@@ -66,6 +66,7 @@ public:
     m_iconText    = KToolBar::IconOnly;
     m_iconSize    = 0;
 
+    m_parent   = 0;
     m_instance = KGlobal::instance();
   }
   ~KToolBarButtonPrivate()
@@ -111,16 +112,18 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
   d = new KToolBarButtonPrivate;
 
   d->m_id     = _id;
-  d->m_parent = (KToolBar*)_parent;
   QToolButton::setTextLabel(_txt);
   d->m_instance = _instance;
+
+  d->m_parent = dynamic_cast<KToolBar*>(_parent);
+  if (d->m_parent) {
+    connect(d->m_parent, SIGNAL( modechange() ),
+            this,         SLOT( modeChange() ));
+  }
 
   setFocusPolicy( NoFocus );
 
   // connect all of our slots and start trapping events
-  connect(d->m_parent, SIGNAL( modechange() ),
-          this,         SLOT( modeChange() ));
-
   connect(this, SIGNAL( clicked() ),
           this, SLOT( slotClicked() ) );
   connect(this, SIGNAL( pressed() ),
@@ -143,15 +146,17 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   d = new KToolBarButtonPrivate;
 
   d->m_id       = _id;
-  d->m_parent   = (KToolBar *) _parent;
   QToolButton::setTextLabel(txt);
+
+  d->m_parent = dynamic_cast<KToolBar*>(_parent);
+  if (d->m_parent) {
+    connect(d->m_parent, SIGNAL( modechange() ),
+            this,         SLOT( modeChange() ));
+  }
 
   setFocusPolicy( NoFocus );
 
   // connect all of our slots and start trapping events
-  connect(d->m_parent, SIGNAL( modechange()),
-          this,        SLOT(modeChange()));
-
   connect(this, SIGNAL( clicked() ),
           this, SLOT( slotClicked() ));
   connect(this, SIGNAL( pressed() ),
@@ -175,17 +180,19 @@ void KToolBarButton::modeChange()
   QSize mysize;
 
   // grab a few global variables for use in this function and others
-  d->m_highlight = d->m_parent->highlight();
-  d->m_iconText  = d->m_parent->iconText();
+  if (d->m_parent) {
+    d->m_highlight = d->m_parent->highlight();
+    d->m_iconText  = d->m_parent->iconText();
 
-  d->m_iconSize = d->m_parent->iconSize();
+    d->m_iconSize = d->m_parent->iconSize();
+  }
   if (!d->m_iconName.isNull())
     setIcon(d->m_iconName);
 
   // we'll start with the size of our pixmap
   int pix_width  = d->m_iconSize;
   if ( d->m_iconSize == 0 ) {
-      if (!strcmp(d->m_parent->name(), "mainToolBar"))
+      if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
           pix_width = IconSize( KIcon::MainToolbar );
       else
           pix_width = IconSize( KIcon::Toolbar );
@@ -269,9 +276,10 @@ void KToolBarButton::setText( const QString& text)
 void KToolBarButton::setIcon( const QString &icon )
 {
   d->m_iconName = icon;
-  d->m_iconSize = d->m_parent->iconSize();
+  if (d->m_parent)
+    d->m_iconSize = d->m_parent->iconSize();
   // QObject::name() return "const char *" instead of QString.
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
     QToolButton::setIconSet( d->m_instance->iconLoader()->loadIconSet(
         d->m_iconName, KIcon::MainToolbar, d->m_iconSize ));
   else
@@ -315,7 +323,7 @@ void KToolBarButton::setDefaultIcon( const QString& icon )
 {
   QIconSet set = iconSet();
   QPixmap pm;
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
         d->m_iconSize );
   else
@@ -329,7 +337,7 @@ void KToolBarButton::setDisabledIcon( const QString& icon )
 {
   QIconSet set = iconSet();
   QPixmap pm;
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
         d->m_iconSize );
   else
