@@ -268,7 +268,7 @@
 
 (define (fr-label-title-sep)
   (list
-   (list (normalize "abstract")		"&nbsp;: ")
+   (list (normalize "abstract")		"\U-00A0;: ")
    (list (normalize "answer")		" ")
    (list (normalize "appendix")		". ")
    (list (normalize "caution")		"")
@@ -277,10 +277,10 @@
    (list (normalize "example")		". ")
    (list (normalize "figure")		". ")
    (list (normalize "footnote")		". ")
-   (list (normalize "glosssee")		"&nbsp;: ")
-   (list (normalize "glossseealso")	"&nbsp;: ")
-   (list (normalize "important")	"&nbsp;: ")
-   (list (normalize "note")		"&nbsp;: ")
+   (list (normalize "glosssee")		"\U-00A0;: ")
+   (list (normalize "glossseealso")	"\U-00A0;: ")
+   (list (normalize "important")	"\U-00A0;: ")
+   (list (normalize "note")		"\U-00A0;: ")
    (list (normalize "orderedlist")	". ")
    (list (normalize "part")		". ")
    (list (normalize "procedure")	". ")
@@ -302,7 +302,7 @@
    (list (normalize "seealsoie")	" ")
    (list (normalize "step")		". ")
    (list (normalize "table")		". ")
-   (list (normalize "tip")		"&nbsp;: ")
+   (list (normalize "tip")		"\U-00A0;: ")
    (list (normalize "warning")		"")
    ))
 
@@ -361,7 +361,7 @@
 	 (title  (assoc name (fr-lot-title))))
     (if title
 	(car (cdr title))
-	(let* ((msg (string-append "&ListofUnknown;&nbsp;: " name))
+	(let* ((msg (string-append "&ListofUnknown;\U-00A0;: " name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
 
@@ -390,7 +390,7 @@
 
 (define %gentext-fr-endnotes% "&Notes;")
 
-(define %gentext-fr-table-endnotes% "&TableNotes;&nbsp;:")
+(define %gentext-fr-table-endnotes% "&TableNotes;\U-00A0;:")
 
 (define %gentext-fr-index-see% "&See;")
 
