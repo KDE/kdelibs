@@ -93,6 +93,7 @@ namespace KJS {
     void closeNow();
     void delayedGoHistory(int steps);
     void goHistory(int steps);
+    void goURL(ExecState* exec, const QString& url, bool lockHistory = true);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;

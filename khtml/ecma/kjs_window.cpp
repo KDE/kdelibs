@@ -695,20 +695,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location: {
-      // No isSafeScript here, it's not a security problem to redirect another window
-      // (tested in other browsers)
-      // Complete the URL using the "active part" (running interpreter)
-      KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-      if (p) {
-        QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
-        //kdDebug() << "Window::put dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
-        // Check if the URL is the current one. No [infinite] redirect in that case.
-        if ( ( dstUrl.find("javascript:", 0, false) || isSafeScript(exec) ) &&
-             !m_part->url().cmp( KURL(dstUrl), true ) )
-            m_part->scheduleRedirection(0,
-                                        dstUrl,
-                                        false /*don't lock history*/);
-      }
+      goURL(exec, value.toString(exec).qstring());
       return;
     }
     case Onabort:
@@ -846,6 +833,27 @@ void Window::closeNow()
     //kdDebug(6070) << k_funcinfo << " -> closing window" << endl;
     m_part->deleteLater();
     m_part = 0;
+  }
+}
+
+void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
+{
+  Window* active = Window::retrieveActive(exec);
+  // Complete the URL using the "active part" (running interpreter)
+  if (active->part()) {
+    QString dstUrl = active->part()->htmlDocument().completeURL(url).string();
+    kdDebug() << "Window::goURL dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
+    // Check if the URL is the current one. No [infinite] redirect in that case.
+    if ( m_part->url().cmp( KURL(dstUrl), true ) )
+        return;
+
+    // check if we're allowed to inject javascript
+    // SYNC check with khtml_part.cpp::slotRedirect!
+    if ( isSafeScript(exec) ||
+            dstUrl.find(QString::fromLatin1("javascript:"), 0, false) != 0 )
+      m_part->scheduleRedirection(-1,
+                                dstUrl,
+                                  lockHistory);
   }
 }
 
@@ -1010,7 +1018,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   UString s = v.toString(exec);
   str = s.qstring();
 
-  switch (id) {
+ // functions that work everywhere
+ switch (id) {
   case Window::Alert:
     part->xmlDocImpl()->updateRendering();
     KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
@@ -1144,14 +1153,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
           while ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
+          Window::retrieveWindow(part)->goURL(exec, url.url(), false /*don't lock history*/);
           return Window::retrieve(part);
       }
       if ( uargs.frameName == "_parent" )
       {
           if ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
+          Window::retrieveWindow(part)->goURL(exec, url.url(), false /*don't lock history*/);
           return Window::retrieve(part);
       }
       uargs.serviceType = "text/html";
@@ -1184,6 +1193,21 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return Undefined();
     }
   }
+  case Window::Focus:
+    if (widget)
+      widget->setActiveWindow();
+    return Undefined();
+  case Window::Blur:
+    // TODO
+    return Undefined();
+  };
+
+
+  // now unsafe functions..
+  if (!window->isSafeScript(exec))
+    return Undefined();
+
+  switch (id) {
   case Window::ScrollBy:
     if(args.size() == 2 && widget)
       widget->scrollBy(args[0].toInt32(exec), args[1].toInt32(exec));
@@ -1298,13 +1322,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::ClearTimeout:
   case Window::ClearInterval:
     (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
-    return Undefined();
-  case Window::Focus:
-    if (widget)
-      widget->setActiveWindow();
-    return Undefined();
-  case Window::Blur:
-    // TODO
     return Undefined();
   case Window::Close: {
     /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
@@ -1678,7 +1695,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-  m_part->scheduleRedirection(0, url.url(), false /*don't lock history*/);
+  Window::retrieveWindow(m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
@@ -1711,14 +1728,19 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   }
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
+
+  if (!part) return Undefined();
+
+  Window* window = Window::retrieveWindow(part);
+
+  if ( !window->isSafeScript(exec) && id != Location::Replace)
+      return Undefined();
+
   if (part) {
     switch (id) {
     case Location::Replace:
     {
-      QString str = args[0].toString(exec).qstring();
-      KHTMLPart* p = Window::retrieveActive(exec)->part();
-      if ( p )
-        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string(), true /*lock history*/);
+      Window::retrieveWindow(part)->goURL(exec, args[0].toString(exec).qstring(), true);
       break;
     }
     case Location::Reload:
