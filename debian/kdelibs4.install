@@ -2,8 +2,6 @@ debian/tmp/usr/lib/kde3/kabc_dir.la
 debian/tmp/usr/lib/kde3/kabc_dir.so
 debian/tmp/usr/lib/kde3/kabc_file.la
 debian/tmp/usr/lib/kde3/kabc_file.so
-debian/tmp/usr/lib/kde3/kabc_imap.la
-debian/tmp/usr/lib/kde3/kabc_imap.so
 debian/tmp/usr/lib/kde3/kabc_ldap.la
 debian/tmp/usr/lib/kde3/kabc_ldap.so
 debian/tmp/usr/lib/kde3/kabcformat_binary.la
