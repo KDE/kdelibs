@@ -26,10 +26,26 @@
 #include "soundserver.h"
 #include "kplayobject.h"
 
+class KArtsServer;
+
 class KPlayObjectFactory
 {
 public:
+	/**
+	 * Constructs a new Factory for creating aRts playobjects on the
+	 * soundserver.
+	 */
 	KPlayObjectFactory(Arts::SoundServerV2 server);
+
+	/**
+	 * Convenience constructor to pass a KArtsServer instead of an
+	 * Arts::SoundServerV2. This equivalent to calling
+	 * KPlayObjectFactory( server.server() ).
+	 *
+	 * @since 3.2
+	 */
+	KPlayObjectFactory(KArtsServer* server);
+
 	~KPlayObjectFactory();
 
 	KPlayObject *createPlayObject(const KURL& url, bool createBUS);
@@ -46,8 +62,11 @@ private:
 	bool m_stream;
 };
 
+class KAudioManagerPlay;
 
 namespace KDE {
+
+class POFHelper;
 
 	/**
 	 * This class implements a factory to create KDE::PlayObjects for
@@ -55,15 +74,31 @@ namespace KDE {
 	 * use the KDE multimedia framework can be found in the documentation
 	 * for KDE::PlayObject.
 	 */
-class PlayObjectFactory
+class PlayObjectFactory// : public QObject ### for KDE4 make it a QObject to be able to receive signals
 {
+	//Q_OBJECT
+
 public:
 	/**
 	 * Creates a KDE::PlayObjectFactory. @p server is an 
 	 * Arts::SoundServerV2
 	 */
 	PlayObjectFactory(Arts::SoundServerV2 server);
+	/**
+	 * Convenience constructor to pass a KArtsServer instead of an
+	 * Arts::SoundServerV2. This equivalent to calling
+	 * KDE::PlayObjectFactory( server.server() ).
+	 *
+	 * @since 3.2
+	 */
+	PlayObjectFactory( KArtsServer* server );
 	~PlayObjectFactory();
+
+	/**
+	 * If this is set the PlayObject doesn't create a Synth_BUS_UPLINK at all
+	 * but always uses the Synth_AMAN_PLAY that you passed.
+	 */
+	void setAudioManagerPlay( KAudioManagerPlay * amanplay );
 
 	/**
 	 * Creates a KDE::PlayObject to play back the file or stream
@@ -101,14 +136,21 @@ public:
 	 */
 	static QStringList mimeTypes(void);
 
+/*private slots: ### KDE4 and remove Helper class
+	void connectAmanPlay();*/
+
 private:
 	struct PrivateData {
 		Arts::SoundServerV2 server;
+		KDE::PlayObject* playObj;
+		KAudioManagerPlay* amanPlay;
+		POFHelper* helper;
 		bool allowStreaming;
 		bool isStream;
 	};
 	PrivateData* d;
 };
 
-}
+};
 #endif
+// vim: sw=4 ts=4 noet

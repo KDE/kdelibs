@@ -100,6 +100,8 @@ Arts::PlayObject KPlayObject::object()
 
 bool KPlayObject::isNull()
 {
+	if( !this )
+		return true;
 	return object().isNull();
 }
 
@@ -141,7 +143,11 @@ KDE::PlayObject::PlayObject(Arts::PlayObject playobject, bool isStream) : QObjec
 	m_playObject = playobject;
 	m_isStream = isStream;
 	d = new PrivateData;
-	emit playObjectCreated();
+
+	//very funny! you can't connect to signals before creating
+	//the object - so nobody will ever receive this signal (mkretz)
+	//
+	//emit playObjectCreated();
 }
 
 KDE::PlayObject::PlayObject( Arts::SoundServerV2 server, const KURL& url, bool isStream, bool createBUS ) : QObject()
@@ -293,3 +299,5 @@ bool KDE::PlayObject::stream()
 {
 	return m_isStream;
 }
+
+// vim: sw=4 ts=4 noet
