@@ -128,7 +128,7 @@ khtmlw has been replaced with khtml.<BR>
 	w-&gt;openURL(myURL);
   </PRE>
 
-	<LI>khtml uses Qstring's instead of char *'s now. This means, that most
+	<LI>khtml uses QString's instead of char *'s now. This means, that most
   of the api has changed. In all functions:<P>
   <PRE>
      const char * -&gt; QString
@@ -190,7 +190,7 @@ khtmlw has been replaced with khtml.<BR>
 
   The API is almost the same and it simplifies existing code a bit,
   so give it a try. If you need more functionality, please contact
-  me (Dirk A. Mueller &lt;<A HREF="mailto:mueller@kde.org">mueller@kde.org</A>&gt;).<P>
+  me, Dirk A. Mueller &lt;<A HREF="mailto:mueller@kde.org">mueller@kde.org</A>&gt;.<P>
 
   The additional class KDoubleNumInput gives you the same look &amp; feel,
   but allows you to edit floating point numbers.<P>
@@ -208,7 +208,7 @@ i18n is no longer a macro<P>
   to klocale-&gt;translate with i18n.<P>
 
   The return value of i18n is also no longer a const char*,
-  but a unicode qstring.<P>
+  but a unicode QString.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -627,7 +627,7 @@ changed to start with a 'k', this prevents namespace pollution. This should
 not cause too many problems as most of the KIO classes now inherit the
 namespace. Finally you should not longer include userpaths.h, its methods
 have been moved to kglobalsettings.h. If you have any questions about the 
-changes then mail me (<A HREF="mailto:rich@kde.org">rich@kde.org</A>).<P>
+changes then mail me Richard J. Moore &lt;<A HREF="mailto:rich@kde.org">rich@kde.org</A>&gt;.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
