@@ -893,7 +893,7 @@ private:
 
     QCString post_data;
     
-    QPixmap* paintBuffer;
+    static QPixmap* paintBuffer;
 };
 
 /**
