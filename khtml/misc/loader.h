@@ -137,6 +137,8 @@ namespace khtml
          */
         void setFree( bool b ) { m_free = b; }
 
+	virtual bool isImage() const = 0;
+
     protected:
 	DOM::DOMString m_url;
 	Type m_type;
@@ -165,6 +167,8 @@ namespace khtml
 	virtual void error( int err, const char *text );
 
 	void checkNotify();
+
+	virtual bool isImage() const { return false; }
 	
     protected:
 	DOM::DOMString m_sheet;
@@ -197,6 +201,10 @@ namespace khtml
 	 */
 	void notify(CachedObjectClient *c = 0);
 
+	virtual bool isImage() const { return true; }
+
+	void load();
+
     public slots:
 	/**
 	 * gets called, whenever a QMovie changes frame
@@ -221,7 +229,8 @@ namespace khtml
 	bool gotFrame;
 	
 	ImageSource* imgSource;
-	
+
+	DOM::DOMString m_baseURL;
     };
 	
 	
@@ -330,6 +339,9 @@ namespace khtml
 
         static void removeCacheEntry( CachedObject *object );
 
+        static void autoloadImages( bool enable );
+	static bool autoloadImages();
+
     protected:
 	/*
 	 * @internal
@@ -356,6 +368,8 @@ namespace khtml
 	static int actSize;
 
 	static Loader *m_loader;
+
+        static bool s_autoloadImages;
 
         static unsigned long s_ulRefCnt;
     };

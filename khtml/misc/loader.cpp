@@ -258,8 +258,10 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL)
     m_size = 0;
     imgSource = 0;
     gotFrame = false;
+    m_baseURL = baseURL;
 
-    Cache::loader()->load(this, baseURL, true);
+    if ( Cache::autoloadImages() )
+      load();
 }
 
 CachedImage::~CachedImage()
@@ -424,6 +426,13 @@ void CachedImage::error( int /*err*/, const char */*text*/ )
 
     notify();
 }
+
+void CachedImage::load()
+{      
+  Cache::loader()->load(this, m_baseURL, true);
+}
+
+
 // ------------------------------------------------------------------------------------------
 
 Loader::Loader() : QObject()
@@ -569,6 +578,8 @@ int Cache::maxSize = DEFCACHESIZE;
 int Cache::actSize = 0;
 
 QPixmap *Cache::nullPixmap = 0;
+
+bool Cache::s_autoloadImages = true;
 
 unsigned long Cache::s_ulRefCnt = 0;
 
@@ -826,5 +837,34 @@ void Cache::removeCacheEntry( CachedObject *object )
     kdDebug( 300 ) << "removed cache entry for " << key << " from lru" << endl;
   }
 }
+
+void Cache::autoloadImages( bool enable )
+{
+  if ( enable == s_autoloadImages )
+    return;
+  
+  s_autoloadImages = enable;
+  
+  QDictIterator<CachedObject> it( *cache );
+  for (; it.current(); ++it )
+    if ( it.current()->isImage() )
+    {
+      CachedImage *img = static_cast<CachedImage *>( it.current() );
+      
+      CachedObject::Status status = img->status();
+      if ( status != CachedObject::Unknown ||
+	   status == CachedObject::Cached ||
+	   status == CachedObject::Uncacheable ||
+	   status == CachedObject::Pending )
+        continue;
+	   
+      img->load();
+    }
+} 
+
+bool Cache::autoloadImages()
+{
+  return s_autoloadImages; 
+} 
 
 #include "loader.moc"

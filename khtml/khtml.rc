@@ -13,5 +13,6 @@
 <ToolBar name="mainToolBar">
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
+ <Action name="loadImages" />
 </ToolBar>
 </kpartgui>

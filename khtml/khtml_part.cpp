@@ -160,6 +160,7 @@ public:
   KSelectAction *m_paSetEncoding;
   KAction *m_paIncFontSizes;
   KAction *m_paDecFontSizes;
+  KAction *m_paLoadImages;
 
   KParts::PartManager *m_manager;
 
@@ -215,6 +216,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->enableJavaScript();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
 
+  autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
+  
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As.." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
@@ -230,6 +233,9 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
+  if ( !autoloadImages() )
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+  
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -397,14 +403,14 @@ bool KHTMLPart::javaEnabled() const
   return d->m_bJavaEnabled;
 }
 
-void KHTMLPart::autoloadImages( bool /*enable*/ )
+void KHTMLPart::autoloadImages( bool enable )
 {
-    // ###
+  khtml::Cache::autoloadImages( enable );
 }
 
 bool KHTMLPart::autoloadImages() const
 {
-    return true;
+  return khtml::Cache::autoloadImages();
 }
 
 void KHTMLPart::clear()
@@ -1711,6 +1717,12 @@ void KHTMLPart::updateFontSize( int add )
   d->m_extension->setURLArgs( args );
   openURL( m_url );
 }
+
+void KHTMLPart::slotLoadImages()
+{
+  autoloadImages( false );
+  autoloadImages( true );
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
