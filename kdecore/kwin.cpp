@@ -661,7 +661,7 @@ QString KWin::WindowInfo::visibleName() const
 {
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
         << "Pass NET::WMVisibleName to KWin::windowInfo()" << endl;
-    return d->info->visibleName() ? QString::fromUtf8(d->info->visibleName()) : d->name_;
+    return d->info->visibleName() ? QString::fromUtf8(d->info->visibleName()) : name();
 }
 
 QString KWin::WindowInfo::name() const
