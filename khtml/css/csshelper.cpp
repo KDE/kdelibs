@@ -177,7 +177,7 @@ void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s, QPa
             }
         }
         //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
-        if ( bestSize != 0 ) // 15% deviation, otherwise we use a scaled font...
+        if ( bestSize != 0 && diff < 0.2 ) // 20% deviation, otherwise we use a scaled font...
             size = bestSize*toPix;
 //         else if ( size > 4 && size < 16 )
 //             size = float( int( ( size + 1 ) / 2 )*2 );
