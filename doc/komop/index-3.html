@@ -27,8 +27,8 @@ Next <A HREF="index-2.html">Previous</A>
 <P>
 <P>The goals of the OpenParts technology, based upon KOM, are:
 <UL>
-<LI>provide an easy way to graphically embed other application's "widgets"</LI>
-<LI>provide an clever way to manage shared GUI elements and provide a CORBA/KOM
+<LI>provide an easy way to graphically embed other applications' "widgets"</LI>
+<LI>provide a clever way to manage shared GUI elements and provide a CORBA/KOM
 interface/implementation of these</LI>
 <LI>implement the basic support for the document view model</LI>
 </UL>
@@ -105,7 +105,7 @@ like the menubar manager for example.</LI>
 <P>The very first step you have to make is to tell the OpenParts Part Interface
 (<CODE>OPPartIf</CODE>) , the class you have to inherit from, what the actual
 widget is, because <CODE>OPartIf</CODE> does not inherit from QWidget. This gives
-you the  flexibility to separate your Part component from your actualy widget,
+you the  flexibility to separate your Part component from your actual widget,
 but you  don't have to do this. You can simply multiply inherit from
 <CODE>OPPartIf</CODE> and <CODE>QWidget</CODE> or the appropriate widget class. In any way you
 specify your Part  widget by calling <CODE>setWidget( your_widget_here )</CODE> .
@@ -178,10 +178,10 @@ this means that you have to re-implement the <CODE>event()</CODE> function
 <P>The attached event arguments indicate whether the toolbar(s) or the menubar
 are to be created or cleared. Check these arguments against
 <CODE>CORBA::is_nil()</CODE> and you know :-) .
-<P>The OpenParts StatusBar is handled different compared to the
+<P>The OpenParts StatusBar is handled differently compared to the
 MenuBar/ToolBar(s) . In fact it is easier: When registering at the OpenParts
 StatusBarManager you receive your <CODE>OpenParts::StatusBar</CODE> as return
-value. You can then use the StatusBar everywhere in your Part, independend
+value. You can then use the StatusBar everywhere in your Part, independent
 from whether it is visible (active) or not.
 <P>In the <CODE>init()</CODE> function a lot of registration stuff is done, and
 corresponding to this in the <CODE>cleanUp()</CODE> function (see chapter about
@@ -245,7 +245,7 @@ for further information about the events and the API in general.</LI>
 unexplained how Parts are really displayed/shown. Since Parts are no simple
 QWidgets but CORBA objects we need a helping hand here, which is the
 <CODE>OPFrame</CODE> class. In fact <CODE>OPFrame</CODE> is a QWidget, but in
-conjuction with Qt's QXEmbed it embeds the Part's widget window. The usage of
+conjunction with Qt's QXEmbed it embeds the Part's widget window. The usage of
 <CODE>OPFrame</CODE> is really easy, usually the code looks like this:
 <P>
 <PRE>
@@ -315,13 +315,13 @@ recommended to perform these calls in the constructor of your MainWindow.
 about OPMenu(Bar)/OPToolBar .
 <P>Your MainWindow emits a Qt signal (<CODE>activePartChanged</CODE>) which informs
 you about a focus change of the active part, meaning whenever the user clicks
-on a non-active Part and it accepts the focus. Beside the pure informative
+on a non-active Part and it accepts the focus. Besides the pure informative
 sense  of this signal it is recommended to connect to this signal and perform
 the  following two steps in the slot implementation:
 <P>
 <OL>
 <LI>deactivate the previous active Part's GUI by calling the *bar managers
-<CODE>clear()</CODE> function, which will do the job and, beside some
+<CODE>clear()</CODE> function, which will do the job and, besides some
 internal stuff, emit the GUI events (see previous chapter) to the Part.</LI>
 <LI>activate the new active Part's GUI by calling the *bar managers
 <CODE>create()</CODE> function, which will, similar to the activation, emit

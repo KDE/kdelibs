@@ -103,7 +103,7 @@ could like this:
   ...
   SenderObject->connect( "mySignal", ReceiverObject, "mySlot" );
   ...
-  SenderObject->disconnect( "mySignal", ReceiverObject", "mySlot");
+  SenderObject->disconnect( "mySignal", ReceiverObject, "mySlot");
 </PRE>
 <P>Well, this is quite self-explaining I think. Just make sure to always disconnect
 from your object upon destruction.
@@ -186,17 +186,17 @@ or
 </PRE>
 
 </LI>
-<LI><CODE>EMIT_EVENT_OCTET</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for
+<LI><CODE>EMIT_EVENT_OCTET</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for
 CORBA::Octet values.</LI>
-<LI><CODE>EMIT_EVENT_CHAR</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for char
+<LI><CODE>EMIT_EVENT_CHAR</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for char
 (CORBA::Char) values.</LI>
-<LI><CODE>EMIT_EVENT_WCHAR</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for
+<LI><CODE>EMIT_EVENT_WCHAR</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for
 CORBA::WChar values.</LI>
-<LI><CODE>EMIT_EVENT_STRING</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for
+<LI><CODE>EMIT_EVENT_STRING</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for
 char * (CORBA::Char*) values.</LI>
-<LI><CODE>EMIT_EVENT_WSTRING</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for
+<LI><CODE>EMIT_EVENT_WSTRING</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for
 CORBA::WChar* values.</LI>
-<LI><CODE>EMIT_EVENT_OBJECT</CODE>, similar to EMIT_EVENT_BOOLEAN, useable for
+<LI><CODE>EMIT_EVENT_OBJECT</CODE>, similar to EMIT_EVENT_BOOLEAN, usable for
 CORBA objects (CORBA::Object).</LI>
 </UL>
 <P>
@@ -528,7 +528,7 @@ KOMShutdownManager::self()->watchObject( obj );
 <P>Pretty self-explaining I think, or? :-) As reference you might also have a look
 at the kded examples in kdelibs/corba/tutorials/kded , KOMShutdownManager is
 used there, too.
-<P>(BTW, please feel free to bomb me with questions if anything is explained bad
+<P>(BTW, please feel free to bomb me with questions if anything is explained badly
 or hard to understand! Just drop me a short mail at 
 <A HREF="mailto:hausmann@kde.org">&lt;hausmann@kde.org></A><P>
 <P ALIGN="RIGHT">

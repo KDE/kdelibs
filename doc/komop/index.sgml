@@ -26,7 +26,7 @@ applications might be:
 
 <itemize>
 <item>make several modules of the application re-usable components, being
-      available for other applications, not matter in what language they are
+      available for other applications, no matter in what language they are
       written or on what platform/machine they're running.
 <item>make use of OpenPart's embedding facility and its way to manage shared
       GUI elements to provide seamless graphical integration of components in
@@ -125,7 +125,7 @@ could like this:
 <verb>  ...
   SenderObject->connect( "mySignal", ReceiverObject, "mySlot" );
   ...
-  SenderObject->disconnect( "mySignal", ReceiverObject", "mySlot");
+  SenderObject->disconnect( "mySignal", ReceiverObject, "mySlot");
 </verb>
 
 Well, this is quite self-explaining I think. Just make sure to always disconnect
@@ -207,17 +207,17 @@ are in particular:
       or
 <verb>    EMIT_EVENT_BOOLEAN( receiver, name, value );</verb>
 
-<item><tt><cdx/EMIT_EVENT_OCTET/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+<item><tt><cdx/EMIT_EVENT_OCTET/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for
       <cdx/CORBA::Octet/ values.
-<item><tt><cdx/EMIT_EVENT_CHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for char
+<item><tt><cdx/EMIT_EVENT_CHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for char
       (<cdx/CORBA::Char/) values.
-<item><tt><cdx/EMIT_EVENT_WCHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+<item><tt><cdx/EMIT_EVENT_WCHAR/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for
       <cdx/CORBA::WChar/ values.
-<item><tt><cdx/EMIT_EVENT_STRING/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+<item><tt><cdx/EMIT_EVENT_STRING/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for
       char * (<cdx/CORBA::Char*/) values.
-<item><tt><cdx/EMIT_EVENT_WSTRING/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+<item><tt><cdx/EMIT_EVENT_WSTRING/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for
       <cdx/CORBA::WChar*/ values.
-<item><tt><cdx/EMIT_EVENT_OBJECT/</tt>, similar to EMIT_EVENT_BOOLEAN, useable for
+<item><tt><cdx/EMIT_EVENT_OBJECT/</tt>, similar to EMIT_EVENT_BOOLEAN, usable for
       CORBA objects (<cdx/CORBA::Object/).
 </itemize>
 
@@ -552,7 +552,7 @@ Pretty self-explaining I think, or? :-) As reference you might also have a look
 at the kded examples in kdelibs/corba/tutorials/kded , KOMShutdownManager is
 used there, too.
 
-(BTW, please feel free to bomb me with questions if anything is explained bad
+(BTW, please feel free to bomb me with questions if anything is explained badly
 or hard to understand! Just drop me a short mail at <htmlurl url="mailto:hausmann@kde.org" name="<hausmann@kde.org>">
 
 <sect>OpenParts
@@ -563,8 +563,8 @@ or hard to understand! Just drop me a short mail at <htmlurl url="mailto:hausman
 
 The goals of the OpenParts technology, based upon KOM, are:
 <itemize>
-<item>provide an easy way to graphically embed other application's "widgets"
-<item>provide an clever way to manage shared GUI elements and provide a CORBA/KOM
+<item>provide an easy way to graphically embed other applications' "widgets"
+<item>provide a clever way to manage shared GUI elements and provide a CORBA/KOM
       interface/implementation of these
 <item>implement the basic support for the document view model
 </itemize>
@@ -648,7 +648,7 @@ framework for this:
 The very first step you have to make is to tell the OpenParts Part Interface
 (<tt><cdx/OPPartIf/</tt>) , the class you have to inherit from, what the actual
 widget is, because <tt><cdx/OPartIf/</tt> does not inherit from QWidget. This gives
-you the  flexibility to separate your Part component from your actualy widget,
+you the  flexibility to separate your Part component from your actual widget,
 but you  don't have to do this. You can simply multiply inherit from
 <tt>OPPartIf</tt> and <tt/<cdx/QWidget// or the appropriate widget class. In any way you
 specify your Part  widget by calling <tt>setWidget( your_widget_here )</tt> .
@@ -726,10 +726,10 @@ The attached event arguments indicate whether the toolbar(s) or the menubar
 are to be created or cleared. Check these arguments against
 <tt>CORBA::is_nil()</tt> and you know :-) .
 
-The OpenParts StatusBar is handled different compared to the
+The OpenParts StatusBar is handled differently compared to the
 MenuBar/ToolBar(s) . In fact it is easier: When registering at the OpenParts
 StatusBarManager you receive your <tt><cdx/OpenParts::StatusBar/</tt> as return
-value. You can then use the StatusBar everywhere in your Part, independend
+value. You can then use the StatusBar everywhere in your Part, independent
 from whether it is visible (active) or not.
 
 In the <tt><cdx/init()/</tt> function a lot of registration stuff is done, and
@@ -792,7 +792,7 @@ Now that you know how to create full-featured Part components it is still
 unexplained how Parts are really displayed/shown. Since Parts are no simple
 QWidgets but CORBA objects we need a helping hand here, which is the
 <tt>OPFrame</tt> class. In fact <tt><cdx/OPFrame/</tt> is a <cdx/QWidget/, but in
-conjuction with Qt's <cdx/QXEmbed/ it embeds the Part's widget window. The usage of
+conjunction with Qt's <cdx/QXEmbed/ it embeds the Part's widget window. The usage of
 <tt>OPFrame</tt> is really easy, usually the code looks like this:
 
 <verb>
@@ -869,13 +869,13 @@ about <cdx/OPMenu/(Bar)/<cdx/OPToolBar/ .
 
 Your MainWindow emits a Qt signal (<tt><cdx/activePartChanged/</tt>) which informs
 you about a focus change of the active part, meaning whenever the user clicks
-on a non-active Part and it accepts the focus. Beside the pure informative
+on a non-active Part and it accepts the focus. Besides the pure informative
 sense  of this signal it is recommended to connect to this signal and perform
 the  following two steps in the slot implementation:
 
 <enum>
 <item>deactivate the previous active Part's GUI by calling the *bar managers
-      <tt><cdx/clear()/</tt> function, which will do the job and, beside some
+      <tt><cdx/clear()/</tt> function, which will do the job and, besides some
       internal stuff, emit the GUI events (see previous chapter) to the Part.
 <item>activate the new active Part's GUI by calling the *bar managers
       <tt><cdx/create()/</tt> function, which will, similar to the activation, emit
