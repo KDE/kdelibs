@@ -67,11 +67,18 @@ namespace KJS {
     RegExpObjectImp(ExecState *exec,
                     RegExpPrototypeImp *regProto,
                     FunctionPrototypeImp *funcProto);
-
+    virtual ~RegExpObjectImp();
     virtual bool implementsConstruct() const;
     virtual Object construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+
+    Value get(ExecState *exec, const UString &p) const;
+    int ** registerRegexp( const RegExp* re, const UString& s );
+  private:
+    UString lastString;
+    int *lastOvector;
+    uint lastNrSubPatterns;
   };
 
 }; // namespace

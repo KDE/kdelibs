@@ -78,14 +78,15 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     return err;
   }
 
-  RegExp *re = static_cast<RegExpImp*>(thisObj.imp())->regExp();
+  RegExpImp *reimp = static_cast<RegExpImp*>(thisObj.imp());
+  RegExp *re = reimp->regExp();
   String s;
   Value lastIndex, tmp;
   UString str;
   int length, i;
   switch (id) {
   case Exec:
-  case Test:
+  case Test: // shouldn't Test use RegExp::test() ?
     s = args[0].toString(exec);
     length = s.value().size();
     lastIndex = thisObj.get(exec,"lastIndex");
@@ -98,10 +99,14 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       result = Null();
       break;
     }
-    str = re->match(s.value(), i);
-    if (id == Test) {
-      result = Boolean(str.size() != 0);
-      break;
+    {
+      RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+      int **ovector = regExpObj->registerRegexp( re, s.value() );
+      str = re->match(s.value(), i, 0L, ovector);
+      if (id == Test) {
+        result = Boolean(str.size() != 0);
+        break;
+      }
     }
     // TODO complete
     result = String(str);
@@ -137,7 +142,7 @@ RegExpImp::~RegExpImp()
 RegExpObjectImp::RegExpObjectImp(ExecState *exec,
                                  RegExpPrototypeImp *regProto,
                                  FunctionPrototypeImp *funcProto)
-  : InternalFunctionImp(funcProto)
+  : InternalFunctionImp(funcProto), lastOvector(0L), lastNrSubPatterns(0)
 {
   Value protect(this);
   // ECMA 15.10.5.1 RegExp.prototype
@@ -145,6 +150,37 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
 
   // no. of arguments for constructor
   put(exec,"length", Number(2), ReadOnly|DontDelete|DontEnum);
+}
+
+RegExpObjectImp::~RegExpObjectImp()
+{
+  if (lastOvector)
+    delete [] lastOvector;
+}
+
+int **RegExpObjectImp::registerRegexp( const RegExp* re, const UString& s )
+{
+  lastString = s;
+  if (lastOvector)
+    delete [] lastOvector;
+  lastOvector = 0;
+  lastNrSubPatterns = re->subPatterns();
+  return &lastOvector;
+}
+
+Value RegExpObjectImp::get(ExecState *, const UString &p) const
+{
+  if (p[0] == '$' && lastOvector)
+  {
+    bool ok;
+    unsigned long i = p.substr(1).toULong(&ok);
+    if (ok && i < lastNrSubPatterns + 1)
+    {
+      UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
+      return String(substring);
+    }
+  }
+  return Undefined();
 }
 
 bool RegExpObjectImp::implementsConstruct() const

@@ -211,9 +211,10 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         result = Undefined(); // No idea what to do here
         break;
       }
+    RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+    int **ovector = regExpObj->registerRegexp( reg, u );
     {
-      //RegExp reg(s2.value());
-      UString mstr = reg->match(u, -1, &pos);
+      UString mstr = reg->match(u, -1, 0L, ovector);
       if (a0.isA(StringType))
         delete reg;
       if (id == Search) {
@@ -235,7 +236,9 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
       s2 = Object::dynamicCast(a0).get(exec,"source").toString(exec);
       RegExp reg(s2);
-      UString mstr = reg.match(u, -1, &pos);
+      RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+      int **ovector = regExpObj->registerRegexp( &reg, u );
+      UString mstr = reg.match(u, -1, &pos, ovector);
       len = mstr.size();
     } else {
       s2 = a0.toString(exec);
@@ -288,11 +291,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	res.put(exec,"length", Number(0));
 	break;
       }
+      // #### Are we supposed to call registerRegexp() (for RegExp.$1 etc?)
+      int *ovector;
       int mpos;
       pos = 0;
       while (1) {
 	// TODO: back references
-	UString mstr = reg.match(u, pos, &mpos);
+	UString mstr = reg.match(u, pos, &mpos, &ovector);
 	if (mpos < 0)
 	  break;
 	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
@@ -302,6 +307,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
+      delete ovector;
     } else if (a0.type() != UndefinedType) {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {

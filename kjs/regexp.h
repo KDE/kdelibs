@@ -45,8 +45,9 @@ namespace KJS {
     enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
     RegExp(const UString &p, int f = None);
     ~RegExp();
-    UString match(const UString &s, int i = -1, int *pos = 0L);
+    UString match(const UString &s, int i = -1, int *pos = 0L, int **ovector = 0L);
     bool test(const UString &s, int i = -1);
+    uint subPatterns() const { return nrSubPatterns; }
   private:
     const UString &pattern;
     int flags;
@@ -55,6 +56,7 @@ namespace KJS {
     regex_t preg;
 #else
     pcre *pcregex;
+    uint nrSubPatterns;
 #endif
 
     RegExp();

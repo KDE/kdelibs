@@ -46,9 +46,14 @@ RegExp::RegExp(const UString &p, int f)
   pcregex = pcre_compile(p.ascii(), pcreflags,
 			 &perrormsg, &errorOffset, NULL);
 
+  // Get number of subpatterns that will be returned
+  int rc = pcre_fullinfo( pcregex, NULL, PCRE_INFO_CAPTURECOUNT, &nrSubPatterns);
+  if (rc != 0)
+    nrSubPatterns = 0; // fallback. We always need the first pair of offsets.
 
 #else /* HAVE_PCREPOSIX */
 
+  nrSubPatterns = 0; // not implemented with POSIX regex.
   int regflags = 0;
 #ifdef REG_EXTENDED
   regflags |= REG_EXTENDED;
@@ -58,7 +63,7 @@ RegExp::RegExp(const UString &p, int f)
     regflags |= REG_ICASE;
 #endif
 
-  //NOTE: Multiline is not feasble with POSIX regex.
+  //NOTE: Multiline is not feasible with POSIX regex.
   //if ( f & Multiline )
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
@@ -80,30 +85,31 @@ RegExp::~RegExp()
 #endif
 }
 
-UString RegExp::match(const UString &s, int i, int *pos)
+UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 {
 
 #ifdef HAVE_PCREPOSIX
-  // A very large number, but should cover the cases we need.
-  //
-  int ovector[300];
   CString buffer(s.cstring());
+  int ovecsize = (nrSubPatterns+1)*3; // see pcre docu
+  if (ovector) *ovector = new int[ovecsize];
 
   if (i < 0)
     i = 0;
 
   if (i > s.size() || s.isNull() ||
       pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size() - i, i,
-		0, ovector, 300) == PCRE_ERROR_NOMATCH) {
+		0, ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH) {
 
     if (pos)
-      *pos = -1;
+       *pos = -1;
     return UString::null;
   }
 
+  if (!ovector)
+    return UString::null; // don't rely on the return value if you pass ovector==0
   if (pos)
-    *pos = ovector[0];
-  return s.substr(ovector[0], ovector[1] - ovector[0]);
+     *pos = (*ovector)[0];
+  return s.substr((*ovector)[0], (*ovector)[1] - (*ovector)[0]);
 
 #else
   regmatch_t rmatch[10];
@@ -115,13 +121,14 @@ UString RegExp::match(const UString &s, int i, int *pos)
   if (i > s.size() || s.isNull() ||
       regexec(&preg, str + i, 10, rmatch, 0)) {
     if (pos)
-      *pos = -1;
+       *pos = -1;
     return UString::null;
   }
   free(str);
 
   if (pos)
-    *pos = rmatch[0].rm_so + i;
+     *pos = rmatch[0].rm_so + i;
+  // TODO copy from rmatch to ovector
   return s.substr(rmatch[0].rm_so + i, rmatch[0].rm_eo - rmatch[0].rm_so);
 #endif
 }
