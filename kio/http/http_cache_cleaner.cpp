@@ -52,7 +52,7 @@ static const char *appName = "kio_http_cache_cleaner";
 
 static const char *description = I18N_NOOP("KDE HTTP cache maintenance tool");
 
-static const char *version = "0.0.2";
+static const char *version = "1.0.0";
 
 static const KCmdLineOptions options[] =
 {
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
    if (deleteAll)
       m_maxCacheSize = -1;
 
-   QString strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+   QString strCacheDir = KGlobal::dirs()->saveLocation("cache", "http");
 
    QDir cacheDir( strCacheDir );
    if (!cacheDir.exists())
