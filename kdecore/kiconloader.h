@@ -86,6 +86,13 @@ public:
      * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
      * @param the KStandardDirs object to use. If null the global one is used
+     *
+     * Usually, you use the default iconloader, which can be accessed via
+     * @ref KGlobal::iconLoader(), so you hardly ever have to create an
+     * iconloader object yourself. That one is the current KInstance's 
+     * (typically KApplication's) iconloader.
+     * @see KGlobal::iconLoader()
+     * @see KInstance::iconLoader()
      */
     KIconLoader(const QString& appname=QString::null, KStandardDirs *dirs = 0);
 
