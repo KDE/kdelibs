@@ -278,7 +278,7 @@ QValueList<QCString> KDEsuClient::getKeys(QCString group)
     QValueList<QCString> list;
     if( !reply.isEmpty() )
     {
-        kdDebug(900) << "Found a matching entry: " << reply << endl;
+        // kdDebug(900) << "Found a matching entry: " << reply << endl;
         while (1)
         {
             pos = reply.find( '\007', index );
