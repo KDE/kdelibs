@@ -44,11 +44,11 @@ public:
 
 	KArtsServer* _server;
 	KAudioManagerPlay* _play;
-	Arts::StereoEffectStack _effects;
+	Arts::StereoEffectStack _effectrack;
 	Arts::ByteStreamToAudio _bs2a;
 	KByteSoundProducer* _sender;
 	Arts::ByteSoundProducerV2 _artssender;
-	bool _polling, _attached;
+	bool _polling, _attached, _effects;
 
 public slots:
 	void initaRts();

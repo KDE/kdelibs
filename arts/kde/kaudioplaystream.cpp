@@ -23,8 +23,8 @@
 #include <kartsserver.h>
 #include <kaudiomanagerplay.h>
 
-#include <arts/artsflow.h>
-#include <arts/soundserver.h>
+#include <artsflow.h>
+#include <soundserver.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -41,7 +41,8 @@ KAudioPlayStreamPrivate::KAudioPlayStreamPrivate( KArtsServer* server, const QSt
  : QObject( p,n )
  , _server( server )
  , _play( new KAudioManagerPlay( _server, title ) )
- , _polling( true ), _attached( false )
+ , _effectrack( Arts::StereoEffectStack::null() )
+ , _polling( true ), _attached( false ), _effects( true )
 {
 kdDebug( 400 ) << k_funcinfo << endl;
 	initaRts();
@@ -50,37 +51,45 @@ kdDebug( 400 ) << k_funcinfo << endl;
 KAudioPlayStreamPrivate::~KAudioPlayStreamPrivate()
 {
 	kdDebug( 400 ) << k_funcinfo << endl;
+/*	if ( _effects )
+	{
+		Arts::disconnect( _effectrack, _play->amanPlay() );
+		Arts::disconnect( _bs2a, _effectrack );
+	} else {
+		Arts::disconnect( _bs2a, _play->amanPlay() );
+	}*/
+
 	_play->stop();
-	_effects.stop();
+	if ( _effects ) _effectrack.stop();
 	_bs2a.stop();
 }
 
 void KAudioPlayStreamPrivate::initaRts() {
 	kdDebug( 400 ) << k_funcinfo << endl;
-	bool b_effects = true;
-	_effects = Arts::DynamicCast( _server->server().createObject( "Arts::StereoEffectStack" ) );
-	if ( _effects.isNull() )
+
+	_effectrack = Arts::DynamicCast( _server->server().createObject( "Arts::StereoEffectStack" ) );
+	if ( _effectrack.isNull() )
 	{
 		kdWarning( 400 ) << "Couldn't create EffectStack!" << endl;
-		b_effects = false;
+		_effects = false;
 	}
+
 	_bs2a = Arts::DynamicCast( _server->server().createObject( "Arts::ByteStreamToAudio" ) );
 	if ( _bs2a.isNull() )
 		kdFatal( 400 ) << "Couldn't create ByteStreamToAudio" << endl;
 
-	if ( b_effects )
+	if ( _effects )
 	{
-		Arts::connect( _effects, _play->amanPlay() );
-		Arts::connect( _bs2a, "left", _effects, "inleft" );
-		Arts::connect( _bs2a, "right", _effects, "inright" );
+		Arts::connect( _effectrack, _play->amanPlay() );
+//		Arts::connect( _bs2a, _effectrack );
 	} else {
-		Arts::connect( _bs2a, "left", _play->amanPlay(), "left" );
-		Arts::connect( _bs2a, "right", _play->amanPlay(), "right" );
+//		Arts::connect( _bs2a, _play->amanPlay() );
 	}
 
+	//Arts::connect( _effectrack, _play->amanPlay() );
+
 	_play->start();
-	_effects.start();
-	_bs2a.start();
+	if ( _effects ) _effectrack.start();
 }
 
 KAudioPlayStream::KAudioPlayStream( KArtsServer* server, const QString title, QObject* p, const char* n )
@@ -100,7 +109,7 @@ bool KAudioPlayStream::polling() const { return d->_polling; }
 bool KAudioPlayStream::running() const { return d->_attached; }
 
 Arts::StereoEffectStack KAudioPlayStream::effectStack() const {
-	return d->_effects;
+	return d->_effectrack;
 }
 
 void KAudioPlayStream::start( int samplingRate, int bits, int channels )
@@ -116,7 +125,13 @@ void KAudioPlayStream::start( int samplingRate, int bits, int channels )
 		d->_artssender = Arts::ByteSoundProducerV2::_from_base( d->_sender );
 		Arts::connect( d->_artssender, "outdata", d->_bs2a, "indata" );
 
+		Arts::connect( d->_bs2a, d->_effectrack );
+
+		d->_bs2a.start();
 		d->_artssender.start();
+
+//		// Needed?
+		Arts::Dispatcher::the()->ioManager()->processOneEvent( false );
 
 		d->_attached = true;
 		emit running( d->_attached );
@@ -127,12 +142,21 @@ void KAudioPlayStream::stop()
 	kdDebug( 400 ) << k_funcinfo << endl;
 	if ( d->_attached )
 	{
+		d->_attached = false;
+
+		d->_bs2a.stop();
 		d->_artssender.stop();
+
+		// Shortly stop the play so we dont get clicks and artefacts
+		d->_play->stop();
+		d->_play->start();
+
+		Arts::disconnect( d->_bs2a, d->_effectrack );
+
 		Arts::disconnect( d->_artssender, d->_bs2a );
 		d->_artssender = Arts::ByteSoundProducerV2::null();
 		d->_sender = 0;
 
-		d->_attached = false;
 		emit running( d->_attached );
 	}
 }
@@ -147,9 +171,13 @@ void KAudioPlayStream::fillData( Arts::DataPacket<Arts::mcopbyte> *packet )
 	if ( d->_polling )
 	{
 		QByteArray bytearray( packet->size );
+		bytearray.setRawData( ( char* )packet->contents, packet->size );
 		bytearray.fill( 0 );
 		emit requestData( bytearray );
-		strncpy( ( char* )packet->contents, bytearray.data(), packet->size );
+		bytearray.resetRawData( ( char* )packet->contents, packet->size );
+
+		//for ( int i=0; i<10; i++ )
+		//	kdDebug() << packet->contents[ i ] << " : " << bytearray.data()[ i ] << endl;
 	} else {
 		/// TODO: Implement a queue and fetching from it...
 	}
@@ -172,7 +200,7 @@ KByteSoundProducer::KByteSoundProducer( KAudioPlayStream* impl, float minBufferT
 		streamBufferTime = ( float )( _packets * packetCapacity * 1000 )
 			/ ( float )( _samplingRate * _channels * 2 );
 	} while ( streamBufferTime < minBufferTime );
-	kdDebug( 400 ) << k_funcinfo << "_packets:" << _packets << " packetCapacity:" << packetCapacity << endl;
+	//kdDebug( 400 ) << k_funcinfo << "_packets:" << _packets << " packetCapacity:" << packetCapacity << endl;
 }
 
 KByteSoundProducer::~KByteSoundProducer()
@@ -184,9 +212,9 @@ void KByteSoundProducer::streamEnd() { outdata.endPull(); }
 
 void KByteSoundProducer::request_outdata( Arts::DataPacket<Arts::mcopbyte> *packet )
 {
-	packet->size = packetCapacity;
+	//kdDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << endl;
 	_impl->fillData( packet );
-	//kdDebug( 400 ) << k_funcinfo << "new packet->size=" << packet->size << "Sending it..." << endl;
+	//kdDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << "Sending it..." << endl;
 	packet->send();
 }
 
