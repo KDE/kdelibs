@@ -391,24 +391,31 @@ void KDirOperator::mkdir()
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 {
     bool writeOk = false;
+    bool exists = false;
     KURL url( currUrl );
     url.addPath(directory);
 
     if ( url.isLocalFile() ) {
+        exists = QFile::exists( url.path() );
         // check if we are allowed to create local directories
-        writeOk = checkAccess( url.path(), W_OK );
+        writeOk = !exists && checkAccess( url.path(), W_OK );
         if ( writeOk )
             writeOk = QDir().mkdir( url.path() );
     }
-    else
-        writeOk = KIO::NetAccess::mkdir( url, kapp->mainWidget() );
+    else {
+        exists = KIO::NetAccess::exists( url, false );
+        writeOk = !exists && KIO::NetAccess::mkdir( url, kapp->mainWidget() );
+    }
 
-    if ( !writeOk )
+    if ( exists ) {
+        KMessageBox::sorry(viewWidget(), i18n("A file or directory named %1 already exists.").arg(url.prettyURL()));
+    }
+    else if ( !writeOk ) {
         KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
                                               "create that directory." ));
-    else {
-        if ( enterDirectory )
-            setURL( url, true );
+    }
+    else if ( enterDirectory ) {
+        setURL( url, true );
     }
 
     return writeOk;
