@@ -21,6 +21,7 @@
 #define __slavebase_h
 
 #include <kurl.h>
+#include <kconfigbase.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
 
@@ -222,9 +223,21 @@ public:
     void setMetaData(const QString &key, const QString &value);
 
     /**
-     * Queries for meta-data send by the application to the slave.
+     * Queries for the existance of a certain config/meta-data entry 
+     * send by the application to the slave.
+     */
+    bool hasMetaData(const QString &key);
+
+    /**
+     * Queries for config/meta-data send by the application to the slave.
      */
     QString metaData(const QString &key);
+
+    /**
+     * Returns a configuration object to query config/meta-data information
+     * from.
+     */
+    KConfigBase* config();
 
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement

@@ -74,6 +74,11 @@ namespace KIO {
                       const QString &user, const QString &passwd);
 
         /**
+         * Configure slave
+         */                      
+        void setConfig(const MetaData &config);
+
+        /**
          * @return Protocol handled by this slave, as seen by the user
          * (For FTP-proxy, this is FTP)
          */

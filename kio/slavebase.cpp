@@ -56,14 +56,58 @@ typedef QMap<QString,QCString> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( data, IO_WriteOnly ); stream
 
 namespace KIO {
+
+class SlaveBaseConfig : public KConfigBase
+{
+public:
+   SlaveBaseConfig(SlaveBase *_slave)
+	: slave(_slave) { }
+   
+   bool hasGroup(const QString &) const { qWarning("hasGroup(const QString &)");
+return false; }
+   bool hasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
+return false; }
+   bool hasGroup(const char *) const { qWarning("hasGroup(const char *)");
+return false; }
+
+   QStringList groupList() const { return QStringList(); }
+
+   bool hasKey(const QString &pKey) const 
+   { 
+      return slave->hasMetaData(pKey);      
+   }      
+   bool hasKey(const char *pKey) const { return hasKey(QString::fromLatin1(pKey)); }
+
+   QMap<QString,QString> entryMap(const QString &) const 
+      { return QMap<QString,QString>(); }
+
+   void reparseConfiguration() { }
+
+   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
+
+   KEntryMap internalEntryMap() const { return KEntryMap(); }
+
+   void putData(const KEntryKey &, const KEntry&) { }
+
+   KEntry lookupData(const KEntryKey &key) const
+   { 
+     KEntry entry; entry.mValue = slave->metaData(key.c_key).utf8(); return entry; 
+   }
+protected:
+   SlaveBase *slave;
+};
+
+
 class SlaveBasePrivate {
 public:
     QString slaveid;
     bool resume:1;
     bool needSendCanResume:1;
-};
+    MetaData configData;
+    SlaveBaseConfig *config;
 };
 
+};
 
 //////////////
 
@@ -93,6 +137,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
+    d->config = new SlaveBaseConfig(this);
 }
 
 SlaveBase::~SlaveBase()
@@ -189,9 +234,25 @@ void SlaveBase::setMetaData(const QString &key, const QString &value)
 
 QString SlaveBase::metaData(const QString &key)
 {
-   if (!mIncomingMetaData.contains(key))
-      return QString::null;
-   return mIncomingMetaData[key];
+   if (mIncomingMetaData.contains(key))
+      return mIncomingMetaData[key];
+   if (d->configData.contains(key))
+      return d->configData[key];
+   return QString::null;
+}
+
+bool SlaveBase::hasMetaData(const QString &key)
+{
+   if (mIncomingMetaData.contains(key))
+      return true;
+   if (d->configData.contains(key))
+      return true;
+   return false;
+}
+
+KConfigBase *SlaveBase::config()
+{
+   return d->config;
 }
 
 void SlaveBase::sendMetaData()
@@ -642,6 +703,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_REPARSECONFIGURATION:
         KProtocolManager::reparseConfiguration();
         reparseConfiguration();
+	break;
+    case CMD_CONFIG:
+        stream >> d->configData;
 	break;
     case CMD_GET: {
         stream >> url;

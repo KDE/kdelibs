@@ -65,7 +65,8 @@ class SlaveInterfacePrivate;
    CMD_SYMLINK = 'Q', // 81
    CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
    CMD_MESSAGEBOXANSWER = 'S', // 83
-   CMD_RESUMEANSWER = 'T' // 84
+   CMD_RESUMEANSWER = 'T', // 84
+   CMD_CONFIG = 'U' // 85
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };

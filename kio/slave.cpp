@@ -250,6 +250,14 @@ void Slave::setHost( const QString &host, int port,
     slaveconn.send( CMD_HOST, data );
 }
 
+void Slave::setConfig(const MetaData &config)
+{
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    stream << config;
+    slaveconn.send( CMD_CONFIG, data );
+}
+
 
 Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 {
