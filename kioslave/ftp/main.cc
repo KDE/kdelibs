@@ -12,6 +12,8 @@
 #include <kprotocolmanager.h>
 #include <kinstance.h>
 #include <kdebug.h>
+#include <assert.h>
+#include <iostream.h>
 
 #include "main.h"
 
@@ -158,7 +160,7 @@ void FtpProtocol::slotMove( const char* _source, const char *_dest )
 }
 
 
-void FtpProtocol::doCopy( QStringList& _source, const char *_dest, 
+void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 			  bool _rename, bool _move )
 {
   if ( _rename )
@@ -431,7 +433,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 	  QString tmp2 = udest.url(), n;
 	  bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc )->date;
 
-	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource, tmp2, 
+	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource, tmp2,
 					       m, sn, n );
 	  if ( r == R_CANCEL ) {
 	    ftp.ftpDisconnect();

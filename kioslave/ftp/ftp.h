@@ -27,7 +27,6 @@
 #define FTP_BUFSIZ 1024
 #define ACCEPT_TIMEOUT 30
 
-#include <string>
 #include <qcstring.h>
 #include <qstring.h>
 #include <kio_interface.h>
@@ -40,7 +39,7 @@ struct FtpEntry
   QString owner;
   QString group;
   QString link;
-  
+
   long size;
   mode_t type;
   mode_t access;
@@ -75,7 +74,7 @@ private:
   QString m_errorText;
 
   QString m_host;
-  
+
   struct netbuf
   {
     char *cput,*cget;
@@ -93,7 +92,7 @@ private:
   bool m_bPasv;
 
   bool m_bPersistent;
-  
+
   size_t m_size;
   size_t m_bytesLeft;
 
@@ -130,7 +129,7 @@ private:
   bool ftpChdir( const char *path );
   bool ftpSize( const char *path, char mode );
 //   FtpEntry* ftpStat( const char *_path );
-  
+
   /**
    * Runs a command on the ftp server like "list" or "retr". In contrast to
    * @ref #ftpSendCmd a data connection is opened. The corresponding socket
@@ -157,7 +156,7 @@ private:
   int ftpAcceptConnect();
   /**
    * The counterpart to @ref #ftpOpenCommand.
-   * 
+   *
    * @return true if the transmission was successfull.
    */
   bool ftpCloseCommand();
@@ -166,9 +165,9 @@ private:
 
 protected:
   virtual void redirection( const char* /* _url */ ) { }
-  
+
 public:
-  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4 }; 
+  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4 };
 
   Ftp();
   virtual ~Ftp();
@@ -176,9 +175,11 @@ public:
   bool ftpConnect( KURL& _url );
   /**
    * The counterpart to @ref #ftpConnect
+   * Does nothing if persistent connections are on
+   * except if @p really is true.
    */
   void ftpDisconnect( bool really = false );
- 
+
   bool isConnected() { return m_bLoggedOn; }
 
   bool ftpOpenDir( KURL& _url );
@@ -210,7 +211,7 @@ public:
   size_t read( void *buffer, long len );
   size_t write( void *buffer, long len );
   bool atEOF();
-  
+
   bool mkdir( KURL& _url );
 
   int error() { return m_error; }

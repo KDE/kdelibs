@@ -445,7 +445,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
 }
 
 /*
- * ftpOpenDataConnection - set up data connection, using PASV mode
+ * ftpOpenPASVDataConnection - set up data connection, using PASV mode
  *
  * return 1 if successful, 0 otherwise
  * doesn't set error message, since non-pasv mode will always be tried if
@@ -626,9 +626,7 @@ int Ftp::ftpAcceptConnect(void)
 
 bool Ftp::ftpPort()
 {
-  string buf = "type A";
-
-  if ( !ftpSendCmd( buf.c_str(), '2' ) )
+  if ( !ftpSendCmd( "type A", '2' ) )
   {
     m_error = ERR_COULD_NOT_CONNECT;
     m_errorText = "";
@@ -647,14 +645,10 @@ bool Ftp::ftpPort()
 
 bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, unsigned long _offset )
 {
-  string buf;
+  QCString buf = "type ";
+  buf += _mode;
 
-  buf = "type ";
-  char buf2[2] = {0,0};
-  buf2[0] = _mode;
-  buf += buf2;
-
-  if ( !ftpSendCmd( buf.c_str(), '2' ) )
+  if ( !ftpSendCmd( buf.data(), '2' ) )
   {
     m_error = ERR_COULD_NOT_CONNECT;
     m_errorText = "";
@@ -667,7 +661,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     return false;
   }
 
-  string tmp;
+  QCString tmp;
 
   // Special hack for the list command. We try to change to this
   // directory first to see whether it really is a directory.
@@ -676,7 +670,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     tmp = "cwd ";
     tmp += ( _path ) ? _path : "/";
 
-    if ( !ftpSendCmd( tmp.c_str(), '2' ) )
+    if ( !ftpSendCmd( tmp.data(), '2' ) )
     {
       if ( !m_error && rspbuf[0] == '5' )
       {
@@ -714,7 +708,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     tmp += _path;
   }
 
-  if ( !ftpSendCmd( tmp.c_str(), '1' ) ) {
+  if ( !ftpSendCmd( tmp.data(), '1' ) ) {
     // We can not give any error code here since the error depends on the command
     return false;
   }
@@ -760,10 +754,10 @@ bool Ftp::ftpMkdir( const char *path )
 {
   assert( m_bLoggedOn );
 
-  string buf = "mkd ";
+  QCString buf = "mkd ";
   buf += path;
 
-  return ftpSendCmd( buf.c_str() , '2' );
+  return ftpSendCmd( buf.data() , '2' );
 }
 
 
@@ -776,10 +770,10 @@ bool Ftp::ftpChdir( const char *path)
 {
   assert( m_bLoggedOn );
 
-  string buf = "cwd ";
+  QString buf = "cwd ";
   buf += path;
 
-  return ftpSendCmd( buf.c_str(), '2' );
+  return ftpSendCmd( buf.data(), '2' );
 }
 
 
@@ -787,10 +781,10 @@ bool Ftp::ftpRmdir( const char *path)
 {
   assert( m_bLoggedOn );
 
-  string buf = "rmd ";
+  QCString buf = "rmd ";
   buf += path;
 
-  return ftpSendCmd( buf.c_str() ,'2' );
+  return ftpSendCmd( buf.data() ,'2' );
 }
 
 
@@ -993,7 +987,6 @@ FtpEntry *Ftp::readdir()
     if ( e )
       return e;
   }
-
   return 0L;
 }
 

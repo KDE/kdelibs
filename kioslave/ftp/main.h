@@ -6,8 +6,6 @@
 #include <kio_interface.h>
 #include <kio_base.h>
 
-#include <list>
-
 #include "ftp.h"
 
 class FtpProtocol : public KIOProtocol
@@ -39,7 +37,7 @@ public:
   virtual void slotDataEnd();
 
   KIOConnection *connection() { return KIOConnectionSignals::m_pConnection; }
-  
+
   void jobError( int _errid, const char *_txt );
 
 protected:
@@ -52,7 +50,7 @@ protected:
     time_t m_mtime;
     off_t m_size;
   };
-  
+
   struct CopyDir
   {
     QString m_strAbsSource;
@@ -78,7 +76,7 @@ class FtpIOJob : public KIOJobBase
 {
 public:
   FtpIOJob( KIOConnection *_conn, FtpProtocol *_Ftp );
-  
+
   virtual void slotError( int _errid, const char *_txt );
 
 protected:
