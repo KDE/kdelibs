@@ -20,7 +20,7 @@
 #define _KIO_IOSLAVE_DEFAULTS_H
 
 // TIMEOUT VALUES
-#define DEFAULT_RESPONSE_TIMEOUT            60     //  1 min.
+#define DEFAULT_RESPONSE_TIMEOUT           600     // 10 min.
 #define DEFAULT_CONNECT_TIMEOUT             20     // 20 secs.
 #define DEFAULT_READ_TIMEOUT                15     // 15 secs.
 #define DEFAULT_PROXY_CONNECT_TIMEOUT       10     // 10 secs.
