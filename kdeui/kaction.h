@@ -1625,6 +1625,11 @@ public:
 
   virtual void createKeyMap( KAccelActions& ) const;
   virtual void setKeyMap( const KAccelActions& map );
+  // Used for reading shortcut configuration from a non-XML rc file.
+  bool readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
+  // Used for writing shortcut configuration to a non-XML rc file.
+  bool writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig = 0 ) const;
+
 
   void setInstance( KInstance *instance );
   KInstance *instance() const;

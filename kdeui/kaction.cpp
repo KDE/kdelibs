@@ -252,6 +252,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d->m_cutDefault = cut;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
+    kdDebug(125) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
@@ -260,8 +261,6 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
 
     if ( receiver )
         connect( this, SIGNAL( activated() ), receiver, slot );
-
-    kdDebug(125) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << d->m_cut.toString() << " m_parentCollection = " << m_parentCollection << endl;
 }
 
 bool KAction::isPlugged() const
@@ -303,8 +302,9 @@ void KAction::setShortcut( const KShortcut& cut )
   d->m_cut = cut;
 
   if( !d->m_kaccel ) {
-    // Only insert action into KAccel if it has a valid name,
-    if( qstrcmp( name(), "unnamed" ) != 0 && m_parentCollection && m_parentCollection->accel() )
+    // Only insert action into KAccel if it has a valid shortcut and name,
+    if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
+        && m_parentCollection && m_parentCollection->accel() )
       plugAccel( m_parentCollection->accel() );
   }
   else
@@ -376,7 +376,7 @@ QString KAction::shortcutText() const
 
 void KAction::setShortcutText( const QString& s )
 {
-  d->m_cut.init( s );
+  setShortcut( KShortcut(s) );
 }
 
 int KAction::accel() const
@@ -437,7 +437,7 @@ QString KAction::toolTip() const
 
 int KAction::plug( QWidget *w, int index )
 {
-  kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
+  //kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
@@ -2804,7 +2804,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
 {
   d = new KActionCollectionPrivate;
   if( watch )
-    d->m_kaccel = new KAccel( watch, parent, "KActionCollection-KAccel" );
+    d->m_kaccel = new KAccel( watch, this, "KActionCollection-KAccel" );
   setInstance( instance );
 }
 
@@ -2816,7 +2816,7 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
-    d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
+    d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
   setInstance( instance );
 }
 #endif
@@ -2926,6 +2926,23 @@ void KActionCollection::createKeyMap( KAccelActions& map ) const
 void KActionCollection::setKeyMap( const KAccelActions& map )
 {
   actions().setKeyMap( map );
+}
+
+bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig )
+{
+  KAccelActions aa;
+  createKeyMap( aa );
+  aa.readActions( sConfigGroup, pConfig );
+  setKeyMap( aa );
+  return true;
+}
+
+bool KActionCollection::writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig ) const
+{
+  KAccelActions aa;
+  createKeyMap( aa );
+  aa.writeActions( sConfigGroup, pConfig );
+  return true;
 }
 
 uint KActionCollection::count() const
