@@ -700,6 +700,38 @@ public:
    X509_PURPOSE * X509_PURPOSE_get0(int idx);
 
 
+   /*
+    * Create a new Private KEY
+    */
+   EVP_PKEY* EVP_PKEY_new();
+
+
+   /*
+    * Assign a private key
+    */
+   int EVP_PKEY_assign(EVP_PKEY *pkey, int type, char *key);
+
+
+   /*
+    * Generate a RSA key
+    */
+   RSA *RSA_generate_key(int bits, unsigned long e, void
+                        (*callback)(int,int,void *), void *cb_arg);
+
+
+   /*
+    * Create/destroy a certificate request
+    */
+   X509_REQ *X509_REQ_new();
+   void X509_REQ_free(X509_REQ *a);
+
+
+   /*
+    * Set the public key in the REQ object
+    */
+   int X509_REQ_set_pubkey(X509_REQ *x, EVP_PKEY *pkey);
+
+
 
 #endif
 

@@ -95,6 +95,9 @@ static void (*K_PKCS12_free) (PKCS12 *) = NULL;
 static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**, 
                                              X509**, STACK_OF(X509)**) = NULL;
 static void (*K_EVP_PKEY_free) (EVP_PKEY *) = NULL;
+static EVP_PKEY* (*K_EVP_PKEY_new) () = NULL;
+static void (*K_X509_REQ_free) (X509_REQ *) = NULL;
+static X509_REQ* (*K_X509_REQ_new) () = NULL;
 static int (*K_SSL_CTX_use_PrivateKey) (SSL_CTX*, EVP_PKEY*) = NULL;
 static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
 static int (*K_SSL_get_error) (SSL*, int) = NULL;
@@ -143,6 +146,9 @@ static int (*K_X509_PURPOSE_get_count)() = NULL;
 static int (*K_X509_PURPOSE_get_id)(X509_PURPOSE *) = NULL;
 static int (*K_X509_check_purpose)(X509*,int,int) = NULL;
 static X509_PURPOSE* (*K_X509_PURPOSE_get0)(int) = NULL;
+static int (*K_EVP_PKEY_assign)(EVP_PKEY*, int, char*) = NULL;
+static int (*K_X509_REQ_set_pubkey)(X509_REQ*, EVP_PKEY*) = NULL;
+static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), void *) = NULL;
 #endif
 };
 
@@ -316,6 +322,9 @@ KConfig *cfg;
       K_PKCS12_parse = (int (*)(PKCS12*, const char *, EVP_PKEY**,
                 X509**, STACK_OF(X509)**)) _cryptoLib->symbol("PKCS12_parse");
       K_EVP_PKEY_free = (void (*) (EVP_PKEY *)) _cryptoLib->symbol("EVP_PKEY_free");
+      K_EVP_PKEY_new = (EVP_PKEY* (*)()) _cryptoLib->symbol("EVP_PKEY_new");
+      K_X509_REQ_free = (void (*)(X509_REQ*)) _cryptoLib->symbol("X509_REQ_free");
+      K_X509_REQ_new = (X509_REQ* (*)()) _cryptoLib->symbol("X509_REQ_new");
       K_X509_STORE_CTX_set_chain = (void (*)(X509_STORE_CTX *, STACK_OF(X509)*)) _cryptoLib->symbol("X509_STORE_CTX_set_chain");
       K_sk_free = (void (*) (STACK *)) _cryptoLib->symbol("sk_free");
       K_sk_num = (int (*) (STACK *)) _cryptoLib->symbol("sk_num");
@@ -359,6 +368,9 @@ KConfig *cfg;
       K_X509_PURPOSE_get_id = (int (*)(X509_PURPOSE *)) _cryptoLib->symbol("X509_PURPOSE_get_id");
       K_X509_check_purpose = (int (*)(X509*,int,int)) _cryptoLib->symbol("X509_check_purpose");
       K_X509_PURPOSE_get0 = (X509_PURPOSE *(*)(int)) _cryptoLib->symbol("X509_PURPOSE_get0");
+      K_EVP_PKEY_assign = (int (*)(EVP_PKEY*, int, char*)) _cryptoLib->symbol("EVP_PKEY_assign");
+      K_X509_REQ_set_pubkey = (int (*)(X509_REQ*, EVP_PKEY*)) _cryptoLib->symbol("X509_REQ_set_pubkey");
+      K_RSA_generate_key = (RSA* (*)(int, unsigned long, void (*)(int,int,void *), void *)) _cryptoLib->symbol("RSA_generate_key");
 #endif
    }
 
@@ -814,6 +826,23 @@ void KOpenSSLProxy::EVP_PKEY_free(EVP_PKEY *x) {
 }
 
 
+EVP_PKEY* KOpenSSLProxy::EVP_PKEY_new() {
+   if (K_EVP_PKEY_new) return (K_EVP_PKEY_new)();
+   else return NULL;
+}
+
+
+void KOpenSSLProxy::X509_REQ_free(X509_REQ *x) {
+   if (K_X509_REQ_free) (K_X509_REQ_free)(x);
+}
+
+
+X509_REQ* KOpenSSLProxy::X509_REQ_new() {
+   if (K_X509_REQ_new) return (K_X509_REQ_new)();
+   else return NULL;
+}
+
+
 int KOpenSSLProxy::SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey) {
    if (K_SSL_CTX_use_PrivateKey) return (K_SSL_CTX_use_PrivateKey)(ctx,pkey);
    else return -1;
@@ -1113,6 +1142,26 @@ X509_PURPOSE *KOpenSSLProxy::X509_PURPOSE_get0(int idx) {
    if (K_X509_PURPOSE_get0) return (K_X509_PURPOSE_get0)(idx);
    else return NULL;
 }
+
+
+int KOpenSSLProxy::EVP_PKEY_assign(EVP_PKEY *pkey, int type, char *key) {
+   if (K_EVP_PKEY_assign) return (K_EVP_PKEY_assign)(pkey, type, key);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_REQ_set_pubkey(X509_REQ *x, EVP_PKEY *pkey) {
+   if (K_X509_REQ_set_pubkey) return (K_X509_REQ_set_pubkey)(x, pkey);
+   else return -1;
+}
+
+
+RSA* KOpenSSLProxy::RSA_generate_key(int bits, unsigned long e, void
+                        (*callback)(int,int,void *), void *cb_arg) {
+   if (K_RSA_generate_key) return (K_RSA_generate_key)(bits, e, callback, cb_arg);
+   else return NULL;
+}
+
 
 
 
