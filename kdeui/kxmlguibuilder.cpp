@@ -151,7 +151,18 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagMenu )
   {
-    KPopupMenu *popup = new KPopupMenu( 0, element.attribute( d->attrName ).utf8());
+    QWidget *prnt = 0L;
+    for ( QDomNode node = element; !node.isNull(); node = node.parentNode() )
+    {
+        if ( node.nodeType() == QDomNode::ElementNode &&
+                node.toElement().tagName().lower() == d->tagMenuBar )
+        {
+            prnt = parent;
+            break;
+        }
+    }
+
+    KPopupMenu *popup = new KPopupMenu( prnt, element.attribute( d->attrName ).utf8());
 
     QString i18nText;
     QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
