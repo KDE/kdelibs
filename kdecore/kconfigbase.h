@@ -133,7 +133,7 @@ protected:
 	*
 	* This method must be reimplemented by the derived classes. It
 	*  should go through the list of appropriate files for a
-								   bool bGlobal = false );
+	* configuration object, open the files and call
 	* parseOneConfigFile() for each one of them.
 	*/
 								   bool bGlobal = FALSE );
@@ -146,7 +146,7 @@ protected:
 	*	
 	* @param rFile The configuration file to parse
 	* @param pGroup
-  virtual bool writeConfigFile( QFile& rFile, bool bGlobal = false ) = 0; 
+	* @param bGlobal
 	*/
   virtual void parseOneConfigFile( QFile& rFile, 
   virtual bool writeConfigFile( QFile& rFile, bool bGlobal = FALSE ) = 0; 
@@ -264,8 +264,8 @@ public:
 						 const QColor* pDefault = 0L ) const;
 
   /** Write the key/value pair. 
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+	*
+	* This is stored to the most specific config file when destroying the
 	* config object or when calling Sync().
 						  bool bPersistent = TRUE, bool bGlobal = FALSE,
 						  bool bNLS = FALSE );
@@ -287,8 +287,8 @@ public:
   /** 
 	* writeEntry() overriden to accept a list of strings.
 	*
-					bool bPersistent = true, bool bGlobal = false,
-					bool bNLS = false ); 
+	* Note: Unlike the other writeEntry() functions, the old value is 
+	* _not_ returned here!
 	*
 					bool bPersistent = TRUE, bool bGlobal = FALSE,
 					bool bNLS = FALSE ); 
@@ -305,8 +305,8 @@ public:
 	*/
   void writeEntry ( const char* pKey, QStrList &list, char sep = ',',
 					bool bPersistent = true, bool bGlobal = false,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
+					bool bNLS = false ); 
+  
   /** Write the key value pair.
 						  bool bPersistent = TRUE, bool bGlobal = FALSE,
 						  bool bNLS = FALSE ); 
@@ -323,8 +323,8 @@ public:
 	*/
   const char* writeEntry( const char* pKey, int nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+						  bool bNLS = false ); 
+  
   /** Write the key value pair.
 						  bool bPersistent = TRUE, bool bGlobal = FALSE,
 						  bool bNLS = FALSE );
@@ -341,8 +341,8 @@ public:
 	*/
   const char* writeEntry( const char* pKey, const QFont& rFont, 
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
+
   /** Write the key value pair.
 						  bool bPersistent = TRUE, bool bGlobal = FALSE,
 						  bool bNLS = FALSE );
@@ -354,7 +354,7 @@ public:
 	*  application specific config file, but to the global ~/.kderc
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
-  virtual void rollback( bool bDeep = true );
+	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	  
 	*/
   virtual void rollback( bool bDeep = TRUE );

@@ -66,7 +66,7 @@
 */
 class KConfig : public KConfigBase
 {
-  bool writeConfigFile( QFile& rFile, bool bGlobal = false );
+  Q_OBJECT
 
   // copy-construction and assignment are not allowed
   bool writeConfigFile( QFile& rFile, bool bGlobal = FALSE );

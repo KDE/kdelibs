@@ -64,22 +64,22 @@ private:
   bool bDirty; // is there any entry that has to be written back to disk?
   bool bLocaleInitialized;
   bool bReadOnly; // currently only used by KSimpleConfig
-  aGroupDict.setAutoDelete( true );
+
     aGroupDict( 37, FALSE )
-  bDirty = false;
-  bLocaleInitialized = false;
+
+  aGroupDict.setAutoDelete( TRUE );
   QString aFile;
   bDirty = FALSE;
   bLocaleInitialized = FALSE;
 public:
   KConfigBaseData();
   KConfigBaseData( const char* pGlobalAppFile, const char* pLocalAppFile );
-  aGroupDict.setAutoDelete( true );
+  KGroupIterator* groupIterator( void );
     aGroupDict( 37, FALSE )
 
   aGroupDict.setAutoDelete( TRUE );
-  bDirty = false;
-  bLocaleInitialized = false;
+    aGroupDict( 37, false )
+{
   aGroupDict.setAutoDelete( true );
   bDirty = FALSE;
   bLocaleInitialized = FALSE;
