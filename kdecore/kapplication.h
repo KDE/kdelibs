@@ -121,6 +121,8 @@ public:
 
   /**
    * @deprecated
+   * // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
+   * // KCmdLineArgs::init isn't called
    *
    * Constructor. Parses command-line arguments.
    *
