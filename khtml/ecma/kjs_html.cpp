@@ -41,6 +41,7 @@
 #include <dom_exception.h>
 
 // ### HACK
+#include <html/html_baseimpl.h>
 #include <xml/dom_docimpl.h>
 #include <xml/dom2_eventsimpl.h>
 #include <khtmlview.h>
@@ -826,6 +827,8 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
+
+      // p == "document" ?
       if (p == "frameBorder")          return getString(frameElement.frameBorder());
       else if (p == "longDesc")        return getString(frameElement.longDesc());
       else if (p == "marginHeight")    return getString(frameElement.marginHeight());
@@ -841,6 +844,13 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_IFRAME: {
       DOM::HTMLIFrameElement iFrame = element;
       if (p == "align")                return getString(iFrame.align());
+      // ### security check ?
+      else if (p == "document") {
+        if ( !iFrame.isNull() )
+          return getDOMNode( static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
+
+        return Undefined();
+      }
       else if (p == "frameBorder")     return getString(iFrame.frameBorder());
       else if (p == "height")          return getString(iFrame.height());
       else if (p == "longDesc")        return getString(iFrame.longDesc());
@@ -1116,6 +1126,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       // read-only: type
       if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber().intValue()); return; }
       else if (p == "value")           { select.setValue(str); return; }
+      // ### p == "length"
       // read-only: length
       // read-only: form
       // read-only: options
@@ -1145,7 +1156,8 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
                                                  return;
                                              }
                                          }
-                                         return;  }
+                                         return;
+      }
       // read-only: index
       else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
@@ -1651,9 +1663,10 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
   if (p == "length") {
     long newLen = v.toInt32();
     long diff = element.length() - newLen;
-    while (diff-- > 0) {
+
+    while (diff-- > 0)
       element.remove(newLen);
-    }
+
     return;
   }
   // an index ?
