@@ -72,7 +72,7 @@ noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
 	html_objectimpl.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la
+libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la
 
 data_DATA = khtml_dnd.png
 datadir = $(kde_datadir)/khtml/pics
