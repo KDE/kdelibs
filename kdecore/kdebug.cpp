@@ -44,6 +44,7 @@
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
 #include <stdarg.h>	// vararg stuff
+#include <ctype.h>      // isprint
 #include <syslog.h>
 #include <errno.h>
 #include <string.h>
@@ -343,6 +344,18 @@ kdbgstream::~kdbgstream() {
 	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
 	*this << "\n";
     }
+}
+
+kdbgstream& kdbgstream::operator << (char ch)
+{
+  if (!print) return *this;
+  if (!isprint(ch))
+    output += "\\x" + QString::number( static_cast<uint>( ch ) + 0x100, 16 ).right(2);
+  else {
+    output += ch;
+    if (ch == '\n') flush();
+  }
+  return *this;
 }
 
 kdbgstream& kdbgstream::operator << (QWidget* widget)

@@ -101,20 +101,14 @@ class kdbgstream {
      * @param i the char to print
      * @return this stream
      */
-    kdbgstream &operator<<(char i)  {
-	if (!print) return *this;
-	QString tmp; tmp.setNum(int(i)); output += tmp;
-	return *this;
-    }
+    kdbgstream &operator<<(char i);
     /**
      * Prints the given value.
      * @param i the unsigned char to print
      * @return this stream
      */
     kdbgstream &operator<<(unsigned char i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(static_cast<unsigned int>(i)); output += tmp;
-        return *this;
+        return operator<<( static_cast<char>( i ) );
     }
     /**
      * Prints the given value.
