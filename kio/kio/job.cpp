@@ -2152,7 +2152,11 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     isDir = S_ISDIR( (mode_t)((*it2).m_long) );
                     break;
                 case UDS_NAME:
-                    relName = (*it2).m_str;
+                    if( relName.isEmpty() )
+                        relName = (*it2).m_str;
+                    break;
+                case UDS_URL:
+                    relName = KURL((*it2).m_str).fileName();
                     break;
                 case UDS_LINK_DEST:
                     info.linkDest = (*it2).m_str;
