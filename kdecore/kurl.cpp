@@ -19,6 +19,7 @@
 
 #include "kurl.h"
 #include <kdebug.h>
+#include <kglobal.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -62,7 +63,7 @@ QString encode( const QString& segment )
       c = character % 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_segment[ new_length++ ] = c;
-	
+
     }
     else
       new_segment[ new_length++ ] = local[i];
@@ -87,11 +88,11 @@ static char hex2int( unsigned int _char )
 // WABA: The result of lazy_encode isn't usable for a URL which
 // needs to satisfies RFC requirements. However, the following
 // operation will make it usable again:
-//	encode(decode(...))
+//      encode(decode(...))
 //
 // As a result one can see that url.prettyURL() does not result in
 // a RFC compliant URL but that the following sequence does:
-//	KURL(url.prettyURL()).url()
+//      KURL(url.prettyURL()).url()
 
 
 static QString lazy_encode( const QString& segment )
@@ -327,7 +328,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
        rUrl[len] == ':' && (rUrl[len+1] != '/' ||
        (rUrl[len+1] == '/' && rUrl[len+2] != '/')) )
   {
-  		rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+                rUrl.remove( 0, rUrl.find( ':' ) + 1 );
   }
 
   if ( rUrl[0] == '#' )
@@ -506,7 +507,7 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
       char *endptr;
       m_iPort = (unsigned short int)strtol(tmp.ascii(), &endptr, 10);
       if ((pos == len) && (strlen(endptr) == 0))
-	goto NodeOk;
+        goto NodeOk;
       // there is more after the digits
       pos -= strlen(endptr);
       start = pos++;
@@ -681,7 +682,7 @@ bool KURL::operator==( const KURL& _u ) const
        m_strPath == _u.m_strPath &&
        // The encoded path may be null, but the URLs are still equal (David)
        ( m_strPath_encoded.isNull() || _u.m_strPath_encoded.isNull() ||
-	 m_strPath_encoded == _u.m_strPath_encoded ) &&
+         m_strPath_encoded == _u.m_strPath_encoded ) &&
        m_strQuery_encoded == _u.m_strQuery_encoded &&
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_iPort == _u.m_iPort )
@@ -711,12 +712,12 @@ bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
       return false;
 
     if ( m_strProtocol == _u.m_strProtocol &&
-	 m_strUser == _u.m_strUser &&
-	 m_strPass == _u.m_strPass &&
-	 m_strHost == _u.m_strHost &&
-	 m_strQuery_encoded == _u.m_strQuery_encoded &&
-	 m_strRef_encoded == _u.m_strRef_encoded &&
-	 m_iPort == _u.m_iPort )
+         m_strUser == _u.m_strUser &&
+         m_strPass == _u.m_strPass &&
+         m_strHost == _u.m_strHost &&
+         m_strQuery_encoded == _u.m_strQuery_encoded &&
+         m_strRef_encoded == _u.m_strRef_encoded &&
+         m_iPort == _u.m_iPort )
       return true;
 
     return false;
@@ -886,7 +887,7 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-  static QString fileProt = QString::fromLatin1( "file" );
+  static const QString & fileProt = KGlobal::staticQString( "file" );
   return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) );
 }
 
@@ -920,8 +921,8 @@ QString KURL::url( int _trailing ) const
       u += encode(m_strUser);
       if ( hasPass() )
       {
-	u += ":";
-	u += encode(m_strPass);
+        u += ":";
+        u += encode(m_strPass);
       }
       u += "@";
     }
@@ -995,7 +996,7 @@ KURL::List KURL::split( const KURL& _url )
 {
   QString ref;
   KURL::List lst;
-  KURL url = _url;  
+  KURL url = _url;
 
   while(true)
   {
@@ -1003,7 +1004,7 @@ KURL::List KURL::split( const KURL& _url )
      u.m_strRef_encoded = QString::null;
      lst.append(u);
      if (url.hasSubURL())
-     {  
+     {
         url = KURL(url.m_strRef_encoded);
      }
      else
@@ -1018,7 +1019,7 @@ KURL::List KURL::split( const KURL& _url )
   for( it = lst.begin() ; it != lst.end(); ++it )
   {
      (*it).m_strRef_encoded = ref;
-  }  
+  }
 
   return lst;
 }
@@ -1037,7 +1038,7 @@ KURL KURL::join( const KURL::List & lst )
   for( KURL::List::ConstIterator it = first; it != lst.end(); --it )
   {
      KURL u(*it);
-     if (it != first) 
+     if (it != first)
      {
         u.m_strRef_encoded = tmp.url();
      }
@@ -1113,7 +1114,7 @@ void KURL::addPath( const QString& _txt )
 }
 
 QString KURL::directory( bool _strip_trailing_slash_from_result,
-			 bool _ignore_trailing_slash_in_path ) const
+                         bool _ignore_trailing_slash_in_path ) const
 {
   QString result;
   if ( _ignore_trailing_slash_in_path )
@@ -1219,7 +1220,7 @@ KURL KURL::upURL( ) const
   KURL::List lst = split( *this );
   if (lst.isEmpty())
       return KURL(); // Huh?
-  while (true) 
+  while (true)
   {
      KURL &u = lst.last();
      QString old = u.path();
@@ -1229,7 +1230,7 @@ KURL KURL::upURL( ) const
      if (lst.count() == 1)
          break; // Finished.
      lst.remove(lst.fromLast());
-  } 
+  }
   return join( lst );
 }
 
