@@ -100,6 +100,9 @@ QString whatstr;
   QWhatsThis::add(mUseSSLv3, whatstr);
 
 #ifdef HAVE_SSL
+  QLabel *cipherlabel = new QLabel(i18n("SSLv2 Ciphers To Use:"), tabSSL);
+  grid->addWidget(cipherlabel, 2, 0);
+  
   SSLv2Box = new QListBox(tabSSL, "v2ciphers");
   connect(SSLv2Box, SIGNAL(selectionChanged()), SLOT(configChanged()));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
@@ -109,12 +112,9 @@ QString whatstr;
   SSLv2Box->setSelectionMode(QListBox::Multi);
   SSLv2Box->setColumnMode(QListBox::FixedNumber);
 
-  grid->addMultiCellWidget(SSLv2Box, 3, 6, 0, 0);
+  grid->addMultiCellWidget(SSLv2Box, 3, 5, 0, 0);
   SSLv2Box->resize(SSLv2Box->sizeHint());
 
-  QLabel *cipherlabel = new QLabel(i18n("SSLv2 Ciphers To Use:"), tabSSL);
-  grid->addWidget(cipherlabel, 2, 0);
-  
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
                                " because this module was not linked"
@@ -123,6 +123,9 @@ QString whatstr;
 #endif
 
 #ifdef HAVE_SSL
+          cipherlabel = new QLabel(i18n("SSLv3 Ciphers To Use:"), tabSSL);
+  grid->addWidget(cipherlabel, 2, 1);
+
   SSLv3Box = new QListBox(tabSSL, "v3ciphers");
   connect(SSLv3Box, SIGNAL(selectionChanged()), SLOT(configChanged()));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
@@ -131,10 +134,7 @@ QString whatstr;
   QWhatsThis::add(SSLv3Box, whatstr);
   SSLv3Box->setSelectionMode(QListBox::Multi);
   SSLv3Box->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(SSLv3Box, 3, 6, 1, 1);
-
-          cipherlabel = new QLabel(i18n("SSLv3 Ciphers To Use:"), tabSSL);
-  grid->addWidget(cipherlabel, 2, 1);
+  grid->addMultiCellWidget(SSLv3Box, 3, 5, 1, 1);
 
   loadCiphers();
 #endif
@@ -173,7 +173,7 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 7, 2);
+  grid = new QGridLayout(tabYourSSLCert, 10, 2);
 
   yourSSLBox = new QListBox(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
@@ -181,11 +181,11 @@ QString whatstr;
   QWhatsThis::add(yourSSLBox, whatstr);
   yourSSLBox->setSelectionMode(QListBox::Single);
   yourSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 0);
+  grid->addMultiCellWidget(yourSSLBox, 0, 7, 0, 0);
 
-  yourSSLAdd = new QPushButton(i18n("&Add..."), tabYourSSLCert);
-  //connect(yourSSLAdd, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLAdd, 0, 1);
+  yourSSLImport = new QPushButton(i18n("&Import..."), tabYourSSLCert);
+  //connect(yourSSLImport, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLImport, 0, 1);
 
   yourSSLView = new QPushButton(i18n("&View/Edit..."), tabYourSSLCert);
   //connect(yourSSLAdd, SIGNAL(), SLOT());
@@ -211,7 +211,7 @@ QString whatstr;
   yourSSLUseDefault = new QRadioButton(i18n("&Use default certificate"), ocbg);
   yourSSLList = new QRadioButton(i18n("&List upon connection"), ocbg);
   yourSSLDont = new QRadioButton(i18n("&Do not use certificates"), ocbg);
-  grid->addMultiCellWidget(ocbg, 6, 6, 0, 1);
+  grid->addMultiCellWidget(ocbg, 9, 9, 0, 1);
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
@@ -226,7 +226,7 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabOtherSSLCert, 4, 2);
+  grid = new QGridLayout(tabOtherSSLCert, 8, 2);
 
   otherSSLBox = new QListBox(tabOtherSSLCert);
   whatstr = i18n("This list box shows which site and person certificates KDE"
@@ -234,7 +234,7 @@ QString whatstr;
   QWhatsThis::add(otherSSLBox, whatstr);
   otherSSLBox->setSelectionMode(QListBox::Single);
   otherSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(otherSSLBox, 0, 3, 0, 0);
+  grid->addMultiCellWidget(otherSSLBox, 0, 7, 0, 0);
 
   otherSSLImport = new QPushButton(i18n("&Import..."), tabOtherSSLCert);
   //connect(otherSSLImport, SIGNAL(), SLOT());
@@ -266,7 +266,7 @@ QString whatstr;
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 4, 2);
+  grid = new QGridLayout(tabSSLCA, 8, 2);
 
   caSSLBox = new QListBox(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
@@ -274,7 +274,7 @@ QString whatstr;
   QWhatsThis::add(caSSLBox, whatstr);
   caSSLBox->setSelectionMode(QListBox::Single);
   caSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(caSSLBox, 0, 3, 0, 0);
+  grid->addMultiCellWidget(caSSLBox, 0, 7, 0, 0);
 
   caSSLImport = new QPushButton(i18n("&Import..."), tabSSLCA);
   //connect(caSSLImport, SIGNAL(), SLOT());

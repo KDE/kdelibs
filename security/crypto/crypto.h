@@ -57,7 +57,7 @@ private:
   QListBox *SSLv2Box, *SSLv3Box, *yourSSLBox, *otherSSLBox, *caSSLBox;
   QPushButton *otherSSLImport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *caSSLImport, *caSSLView, *caSSLRemove, *caSSLVerify;
-  QPushButton *yourSSLAdd, *yourSSLView, *yourSSLRemove, *yourSSLExport,
+  QPushButton *yourSSLImport, *yourSSLView, *yourSSLRemove, *yourSSLExport,
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
 
