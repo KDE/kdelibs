@@ -24,6 +24,7 @@
 
 namespace KJS {
 
+#if 1  // obsolete version 1
   struct HashEntry {
     unsigned int len;
     const void *c; // unicode data
@@ -37,17 +38,39 @@ namespace KJS {
     const HashEntry *entries;
     int hashSize;
   };
+#endif
+
+  // version 2
+  struct HashEntry2 {
+    const char *s;
+    int value;
+    int attr;
+    const HashEntry2 *next;
+  };
+
+  struct HashTable2 {
+    int type;
+    int size;
+    const HashEntry2 *entries;
+    int hashSize;
+  };
 
   /**
    * @short Fast keyword lookup.
    */
   class Lookup {
   public:
+#if 1 // obsolete
     static int find(const struct HashTable *table, const UString &s);
     static int find(const struct HashTable *table,
 		    const UChar *c, unsigned int len);
+#endif
+    static int find(const struct HashTable2 *table, const UString &s);
+    static int find(const struct HashTable2 *table,
+		    const UChar *c, unsigned int len);
     static unsigned int hash(const UChar *c, unsigned int len);
     static unsigned int hash(const UString &key);
+    static unsigned int hash(const char *s);
   private:
     HashTable *table;
   };

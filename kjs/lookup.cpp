@@ -74,9 +74,56 @@ int Lookup::find(const struct HashTable *table, const UString &s)
   return find(table, s.data(), s.size());
 }
 
+int Lookup::find(const struct HashTable2 *table,
+		 const UChar *c, unsigned int len)
+{
+  if (table->type != 2) {
+    fprintf(stderr, "Unknown hash table version.\n");
+    return -1;
+  }
+
+  char *ascii = new char[len+1];
+  unsigned int i;
+  for(i = 0; i < len; i++, c++) {
+    if (!c->high())
+      ascii[i] = c->low();
+    else
+      break;
+  }
+  ascii[i] = '\0';
+
+  int h = hash(ascii) % table->hashSize;
+  const HashEntry2 *e = &table->entries[h];
+
+  // empty bucket ?
+  if (!e->s) {
+    delete [] ascii;
+    return -1;
+  }
+
+  do {
+    // compare strings
+    if (strcmp(ascii, e->s) == 0) {
+      delete [] ascii;
+      return e->value;
+    }
+    // try next bucket
+    e = e->next;
+  } while (e);
+
+  delete [] ascii;
+  return -1;
+}
+
+int Lookup::find(const struct HashTable2 *table, const UString &s)
+{
+  return find(table, s.data(), s.size());
+}
+
 unsigned int Lookup::hash(const UChar *c, unsigned int len)
 {
   unsigned int val = 0;
+  // ignoring higher byte
   for (unsigned int i = 0; i < len; i++, c++)
     val += c->low();
 
@@ -86,4 +133,13 @@ unsigned int Lookup::hash(const UChar *c, unsigned int len)
 unsigned int Lookup::hash(const UString &key)
 {
   return hash(key.data(), key.size());
+}
+
+unsigned int Lookup::hash(const char *s)
+{
+  unsigned int val = 0;
+  while (*s)
+    val += *s++;
+
+  return val;
 }
