@@ -30,6 +30,8 @@
 #include "dom_node.h"
 #include "dom_textimpl.h"
 
+#include <stdio.h>
+
 using namespace DOM;
 
 /*
