@@ -144,8 +144,8 @@ public:
     virtual QRect getOverflowClipRect(int /*tx*/, int /*ty*/)
 	{ return QRect(0,0,0,0); }
     virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
-    bool hasClip() { return isPositioned() &&  style()->hasClip(); }
-    bool hasOverflowClip() { return style()->hidesOverflow(); }
+    bool hasClip() const { return isPositioned() &&  style()->hasClip(); }
+    bool hasOverflowClip() const { return style()->hidesOverflow(); }
 
     virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
     virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
@@ -475,6 +475,17 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
+    
+    /**
+     * Returns the height that is effectively considered when contemplating the
+     * object as a whole -- usually the overflow height, or the height if clipped.
+     */
+    int effectiveHeight() const { return hasOverflowClip() ? height() : overflowHeight(); }
+    /**
+     * Returns the width that is effectively considered when contemplating the
+     * object as a whole -- usually the overflow width, or the width if clipped.
+     */
+    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }

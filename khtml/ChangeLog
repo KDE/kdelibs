@@ -1,3 +1,23 @@
+2004-08-18  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_block.cpp (layoutBlock, layoutBlockChildren,
+	layoutPositionedObject): Ensure that m_overflowWidth/m_overflowHeight
+	get updated properly to include relatively positioned
+	elements, but to exclude the overflow-area of clipped children.
+
+	* rendering/render_box.cpp (repaint): Removed superfluous null ptr check.
+	Use effectiveWidth/Height instead of overflowWidth/Height.
+
+	* rendering/render_canvas.cpp (docHeight): Fixed superfluous vertical
+	scrollbars on clipped children.
+	(docWidth): Fixed superfluous horizontal scrollbars on clipped children.
+
+	* rendering/render_flow.cpp (repaint):
+	Use effectiveWidth/Height instead of overflowWidth/Height.
+
+	* rendering/render_object.h: Added effectiveWidth/Height.
+	Made hasClip and hasOverflowClip const.
+
 2004-08-05  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren): when positionning floats,
@@ -5,7 +25,7 @@
         self-collapsing blocks in between (#85150).
         (calcMinMaxWidth): better calculation merged from WebCore.  Fixes a few testcases.
 
-        * rendering/render_object.h (collapsedMarginTop/Bottom): don't avoid max(Top|Bottom)Margin, 
+        * rendering/render_object.h (collapsedMarginTop/Bottom): don't avoid max(Top|Bottom)Margin,
         they are virtuals reimplemented for RenderBlock.
 
         * rendering/render_object.cpp (createObject): do not set the style before
@@ -49,15 +69,15 @@
 
         * css/parser.y: catching imports that come between rules.
         They have to be ignored (css1/test11.htm)
-	
+
 2004-07-14 Jean-Baptiste Mardelle <bj@altern.org>
-	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing 
+	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing
 	the crtl key (#83053).
 
 2004-07-12 Jean-Baptiste Mardelle <bj@altern.org>
 	* html/html_formimpl.{h,cpp}: Make form labels clickable (#59489)
 	* khtmlview.cpp (focusNodeWithAccessKey): Make accesskeys work for labels
-	
+
 2004-07-12 Germain Garand <germain@ebooksfrance.org>
 
 	* ecma/kjs_navigator.{h,cpp} (getValueProperty):
@@ -66,8 +86,8 @@
 
 2004-07-10 Germain Garand <germain@ebooksfrance.org>
 
-        * rendering/render_layer.cpp (calculateClipRects): 
-        absolutely positioned objects must update the overflowClipRect 
+        * rendering/render_layer.cpp (calculateClipRects):
+        absolutely positioned objects must update the overflowClipRect
         passed to relatively positioned child layers to match the
         posClipRect in effect (#67665/#72994).
 
@@ -82,12 +102,12 @@
 
 2004-06-26  Germain Garand  <germain@ebooksfrance.org>
 
-        * css/html4.css: 
+        * css/html4.css:
         - do not set vertical-align on the table: it breaks inline-table's
         default (baseline). cf.webcore/fast/inline-block/001.html
         - default all of tbody/tfoot/thead to 'vertical-align: middle'
         as per specification.
-        
+
         * rendering/render_object.cpp:
         (getVerticalPosition): fix inverted logic. cf.unsorted/74399.html
         (lineHeight/baselinePosition): inline-blocks behaves like replaced elements
@@ -97,18 +117,18 @@
         inline-tables need positioning. cf.webcore/fast/inline-block/001.html
 
         * rendering/render_box.cpp (calcAbsoluteHorizontal): subtract p/b width
-        when shrinking-to-fit, otherwise it gets accounted for twice. 
+        when shrinking-to-fit, otherwise it gets accounted for twice.
 
 2004-06-22  Zack Rusin  <zack@kde.org>
 
         * ecma/kjs_events.cpp (JSLazyEventListener): Adding a destructor
-        which is now needed since Niko's eventlistener changes make 
-        jseventlistener destructor not remove the listener from 
+        which is now needed since Niko's eventlistener changes make
+        jseventlistener destructor not remove the listener from
         jsEventListeners
 
 2004-06-22  Germain Garand  <germain@ebooksfrance.org>
 
-        Scope: Inline-blocks inlining. Merge Webcore improvements for 
+        Scope: Inline-blocks inlining. Merge Webcore improvements for
         Fieldset/Legend
 
         * css/html4.css: Legend => display: block.
@@ -136,22 +156,22 @@
 
         Scope: avoid leaking placeholder InlineBoxes. Cleanups.
 
-        * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each 
+        * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each
         InlineFlow twice.
         (layoutInlineChildren): clear InlineBoxes on relayout.
 
-        * rendering/render_object.{cpp,h}: 
+        * rendering/render_object.{cpp,h}:
         (deleteInlineBoxes): new virtual method.
 
         * rendering/render_box.{cpp,h}: added m_placeHolderBox member.
-        (createInlineBox/deleteInlineBoxes): reimplemented. 
+        (createInlineBox/deleteInlineBoxes): reimplemented.
 
         * rendering/render_flow.{cpp,h}:
-        (createInlineBox/deleteInlineBoxes): ditto. 
+        (createInlineBox/deleteInlineBoxes): ditto.
 
         * rendering/render_replaced.cpp (detach): call deleteLineBoxes
 
-        * rendering/render_text.{cpp,h} (deleteInlineBoxes): reimplemented, replacing 
+        * rendering/render_text.{cpp,h} (deleteInlineBoxes): reimplemented, replacing
         deleteTextBoxes
         (~RenderText): no need to clear lineboxes twice.
 
@@ -223,7 +243,7 @@
         * dom/html_elementimpl.h (innerHTML): implement in terms of
         toString,
         * xml/dom_nodeimpl.{h,cpp}: remove the toHTML and recursive_toHTML
-        methods, 
+        methods,
 
 2004-06-09  Zack Rusin  <zack@kde.org>
 
@@ -234,7 +254,7 @@
         the DOM tree back to a string
 
 2004-06-09  Zack Rusin  <zack@kde.org>
-        
+
         * xml/xml_tokenizer.{h,cpp}: adding bool isWaitingForScripts()
         const method to tokenizer interface which should return true if
         the tokenizer is waiting for scripts to finish. Adding the method
@@ -243,10 +263,10 @@
         method,
         * xml/dom_docimpl.cpp (close): On an explicit document.close()
         don't destroy the  tokenizer if it's still waiting on external
-        scripts  
-        
+        scripts
+
 2004-06-09  Zack Rusin  <zack@kde.org>
-        
+
         * ecma/kjs_events.{h,cpp}: made the listener in jseventlistener an
         object instead of a value and switch its function accordingly,
         adding JSLazyEventListener which delays evaluation of event
@@ -258,9 +278,9 @@
         listener implementation is in place (listener is valid),
         * ecma/kjs_proxy.cpp (createHTMLEventHandler): switched to use
         getJSLazyEventListener,
-        
+
 2004-06-08  Zack Rusin  <zack@kde.org>
-        
+
         * html/htmltokenizer.cpp (parseEntity): Fix to make 8-character
         hexadecimal entities work in khtml from Darin Adler. Testcase at
         http://www.alanwood.net/unicode/deseret.html
@@ -270,7 +290,7 @@
         * xml/dom_docimpl.cpp (getId): do html lookup if specified even if not
         in a html document since elements can be in xhtml the namespace
 
-        * xml/dom_docimpl.h (hasPendingSheets): adding function returning true, 
+        * xml/dom_docimpl.h (hasPendingSheets): adding function returning true,
         if stylesheets are currently loading for document.
 
         * xml/xml_tokenizer.cpp: Merging table hack for XML parsing from
@@ -280,12 +300,12 @@
 
 2004-06-02  Zack Rusin  <zack@kde.org>
 
-        * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in 
+        * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in
         XML documents (try to avoid FOUC)
 
         * xml/xml_tokenizer.{h,cpp}: Added pushNode(), popNode() and
         currenNode() methods. Removed m_currentNode memeber and switched
-        node construction to a stack based ones. Try to attach to the 
+        node construction to a stack based ones. Try to attach to the
         parent of the tag which encloses us if it can't handle children.
 
 2004-05-28  Leo Savernik  <l.savernik@aon.at>
