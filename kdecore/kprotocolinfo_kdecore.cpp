@@ -32,8 +32,9 @@ class KProtocolInfo::KProtocolInfoPrivate
 public:
   QString docPath;
   QString protClass;
+  KProtocolInfo::ExtraFieldList extraFields;
 };
- 
+
 //
 // Internal functions:
 //
@@ -84,11 +85,19 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_outputType = KProtocolInfo::T_STREAM;
   else
     m_outputType = KProtocolInfo::T_NONE;
-    
+
   d->docPath = config.readPathEntry( "DocPath" );
   d->protClass = config.readEntry( "Class" ).lower();
   if (!d->protClass.startsWith(":"))
      d->protClass.prepend(':');
+
+  QStringList extraNames = config.readListEntry( "ExtraNames" );
+  QStringList extraTypes = config.readListEntry( "ExtraTypes" );
+  QStringList::Iterator it = extraNames.begin();
+  QStringList::Iterator typeit = extraTypes.begin();
+  for( ; it != extraNames.end() && typeit != extraTypes.end(); ++it, ++typeit ) {
+      d->extraFields.append( ExtraField( *it, *typeit ) );
+  }
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -114,16 +123,16 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile;
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
-        >> i_determineMimetypeFromExtension 
+        >> i_determineMimetypeFromExtension
         >> m_icon
         >> i_inputType >> i_outputType
         >> i_isSourceProtocol >> i_isHelperProtocol
         >> i_supportsListing >> i_supportsReading
         >> i_supportsWriting >> i_supportsMakeDir
         >> i_supportsDeleting >> i_supportsLinking
-        >> i_supportsMoving 
+        >> i_supportsMoving
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass;
+        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -170,7 +179,7 @@ KProtocolInfo::save( QDataStream& _str)
 
 
    _str << m_name << m_exec << m_listing << m_defaultMimetype
-        << i_determineMimetypeFromExtension 
+        << i_determineMimetypeFromExtension
         << m_icon
         << i_inputType << i_outputType
         << i_isSourceProtocol << i_isHelperProtocol
@@ -179,7 +188,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath << d->protClass;
+        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields;
 }
 
 
@@ -388,6 +397,15 @@ KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
   return prot->m_outputType;
 }
 
+KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
+  if ( !prot )
+    return ExtraFieldList();
+
+  return prot->d->extraFields;
+}
+
 QString KProtocolInfo::docPath( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -406,7 +424,19 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
   return prot->d->protClass;
 }
 
-// KURL based static functions are implemented in ../kio/kio/kprotoconinfo.cpp
+QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {
+  s >> field.name;
+  s >> field.type;
+  return s;
+}
+
+QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field )  {
+  s << field.name;
+  s << field.type;
+  return s;
+}
+
+// KURL based static functions are implemented in ../kio/kio/kprotocolinfo.cpp
 
 void KProtocolInfo::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }

@@ -25,15 +25,16 @@
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
 #include <kdemacros.h>
+#include <qdatastream.h>
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.
- 
+
  * This class is useful if you want to know which protocols
  * KDE supports. In addition you can find out lots of information
- * about a certain protocol. A KProtocolInfo instance represents a 
- * single protocol. Most of the functionality is provided by the static 
- * methods that scan the *.protocol files of all installed kioslaves to get 
+ * about a certain protocol. A KProtocolInfo instance represents a
+ * single protocol. Most of the functionality is provided by the static
+ * methods that scan the *.protocol files of all installed kioslaves to get
  * this information.
  *
  * *.protocol files are installed in the "services" resource.
@@ -68,7 +69,7 @@ public:
    *
    * @return the name of the protocol
    * @see KURL::protocol()
-   */  
+   */
   virtual QString name() const { return m_name; }
 
   //
@@ -104,7 +105,7 @@ public:
   static QString exec( const QString& protocol );
 
   /**
-   * Describes the type of a protocol. 
+   * Describes the type of a protocol.
    */
   enum Type { T_STREAM, ///< protocol returns a stream
 	      T_FILESYSTEM, ///<protocol describes location in a file system
@@ -112,7 +113,7 @@ public:
 	      T_ERROR   ///< used to signal an error
   };
 
-  /** 
+  /**
    * Returns whether the protocol should be treated as a filesystem
    * or as a stream when reading from it.
    *
@@ -121,10 +122,10 @@ public:
    *
    * @param url the url to check
    * @return the input type of the given @p url
-   */   
+   */
   static Type inputType( const KURL &url );
 
-  /** 
+  /**
    * Returns whether the protocol should be treated as a filesystem
    * or as a stream when writing to it.
    *
@@ -133,13 +134,14 @@ public:
    *
    * @param url the url to check
    * @return the output type of the given @p url
-   */   
+   */
   static Type outputType( const KURL &url );
 
   /**
    * Returns the list of fields this protocol returns when listing
    * The current possibilities are
    * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
+   * as well as Extra1, Extra2 etc. for extra fields (see extraFields).
    *
    * This corresponds to the "listing=" field in the protocol description file.
    * The supported fields should be separated with ',' in the protocol description file.
@@ -150,16 +152,38 @@ public:
   static QStringList listing( const KURL &url );
 
   /**
+   * Definition of an extra field in the UDS entries, returned by a listDir operation.
+   * @since 3.2
+   */
+  struct ExtraField {
+    ExtraField() {} // for QValueList
+    ExtraField(const QString& _name, const QString& _type )
+      : name(_name), type(_type) {
+    }
+    QString name;
+    QString type;
+  };
+  typedef QValueList<ExtraField > ExtraFieldList;
+  /**
+   * Definition of extra fields in the UDS entries, returned by a listDir operation.
+   *
+   * This corresponds to the "ExtraNames=" and "ExtraTypes=" fields in the protocol description file.
+   * Those two lists should be separated with ',' in the protocol description file.
+   * @since 3.2
+   */
+  static ExtraFieldList extraFields( const KURL& url );
+
+  /**
    * Returns whether the protocol can act as a source protocol.
    *
-   * A source protocol retrieves data from or stores data to the 
+   * A source protocol retrieves data from or stores data to the
    * location specified by a URL.
    * A source protocol is the opposite of a filter protocol.
    *
    * The "source=" field in the protocol description file determines
    * whether a protocol is a source protocol or a filter protocol.
    * @param url the url to check
-   * @return true if the protocol is a source of data (e.g. http), false if the 
+   * @return true if the protocol is a source of data (e.g. http), false if the
    *         protocol is a filter (e.g. gzip)
    */
   static bool isSourceProtocol( const KURL &url );
@@ -167,13 +191,13 @@ public:
   /**
    * Returns whether the protocol can act as a helper protocol.
    * A helper protocol invokes an external application and does not return
-   * a file or stream. 
+   * a file or stream.
    *
    * This corresponds to the "helper=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
    *
    * @param url the url to check
-   * @return true if the protocol is a helper protocol (e.g. vnc), false 
+   * @return true if the protocol is a helper protocol (e.g. vnc), false
    *              if not (e.g. http)
    */
   static bool isHelperProtocol( const KURL &url );
@@ -181,27 +205,27 @@ public:
   /**
    * Returns whether the protocol can act as a filter protocol.
    *
-   * A filter protocol can operate on data that is passed to it 
+   * A filter protocol can operate on data that is passed to it
    * but does not retrieve/store data itself, like gzip.
    * A filter protocol is the opposite of a source protocol.
    *
    * The "source=" field in the protocol description file determines
    * whether a protocol is a source protocol or a filter protocol.
-   * Valid values for this field are "true" (default) for source protocol or 
+   * Valid values for this field are "true" (default) for source protocol or
    * "false" for filter protocol.
    *
    * @param url the url to check
-   * @return true if the protocol is a filter (e.g. gzip), false if the 
+   * @return true if the protocol is a filter (e.g. gzip), false if the
    *         protocol is a helper or source
    */
   static bool isFilterProtocol( const KURL &url );
 
   /**
-   * Returns whether the protocol can list files/objects. 
-   * If a protocol supports listing it can be browsed in e.g. file-dialogs 
+   * Returns whether the protocol can list files/objects.
+   * If a protocol supports listing it can be browsed in e.g. file-dialogs
    * and konqueror.
    *
-   * Whether a protocol supports listing is determined by the "listing=" 
+   * Whether a protocol supports listing is determined by the "listing="
    * field in the protocol description file.
    * If the protocol support listing it should list the fields it provides in
    * this field. If the protocol does not support listing this field should
@@ -214,7 +238,7 @@ public:
   static bool supportsListing( const KURL &url );
 
   /**
-   * Returns whether the protocol can retrieve data from URLs. 
+   * Returns whether the protocol can retrieve data from URLs.
    *
    * This corresponds to the "reading=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -225,7 +249,7 @@ public:
   static bool supportsReading( const KURL &url );
 
   /**
-   * Returns whether the protocol can store data to URLs. 
+   * Returns whether the protocol can store data to URLs.
    *
    * This corresponds to the "writing=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -236,7 +260,7 @@ public:
   static bool supportsWriting( const KURL &url );
 
   /**
-   * Returns whether the protocol can create directories/folders. 
+   * Returns whether the protocol can create directories/folders.
    *
    * This corresponds to the "makedir=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -247,7 +271,7 @@ public:
   static bool supportsMakeDir( const KURL &url );
 
   /**
-   * Returns whether the protocol can delete files/objects. 
+   * Returns whether the protocol can delete files/objects.
    *
    * This corresponds to the "deleting=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -258,7 +282,7 @@ public:
   static bool supportsDeleting( const KURL &url );
 
   /**
-   * Returns whether the protocol can create links between files/objects. 
+   * Returns whether the protocol can create links between files/objects.
    *
    * This corresponds to the "linking=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -282,7 +306,7 @@ public:
 
   /**
    * Returns whether the protocol can copy files/objects directly from the
-   * filesystem itself. If not, the application will read files from the 
+   * filesystem itself. If not, the application will read files from the
    * filesystem using the file-protocol and pass the data on to the destination
    * protocol.
    *
@@ -297,7 +321,7 @@ public:
   /**
    * Returns whether the protocol can copy files/objects directly to the
    * filesystem itself. If not, the application will receive the data from
-   * the source protocol and store it in the filesystem using the 
+   * the source protocol and store it in the filesystem using the
    * file-protocol.
    *
    * This corresponds to the "copyToFile=" field in the protocol description file.
@@ -321,7 +345,7 @@ public:
   /**
    * Returns the name of the icon, associated with the specified protocol.
    *
-   * This corresponds to the "Icon=" field in the protocol description file. 
+   * This corresponds to the "Icon=" field in the protocol description file.
    *
    * @param protocol the protocol to check
    * @return the icon of the protocol, or null if unknown
@@ -329,7 +353,7 @@ public:
   static QString icon( const QString& protocol );
 
   /**
-   * Returns the name of the config file associated with the 
+   * Returns the name of the config file associated with the
    * specified protocol. This is useful if two similar protocols
    * need to share a single config file, e.g. http and https.
    *
@@ -344,7 +368,7 @@ public:
   /**
    * Returns the soft limit on the number of slaves for this protocol.
    * This limits the number of slaves used for a single operation, note
-   * that multiple operations may result in a number of instances that 
+   * that multiple operations may result in a number of instances that
    * exceeds this soft limit.
    *
    * This corresponds to the "maxInstances=" field in the protocol description file.
@@ -371,7 +395,7 @@ public:
   /**
    * Returns the documentation path for the specified protocol.
    *
-   * This corresponds to the "DocPath=" field in the protocol description file. 
+   * This corresponds to the "DocPath=" field in the protocol description file.
    *
    * @param protocol the protocol to check
    * @return the docpath of the protocol, or null if unknown
@@ -382,7 +406,7 @@ public:
   /**
    * Returns the protocol class for the specified protocol.
    *
-   * This corresponds to the "Class=" field in the protocol description file. 
+   * This corresponds to the "Class=" field in the protocol description file.
    *
    * The following classes are defined:
    * @li ":internet" for common internet protocols
@@ -430,7 +454,7 @@ public:
    * @deprecated
    * Returns the list of fields this protocol returns when listing
    * The current possibilities are
-   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType   
+   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
    */
   static QStringList listing( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
@@ -491,5 +515,8 @@ private:
   class KProtocolInfoPrivate;
   KProtocolInfoPrivate* d;
 };
+
+QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
+QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
 
 #endif

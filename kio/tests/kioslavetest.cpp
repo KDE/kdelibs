@@ -21,6 +21,7 @@
 #include <kstatusbar.h>
 #include <kio/job.h>
 #include <kio/scheduler.h>
+#include <kprotocolinfo.h>
 
 #include "kioslavetest.h"
 
@@ -213,7 +214,7 @@ void KioslaveTest::startJob() {
   QString sSrc( le_source->text() );
   KURL src( sCurrent, sSrc );
 
-  if ( src.isMalformed() ) {
+  if ( !src.isValid() ) {
     QMessageBox::critical(this, "Kioslave Error Message", "Source URL is malformed" );
     return;
   }
@@ -221,7 +222,7 @@ void KioslaveTest::startJob() {
   QString sDest( le_dest->text() );
   KURL dest( sCurrent, sDest );
 
-  if ( dest.isMalformed() &&
+  if ( !dest.isValid() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
     QMessageBox::critical(this, "Kioslave Error Message",
                        "Destination URL is malformed" );
@@ -251,7 +252,7 @@ void KioslaveTest::startJob() {
     break;
 
   case Stat:
-    myJob = KIO::stat( src );
+    myJob = KIO::stat( src, false, 2 );
     break;
 
   case Get:
@@ -386,14 +387,25 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     }
 }
 
-void KioslaveTest::slotEntries(KIO::Job*, const KIO::UDSEntryList& list) {
+void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
 
+    KURL url = static_cast<KIO::ListJob*>( job )->url();
+    KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(url);
     UDSEntryListConstIterator it=list.begin();
     for (; it != list.end(); ++it) {
+        // For each file...
+        KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
         UDSEntry::ConstIterator it2 = (*it).begin();
         for( ; it2 != (*it).end(); it2++ ) {
             if ((*it2).m_uds == UDS_NAME)
                 kdDebug() << "" << ( *it2 ).m_str << endl;
+            else if ( (*it2).m_uds == UDS_EXTRA) {
+                Q_ASSERT( extraFieldsIt != extraFields.end() );
+                QString column = (*extraFieldsIt).name;
+                //QString type = (*extraFieldsIt).type;
+                kdDebug() << "  Extra data (" << column << ") :" << ( *it2 ).m_str << endl;
+                ++extraFieldsIt;
+            }
         }
     }
 }

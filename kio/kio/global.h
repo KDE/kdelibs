@@ -288,6 +288,10 @@ namespace KIO
     UDS_ICON_NAME = 24 | UDS_STRING,
     /// Group ID of the file owner
     UDS_GROUP =	32 | UDS_STRING,
+    /// Extra data (used only if you specified Columns/ColumnsTypes)
+    /// This is the only UDS entry that can be repeated.
+    /// @since 3.2
+    UDS_EXTRA = 48 | UDS_STRING,
     /// Filename
     UDS_NAME = 64 | UDS_STRING,
     /// Access permissions (part of the mode returned by stat)
