@@ -26,9 +26,13 @@
 class QDataStream;
 
 /**
- * Base class for all entries.
- * You can't create instance of KSycocaEntry, but it provides
+ * Base class for all Sycoca entries.
+ * 
+ * You can't create an instance of KSycocaEntry, but it provides
  * the common functionality for servicetypes and services.
+ * 
+ * @internal
+ * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html 
  */
 class KSycocaEntry : public KShared
 {
@@ -69,7 +73,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
 
    /**
     * @return the path of this entry 
-    * The path can be aboslute or relative.
+    * The path can be absolute or relative.
     * The corresponding factory should know relative to what.
     */
    QString entryPath() const { return mPath; }
