@@ -14,8 +14,7 @@
  *     mapmode != NORMAL (e.g. dithered); Images with 16 bit
  *     precision or more than 4 layers are stripped down.
  * writing:
- *     Run Length Encoded (RLE) files	[default]
- *     (uncompressed files)		[commented out]
+ *     Run Length Encoded (RLE) files  (layers don't share patterns yet)
  *
  * Please report if you come across rgb/rgba/sgi/bw files that aren't
  * recognized. Also report applications that can't deal with images
@@ -431,74 +430,5 @@ bool RGBImage::writeImage(QImage& img)
 	}
 	return true;
 }
-
-
-#if 0
-// write verbatim (non-RLE) image
-bool RGBImage::writeImage(QImage& img)
-{
-	m_rle = 0;
-	m_bpc = 1;				// one byte per pixel & channel
-	if (img.allGray())
-		m_dim = 2, m_zsize = 1;
-	else
-		m_dim = 3, m_zsize = img.hasAlphaBuffer() ? 4 : 3;
-	m_xsize = img.width();
-	m_ysize = img.height();
-	m_pixmin = 0;
-	m_pixmax = 255;
-	m_colormap = NORMAL;
-
-	m_stream << Q_UINT16(0x01da);		// magic
-	m_stream << m_rle << m_bpc << m_dim << m_xsize << m_ysize << m_zsize << m_pixmin << m_pixmax;
-	m_stream << Q_UINT32(0);		// dummy
-
-	int i;
-	for (i = 0; i < 80; i++)		// no name
-		m_stream << Q_UINT8(0);
-
-	m_stream << m_colormap;
-	for (i = 0; i < 404; i++)
-		m_stream << Q_UINT8(0);		// wasting space ...
-
-	if (img.depth() != 32)
-		img.convertDepth(32);
-
-	QRgb *c;
-	unsigned x, y;
-
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qRed(*c++));
-	}
-
-	if (m_zsize == 1)
-		return true;
-
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qBlue(*c++));
-	}
-
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qGreen(*c++));
-	}
-
-	if (m_zsize == 3)
-		return true;
-
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qAlpha(*c++));
-	}
-
-	return true;
-}
-#endif
 
 
