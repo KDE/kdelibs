@@ -28,7 +28,7 @@ LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
 
-lib_LTLIBRARIES  = libDCOP.la libdcopserver.la
+lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 libDCOP_la_LIBADD = $(LIBSM) -lICE  $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
@@ -39,9 +39,9 @@ METASOURCES = AUTO
 
 libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp dcopref.cpp
 
-libdcopserver_la_LDFLAGS = -no-version -module
-libdcopserver_la_SOURCES = dcopserver.cpp
-libdcopserver_la_LIBADD   = libDCOP.la
+dcopserver_la_LDFLAGS = -module -avoid-version -R /usr/X11R6/lib -R /ext/qt-2.1/lib -R /ext/kde2.0/lib
+dcopserver_la_SOURCES = dcopserver.cpp
+dcopserver_la_LIBADD   = libDCOP.la
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
