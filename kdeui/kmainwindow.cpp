@@ -62,6 +62,7 @@ public:
     bool settingsDirty:1;
     bool autoSaveWindowSize:1;
     bool care_about_geometry:1;
+    bool shuttingDown:1;
     QString autoSaveGroup;
     KAccel * kaccel;
     KMainWindowInterface *m_interface;
@@ -239,6 +240,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     d->toolBarHandler = 0;
     d->settingsTimer = 0;
     d->showStatusBarAction = NULL;
+    d->shuttingDown = false;
     if ((d->care_about_geometry = being_first)) {
         being_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -577,9 +579,10 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if ( queryExit() && !kapp->sessionSaving()) {            // Yes, Quit app?
+            if ( queryExit() && !kapp->sessionSaving() && !d->shuttingDown ) { // Yes, Quit app?
                 // don't call queryExit() twice
                 disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
+                d->shuttingDown = true;
                 kapp->deref();             // ...and quit aplication.
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
