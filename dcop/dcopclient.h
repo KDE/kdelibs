@@ -662,7 +662,7 @@ class DCOPClient : public QObject
    * Returns the application's main dcop client. The main client can
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
-   * as KAppliction::dcopClient().
+   * as KApplication::dcopClient().
    * @return the application's main dcop client
    */
   static DCOPClient* mainClient();
@@ -671,7 +671,7 @@ class DCOPClient : public QObject
    * Sets the application's main dcop client. The main client can
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
-   * as KAppliction::dcopClient().
+   * as KApplication::dcopClient().
    * @param mainClient the new main dcop client
    */
   static void setMainClient( DCOPClient* mainClient);
