@@ -213,17 +213,20 @@ TABLE[align="center"] {
 
 THEAD { 
 	display: table-header-group; 
+        border-color: inherit; 
 	padding: inherit; 
 }
       
 TBODY { 
 	display: table-row-group;
 	vertical-align: inherit; 
+        border-color: inherit; 
 	padding: inherit; 
 }
       
 TFOOT { 
 	display: table-footer-group; 
+        border-color: inherit; 
 	padding: inherit; 
 }
 
