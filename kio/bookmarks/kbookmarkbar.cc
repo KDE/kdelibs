@@ -230,8 +230,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                                                     bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ),
                     this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ));
-            connect(menu, SIGNAL( openBookmark( const QString &, bool) ),
-                    this, SLOT( slotOpenBookmarkURL( const QString &, bool) ));
+            connect(menu, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ),
+                    this, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ));
             menu->fillBookmarkMenu();
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
@@ -258,21 +258,15 @@ void KBookmarkBar::slotBookmarkSelected( KAction::ActivationReason /*reason*/, Q
     const KAction* action = dynamic_cast<const KAction *>(sender());
     if(action)
     {
-        bool inNewTab = state & Qt::MidButton;
         const QString & url = sender()->property("url").toString();
         m_pOwner->openBookmarkURL(url);
-        slotOpenBookmarkURL(url, inNewTab);
+        emit openBookmark( url, state );
     }
 }
 
 void KBookmarkBar::slotBookmarkSelected()
 {
     slotBookmarkSelected(KAction::ToolBarActivation, Qt::NoButton);
-}
-
-void KBookmarkBar::slotOpenBookmarkURL(const QString & url, bool inNewTab)
-{
-  emit openBookmark(url, inNewTab);
 }
 
 static const int const_sepId = -9999; // FIXME this is ugly,

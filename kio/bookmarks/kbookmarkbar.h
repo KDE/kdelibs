@@ -86,7 +86,7 @@ signals:
     /**
      * @since 3.4
      */
-    void openBookmark( const QString& url, bool inNewTab );
+    void openBookmark( const QString& url, Qt::ButtonState state );
 
 public slots:
     void clear();
@@ -109,9 +109,6 @@ public slots:
     void slotRMBActionEditAt( int );
     /// @since 3.2
     void slotRMBActionProperties( int );
-
-    /// @since 3.4
-    void slotOpenBookmarkURL( const QString& url, bool inNewTab );
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );

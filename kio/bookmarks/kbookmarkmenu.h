@@ -162,11 +162,10 @@ signals:
   /**
    * @since 3.4
    */
-  void openBookmark( const QString& url, bool inNewTab );
+  void openBookmark( const QString& url, Qt::ButtonState state );
 
 public slots: // public for bookmark bar
   void slotBookmarksChanged( const QString & );
-  void slotOpenBookmarkURL(const QString &, bool);
 
 protected slots:
   void slotAboutToShow();
