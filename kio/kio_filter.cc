@@ -1,5 +1,7 @@
 #include "kio_filter.h"
 
+#include <kdebug.h>
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -107,7 +109,7 @@ bool Filter::send( void *_p, int _len )
 	goto again1;
       else if ( n == -1 && errno != EAGAIN )
       {
-	cerr << "ERROR: Write" << endl;
+	kdebug( KDEBUG_ERROR, 7005, "ERROR: Write" );
 	return false;
       }
       
@@ -124,7 +126,7 @@ bool Filter::send( void *_p, int _len )
 	  goto again2;
 	else if ( n == -1 && errno != EAGAIN )
 	{
-	  cerr << "ERROR: Read " << errno << endl;
+	  kdebug( KDEBUG_ERROR, 7005, "ERROR: Read %d", errno );
 	  return false;
 	}
 	

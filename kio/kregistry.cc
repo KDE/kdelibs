@@ -65,7 +65,7 @@ void KRegistry::addFactory( KRegFactory *_factory )
 
 bool KRegistry::readDirectory( const char* _path, bool _init )
 {
-  cerr << "Reading directory " << _path << endl;
+  kdebug( KDEBUG_INFO, 7011, "Reading directory %s", _path );
   
   QDir d( _path );                               // set QDir ...
   if ( !d.exists() )                            // exists&isdir?
@@ -128,7 +128,7 @@ bool KRegistry::readDirectory( const char* _path, bool _init )
        i2 = ( exists( file ) );                  // find it in list...
      if ( i2 != -1 )                              // got it?
      {                                         // Yeah!
-       // cerr << "Updating " << file << endl;
+       // kdebug( KDEBUG_INFO, 7011, "Updating %s", file.data() );
        KRegEntry *entry = m_lstEntries.at( i2 );
        entry->mark();
        KRegEntry *e = entry->update();                // update it (if needed)
@@ -149,7 +149,7 @@ bool KRegistry::readDirectory( const char* _path, bool _init )
 	 KRegEntry *entry = createEntry( file );
 	 m_lstEntries.append( entry );
 	 if ( !_init )
-	   cerr << "KRegistry: New item " << file << endl;
+	   kdebug( KDEBUG_INFO, 7011, "KRegistry: New item %s", file.data() );
 	 m_bModified = true;
        }
      }
@@ -176,7 +176,7 @@ bool KRegistry::readDirectory( const char* _path, bool _init )
  {
    if ( !a->isMarked() && a->isInDirectory( path ) )
    {
-     debug ("KRegistry: Deleted item %s", a->file());
+     kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file());
      m_lstEntries.remove( m_lstEntries.at() );
      a = m_lstEntries.current();
      m_bModified = true;
@@ -217,7 +217,7 @@ void KRegistry::load( const char *_dbfile )
 	QString file;
 	str >> type >> file;
       
-	// cerr << "STORE: " << file << " of type " << type << endl;
+	kdebug( KDEBUG_INFO, 7011, "STORE: %s of type %s", file.data(), type.data());
 	
 	KRegEntry *entry = createEntry( str, file, type );
 	if ( entry )
@@ -231,7 +231,7 @@ void KRegistry::load( const char *_dbfile )
   const char *s;
   for( s = m_lstToplevelDirs.first(); s != 0L; s = m_lstToplevelDirs.next() )
   {    
-    cerr << "========== SCANNING " << s << "==============" << endl;
+    kdebug( KDEBUG_INFO, 7011, "========== SCANNING %s ==============", s );
     readDirectory( s, true );
   }
   
@@ -276,14 +276,14 @@ void KRegistry::update( const char *_path )
 
 void KRegistry::dirDeleted( const char *_path )
 {
-  cerr << "KRegistry: Dir deleted " << _path << endl;
+  kdebug( KDEBUG_INFO, 7011, "KRegistry: Dir deleted %s", _path );
   
   KRegEntry *a = m_lstEntries.first();
   while( a )
   {
     if ( a->isInDirectory( _path, true ) )
     {
-      cerr << "KRegistry: Deleted item " << a->file() << endl;
+      kdebug( KDEBUG_INFO, 7011, "KRegistry: Deleted item %s", a->file() );
       m_lstEntries.remove( m_lstEntries.at() );
       a = m_lstEntries.current();
       continue;
@@ -363,7 +363,7 @@ KRegEntry::KRegEntry( KRegistry* _reg, const char* _file )
   struct stat statbuff;
   if ( stat( m_strFile, &statbuff ) == -1 )
   {
-    cerr << "Oooops " << m_strFile << endl;
+    kdebug( KDEBUG_ERROR, 7011, "Oooops %s", m_strFile.data() );
   }
 
   m_ctime = statbuff.st_ctime;
@@ -390,12 +390,12 @@ bool KRegEntry::isInDirectory( const char *_path, bool _allow_subdir )
 
 KRegEntry* KRegEntry::update()
 {
-  // cerr << "Checking " << m_strFile << endl;
+  kdebug( KDEBUG_INFO, 7011, "Checking %s", m_strFile.data() );
 
   struct stat statbuff;
   if (stat( m_strFile, &statbuff) == -1)
   {
-    cerr << "Removing us" << endl;
+    kdebug( KDEBUG_INFO, 7011, "Removing us" );
     // We are going to be deleted now
     unmark();
     return 0L;
@@ -403,7 +403,7 @@ KRegEntry* KRegEntry::update()
 
   if ( access( m_strFile, R_OK ) == -1 )
   {
-    cerr << "We are no longer readable" << endl;
+    kdebug( KDEBUG_INFO, 7011, "We are no longer readable" );
     unmark();
     return 0L;
   }
@@ -411,7 +411,7 @@ KRegEntry* KRegEntry::update()
   if ( statbuff.st_ctime == m_ctime )
     return 0L; // nothing happened 
 
-  cerr << "OUTDATED " << m_strFile << " " << statbuff.st_ctime << " old was " << m_ctime << endl;
+  kdebug( KDEBUG_INFO, 7011, "OUTDATED %s %d old was %d", m_strFile.data(), statbuff.st_ctime, m_ctime );
   
   if ( !updateIntern() )
     return m_pRegistry->createEntry( m_strFile );

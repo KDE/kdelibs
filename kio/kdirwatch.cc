@@ -13,6 +13,7 @@
 #include <qstrlist.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 
 #include "kdirwatch.h"
 
@@ -169,8 +170,6 @@ void KDirWatch::resetList( bool skippedToo )
 
 void KDirWatch::slotRescan()
 {
-  // cerr << "KDirWatch in action" << endl;
-  
   QStrList del;
   
   QDictIterator<Entry> it( m_mapDirs );
@@ -178,7 +177,7 @@ void KDirWatch::slotRescan()
   {
     if ( stat( it.currentKey(), &statbuff ) == -1 )
     {
-      cerr << "Deleting " << it.currentKey() << endl;
+      kdebug( KDEBUG_INFO, 7001, "Deleting %s", it.currentKey() );
       emit deleted( it.currentKey() );
       del.append( it.currentKey() );
       continue; // iterator incremented
@@ -210,11 +209,11 @@ bool KDirWatch::contains( const char *_path )
 int main (int argc, char **argv)
 {
 
-  debug ("You must create directory test in your home");
-  debug ("Directory test will be watched, but skipped");
-  debug ("When test is changed, you will be notified on console");
-  debug ("Open kfms on home and test and move/copy files between them and root");
-  debug ("Note that there will allways be output for test");
+  kdebug( KDEBUG_INFO, 7001,"You must create directory test in your home");
+  kdebug( KDEBUG_INFO, 7001,"Directory test will be watched, but skipped");
+  kdebug( KDEBUG_INFO, 7001,"When test is changed, you will be notified on console");
+  kdebug( KDEBUG_INFO, 7001,"Open kfms on home and test and move/copy files between them and root");
+  kdebug( KDEBUG_INFO, 7001,"Note that there will allways be output for test");
 
   KDirWatch *dirwatch;
 
@@ -227,19 +226,19 @@ int main (int argc, char **argv)
   desk.prepend("file:");
   desk.append("/Desktop/");
   home.append("/");
-  debug ("Watching:");
-  debug (home.data());
-  debug (desk.data());
+  kdebug( KDEBUG_INFO, 7001,"Watching:");
+  kdebug( KDEBUG_INFO, 7001,home.data());
+  kdebug( KDEBUG_INFO, 7001,desk.data());
   dirwatch->addDirListEntry(home.data());
   home.append("test/");
   dirwatch->addDirListEntry(home.data());
   dirwatch->addDirListEntry(desk.data());
-  debug ("Watching: (but skipped)");
-  debug (home.data());
+  kdebug( KDEBUG_INFO, 7001,"Watching: (but skipped)");
+  kdebug( KDEBUG_INFO, 7001,home.data());
 
   dirwatch->startScan();
   if (!dirwatch->stopDirScan(home.data()))
-    debug ("stopDirScan: error");
+    kdebug( KDEBUG_ERROR, 7001,"stopDirScan: error");
   
   return a.exec();
 }

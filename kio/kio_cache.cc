@@ -17,6 +17,7 @@
 #include <k2url.h>
 #include <kapp.h>
 #include <kstring.h>
+#include <kdebug.h>
 
 /************************************************
  *
@@ -292,7 +293,7 @@ bool KIOCache::storeCache()
 
 QString KIOCache::storeIndex()
 {
-  cerr << "STORING INDEX" << endl;
+  kdebug( KDEBUG_INFO, 7002, "STORING INDEX" );
   
   // No need to write the config file, KSimpleConfig handles this at
   // destruction time. But write a new index.html for the cache directory
@@ -301,22 +302,22 @@ QString KIOCache::storeIndex()
   if ( !index_file.open( IO_WriteOnly ) )
     return QString();
 
-  cerr << "WRITING INDEX" << endl;
+  kdebug( KDEBUG_INFO, 7002, "WRITING INDEX" );
 
   QString html = htmlIndex();
   if ( html.isEmpty() )
     return QString();
   
-  cerr << "WRITING INDEX 2" << endl;
+  kdebug( KDEBUG_INFO, 7002, "WRITING INDEX 2" );
 
   if ( index_file.writeBlock( html.data(), html.size() ) != (int)html.size() )
   {
     index_file.close();
     return QString();
   }
-  cerr << "CLOSING" << endl;
+  kdebug( KDEBUG_INFO, 7002, "CLOSING" );
   index_file.close();
-  cerr << "INDEX DONE" << endl;
+  kdebug( KDEBUG_INFO, 7002, "INDEX DONE" );
   return file;
 };
 
@@ -458,13 +459,13 @@ const KIOCacheEntry& KIOCache::lookup(const QString &url)
 
 bool KIOCache::insert( KIOCacheEntry *entry )
 {
-  cerr << "########### CACHE 1"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 1"  );
   
     // Check for consistency. At least an URL must be set, and it must
     // be cacheable.
     if (!isCacheable(entry->url())) return false;
 
-  cerr << "########### CACHE 2"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 2"  );
 
     // Calculate default values for expiration if no expiration date
     // is given, check expiration date if it is given.
@@ -479,7 +480,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
 	entry->setExpiresAt( defaultExpire( entry ) );
     }
 
-  cerr << "########### CACHE 3"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 3"  );
 
     // Do we have an entry already? If yes, delete the local file.
     KIOCacheEntry oldEntry = lookup( entry->url() );
@@ -488,13 +489,13 @@ bool KIOCache::insert( KIOCacheEntry *entry )
       unlink( cachePath + oldEntry.localFile() );
     }
     
-  cerr << "########### CACHE 4"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 4"  );
 
     // OK, put the new entry into the cache.
     entry->setLocalKey( localKey( entry ) );
     entry->storeData();
 
-  cerr << "########### CACHE 5"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 5"  );
 
     // Check if there is a mime type, if not determine one using
     // KMimeMagic on the cached file. Can't do it before this since
@@ -511,7 +512,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
       entry->setMimeType( mime->mimeType() );
     }
 
-  cerr << "########### CACHE 6"  << endl;
+  kdebug( KDEBUG_INFO, 7002, "########### CACHE 6"  );
 
     cacheDict.replace( trimURL( entry->url() ), entry );
     return true;
@@ -589,7 +590,7 @@ CachedKIOJob::CachedKIOJob() : KIOJob()
 
 CachedKIOJob::~CachedKIOJob()
 {
-  cerr << "RUNNING destructor " << hex << this << endl;
+  kdebug( KDEBUG_INFO, 7002, "RUNNING destructor %p", this );
   if ( m_pCurrentDoc )
     delete m_pCurrentDoc;
 }
@@ -626,11 +627,11 @@ void CachedKIOJob::slotFinished()
     return;
   }
   
-  cerr << "#### CACHE COMMIT 1" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### CACHE COMMIT 1" );
 
   if ( !KIOCache::insert(m_pCurrentDoc) )
   {
-    cerr << "#### CACHE COMMIT 2" << endl;
+    kdebug( KDEBUG_INFO, 7002, "#### CACHE COMMIT 2" );
     delete m_pCurrentDoc;
     m_pCurrentDoc = 0L;
     // Should notify clients that something went wrong. But since
@@ -641,23 +642,23 @@ void CachedKIOJob::slotFinished()
   else
     m_pCurrentDoc = 0L;
 
-  cerr << "#### CACHE COMMIT 3" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### CACHE COMMIT 3" );
 
   KIOJob::slotFinished();
 }
     
 void CachedKIOJob::slotData( void *_data, int _len )
 {
-  cerr << "#### CACHE ADD 1" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### CACHE ADD 1" );
 
   if ( m_pCurrentDoc )
     m_pCurrentDoc->addData( (const char*)_data, _len );
 
-  cerr << "#### CACHE ADD 2" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### CACHE ADD 2" );
 
   KIOJob::slotData( _data, _len );
 
-  cerr << "#### CACHE ADD 3" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### CACHE ADD 3" );
 }
     
 void CachedKIOJob::slotRedirection( const char *_url )
@@ -690,11 +691,11 @@ void CachedKIOJob::slotError( int _errid, const char* _errortext )
 
 void CachedKIOJob::slotTimeout()
 {
-  cerr << "#### TIMER 1" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### TIMER 1" );
   
   assert( m_pCurrentDoc );
   
-  cerr << "#### TIMER 2" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### TIMER 2" );
 
   switch( m_step )
     {
@@ -737,19 +738,19 @@ void CachedKIOJob::slotTimeout()
       assert( 0 );
     }
   
-  cerr << "#### TIMER 3" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### TIMER 3" );
 
   if ( m_step != STEP_NONE )
     m_timer.start( 0, true );
   else if ( m_bAutoDelete )
   {
-    cerr << "#### TIMER 4a " << hex << this <<  endl;
+    kdebug( KDEBUG_INFO, 7002, "#### TIMER 4a %p", this );
     delete this;
-    cerr << "#### TIMER 5" << endl;
+    kdebug( KDEBUG_INFO, 7002, "#### TIMER 5" );
     return;
   }
 
-  cerr << "#### TIMER 4b" << endl;
+  kdebug( KDEBUG_INFO, 7002, "#### TIMER 4b" );
 }
 
 #include "kio_cache.moc"

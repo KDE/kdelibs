@@ -6,6 +6,7 @@
 #include <assert.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 
 ProtocolManager* ProtocolManager::s_pManager = 0L;
 
@@ -39,7 +40,7 @@ bool ProtocolManager::listing( const char *_protocol, list<string>& _listing )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
   
@@ -51,7 +52,7 @@ bool ProtocolManager::supportsReading( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
 
@@ -68,7 +69,7 @@ bool ProtocolManager::supportsWriting( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
   
@@ -85,7 +86,7 @@ bool ProtocolManager::supportsMakeDir( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
 
@@ -101,7 +102,7 @@ bool ProtocolManager::supportsDeleting( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
   
@@ -118,7 +119,7 @@ bool ProtocolManager::supportsLinking( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
   
@@ -135,7 +136,7 @@ bool ProtocolManager::supportsMoving( const char *_protocol )
   K2Config *g = findIntern( _protocol );
   if ( !g )
   {
-    cerr << "Protocol " << _protocol << " not found" << endl;
+    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol );
     return false;
   }
   

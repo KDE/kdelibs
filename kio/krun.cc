@@ -21,7 +21,6 @@ extern void openFileManagerWindow( const char *_url );
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
-  cerr << "SO EIN MIST" << endl;
   
   if ( strcmp( _mimetype, "text/html" ) == 0 )
   {
@@ -53,7 +52,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
 
   if ( offers.size() == 0 || !offers.front().allowAsDefault() )
   {
-    cerr << "No Offers" << endl;
+    kdebug( KDEBUG_INFO, 7010, "No Offers" );
     // HACK TODO: OpenWith
     return false;
   }
@@ -233,7 +232,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
 
 bool KRun::run( const char *_cmd )
 {
-  cerr << "Running " << _cmd << endl;
+  kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd );
   
   QString exec = _cmd;
   exec += " &";
@@ -311,7 +310,7 @@ KRun::KRun( const char *_url, mode_t _mode, bool _is_local_file, bool _auto_dele
 
 void KRun::init()
 {
-  cerr << "INIT called" << endl;
+  kdebug( KDEBUG_INFO, 7010, "INIT called" );
   
   K2URL url( m_strURL );
   
@@ -336,7 +335,7 @@ void KRun::init()
     }
 
     KMimeType* mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
-    cerr << "MIME TYPE is " << mime->mimeType() << endl;
+    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType() );
     assert( mime );
     foundMimeType( mime->mimeType() );
     return;
@@ -354,13 +353,13 @@ void KRun::init()
   K2URL::split( m_strURL, lst );
   if ( !ProtocolManager::self()->supportsListing( lst.back().protocol() ) )
   {
-    cerr << "##### NOT A DIRECTORY" << endl;
+    kdebug( KDEBUG_INFO, 7010, "##### NOT A DIRECTORY" );
     // No support for listing => we can scan the file
     scanFile();
     return;
   }
 
-  cerr << "##### TESTING DIRECTORY" << endl;
+  kdebug( KDEBUG_INFO, 7010, "##### TESTING DIRECTORY" );
   
   // It may be a directory
   KIOJob* job = new KIOJob();
@@ -384,7 +383,7 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  cerr << "###### Scanning file " << m_strURL << endl;
+  kdebug( KDEBUG_INFO, 7010, "###### Scanning file %s", m_strURL.data() );
   
   KIOJob* job = new KIOJob();
   connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
@@ -447,7 +446,7 @@ void KRun::slotIsFile( int /* _id */ )
 
 void KRun::slotFinished( int /* _id */ )
 {
-  cerr << "####### FINISHED" << endl;
+  kdebug( KDEBUG_INFO, 7010, "####### FINISHED" );
 
   if ( m_bFault )
   {    
@@ -470,7 +469,7 @@ void KRun::slotFinished( int /* _id */ )
 
 void KRun::slotError( int, int _errid, const char *_errortext )
 {
-  cerr << "######## ERROR " << _errid << " " << _errortext << endl;
+  kdebug( KDEBUG_ERROR, 7010,"######## ERROR %d %s", _errid, _errortext );
   // HACK
   // Display error message
   kioErrorDialog( _errid, _errortext );
@@ -481,13 +480,13 @@ void KRun::slotError( int, int _errid, const char *_errortext )
 
 void KRun::slotMimeType( int, const char *_type )
 {
-  cerr << "######## MIMETYPE " << _type << endl;
+  kdebug( KDEBUG_INFO, 7010, "######## MIMETYPE %s", _type );
   foundMimeType( _type );
 }
 
 void KRun::slotPreData( int, const char *_data, int _len )
 {
-  cerr << "Got pre data" << endl;
+  kdebug( KDEBUG_INFO, 7010, "Got pre data" );
   KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data, _len );
 
   // If we still did not find it, we must assume the default mime type
@@ -499,7 +498,7 @@ void KRun::slotPreData( int, const char *_data, int _len )
 
 void KRun::foundMimeType( const char *_type )
 {
-  cerr << "Resulting mime type is " << _type << endl;
+  kdebug( KDEBUG_INFO, 7010, "Resulting mime type is %s", _type );
   
   if ( strcmp( _type, "application/x-gzip" ) == 0 )
   {
@@ -528,7 +527,7 @@ void KRun::foundMimeType( const char *_type )
     K2URL::join( lst, tmp );
     m_strURL = tmp.c_str();
     
-    cerr << "Now trying with " << m_strURL << endl;
+    kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.data() );
     
     killJob();
 

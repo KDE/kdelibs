@@ -4,7 +4,6 @@
 #include "krun.h"
 #include "kautomount.h"
 #include "kio_job.h"
-
 #include <unistd.h>
 #include <sys/types.h>
 #include <stddef.h>
@@ -19,6 +18,7 @@
 #include <kapp.h>
 #include <k2url.h>
 #include <kstring.h>
+#include <kdebug.h>
 
 // This function is implemented in kfmgui.cc and in kfmlib
 extern void openFileManagerWindow( const char *_url );
@@ -48,7 +48,7 @@ void KMimeType::check()
 {
   initStatic();
 
-  cerr << "================== " << s_mapTypes->count() << " MTs ==========" << endl;
+  kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapTypes->count() );
   
   // Try to find the default type
   if ( ( s_pDefaultType = KMimeType::find( "application/octet-stream" ) ) == 0L )
@@ -266,7 +266,7 @@ KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file,
     return find( "application/octet-stream" );
   
   // Do some magic for local files
-  cerr << "Mime Type finding for '" << path << "'" << endl;
+  kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.c_str() );
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.c_str() );
   /** DEBUG code **/
   /* assert( result );
@@ -516,7 +516,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
     return false;
   }
 
-  cerr << "TYPE=" << type << endl;
+  kdebug( KDEBUG_INFO, 7009, "TYPE = %s", type.data() );
   
   if ( type == "FSDevice" )
     return runFSDevice( _url, cfg );
@@ -668,7 +668,7 @@ void KDELnkMimeType::userDefinedServices( K2URL& _url, list<KDELnkMimeType::Serv
   const char *k;
   for( k = keys.first(); k != 0L; k = keys.next() )
   {
-    cerr << "CURRENT KEY=" << k << endl;
+    kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", k );
    
     QStrList lst;
     if ( cfg.readListEntry( k, lst ) == 3 )
@@ -691,7 +691,7 @@ void KDELnkMimeType::userDefinedServices( K2URL& _url, list<KDELnkMimeType::Serv
 
 void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& _service )
 {
-  cerr << "EXECUTING Service " << _service.m_strName << endl;
+  kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
   
   K2URL u( _url );
   
@@ -707,7 +707,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
   } */
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
-    cerr << "MOUNT&UNMOUNT" << endl;
+    kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
 
     KSimpleConfig cfg( u.path(), true );
     cfg.setGroup( "KDE Desktop Entry" );
@@ -726,7 +726,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
       // Already mounted? Strange, but who knows ...
       if ( !mp.isEmpty() )
       {
-	cerr << "ALREADY Mounted" << endl;
+	kdebug( KDEBUG_INFO, 7009, "ALREADY Mounted" );
 	return;
       }
       

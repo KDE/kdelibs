@@ -9,6 +9,7 @@
 #include <k2url.h>
 #include <kapp.h>
 #include <kwm.h>
+#include <kdebug.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -700,7 +701,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes )
     m_pCopyProgressDlg->totalSize( _bytes );
   
   emit sigTotalSize( m_id, _bytes );
-  cerr << "TotalSize " << _bytes << endl;
+  kdebug( KDEBUG_INFO, 7007, "TotalSize %ld", _bytes );
 }
 
 
@@ -711,7 +712,7 @@ void KIOJob::slotTotalFiles( unsigned long _files )
     m_pCopyProgressDlg->totalFiles( _files );
 
   emit sigTotalFiles( m_id, _files );
-  cerr << "TotalFiles " << _files << endl;
+  kdebug( KDEBUG_INFO, 7007, "TotalFiles %ld", _files );
 }
 
 
@@ -722,7 +723,7 @@ void KIOJob::slotTotalDirs( unsigned long _dirs )
     m_pCopyProgressDlg->totalDirs( _dirs );
 
   emit sigTotalDirs( m_id, _dirs );
-  cerr << "TotalDirs " << _dirs << endl;
+  kdebug( KDEBUG_INFO, 7007, "TotalDirs %ld", _dirs );
 }
 
 
@@ -734,7 +735,7 @@ void KIOJob::slotProcessedSize( unsigned long _bytes )
     m_pCopyProgressDlg->processedSize( _bytes );
 
   emit sigProcessedSize( m_id, _bytes );
-  cerr << "ProcessedSize " << _bytes << endl;
+  kdebug( KDEBUG_INFO, 7007, "ProcessedSize %ld", _bytes );
 }
 
 
@@ -744,7 +745,7 @@ void KIOJob::slotProcessedFiles( unsigned long _files )
     m_pCopyProgressDlg->processedFiles( _files );
 
   emit sigProcessedFiles( m_id, _files );
-  cerr << "ProcessedFiles " << _files << endl;
+  kdebug( KDEBUG_INFO, 7007, "ProcessedFiles %ld", _files );
 }
 
 
@@ -754,7 +755,7 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs )
     m_pCopyProgressDlg->processedDirs( _dirs );
 
   emit sigProcessedDirs( m_id, _dirs );
-  cerr << "ProcessedDirs " << _dirs << endl;
+  kdebug( KDEBUG_INFO, 7007, "ProcessedDirs %ld", _dirs );
 }
 
 
@@ -763,7 +764,7 @@ void KIOJob::slotScanningDir( const char *_dir )
   if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->scanningDir( _dir );
 
-  cerr << "ScanningDir " << _dir << endl;
+  kdebug( KDEBUG_INFO, 7007, "ScanningDir %s", _dir );
 }
 
 
@@ -774,7 +775,7 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second )
     m_pCopyProgressDlg->speed( _bytes_per_second );
 
   emit sigSpeed( m_id, _bytes_per_second );
-  cerr << "Speed " << _bytes_per_second << endl;
+  kdebug( KDEBUG_INFO, 7007, "Speed %ld", _bytes_per_second );
 }
 
 
@@ -787,7 +788,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
     m_pCopyProgressDlg->copyingFile( _from, _to );
 
   emit sigCopying( m_id, _from, _to );
-  cerr << "CopyingFile " << _from << " -> " << _to << endl;
+  kdebug( KDEBUG_INFO, 7007, "CopyingFile %s -> %s", _from,  _to );
 }
 
 
@@ -796,7 +797,7 @@ void KIOJob::slotMakingDir( const char *_dir )
   if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->makingDir( _dir );
 
-  cerr << "MakingDir " << _dir << endl;
+  kdebug( KDEBUG_INFO, 7007, "MakingDir %s", _dir );
 }
 
 
@@ -805,7 +806,7 @@ void KIOJob::slotGettingFile( const char *_url )
   if ( m_cmd == CMD_GET && m_pCopyProgressDlg )
     m_pCopyProgressDlg->gettingFile( _url );
 
-  cerr << "GettingFile " << _url << endl;
+  kdebug( KDEBUG_INFO, 7007, "GettingFile %s", _url );
 }
 
 
@@ -814,7 +815,7 @@ void KIOJob::slotDeletingFile( const char *_url )
   if ( m_cmd == CMD_DEL && m_pCopyProgressDlg )
     m_pCopyProgressDlg->deletingFile( _url );
 
-  cerr << "DeletingFile " << _url << endl;
+  kdebug( KDEBUG_INFO, 7007, "DeletingFile %s", _url );
 }
 
 void KIOJob::slotMimeType( const char *_type )
@@ -828,7 +829,7 @@ void KIOJob::slotMimeType( const char *_type )
   }
   
   emit sigMimeType( m_id, _type );
-  cerr << "MimeType " << _type << endl;
+  kdebug( KDEBUG_INFO, 7007, "MimeType %s", _type );
 }
 
 
@@ -869,7 +870,7 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_t
   }
   
   string exec = ProtocolManager::self()->find( _protocol );
-  cerr << "TRYING TO START" << exec << endl;
+  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.c_str() );
   
   if ( exec.empty() )
   {

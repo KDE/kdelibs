@@ -1,5 +1,7 @@
 #include "kio_connection.h"
 
+#include <kdebug.h>
+
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -62,7 +64,7 @@ int Connection::send( int _cmd, const void *_p, int _len )
   
   if ( n != 8 )
   {
-    cerr << "Could not send header" << endl;
+    kdebug( KDEBUG_ERROR, 7003, "Could not send header" );
     return 0;
   }
   
@@ -70,7 +72,7 @@ int Connection::send( int _cmd, const void *_p, int _len )
 
   if ( n != _len )
   {
-    cerr << "Could not write data" << endl;
+    kdebug( KDEBUG_ERROR, 7003, "Could not write data" );
     return 0;
   }
   
@@ -90,7 +92,7 @@ again1:
   
   if ( n != 8 )
   {
-    cerr << "No header " << n << endl;
+    kdebug( KDEBUG_ERROR, 7003, "No header %d", n );
     return 0L;
   }
   
@@ -114,13 +116,13 @@ again1:
   
     if ( n == -1 )
     {
-      cerr << "ERRNO is " << errno << endl;
+      kdebug( KDEBUG_ERROR, 7003, "ERRNO is %d", errno );
       exit(3);
     }
   
     if ( n != len )
     {
-      cerr << "Not enough data " << n << " instead of " << len << endl;
+      kdebug( KDEBUG_ERROR, 7003, "Not enough data %d instead of %d", n, len );
       return 0L;
     }
 
@@ -160,7 +162,7 @@ Slave::Slave( const char *_cmd ) : Connection()
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
-    fprintf( stderr, "Slave: exec failed...!\n" );
+    kdebug( KDEBUG_FATAL, 7004, "Slave: exec failed...!" );
     exit( 0 );
   }
   close( recv_in );
@@ -171,7 +173,7 @@ Slave::Slave( const char *_cmd ) : Connection()
 
 Slave::~Slave()
 {
-  cerr << "KILLING SLAVE xb" << m_pid << endl;
+  kdebug( KDEBUG_FATAL, 7004, "KILLING SLAVE xb %d", m_pid);
   kill( m_pid, SIGTERM );
 }
 

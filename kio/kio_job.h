@@ -46,18 +46,28 @@ public:
    */
   void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
 
+  /**
+   * Use this to set whether KIOJob should cache slaves into the pool.
+   * Caching means, that when slave is done it is cached for next use.
+   * This also means, that it is kept in memory.
+   * Default value is true = cache to pool.
+   *
+   */
+  void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
+
 
   /**
-   * Enable or disable progress dialogs. Dialogs are enabled per default.
+   * Enable or disable progress dialogs.
    * Call this before you call any other command ( like copy etc. )
+   * Default value is true = show progress dialogs
    * @see #showGUI #hideGUI
    */
   void enableGUI( bool _mode ) { m_bGUI = _mode; }
 
   /**
-   * This flags determines, whether progress dialogs will start iconified or no.
-   * Default value is normal mode ( not iconified ).
+   * Use this to set whether progress dialogs will start iconified or no.
    * Call this before you call any other command ( like copy etc. )
+   * Default value is false = do not start iconified.
    * @see #iconifyGUI
    */
   void startIconified( bool _mode ) { m_bStartIconified = _mode; }
@@ -76,15 +86,6 @@ public:
    * Allows iconifying dialogs from the program. Doesn't care whether GUI is enabled.
    */
   void iconifyGUI();
-
-  /**
-   * This flags determines, whether KIOJob should cache slaves into the pool.
-   * Default mode is yes - cache to pool.
-   * When slave is done it is cached for next use. This also means, that it is kept in memory.
-   *
-   * Set this flag to false if you don't want this behaviour.
-   */
-  void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
 
   virtual bool copy( list<string>& _source, const char *_dest, bool _move = false );
   virtual bool copy( QStrList& _source, const char *_dest, bool _move = false );

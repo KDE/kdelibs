@@ -1,5 +1,7 @@
 #include "kio_interface.h"
 
+#include <kdebug.h>
+
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -497,7 +499,7 @@ bool ConnectionSignals::listEntry( UDSEntry& _entry )
     else
       assert( 0 );
 
-    // cerr << "Packed " << (const char*)x << endl;
+    // debug( "Packed %s", (const char*)x );
   }
 
   m_pConnection->send( MSG_LIST_ENTRY, m_pConnection->buffer(), size + 1 );
@@ -572,7 +574,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	const char* fstype = (const char*)_p + 1;
 	const char* dev = (const char*)_p + 1 + strlen( fstype ) + 1;
 	const char* point = (const char*)_p + 1 + strlen( fstype ) + 1 + strlen( dev ) + 1;
-	cerr << "!!!!!!!!! MOUNTING " << fstype << " " << dev << " " << point << endl;
+	kdebug( KDEBUG_INFO, 7006, "!!!!!!!!! MOUNTING %s %s %s", fstype, dev, point);
 	slotMount( ro, fstype, dev, point );
       }
       break;
