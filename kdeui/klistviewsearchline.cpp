@@ -19,13 +19,13 @@
 #include "klistviewsearchline.h"
 
 #include <klistview.h>
-#include <kapplication.h>
 #include <kiconloader.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kdebug.h>
 #include <klocale.h>
 
+#include <qapplication.h>
 #include <qtimer.h>
 #include <qpopupmenu.h>
 #include <qlabel.h>
@@ -413,7 +413,7 @@ void KListViewSearchLineWidget::createWidgets()
 
     if(!d->clearButton) {
         d->clearButton = new QToolButton(this);
-        QIconSet icon = SmallIconSet(KApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
+        QIconSet icon = SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
         d->clearButton->setIconSet(icon);
     }
 
@@ -452,7 +452,7 @@ void KListViewSearchLineWidget::positionInToolBar()
             if(toolBar->getWidget(id) == this) {
                 toolBar->setItemAutoSized(id);
                 if(!d->clearButton) {
-                    QString icon = KApplication::reverseLayout() ? "clear_left" : "locationbar_erase";
+                    QString icon = QApplication::reverseLayout() ? "clear_left" : "locationbar_erase";
                     d->clearButton = new KToolBarButton(icon, 2005, toolBar);
                 }
                 toolBar->insertWidget(2005, d->clearButton->width(), d->clearButton, index);
