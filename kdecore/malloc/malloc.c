@@ -372,7 +372,7 @@ extern "C" {
   or other mallocs available that do this.
 */
 
-#if DEBUG
+#ifdef DEBUG
 #include <assert.h>
 #else
 #define assert(x) ((void)0)
@@ -2472,7 +2472,7 @@ static Void_t** iALLOc();
   in malloc. In which case, please report it!)
 */
 
-#if ! DEBUG
+#ifndef DEBUG
 
 #define check_chunk(P)
 #define check_free_chunk(P)
@@ -4425,7 +4425,7 @@ static Void_t** iALLOc(n_elements, sizes, opts, chunks) size_t n_elements; size_
     }
   }
 
-#if DEBUG
+#ifdef DEBUG
   if (marray != chunks) {
     /* final element must have exactly exhausted chunk */
     if (element_size != 0) 
