@@ -641,7 +641,6 @@ void KApplication::init(bool GUIenabled)
     XSetIOErrorHandler( kde_xio_errhandler );
 
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
-    connect( this, SIGNAL( aboutToQuit() ), this, SLOT( slotAboutToQuit() ) );
 
     display = desktop()->x11Display();
     kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
@@ -1112,20 +1111,6 @@ QPixmap KApplication::miniIcon() const
       that->aMiniIconPixmap = SmallIcon( instanceName() );
   }
   return aMiniIconPixmap;
-}
-
-void KApplication::slotAboutToQuit()
-{
-  // Delete all toplevel widgets that have WDestructiveClose, so that we don't have
-  // any parts loaded when KLibLoader::cleanUp is called.
-  QWidgetList *list = topLevelWidgets();
-  QWidgetListIt it(*list);
-  QWidget * w;
-  while( (w=it.current()) != 0 ) {
-     ++it;
-     if ( w->testWFlags( WDestructiveClose ) )
-          delete w;
-  }
 }
 
 KApplication::~KApplication()

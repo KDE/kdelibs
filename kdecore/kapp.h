@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.0.9 >= 20001207"
+#define KDE_VERSION_STRING "2.1 Beta 1 >= 20001213"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
@@ -67,8 +67,6 @@ class KApplicationPrivate;
 * avoid zombie children. If you want to catch this signal yourself or
 * don't want it to be caught at all, you have set a new signal handler
 * (or SIG_IGN) after KApplication's constructor has run.
-* @li   Provides a debugging system for all KDE GUI apps. This can be
-*       invoked via the key combo Ctrl-Shift-F12 in any KDE application.
 *
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
@@ -560,7 +558,6 @@ private slots:
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
   void kstyleDestroyed();
-  void slotAboutToQuit();
 
 private:
   KApplicationPrivate* d;
@@ -788,6 +785,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.201  2000/12/11 23:42:16  faure
+// Thus spoke master Matthias... connecting to slotAboutToQuit and deleting
+// the toplevel-widgets that have WDestructiveClose indeed works very nicely.
+//
 // Revision 1.200  2000/12/07 18:34:28  molnarc
 //
 // Updated date - significant # of changes
