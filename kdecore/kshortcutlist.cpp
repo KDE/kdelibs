@@ -152,16 +152,26 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 // KAccelShortcutList
 //---------------------------------------------------------------------
 
+class KAccelShortcutListPrivate
+{
+	public:
+		QString m_configGroup;
+};
+
 KAccelShortcutList::KAccelShortcutList( KAccel* pAccel )
 : m_actions( pAccel->actions() )
 {
+	d=new KAccelShortcutListPrivate;
 	m_bGlobal = false;
+	d->m_configGroup=pAccel->configGroup();
 }
 
 KAccelShortcutList::KAccelShortcutList( KGlobalAccel* pAccel )
 : m_actions( pAccel->actions() )
 {
+	d=new KAccelShortcutListPrivate;
 	m_bGlobal = true;
+	d->m_configGroup=pAccel->configGroup();
 }
 
 KAccelShortcutList::KAccelShortcutList( KAccelActions& actions, bool bGlobal )
@@ -172,7 +182,7 @@ KAccelShortcutList::KAccelShortcutList( KAccelActions& actions, bool bGlobal )
 
 
 KAccelShortcutList::~KAccelShortcutList()
-	{ }
+	{  delete d;}
 uint KAccelShortcutList::count() const
 	{ return m_actions.count(); }
 QString KAccelShortcutList::name( uint i ) const
@@ -196,7 +206,7 @@ bool KAccelShortcutList::isGlobal( uint ) const
 bool KAccelShortcutList::setOther( Other, uint, QVariant )
 	{ return false; }
 bool KAccelShortcutList::save() const
-	{ return writeSettings(); }
+	{ return writeSettings( d->m_configGroup ); }
 
 void KShortcutList::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
