@@ -30,6 +30,7 @@ KCharsetsData *KCharsets::data=0;
 KCharsetsData *KCharset::data=0;
 KCharsets *KCharset::charsets=0;
 KCharsetsData *KCharsetConverterData::kcharsetsData=0;
+uint KCharsets::count=0;
 
 /////////////////////////////////////////////////////////////////
 
@@ -367,11 +368,13 @@ KCharsets::KCharsets(){
      KCharsetConverterData::kcharsetsData=data;
      KCharset::data=data;
      KCharset::charsets=this;
+     count++;
   }   
 }
 
 KCharsets::~KCharsets(){
-
+  if(!--count)
+    delete data;
 }
 
 KCharset KCharsets::defaultCharset()const{

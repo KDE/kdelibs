@@ -518,7 +518,7 @@ KCharsetsData::KCharsetsData(){
 
   QString fileName=KApplication::kde_configdir() + "/charsets";
   kchdebug("Reading config from %s...\n",(const char *)fileName);
-  config=new KSimpleConfig(fileName);
+  config=new KSimpleConfig(fileName, TRUE);
   config->setGroup("general");
   QString i18dir = config->readEntry("i18ndir");
   if (i18dir) scanDirectory(i18dir);
@@ -540,6 +540,7 @@ KCharsetsData::KCharsetsData(){
 	++(*it);
       }  
   }
+  delete it;
   kchdebug("done!\n");
 }
 
@@ -624,6 +625,7 @@ KCharsetsData::~KCharsetsData(){
   QDictIterator<KCharsetEntry> it(i18nCharsets);
   KCharsetEntry *e;
   while( (e=it.current()) ){
+    ++it;
     if (e->toUnicodeDict) delete e->toUnicodeDict;
     if (e->name) delete e->name;
     delete e;
@@ -715,17 +717,23 @@ const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
   if (!it) return 0;
   while( it->current() ){
     const char * faceStr=it->current()->aValue;
-    if (!faceStr || faceStr[0]==0) return charsetEntry(it->currentKey());
+    const char * key=it->currentKey();
+    if (!faceStr || faceStr[0]==0){
+      delete it;
+      return charsetEntry(key);
+    }
     kchdebug("testing if it is %s (%s)...",(const char *)it->currentKey(),faceStr);
     QRegExp rexp(faceStr,FALSE,TRUE);
     kchdebug("regexp: %s face: %s\n",rexp.pattern(),(const char *)face);
     if (face.contains(rexp)){
       kchdebug("Yes, it is\n");
-      return charsetEntry(it->currentKey());
+      delete it;
+      return charsetEntry(key);
     }  
     kchdebug("No, it isn't\n");
     ++(*it);
   }
+  delete it;
   return 0;
 }
   
@@ -976,10 +984,15 @@ QString KCharsetsData::fromX(QString name){
   if ( it )
   {
       while( it->current() ){
-	if (it->current()->aValue==name ) return it->currentKey();
+        const char * key = it->currentKey();
+	if (it->current()->aValue==name ){
+          delete it;
+          return key;
+        }
 	++(*it);
       }  
   }
+  delete it;
   return ""; 
 }
 

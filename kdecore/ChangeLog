@@ -1,3 +1,7 @@
+1999-03-22  Harri Porten  <porten@kde.org>
+
+	* kcharsets*.cpp: fixed memory leaks.
+
 1999-03-03  Jochen Küpper  <jochen@uni-duesseldorf.de>
 
 	* kconfigbase.cpp (writeEntry): Write double values to good precision.

@@ -396,6 +396,7 @@ class KCharsetsData;
 
 class KCharsets{
   static KCharsetsData *data;
+  static uint count; // reference counter
 public:
 
   /**
