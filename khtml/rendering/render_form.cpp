@@ -1630,13 +1630,16 @@ void RenderTextArea::updateFromElement()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
     QString elementText = element()->value().string();
-    if ( elementText != text() )
+    if ( elementText != w->text() )
     {
         w->blockSignals(true);
         int line, col;
         w->getCursorPosition( &line, &col );
+        int cx = w->contentsX();
+        int cy = w->contentsY();
         w->setText( elementText );
         w->setCursorPosition( line, col );
+        w->scrollBy( cx, cy );
         w->blockSignals(false);
     }
     element()->m_dirtyvalue = false;
