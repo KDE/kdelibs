@@ -119,7 +119,7 @@ libkdeui_la_SOURCES = \
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
-		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h \
+		kdepackages.h kshortcutdialog.h kxmlguifactory_p.h \
 		kstdaction_p.h
 
 scripts_SCRIPTS = preparetips
@@ -133,7 +133,7 @@ libkdeui_la_NMCHECKWEAK = $(srcdir)/libkdeui_weak.nmcheck $(top_srcdir)/kdecore/
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
 
-EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors Mainpage.dox
 
 .PHONY: kdepackages
 

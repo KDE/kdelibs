@@ -5,8 +5,8 @@
 	Distributed under the LGPL.
 */
 
-/**
-* @libdoc The KDE User Interface library
+
+* @mainpage The KDE User Interface library
 *
 * This library provides standard user interface elements for use in
 * KDE applications. If your KDE application has a GUI, you will almost
