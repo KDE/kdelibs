@@ -27,7 +27,6 @@
  * Alternative Layout manager widget.
  * Here is an example of using this class:
  *
- * 
  * @author Jorge Monteiro <jomo@casema.net>
  * @version 0.1
  */
@@ -100,15 +99,18 @@ enum { Horizontal = 0, Vertical };
      */
     void setEndOffset(int i);
     /**
-     * Returns the current orientation of the container @see KContainerLayout#setOrientation
+     * Returns the current orientation of the container @see
+     * KContainerLayout#setOrientation
      */
     const int orientation() const	{ return _orientation; }
     /**
-     * Returns the current homogeneous state of the container @see KContainerLayout#setHomogeneous
+     * Returns the current homogeneous state of the container @see
+     * KContainerLayout#setHomogeneous
      */
     const bool homogeneos() const	{ return _homogeneos; }
     /**
-     * Returns the current spacing of the container @see KContainerLayout#setSpacing
+     * Returns the current spacing of the container @see
+     * KContainerLayout#setSpacing
      */
     const int spacing() const		{ return _spacing; }
     /**
@@ -120,7 +122,8 @@ enum { Horizontal = 0, Vertical };
      */
     const int endOffset() const		{ return _endOffset; }
     /**
-     * Resizes the container to be as small as necessary to display all widgets
+     * Resizes the container to be as small as necessary to display
+     * all widgets
      */
     void sizeToFit();
 protected:
@@ -140,7 +143,8 @@ protected:
 	     * Creates one KContIem
 	     *
 	     * @param w The widget associated with this KContainerLayoutItem
-	     * @param e Expand will make the widget to use all space alocated to it
+	     * @param e Expand will make the widget to use all space
+	     * alocated to it
 	     * @param f Fill will make the widget be sized to ocupy all the
 	     * space allocated to it. Only makes sense with expand = TRUE
 	     * @param p Padding is the size the widget will use as borders on
@@ -172,7 +176,8 @@ protected:
      */
     void recalcLayout();
     /**
-     * Returns the size necessary for the widget represented by this KContainerLayoutItem
+     * Returns the size necessary for the widget represented by this
+     * KContainerLayoutItem
      */
     QSize widgetSize(KContainerLayoutItem *item)
     {
@@ -187,13 +192,14 @@ protected:
      */
     void repositionWidgets();
     /**
-     * Returns the number of widgets that share the extra space on the container.
+     * Returns the number of widgets that share the extra space on
+     * the container.
      */
     int numberOfWidgetsWithExpand();
     /**
-     * Calculate our size hint based on the sizeHint() of all out widgets,
-     * on our properties - expand and homogeneous, and on the KContainerLayoutItem 
-     * properties.
+     * Calculate our size hint based on the sizeHint() of all out
+     * widgets, on our properties - expand and homogeneous, and on the
+     * KContainerLayoutItem properties.
      * @see KContainerLayoutItem @see packStart @see packEnd
      */
     void calculateSizeHint();
@@ -202,7 +208,8 @@ protected:
      */
     QSize sizeOfLargerWidget();
     /**
-     * Returns the ideal size for the widget represented by this KContainerLayoutItem.
+     * Returns the ideal size for the widget represented by this
+     * KContainerLayoutItem.
      */
     QSize idealSizeOfWidget(KContainerLayoutItem *item);
     /**
@@ -215,7 +222,8 @@ protected:
      */
     virtual void resizeEvent(QResizeEvent *ev);
     /**
-     * Used to filter resize events from our parent if it isn't a KContainerLayout.
+     * Used to filter resize events from our parent if it isn't a
+     * KContainerLayout.
      */
     virtual bool eventFilter(QObject *, QEvent *ev);
     /**
@@ -260,6 +268,7 @@ protected:
      * our sizeHint that we will return on our implementation of sizeHint()
      */
     QSize _sizeHint;
+
 };
 
 #endif // __KCONTAINER_H__
