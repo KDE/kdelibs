@@ -49,6 +49,7 @@ Area codes for KDebug system
 4001-4100 kirc
 4101-4200 kciv
 4201-4250 krot
+4251-4260 khidaq
 
 30001-65534 koffice
 
