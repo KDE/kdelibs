@@ -59,8 +59,8 @@ public:
 	Availability of DNS-SD services.
 	Working - available
 	Stopped - not available because mdnsd daemon is not running
-	Unsupported - not available because KDE was compiled without DNS-SD support
-	 */
+	Unsupported - not available because KDE was compiled without DNS-SD support	
+	*/
 	enum State { Working, Stopped, Unsupported };
 
 	/**
@@ -107,6 +107,29 @@ public:
 	
 	/**
 	Checks availability of DNS-SD services (this also covers publishing).
+
+	If you use this function to report an error to the user, below is a suggestion
+	on how to word the errors:
+	
+	\code
+	switch(DNSSD::ServiceBrowser::isAvailable()) {	    
+          case DNSSD::ServiceBrowser::Stopped:
+          return i18n("<p>The Zeroconf daemon is not running. See the Service Discovery Handbook"
+                      " for more information.<br/>"
+	              "Other users will not see this system when browsing"
+	              " the network via zeroconf, but normal access will still work.</p>");
+          case DNSSD::ServiceBrowser::Unsupported:
+          return i18n("<p>Zeroconf support is not available in this version of KDE."
+                      " See the Service Discovery Handbook for more information.<br/>"
+                      "Other users will not see this system when browsing"
+                      " the network via zeroconf, but normal access will still work.</p>");
+          default:
+          return i18n("<p>Unknown error with Zeroconf.<br/>"
+                      "Other users will not see this system when browsing"
+                      " the network via zeroconf, but normal access will still work.</p>");
+        }
+	\endcode
+
 	 */
 	static const State isAvailable();
 
