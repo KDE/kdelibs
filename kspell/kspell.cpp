@@ -672,13 +672,9 @@ void KSpell::checkList3a (KProcIO *)
 	      {
 		dlgresult=-1;
 
-		//orig is set by parseOneResponse()
-		//		lastpos=newbuffer.find (orig,lastpos,TRUE);
-
 		if (e==REPLACE)
 		  {
-		    emit corrected (orig, replacement(), lastpos);
-		    //  newbuffer.replace (lastpos,orig.length(),word);
+		    emit corrected (orig, replacement(), lastpos-1);
 		  }
 		else
 		  {
@@ -715,9 +711,11 @@ void KSpell::checkList4 ()
     case KS_REPLACE:
     case KS_REPLACEALL:
       kdDebug(750) << "cklist4: lastpos: " << lastpos << endl;
-      wlIt = wordlist->remove (wlIt);
+      wlIt--; // go back to misspelled word
+      kdDebug(750) << *wlIt << endl;
       wordlist->insert (wlIt, replacement());
-      wlIt++;
+      wlIt = wordlist->remove (wlIt);
+      kdDebug(750) << *wlIt << endl;
       break;
     case KS_CANCEL:
       ksdlg->hide();
