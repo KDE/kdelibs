@@ -189,7 +189,8 @@ class Element : public Node
 
 public:
     Element();
-
+    Element(const Node &other) : Node()
+        {(*this)=other;}
     Element(const Element &other);
 
     Element & operator = (const Node &other);

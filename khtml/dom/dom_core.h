@@ -29,6 +29,7 @@
 #include <dom/dom_exception.h>
 #include <dom/dom_node.h>
 #include <dom/dom_string.h>
+#include <dom/dom_text.h>
 #include <dom/dom_xml.h>
 
 #endif

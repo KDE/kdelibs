@@ -41,6 +41,18 @@ namespace KJS {
     DOM::CharacterData data;
   };
 
+
+  class DOMCharacterDataFunction : public InternalFunctionImp {
+  public:
+    DOMCharacterDataFunction(DOM::CharacterData d, int i);
+    Completion execute(const List &);
+    enum { SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
+  private:
+    DOM::CharacterData data;
+    int id;
+  };
+
+
   class DOMText : public NodeObject {
   public:
     DOMText(DOM::Text t) : text(t) { }
@@ -52,16 +64,16 @@ namespace KJS {
     DOM::Text text;
   };
 
-  class DOMComment : public NodeObject {
+  class DOMTextFunction : public InternalFunctionImp {
   public:
-    DOMComment(DOM::Comment t) : comment(t) { }
-    virtual KJSO get(const UString &p) const;
-    virtual DOM::Node toNode() const { return comment; }
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    DOMTextFunction(DOM::Text t, int i);
+    Completion execute(const List &);
+    enum { SplitText };
   private:
-    DOM::Comment comment;
+    DOM::Text text;
+    int id;
   };
+
 
 }; // namespace
 

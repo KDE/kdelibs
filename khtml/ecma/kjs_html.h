@@ -70,6 +70,20 @@ namespace KJS {
     DOM::HTMLElement element;
   };
 
+
+  class HTMLElementFunction : public InternalFunctionImp {
+  public:
+    HTMLElementFunction(DOM::HTMLElement e, int i) : element(e), id(i) { };
+    Completion execute(const List &);
+    enum { Submit, Reset, Add, Remove, Blur, Focus, Select, Click,
+           CreateTHead, DeleteTHead, CreateTFoot, DeleteTFoot,
+           CreateCaption, DeleteCaption, InsertRow, DeleteRow,
+           InsertCell, DeleteCell };
+  private:
+    DOM::HTMLElement element;
+    int id;
+  };
+
   class HTMLCollection : public HostImp {
   public:
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }

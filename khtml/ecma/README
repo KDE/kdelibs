@@ -21,19 +21,4 @@ Image.src
 
 DOM Bindings:
 
-Node.*
-NodeList.length
-CharacterData.data, length
-Attr.*
-Document.*
-Element.*
-HTMLCollection.*
-HTMLDocument.*
-HTMLElement.*
-HTMLHtmlElement.*
-HTMLLinkElement.*
-HTMLBodyElement.*
-HTMLImageElement.*
-HTMLAreaElement.*
-
-
+all DOM level 1 core & HTML

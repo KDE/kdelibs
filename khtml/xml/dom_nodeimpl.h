@@ -27,6 +27,7 @@
 
 #include "dom/dom_misc.h"
 #include "dom/dom_node.h"
+#include "dom/dom_string.h"
 #include <qstring.h>
 
 class QPainter;
@@ -373,7 +374,7 @@ protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
     DocumentImpl *refDoc;
-    const DOMString &tagName;
+    DOMString tagName;
 };
 
 
@@ -395,7 +396,7 @@ protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
     DocumentImpl *refDoc;
-    const DOMString &nodeName;
+    DOMString nodeName;
 };
 
 }; //namespace

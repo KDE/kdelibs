@@ -36,6 +36,16 @@ KJSO DOMCharacterData::get(const UString &p) const
     return String(data.data());
   else if (p == "length")
     return Number(data.length());
+  else if (p == "substringData")
+    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::SubstringData);
+  else if (p == "appendData")
+    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::AppendData);
+  else if (p == "insertData")
+    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::InsertData);
+  else if (p == "deleteData")
+    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::DeleteData);
+  else if (p == "replaceData")
+    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::ReplaceData);
   else {
     KJSO tmp(new DOMNode(data));
     return tmp.get(p);
@@ -44,14 +54,50 @@ KJSO DOMCharacterData::get(const UString &p) const
 
 void DOMCharacterData::put(const UString &p, const KJSO& v)
 {
-  if (p == "data") {
-    String s = v.toString();
-    data.setData(s.value().string());
-  } else {
+  if (p == "data")
+    data.setData(v.toString().value().string());
+  else {
     KJSO tmp(new DOMNode(data));
     tmp.put(p, v);
   }
 }
+
+DOMCharacterDataFunction::DOMCharacterDataFunction(DOM::CharacterData d, int i)
+  : data(d), id(i)
+{
+}
+
+Completion DOMCharacterDataFunction::execute(const List &args)
+{
+  KJSO result;
+
+  switch(id) {
+    case SubstringData:
+      result = String(data.substringData(args[0].toNumber().intValue(),args[1].toNumber().intValue()));
+      break;
+    case AppendData:
+      data.appendData(args[0].toString().value().string());
+      result = Undefined();
+      break;
+    case InsertData:
+      data.insertData(args[0].toNumber().intValue(),args[1].toString().value().string());
+      result = Undefined();
+      break;
+    case DeleteData:
+      data.deleteData(args[0].toNumber().intValue(),args[1].toNumber().intValue());
+      result = Undefined();
+      break;
+    case ReplaceData:
+      data.replaceData(args[0].toNumber().intValue(),args[1].toNumber().intValue(),args[2].toString().value().string());
+      result = Undefined();
+      break;
+    default:
+      result = Undefined();
+  }
+
+  return Completion(Normal, result);
+}
+
 
 const TypeInfo DOMText::info = { "Text", HostType,
 				 &DOMCharacterData::info, 0, 0 };
@@ -60,6 +106,8 @@ KJSO DOMText::get(const UString &p) const
 {
   if (p == "")
     return Undefined(); // TODO
+  else if (p == "splitText")
+    return new DOMTextFunction(text, DOMTextFunction::SplitText);
   else {
     DOM::Node n = text;
     KJSO tmp(new DOMCharacterData(n));
@@ -67,16 +115,23 @@ KJSO DOMText::get(const UString &p) const
   }
 }
 
-const TypeInfo DOMComment::info = { "Comment", HostType,
-				 &DOMCharacterData::info, 0, 0 };
-
-KJSO DOMComment::get(const UString &p) const
+DOMTextFunction::DOMTextFunction(DOM::Text t, int i)
+  : text(t), id(i)
 {
-  if (p == "")
-    return Undefined(); // TODO
-  else {
-    DOM::Node n = comment;
-    KJSO tmp(new DOMCharacterData(n));
-    return tmp.get(p);
-  }
 }
+
+Completion DOMTextFunction::execute(const List &args)
+{
+  KJSO result;
+
+  switch(id) {
+    case SplitText:
+      return new DOMText(text.splitText(args[0].toNumber().intValue()));
+      break;
+    default:
+      result = Undefined();
+  }
+
+  return Completion(Normal, result);
+}
+

@@ -63,7 +63,7 @@ NodeImpl::~NodeImpl()
 
 DOMString NodeImpl::nodeValue() const
 {
-  return 0;
+  return 0; // ### spec says to raise exception here
 }
 
 void NodeImpl::setNodeValue( const DOMString & )

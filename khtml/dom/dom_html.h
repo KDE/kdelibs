@@ -35,6 +35,7 @@
 #include <dom/html_inline.h>
 #include <dom/html_list.h>
 #include <dom/html_misc.h>
+#include <dom/html_object.h>
 #include <dom/html_table.h>
 
 #endif
