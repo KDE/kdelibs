@@ -1443,7 +1443,8 @@ class KDialogBase : public KDialog
     void aboutToShowDetails();
 
     /**
-     * A page is about to be shown.
+     * A page is about to be shown. This signal is only emitted for the TreeList
+     * and IconList faces.
      */
     void aboutToShowPage(QWidget *page);
 
