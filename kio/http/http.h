@@ -331,6 +331,10 @@ protected:
   // Chunked tranfer encoding
   bool m_bChunked;
 
+  // Cookie flags
+  bool m_bUseCookiejar; 
+  enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;
+
   // Flag that indicates whether there was some connection
   // error...
   bool m_bError;

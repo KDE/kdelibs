@@ -971,7 +971,24 @@ bool HTTPProtocol::http_open()
   }
   header += "\r\n";
 
-  QString cookieStr = findCookies( m_request.url.url());
+  QString cookieStr;
+  QString cookieMode = metaData("cookies").lower();
+  if (cookieMode == "manual")
+  {
+     m_cookieMode = CookiesManual;
+     cookieStr = metaData("setcookies");
+  }
+  else if (cookieMode == "none") 
+  {
+     m_cookieMode = CookiesNone;
+  }
+  else 
+  {
+     m_cookieMode = CookiesAuto;
+     if (m_bUseCookiejar)
+        cookieStr = findCookies( m_request.url.url());
+  }
+
   if (!cookieStr.isEmpty())
     header += cookieStr + "\r\n";
 
@@ -1588,8 +1605,16 @@ bool HTTPProtocol::readHeader()
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
-     // Give cookies to the cookiejar.
-     addCookies( m_request.url.url(), cookieStr );
+     if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
+     {
+        // Give cookies to the cookiejar.
+        addCookies( m_request.url.url(), cookieStr );
+     }
+     else if (m_cookieMode == CookiesManual)
+     {
+        // Pass cookie to application
+        setMetaData("setcookies", cookieStr);
+     }
   }
 
   if (m_bMustRevalidate)
@@ -1829,6 +1854,12 @@ void HTTPProtocol::configAuth( const char *p, bool b )
     // Another strange thing from IIS. Found on http://www.lottorush.com.
     kdWarning(7103) << "Unsupported Authorization type requested : Negotiate" << endl;
     return;
+  }
+  else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0) 
+  {
+    // Found on http://www.webscription.net/baen/default.asp
+    f = AUTH_Basic;
+    p += 14;
   }
   else
   {
