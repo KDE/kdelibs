@@ -22,11 +22,11 @@
 #ifndef KMCUPSCONFIG_H
 #define KMCUPSCONFIG_H
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class KMCupsConfigWidget;
 
-class KMCupsConfig : public KDialog
+class KMCupsConfig : public KDialogBase
 {
 public:
 	KMCupsConfig(QWidget *parent = 0, const char *name = 0);

@@ -20,19 +20,20 @@
 #include "editlist.h"
 
 #include <klistbox.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kguiitem.h>
 
 EditList::EditList(QWidget *parent, const char *name)
 	: QWidget(parent, name)
 {
 	list_ = new KListBox(this);
-	addbtn_ = new QPushButton(i18n("Add..."), this);
-	editbtn_ = new QPushButton(i18n("Edit..."), this);
-	delbtn_ = new QPushButton(i18n("Delete"), this);
-	defbtn_ = new QPushButton(i18n("Default List"), this);
+	addbtn_ = new KPushButton(KGuiItem(i18n("Add..."), "filenew"), this);
+	editbtn_ = new KPushButton(KGuiItem(i18n("Edit..."), "edit"), this);
+	delbtn_ = new KPushButton(KGuiItem(i18n("Delete"), "editdelete"), this);
+	defbtn_ = new KPushButton(KGuiItem(i18n("Default List"), "history"), this);
 
 	QGridLayout *m1 = new QGridLayout(this, 4, 2, 0, 0);
 	m1->setColStretch(0, 1);

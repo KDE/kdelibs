@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qptrlist.h>
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 struct SocketInfo
 {
@@ -38,7 +38,7 @@ class QLineEdit;
 class QComboBox;
 class KMWSocketUtil;
 
-class SocketConfig : public KDialog
+class SocketConfig : public KDialogBase
 {
 	friend class KMWSocketUtil;
 	Q_OBJECT
@@ -47,7 +47,7 @@ public:
 	~SocketConfig();
 
 protected slots:
-	virtual void done(int);
+	void slotOk();
 
 private:
 	QLineEdit	*mask_, *tout_;

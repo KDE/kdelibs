@@ -26,7 +26,7 @@
 
 #include <klistview.h>
 #include <qheader.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qprogressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
@@ -37,6 +37,7 @@
 #include <kseparator.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kguiitem.h>
 
 KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -66,11 +67,11 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_info->setPaper(colorGroup().background());
 	m_info->setMinimumHeight(100);
 	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
-	m_ippreport = new QPushButton(i18n("&IPP Report..."), this);
+	m_ippreport = new KPushButton(KGuiItem(i18n("&IPP Report..."), "kdeprint_report"), this);
 	m_ippreport->setEnabled(false);
 
-	QPushButton	*settings_ = new QPushButton(i18n("&Settings"),this);
-	QPushButton	*scan_ = new QPushButton(i18n("S&can"),this);
+	QPushButton	*settings_ = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
+	QPushButton	*scan_ = new KPushButton(KGuiItem(i18n("S&can"), "viewmag"), this);
 
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(20);

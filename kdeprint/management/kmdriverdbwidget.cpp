@@ -26,7 +26,7 @@
 #include "driver.h"
 
 #include <klistbox.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qcheckbox.h>
 #include <qcursor.h>
 #include <qapplication.h>
@@ -38,6 +38,7 @@
 #include <klocale.h>
 #include <kcursor.h>
 #include <kfiledialog.h>
+#include <kguiitem.h>
 
 KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -51,7 +52,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
 	m_postscript->setCursor(KCursor::handCursor());
 	m_raw->setCursor(KCursor::handCursor());
-	m_other = new QPushButton(i18n("&Other..."),this);
+	m_other = new KPushButton(KGuiItem(i18n("&Other..."), "fileopen"), this);
 	QLabel	*l1 = new QLabel(i18n("&Manufacturer:"), this);
 	QLabel	*l2 = new QLabel(i18n("Mo&del:"), this);
 	l1->setBuddy(m_manu);

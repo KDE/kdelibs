@@ -22,7 +22,7 @@
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qcheckbox.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <klocale.h>
 #include <kurlrequester.h>
 #include <krun.h>
@@ -32,6 +32,7 @@
 #include <kmessagebox.h>
 #include <kcursor.h>
 #include <klineedit.h>
+#include <kguiitem.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 : KMConfigPage(parent,"ConfigTimer")
@@ -48,7 +49,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
 	m_defaulttestpage = new QCheckBox(i18n("&Use non default test page:"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
-	m_preview = new QPushButton(i18n("Preview..."), m_testpagebox);
+	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),this,SLOT(setEnabledPreviewButton(bool)));
 	connect(m_preview,SIGNAL(clicked()),SLOT(slotTestPagePreview()));

@@ -23,7 +23,7 @@
 #include "kmprinter.h"
 
 #include <klocale.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qlabel.h>
@@ -36,8 +36,8 @@ KMWSmb::KMWSmb(QWidget *parent, const char *name)
 	m_nextpage = KMWizard::Driver;
 
 	m_view = new SmbView(this,"SmbView");
-	QPushButton	*m_scan = new QPushButton(i18n("Scan"), this);
-	QPushButton	*m_abort = new QPushButton(i18n("Abort"), this);
+	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "viewmag"), this);
+	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "stop"), this);
 	m_abort->setEnabled(false);
 	QLabel		*m_worklabel = new QLabel(i18n("Workgroup"), this);
 	QLabel		*m_serverlabel = new QLabel(i18n("Server"), this);

@@ -20,11 +20,11 @@
 #ifndef KMPROXYDIALOG_H
 #define KMPROXYDIALOG_H
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class KMProxyWidget;
 
-class KMProxyDialog : public KDialog
+class KMProxyDialog : public KDialogBase
 {
 public:
 	KMProxyDialog(QWidget *parent = 0, const char *name = 0);

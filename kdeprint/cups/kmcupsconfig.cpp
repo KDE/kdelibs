@@ -23,32 +23,16 @@
 #include "kmcupsconfigwidget.h"
 
 #include <qlayout.h>
-#include <qpushbutton.h>
 #include <klocale.h>
 
 KMCupsConfig::KMCupsConfig(QWidget *parent, const char *name)
-: KDialog(parent,name,true)
+: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok)
 {
 	setCaption(i18n("CUPS Settings"));
 
 	// widget creation
 	m_widget = new KMCupsConfigWidget(this);
-	QPushButton	*m_ok = new QPushButton(i18n("OK"), this);
-	m_ok->setDefault(true);
-	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
-
-	// layout creation
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 10, 10);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
-	lay0->addWidget(m_widget,1);
-	lay0->addLayout(lay1,0);
-	lay1->addStretch(1);
-	lay1->addWidget(m_ok);
-	lay1->addWidget(m_cancel);
-
-	// connections
-	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
-	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
+	setMainWidget(m_widget);
 
 	resize(300,100);
 }

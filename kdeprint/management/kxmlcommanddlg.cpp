@@ -28,7 +28,7 @@
 #include <qcombobox.h>
 #include <qgroupbox.h>
 #include <qwidgetstack.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qtooltip.h>
 #include <qheader.h>
 #include <klistview.h>
@@ -41,6 +41,7 @@
 #include <kmessagebox.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kguiitem.h>
 
 QString generateId(const QMap<QString, DrBase*>& map)
 {
@@ -750,7 +751,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_addreq->setPixmap(SmallIcon("filenew"));
 	m_removereq = new QPushButton(m_gb2);
 	m_removereq->setPixmap(SmallIcon("editdelete"));
-	QPushButton	*m_edit = new QPushButton(i18n("&Edit Command..."), topmain);
+	QPushButton	*m_edit = new KPushButton(KGuiItem(i18n("&Edit Command..."), "edit"), topmain);
 	m_mimetype = new QComboBox(dummy);
 	m_availablemime = new KListBox(m_gb1);
 	m_selectedmime = new KListBox(m_gb1);

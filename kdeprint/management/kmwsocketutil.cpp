@@ -44,27 +44,23 @@ QString localRootIP();
 //----------------------------------------------------------------------------------------
 
 SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *name)
-: KDialog(parent,name,true)
+: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
 {
-	QPushButton	*ok = new QPushButton(i18n("Ok"),this);
-	QPushButton	*cancel = new QPushButton(i18n("Cancel"),this);
-	ok->setDefault(true);
+	QWidget	*dummy = new QWidget(this);
+	setMainWidget(dummy);
 
-	connect(ok,SIGNAL(clicked()),SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),SLOT(reject()));
-
-	QLabel	*masklabel = new QLabel(i18n("&Subnetwork:"),this);
-	QLabel	*portlabel = new QLabel(i18n("&Port:"),this);
-	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),this);
-	QLineEdit	*mm = new QLineEdit(this);
+	QLabel	*masklabel = new QLabel(i18n("&Subnetwork:"),dummy);
+	QLabel	*portlabel = new QLabel(i18n("&Port:"),dummy);
+	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),dummy);
+	QLineEdit	*mm = new QLineEdit(dummy);
 	mm->setText(QString::fromLatin1(".[0-255]"));
 	mm->setReadOnly(true);
 	mm->setFixedWidth(fontMetrics().width(mm->text())+10);
 
-	mask_ = new QLineEdit(this);
+	mask_ = new QLineEdit(dummy);
 	mask_->setAlignment(Qt::AlignRight);
-	port_ = new QComboBox(true,this);
-	tout_ = new QLineEdit(this);
+	port_ = new QComboBox(true,dummy);
+	tout_ = new QLineEdit(dummy);
 
 	masklabel->setBuddy(mask_);
 	portlabel->setBuddy(port_);
@@ -78,18 +74,14 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	port_->setEditText(QString::number(util->port_));
 	tout_->setText(QString::number(util->timeout_));
 
-	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 10);
-	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10), *lay1 = new QHBoxLayout(0, 0, 5);
+	QGridLayout	*main_ = new QGridLayout(dummy, 3, 2, 0, 10);
+	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 5);
 	main_->addWidget(masklabel, 0, 0);
 	main_->addWidget(portlabel, 1, 0);
 	main_->addWidget(toutlabel, 2, 0);
 	main_->addLayout(lay1, 0, 1);
 	main_->addWidget(port_, 1, 1);
 	main_->addWidget(tout_, 2, 1);
-	main_->addMultiCellLayout(btn_, 4, 4, 0, 1);
-	btn_->addStretch(1);
-	btn_->addWidget(ok);
-	btn_->addWidget(cancel);
 	lay1->addWidget(mask_,1);
 	lay1->addWidget(mm,0);
 
@@ -101,38 +93,36 @@ SocketConfig::~SocketConfig()
 {
 }
 
-void SocketConfig::done(int result)
+void SocketConfig::slotOk()
 {
-	if (result == Accepted)
+	QString	msg;
+	QRegExp	re("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
+	if (!re.exactMatch(mask_->text()))
+		msg = i18n("Wrong subnetwork specification.");
+	else
 	{
-		QString	msg;
-		QRegExp	re("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
-		if (!re.exactMatch(mask_->text()))
-			msg = i18n("Wrong subnetwork specification.");
-		else
-		{
-			for (int i=1; i<=3; i++)
-				if (re.cap(i).toInt() >= 255)
-				{
-					msg = i18n("Wrong subnetwork specification.");
-					break;
-				}
-		}
-
-		bool 	ok(false);
-		int 	v = tout_->text().toInt(&ok);
-		if (!ok || v <= 0)
-			msg = i18n("Wrong timeout specification.");
-		v = port_->currentText().toInt(&ok);
-		if (!ok || v <= 0)
-			msg = i18n("Wrong port specification.");
-		if (!msg.isEmpty())
-		{
-			KMessageBox::error(this,msg);
-			return;
-		}
+		for (int i=1; i<=3; i++)
+			if (re.cap(i).toInt() >= 255)
+			{
+				msg = i18n("Wrong subnetwork specification.");
+				break;
+			}
 	}
-	KDialog::done(result);
+
+	bool 	ok(false);
+	int 	v = tout_->text().toInt(&ok);
+	if (!ok || v <= 0)
+		msg = i18n("Wrong timeout specification.");
+	v = port_->currentText().toInt(&ok);
+	if (!ok || v <= 0)
+		msg = i18n("Wrong port specification.");
+	if (!msg.isEmpty())
+	{
+		KMessageBox::error(this,msg);
+		return;
+	}
+
+	KDialogBase::slotOk();
 }
 
 //----------------------------------------------------------------------------------------

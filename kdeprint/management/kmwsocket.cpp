@@ -26,7 +26,7 @@
 
 #include <klistview.h>
 #include <qheader.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qprogressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
@@ -35,6 +35,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kseparator.h>
+#include <kguiitem.h>
 
 KMWSocket::KMWSocket(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -63,8 +64,8 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 
 	m_bar = new QProgressBar(this);
 
-	QPushButton	*settings_ = new QPushButton(i18n("&Settings"),this);
-	QPushButton	*scan_ = new QPushButton(i18n("S&can"),this);
+	QPushButton	*settings_ = new KPushButton(KGuiItem(i18n("&Settings"), "configure"),this);
+	QPushButton	*scan_ = new KPushButton(KGuiItem(i18n("S&can"), "viewmag"), this);
 
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(40);

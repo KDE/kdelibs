@@ -130,7 +130,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QLabel	*pluginlabel = new QLabel(i18n("Print s&ystem currently used:"), this);
 	pluginlabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	pluginlabel->setBuddy(d->m_plugin);
-	d->m_extbtn = new QPushButton(this);
+	d->m_extbtn = new KPushButton(this);
 	QToolTip::add(d->m_extbtn, i18n("Show/Hide Advanced Options"));
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
 

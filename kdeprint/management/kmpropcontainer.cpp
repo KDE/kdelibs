@@ -22,10 +22,11 @@
 #include "kmpropcontainer.h"
 #include "kmpropwidget.h"
 
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kseparator.h>
+#include <kguiitem.h>
 
 KMPropContainer::KMPropContainer(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -33,7 +34,7 @@ KMPropContainer::KMPropContainer(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);
 
-	m_button = new QPushButton(i18n("Change..."), this);
+	m_button = new KPushButton(KGuiItem(i18n("Change..."), "edit"), this);
 	m_widget = 0;
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);

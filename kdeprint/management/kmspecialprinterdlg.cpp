@@ -40,40 +40,37 @@
 #include <kseparator.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
-: KDialog(parent,name,true)
+: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok)
 {
 	setCaption(i18n("Add Special Printer"));
 
+	QWidget	*dummy = new QWidget(this);
+	setMainWidget(dummy);
+
 	// widget creation
-	m_name = new QLineEdit(this);
+	m_name = new QLineEdit(dummy);
 	connect(m_name, SIGNAL(textChanged ( const QString & )),this,SLOT(slotTextChanged(const QString & )));
-	m_description = new QLineEdit(this);
-	m_location = new QLineEdit(this);
-	QLabel	*m_namelabel = new QLabel(i18n("&Name:"), this);
-	QLabel	*m_desclabel = new QLabel(i18n("&Description:"), this);
-	QLabel	*m_loclabel = new QLabel(i18n("&Location:"), this);
+	m_description = new QLineEdit(dummy);
+	m_location = new QLineEdit(dummy);
+	QLabel	*m_namelabel = new QLabel(i18n("&Name:"), dummy);
+	QLabel	*m_desclabel = new QLabel(i18n("&Description:"), dummy);
+	QLabel	*m_loclabel = new QLabel(i18n("&Location:"), dummy);
 	m_namelabel->setBuddy(m_name);
 	m_desclabel->setBuddy(m_description);
 	m_loclabel->setBuddy(m_location);
 
-	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, dummy);
 
 	sep->setFixedHeight(10);
-	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), this);
+	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
 	m_command = new KXmlCommandSelector(true, m_gb);
-	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Output File Settings"), this);
+	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Output File Settings"), dummy);
 	m_usefile = new QCheckBox(i18n("Always use &file-extention:"), m_gb2);
 	m_extension = new QLineEdit(m_gb2);
 	connect(m_usefile, SIGNAL(toggled(bool)), m_extension, SLOT(setEnabled(bool)));
 	m_extension->setEnabled(false);
 
-	m_ok = new QPushButton(i18n("&OK"), this);
-	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
-	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
-	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
-	m_ok->setDefault(true);
-
-	m_icon = new KIconButton(this);
+	m_icon = new KIconButton(dummy);
 	m_icon->setIcon("fileprint");
 	m_icon->setFixedSize(QSize(48,48));
 
@@ -95,7 +92,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 		i18n("<p>The default extension for the output file (<u>ex</u>: ps, pdf, ps.gz).</p>"));
 
 	// layout creation
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);
 	QGridLayout	*l1 = new QGridLayout(0, 3, 3, 0, 5);
 	l0->addLayout(l1);
 	l1->setColStretch(2,1);
@@ -113,14 +110,8 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	QHBoxLayout	*l6 = new QHBoxLayout(m_gb2->layout(), 10);
 	l6->addWidget(m_usefile, 0);
 	l6->addWidget(m_extension, 1);
-	l0->addSpacing(10);
-	QHBoxLayout	*l5 = new QHBoxLayout(0, 0, 10);
-	l0->addLayout(l5);
-	l5->addStretch(1);
-	l5->addWidget(m_ok);
-	l5->addWidget(m_cancel);
 
-        m_ok->setEnabled(!m_name->text().isEmpty());
+	enableButton(Ok, !m_name->text().isEmpty());
 
 	// resize dialog
 	resize(400,100);
@@ -128,17 +119,14 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 void KMSpecialPrinterDlg::slotTextChanged(const QString & text)
 {
-  m_ok->setEnabled(!text.isEmpty());
+	enableButton(Ok, !m_name->text().isEmpty());
 }
 
-void KMSpecialPrinterDlg::done(int result)
+void KMSpecialPrinterDlg::slotOk()
 {
-	if (result == QDialog::Accepted)
-	{
-		if (!checkSettings())
-			return;
-	}
-	KDialog::done(result);
+	if (!checkSettings())
+		return;
+	KDialogBase::slotOk();
 }
 
 bool KMSpecialPrinterDlg::checkSettings()

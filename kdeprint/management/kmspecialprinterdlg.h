@@ -20,16 +20,15 @@
 #ifndef KMSPECIALPRINTERDLG_H
 #define KMSPECIALPRINTERDLG_H
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class KMPrinter;
 class QLineEdit;
 class QCheckBox;
-class QPushButton;
 class KIconButton;
 class KXmlCommandSelector;
 
-class KMSpecialPrinterDlg : public KDialog
+class KMSpecialPrinterDlg : public KDialogBase
 {
 	Q_OBJECT
 public:
@@ -42,14 +41,14 @@ protected:
 	bool checkSettings();
 
 protected slots:
-	virtual void done(int);
+	void slotOk();
         void slotTextChanged(const QString &);
+
 private:
 	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
 	QCheckBox	*m_usefile;
 	KIconButton	*m_icon;
 	KXmlCommandSelector	*m_command;
-        QPushButton     *m_ok;
 };
 
 #endif

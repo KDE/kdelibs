@@ -22,7 +22,7 @@
 #include "kxmlcommanddlg.h"
 
 #include <qcombobox.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qinputdialog.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
@@ -34,6 +34,7 @@
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kseparator.h>
+#include <kguiitem.h>
 
 KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name)
 : QWidget(parent, name)
@@ -59,7 +60,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	if (canBeNull)
 	{
 		m_line = new QLineEdit(this);
-		m_browse = new QPushButton(i18n("&Browse..."), this);
+		m_browse = new KPushButton(KGuiItem(i18n("&Browse..."), "fileopen"), this);
 		m_usefilter = new QCheckBox(i18n("Use Co&mmand:"), this);
 		connect(m_browse, SIGNAL(clicked()), SLOT(slotBrowse()));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_line, SLOT(setDisabled(bool)));

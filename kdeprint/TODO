@@ -1,18 +1,17 @@
 BUGS
 ----
 
-- in the IOslave, print:/Manager works, but not print:/Manager/
-
 - move print manager module from "Peripherals" back to "System"
   in KControl
 
-- Administration of remote printers: driver settings, job management
-  (try again)
+- Administration of remote printers: driver settings
 
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
 - Make KDEPrint differentiate "accept/reject" and "enable/disable"
+
+- remove KMManager::configure() (obsolete now)
 
 
 WISHES
@@ -51,6 +50,3 @@ WISHES
 - CUPS: add a generic table view as the print dialog to set arbitrary
   options (useful to "tag" a specified job, and this doesn't affect
   the CUPS process).
-
-- printer filtering mechanism to view only a selected set of
-  printers

@@ -28,11 +28,12 @@
 #include "kmdriverdialog.h"
 
 #include <qlabel.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <kmessagebox.h>
+#include <kguiitem.h>
 
 KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -51,8 +52,8 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 	QLabel	*l2 = new QLabel(i18n("<b>Model:</b>"), this);
 	QLabel	*l3 = new QLabel(i18n("<b>Description:</b>"), this);
 
-	m_test = new QPushButton(i18n("&Test"), this);
-	m_settings = new QPushButton(i18n("&Settings"), this);
+	m_test = new KPushButton(KGuiItem(i18n("&Test"), "kdeprint_testprinter"), this);
+	m_settings = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
 
 	QLabel	*l0 = new QLabel(this);
 	l0->setText(i18n("<p>Now you can test the printer before finishing installation. "

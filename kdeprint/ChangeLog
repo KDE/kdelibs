@@ -421,3 +421,9 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	  (for example to change the filter or default preview program)
 	. added icon on push buttons when useful
 	. changed plugin names to kdeprint_* (stripped the leading "lib")
+
+20/02/2002 Michael Goffioul <goffioul@imec.be>
+  * slave: prevent konqueror to consider a trailing slash as a directory
+    specification (simply add a config entry in protocol file)
+  * general: large UI standardization by making use of KDialogBase along
+    with KGuiItem
