@@ -84,7 +84,6 @@ public:
 
 KProcess::KProcess()
   : QObject(),
-    arguments(true), // Make deep copies
     run_mode(NotifyOnExit),
     runs(false),
     pid_(0),
@@ -192,8 +191,8 @@ bool KProcess::setExecutable(const QString& proc)
 
   if (proc.isEmpty())  return false;
 
-  arguments.removeFirst();
-  arguments.insert(0, QFile::encodeName(proc));
+  arguments.pop_front();
+  arguments.prepend(QFile::encodeName(proc));
 
   return true;
 }
@@ -226,7 +225,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
   Q_CHECK_PTR(arglist);
   for (i=0; i < n; i++)
-    arglist[i] = arguments.at(i);
+    arglist[i] = arguments[i].data();
   arglist[n]= 0;
 
   if (!setupCommunication(comm))
@@ -811,7 +810,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   //TODO: Add proper quoting of arguments!
 
   for (i=0; i < n; i++) {
-      cmd += arguments.at(i);
+      cmd += arguments[i];
       cmd += " "; // CC: to separate the arguments
   }
 

@@ -41,8 +41,6 @@
 #include "kprocess.h"
 #include "kprocctrl.h"
 
-template class QPtrList<KProcess>;
-
 KProcessController *KProcessController::theKProcessController = 0;
 
 struct sigaction KProcessController::oldChildHandlerData;

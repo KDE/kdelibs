@@ -33,7 +33,8 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
-#include <qstrlist.h>
+#include <qvaluelist.h>
+#include <qcstring.h>
 #include <qobject.h>
 
 class QSocketNotifier;
@@ -373,7 +374,7 @@ public:
    * Lets you see what your arguments are for debugging.
    */
 
-  QStrList * args() { return &arguments; }
+  const QValueList<QCString> &args() { return arguments; }
 
   /**
    * Controls whether the started process should drop any
@@ -515,7 +516,7 @@ protected:
      The list of the process' command line arguments. The first entry
      in this list is the executable itself.
   */
-  QStrList arguments;
+  QValueList<QCString> arguments;
   /**
      How to run the process (Block, NotifyOnExit, DontCare). You should
      not modify this data member directly from derived classes.

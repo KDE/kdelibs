@@ -20,6 +20,7 @@
 
 #include <qstring.h>
 #include <kprocess.h>
+#include <qstrlist.h>
 
 /**
  * @version $Id$
