@@ -30,13 +30,44 @@ namespace KHE
 class HexColumnInterface
 {
   public:
-    enum KCoding { HexadecimalCoding=0, DecimalCoding, OctalCoding, BinaryCoding, NoCoding };
-    enum KResizeStyle { NoResize, LockGrouping, FullSizeUsage };
+    /** collection of ids for the different numeric codings of a byte */
+    enum KCoding
+    {
+      /** hexadecimal encoding */
+      HexadecimalCoding=0,
+      /** decimal encoding */
+      DecimalCoding=1,
+      /** octal encoding */
+      OctalCoding=2,
+      /** bit by bit coding */
+      BinaryCoding=3,
+      /** don't use; this should enable extension without breaking binary compatibility */
+      MaxCodingId=0xFF
+    };
 
-    
+    /** collection of ids for the fitting of the layout into the available widget's width */
+    enum KResizeStyle
+    {
+      /** we don't care about the actual sizing of the widget
+        * but stick to the given NoOfBytesPerLine
+        */
+      NoResize=0,
+      /** we try to fit the layout to the available width
+        * but only with full groups like set in NoOfGroupedBytes
+        * with minimum of one full group
+        */
+      LockGrouping=1,
+      /** we try to fit as many bytes into the width as possible, with minimum of 1 byte
+        */
+      FullSizeUsage=2,
+      /** don't use; this should enable extension without breaking binary compatibility */
+      MaxResizeStyleId=0xFF
+    };
+
+
   public: // get methods
     virtual KResizeStyle resizeStyle() const = 0;
-    virtual int noOfBytesPerLine() const = 0;
+    virtual int noOfBytesPerLine()     const = 0;
 
     virtual KCoding coding()        const = 0;
     virtual int byteSpacingWidth()  const = 0;
@@ -53,7 +84,8 @@ class HexColumnInterface
     /** sets the number of bytes per line, switching the resize style to KHE::NoResize */
     virtual void setNoOfBytesPerLine( int NoCpL ) = 0;
 
-    /** sets the format of the hex column. Default is KHE::HexadecimalCoding */
+    /** sets the format of the hex column. Default is KHE::HexadecimalCoding.
+      * If the coding is not available the format will not be changed. */
     virtual void setCoding( KCoding C )          = 0;
     /** sets the spacing between the bytes in pixels */
     virtual void setByteSpacingWidth( int BSW )  = 0;
