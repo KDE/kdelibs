@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+//
+// Revision 1.72  1997/11/18 21:40:41  kalle
+// KApplication::localconfigdir()
 // KApplication::localkdedir()
 // KConfig searches in $KDEDIR/share/config/kderc
 //
@@ -731,15 +734,19 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		if (QFile::exists(aSessionConfigName)){
 		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
 		  if( bSuccess ){
-			  KWM::setUnsavedDataHint( topWidget()->winId(),
-						   bUnsavedData );
-			  
 			aConfigFile.close();
   delete theKProcessController; // Stephan: "the can only be one" ;)
   theKProcessController = 0L;
 
     if ( parameter != unknown ) { // remove arguments
-			      QString aCommand = argv()[0];
+			      QString aCommand;
+      for( int j = i;  j < argc-2; j++ )
+				char* s = new char[1024];
+				aCommand+=(getcwd(s, 1024));
+				aCommand+="/";
+				delete [] s;
+  }
+			      aCommand+=aAppName;
   if (aMiniIconPixmap.isNull()){
     aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
 
@@ -1318,14 +1325,6 @@ QString KApplication::localconfigdir()
   KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::checkRecoverFile" );
   bRecover = false;
   return pFilename;
-}
-
-
-void KApplication::setUnsavedData( bool bUnsaved )
-{
-  bUnsavedData = bUnsaved;
-  if (topWidget())
-    KWM::setUnsavedDataHint( topWidget()->winId(), bUnsavedData );
     QString s = t.readLine();
     if(!s.isEmpty())
       fontlist->append( s );

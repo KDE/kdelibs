@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// instead of id is stored.
+//
+//
+// Revision 1.37  1997/11/20 22:24:31  kalle
 // new static methods for the various directories
 //
 // Revision 1.36  1997/11/18 21:40:43  kalle
@@ -484,12 +488,6 @@ class KApplication : public QApplication
 	*  @return true on success.
 	*/
   bool getKDEFonts(QStrList *fontlist);
-  /**
-	* Tells KApplication that there is (is not) unsaved data.
-	* KApplication passes this information on to the window manager.
-	* @param bUnsaved true, if there if data should be saved before exiting
-	*/
-  void setUnsavedData( bool bUnsaved );
 
 
   /**
@@ -608,7 +606,6 @@ private slots:
   Display *display;
 
   Atom KDEChangePalette;
-  bool bUnsavedData; // there is data to be saved before the app should exit
   Atom KDEChangeGeneral;
   Atom KDEChangeStyle;
 
