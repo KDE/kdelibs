@@ -180,10 +180,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     result = tmp.get(p);
 
     if (result.isA(UndefinedType)) {
-      DOM::HTMLElement element;
       DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
-      DOM::Node node = coll.namedItem(p.string());
-      element = node;
+      DOM::HTMLElement element = coll.namedItem(p.string());
       result = new HTMLElement(element);
     }
   }
