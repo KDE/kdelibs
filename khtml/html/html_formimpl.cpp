@@ -2278,15 +2278,29 @@ NodeImpl::Id HTMLIsIndexElementImpl::id() const
 
 void HTMLIsIndexElementImpl::parseAttribute(AttributeImpl* attr)
 {
-    switch(attr->id())
-    {
-    case ATTR_PROMPT:
-	setValue(attr->value());
-    default:
-        // don't call HTMLInputElement::parseAttribute here, as it would
-        // accept attributes this element does not support
-        HTMLGenericFormElementImpl::parseAttribute(attr);
-    }
+    // don't call HTMLInputElement::parseAttribute here, as it would
+    // accept attributes this element does not support
+    HTMLGenericFormElementImpl::parseAttribute(attr);
+}
+
+DOMString HTMLIsIndexElementImpl::prompt() const
+{
+    // When IsIndex is parsed, <HR/>Prompt: <ISINDEX/><HR/> is created.
+    // So we have to look at the previous sibling to find the prompt text
+    DOM::NodeImpl* prev = previousSibling();
+    if ( prev && prev->nodeType() == DOM::Node::TEXT_NODE)
+        return prev->nodeValue();
+    return "";
+}
+
+void HTMLIsIndexElementImpl::setPrompt(const DOMString& str)
+{
+    // When IsIndex is parsed, <HR/>Prompt: <ISINDEX/><HR/> is created.
+    // So we have to look at the previous sibling to find the prompt text
+    int exceptioncode = 0;
+    DOM::NodeImpl* prev = previousSibling();
+    if ( prev && prev->nodeType() == DOM::Node::TEXT_NODE)
+        static_cast<DOM::TextImpl *>(prev)->setData(str, exceptioncode);
 }
 
 // -------------------------------------------------------------------------

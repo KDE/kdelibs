@@ -553,8 +553,8 @@ public:
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
 
-protected:
-    DOMString m_prompt;
+    DOMString prompt() const;
+    void setPrompt(const DOMString& _value);
 };
 
 
