@@ -561,7 +561,7 @@ public:
      *
      * @since 3.3
      */
-    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create,const QString & xmlfile="" );
+    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
