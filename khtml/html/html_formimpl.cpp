@@ -439,6 +439,8 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         setHTMLEventListener(EventImpl::RESET_EVENT,
 	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
+    case ATTR_NAME:
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }

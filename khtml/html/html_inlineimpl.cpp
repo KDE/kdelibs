@@ -162,6 +162,8 @@ void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
         target->ref();
         break;
     case ATTR_NAME:
+    case ATTR_TITLE:
+    case ATTR_REL:
 	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
