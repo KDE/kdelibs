@@ -104,6 +104,7 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
 
 Ftp::~Ftp()
 {
+  kdDebug(7102) << "Ftp::~Ftp()" << endl;
   closeConnection();
 }
 
@@ -227,7 +228,8 @@ void Ftp::closeConnection()
     {
       kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
       if ( !ftpSendCmd( "quit" ) || rspbuf[0] != '2' )
-        kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err=" << rspbuf[0] << rspbuf[1] << rspbuf[2] << endl;
+        kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err="
+            << QString(QChar(rspbuf[0]))+QChar(rspbuf[1])+QChar(rspbuf[2]) << endl;
       free( nControl );
       if (ksControl != NULL)
 	delete ksControl;
