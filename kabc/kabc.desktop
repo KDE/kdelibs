@@ -3,9 +3,11 @@ Encoding=UTF-8
 Exec=kcmshell kabc
 Icon=kaddressbook
 Type=Application
+Terminal=0
 
 X-KDE-ModuleType=Library
 X-KDE-Library=kabc
+X-KDE-FactoryName=kabc
 X-KDE-HasReadOnlyMode=false
 
 Name=Address Book Configuration
