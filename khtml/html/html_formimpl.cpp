@@ -1456,7 +1456,7 @@ long HTMLSelectElementImpl::selectedIndex() const
             o++;
         }
     }
-    Q_ASSERT(m_multiple);
+    Q_ASSERT(m_multiple || items.isEmpty());
     return -1;
 }
 
