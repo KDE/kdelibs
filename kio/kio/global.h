@@ -165,9 +165,11 @@ namespace KIO
                             // will be handled by the standard browser.
                             // <a href="exec:/khelpcenter ?" will be
                             // forked.
-    ERR_UPGRADE_REQUIRED = 64  // A transport upgrade is required to access this
+    ERR_UPGRADE_REQUIRED = 64, // A transport upgrade is required to access this
                                // object.  For instance, TLS is demanded by
                                // the server in order to continue.
+    ERR_POST_DENIED = 65    // Issued when trying to POST data to a certain Ports
+                               // see job.cpp
   };
 
   /*

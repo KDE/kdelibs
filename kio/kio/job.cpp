@@ -950,13 +950,13 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
     return job;
 }
 
-class ErrorJob : public TransferJob
+class PostErrorJob : public TransferJob
 {
 public:
 
-  ErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
+  PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
-    m_error = ERR_ACCESS_DENIED;
+    m_error = KIO::ERR_POST_DENIED;
     m_errorText = url;
   }
 
@@ -1062,7 +1062,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     if (!valid)
     {
         KIO_ARGS << (int)1 << url;
-        TransferJob * job = new ErrorJob(url.url(), packedArgs, postData, showProgressInfo);
+        TransferJob * job = new PostErrorJob(url.url(), packedArgs, postData, showProgressInfo);
         return job;
     }
 
