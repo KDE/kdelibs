@@ -1068,6 +1068,23 @@ void KHTMLView::print()
 #endif
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
+
+        // Squeeze header to make it it on the page.
+        if (printHeader)
+        {                      
+            int available_width = metrics.width() - 10 - 
+                2 * QMAX(p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
+                         p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
+            if (available_width < 150)
+               available_width = 150;
+            int mid_width;
+            int squeeze = 120;
+            do {
+                headerMid = KStringHandler::csqueeze(docname, squeeze);
+                mid_width = p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerMid).width();
+                squeeze -= 10;
+            } while (mid_width > available_width);
+        }
                       
         int top = 0;
         int page = 1;
