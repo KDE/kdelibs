@@ -212,17 +212,25 @@ protected:
    */ 
   virtual void connectKAutoConfig( KAutoConfig const* kautoconfig_object );
   
-  // Pointer to the KAutoConfig object.
+  /**
+   * Pointer to the KAutoConfig object.
+   */
   KAutoConfig *kautoconfig;
-  // Pointer to the KDialogBase object.
+  /**
+   * Pointer to the KDialogBase object.
+   */
   KDialogBase *kdialogbase;
   
 private:
-  // The list of existing dialogs.
+  /**
+   * The list of existing dialogs.
+   */
   static QAsciiDict<QObject> openDialogs;
  
-  // Private class.
   class KAutoConfigDialogPrivate;
+  /**
+   * Private class.
+   */ 
   KAutoConfigDialogPrivate *d;
 };
 

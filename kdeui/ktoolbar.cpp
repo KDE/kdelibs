@@ -1108,37 +1108,37 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     if ( position != d->PositionDefault )
       config->writeEntry("Position", position);
     else
-      config->deleteEntry("Position");
+      config->revertToDefault("Position");
 
     if ( icontext != d->IconTextDefault )
       config->writeEntry("IconText", icontext);
     else
-      config->deleteEntry("IconText");
+      config->revertToDefault("IconText");
 	    
     if ( iconSize() != d->IconSizeDefault )
       config->writeEntry("IconSize", iconSize());
     else
-      config->deleteEntry("IconSize");
+      config->revertToDefault("IconSize");
 
     if ( isHidden() != d->HiddenDefault )
       config->writeEntry("Hidden", isHidden());
     else
-      config->deleteEntry("Hidden");
+      config->revertToDefault("Hidden");
 
     if ( index != d->IndexDefault )
       config->writeEntry( "Index", index );
     else
-      config->deleteEntry("Index");
+      config->revertToDefault("Index");
 
     if ( offset() != d->OffsetDefault )
       config->writeEntry( "Offset", offset() );
     else
-      config->deleteEntry("Offset");
+      config->revertToDefault("Offset");
 
     if ( newLine() != d->NewLineDefault )
       config->writeEntry( "NewLine", newLine() );
     else
-      config->deleteEntry("NewLine");
+      config->revertToDefault("NewLine");
 }
 
 

@@ -1195,15 +1195,17 @@ KColorDialog::readSettings()
 void
 KColorDialog::slotWriteSettings()
 {
+  KConfig* config = KGlobal::config();
+  QString oldgroup = config->group();
+  config->setGroup("Colors");
+    
   QString palette = d->table->palette();
   // Don't save anything if there is nothing new or nothing changed.
-  if(palette != d->originalPalette){
-    KConfig* config = KGlobal::config();
-    QString oldgroup = config->group();
-    config->setGroup("Colors");
+  if(palette != d->originalPalette)
     config->writeEntry("CurrentPalette", d->table->palette() );
-    config->setGroup( oldgroup );
-  }
+  else
+    config->revertToDefault("CurrentPalette");
+  config->setGroup( oldgroup );
 }
 
 QColor
