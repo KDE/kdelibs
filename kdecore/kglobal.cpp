@@ -145,9 +145,9 @@ KGlobal::Completion KGlobal::completionMode()
         c->setGroup("General");
         completion = c->readNumEntry("completionMode", -1);
         if ((completion < (int) CompletionNone) ||
-            (completion > (int) CompletionEOL))
+            (completion > (int) CompletionShell))
         {
-           completion = (int) CompletionEOL; // Default
+           completion = (int) CompletionShell; // Default
         }
     }
     return (Completion) completion;

@@ -109,20 +109,20 @@ public:
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
      *
-     * @return CompletionNone, completion should be disabled
-     *         CompletionAuto, automatic completion
-     *         CompletionEOL, manual completion at end of line (with Right/End keys)
-     *         CompletionMan, like automatic completion except the user initiates
-     *                        the completion using the completion key as in CompletionEOL
-     *         CompletionShell - attempts to mimic the completion feature found in
-     *                           typical *nix shell enviornments.
-
+     * @return CompletionNone:  completion should be disabled
+     *         CompletionAuto:  automatic completion
+     *         CompletionMan:   Like automatic completion except the user initiates
+     *                          the completion using the completion key as in CompletionEOL
+     *         CompletionShell: Attempts to mimic the completion feature found in
+     *                          typical *nix shell enviornments.
      **/
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL, CompletionMan, CompletionShell };
+
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan, CompletionShell };
+
     static Completion completionMode();
   
     static  KInstance           *_instance;
-    static  KLocale            *_locale;
+    static  KLocale             *_locale;
     static  KCharsets	        *_charsets;
     
     static  QFont               *_generalFont;
