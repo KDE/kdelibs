@@ -144,6 +144,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
+  Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
@@ -316,9 +317,23 @@ public:
    * Return whether images contained in the document are loaded automatically
    * or not.
    * @note that the returned information is unrelieable as long as no begin()
-   * was called. 
+   * was called.
    */
   bool autoloadImages() const;
+
+  /**
+   * Security option
+   *
+   * Specify whether only local references ( stylesheets, images, scripts, subdocuments )
+   * should be loaded. ( default false - everything is loaded, if the more specific
+   * options allow )
+   */
+  void setOnlyLocalReferences(bool enable);
+
+  /**
+   * Return whether references should be loaded ( default false )
+   **/
+  bool onlyLocalReferences() const;
 
   /**
    * Clear the widget and prepares it for new content.
@@ -793,7 +808,7 @@ protected:
   virtual void submitForm( const char *action, const QString &url, const QByteArray &formData,
                            const QString &target, const QString& contentType = QString::null,
                            const QString& boundary = QString::null ); // ### KDE 3.0: make private
-			   
+
   /**
    * @internal
    */

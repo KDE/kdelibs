@@ -171,6 +171,7 @@ public:
     m_bJavaOverride = false;
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
+    m_loadExternalFiles = true;
 
     m_metaRefreshEnabled = true;
     m_bHTTPRefresh = false;
@@ -192,6 +193,7 @@ public:
             m_bPluginsOverride = part->d->m_bPluginsOverride;
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
+            m_loadExternalFiles = part->d->m_loadExternalFiles;
         }
     }
 
@@ -265,6 +267,7 @@ public:
   bool m_haveEncoding:1;
   bool m_haveCharset:1;
   bool m_bHTTPRefresh:1;
+  bool m_onlyLocalReferences :1;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -462,7 +465,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
-  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );  
+  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
@@ -1792,6 +1795,16 @@ void KHTMLPart::setURLCursor( const QCursor &c )
 const QCursor &KHTMLPart::urlCursor() const
 {
   return d->m_linkCursor;
+}
+
+bool KHTMLPart::onlyLocalReferences() const
+{
+  return d->m_onlyLocalReferences;
+}
+
+void KHTMLPart::setOnlyLocalReferences(bool enable)
+{
+  d->m_onlyLocalReferences = enable;
 }
 
 void KHTMLPart::findTextBegin()
