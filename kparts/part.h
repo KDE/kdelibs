@@ -25,12 +25,28 @@ class PartSelectEvent;
 class GUIActivateEvent;
 class PartBasePrivate;
 
+/**
+ *  Base class for all parts.
+ *
+ *  @short Base class for all parts.
+ */
 class PartBase : virtual public KXMLGUIBase
 {
 public:
+
+  /**
+   *  Constructor. 
+   */
   PartBase();
+
+  /**
+   *  Destructor.
+   */
   virtual ~PartBase();
 
+  /**
+   *  Sets the object. But for what is it good for ?
+   */
   void setObject( QObject *object );
 
 protected:  
@@ -81,9 +97,21 @@ private:
  */
 class Part : public QObject, public PartBase
 {
-  Q_OBJECT
+    Q_OBJECT
+    
 public:
+
+    /**
+     *  Contructor.
+     *
+     *  @param parent Parent object of the part.
+     *  @param name   QT-internal name of the part.
+     */
     Part( QObject *parent = 0, const char* name = 0 );
+
+    /**
+     *  Destructor.
+     */
     virtual ~Part();
 
     /**
@@ -107,6 +135,7 @@ public:
 
     // Only called by PartManager - should be protected and using friend ?
     virtual void setManager( PartManager * manager );
+    
     /**
      * @return The part manager handling this part, if any (0L otherwise).
      */
@@ -117,7 +146,14 @@ public:
      */
     virtual Part *hitTest( QWidget *widget, const QPoint &globalPos );
 
+    /**
+     *  @param seleetable Indicates whether the part is selectable or not.
+     */
     virtual void setSelectable( bool selectable );
+
+    /**
+     *  Retrieves whether the part is selectable or not.
+     */
     virtual bool isSelectable() const;
 
 signals:
@@ -188,6 +224,7 @@ public:
    * See also @ref Part for the setXXX methods to call.
    */
   ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
+  
   /**
    * Destructor
    */
@@ -201,6 +238,12 @@ public:
    * emit setWindowCaption( url.decodedURL() );
    */
   virtual bool openURL( const KURL &url );
+
+  /**
+   *  Retrieves the currently in part used URL.
+   *
+   *  @return The current used URL.
+   */
   virtual const KURL & url() const { return m_url; }
 
   /**
@@ -344,6 +387,9 @@ public:
    */
   virtual bool saveAs( const KURL &url );
 
+  /**
+   *  Sets the modified flag of the part.
+   */
   virtual void setModified( bool modified );
 
 public slots:
