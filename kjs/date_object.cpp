@@ -300,19 +300,25 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (milli < 0 || milli >= timeFromYear(2038)) {
     // ### ugly and probably not very precise
     int realYear = yearFromTime(milli);
-    int y0 = (realYear / 100) * 100;
-    int base = 1900;
-    if (realYear % 100 == 0)
-      base += 100;
-    milliOffset = timeFromYear(base) - timeFromYear(y0);
+    int base = daysInYear(realYear) == 365 ? 2001 : 2000;
+    milliOffset = timeFromYear(base) - timeFromYear(realYear);
     milli += milliOffset;
-    realYearOffset = realYear - yearFromTime(milli);
+    realYearOffset = realYear - base;
   }
 
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
-  struct tm *t = utc ? gmtime(&tv) : localtime(&tv);
+  struct tm *t;
+  if ( (id == DateProtoFuncImp::ToGMTString) ||
+       (id == DateProtoFuncImp::ToUTCString) )
+    t = gmtime(&tv);
+  else if (id == DateProtoFuncImp::ToString)
+    t = localtime(&tv);
+  else if (utc)
+    t = gmtime(&tv);
+  else
+    t = localtime(&tv);
 
   // we had an out of range year. use that one (plus/minus offset
   // found by calculating tm_year) and fix the week day calculation
@@ -342,7 +348,6 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
     } else { // ToString, toGMTString & toUTCString
-      t = (id == ToString ? localtime(&tv) : gmtime(&tv));
       strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
     }
     setlocale(LC_TIME,oldlocale.c_str());
