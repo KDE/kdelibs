@@ -77,14 +77,15 @@ public:
     void setItems( const QStringList& lst );
     void clear();
 
-protected slots:
-    virtual void slotActivated( int ) {}
-
+signals:
+    void activate();
+    
 };
 
 class KFontAction : public KSelectAction
 {
     Q_OBJECT
+
 public:
     KFontAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, int accel,
@@ -99,10 +100,41 @@ public:
     QString font() {
 	return currentText();
     }
-    
+
 private:
     QStringList fonts;
-    
+
+};
+
+class KFontSizeAction : public KSelectAction
+{
+    Q_OBJECT
+
+public:
+    KFontSizeAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    KFontSizeAction( const QString& text, int accel,
+		     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KFontSizeAction( const QString& text, const QIconSet& pix, int accel = 0,
+		     QObject* parent = 0, const char* name = 0 );
+    KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
+		     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KFontSizeAction( QObject* parent = 0, const char* name = 0 );
+
+    void setFontSize( int size );
+    int fontSize();
+
+protected slots:
+    virtual void slotActivated( int );
+    virtual void slotActivated( const QString& );
+
+signals:
+    void fontSizeChanged( int );
+
+private:
+    void init();
+
+    bool m_lock;
+
 };
 
 #endif

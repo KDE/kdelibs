@@ -6,6 +6,7 @@
 #include <kmenubar.h>
 #include <qobjectlist.h>
 #include <kapp.h>
+#include <qtl.h>
 
 #include <X11/Xlib.h>
 
@@ -344,33 +345,35 @@ void KToggleAction::uncheckGroup()
     }
 }
 
-KSelectAction::KSelectAction( const QString& text, int accel = 0,
-			      QObject* parent = 0, const char* name = 0 )
+KSelectAction::KSelectAction( const QString& text, int accel,
+			      QObject* parent, const char* name )
     : QSelectAction( text, accel, parent, name )
 {
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
 			      QObject* receiver, const char* slot, QObject* parent,
-			      const char* name = 0 )
+			      const char* name )
     : QSelectAction( text, accel, parent, name )
 {
+    connect( this, SIGNAL( activate() ), receiver, slot );
 }
 
-KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
-			      QObject* parent = 0, const char* name = 0 )
+KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
+			      QObject* parent, const char* name )
     : QSelectAction( text, pix, accel, parent, name )
 {
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
 			      QObject* receiver, const char* slot, QObject* parent,
-			      const char* name = 0 )
+			      const char* name )
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
+    connect( this, SIGNAL( activate() ), receiver, slot );
 }
 
-KSelectAction::KSelectAction( QObject* parent = 0, const char* name = 0 )
+KSelectAction::KSelectAction( QObject* parent, const char* name )
     : QSelectAction( parent, name )
 {
 }
@@ -393,9 +396,8 @@ void KSelectAction::setCurrentItem( int id )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 	
-    emit QAction::activated();
-    emit activated( currentItem() );
-    emit activated( currentText() );
+    qDebug( "activated!" );
+    emit activate();
 }
 
 void KSelectAction::setItems( const QStringList& lst )
@@ -464,8 +466,9 @@ int KSelectAction::plug( QWidget *widget )
 	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( int ) ),
 			  this, SLOT( slotActivated( int ) ) );
 	QComboBox *cb = bar->getCombo( id_ );
-	if ( cb )
+	if ( cb ) {
 	    cb->setMinimumWidth( cb->sizeHint().width() );
+	}
 	addContainer( bar, id_ );
 
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -548,6 +551,116 @@ void KFontAction::setFont( const QString &family )
 	setCurrentItem( i );
 }
 
+
+KFontSizeAction::KFontSizeAction( const QString& text, int accel, 
+				  QObject* parent, const char* name )
+    : KSelectAction( text, accel, parent, name )
+{
+    init();
+}
+
+KFontSizeAction::KFontSizeAction( const QString& text, int accel,
+				  QObject* receiver, const char* slot, QObject* parent, 
+				  const char* name )
+    : KSelectAction( text, accel, receiver, slot, parent, name )
+{
+    init();
+}
+
+KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
+				  QObject* parent, const char* name )
+    : KSelectAction( text, pix, accel, parent, name )
+{
+    init();
+}
+
+KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
+				  QObject* receiver, const char* slot, QObject* parent, 
+				  const char* name )
+    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    init();
+}
+
+KFontSizeAction::KFontSizeAction( QObject* parent, const char* name )
+    : KSelectAction( parent, name )
+{
+    init();
+}
+
+void KFontSizeAction::init()
+{
+    m_lock = FALSE;
+
+    setEditable( TRUE );
+    QStringList lst;
+    for ( unsigned int i = 0; i < 100; ++i )
+	lst.append( QString( "%1" ).arg( i + 1 ) );
+    
+    setItems( lst );
+}
+
+void KFontSizeAction::setFontSize( int size )
+{
+    if ( size == fontSize() )
+	return;
+
+    if ( size < 1 || size > 128 )
+    {
+	qDebug( "KFontSizeAction: Size %i is out of range", size );
+	return;
+    }
+
+    int index = items().findIndex( QString::number( size ) );
+    if ( index == -1 )
+    {
+	QStringList lst = items();
+	lst.append( QString::number( size ) );
+	qHeapSort( lst );
+	setItems( lst );
+	index = lst.findIndex( QString::number( size ) );
+	setCurrentItem( index );
+    }
+    else
+    {
+	// Avoid dupes in combo boxes ...
+	//setItems( items() );
+	setCurrentItem( index );
+    }
+
+    emit QAction::activated();
+    emit activated( index );
+    emit activated( QString::number( size ) );
+    emit fontSizeChanged( size );
+}
+
+int KFontSizeAction::fontSize()
+{
+    return currentText().toInt();
+}
+
+void KFontSizeAction::slotActivated( int index )
+{
+    QSelectAction::slotActivated( index );
+
+    emit fontSizeChanged( items()[ index ].toInt() );
+}
+
+void KFontSizeAction::slotActivated( const QString& size )
+{
+    if ( m_lock )
+	return;
+
+    if ( size.toInt() < 1 || size.toInt() > 128 )
+    {
+	qDebug( "KFontSizeAction: Size %s is out of range", size.latin1() );
+	return;
+    }
+
+    m_lock = TRUE;
+    setFontSize( size.toInt() );
+    m_lock = FALSE;
+}
 
 #include "kaction.moc"
 
