@@ -59,6 +59,7 @@
 #include <kurldrag.h>
 #include <qobjectlist.h>
 #include <qtimer.h>
+#include <kdialogbase.h>
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -279,6 +280,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
 KHTMLView::~KHTMLView()
 {
+    closeChildDialogs();
     if (m_part)
     {
         //WABA: Is this Ok? Do I need to deref it as well?
@@ -464,7 +466,20 @@ void KHTMLView::closeChildDialogs()
 {
     QObjectList *dlgs = queryList("QDialog");
     for (QObject *dlg = dlgs->first(); dlg; dlg = dlgs->next())
-        static_cast<QWidget*>(dlg)->close();
+    {
+        KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
+        if ( dlgbase ) {
+            kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
+            // close() ends up calling QButton::animateClick, which isn't immediate
+            // we need something the exits the event loop immediately (#49068)
+            dlgbase->cancel();
+        }
+        else
+        {
+            kdWarning() << "closeChildDialogs: not a KDialogBase! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg) << endl;
+            static_cast<QWidget*>(dlg)->hide();
+        }
+    }
     delete dlgs;
 }
 
@@ -1677,9 +1692,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
             int xp = 0, yp = 0;
             w = it.current();
-            if (!static_cast<RenderWidget*>(it.currentKey())->absolutePosition(xp, yp) ||
-                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())) )
-                toRemove.append(static_cast<RenderWidget*>(it.currentKey()));
+            RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
+            if (!rw->absolutePosition(xp, yp) ||
+                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
+                toRemove.append(rw);
         }
         for (RenderWidget* r = toRemove.first(); r; r = toRemove.next())
             if ( (w = d->visibleWidgets.take(r) ) )
