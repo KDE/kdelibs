@@ -781,6 +781,7 @@ void Window::clearTimeout(int timerId)
 void Window::scheduleClose()
 {
   kdDebug(6070) << "Window::scheduleClose window.close() " << m_part << endl;
+  Q_ASSERT(winq);
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
 }
 
