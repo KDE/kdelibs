@@ -1590,7 +1590,8 @@ void RenderTableCell::calcMinMaxWidth()
     if (element() && style()->whiteSpace() == NORMAL) {
         // See if nowrap was set.
         DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
-        if (!nowrap.isNull() && style()->width().isFixed())
+        if (!nowrap.isNull() && style()->width().isFixed() &&
+            m_minWidth < style()->width().value() )
             // Nowrap is set, but we didn't actually use it because of the
             // fixed width set on the cell.  Even so, it is a WinIE/Moz trait
             // to make the minwidth of the cell into the fixed width.  They do this
