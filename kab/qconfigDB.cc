@@ -355,11 +355,11 @@ KeyValueMap::parseComplexString
   register bool GUARD; GUARD=false;
   // ###########################################################################
   int first;
-  QCString temp;
+  QCString temp(2*orig.length());
   QCString mod;
   int count=1;
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
-      "KeyValueMap::parseComplexString: parsing the string -->"
+    "KeyValueMap::parseComplexString: parsing the string -->"
 				  << orig << "<--.\n";
   // -----
   if(orig.isEmpty())
@@ -431,8 +431,8 @@ KeyValueMap::parseComplexString
       if((unsigned)first>=mod.length())
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::parseComplexString: "
-	     "string lacks the closing \".\n              "
-	     "                   This is no valid complex string.\n";
+	    "string lacks the closing \".\n              "
+	    "                   This is no valid complex string.\n";
 	  return false;
 	}
     }
@@ -455,7 +455,7 @@ KeyValueMap::makeComplexString(const QCString& orig)
       "KeyValueMap::makeComplexString: coding the string\n           -->"
 				  << orig <<
       "<--\n                                into a complex string.\n";
-  QCString temp;
+  QCString temp(2*orig.length());
   unsigned int count;
   // -----
   temp+='"'; // opening bracket

@@ -160,6 +160,8 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
   register bool GUARD; GUARD=true;
   // ###########################################################################
   QString dir, filename;
+  bool createBackup=true;
+  KeyValueMap *keys;
   // ----- do memory checks (do not rely on exception handling):
   if(config==0 || data==0 || entries==0)
     {
@@ -198,7 +200,11 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	}
   }
   loadConfigFile();
-
+  // ----- now get some configuration settings:
+  if(config->get("config", keys))
+    {
+      keys->get("CreateBackupOnStartup", createBackup);
+    }
   // ----- check and possibly create user standard file:
   filename = locate( "data", STD_USERFILENAME );
 
@@ -230,35 +236,39 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	{ // ----- the standard file could not be loaded
 	  state=PermDenied;
 	} else {
-	  // ----- create the backup file:
-	  QString temp=data->fileName();
-	  if(data->setFileName(temp+".backup", false, false))
+	  if(createBackup)
 	    {
-	      if(!data->save())
+	      // ----- create the backup file:
+	      QString temp=data->fileName();
+	      if(data->setFileName(temp+".backup", false, false))
 		{
-		  KMessageBox::information(this,
-		     i18n("Cannot create backup file (permission denied)."),
+		  if(!data->save())
+		    {
+		      KMessageBox::information
+			(this,
+			 i18n("Cannot create backup file (permission denied)."),
+			 i18n("File error"));
+		    }
+		} else {
+		  KMessageBox::error
+		    (this,
+		     i18n("Cannot open backup file for "
+			  "writing (permission denied)."),
 		     i18n("File error"));
 		}
-	    } else {
-	      KMessageBox::error(this,
-		 i18n("Cannot open backup file for "
-		      "writing (permission denied)."),
-	 i18n("File error"));
-
-	    }
-	  // ----- reset the filename:
-	  if(!data->setFileName(temp, true, true))
-	    {
-	      KMessageBox::error(this,
-		 i18n("Critical error:\n"
-		      "Permissions changed in local directory!"),
-	 i18n("File error"));
-
-	      closeFile(false);
-	      state=PermDenied;
-	    } else {
-	      state=NoError;
+	      // ----- reset the filename:
+	      if(!data->setFileName(temp, true, true))
+		{
+		  KMessageBox::error
+		    (this,
+		     i18n("Critical error:\n"
+			  "Permissions changed in local directory!"),
+		     i18n("File error"));
+		  closeFile(false);
+		  state=PermDenied;
+		} else {
+		  state=NoError;
+		}
 	    }
 	}
     }
@@ -585,7 +595,7 @@ AddressBook::configFileChanged()
 void
 AddressBook::reloaded(QConfigDB* db)
 {
-  register bool GUARD; GUARD=true;
+  register bool GUARD; GUARD=false;
   // ###########################################################################
   if(db==data)
       {
@@ -1020,7 +1030,7 @@ AddressBook::nextAvailEntryKey()
 AddressBook::ErrorCode
 AddressBook::updateMirrorMap()
 {
-  register bool GUARD; GUARD=true;
+  register bool GUARD; GUARD=false;
   // ###########################################################################
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	     "AddressBook::updateMirrorMap: updating mirror map.\n";
