@@ -47,14 +47,14 @@ public:
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
 			   bool checkAtEntering, int buttons )
-    :QGroupBox(parent, name )
+    :QGroupBox(parent, name ), d(new KEditListBoxPrivate)
 {
     init( checkAtEntering, buttons );
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 			   const char *name, bool checkAtEntering, int buttons)
-    :QGroupBox(title, parent, name )
+    :QGroupBox(title, parent, name ), d(new KEditListBoxPrivate)
 {
     init( checkAtEntering, buttons );
 }
@@ -62,7 +62,7 @@ KEditListBox::KEditListBox(const QString& title, QWidget *parent,
 KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            QWidget *parent, const char *name,
                            bool checkAtEntering, int buttons)
-    :QGroupBox(title, parent, name )
+    :QGroupBox(title, parent, name ), d(new KEditListBoxPrivate)
 {
     m_lineEdit = custom.lineEdit();
     init( checkAtEntering, buttons, custom.representationWidget() );
@@ -71,13 +71,11 @@ KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
 KEditListBox::~KEditListBox()
 {
     delete d;
-    d=0;
 }
 
 void KEditListBox::init( bool checkAtEntering, int buttons,
                          QWidget *representationWidget )
 {
-    d=new KEditListBoxPrivate;
     d->m_checkAtEntering=checkAtEntering;
     d->buttons = buttons;
 
@@ -99,7 +97,7 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
                                          KDialog::marginHint(),
                                          KDialog::spacingHint());
     grid->addRowSpacing(0, fontMetrics().lineSpacing());
-    for ( int i = 1; i < 7 - lostButtons; i++ )
+    for ( int i = 1; i < 7 - lostButtons; ++i )
         grid->setRowStretch(i, 1);
 
     grid->setMargin(15);
@@ -373,8 +371,8 @@ void KEditListBox::insertStrList(const char ** list, int numStrings, int index)
 QStringList KEditListBox::items() const
 {
     QStringList list;
-    for ( uint i = 0; i < m_listBox->count(); i++ )
-	list.append( m_listBox->text( i ));
+    for (QListBoxItem const * i = m_listBox->firstItem(); i != 0; i = i->next() )
+	list.append( i->text());
 
     return list;
 }

@@ -252,7 +252,7 @@ public:
       virtual void virtual_hook( int id, void* data );
    private:
       //our lovely private d-pointer
-      KEditListBoxPrivate *d;
+      KEditListBoxPrivate* const d;
 };
 
 #endif
