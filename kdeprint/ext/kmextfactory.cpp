@@ -24,7 +24,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_ext()
+	void* init_kdeprint_ext()
 	{
 		return new KExtFactory;
 	}

@@ -25,7 +25,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_lpr()
+	void* init_kdeprint_lpr()
 	{
 		return new KLprFactory;
 	}

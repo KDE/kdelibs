@@ -1,11 +1,11 @@
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint $(all_includes)
 
-kde_module_LTLIBRARIES = libkdeprint_ext.la
+kde_module_LTLIBRARIES = kdeprint_ext.la
 
-libkdeprint_ext_la_SOURCES = kmextfactory.cpp kmextmanager.cpp kextprinterimpl.cpp kmextuimanager.cpp
-libkdeprint_ext_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-libkdeprint_ext_la_LIBADD = $(top_builddir)/kdeprint/libkdeprint.la
-libkdeprint_ext_la_METASOURCES = AUTO
+kdeprint_ext_la_SOURCES = kmextfactory.cpp kmextmanager.cpp kextprinterimpl.cpp kmextuimanager.cpp
+kdeprint_ext_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kdeprint_ext_la_LIBADD = $(top_builddir)/kdeprint/libkdeprint.la
+kdeprint_ext_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmextfactory.h kmextmanager.h kextprinterimpl.h kmextuimanager.h
 

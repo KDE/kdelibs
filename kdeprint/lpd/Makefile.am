@@ -1,12 +1,12 @@
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
 
-kde_module_LTLIBRARIES = libkdeprint_lpd.la
+kde_module_LTLIBRARIES = kdeprint_lpd.la
 
-libkdeprint_lpd_la_SOURCES = kmlpdfactory.cpp kmlpdmanager.cpp klpdprinterimpl.cpp kmlpduimanager.cpp \
+kdeprint_lpd_la_SOURCES = kmlpdfactory.cpp kmlpdmanager.cpp klpdprinterimpl.cpp kmlpduimanager.cpp \
 			     lpdtools.cpp gschecker.cpp
-libkdeprint_lpd_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-libkdeprint_lpd_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KDEUI)
-libkdeprint_lpd_la_METASOURCES = AUTO
+kdeprint_lpd_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kdeprint_lpd_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KDEUI)
+kdeprint_lpd_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmlpdfactory.h kmlpdmanager.h klpdprinterimpl.h kmlpduimanager.h lpdtools.h gschecker.h
 

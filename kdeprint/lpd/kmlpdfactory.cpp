@@ -26,7 +26,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_lpd()
+	void* init_kdeprint_lpd()
 	{
 		return new KLpdFactory;
 	}

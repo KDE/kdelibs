@@ -25,7 +25,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_lpdunix()
+	void* init_kdeprint_lpdunix()
 	{
 		return new KLpdUnixFactory;
 	}

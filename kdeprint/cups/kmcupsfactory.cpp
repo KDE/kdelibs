@@ -30,7 +30,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_cups()
+	void* init_kdeprint_cups()
 	{
 		return new KCupsFactory;
 	}

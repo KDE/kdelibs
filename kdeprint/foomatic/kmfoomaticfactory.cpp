@@ -23,7 +23,7 @@
 
 extern "C"
 {
-	void* init_libkdeprint_foomatic()
+	void* init_kdeprint_foomatic()
 	{
 		return new KMFoomaticFactory;
 	}

@@ -192,7 +192,7 @@ void KMFactory::loadFactory(const QString& syst)
 		if (sys.isEmpty())
 			// load default configured print plugin
 			sys = printSystem();
-		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
+		QString	libname = QString::fromLatin1("kdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
                 if (!m_factory)
                 {
