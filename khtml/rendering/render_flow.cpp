@@ -941,6 +941,7 @@ void RenderFlow::calcMinMaxWidth()
     m_maxWidth = 0;
 
     RenderObject *child = firstChild();
+    RenderObject *prevchild = 0;
     if(childrenInline())
     {
         int inlineMax=0;
@@ -988,7 +989,8 @@ void RenderFlow::calcMinMaxWidth()
                         continue;
                     }
                 }
-                if (noBreak || child->isFloating())
+                if (noBreak || 
+                        (prevchild && prevchild->isFloating() && child->isFloating()))
                 {
                     inlineMin += childMin;
                     inlineMax += childMax;
@@ -1007,6 +1009,7 @@ void RenderFlow::calcMinMaxWidth()
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
                 inlineMin = inlineMax = 0;
             }
+            prevchild = child;
             child = next(child);
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
