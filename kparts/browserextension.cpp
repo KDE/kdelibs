@@ -371,12 +371,12 @@ void BrowserExtension::slotEmitOpenURLRequestDelayed()
 
 void BrowserExtension::slotEnableAction( const char * name, bool enabled )
 {
-    kdDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled << endl;
+    //kdDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled << endl;
     ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
     if ( it != s_actionNumberMap->end() )
     {
         d->m_actionStatus.setBit( it.data(), enabled );
-        kdDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled << endl;
+        //kdDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled << endl;
     }
     else
         kdWarning() << "BrowserExtension::slotEnableAction unknown action " << name << endl;
