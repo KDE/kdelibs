@@ -214,7 +214,6 @@ public:
     void write ( const QString &text );
     void writeln ( const DOMString &text );
     void finishParsing (  );
-    void clear();
 
     QString URL() const { return m_url; }
     void setURL(QString url) { m_url = url; }

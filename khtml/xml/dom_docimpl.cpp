@@ -986,6 +986,9 @@ void DocumentImpl::detach()
     // indicate destruction mode,  i.e. attached() but m_render == 0
     m_render = 0;
 
+    delete m_tokenizer;
+    m_tokenizer = 0;
+
     NodeBaseImpl::detach();
 
     if ( render )
@@ -1032,7 +1035,14 @@ void DocumentImpl::open(  )
     if (m_tokenizer)
         close();
 
-    clear();
+    delete m_tokenizer;
+    m_tokenizer = 0;
+
+    removeChildren();
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current();)
+        m_windowEventListeners.removeRef(it.current());
+
     m_tokenizer = createTokenizer();
     m_decoderMibEnum = 0;
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
@@ -1085,17 +1095,6 @@ void DocumentImpl::finishParsing (  )
         m_tokenizer->finish();
 }
 
-void DocumentImpl::clear()
-{
-    delete m_tokenizer;
-    m_tokenizer = 0;
-
-    removeChildren();
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current();)
-        m_windowEventListeners.removeRef(it.current());
-}
-
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
 //    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
@@ -1111,7 +1110,7 @@ void DocumentImpl::setUserStyleSheet( const QString& sheet )
 {
     if ( m_usersheet != sheet ) {
         m_usersheet = sheet;
-        recalcStyle( Force );
+        updateStyleSelector();
     }
 }
 
