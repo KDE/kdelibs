@@ -46,5 +46,8 @@ include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 kioconfig_DATA = kio.kfg 
 kioconfigdir = $(kde_datadir)/kio
 
-EXTRA_DIST = $(kioconfig_DATA)
+magic_DATA = magic
+magicdir = $(kde_mimedir)
+
+EXTRA_DIST = $(kioconfig_DATA) $(magic_DATA)
 
