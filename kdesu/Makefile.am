@@ -1,6 +1,6 @@
 ## Makefile.am for libkdesu
 
-INCLUDES = $(all_includes) -I../kio/
+INCLUDES = $(all_includes) -I$(top_srcdir)/kio/
 
 lib_LTLIBRARIES = libkdesu.la
 libkdesu_la_SOURCES = pty.cpp client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp
