@@ -28,6 +28,7 @@
 #include <qstringlist.h>
 #include <qvbox.h>
 #include <qvgroupbox.h>
+#include <qstylesheet.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -74,7 +75,13 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     label1->setPixmap(QMessageBox::standardIcon(icon));
 #endif
     lay->add( label1 );
-    QLabel *label2 = new QLabel( text, contents);
+    // Enforce <qt>text</qt> otherwise the word-wrap doesn't work well (qt bug ?)
+    QString qt_text;
+    if ( text.find('<') == -1 )
+        qt_text = QStyleSheet::convertFromPlainText( text );
+    else
+        qt_text = text;
+    QLabel *label2 = new QLabel( qt_text, contents);
     label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs | Qt::WordBreak );
     label2->setMinimumSize(label2->sizeHint());
     lay->add( label2 );
@@ -582,7 +589,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
     bool checkboxResult;
 
     createKMessageBox(dialog, QMessageBox::Information, text, QStringList(),
-		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"), 
+		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"),
                 &checkboxResult);
 
     if (!dontShowAgainName.isEmpty())
