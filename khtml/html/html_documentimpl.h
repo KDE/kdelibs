@@ -72,6 +72,9 @@ public:
     virtual void close();
 
     void setAutoFill() { m_doAutoFill = true; }
+
+    // If true, HTML was requested by mimetype (e.g. HTTP Content-Type). Otherwise XHTML was requested.
+    // This is independent of the actual doctype, of course. (#86446)
     void setHTMLRequested( bool html ) { m_htmlRequested = html; }
 
     HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
