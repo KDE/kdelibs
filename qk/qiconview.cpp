@@ -2454,7 +2454,7 @@ void QIconView::doAutoScroll()
     bool block = signalsBlocked();
 
     QList<QIconViewItem> lst;
-        
+
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     viewport()->setUpdatesEnabled( FALSE );
@@ -2483,7 +2483,7 @@ void QIconView::doAutoScroll()
 
     QRect r = *d->rubber;
     *d->rubber = oldRubber;
-    
+
     QPainter p;
     p.begin( viewport() );
     p.setRasterOp( NotROP );
@@ -2493,12 +2493,12 @@ void QIconView::doAutoScroll()
     p.end();
 
     *d->rubber = r;
-    
+
     if ( changed ) {
 	for ( item = lst.first(); item; item = lst.next() )
 	    item->repaint();
     }
-    
+
     ensureVisible( pos.x(), pos.y() );
 
     p.begin( viewport() );
@@ -4321,6 +4321,7 @@ void QIconView::setDragObjectIsKnown( QDropEvent *e )
 
 void QIconView::setNumDragItems( int num )
 {
+    d->isIconDrag = FALSE;
     d->numDragItems = num;
 }
 
