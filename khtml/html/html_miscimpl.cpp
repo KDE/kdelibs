@@ -327,7 +327,7 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 
 // -----------------------------------------------------------------------------
 
-unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl* current) const
+unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 {
     if(base->nodeType() == Node::ELEMENT_NODE)
     {
@@ -339,7 +339,7 @@ unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl* current) const
     return 0;
 }
 
-NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *current, int index, int& pos) const
+NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
 {
     if(base->nodeType() == Node::ELEMENT_NODE)
     {
@@ -352,7 +352,7 @@ NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *current, int index, int& pos
     return 0;
 }
 
-NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl* current, int attr_id, const DOMString& name) const
+NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl*, int attr_id, const DOMString& name) const
 {
     if(base->nodeType() == Node::ELEMENT_NODE)
     {
