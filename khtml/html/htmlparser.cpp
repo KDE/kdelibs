@@ -267,6 +267,7 @@ void KHTMLParser::reset()
 
     form = 0;
     map = 0;
+    head = 0;
     end = false;
 
     discard_until = 0;
@@ -418,8 +419,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
                 throw exception;
             break;
-        case ID_HTML:
+	    // We can deal with a <base> element in the body, by just adding the element to head.
         case ID_BASE:
+	    if(head) {
+		head->addChild(n);
+		n->attach(HTMLWidget);
+		return;
+	    }
+        case ID_HTML:
         case ID_META:
         case ID_LINK:
             // SCRIPT and OBJECT are allowd in the body.
@@ -552,7 +559,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
             case ID_ISINDEX:
             case ID_BASE:
                 // ### what about <script> tags between head and body????
-                e = new HTMLHeadElementImpl(document);
+                head = new HTMLHeadElementImpl(document);
+		e = head;
                 insertNode(e);
                 handled = true;
                 break;
@@ -748,7 +756,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLHtmlElementImpl(document);
         break;
     case ID_HEAD:
-        n = new HTMLHeadElementImpl(document);
+        head = new HTMLHeadElementImpl(document);
+	n = head;
         break;
     case ID_BODY:
         popBlock(ID_HEAD);

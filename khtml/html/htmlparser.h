@@ -40,6 +40,7 @@ namespace DOM {
     class NodeImpl;
     class HTMLFormElementImpl;
     class HTMLMapElementImpl;
+    class HTMLHeadElementImpl;
 }
 
 namespace khtml {
@@ -114,6 +115,11 @@ protected:
      */
     DOM::HTMLMapElementImpl *map;
 
+    /*
+     * the head element. Needed for crappy html which defines <base> after </head>
+     */
+    DOM::HTMLHeadElementImpl *head;
+    
     bool inBody;
     bool explicitBody;
     bool haveFrameSet;
