@@ -211,7 +211,7 @@ void RenderTable::layout()
 
     m_height = 0;
 
-    int oldWidth = m_width;
+    //int oldWidth = m_width;
     calcWidth();
 
     // the optimisation below doesn't work since the internal table
@@ -531,7 +531,7 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 	*stream << " foot";
 
     *stream << endl << ind << "cspans:";
-    for ( int i = 0; i < columns.size(); i++ )
+    for ( unsigned int i = 0; i < columns.size(); i++ )
 	*stream << " " << columns[i].span;
     *stream << endl << ind;
 
@@ -733,7 +733,10 @@ void RenderTableSection::setCellWidths()
 	    lastCell = row[j];
 	    lastCol = j;
 	}
-	if ( lastCell ) {
+	if ( lastCell && lastCol < int( row.size() ) ) {
+#ifdef DEBUG_LAYOUT
+            kdDebug( 6040 ) << "lastcell: " << lastCell << " lastCol: " << lastCol << endl;
+#endif
 	    int w = columnPos[cols]-columnPos[lastCol] - table()->cellSpacing();
 	    int oldWidth = lastCell->width();
 #ifdef DEBUG_LAYOUT
@@ -750,7 +753,6 @@ void RenderTableSection::setCellWidths()
 
 void RenderTableSection::calcRowHeight()
 {
-    unsigned int c;
     int indx;
     RenderTableCell *cell;
 
@@ -760,7 +762,7 @@ void RenderTableSection::calcRowHeight()
     rowPos.resize( totalRows + 1 );
     rowPos[0] =  spacing + borderTop();
 
-    for ( unsigned int r = 0; r < totalRows; r++ ) {
+    for ( int r = 0; r < totalRows; r++ ) {
 	//    int oldheight = rowPos[r+1] - rowPos[r];
 	rowPos[r+1] = 0;
 
@@ -769,15 +771,15 @@ void RenderTableSection::calcRowHeight()
 	int ch;
 
 	Row *row = grid[r].row;
-	unsigned int totalCols = row->size();
-	unsigned int totalRows = grid.size();
+	int totalCols = row->size();
+	int totalRows = grid.size();
 
-	for ( c = 0; c < totalCols; c++ ) {
+	for ( int c = 0; c < totalCols; c++ ) {
 	    if ( ( cell = cellAt(r, c) ) == 0 )
 		continue;
 	    if ( c < totalCols - 1 && cell == cellAt(r, c+1) )
 		continue;
-	    if ( r < (int)totalRows - 1 && cellAt(r+1, c) == cell )
+	    if ( r < totalRows - 1 && cellAt(r+1, c) == cell )
 		continue;
 
 	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
@@ -826,7 +828,7 @@ void RenderTableSection::calcRowHeight()
 int RenderTableSection::layoutRows( int th )
 {
     int rHeight;
-    int indx, rindx;
+    int rindx;
     int totalRows = grid.size();
     int spacing = table()->cellSpacing();
 
@@ -839,7 +841,7 @@ int RenderTableSection::layoutRows( int th )
             int tot=rowPos[totalRows];
             int add=0;
             int prev=rowPos[0];
-            for ( unsigned int r = 0; r < totalRows; r++ )
+            for ( int r = 0; r < totalRows; r++ )
             {
                 //weight with the original height
                 add+=dh*(rowPos[r+1]-prev)/tot;
@@ -853,11 +855,11 @@ int RenderTableSection::layoutRows( int th )
     int leftOffset = borderLeft() + spacing;
 
     int nEffCols = table()->numEffCols();
-    for ( unsigned int r = 0; r < totalRows; r++ )
+    for ( int r = 0; r < totalRows; r++ )
     {
 	Row *row = grid[r].row;
 	int totalCols = row->size();
-        for ( unsigned int c = 0; c < nEffCols; c++ )
+        for ( int c = 0; c < nEffCols; c++ )
         {
             RenderTableCell *cell = cellAt(r, c);
             if (!cell)
@@ -977,7 +979,7 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 void RenderTableSection::dump(QTextStream *stream, QString ind) const
 {
     *stream << endl << ind << "grid=(" << grid.size() << "," << table()->numEffCols() << ")" << endl << ind;
-    for ( int r = 0; r < grid.size(); r++ ) {
+    for ( unsigned int r = 0; r < grid.size(); r++ ) {
 	for ( int c = 0; c < table()->numEffCols(); c++ ) {
 	    if ( cellAt( r,  c ) )
 		*stream << "(" << cellAt( r, c )->row() << "," << cellAt( r, c )->col() << ","
@@ -1131,8 +1133,8 @@ void RenderTableCell::calcMinMaxWidth()
 
     //if(minMaxKnown()) return;
 
-    int oldMin = m_minWidth;
-    int oldMax = m_maxWidth;
+    //int oldMin = m_minWidth;
+    //int oldMax = m_maxWidth;
 
     RenderFlow::calcMinMaxWidth();
 
@@ -1243,8 +1245,6 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
-
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
@@ -1358,11 +1358,9 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
     //                   (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
 
-    if (child->style()->display() == TABLE_COLUMN) {
+    if (child->style()->display() == TABLE_COLUMN)
         // these have to come before the table definition!
         RenderContainer::addChild(child,beforeChild);
-        RenderTableCol* colel = static_cast<RenderTableCol *>(child);
-    }
 }
 
 #ifndef NDEBUG
