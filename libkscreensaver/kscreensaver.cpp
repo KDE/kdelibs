@@ -65,6 +65,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
     if ( w == 0 ) w = 600;
     if ( h == 0 ) h = 420;
     resize( w, h );
+    show();
 }
 
 KScreenSaver::~KScreenSaver()
