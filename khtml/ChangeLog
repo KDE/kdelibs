@@ -1,3 +1,6 @@
+2003-12-05  Stephan Kulow  <coolo@kde.org>
+
+	* css/cssparser.cpp (parseValue): Do not accept negative values for padding (#59557)
 
 2003-12-05  Lubos Lunak  <l.lunak@kde.org>
 

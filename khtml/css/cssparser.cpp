@@ -814,12 +814,15 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = validUnit( value, FLength, strict&(!nonCSSHint) );
         break;
 
-    case CSS_PROP_TEXT_INDENT:          // <length> | <percentage> | inherit
-    case CSS_PROP_PADDING_TOP:          //// <padding-width> | inherit
-    case CSS_PROP_PADDING_RIGHT:        //   Which is defined as
-    case CSS_PROP_PADDING_BOTTOM:       //   <length> | <percentage>
-    case CSS_PROP_PADDING_LEFT:         ////
+    case CSS_PROP_TEXT_INDENT:          //  <length> | <percentage> | inherit
         valid_primitive = ( !id && validUnit( value, FLength|FPercent, strict&(!nonCSSHint) ) );
+        break;
+
+    case CSS_PROP_PADDING_TOP:          //  <length> | <percentage> | inherit
+    case CSS_PROP_PADDING_RIGHT:        //  <padding-width> | inherit
+    case CSS_PROP_PADDING_BOTTOM:       //   Which is defined as
+    case CSS_PROP_PADDING_LEFT:         //   <length> | <percentage>
+        valid_primitive = ( !id && validUnit( value, FLength|FPercent|FNonNeg, strict&(!nonCSSHint) ) );
         break;
 
     case CSS_PROP_MAX_HEIGHT:           // <length> | <percentage> | none | inherit
