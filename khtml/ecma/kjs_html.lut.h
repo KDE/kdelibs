@@ -26,7 +26,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "location", HTMLDocument::Location, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "clear", HTMLDocument::Clear, DontDelete|Function, 0, 0 },
    { "referrer", HTMLDocument::Referrer, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[31] },
    { 0, 0, 0, 0, 0 },
    { "URL", HTMLDocument::URL, DontDelete|ReadOnly, 0, 0 },

@@ -45,7 +45,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
-           Images, Applets, Links, Forms, Anchors, All, Open, Close,
+           Images, Applets, Links, Forms, Anchors, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified, Height, Width, Dir };
     DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }

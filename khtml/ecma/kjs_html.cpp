@@ -65,12 +65,13 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   Value v = args[0];
 
   switch (id) {
+  case HTMLDocument::Clear: // even IE doesn't support that one...
+    //doc.clear(); // TODO
+    return Undefined();
   case HTMLDocument::Open:
-    // this is just a dummy function,  has no purpose anymore
     doc.open();
     return Undefined();
   case HTMLDocument::Close:
-    // this is just a dummy function,  has no purpose
     // see khtmltests/ecma/tokenizer-script-recursion.html
     doc.close();
     return Undefined();
@@ -110,6 +111,7 @@ const ClassInfo KJS::HTMLDocument::info =
   forms			HTMLDocument::Forms		DontDelete|ReadOnly
   anchors		HTMLDocument::Anchors		DontDelete|ReadOnly
   all			HTMLDocument::All		DontDelete|ReadOnly
+  clear			HTMLDocument::Clear		DontDelete|Function 0
   open			HTMLDocument::Open		DontDelete|Function 0
   close			HTMLDocument::Close		DontDelete|Function 0
   write			HTMLDocument::Write		DontDelete|Function 1
@@ -159,7 +161,10 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   DOM::HTMLElement element = coll.namedItem(propertyName.string());
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
-    return getDOMNode(exec,element);
+  {
+    KJS::HTMLCollection htmlcoll(exec,coll);
+    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
+  }
 
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
   if (entry) {
@@ -198,6 +203,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
         return Undefined();
       return getHTMLCollection(exec,doc.all());
+    case Clear:
     case Open:
     case Close:
     case Write:
@@ -238,7 +244,10 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
 
   //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
   if(!element.isNull())
-    return getDOMNode(exec,element);
+  {
+    KJS::HTMLCollection htmlcoll(exec,coll);
+    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
+  }
   return Undefined();
 }
 
@@ -2691,13 +2700,21 @@ Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
 
 Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propertyName) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii() << endl;
+#endif
   DOM::DOMString pstr = propertyName.string();
   DOM::Node node = collection.namedItem(pstr);
   if(!node.isNull())
   {
     DOM::Node next = collection.nextNamedItem(pstr);
     if (next.isNull()) // single item
+    {
+#ifdef KJS_VERBOSE
+      //kdDebug(6070) << "returning single node" << endl;
+#endif
       return getDOMNode(exec,node);
+    }
     else // multiple items, return a collection
     {
       QValueList<DOM::Node> nodes;
@@ -2706,9 +2723,15 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
         nodes.append(next);
         next = collection.nextNamedItem(pstr);
       } while (!next.isNull());
+#ifdef KJS_VERBOSE
+      //kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
+#endif
       return new DOMNamedNodesCollection(exec,nodes);
     }
   }
+#ifdef KJS_VERBOSE
+  //kdDebug(6070) << "not found" << endl;
+#endif
   return Undefined();
 }
 
