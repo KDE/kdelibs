@@ -23,11 +23,12 @@
 #include <soundserver.h>
 #include <string>
 
-KAudioManagerPlay::KAudioManagerPlay( KArtsServer * server )
+KAudioManagerPlay::KAudioManagerPlay( KArtsServer * server, const QString & title )
 {
 	d = new PrivateData;
 	d->amanPlay = Arts::DynamicCast( server->server().createObject( "Arts::Synth_AMAN_PLAY" ) );
 	d->started = false;
+	setTitle( title );
 }
 
 KAudioManagerPlay::~KAudioManagerPlay()

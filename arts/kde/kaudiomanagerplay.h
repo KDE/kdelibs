@@ -36,7 +36,7 @@ class QString;
 class KAudioManagerPlay
 {
 	public:
-		KAudioManagerPlay( KArtsServer * server );
+		KAudioManagerPlay( KArtsServer * server, const QString & title =0 );
 		~KAudioManagerPlay();
 
 		/**
