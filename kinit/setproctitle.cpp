@@ -30,12 +30,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
-# include <sys/time.h>
-# include <crt_externs.h>
-# define environ (*_NSGetEnviron())
-#endif
-
 /* _PATH_KMEM should be defined in <paths.h> */
 #ifndef _PATH_KMEM
 # define _PATH_KMEM	"/dev/kmem"

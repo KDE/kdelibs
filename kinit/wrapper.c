@@ -39,11 +39,6 @@
 #include <pwd.h>
 #include <signal.h>
 
-#if  defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
-# include <crt_externs.h>
-# define environ (*_NSGetEnviron())
-#endif
-
 extern char **environ;
 
 static char *getDisplay()
