@@ -508,7 +508,7 @@ void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
 int RenderObject::paddingTop() const
 {
     int cw=0;
-    if (style()->width().isPercent())
+    if (style()->paddingTop().isPercent())
         cw = containingBlock()->contentWidth();
     return m_style->paddingTop().minWidth(cw);
 }
@@ -516,7 +516,7 @@ int RenderObject::paddingTop() const
 int RenderObject::paddingBottom() const
 {
     int cw=0;
-    if (style()->width().isPercent())
+    if (style()->paddingBottom().isPercent())
         cw = containingBlock()->contentWidth();
     return m_style->paddingBottom().minWidth(cw);
 }
@@ -524,7 +524,7 @@ int RenderObject::paddingBottom() const
 int RenderObject::paddingLeft() const
 {
     int cw=0;
-    if (style()->width().isPercent())
+    if (style()->paddingLeft().isPercent())
         cw = containingBlock()->contentWidth();
     return m_style->paddingLeft().minWidth(cw);
 }
@@ -532,7 +532,7 @@ int RenderObject::paddingLeft() const
 int RenderObject::paddingRight() const
 {
     int cw=0;
-    if (style()->width().isPercent())
+    if (style()->paddingRight().isPercent())
         cw = containingBlock()->contentWidth();
     return m_style->paddingRight().minWidth(cw);
 }
