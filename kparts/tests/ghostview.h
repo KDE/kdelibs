@@ -2,7 +2,6 @@
 #define __example_h__
 
 #include <kparts/mainwindow.h>
-class QWidget;
 
 class Shell : public KParts::MainWindow
 {

@@ -6,8 +6,6 @@
 #include <qmenubar.h>
 #include <qaction.h>
 #include <qapplication.h>
-#include <qfile.h>
-#include <qstatusbar.h>
 #include <qdatastream.h>
 #include <qobjectlist.h>
 
@@ -31,7 +29,6 @@ class MainWindowPrivate
 public:
   MainWindowPrivate()
   {
-    m_statusBar = 0;
     m_activePart = 0;
     m_bShellGUIActivated = false;
   }
@@ -40,7 +37,6 @@ public:
   }
 
   QDomDocument m_doc;
-  KStatusBar *m_statusBar;
   QGuardedPtr<Part> m_activePart;
   bool m_bShellGUIActivated;
 };
