@@ -20,6 +20,7 @@
 #ifndef __KKEYDIALOG_H__
 #define __KKEYDIALOG_H__
 
+#include <qdict.h>
 #include <kdialogbase.h>
 #include <kaccel.h>
 
@@ -112,6 +113,8 @@ protected:
 
     bool isKeyPresent(int kcode, bool warnuser = true );
     void setKey( int kCode );
+    QDict<int>* globalDict(); // for accessing d->globalDict ( kdebase/kcontrol/keys )
+    QDict<int>* stdDict(); // for accessing d->stdDict
 
     KKeyChooserPrivate *d;
 };

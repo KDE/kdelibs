@@ -542,11 +542,7 @@ void KKeyChooser::readGlobalKeys()
     d->globalDict->insert( gIt.key(), keyCode);
   }
 
-  // Only insert global keys which don't appear in the dictionary to be configured
-  for (KKeyEntryMap::ConstIterator it = d->map->begin();
-       it != d->map->end(); ++it)
-    if ( d->globalDict->find( it.key() ))
-      d->globalDict->remove( it.key() );
+// insert all global keys, even if they appear in dictionary to be configured
 }
 
 void KKeyChooser::readStdKeys()
@@ -1042,5 +1038,16 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
 
     return false;
 }
+
+QDict<int>* KKeyChooser::globalDict()
+    {
+    return d->globalDict;
+    }
+    
+QDict<int>* KKeyChooser::stdDict()
+    {
+    return d->stdDict;
+    }
+    
 #include "kkeydialog.moc"
 #include "kkeybutton.moc"
