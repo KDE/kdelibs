@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 1999 Espen Sand (espen@kde.org)
+ * Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,7 +29,10 @@
 #include <kaboutdialog.h>
 #include <kapp.h>
 #include <khelpmenu.h>
+#include <kiconloader.h>
 #include <klocale.h>
+#include <kmessagebox.h>
+#include <kstdaccel.h>
 #include <kstddirs.h>
 
 
@@ -65,9 +68,10 @@ QPopupMenu* KHelpMenu::menu( void )
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( i18n( "&Contents" ), menuHelpContents );
+    mMenu->insertItem( BarIcon( "contents" ), i18n( "&Contents" ), 
+		       menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
-    mMenu->setAccel( Key_F1, menuHelpContents );
+    mMenu->setAccel( KStdAccel::help(), menuHelpContents );
 
     if( mShowWhatsThis == true )
     {
@@ -86,6 +90,11 @@ QPopupMenu* KHelpMenu::menu( void )
 
     mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
     mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
+
+    mMenu->insertSeparator();
+
+    mMenu->insertItem( i18n( "&Report Bug" ), menuReportBug );
+    mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
   }
 
   return( mMenu );
@@ -156,8 +165,8 @@ void KHelpMenu::aboutKDE( void )
       "do so. However, you - the user - must tell us when "
       "something does not work as expected or could be done better.<br><br>"
       "The K Desktop Environment has a bug tracking system. Visit "
-      "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> to "
-      "report bugs.<br><br>"
+      "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> or "
+      "use the \"Report Bug\" dialog to report bugs.<br><br>"
       "If you have a suggestion for improvement then you are welcome to visit "
       "<A HREF=\"http://wishlist.kde.org/\">http://wishlist.kde.org/</A> and "
       "register your wish." );
@@ -187,6 +196,16 @@ void KHelpMenu::aboutKDE( void )
   }
 
   mAboutKDE->show();
+}
+
+
+void KHelpMenu::reportBug( void )
+{
+  QString msg = ""
+    "The bug report dialog box is ready, but it must\n"
+    "be moved to kdeui before it can be used\n\n"
+    "2000-01-02 Espen";
+  KMessageBox::sorry( mParent, msg, "Report Bugs");
 }
 
 

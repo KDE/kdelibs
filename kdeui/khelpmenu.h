@@ -123,7 +123,8 @@ class KHelpMenu : public QObject
       menuHelpContents = 0,
       menuWhatsThis = 1,
       menuAboutApp = 2,
-      menuAboutKDE = 3
+      menuAboutKDE = 3,
+      menuReportBug = 4
     };
 
     /**
@@ -183,6 +184,11 @@ class KHelpMenu : public QObject
      */
     void aboutKDE( void );
 
+    /**
+     * Opens the standard "Report Bugs" dialog box.
+     */
+    void reportBug( void );
+    
   private slots:
     /**
      * Connected to the menu pointer (if created) to detect a delete
