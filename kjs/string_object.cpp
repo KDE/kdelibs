@@ -297,8 +297,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  delete [] *ovector;
 	  mstr = reg->match(s, pos, &pos, ovector);
 	}
-	if (imp)
-	  imp->put(exec, "lastIndex", Number(lastIndex), DontDelete|DontEnum);
 	result = exec->interpreter()->builtinArray().construct(exec, list);
       }
     }
