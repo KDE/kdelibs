@@ -505,7 +505,13 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
     }
 }
 
-KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &id ) const 
+KBookmarkManager* KBookmarkManager::userBookmarksManager()
+{
+   static QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
+   return KBookmarkManager::managerForFile( bookmarksFile );
+};
+
+KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &id )
 {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");
@@ -516,7 +522,8 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
    if (!config.hasKey("DynamicMenus")) {
       // upgrade path
       if (id == "netscape") {
-         info.show = root().internalElement().attribute("hide_nsbk") != "yes";
+         KBookmarkManager *manager = userBookmarksManager();
+         info.show = manager->root().internalElement().attribute("hide_nsbk") != "yes";
          info.location = KNSBookmarkImporter::netscapeBookmarksFile();
          info.type = "netscape";
          info.name = i18n("Netscape Bookmarks");
@@ -536,7 +543,7 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
    return info;
 }
 
-QStringList KBookmarkManager::dynamicBookmarksList() const
+QStringList KBookmarkManager::dynamicBookmarksList()
 {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");

@@ -441,12 +441,12 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     bool haveSep = false;
 
-    QValueList<QString> keys = m_pManager->dynamicBookmarksList();
+    QValueList<QString> keys = KBookmarkManager::dynamicBookmarksList();
     QValueList<QString>::const_iterator it;
     for ( it = keys.begin(); it != keys.end(); ++it ) 
     {
        KBookmarkManager::DynMenuInfo info;
-       info = m_pManager->showDynamicBookmarks((*it));
+       info = KBookmarkManager::showDynamicBookmarks((*it));
 
        if ( !info.show || !QFile::exists( info.location ) )
           continue;

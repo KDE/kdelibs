@@ -72,7 +72,7 @@ public:
     ~KBookmarkManager();
 
     /**
-     * Set the update flag.
+     * Set the update flag. Defaults to true. TODO - check
      * @param update iff true will KBookmarkManager listen to DCOP update requests.
      */
     void setUpdate( bool update );
@@ -174,7 +174,7 @@ public:
      * @param 
      * @since 3.2
      */
-    DynMenuInfo showDynamicBookmarks( const QString &id ) const;
+    static DynMenuInfo showDynamicBookmarks( const QString &id );
 
     /**
      * Shows an extra menu for the given bookmarks file and type. 
@@ -184,13 +184,13 @@ public:
      * @param info a DynMenuInfo struct containing the to be added/modified data
      * @since 3.2
      */
-    void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
+    static void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
 
     /**
      * @return list of dynamic menu ids
      * @since 3.2
      */
-    QStringList dynamicBookmarksList() const;
+    static QStringList dynamicBookmarksList();
 
     /**
      * This static function will return an instance of the
@@ -210,6 +210,8 @@ public:
      */
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                    bool bImportDesktopFiles = true );
+
+    static KBookmarkManager* userBookmarksManager();
 
     /**
      * @internal
