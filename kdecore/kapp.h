@@ -81,7 +81,7 @@ public:
    *
    */
   KApplication( int& argc, char** argv,
-		const QString& rAppName = QString::null);
+		const QCString& rAppName = 0);
 
   /** Destructor */
   virtual ~KApplication();
@@ -183,13 +183,13 @@ public:
 	*/
   QPixmap miniIcon() const;
 
-  /** 
+  /**
       Makes @param topWidget a top widget of the application.
-      
+
       This means bascially applying the right window caption and
       icon. An application may have several top widgets. You don't
-      need to call this function manually when using KTMainWindow 
-      
+      need to call this function manually when using KTMainWindow
+
       @see #icon, #caption
     */
   void setTopWidget( QWidget *topWidget );
@@ -255,20 +255,20 @@ public:
   QString caption() const;
 
   /**
-   * Builds a caption that contains the application name along with the 
+   * Builds a caption that contains the application name along with the
    * userCaption using a standard layout. To make a compliant caption
    * for your window, simply do: setCaption(kapp->makeStdCaption(yourCaption));
    *
-   * @param userCaption is the caption string you want to display in the 
+   * @param userCaption is the caption string you want to display in the
    * window caption area. Do not include the application name!
    * @param withAppName indicates that the method shall include or ignore
    * the application name when making the caption string. You are not
    * compliant if you set this to false.
    * @param modified If true, a 'modified' sign will be included in the
-   * returned string. This is useful when indicating that a file is 
+   * returned string. This is useful when indicating that a file is
    * modified, i.e., contains data the has not been saved.
    */
-  QString makeStdCaption( const QString &userCaption, 
+  QString makeStdCaption( const QString &userCaption,
 			  bool withAppName=true, bool modified=false ) const;
 
   /**
@@ -468,7 +468,7 @@ private:
 * @short Highlevel access to session management.
 * @author Matthias Ettrich <ettrich@kde.org>
 */
-class KSessionManaged 
+class KSessionManaged
 {
 public:
     KSessionManaged();
@@ -482,6 +482,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.108  1999/10/13 02:39:02  boloni
+// fix it to compile. (dcopclient can not be declared const)
+//
 // Revision 1.107  1999/10/10 22:02:50  pbrown
 // require libDCOP, set up DCOPClient in kapp constructor.
 //

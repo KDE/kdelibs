@@ -140,11 +140,11 @@ static QString sessionConfigName()
   return aSessionConfigName;
 }
 
-KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
+KApplication::KApplication( int& argc, char** argv, const QCString& rAppName ) :
     QApplication( argc, argv )
 {
     if (!rAppName.isEmpty())
-	QApplication::setName(rAppName.ascii());
+	QApplication::setName(rAppName );
 
     pAppData = new KApplicationPrivate;
 
@@ -479,10 +479,10 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
       {
 	/* User pressed Cancel, do nothing */
       }
-      
+
       /* restore old group */
       pConfig->setGroup( aOldGroup );
-      
+
       return true; // do not process event further
     }
   }
@@ -747,9 +747,9 @@ QString KApplication::caption() const
 
 //
 // 1999-09-20: Espen Sand
-// An attempt to simplify consistent captions. 
+// An attempt to simplify consistent captions.
 //
-QString KApplication::makeStdCaption( const QString &userCaption, 
+QString KApplication::makeStdCaption( const QString &userCaption,
 	                              bool withAppName, bool modified ) const
 {
   if( userCaption.isNull() == true )
@@ -761,7 +761,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   // This string should be collected from a global object.
   //
   QString modString = i18n("**");
-  if( modified == true ) 
+  if( modified == true )
   {
     modified = modString.isNull() == true ? false : true;
   }
@@ -793,7 +793,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
       }
     }
   }
-  
+
   if( modified == true )
   {
     return( QString("%1 %2").arg(modString).arg(userCaption) );
@@ -1016,7 +1016,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
     setgid( getgid() );
 
     const char* shell = "/bin/sh";
-    if( getenv("SHELL") ) 
+    if( getenv("SHELL") )
     {
       shell = getenv("SHELL");
     }
@@ -1029,13 +1029,13 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
 void KApplication::invokeBrowser( const QString &url )
 {
   if( fork() == 0 )
-  { 
+  {
     setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
     setgid( getgid() );
     QString browser, exec;
-    
+
     //
-    // 1999-10-05 Espen Sand 
+    // 1999-10-05 Espen Sand
     //
     // The code below is inspired by the work of Markus Goetz <guruz@gmx.de>
     // It should not be here at all. We should rather just use a method
@@ -1081,7 +1081,7 @@ void KApplication::invokeBrowser( const QString &url )
     exec = QString("%1 openURL %2").arg(browser).arg(url);
 
     const char* shell = "/bin/sh";
-    if( getenv("SHELL") ) 
+    if( getenv("SHELL") )
     {
       shell = getenv("SHELL");
     }
