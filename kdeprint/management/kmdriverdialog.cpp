@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #include "driverview.h"
 
 #include <klocale.h>
+#include <kmessagebox.h>
 
 KMDriverDialog::KMDriverDialog(QWidget *parent, const char *name)
 : KDialogBase(KDialogBase::Swallow,i18n("Configure"),KDialogBase::Ok|KDialogBase::Cancel,KDialogBase::Ok,parent,name,true,false)
@@ -41,3 +42,16 @@ void KMDriverDialog::setDriver(DrMain *d)
 {
 	m_view->setDriver(d);
 }
+
+void KMDriverDialog::slotOk()
+{
+	if (m_view->hasConflict())
+	{
+		KMessageBox::error(this, "<qt>"+i18n("Some options are in conflict. You must resolve those conflicts "
+		                                     "before continuing.")+"</qt>");
+		return;
+	}
+	KDialogBase::slotOk();
+}
+
+#include "kmdriverdialog.moc"
