@@ -52,6 +52,14 @@ public:
  * held as pointer.
  * When the library is unloaded, or the app terminated, all static deleters
  * are destroyed, which in turn destroys those static objects properly.
+ * There are some rules which you should accept in the KStaticDeleter managed
+ * class:
+ * @li Don't rely on the global reference variable in the destructor of the 
+ * object, it will be '0' at destruction time.
+ * @li Don't rely on other KStaticDeleter managed objects in the destructor 
+ * of the object, because it may be destroyed before your destructor get called.
+ * This one can be tricky, because you might not know that you actually use a
+ * KStaticDeleter managed class. So try to keep your destructor simple.
  *
  * A typical use is
  * \code
