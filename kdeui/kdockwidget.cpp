@@ -964,17 +964,22 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
       kdDebug(282) << "KDockWidget::manualDock(): fix splitter position: " << spliPos << endl;
   }
 
-  KDockWidget *tmpTarget;
+  KDockWidget *tmpTarget = 0;
   switch (dockPos) {
-	case DockLeft:tmpTarget=dockManager()->d->leftContainer;
+	case DockLeft:
+		tmpTarget=dockManager()->d->leftContainer;
 		break;
-	case DockRight:tmpTarget=dockManager()->d->rightContainer;
+	case DockRight:
+		tmpTarget=dockManager()->d->rightContainer;
 		break;
-	case DockBottom:tmpTarget=dockManager()->d->bottomContainer;
+	case DockBottom:
+		tmpTarget=dockManager()->d->bottomContainer;
 		break;
-	case DockTop:tmpTarget=dockManager()->d->topContainer;
+	case DockTop:
+		tmpTarget=dockManager()->d->topContainer;
 		break;
-	default: tmpTarget=0;
+	default:
+		tmpTarget = 0;
   }
 
   //If we're not the target, and the target is our dock manager's main window
