@@ -1439,7 +1439,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 }
 
 
-static QRgb parseColor(const QString &name, bool strictParsing)
+static QRgb parseColor(const QString &name)
 {
     int len = name.length();
 
@@ -1478,7 +1478,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
     Value *value = valueList->current();
     if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
          value->unit == CSSPrimitiveValue::CSS_IDENT )
-	c = ::parseColor( qString( value->string ), !nonCSSHint);
+	c = ::parseColor( qString( value->string ));
     else if ( value->unit == Value::Function &&
 		value->function->args->numValues == 5 /* rgb + two commas */ &&
 		qString( value->function->name ).lower() == "rgb(" ) {
