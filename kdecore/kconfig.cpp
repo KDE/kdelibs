@@ -214,11 +214,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   }
 
   // now either add or replace the data
-  KEntryMapIterator aIt = aEntryMap.find(_key);
-  if (aIt != aEntryMap.end())
-    aEntryMap.replace(_key, _data);
-  else
-    aEntryMap.insert(_key, _data);
+  aEntryMap[_key] = _data;
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const

@@ -174,60 +174,68 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (!rFile.isOpen()) // come back, if you have real work for us ;->
     return;
 
-  QString aCurrentLine;
   QString aCurrentGroup(QString::fromLatin1("<default>"));
 
-  // reset the stream's device
   rFile.at(0);
-  QTextStream aStream( &rFile );
-  aStream.setCodec(QTextCodec::codecForName("utf-8"));
-  while (!aStream.atEnd()) {
-    aCurrentLine = aStream.readLine();
+  QByteArray data(rFile.readAll());
 
-    // check for a group
-    int nLeftBracket = aCurrentLine.find( '[' );
-    int nRightBracket = aCurrentLine.find( ']', 1 );
-    if( nLeftBracket == 0 && nRightBracket != -1 ) {
-      // group found; get the group name by taking everything in
-      // between the brackets
-      aCurrentGroup =
-	aCurrentLine.mid( 1, nRightBracket-1 );
+  // might miss the end if the file doesn't end with an EOL
+  QString contents = QString::fromUtf8(data, data.size()) + "\n";
+
+  unsigned int startLine = 0, endLine;
+  for(endLine = 0; endLine < contents.length(); endLine++)
+  {
+    if(contents[endLine] == '\n')
+    {
+      QString aCurrentLine = contents.mid(startLine,endLine-startLine);
+      startLine = endLine + 1;
+
+      // check for a group
+      if(aCurrentLine[0] == '[')
+      {
+        int nRightBracket = aCurrentLine.find( ']', 1 );
+        if( nRightBracket != -1 ) {
+          // group found; get the group name by taking everything in
+          // between the brackets
+          aCurrentGroup = aCurrentLine.mid( 1, nRightBracket-1 );
+  
+          if (pWriteBackMap) {
+	    // add the special group key indicator
+	    KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
+	    pWriteBackMap->insert(groupKey, KEntry());
+          }
+          continue;
+        };
+      }
+  
+      if( aCurrentLine[0] == '#' )
+        // comment character in the first column, skip the line
+        continue;
+  
+      int nEqualsPos = aCurrentLine.find( '=' );
+      if( nEqualsPos == -1 )
+        // no equals sign: incorrect or empty line, skip it
+        continue;
+
+      // insert the key/value line
+      QString key = aCurrentLine.left(nEqualsPos).stripWhiteSpace();
+      QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
+
+      KEntryKey aEntryKey(aCurrentGroup, key);
+      KEntry aEntry;
+      aEntry.aValue = val;
+      aEntry.bGlobal = bGlobal;
 
       if (pWriteBackMap) {
-	// add the special group key indicator
-	KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
-	pWriteBackMap->insert(groupKey, KEntry());
+        // don't insert into the config object but into the temporary
+        // scratchpad map
+        pWriteBackMap->insert(aEntryKey, aEntry);
+      } else {
+        // directly insert value into config object
+        // no need to specify localization; if the key we just
+        // retrieved was localized already, no need to localize it again.
+        pConfig->putData(aEntryKey, aEntry);
       }
-      continue;
-    };
-
-    if( aCurrentLine[0] == '#' )
-      // comment character in the first column, skip the line
-      continue;
-
-    int nEqualsPos = aCurrentLine.find( '=' );
-    if( nEqualsPos == -1 )
-      // no equals sign: incorrect or empty line, skip it
-      continue;
-
-    // insert the key/value line
-    QString key = aCurrentLine.left(nEqualsPos).stripWhiteSpace();
-    QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
-
-    KEntryKey aEntryKey(aCurrentGroup, key);
-    KEntry aEntry;
-    aEntry.aValue = val;
-    aEntry.bGlobal = bGlobal;
-
-    if (pWriteBackMap) {
-      // don't insert into the config object but into the temporary
-      // scratchpad map
-      pWriteBackMap->insert(aEntryKey, aEntry);
-    } else {
-      // directly insert value into config object
-      // no need to specify localization; if the key we just
-      // retrieved was localized already, no need to localize it again.
-      pConfig->putData(aEntryKey, aEntry);
     }
   }
 }
