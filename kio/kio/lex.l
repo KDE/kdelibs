@@ -36,19 +36,19 @@ DIGIT    [0-9]
 
 "~"|"/"|"+"|"-"|"="|"*"|"("|")"|","  { yylval.name = 0L; return (int)(*yytext); }
 
-"TRUE" { yylval.valb = 1; return BOOL; }
-"FALSE" { yylval.valb = 0; return BOOL; }
+"TRUE" { yylval.valb = 1; return VAL_BOOL; }
+"FALSE" { yylval.valb = 0; return VAL_BOOL; }
 
-"'"[^']*"'" { yylval.name = KTraderParse_putString( yytext ); return STRING; }
+"'"[^']*"'" { yylval.name = KTraderParse_putString( yytext ); return VAL_STRING; }
 
-"-"{DIGIT}+  { yylval.vali = atoi( yytext ); return NUM; }
-{DIGIT}+  { yylval.vali = atoi( yytext ); return NUM; }
+"-"{DIGIT}+  { yylval.vali = atoi( yytext ); return VAL_NUM; }
+{DIGIT}+  { yylval.vali = atoi( yytext ); return VAL_NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return VAL_FLOAT; }
 
-\[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return ID; }
+\[[a-zA-Z][a-zA-Z0-9\-]*\] { yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return VAL_ID; }
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.name = KTraderParse_putSymbol( yytext ); return ID; }
+[a-zA-Z][a-zA-Z0-9]* { yylval.name = KTraderParse_putSymbol( yytext ); return VAL_ID; }
 
 [ \t\n]+          /* eat up whitespace */
 

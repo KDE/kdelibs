@@ -14,7 +14,7 @@
 #include <kurl.h>
 
 
-class KDirNotify_stub : virtual public DCOPStub
+class KIO_EXPORT KDirNotify_stub : virtual public DCOPStub
 {
 public:
     KDirNotify_stub( const QCString& app, const QCString& id );

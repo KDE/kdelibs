@@ -32,11 +32,11 @@ void KTraderParse_initFlex( const char *s );
 %token MAX
 %token MIN
 
-%token <valb> BOOL
-%token <name> STRING
-%token <name> ID
-%token <vali> NUM
-%token <vald> FLOAT
+%token <valb> VAL_BOOL
+%token <name> VAL_STRING
+%token <name> VAL_ID
+%token <vali> VAL_NUM
+%token <vald> VAL_FLOAT
 
 %type <ptr> bool
 %type <ptr> bool_or
@@ -77,7 +77,7 @@ bool_compare: expr_in EQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 1
             | expr_in { $$ = $<ptr>1; }
 ;
 
-expr_in: expr_twiddle IN ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ) ); }
+expr_in: expr_twiddle IN VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ) ); }
        | expr_twiddle { $$ = $<ptr>1; }
 ;
 
@@ -100,14 +100,14 @@ factor_non: NOT factor { $$ = KTraderParse_newNOT( $<ptr>2 ); }
 ;
 
 factor: '(' bool_or ')' { $$ = KTraderParse_newBRACKETS( $<ptr>2 ); }
-      | EXIST ID { $$ = KTraderParse_newEXIST( $<name>2 ); }
-      | ID { $$ = KTraderParse_newID( $<name>1 ); }
-      | NUM { $$ = KTraderParse_newNUM( $<vali>1 ); }
-      | FLOAT { $$ = KTraderParse_newFLOAT( $<vald>1 ); }
-      | STRING { $$ = KTraderParse_newSTRING( $<name>1 ); }
-      | BOOL { $$ = KTraderParse_newBOOL( $<valb>1 ); }
-      | MAX ID { $$ = KTraderParse_newMAX2( $<name>2 ); }
-      | MIN ID { $$ = KTraderParse_newMIN2( $<name>2 ); }
+      | EXIST VAL_ID { $$ = KTraderParse_newEXIST( $<name>2 ); }
+      | VAL_ID { $$ = KTraderParse_newID( $<name>1 ); }
+      | VAL_NUM { $$ = KTraderParse_newNUM( $<vali>1 ); }
+      | VAL_FLOAT { $$ = KTraderParse_newFLOAT( $<vald>1 ); }
+      | VAL_STRING { $$ = KTraderParse_newSTRING( $<name>1 ); }
+      | VAL_BOOL { $$ = KTraderParse_newBOOL( $<valb>1 ); }
+      | MAX VAL_ID { $$ = KTraderParse_newMAX2( $<name>2 ); }
+      | MIN VAL_ID { $$ = KTraderParse_newMIN2( $<name>2 ); }
 ;
 
 /* End of grammar */

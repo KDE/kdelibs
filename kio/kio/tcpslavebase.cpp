@@ -147,6 +147,7 @@ TCPSlaveBase::~TCPSlaveBase()
 
 ssize_t TCPSlaveBase::write(const void *data, ssize_t len)
 {
+#ifdef Q_OS_UNIX
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
     {
         if ( d->needSSLHandShake )
@@ -154,10 +155,14 @@ ssize_t TCPSlaveBase::write(const void *data, ssize_t len)
         return d->kssl->write(data, len);
     }
     return KSocks::self()->write(m_iSock, data, len);
+#else
+    return 0;
+#endif
 }
 
 ssize_t TCPSlaveBase::read(void *data, ssize_t len)
 {
+#ifdef Q_OS_UNIX
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
     {
         if ( d->needSSLHandShake )
@@ -165,6 +170,9 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
         return d->kssl->read(data, len);
     }
     return KSocks::self()->read(m_iSock, data, len);
+#else
+    return 0;
+#endif
 }
 
 
@@ -248,7 +256,11 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
   }
 } else {                                                      // NON SSL CASE
   while (clen < len-1) {
+#ifdef Q_OS_UNIX
     rc = KSocks::self()->read(m_iSock, buf, 1);
+#else
+    rc = 0;
+#endif
     if (rc <= 0) {
       // FIXME: this doesn't cover rc == 0 case
       return -1;
@@ -1157,11 +1169,15 @@ bool TCPSlaveBase::isConnectionValid()
     tv.tv_usec = 0;
     tv.tv_sec = 0;
     int retval;
+#ifdef Q_OS_UNIX
     do {
        retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
        if (wasKilled())
           return false; // Beam us out of here
     } while ((retval == -1) && (errno == EAGAIN));
+#else
+    retval = -1;
+#endif
     // retval == -1 ==> Error
     // retval ==  0 ==> Connection Idle
     // retval >=  1 ==> Connection Active
@@ -1176,10 +1192,14 @@ bool TCPSlaveBase::isConnectionValid()
 
     // Connection is active, check if it has closed.
     char buffer[100];
+#ifdef Q_OS_UNIX
     do {
        retval = KSocks::self()->recv(m_iSock, buffer, 80, MSG_PEEK);
 
     } while ((retval == -1) && (errno == EAGAIN));
+#else
+    retval = -1;
+#endif
     //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
     //                 << retval << endl;
     if (retval <= 0)
@@ -1210,7 +1230,11 @@ bool TCPSlaveBase::waitForResponse( int t )
 
 reSelect:
   startTime = time(NULL);
+#ifdef Q_OS_UNIX
   rc = KSocks::self()->select(m_iSock+1, &rd, NULL, NULL, &timeout);
+#else
+  rc = -1;
+#endif
   if (wasKilled())
     return false; // We're dead.
 

@@ -1853,7 +1853,13 @@ static QString get_mount_info(const QString& filename,
     return mountPoint;
 }
 
-#endif //Q_OS_UNIX
+#else //!Q_OS_UNIX
+//dummy
+QString KIO::findDeviceMountPoint( const QString& filename )
+{
+	return QString::null;
+}
+#endif
 
 QString KIO::findPathMountPoint(const QString& filename)
 {
