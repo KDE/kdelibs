@@ -29,7 +29,7 @@
 #include <qwidget.h>
 
 #include <kaboutdata.h>
-#include <kaboutdialog.h>
+#include <kaboutkde.h>
 #include <kaction.h>
 #include <kapp.h>
 #include <kbugreport.h>
@@ -40,7 +40,6 @@
 #include <kmessagebox.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
-#include <kstddirs.h>
 
 class KHelpMenuPrivate
 {
@@ -207,63 +206,13 @@ void KHelpMenu::aboutApplication()
 }
 
 
-
 void KHelpMenu::aboutKDE()
 {
   if( mAboutKDE == 0 )
   {
-    mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, 
-      QString::fromLatin1("KDE"),
-      KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent,
-      "aboutkde", false );
+    mAboutKDE = new KAboutKDE( mParent, "aboutkde", false );
     connect( mAboutKDE, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
-
-    const QString text1 = i18n(""
-      "The <b>K Desktop Environment</b> is written and maintained by the "
-      "KDE Team, a world-wide network of software engineers committed to "
-      "free software development.<br><br>"
-      "No single group, company or organization controls the KDE source "
-      "code. Everyone is welcome to contribute to KDE.<br><br>"
-      "Visit <A HREF=\"http://www.kde.org/\">http://www.kde.org/</A> for "
-      "more information on the KDE Project. ");
-
-    const QString text2 = i18n(""
-      "Software can always be improved, and the KDE Team is ready to "
-      "do so. However, you - the user - must tell us when "
-      "something does not work as expected or could be done better.<br><br>"
-      "The K Desktop Environment has a bug tracking system. Visit "
-      "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> or "
-      "use the \"Report Bug\" dialog to report bugs.<br><br>"
-      "If you have a suggestion for improvement then you are welcome to visit "
-      "<A HREF=\"http://wishlist.kde.org/\">http://wishlist.kde.org/</A> and "
-      "register your wish." );
-
-    const QString text3 = i18n(""
-      "You don't have to be a software developer to be a member of the "
-      "KDE Team. You can join the national teams that translate "
-      "program interfaces. You can provide graphics, themes, sounds and "
-      "improved documentation. You decide!"
-      "<br><br>"
-      "Visit "
-      "<A HREF=\"http://www.kde.org/jobs.html\">http://www.kde.org/jobs.html</A> "
-      "for information on some projects in which you can participate."
-      "<br><br>"
-      "If you need more information or documentation, then a visit to "
-      "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
-      "will provide with what you need.");
-
-    mAboutKDE->setHelp( QString::fromLatin1("khelpcenter/main.html"), 
-			QString::null );
-    mAboutKDE->setTitle(i18n("K Desktop Environment. Release %1").
-			arg(QString::fromLatin1(KDE_VERSION_STRING)) );
-    mAboutKDE->addTextPage( i18n("&About"), text1, true );
-    mAboutKDE->addTextPage( i18n("&Report bugs or wishes"), text2, true );
-    mAboutKDE->addTextPage( i18n("&Join the KDE team"), text3, true );
-    mAboutKDE->setImage( 
-      locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
-    mAboutKDE->setImageBackgroundColor( white );
-  }
-
+  }    
   mAboutKDE->show();
 }
 

@@ -31,7 +31,7 @@ class QPopupMenu;
 class QWidget;
 
 class KAboutData;
-class KAboutDialog;
+class KAboutKDE;
 class KBugReport;
 class KDialogBase;
 class KHelpMenuPrivate;
@@ -241,7 +241,7 @@ class KHelpMenu : public QObject
   private:
     QPopupMenu   *mMenu;
     KDialogBase  *mAboutApp;
-    KAboutDialog *mAboutKDE;
+    KAboutKDE    *mAboutKDE;
     KBugReport   *mBugReport;
 
     QString      mAboutAppText;
