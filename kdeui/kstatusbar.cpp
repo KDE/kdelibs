@@ -24,11 +24,15 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// Revision 1.12  1998/05/08 16:25:55  radej
+// Fixed timer ftr temp messages.
+//
 // Revision 1.11  1998/05/05 10:04:40  radej
 // Not sunken in windows style
 //
 // Revision 1.10  1998/04/21 20:37:48  radej
 // Added insertWidget and some reorganisation - BINARY INCOMPATIBLE
+//
 
 
 /*************************************************************************/
@@ -73,10 +77,13 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
 {
   init();
 }
+
 KStatusBar::~KStatusBar ()
 {
   tmpTimer->stop();
   for ( KStatusBarItem *b = items.first(); b; b=items.next() )
+    delete b;
+  if (tempMessage)
     delete tempMessage;
   delete tmpTimer; // What do I have to notice!?
 };
@@ -92,6 +99,8 @@ void KStatusBar::init()
 
   insert_order = KStatusBar::LeftToRight;
   setFrameStyle( QFrame::NoFrame );
+  resize( width(), fieldheight + 2* borderwidth);
+  tempWidget=0;
   tmpTimer = new QTimer(this);
   connect (tmpTimer, SIGNAL(timeout()), this, SLOT(clear()));
 
@@ -230,37 +239,45 @@ void KStatusBar::setAlignment( int id, int align)
 	  ((KStatusBarLabel *)b->getItem())->setAlignment(align|AlignVCenter);
 void KStatusBar::message(const char *text, int time)
 }
-  for ( KStatusBarItem *b = items.first(); b; b=items.next() )
-    b->hide();
 
+void KStatusBar::message(const QString& text, int time)
+{
   if (tmpTimer->isActive())
   
-  if (tempWidget)
+    delete tempMessage;
     tempMessage = 0;
   }
   else if (tempWidget)
   {
+    tempWidget->hide();
+    tempWidget=0;
+  }
+  else
     for ( KStatusBarItem *b = items.first(); b; b=items.next() )
       b->hide();
 
   
   tempMessage = new KStatusBarLabel( text, -1, this );
   tempMessage->setGeometry(borderwidth, borderwidth,
-    QTimer::singleShot(time, this,  SLOT(clear()));
+                           width()-2*borderwidth, fieldheight);
   tempMessage->show();
   if (time >0)
     tmpTimer->start(time, true);
 }
-  for ( KStatusBarItem *b = items.first(); b; b=items.next() )
-    b->hide();
 
+void KStatusBar::message(QWidget *widget, int time)
+{
   if (tmpTimer->isActive())
   
-  if (tempWidget)
+    delete tempMessage;
     tempMessage = 0;
   }
   else if (tempWidget)
   {
+    tempWidget->hide();
+    tempWidget=0;
+  }
+  else
     for ( KStatusBarItem *b = items.first(); b; b=items.next() )
       b->hide();
 
@@ -268,14 +285,17 @@ void KStatusBar::message(const char *text, int time)
   
   tempWidget = widget;
   tempWidget->setGeometry(borderwidth, borderwidth,
-    QTimer::singleShot(time, this,  SLOT(clear()));
+                          width()-2*borderwidth, fieldheight);
   tempWidget->show();
   if (time >0)
     tmpTimer->start(time, true);
 }
 
-  if (tempMessage) delete tempMessage;
-  if (tempWidget) tempWidget->hide();
+
+void KStatusBar::clear()
+{
+  tmpTimer->stop();
+  if (tempMessage)
     delete tempMessage;
   if (tempWidget)
     tempWidget->hide();
