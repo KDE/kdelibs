@@ -1248,7 +1248,7 @@ inline void HTMLTokenizer::checkBuffer(int len)
 }
 
 //-----------------------------------------------------------------------------
-
+#if 0
 int ustrlen( const QChar *c )
 {
     int l = 0;
@@ -1265,74 +1265,4 @@ QChar *ustrchr( const QChar *c, const QChar s )
     }
     return 0L;
 }
-
-StringTokenizer::StringTokenizer()
-{
-    buffer = 0;
-    pos    = 0;
-    end    = 0;
-    bufLen = 0;
-}
-
-void StringTokenizer::tokenize( const HTMLString &_str,
-				const QChar *_separators )
-{
-    if ( _str.unicode() == 0 )
-    {
-	pos = 0;
-	return;
-    }
-
-    HTMLStringIt str(_str);
-
-    int strLength = str.length();
-
-    if ( bufLen < strLength )
-    {
-	delete [] buffer;
-	buffer = new QChar[ strLength ];
-	bufLen = strLength;
-    }
-
-    end = buffer;
-    bool quoted = false;
-
-    for ( ; str.length() - 1; ++str )
-    {
-	QChar *x = ustrchr( _separators, str[0] );
-	if ( str[0] == '\"' )
-	    quoted = !quoted;
-	else if ( x && !quoted )
-	    *end++ = 0;
-	else
-	    *end++ = str[0];
-    }
-
-    *end = 0;
-
-    if ( end - buffer <= 1 )
-	pos = 0;	// no tokens
-    else
-	pos = buffer;
-}
-
-HTMLString StringTokenizer::nextToken()
-{
-    if ( pos == 0 )
-	return HTMLString();
-
-    QChar *ret = pos;
-    int len = ustrlen(ret);
-    pos += len + 1;
-    if ( pos >= end )
-	pos = 0;
-
-    return HTMLString(ret, len);
-}
-
-StringTokenizer::~StringTokenizer()
-{
-    if ( bufLen > 0 )
-	delete [] buffer;
-}
-
+#endif

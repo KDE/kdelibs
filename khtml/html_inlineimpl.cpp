@@ -24,6 +24,7 @@
 
 #include <qfontinfo.h>
 #include <qstack.h>
+#include <qregexp.h>
 
 #include <stdio.h>
 
@@ -233,7 +234,7 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
 	break;
     default:
     	HTMLElementImpl::parseAttribute(attr);
-    }    
+    }
 }
 
 
@@ -265,7 +266,7 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
     case ATTR_SIZE:
     case ATTR_COLOR:
     case ATTR_FACE:
-      // handled in setStyle...
+	// handled in setStyle...
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
@@ -277,7 +278,6 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     DOMString s = attributeMap.valueForId(ATTR_SIZE);
     if(s != 0)
     {
-      printf("setting size\n");
 	int num = s.toInt();
 	if ( *s.unicode() == '+' ||
 	     *s.unicode() == '-' )
@@ -290,30 +290,35 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     s = attributeMap.valueForId(ATTR_COLOR);
     if(s != 0)
     {
-      printf("setting color\n");
 	setNamedColor( currentStyle->font.color, s.string() );
     }
-    s = attributeMap.find(ATTR_FACE);
+    s = attributeMap.valueForId(ATTR_FACE);
     if(s != 0)
     {
-      printf("setting face\n");
+	printf("setting face\n");
+	QString str = s.string();
+	str.replace(QRegExp("[ ,]+"), ",");
 	// try to find a matching font in the font list.
-	StringTokenizer st;
-	const QChar separ[] = { ' ', ',', 0x0 };
-	st.tokenize( s, separ );
-	while ( st.hasMoreTokens() )
+	int index = 0;
+	int index2;
+	while( 1 )
 	{
-	    QString fname(st.nextToken().string());
+	    index2 = str.find(",", index);
+	    QString fname = str.mid(index, index2-index);
 	    fname = fname.lower();
 	    QFont tryFont( fname.data() );
 	    QFontInfo fi( tryFont );
+	    printf("trying \"%s\": getting %s\n", tryFont.family().ascii(), fi.family().ascii());
 	    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
 	    {
 		// we found a matching font
+		printf("found mathing face!\n");
 		currentStyle->font.family = fname;
 		break;
 	    }
-	}
+	    if(index2 == -1) break;
+	    index = index2 + 1;
+	}	
     }
     HTMLElementImpl::setStyle(currentStyle);
 

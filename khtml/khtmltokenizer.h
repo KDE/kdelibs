@@ -213,31 +213,11 @@ protected:
 
     QString _src;
     HTMLStringIt src;
-    
+
     KCharsets *charsets;
     KHTMLParser *parser;
 
     KHTMLWidget *view;
-};
-
-//-----------------------------------------------------------------------------
-
-class StringTokenizer
-{
-public:
-    StringTokenizer();
-    ~StringTokenizer();
-
-    // ### FIXME 2nd argument is 0 terminated!!!
-    void tokenize( const HTMLString &, const QChar * );
-    HTMLString nextToken();
-    bool hasMoreTokens() { return ( pos != 0 ); }
-
-protected:
-    QChar *pos;
-    QChar *end;
-    QChar *buffer;
-    int  bufLen;
 };
 
 #endif // HTMLTOKENIZER
