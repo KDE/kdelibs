@@ -366,6 +366,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 #ifdef DO_SSL
   m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
   m_bUseSSL=true;
+  m_bssl_init=false;
   meth=0; ctx=0; hand=0;
 #endif
 
@@ -412,7 +413,13 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
 #ifdef DO_SSL
 void HTTPProtocol::initSSL() {
-  m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
+  if (m_bssl_init) return;
+  kdDebug(7103) << "SSL Initialisation code called." << endl;
+  // George Staikos <staikos@kde.org> 9/4/2000
+  //         I have found some sites that don't work with SSL3
+  //         recently.  This may be an OpenSSL problem but in any
+  //         case, we have to make Konqueror work.
+  // m_bUseSSL3 = false;
   if (m_bUseSSL2 && m_bUseSSL3)
     meth=SSLv23_client_method();
   else if (m_bUseSSL3)
@@ -429,7 +436,24 @@ void HTTPProtocol::initSSL() {
   }
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
   hand=SSL_new(ctx);
+  m_bssl_init = true;
 }
+
+void HTTPProtocol::closeSSL() {
+  if (!m_bssl_init) return;
+
+  kdDebug(7103) << "SSL was deinitialised." << endl;
+  SSL_shutdown(hand);
+  SSL_free(hand);
+  SSL_CTX_free(ctx);
+  m_bssl_init = false;
+}
+
+void HTTPProtocol::resetSSL() {
+  closeSSL();
+  initSSL();
+}
+
 #endif
 
 
@@ -438,8 +462,10 @@ int HTTPProtocol::openStream() {
   if (m_bUseSSL) {
     initSSL();
     SSL_set_fd(hand, m_sock);
-    if (SSL_connect(hand)== -1)
+    if (SSL_connect(hand) == -1) {
+      closeSSL();
       return false;
+    }
     return true;
   }
 #endif

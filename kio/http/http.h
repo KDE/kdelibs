@@ -165,6 +165,8 @@ protected:
   void configAuth(const char *, bool);
 #ifdef DO_SSL
   void initSSL();
+  void closeSSL();
+  void resetSSL();
 #endif
 
   size_t sendData();
@@ -304,6 +306,7 @@ protected: // Members
   SSL_METHOD *meth;
   SSL_CTX *ctx;
   SSL *hand;
+  bool m_bssl_init;
 #endif
 
 };
