@@ -10,17 +10,17 @@
 <!ENTITY FDLISTitles "ПЕРЕЧИСЛИТЬ ИХ НАЗВАНИЯ"><!-- keep capitals -->
 <!ENTITY FDLInvariantSections "неизменяемые разделы: &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "нет неизменямых разделов">
+<!ENTITY FDLInvariantSections " неизменямых разделов">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "текст на первой странице: &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "нет текста на первой странице">
+<!ENTITY FDLFrontCoverText " текста на первой странице">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "ПЕРЕЧИСЛИТЬ ИХ НАЗВАНИЯ"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "текст на последней странице: &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "нет текста на последней странице">
+<!ENTITY FDLBackCoverText " текста на последней странице">
 
  
 <!ENTITY kde.modespec '
