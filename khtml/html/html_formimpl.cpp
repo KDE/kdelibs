@@ -240,7 +240,7 @@ void HTMLFormElementImpl::submit(  )
     if(!view) return;
 
     DOMString script = getAttribute(ATTR_ONSUBMIT);
-    if (!script.isNull())
+    if (!script.isNull() && view->part()->jScriptEnabled())
         if(!view->part()->executeScript(Node(this), script.string()))
             return; // don't submit if script returns false
 
@@ -266,7 +266,7 @@ void HTMLFormElementImpl::reset(  )
     kdDebug( 6030 ) << "reset pressed!" << endl;
 
     DOMString script = getAttribute(ATTR_ONRESET);
-    if (!script.isNull())
+    if (!script.isNull() && view->part()->jScriptEnabled())
         if(!view->part()->executeScript(Node(this), script.string()))
             return;
 
@@ -449,28 +449,28 @@ void HTMLGenericFormElementImpl::detach()
 void HTMLGenericFormElementImpl::onBlur()
 {
     DOMString script = getAttribute(ATTR_ONBLUR);
-    if (!script.isEmpty())
+    if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onFocus()
 {
     DOMString script = getAttribute(ATTR_ONFOCUS);
-    if (!script.isEmpty())
+    if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onSelect()
 {
     DOMString script = getAttribute(ATTR_ONSELECT);
-    if (!script.isEmpty())
+    if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onChange()
 {
     DOMString script = getAttribute(ATTR_ONCHANGE);
-    if (!script.isEmpty())
+    if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
 }
 
