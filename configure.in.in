@@ -113,6 +113,7 @@ AC_CHECK_GETHOSTNAME
 AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
 dnl AC_CHECK_SOCKLEN_T already in kde_misc_tests
+KDE_CHECK_INITGROUPS
 
 AC_MSG_CHECKING([for mount tab file])
 AC_CACHE_VAL(kde_cv_mtab_file,
