@@ -141,7 +141,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
 
 KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg )
 {
-  QString service = _cfg.readEntry( "ServiceType" );
+  QString service = _cfg.readEntry( "X-KDE-ServiceType" );
   QString mime = _cfg.readEntry( "MimeType" );
 
   if ( mime.isEmpty() && service.isEmpty() )
