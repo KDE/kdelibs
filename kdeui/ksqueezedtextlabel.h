@@ -55,6 +55,10 @@ public:
 
   virtual QSize minimumSizeHint() const;
   virtual QSize sizeHint() const;
+  /**
+   * Overridden for internal reasons; the API remains unaffected.
+   */
+  virtual void setAlignment( int );
 
 public slots:
   void setText( const QString & );

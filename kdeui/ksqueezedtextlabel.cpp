@@ -70,7 +70,15 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
     QToolTip::remove( this );
     QToolTip::hide();
 
-  };
+  }
+}
+
+void KSqueezedTextLabel::setAlignment( int alignment )
+{
+  // save fullText and restore it
+  QString tmpFull(fullText);
+  QLabel::setAlignment(alignment);
+  fullText = tmpFull;
 }
 
 void KSqueezedTextLabel::virtual_hook( int, void* )
