@@ -98,7 +98,6 @@ void RenderFlow::setStyle(RenderStyle *_style)
         setInline(false);
 
     m_pre = (style()->whiteSpace() == PRE);
-
     // ### we could save this call when the change only affected
     // non inherited properties
     RenderObject*child = firstChild();
@@ -696,7 +695,7 @@ void RenderFlow::positionNewFloats()
             }
             if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
-            //kdDebug( 6040 ) << this << ": positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
+            //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 	f->startY = y;
@@ -1355,7 +1354,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // there is an anonymous block box within this object that contains the beforeChild. So
     // just insert the child into the anonymous block box instead of here.
     if (beforeChild && beforeChild->parent() != this) {
-
         KHTMLAssert(beforeChild->parent());
         KHTMLAssert(beforeChild->parent()->isAnonymousBox());
         KHTMLAssert(beforeChild->parent()->parent() == this);
@@ -1374,22 +1372,26 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             RenderObject *anonBox = beforeChild->parent();
             KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
 
+
 	    if ( anonBox->childrenInline() ) {
 		static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
 		madeBoxesNonInline = true;
 	    }
             beforeChild = beforeChild->parent();
 
+            // prevent deletion of anonymous box by render_container.cpp
+            anonBox->setIsAnonymousBox(false);
+
             RenderObject *child;
             while ((child = anonBox->firstChild()) != 0) {
                 anonBox->removeChild(child);
                 addChild(child,anonBox);
             }
-
+            anonBox->setIsAnonymousBox(true);
             removeChildNode(anonBox);
             anonBox->detach(); // does necessary cleanup & deletes anonBox
-
             KHTMLAssert(beforeChild->parent() == this);
+
         }
     }
 
