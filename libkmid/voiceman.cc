@@ -89,7 +89,9 @@ delete searcher_aid;
 
 void voiceManager::cleanLists(void)
 {
+#ifdef VOICEMANDEBUG
 printf("voicemanager::cleanLists\n");
+#endif
 voice *ptr=FirstVoice;
 voice *ptr2=FirstVoice;
 while (ptr!=NULL)
@@ -128,10 +130,13 @@ LastVoice->next=NULL;
 
 newvoice->channel=chn;
 newvoice->note=key;
+
+#ifdef VOICEMANDEBUG
 if (newvoice->used==1) 
 	{
 	printf("Replacing voice : %d\n",newvoice->id);
 	};
+#endif
 newvoice->used=1;
 
 dispStat();
@@ -224,9 +229,6 @@ searcher_aid->prev=LastVoice;
 
 int voiceManager::Search(int chn)
 {
-#ifdef VOICEMANDEBUG
-printf("C\n");
-#endif
 if (searcher==NULL) return -1;
 searcher=searcher->prev;
 
@@ -235,41 +237,26 @@ while (searcher!=NULL)
    if (searcher->used==0) return -1;
    if (searcher->channel==chn) 
 	{	
-#ifdef VOICEMANDEBUG
-	printf("C2\n");
-#endif
 	return searcher->id;
 	};
    searcher=searcher->prev;
    };
-#ifdef VOICEMANDEBUG
-printf("C2.\n");
-#endif
 return -1;
 };
 
 int voiceManager::Search(int chn,int note)
 {
 if (searcher==NULL) return -1;
-#ifdef VOICEMANDEBUG
-printf("D\n");
-#endif
 searcher=searcher->prev;
 while ((searcher!=NULL))
    {
    if (searcher->used==0) return -1;
    if ((searcher->channel==chn)&&(searcher->note==note)) 
 	{
-#ifdef VOICEMANDEBUG
-	printf("D2\n");
-#endif
 	return searcher->id;
 	};
    searcher=searcher->prev;
    };
-#ifdef VOICEMANDEBUG
-printf("D2.\n");
-#endif
 return -1;
 };
 

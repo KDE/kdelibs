@@ -53,9 +53,10 @@ count=0.0;
 lastcount=0.0;
 rate=100;
 ok=1;
-// Put opl=3 for opl/3 , or opl=4 for fm output (better) : 
-opl=4;
-// But be aware that opl3 is not intended to be supported
+// Put opl=3 for opl/3 (better quality/ 6 voices)
+//  or opl=2 for fm output (less quality/ 18 voices, which is better imho) : 
+opl=2;
+// But be aware that opl3 is not intended to be fully supported by now
 
 nvoices=total;
 vm=new voiceManager(nvoices);
@@ -97,8 +98,8 @@ convertrate=1000/rate;
 
 loadFMPatches();
 
-#ifdef FMOUTDEBUG
 printf("FM Device %d opened\n",device);
+#ifdef FMOUTDEBUG
 printf("Number of synth devices : %d\n",ndevs);
 printf("Number of midi ports : %d\n",nmidiports);
 printf("Rate : %d\n",rate);
@@ -151,58 +152,8 @@ for (int i = 0; i < nvoices; i++)
      SEQ_STOP_NOTE(device, i, vm->Note(i), 64);
      };
 
-#ifdef FMOUTDEBUG
 printf("FM Device %d initialized\n",device);
-#endif
 };
-
-void fmOut::modifyPatch(char *buf, int key)
-{
-    unsigned char pan = ((rand() % 3) + 1) << 4;
-    int reverb=64;
-
-    if (key == FM_PATCH) {
-        buf[39] &= 0xc0;
-        if (buf[46] & 1)
-            buf[38] &= 0xc0;
-        buf[46] = (buf[46] & 0xcf) | pan;
-        if (reverb) {
-            unsigned val;
-            val = buf[43] & 0x0f;
-            if (val > 0)
-                val--;
-            buf[43] = (buf[43] & 0xf0) | val;
-        }
-    } else {
-        int mode;
-        if (buf[46] & 1)
-            mode = 2;
-        else 
-            mode = 0;
-        if (buf[57] & 1)
-            mode++;
-        buf[50] &= 0xc0;
-        if (mode == 3)
-            buf[49] &= 0xc0;
-        if (mode == 1)
-            buf[39] &= 0xc0;
-        if (mode == 2 || mode == 3)
-            buf[38] &= 0xc0;
-        buf[46] = (buf[46] & 0xcf) | pan;
-        buf[57] = (buf[57] & 0xcf) | pan;
-        if (mode == 1 && reverb) {
-            unsigned val;
-            val = buf[43] & 0x0f;
-            if (val > 0)
-                val--;
-            buf[43] = (buf[43] & 0xf0) | val;
-            val = buf[54] & 0x0f;
-            if (val > 0)
-                val--;
-            buf[54] = (buf[54] & 0xf0) | val;
-        }
-    }
-} 
 
 void fmOut::loadFMPatches(void)
 {
@@ -216,37 +167,8 @@ int i,j;
 for (i=0;i<256;i++)
     patchloaded[i] = 0;
 
+FILE *fh;
 int datasize;
-
-if (opl==3)
-   {
-   sprintf(drumsfile,"%s/drums.o3",FM_patches_directory);
-   size=60;
-   }
-  else
-   {
-   sprintf(drumsfile,"%s/drums.sb",FM_patches_directory);
-   size=52;
-   };
-
-FILE *fh=fopen(drumsfile,"rb");
-if (fh==NULL) return;
-
-for (i=128;i<175;i++)
-   {
-   fread(tmp,size,1,fh);
-   patchloaded[i]=1;
-   instr.key = (strncmp(tmp, "4OP", 3) == 0)? OPL3_PATCH : FM_PATCH;
-   datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
-   instr.device=device;
-   instr.channel = i;
-   modifyPatch(tmp, instr.key);
-   for (j=0; j<32; j++)
-       instr.operators[j] = (j<datasize)? tmp[j+36] : 0;
-   SEQ_WRPATCH(&instr,sizeof(instr));
-//   ioctl(seqfd,SNDCTL_FM_LOAD_INSTR,&instr);
-   };
-fclose(fh);
 
 if (opl==3)
    {
@@ -269,14 +191,12 @@ for (i=0;i<128;i++)
    datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
    instr.device=device;
    instr.channel = i;
-   modifyPatch(tmp, instr.key);
-   for (j=0; j<32; j++)
-       instr.operators[j] = (j<datasize)? tmp[j+36] : 0;
+   for (j=0; j<22; j++)
+       instr.operators[j] = tmp[j+36];
    SEQ_WRPATCH(&instr,sizeof(instr));
-//   ioctl(seqfd,SNDCTL_FM_LOAD_INSTR,&instr);
    };
 fclose(fh);
-/*
+
 if (opl==3)
    {
    sprintf(drumsfile,"%s/drums.o3",FM_patches_directory);
@@ -297,14 +217,12 @@ for (i=128;i<256;i++)
    datasize = (strncmp(tmp, "4OP", 3) == 0)? 22 : 11;
    instr.device=device;
    instr.channel = i;
-   modifyPatch(tmp, instr.key);
-   for (j=0; j<32; j++)
-       instr.operators[j] = (j<datasize)? tmp[j+36] : 0;
-//   SEQ_WRPATCH(&instr,sizeof(instr));
-   ioctl(seqfd,SNDCTL_FM_LOAD_INSTR,&instr);
+   for (j=0; j<22; j++)
+       instr.operators[j] = tmp[j+36];
+   SEQ_WRPATCH(&instr,sizeof(instr));
    };
 fclose(fh);
-*/
+
 #ifdef FMOUTDEBUG
 printf("Patches loaded\n");
 #endif
@@ -339,8 +257,6 @@ if (vel==0)
         SEQ_SET_PATCH(device,v ,p=Patch(note+128))
        else
         SEQ_SET_PATCH(device,v ,p=Map->Patch(chn,chn_patch[chn])); 
-//        SEQ_SET_PATCH(device,v ,p=Patch(chn_patch[chn])); 
-    printf("patch : %d\n",p);
     SEQ_BENDER(device, v, chn_bender[chn]);
 
     SEQ_START_NOTE(device, v, note, vel);
