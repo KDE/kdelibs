@@ -572,7 +572,7 @@ bool KHTMLPart::openURL( const KURL &url )
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
-  
+
   if ( url.hasRef() && !isFrameSet )
   {
 
@@ -584,14 +584,14 @@ bool KHTMLPart::openURL( const KURL &url )
         kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
         m_url = url;
         emit started( 0L );
-        
+
         if ( !gotoAnchor( url.encodedHtmlRef()) )
           gotoAnchor( url.htmlRef() );
-        
+
         d->m_bComplete = true;
         if (d->m_doc)
         d->m_doc->setParsing(false);
-        
+
         kdDebug( 6050 ) << "completed..." << endl;
         emit completed();
         return true;
@@ -1772,7 +1772,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // about to load a new page.
   d->m_doc->setBaseURL( baseurl );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
-  emit docCreated(); // so that the parent can set the domain
+  emit docCreated();
 
   d->m_paUseStylesheet->setItems(QStringList());
   d->m_paUseStylesheet->setEnabled( false );
@@ -2031,7 +2031,7 @@ void KHTMLPart::checkCompleted()
   for (; it != end; ++it ) {
     if ( !(*it)->m_bCompleted )
     {
-      //kdDebug( 6050 ) << this << " is waiting for " << ( *it ).m_part << endl;
+      //kdDebug( 6050 ) << this << " is waiting for " << (*it)->m_part << endl;
       return;
     }
     // Check for frames with pending redirections
@@ -2098,9 +2098,9 @@ void KHTMLPart::checkCompleted()
     pendingAction = true;
   }
 
-  // the view will emit completed on our behalf, 
+  // the view will emit completed on our behalf,
   // either now or at next repaint if one is pending
-  
+
   d->m_view->complete( pendingAction );
 
   // find the alternate stylesheets
@@ -2339,7 +2339,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
 
   // Implement the rule that "" and "top" both mean top of page as in other browsers.
   bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
-  
+
   if (quirkyName) {
       d->m_view->setContentsPos(0, 0);
       return true;
@@ -3582,7 +3582,7 @@ void KHTMLPart::slotViewPageInfo()
 {
   KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, WDestructiveClose);
   dlg->_close->setGuiItem(KStdGuiItem::close());
-  
+
   if (d->m_doc)
      dlg->_title->setText(d->m_doc->title().string());
 
@@ -4667,7 +4667,7 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
 #endif
   // Check access
   KHTMLPart *callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
-  
+
   if (!checkFrameAccess(callingHtmlPart))
      return 0;
 
@@ -4682,7 +4682,7 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
         *childFrame = *it;
      return this;
   }
-     
+
   it = d->m_frames.begin();
   for (; it != end; ++it )
   {
@@ -4716,7 +4716,7 @@ KParts::ReadOnlyPart *KHTMLPart::findFramePart(const QString &f)
   khtml::ChildFrame *childFrame;
   return findFrameParent(this, f, &childFrame) ? static_cast<KParts::ReadOnlyPart *>(childFrame->m_part) : 0L;
 }
-    
+
 KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
 {
   KParts::ReadOnlyPart* part = (KParts::ReadOnlyPart*)(this);
@@ -4766,19 +4766,19 @@ KHTMLPart *KHTMLPart::parentPart()
   return (KHTMLPart *)parent();
 }
 
-khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url, 
+khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url,
                                                      const KParts::URLArgs &args, bool callParent )
 {
 #ifdef DEBUG_FINDFRAME
   kdDebug( 6050 ) << "KHTMLPart::recursiveFrameRequest this = " << this << ", frame = " << args.frameName << ", url = " << url << endl;
-#endif  
+#endif
   khtml::ChildFrame *childFrame;
   KHTMLPart *childPart = findFrameParent(callingHtmlPart, args.frameName, &childFrame);
   if (childPart)
   {
      if (childPart == this)
         return childFrame;
-     
+
      childPart->requestObject( childFrame, url, args );
      return 0;
   }
