@@ -88,10 +88,10 @@ KWinModule::KWinModule( QObject* parent )
     } else {
 	static_d->ref();
     }
-    
+
     d = static_d;
     d->modules.append( this );
-    
+
 }
 
 KWinModule::~KWinModule()
@@ -217,7 +217,7 @@ WId KWinModule::activeWindow() const
 
 QRect KWinModule::workArea( int desktop ) const
 {
-    NETRect r = d->workArea( (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop-1 : currentDesktop()-1 );
+    NETRect r = d->workArea( (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop : currentDesktop() );
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
