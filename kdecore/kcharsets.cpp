@@ -396,6 +396,12 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     if(QFontInfo(f).charSet() == charset)
         return;
 
+    if(charset == QFont::AnyCharSet)
+    {
+        f.setCharSet(QFont::AnyCharSet);
+        return;
+    }
+
     if(!d->db)
         d->db = new QFontDatabase;
 
