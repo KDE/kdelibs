@@ -30,7 +30,7 @@ HistoryProvider * HistoryProvider::s_self = 0L;
 class HistoryProvider::HistoryProviderPrivate
 {
 public:
-    HistoryProviderPrivate() : dict( 3001 ) {}
+    HistoryProviderPrivate() : dict( 1009 ) {}
 
     QDict<void> dict;
 };
