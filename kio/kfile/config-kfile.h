@@ -11,7 +11,7 @@ const int kfile_area = 250;
 #define DefaultCaseInsensitive true
 #define DefaultDirsFirst true
 #define DefaultSortReversed false
-#define DefaultRecentURLsNumber 10
+#define DefaultRecentURLsNumber 15
 #define DefaultDirectoryFollowing true
 #define ConfigGroup QString::fromLatin1("KFileDialog Settings")
 #define RecentURLs QString::fromLatin1("Recent URLs")

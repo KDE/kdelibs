@@ -465,7 +465,7 @@ void KFileDialog::slotOk()
             d->filenames = QString::null;
             d->urlList.clear();
             d->urlList.append( d->url );
-            
+
             if ( mode() & KFile::ExistingOnly )
                 done = false;
             else
@@ -553,7 +553,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     {
         return; // ### error message?
     }
-    
+
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
 
     if ( count == 0 )
@@ -564,7 +564,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 void KFileDialog::accept()
 {
     qDebug("* accept!");
-    
+
     setResult( QDialog::Accepted ); // parseSelectedURLs() checks that
 
     *lastDirectory = ops->url();
@@ -1697,7 +1697,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     ops->readConfig( kc, group );
 
     KURLComboBox *combo = d->pathCombo;
-    combo->setURLs( kc->readListEntry( RecentURLs ) );
+    combo->setURLs( kc->readListEntry( RecentURLs ), KURLComboBox::RemoveTop );
     combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
                                           DefaultRecentURLsNumber ) );
     combo->setURL( ops->url() );
