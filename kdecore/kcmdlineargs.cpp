@@ -147,7 +147,9 @@ KCmdLineArgs::initIgnore(int _argc, char **_argv, const char *_appname )
 void
 KCmdLineArgs::init(const KAboutData* ab)
 {
-   init(0,0,ab, true);
+   char **_argv = (char **) malloc(sizeof(char *));
+   _argv[0] = (char *) ab->appName();
+   init(1,_argv,ab, true);
 }
 
 
