@@ -128,9 +128,6 @@ public: //static methods
 	 * Gets the default file associated with a certain event name
 	 * The control panel module will list all the event names
 	 * This has the potential for being slow.
-	 * [Not Yet Implemented!]
-	 *
-	 * This gets it for this app only!
 	 */
 	static QString getFile(const QString &eventname, int present);
 	
