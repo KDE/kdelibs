@@ -63,7 +63,7 @@ public:
      *
      * This is a request to the window manager. It may or may not be
      * obeyed.
-     * @param win the if of the window to make active
+     * @param win the id of the window to make active
     */
     static void setActiveWindow( WId win);
 
@@ -132,7 +132,7 @@ public:
 
     /**
      * Returns information about window @p win.
-     * @param win the id of the windoe
+     * @param win the id of the window
      * @return the window information
      */
     static Info info( WId win );
