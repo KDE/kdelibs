@@ -4548,7 +4548,6 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
-  DOM::Node innerNode = event->innerNode();
 
   if( d->m_bRightMousePressed && parentPart() != 0 && d->m_bBackRightClick )
   {
@@ -4557,9 +4556,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     d->m_bRightMousePressed = false;
   }
 #ifndef QT_NO_DRAGANDDROP
-  if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || (!innerNode.isNull() && innerNode.elementId() == ID_IMG) ) &&
-      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
-      d->m_bDnd && d->m_mousePressNode == innerNode ) {
+  if( d->m_bDnd && d->m_bMousePressed &&
+      (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) &&
+      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay()) {
 
       QPixmap p;
       QDragObject *drag = 0;
@@ -4571,7 +4570,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           drag = urlDrag;
           p = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
       } else {
-          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(d->m_mousePressNode.handle());
           if( i ) {
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
@@ -4601,6 +4600,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
   DOM::DOMString url = event->url();
   DOM::DOMString target = event->target();
+  DOM::Node innerNode = event->innerNode();
 
   // Not clicked -> mouse over stuff
   if ( !d->m_bMousePressed )
