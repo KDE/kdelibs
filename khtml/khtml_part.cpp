@@ -170,8 +170,8 @@ public:
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
   KSelectAction *m_paSetEncoding;
-  KAction *m_paIncFontSizes;
-  KAction *m_paDecFontSizes;
+  KHTMLFontSizeAction *m_paIncFontSizes;
+  KHTMLFontSizeAction *m_paDecFontSizes;
   KAction *m_paLoadImages;
   KAction *m_paFind;
   KAction *m_paPrintFrame;
@@ -314,8 +314,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
 
-  d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
-  d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
+  d->m_paIncFontSizes = new KHTMLFontSizeAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
+  d->m_paDecFontSizes = new KHTMLFontSizeAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
+  d->m_paDecFontSizes->setEnabled( false );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
 
@@ -2134,6 +2135,21 @@ void KHTMLPart::slotDecFontSizes()
 
   if ( d->m_fontBase == 0 )
     d->m_paDecFontSizes->setEnabled( false );
+}
+
+void KHTMLPart::setFontBaseInternal( int base, bool absolute )
+{
+    if ( absolute )
+      d->m_fontBase = base;
+    else
+      d->m_fontBase += base;
+
+    if ( d->m_fontBase < 0 )
+	d->m_fontBase = 0;
+
+   d->m_paDecFontSizes->setEnabled( d->m_fontBase > 0 );
+    
+    updateFontSize( d->m_fontBase );
 }
 
 void KHTMLPart::updateFontSize( int add )

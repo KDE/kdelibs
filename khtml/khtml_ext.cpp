@@ -9,6 +9,8 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
+#include <ktoolbarbutton.h>
+#include <ktoolbar.h>
 
 #include <dom/dom_element.h>
 #include <misc/htmltags.h>
@@ -206,6 +208,58 @@ const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
 bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
 {
   return m_part->openURLInFrame( url, urlArgs );
+}
+
+KHTMLFontSizeAction::KHTMLFontSizeAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+    : KAction( text, icon, 0, receiver, slot, parent, name )
+{
+    m_direction = direction;
+    m_part = part;
+
+    m_popup = new QPopupMenu;
+    m_popup->insertItem( i18n( "Default font size" ) );
+
+    int m = m_direction ? 1 : -1;
+
+    for ( int i = 1; i < 5; ++i )
+    {
+	int num = i * m;
+	QString numStr = QString::number( num );
+	if ( num > 0 ) numStr.prepend( '+' );
+	
+	m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
+    }
+
+    connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
+}
+
+KHTMLFontSizeAction::~KHTMLFontSizeAction()
+{
+    delete m_popup;
+}
+
+int KHTMLFontSizeAction::plug( QWidget *w, int index )
+{
+    int containerId = KAction::plug( w, index );
+    if ( containerId == -1 || !w->inherits( "KToolBar" ) )
+	return containerId;
+
+    KToolBarButton *button = static_cast<KToolBar *>( w )->getButton( menuId( containerId ) );
+    if ( !button )
+	return containerId;
+
+    button->setDelayedPopup( m_popup );
+    return containerId;
+}
+
+void KHTMLFontSizeAction::slotActivated( int id )
+{
+    int idx = m_popup->indexOf( id );
+
+    if ( idx == 0 )
+	m_part->setFontBaseInternal( 0, true );
+    else
+	m_part->setFontBaseInternal( idx * ( m_direction ? 1 : -1 ), false );
 }
 
 #include "khtml_ext.moc"

@@ -126,6 +126,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::RenderPartObject;
   friend class KJS::WindowFunc;
   friend class KHTMLPartBrowserExtension;
+  friend class KHTMLFontSizeAction;
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava )
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages )
@@ -588,6 +589,17 @@ protected:
 					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
 					    const QStringList &params);
 
+  /**
+     * @internal
+     */
+  void updateFontSize( int add );
+
+  /**
+    * @internal
+    */
+  void setFontBaseInternal( int base, bool absolute );
+
+
 protected slots:
   /**
    * Internal. Called by the @ref BrowserExtension .
@@ -686,8 +698,6 @@ private:
   void init( KHTMLView *view, GUIProfile prof );
 
   void clear();
-
-  void updateFontSize( int add );
 
   /**
    * @internal

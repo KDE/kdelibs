@@ -69,4 +69,21 @@ private:
   KHTMLPopupGUIClientPrivate *d;
 };
 
+class KHTMLFontSizeAction : public KAction
+{
+    Q_OBJECT
+public:
+    KHTMLFontSizeAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name );
+    ~KHTMLFontSizeAction();
+    
+    virtual int plug( QWidget *w, int index );
+    
+private slots:
+    void slotActivated( int );
+private:
+    QPopupMenu *m_popup;
+    bool m_direction;
+    KHTMLPart *m_part;
+};
+
 #endif
