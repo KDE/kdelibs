@@ -47,6 +47,7 @@
 #define KDE_open		::open64
 #define KDE_lseek		::lseek64
 #define KDE_readdir		::readdir64
+#define KDE_sendfile            ::sendfile64
 #define KDE_struct_stat 	struct stat64
 #define KDE_struct_dirent	struct dirent64
 #else
@@ -56,6 +57,7 @@
 #define KDE_open		::open
 #define KDE_lseek		::lseek
 #define KDE_readdir		::readdir
+#define KDE_sendfile            ::sendfile
 #define KDE_struct_stat 	struct stat
 #define KDE_struct_dirent	struct dirent
 #endif
