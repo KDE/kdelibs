@@ -49,7 +49,7 @@ class RenderTableCell;
 class RenderTableCol;
 class RenderTableCaption;
 
-class RenderTable : public RenderBox
+class RenderTable : public RenderFlow
 {
 public:
     enum Rules {

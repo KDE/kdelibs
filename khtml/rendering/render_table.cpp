@@ -67,7 +67,7 @@ template class QArray<LengthType>;
 
 
 RenderTable::RenderTable()
-    : RenderBox()
+    : RenderFlow()
 {
 
     tCaption = 0;
@@ -1441,7 +1441,10 @@ void RenderTable::layout()
     calcHeight();
 
     //kdDebug(0) << "table height: " << m_height << endl;
-
+    
+    // table can be containing block of positioned elements.
+    layoutSpecialObjects();
+    
     setLayouted();
 
 }
@@ -1597,6 +1600,9 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
     END_FOR_EACH
 
+    if ( specialObjects ) 
+	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
+	
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty, "blue");
 #endif

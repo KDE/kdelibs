@@ -66,7 +66,8 @@ public:
                         int tx, int ty);
     virtual void printObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-
+    void printSpecialObjects( QPainter *, int x, int y, int w, int h,
+                        int tx, int ty);
 
     virtual void layout( );
 

@@ -171,17 +171,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
     // 3. print floats and other non-flow objects
     if(specialObjects)
-    {
-        SpecialObject* r;
-        QListIterator<SpecialObject> it(*specialObjects);
-        for ( ; (r = it.current()); ++it ) {
-            if (r->node->containingBlock()==this) {
-                RenderObject *o = r->node;
-                //kdDebug(0) << renderName() << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
-                o->print(p, _x, _y, _w, _h, _tx , _ty);
-            }
-        }
-    }
+	printSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
 
 #ifdef BOX_DEBUG
     if(isAnonymousBox())
@@ -190,6 +180,19 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	outlineBox(p, _tx, _ty);
 #endif
 
+}
+
+void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+{
+    SpecialObject* r;
+    QListIterator<SpecialObject> it(*specialObjects);
+    for ( ; (r = it.current()); ++it ) {
+	if (r->node->containingBlock()==this) {
+	    RenderObject *o = r->node;
+	    //kdDebug(0) << renderName() << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+	    o->print(p, x, y, w, h, tx , ty);
+	}
+    }
 }
 
 void RenderFlow::layout()
