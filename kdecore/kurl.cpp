@@ -555,6 +555,9 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
         if ((rUrl.length() > 1) && (rUrl[1] == '/'))
         {
            m_strHost = QString::null;
+           // File protocol returns file:/// without host, strip // from rUrl
+           if (_u.m_strProtocol == fileProt)
+              rUrl.remove(0, 2);
         }
         m_strPath = QString::null;
         m_strPath_encoded = QString::null;

@@ -61,9 +61,8 @@ int main(int argc, char *argv[])
   check( "KURL::isValid()", baseURL.isValid() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::protocol()", baseURL.protocol(), "http"); // lowercase
   KURL url1 ( baseURL, "//www1.foo.bar" );
-// THIS FAILS AT THE MOMENT!
-//  check( "KURL::host()", url1.host(), "www1.foo.bar");
-//  check( "KURL::url()", url1.url(), "http://www1.foo.bar");
+  check( "KURL::host()", url1.host(), "www1.foo.bar");
+  check( "KURL::url()", url1.url(), "http://www1.foo.bar");
 
   baseURL = "http://www.foo.bar";
   KURL rel_url( baseURL, "/top//test/../test1/file.html" );
@@ -654,6 +653,10 @@ int main(int argc, char *argv[])
      //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
      //KURL url3("file:////atlas/dfaure");
      //check("KURL::path()", url3.path(), "//atlas/dfaure"); // says Waba
+     
+     KURL url4(url2, "//remotehost/home/root");
+     check("KURL::host()", url4.host(), "remotehost");
+     check("KURL::path()", url4.path(), "/home/root");
   }
 
   KURL umail1 ( "mailto:faure@kde.org" );
