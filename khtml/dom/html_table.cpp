@@ -607,13 +607,20 @@ void HTMLTableElement::deleteCaption(  )
 HTMLElement HTMLTableElement::insertRow( long index )
 {
     if(!impl) return 0;
-    return ((HTMLTableElementImpl *)impl)->insertRow( index );
+    int exceptioncode = 0;
+    HTMLElementImpl* ret = ((HTMLTableElementImpl *)impl)->insertRow( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return ret;
 }
 
 void HTMLTableElement::deleteRow( long index )
 {
+    int exceptioncode = 0;
     if(impl)
-        ((HTMLTableElementImpl *)impl)->deleteRow( index );
+        ((HTMLTableElementImpl *)impl)->deleteRow( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
 }
 
 // --------------------------------------------------------------------------
@@ -837,12 +844,19 @@ HTMLCollection HTMLTableSectionElement::rows() const
 HTMLElement HTMLTableSectionElement::insertRow( long index )
 {
     if(!impl) return 0;
-    return ((HTMLTableSectionElementImpl *)impl)->insertRow( index );
+    int exceptioncode = 0;
+    HTMLElementImpl* ret = ((HTMLTableSectionElementImpl *)impl)->insertRow( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return ret;
 }
 
 void HTMLTableSectionElement::deleteRow( long index )
 {
+    int exceptioncode = 0;
     if(impl)
-        ((HTMLTableSectionElementImpl *)impl)->deleteRow( index );
+        ((HTMLTableSectionElementImpl *)impl)->deleteRow( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
 }
 
