@@ -1250,7 +1250,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t\tcache=dynamic_cast<%s_base *>(_pool->base);\n",d->name.c_str());
 		fprintf(header,"\t\tassert(cache);\n");
 		fprintf(header,"\t\tcacheOK=true;\n");
-		fprintf(header,"\t\treturn cache;\n",d->name.c_str());
+		fprintf(header,"\t\treturn cache;\n");
 		fprintf(header,"\t}\n");
 
 		fprintf(header,"\npublic:\n");
