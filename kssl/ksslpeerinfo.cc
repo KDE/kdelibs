@@ -69,7 +69,11 @@ bool KSSLPeerInfo::certMatchesAddress() {
      QRegExp cnre(cn, false, true);
      if (cnre.match(d->host->nodeName())) return true;
   } else {
+#if QT_VERSION < 300
+     QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
+#else
      QPtrList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
+#endif
      cns.setAutoDelete(true);
 
      /*
