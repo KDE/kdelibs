@@ -484,7 +484,6 @@ void HTMLInlineElementImpl::setStyle(CSSStyle *currentStyle)
     case ID_SUP:
 	currentStyle->font.size -= 1;
 	break;
-    case ID_DT:
     default:
 	break;
     }

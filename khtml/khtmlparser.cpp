@@ -704,9 +704,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	popBlock(ID_DD);
 	break;
     case ID_DT:
-	// ###
-	// ??? -antti
-	//n = new HTMLInlineElementImpl(document, t->id); 
 	n = new HTMLGenericBlockElementImpl(document, t->id); 
 	popBlock(ID_DD);
 	popBlock(ID_DT);
