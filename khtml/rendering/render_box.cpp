@@ -274,7 +274,7 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 }
 
 
-void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
+void RenderBox::calcClip(QPainter* p, int tx, int ty)
 {
     int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
     int clipx = tx+bl;
@@ -302,15 +302,17 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
     {
         cliph-=style()->clipBottom().width(m_height-bt-bb);
     }
-//    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
+    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 
     QRect cr(clipx,clipy,clipw,cliph);
     cr = p->xForm(cr);
     QRegion creg(cr);
+    QRegion old = p->clipRegion();
     if (!old.isNull())
         creg = old.intersect(creg);
-    p->setClipRegion(creg);
 
+    p->save();
+    p->setClipRegion(creg);
 }
 
 void RenderBox::close()

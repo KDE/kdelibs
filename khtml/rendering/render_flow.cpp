@@ -154,13 +154,8 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 
     // overflow: hidden
-    // save old clip region, set a new one
-    QRegion oldClip;
-    if (style()->overflow()==OHIDDEN)
-    {
-        if (p->hasClipping())
-            oldClip = p->clipRegion();
-        calcClip(p, _tx, _ty, oldClip);
+    if (style()->overflow()==OHIDDEN) {
+        calcClip(p, _tx, _ty);
     }
 
 
@@ -180,12 +175,8 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
     // overflow: hidden
     // restore clip region
-    if (style()->overflow()==OHIDDEN)
-    {
-        if (oldClip.isNull())
-            p->setClipping(false);
-        else
-            p->setClipRegion(oldClip);
+    if (style()->overflow()==OHIDDEN) {
+	p->restore();
     }
 
     if(!isInline() && !childrenInline() && style()->outlineWidth())
