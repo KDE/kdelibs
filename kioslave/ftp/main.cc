@@ -1569,3 +1569,5 @@ again:
   return 0;
 }
 
+#undef string
+
