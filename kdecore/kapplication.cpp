@@ -2196,7 +2196,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    if (config.readBoolEntry("TerminalClient", false))
    {
      KConfigGroup confGroup( KGlobal::config(), "General" );
-     QString preferredTerminal = confGroup.readEntry("TerminalApplication","konsole");
+     QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", "konsole");
      command = preferredTerminal + " -e " + command;
    }
 
