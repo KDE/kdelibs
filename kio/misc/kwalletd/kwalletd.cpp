@@ -428,7 +428,7 @@ return -1;
 }
 
 
-int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, long entryType) {
+int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {
@@ -482,7 +482,7 @@ return -1;
 }
 
 
-long KWalletD::entryType(int handle, const QString& folder, const QString& key) {
+int KWalletD::entryType(int handle, const QString& folder, const QString& key) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {

@@ -86,7 +86,7 @@ class KWalletD : public KDEDModule {
 		virtual int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName);
 
 		// Write an entry.  rc=0 on success.
-		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, long entryType);
+		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType);
 		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value);
 		virtual int writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value);
 		virtual int writePassword(int handle, const QString& folder, const QString& key, const QString& value);
@@ -95,7 +95,7 @@ class KWalletD : public KDEDModule {
 		virtual bool hasEntry(int handle, const QString& folder, const QString& key);
 
 		// What type is the entry?
-		virtual long entryType(int handle, const QString& folder, const QString& key);
+		virtual int entryType(int handle, const QString& folder, const QString& key);
 
 		// Remove an entry.  rc=0 on success.
 		virtual int removeEntry(int handle, const QString& folder, const QString& key);
