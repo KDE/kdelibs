@@ -20,6 +20,7 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -173,7 +174,15 @@ Completion KProxyFunc::execute(const List &args)
             // myIpAddress()
             // returns the IP of the client
             if (args.size() == 0)
-                result = String("Unimplemented");
+            {
+                char hostname[256];
+                gethostname(hostname, 255);
+                UString addr = dnsResolve(hostname);
+                if (addr.isNull())
+                    result = Undefined();
+                else
+                    result = String(addr);
+            }
             break;
         case DNSDomainLevels:
             // dnsDomainLevels(host)
