@@ -84,6 +84,7 @@ class KAccelPrivate;
  *
  * @short Configurable shortcut support for widgets.
  * @see KGlobalAccel
+ * @see KAccelShortcutList
  * @see KKeyChooser
  * @see KKeyDialog
  * @version $Id$

@@ -37,6 +37,7 @@ class KGlobalAccelPrivate;
 * currently active.
 *
 * @see KAccel
+* @see KAccelShortcutList
 * @see KKeyChooser
 * @see KKeyDialog
 * @short Configurable global shortcut support

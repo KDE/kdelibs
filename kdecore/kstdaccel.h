@@ -34,6 +34,7 @@ class KAccelActions;
  *
  * If you want real configurable keybindings in your applications,
  * please checkout the class @ref KAccel in kaccel.h
+ * @see KAccelShortcutList
  */
 namespace KStdAccel
 {
