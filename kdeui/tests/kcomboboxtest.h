@@ -2,10 +2,9 @@
 #define _KCOMBOBOXTEST_H
 
 #include <qwidget.h>
-#include <qguardedptr.h>
 
 class QTimer;
-class QLineEdit;
+class QComboBox;
 class QPushButton;
 
 class KComboBox;
@@ -23,14 +22,18 @@ private slots:
   void slotTimeout();
   void slotDisable();
   void slotReturnPressed();
+  void slotReturnPressed(const QString&);
   void slotActivated( int );
   void slotActivated( const QString& );
    
 protected:
+  QComboBox* m_qc;
+  
   KComboBox* m_ro;
   KComboBox* m_rw;
   KComboBox* m_hc;
   KComboBox* m_konqc;
+
 
   QPushButton* m_btnExit;
   QPushButton* m_btnEnable;
