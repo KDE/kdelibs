@@ -107,6 +107,7 @@
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY CD	"<acronym>CD</acronym>">
+<!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
@@ -125,6 +126,7 @@
 <!ENTITY HTTP	"<acronym>HTTP</acronym>">
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
 <!ENTITY Java	"<trademark>Java</trademark>">
+<!ENTITY Jini	"<trademark>Jini</trademark>">
 <!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
