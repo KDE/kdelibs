@@ -1324,7 +1324,7 @@ void UIServer::resizeEvent(QResizeEvent* e)
 
 bool UIServer::queryClose()
 {
-  if ( !m_shuttingDown ) {
+  if (( !m_shuttingDown ) && !kapp->sessionSaving()) {
     hide();
     return false;
   }
