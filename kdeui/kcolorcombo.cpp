@@ -60,8 +60,8 @@
 //#include "kcolordrag.h"
 #include "kcolorcombo.h"
 
-// This is repeated from the KColorDlg, but I didn't 
-// want to make it public BL. 
+// This is repeated from the KColorDlg, but I didn't
+// want to make it public BL.
 // We define it out when compiling with --enable-final in which case
 // we use the version defined in KColorDlg
 
@@ -142,7 +142,7 @@ void KColorCombo::slotActivated( int index )
 {
 	if ( index == 0 )
 	{
-	    if ( KColorDialog::getColor( customColor ) == QDialog::Accepted )
+	    if ( KColorDialog::getColor( customColor, this ) == QDialog::Accepted )
 		{
 			QRect rect( 0, 0, width(), 20 );
 			QPixmap pixmap( rect.width(), rect.height() );
@@ -158,7 +158,7 @@ void KColorCombo::slotActivated( int index )
 			QBrush brush( customColor );
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
-			painter.drawText( 2, 18,
+			painter.drawText( 2, 15,
 					  i18n("Custom...") );
 			painter.end();
 
@@ -211,12 +211,12 @@ void KColorCombo::addColors()
 	QBrush brush( customColor );
 	painter.fillRect( rect, brush );
 	painter.setPen( pen );
-	painter.drawText( 2, 18, i18n("Custom...") );
+	painter.drawText( 2, 15, i18n("Custom...") );
 	painter.end();
 
 	insertItem( pixmap );
 	pixmap.detach();
-	
+
 	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
 	{
 		painter.begin( &pixmap );
