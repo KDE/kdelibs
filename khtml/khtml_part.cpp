@@ -3689,7 +3689,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
-  if (_mouse->button() == MidButton)
+  if ((_mouse->button() == MidButton) && (event->url() == 0))
   {
     QClipboard *cb = QApplication::clipboard();
     QCString plain("plain");
