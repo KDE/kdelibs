@@ -320,9 +320,6 @@ protected:
 
     void slotCompletionMatch(const QString&);
 
-protected:
-    virtual bool eventFilter( QObject *, QEvent * );
-
 private slots:
     void slotDetailedView();
     void slotSimpleView();

@@ -636,7 +636,6 @@ void KDirOperator::setView( KFile::FileView view )
 void KDirOperator::deleteOldView()
 {
     if ( oldView ) {
-        oldView->widget()->removeEventFilter( this );
         oldView->widget()->hide();
         delete oldView;
         oldView = 0;
@@ -688,9 +687,6 @@ void KDirOperator::connectView(KFileView *view)
     updateViewActions();
     fileView->widget()->show();
     fileView->widget()->resize(size());
-
-    // FIXME : only installed because focusNextPrevChild() isn't called
-    fileView->widget()->installEventFilter( this );
 }
 
 KFile::Mode KDirOperator::mode() const
@@ -1150,20 +1146,6 @@ void KDirOperator::slotIOFinished()
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
     QTimer::singleShot(200, this, SLOT(resetCursor()));
     emit finishedLoading();
-}
-
-
-// somehow focusNextPrevChild() is not called ;(
-bool KDirOperator::eventFilter( QObject *o, QEvent *e )
-{
-    if ( e->type() == QEvent::FocusOut ) {
-        if ( fileView && o == fileView->widget() ) {
-            focusNextPrevChild( true );
-            return true;
-        }
-        return false;
-    }
-    return QWidget::eventFilter( o, e );
 }
 
 #include "kdiroperator.moc"
