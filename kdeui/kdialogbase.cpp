@@ -1487,10 +1487,10 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
     e->accept();
     return;
   }
-  
+
   // accept the dialog when Ctrl-Return is pressed
-  else if ( e->state() == ControlButton && 
-            qApp->focusWidget() && 
+  else if ( e->state() == ControlButton &&
+            qApp->focusWidget() &&
             qApp->focusWidget()->inherits( "QTextEdit" ) &&
             (e->key() == Key_Return || e->key() == Key_Enter) )
   {
@@ -1532,6 +1532,35 @@ void KDialogBase::closeEvent( QCloseEvent *e )
     }
 }
 
+void KDialogBase::cancel()
+{
+    switch ( mEscapeButton ) {
+    case Ok:
+        slotOk();
+        break;
+    case User1: // == No
+        if ( mMessageBoxMode )
+            slotNo();
+        else
+            slotUser1();
+        break;
+    case User2: // == Yes
+        if ( mMessageBoxMode )
+            slotYes();
+        else
+            slotUser2();
+        break;
+    case User3:
+        slotUser3();
+        break;
+    case Close:
+        slotClose();
+        break;
+    case Cancel:
+    default:
+	slotCancel();
+    }
+}
 
 bool KDialogBase::haveBackgroundTile()
 {

@@ -1142,6 +1142,16 @@ class KDialogBase : public KDialog
      */
     void updateBackground();
 
+    /**
+     * Force closing the dialog, setting its result code to the one Esc would set.
+     * You shouldn't use this, generally (let the user make his choice!)
+     * but it can be useful when you need to make a choice after a timeout
+     * has happened, or when the parent widget has to go somewhere else
+     * (e.g. html redirections).
+     * @since 3.1
+     */
+    void cancel();
+
   signals:
     /**
      * The Help button was pressed. This signal is only emitted if
