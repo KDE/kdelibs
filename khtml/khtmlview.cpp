@@ -112,7 +112,7 @@ public:
         m_view = view;
         m_viewprivate = vp;
     };
-    
+
 protected:
     virtual void maybeTip(const QPoint &);
 
@@ -1244,7 +1244,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		return;
 	}
 #endif // KHTML_NO_TYPE_AHEAD_FIND
-	
+
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
@@ -1447,7 +1447,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     }
 
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
-    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardModifiers() & KApplication::ControlModifier))
+    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
 	{
 	    displayAccessKeys();
 	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
@@ -1455,11 +1455,11 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	    d->accessKeysPreActivate = false;
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
-	
+
     if( d->scrollSuspendPreActivate && _ke->key() != Key_Shift )
         d->scrollSuspendPreActivate = false;
     if( _ke->key() == Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftButton
-        && !(KApplication::keyboardModifiers() & KApplication::ShiftModifier))
+        && !(KApplication::keyboardMouseState() & Qt::ShiftButton))
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
@@ -1469,7 +1469,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         _ke->accept();
         return;
     }
-    
+
     QScrollView::keyReleaseEvent(_ke);
 }
 
@@ -1807,7 +1807,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
 	while (toFocus && toFocus != oldFocusNode)
 	{
-	    
+
 	    QRect focusNodeRect = toFocus->getRect();
 	    if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
 		(focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
@@ -1934,7 +1934,7 @@ void KHTMLView::displayAccessKeys()
         if( n->isElementNode()) {
             ElementImpl* en = static_cast< ElementImpl* >( n );
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
-            if( s.length() == 1) {	    
+            if( s.length() == 1) {
 	        QRect rec=en->getRect();
 	        QLabel *lab=new QLabel(s.string(),viewport(),0,Qt::WDestructiveClose);
 	        connect( this, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
@@ -2446,9 +2446,9 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	default:
 	    break;
     }
-    if (d->accessKeysPreActivate && button!=-1) 
+    if (d->accessKeysPreActivate && button!=-1)
     	d->accessKeysPreActivate=false;
-	
+
     bool ctrlKey = (_mouse->state() & ControlButton);
     bool altKey = (_mouse->state() & AltButton);
     bool shiftKey = (_mouse->state() & ShiftButton);
@@ -2852,7 +2852,7 @@ void KHTMLView::complete( bool pendingAction )
         // do it now
         killTimer(d->layoutTimerId);
         d->layoutTimerId = startTimer( 0 );
-        d->emitCompletedAfterRepaint = pendingAction ? 
+        d->emitCompletedAfterRepaint = pendingAction ?
             KHTMLViewPrivate::CSActionPending : KHTMLViewPrivate::CSFull;
     }
 
@@ -2863,7 +2863,7 @@ void KHTMLView::complete( bool pendingAction )
         // do it now
         killTimer(d->repaintTimerId);
         d->repaintTimerId = startTimer( 20 );
-        d->emitCompletedAfterRepaint = pendingAction ? 
+        d->emitCompletedAfterRepaint = pendingAction ?
             KHTMLViewPrivate::CSActionPending : KHTMLViewPrivate::CSFull;
     }
 
@@ -2874,7 +2874,7 @@ void KHTMLView::complete( bool pendingAction )
         else
             emit m_part->completed(true);
     }
-    
+
 }
 
 #ifndef KHTML_NO_CARET
