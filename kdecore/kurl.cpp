@@ -439,7 +439,10 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   else if ( rUrl[0] == '#' )
   {
     *this = _u;
-    setHTMLRef( decode(rUrl.mid(1), 0, encoding_hint) );
+    QString ref = decode(rUrl.mid(1), 0, encoding_hint);
+    if ( ref.isNull() )
+        ref = ""; // we know there was an (empty) html ref, we saw the '#'
+    setHTMLRef( ref );
   }
   else if ( isRelativeURL( rUrl) )
   {
