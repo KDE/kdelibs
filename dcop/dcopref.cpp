@@ -43,7 +43,7 @@ DCOPRef::DCOPRef( const QCString& app, const QCString& obj )
 {
 }
 
-DCOPRef::DCOPRef( const QCString& app, const QCString& obj. const QCString& type )
+DCOPRef::DCOPRef( const QCString& app, const QCString& obj, const QCString& type )
     : m_app( app ), m_obj( obj ), m_type( type )
 {
 }
