@@ -48,6 +48,7 @@ Comment[pt_BR]=O script de configuração do proxy baixado é inválido
 Comment[sk]=Stiahnutý konfiguračný skript proxy nieje správny
 Comment[sr]=Preuzeta skripta za podešavanje proxy-ja je neispravna
 Comment[sv]=Det nerladdade proxyinställningsskriptet är ogiltigt
+Comment[tr]=Vekil sunucu yapılandırma dosyası geçersiz
 default_presentation=16
 
 [download-error]
@@ -81,6 +82,7 @@ Comment[pt_BR]=O script de configuração do proxy não pode ser carregado
 Comment[sk]=Nebolo možné stiahnúť konfiguračný skript pre proxy
 Comment[sr]=Konfiguraciona skripta za podešavanje proxy-ja ne može biti preuzeta
 Comment[sv]=Proxyinställningsskriptet kunde inte laddas ner
+Comment[tr]=Vekil sunucu yapılandırma dosyası indirilemedi
 default_presentation=16
 
 [evaluation-error]
@@ -98,6 +100,7 @@ Name[pt_BR]=Erro de avaliação de script
 Name[sk]=Chyba kontroly skriptu
 Name[sr]=Greška prilikom izračunavanja u skripti
 Name[sv]=Utvärderingsfel för skript
+Name[tr]=Betik çalıştırma hatası
 Comment=There was an error executing the proxy configuration script
 Comment[cs]=Nastala chyba při spouštění konfiguračního skriptu proxy
 Comment[da]=Der opstod en fejl ved kørslen af proxy-indstillingsscriptet
@@ -112,4 +115,5 @@ Comment[pt_BR]=Ocorreu um erro ao executar o script de configuração do proxy.
 Comment[sk]=Vyskytla sa chyba počas spustenia konfiguračného skriptu proxy
 Comment[sr]=Desila se greška prilikom izvršavanja skripte za podešavanje proxy-ja
 Comment[sv]=Ett fel uppstod vid körning av proxyinställningsskriptet
+Comment[tr]=Vekil sunucu yapılandırma dosyası çalıştırılamadı
 default_presentation=0

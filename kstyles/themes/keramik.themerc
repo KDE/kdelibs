@@ -25,6 +25,7 @@ Comment[pt_BR]=O estilo padrão usando Mistura Alpha
 Comment[sk]=Štandardný štýl používajúci alfa kanál
 Comment[sr]=Podrazumevani stil koji koristi alfa blending
 Comment[sv]=Förvald stil som använder alfablandning
+Comment[tr]=Alpha karışımı kullanan öntanımlı stil
 
 [KDE]
 WidgetStyle=Keramik
