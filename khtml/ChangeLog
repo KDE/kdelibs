@@ -1,3 +1,14 @@
+2004-11-22  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (layoutInlineChildren): for elements with some kind of 
+        scrolling overflow and a variable height, include the scrollbar height in 
+        calculations to avoid masking content (#89136).
+
+        * rendering/render_block.cpp (layoutBlock/layoutBlockChildren): ditto.
+
+        * rendering/render_box.cpp (contentWidth/contentHeight): subtract scrollbars 
+        height/width when applicable.
+
 2004-11-22  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement CSS border on form-widgets
