@@ -329,6 +329,13 @@ protected:
   bool validURL( const KURL& ) const;
 
   /**
+   * If an update was triggered while we were listing, we'll process it
+   * after the end of the listing. This processes the next update in the
+   * list of pending updates.
+   */
+  void processPendingUpdates();
+
+  /**
    * The url that we used to list (can be different in case of redirect)
    */
   KURL m_url;

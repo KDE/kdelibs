@@ -69,6 +69,7 @@ KDirLister::~KDirLister()
 
 void KDirLister::slotFileDirty( const QString& _file )
 {
+  //kdDebug(7003) << "KDirLister::slotFileDirty " << _file << endl;
   KURL u;
   u.setPath( _file );
   KFileItem * item = find( u.url() );
@@ -92,6 +93,7 @@ void KDirLister::slotDirectoryDirty( const QString& _dir )
 
 void KDirLister::slotURLDirty( const KURL & dir )
 {
+  //kdDebug(7003) << "KDirLister::slotURLDirty " << dir.prettyURL() << endl;
   // Check for dir in m_lstDirs
   for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
     if ( dir.cmp( (*it), true /* ignore trailing slash */ ) )
@@ -106,6 +108,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   if ( !validURL( _url ) )
     return;
 
+  kdDebug(7003) << "KDirLister::openURL " << _url.prettyURL() << " keep=" << _keep << endl;
   m_isShowingDotFiles = _showDotFiles;
 
   // Stop running jobs, if any
@@ -118,7 +121,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   // Automatic updating of directories ?
   if ( d->autoUpdate && _url.isLocalFile() )
   {
-    //kdDebug(7003) << "adding " << _url.path() << endl;
+    //kdDebug(7003) << "adding to kdirwatch " << _url.path() << endl;
     kdirwatch->addDir( _url.path() );
     if ( !_keep ) // already done if keep == true
     {
@@ -173,7 +176,10 @@ void KDirLister::slotResult( KIO::Job * job )
     job->showErrorDialog();
     emit canceled();
   } else
-    emit completed();
+  {
+      emit completed();
+      processPendingUpdates();
+  }
 }
 
 
@@ -230,12 +236,12 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
   m_url = url;
   if ( m_lstDirs.count() == 1 )
   {
-      kdDebug( 7003 ) << "setting first URL to " << url.url() << endl;
+      //kdDebug( 7003 ) << "setting first URL to " << url.url() << endl;
       m_lstDirs.first() = m_url;
   }
   if ( !m_lstFileItems.isEmpty() )
   {
-      kdDebug( 7003 ) << "getting rid of current stuff by emitting clear" << endl;
+      //kdDebug( 7003 ) << "getting rid of current stuff by emitting clear" << endl;
       emit clear();
   }
   emit redirection( url );
@@ -246,6 +252,7 @@ void KDirLister::updateDirectory( const KURL& _dir )
   kdDebug(7003) << "KDirLister::updateDirectory( " << _dir.url() << " )" << endl;
   if ( !m_bComplete )
   {
+    //kdDebug(7003) << "KDirLister::updateDirectory -> appending to pending updates " << endl;
     d->lstPendingUpdates.append( _dir );
     return;
   }
@@ -352,7 +359,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
               (*kit)->assign( *item );
               (*kit)->mark(); // just in case
               lstRefreshItems.append( (*kit) );
-              kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
+              //kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
           }
           delete item;
       }
@@ -384,13 +391,28 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   m_buffer.clear();
 
   emit completed();
+  processPendingUpdates();
+}
 
+void KDirLister::processPendingUpdates()
+{
   // continue with pending updates
-  // as this will result in a recursive loop it's sufficient to only
-  // take the first entry
-  pendingIt = d->lstPendingUpdates.begin();
-  if ( pendingIt != d->lstPendingUpdates.end() )
-    updateDirectory( *pendingIt );
+  KURL::List::Iterator pendingIt = d->lstPendingUpdates.begin();
+  while ( pendingIt != d->lstPendingUpdates.end() )
+  {
+    // Check for dir in m_lstDirs - this may have changed since the time
+    // we registered the update
+    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
+      if ( (*pendingIt).cmp( (*it), true /* ignore trailing slash */ ) )
+      {
+        kdDebug(7003) << "KDirLister::processPendingUpdates pending update in " << (*pendingIt).prettyURL() << endl;
+        updateDirectory( *pendingIt );
+        return;
+      }
+    // Drop this update, we're not interested anymore
+    d->lstPendingUpdates.remove( pendingIt );
+    pendingIt = d->lstPendingUpdates.begin();
+  }
 }
 
 void KDirLister::deleteUnmarkedItems()
@@ -569,8 +591,8 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
       {
         if ( (*it).isParentOf(m_lstDirs.first()) )
         {
-            kdDebug( 7003 ) << (*it).prettyURL() << " is a parent of " << m_lstDirs.first().prettyURL() << endl;
-          kdDebug(7003) << "emit closeView" << endl;
+          kdDebug( 7003 ) << (*it).prettyURL() << " is a parent of " << m_lstDirs.first().prettyURL() << endl;
+          //kdDebug(7003) << "emit closeView" << endl;
           stop();
           emit closeView();
           return;
