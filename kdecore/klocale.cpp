@@ -594,7 +594,7 @@ QString KLocale::formatMoney(const QString &numStr) const
 QString KLocale::formatNumber(double num, int precision) const
 {
     bool neg = num < 0;
-    QString res = QString::number(neg?-num:num, 'f', (precision==-1) ? fracDigits() : precision);
+    QString res = QString::number(neg?-num:num, 'f', (precision==-1) ? 2 : precision);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, decimalSymbol());
@@ -756,7 +756,10 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	if (includeSecs)
 	  rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
 	else
-	  rst.replace(i-1, 3, "");
+	{
+	  i--;
+	  rst.remove(i, 3);
+	}
 	continue;
       case 'p':
 	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
@@ -878,7 +881,7 @@ QString KLocale::monetaryThousandsSeparator() const {
 }
 
 QString KLocale::positiveSign() const {
-  return QString("+");
+  return QString::null;
 }
 
 QString KLocale::negativeSign() const {
