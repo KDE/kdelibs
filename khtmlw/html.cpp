@@ -45,8 +45,8 @@
 QString toRoman( int number, bool upper )
 {
     QString roman;
-    char ldigits[] = { 'i', 'v', 'x', 'm', 'c' };
-    char udigits[] = { 'I', 'V', 'X', 'M', 'C' };
+    char ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
+    char udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
     char *digits = upper ? udigits : ldigits;
     int i, d = 0;
 
