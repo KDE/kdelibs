@@ -30,6 +30,12 @@
 class KArtsServer;
 namespace Arts { class StereoEffectStack; }
 
+/**
+ * @brief A KDE wrapper around Synth_AMAN_RECORD/AudioToByteStream/ByteSoundReceiver
+ *
+ * @author Matthias Kretz <kretz@kde.org>
+ * @since 3.2
+*/
 class KAudioRecordStream : public QObject
 {
 	Q_OBJECT

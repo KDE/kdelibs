@@ -30,6 +30,13 @@ namespace Arts { class StereoEffectStack; }
 
 class KAudioPlayStreamPrivate;
 
+/**
+ * @brief A wrapper around ByteSoundProducer/ByteStreamToAudio/Synth_AMAN_PLAY.
+ *
+ * @author Arnold Krille <arnold@arnoldarts.de>
+ * @since 3.2
+*/
+
 class KAudioPlayStream : public QObject {
    Q_OBJECT
 public:
@@ -39,6 +46,7 @@ public:
 	 *
 	 * @param server The server where it should play to.
 	 * @param title The title that is shown in the AudioManager.
+	 * @param parent You will propably want to pass the server as parent to so this stream gets deleted before the server disappears.
 	*/
 	KAudioPlayStream( KArtsServer* server, const QString title, QObject* parent=0, const char* name=0 );
 	/**
@@ -99,7 +107,7 @@ signals:
 	void running( bool );
 
 	/**
-	 * Is emitted if the inputbuffer runs dry
+	 * Is emitted if the inputbuffer runs dry and polling os off.
 	*/
 	void noData();
 public:
