@@ -152,7 +152,7 @@ void HTMLSelect::addOption( const char *v, bool sel )
 		if ( sel || lb->count() == 1 )
 		{
 			_defSelected = lb->count() - 1;
-			lb->setCurrentItem( _defSelected );
+			lb->setSelected( _defSelected, true );
 		}
 		width = lb->maxItemWidth()+20;
 		widget->resize( width, widget->height() );

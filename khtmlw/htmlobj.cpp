@@ -615,7 +615,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     
     cached = TRUE;
 
-    predefinedWidth = _width < 0 ? false : true;
+    predefinedWidth = ( _width < 0 && !_percent ) ? false : true;
     predefinedHeight = _height < 0 ? false : true;
 
     border = bdr;
@@ -679,9 +679,9 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     // Is the image available ?
     if ( pixmap == 0 || pixmap->isNull() )
     {
-	if ( !predefinedWidth )
+	if ( !predefinedWidth && !percent )
 	    width = 32;
-	if ( !predefinedHeight )
+	if ( !predefinedHeight && !percent )
 	    ascent = 32;
     }
     else
@@ -692,9 +692,12 @@ void HTMLImage::init()
 {
     if ( percent > 0 )
     {
-	width = max_width * percent / 100;
-	ascent = pixmap->height() * width / pixmap->width();
+	width = (int)max_width * (int)percent / 100;
+	if ( !predefinedHeight )
+	    ascent = pixmap->height() * width / pixmap->width();
 	setFixedWidth( false );
+
+	debug( "max_width=%d, percent=%d, width=%d",(int)max_width,(int)percent,(int)width);
     }
     else
     {
@@ -779,9 +782,11 @@ void HTMLImage::setMaxWidth( int _max_width )
     if ( percent > 0 )
     {
 	max_width = _max_width;
-	width = max_width * percent / 100;
-	ascent = pixmap->height() * width / pixmap->width() + border * 2;
+	width = (int)max_width * (int)percent / 100;
+	if ( !predefinedHeight )
+	    ascent = pixmap->height() * width / pixmap->width() + border * 2;
 	width += border * 2;
+	debug( "max_width=%d, percent=%d, width=%d",(int)max_width,(int)percent,(int)width);
     }
 }
 
@@ -860,8 +865,11 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	    matrix.scale( (float)(width-border*2)/pixptr->width(),
 		    (float)(ascent-border*2)/pixptr->height() );
 	    QPixmap tp = pm.xForm( matrix );
-	    rect.setRight( rect.right() * (width-border*2)/pixptr->width() );
-	    rect.setBottom( rect.bottom() * (ascent-border*2)/pixptr->height());
+	    debug( "pixmap: %d, %d", tp.width(), tp.height() );
+	    debug( "rect: %d, %d", rect.right(), rect.bottom() );
+	    rect.setRight( rect.width() * (width-border*2)/pixptr->width() );
+	    rect.setBottom( rect.height() * (ascent-border*2)/pixptr->height());
+	    debug( "rect: %d, %d", rect.right(), rect.bottom() );
 	    _painter->drawPixmap( QPoint( x + _tx + border,
 		    y - ascent + _ty + border ), tp, rect );
 	}

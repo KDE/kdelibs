@@ -2347,7 +2347,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 			    if ( *(token + 5) == '+' || *(token + 5) == '-' )
 				newSize = num;
 			    else
-				newSize = num - settings->fontBaseSize;
+				newSize = num - 3;
 		    }
 		    else if ( strncasecmp( token, "color=", 6 ) == 0 )
 		    {
