@@ -24,22 +24,102 @@
 
 #include <qfile.h>
 #include <qmessagebox.h>
-#include <qbitarray.h>
+#include <qlist.h>
+#include <qstring.h>
+#include <qtextstream.h>
 
-#include <stdlib.h> // abort
-#include <stdarg.h> // vararg stuff
+#include <stdlib.h>	// abort
+#include <stdarg.h>	// vararg stuff
 #include <syslog.h>
-#include <math.h> // pow
+#include <math.h>	// pow
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-bool bAreaCalculated = false;
-QBitArray *pInfoArray = 0L, *pWarnArray = 0L,
-  *pErrorArray = 0L, *pFatalArray = 0L;
+class KDebugEntry
+{ 
+public:
+  KDebugEntry (int n, QString d) {number=n; descr=d.copy();}
+  KDebugEntry (QString d, int n) {number=n; descr=d.copy();}
+  unsigned int number;
+  QString descr;
+};
 
-void kdebug( ushort nLevel, ushort, 
+static QList<KDebugEntry> KDebugCache;
+#define MAX_CACHE 20
+
+QString getDescrFromNum(int _num)
+{
+  QString data, filename(KApplication::kde_configdir()+"/kdebug.areas");
+  QFile file(filename);
+  QTextStream *ts;
+  unsigned long number, space;
+  bool longOK;
+
+  KDebugEntry *ent;
+  for (ent=KDebugCache.first(); ent != 0; ent=KDebugCache.next()) {
+    if (ent->number == _num) {
+      return ent->descr.copy();
+    }
+  }
+ 
+  if (!file.open(IO_ReadOnly)) {
+    warning("Couldn't open %s", (const char *)filename);
+    file.close();
+    return "";
+  }
+
+  ts = new QTextStream(&file);
+  while (!ts->eof()) {
+    data=ts->readLine().stripWhiteSpace().copy();
+
+    if (data.left(1) == "#")
+      continue; // It's a comment
+
+    if (data.find("#") != -1) {
+      data.remove(data.find("#"), data.length());
+      data=data.stripWhiteSpace();
+    }
+
+    if (data.isEmpty() || data.isNull())
+      continue;
+
+    if ( (data.find(" ") == -1) && (data.find("	") == -1) )
+      continue; // It only has one "part", need two
+
+    if (data.find(" ") == -1)
+      space=data.find("	");
+    else if (data.find("	") == -1)
+      space=data.find(" ");
+    else if (data.find(" ") < data.find("	"))
+      space=data.find(" ");
+    else
+      space=data.find("	");
+
+    number=data.left(space).toULong(&longOK);
+    if (!longOK)
+      continue; // The first part wasn't a number
+
+    if (number != _num)
+      continue; // Not the number we're looking for
+
+    data.remove(0, space); data=data.stripWhiteSpace();
+
+    if (KDebugCache.count() <= MAX_CACHE)
+      KDebugCache.removeFirst();
+    KDebugCache.append(new KDebugEntry(number,data.copy()));
+    delete ts;
+    file.close();
+    return data.copy();
+  }
+
+  delete ts;
+  file.close();
+  return "";
+}
+
+void kdebug( ushort nLevel, ushort nArea, 
                          const char* pFormat, ... )
 {
   // Save old group
@@ -54,28 +134,32 @@ void kdebug( ushort nLevel, ushort,
   short nOutput = 0;
   int nPriority = 0; // for syslog
   QString aCaption;
+  QString aAppName = getDescrFromNum(nArea).copy();
+  if (aAppName.isEmpty() || aAppName.isNull()) {
+    aAppName=kapp->appName().copy();
+  }
   switch( nLevel )
         {
         case KDEBUG_INFO:
           nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 2 );
-          aCaption = "Info";
+          aCaption = "Info (" + aAppName.copy() + ")";
           nPriority = LOG_INFO;
           break;
         case KDEBUG_WARN:
           nOutput = kapp->getConfig()->readNumEntry( "WarnOutput", 2 );
-          aCaption = "Warning";
+          aCaption = "Warning (" + aAppName.copy() + ")";
           nPriority = LOG_WARNING;
           break;
         case KDEBUG_FATAL:
           nOutput = kapp->getConfig()->readNumEntry( "FatalOutput", 2 );
-          aCaption = "Fatal Error";
+          aCaption = "Fatal Error (" + aAppName.copy() + ")";
           nPriority = LOG_CRIT;
           break;
         case KDEBUG_ERROR:
         default:
           /* Programmer error, use "Error" as default */
           nOutput = kapp->getConfig()->readNumEntry( "ErrorOutput", 2 );
-          aCaption = "Error";
+          aCaption = "Error (" + aAppName.copy() + ")";
           nPriority = LOG_ERR;
           break;
         };
@@ -107,7 +191,6 @@ void kdebug( ushort nLevel, ushort,
                         break;
                   };
                 char buf[4096];
-                QString aAppName = kapp->appName();
                 int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
                 va_start( arguments, pFormat );
 #ifdef HAVE_VSNPRINTF
@@ -143,7 +226,7 @@ void kdebug( ushort nLevel, ushort,
         case 2: // Shell
           {
                 va_start( arguments, pFormat );
-                fprintf( stderr, "%s: ", kapp->appName().data() );
+                fprintf( stderr, "%s: ", aAppName.data() );
                 vfprintf( stderr, pFormat, arguments );
                 fprintf( stderr, "\n" );
                 va_end( arguments );
@@ -152,7 +235,6 @@ void kdebug( ushort nLevel, ushort,
         case 3: // syslog
           {
                 char buf[4096];
-                QString aAppName = kapp->appName();
                 int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
                 va_start( arguments, pFormat );
                 int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
