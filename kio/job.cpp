@@ -709,6 +709,8 @@ MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
     kdDebug(7007) << "mimetype " << url.url() << endl;
     KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
+    if ( showProgressInfo )
+      Observer::self()->stating( job, url );
     return job;
 }
 
