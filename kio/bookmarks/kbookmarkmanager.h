@@ -65,10 +65,12 @@ protected:
      * @param bImportDesktopFiles if true, and if the bookmarksFile
      * doesn't already exist, import bookmarks from desktop files
      */
-    KBookmarkManager( const QString & bookmarksFile,
-                         bool bImportDesktopFiles = true );
+    KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles = true );
 
 public:
+    /**
+     * Destructor
+     */
     ~KBookmarkManager();
 
     /**
@@ -102,6 +104,8 @@ public:
     bool updateAccessMetadata( const QString &url, bool emitSignal = true );
 
     /*
+     * NB. currently *unimplemented*
+     *
      * Update favicon url for a given url.
      * @param url the viewed url
      * @param faviconurl the favicion url
@@ -189,6 +193,11 @@ public:
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                    bool bImportDesktopFiles = true );
 
+    /**
+     * Returns a pointer to the users main bookmark collection.
+     * @return a pointer to the users main bookmark collection.
+     * @since 3.2 (?)
+     */
     static KBookmarkManager* userBookmarksManager();
 
     /**
