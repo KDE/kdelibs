@@ -46,7 +46,6 @@ AC_FIND_GIF
 AC_FIND_JPEG
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
 AC_C_INLINE
 AC_HEADER_TIME
 
@@ -77,4 +76,4 @@ if test "${prefix}" = NONE; then
 fi
 AC_SUBST(KDEDIR)
 
-AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile jscript/Makefile)
+AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile jscript/Makefile kfmlib/Makefile)
