@@ -101,7 +101,7 @@
                 <cstring>tlNumJobs</cstring>
             </property>
             <property name="text">
-                <string>Number of Jobs remaining:</string>
+                <string>Number of jobs remaining:</string>
             </property>
             <property name="alignment">
                 <set>AlignVCenter|AlignRight</set>
