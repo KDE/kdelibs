@@ -56,7 +56,7 @@ class QPixmap;
  *
  * @short A drop-in replacement for QLabel that displays hyperlinks.
  * @author Kurt Granroth <granroth@kde.org> (Interface)
- * @author Peter Putzer <putze@kde.org> (Rewrite)
+ * @author Peter Putzer <putzer@kde.org> (Rewrite)
  * @version $Id$
  * 
  */
