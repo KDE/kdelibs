@@ -263,10 +263,12 @@ namespace KIO {
                                   bool overwrite, bool resume, bool showProgressInfo = true );
 
     /**
-     * Creates a new mult-get job.
+     * Creates a new multiple get job.
      *
      * @param id the id of the get operation
      * @param url the URL of the file
+     * @param metaData the MetaData associated with the file
+     *
      * @return the job handling the operation.
      * @see get()
      */
@@ -465,7 +467,7 @@ namespace KIO {
      * Otherwise, a .desktop file of Type Link and pointing to the src URL will be created.
      *
      * @param src The existing file or directory, 'target' of the link.
-     * @param destDir Destination directory where the link will be created.
+     * @param dest Destination directory where the link will be created.
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      * @see link ()

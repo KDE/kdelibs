@@ -206,6 +206,7 @@ public:
 
     /**
      * Create a new bookmark folder, as the last child of this group
+     * @param mgr the manager of the bookmark
      * @param text for the folder. If empty, the user will be queried for it.
      * @param emitSignal if true emit KBookmarkNotifier signal
      */
@@ -218,7 +219,12 @@ public:
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      * if this bookmark was added interactively.
-     * @param emitSignal iff true emit KBookmarkNotifier signal
+     * @param mgr the manager of the bookmark
+     * @param text for the bookmark
+     * @param url the URL that the bookmark points to
+     * @param icon the name of the icon to associate with the bookmark. A suitable default
+     * will be determined from the URL if not specified.
+     * @param emitSignal if true emit KBookmarkNotifier signal
      */
     KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString::null, bool emitSignal = true );
 

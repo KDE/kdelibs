@@ -46,10 +46,14 @@ public:
     /**
      * Fills a bookmark toolbar
      *
+     * @param manager the bookmark manager
      * @param owner implementation of the KBookmarkOwner interface (callbacks)
      * @param toolBar toolbar to fill
-     * @param collec parent for the KActions OBSOLETE
-     * @param manager the bookmark manager
+     * 
+     * The KActionCollection pointer argument is now obsolete.
+     *
+     * @param parent the parent widget for the bookmark toolbar
+     * @param name the internal name for the bookmark toolbar
      */
     KBookmarkBar( KBookmarkManager* manager,
                   KBookmarkOwner *owner, KToolBar *toolBar,

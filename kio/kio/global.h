@@ -58,7 +58,7 @@ namespace KIO
   /**
    * Converts size from kilo-bytes to the string representation.
    *
-   * @param  kbsize  size in kilo-bytes
+   * @param  kbSize  size in kilo-bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
    QString convertSizeFromKB( KIO::filesize_t kbSize );
