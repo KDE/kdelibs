@@ -1,36 +1,18 @@
+<!-- This file contains entities (only!) to make authoring/translating
+     a document easier.  They are necessarily language-specific.
+     In the case of name clashes, entities in this file always lose.
+     Keep the entities simple, but _always_ provide them with full markup.
+     Please keep the entities sorted on the name: it will avoid duplicate
+     names (which if they occur will cost you a _lot_ of time)
+ -->
 
-
-
-<!ENTITY kde       'KDE'>
-<!ENTITY konqueror 'Konqueror'>
-<!ENTITY kate      'Kate'>
-<!ENTITY arts      'aRTs'>
-<!ENTITY kicker    'Kicker'>
-<!ENTITY ex        'por ex.'>
-<!ENTITY ie        'isto È'>
-<!ENTITY Linux     'Linux'>
-<!ENTITY Solaris   'Solaris'>
-<!ENTITY UNIX      'UNIX'>
-<!ENTITY X-Window  'Sistema de Janelas X'>
-<!ENTITY X-Windows 'Sistema de Janelas X'>
-<!ENTITY FTP       'FTP'>
-<!ENTITY XML       'XML'>
-<!ENTITY URL       'URL'>
-<!ENTITY etc       'etc'>
-<!ENTITY LMB       'LMB'>
-<!ENTITY RMB       'bot„o direto do mouse'>
-<!ENTITY Ctrl      'CTRL'>
-<!ENTITY kstarts   'KStarts'>
-<!ENTITY qt         'QT'>
-<!ENTITY kde-http   '<link url="http://www.kde.org">http://www.kde.org</link>'>
-<!ENTITY kgeo       'KGeo'>
-<!ENTITY arts       'aRTs'>
-<!ENTITY artsbuilder 'Construtor do aRTs'>
-<!ENTITY khelpcenter 'Centro de InformaÁıes do KDE'>
-<!ENTITY kcontrol   'Centro de Controle do KDE'>
-<!ENTITY kcontrolcenter   'Centro de Controle do KDE'>
-<!ENTITY Netscape   'Netscape'>
-<!ENTITY MacOS      'MacOS'>
-<!ENTITY Mac        'Mac'>
 <!ENTITY Alt    "<keycap>Alt</keycap>">
-<!ENTITY cdrom  "<abbrev>CD-ROM</abbrev>">
+<!ENTITY artsbuilder    "<application>Construtor do aRTs</application>">
+<!ENTITY cdrom  "<hardware>CD-ROM</hardware>">
+<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
+<!ENTITY ex     "<abbrev>por ex.</abbrev>">
+<!ENTITY ie     "isto √©">
+<!ENTITY kcontrol       "<application>Centro de Controle do &kde;</application>">
+<!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
+<!ENTITY khelpcenter    "<application>Centro de Informa√ß√µes do &kde;</application>">
+<!ENTITY RMB    "bot√£o <mousebutton>direto</mousebutton> do mouse">
