@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
+#include <time.h>
 
 #include <qfile.h>
 
@@ -117,6 +118,8 @@ public:
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
     DCOPClient *dcopClient;
+    time_t timeout;
+    QByteArray timeoutData;
 };
 
 };
@@ -208,6 +211,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
 //    d->processed_size = 0;
     d->totalSize=0;
     d->sentListEntries=0;
+    d->timeout = 0;
     connectSlave(mAppSocket);
     
     d->dcopClient = 0;
@@ -234,6 +238,13 @@ void SlaveBase::dispatchLoop()
     int retval;
 
     while (true) {
+    if (d->timeout && (d->timeout < time(0)))
+    {
+       QByteArray data = d->timeoutData;
+       d->timeout = 0;
+       d->timeoutData = QByteArray();
+       special(data);
+    }
     FD_ZERO(&rfds);
 
     assert(appconn->inited());
@@ -848,6 +859,17 @@ int SlaveBase::readData( QByteArray &buffer)
    return result;
 }
 
+void SlaveBase::setTimeoutSpecialCommand(int timeout, const QByteArray &data)
+{
+   if (timeout > 0)
+      d->timeout = time(0)+(time_t)timeout;
+   else if (timeout == 0)
+      d->timeout = 1; // Immediate timeout
+   else
+      d->timeout = 0; // Canceled
+      
+   d->timeoutData = data;
+}
 
 void SlaveBase::dispatch( int command, const QByteArray &data )
 {

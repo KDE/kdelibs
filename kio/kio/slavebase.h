@@ -476,6 +476,21 @@ public:
     int readTimeout();
 
     /**
+     * This function sets a timeout of @p timeout seconds and calls
+     * special(data) when the timeout occurs as if it was called by the 
+     * application.
+     *
+     * A timeout can only occur when the slave is waiting for a command
+     * from the application.
+     *
+     * Specifying a negative timeout cancels a pending timeout.
+     *
+     * Only one timeout at a time is supported, setting a timeout
+     * cancels any pending timeout.
+     */
+    void setTimeoutSpecialCommand(int timeout, const QByteArray &data=QByteArray());
+
+    /**
      * @internal
      */
     static void sigsegv_handler(int);
