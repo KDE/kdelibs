@@ -54,7 +54,7 @@ public:
 	* The current colour.
 	* @return The current colour.
 	*/
-	const QColor color() const
+	QColor color() const
 		{	return col; }
 	/**
 	* Set the current colour.
