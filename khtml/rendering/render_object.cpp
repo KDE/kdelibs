@@ -580,6 +580,24 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                    style->borderTopStyle(), render_l && lc != tc, render_r && rc != tc);
 }
 
+void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style)
+{
+    int ow = style->outlineWidth();
+    if(!ow) return;
+
+    const QColor& oc = style->outlineColor();
+    EBorderStyle os = style->outlineStyle();
+
+    drawBorder(p, _tx - ow, _ty-ow, _tx - ow, _ty + h+ow, ow, BSLeft, oc, style->color(),
+               os, false, false);
+    drawBorder(p, _tx - ow, _ty - ow, _tx + w + ow, _ty - ow, ow, BSTop, oc, style->color(),
+               os, false, false);
+    drawBorder(p, _tx + w + ow, _ty - ow, _tx + w + ow, _ty + h + ow, ow, BSRight, oc, style->color(),
+               os, false, false);
+    drawBorder(p, _tx -ow, _ty + h + ow, _tx + w + ow, _ty + h + ow, ow, BSBottom, oc, style->color(),
+               os, false, false);
+}
+
 void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int ty)
 {
     printObject(p, x, y, w, h, tx, ty);

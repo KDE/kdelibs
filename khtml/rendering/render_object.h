@@ -198,9 +198,15 @@ public:
                         int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
 
     /**
-     * prints the the Box decoration borders
+     * prints the Box decoration borders
      */
     void printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
+
+    /**
+     * prints the Box outline borders
+     */
+    void printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
+
 
     /**
      * This function calculates the minimum & maximum width that the object
