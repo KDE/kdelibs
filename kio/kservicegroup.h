@@ -52,7 +52,7 @@ public:
   KServiceGroup( const QString & _fullpath, const QString & _relpath );
 
   /**
-   * @internal construct a service from a stream. 
+   * @internal construct a service from a stream.
    * The stream must already be positionned at the correct offset
    */
   KServiceGroup( QDataStream& _str, int offset, bool deep );
@@ -72,7 +72,7 @@ public:
 
   /**
    * @return the caption of this group
-   */ 
+   */
   QString caption() const { return m_strCaption; }
 
   /**
@@ -83,7 +83,7 @@ public:
   /**
    * @return the descriptive comment for the group, if there is one.
    */
-  QString comment() const { return m_strComment; }                              
+  QString comment() const { return m_strComment; }
 
   /**
    * @internal
@@ -97,10 +97,27 @@ public:
   virtual void save( QDataStream& );
 
   /**
-   * List of all Services and ServiceGroups within this 
+   * List of all Services and ServiceGroups within this
    * ServiceGroup
    */
   virtual List entries(bool sorted = false);
+
+  /**
+   * @return non-empty string if the group is a special base group.
+   * By default, "Settings/" is the kcontrol base group ("settings")
+   * and "System/Screensavers/" is the screensavers base group ("screensavers").
+   * This allows moving the groups without breaking those apps.
+   *
+   * The base group is defined by the X-KDE-BaseGroup key
+   * in the .directory file.
+   */
+  QString baseGroupName() const { return m_strBaseGroupName; }
+
+  /**
+   * @return the group for the given baseGroupName
+   * Can return 0L if the directory (or the .directory file) was deleted.
+   */
+  static Ptr baseGroup( const QString &baseGroupName );
 
   static Ptr root();
   static Ptr group(const QString &relPath);
@@ -108,7 +125,7 @@ public:
 protected:
   /**
    * @internal
-   * Add a service to this group 
+   * Add a service to this group
    */
   void addEntry( KSycocaEntry *entry);
 
@@ -118,5 +135,6 @@ protected:
 
   List m_serviceList;
   bool m_bDeep;
+  QString m_strBaseGroupName;
 };
 #endif

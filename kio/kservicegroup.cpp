@@ -44,6 +44,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
      m_strIcon = config.readEntry( "Icon" );
      m_strComment = config.readEntry( "Comment" );
      m_bDeleted = config.readBoolEntry( "Hidden", false );
+     m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   }
   // Fill in defaults.
   if (m_strCaption.isEmpty())
@@ -60,7 +61,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 }
 
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
-	KSycocaEntry( _str, offset )
+    KSycocaEntry( _str, offset )
 {
   m_bDeep = deep;
   load( _str );
@@ -75,12 +76,12 @@ void KServiceGroup::load( QDataStream& s )
   QStringList groupList;
 
   s >> m_strCaption >> m_strIcon >>
-       m_strComment >> groupList;
+       m_strComment >> groupList >> m_strBaseGroupName;
 
   if (m_bDeep)
   {
      for(QStringList::ConstIterator it = groupList.begin();
-	 it != groupList.end(); it++)
+         it != groupList.end(); it++)
      {
         QString path = *it;
         if (path[path.length()-1] == '/')
@@ -125,12 +126,12 @@ void KServiceGroup::save( QDataStream& s )
      }
      else
      {
-	//fprintf(stderr, "KServiceGroup: Unexpected object in list!\n");
+        //fprintf(stderr, "KServiceGroup: Unexpected object in list!\n");
      }
   }
 
   s << m_strCaption << m_strIcon <<
-       m_strComment << groupList;
+       m_strComment << groupList << m_strBaseGroupName;
 }
 
 KServiceGroup::List
@@ -144,54 +145,54 @@ KServiceGroup::entries(bool sort)
 
     if (!m_bDeep) {
 
-	group =
-	    KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
+        group =
+            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
 
-	if (0 == group) // No guarantee that we still exist!
-	    return List();
+        if (0 == group) // No guarantee that we still exist!
+            return List();
     }
 
     if (!sort)
-	return group->m_serviceList;
-   
-    
+        return group->m_serviceList;
+
+
     // Sort the list alphabetically.
     // Groups come first, then services.
-    
+
     QStringList slist;
     QStringList glist;
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
-	{
-	    if ((*it)->isType(KST_KServiceGroup))
-		glist.append((*it)->name());
-	    else
-		slist.append((*it)->name());
-	}
-		
+        {
+            if ((*it)->isType(KST_KServiceGroup))
+                glist.append((*it)->name());
+            else
+                slist.append((*it)->name());
+        }
+
     glist.sort();
     slist.sort();
-    
+
     List lsort;
     for(QStringList::ConstIterator it = glist.begin(); it != glist.end(); ++it)
-	for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
-	    if((*it) == (*sit)->name())
-		lsort.append(*sit);
-    
+        for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
+            if((*it) == (*sit)->name())
+                lsort.append(*sit);
+
     for(QStringList::ConstIterator it = slist.begin(); it != slist.end(); ++it)
-	for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
-	    if((*it) == (*sit)->name())
-		lsort.append(*sit);
-    
+        for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
+            if((*it) == (*sit)->name())
+                lsort.append(*sit);
+
     // honor the SortOrder Key
-    
+
     QString rp = relPath();
     if(rp == "/") rp = QString::null;
 
     QStringList order =
-	KDesktopFile(rp + QString::fromUtf8(".directory")).sortOrder();
+        KDesktopFile(rp + QString::fromUtf8(".directory")).sortOrder();
 
     if (order.isEmpty())
-	return lsort;
+        return lsort;
 
     // Iterate through the sort spec list. If we find an entry that matches one
     // in the original list, take it out of the original list and add it to the
@@ -202,20 +203,26 @@ KServiceGroup::entries(bool sort)
     List orig = lsort;
 
     for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
-	for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-	    {
-		if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
-		    {
-			sorted.append(*sit);
-			orig.remove(sit);
-			break;
-		    }
-	    }
+        for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
+            {
+                if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
+                    {
+                        sorted.append(*sit);
+                        orig.remove(sit);
+                        break;
+                    }
+            }
 
     for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-	sorted.append(*sit);
+        sorted.append(*sit);
 
     return sorted;
+}
+
+KServiceGroup::Ptr
+KServiceGroup::baseGroup( const QString & _baseGroupName )
+{
+    return KServiceGroupFactory::self()->findBaseGroup(_baseGroupName, true);
 }
 
 KServiceGroup::Ptr

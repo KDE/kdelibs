@@ -105,5 +105,35 @@ void
 KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry, const char *resource)
 {
    KSycocaFactory::addEntry(newEntry, resource);
+   KServiceGroup * serviceGroup = (KServiceGroup *) newEntry;
+
+   if ( !serviceGroup->baseGroupName().isEmpty() )
+   {
+       m_baseGroupDict->add( serviceGroup->baseGroupName(), newEntry );
+   }
 }
 
+void
+KBuildServiceGroupFactory::saveHeader(QDataStream &str)
+{
+   KSycocaFactory::saveHeader(str);
+
+   str << (Q_INT32) m_baseGroupDictOffset;
+}
+
+void
+KBuildServiceGroupFactory::save(QDataStream &str)
+{
+   KSycocaFactory::save(str);
+
+   m_baseGroupDictOffset = str.device()->at();
+   m_baseGroupDict->save(str);
+
+   int endOfFactoryData = str.device()->at();
+
+   // Update header (pass #3)
+   saveHeader(str);
+
+   // Seek to end.
+   str.device()->at(endOfFactoryData);
+}
