@@ -1125,6 +1125,17 @@ bool TextAreaWidget::event( QEvent *e )
     return KEdit::event( e );
 }
 
+void TextAreaWidget::resizeEvent( QResizeEvent *ev )
+{
+    QTableView::resizeEvent( ev );
+#if QT_VERSION <= 232
+    // updates widget mask when autoMask == true. Qt <= 2.3.2
+    // didn't call the base impl, causing ugly cropped form widget
+    // bugs in konq/e :-( (Simon)
+    QFrame::resizeEvent( ev );
+#endif
+}
+
 // -------------------------------------------------------------------------
 
 // ### allow contents to be manipulated via DOM - will require updating

@@ -359,6 +359,7 @@ public:
 
 protected:
     virtual bool event (QEvent *e );
+    virtual void resizeEvent( QResizeEvent *ev );
 };
 
 
