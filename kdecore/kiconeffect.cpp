@@ -34,13 +34,21 @@
 
 extern bool qt_use_xrender;
 
+class KIconEffectPrivate
+{
+public:
+	QString mKey[6][3];
+};
+
 KIconEffect::KIconEffect()
 {
+    d = new KIconEffectPrivate;
     init();
 }
 
 KIconEffect::~KIconEffect()
 {
+    delete d;
 }
 
 void KIconEffect::init()
@@ -75,6 +83,7 @@ void KIconEffect::init()
 	mEffect[i][0] = NoEffect;
 	mEffect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
 	mEffect[i][2] = NoEffect;
+	
 	mTrans[i][0] = false;
 	mTrans[i][1] = false;
 	mTrans[i][2] = true;
@@ -108,7 +117,7 @@ void KIconEffect::init()
 	    mTrans[i][j] = config->readBoolEntry(*it2 + "SemiTransparent");
 
 	}
-    }
+    }    
 }
 
 bool KIconEffect::hasEffect(int group, int state) const
@@ -118,19 +127,26 @@ bool KIconEffect::hasEffect(int group, int state) const
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
-    QString s, tmp;
-    s += tmp.setNum(mEffect[group][state]);
-    s += ":";
-    s += tmp.setNum(mValue[group][state]);
-    s += ":";
-    s += mTrans[group][state] ? QString::fromLatin1("trans")
-	    : QString::fromLatin1("notrans");
-    if (mEffect[group][state] == Colorize)
+    QString cached = d->mKey[group][state];
+    if (cached.isEmpty())
     {
-	s += ":";
-	s += mColor[group][state].name();
+        QString tmp;
+        cached = tmp.setNum(mEffect[group][state]);
+        cached += ":";
+        cached += tmp.setNum(mValue[group][state]);
+        cached += ":";
+        cached += mTrans[group][state] ? QString::fromLatin1("trans")
+            : QString::fromLatin1("notrans");
+        if (mEffect[group][state] == Colorize)
+        {
+            cached += ":";
+            cached += mColor[group][state].name();
+        }
+    
+        d->mKey[group][state] = cached;    
     }
-    return s;
+    
+    return cached;
 }
 
 QImage KIconEffect::apply(QImage image, int group, int state) const
