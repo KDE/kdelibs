@@ -180,6 +180,11 @@ int main(int argc, char *argv[])
       KURL newUrl = tmpurl;
       newUrl.setFileName( "mynewdir" );
   check("KURL::setFileName() special", newUrl.url(), "file:/home/dfaure/mynewdir");
+  // even more tricky
+  u2 = "print:/specials/Print%20To%20File%20(PDF%2FAcrobat)";
+  printf("\n* URL is %s\n",u2.url().ascii());
+  u2.setFileName( "" );
+  check("KURL::setFileName()", u2.url(), "print:/specials/");
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
