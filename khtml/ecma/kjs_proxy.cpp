@@ -266,6 +266,7 @@ void KJSProxyImpl::initScript()
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_part);
+  static_cast<ObjectImp*>(globalObject.imp())->setPrototype(m_script->builtinObjectPrototype());
 
 #ifdef KJS_DEBUGGER
   m_script->setDebuggingEnabled(m_debugEnabled);
