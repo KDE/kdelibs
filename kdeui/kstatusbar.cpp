@@ -25,22 +25,11 @@
 
 // $Id$
 
-#define FONT_Y_DELTA 3
-#define DEFAULT_BORDERWIDTH 0
-
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent, const char *name) :
   QLabel( parent, name)
 {
   id = _id;
-
-  // Commented out - not needed? (sven)
-  //int w, h;
-  //QFontMetrics fm = fontMetrics();
-  //w = fm.width( text )+8;
-  //h = fm.height() + FONT_Y_DELTA;
-  //resize( w, h );
-
 
   setText( text );
 
@@ -48,7 +37,7 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
 
   // Warning: QStatusBar draws shaded rectangle around every item - which
   // IMHO is stupid.
-  // So NoFrame|PLain is the best you get. the problem is that only in case of
+  // So NoFrame|Plain is the best you get. the problem is that only in case of
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
   setLineWidth  (0);
@@ -56,8 +45,8 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
 
   setAlignment( AlignHCenter | AlignVCenter );
 
-  connect (this, SIGNAL(itemPressed(int)), parent, SLOT(slotPressed(int)));
-  connect (this, SIGNAL(itemReleased(int)), parent, SLOT(slotReleased(int)));
+  connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
+  connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));
 }
 
 void KStatusBarLabel::mousePressEvent (QMouseEvent *)
@@ -74,12 +63,6 @@ void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
 KStatusBar::KStatusBar( QWidget *parent, const char *name )
   : QStatusBar( parent, name )
 {
-  // Don claims that this causes segfaults, because QStatusBar deletes its child
-  // objects. So I won´t delete it here. (sven)
-
-  // items.setAutoDelete(true);
-  items.setAutoDelete(false);
-
   // make the size grip stuff configurable
   // ...but off by default (sven)
   KConfig *config = KGlobal::config();
@@ -88,18 +71,10 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   bool grip_enabled = config->readBoolEntry(QString::fromLatin1("SizeGripEnabled"), false);
   setSizeGripEnabled(grip_enabled);
   config->setGroup(group);
-
-  // Peter Putzer 2000-07-14
-  // fixes strange warnings in KSysV
-  // because resizeEvent is somehow called with a too small
-  // width()
-  //resize (QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
 
 KStatusBar::~KStatusBar ()
 {
-  // Umm... delete something;
-  items.clear();
 }
 
 void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
@@ -117,7 +92,7 @@ void KStatusBar::removeItem (int id)
   {
     removeWidget (l);
     items.remove(id);
-    // reformat (); // needed? (sven)
+    delete l;
   }
   else
     kdDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
@@ -151,7 +126,7 @@ void KStatusBar::setItemAlignment (int id, int align)
 
 void KStatusBar::setItemFixed(int id, int w)
 {
-   KStatusBarLabel *l = items[id];
+  KStatusBarLabel *l = items[id];
   if (l)
   {
     //clear();
@@ -175,8 +150,8 @@ void KStatusBar::slotReleased(int _id)
   emit released(_id);
 }
 
-
 #include "kstatusbar.moc"
 
 //Eh!!!
+//Eh what ? :)
 
