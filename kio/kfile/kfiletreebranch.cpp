@@ -76,7 +76,7 @@ void KFileTreeBranch::slotListerStarted( const KURL &url )
    /* set the parent correct if it is zero. */
    kdDebug( 250) << "Find parent for " << url.prettyURL() << endl;
 
-   KFileItem *fi = find( url );
+   KFileItem *fi = findByURL( url );
 
    m_currParent = 0;
    
