@@ -5,6 +5,8 @@
 
 #include <krun.h>
 
+#include <qwidget.h>
+
 class testKRun : public KRun
 {
   Q_OBJECT
@@ -21,6 +23,7 @@ public:
 };
 
 
+class QPushButton;
 class Receiver : public QWidget
 {
   Q_OBJECT
