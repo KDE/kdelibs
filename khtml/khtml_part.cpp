@@ -2631,14 +2631,6 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     popupMenu( currentUrl );
     d->m_strSelectedURL = QString::null;
   }
-  else if ( _mouse->button() == MidButton && !d->m_strSelectedURL.isEmpty() )
-  {
-    KURL u = completeURL( currentUrl );
-    if ( !u.isMalformed() )
-      emit d->m_extension->createNewWindow( u );
-
-    d->m_strSelectedURL = QString::null;
-  }
 }
 
 void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * )
@@ -2803,7 +2795,13 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   if ( !d->m_strSelectedURL.isEmpty() && _mouse->button() != RightButton )
   {
      QString target;
-     QString url = splitUrlTarget(d->m_strSelectedURL, &target);
+     QString url;
+     if( _mouse->button() == LeftButton ) {
+       url = splitUrlTarget(d->m_strSelectedURL, &target);
+     } else {
+       url = splitUrlTarget(d->m_strSelectedURL);
+       target = "_blank";
+     }
      kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
 
      // Visual action effect, over text links
