@@ -989,7 +989,11 @@ void HTMLInputElementImpl::attach()
     case SUBMIT:
     case RESET:
     case BUTTON:
+    case CHECKBOX:
+    case RADIO:
         addCSSProperty(CSS_PROP_COLOR, "buttontext" );
+    case HIDDEN:
+    case IMAGE:
         break;
     };
 
