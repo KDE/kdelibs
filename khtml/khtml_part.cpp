@@ -27,6 +27,7 @@
 #include "khtml_events.h"
 #include "khtml_find.h"
 #include "khtml_ext.h"
+#include "khtml_pagecache.h"
 
 #include "dom/dom_string.h"
 #include "dom/dom_element.h"
@@ -66,6 +67,8 @@ using namespace DOM;
 #include <kxmlgui.h>
 #include <kcursor.h>
 #include <kiconeffect.h>
+#include <kdatastream.h>
+#include <ktempfile.h>
 
 #include <qtextcodec.h>
 
@@ -155,8 +158,8 @@ public:
   DOM::HTMLDocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
-  QStringList m_cachedHtml;
-    QString scheduledScript;
+  long m_cacheId;
+  QString scheduledScript;
 
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
@@ -394,9 +397,24 @@ KHTMLPart::~KHTMLPart()
   khtml::Cache::deref();
 }
 
-bool KHTMLPart::restoreURL( const KURL &url, int charset )
+void KHTMLPart::slotRestoreData(const QByteArray &data )
 {
-  QStringList cachedDoc = d->m_cachedHtml;
+  kdDebug( 6050 ) << "slotRestoreData: " << data.size() << endl;
+  write( data.data(), data.size() );
+
+  if (data.size() == 0)
+  {
+     kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
+     // End of data.
+     if ( d->m_bParsing )
+     {
+        end(); //will emit completed()
+     }
+  }
+}
+
+bool KHTMLPart::restoreURL( const KURL &url )
+{
   QString referrerUrl = m_url.url();
 
   kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
@@ -413,18 +431,10 @@ bool KHTMLPart::restoreURL( const KURL &url, int charset )
   kdDebug( 6050 ) << "begin!" << endl;
   d->m_bParsing = true;
 
+  KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
+
   begin( url, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
-  d->m_settings->setCharset( (QFont::CharSet) charset );
-
-  for(QStringList::ConstIterator it = cachedDoc.begin();
-      it != cachedDoc.end();
-      ++it)
-  {
-     d->m_doc->write( *it );
-  }
-  end();
-  d->m_cachedHtml = cachedDoc;
   return true;
 }
 
@@ -772,7 +782,11 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
         d->m_doc->setReloading();
 
     d->m_workingURL = KURL();
+ 
+    d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
   }
+
+  KHTMLPageCache::self()->addData(d->m_cacheId, data);
 
   write( data.data(), data.size() );
 }
@@ -781,6 +795,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 {
   if (job->error())
   {
+    KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
     job->showErrorDialog();
     d->m_job = 0L;
     emit canceled( job->errorString() );
@@ -788,6 +803,8 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     return;
   }
   kdDebug( 6050 ) << "slotFinished" << endl;
+
+  KHTMLPageCache::self()->endData(d->m_cacheId);
 
   d->m_workingURL = KURL();
 
@@ -803,7 +820,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
   clear();
   d->m_bCleared = false;
-  d->m_cachedHtml.clear();
+  d->m_cacheId = 0;
 
   // ###
   //stopParser();
@@ -876,8 +893,6 @@ void KHTMLPart::write( const char *str, int len )
       d->m_haveEncoding = true;
   }
 
-  d->m_cachedHtml.append(decoded);
-
   d->m_doc->write( decoded );
 }
 
@@ -885,8 +900,6 @@ void KHTMLPart::write( const QString &str )
 {
   if ( str.isNull() )
     return;
-
-  d->m_cachedHtml.append(str);
 
   d->m_doc->write( str );
 }
@@ -1521,8 +1534,23 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
 void KHTMLPart::slotViewDocumentSource()
 {
+  KURL url(m_url);
+  if (KHTMLPageCache::self()->isValid(d->m_cacheId))
+  {
+     QString extension = m_url.fileName(false);
+     if (extension.isEmpty())
+        extension = "index.html";
+     KTempFile sourceFile(QString::null, extension);
+     if (sourceFile.status() == 0)
+     {
+        KHTMLPageCache::self()->saveData(d->m_cacheId, sourceFile.dataStream());
+        url = KURL();
+        url.setPath(sourceFile.name());
+     }
+  }
+
   //  emit d->m_extension->openURLRequest( m_url, KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
-  (void) KRun::runURL( m_url, QString::fromLatin1("text/plain") );
+  (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
 }
 
 void KHTMLPart::slotViewFrameSource()
@@ -2065,8 +2093,8 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
-  // Save the doc itself.
-  stream << (int) d->m_settings->charset() << d->m_cachedHtml;
+  // Save the doc's cache id.
+  stream << d->m_cacheId;
 
   // Save the state of the document (Most notably the state of any forms)
   QStringList docState;
@@ -2123,8 +2151,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> u >> xOffset >> yOffset;
 
-  int charset;
-  stream >> charset >> d->m_cachedHtml;
+  stream >> d->m_cacheId;
 
   stream >> docState;
 
@@ -2234,10 +2261,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.docState = docState;
     d->m_extension->setURLArgs( args );
     kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
-    if (d->m_cachedHtml.isEmpty())
+    if (!KHTMLPageCache::self()->isValid(d->m_cacheId))
        openURL( u );
     else
-       restoreURL( u, charset );
+       restoreURL( u );
   }
 
 }

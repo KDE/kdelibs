@@ -102,7 +102,6 @@ KHTMLPageCache::KHTMLPageCache()
   d = new KHTMLPageCachePrivate;
   d->newId = 1;
   d->deliveryActive = false;
-  d->expireQueue.setAutoDelete(true);
 }
 
 KHTMLPageCache::~KHTMLPageCache()
@@ -117,7 +116,10 @@ KHTMLPageCache::createCacheEntry()
   d->dict.insert(d->newId, entry);   
   d->expireQueue.append(entry);
   if (d->expireQueue.count() > EXPIRE_QUEUE_LENGTH)
-     d->expireQueue.removeFirst();
+  {
+     KHTMLPageCacheEntry *entry = d->expireQueue.take(0);
+     delete entry;
+  }
   return (d->newId++);
 }
 
@@ -159,6 +161,10 @@ KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   if (!entry) return;
+
+  // Make this entry the most recent entry.
+  d->expireQueue.removeRef(entry);
+  d->expireQueue.append(entry);
 
   d->delivery.append( entry->fetchData(recvObj, recvSlot) );
   if (!d->deliveryActive)

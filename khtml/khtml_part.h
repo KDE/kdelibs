@@ -512,7 +512,7 @@ public:
    **/
   virtual void restoreState( QDataStream &stream );
 
-  bool restoreURL( const KURL &url, int charset );
+  bool restoreURL( const KURL &url );
 
   /**
    * Retrieve the @p Node currently under the mouse
@@ -620,6 +620,10 @@ private slots:
    * @internal
    */
   void slotData( KIO::Job*, const QByteArray &data );
+  /**
+   * @internal
+   */
+  void slotRestoreData( const QByteArray &data );
   /**
    * @internal
    */
