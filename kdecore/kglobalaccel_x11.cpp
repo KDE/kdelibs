@@ -104,6 +104,11 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
 	uchar keyCodeX = key.code();
 	uint keyModX = key.mod() & g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
+	// HACK: make Alt+Print work
+	if( key.sym() == XK_Sys_Req ) {
+	    keyModX |= KKeyServer::modXAlt();
+	    keyCodeX = 111;
+	}
 
 #ifndef __osf__
 // this crashes under Tru64 so .....
