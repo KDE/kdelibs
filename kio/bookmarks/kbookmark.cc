@@ -405,8 +405,7 @@ static QDomNode findOrCreateMetadata( QDomNode& parent )
 bool KBookmark::hasMetaData() const
 {
     QDomNode n = cd_or_create( internalElement(), "info" );
-    n = findOrCreateMetadata( n );
-    return !n.firstChild().isNull();
+    return findOrCreateMetadata( n ).hasChildNodes();
 }
 
 void KBookmark::updateAccessMetadata()
