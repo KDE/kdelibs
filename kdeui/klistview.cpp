@@ -200,9 +200,11 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         int fieldX = rect.x() - 1;
         int fieldW = p->columnWidth(col) + 2;
 
-        int pos = p->header()->mapToIndex(col);
-        for ( int index = 0; index < pos; index++ )
-            fieldX += p->columnWidth( p->header()->mapToSection( index ));
+        QHeader* const pHeader = p->header();
+
+        const int pos = pHeader->mapToIndex(col);
+        for ( int index = 0; index < pos; ++index )
+            fieldX += p->columnWidth( pHeader->mapToSection( index ));
 
         if ( col == 0 ) {
             int d = i->depth() + (p->rootIsDecorated() ? 1 : 0);
@@ -474,11 +476,15 @@ bool KListView::isExecuteArea( int x, QListViewItem* item )
     return true;
   else {
     int offset = 0;
-    int width = columnWidth( 0 );
-    int pos = header()->mapToIndex( 0 );
 
-    for ( int index = 0; index < pos; index++ )
-      offset += columnWidth( header()->mapToSection( index ) );
+
+    int width = columnWidth( 0 );
+
+    QHeader* const thisHeader = header();
+    const int pos = thisHeader->mapToIndex( 0 );
+
+    for ( int index = 0; index < pos; ++index )
+      offset += columnWidth( thisHeader->mapToSection( index ) );
 
     x += contentsX(); // in case of a horizontal scrollbar
 
@@ -643,11 +649,14 @@ void KListView::slotAutoSelect()
 
 void KListView::slotHeaderChanged()
 {
-  if (d->fullWidth && columns())
+
+  const int colCount = columns();
+  if (d->fullWidth && colCount)
   {
     int w = 0;
-    for (int i = 0; i < columns() - 1; ++i) w += columnWidth(i);
-    setColumnWidth( columns() - 1, viewport()->width() - w - 1 );
+    const int lastColumn = colCount - 1;
+    for (int i = 0; i < lastColumn; ++i) w += columnWidth(i);
+    setColumnWidth( lastColumn, viewport()->width() - w - 1 );
   }
 }
 
@@ -1858,7 +1867,7 @@ QListViewItem* KListView::itemAtIndex(int index)
    {
       if (j==index)
          return it.current();
-      j++;
+      ++j;
    };
    return 0;
 }
@@ -1982,10 +1991,13 @@ void KListView::saveLayout(KConfig *config, const QString &group) const
 {
   KConfigGroupSaver saver(config, group);
   QStringList widths, order;
-  for (int i = 0; i < columns(); ++i)
+
+  const int colCount = columns();
+  QHeader* const thisHeader = header();
+  for (int i = 0; i < colCount; ++i)
   {
     widths << QString::number(columnWidth(i));
-    order << QString::number(header()->mapToIndex(i));
+    order << QString::number(thisHeader->mapToIndex(i));
   }
   config->writeEntry("ColumnWidths", widths);
   config->writeEntry("ColumnOrder", order);
@@ -1998,20 +2010,27 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
   KConfigGroupSaver saver(config, group);
   QStringList cols = config->readListEntry("ColumnWidths");
   int i = 0;
-  for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
-    setColumnWidth(i++, (*it).toInt());
+  { // scope the iterators
+    QStringList::ConstIterator it = cols.constBegin();
+    const QStringList::ConstIterator itEnd = cols.constEnd();
+    for (; it != itEnd; ++it)
+      setColumnWidth(i++, (*it).toInt());
+  }
 
   // move sections in the correct sequence: from lowest to highest index position
   // otherwise we move a section from an index, which modifies
   // all index numbers to the right of the moved one
   cols = config->readListEntry("ColumnOrder");
-  for (i = 0; i < columns(); i++)   // final index positions from lowest to highest
+  const int colCount = columns();
+  for (i = 0; i < colCount; ++i)   // final index positions from lowest to highest
   {
-    QStringList::ConstIterator it;
-    int section = 0;
-    for (it = cols.begin(); (it != cols.end()) && ((*it).toInt() != i); ++it, section++) ;
+    QStringList::ConstIterator it = cols.constBegin();
+    const QStringList::ConstIterator itEnd = cols.constEnd();
 
-    if ( it != cols.end() ) {
+    int section = 0;
+    for (; (it != itEnd) && ((*it).toInt() != i); ++it, ++section) ;
+
+    if ( it != itEnd ) {
       // found the section to move to position i
       header()->moveSection(section, i);
     }
@@ -2170,10 +2189,12 @@ const QColor &KListViewItem::backgroundColor()
 
 bool KListViewItem::isAlternate()
 {
-  KListView *lv = static_cast<KListView *>(listView());
+  KListView* const lv = static_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
     KListViewItem *above;
+
+    KListView::KListViewPrivate* const lvD = lv->d;
 
     // Ok, there's some weirdness here that requires explanation as this is a
     // speed hack.  itemAbove() is a O(n) operation (though this isn't
@@ -2192,15 +2213,15 @@ bool KListViewItem::isAlternate()
     // Ideally this will make checking to see if the item above the current item
     // is the alternate color a constant time operation rather than 0(n).
 
-    if (lv->d->painting) {
-      if (lv->d->paintCurrent != this)
+    if (lvD->painting) {
+      if (lvD->paintCurrent != this)
       {
-        lv->d->paintAbove = lv->d->paintBelow == this ? lv->d->paintCurrent : itemAbove();
-        lv->d->paintCurrent = this;
-        lv->d->paintBelow = itemBelow();
+        lvD->paintAbove = lvD->paintBelow == this ? lvD->paintCurrent : itemAbove();
+        lvD->paintCurrent = this;
+        lvD->paintBelow = itemBelow();
       }
 
-      above = dynamic_cast<KListViewItem *>(lv->d->paintAbove);
+      above = dynamic_cast<KListViewItem *>(lvD->paintAbove);
     }
     else
     {

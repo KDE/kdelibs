@@ -52,7 +52,7 @@ protected:
 	void terminate(bool commit);
 	QListViewItem *item;
 	int col;
-	KListView *p;
+	KListView* const p;
 
 protected slots:
 	void slotSelectionChanged();
