@@ -149,7 +149,7 @@ KDirWatch::KDirWatch (int _freq)
   if (d->supports_dnotify && (dnotify_sn == 0))
   {
      pipe(dnotify_pipe);
-     dnotify_sn = new QSocketNotifier( dnotify_pipe[1], QSocketNotifier::Read, this);
+     dnotify_sn = new QSocketNotifier( dnotify_pipe[0], QSocketNotifier::Read, this);
   }
   connect( dnotify_sn, SIGNAL(activated(int)),
  	     this, SLOT(slotRescan()) );
@@ -213,9 +213,9 @@ static void dnotify_handler(int, siginfo_t *si, void *)
     qDebug("fatal error in KDirWatch");
   } else 
     e->dn_dirty = true;
-    
+
   char c;
-  write(dnotify_pipe[0], &c, 1);
+  write(dnotify_pipe[1], &c, 1);
 }
 #endif
 
@@ -541,7 +541,7 @@ void KDirWatch::slotRescan()
 #ifdef HAVE_DNOTIFY
 
   char dummy_buf[100];
-  read(dnotify_pipe[1], &dummy_buf, 100);
+  read(dnotify_pipe[0], &dummy_buf, 100);
 
   it = d->m_mapDirs.begin();
   for( ; it != d->m_mapDirs.end(); ++it )
