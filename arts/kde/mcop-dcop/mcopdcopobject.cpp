@@ -26,6 +26,8 @@
 #include <qmap.h>
 #include <qdatastream.h>
 
+using namespace std;
+
 #include "mcopdcopobject.h"
 
 class MCOPDCOPObjectPrivate
