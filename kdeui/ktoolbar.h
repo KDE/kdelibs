@@ -305,27 +305,6 @@ public:
 		     int size = 70, int index =-1);
 
   /**
-   * Insert a @ref KComboBox with list.
-   *
-   * Can be writable, but cannot contain
-   * pixmaps. By default inserting policy is AtBottom, i.e. typed items
-   * are placed at the bottom of the list. Can be autosized. If the size
-   * argument is specified as -1, the width of the combobox is automatically
-   * computed.
-   *
-   * @see setFullWidth()
-   * @see setItemAutoSized()
-   * @see KComboBox
-   * @return Item index.
-   */
-    int insertCombo (QStrList *list, int id, bool writable,
-		     const char *signal, const QObject *receiver,
-		     const char *slot, bool enabled=true,
-		     const QString& tooltiptext=QString::null,
-		     int size=70, int index=-1,
-		     QComboBox::Policy policy = QComboBox::AtBottom);
-
-  /**
    * Inserts a @ref KComboBox with list.
    *
    * Can be writable, but cannot contain
@@ -543,11 +522,6 @@ public:
    * Inserts @p text in combobox @p id at position @p index.
    */
     void insertComboItem (int id, const QString& text, int index);
-
-    /**
-   * Inserts @p list in combobox @p id at position @p index.
-   */
-    void insertComboList (int id, QStrList *list, int index);
 
     /**
    * Inserts @p list in combobox @p id at position @p index.

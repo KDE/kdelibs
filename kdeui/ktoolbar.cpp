@@ -312,37 +312,6 @@ int KToolBar::insertLined (const QString& text, int id,
     return index;
 }
 
-
-int KToolBar::insertCombo (QStrList *list, int id, bool writable,
-                            const char *signal, const QObject *receiver,
-                            const char *slot, bool enabled ,
-                            const QString& tooltiptext,
-                            int size, int index,
-                            QComboBox::Policy policy )
-{
-    KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
-    insertWidgetInternal( combo, index, id );
-    combo->insertStrList (list);
-    combo->setEnabled( enabled );
-    if ( !tooltiptext.isEmpty() )
-        QToolTip::add( combo, tooltiptext );
-    if ( size > 0 )
-        combo->setMinimumWidth( size );
-    combo->setInsertionPolicy(policy);
-    if (!tooltiptext.isNull())
-        QToolTip::add( combo, tooltiptext );
-
-    if ( signal && receiver && slot )
-        connect ( combo, signal, receiver, slot );
-    return index;
-}
-
-
 int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             const char *signal, const QObject *receiver,
                             const char *slot, bool enabled,
@@ -607,18 +576,6 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
     if (comboBox)
         comboBox->insertItem( text, index );
 }
-
-
-void KToolBar::insertComboList (int id, QStrList *list, int index)
-{
-    Id2WidgetMap::Iterator it = id2widget.find( id );
-    if ( it == id2widget.end() )
-        return;
-    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
-    if (comboBox)
-        comboBox->insertStrList( list, index );
-}
-
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
