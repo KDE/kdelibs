@@ -94,8 +94,6 @@ ObjectProtoFunc::ObjectProtoFunc(int i)
 // ECMA 15.2.4.2 + 15.2.4.3
 Completion ObjectProtoFunc::execute(const List &)
 {
-  KJSO result;
-
   Object thisObj = Object::dynamicCast(thisValue());
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
