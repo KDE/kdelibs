@@ -41,7 +41,7 @@ public:
   /** This function will be called by RenameDlg. The params are infos about the files
    *  @return If the plugin want's to display it return true if not return false
    */
-  virtual bool initialize(/*KIO::RenameDlg_Mode*/ /*mod ,*/ const QString &/*_src*/, const QString &/*_dest*/,
+  virtual bool initialize(KIO::RenameDlg_Mode /*mod*/ , const QString &/*_src*/, const QString &/*_dest*/,
 		  const QString &/*mimeSrc*/,
 		  const QString &/*mimeDest*/,
 		  KIO::filesize_t /*sizeSrc*/,
