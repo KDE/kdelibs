@@ -20,7 +20,9 @@
 #define KLISTVIEW_H
 
 #include <qcursor.h>
+#define private public
 #include <qlistview.h>
+#undef private
 #include <qlist.h>
 
 class QDragObject;
@@ -57,7 +59,7 @@ public:
   virtual bool isExecuteArea( const QPoint& point);
 
   QList<QListViewItem> selectedItems() const;
-  void moveItem(QListViewItem *item, QListViewItem *after, bool=false);
+  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 
 
   QListViewItem *lastItem() const;
@@ -172,6 +174,7 @@ protected:
 
   virtual QDragObject *dragObject() const;
 
+  virtual bool acceptDrag(QDropEvent*) const;
 
   /**
    * paint the drag line.  if painter is null, don't try to :)

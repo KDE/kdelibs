@@ -48,37 +48,6 @@ public:
   bool dropVisualizer;
 };
 
-class QListViewItemHack
-{
-public:
-	QListViewItemHack() {} ;
-	void moveItem(QListViewItemHack *after, bool child);
-
-private:
-    int ownHeight;
-    int maybeTotalHeight;
-    int nChildren;
-
-    uint lsc: 14;
-    uint lso: 1;
-    uint open : 1;
-    uint selected : 1;
-    uint selectable: 1;
-    uint configured: 1;
-    uint expandable: 1;
-    uint is_root: 1;
-
-    QListViewItem * parentItem;
-    QListViewItem * siblingItem;
-    QListViewItem * childItem;
-
-    void * columns;
-};
-
-void QListViewItemHack::moveItem(QListViewItemHack */*after*/, bool /*child*/)
-{
-
-}
 
 KListViewLineEdit::KListViewLineEdit(KListView *parent)
 	: KLineEdit(parent->viewport()), item(0), col(0), p(parent)
@@ -662,11 +631,9 @@ QList<QListViewItem> KListView::selectedItems() const
 	return list;
 }
 
-void KListView::moveItem(QListViewItem *item, QListViewItem *after, bool child)
+void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*parent*/, QListViewItem */*after*/)
 {
 // unimplemented
-	QListViewItemHack *hi=(QListViewItemHack*)item;
-	hi->moveItem((QListViewItemHack*)after,child);
 }
 
 void KListView::dragEnterEvent(QDragEnterEvent *event)
@@ -717,6 +684,10 @@ void KListView::doneEditing(QListViewItem *item, int row)
 	emit itemRenamed(item);
 }
 
+bool KListView::acceptDrag(QDropEvent*) const
+{
+	return true;
+}
 
 
 #include "klistviewlineedit.moc"
