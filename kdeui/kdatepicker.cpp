@@ -44,10 +44,11 @@
 class KDatePicker::KDatePickerPrivate
 {
 public:
-    KDatePickerPrivate() : closeButton(0L), selectWeek(0L) {}
+    KDatePickerPrivate() : closeButton(0L), selectWeek(0L), navigationLayout(0) {}
 
     QToolButton *closeButton;
     QToolButton *selectWeek;
+    QBoxLayout *navigationLayout;
 };
 
 
@@ -116,14 +117,14 @@ void KDatePicker::init( const QDate &dt )
 
   QBoxLayout * topLayout = new QVBoxLayout(this);
 
-  QBoxLayout * navigationLayout = new QHBoxLayout(topLayout);
-  navigationLayout->addWidget(yearBackward);
-  navigationLayout->addWidget(monthBackward);
-  navigationLayout->addWidget(selectMonth);
-  navigationLayout->addWidget(selectYear);
-  navigationLayout->addWidget(monthForward);
-  navigationLayout->addWidget(yearForward);
-  navigationLayout->addStretch();
+  d->navigationLayout = new QHBoxLayout(topLayout);
+  d->navigationLayout->addWidget(yearBackward);
+  d->navigationLayout->addWidget(monthBackward);
+  d->navigationLayout->addWidget(selectMonth);
+  d->navigationLayout->addWidget(selectYear);
+  d->navigationLayout->addWidget(monthForward);
+  d->navigationLayout->addWidget(yearForward);
+  d->navigationLayout->addStretch();
 
   topLayout->addWidget(table);
 
@@ -448,6 +449,7 @@ KDatePicker::setCloseButton( bool enable )
 
     if ( enable ) {
         d->closeButton = new QToolButton( this );
+        d->navigationLayout->addWidget(d->closeButton);
         QToolTip::add(d->closeButton, i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
         connect( d->closeButton, SIGNAL( clicked() ),
