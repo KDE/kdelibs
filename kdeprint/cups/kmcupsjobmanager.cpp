@@ -366,7 +366,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	dlg.addPage(new KPSchedulePage(&dlg));
 	dlg.setOptions(opts);
 	dlg.setDefaultButton(QString::null);
-	dlg.setCaption(i18n("Attributes of job %1 (%2)").arg(j->id()).arg(j->printer()));
+	dlg.setCaption(i18n("Attributes of job %1@%2 (%3)").arg(j->id()).arg(j->printer()).arg(j->name()));
 	if (dlg.exec())
 	{
 		opts.clear();
