@@ -70,7 +70,7 @@ public:
      * Describes the type of URI to be filtered.
      *
      * This enumerator prvoides the return value for
-     * @ref uriType.  A breif description for each value:
+     * @ref uriType.  A brief description for each value:
      *
      * @li NET_PROTOCOL - Any network protocol: http, ftp, nttp, pop3, etc...
      * @li LOCAL_FILE   - A local file whose executable flag is not set
