@@ -20,10 +20,10 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <kcrash.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream.h>
 
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -34,19 +34,19 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kcrash.h>
 #include <dcopclient.h>
 #include <soundserver.h>
 #include <dispatcher.h>
-#include <qiomanager.h>
 
 #include "knotify.h"
 #include "knotify.moc"
 
+#include <qiomanager.h>
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qstringlist.h>
-#include <iostream.h>
 #include <qtextstream.h>
 
 class KNotifyPrivate
