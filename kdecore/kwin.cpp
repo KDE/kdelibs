@@ -540,6 +540,7 @@ class KWin::WindowInfoPrivate
 	QString name_;
         QString iconic_name_;
 	QRect geometry_;
+        QRect frame_geometry_;
 	int ref;
         bool valid;
     private:
@@ -586,10 +587,11 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
         else
             d->iconic_name_ = readNameProperty( win, XA_WM_ICON_NAME );
     }
-    if( properties & NET::WMGeometry ) {
+    if( properties & ( NET::WMGeometry | NET::WMKDEFrameStrut )) {
         NETRect frame, geom;
         d->info->kdeGeometry( frame, geom );
         d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+        d->frame_geometry_.setRect( frame.pos.x, frame.pos.y, frame.size.width, frame.size.height );
     }
     d->valid = !handler.error( false ); // no sync - NETWinInfo did roundtrips
 }
@@ -768,6 +770,13 @@ QRect KWin::WindowInfo::geometry() const
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
     return d->geometry_;
+}
+
+QRect KWin::WindowInfo::frameGeometry() const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
+        << "Pass NET::WMKDEFrameStrut to KWin::windowInfo()" << endl;
+    return d->frame_geometry_;
 }
 
 WId KWin::WindowInfo::transientFor() const

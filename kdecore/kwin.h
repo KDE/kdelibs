@@ -530,6 +530,11 @@ public:
      */
     QRect geometry() const;
     /**
+     * Returns the frame geometry of the window, i.e. including the window decoration.
+     * Requires NET::WMKDEFrameStrut passed to KWin::windowInfo().
+     */
+    QRect frameGeometry() const;
+    /**
      * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
      * for this window.
      * Requires NET::WM2TransientFor passed to KWin::windowInfo().

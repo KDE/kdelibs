@@ -3068,7 +3068,7 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 	p->win_geom.size.width = w;
 	p->win_geom.size.height = h;
     }
-
+// TODO try to work also without _KDE_NET_WM_FRAME_STRUT
     window = p->win_geom;
 
     frame.pos.x = window.pos.x - p->frame_strut.left;
