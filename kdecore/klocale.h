@@ -460,6 +460,12 @@ public:
   QDate readDate(const QString &str) const;
 
   /**
+   * Converts a localized date string to a QDate, using the specified format.
+   * You will usually not want to use this method.
+   */
+  QDate readDate( const QString &intstr, const QString &fmt) const;
+
+  /**
    * Converts a localized time string to a QTime.
    * isValid() on the returning object will be false
    * if the time entered was not valid.

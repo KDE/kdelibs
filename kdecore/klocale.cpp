@@ -1100,33 +1100,41 @@ QDate KLocale::readDate(const QString &intstr) const
 QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
 {
   QString str = intstr.simplifyWhiteSpace().lower();
-  QString Format = (shortFormat ? m_dateFormatShort : m_dateFormat).simplifyWhiteSpace();
+  QString fmt = (shortFormat ? m_dateFormatShort : m_dateFormat).simplifyWhiteSpace();
+  return readDate( intstr, fmt );
+}
 
-  int day = -1, month = -1, year = -1;
+QDate KLocale::readDate(const QString &intstr, const QString &fmt) const
+{
+  QString str = intstr.simplifyWhiteSpace().lower();
+  int day = -1, month = -1;
+  // allow the year to be omitted if not in the format
+  int year = QDate::currentDate().year();
   uint strpos = 0;
-  uint Formatpos = 0;
+  uint fmtpos = 0;
 
-  while (Format.length() > Formatpos || str.length() > strpos)
+  while (fmt.length() > fmtpos || str.length() > strpos)
     {
-      if ( !(Format.length() > Formatpos && str.length() > strpos) ) goto error;
+      if ( !(fmt.length() > fmtpos && str.length() > strpos) )
+        goto error;
 
-      QChar c = Format.at(Formatpos++);
+      QChar c = fmt.at(fmtpos++);
 
       if (c != '%') {
-	if (c.isSpace())
-	  strpos++;
-	else if (c != str.at(strpos++))
-	  goto error;
-	continue;
+        if (c.isSpace())
+          strpos++;
+        else if (c != str.at(strpos++))
+          goto error;
+        continue;
       }
 
       // remove space at the begining
       if (str.length() > strpos && str.at(strpos).isSpace())
-	strpos++;
+        strpos++;
 
-      c = Format.at(Formatpos++);
+      c = fmt.at(fmtpos++);
       switch (c)
-	{
+      {
 	case 'a':
 	case 'A':
 	  // this will just be ignored
@@ -1169,17 +1177,21 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
 	  year = readInt(str, strpos);
 	  if (year < 0)
 	    goto error;
-	  if (c == 'y') {
-	    if (year < 69) year += 100;
+	  // Qt treats a year in the range 0-100 as 1900-1999.
+	  // It is nicer for the user if we treat 0-68 as 2000-2068
+	  if (year < 69)
+	    year += 2000;
+	  else if (c == 'y')
 	    year += 1900;
-	  }
 
 	  break;
 	}
     }
-  return QDate(year, month, day);
+  //kdDebug() << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
+  if ( year != -1 && month != -1 && day != -1 )
+    return QDate(year, month, day);
  error:
-  return QDate(-1, -1, -1);
+  return QDate(); // invalid date
 }
 
 QTime KLocale::readTime(const QString &intstr) const
