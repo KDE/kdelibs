@@ -225,7 +225,7 @@ QString NodeImpl::recursive_toHTML(bool start) const
 
         // print ending bracket of start tag
         if( firstChild() == 0 )     // if element has no endtag
-        	me += " />\n"
+        	me += " />\n";
         else                        // if element has endtag
 	{
 		NodeImpl* temp = nextSibling();
