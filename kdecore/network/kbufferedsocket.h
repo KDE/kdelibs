@@ -30,6 +30,8 @@
 #include <qvaluelist.h>
 #include "kstreamsocket.h"
 
+class KIOBufferBase;
+
 namespace KNetwork {
 
 class KBufferedSocketPrivate;
@@ -44,144 +46,7 @@ class KBufferedSocketPrivate;
  */
 class KBufferedSocket: public KStreamSocket
 {
-public:
-  /** @class KBufferedSocket::Buffer kbufferedsocket.h kbufferedsocket.h
-   *  @brief Socket buffering class.
-   *
-   * This class is the actual input and output buffer used for @ref KStreamSocket
-   * objects. The default implementation uses an unlimited internal buffer which
-   * grows and shrinks on demand. See @ref KBufferedSocket::SizedBuffer for
-   * a buffer whose (maximum) size is determined.
-   *
-   * Especially note that objects of this type allow the user to inspect the buffer
-   * contents through the @ref contents method, but the @ref QByteArray object that
-   * is returned might or might not be modified after new input and output operations
-   * in this object.
-   */
-  class Buffer
-  {
-  protected:
-    QValueList<QByteArray> list;
-    QIODevice::Offset start;	///< offset into the first element
-    QIODevice::Offset end;	///< offset into the last element
-
-  public:
-    /**
-     * Default constructor.
-     */
-    Buffer();
-
-    /**
-     * Destructor. The allocated resources are discarded.
-     */
-    virtual ~Buffer();
-
-    /**
-     * Sets the contents of this buffer as the specified data.
-     *
-     * This function is intended to be used as when replacing a buffer with
-     * another, so, whenever possible, this function will use QByteArray's
-     * explicitly sharing features. That also means that modification of the
-     * @p contents parameter might modify the internal data in the buffer as well.
-     *
-     * Some implementations of this function might be lossy. The default
-     * implementation never loses data.
-     */
-    virtual void setContents(const QByteArray& contents);
-
-    /**
-     * Return the condensed contents of this object into the QByteArray object.
-     * This function has the side-effect of condensing the list of buffers
-     * into a single QByteArray object, which will be returned.
-     */
-    virtual QByteArray contents();
-
-    /**
-     * Returns the number of bytes that this buffer can still hold
-     * or -1 if it's unlimited.
-     */
-    virtual Q_LONG spaceAvailable() const;
-
-    /**
-     * Returns true if this buffer is empty.
-     */
-    bool isEmpty() const;
-
-    /**
-     * Returns trtue if this buffer is full.
-     */
-    bool isFull() const;
-
-    /**
-     * Feed the buffer (i.e., write into it). This function is analogous to
-     * @ref QIODevice::writeBlock.
-     */
-    virtual Q_LONG feedBlock(const char *data, Q_ULONG len);
-
-    /**
-     * Consume the buffer (i.e., read from it). This function is analogous to
-     * @ref QIODevice::readBlock.
-     *
-     * @param discard		if true, the data that is read is also discarded
-     *				from the buffer
-     */
-    virtual Q_LONG consumeBlock(char *data, Q_ULONG maxlen, bool discard = true);
-
-    /**
-     * Receive from the device into this buffer.
-     */
-    virtual Q_LONG receive(QIODevice* device);
-
-    /**
-     * Send the contents of this buffer into the device.
-     */
-    virtual Q_LONG send(QIODevice* device);
-  };
-
-  /** @class KBufferedSocket::SizedBuffer kbufferedsocket.h kbufferedsocket.h
-   *  @brief A socket buffer with maximum size.
-   *
-   * This class provides a buffer whose maximum size is specified and will
-   * never grow bigger. However, this class also provides grow and shrink
-   * on demand capabilities.
-   *
-   * @author Thiago Macieira <thiago.macieira@kdemail.net>
-   */
-  class SizedBuffer: public Buffer
-  {
-  public:
-    /**
-     * Default constructor.
-     */
-    SizedBuffer(Q_ULONG maxlen);
-
-    /**
-     * Destructor.
-     */
-    virtual ~SizedBuffer();
-
-    /**
-     * This function might lose data. If the given contents are larger than this
-     * buffer's maximum size, the data will be shrunk to the maximum value. 
-     * Especially note that since QByteArray shares data explicitly, this will
-     * also affect the caller's buffer.
-     */
-    virtual void setContents(const QByteArray& contents);
-
-    /**
-     */
-    virtual Q_LONG spaceAvailable() const;
-
-    /**
-     * Write into the buffer. If there is no more available space, this function
-     * will fail to write.
-     */
-    virtual Q_LONG feedBlock(const char *data, Q_ULONG len);
- 
-  private:
-    Q_ULONG m_maxlen;
- };
-
+  Q_OBJECT
 public:
   /**
    * Default constructor.
@@ -276,32 +141,25 @@ public:
    */
   virtual void enableWrite(bool enable);
 
-public:
+  /**
+   * Sets the use of input buffering.
+   */
+  void setInputBuffering(bool enable);
+
   /**
    * Retrieves the input buffer object.
    */
-  Buffer* inputBuffer() const;
+  KIOBufferBase* inputBuffer();
 
   /**
-   * Sets the input buffer object to this one.
-   * Data is copied using the new object's setContents method.
-   *
-   * Setting this to null will cause buffering to stop.
+   * Sets the use of output buffering.
    */
-  virtual void setInputBuffer(Buffer* newBuffer);
+  void setOutputBuffering(bool enable);
 
   /**
    * Retrieves the output buffer object.
    */
-  Buffer* outputBuffer() const;
-
-  /**
-   * Sets the output buffer object to this one.
-   * Data is copied using the new object's setContents method.
-   *
-   * Setting this to null will cause buffering to stop.
-   */
-  virtual void setOutputBuffer(Buffer* newBuffer);
+  KIOBufferBase* outputBuffer();
 
   /**
    * Returns the length of the output buffer.
@@ -326,24 +184,28 @@ public:
    */
   QCString readLine();
 
-protected slots:
-  // protected slots
-
-  /**
-   * Handle buffering.
-   */
-  virtual void slotReadActivity();
-
-  /**
-   * Handle buffering.
-   */
-  virtual void slotWriteActivity();
-
 protected:
   /**
    * Catch connection to clear the buffers
    */
   virtual void stateChanging(SocketState newState);
+
+protected slots:
+  /**
+   * Slot called when there's read activity.
+   */
+  virtual void slotReadActivity();
+
+  /**
+   * Slot called when there's write activity.
+   */
+  virtual void slotWriteActivity();
+
+signals:
+  /**
+   * This signal is emitted whenever data is written.
+   */
+  void bytesWritten(int bytes);
 
 private:
   KBufferedSocket(const KBufferedSocket&);

@@ -21,11 +21,12 @@ libkdecorenetwork_la_SOURCES = kresolver.cpp \
 		ksocketbase.cpp \
 		kclientsocketbase.cpp \
 		kstreamsocket.cpp \
-		kbufferedsocket.cpp \
 		kserversocket.cpp \
 		kdatagramsocket.cpp \
 		khttpproxysocketdevice.cpp \
-		ksockssocketdevice.cpp
+		ksockssocketdevice.cpp \
+		kbufferedsocket.cpp \
+		ksocketbuffer.cpp
 
 include_HEADERS = kresolver.h \
 	kreverseresolver.h \
@@ -41,7 +42,11 @@ include_HEADERS = kresolver.h \
 	knetworkinterface.h \
 	khttpproxysocketdevice.h \
 	ksockssocketdevice.h
-noinst_HEADERS = kresolver_p.h kresolverworkerbase.h kresolverstandardworkers_p.h syssocket.h
+noinst_HEADERS = kresolver_p.h \
+	kresolverworkerbase.h \
+	kresolverstandardworkers_p.h \
+	ksocketbuffer_p.h \
+	syssocket.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
