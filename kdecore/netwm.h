@@ -746,7 +746,7 @@ private:
  use it instead of NETRootInfo and override also the added virtual methods.
  @since 3.2
 */
-class NETRootInfo2
+class KDECORE_EXPORT NETRootInfo2
     : public NETRootInfo
 {
 public:
@@ -812,7 +812,7 @@ protected:
  use it instead of NETRootInfo and override also the added virtual methods.
  @since 3.3
 */
-class NETRootInfo3
+class KDECORE_EXPORT NETRootInfo3
     : public NETRootInfo2
 {
 public:
