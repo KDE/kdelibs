@@ -30,7 +30,7 @@ QUriDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
-        uris.append( (*uit).url(0, QFont::Unicode).latin1() );
+        uris.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
     return new KURLDrag( uris, dragSource, name );
 }
 
@@ -39,7 +39,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     QStrList lst;
     bool ret = QUriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
-      uris.append(KURL(*it, QFont::Unicode));
+      uris.append(KURL(*it, 106)); // 106 is mib enum for utf8 codec
     return ret;
 }
 
@@ -47,7 +47,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
 {
     for(QStringList::ConstIterator it=e.begin(); it!=e.end(); it++)
-      uris.append(KURL(*it, QFont::Unicode));
+      uris.append(KURL(*it, 106)); // 106 is mib enum for utf8 codec
     return true;
 }
 #endif
@@ -73,7 +73,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
 	QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(KURL(*it, QFont::Unicode).prettyURL());
+         uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
         QCString s = uris.join( "\n" ).local8Bit();
         a.resize( s.length() + 1 ); // trailing zero
         memcpy( a.data(), s.data(), s.length() + 1 );
