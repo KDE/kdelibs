@@ -44,9 +44,12 @@ public:
     HTMLObjectBaseElementImpl(DocumentPtr *doc);
 
     virtual void parseAttribute(AttributeImpl *attr);
+    virtual void attach();
     virtual void detach();
 
     virtual void recalcStyle( StyleChange ch );
+
+    void renderAlternative();
 
     bool get(const unsigned long, const QString &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
     bool put(const unsigned long, const QString &, const QString &);
@@ -60,6 +63,7 @@ public:
     QString classId;
     QString serviceType;
     bool needWidgetUpdate;
+    bool m_renderAlternative;
 
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
@@ -119,13 +123,8 @@ public:
     virtual void parseAttribute(AttributeImpl *token);
 
     virtual void attach();
-    virtual void detach();
 
     DocumentImpl* contentDocument() const;
-
-    void renderAlternative();
-
-    bool m_renderAlternative;
 };
 
 // -------------------------------------------------------------------------

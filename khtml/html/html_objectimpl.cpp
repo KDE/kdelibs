@@ -50,6 +50,7 @@ HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc), liveconnect(0L)
 {
     needWidgetUpdate = false;
+    m_renderAlternative = false;
 }
 
 void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
@@ -94,6 +95,21 @@ void HTMLObjectBaseElementImpl::recalcStyle( StyleChange ch )
         needWidgetUpdate = false;
     }
     HTMLElementImpl::recalcStyle( ch );
+}
+
+void HTMLObjectBaseElementImpl::renderAlternative()
+{
+    // an unbelievable hack. FIXME!!
+
+    if ( m_renderAlternative ) return;
+
+    // ### there can be a m_render if this is called from our attach indirectly
+    if ( attached() || m_render)
+        detach();
+
+    m_renderAlternative = true;
+
+    attach();
 }
 
 bool HTMLObjectBaseElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
@@ -153,8 +169,55 @@ void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QStr
 	w->part()->executeScript(this, script);
 }
 
+void HTMLObjectBaseElementImpl::attach() {
+    assert(!attached());
+    assert(!m_render);
+
+    if (m_renderAlternative) {
+        // render alternative content
+        ElementImpl::attach();
+        return;
+    }
+
+    if (!parentNode()->renderer()) {
+        NodeBaseImpl::attach();
+        return;
+    }
+
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+
+    if (parentNode()->renderer() && _style->display() != NONE) 
+    {
+        needWidgetUpdate = false;
+        bool imagelike = serviceType.startsWith("image/");
+        if (imagelike) {
+            m_render = new (getDocument()->renderArena()) RenderImage(this);
+            // make sure we don't attach the inner contents
+            addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
+        }
+        else
+            m_render = new (getDocument()->renderArena())RenderPartObject(this);
+
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+        if (imagelike)
+            m_render->updateFromElement();
+    }
+
+    _style->deref();
+    NodeBaseImpl::attach();
+
+    // ### do this when we are actually finished loading instead
+    if (m_render) dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
+}
+
 void HTMLObjectBaseElementImpl::detach() {
     setLiveConnect(0L);
+
+    if (attached())
+        // ### do this when we are actualy removed from document instead
+        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     HTMLElementImpl::detach();
 }
@@ -199,43 +262,22 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLAppletElementImpl::attach()
 {
-    assert(!attached());
-    assert(!m_render);
-
     KHTMLView* w = getDocument()->view();
 
-    if (!parentNode()->renderer() || getAttribute(ATTR_CODE).isNull()) {
-        NodeBaseImpl::attach();
-        return;
-    }
-
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-
 #ifndef Q_WS_QWS // FIXME?
-    KURL url = getDocument()->baseURL();
     DOMString codeBase = getAttribute( ATTR_CODEBASE );
     DOMString code = getAttribute( ATTR_CODE );
     if ( !codeBase.isEmpty() )
-        url = KURL( url, codeBase.string() );
+        url = codeBase.string();
     if ( !code.isEmpty() )
-        url = KURL( url, code.string() );
+        url = code.string();
 
-    if (w && w->part()->javaEnabled() &&
-        getDocument()->isURLAllowed( url.url() ) &&
-        parentNode()->renderer() && 
-        _style->display() != NONE) 
-    {
-        needWidgetUpdate=false;
-        m_render = new (getDocument()->renderArena()) RenderPartObject(this);
-
-        m_render->setStyle(_style);
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-    }
-
+    if (!w || !w->part()->javaEnabled())
 #endif
-    _style->deref();
-    NodeBaseImpl::attach();
+        m_renderAlternative = true;
+
+    HTMLObjectBaseElementImpl::attach();
+
 }
 
 // -------------------------------------------------------------------------
@@ -305,25 +347,15 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLEmbedElementImpl::attach()
 {
-    assert(!attached());
-    assert(!m_render);
+    KHTMLView* w = getDocument()->view();
 
-    if (parentNode()->renderer()) {
-        KHTMLView* w = getDocument()->view();
-        RenderStyle* _style = getDocument()->styleSelector()->styleForElement( this );
-        _style->ref();
+    if (!w || !w->part()->pluginsEnabled())
+        m_renderAlternative = true;
 
-        if (w && w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
-            parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
-            needWidgetUpdate=false;
-            m_render = new (getDocument()->renderArena()) RenderPartObject(this);
-            m_render->setStyle(_style );
-            parentNode()->renderer()->addChild(m_render, nextRenderer());
-        }
-        _style->deref();
-    }
-
-    NodeBaseImpl::attach();
+    if (parentNode()->id() == ID_OBJECT)
+        NodeBaseImpl::attach();
+    else
+        HTMLObjectBaseElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -331,7 +363,6 @@ void HTMLEmbedElementImpl::attach()
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc)
     : HTMLObjectBaseElementImpl(doc)
 {
-    m_renderAlternative = false;
 }
 
 HTMLObjectElementImpl::~HTMLObjectElementImpl()
@@ -387,67 +418,12 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 
 void HTMLObjectElementImpl::attach()
 {
-    assert(!attached());
-    assert(!m_render);
-
     KHTMLView* w = getDocument()->view();
-    if ( !w || !w->part()->pluginsEnabled() ||
-         ( url.isEmpty() && classId.isEmpty() && id() != ID_APPLET) ||
-         m_renderAlternative || !getDocument()->isURLAllowed( url ) ) {
-        // render alternative content
-        ElementImpl::attach();
-        return;
-    }
 
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
+    if (!w || !w->part()->pluginsEnabled())
+        m_renderAlternative = true;
 
-    if (parentNode()->renderer() && _style->display() != NONE) {
-        needWidgetUpdate=false;
-        bool imagelike = serviceType.startsWith("image/");
-        if (imagelike) {
-            m_render = new (getDocument()->renderArena()) RenderImage(this);
-            // make sure we don't attach the inner contents
-            addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
-        }
-        else
-            m_render = new (getDocument()->renderArena()) RenderPartObject(this);
-
-        m_render->setStyle(_style);
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-        if (imagelike)
-            m_render->updateFromElement();
-    }
-
-    _style->deref();
-
-    NodeBaseImpl::attach();
-
-    // ### do this when we are actually finished loading instead
-    if (m_render)  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
-}
-
-void HTMLObjectElementImpl::detach()
-{
-    if (attached())
-        // ### do this when we are actualy removed from document instead
-        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
-
-    HTMLObjectBaseElementImpl::detach();
-}
-
-void HTMLObjectElementImpl::renderAlternative()
-{
-    // an unbelievable hack. FIXME!!
-
-    if ( m_renderAlternative ) return;
-
-    if ( attached() )
-        detach();
-
-    m_renderAlternative = true;
-
-    attach();
+    HTMLObjectBaseElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------

@@ -604,6 +604,7 @@ void RenderPartObject::updateWidget()
   if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET) {
 
       objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
+      url = objbase->url;
 
       for (NodeImpl* child = element()->firstChild(); child; child=child->nextSibling()) {
           if ( child->id() == ID_PARAM ) {
@@ -613,8 +614,15 @@ void RenderPartObject::updateWidget()
               aStr += QString::fromLatin1("=\"");
               aStr += p->value();
               aStr += QString::fromLatin1("\"");
-              if (p->name().lower() == QString::fromLatin1("type"))
+              QString name_lower = p->name().lower();
+              if (name_lower == QString::fromLatin1("type")) {
                   objbase->setServiceType(p->value());
+              } else if (url.isEmpty() &&
+                         (name_lower == QString::fromLatin1("src") ||
+                          name_lower == QString::fromLatin1("movie") ||
+                          name_lower == QString::fromLatin1("code"))) {
+                  url = p->value();
+              }
               params.append(aStr);
           }
       }
@@ -630,6 +638,11 @@ void RenderPartObject::updateWidget()
               params.append(objbase->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
               }
           }
+      }
+      if (url.isEmpty() || !objbase->getDocument()->isURLAllowed(url)) {
+          // not a valid url
+          objbase->renderAlternative();
+          return;
       }
   }
 
@@ -652,13 +665,11 @@ void RenderPartObject::updateWidget()
 
       if ( !embed )
       {
-          url = objbase->url;
           serviceType = objbase->serviceType;
           if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
               // We have a clsid, means this is activex (Niko)
               serviceType = "application/x-activex-handler";
-              url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
 
               if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
                   // It is ActiveX, but the nsplugin system handling
@@ -671,6 +682,9 @@ void RenderPartObject::updateWidget()
               }
               else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
                   serviceType = "audio/x-pn-realaudio-plugin";
+              else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) || 
+                      objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
+                  serviceType = "application/x-java-applet";
 
               else
                   kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
@@ -678,32 +692,6 @@ void RenderPartObject::updateWidget()
               // TODO: add more plugins here
           }
 
-          if((url.isEmpty() || url.isNull())) {
-              // look for a SRC attribute in the params
-              NodeImpl *child = objbase->firstChild();
-              while ( child ) {
-                  if ( child->id() == ID_PARAM ) {
-                      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-
-                      if ( p->name().lower()==QString::fromLatin1("src") ||
-                           p->name().lower()==QString::fromLatin1("movie") ||
-                           p->name().lower()==QString::fromLatin1("code") )
-                      {
-                          url = p->value();
-                          break;
-                      }
-                  }
-                  child = child->nextSibling();
-              }
-          }
-
-
-          if ( url.isEmpty() && serviceType.isEmpty() ) {
-#ifdef DEBUG_LAYOUT
-              kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
-#endif
-              return;
-          }
           part->requestObject( this, url, serviceType, params );
       }
       else {
@@ -723,7 +711,6 @@ void RenderPartObject::updateWidget()
   }
   else if ( element()->id() == ID_EMBED ) {
 
-      url = objbase->url;
       serviceType = objbase->serviceType;
 
       if ( url.isEmpty() && serviceType.isEmpty() ) {
@@ -847,8 +834,9 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     }
 
     // didn't work, render alternative content.
-    if ( element() && element()->id() == ID_OBJECT )
-        static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
+    if ( element() && (
+         element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET))
+        static_cast<HTMLObjectBaseElementImpl*>( element() )->renderAlternative();
 }
 
 void RenderPartObject::layout( )
