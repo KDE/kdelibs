@@ -1,4 +1,4 @@
-AC_DEFUN(AC_CHECK_CUPS_VERSION,
+AC_DEFUN([AC_CHECK_CUPS_VERSION],
 [
 kde_save_cflags="$CFLAGS"
 kde_save_libs="$LIBS"
