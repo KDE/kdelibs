@@ -277,71 +277,84 @@ KSycocaDict::save(QDataStream &str)
       if ((int) entry->key.length() > maxLength)
          maxLength = entry->key.length();
    }
-   
+
    //kdDebug(7011) << QString("Max string length = %1").arg(maxLength) << endl;
 
-   int sz = d->count()*5-1;
+   // use "almost prime" number for sz (to calculate diversity) and later
+   // for the table size of big tables
+   // int sz = d->count()*5-1;
+   register int sz = count()*4 + 1;
+   while(!(((sz % 3) && (sz % 5) && (sz % 7) && (sz % 11) && (sz % 13)))) sz+=2;
+
    int maxDiv = 0;
    int maxPos = 0;
    int lastDiv = 0;
 
    mHashList.clear();
 
+   // try to limit diversity scan by "predicting" positions
+   // with high diversity
+   int *oldvec=new int[maxLength*2+1];
+   for (int i=0; i<(maxLength*2+1); i++) oldvec[i]=0;
+   int mindiv=0;
 
    while(true)
    {
+      int divsum=0,divnum=0;
+
       maxDiv = 0;
       maxPos = 0;
       for(int pos=-maxLength; pos <= maxLength; pos++)
       {
+         // cut off
+         if (oldvec[pos+maxLength]<mindiv)
+         { oldvec[pos+maxLength]=0; continue; }
+
          int diversity = calcDiversity(d, pos, sz);
          if (diversity > maxDiv)
          {
             maxDiv = diversity;
             maxPos = pos;
          }
+         oldvec[pos+maxLength]=diversity;
+         divsum+=diversity; divnum++;
       }
+      // arbitrary cut-off value 3/4 of average seems to work
+      mindiv=(3*divsum)/(4*divnum);
+
       if (maxDiv <= lastDiv)
          break;
-//    fprintf(stderr, "Max Div = %d at pos %d\n", maxDiv, maxPos);
+      // qWarning("Max Div = %d at pos %d", maxDiv, maxPos);
       lastDiv = maxDiv;
-      addDiversity(d, maxPos); 
+      addDiversity(d, maxPos);
       mHashList.append(maxPos);
    }
+
+   delete [] oldvec;
 
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
       entry->hash = hashKey(entry->key);
    }
-
 // fprintf(stderr, "Calculating minimum table size..\n");
-   mHashTableSize = count();
-   int minDups = count();
-   uint maxHashTableSize = count()*6;
-   for(uint hashTableSize = count()*4; hashTableSize < maxHashTableSize; hashTableSize++)
+
+   mHashTableSize = sz;
+   int *checkList = new int[sz];
+
+   for(uint i = 0; i < sz; i++)
+      checkList[i] = 0;
+   for(string_entry *entry=d->first(); entry; entry = d->next())
    {
-      int *checkList = new int[hashTableSize];
-      for(uint i = 0; i < hashTableSize; i++)
-         checkList[i] = 0;
-      for(string_entry *entry=d->first(); entry; entry = d->next())
-      {
-         checkList[entry->hash % hashTableSize]++;
-      }
-       
-      int dups = 0;
-      for(uint i = 0; i < hashTableSize; i++)
-      {
-         if (checkList[i] > 1)
-            dups += (checkList[i]-1)*(checkList[i]-1);
-      }
-      if (dups < minDups)
-      {
-          mHashTableSize = hashTableSize;
-          minDups = dups;
-      }
-      delete [] checkList;
+      checkList[entry->hash % sz]++;
    }
-   //kdDebug(7011) << QString("item count = %1 min. dups = %2, hashtable size = %3")	//	.arg(d->count()).arg(minDups).arg(mHashTableSize) << endl;
+
+   int dups = 0;
+   for(uint i = 0; i < sz; i++)
+   {
+      if (checkList[i] > 1)
+         dups += (checkList[i]-1) *(checkList[i]-1);
+   }
+   delete [] checkList;
 
    struct hashtable_entry {
       string_entry *entry;
@@ -349,10 +362,10 @@ KSycocaDict::save(QDataStream &str)
       int duplicate_offset;
    };
 
-   hashtable_entry *hashTable = new hashtable_entry[ mHashTableSize ];
+   hashtable_entry *hashTable = new hashtable_entry[ sz ];
 
    //kdDebug(7011) << "Clearing hashtable..." << endl;
-   for(uint i=0; i < mHashTableSize; i++)
+   for(uint i=0; i < sz; i++)
    {
       hashTable[i].entry = 0;
       hashTable[i].duplicates = 0;
@@ -362,7 +375,7 @@ KSycocaDict::save(QDataStream &str)
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
 //fprintf(stderr, "Filling with %s\n", entry->key.ascii());
-      int hash = entry->hash % mHashTableSize;
+      int hash = entry->hash % sz;
       if (!hashTable[hash].entry)
       { // First entry
          hashTable[hash].entry = entry;
