@@ -314,6 +314,8 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     // e.g. postscript is different, because takes longer to read, so
     // it's more likely that the user might want to save it.
     if ( mime->is( "text/html" ) ||
+         mime->is( "text/xml" ) ||
+         mime->is( "application/xhtml+xml" ) ||  // this one should use X-KDE-IsAlso I guess
          mime->is( "inode/directory" ) ||
          mimeType.startsWith( "image" ) )
         return Open;
