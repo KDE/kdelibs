@@ -6,21 +6,23 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!-- ENTITY Alt         "<keycap>Alt</keycap>" -->
-<!ENTITY Correction     "<keycap>Correction</keycap>">                            <!-- English: &Backspace; -->
-<!ENTITY BGS            "bouton <mousebutton>gauche</mousebutton> de la souris">  <!-- English: &LMB; -->
-<!ENTITY BCS            "bouton <mousebutton>central</mousebutton> de la souris"> <!-- English: &MMB; -->
-<!ENTITY BDS            "bouton <mousebutton>droit</mousebutton> de la souris">   <!-- English: &RMB; -->
-<!ENTITY cad            "c'est-à-dire">                                         <!-- English: &ie; -->
-<!ENTITY cdrom          '<hardware>lecteur de CD-ROM</hardware>'>
-<!-- ENTITY Ctrl        "<keycap>Ctrl</keycap>" -->
-<!ENTITY dpi            '<acronym>dpi</acronym>'>
-<!ENTITY Echap          '<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
-<!ENTITY etc            "<abbrev>etc.</abbrev>">
-<!ENTITY FAQ            '<acronym>FAQ</acronym>'>
-<!ENTITY kcontrol       '<application>Centre de Configuration de &kde;</application>'>
-<!ENTITY kcontrolcenter '<application>Centre de Configuration de &kde;</application>'>
-<!ENTITY khelpcenter    '<application>Aide centralisée de &kde;</application>'>
-<!ENTITY pex            "par exemple">                                            <!-- English: &eg; -->
-<!ENTITY Maj            '<keycap>Maj</keycap>'>                                   <!-- English: &Shift; -->
-<!ENTITY SE             "système d'exploitation">                                <!-- English: &OS; -->
+<!-- ENTITY Alt         	"<keycap>Alt</keycap>" -->
+<!ENTITY Correction     	"<keycap>Correction</keycap>">                            <!-- English: &Backspace; -->	
+<!ENTITY BGS            	"bouton <mousebutton>gauche</mousebutton> de la souris">  <!-- English: &LMB; -->
+<!ENTITY BCS            	"bouton <mousebutton>central</mousebutton> de la souris"> <!-- English: &MMB; -->
+<!ENTITY BDS            	"bouton <mousebutton>droit</mousebutton> de la souris">   <!-- English: &RMB; -->
+<!ENTITY cad            	"c'est-à-dire">                                         <!-- English: &ie; -->
+<!ENTITY cdrom          	'<hardware>lecteur de CD-ROM</hardware>'>
+<!ENTITY centreAide     	'<application>Centre d'aide de &kde;</application>'>
+<!ENTITY centreConfiguration    '<application>Centre de configuration de &kde;</application>'>
+<!-- ENTITY Ctrl        	"<keycap>Ctrl</keycap>" -->
+<!ENTITY dpi            	'<acronym>dpi</acronym>'>
+<!ENTITY Echap          	'<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
+<!ENTITY etc            	"<abbrev>etc.</abbrev>">
+<!ENTITY FAQ            	'<acronym>FAQ</acronym>'>
+<!ENTITY kcontrol       	'<application>Centre de Configuration de &kde;</application>'>
+<!ENTITY kcontrolcenter 	'<application>Centre de Configuration de &kde;</application>'>
+<!ENTITY khelpcenter    	'<application>Aide centralisée de &kde;</application>'>
+<!ENTITY pex            	"par exemple">                                            <!-- English: &eg; -->
+<!ENTITY Maj            	'<keycap>Maj</keycap>'>                                   <!-- English: &Shift; -->
+<!ENTITY SE             	"système d'exploitation">                                <!-- English: &OS; -->
