@@ -278,6 +278,11 @@ public:
   QString htmlRef() const;
 
   /**
+   * @return The HTML-style reference in its original form.
+   */
+  QString encodedHtmlRef() const;
+
+  /**
    * Set the HTML-style reference.
    *
    * @param _ref This is considered to be @em not encoded in contrast to @ref setRef()

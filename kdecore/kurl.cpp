@@ -1379,6 +1379,17 @@ QString KURL::htmlRef() const
   return decode( (*lst.begin()).ref() );
 }
 
+QString KURL::encodedHtmlRef() const
+{
+  if ( !hasSubURL() )
+  {
+    return ref();
+  }
+
+  List lst = split( *this );
+  return (*lst.begin()).ref();
+}
+
 void KURL::setHTMLRef( const QString& _ref )
 {
   if ( !hasSubURL() )
