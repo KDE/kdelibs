@@ -56,12 +56,12 @@ public:
    * Constructor
    */
   KProcIO ( QTextCodec *codec = 0 );
-  
+
   /**
    * Destructor
    */
   ~KProcIO();
-  
+
   /**
    * Sets the communication mode to be passed to KProcess::start()
    * by start(). The default communication mode is KProcess::All.
@@ -81,9 +81,9 @@ public:
    *  @param runmode For a detailed description of the
    *  various run modes, have a look at the
    *  general description of the KProcess class.
-   *  @param includeStderr If true, data from both stdout and stderr is 
+   *  @param includeStderr If true, data from both stdout and stderr is
    *  listened to. If false, only stdout is listened to.
-   *  @return true on success, false on error. 
+   *  @return true on success, false on error.
    **/
   bool start (RunMode  runmode = NotifyOnExit, bool includeStderr = false);
 
@@ -114,7 +114,7 @@ public:
   //inline
   /**
    * This function just calls writeStdin().
-   * 
+   *
    * @param line Text to write.
    * @param AppendNewLine if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
@@ -125,7 +125,7 @@ public:
 
   /**
    * Closes stdin after all data has been send.
-   */ 
+   */
   void closeWhenDone();
 
   /**
@@ -144,7 +144,7 @@ public:
    *
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
-   * @param partial when provided the line is returned 
+   * @param partial when provided the line is returned
    * even if it does not contain a '\\n'. *partial will be set to
    * false if the line contains a '\\n' and false otherwise.
    * @return the number of characters read, or -1 if no data is available.
@@ -155,11 +155,8 @@ public:
    * This function calls readln().
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
-   * @param partial when provided the line is returned 
-   * even if it does not contain a '\\n'. *partial will be set to
-   * false if the line contains a '\\n' and false otherwise.
    * @return the number of characters read, or -1 if no data is available.
-   * @deprecated
+   * @deprecated use readln
    **/
   int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }

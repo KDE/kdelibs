@@ -259,7 +259,7 @@ public:
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
      *
-     * \code 
+     * \code
      * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
      * kfile->setFilter("*.cpp");
      * kfile->setFilter("*.cpp|Sources (*.cpp)");
@@ -628,9 +628,6 @@ public:
     static KURL getImageOpenURL( const QString& startDir = QString::null,
 				 QWidget *parent = 0,
 				 const QString& caption = QString::null );
-    /**
-     * @reimplemented
-     **/
     virtual void show();
 
     /**

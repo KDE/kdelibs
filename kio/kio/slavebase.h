@@ -430,7 +430,7 @@ public:
 
     /**
      * Delete a file or directory.
-     * @param path file/directory to delete
+     * @param url file/directory to delete
      * @param isfile if true, a file should be deleted.
      *               if false, a directory should be deleted.
      */
@@ -453,7 +453,7 @@ public:
      * @param data packed data; Contains number of URLs to fetch, and for
      * each URL the URL itself and its associated MetaData.
      */
-    virtual void multiGet( const QByteArray & );
+    virtual void multiGet( const QByteArray & data );
 
     /**
      * Called to get the status of the slave. Slave should respond
@@ -694,7 +694,7 @@ public:
     /**
      * Used by the slave to check if it can connect
      * to a given host. This should be called where the slave is ready
-     * to do a ::connect() on a socket. For each call to 
+     * to do a ::connect() on a socket. For each call to
      * requestNetwork must exist a matching call to
      * dropNetwork, or the system will stay online until
      * KNetMgr gets closed (or the SlaveBase gets destructed)!

@@ -118,15 +118,15 @@ public:
     static void demandAttention( WId win, bool set = true );
 
     /**
-     * Sets user timestamp @p time on window @win. The timestamp
+     * Sets user timestamp @p time on window @p win. The timestamp
      * is expressed as XServer time. If a window
      * is shown with user timestamp older than the time of the last
      * user action, it won't be activated after being shown.
      * The most common case is the special value 0 which means
      * not to activate the window after being shown.
-     */    
+     */
     static void setUserTime( WId win, long time );
-    
+
     /**
      * Invokes interactive context help.
      */
@@ -173,7 +173,7 @@ public:
     /**
      * Returns the leader window for the group the given window is in, if any.
      * @since 3.2
-     */    
+     */
     static WId groupLeader( WId window );
 
     /**
@@ -210,7 +210,7 @@ public:
      * You should usually prefer the simpler variant which tries all possibilities to get
      * an icon.
      *
-     * @param icon OR-ed flags from the IconSource enum
+     * @param flags OR-ed flags from the IconSource enum
      */
     static QPixmap icon( WId win, int width, int height, bool scale, int flags );
 
@@ -296,7 +296,7 @@ public:
     static int currentDesktop();
 
     /**
-     * Convenience function to access the number of desktops. See 
+     * Convenience function to access the number of desktops. See
      * NETRootInfo.
      * @return the number of desktops
      */
@@ -335,12 +335,12 @@ public:
      * on inactive virtual desktops.
      */
     static bool icccmCompliantMappingState();
-    
+
     /**
      * Returns true if the WM announces which actions it allows for windows.
      */
     static bool allowedActionsSupported();
-    
+
     /**
      * Function that reads and returns the contents of the given text
      * property (WM_NAME, WM_ICON_NAME,...).
@@ -421,7 +421,7 @@ public:
     bool valid( bool withdrawn_is_valid = false ) const;
     /**
      * Returns the window identifier.
-     */ 
+     */
     WId win() const;
     /**
      * Returns the window's state flags(see the NET::State enum for details).
@@ -538,16 +538,16 @@ public:
     /**
      * Returns the leader window for the group the window is in, if any.
      * Requires NET::WM2GroupLeader passed to KWin::windowInfo().
-     */    
+     */
     WId groupLeader() const;
 
     /**
      * Returns true if the given action is currently supported for the window
      * by the window manager.
      * Requires NET::WM2AllowedActions passed to KWin::windowInfo().
-     */    
+     */
     bool actionSupported( NET::Action action ) const;
-    
+
     WindowInfo( const WindowInfo& );
     WindowInfo& operator=( const WindowInfo& );
 private:

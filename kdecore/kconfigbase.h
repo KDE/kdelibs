@@ -1195,7 +1195,7 @@ public:
    * _not_ returned here!
    *
    * @param pKey The key to write.
-   * @param rValue The color value to write.
+   * @param rColor The color value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
    * flag will not be set and thus the entry will not be written to
    * disk at deletion time.
@@ -1215,7 +1215,7 @@ public:
    * _not_ returned here!
    *
    * @param pKey The key to write.
-   * @param rValue The color value to write.
+   * @param rColor The color value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
    * flag will not be set and thus the entry will not be written to
    * disk at deletion time.
@@ -1236,7 +1236,7 @@ public:
    * @em not returned here!
    *
    * @param pKey The key to write.
-   * @param rValue The date and time value to write.
+   * @param rDateTime The date and time value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
    * flag will not be set and thus the entry will not be written to
    * disk at deletion time.
@@ -1256,7 +1256,7 @@ public:
    * @em not returned here!
    *
    * @param pKey The key to write.
-   * @param rValue The date and time value to write.
+   * @param rDateTime The date and time value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
    * flag will not be set and thus the entry will not be written to
    * disk at deletion time.
@@ -1437,7 +1437,7 @@ public:
   /**
    * writePathEntry() overridden to accept a list of paths (strings).
    *
-   * It is checked whether the paths are located under $HOME. If so each of 
+   * It is checked whether the paths are located under $HOME. If so each of
    * the paths are written out with the user's home-directory replaced with
    * $HOME. The paths should be read back with readPathListEntry()
    *
@@ -1461,7 +1461,7 @@ public:
   /**
    * writePathEntry() overridden to accept a list of paths (strings).
    *
-   * It is checked whether the paths are located under $HOME. If so each of 
+   * It is checked whether the paths are located under $HOME. If so each of
    * the paths are written out with the user's home-directory replaced with
    * $HOME. The paths should be read back with readPathListEntry()
    *
@@ -1600,7 +1600,7 @@ public:
    * group (hasKey() returns false). Keys with null data are considered
    * nonexistent.
    *
-   * @param pKey The key to search for.
+   * @param key The key to search for.
    * @return If true, the key is available.
    */
   bool hasKey( const QString& key ) const;
@@ -1647,7 +1647,7 @@ public:
 
   /**
    * Checks whether it is possible to change the given entry.
-   * @param the key to check
+   * @param key the key to check
    * @return whether the entry @p key may be changed in the current group
    * in this configuration file.
    */
@@ -1689,7 +1689,7 @@ public:
    * @since 3.2
    */
   void setReadDefaults(bool b);
-  
+
   /**
    * @returns true if all readEntry and readXXXEntry calls return the system
    * wide (default) values instead of the user's preference.
@@ -1698,8 +1698,8 @@ public:
   bool readDefaults() const;
 
   /**
-   * Reverts the entry with key @p key in the current group in the 
-   * application specific config file to either the system wide (default) 
+   * Reverts the entry with key @p key in the current group in the
+   * application specific config file to either the system wide (default)
    * value or the value specified in the global KDE config file.
    *
    * To revert entries in the global KDE config file, the global KDE config
@@ -1724,7 +1724,7 @@ public:
    *    writeEntry(key, value)
    * \endcode
    *
-   * This ensures that as long as the entry is not modified to differ 
+   * This ensures that as long as the entry is not modified to differ
    * from the dynamically determined default, the application will
    * follow changes of the default.
    * @param key The key of the entry to check.

@@ -36,7 +36,6 @@ class KCalendarSystemPrivate;
  * Derived classes must be created through KCalendarFactory class
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @version $Id$
  * @since 3.2
  */
@@ -179,7 +178,7 @@ public:
    * Gets specific calendar string representing the number of the year
    * or, if it exists, the name of the year (eg., chinesse calendar)
    *
-   * @param year  The year number
+   * @param year The year number
    * @return The name of the year
    */
   virtual QString yearLiteral (int year) const = 0;
@@ -189,7 +188,7 @@ public:
    * or, if it exists, the name of the year (eg., chinesse calendar)
    * for a given gregorian date
    *
-   * @param date Gregorian date 
+   * @param date Gregorian date
    * @return The name of the year
    */
   virtual QString yearLiteral (const QDate & date) const = 0;

@@ -54,7 +54,7 @@ class KCrash
 
   /**
    * Install a function to be called in case a SIGSEGV is caught.
-   * @param HandlerType handler can be one of
+   * @param handler HandlerType handler can be one of
    * @li null in which case signal-catching is disabled
    *  (by calling signal(SIGSEGV, SIG_DFL))
    * @li if handler is omitted the default crash handler is installed.

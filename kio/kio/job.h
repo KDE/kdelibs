@@ -34,7 +34,7 @@ namespace KIO {
      *
      *
      * @param url The URL of the directory to create.
-     * @param permissions The permissions to set after creating the 
+     * @param permissions The permissions to set after creating the
      *                    directory (unix-style), -1 for default permissions.
      * @return A pointer to the job handling the operation.
      */
@@ -183,7 +183,7 @@ namespace KIO {
      * @param url the URL of the file
      * @param reload true to reload the file, false if it can be taken from the cache
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     TransferJob *get( const KURL& url, bool reload=false, bool showProgressInfo = true );
 
@@ -195,7 +195,7 @@ namespace KIO {
      * @param overwrite If true, any existing file will be overwritten.
      * @param resume true to resume, false otherwise
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      * @see multi_get()
      */
     TransferJob *put( const KURL& url, int permissions,
@@ -213,12 +213,12 @@ namespace KIO {
      *
      * @p postData is the data that you want to send and
      * @p contentType is the complete HTTP header line that
-     * specifies the content's MIME type, for example 
-     * "Content-Type: text/xml". 
+     * specifies the content's MIME type, for example
+     * "Content-Type: text/xml".
      *
      * You MUST specify content-type!
      *
-     * Often @p contentType is 
+     * Often @p contentType is
      * "Content-Type: application/x-www-form-urlencoded" and
      * the @p postData is then an ASCII string (without null-termination!)
      * with characters like space, linefeed and percent escaped like %20,
@@ -226,20 +226,18 @@ namespace KIO {
      *
      * @param url Where to write the data.
      * @param postData Encoded data to post.
-     * @param showProgressInfo true to display 
-     * @return the job handling the operation.  
+     * @param showProgressInfo true to display
+     * @return the job handling the operation.
      */
     TransferJob *http_post( const KURL& url, const QByteArray &postData,
                             bool showProgressInfo = true );
 
     /**
      * Creates a new mult-get job.
-     * 
+     *
      * @param id the id of the get operation
      * @param url the URL of the file
-     * @param reload true to reload the file, false if it can be taken from the cache
-     * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      * @see get()
      */
     MultiGetJob *multi_get( long id, const KURL &url, const MetaData &metaData);
@@ -249,7 +247,7 @@ namespace KIO {
      *
      * @param url the URL of the file
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     MimetypeJob * mimetype( const KURL& url,
                             bool showProgressInfo = true );
@@ -265,7 +263,7 @@ namespace KIO {
      * @param overwrite If true, any existing file will be overwritten.
      * @param resume true to resume an operation
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
                             bool overwrite=false, bool resume=false,
@@ -282,7 +280,7 @@ namespace KIO {
      * @param overwrite If @p true, any existing file will be overwritten.
      * @param resume true to resume an operation
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
                             bool overwrite=false, bool resume=false,
@@ -293,7 +291,7 @@ namespace KIO {
      *
      * @param src File to delete.
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
@@ -305,9 +303,9 @@ namespace KIO {
      *
      * @param url the url of the directory
      * @param showProgressInfo true to show progress information
-     * @param includeHidden true for all files, false to cull out UNIX hidden 
+     * @param includeHidden true for all files, false to cull out UNIX hidden
      *                      files/dirs (whose names start with dot)
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     ListJob *listDir( const KURL& url, bool showProgressInfo = true,
                       bool includeHidden = true );
@@ -320,9 +318,9 @@ namespace KIO {
      *
      * @param url the url of the directory
      * @param showProgressInfo true to show progress information
-     * @param includeHidden true for all files, false to cull out UNIX hidden 
+     * @param includeHidden true for all files, false to cull out UNIX hidden
      *                      files/dirs (whose names start with dot)
-     * @return the job handling the operation.  
+     * @return the job handling the operation.
      */
     ListJob *listRecursive( const KURL& url, bool showProgressInfo = true,
                             bool includeHidden = true );
@@ -333,7 +331,7 @@ namespace KIO {
      * (into which @p src will be copied).
      *
      * This emulates the cp command completely.
-     * 
+     *
      * @param src the file or directory to copy
      * @param dest the destination
      * @param showProgressInfo true to show progress information
@@ -390,12 +388,12 @@ namespace KIO {
      */
     CopyJob *moveAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
     /**
-     * Moves a list of files or directories @src to the given destination @p dest.
+     * Moves a list of files or directories @p src to the given destination @p dest.
      *
      * @param src the list of files or directories to copy
      * @param dest the destination
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      * @see copy()
      */
     CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
@@ -408,7 +406,7 @@ namespace KIO {
      * @param src The existing file or directory, 'target' of the link.
      * @param destDir Destination directory where the link will be created.
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      */
     CopyJob *link( const KURL& src, const KURL& destDir, bool showProgressInfo = true );
 
@@ -420,13 +418,13 @@ namespace KIO {
      * @param src The existing files or directories, 'targets' of the link.
      * @param destDir Destination directory where the links will be created.
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      * @see link()
      */
     CopyJob *link( const KURL::List& src, const KURL& destDir, bool showProgressInfo = true );
 
     /**
-     * Create a link. Unlike link() this operation will fail when the directory already 
+     * Create a link. Unlike link() this operation will fail when the directory already
      * exists.
      * If the protocols and hosts are the same, a Unix symlink will be created.
      * Otherwise, a .desktop file of Type Link and pointing to the src URL will be created.
@@ -434,7 +432,7 @@ namespace KIO {
      * @param src The existing file or directory, 'target' of the link.
      * @param destDir Destination directory where the link will be created.
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      * @see link ()
      * @see copyAs()
      */
@@ -447,7 +445,7 @@ namespace KIO {
      * @param shred If true, delete in a way that makes recovery impossible
      * (only supported for local files currently)
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      */
     DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );
 
@@ -458,7 +456,7 @@ namespace KIO {
      * @param shred If true, delete in a way that makes recovery impossible
      * (only supported for local files currently)
      * @param showProgressInfo true to show progress information
-     * @return the job handling the operation   
+     * @return the job handling the operation
      */
     DeleteJob *del( const KURL::List& src, bool shred = false, bool showProgressInfo = true );
 }

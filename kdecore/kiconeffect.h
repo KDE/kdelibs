@@ -7,8 +7,8 @@
  * with minor additions and based on ideas from
  * Torsten Rahn <torsten@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -59,7 +59,7 @@ public:
      */
     void init();
 
-    /** 
+    /**
      * Tests whether an effect has been configured for the given icon group.
      * @param group the group to check, see KIcon::Group
      * @param state the state to check, see KIcon::States
@@ -72,12 +72,12 @@ public:
 
     /**
      * Returns a fingerprint for the effect by encoding
-     * the given @p group and @p state into a QString. This 
+     * the given @p group and @p state into a QString. This
      * is useful for caching.
      * @param group the group, see KIcon::Group
      * @param state the state, see KIcon::States
      * @return the fingerprint of the given @p group+@p state
-     */ 
+     */
      QString fingerprint(int group, int state) const;
 
     /**
@@ -95,10 +95,11 @@ public:
      * @param src The image.
      * @param effect The effect to apply, one of KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
-     * @param color Color parameter for effects that need one.
+     * @param rgb Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.
      * @return An image with the effect applied.
      */
+    // KDE4: make them references
     QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
 
     /**
@@ -115,7 +116,7 @@ public:
      * @param src The pixmap.
      * @param effect The effect to apply, one of KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
-     * @param color Color parameter for effects that need one.
+     * @param rgb Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.
      * @return A pixmap with the effect applied.
      */
@@ -138,7 +139,7 @@ public:
      * option is not activated (See kcontrol/Peripherals/Mouse).
      *
      * @param widget The widget on which the effect should be painted
-     * @param rect This rectangle defines the effect's borders 
+     * @param rect This rectangle defines the effect's borders
      */
     static void visualActivate(QWidget *widget, QRect rect);
 
@@ -185,7 +186,7 @@ public:
     /**
      * Renders a pixmap semi-transparent.
      *
-     * @param image The pixmap
+     * @param pixmap The pixmap
      */
     static void semiTransparent(QPixmap &pixmap);
 

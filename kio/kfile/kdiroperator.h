@@ -390,9 +390,9 @@ class KDirOperator : public QWidget
 
     /**
      * Sets the config object and the to be used group in KDirOperator. This
-     * will be used to store the view's configuration via 
+     * will be used to store the view's configuration via
      * KFileView::writeConfig() (and for KFileView::readConfig()).
-     * If you don't set this, the views cannot save and restore their 
+     * If you don't set this, the views cannot save and restore their
      * configuration.
      *
      * Usually you call this right after KDirOperator creation so that the view
@@ -407,7 +407,7 @@ class KDirOperator : public QWidget
      */
 	// ### KDE4: make virtual
     void setViewConfig( KConfig *config, const QString& group );
-    
+
     /**
      * Returns the KConfig object used for saving and restoring view's
      * configuration.
@@ -425,7 +425,7 @@ class KDirOperator : public QWidget
      * @since 3.1
      */
     QString viewConfigGroup() const;
-    
+
     /**
      * Reads the default settings for a view, i.e. the default KFile::FileView.
      * Also reads the sorting and whether hidden files should be shown.
@@ -581,9 +581,6 @@ protected:
 	// ### KDE4: make virtual
     void setDirLister( KDirLister *lister );
 
-    /**
-     * @reimplemented
-     */
     virtual void resizeEvent( QResizeEvent * );
 
     /**

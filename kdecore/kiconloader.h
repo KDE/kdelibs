@@ -85,11 +85,11 @@ public:
      * @param appname Add the data directories of this application to the
      * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
-     * @param the KStandardDirs object to use. If null the global one is used
+     * @param dirs the KStandardDirs object to use. If null the global one is used
      *
      * Usually, you use the default iconloader, which can be accessed via
      * KGlobal::iconLoader(), so you hardly ever have to create an
-     * iconloader object yourself. That one is the current KInstance's 
+     * iconloader object yourself. That one is the current KInstance's
      * (typically KApplication's) iconloader.
      * @see KGlobal::iconLoader()
      * @see KInstance::iconLoader()
@@ -305,7 +305,7 @@ public:
      * Returns if the default icon themes of other desktops have been added
      * to the list of icon themes where icons are searched.
      * @since 3.1
-     */ 
+     */
     bool extraDesktopThemesAdded() const;
 
     /**
@@ -316,7 +316,7 @@ public:
      * Note that enabling or disabling this only affects loadIconSet()
      * calls after this setting is changed.
      *
-     * The default is disabled, as the iconloader object must not be 
+     * The default is disabled, as the iconloader object must not be
      * destroyed before all those iconsets are destroyed.
      *
      * (Some broken applications use temporary KIconLoader objects).
@@ -390,7 +390,7 @@ public:
      */
     QIconSet loadIconSetNonDelayed( const QString& name, KIcon::Group group,
                                     int size, bool canReturnNull );
-    
+
     // @internal the data object
     KIconLoaderPrivate *d;
 };

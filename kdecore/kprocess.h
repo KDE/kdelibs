@@ -35,7 +35,7 @@ class KPty;
 /**
  * Child process invocation, monitoring and control.
  *
- * @sect General usage and features
+ * <b>General usage and features:</b>\n
  *
  * This class allows a KDE application to start child processes without having
  * to worry about UN*X signal handling issues and zombie process reaping.
@@ -98,7 +98,7 @@ class KPty;
  *
  * When the child process exits, the slot will be invoked.
  *
- * @sect Communication with the child process
+ * <b>Communication with the child process:</b>\n
  *
  * KProcess supports communication with the child process through
  * stdin/stdout/stderr.
@@ -232,7 +232,7 @@ public:
   /**
    * Sets the executable and the command line argument list for this process,
    * in a single method call, or add a list of arguments.
-   * @param arg the arguments to add
+   * @param args the arguments to add
    * @return a reference to this KProcess
    **/
   KProcess &operator<<(const QStringList& args);
@@ -248,7 +248,7 @@ public:
    *  For a detailed description of the
    *  various run modes and communication semantics, have a look at the
    *  general description of the KProcess class. Note that if you use
-   * setUsePty( Stdout | Stderr, <bool> ), you cannot use Stdout | Stderr
+   * setUsePty( Stdout | Stderr, \<bool\> ), you cannot use Stdout | Stderr
    *  here - instead, use Stdout only to receive the mixed output.
    *
    *  The following problems could cause this function to
@@ -424,7 +424,7 @@ public:
    * currently refuse to run with setuid/setgid privileges.
    *
    * The default is false: drop privileges
-   * @param true to keep the privileges
+   * @param keepPrivileges true to keep the privileges
    */
   void setRunPrivileged(bool keepPrivileges);
 
@@ -607,14 +607,14 @@ protected slots:
  /**
   * This slot gets activated when data from the child's stdout arrives.
   * It usually calls childOutput().
-  * @param the file descriptor for the output
+  * @param fdno the file descriptor for the output
   */
   void slotChildOutput(int fdno);
 
  /**
   * This slot gets activated when data from the child's stderr arrives.
   * It usually calls childError().
-  * @param the file descriptor for the output
+  * @param fdno the file descriptor for the output
   */
   void slotChildError(int fdno);
 
@@ -752,7 +752,7 @@ protected:
   /* KDE 4 - commClose will be changed to perform cleanup only in all cases *
    * If @p notfd is -1, all data immediately available from the
    *  communication links should be processed.
-   * If @p notfd is not -1, the communication links should be monitored 
+   * If @p notfd is not -1, the communication links should be monitored
    *  for data until the file handle @p notfd becomes ready for reading.
    */
 //  virtual void commDrain(int notfd);

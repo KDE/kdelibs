@@ -86,7 +86,7 @@ public:
   void jobFinished( int progressId );
 
   /**
-   * @deprecated.
+   * @deprecated use KIO::AutoInfo
    */
   bool openPassDlg( const QString& prompt, QString& user, QString& pass,
                     bool readOnly );

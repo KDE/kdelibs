@@ -73,7 +73,7 @@ class KKey
 
 	/**
 	 * Creates a new key from the first key code of the given key sequence.
-	 * @param keySeq the key sequence that contains the key 
+	 * @param keySeq the key sequence that contains the key
 	 */
 	KKey( const QKeySequence& keySeq );
 
@@ -90,9 +90,9 @@ class KKey
 
 	/**
 	 * Creates a new key from the given description. The form of the description
-	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or 
+	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or
 	 * "CTRL+ALT+DEL". Allowed modifiers are "SHIFT", "CTRL", "ALT", "WIN" and
-	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive. 
+	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive.
 	 * @param key the description of the key
 	 * @see KKeyServer::Sym::init()
 	 */
@@ -120,7 +120,7 @@ class KKey
 
 	/**
 	 * Initializes the key with the first key code of the given key sequence.
-	 * @param keySeq the key sequence that contains the key 
+	 * @param keySeq the key sequence that contains the key
 	 * @return true if successful, false otherwise
 	 */
 	bool init( const QKeySequence& keySeq );
@@ -141,14 +141,14 @@ class KKey
 
 	/**
 	 * Initializes the key with the given description. The form of the description
-	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or 
+	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or
 	 * "CTRL+ALT+DEL". Allowed modifiers are "SHIFT", "CTRL", "ALT", "WIN" and
-	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive. 
+	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive.
 	 * @param key the description of the key
 	 * @return true if successful, false otherwise
 	 * @see KKeyServer::Sym::init()
 	 */
-	bool init( const QString& );
+	bool init( const QString& key);
 
 	/**
 	 * @internal
@@ -192,13 +192,13 @@ class KKey
 
  // Comparison Methods
 	/**
-	 * Compares this key with the given KKey object. Returns a negative 
+	 * Compares this key with the given KKey object. Returns a negative
 	 * number if the given KKey is larger, 0 if they are equal and
 	 * a positive number this KKey is larger. The returned value
-	 * is the difference between the symbol or, if the symbols 
+	 * is the difference between the symbol or, if the symbols
 	 * are equal, the difference between the encoded modifiers.
 	 * @param key the key to compare with this key
-	 * @return a negative number if the given KKey is larger, 0 if 
+	 * @return a negative number if the given KKey is larger, 0 if
 	 * they are equal and a positive number this KKey is larger
 	 */
 	int compare( const KKey& key ) const;
@@ -229,7 +229,7 @@ class KKey
 	 * @see Qt::Key
 	 */
 	int keyCodeQt() const;
-	
+
 	/**
 	 * Returns a human-readable representation of the key in the form
 	 * "modifier+key".
@@ -247,7 +247,7 @@ class KKey
 	 * @internal
 	 */
 	void simplify();
-	
+
 	/**
 	 * Returns a null key.
 	 * @return the null key
@@ -294,8 +294,8 @@ class KKey
 class KKeySequence
 {
  public:
-        /// Defines the maximum length of the key sequence 
-        enum { MAX_KEYS = 4 }; 
+        /// Defines the maximum length of the key sequence
+        enum { MAX_KEYS = 4 };
 
 	/**
 	 * Create a new null key sequence.
@@ -330,7 +330,7 @@ class KKeySequence
 	KKeySequence( const KKeySequence& keySeq );
 
 	/**
-	 * Creates a new key sequence that contains the given key sequence. 
+	 * Creates a new key sequence that contains the given key sequence.
 	 * The description consists of comma-separated keys as
 	 * required by KKey::KKey(const QString&).
 	 * @param keySeq the description of the key
@@ -342,7 +342,7 @@ class KKeySequence
 	~KKeySequence();
 
 	/**
-	 * Clears the key sequence. The key sequence is null after calling this 
+	 * Clears the key sequence. The key sequence is null after calling this
 	 * function.
 	 * @see isNull()
 	 */
@@ -447,14 +447,14 @@ class KKeySequence
 	bool startsWith( const KKeySequence& keySeq ) const;
 
 	/**
-	 * Compares this object with the given key sequence. Returns a negative 
+	 * Compares this object with the given key sequence. Returns a negative
 	 * number if the given KKeySequence is larger, 0 if they are equal and
 	 * a positive number this KKeySequence is larger. Key sequences are
 	 * compared by comparing the individual keys, starting from the beginning
 	 * until an unequal key has been found. If a sequence contains more
 	 * keys, it is considered larger.
 	 * @param keySeq the key sequence to compare to
-	 * @return a negative number if the given KKeySequence is larger, 0 if 
+	 * @return a negative number if the given KKeySequence is larger, 0 if
 	 * they are equal and a positive number this KKeySequence is larger
 	 * @see KKey::sequence
 	 */
@@ -487,7 +487,7 @@ class KKeySequence
 	 * @return the QKeySequence
 	 */
 	QKeySequence qt() const;
-	
+
 	/**
 	 * Returns the qt key code of the first key.
 	 * @return the qt key code of the first key
@@ -540,9 +540,9 @@ class KShortcut
 {
  public:
         /**
-	 * The maximum number of key sequences that can be contained in 
+	 * The maximum number of key sequences that can be contained in
 	 * a KShortcut.
-         */ 
+         */
 	enum { MAX_SEQUENCES = 2 };
 
 	/**
@@ -608,7 +608,7 @@ class KShortcut
 	~KShortcut();
 
 	/**
-	 * Clears the shortcut. The shortcut is null after calling this 
+	 * Clears the shortcut. The shortcut is null after calling this
 	 * function.
 	 * @see isNull()
 	 */
@@ -679,7 +679,7 @@ class KShortcut
 	const KKeySequence& seq( uint i ) const;
 
 	/**
-	 * Returns the key code of the first key sequence, or 
+	 * Returns the key code of the first key sequence, or
 	 * null if there is no first key sequence.
 	 * @return the key code of the first sequence's first key
 	 * @see Qt::Key
@@ -697,14 +697,14 @@ class KShortcut
 	bool isNull() const;
 
 	/**
-	 * Compares this object with the given shortcut. Returns a negative 
+	 * Compares this object with the given shortcut. Returns a negative
 	 * number if the given shortcut is larger, 0 if they are equal and
 	 * a positive number this shortcut is larger. Shortcuts are
-	 * compared by comparing the individual key sequences, starting from the 
+	 * compared by comparing the individual key sequences, starting from the
 	 * beginning until an unequal key sequences has been found. If a shortcut
 	 * contains more key sequences, it is considered larger.
 	 * @param shortcut the shortcut to compare to
-	 * @return a negative number if the given KShortcut is larger, 0 if 
+	 * @return a negative number if the given KShortcut is larger, 0 if
 	 * they are equal and a positive number this KShortcut is larger
 	 * @see KKey::compare()
 	 * @see KKeyShortcut::compare()
@@ -756,10 +756,10 @@ class KShortcut
 	bool contains( const KKeySequence& keySeq ) const;
 
 	/**
-	 * Sets the @p i'th key sequence of the shortcut. You can not introduce 
-	 * gaps in the list of sequences, so you must use an @i <= count(). 
+	 * Sets the @p i 'th key sequence of the shortcut. You can not introduce
+	 * gaps in the list of sequences, so you must use an @p i <= count().
 	 * Also note that the maximum number of key sequences is MAX_SEQUENCES.
-	 * @param i the position of the new key sequence(<= count(), 
+	 * @param i the position of the new key sequence(<= count(),
 	 *          <= MAX_SEQUENCES)
 	 * @param keySeq the key sequence to set
 	 * @return true if successful, false otherwise

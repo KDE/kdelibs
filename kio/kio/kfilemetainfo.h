@@ -111,9 +111,9 @@ public:
     enum Unit {
         NoUnit          = 0,  ///< None of the listed units
         Seconds         = 1,  ///< The item represents a time in seconds
-        MilliSeconds    = 2,  ///< The item represents a time in milliseconds 
+        MilliSeconds    = 2,  ///< The item represents a time in milliseconds
         BitsPerSecond   = 3,  ///< A bit rate
-        Pixels          = 4,  ///< For image dimensions and similar 
+        Pixels          = 4,  ///< For image dimensions and similar
         Inches          = 5,  ///< Sizes
         Centimeters     = 6,  ///< Sizes
         Bytes           = 7,  ///< Some data/file size in bytes
@@ -424,7 +424,7 @@ public:
 
     /**
      * Returns the mimetype to which this info belongs.
-     * @retun the mimetype of this info
+     * @return the mimetype of this info
      */
     QString mimeType()  const {return m_mimeType;}
 
@@ -725,7 +725,7 @@ public:
      * @since 3.1
      */
     bool isModified() const;
-    
+
     /**
      * Operator for convenience. It does the same as item(),
      * but you cannot specify a group to search in
@@ -896,7 +896,7 @@ public:
                                  that might need a significantly longer time
                                  than the others */
       DontCare      = 0x2,  ///< let the plugin decide what to read
-      
+
       TechnicalInfo = 0x4,  /**< extract technical details about the file, like
                                  e.g. play time, resolution or a compressioni
                                  type */

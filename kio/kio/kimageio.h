@@ -23,36 +23,35 @@
  * with the QImageIO handler format. The backends are loaded on demand
  * when a particular format is requested. Each format can be identified
  * by a unique type id string.
- * 
- * @sect Formats
+ *
+ * \b Formats: \n
  *
  * Currently supported formats include:
- * @li JPEG    <read>
- * @li XV      <read> <write>
- * @li EPS     <read> <write>
- * @li NETPBM  <incomplete>
- * @li PNG     <read> <write, only with newer libraries>
- * @li TIFF    <read>
- * @li KRL     <read> 
+ * @li JPEG    \<read\>
+ * @li XV      \<read\> \<write\>
+ * @li EPS     \<read\> \<write\>
+ * @li NETPBM  \<incomplete\>
+ * @li PNG     \<read\> \<write, only with newer libraries\>
+ * @li TIFF    \<read\>
+ * @li KRL     \<read\>
  *
- * @sect Usage
+ * \b Usage:\n
  *
  * Simply call the KImageIO::registerFormats() static method declared
  * in kimgageio.h.
- * 
- * @sect Example
+ *
+ * \b Example:\n
  *
  * \code
-	#include<qpixmap.h>
- 	#include<kimgio.h>
+  #include<qpixmap.h>
+  #include<kimgio.h>
 
-	int main( int argc, char **argv )
-	{
-		....
-		KImageIO::registerFormats();
-		
-		...	// start main program
-	}
+  int main( int argc, char **argv )
+  {
+    ....
+    KImageIO::registerFormats();
+    ...   // start main program
+  }
  * \endcode
  *
  * @see KImageIO, QPixmap, QImage, QImageIO
@@ -76,20 +75,20 @@ public:
 
   /**
    * Checks if a special type is supported for writing.
-   * @param the type id of the image type
+   * @param type the type id of the image type
    * @return true if the image format can be written
    */
   static bool canWrite(const QString& type);
 
   /**
    * Checks if a special type is supported for reading.
-   * @param the type id of the image type
+   * @param type the type id of the image type
    * @return true if the image format can be read
    */
   static bool canRead(const QString& type);
 
   /**
-   * Returns a list of all KImageIO supported formats. 
+   * Returns a list of all KImageIO supported formats.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a list of the type ids
@@ -98,14 +97,14 @@ public:
 
 
   /**
-   * Returns a list of patterns of all KImageIO supported formats. 
+   * Returns a list of patterns of all KImageIO supported formats.
    *
    * These patterns can be passed to KFileDialog::getOpenFileName()
    * or KFileDialog::getSaveFileName(), for example.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a space-separated list of file globs that describe the
-   * supported formats 
+   * supported formats
    */
   static QString pattern(Mode mode = Reading);
 
@@ -135,12 +134,12 @@ public:
   static QString type(const QString& filename);
 
   /**
-   *  Returns a list of MIME types for all KImageIO supported formats. 
+   *  Returns a list of MIME types for all KImageIO supported formats.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a list if MIME types of the supported formats
    */
-  static QStringList mimeTypes( Mode _mode = Writing );
+  static QStringList mimeTypes( Mode mode = Writing );
 
   /**
    * Test to see whether a MIME type is supported to reading/writing.

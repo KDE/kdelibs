@@ -107,8 +107,8 @@ public:
     * Information to be displayed when prompting
     * the user for authentication information.
     *
-    * <u>NOTE:</u>If this field is not set, the authentication
-    * dialog simply displays the preset default prompt.
+    * @note If this field is not set, the authentication
+    *    dialog simply displays the preset default prompt.
     *
     * This setting is @em optional and empty by default.
     */
@@ -118,8 +118,8 @@ public:
     * The text to displayed in the title bar of
     * the password prompting dialog.
     *
-    * <u>NOTE:</u>If this field is not set, the authentication
-    * dialog simply displays the preset default caption.
+    * @note If this field is not set, the authentication
+    *    dialog simply displays the preset default caption.
     *
     * This setting is @em optional and empty by default.
     */

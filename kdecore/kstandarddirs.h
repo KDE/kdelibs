@@ -67,7 +67,7 @@ class KStandardDirsPrivate;
  * specific directories that aren't in his $HOME/.kde directory for,
  * for example, icons.
  *
- * @sect Standard resources that kdelibs allocates are:
+ * <b>Standard resources that kdelibs allocates are:</b>\n
  *
  * @li apps - Applications menu (.desktop files).
  * @li cache - Cached information (e.g. favicons, web-pages)
@@ -103,7 +103,7 @@ class KStandardDirsPrivate;
  * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
  * to work around this by using ::locate("data", "appletname/filename").
  *
- * @sect KStandardDirs supports the following environment variables:
+ * <b>KStandardDirs supports the following environment variables:</b>
  *
  * @li KDEDIRS: This may set an additional number of directory prefixes to
  *          search for resources. The directories should be separated
@@ -147,7 +147,7 @@ public:
 	void addPrefix( const QString& dir );
 
 	/**
-	 * Adds another search dir to front of the XDG_CONFIG_XXX list 
+	 * Adds another search dir to front of the XDG_CONFIG_XXX list
 	 * of prefixes.
 	 * This prefix is only used for resources that start with "xdgconf-"
 	 *
@@ -156,7 +156,7 @@ public:
 	void addXdgConfigPrefix( const QString& dir );
 
 	/**
-	 * Adds another search dir to front of the XDG_DATA_XXX list 
+	 * Adds another search dir to front of the XDG_DATA_XXX list
 	 * of prefixes.
 	 * This prefix is only used for resources that start with "xdgdata-"
 	 *
@@ -341,7 +341,6 @@ public:
 	 *        into subdirectories.
 	 * @param uniq If specified,  only return items which have
 	 *        unique suffixes.
-	 * @param list Of relative paths for the given type.
 	 * @param relPaths The list to store the relative paths into
 	 *        These can be used later to ::locate() the file
 	 *
@@ -553,10 +552,10 @@ public:
 	static bool exists(const QString &fullPath);
 
         /**
-         * Expands all symbolic links and resolves references to 
+         * Expands all symbolic links and resolves references to
          * '/./', '/../' and extra  '/' characters in @p dirname
          * and returns the canonicalized absolute pathname.
-         * The resulting path will have no symbolic link, '/./' 
+         * The resulting path will have no symbolic link, '/./'
          * or '/../' components.
 	 * @since 3.1
          */
@@ -659,8 +658,8 @@ QString locateLocal( const char *type, const QString& filename, const KInstance*
  * \relates KStandardDirs
  * This function is much like locate. No check is made if the
  * specified filename actually exists. Missing directories
- * are created if @p createDir is true. If filename is only 
- * a directory, without a specific file, 
+ * are created if @p createDir is true. If filename is only
+ * a directory, without a specific file,
  * filename must have a trailing slash.
  *
  **/

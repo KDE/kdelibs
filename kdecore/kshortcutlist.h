@@ -35,11 +35,11 @@ class KShortcut;
 **********************************************************************/
 
 /**
- * KShortcutList is an abstract base class for 
+ * KShortcutList is an abstract base class for
  * KAccelShortcutList and KStdAccel::ShortcutList. It gives
  * you an unified interface for accessing the accelerator lists
- * of KAccel (using @KAccelShortcutList), 
- * KGlobalAccel (using @KAccelShortcutList), and 
+ * of KAccel (using KAccelShortcutList),
+ * KGlobalAccel (using KAccelShortcutList), and
  * KStdAccel (using KStdAccel::ShortcutList).
  *
  * @short Base class for accessing accelerator lists
@@ -188,7 +188,7 @@ class KAccelActions;
 class KGlobalAccel;
 
 /**
- * KShortcutList implementation to access KAccel and 
+ * KShortcutList implementation to access KAccel and
  * KGlobalAccel lists.
  */
 class KAccelShortcutList : public KShortcutList
@@ -197,24 +197,24 @@ class KAccelShortcutList : public KShortcutList
         /**
 	 * Creates a new KShortcutList that accesses the given KAccel.
 	 * @param accel the accelerators to access
-	 */ 
+	 */
 	KAccelShortcutList( KAccel* accel );
 
         /**
-	 * Creates a new KShortcutList that accesses the given 
+	 * Creates a new KShortcutList that accesses the given
 	 * KGlobalAccel.
 	 * @param accel the accelerators to access
-	 */ 
+	 */
 	KAccelShortcutList( KGlobalAccel* accel );
 
         /**
 	 * @internal
-	 * Creates a new KShortcutList that accesses the given 
+	 * Creates a new KShortcutList that accesses the given
 	 * KAccelActions collection.
 	 * @param accel the actions to access
-	 * @param bGlobal true to save the actions in the global 
+	 * @param bGlobal true to save the actions in the global
 	 *        configuration file
-	 */ 
+	 */
 	KAccelShortcutList( KAccelActions &actions, bool bGlobal );
 	virtual ~KAccelShortcutList();
 
@@ -259,7 +259,7 @@ class ShortcutList : public KShortcutList
  public:
         /**
 	 * Creates a new ShortcutList.
-	 */ 
+	 */
 	ShortcutList();
 	virtual ~ShortcutList();
 

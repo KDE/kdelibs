@@ -99,7 +99,7 @@ public:
     /**
      * Update access time stamps for a given url.
      * @param url the viewed url
-     * @emitSignal iff true emit KBookmarkNotifier signal
+     * @param emitSignal iff true emit KBookmarkNotifier signal
      * @since 3.2
      * @return true if any metadata was modified (bookmarks file is not saved automatically)
      */
@@ -164,7 +164,7 @@ public:
      * want this.
      */
     void setShowNSBookmarks( bool show );
-    
+
     /**
      * Set options with which slotEditBookmarks called keditbookmarks
      * this can be used to change the appearance of the keditbookmarks
@@ -175,7 +175,7 @@ public:
      *            menu items in keditbookmarks :: --nobrowser
      */
     void setEditorOptions( const QString& caption, bool browser );
-    
+
     /**
      * This static function will return an instance of the
      * KBookmarkManager, responsible for the given @p bookmarksFile.
@@ -207,10 +207,10 @@ public:
      */
     const QDomDocument & internalDocument() const;
 
-    /** 
+    /**
      * Access to bookmark notifier, for emitting signals.
      * We need this object to exist in one instance only, so we could
-     * connectDCOP to it by name. 
+     * connectDCOP to it by name.
      */
     KBookmarkNotifier& notifier() { return m_notifier; }
 
@@ -320,7 +320,7 @@ class KExtendedBookmarkOwnerPrivate;
 class KExtendedBookmarkOwner : public QObject, virtual public KBookmarkOwner
 {
     Q_OBJECT
-public:    
+public:
     typedef QValueList<QPair<QString,QString> > QStringPairList;
 public slots:
     void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };

@@ -462,21 +462,26 @@ public:
    * '/' or not. If there is none, it becomes appended. If @p _txt
    * has a leading '/' then this one is stripped.
    *
-   * @param _txt The text to add. It is considered to be decoded.
+   * @param txt The text to add. It is considered to be decoded.
    */
-  void addPath( const QString& _txt );
+  void addPath( const QString& txt );
+
+  /**
+   * call the function below with encoding_hint = 0
+   * (will be merged for KDE4)
+   */
+  QString queryItem( const QString& item ) const;
 
   /**
    * Returns the value of a certain query item.
    *
-   * @param _item Item whose value we want
+   * @param item Item whose value we want
    * @param encoding_hint MIB of encoding of query.
    *
    * @return the value of the given query item name or QString::null if the
    * specified item does not exist.
    */
-  QString queryItem( const QString& _item ) const;
-  QString queryItem( const QString& _item, int encoding_hint ) const;
+  QString queryItem( const QString& item, int encoding_hint ) const;
 
   /**
    * Options for queryItems. Currently, only one option is
@@ -489,9 +494,14 @@ public:
   enum QueryItemsOptions { CaseInsensitiveKeys = 1 };
 
   /**
+   * @internal, override for the below function
+   */
+  QMap< QString, QString > queryItems( int options=0 ) const;
+
+  /**
    * Returns the list of query items as a map mapping keys to values.
    *
-   * @param options any of QueryItemsOptions <em>or</or>ed together.
+   * @param options any of QueryItemsOptions <em>or</em>ed together.
    * @param encoding_hint MIB of encoding of query.
    *
    * @return the map of query items or the empty map if the url has no
@@ -499,7 +509,6 @@ public:
    *
    * @since 3.1
    */
-  QMap< QString, QString > queryItems( int options=0 ) const;
   QMap< QString, QString > queryItems( int options, int encoding_hint ) const;
 
   /**
@@ -588,8 +597,8 @@ public:
    * This is used in particular for encoding URLs in UTF-8 before using them
    * in a drag and drop operation.
    * Please note that the string returned by url() will include
-   * the password of the URL. If you want to show the URL to the 
-   * user, use prettyURL(). 
+   * the password of the URL. If you want to show the URL to the
+   * user, use prettyURL().
    *
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
@@ -604,7 +613,7 @@ public:
 
   /**
    * Returns the URL as string in human-friendly format.
-   * Example: 
+   * Example:
    * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
    * \endcode
@@ -628,7 +637,7 @@ public:
 
   /**
    * Returns the URL as string, escaped for HTML.
-   * Example: 
+   * Example:
    * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
    * \endcode
@@ -802,18 +811,18 @@ public:
    * Convenience function
    *
    * Returns a "relative URL" based on @p base_url that points to @p url.
-   * 
-   * If no "relative URL" can be created, e.g. because the protocol 
+   *
+   * If no "relative URL" can be created, e.g. because the protocol
    * and/or hostname differ between @p base_url and @p url an absolute
    * URL is returned.
-   * Note that if @p base_url represents a directory, it should contain 
+   * Note that if @p base_url represents a directory, it should contain
    * a trailing slash.
    * @param encoding_hint MIB of original encoding of @p str .
    * @see QTextCodec::mibEnum()
    * @see adjustPath()
    */
   static QString relativeURL(const KURL &base_url, const KURL &url, int encoding_hint = 0);
-  
+
   /**
    * Convenience function
    *

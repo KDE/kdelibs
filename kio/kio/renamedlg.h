@@ -106,7 +106,7 @@ private:
   /**
    * \addtogroup renamedlg "RenameDlg related Functions"
    *  @{
-   * \relate KIO::RenameDlg
+   * \relates KIO::RenameDlg
    * Construct a modal, parent-less "rename" dialog, and return
    * a result code, as well as the new dest. Much easier to use than the
    * class RenameDlg directly.

@@ -30,7 +30,7 @@
 /**
  * This class holds the user-specific preferences of a service
  * (whether it can be a default offer or not, how big is the preference
- * for this offer, ...). Basically it is a reference to a 
+ * for this offer, ...). Basically it is a reference to a
  * KService, a number that represents the user's preference (bigger
  * is better) and a flag whether the KService can be used as default.
  *
@@ -44,7 +44,7 @@ public:
    * Create an invalid service offer.
    */
   KServiceOffer();
-  
+
   /**
    * Copy constructor.
    * Shallow copy (the KService will not be copied).
@@ -54,7 +54,7 @@ public:
   /**
    * Creates a new KServiceOffer.
    * @param _service a pointer to the KService
-   * @param _pref the user's preference value, must be positive, 
+   * @param _pref the user's preference value, must be positive,
    *              bigger is better
    * @param _default true if the service should be used as
    *                 default
@@ -103,8 +103,8 @@ private:
 /**
  * KServiceTypeProfile represents the user's preferences for services
  * of a service type.
- * It consists of a list of services (service offers) for the service type 
- * that is sorted by the user's preference. 
+ * It consists of a list of services (service offers) for the service type
+ * that is sorted by the user's preference.
  * KTrader uses KServiceTypeProfile to sort its results, so usually
  * you can just use KTrader to find the user's preferred service.
  *
@@ -124,7 +124,7 @@ public:
   /**
    * Returns the users preference of the given service.
    * @param _service the name of the service to check
-   * @return the user's preference number of the given 
+   * @return the user's preference number of the given
    *         @p _service, or 0 the service is unknown.
    */
   int preference( const QString& _service ) const;
@@ -144,7 +144,7 @@ public:
   OfferList offers() const;
 
   /**
-   * Returns the preferred service for @p _serviceType and @p _genericServiceType 
+   * Returns the preferred service for @p _serviceType and @p _genericServiceType
    * ("Application", type of component, or null).
    *
    * @param serviceType the service type (e.g. a MIME type)
@@ -169,7 +169,7 @@ public:
    * This is what KTrader uses to get the list of offers, before applying the
    * constraints and preferences.
    *
-   * If @p genericServiceType is specified, a list is returned with 
+   * If @p genericServiceType is specified, a list is returned with
    * the offers associated with the combination of the two service types.
    * This is almost like an "foo in ServiceTypes" constraint in the KTrader,
    * but the difference is that to order the offers, we will look at entries
@@ -199,7 +199,7 @@ public:
   /**
    * This method activates a special mode of KServiceTypeProfile, in which all/all
    * and all/allfiles are excluded from the results of the queries.
-   * It is meant for the configuration module _only_. 
+   * It is meant for the configuration module _only_.
    * @internal
    */
   static void setConfigurationMode() { s_configurationMode = true; }
@@ -217,12 +217,13 @@ protected:
    *                           or "KParts/ReadOnlyPart"). Can be QString::null,
    *                           then the "Application" generic type will be used
    */
-  KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType = QString::null );
+  KServiceTypeProfile( const QString& servicetype,
+                       const QString& genericServiceType = QString::null );
 
   /**
    * Add a service to this profile.
    * @param _service the name of the service
-   * @param _pref the user's preference value, must be positive, 
+   * @param _pref the user's preference value, must be positive,
    *              bigger is better
    * @param _default true if the service should be used as
    *                 default

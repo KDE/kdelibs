@@ -103,14 +103,14 @@ public:
     : ptr(0) { }
   /**
    * Creates a new pointer.
-   * @param the pointer
+   * @param t the pointer
    */
   KSharedPtr( T* t )
     : ptr(t) { if ( ptr ) ptr->_KShared_ref(); }
 
   /**
    * Copies a pointer.
-   * @param the pointer to copy
+   * @param p the pointer to copy
    */
   KSharedPtr( const KSharedPtr& p )
     : ptr(p.ptr) { if ( ptr ) ptr->_KShared_ref(); }

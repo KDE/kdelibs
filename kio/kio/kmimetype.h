@@ -118,17 +118,17 @@ public:
    * out, which icon is usually chosen for a certain mime type. Since
    * no URL is passed, it is impossible to obey icon hints in desktop
    * entries for example.
-   * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globallly configured icon size.
+   * @param group The icon group where the icon is going to be used.
+   * @param force_size Override globallly configured icon size.
    *        Use 0 for the default size
-   * @param _state The icon state, one of: @p KIcon::DefaultState,
+   * @param state The icon state, one of: @p KIcon::DefaultState,
    *         @p KIcon::ActiveState or @p KIcon::DisabledState.
-   * @param _path Output parameter to get the full path. Seldom needed.
+   * @param path Output parameter to get the full path. Seldom needed.
    *              Ignored if 0
    * @return the pixmap of the mime type, can be a default icon if not found
    */
-  virtual QPixmap pixmap( KIcon::Group _group, int _force_size = 0, int _state = 0,
-                          QString * _path = 0L ) const;
+  virtual QPixmap pixmap( KIcon::Group group, int _force_size = 0, int state = 0,
+                          QString * path = 0L ) const;
 
   /**
    * Find the pixmap for a given file of this mimetype.
@@ -313,15 +313,16 @@ public:
    * "application/octet-stream" is returned otherwise.
    *
    * Equivalent to
-   *   \code
-   *        KURL u;
-   *        u.setPath(path);
-   *        return findByURL( u, mode, true, fast_mode );
-   *   \endcode
+   * \code
+   * KURL u;
+   * u.setPath(path);
+   * return findByURL( u, mode, true, fast_mode );
+   * \endcode
+   *
    * @param path the path to the file
-   * @param _mode the mode of the file (used, for example, to identify
+   * @param mode the mode of the file (used, for example, to identify
    *              executables)
-   * @param _fast_mode If set to true no disk access is allowed to
+   * @param fast_mode If set to true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
    *        it is @em fast.
    * @return A pointer to the matching mimetype. 0L is never returned.
@@ -333,7 +334,7 @@ public:
    * certain magic numbers and characteristic strings in it.
    *
    * @param data the data to examine
-   * @param accurracy If not a null pointer, *accuracy is set to the
+   * @param accuracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
    * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
    *         type can not be found this way.
@@ -348,7 +349,7 @@ public:
    * used for loading the file's contents.
    *
    * @param fileName the path to the file
-   * @param accurracy If not a null pointer, *accuracy is set to the
+   * @param accuracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
    * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
    *         type can not be found this way.

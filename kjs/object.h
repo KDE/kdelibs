@@ -140,7 +140,7 @@ namespace KJS {
      *
      * @param exec The current execution state
      * @param propertyName The name of the property to set
-     * @param propertyValue The value to set
+     * @param value The value to set
      */
     void put(ExecState *exec, const Identifier &propertyName,
 	     const Value &value, int attr = None);
@@ -355,7 +355,7 @@ namespace KJS {
   };
 
   inline Object Value::toObject(ExecState *exec) const { return rep->dispatchToObject(exec); }
-  
+
   class ObjectImp : public ValueImp {
     friend class ObjectProtoFuncImp;
   public:

@@ -49,7 +49,7 @@ public:
    * Construct a KSimpleConfig object and make it either read-write
    * or read-only.
    *
-   * @param pFileName The file used for saving the config data. Either
+   * @param fileName The file used for saving the config data. Either
    *                  a full path can be specified or just the filename.
    *                  If only a filename is specified, the default
    *                  directory for "config" files is used.

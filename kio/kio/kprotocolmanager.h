@@ -238,7 +238,7 @@ public:
 
   /**
    * Returns the URL of the script for automatic proxy configuration.
-   * @rturn the proxy configuration script
+   * @return the proxy configuration script
    */
   static QString proxyConfigScript();
 
@@ -314,15 +314,15 @@ public:
    * @return the minimum keep size for aborted downloads in bytes
    */
   static int minimumKeepSize();
-  
-  
+
+
   /*============================ NETWORK CONNECTIONS ==========================*/
   /**
    * Returns true if proxy connections should be persistent.
    * @return true if proxy connections should be persistent
    * @since 3.1
    */
-  static bool persistentProxyConnection(); 
+  static bool persistentProxyConnection();
 
   /**
    * Returns true if connections should be persistent

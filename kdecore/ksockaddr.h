@@ -187,7 +187,7 @@ public:
    * @param size	new socket address's length
    * @return the new KSocketAddress, or 0 if the function failed
    */
-  static KSocketAddress* newAddress(const struct sockaddr*, ksocklen_t size);
+  static KSocketAddress* newAddress(const struct sockaddr *sa, ksocklen_t size);
 
   /**
    * Returns the IANA family number of the given address family.
@@ -418,7 +418,7 @@ public:
 
   /**
    * Returns the text representation of the port number.
-   * @param the name of the service (a number)
+   * @return the name of the service (a number)
    */
   virtual QString serviceName() const;
 
@@ -484,7 +484,7 @@ public:
    * Compares two IPv4 addresses.
    * @param s1 the first address to compare
    * @param s2 the second address to compare
-   * @param coreOnly true if only core parts should be compared (only 
+   * @param coreOnly true if only core parts should be compared (only
    *                 the address)
    * @return true if the given addresses are equal.
    * @see areEqualInet6()
@@ -497,7 +497,7 @@ public:
    * Compares two IPv6 addresses.
    * @param s1 the first address to compare
    * @param s2 the second address to compare
-   * @param coreOnly true if only core parts should be compared (only 
+   * @param coreOnly true if only core parts should be compared (only
    *                 the address)
    * @return true if the given addresses are equal.
    * @see areEqualInet()
@@ -666,8 +666,8 @@ public:
    * Compares two unix socket addresses.
    * @param s1 the first address to compare
    * @param s2 the second address to compare
-   * @param coreOnly true if only core parts should be compared (currently 
-   *                 unused) 
+   * @param coreOnly true if only core parts should be compared (currently
+   *                 unused)
    * @return true if the given addresses are equal.
    * @see KSocketAddress::isEqual()
    * @see KSocketAddress::isCoreEqual()

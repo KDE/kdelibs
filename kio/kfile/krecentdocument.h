@@ -40,12 +40,12 @@
  * static add() method whenever the user opens or saves a new
  * document if you want it to show up in the menu.
  *
- * You don't have to worry about this if you are using any 
+ * You don't have to worry about this if you are using any
  * KFileDialog derived class to open and save documents, as it
  * already calls this class.  User defined limits on the maximum
  * number of documents to save, etc... are all automatically handled.
  *
- * @author Daniel M. Duley <mosfet@kde.org> 
+ * @author Daniel M. Duley <mosfet@kde.org>
  */
 class KRecentDocument
 {
@@ -58,7 +58,7 @@ public:
      *
      */
     static QStringList recentDocuments();
-    
+
     /**
      * Add a new item to the Recent Document menu.
      *
@@ -72,7 +72,7 @@ public:
      * This method is used when an application launches another one to open a document.
      *
      * @param url The url to add.
-     * @param serviceDesktopName The desktopEntryName of the service to use for opening this document.
+     * @param desktopEntryName The desktopEntryName of the service to use for opening this document.
      */
     static void add(const KURL& url, const QString& desktopEntryName);
 

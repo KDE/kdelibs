@@ -172,6 +172,7 @@ protected:
   virtual bool internalHasGroup(const QCString &group) const;
 
   /**
+   * @internal
    * Returns a map (tree) of the entries in the specified group.
    *
    * Do not use this function, the implementation / return type are
@@ -179,19 +180,17 @@ protected:
    *
    * @param pGroup the group to provide a KEntryMap for.
    * @return The map of the entries in the group.
-   * @internal
    */
   virtual KEntryMap internalEntryMap(const QString &pGroup) const;
 
   /**
+   * @internal
    * Returns a copy of the internal map used to hold all entries.
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
    *
-   * @param pGroup the group to provide a KEntryMap for.
    * @return The map of the entries in the group.
-   * @internal
    */
    virtual KEntryMap internalEntryMap() const { return aEntryMap; }
 

@@ -41,7 +41,7 @@ public:
      * Creates a new KSortableItem that copies another one.
      * @param rhs the other item to copy
      */
-    KSortableItem( const KSortableItem<T, Key> &rhs ) 
+    KSortableItem( const KSortableItem<T, Key> &rhs )
         : QPair<Key,T>( rhs.first, rhs.second ) {}
 
     /**
@@ -103,7 +103,6 @@ public:
     }
 
     /**
-     * Returns the second value.
      * @return the second value
      */
     T& value() { return this->second; }
@@ -114,15 +113,14 @@ public:
     const T& value() const { return this->second; }
 
     /**
-     * Returns the first value.
-     * @param the first value
+     * @return the first value.
      */
     Key index() const { return this->first; }
 };
 
 
 /**
- * KSortableValueList is a special QValueList for 
+ * KSortableValueList is a special QValueList for
  * KSortableItem. It includes convenience operators
  * to get the first value of the KSortableItem and a method
  * to sort all items.

@@ -21,6 +21,10 @@
 #ifndef KEXTSOCKLOOKUP_H
 #define KEXTSOCKLOOKUP_H
 
+#include <qdns.h>
+#include "kidna.h"
+#include "netsupp.h"
+
 /**
  * @internal
  * What is this class for?

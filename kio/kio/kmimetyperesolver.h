@@ -28,7 +28,7 @@
 
 /**
  * @internal
- * A baseclass for KMimeTypeResolver, with the interface, 
+ * A baseclass for KMimeTypeResolver, with the interface,
  * KMimeTypeResolverHelper uses.
  */
 class KMimeTypeResolverBase
@@ -49,15 +49,15 @@ protected:
 class KMimeTypeResolverHelper : public QObject
 {
     Q_OBJECT
-    
+
 public:
-    KMimeTypeResolverHelper( KMimeTypeResolverBase *resolver, 
+    KMimeTypeResolverHelper( KMimeTypeResolverBase *resolver,
                              QScrollView *view )
-        : m_resolver( resolver ), 
+        : m_resolver( resolver ),
           m_timer( new QTimer( this ) )
     {
         connect( m_timer, SIGNAL( timeout() ), SLOT( slotProcessMimeIcons() ));
-        
+
         connect( view->horizontalScrollBar(), SIGNAL( sliderMoved(int) ),
                  SLOT( slotAdjust() ) );
         connect( view->verticalScrollBar(), SIGNAL( sliderMoved(int) ),
@@ -65,12 +65,12 @@ public:
 
         view->viewport()->installEventFilter( this );
     }
-    
+
     void start( int delay, bool singleShot )
     {
         m_timer->start( delay, singleShot );
     }
-                   
+
 protected:
     virtual bool eventFilter( QObject *o, QEvent *e )
     {
@@ -78,10 +78,10 @@ protected:
 
         if ( e->type() == QEvent::Resize )
             m_resolver->slotViewportAdjusted();
-        
+
         return ret;
     }
-    
+
 private slots:
     void slotProcessMimeIcons()
     {
@@ -92,7 +92,7 @@ private slots:
     {
         m_resolver->slotViewportAdjusted();
     }
-    
+
 private:
     KMimeTypeResolverBase *m_resolver;
     QTimer *m_timer;
@@ -120,7 +120,7 @@ class KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be 
 public:
   /**
    * Creates a new KMimeTypeResolver with the given parent.
-   * @param paren the parent's resolver
+   * @param parent the parent's resolver
    */
     KMimeTypeResolver( Parent * parent )
         : m_parent(parent),
@@ -128,7 +128,7 @@ public:
           m_delayNonVisibleIcons(10)
     {}
 
-    virtual ~KMimeTypeResolver() { 
+    virtual ~KMimeTypeResolver() {
         delete m_helper;
     }
 

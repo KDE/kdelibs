@@ -255,7 +255,7 @@ public:
     static KLibLoader* self();
 
     /**
-     * @internal 
+     * @internal
      * Internal Method, called by the KApplication destructor.
      * Do not call it.
      * This is what makes it possible to rely on ~KLibFactory
@@ -270,7 +270,7 @@ public:
      * Made public for code that doesn't use KLibLoader itself, but still
      * wants to open modules.
      * @param name of the library. If it is not a path, the function searches in
-     *             the "module" and "lib" resources. If there is no extension, 
+     *             the "module" and "lib" resources. If there is no extension,
      *             ".la" will be appended.
      * @param instance a KInstance used to get the standard paths
      */
@@ -323,7 +323,7 @@ private:
  * All objects created by the factory must be derived from QObject, since QObject
  * offers type safe casting.
  *
- * KLibFactory is an abstract class. Reimplement the 
+ * KLibFactory is an abstract class. Reimplement the
  * createObject() method to give it functionality.
  *
  * @author Torben Weis <weis@kde.org>
@@ -389,7 +389,9 @@ protected:
      * @param classname the name of the class
      * @param args a list of arguments
      */
-    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
+                                   const char* classname = "QObject",
+                                   const QStringList &args = QStringList() ) = 0;
 
 
 protected:

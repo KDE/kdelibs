@@ -84,7 +84,7 @@ public:
 
     /**
      * Reimplement this if you need to set up some things, before showing the
-     * dialog, e.g. to ask the user for the scanner device to use. If you 
+     * dialog, e.g. to ask the user for the scanner device to use. If you
      * return false (e.g. there is no device available or the user aborted
      * device selection), the dialog will not be shown.
      *
@@ -98,7 +98,7 @@ protected:
      * customize it with the usual KDialogBase flags.
      *
      * @param dialogFace the KDialogBase::DialogType
-     * @param buttonMask a ORed mask of all buttons (see 
+     * @param buttonMask a ORed mask of all buttons (see
      * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
@@ -157,7 +157,7 @@ signals:
      * Informs you that the image with the id @p id has been run through
      * text-recognition. The text is in the QString parameter. In the future,
      * a compound document, using rich text will be used instead.
-     * 
+     *
      * @param text the text that has been recognized
      * @param id the id of the image
      */
@@ -258,7 +258,7 @@ protected:
      * customize it with the usual KDialogBase flags.
      *
      * @param dialogFace the KDialogBase::DialogType
-     * @param buttonMask a ORed mask of all buttons (see 
+     * @param buttonMask a ORed mask of all buttons (see
      * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
@@ -293,7 +293,7 @@ signals:
      * Informs you that the image with the id @p id has been run through
      * text-recognition. The text is in the QString parameter. In the future,
      * a compound document, using rich text will be used instead.
-     * 
+     *
      * @param text the text that has been recognized
      * @param id the id of the image
      */
@@ -335,7 +335,6 @@ protected:
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
-     * @param modal if true the dialog is model
      */
     KOCRDialogFactory( QObject *parent=0, const char *name=0 );
 

@@ -221,7 +221,6 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   return false;
 }
 
-//////
 
 UString::UString(const QString &d)
 {

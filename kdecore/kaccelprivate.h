@@ -2,6 +2,7 @@
 #define __KACCELPRIVATE_H
 
 #include "kkeyserver_x11.h"
+#include <qtimer.h>
 
 /**
  * @internal

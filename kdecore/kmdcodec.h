@@ -46,7 +46,7 @@
  * and decoding input using base64, uu and the quoted-printable
  * specifications.
  *
- * @sect Usage:
+ * \b Usage:\n
  *
  * <PRE>
  * QCString input = "Aladdin:open sesame";
@@ -373,7 +373,7 @@ class KMD5Private;
  * 64 byte boundary to calculate its value. After this operation it
  * is not possible to resume consuming data.
  *
- * @sect Usage:
+ * \b Usage:\n
  *
  * A common usage of this class:
  *

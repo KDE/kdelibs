@@ -162,7 +162,7 @@ public:
   /**
    * Creates a socket with the given hostname and service.
    * @param host	the hostname
-   * @param serv	the service
+   * @param service	the service
    * @param flags	flags
    */
   KExtendedSocket(const QString& host, const QString& service, int flags = 0);
@@ -200,7 +200,7 @@ public:
   int systemError() const;
 
   /**
-   * Sets the given flags. 
+   * Sets the given flags.
    * @param flags	the flags to be set
    * @return the new flags status, or -1 if flags can no longer be set
    */
@@ -237,7 +237,7 @@ public:
    * @param port	the port
    * @return true if successful, false on error (e.g. connection already established)
    */
-  bool setPort(const QString& service);
+  bool setPort(const QString& port);
 
   /**
    * Returns the port/service. If it is a port, the string contains a number.
@@ -319,7 +319,7 @@ public:
    * Sets both host and service to which we will bind the socket. Will return
    * false if this is a passiveSocket.
    * @param host	the hostname
-   * @param serv	the service
+   * @param service	the service
    * @return true if successful, false on error (e.g. connection already established)
    */
   bool setBindAddress(const QString& host, const QString& service);
@@ -386,7 +386,7 @@ public:
   /**
    * Sets/unsets the v6-only flag for IPv6 sockets.
    *
-   * When an IPv6 socket is in use, communication with IPv4 sockets is 
+   * When an IPv6 socket is in use, communication with IPv4 sockets is
    * guaranteed by translating those IPv4 addresses into IPv6 ones
    * (specifically, the v4-mapped addresses). This flag allows that
    * behaviour to be turned on and off.
@@ -478,7 +478,7 @@ public:
    * One such case is when noResolve flag is set.
    * If this function is able to determine the results without queueing
    * and the lookup failed, this function will return -1.
-   * 
+   *
    * @return 0 on success or -1 on error. Note that
    * returning 0 means that either we are in the process of doing
    * lookup or that it has finished already.
@@ -492,7 +492,7 @@ public:
 
   /**
    * Place the socket in listen mode. The parameters are the same as for
-   * the system listen() call. 
+   * the system listen() call.
    * @param N		the queue length for pending connections
    * @return 0 on success, -1 on system error (errno
    *         available) and -2 if this is not a passiveSocket.
@@ -516,7 +516,7 @@ public:
   virtual int accept(KExtendedSocket *&sock);
 
   /**
-   * Attempts to connect to the remote host. 
+   * Attempts to connect to the remote host.
    * After successful connection (return value 0), the socket will be ready
    * for I/O operations. Note, however, that not all signals may be enabled
    * for emission by this socket:
@@ -542,7 +542,7 @@ public:
 
   /**
    * Starts an asynchronous connect. This works exactly the same as #connect,
-   * except that the connection result won't be returned. 
+   * except that the connection result won't be returned.
    *
    * Note that those signals might be emitted before this function returns, so your
    * code should be prepared for that condition.
@@ -550,8 +550,8 @@ public:
    * You must call cancelAsyncConnect() before you delete the socket if you
    * call this.  Otherwise you will have crashes.
    *
-   * @return 0 on successful queueing of the connect or -1 on error. 
-   *         If this function returns 0, then the connectionSuccess() or the 
+   * @return 0 on successful queueing of the connect or -1 on error.
+   *         If this function returns 0, then the connectionSuccess() or the
    * connectionFailed() signals will be emitted.
    */
   virtual int startAsyncConnect();
@@ -722,7 +722,7 @@ public:
    *
    * @param data	where to store the data
    * @param maxlen	how many bytes to copy, at most
-   * @return the number of bytes copied. 0 does not mean end-of-file 
+   * @return the number of bytes copied. 0 does not mean end-of-file
    *         condition.
    */
   virtual int peekBlock(char *data, uint maxlen);
@@ -737,7 +737,7 @@ public:
 
   /**
    * Returns the number of available bytes yet to be read via readBlock
-   * and family of functions. 
+   * and family of functions.
    *
    * Note: as of now, this only works on input-buffered sockets. This will
    * change in the future
@@ -752,7 +752,7 @@ public:
    * read in the read buffer.
    *
    * @param msec	milliseconds to wait
-   * @return -1 in case of system error and -2 in case of invalid socket 
+   * @return -1 in case of system error and -2 in case of invalid socket
    *         state
    */
   virtual int waitForMore(int msec);
@@ -803,7 +803,7 @@ public:
 signals:
   /**
    * This signal is emitted whenever an asynchronous lookup process is done.
-   * The parameter @p count tells 
+   * The parameter @p count tells
    * @param count the number of results
    */
   void lookupFinished(int count);
@@ -998,7 +998,7 @@ public:
   { return *ai; }
 
   /**
-   * Returns a pointer to KAddressInfo's addrinfo. 
+   * Returns a pointer to KAddressInfo's addrinfo.
    * Only valid as long as the KAddressInfo exists.
    */
   inline operator const addrinfo*() const
