@@ -776,6 +776,7 @@ void KDockTabCtl::showPage( QWidget* widget, bool allowDisable )
   if ( data != 0L ) tabs->setCurrentTab( data->id, allowDisable );
 
   emit pageSelected( widget );
+  widget->setFocus();
 }
 
 bool KDockTabCtl::isPageEnabled( QWidget* widget )
