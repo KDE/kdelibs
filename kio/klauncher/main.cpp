@@ -22,6 +22,7 @@
 #include "kapp.h"
 #include "klauncher.h"
 #include "kcmdlineargs.h"
+#include "kcrash.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -52,10 +53,10 @@ start_launcher(int socket)
    KLauncher *launcher = new KLauncher(socket);
    launcher->dcopClient()->setDefaultObject( name );
 
+   KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);
    signal( SIGPIPE, sig_handler);
    signal( SIGTERM, sig_handler);
-   signal( SIGSEGV, sig_handler);
 
 #ifdef __USE_GNU
 #warning Temporary hack to get KLocale initialised
