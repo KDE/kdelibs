@@ -97,7 +97,7 @@ public:
 
         IconSizeDefault = 0;
         IconTextDefault = "IconOnly";
-        
+
 	IndexDefault = 0;
         NewLineDefault = false;
         OffsetDefault = 0;
@@ -168,12 +168,12 @@ void KToolBarSeparator::setOrientation( Orientation o )
 void KToolBarSeparator::drawContents( QPainter* p )
 {
     if ( line ) {
-        QStyle::SFlags flags = QStyle::Style_Default;        
-        
+        QStyle::SFlags flags = QStyle::Style_Default;
+
         if ( orientation() == Horizontal )
             flags = flags | QStyle::Style_Horizontal;
-            
-        style().drawPrimitive(QStyle::PE_DockWindowSeparator, p, 
+
+        style().drawPrimitive(QStyle::PE_DockWindowSeparator, p,
                               contentsRect(), colorGroup(), flags);
     } else {
         QFrame::drawContents(p);
@@ -1117,30 +1117,30 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
       config->revertToDefault("IconText");
     else
       config->writeEntry("IconText", icontext);
-   
+
     if(!config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault )
       config->revertToDefault("IconSize");
     else
       config->writeEntry("IconSize", iconSize());
-    
+
     if(!config->hasDefault("Hidden") && isHidden() == d->HiddenDefault )
       config->revertToDefault("Hidden");
     else
       config->writeEntry("Hidden", isHidden());
-    
+
     if(!config->hasDefault("Index") && index == d->IndexDefault )
       config->revertToDefault("Index");
     else
       config->writeEntry("Index", index);
-    
+
     if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
       config->revertToDefault("Offset");
     else
       config->writeEntry("Offset", offset());
-    
+
     if(!config->hasDefault("NewLine") && newLine() == d->NewLineDefault )
       config->revertToDefault("NewLine");
-    else  
+    else
       config->writeEntry("NewLine", newLine());
 }
 
@@ -1370,13 +1370,13 @@ QSize KToolBar::sizeHint() const
              sh.setHeight( 1 );
           sh = sh.boundedTo( w->maximumSize() )
                  .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );
-                
+
           minSize = minSize.expandedTo(QSize(0, sh.height()));
           minSize += QSize(sh.width()+1, 0);
           if (w->inherits( "QLineEdit"))
              minSize += QSize(2, 0); // A little bit extra spacing behind it.
        }
-             
+
        minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
        minSize += QSize(margin*2, margin*2);
        break;
@@ -1392,7 +1392,7 @@ QSize KToolBar::sizeHint() const
              sh.setHeight( 1 );
           sh = sh.boundedTo( w->maximumSize() )
                  .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );
-                
+
           minSize = minSize.expandedTo(QSize(sh.width(), 0));
           minSize += QSize(0, sh.height()+1);
        }
