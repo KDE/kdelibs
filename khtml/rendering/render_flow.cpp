@@ -1046,7 +1046,7 @@ void RenderFlow::calcMinMaxWidth()
                     {                           //inline starts and ends with nbsp
                         noBreak=true;
                     }
-                    else if (t->data()[t->length()-1] == nbsp)
+                    else if (t->data()[t->length()-1] == nbsp && t->data()[0] != ' ')
                     {                           //inline only ends with nbsp
                         if(inlineMin < childMin) inlineMin = childMin;
                         inlineMax += childMax;
@@ -1057,7 +1057,7 @@ void RenderFlow::calcMinMaxWidth()
                     if (hasNbsp)
                     {
                         child = next(child);
-	        prevchild = child;
+	                prevchild = child;
                         hasNbsp = false;
                         continue;
                     }
