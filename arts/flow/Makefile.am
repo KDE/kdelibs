@@ -43,6 +43,7 @@ artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
 $(srcdir)/stdsynthmodule.h: artsflow.h
+$(srcdir)/stdsynthmodule.cc: artsflow.h
 $(srcdir)/synthschedule.h: artsflow.h
 $(srcdir)/synthschedule.cc: artsflow.h
 $(srcdir)/synth_play_impl.cc: artsflow.h
