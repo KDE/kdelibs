@@ -556,7 +556,7 @@ void AutoTableLayout::calcMinMaxWidth()
 	maxWidth = minWidth;
     }
 
-    table->m_maxWidth = maxWidth;
+    table->m_maxWidth = kMin(maxWidth, 32767);
     table->m_minWidth = minWidth;
 #ifdef DEBUG_LAYOUT
     qDebug("    minWidth=%d, maxWidth=%d", table->m_minWidth, table->m_maxWidth );
