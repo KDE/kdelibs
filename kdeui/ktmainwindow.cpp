@@ -425,9 +425,9 @@ void KTMainWindow::savePropertiesInternal( KConfig *config, int number )
 	bool nl;
 	int offset;
 	getLocation( toolbar, dock, index, nl, offset );
-	entryList.append( QString::number( index ) );
-	entryList.append( nl ? QString::fromLatin1( "TRUE" ) : QString::fromLatin1( "FALSE" ) );
-	entryList.append( QString::number( offset ) );
+	entryList.append( QString::number( index ).latin1() );
+	entryList.append( nl ?  "true" : "false" );
+	entryList.append( QString::number( offset ).latin1() );
 	toolKey.prepend(QString::fromLatin1("ToolBar"));
 	config->writeEntry(toolKey, entryList, ';');
 	entryList.clear();
@@ -526,9 +526,9 @@ bool KTMainWindow::readPropertiesInternal( KConfig *config, int number )
 	
 	if ( entryList.count() > 2 ) {
 	    entry = entryList.next();
-	    index = atoi( entry );
+	    index = entry.toInt();
 	    nl = ( QString( entry ).lower() == QString::fromLatin1( "true" ) ) ? TRUE : FALSE;
-	    offset = atoi( entry );
+	    offset = entry.toInt();
 	    moveToolBar( toolbar, dock, index, nl, offset );
 	}
 	toolbar->setBarPos( (KToolBar::BarPosition)dock );
