@@ -863,7 +863,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// line edit frame
 		case PE_PanelLineEdit:
 		{
-			if (!opt.isDefault() && opt.lineWidth() == 1)
+			if ( opt.isDefault() || opt.lineWidth() == 1 )
 			{
 				//1-pixel frames can not be simply clipped wider frames, as that would produce too little contrast on the lower border
 				p->setPen( cg.dark() );
@@ -1079,21 +1079,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			QToolBar* parent      = 0;
 			if (paintWidget)
 				parent = ::qt_cast<QToolBar*>(paintWidget->parentWidget());
-			
+
 			renderToolbarEntryBackground(p, parent, r, cg, (flags & Style_Horizontal) );
 			if ( !(flags & Style_Horizontal) )
 			{
 				p->setPen(cg.mid());
-				p->drawLine(4, r.height()/2, r.width()-5, r.height()/2);
+				p->drawLine(4, r.height()/2-1, r.width()-5, r.height()/2-1);
 				p->setPen(cg.light());
-				p->drawLine(4, r.height()/2+1, r.width()-5, r.height()/2+1);
+				p->drawLine(4, r.height()/2, r.width()-5, r.height()/2);
 			}
 			else
 			{
 				p->setPen(cg.mid());
-				p->drawLine(r.width()/2, 4, r.width()/2, r.height()-5);
+				p->drawLine(r.width()/2-1, 4, r.width()/2-1, r.height()-5);
 				p->setPen(cg.light());
-				p->drawLine(r.width()/2+1, 4, r.width()/2+1, r.height()-5);
+				p->drawLine(r.width()/2, 4, r.width()/2, r.height()-5);
 			}
 			break;
 		}
@@ -2362,6 +2362,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() +
                         loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
+		case PM_SpinBoxFrameWidth:		
 		case PM_DefaultFrameWidth:
 			return 1;
 
