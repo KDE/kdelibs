@@ -22,7 +22,6 @@
  */
 
 #include <stdio.h>
-#include <iostream.h>
 
 #include "value.h"
 #include "object.h"
