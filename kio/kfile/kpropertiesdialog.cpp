@@ -1927,12 +1927,14 @@ class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 public:
   KApplicationPropsPluginPrivate()
   {
+      m_kdesktopMode = QCString(qApp->name()) == "kdesktop"; // nasty heh?
   }
   ~KApplicationPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
+  bool m_kdesktopMode;
 };
 
 KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
@@ -1952,11 +1954,19 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid->setColStretch(1, 1);
   toplayout->addLayout(grid);
 
-  l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
-  grid->addWidget(l, 0, 0);
+  if ( d->m_kdesktopMode )
+  {
+      // in kdesktop the name field comes from the first tab
+      nameEdit = 0L;
+  }
+  else
+  {
+      l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
+      grid->addWidget(l, 0, 0);
 
-  nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
-  grid->addWidget(nameEdit, 0, 1);
+      nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
+      grid->addWidget(nameEdit, 0, 1);
+  }
 
   l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
   grid->addWidget(l, 1, 0);
@@ -1998,7 +2008,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   selectedTypes += config.readListEntry( "MimeType", ';' );
 
   QString nameStr = config.readEntry( QString::fromLatin1("Name") );
-  if ( nameStr.isEmpty() ) {
+  if ( nameStr.isEmpty() || d->m_kdesktopMode ) {
     // We'll use the file name if no name is specified
     // because we _need_ a Name for a valid file.
     // But let's do it in apply, not here, so that we pick up the right name.
@@ -2006,7 +2016,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
 
   commentEdit->setText( commentStr );
-  nameEdit->setText( nameStr );
+  if ( nameEdit )
+      nameEdit->setText( nameStr );
 
   selectedTypes.sort();
   QStringList::Iterator sit = selectedTypes.begin();
@@ -2028,8 +2039,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
            this, SIGNAL( changed() ) );
   connect( delExtensionButton, SIGNAL( clicked() ),
            this, SIGNAL( changed() ) );
-  connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
+  if ( nameEdit )
+      connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
+               this, SIGNAL( changed() ) );
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( extensionsList, SIGNAL( selected( int ) ),
@@ -2100,8 +2112,8 @@ void KApplicationPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("ServiceTypes"), "" );
   // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
 
-  QString nameStr = nameEdit->text();
-  if ( nameStr.isEmpty() )
+  QString nameStr = nameEdit ? nameEdit->text() : QString::null;
+  if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
   {
     nameStr = properties->kurl().fileName();
     if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
