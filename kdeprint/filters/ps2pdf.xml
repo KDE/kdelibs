@@ -8,7 +8,7 @@
     <value name="1.3" description="Acrobat 4+" />
     <value name="1.4" description="Acrobat 5+" />
    </filterarg>
-   <filterarg format="-dPDFSETTINGS=%value" type="list" name="targetDevice" default="/default" description="Target device" >
+   <filterarg format="-dPDFSETTINGS=%value" type="list" name="targetdevice" default="/default" description="Target device" >
     <value name="/default" description="Default" />
     <value name="/screen" description="Screen" />
     <value name="/printer" description="Printer" />
@@ -21,14 +21,20 @@
   </filtergroup>
   <filtergroup name="image" description="Image Options" >
    <filtergroup name="colorimage" description="Color Images" >
-    <filterarg format="-dEncodeColorImages=%value" type="bool" name="colorencode" default="true" description="Encode color images" >
-     <value name="true" description="Enabled" />
-     <value name="false" description="Disabled" />
-    </filterarg>
-    <filterarg format="-dColorImageFilter=%value" type="list" name="colorencodetype" default="/DCTEncode" description="Color image encoding method" >
-     <value name="/FlateEncode" description="Flate compression" />
-     <value name="/DCTEncode" description="JPEG compression" />
-    </filterarg>
+    <filtergroup name="colorcompress" description="Compression" >
+     <filterarg format="-dEncodeColorImages=%value" type="bool" name="colorencode" default="true" description="Encode color images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dAutoFilterColorImages=%value" type="bool" name="colorautofilt" default="true" description="Auto encode color images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dColorImageFilter=%value" type="bool" name="colorencodetype" default="/DCTEncode" description="Manual color image encoding method" >
+      <value name="/FlateEncode" description="Flate compression" />
+      <value name="/DCTEncode" description="JPEG compression" />
+     </filterarg>
+    </filtergroup>
     <filterarg format="-dDownsampleColorImages=%value" type="bool" name="coldownsampl" default="false" description="Downsample color images" >
      <value name="true" description="Enabled" />
      <value name="false" description="Disabled" />
@@ -48,14 +54,20 @@
     </filterarg>
    </filtergroup>
    <filtergroup name="grayimage" description="Grayscale Images" >
-    <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencode" default="true" description="Encode grayscale images" >
-     <value name="true" description="Enabled" />
-     <value name="false" description="Disabled" />
-    </filterarg>
-    <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencodetype" default="/FlateEncode" description="Grayscale image encoding method" >
-     <value name="/FlateEncode" description="Flate compression" />
-     <value name="/DCTEncode" description="JPEG compression" />
-    </filterarg>
+    <filtergroup name="graycompress" description="Compression" >
+     <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencode" default="true" description="Encode grayscale images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dAutoFilterGrayImages=%value" type="bool" name="grayautofilt" default="true" description="Auto encode grayscale images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencodetype" default="/FlateEncode" description="Manual grayscale image encoding method" >
+      <value name="/FlateEncode" description="Flate compression" />
+      <value name="/DCTEncode" description="JPEG compression" />
+     </filterarg>
+    </filtergroup>
     <filterarg format="-dDownsampleGrayImages=%value" type="bool" name="graydownsampl" default="false" description="Downsample grayscale images" >
      <value name="true" description="Enabled" />
      <value name="false" description="Disabled" />
@@ -75,14 +87,20 @@
     </filterarg>
    </filtergroup>
    <filtergroup name="monoimage" description="Mono Images" >
-    <filterarg format="-dEncodeMonoImages=%value" type="bool" name="monoencode" default="true" description="Encode mono images" >
-     <value name="true" description="Enabled" />
-     <value name="false" description="Disabled" />
-    </filterarg>
-    <filterarg format="-dEncodeMonoImages=%value" type="list" name="monoencodetype" default="/CCITTFaxEncode" description="Mono image encoding method" >
-     <value name="/CCITTFaxEncode" description="CCITT compression" />
-     <value name="/FlateEncode" description="Flate compression" />
-    </filterarg>
+    <filtergroup name="monocompress" description="Compression" >
+     <filterarg format="-dEncodeMonoImages=%value" type="bool" name="monoencode" default="true" description="Encode mono images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dAutoFilterMonoImages=%value" type="bool" name="monoautofilt" default="true" description="Auto encode mono images" >
+      <value name="true" description="Enabled" />
+      <value name="false" description="Disabled" />
+     </filterarg>
+     <filterarg format="-dEncodeMonoImages=%value" type="bool" name="monoencodetype" default="/CCITTFaxEncode" description="Manual mono image encoding method" >
+      <value name="/CCITTFaxEncode" description="CCITT compression" />
+      <value name="/FlateEncode" description="Flate compression" />
+     </filterarg>
+    </filtergroup>
     <filterarg format="-dDownsampleMonoImages=%value" type="bool" name="downsamplmono" default="false" description="Downsample mono images" >
      <value name="true" description="Enabled" />
      <value name="false" description="Disabled" />
