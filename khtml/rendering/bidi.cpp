@@ -845,6 +845,14 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 #endif
 	    return current;
 	}
+	if(o->isBR()) {
+	    //check the clear status
+	    EClear clear = o->style()->clear();
+	    if(clear != CNONE) {
+		//kdDebug( 6040 ) << "setting clear to " << clear << endl;
+		m_clearStatus = (EClear) (m_clearStatus | clear);
+	    }	
+	}
 	if( o->isSpecial() ) {
 	    // add to special objects...
 	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed

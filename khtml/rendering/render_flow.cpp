@@ -1314,18 +1314,6 @@ void RenderFlow::specialHandler(RenderObject *o)
     else if(o->isPositioned())
 	static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
 
-	
-    if( !o->isPositioned() && !o->isFloating() &&
-    	(!o->isInline() || o->isBR()) )
-    {
-	//check the clear status
-	EClear clear = o->style()->clear();
-	if(clear != CNONE)
-	{
-	    //kdDebug( 6040 ) << "setting clear to " << clear << endl;
-	    m_clearStatus = (EClear) (m_clearStatus | clear);
-	}	
-    }
 }
 
 void RenderFlow::absolutePosition(int &xPos, int &yPos)
