@@ -121,6 +121,10 @@ public:
     short scrollWidth() const { return m_scrollWidth; }
     int scrollHeight() const { return m_scrollHeight; }
 
+    void resize( int w, int h ) {
+        m_scrollWidth = w; m_scrollHeight = h;
+    }
+
     void setPos( int xPos, int yPos ) {
         m_x = xPos;
         m_y = yPos;
