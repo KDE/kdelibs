@@ -340,18 +340,24 @@ QPixmap KMimeType::pixmap( const KURL& _url, int _group, int _force_size,
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
                                  int _force_size, int _state, QString * _path )
 {
+    QString i = iconForURL( _url, _mode );
+    return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state,
+					    _path, false );
+}
+
+QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
+{
     KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
 				   false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");
     QString i( mt->icon( _url, _url.isLocalFile() ));
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( mt->icon( _url, _url.isLocalFile() ) == unknown )
+    if ( i == unknown )
 	i = KProtocolInfo::icon( _url.protocol() );
-
-    return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state,
-					    _path, false );
+    return i;
 }
+
 
 /*******************************************************
  *

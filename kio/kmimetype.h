@@ -120,8 +120,8 @@ public:
    * @param _url URL for the file.
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: @p KIcon::DefaultState,
-   * @p KIcon::ActiveState or @p KIcon::DisabledState.
+   * @param _state The icon state, one of: KIcon::DefaultState,
+   * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
   virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
@@ -131,9 +131,25 @@ public:
    * Convenience method to find the pixmap for a URL
    *
    * Call this one when you don't know the mimetype.
+   *
+   * @param _url URL for the file.
+   * @param _group The icon group where the icon is going to be used.
+   * @param _force_size Override globallly configured icon size.
+   * @param _state The icon state, one of: KIcon::DefaultState,
+   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _path Output parameter to get the full path. Seldom needed.
    */
   static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, int _group = 0,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
+
+
+  /**
+   * The same functionality as pixmapForURL, but this method returns the name
+   * of the icon to load. You'll have to use KIconLoader to load the pixmap for it.
+   * The advantage of this method is that you can store the result, and then use it
+   * later on for any kind of size.
+   */
+  static QString iconForURL( const KURL & _url, mode_t _mode = 0 );
 
   /**
    * @return The desriptive comment associated with the MIME type.
