@@ -5,7 +5,7 @@ kdelibs (4:2.1.0-1) unstable; urgency=low
    * Version changed to 2.1.0 instead of 2.1-final as we are post 2.1-final
      and pre 2.1.1 which will be released in about a month.  This also allows
      for the source upload.
-   * Built with older sgml-base so that kdb2html turns out ok
+   * Modified ksgmltools configure.in.in to handle new location of sgml files
    * Updating build-depends
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Feb 2001 19:00:00 -0700
