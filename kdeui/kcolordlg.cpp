@@ -377,9 +377,10 @@ void KColorPatch::dropEvent( QDropEvent *event)
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
-		Ok, true )
+		0, true )
 {
-  setHelp( "kcolordialog.html", QString::null, QString::null );
+    
+    setHelp( "kcolordialog.html", QString::null, QString::null );
   setResizeMode( ResizeFixed ); // Comment if resizeable
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
 
