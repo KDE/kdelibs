@@ -74,8 +74,13 @@ void KDockWindow::mouseReleaseEvent( QMouseEvent * e)
     switch ( e->button() ) {
     case LeftButton:
 	if ( parentWidget() ){
+
+	  if ( parentWidget()->isVisible() ) {
+	    parentWidget()->hide();
+	  } else {
 	    parentWidget()->show();
 	    KWin::setActiveWindow( parentWidget()->winId() );
+	  }
 	}
 	break;
     case MidButton:
