@@ -264,6 +264,7 @@ Name[uk]=Родина системних стилів
 Name[xh]=Indlela yokusebenza-Uluhlu
 Name[xx]=xx
 Name[zh_CN]=系统序列
+Name[zh_TW]=系統序列
 Comment=System Style 001
 Comment[af]=stelsel styl 001
 Comment[az]=Sistem Tərzi 001
@@ -311,6 +312,7 @@ Comment[vi]=Kiểu hềEthống 001
 Comment[xh]=Uhlobolwendlela yokusebenza 001
 Comment[xx]=xx
 Comment[zh_CN]=系统风格 001
+Comment[zh_TW]=系統風格 001
 ScrollBarExtent=14
 
 [General]
