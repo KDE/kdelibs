@@ -19,6 +19,11 @@
 
 #include "kdeversion.h"
 
+unsigned int KDE::version()
+{
+    return KDE_VERSION;
+}
+
 unsigned int KDE::versionMajor()
 {
     return KDE_VERSION_MAJOR;

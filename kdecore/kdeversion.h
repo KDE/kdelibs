@@ -39,6 +39,15 @@
 namespace KDE
 {
     /**
+     * Returns the encoded number of KDE's version, see the KDE_VERSION macro.
+     * In contrary to that macro this function returns the number of the actully
+     * installed KDE version, not the number of the KDE version that was
+     * installed when the program was compiled.
+     * @return the version number, encoded in a single uint
+     * @since 3.2
+     */
+    unsigned int version();
+    /**
      * Returns the major number of KDE's version, e.g.
      * 3 for KDE 3.1.2. 
      * @return the major version number
