@@ -366,8 +366,10 @@ void KEdit::computePosition()
 
 void KEdit::keyPressEvent ( QKeyEvent *e){
 
+  KKey key(e);
+  int keyQt = key.keyCodeQt();
 
-  if ((e->state() & ControlButton ) && (e->key() == Key_K) ){
+  if ( keyQt == CTRL+Key_K ){
 
     int line = 0;
     int col  = 0;
@@ -380,7 +382,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
     }
 
     if(!atEnd()){
- 
+
       getCursorPosition(&line,&col);
       killstring = textLine(line);
       killstring = killstring.mid(col,killstring.length());
@@ -420,10 +422,10 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     QMultiLineEdit::keyPressEvent(e);
     setModified(true);
+    e->accept();
     return;
   }
-
-  if ((e->state() & ControlButton ) && (e->key() == Key_Y) ){
+  else if ( keyQt == CTRL+Key_Y ){
 
     int line = 0;
     int col  = 0;
@@ -438,55 +440,64 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     killing = false;
     setModified(true);
+    e->accept();
     return;
   }
 
   killing = false;
 
-  if ((e->state() & ControlButton ) && (e->key() == Key_Insert) ){
+  if ( KStdAccel::copy().contains( key ) ) {
     copy();
-    return;
+    e->accept();
   }
-
-  if ((e->state() & ShiftButton ) && (e->key() == Key_Insert) ){
+  if ( isReadOnly() )
+    QMultiLineEdit::keyPressEvent( e );
+  // If this is an unmodified printable key, send it directly to QLineEdit.
+  else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isNull() && e->text().unicode()->isPrint() )
+  {
+    QMultiLineEdit::keyPressEvent( e );
+  }
+  else if ( KStdAccel::paste().contains( key ) ) {
     paste();
     setModified(true);
-    return;
+    e->accept();
   }
-
-  if ((e->state() & ShiftButton ) && (e->key() == Key_Delete) ){
+  else if ( KStdAccel::cut().contains( key ) ) {
     cut();
     setModified(true);
-    return;
+    e->accept();
   }
-
-  if (d->overwriteEnabled)
-  {
-    if (e->key() == Key_Insert){
-       this->setOverwriteMode(!this->isOverwriteMode());
-       emit toggle_overwrite_signal();
-       return;
-    }
+  else if ( KStdAccel::undo().contains( key ) ) {
+    undo();
+    setModified(true);
+    e->accept();
   }
-
-  if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
-    moveCursor(MoveWordBackward, true);  
+  else if ( KStdAccel::redo().contains( key ) ) {
+    redo();
+    setModified(true);
+    e->accept();
+  }
+  else if ( KStdAccel::deleteWordBack().contains( key ) ) {
+    moveCursor(MoveWordBackward, true);
     if (hasSelectedText())
       del();
-    e->accept();
     setModified(true);
-    return;
+    e->accept();
   }
-  else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
-    moveCursor(MoveWordForward, true);  
+  else if ( KStdAccel::deleteWordForward().contains( key ) ) {
+    moveCursor(MoveWordForward, true);
     if (hasSelectedText())
       del();
-    e->accept();
     setModified(true);
-    return;
+    e->accept();
   }
-
-  QMultiLineEdit::keyPressEvent(e);
+  else if ( d->overwriteEnabled && key == Key_Insert ) {
+    this->setOverwriteMode(!this->isOverwriteMode());
+    emit toggle_overwrite_signal();
+    e->accept();
+  }
+  else
+    QMultiLineEdit::keyPressEvent(e);
 }
 
 void KEdit::installRBPopup(QPopupMenu *p) {
@@ -511,7 +522,7 @@ void KEdit::doGotoLine() {
    gotodialog->exec();
    // this seems to be not necessary
    // gotodialog->setFocus();
-   if( gotodialog->result() != KEdGotoLine::Accepted) 
+   if( gotodialog->result() != KEdGotoLine::Accepted)
       return;
    int target_line = gotodialog->getLineNumber()-1;
    if (wordWrap() == NoWrap)
