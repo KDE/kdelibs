@@ -1,0 +1,201 @@
+<!-- -*- dtd -*-
+    Modified hierarchy elements for DocBook as used in the KDE documentation
+    (instantiates %rdbhier2;)
+    
+    Copyright (C) 1999-2000 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+    Send suggestions, comments, etc. to Frederik Fouvry 
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
+
+    USAGE
+
+    Refer to this DTD as
+
+      "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
+
+    For instance
+
+      <!ENTITY % rdbhier2 PUBLIC
+       "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN">
+
+    It is recommended to use kde.cat as the catalogue file.
+-->
+
+<!ENTITY % kde.rdbhier2 "INCLUDE">
+<![ %kde.rdbhier2; [
+
+<![ %kde.compulsory.id; [
+<!-- This is needed because it is read before %chapter.module 
+     is declared in the docbook dtd.  So, any modifications of 
+     %chapter.module (like IGNOREs) must happen before this point! 
+     (I made an effort to place it as late as possible.) -->
+
+<!ENTITY % chapter.module "INCLUDE">
+<![ %chapter.module; [
+<!ENTITY % local.chapter.attrib "">
+<!ENTITY % chapter.role.attrib "%role.attrib;">
+
+<!ENTITY % chapter.attlist "IGNORE">
+<!ENTITY % kde.chapter.attlist "INCLUDE">
+<!-- This is copied from the DocBook DTD with only one modification -->
+<![ %kde.chapter.attlist; [
+<!ATTLIST Chapter
+		%label.attrib;
+		%status.attrib;
+		%idreq.common.attrib;  -- ID is required for KDE --
+		%chapter.role.attrib;
+		%local.chapter.attrib;
+>
+<!-- End of kde.chapter.attlist -->]]>
+<!-- End of chapter.module	-->]]>
+
+<!ENTITY % section.content.module "INCLUDE">
+<![ %section.content.module; [
+<!ENTITY % section.module "INCLUDE">
+<![ %section.module; [
+<!ENTITY % local.section.attrib "">
+<!ENTITY % section.role.attrib "%role.attrib;">
+
+<!ENTITY % section.attlist "IGNORE">
+<!ENTITY % kde.section.attlist "INCLUDE">
+<![ %kde.section.attlist; [
+<!-- One change: required ID -->
+<!ATTLIST Section
+		%label.attrib;
+		%status.attrib;
+		%idreq.common.attrib; -- ID is required for KDE --
+		%section.role.attrib;
+		%local.section.attrib;
+>
+<!--end of section.attlist-->]]>
+<!--end of section.module-->]]>
+<!--end of section.content.module-->]]>
+
+<!ENTITY % sect1.module "INCLUDE">
+<![ %sect1.module; [
+<!ENTITY % local.sect1.attrib "">
+<!ENTITY % sect1.role.attrib "%role.attrib;">
+
+<!ENTITY % sect1.attlist "IGNORE">
+<!ENTITY % kde.sect1.attlist "INCLUDE">
+<![ %kde.sect1.attlist; [
+<!-- One change: ID required -->
+<!ATTLIST Sect1
+		Renderas	(Sect2
+				|Sect3
+				|Sect4
+				|Sect5)		#IMPLIED
+		%label.attrib;
+		%status.attrib;
+		%idreq.common.attrib; -- ID is required for KDE --
+		%sect1.role.attrib;
+		%local.sect1.attrib;
+>
+<!--end of sect1.attlist-->]]>
+<!--end of sect1.module-->]]>
+
+<!-- Sect2-5 have no compulsory ID (they don't seem to be used to create 
+     chunks.) -->
+
+<!-- Compulsory ID for qandaset and qandadiv must be declared 
+     in kde-rdbpool.elements -->
+
+<!-- End of compulsory id -->]]>
+
+
+<![ %kde.compulsory.datereleaseinfo; [
+<!ENTITY % div.title.content
+	"Title, Subtitle?, TitleAbbrev?">
+
+<!ENTITY % book.content.module "INCLUDE">
+<![ %book.content.module; [
+<!ENTITY % book.module "INCLUDE">
+<![ %book.module; [
+
+<!-- Unchanged -->
+<!ENTITY % local.book.attrib "">
+<!ENTITY % book.role.attrib "%role.attrib;">
+
+<!ENTITY % book.element "IGNORE">
+<!ENTITY % kde.book.element "INCLUDE">
+<![ %kde.book.element; [
+<!-- One modification: BookInfo is compulsory, because
+     it contains ReleaseInfo, which is compulsory -->
+<!ELEMENT Book - O ((%div.title.content;)?, BookInfo,
+		(Dedication | ToC | LoT
+		| Glossary | Bibliography | Preface
+		| %chapter.class; | Reference | Part
+		| %article.class;
+		| %appendix.class;
+		| %index.class;
+		| Colophon)*)
+		%ubiq.inclusion;>
+<!--end of kde.book.element-->]]>
+
+<![ %kde.compulsory.fpi; [
+<!ENTITY % book.attlist "IGNORE">
+<!ENTITY % kde.book.attlist "INCLUDE">
+<![ %kde.book.attlist; [
+<!-- FPI is compulsory -->
+<!ATTLIST Book	
+		--
+		FPI: SGML formal public identifier
+		--
+		FPI		CDATA		#REQUIRED
+		%label.attrib;
+		%status.attrib;
+		%common.attrib;
+		%book.role.attrib;
+		%local.book.attrib;
+>
+<!--end of kde.book.attlist-->]]>
+<!--end of kde.compulsory.fpi in book-->]]>
+<!--end of book.module-->]]>
+
+<!ENTITY % bookinfo.module "INCLUDE">
+<![ %bookinfo.module; [
+
+<!ENTITY % bookinfo.element "IGNORE">
+<!ENTITY % kde.bookinfo.element "INCLUDE">
+<![ %kde.bookinfo.element; [
+<!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
+     compulsory.  Not all orders that could be valid are allowed (the
+     number increases factorial).  The current restrictions are quite
+     strict, and it is foreseen that they will be relaxed.  Date and 
+     ReleaseInfo must come together, as must Abstract and Keywordset.
+     Abstract and Keywordset must follow Date and ReleaseInfo when they
+     are used the first time.
+-->
+<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice
+		        | ModeSpec | SubjectSet | ITermSet
+		        | %kde.bibliocomponent.mix; | BookBiblio)*,
+		        ((Date, ReleaseInfo) | (ReleaseInfo, Date)),
+                        (Graphic | MediaObject | LegalNotice
+			| ModeSpec | SubjectSet
+			| ITermSet | %kde.bibliocomponent.mix;
+			| BookBiblio)*,
+                        ((Abstract, Keywordset) | (Keywordset, Abstract)),
+		       (Graphic | MediaObject | LegalNotice | ModeSpec 
+		       | SubjectSet | ITermSet
+		       | %bibliocomponent.mix; | BookBiblio | Keywordset)*)
+		       %beginpage.exclusion;>
+<!--end of kde.bookinfo.element-->]]>
+<!--end of bookinfo.module-->]]>
+<!--end of book.content.module-->]]>
+<!-- End of compulsory releaseinfo -->]]>
+
+<!-- End of kde.rdbhier2	-->]]>
