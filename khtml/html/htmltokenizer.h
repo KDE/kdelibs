@@ -66,6 +66,7 @@ namespace DOM {
 namespace khtml {
     class CachedScript;
 
+    
     /**
      * @internal
      * represents one HTML tag. Consists of a numerical id, and the list
@@ -140,6 +141,7 @@ signals:
  * This class takes QStrings as input, and splits up the input streams into
  * tokens, which are passed on to the @ref KHTMLParser.
  */
+
 class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
     Q_OBJECT
@@ -331,8 +333,9 @@ protected:
 
     QString scriptOutput;
 
-    char entityBuffer[10];
-    uint entityPos;
+#define CBUFLEN 15
+    char cBuffer[CBUFLEN+1];
+    unsigned int cBufferPos;
 
     QString _src;
     khtml::DOMStringIt src;
