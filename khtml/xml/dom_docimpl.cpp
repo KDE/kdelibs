@@ -1785,26 +1785,27 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
         return;
 
     if (m_focusNode != newFocusNode) {
+        NodeImpl *oldFocusNode = m_focusNode;
+        // Set focus on the new node
+        m_focusNode = newFocusNode;
         // Remove focus from the existing focus node (if any)
-        if (m_focusNode) {
-            if (m_focusNode->active())
-                m_focusNode->setActive(false);
+        if (oldFocusNode) {
+            if (oldFocusNode->active())
+                oldFocusNode->setActive(false);
 
-            m_focusNode->setFocus(false);
-	    m_focusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-	    m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
+            oldFocusNode->setFocus(false);
+	    oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+	    oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
 
-            if ((m_focusNode == this) && m_focusNode->hasOneRef()) {
-                m_focusNode->deref(); // deletes this
+            if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
+                oldFocusNode->deref(); // deletes this
                 return;
             }
 	    else {
-                m_focusNode->deref();
+                oldFocusNode->deref();
             }
         }
 
-        // Set focus on the new node
-        m_focusNode = newFocusNode;
         if (m_focusNode) {
             m_focusNode->ref();
             m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
