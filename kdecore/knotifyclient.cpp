@@ -151,7 +151,10 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 
 bool KNotifyClient::startDaemon()
 {
-	KApplication::startServiceByDesktopName("knotify");
+	static bool triedItOnceAlready=false;
+	if (!triedItOnceAlready)
+		KApplication::startServiceByDesktopName("knotify");
+	triedItOnceAlready=true;
 	return true;
 }
 
