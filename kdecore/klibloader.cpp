@@ -542,8 +542,6 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
 //    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
          WABA: *HACK*
@@ -563,9 +561,6 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
             kapp->clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
       }
     }
-#else
-    // FIXME(E): Implement in Qt Embedded
-#endif
 
     deleted_one = true;
     lt_dlclose(wrap->handle);
