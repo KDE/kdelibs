@@ -134,6 +134,22 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
     return r;
 }
 
+NodeImpl* HTMLTableElementImpl::setTBody( HTMLTableSectionElementImpl *s )
+{
+    int exceptioncode;
+    NodeImpl* r;
+
+    if(!firstBody)
+        firstBody = s;
+
+    if( foot )
+        r = insertBefore( s, foot, exceptioncode );
+    else
+        r = appendChild( s, exceptioncode );
+
+    return r;
+}
+
 HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
     if(!head)
@@ -244,9 +260,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
         break;
     case ID_TBODY:
         //if(incremental && !columnPos[totalCols]);// calcColWidth();
-        if(!firstBody)
-            firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
-        return HTMLElementImpl::addChild( child );
+        return setTBody(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
     }
     return 0;

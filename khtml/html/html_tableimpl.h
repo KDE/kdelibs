@@ -84,6 +84,8 @@ public:
     HTMLTableSectionElementImpl *tFoot() const { return foot; }
     NodeImpl *setTFoot( HTMLTableSectionElementImpl * );
 
+    NodeImpl *setTBody( HTMLTableSectionElementImpl * );
+
     HTMLElementImpl *createTHead (  );
     void deleteTHead (  );
     HTMLElementImpl *createTFoot (  );
