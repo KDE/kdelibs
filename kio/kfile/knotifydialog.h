@@ -90,13 +90,49 @@ private:
 namespace KNotify
 {
     class Application;
-    typedef QPtrList<Application> ApplicationList;
     class Event;
     typedef QPtrList<Event> EventList;
     typedef QPtrListIterator<Application> ApplicationListIterator;
     typedef QPtrListIterator<Event> EventListIterator;
 
+    /**
+     * @internal
+     */
+    class Application
+    {
+    public:
+        Application( const QString &path );
+        ~Application();
 
+        QString text() const { return m_description; }
+        QString icon() const { return m_icon; }
+        const EventList& eventList();
+        void reloadEvents( bool revertToDefaults = false );
+        void save();
+
+        QString appName() const { return m_appname; }
+
+    private:
+        QString m_icon;
+        QString m_description;
+        QString m_appname;
+        EventList *m_events;
+
+        KConfig *kc; // The file that defines the events.
+        KConfig *config; // The file that contains the settings for the events
+    };
+
+
+    class ApplicationList : public QPtrList<Application>
+    {
+        virtual int compareItems ( QPtrCollection::Item item1, 
+                                   QPtrCollection::Item item2 )
+        {
+            return (static_cast<Application*>( item1 )->text() >= 
+                static_cast<Application*>( item2 )->text()) ? 1 : -1;
+        }
+    };
+    
     /**
      * @internal
      */
@@ -178,34 +214,6 @@ namespace KNotify
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-
-
-    /**
-     * @internal
-     */
-    class Application
-    {
-    public:
-        Application( const QString &path );
-        ~Application();
-
-        QString text() const { return m_description; }
-        QString icon() const { return m_icon; }
-        const EventList& eventList();
-        void reloadEvents( bool revertToDefaults = false );
-        void save();
-
-        QString appName() const { return m_appname; }
-
-    private:
-        QString m_icon;
-        QString m_description;
-        QString m_appname;
-        EventList *m_events;
-
-        KConfig *kc; // The file that defines the events.
-        KConfig *config; // The file that contains the settings for the events
-    };
 
 
     /**
