@@ -171,6 +171,11 @@ KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
     init( readConfig, b );
 }
 
+KToolBar::~KToolBar()
+{
+    delete d;
+}
+
 void KToolBar::init( bool readConfig, bool honorStyle )
 {
     setFullSize( TRUE );
@@ -195,7 +200,6 @@ void KToolBar::init( bool readConfig, bool honorStyle )
       connect( (QMainWindow*)parentWidget(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
                this, SLOT( toolBarPosChanged( QToolBar * ) ) );
 }
-
 
 int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )

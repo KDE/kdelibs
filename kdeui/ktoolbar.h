@@ -134,6 +134,8 @@ public:
    *                    and IconText will be honored
    */
   KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+    
+  virtual ~KToolBar();
 
   /**
    * Insert a button (a @ref KToolbarButton) with a pixmap.  The
