@@ -7,6 +7,8 @@
 1201	kfm (kdebase)
 1202    konqueror (kdebase)
 1300	kfm (kioslave)
+1400	khelpcenter.bin (khelpcenter server)
+1401	khelpcenterclient (khelpcenter client)
 1501	khexedit (kdeutils)
 1901	kfind (kdebase)
 1902	kfind (KfindWindow::updateResults)
@@ -41,3 +43,4 @@
 35000 klyx
 35001 kchart
 36000 kchart
+37000 kspread
