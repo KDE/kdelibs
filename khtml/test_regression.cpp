@@ -68,6 +68,7 @@
 #include "html_document.h"
 #include "htmltokenizer.h"
 #include "khtml_part.h"
+#include "khtmlpart_p.h"
 
 #include "khtmlview.h"
 #include "rendering/render_replaced.h"
@@ -1276,7 +1277,9 @@ void RegressionTest::testJSFile(const QString & filename )
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
     Object global(new GlobalImp());
-    ScriptInterpreter interp(global,m_part);
+    khtml::ChildFrame frame;
+    frame.m_part = m_part;
+    ScriptInterpreter interp(global,&frame);
     ExecState *exec = interp.globalExec();
 
     global.put(exec, "part", Object(new KHTMLPartObject(exec,m_part)));
