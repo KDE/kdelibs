@@ -7,9 +7,11 @@ module Arts {
  */
 interface KWrapperFactory {
 	/**
-	 * creates a PlayObjects
+	 * creates a PlayObject
 	 *
 	 * @param url the url to create a play object for
+	 * @param mimetype mimetype for the url
+	 * @param createBUS specifies wheter to create the bus-uplink or not
 	 */
 	PlayObject createPlayObject(string url, string mimetype, boolean createBUS);
 };
