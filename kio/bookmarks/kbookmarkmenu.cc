@@ -49,7 +49,6 @@
 #include <klineedit.h>
 
 #include <qfile.h>
-#include <qregexp.h>
 
 #include <kapplication.h>
 #include <kaction.h>
@@ -521,7 +520,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull();  bm = parentBookmark.next(bm) )
   {
     QString text = bm.text();
-    text.replace( QRegExp( "&" ), "&&" );
+    text.replace( '&', "&&" );
     if ( !separatorInserted && m_bIsRoot) { 
       // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
       m_parentMenu->insertSeparator();
@@ -859,7 +858,7 @@ void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
 void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString & url, const QString & )
 {
   QString _text = text;
-  _text.replace( QRegExp( "&" ), "&&" );
+  _text.replace( '&', "&&" );
   KAction * action = new KBookmarkAction(_text, "html", 0, 
                                          m_menu, SLOT( slotBookmarkSelected() ),
                                          m_actionCollection, 0);
@@ -872,7 +871,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString 
 void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QString & )
 {
   QString _text = text;
-  _text.replace( QRegExp( "&" ), "&&" );
+  _text.replace( '&', "&&" );
   KActionMenu * actionMenu = new KActionMenu( _text, "folder", m_actionCollection, 0L );
   actionMenu->plug( mstack.top()->m_parentMenu );
   mstack.top()->m_actions.append( actionMenu );
