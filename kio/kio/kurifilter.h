@@ -67,10 +67,8 @@ friend class KURIFilterPlugin;
 
 public:
     /**
-     * Describes the type of URI to be filtered.
-     *
-     * This enumerator prvoides the return value for
-     * @ref uriType.  A brief description for each value:
+     * Describes the type of the URI that was filtered.
+     * Here is a brief description of the types:
      *
      * @li NET_PROTOCOL - Any network protocol: http, ftp, nttp, pop3, etc...
      * @li LOCAL_FILE   - A local file whose executable flag is not set
@@ -190,14 +188,12 @@ public:
      * Sets the absolute path to be used whenever the supplied
      * data is a relative local URL.
      *
-     * NOTE: This function works only for a local resource and
-     * expects the absolute path to the relative URL set in this
-     * meta object.  If you are extracting the absolute path from
-     * a KURL object, make sure you always set the argument below
-     * using KURL::path() instead of KURL::url() so that "file:/"
-     * would not be appended! Otherwise, the filter might not be
-     * able to make correct determination whether the relative URL
-     * locally exists!
+     * NOTE: This function should only be used for local resources,
+     * i.e. the "file:/" protocol. It is useful for specifying the
+     * absolute path in cases where the actual URL might be relative.
+     * meta object.  If deriving the path from a KURL, make sure you
+     * set the argument for this function to the result of calling
+     * path () instead of url ().
      *
      * @param abs_path  the abolute path to the local resource.
      * @return true if absolute path is successfully set. Otherwise, false.
@@ -597,7 +593,7 @@ protected:
      * Loads all allowed plugins.
      *
      * This function loads all filters that have not
-     * been dis
+     * been disbled.
      */
     void loadPlugins();
 
