@@ -41,7 +41,7 @@ Description: KDE core libraries
 Package: kdelibs4-dev
 Section: devel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), arts-dev, libart-2.0-dev, libcupsys2-dev, libfam-dev, libjpeg62-dev, libpcre3-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), arts-dev, libart-2.0-dev, libcupsys2-dev, libfam-dev, libpcre3-dev
 Provides: kdelibs-dev
 Conflicts: kdelibs-dev
 Replaces: kdelibs-dev
