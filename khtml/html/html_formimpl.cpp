@@ -1009,19 +1009,21 @@ void HTMLInputElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    switch(m_type)
-    {
-    case TEXT:
-    case PASSWORD:
-    case ISINDEX:      m_render = new RenderLineEdit(this);   break;
-    case CHECKBOX:  m_render = new RenderCheckBox(this); break;
-    case RADIO:        m_render = new RenderRadioButton(this); break;
-    case SUBMIT:      m_render = new RenderSubmitButton(this); break;
-    case IMAGE:       m_render =  new RenderImageButton(this); break;
-    case RESET:      m_render = new RenderResetButton(this);   break;
-    case FILE:         m_render =  new RenderFileButton(this);    break;
-    case BUTTON:  m_render = new RenderPushButton(this);
-    case HIDDEN:   break;
+    if (parentNode()->renderer()) {
+        switch(m_type)
+        {
+        case TEXT:
+        case PASSWORD:
+        case ISINDEX:      m_render = new RenderLineEdit(this);   break;
+        case CHECKBOX:  m_render = new RenderCheckBox(this); break;
+        case RADIO:        m_render = new RenderRadioButton(this); break;
+        case SUBMIT:      m_render = new RenderSubmitButton(this); break;
+        case IMAGE:       m_render =  new RenderImageButton(this); break;
+        case RESET:      m_render = new RenderResetButton(this);   break;
+        case FILE:         m_render =  new RenderFileButton(this);    break;
+        case BUTTON:  m_render = new RenderPushButton(this);
+        case HIDDEN:   break;
+        }
     }
 
     HTMLGenericFormElementImpl::attach();
