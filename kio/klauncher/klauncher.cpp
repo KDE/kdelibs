@@ -468,6 +468,7 @@ KLauncher::requestStart(KLaunchRequest *request)
        it != request->arg_list.end();
        it++)
    {
+      fprintf(stderr,"LAUNCHER_EXEC: arg %s", (*it).data());
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
@@ -727,22 +728,55 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 
   // Put args in request->arg_list;
   {
-     QStringList args = QStringList::split( ' ', exec);
-     for(QStringList::Iterator it = args.begin();
-         it != args.end();
-         it++)
-     {
-         QString arg = *it;
-         // Unquote.
-         if ((arg.length() > 1) &&
-             ((arg[0] == '\"') && (arg[arg.length()-1] == '\"') ||
-              (arg[0] == '\'') && (arg[arg.length()-1] == '\''))
-            )
-         {
-            arg = arg.mid(1, arg.length()-2);
-         }
-         request->arg_list.append(arg.local8Bit());
-     }
+      // This small state machine is used to parse "exec" in order
+      // to cut arguments at spaces, but also treat "..." and '...'
+      // as a single argument even if they contain spaces. Those simple
+      // and double quotes are also removed.
+      enum { PARSE_ANY, PARSE_QUOTED, PARSE_DBLQUOTED } state = PARSE_ANY;
+      QString arg;
+      for ( uint pos = 0; pos < exec.length() ; ++pos )
+      {
+          QChar ch = exec[pos];
+          switch (state) {
+              case PARSE_ANY:
+                  if ( ch == '\'' && arg.isEmpty() )
+                      state = PARSE_QUOTED;
+                  else if ( ch == '"' && arg.isEmpty() )
+                      state = PARSE_DBLQUOTED;
+                  else if ( ch == ' ' )
+                  {
+                      if (!arg.isEmpty())
+                          request->arg_list.append(arg.local8Bit());
+                      arg = QString::null;
+                      state = PARSE_ANY;
+                  }
+                  else
+                      arg += ch;
+                  break;
+              case PARSE_QUOTED:
+                  if ( ch == '\'' )
+                  {
+                      request->arg_list.append(arg.local8Bit());
+                      arg = QString::null;
+                      state = PARSE_ANY;
+                  }
+                  else
+                      arg += ch;
+                  break;
+              case PARSE_DBLQUOTED:
+                  if ( ch == '"' )
+                  {
+                      request->arg_list.append(arg.local8Bit());
+                      arg = QString::null;
+                      state = PARSE_ANY;
+                  }
+                  else
+                      arg += ch;
+                  break;
+          }
+      }
+      if (!arg.isEmpty())
+          request->arg_list.append(arg.local8Bit());
   }
 
   // Service Name
