@@ -408,7 +408,8 @@ read_string (FILE *file, char **stringp)
 
     if (len == 0)
     {
-	data = 0;
+	data = malloc ( 1 );
+	*data = 0;
     }
     else
     {
