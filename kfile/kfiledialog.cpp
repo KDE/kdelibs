@@ -108,11 +108,13 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     if (!lastDirectory)
     {
 	qAddPostRoutine( cleanup );
-	if (dirName.isEmpty()) // no dir specified -> current dir
-	    lastDirectory = new QString(QDir::currentDirPath());
-        else
-	    lastDirectory = new QString(dirName);
+        lastDirectory = new QString();
     }
+
+    if (!dirName.isEmpty())
+        *lastDirectory = dirName;
+    else if (lastDirectory->isEmpty())
+        *lastDirectory = QDir::currentDirPath();
 
     // we remember the selected name for init()
     d->filename_ = *lastDirectory;
