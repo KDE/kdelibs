@@ -589,12 +589,13 @@ if test -z "$1"; then
 kde_incdirs="$ac_kde_includes /usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
 test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
+ac_kde_includes=$kde_incdir
+
 if test -n "$ac_kde_includes" && test ! -r "$ac_kde_includes/ksock.h"; then
   AC_MSG_ERROR([
 in the prefix, you've chosen, are no kde headers installed. This will fail.
 So, check this please and use another prefix!])
 fi
-ac_kde_includes=$kde_incdir
 
 kde_libdirs="$ac_kde_libraries /usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
