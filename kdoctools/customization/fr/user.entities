@@ -143,6 +143,9 @@
 <!ENTITY relecteurGillesThioliere   '<othercredit role="relecteur"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 
+<!ENTITY traducteurYannVerley  '<othercredit role="translator"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurYannVerley   '<othercredit role="relecteur"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!-- CREDITS FOR TRANSLATORS -->
 
 <!ENTITY DavidAmmouial     'David Ammouial <email></email>'>
@@ -190,7 +193,7 @@
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
-
+<!ENTITY YannVerley   ' Yann Verley<email>yann.verley@free.fr</email>'>
 
 <!-- OTHER USER ENTITIES -->
 
