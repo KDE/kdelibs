@@ -838,7 +838,8 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
     kdDebug(7104) << "Set cookie policy for => " << _domain.latin1() << ": " << adviceToStr( _advice ).latin1() << endl;
     if (cookieList)
     {
-        configChanged = (cookieList->getAdvice() != _advice);
+        if (cookieList->getAdvice() != _advice);
+           configChanged = true;
         // domain is already known
         cookieList->setAdvice( _advice);
 
@@ -886,7 +887,8 @@ void KCookieJar::setDomainAdvice(KHttpCookiePtr _cookie, KCookieAdvice _advice)
 //
 void KCookieJar::setGlobalAdvice(KCookieAdvice _advice)
 {
-    configChanged = (globalAdvice != _advice);
+    if (globalAdvice != _advice)
+       configChanged = true;
     globalAdvice = _advice;
 }
 
