@@ -173,8 +173,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         KCompletion* comp = completionObject();
         int key = ( completionKey() == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: completionKey();
         if( KStdAccel::isEqual( ev, key ) && fireSignals &&
-            ( mode == KGlobalSettings::CompletionMan && (comp != 0 && comp->lastMatch() == displayText()) ) ||
-            ( mode == KGlobalSettings::CompletionShell && len != 0 && len == cursorPosition() ) )
+            ( ( mode == KGlobalSettings::CompletionMan && (comp != 0 && comp->lastMatch() == displayText()) ) ||
+            ( mode == KGlobalSettings::CompletionShell && len != 0 && len == cursorPosition() ) ) )
         {
             // Emit completion if the completion mode is NOT
             // CompletionAuto and if the mode is CompletionShell,
@@ -183,14 +183,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateUp.
-	key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
+    	key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
         if( KStdAccel::isEqual( ev, key ) && fireSignals )
         {
             emit rotateUp ();
             return;
         }
         // Handles rotateDown.
-	key = ( rotateDownKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : rotateDownKey();
+	    key = ( rotateDownKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : rotateDownKey();
         if( KStdAccel::isEqual( ev, key ) && fireSignals)
         {
             emit rotateDown();
