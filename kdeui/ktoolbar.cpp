@@ -2073,8 +2073,9 @@ void KToolBar::slotContextAboutToShow()
   if ( kmw ) {
       kmw->setupToolbarMenuActions();
       // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
-      if ( kmw->toolBarMenuAction()->containerCount() > 0 )
-          kmw->toolBarMenuAction()->plug(context);
+      KAction *tbAction = kmw->toolBarMenuAction();
+      if ( tbAction && tbAction->containerCount() > 0 )
+          tbAction->plug(context);
   }
 
   // try to find "configure toolbars" action
