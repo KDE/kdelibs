@@ -160,9 +160,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 
 void KMenuBar::show()
 {
-    // work around a Qt bug
-    if ( !isVisible() )
-	QMenuBar::show();
+    QMenuBar::show();
 }
 
 void KMenuBar::showEvent( QShowEvent* )
