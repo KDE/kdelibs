@@ -1,15 +1,27 @@
 /* -*- C++ -*-
- * This file declares a class for creating "About ..." dialogs
- * in a general way. It provides geometry management and some
- * options to connect for, like emailing the author or
- * maintainer.
- *
- * copyright:  (C) Mirko Sucker, 1999
- * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko@kdeorg>
- * requires:   at least Qt 1.4
- * $Revision$
- */
+   This file is part of the KDE libraries
+   Copyright (C) 1999 Mirko Sucker <mirko@kde.org>
+
+   This file declares a class for creating "About ..." dialogs
+   in a general way. It provides geometry management and some
+   options to connect for, like emailing the author or
+   maintainer.
+   
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 
 #ifndef KABOUTDIALOG_H
 #define KABOUTDIALOG_H
@@ -22,8 +34,11 @@
 class QLabel;
 class KURLLabel;
 
-/** Every contributor, the author and/or the maintainer of the application are
- *  stored in objects of this local class. Every single field may be empty. */
+/** Every person displayed is stored in a KAboutContributor object.
+ *  Every contributor, the author and/or the maintainer of the application are
+ *  stored in objects of this local class. Every single field may be empty. 
+ *  To add a contributor, create a KAboutContributor object as a child of your
+ *  @ref KAboutDialog, set its contents and add it using add addContributor. */
 class KAboutContributor : public QFrame
 {
   // ############################################################################
@@ -143,7 +158,15 @@ protected:
 
 /** KAboutDialog is a DialogBase with predefined main widget.
  *  Being a DialogBase it uses your application wide settings for DialogBase
- *  objects (base frame tiles, main frame tiles etc). */
+ *  objects (base frame tiles, main frame tiles etc). 
+ *  To use it, simply create a KAboutDialog object, set all (or some) of its
+ *  properties and show it. Do not derive it to create your own about dialog 
+ *  until yoiu need some cool features that are unsupported and you have 
+ *  contacted me to add them. 
+ *  For the derived features, see the basic class @ref DialogBase. 
+ *  @author Mirko Sucker (mirko@kde.org) 
+ *  @see DialogBase 
+ */
 class KAboutDialog : public DialogBase
 {
   // ############################################################################

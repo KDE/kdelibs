@@ -1,13 +1,25 @@
 /* -*- C++ -*-
- * A dialog class that serves as a common base class for different dialogs.
- * 
- * the K Desktop Environment
- * copyright:  (C) Mirko Sucker, 1998, 1999
- * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko@kde.org>
- * requires:   Qt 1.4x or later
- * $Revision$
- */
+   This file is part of the KDE libraries
+   Copyright (C) 1999 Mirko Sucker <mirko@kde.org>
+
+   It implements a dialog class that serves as a common base class 
+   for different dialogs.
+   
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 
 #ifndef DialogBase_included
 #define DialogBase_included
@@ -63,7 +75,9 @@ class KURLLabel;
  * the same way all over your application. All dialogs derived from this class 
  * used in one program get the background that is set centrally. <BR>
  * The class has been initially created using QtArchitect. The *Data* sources
- * created by it have been removed for performance reasons. */
+ * created by it have been removed for performance reasons.
+ * @author Mirko Sucker (mirko@kde.org)  
+ */
  
 class DialogBase : public QDialog
 {
@@ -162,37 +176,61 @@ public:
   // ----------------------------------------------------------------------------
 protected:
   // members:
-  static QPixmap *tile; /**< The background tile. */
-  static const int Grid; /**< The default grid spacing. */
-  static DialogBase *dummy; /**< \internal A dummy object for sending signals. */
-  QWidget *main; /**< The main widget. */
-  bool mainTile; /**< Show the outer frame background tile if \c true. */
-  bool baseTile; /**< Show the base frame background tile if \c true. */
-  QFrame* frameBase; /**< The outer frame. */
-  QFrame* frameMain; /**< The inner frame. */
-  QPushButton* buttonOK; /**< The OK button. */
-  QPushButton* buttonApply; /**< The apply button. */
-  QPushButton* buttonCancel; /**< The cancel button. */
-  KURLLabel *kurlHelp; /**< The URL label for launching kdehelp. */
-  QString path; /**< The path to the help file. */
-  QString topic; /**< The help topic. */
-  bool showHelp; /**< Is true if \e kurlHelp is visible and should be. */
-  bool init; /**< False until constructor is done. */
+  /** The background tile. */
+  static QPixmap *tile; 
+  /** The default grid spacing. */
+  static const int Grid; 
+  /** \internal A dummy object for sending signals. */
+  static DialogBase *dummy; 
+  /** The main widget. */
+  QWidget *main; 
+  /** Show the outer frame background tile if \c true. */
+  bool mainTile; 
+  /** Show the base frame background tile if \c true. */
+  bool baseTile; 
+  /** The outer frame. */
+  QFrame* frameBase; 
+  /** The inner frame. */
+  QFrame* frameMain; 
+  /** The OK button. */
+  QPushButton* buttonOK; 
+  /** The apply button. */
+  QPushButton* buttonApply; 
+  /** The cancel button. */
+  QPushButton* buttonCancel; 
+  /** The URL label for launching kdehelp. */
+  KURLLabel *kurlHelp; 
+  /** The path to the help file. */
+  QString path; 
+  /** The help topic. */
+  QString topic; 
+  /** Is true if \e kurlHelp is visible and should be. */
+  bool showHelp; 
+  /** False until constructor is done. */
+  bool init; 
   // methods:
-  void emitBackgroundChanged(); /**< Emits the signal ::backgroundChanged. */
-  void resizeEvent(QResizeEvent*); /**< The resize event. */
-  static void cleanup(); /**< Cleanup function to delete static QWidgets. */
+  /** Emits the signal ::backgroundChanged. */
+  void emitBackgroundChanged(); 
+  /** The resize event. */
+  void resizeEvent(QResizeEvent*); 
+  /** Cleanup function to delete static QWidgets. */
+  static void cleanup(); 
   // ----------------------------------------------------------------------------
 protected slots:
-  void applyPressed(); /**< Called when apply button is pressed. */
+  /** Called when apply button is pressed. */
+  void applyPressed(); 
   // ----------------------------------------------------------------------------
 signals:
-  void apply(); /**< The apply button was pressed. */
-  void backgroundChanged(); /**< The background tile has changed. */
+  /** The apply button was pressed. */
+  void apply(); 
+  /** The background tile has changed. */
+  void backgroundChanged(); 
   // ----------------------------------------------------------------------------
 public slots:
-  void updateBackground(); /**< Called when the background changed. */
-  void initializeGeometry(); /**< Initialize dialog geometry. */
+  /** Called when the background changed. */
+  void updateBackground(); 
+  /** Initialize dialog geometry. */
+  void initializeGeometry(); 
   /** Set the help topic, thereby enabling and showing the help url label.
    *  \e path is the path to the html file, \e text is the text shown by the
    *  label.
@@ -202,7 +240,8 @@ public slots:
   void setHelp(const QString& path,
 	       const QString& topic,
 	       const QString& text);
-  void helpClickedSlot(const QString& url); /**< Connected to kurlHelp. */
+  /** Connected to kurlHelp. */
+  void helpClickedSlot(const QString& url); 
   // ############################################################################
 };
 
