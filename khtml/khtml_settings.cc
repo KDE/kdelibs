@@ -126,6 +126,16 @@ void KHTMLSettings::init()
 void KHTMLSettings::init( KConfig * config, bool reset )
 {
   // Fonts and colors
+    if( reset ) {
+	defaultFonts = QStringList();
+	defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
+	defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
+	defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
+	defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
+	defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
+	defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
+	defaultFonts.append( QString( "0" ) ); // font size adjustment
+    }
 
   if ( reset || config->hasKey( "FontSize" ) )
   {
@@ -138,16 +148,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
   }
 
-    if( reset ) {
-	defaultFonts = QStringList();
-	defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
-	defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
-	defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
-	defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
-	defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
-	defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
-	defaultFonts.append( QString( "0" ) ); // font size adjustment
-    }
     QStringList chSets = KGlobal::charsets()->availableCharsetNames();
     for ( QStringList::Iterator it = chSets.begin(); it != chSets.end(); ++it ) {
 	if ( reset || config->hasKey( *it ) ){
