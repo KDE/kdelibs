@@ -48,7 +48,7 @@
 #define _KDOCKWIDGET_2_2_
 
 #include <qpoint.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qframe.h>
 #include <qdom.h>
 #include <qtabwidget.h>

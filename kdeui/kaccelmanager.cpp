@@ -23,12 +23,12 @@
 #include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qmenubar.h>
-#include <qarray.h>
+#include <qmemarray.h>
 #include <qmainwindow.h>
 #include <qtabbar.h>
 #include <qwidgetstack.h>
 #include <qlabel.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
