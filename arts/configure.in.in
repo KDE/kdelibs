@@ -39,7 +39,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   AC_LANG_C
   AC_CHECK_HEADER(audiofile.h,
   [
-    AC_CHECK_LIB(audiofile,afOpenFile,[
+    KDE_CHECK_LIB(audiofile,afOpenFile,[
       dnl LDFLAGS in case it's in KDEDIR/lib
       LIBAUDIOFILE="$LDFLAGS -laudiofile"
       AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
