@@ -741,8 +741,8 @@ void RegressionTest::testStaticFile(const QString & filename)
         reportResult( checkOutput(filename+"-render") );
     } else {
         // compare with output file
-        if ( reportResult( checkOutput(filename+"-dom") ) )
-            reportResult(checkOutput(filename+"-render"));
+        reportResult( checkOutput(filename+"-dom") );
+        reportResult(checkOutput(filename+"-render"));
     }
 }
 
