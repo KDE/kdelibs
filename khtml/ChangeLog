@@ -1,3 +1,10 @@
+2004-02-28  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp (layoutBlockChildren):
+        - displace the check for if we need to relayout our childs 
+        because of a float. It was outside of loop (#71445)
+        - remove check for floatBottom() > m_y has it seems outdated.
+
 2004-02-25  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_text.h (class InlineTextBox): rename width(int)

@@ -637,10 +637,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
     //kdDebug() << "RenderBlock::layoutBlockChildren " << prevMargin << endl;
 
-    // take care in case we inherited floats
-    if (child && floatBottom() > m_height)
-        child->setLayouted( false );
-
     //     QTime t;
     //     t.start();
 
@@ -659,8 +655,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // make sure we relayout children if we need it.
-        if ( relayoutChildren || floatBottom() > m_y ||
-             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
+        if ( relayoutChildren || (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
             child->setLayouted( false );
 
         //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->needsLayout() << endl;
@@ -798,6 +793,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             shouldCollapseChild = false;
             clearOccurred = true;
         }
+
+        // take care in case we inherited floats
+        if (floatBottom() > m_height)
+            child->setLayouted(false);
 
         child->calcVerticalMargins();
 
