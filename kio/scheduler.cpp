@@ -759,7 +759,7 @@ void
 Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = (Slave *)sender();
-    if (coIdleSlaves->find(slave))
+    if (coIdleSlaves->find(slave) != -1)
     {
        // Only forward to application if slave is idle 
        emit slaveError(slave, errorNr, errorMsg);
