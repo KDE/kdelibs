@@ -16,14 +16,14 @@
 
 Shell::Shell()
 {
-  m_servant = new KTMainWindowGUIServant( this );
+  m_builder = new KTMainWindowGUIBuilder( this );
 
-  m_servant->setXML( KXMLGUIFactory::readConfigFile( "example_shell.rc" ) );
+  m_builder->setXML( KXMLGUIFactory::readConfigFile( "example_shell.rc" ) );
 
   m_part1 = new Part1();
   m_part2 = new Part2();
 
-  QActionCollection *coll = m_servant->actionCollection();
+  QActionCollection *coll = m_builder->actionCollection();
 
   (void)new KAction( i18n( "&Open local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
@@ -75,17 +75,17 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
 
   setUpdatesEnabled( false );
 
-  m_servant->clearGUI();
+  m_builder->clearGUI();
 
   if ( newPart )
   {
     KPartGUIServant partServant( newPart );
-    KXMLGUIFactory::createGUI( m_servant, &partServant );
+    KXMLGUIFactory::createGUI( m_builder, &partServant, m_builder );
   }
   else
   {
     KNullGUIServant nullServant;
-    KXMLGUIFactory::createGUI( m_servant, &nullServant );
+    KXMLGUIFactory::createGUI( m_builder, &nullServant, m_builder );
   }
 
   setUpdatesEnabled( true );

@@ -30,7 +30,7 @@ private:
   KPart *m_part2;
   KPartManager *m_manager;
   QSplitter *m_splitter;
-  KTMainWindowGUIServant *m_servant;
+  KTMainWindowGUIBuilder *m_builder;
 };
 
 class Part1 : public KReadOnlyPart

@@ -21,7 +21,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   return text;
 }
 
-void KXMLGUIFactory::createGUI( KXMLGUIShellServant *shell, KXMLGUIServant *part )
+void KXMLGUIFactory::createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder )
 {
 
   QDomDocument shellXML;
@@ -34,13 +34,13 @@ void KXMLGUIFactory::createGUI( KXMLGUIShellServant *shell, KXMLGUIServant *part
 
   qDebug( "starting recursive build" );
 
-  buildRecursive( shellDoc, shell, partDoc, part );
+  buildRecursive( shellDoc, shell, partDoc, part, builder );
 }
 
 
-void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIShellServant *shellServant,
+void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIServant *shellServant,
                                      const QDomElement &partElement, KXMLGUIServant *partServant,
-                                     QObject *parent )
+                                     KXMLGUIBuilder *builder, QObject *parent )
 {
 
   QDomElement servantElement = shellElement;
@@ -85,7 +85,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIShe
 	  }
       }
 
-      buildRecursive( QDomElement(), shellServant, p, partServant, parent );
+      buildRecursive( QDomElement(), shellServant, p, partServant, builder, parent );
     }
     else if ( e.tagName() == "Action" )
     {
@@ -100,7 +100,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIShe
     }
     else
     {
-      QWidget *container = shellServant->createContainer( parent, e );
+      QWidget *container = builder->createContainer( parent, e );
 
       if ( !container )
         continue;
@@ -130,11 +130,11 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement, KXMLGUIShe
 	    }
 	}
 
-        buildRecursive( e, shellServant, p, partServant, container );
+        buildRecursive( e, shellServant, p, partServant, builder, container );
       }
       else
       {
-	buildRecursive( QDomElement(), shellServant, e, partServant, container );
+	buildRecursive( QDomElement(), shellServant, e, partServant, builder, container );
       }
       
     }
