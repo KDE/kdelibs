@@ -152,11 +152,10 @@ void KJavaAppletWidget::uniqueTitle()
 
 void KJavaAppletWidget::showApplet()
 {
-   // Avoid flickering a la kwm! (ettrich)
-   //KWM::doNotManage( swallowTitle );
-
    connect( kwm, SIGNAL( windowAdded( WId ) ),
 	    this, SLOT( setWindow( WId ) ) );
+
+   kwm->doNotManage(swallowTitle);
 
    applet->show( swallowTitle );
 }
