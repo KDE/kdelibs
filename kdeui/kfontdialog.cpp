@@ -128,8 +128,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   // first, create the labels across the top
   //
   QHBoxLayout *familyLayout = new QHBoxLayout();
+  familyLayout->addSpacing( checkBoxGap );
   if (diff) {
-    familyCheckbox = new QCheckBox(page);
+    familyCheckbox = new QCheckBox(i18n("Font"), page);
     connect(familyCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
     familyLayout->addWidget(familyCheckbox, 0, Qt::AlignLeft);
     QString familyCBToolTipText =
@@ -138,16 +139,15 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font family settings.");
     QWhatsThis::add( familyCheckbox, familyCBWhatsThisText );
     QToolTip::add(   familyCheckbox, familyCBToolTipText );
+  } else {
+    familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
+    familyLayout->addWidget(familyLabel, 1, Qt::AlignLeft);
   }
-  familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
-  familyLabel->setEnabled( !diff );
-  familyLayout->addSpacing( checkBoxGap );
-  familyLayout->addWidget(familyLabel, 1, Qt::AlignLeft);
   gridLayout->addLayout(familyLayout, row, 0 );
 
   QHBoxLayout *styleLayout = new QHBoxLayout();
   if (diff) {
-     styleCheckbox = new QCheckBox(page);
+     styleCheckbox = new QCheckBox(i18n("Font style"), page);
      connect(styleCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
      styleLayout->addWidget(styleCheckbox, 0, Qt::AlignLeft);
     QString styleCBToolTipText =
@@ -156,16 +156,16 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font style settings.");
     QWhatsThis::add( styleCheckbox, styleCBWhatsThisText );
     QToolTip::add(   styleCheckbox, styleCBToolTipText );
+  } else {
+    styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
+    styleLayout->addWidget(styleLabel, 1, Qt::AlignLeft);
   }
-  styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
-  styleLabel->setEnabled( !diff );
   styleLayout->addSpacing( checkBoxGap );
-  styleLayout->addWidget(styleLabel, 1, Qt::AlignLeft);
   gridLayout->addLayout(styleLayout, row, 1 );
 
   QHBoxLayout *sizeLayout = new QHBoxLayout();
   if (diff) {
-    sizeCheckbox = new QCheckBox(page);
+    sizeCheckbox = new QCheckBox(i18n("Size"),page);
     connect(sizeCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
     sizeLayout->addWidget(sizeCheckbox, 0, Qt::AlignLeft);
     QString sizeCBToolTipText =
@@ -174,11 +174,11 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font size settings.");
     QWhatsThis::add( sizeCheckbox, sizeCBWhatsThisText );
     QToolTip::add(   sizeCheckbox, sizeCBToolTipText );
+  } else {
+    sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
+    sizeLayout->addWidget(sizeLabel, 1, Qt::AlignLeft);
   }
-  sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
-  sizeLabel->setEnabled( !diff );
   sizeLayout->addSpacing( checkBoxGap );
-  sizeLayout->addWidget(sizeLabel, 1, Qt::AlignLeft);
   sizeLayout->addSpacing( checkBoxGap ); // prevent label from eating border
   gridLayout->addLayout(sizeLayout, row, 2 );
 
@@ -193,7 +193,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontFamilyWhatsThisText =
     i18n("Here you can choose the font family to be used." );
   QWhatsThis::add( familyListBox, fontFamilyWhatsThisText );
-  QWhatsThis::add( familyLabel,   fontFamilyWhatsThisText );
+  QWhatsThis::add( diff?familyCheckbox:familyLabel,   fontFamilyWhatsThisText );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
   if(fontList.count() != 0)
@@ -215,7 +215,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontStyleWhatsThisText =
     i18n("Here you can choose the font style to be used." );
   QWhatsThis::add( styleListBox, fontStyleWhatsThisText );
-  QWhatsThis::add( styleLabel,   fontFamilyWhatsThisText );
+  QWhatsThis::add( diff?styleCheckbox:styleLabel,   fontFamilyWhatsThisText );
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
   styleListBox->insertItem(i18n("Bold"));
@@ -258,7 +258,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontSizeWhatsThisText =
     i18n("Here you can choose the font size to be used." );
   QWhatsThis::add( sizeListBox, fontSizeWhatsThisText );
-  QWhatsThis::add( sizeLabel,   fontSizeWhatsThisText );
+  QWhatsThis::add( diff?sizeCheckbox:sizeLabel,   fontSizeWhatsThisText );
 
   static const int c[] =
   {
@@ -396,17 +396,14 @@ void KFontChooser::enableColumn( int column, bool state )
 {
   if( column & FamilyList )
   {
-    familyLabel->setEnabled(state);
     familyListBox->setEnabled(state);
   }
   if( column & StyleList )
   {
-    styleLabel->setEnabled(state);
     styleListBox->setEnabled(state);
   }
   if( column & SizeList )
   {
-    sizeLabel->setEnabled(state);
     sizeListBox->setEnabled(state);
   }
   if( column & CharsetList && d->charsetLabel && charsetsCombo )
@@ -502,11 +499,8 @@ void KFontChooser::fillCharsetsCombo()
 
 void KFontChooser::toggled_checkbox()
 {
-  familyLabel->setEnabled( familyCheckbox->isChecked() );
   familyListBox->setEnabled( familyCheckbox->isChecked() );
-  styleLabel->setEnabled( styleCheckbox->isChecked() );
   styleListBox->setEnabled( styleCheckbox->isChecked() );
-  sizeLabel->setEnabled( sizeCheckbox->isChecked() );
   sizeListBox->setEnabled( sizeCheckbox->isChecked() );
 }
 
@@ -766,6 +760,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.78  2001/12/18 14:08:37  khz
+* minor bugfix: "relative" checkbox is a tristate box _only_ if dialog is in "diff" mode, note however that there is no difference from a programmers point of view: you still will specify a *QButton::ToggleState as parameter, no matter whether you are seeing a tristate box or not (the alternative would be having all respective functions duplicate in the KFontDialog class - something I am not sure we really want to have)
+*
 * Revision 1.77  2001/12/16 01:10:54  khz
 * Changed sizeIsRelative parameter from *bool to *QButton::ToggleState (and converted the "relative" checkbox into a tri-state-checkbox accordingly) to ease interoperation with the new "diff" feature of KFontDialog.
 *
