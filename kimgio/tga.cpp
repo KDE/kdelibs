@@ -226,24 +226,25 @@ void kimgio_tga_write( QImageIO *io )
     QDataStream s( io->ioDevice() );
     s.setByteOrder( QDataStream::LittleEndian );
 
-    QImage img = io->image();
+    const QImage img = io->image();
+    const bool hasAlpha = img.hasAlphaBuffer();
     for( int i = 0; i < 12; i++ )
         s << targaMagic[i];
 
     // write header
-    s << Q_UINT16(img.width()); // width
-    s << Q_UINT16(img.height()); // height
-    s << (unsigned char)img.depth(); // depth
-    s << (unsigned char)36;
+    s << Q_UINT16( img.width() ); // width
+    s << Q_UINT16( img.height() ); // height
+    s << Q_UINT8( hasAlpha ? 32 : 24 ); // depth (24 bit RGB + 8 bit alpha)
+    s << Q_UINT8( hasAlpha ? 0x24 : 0x20 ); // top left image (0x20) + 8 bit alpha (0x4)
 
     for( int y = 0; y < img.height(); y++ )
         for( int x = 0; x < img.width(); x++ ) {
-            int color = img.pixel( x, y );
-            s << (unsigned char)qBlue( color );
-            s << (unsigned char)qGreen( color );
-            s << (unsigned char)qRed( color );
-            if( img.depth() == 32 )
-                s << (unsigned char)qAlpha( color );
+            const QRgb color = img.pixel( x, y );
+            s << Q_UINT8( qBlue( color ) );
+            s << Q_UINT8( qGreen( color ) );
+            s << Q_UINT8( qRed( color ) );
+            if( hasAlpha )
+                s << Q_UINT8( qAlpha( color ) );
         }
 
     io->setStatus( 0 );
