@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-#define PARSER_DEBUG
+//#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
