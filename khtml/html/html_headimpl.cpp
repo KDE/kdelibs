@@ -233,7 +233,6 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     if (m_sheet)
         m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this, url);
-    kdDebug( 6030 ) << "style sheet parse mode strict = " << ( getDocument()->parseMode() == DocumentImpl::Strict ) << endl;
     m_sheet->ref();
     m_sheet->parseString( sheetStr, getDocument()->parseMode() == DocumentImpl::Strict );
 
