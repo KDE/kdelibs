@@ -430,6 +430,7 @@ bool _IPmatchesCN;
    }
 
 
+   if (rc == -1) return rc;
 
    // Things to check:
    //  - posting unencrypted data  -- elsewhere?
