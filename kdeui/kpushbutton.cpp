@@ -19,6 +19,8 @@
 
 #include <kglobalsettings.h>
 #include <qdragobject.h>
+#include <kconfig.h>
+#include <kglobal.h>
 
 #include "kpushbutton.h"
 
@@ -37,9 +39,12 @@ KPushButton::KPushButton( const QString &text, QWidget *parent,
 
 KPushButton::KPushButton( const QIconSet &icon, const QString &text,
 				  QWidget *parent, const char *name )
-    : QPushButton( icon, text, parent, name ),
+    : QPushButton( text, parent, name ),
       m_dragEnabled( false )
 {
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    if( cg.readBoolEntry( "showIconsOnPushButtons", true ) )
+        setIconSet( icon );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
@@ -47,8 +52,12 @@ KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
     : QPushButton( item.text(), parent, name ),
       m_dragEnabled( false )
 {
-    if( item.hasIconSet() )
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    if( item.hasIconSet() &&
+                        cg.readBoolEntry( "showIconsOnPushButtons", true ) )
+    {
         setIconSet( item.iconSet() );
+    }
 }
 
 KPushButton::~KPushButton()
