@@ -52,7 +52,6 @@ public:
     bool isEnabled() const;
 
     void setText( const QString &text );
-    void setPixmap( const QPixmap &pixmap );
     void setIconSet( const QIconSet &iconset );
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
