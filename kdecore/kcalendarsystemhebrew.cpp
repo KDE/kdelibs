@@ -29,7 +29,7 @@
 
 static int jflg = 0; // ### HPB Remove this!?!?
 
-int dysiz(int y);
+static int dysiz(int y);
 
 class hdate
 {
@@ -195,6 +195,11 @@ static int short_kislev(int year)
   return ((dysiz(year) % 10) == 3);
 }
 
+static bool is_leap_year(int year)
+{
+  return ((((7 * year) + 1) % 19) < 7);
+}
+
 // Ok
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KLocale * locale)
   : KCalendarSystem(locale)
@@ -211,9 +216,12 @@ class hdate * toHebrew(const QDate & date)
 {
   class hdate *sd;
   sd = hdate(date.year(), date.month(), date.day());
+  ++sd->hd_mon;
+  ++sd->hd_day;
   return sd;
 }
 
+// Ok
 int KCalendarSystemHebrew::year(const QDate& date) const
 {
   class hdate *sd = toHebrew(date);
@@ -223,22 +231,69 @@ int KCalendarSystemHebrew::year(const QDate& date) const
 // Ok
 int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
 {
-  if ((((7 * year(date)) + 1)  %  19) < 7)
+  if ( is_leap_year( year(date) ) )
     return 13;
   else
     return 12;
 }
 
-// ### Fixme
+// Ok
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
-  return 51;
+  QDate temp;
+  setYMD(temp, year + 1, 1, 1);
+
+  // If the first day of the next year is in the first week, we have to
+  // check the week before
+  int yearNum;
+  int nWeekNumber = weekNumber(temp, &yearNum);
+  if ( yearNum != year )
+    temp = addDays(temp, -7);
+
+  return nWeekNumber;
 }
 
-// ### Fixme
+// Ok
 int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
 {
-  return date.weekNumber(yearNum);
+  QDate firstDayWeek1, lastDayOfYear;
+  int y = year(date);
+  int week;
+  int weekDay1, dayOfWeek1InYear;
+
+  // let's guess 1st day of 1st week
+  setYMD(firstDayWeek1, y, 1, 1);
+  weekDay1 = dayOfWeek(firstDayWeek1);
+
+  // iso 8601: week 1  is the first containing thursday and week starts on
+  // monday
+  if (weekDay1 > 4 /*Thursday*/)
+    firstDayWeek1 = addDays(firstDayWeek1 , 7 - weekDay1 + 1); // next monday
+
+  dayOfWeek1InYear = dayOfYear(firstDayWeek1);
+
+  if ( dayOfYear(date) < dayOfWeek1InYear ) // our date in prev year's week
+  {
+    if ( yearNum )
+      *yearNum = y - 1;
+    return weeksInYear(y - 1);
+  }
+
+  // let's check if its last week belongs to next year
+  setYMD(lastDayOfYear, y + 1, 1, 1);
+  lastDayOfYear = addDays(lastDayOfYear, -1);
+  if ( (dayOfYear(date) >= daysInYear(date) - dayOfWeek(lastDayOfYear) + 1)
+       // our date is in last week
+       && dayOfWeek(lastDayOfYear) < 4) // 1st week in next year has thursday
+    {
+      if ( yearNum )
+        *yearNum = y + 1;
+      week = 1;
+    }
+  else
+    week = firstDayWeek1.daysTo(date) / 7 + 1;
+
+  return week;
 }
 
 // Ok
@@ -307,7 +362,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   // range checks
   // ### Fixme
 
-  class hdate * gd = gdate( y, m, d );
+  class hdate * gd = gdate( y, m - 1, d - 1 );
 
   return date.setYMD(gd->hd_year, gd->hd_mon, gd->hd_day);
 }
@@ -351,22 +406,21 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
   return first.daysTo(date) + 1;
 }
 
-
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
   class hdate *sd = toHebrew(date);
-  return hndays(sd->mon, sd->year);
+  return hndays(sd->hd_mon, sd->hd_year);
 }
 
 // ### CFM check. Fix Adar1 and Adar
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
-  if( mon == 8 /*IYYAR*/ || month == 10 /*TAMUZ*/ ||
-    month == 12 /*ELUL*/ || month == 4 /*TEVET*/ || 
-    month == 14 /*ADAR 2*/||
-    ( month == 13 /*ADAR 1*/ && monthsInYear(year) == 12) /*!leap*/||
-    (month ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
-    (month == 3 /*KISLEV*/ && short_kislev(year)))
+  if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
+    mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ || 
+    mon == 14 /*ADAR 2*/||
+    ( mon == 13 /*ADAR 1*/ && !is_leap_year(year)) /*!leap*/||
+    (mon ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
+    (mon == 3 /*KISLEV*/ && short_kislev(year)))
     return 29;
   else
     return 30;
@@ -406,12 +460,12 @@ int KCalendarSystemHebrew::month(const QDate& date) const
   return sd->hd_mon;
 }
 
-// ### Not sure
+// Ok
 int KCalendarSystemHebrew::daysInYear(const QDate & date) const
 {
   QDate first, last;
-  setYMD(first, year(date), 1, 1);
-  setYMD(last, year(date) + 1, 1, 1);
+  setYMD(first, year(date), 1, 1); // 1 Tishrey
+  setYMD(last, year(date) + 1, 1, 1); // 1 Tishrey the year later
 
   return first.daysTo(last);
 }
@@ -428,26 +482,25 @@ QDate KCalendarSystemHebrew::addDays( const QDate & date, int ndays ) const
   return date.addDays( ndays );
 }
 
-// ### Fixme
+// Ok
 QDate KCalendarSystemHebrew::addMonths( const QDate & date, int nmonths ) const
 {
   QDate result = date;
-  int m = month(date);
-  int y = year(date);
 
-  if ( nmonths < 0 )
+  while ( nmonths > 0 )
   {
-    m += 12;
-    y -= 1;
+    result = addDays(result, daysInMonth(result));
+    --nmonths;
   }
 
-  --m; // this only works if we start counting at zero
-  m += nmonths;
-  y += m / 12;
-  m  %= 12;
-  ++m;
-
-  setYMD( result, y, m, day(date) );
+  while ( nmonths < 0 )
+  {
+    // get the number of days in the previous month to be consistent with 
+    // addMonths where nmonths > 0
+    int nDaysInMonth = daysInMonth(addDays(result, -day(result)));
+    result = addDays(result, -nDaysInMonth);
+    ++nmonths;
+  }
 
   return result;
 }
