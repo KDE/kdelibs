@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-  KApplication app(argc,argv,"kurltest",false,false);
+  KApplication app(argc,argv,"kiconloadertest",false,false);
 
   KIconLoader * mpLoader = KGlobal::iconLoader();
   int mContext = KIcon::Application;
