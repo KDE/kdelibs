@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  1999/12/11 17:20:36  antlarr
+ * Changed the QStringList questionYesNo method name to questionYesNoList
+ * Also reimplemented the original questionYesNo to call questionYesNoList with
+ * an empty list which reduces the sources and keeps the look
+ * I've changed the only two places that used this to reflect the changes:
+ * the KMessageBox test and Konqueror
+ *
  * Revision 1.12  1999/12/09 07:08:00  antlarr
  * Fixed the layout of the message boxes, now the text and icon are always
  * centered in the dialog. The solution was to add setStretch calls, but
@@ -106,8 +113,8 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &buttonYes, 
                            const QString &buttonNo)
 {
-    questionYesNoList( parent, text, QStringList(), caption, 
-			buttonYes, buttonNo );
+    return questionYesNoList( parent, text, QStringList(), caption, 
+	       	              buttonYes, buttonNo );
 }
 
 int
