@@ -28,6 +28,10 @@ ResourceConfigWidget::ResourceConfigWidget( QWidget *parent, const char *name )
 {
 }
 
+void ResourceConfigWidget::setInEditMode( bool )
+{
+}
+
 void ResourceConfigWidget::loadSettings( Resource* )
 {
 }

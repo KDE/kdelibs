@@ -24,11 +24,10 @@
 
 #include <kdialog.h>
 
-// #include "resource.h"
-// #include "resourceconfigwidget.h"
 class KLineEdit;
 class QCheckBox;
 class KButtonBox;
+
 namespace KRES {
   class Resource;
   class ResourceConfigWidget;
@@ -40,7 +39,9 @@ class ResourceConfigDlg : KDialog
 public:
   // Resource=0: create new resource
   ResourceConfigDlg( QWidget *parent, const QString& resourceFamily,
-	  /*const QString& type,*/ Resource* resource, /*KConfig *config,*/ const char *name = 0);
+	  Resource* resource, const char *name = 0);
+
+  void setInEditMode( bool value );
 
 public slots:
   int exec();
@@ -48,7 +49,8 @@ public slots:
 protected slots:
   void accept();
   void setReadOnly( bool value );
-    void slotNameChanged( const QString &text);
+  void slotNameChanged( const QString &text);
+
 private:
   ResourceConfigWidget *mConfigWidget;
   Resource* mResource;
@@ -56,7 +58,7 @@ private:
   KButtonBox *mButtonBox;
   KLineEdit *mName;
   QCheckBox *mReadOnly;
-    QPushButton *mbuttonOk;
+  QPushButton *mbuttonOk;
 };
 
 }

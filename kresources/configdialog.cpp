@@ -71,12 +71,11 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& resourceFa
   mainLayout->addSpacing( 10 );
 
   mConfigWidget = factory->configWidget( resource->type(), resourceGroupBox );
-  if ( mConfigWidget ) { // && mConfig ) {
+  if ( mConfigWidget ) {
+    mConfigWidget->setInEditMode( false );
     mConfigWidget->loadSettings( mResource );
     mConfigWidget->show();
-    // connect( mConfigWidget, SIGNAL( setResourceName( const QString & ) ), SLOT( setResourceName( const QString & ) ) );
     connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ), SLOT( setReadOnly( bool ) ) );
-    // connect( mConfigWidget, SIGNAL( setFast( bool ) ), SLOT( setFast( bool ) ) );
   }
 
 
@@ -87,15 +86,22 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& resourceFa
   mbuttonOk->setFocus();
   mButtonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
   mButtonBox->layout();
-  connect( mName, SIGNAL( textChanged ( const QString & )),this, SLOT( slotNameChanged( const QString &)));
+  connect( mName, SIGNAL( textChanged ( const QString & )),this,
+           SLOT( slotNameChanged( const QString &)));
   mainLayout->addWidget( mButtonBox );
   slotNameChanged( mName->text());
 
 }
 
+void ResourceConfigDlg::setInEditMode( bool value )
+{
+  if ( mConfigWidget )
+    mConfigWidget->setInEditMode( value );
+}
+
 void ResourceConfigDlg::slotNameChanged( const QString &text)
 {
-    mbuttonOk->setEnabled( !text.isEmpty() );
+  mbuttonOk->setEnabled( !text.isEmpty() );
 }
 
 int ResourceConfigDlg::exec()
@@ -118,7 +124,7 @@ void ResourceConfigDlg::accept()
   mResource->setResourceName( mName->text() );
   mResource->setReadOnly( mReadOnly->isChecked() );
 
-  if ( mConfigWidget /*&& mConfig*/ ) {
+  if ( mConfigWidget ) {
     // First save generic information
     // Also save setting of specific resource type
     mConfigWidget->saveSettings( mResource );

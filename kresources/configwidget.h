@@ -37,14 +37,19 @@ class ResourceConfigWidget : public QWidget
 public:
   ResourceConfigWidget( QWidget *parent = 0, const char *name = 0 );
 
+  /**
+    Sets the widget to 'edit' mode. Reimplement this method if you are
+    interested in the mode change (to disable some GUI element for
+    example). By default the widget is in 'create new' mode.
+   */
+  virtual void setInEditMode( bool value );
+
 public slots:
   virtual void loadSettings( Resource *resource );
   virtual void saveSettings( Resource *resource );
 
 signals:
-//  void setResourceName( const QString &name );
   void setReadOnly( bool value );
-//  void setFast( bool value );
 
 protected:
   Resource* mResource;
