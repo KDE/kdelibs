@@ -214,6 +214,14 @@ void DrGroup::addGroup(DrGroup *grp)
 	m_subgroups.append(grp);
 }
 
+void DrGroup::addObject(DrBase *optgrp)
+{
+	if (optgrp->isOption())
+		addOption(optgrp);
+	else if (optgrp->type() == DrBase::Group)
+		addGroup(static_cast<DrGroup*>(optgrp));
+}
+
 void DrGroup::removeOption(const QString& name)
 {
 	DrBase	*opt = m_options.find(name);
@@ -352,6 +360,26 @@ DrBase* DrGroup::clone()
 		grp->addOption(oit.current()->clone());
 
 	return static_cast<DrBase*>(grp);
+}
+
+/*************************
+ * DrChoiceGroup members *
+ *************************/
+
+DrChoiceGroup::DrChoiceGroup()
+: DrGroup()
+{
+	m_type = DrBase::ChoiceGroup;
+}
+
+DrChoiceGroup::~DrChoiceGroup()
+{
+}
+
+DriverItem* DrChoiceGroup::createItem(DriverItem *parent, DriverItem*)
+{
+	createTree(parent);
+	return NULL;
 }
 
 /**************************
@@ -512,6 +540,13 @@ QString DrListOption::prettyText()
 void DrListOption::setValueText(const QString& s)
 {
 	m_current = findChoice(s);
+	if (!m_current)
+	{
+		bool	ok;
+		int	index = s.toInt(&ok);
+		if (ok)
+			setChoice(index);
+	}
 }
 
 DrBase* DrListOption::findChoice(const QString& txt)
@@ -534,6 +569,38 @@ DrBase* DrListOption::clone()
 	opt->setValueText(valueText());
 
 	return static_cast<DrBase*>(opt);
+}
+
+void DrListOption::getOptions(QMap<QString,QString>& opts, bool incldef)
+{
+	DrBase::getOptions(opts, incldef);
+	if (currentChoice() && currentChoice()->type() == DrBase::ChoiceGroup)
+		currentChoice()->getOptions(opts, incldef);
+}
+
+void DrListOption::setOptions(const QMap<QString,QString>& opts)
+{
+	DrBase::setOptions(opts);
+	if (currentChoice() && currentChoice()->type() == DrBase::ChoiceGroup)
+		currentChoice()->setOptions(opts);
+}
+
+DriverItem* DrListOption::createItem(DriverItem *parent, DriverItem *after)
+{
+	DriverItem	*item = DrBase::createItem(parent, after);
+	/*if (currentChoice() && currentChoice()->type() == DrBase::ChoiceGroup)
+	{
+		currentChoice()->createItem(item);
+	}*/
+	return item;
+}
+
+void DrListOption::setChoice(int choicenum)
+{
+	if (choicenum >= 0 && choicenum < (int)m_choices.count())
+	{
+		setValueText(m_choices.at(choicenum)->name());
+	}
 }
 
 /************************

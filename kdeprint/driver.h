@@ -49,13 +49,13 @@ class DrPageSize;
 class DrBase
 {
 public:
-	enum Type { Base = 0, Main, Group, String, Integer, Float, List, Boolean };
+	enum Type { Base = 0, Main, ChoiceGroup, Group, String, Integer, Float, List, Boolean };
 
 	DrBase();
 	virtual ~DrBase();
 
 	Type type() const 					{ return m_type; }
-	bool isOption() const 					{ return (m_type > DrBase::Group); }
+	bool isOption() const 					{ return (m_type >= DrBase::String); }
 
 	const QString& get(const QString& key) const 		{ return m_map[key]; }
 	void set(const QString& key, const QString& val)	{ m_map[key] = val; }
@@ -92,6 +92,7 @@ public:
 
 	void addOption(DrBase *opt);
 	void addGroup(DrGroup *grp);
+	void addObject(DrBase *optgrp);
 	void clearConflict();
 	void removeOption(const QString& name);
 	void removeGroup(DrGroup *grp);
@@ -140,6 +141,19 @@ public:
 protected:
 	QPtrList<DrConstraint>	m_constraints;
 	QDict<DrPageSize>	m_pagesizes;
+};
+
+/**********************************************************
+ * Choice group class: a choice that involve a sub-option *
+ **********************************************************/
+
+class DrChoiceGroup : public DrGroup
+{
+public:
+	DrChoiceGroup();
+	~DrChoiceGroup();
+
+	DriverItem* createItem(DriverItem *parent, DriverItem *after = 0);
 };
 
 /***********************
@@ -209,10 +223,14 @@ public:
 	QPtrList<DrBase>* choices()	{ return &m_choices; }
 	DrBase* currentChoice() const 	{ return m_current; }
 	DrBase* findChoice(const QString& txt);
+	void setChoice(int choicenum);
 
 	virtual QString valueText();
 	virtual QString prettyText();
 	virtual void setValueText(const QString& s);
+	void setOptions(const QMap<QString,QString>& opts);
+	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	DriverItem* createItem(DriverItem *parent, DriverItem *after = 0);
 	DrBase* clone();
 
 protected:

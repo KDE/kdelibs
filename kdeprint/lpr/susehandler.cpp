@@ -18,6 +18,7 @@
  **/
 
 #include "susehandler.h"
+#include "susehelper.h"
 #include "printcapentry.h"
 #include "kmprinter.h"
 #include "lprsettings.h"
@@ -35,6 +36,12 @@
 SuSEHandler::SuSEHandler(KMManager *mgr)
 : LprHandler("suse", mgr)
 {
+	m_helper = new SuSEHelper(locateDir("YaST2", "/usr/lib:/usr/local/lib"));
+}
+
+SuSEHandler::~SuSEHandler()
+{
+	delete m_helper;
 }
 
 bool SuSEHandler::validate(PrintcapEntry *entry)
@@ -101,16 +108,80 @@ bool SuSEHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sho
 	return true;
 }
 
+QMap<QString,QString> SuSEHandler::loadYaST2File(const QString& filename)
+{
+	QFile	f(filename);
+	QMap<QString,QString>	opts;
+	QRegExp	re("^\"|(?:\"?,?)$");
+	if (f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString	line;
+		while (!t.atEnd())
+		{
+			line = t.readLine().stripWhiteSpace();
+			int	p = line.find(':');
+			if (p != -1)
+			{
+				opts[line.left(p).replace(re,"").stripWhiteSpace()] = line.mid(p+1).replace(re,"").stripWhiteSpace();
+			}
+		}
+	}
+	return opts;
+}
+
 DrMain* SuSEHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool config)
 {
-	manager()->setErrorMsg("This operation is currently not supported.");
-	return NULL;
+	if (!config)
+		return NULL;
+	else
+	{
+		QString	yastPath = (dataDir(prt->printerName())+"/yast2");
+		QMap<QString,QString>	yastOpts = loadYaST2File(yastPath);
+		DrMain	*driver(0);
+		if (!yastOpts.contains("config"))
+		{
+			manager()->setErrorMsg(i18n("This print queue doesn't have any associated driver. It is probably a raw print queue."));
+			return NULL;
+		}
+		else if ((driver = m_helper->generateDriver(yastOpts["config"])) == NULL)
+		{
+			manager()->setErrorMsg(i18n("The driver %1 could not be find in the driver database.").arg(yastOpts["config"]));
+			return NULL;
+		}
+		// apply the options found in the yast2 file
+		driver->set("template", yastPath);
+		driver->set("config", yastOpts["config"]);
+		driver->set("device", yastOpts["device"]);
+		if (yastOpts.contains("options"))
+		{
+			QString	ss = yastOpts["options"];
+			ss = ss.mid(2, ss.length()-3);
+			QStringList	optlist = QStringList::split(QRegExp(",\\s*"), ss, false);
+			QMap<QString,QString>	opts;
+			for (QStringList::ConstIterator it=optlist.begin(); it!=optlist.end(); ++it)
+			{
+				int	p = (*it).find(':');
+				QString	key = (*it).left(p), val = (*it).mid(p+1);
+				if (key[0] == '"')
+					key = key.mid(1, key.length()-2);
+				if (val[0] == '"')
+					val = val.mid(1, val.length()-2);
+				opts[key] = val;
+			}
+			driver->setOptions(opts);
+		}
+		return driver;
+	}
 }
 
 DrMain* SuSEHandler::loadDbDriver(const QString& s)
 {
-	manager()->setErrorMsg("This operation is currently not supported.");
-	return NULL;
+	int	p = s.find('/');
+	DrMain	*driver = m_helper->generateDriver(s.mid(p+1));
+	if (driver == NULL)
+		manager()->setErrorMsg(i18n("The driver %1 could not be find in the driver database.").arg(s.mid(p+1)));
+	return driver;
 }
 
 QString SuSEHandler::driverDirInternal()
@@ -125,6 +196,9 @@ QString SuSEHandler::dataDir(const QString& prname)
 
 PrintcapEntry* SuSEHandler::createEntry(KMPrinter *prt)
 {
+	manager()->setErrorMsg(QString::fromLatin1("The KDE Print framework is not able yet to modify print queues "
+			       "created with YaST2 or create new ones. To manage your print system "
+			       "you should use YaST2 instead."));
 	return NULL;
 	/*
 	QString	prot = prt->device().protocol();
@@ -139,9 +213,34 @@ PrintcapEntry* SuSEHandler::createEntry(KMPrinter *prt)
 	*/
 }
 
-bool SuSEHandler::savePrinterDriver(KMPrinter*, PrintcapEntry *entry, DrMain *driver, bool *mustSave)
+bool SuSEHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver, bool *mustSave)
 {
-	return false;
+	QMap<QString,QString>	opts;
+	driver->getOptions(opts, true);
+	QString	fpath = dataDir(prt->printerName())+"/upp";
+	if (!m_helper->writeUppFile(fpath, opts))
+	{
+		manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(fpath));
+		return false;
+	}
+	fpath = dataDir(prt->printerName())+"/yast2";
+	QString	yastOpts = m_helper->generateYaST2Option(opts);
+	if (!QFile::exists(fpath))
+	{
+		manager()->setErrorMsg("Unimplemented");
+		return false;
+	}
+	else
+	{
+		opts = loadYaST2File(fpath);
+		opts["options"] = yastOpts;
+	}
+	if (!m_helper->writeYaST2File(fpath, opts))
+	{
+		manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(fpath));
+		return false;
+	}
+	return true;
 }
 
 QString SuSEHandler::printOptions(KPrinter *printer)

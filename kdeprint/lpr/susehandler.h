@@ -21,11 +21,15 @@
 #define SUSEHANDLER_H
 
 #include "lprhandler.h"
+#include <qmap.h>
+
+class SuSEHelper;
 
 class SuSEHandler : public LprHandler
 {
 public:
 	SuSEHandler(KMManager *mgr = 0);
+	~SuSEHandler();
 
 	bool validate(PrintcapEntry*);
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
@@ -38,6 +42,10 @@ public:
 protected:
 	QString driverDirInternal();
 	QString dataDir(const QString& prname = QString::null);
+	QMap<QString,QString> loadYaST2File(const QString&);
+
+private:
+	SuSEHelper	*m_helper;
 };
 
 #endif

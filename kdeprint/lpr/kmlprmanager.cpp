@@ -48,7 +48,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 
 	m_lpchelper = new LpcHelper(this);
 
-	setHasManagement(getuid() == 0);
+	setHasManagement(1||getuid() == 0);
 	setPrinterOperationMask(
 		KMManager::PrinterEnabling |
 		KMManager::PrinterConfigure |

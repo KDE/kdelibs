@@ -52,7 +52,7 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	cmd = QString::fromLatin1("cupsdoprint -P %1 -J %3 -H %2").arg(quote(printer->printerName())).arg(quote(hoststr)).arg(quote(printer->docName()));
 	if (!CupsInfos::self()->login().isEmpty())
 	{
-		QString	userstr(CupsInfos::self()->login());
+		QString	userstr(CupsInfos::self()->realLogin());
 		if (!CupsInfos::self()->password().isEmpty())
 			userstr += (":" + CupsInfos::self()->password());
 		cmd.append(" -U ").append(quote(userstr));

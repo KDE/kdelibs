@@ -347,7 +347,7 @@ void DrOptionView::slotItemSelected(QListViewItem *i)
 
 void DrOptionView::slotValueChanged(const QString& val)
 {
-	if (m_item && !m_block)
+	if (m_item && m_item->drItem() && !m_block)
 	{
 		m_item->drItem()->setValueText(val);
 		m_item->updateText();

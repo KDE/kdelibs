@@ -24,11 +24,12 @@
 
 #include <qpainter.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 DriverItem::DriverItem(QListView *parent, DrBase *item)
 : QListViewItem(parent), m_item(item), m_conflict(false)
 {
-	setOpen(true);
+	setOpen(depth() < 3);
 	setPixmap(0,SmallIcon("fileprint"));
 	updateText();
 }
@@ -36,7 +37,7 @@ DriverItem::DriverItem(QListView *parent, DrBase *item)
 DriverItem::DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item)
 : QListViewItem(parent, after), m_item(item), m_conflict(false)
 {
-	setOpen(true);
+	setOpen(depth() < 3);
 	if (item) setPixmap(0,SmallIcon((item->isOption() ? "document" : "folder")));
 	updateText();
 }
@@ -48,6 +49,21 @@ void DriverItem::updateText()
 		QString	s(m_item->get("text"));
 		if (m_item->isOption())
 			s.append(QString::fromLatin1(": <%1>").arg(m_item->prettyText()));
+		if (m_item->type() == DrBase::List)
+		{
+			// remove all children: something has changed (otherwise this
+			// function would not be called), so it make sense to remove
+			// those children in all cases.
+			while (firstChild())
+				delete firstChild();
+			DrBase	*ch = static_cast<DrListOption*>(m_item)->currentChoice();
+			if (ch && ch->type() == DrBase::ChoiceGroup)
+			{
+				// add new children
+				static_cast<DrChoiceGroup*>(ch)->createItem(this);
+				setOpen(true);
+			}
+		}
 		setText(0,s);
 	}
 	else
@@ -116,7 +132,7 @@ bool DriverItem::updateConflict()
 		}
 		else
 		{
-			updateText();
+			//updateText();
 			m_conflict = (m_item->conflict());
 		}
 	}
