@@ -515,7 +515,7 @@ void KFontDialog::setCombos(){
  else
    style_combo->setCurrentItem(0);
 
-  fontfilename = fontfilename + "/.kde/config/kdefonts";
+ QFont::CharSet charset=selFont.charSet();
  for(i = 0;i<CHARSETS_COUNT;i++)
    if (charset==charsetsIds[i]){
      charset_combo->setCurrentItem(i);
