@@ -139,6 +139,7 @@ public:
      */
     void setView( QWidget *view, bool show_frame = TRUE );
 
+    QWidget *view() const { return kmainwidget; }
 
     /**
      *Enable or disable the status bar.
