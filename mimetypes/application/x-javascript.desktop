@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-javascript
+Icon=Script
+Patterns=*.js;
+Comment=JavaScript File
+X-KDE-IsAlso=text/plain
+
