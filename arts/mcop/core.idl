@@ -26,12 +26,13 @@ module Arts {
 enum HeaderMagic { MCOP_MAGIC = 0x4d434f50 }; /* gets marshalled as "MCOP" */
 											  /* decimal 1296256848 */                                                                                    
 enum MessageType {
- mcopInvocation  = 1,
- mcopReturn      = 2,
- mcopServerHello = 3,
- mcopClientHello = 4,
- mcopAuthAccept  = 5,
- mcopOnewayInvocation  = 6
+ mcopMessageInvalid		= 0,				  /* never send this */
+ mcopServerHello		= 1,
+ mcopClientHello		= 2,
+ mcopAuthAccept			= 3,
+ mcopInvocation			= 4,
+ mcopReturn				= 5,
+ mcopOnewayInvocation   = 6
 };
 
 /**
@@ -51,10 +52,6 @@ struct Header {
  */
 struct Invocation {
 	/**
-	 * A unique number of the request (needed to send the return code back)
-	 */
-    long requestID;
-	/**
 	 * The ID of the object receiving the request
 	 */
     long objectID;
@@ -62,6 +59,10 @@ struct Invocation {
 	 * The ID of the method that is to be invoked
 	 */
     long methodID;
+	/**
+	 * A unique number of the request (needed to send the return code back)
+	 */
+    long requestID;
 };
 
 /**
@@ -95,6 +96,19 @@ struct ClientHello {
 	string serverID;
 	string authProtocol;
 	string authData;
+};
+
+/**
+ * The message you get when you connect a MCOP server. The MCOP server can
+ * send you some useful information here. Usually, it will send you
+ *
+ *   GlobalComm=<object reference of a global comm interface>
+ *   InterfaceRepo=<object reference of an interface repository>
+ *
+ * But as this is called "hints" it doesn't necessarily need to happen.
+ */
+struct AuthAccept {
+	sequence<string> hints;
 };
 
 /**

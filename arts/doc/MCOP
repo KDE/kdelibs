@@ -147,11 +147,12 @@ struct Header {
 
 The possible messageTypes are currently
 
-mcopInvocation  1
-mcopReturn      2
-mcopServerHello 3
-mcopClientHello 4
-mcopAuthAccept  5
+ mcopServerHello		= 1
+ mcopClientHello		= 2
+ mcopAuthAccept			= 3
+ mcopInvocation			= 4
+ mcopReturn				= 5
+ mcopOnewayInvocation   = 6
 
 A few notes about the MCOP messaging:
 
@@ -183,9 +184,9 @@ To call a remote method, you need to send the following structure in the body
 of an MCOP message with the messageType = 1 (mcopInvocation):
 
 struct Invocation {
-    long requestID;
     long objectID;
     long methodID;
+    long requestID;
 };
 
 after that, you send the parameters as structure, e.g. if you invoke the

@@ -48,19 +48,20 @@
 
 /* Dispatcher private data class (to ensure binary compatibility) */
 
+using namespace std;
+using namespace Arts;
+
 namespace Arts {
 
 class DispatcherPrivate {
 public:
 	GlobalComm globalComm;
 	InterfaceRepo interfaceRepo;
+	AuthAccept *accept;
 	LoopbackConnection *loopbackConnection;
 };
 
 };
-
-using namespace std;
-using namespace Arts;
 
 Dispatcher *Dispatcher::_instance = 0;
 
@@ -113,6 +114,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	}
 	else tcpServer = 0;
 
+	d->accept = 0;
 	d->loopbackConnection = new LoopbackConnection(serverID);
 
 	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
@@ -201,6 +203,12 @@ Dispatcher::~Dispatcher()
 	delete referenceClean;
 
 	d->interfaceRepo = InterfaceRepo::null();
+
+	if(d->accept)
+	{
+		delete d->accept;
+		d->accept = 0;
+	}
 
 	if(d->loopbackConnection)
 	{
@@ -321,9 +329,9 @@ Buffer *Dispatcher::createRequest(long& requestID, long objectID, long methodID)
 	requestID = requestResultPool.allocSlot();
 
 	// write invocation record
-	buffer->writeLong(requestID);
 	buffer->writeLong(objectID);
 	buffer->writeLong(methodID);
+	buffer->writeLong(requestID);
 
 	return buffer;
 }
@@ -373,9 +381,9 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #ifdef DEBUG_MESSAGES
 		printf("[got Invocation]\n");
 #endif
-				long requestID = buffer->readLong();
 				long objectID = buffer->readLong();
 				long methodID = buffer->readLong();
+				long requestID = buffer->readLong();
 
 				Buffer *result = new Buffer;
 				// write mcop header record
@@ -432,16 +440,24 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #endif
 				/*
 		 		 * if we get a server hello, answer with a client hello
-		 		 *
-		 		 * currently, we always send md5auth (because nothing else
-		 		 * is implemented)
 		 		 */
 				ServerHello h;
 				h.readType(*buffer);
 				bool valid = (!buffer->readError() && !buffer->remaining());
 				delete buffer;
 
-				if(valid)
+				if(!valid) break;		// invalid hello received -> forget it
+
+				/*
+				 * check if md5auth (the only authentication protocol we support)
+				 * is offered by the server
+				 */
+				bool md5authSupported = false;
+				vector<string>::iterator ai;
+				for(ai = h.authProtocols.begin(); ai != h.authProtocols.end(); ai++)
+					if(*ai == "md5auth") md5authSupported = true;
+
+				if(md5authSupported)
 				{
 					conn->setServerID(h.serverID);
 
@@ -470,6 +486,14 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 					conn->setConnState(Connection::expectAuthAccept);
 					return;		/* everything ok - leave here */
 				}
+				else
+				{
+					cerr << "MCOP error: don't know authentication protocol" << endl;
+					cerr << "   server offered: ";
+					for(ai = h.authProtocols.begin(); ai != h.authProtocols.end(); ai++)
+						cerr << *ai << " ";
+					cerr << endl;
+				}
 			}
 			break;
 
@@ -488,10 +512,21 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 				{
 					conn->setServerID(c.serverID);
 	
-					Buffer *helloBuffer = new Buffer;
+					/* build hints only for the first connection */
+					if(!d->accept)
+					{
+						d->accept = new AuthAccept();
+
+						d->accept->hints.push_back(
+							"GlobalComm="+d->globalComm.toString());
+						d->accept->hints.push_back(
+							"InterfaceRepo="+d->interfaceRepo.toString());
+					}
 	
+					Buffer *helloBuffer = new Buffer;
 					Header header(MCOP_MAGIC,0,mcopAuthAccept);
 					header.writeType(*helloBuffer);
+					d->accept->writeType(*helloBuffer);
 	
 					helloBuffer->patchLength();
 					conn->qSendBuffer(helloBuffer);
@@ -508,6 +543,17 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #ifdef DEBUG_MESSAGES
 				printf("[got AuthAccept]\n");
 #endif
+				AuthAccept a;
+				a.readType(*buffer);
+				delete buffer;
+#ifdef DEBUG_MESSAGES
+
+				vector<string>::iterator hi;
+				for(hi = a.hints.begin(); hi != a.hints.end(); hi++)
+					cout << "[got ConnectionHint] " << *hi << endl;
+
+#endif
+
 				conn->setConnState(Connection::established);
 
 				return;		/* everything ok - leave here */

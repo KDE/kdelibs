@@ -7,7 +7,7 @@
 
 namespace Arts {
 enum HeaderMagic {MCOP_MAGIC = 1296256848};
-enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5, mcopOnewayInvocation = 6};
+enum MessageType {mcopMessageInvalid = 0, mcopServerHello = 1, mcopClientHello = 2, mcopAuthAccept = 3, mcopInvocation = 4, mcopReturn = 5, mcopOnewayInvocation = 6};
 enum MethodType {methodOneway = 1, methodTwoway = 2};
 enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32, streamDefault = 64};
 };
@@ -31,13 +31,13 @@ public:
 class Invocation : public Arts::Type {
 public:
 	Invocation();
-	Invocation(long requestID, long objectID, long methodID);
+	Invocation(long objectID, long methodID, long requestID);
 	Invocation(Arts::Buffer& stream);
 	Invocation(const Invocation& copyType);
 	Invocation& operator=(const Invocation& assignType);
-	long requestID;
 	long objectID;
 	long methodID;
+	long requestID;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -86,6 +86,20 @@ public:
 	std::string serverID;
 	std::string authProtocol;
 	std::string authData;
+
+// marshalling functions
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
+};
+
+class AuthAccept : public Arts::Type {
+public:
+	AuthAccept();
+	AuthAccept(const std::vector<std::string>& hints);
+	AuthAccept(Arts::Buffer& stream);
+	AuthAccept(const AuthAccept& copyType);
+	AuthAccept& operator=(const AuthAccept& assignType);
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);

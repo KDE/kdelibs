@@ -133,7 +133,7 @@ bool DynamicRequest::invoke(const AnyRef& returnCode)
 
 
 	d->buffer->patchLength();
-	d->buffer->patchLong(20,d->methodID);
+	d->buffer->patchLong(16,d->methodID);
 	d->connection->qSendBuffer(d->buffer);
 	d->buffer = 0;
 
