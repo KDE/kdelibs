@@ -71,6 +71,9 @@
 # FLAC files
 0	string		fLaC		audio/x-flac
 
+# Musepack files
+0	string		MP+		audio/x-musepack
+
 #------------------------------------------------------------------------------
 # riff:  file(1) magic for RIFF format
 # See
