@@ -149,6 +149,9 @@ void KAccelPrivate::slotKeyPressed( int id )
 	kdDebug(125) << "KAccelPrivate::slotKeyPressed( " << id << " )" << endl;
 	if( m_mapIDToAction.contains( id ) ) {
 		KAccelAction* pAction = m_mapIDToAction[id];
+		Q_ASSERT( pAction );
+		if ( !pAction )
+			return;
 		QRegExp rxVal("\\{(.+)\\}");
 		rxVal.setMinimal( true );
 		kdDebug(125) << "pAction->name() = " << pAction->name() << endl;
