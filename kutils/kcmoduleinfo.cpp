@@ -64,6 +64,7 @@ KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
 
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
 {
+    d = new KCModuleInfoPrivate;
     ( *this ) = rhs;
 }
 
@@ -85,7 +86,7 @@ KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
     _allLoaded = rhs._allLoaded;
     _service = rhs._service;
 
-    // d pointer ... once used.
+    *d = *(rhs.d);
 
     return *this;
 }
