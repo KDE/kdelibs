@@ -1183,5 +1183,10 @@ void KListView::setAcceptDrops (bool val)
 	viewport()->setAcceptDrops (val);
 }
 
+void KListView::paintEvent(QPaintEvent *e)
+{
+	QListView::paintEvent(e);
+}
+
 #include "klistview.moc"
 #include "klistviewlineedit.moc"

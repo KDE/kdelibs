@@ -648,6 +648,15 @@ protected:
    */
   virtual void keyPressEvent (QKeyEvent*);
 
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
+  virtual void paintEvent(QPaintEvent*);
+
 private slots:
   /**
    * Update internal settings whenever the global ones change.
