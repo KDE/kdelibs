@@ -159,8 +159,7 @@ namespace KJS {
 
   class HTMLCollection : public DOMObject {
   public:
-    enum ReturnType { ReturnNodeOrFrame, ReturnNode };
-    HTMLCollection(ExecState *exec, DOM::HTMLCollection c, ReturnType returnType = ReturnNode);
+    HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
@@ -175,7 +174,6 @@ namespace KJS {
     DOM::HTMLCollection toCollection() const { return collection; }
   protected:
     DOM::HTMLCollection collection;
-    ReturnType m_returnType;
   };
 
   class HTMLSelectCollection : public HTMLCollection {

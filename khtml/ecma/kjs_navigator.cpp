@@ -29,10 +29,10 @@
 #include <kio/kprotocolmanager.h>
 #include "kjs_navigator.h"
 #include "kjs/lookup.h"
-#include "kjs_navigator.lut.h"
 #include "kjs_binding.h"
 #include "khtml_part.h"
 #include <sys/utsname.h>
+#include "kjs_navigator.lut.h"
 
 using namespace KJS;
 

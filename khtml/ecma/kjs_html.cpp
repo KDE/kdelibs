@@ -32,6 +32,7 @@
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_objectimpl.h"
+#include "html/html_miscimpl.h"
 #include <kparts/browserextension.h>
 
 #include "khtml_part.h"
@@ -139,15 +140,28 @@ const ClassInfo KJS::HTMLDocument::info =
 # ids
 @end
 */
-bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p) const
+bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
+  //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << propertyName.qstring() << endl;
 #endif
-  if (!static_cast<DOM::HTMLDocument>(node).all().
-      namedItem(p.string()).isNull())
+  DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+  // Keep in sync with tryGet
+  DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
+  if ( list->length() )
     return true;
-  return DOMDocument::hasProperty(exec, p);
+  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
+  if ( list->length() )
+    return true;
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  if ( view && view->part() )
+  {
+    KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
+    if (kp)
+      return true;
+  }
+
+  return DOMDocument::hasProperty(exec, propertyName);
 }
 
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
@@ -156,28 +170,41 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
-  DOM::HTMLBodyElement body = doc.body();
+
+  // Check for images with name==propertyName, return item or list if found
+  // We don't use the images collection because
+  DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
+  int len = list->length();
+  if ( len == 1 )
+    return getDOMNode( exec, list->item( 0 ) );
+  else if ( len > 1 )
+  {
+    // Get all the items with the same name
+    return getDOMNodeList( exec, list );
+  }
+
+  // Check for forms with name==propertyName, return item or list if found
+  // Note that document.myform should only look at forms
+  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
+  len = list->length();
+  if ( len == 1 )
+    return getDOMNode( exec, list->item( 0 ) );
+  else if ( len > 1 )
+  {
+    // Get all the items with the same name
+    return getDOMNodeList( exec, list );
+  }
 
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
 
-  // image and form elements with the name p will be looked up first
-  DOM::HTMLCollection allImages = doc.images();
-  DOM::HTMLElement element = allImages.namedItem(propertyName.string());
-  if (!element.isNull())
+  // Check for frames/iframes with name==propertyName
+  if ( view && view->part() )
   {
-    Q_ASSERT(element.elementId() == ID_IMG);
-    KJS::HTMLCollection htmlcoll(exec, allImages, KJS::HTMLCollection::ReturnNode);
-    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
-  }
-
-  // document.myform should only look at forms
-  DOM::HTMLCollection allForms = doc.forms();
-  element = allForms.namedItem(propertyName.string());
-  if (!element.isNull())
-  {
-    Q_ASSERT(element.elementId() == ID_FORM);
-    KJS::HTMLCollection htmlcoll(exec, allForms, KJS::HTMLCollection::ReturnNode);
-    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
+    // ###### TODO return a collection in case several frames have the same name
+    // (IE does that). Hard to do with findFrame :}
+    KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
+    if (kp)
+      return Value(Window::retrieve(kp));
   }
 
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
@@ -253,6 +280,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if (val)
     return Value(val);
 
+  DOM::HTMLBodyElement body = doc.body();
   if (entry) {
     switch (entry->value) {
     case BgColor:
@@ -278,19 +306,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if (DOMDocument::hasProperty(exec, propertyName))
     return DOMDocument::tryGet(exec, propertyName);
 
-  //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
-  DOM::HTMLCollection coll = doc.all();
-  element = coll.namedItem(propertyName.string());
-  if(!element.isNull())
-  {
-    /// ### We use the document.all collection here, but in fact in IE:
-    // * document.all('bleh') looks for id=bleh or name=bleh,
-    // * document.bleh looks for name=bleh only (!)
-    // The other difference is what they return for frames/iframes, but we already take
-    // care of that with ReturnNodeOfFrame.
-    KJS::HTMLCollection htmlcoll(exec,coll, KJS::HTMLCollection::ReturnNodeOrFrame);
-    return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
-  }
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found" << endl;
+#endif
   return Undefined();
 }
 
@@ -1102,7 +1120,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
 
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
-      KJS::HTMLCollection coll(exec, form.elements(), KJS::HTMLCollection::ReturnNode);
+      KJS::HTMLCollection coll(exec, form.elements());
       Value namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems.type() != UndefinedType)
         return namedItems;
@@ -2791,8 +2809,8 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c, ReturnType ret)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c), m_returnType(ret) {}
+HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
 
 HTMLCollection::~HTMLCollection()
 {
@@ -2925,10 +2943,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning single node" << endl;
 #endif
-      if ( m_returnType == ReturnNodeOrFrame )
-        return getDOMNodeOrFrame(exec,node);
-      else
-        return getDOMNode(exec,node);
+      return getDOMNode(exec,node);
     }
     else // multiple items, return a collection
     {
@@ -2941,7 +2956,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
-      return Value(new DOMNamedNodesCollection(exec,nodes,m_returnType));
+      return Value(new DOMNamedNodesCollection(exec, nodes));
     }
   }
 #ifdef KJS_VERBOSE

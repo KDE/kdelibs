@@ -1229,29 +1229,6 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-// When someone does document.myiframe they want the window object of the iframe,
-// but not when doing document.getElementById('myiframe').
-// The former calls this method, the latter calls the normal getDOMNode
-Value KJS::getDOMNodeOrFrame(ExecState *exec, DOM::Node n)
-{
-  if (n.isNull())
-    return Null();
-  if (n.nodeType() == DOM::Node::ELEMENT_NODE)
-  {
-    DOM::Element element = static_cast<DOM::Element>(n);
-    if (element.elementId() == ID_IFRAME || element.elementId() == ID_FRAME)
-    {
-      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
-      if ( doc && doc->view() ) {
-        KHTMLPart* part = doc->view()->part();
-        if ( part )
-          return Window::retrieve( part );
-      }
-    }
-  }
-  return getDOMNode(exec, n);
-}
-
 Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
   DOMObject *ret = 0;
@@ -1486,16 +1463,16 @@ const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection"
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes, int returnType )
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes )
   : DOMObject(exec->interpreter()->builtinObjectPrototype()),
-  m_nodes(nodes), m_returnType(returnType)
+  m_nodes(nodes)
 {
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
 }
 
 Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  //kdDebug(6070) << k_funcinfo << propertyName.ascii() << endl;
+  kdDebug(6070) << k_funcinfo << propertyName.ascii() << endl;
   if (propertyName == "length")
     return Number(m_nodes.count());
   // index?
@@ -1503,10 +1480,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
     DOM::Node node = m_nodes[u];
-    if ( m_returnType == KJS::HTMLCollection::ReturnNodeOrFrame )
-      return getDOMNodeOrFrame(exec,node);
-    else
-      return getDOMNode(exec,node);
+    return getDOMNode(exec,node);
   }
   return DOMObject::tryGet(exec,propertyName);
 }
