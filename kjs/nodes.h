@@ -271,10 +271,10 @@ namespace KJS {
   class PropertyValueNode : public Node {
   public:
     // list is circular during construction, cut in ObjectLiteralNode ctor
-    PropertyValueNode(PropertyNode *n, Node *a, PropertyValueNode *l = 0L)
-      : name(n), assign(a) {
-      if (l) { list = l; l->list = this; } else { l = this; }
-    }
+    PropertyValueNode(PropertyNode *n, Node *a)
+      : name(n), assign(a), list(this) { }
+    PropertyValueNode(PropertyNode *n, Node *a, PropertyValueNode *l)
+      : name(n), assign(a), list(l) { l->list = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -299,10 +299,10 @@ namespace KJS {
 
   class ObjectLiteralNode : public Node {
   public:
+    // empty literal
+    ObjectLiteralNode() : list(0) { }
     // l points to last list element, get and detach pointer to first one
-    ObjectLiteralNode(PropertyValueNode *l) {
-      if (l) { list = l->list; l->list = 0; } else { list = 0; }
-    }
+    ObjectLiteralNode(PropertyValueNode *l) : list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;

@@ -179,7 +179,7 @@ PrimaryExpr:
   | Literal
   | ArrayLiteral
   | '(' Expr ')'                   { $$ = new GroupNode($2); }
-  | '{' '}'                        { $$ = new ObjectLiteralNode(0L); }
+  | '{' '}'                        { $$ = new ObjectLiteralNode(); }
   | '{' PropertyNameAndValueList '}'   { $$ = new ObjectLiteralNode($2); }
 ;
 

@@ -1338,7 +1338,7 @@ case 12:
     break;}
 case 13:
 #line 178 "grammar.y"
-{ yyval.node = new ObjectLiteralNode(0L); ;
+{ yyval.node = new ObjectLiteralNode(); ;
     break;}
 case 14:
 #line 179 "grammar.y"
