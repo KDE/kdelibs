@@ -319,6 +319,7 @@ void KIconLoaderButton::slotChangeIcon()
 void KIconLoaderButton::setIcon( const char *_icon )
 {
     iconStr = _icon;
-    
-    setPixmap( KApplication::getKApplication()->getIconLoader()->loadIcon( iconStr ) );      
+
+    // A Hack, since it uses loadApplicationIcon!!!
+    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr ) );
 }
