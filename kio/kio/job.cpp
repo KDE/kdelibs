@@ -2435,7 +2435,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
 
             // Change the current one and strip the trailing '/'
-            (*it).uDest = newUrl.path( -1 );
+            (*it).uDest.setPath( newUrl.path( -1 ) );
             newPath = newUrl.path( 1 ); // With trailing slash
             QValueList<CopyInfo>::Iterator renamedirit = it;
             ++renamedirit;
