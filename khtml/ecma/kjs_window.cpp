@@ -1210,12 +1210,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     else
       return Undefined();
   case Window::SetInterval:
-    if (args.size() == 2 && v.isA(StringType)) {
+    if (args.size() >= 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
       int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
       return Number(r);
     }
-    else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
+    else if (args.size() >= 2 && !Object::dynamicCast(v).isNull() &&
+	     Object::dynamicCast(v).implementsCall()) {
       Value func = args[0];
       int i = args[1].toInt32(exec);
 #if 0
