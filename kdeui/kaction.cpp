@@ -639,7 +639,19 @@ void KAction::setWhatsThis( int i, const QString& text )
 {
   QPopupMenu* pm = popupMenu( i );
   if ( pm )
+  {
     pm->setWhatsThis( menuId( i ), text );
+    return;
+  }
+  
+  KToolBar *tb = toolBar( i );
+  if ( tb )
+  {
+    QWidget *w = tb->getButton( menuId( i ) );
+    QWhatsThis::remove( w );
+    QWhatsThis::add( w, text );
+    return;
+  }
 }
 
 QString KAction::whatsThis() const
@@ -785,7 +797,7 @@ void KAction::unplugAll()
 {
   while ( containerCount() != 0 )
     unplug( container( 0 ) );
-} 
+}
 
 class KToggleAction::KToggleActionPrivate
 {
