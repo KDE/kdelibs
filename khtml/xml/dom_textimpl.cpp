@@ -266,7 +266,7 @@ DOMString CommentImpl::namespaceURI() const
 
 NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return ownerDocument()->createComment( str );
+    return getDocument()->createComment( str );
 }
 
 NodeImpl::Id CommentImpl::id() const
@@ -358,7 +358,7 @@ DOMString TextImpl::namespaceURI() const
 
 NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return ownerDocument()->createTextNode(str);
+    return getDocument()->createTextNode(str);
 }
 
 void TextImpl::attach()
@@ -470,7 +470,7 @@ DOMString CDATASectionImpl::namespaceURI() const
 
 NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return ownerDocument()->createCDATASection(str);
+    return getDocument()->createCDATASection(str);
 }
 
 // DOM Section 1.1.1

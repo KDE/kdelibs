@@ -259,7 +259,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // we can't apply style rules without a view(). This
     // tends to happen on delayed destruction of widget Renderobjects
-    KHTMLView* v = e->ownerDocument()->view();
+    KHTMLView* v = e->getDocument()->view();
     if ( v && v->part() ) {
         if ( propsToApply->count() != 0 ) {
             CSSOrderedProperty *ordprop = propsToApply->first();
@@ -943,7 +943,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 {
     CSSValueImpl *value = prop->value();
 
-    QPaintDeviceMetrics *paintDeviceMetrics = e->ownerDocument()->paintDeviceMetrics();
+    QPaintDeviceMetrics *paintDeviceMetrics = e->getDocument()->paintDeviceMetrics();
 
     //kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
 
@@ -971,7 +971,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_FIXED:
             {
                 style->setBackgroundAttachment(false);
-                DocumentImpl *doc = e->ownerDocument();
+                DocumentImpl *doc = e->getDocument();
 		// only use slow repaints if we actually have a background pixmap
                 if( style->backgroundImage() )
                     doc->view()->useSlowRepaints();
@@ -1225,7 +1225,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         default:
             return;
         }
-        //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
+        //KGlobal::charsets()->setQFont(f, e->getDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         break;
     }
@@ -1258,7 +1258,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
             if(!e->parentNode()) return;
             f.setWeight(e->parentNode()->style()->font().weight());
-            //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
+            //KGlobal::charsets()->setQFont(f, e->getDocument()->view()->part()->settings()->charset);
             style->setFont(f);
             return;
         }
@@ -1285,7 +1285,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
             // ### fix parsing of 100-900 values in parser, apply them here
         }
-        //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
+        //KGlobal::charsets()->setQFont(f, e->getDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         break;
     }
@@ -1382,7 +1382,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             p = ABSOLUTE; break;
         case CSS_VAL_FIXED:
             {
-                DocumentImpl *doc = e->ownerDocument();
+                DocumentImpl *doc = e->getDocument();
                 doc->view()->useSlowRepaints();
                 p = FIXED;
                 break;
@@ -2023,7 +2023,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         QFont f = style->font();
         int oldSize;
         float size = 0;
-        int minFontSize = e->ownerDocument()->view()->part()->settings()->minFontSize();
+        int minFontSize = e->getDocument()->view()->part()->settings()->minFontSize();
 
         float toPix = 1.; // fallback
         if ( !khtml::printpainter )
@@ -2031,7 +2031,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if ( !khtml::printpainter && toPix < 96./72. )
             toPix = 96./72.;
 
-        QValueList<int> standardSizes = e->ownerDocument()->view()->part()->fontSizes();
+        QValueList<int> standardSizes = e->getDocument()->view()->part()->fontSizes();
         if(e->parentNode()) {
             oldSize = e->parentNode()->style()->font().pixelSize();
         } else {
@@ -2096,11 +2096,11 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
-        const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
+        const KHTMLSettings *s = e->getDocument()->view()->part()->settings();
 
         setFontSize( f, (int)size, s, paintDeviceMetrics );
 
-        //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
+        //KGlobal::charsets()->setQFont(f, e->getDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         return;
     }
@@ -2255,7 +2255,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
-	const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
+	const KHTMLSettings *s = e->getDocument()->view()->part()->settings();
 	QString available = s->availableFamilies();
 	QFont f = style->font();
 	QString family;

@@ -409,7 +409,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 // ### some validation on the URL?
                 // ### FIXME charset
                 if (m_cachedSheet) m_cachedSheet->deref(this);
-                m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
+                m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
                 if (m_cachedSheet)
                     m_cachedSheet->ref( this );
             }
@@ -427,7 +427,7 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
 {
     if (m_sheet)
 	m_sheet->deref();
-    m_sheet = new CSSStyleSheetImpl(ownerDocument(), url);
+    m_sheet = new CSSStyleSheetImpl(getDocument(), url);
     m_sheet->ref();
     m_sheet->parseString(sheet);
     if (m_cachedSheet)

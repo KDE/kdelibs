@@ -104,7 +104,7 @@ DOMString StyleBaseImpl::baseURL()
 
     if(!sheet->ownerNode()) return DOMString();
 
-    DocumentImpl *doc = static_cast<DocumentImpl*>(sheet->ownerNode()->nodeType() == Node::DOCUMENT_NODE ? sheet->ownerNode() : sheet->ownerNode()->ownerDocument());
+    DocumentImpl *doc = sheet->ownerNode()->getDocument();
 
     return doc->baseURL();
 }

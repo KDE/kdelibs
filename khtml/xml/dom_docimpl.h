@@ -278,8 +278,7 @@ public:
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
 
-    virtual DocumentImpl* getDocument()
-        { return this; }
+    virtual DocumentImpl *ownerDocument() const { return 0; }
     bool isDocumentChanged()
 	{ return m_docChanged; }
     virtual void setDocumentChanged(bool);

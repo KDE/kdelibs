@@ -126,24 +126,24 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_ONLOAD:
-        ownerDocument()->setWindowEventListener(EventImpl::LOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        getDocument()->setWindowEventListener(EventImpl::LOAD_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
-        ownerDocument()->setWindowEventListener(EventImpl::UNLOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        getDocument()->setWindowEventListener(EventImpl::UNLOAD_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
-        ownerDocument()->setWindowEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        getDocument()->setWindowEventListener(EventImpl::BLUR_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONFOCUS:
-        ownerDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        getDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONRESIZE:
-        ownerDocument()->setWindowEventListener(EventImpl::RESIZE_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        getDocument()->setWindowEventListener(EventImpl::RESIZE_EVENT,
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_NOSAVE:
 	break;
@@ -157,7 +157,7 @@ void HTMLBodyElementImpl::init()
 {
     HTMLElementImpl::init();
 
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     if(w->marginWidth() != -1) {
         QString s;
         s.sprintf( "%d", w->marginWidth() );
@@ -174,7 +174,7 @@ void HTMLBodyElementImpl::init()
 //     if ( m_bgSet && !m_fgSet )
 //         addCSSProperty(CSS_PROP_COLOR, "black");
 
-    ownerDocument()->updateStyleSelector();
+    getDocument()->updateStyleSelector();
 }
 
 RenderObject *HTMLBodyElementImpl::createRenderer()
@@ -281,7 +281,7 @@ RenderObject *HTMLFrameElementImpl::createRenderer()
 {
     // ### ignore display: none for this element?
 
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     // limit to how deep we can nest frames
     KHTMLPart *part = w->part();
     int depth = 0;
@@ -303,7 +303,7 @@ void HTMLFrameElementImpl::attach()
 	return;
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     if(name.isEmpty() || w->part()->frameExists( name.string() ) )
     {
       name = DOMString(w->part()->requestFrameName());
@@ -325,7 +325,7 @@ void HTMLFrameElementImpl::detach()
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
     url = str;
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     if ( m_render && w && w->part() )
         // don't call this for an iframe
         w->part()->requestFrame( static_cast<khtml::RenderFrame *>(m_render), url.string(), name.string() );
@@ -424,11 +424,11 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -457,7 +457,7 @@ void HTMLFrameSetElementImpl::init()
 RenderObject *HTMLFrameSetElementImpl::createRenderer()
 {
     // ### ignore display: none for this element?
-    return new khtml::RenderFrameSet( this, ownerDocument()->view() );
+    return new khtml::RenderFrameSet( this, getDocument()->view() );
 }
 
 bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
@@ -611,7 +611,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 
 RenderObject *HTMLIFrameElementImpl::createRenderer()
 {
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     // limit to how deep we can nest frames
     KHTMLPart *part = w->part();
     int depth = 0;
@@ -632,7 +632,7 @@ void HTMLIFrameElementImpl::attach()
 	// we need a unique name for every frame in the frameset. Hope that's unique enough.
 	if(name.isEmpty())
 	{
-	    name = DOMString(ownerDocument()->view()->part()->requestFrameName());
+	    name = DOMString(getDocument()->view()->part()->requestFrameName());
 	    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
 	}
 

@@ -202,14 +202,14 @@ void HTMLAnchorElement::setType( const DOMString &value )
 
 void HTMLAnchorElement::blur(  )
 {
-    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
-        impl->ownerDocument()->setFocusNode(0);
+    if(impl && impl->getDocument()->focusNode()==impl)
+        impl->getDocument()->setFocusNode(0);
 }
 
 void HTMLAnchorElement::focus(  )
 {
-    if(impl && impl->ownerDocument())
-        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
+    if(impl)
+        impl->getDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
 // --------------------------------------------------------------------------

@@ -180,7 +180,7 @@ DOMString AttrImpl::name() const
     // their uppercase form
 
     if(attrId) {
-        if (ownerDocument()->htmlMode() != DocumentImpl::XHtml)
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml)
             return getAttrName(attrId);
         else
             return getAttrName(attrId).lower();
@@ -683,7 +683,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
     exceptioncode = 0;
-    ElementImpl *clone = ownerDocument()->createElement(tagName()); // ### pass exceptioncode
+    ElementImpl *clone = getDocument()->createElement(tagName()); // ### pass exceptioncode
     if (!clone)
       return 0;
 
@@ -706,8 +706,8 @@ DOMString ElementImpl::nodeName() const
 
 DOMString ElementImpl::tagName() const
 {
-    DOMString tn = ownerDocument()->tagName(id());
-    if (ownerDocument()->htmlMode() == DocumentImpl::XHtml)
+    DOMString tn = getDocument()->tagName(id());
+    if (getDocument()->htmlMode() == DocumentImpl::XHtml)
         tn = tn.lower();
 
     if (m_prefix)
@@ -768,7 +768,7 @@ void ElementImpl::attach()
     if (!m_render)
     {
 #if SPEED_DEBUG < 2
-        setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+        setStyle(getDocument()->styleSelector()->styleForElement(this));
 #if SPEED_DEBUG < 1
         if(_parent && _parent->renderer())
         {
@@ -813,7 +813,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 	    if ( m_active )
 		dynamicState |= StyleSelector::Active;
 
-	    RenderStyle *newStyle = ownerDocument()->styleSelector()->styleForElement(this, dynamicState);
+	    RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this, dynamicState);
 	    StyleChange ch = diff( m_style, newStyle );
 	    if ( ch != NoChange ) {
 		setStyle( newStyle );
@@ -973,9 +973,9 @@ void ElementImpl::createDecl( )
 {
     m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->ref();
-    m_styleDecls->setParent(ownerDocument()->elementSheet());
+    m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->setNode(this);
-    m_styleDecls->setStrictParsing( ownerDocument()->parseMode() == DocumentImpl::Strict );
+    m_styleDecls->setStrictParsing( getDocument()->parseMode() == DocumentImpl::Strict );
 }
 
 void ElementImpl::dispatchAttrRemovalEvent(NodeImpl *attr)
@@ -1053,17 +1053,17 @@ XMLElementImpl::~XMLElementImpl()
 
 DOMString XMLElementImpl::namespaceURI() const
 {
-    return ownerDocument()->namespaceURI(m_id);
+    return getDocument()->namespaceURI(m_id);
 }
 
 DOMString XMLElementImpl::localName() const
 {
-    return ownerDocument()->tagName(m_id);
+    return getDocument()->tagName(m_id);
 }
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(), ownerDocument()->tagName(m_id).implementation());
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(), getDocument()->tagName(m_id).implementation());
     clone->m_id = m_id;
 
     // clone attributes

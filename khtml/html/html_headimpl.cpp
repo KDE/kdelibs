@@ -78,10 +78,10 @@ void HTMLBaseElementImpl::init()
     HTMLElementImpl::init();
 
     if(!_href.isEmpty())
-        ownerDocument()->setBaseURL( KURL( ownerDocument()->view()->part()->url(), _href.string() ).url() );
+        getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), _href.string() ).url() );
 
     if(!_target.isEmpty())
-        ownerDocument()->setBaseTarget( _target.string() );
+        getDocument()->setBaseTarget( _target.string() );
 }
 
 // -------------------------------------------------------------------------
@@ -125,8 +125,7 @@ void HTMLLinkElementImpl::init()
         if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") )
         {
             m_loading = true;
-            //HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            DocumentImpl *doc = ownerDocument();
+            DocumentImpl *doc = getDocument();
             // we must have a doc->docLoader() !
             QString chset = getAttribute( ATTR_CHARSET ).string();
             m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, chset);
@@ -237,8 +236,8 @@ void HTMLMetaElementImpl::init()
 {
     HTMLElementImpl::init();
 
-    KHTMLView *v = ownerDocument()->view();
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+    KHTMLView *v = getDocument()->view();
+    setStyle(getDocument()->styleSelector()->styleForElement(this));
     //kdDebug() << "meta::init() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
@@ -273,7 +272,7 @@ void HTMLMetaElementImpl::init()
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
             str = parseURL( DOMString(str) ).string();
             if ( ok )
-                v->part()->scheduleRedirection(delay, ownerDocument()->completeURL( str ));
+                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
         }
     }
     else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())
@@ -281,8 +280,8 @@ void HTMLMetaElementImpl::init()
         QString str = _content.string().stripWhiteSpace();
         time_t expire_date = str.toLong();
         KURL url = v->part()->url();
-        if (ownerDocument()->docLoader())
-            ownerDocument()->docLoader()->setExpireDate(expire_date);
+        if (getDocument()->docLoader())
+            getDocument()->docLoader()->setExpireDate(expire_date);
     }
     else if( (strcasecmp(_equiv, "pragma") == 0 || strcasecmp(_equiv, "cache-control") == 0) && !_content.isNull())
     {
@@ -295,7 +294,8 @@ void HTMLMetaElementImpl::init()
     }
     else if( (strcasecmp(_equiv, "set-cookie") == 0) && !_content.isNull())
     {
-        HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
+        // ### make setCookie work on XML documents too; e.g. in case of <html:meta .....>
+        HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(getDocument());
         d->setCookie(_content);
     }
 }
@@ -391,7 +391,7 @@ void HTMLStyleElementImpl::reparseSheet()
 	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
-    m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
+    m_sheet->parseString( text, (getDocument()->parseMode() == DocumentImpl::Strict) );
     getDocument()->updateStyleSelector();
 }
 
@@ -426,7 +426,7 @@ void HTMLTitleElementImpl::setTitle()
     s.compose();
     s = KStringHandler::csqueeze( s, 128 );
 
-    HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
+    DocumentImpl *d = getDocument();
     if ( !d->view()->part()->parentPart() )
         emit d->view()->part()->setWindowCaption( s );
 }

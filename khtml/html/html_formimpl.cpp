@@ -401,8 +401,7 @@ void HTMLFormElementImpl::reset(  )
         current->reset();
         current = formElements.next();
     }
-    if (ownerDocument()->isHTMLDocument())
-        static_cast<HTMLDocumentImpl*>(ownerDocument())->updateRendering();
+    getDocument()->updateRendering(); // ### does this belong here?
 
     m_inreset = false;
 }
@@ -437,11 +436,11 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONSUBMIT:
         setHTMLEventListener(EventImpl::SUBMIT_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONRESET:
         setHTMLEventListener(EventImpl::RESET_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -713,11 +712,11 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -975,19 +974,19 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1072,7 +1071,7 @@ void HTMLInputElementImpl::attach()
 
     if (m_render && m_type == IMAGE) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-        renderImage->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+        renderImage->setImageUrl(m_src,getDocument()->docLoader());
         renderImage->setAlt(altText());
     }
 }
@@ -1301,13 +1300,13 @@ void HTMLInputElementImpl::setValue(DOMString val)
 
 void HTMLInputElementImpl::blur()
 {
-    if(ownerDocument()->focusNode() == this)
-	ownerDocument()->setFocusNode(0);
+    if(getDocument()->focusNode() == this)
+	getDocument()->setFocusNode(0);
 }
 
 void HTMLInputElementImpl::focus()
 {
-    ownerDocument()->setFocusNode(this);
+    getDocument()->setFocusNode(this);
 }
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
@@ -1389,11 +1388,11 @@ void HTMLLabelElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -1405,7 +1404,7 @@ ElementImpl *HTMLLabelElementImpl::formElement()
     DOMString formElementId = getAttribute(ATTR_FOR);
     if (formElementId.isNull() || formElementId.isEmpty())
         return 0;
-    return ownerDocument()->getElementById(formElementId);
+    return getDocument()->getElementById(formElementId);
 }
 
 // -------------------------------------------------------------------------
@@ -1526,13 +1525,13 @@ void HTMLSelectElementImpl::remove( long index )
 
 void HTMLSelectElementImpl::blur()
 {
-    if(ownerDocument()->focusNode() == this)
-	ownerDocument()->setFocusNode(0);
+    if(getDocument()->focusNode() == this)
+	getDocument()->setFocusNode(0);
 }
 
 void HTMLSelectElementImpl::focus()
 {
-    ownerDocument()->setFocusNode(this);
+    getDocument()->setFocusNode(this);
 }
 
 DOMString HTMLSelectElementImpl::value( )
@@ -1642,15 +1641,15 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            ownerDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1669,7 +1668,7 @@ void HTMLSelectElementImpl::init()
 
 RenderObject *HTMLSelectElementImpl::createRenderer()
 {
-    return new RenderSelect(ownerDocument()->view(), this);
+    return new RenderSelect(getDocument()->view(), this);
 }
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
@@ -2142,19 +2141,19 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2241,19 +2240,19 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
     }
-    insertBefore(ownerDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
+    insertBefore(getDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 
 void HTMLTextAreaElementImpl::blur()
 {
-    if(ownerDocument()->focusNode() == this)
-	ownerDocument()->setFocusNode(0);
+    if(getDocument()->focusNode() == this)
+	getDocument()->setFocusNode(0);
 }
 
 void HTMLTextAreaElementImpl::focus()
 {
-    ownerDocument()->setFocusNode(this);
+    getDocument()->setFocusNode(this);
 }
 
 bool HTMLTextAreaElementImpl::isEditable()

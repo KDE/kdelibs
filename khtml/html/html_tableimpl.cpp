@@ -63,9 +63,9 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // reset font color and sizes here, if we don't have strict parse mode.
     // this is 90% compatible to ie and mozilla, and the by way easiest solution...
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
-    if ( ownerDocument()->parseMode() != DocumentImpl::Strict ) {
+    if ( getDocument()->parseMode() != DocumentImpl::Strict ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
-        addCSSProperty( CSS_PROP_COLOR, ownerDocument()->textColor() );
+        addCSSProperty( CSS_PROP_COLOR, getDocument()->textColor() );
         addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_default" );
     }
 }
@@ -355,9 +355,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BACKGROUND:
     {
         if (!attr->value().isEmpty()) {
-            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
             QString url = khtml::parseURL( attr->value() ).string();
-            url = doc->completeURL( url );
+            url = getDocument()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
@@ -478,7 +477,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (attr->val()) {
             QString url = khtml::parseURL( attr->value() ).string();
-            url = ownerDocument()->completeURL( url );
+            url = getDocument()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE,  "url('"+url+"')" );
         }
         else

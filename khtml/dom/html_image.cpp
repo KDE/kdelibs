@@ -298,6 +298,7 @@ DOMString HTMLImageElement::src() const
 {
     if(!impl) return DOMString();
     DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    // ### not sure if we're supposed to do the completion
     if ( !s.isEmpty() )
         s = ownerDocument().completeURL( s );
     return s;

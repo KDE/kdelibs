@@ -1286,7 +1286,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached() && ownerDocument() )
+        if (attached() && !child->attached())
             child->attach();
 
         // Dispatch the mutation events
@@ -1352,7 +1352,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached() && ownerDocument() )
+        if (attached() && !child->attached())
             child->attach();
 
         // Dispatch the mutation events
@@ -1501,7 +1501,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached() && ownerDocument() )
+        if (attached() && !child->attached())
             child->attach();
 
         // Dispatch the mutation events
@@ -1536,10 +1536,10 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
 {
     exceptioncode = 0;
-    DocumentImpl *ownerDocThis = static_cast<DocumentImpl*>(nodeType() == Node::DOCUMENT_NODE ? this : ownerDocument());
-    DocumentImpl *ownerDocNew = static_cast<DocumentImpl*>(newChild->nodeType() == Node::DOCUMENT_NODE ? newChild : newChild->ownerDocument());
+    DocumentImpl *ownerDocThis = getDocument();
+    DocumentImpl *ownerDocNew = getDocument();
     if(ownerDocThis != ownerDocNew) {
-        kdDebug(6010)<< "not same document, newChild = " << newChild << "document = " << ownerDocument() << endl;
+        kdDebug(6010)<< "not same document, newChild = " << newChild << "document = " << getDocument() << endl;
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return true;
     }
@@ -1552,7 +1552,7 @@ bool NodeBaseImpl::checkNoOwner( NodeImpl *newChild, int &exceptioncode )
 {
   //check if newChild is parent of this...
   NodeImpl *n;
-  for( n = this; n != (NodeImpl *)ownerDocument() && n!= 0; n = n->parentNode() )
+  for( n = this; (n != getDocument()) && (n!= 0); n = n->parentNode() )
       if(n == newChild) {
           exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
           return true;
@@ -1722,7 +1722,7 @@ NodeListImpl* NodeBaseImpl::getElementsByTagNameNS ( DOMStringImpl* namespaceURI
         idMask &= ~NodeImpl::IdNSMask;
 
     return new TagNodeListImpl( this,
-                                ownerDocument()->tagId(namespaceURI, localName, true), idMask);
+                                getDocument()->tagId(namespaceURI, localName, true), idMask);
 }
 
 // I don't like this way of implementing the method, but I didn't find any

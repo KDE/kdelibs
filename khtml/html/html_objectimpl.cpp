@@ -89,7 +89,7 @@ RenderObject *HTMLAppletElementImpl::createRenderer()
     if (getAttribute(ATTR_CODE).isNull())
 	return 0;
 
-    KHTMLView *view = ownerDocument()->view();
+    KHTMLView *view = getDocument()->view();
 
 #ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
     if( view->part()->javaEnabled() )
@@ -108,7 +108,7 @@ RenderObject *HTMLAppletElementImpl::createRenderer()
 	if(!archive.isNull())
 	    args.insert( "archive", archive.string() );
 
-	args.insert( "baseURL", ownerDocument()->baseURL() );
+	args.insert( "baseURL", getDocument()->baseURL() );
 	return new RenderApplet(view, args, this);
     }
     else {
@@ -272,11 +272,11 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
       HTMLElementImpl::parseAttribute( attr );
@@ -291,7 +291,7 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 
 RenderObject *HTMLObjectElementImpl::createRenderer()
 {
-    KHTMLView* w = ownerDocument()->view();
+    KHTMLView* w = getDocument()->view();
     if (w->part()->pluginsEnabled()) {
 	needWidgetUpdate = false;
 	return new RenderPartObject( w, this );

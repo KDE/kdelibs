@@ -108,47 +108,47 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 // standard events
     case ATTR_ONCLICK:
 	setHTMLEventListener(EventImpl::KHTML_CLICK_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONDBLCLICK:
 	setHTMLEventListener(EventImpl::KHTML_DBLCLICK_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEDOWN:
         setHTMLEventListener(EventImpl::MOUSEDOWN_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEMOVE:
         setHTMLEventListener(EventImpl::MOUSEMOVE_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEOUT:
         setHTMLEventListener(EventImpl::MOUSEOUT_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEOVER:
         setHTMLEventListener(EventImpl::MOUSEOVER_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEUP:
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::DOMFOCUSIN_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
 	break;
     case ATTR_ONKEYPRESS:
         setHTMLEventListener(EventImpl::KHTML_KEYPRESS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
 	break;
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KHTML_KEYUP_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
 // other misc attributes
     default:
@@ -210,8 +210,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
 {
     if(!m_styleDecls)
         return;
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->removeProperty(id);
 }
 
@@ -219,8 +218,7 @@ void HTMLElementImpl::removeCSSProperty( const DOMString &id )
 {
     if(!m_styleDecls)
         return;
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->removeProperty(id);
 }
 
@@ -289,7 +287,7 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
         default:
             break;
     }
-    if ( !ownerDocument()->isHTMLDocument() )
+    if ( !getDocument()->isHTMLDocument() )
         return false;
 
     DocumentFragmentImpl *fragment = new DocumentFragmentImpl( docPtr() );
@@ -344,7 +342,7 @@ DOMString HTMLElementImpl::namespaceURI() const
 {
     // For HTML documents, we treat HTML elements as having no namespace. But for XML documents
     // the elements have the namespace defined in the XHTML spec
-    if (ownerDocument()->isHTMLDocument())
+    if (getDocument()->isHTMLDocument())
         return DOMString();
     else
         return XHTML_NAMESPACE;

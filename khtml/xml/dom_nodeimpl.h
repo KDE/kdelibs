@@ -259,8 +259,14 @@ public:
     
     virtual unsigned long nodeIndex() const;
 
-    virtual DocumentImpl* getDocument()
-        { return document->document(); } // different from ownerDocument() in that it is never null
+    /**
+     * Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
+     * ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes). Also, since this is an
+     * inline function, it gives a small performance improvement so should generally be used instead of ownerDocument().
+     * 
+     * @return This node's document
+     */
+    DocumentImpl* getDocument() const { return document->document(); }
 
     void addEventListener(int id, EventListener *listener, const bool useCapture);
     void addEventListener(const DOMString &type, EventListener *listener,

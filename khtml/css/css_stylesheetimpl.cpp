@@ -143,7 +143,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QPtrList<StyleBaseImpl>;
-    m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
+    m_doc = parentNode->getDocument();
     m_implicit = _implicit;
 }
 
@@ -165,7 +165,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
-    m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
+    m_doc = parentNode->getDocument();
     m_implicit = false;
 }
 

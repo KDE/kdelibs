@@ -89,7 +89,7 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
 
         //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
-        DocumentImpl* doc = ownerDocument();
+        DocumentImpl* doc = getDocument();
 
         if(doc && doc->isHTMLDocument() &&
            (map = static_cast<HTMLDocumentImpl*>(doc)->getMap(usemap)))
@@ -156,15 +156,15 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONERROR: // ### add support for this
         setHTMLEventListener(EventImpl::ERROR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_NAME:
     case ATTR_NOSAVE:
@@ -184,7 +184,7 @@ DOMString HTMLImageElementImpl::altText() const
     if ( alt.isNull() )
         alt = getAttribute( ATTR_TITLE );
     if ( alt.isNull() ) {
-        QString p = KURL( ownerDocument()->completeURL( m_imageURL.string() ) ).prettyURL();
+        QString p = KURL( getDocument()->completeURL( m_imageURL.string() ) ).prettyURL();
         int pos;
         if ( ( pos = p.findRev( '.' ) ) > 0 )
             p.truncate( pos );
@@ -217,7 +217,7 @@ void HTMLImageElementImpl::recalcStyle( StyleChange ch )
     // a script has executed
     if (m_render) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-        renderImage->setImageUrl(m_imageURL, ownerDocument()->docLoader());
+        renderImage->setImageUrl(m_imageURL, getDocument()->docLoader());
         renderImage->setAlt(altText());
     }
 }
@@ -241,8 +241,8 @@ HTMLMapElementImpl::HTMLMapElementImpl(DocumentPtr *doc)
 
 HTMLMapElementImpl::~HTMLMapElementImpl()
 {
-    if(ownerDocument() && ownerDocument()->isHTMLDocument())
-        static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
+    if(getDocument() && getDocument()->isHTMLDocument())
+        static_cast<HTMLDocumentImpl*>(getDocument())->mapMap.remove(name);
 }
 
 NodeImpl::Id HTMLMapElementImpl::id() const
@@ -304,8 +304,9 @@ void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
             name = QString(s.unicode()+1, s.length()-1);
         else
             name = s.string();
-        if(ownerDocument()->isHTMLDocument())
-            static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap[name] = this;
+	// ### make this work for XML documents, e.g. in case of <html:map...>
+        if(getDocument()->isHTMLDocument())
+            static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;
         break;
     }
     default:
