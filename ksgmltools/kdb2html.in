@@ -1,8 +1,13 @@
 #! /bin/sh
 
-CATALOG=@prefix@/share/apps/ksgmltools/kde.cat
-DB_STYLESHEET=@prefix@/share/apps/ksgmltools/stylesheets/kde.dsl
+if test -z "$KDB2HTML_UNINSTALLED"; then
+ksgmldir=@prefix@/share/apps/ksgmltools/
+else
+ksgmldir=$KDB2HTML_UNINSTALLED
+fi
 
+CATALOG=$ksgmldir/kde.cat
+DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
 SGML_CATALOG_FILES=@SGML_CATALOGS@
 
 export SGML_CATALOG_FILES

@@ -602,7 +602,7 @@ SimpleJob *KIO::file_delete( const KURL& src)
 
 bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 {
-    kdDebug(1202) << "" << QString("destDir = %1").arg(destDir.url()) << endl;
+    kdDebug(1202) << "destDir = " << destDir.url() << endl;
     bool overwriteExistingFiles = false;
     if ( destDir.isMalformed() )
     {
@@ -627,7 +627,7 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 
 	// The destination URL is the destination dir + the filename
 	KURL destUrl( destDir.url(1) + srcUrl.filename() );
-	kdDebug(1202) << "" << QString("destUrl = %1").arg(destUrl.url()) << endl;
+	kdDebug(1202) << "destUrl = " << destUrl.url() << endl;
 
 	// Do we link a file on the local disk?
 	if ( srcUrl.isLocalFile() )
