@@ -535,12 +535,13 @@ bool KHTMLPart::openURL( const KURL &url )
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
   
-  if ( !isFrameSet && !args.redirectedRequest() &&
-        url.hasRef() && !args.doPost() && !args.reload )
+  if ( url.hasRef() && !isFrameSet )
   {
 
-    //if new url == old url, jump to anchor straight away, no need to reload  
-    if (urlcmp( url.url(), m_url.url(), true, true ))
+    //if new url == old url, jump to anchor straight away
+    //no need to reload unless explicitly asked
+    bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
+    if (urlcmp( url.url(), m_url.url(), true, true ) && noReloadForced)
     {
         kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
         m_url = url;
