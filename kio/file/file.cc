@@ -40,7 +40,6 @@
 #include <kshred.h>
 #include <kdebug.h>
 #include <kurl.h>
-#include <kprotocolmanager.h>
 #include <kinstance.h>
 #include <ksimpleconfig.h>
 #include <ktempfile.h>
@@ -54,6 +53,8 @@
 #include <volmgt.h>
 #include <sys/mnttab.h>
 #endif
+
+#include <kio/ioslave_defaults.h>
 
 using namespace KIO;
 
@@ -231,7 +232,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     dest_part += QString::fromLatin1(".part");
     QCString _dest_part( QFile::encodeName(dest_part));
 
-    bool bMarkPartial = KProtocolManager::markPartial();
+    bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
     struct stat buff_orig;
     bool orig_exists = ( ::stat( _dest_orig.data(), &buff_orig ) != -1 );
@@ -352,7 +353,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         {
            struct stat buff;
            if (( ::stat( _dest.data(), &buff ) == -1 ) ||
-               ( buff.st_size < KProtocolManager::minimumKeepSize() ))
+               ( buff.st_size < config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ))
            {
 	       remove(_dest.data());
            }
