@@ -63,7 +63,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   : QWidget(parent, name),
     AddressBook(readonly_),
     showSearchResults(false),
-    kfm(0)
+    kfm(0),
+    readonlyGUI(false)
 {
   register bool GUARD; GUARD=true;
   // ############################################################################
@@ -74,8 +75,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   string lastCurrentKey;
   KeyValueMap* keys;
   QPixmap pixmap;
-  // ----- 
-  if(!readonly_ && isRO())
+  // -----
+  if(access(fileName().c_str(), R_OK | W_OK)!=0)
     { // if r/w requested, but file locked
       readonlyGUI=true;
     }
