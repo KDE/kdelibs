@@ -299,7 +299,7 @@ namespace KIO {
 	 * @param msg the info message
          */
         void infoMessage( KIO::Job *job, const QString & msg );
-        // KDE 3.0: Separate rich-text string from plain-text string, for different widgets.
+        // KDE4: Separate rich-text string from plain-text string, for different widgets.
 
         /**
          * Emitted when the slave successfully connected to the host.
@@ -1334,6 +1334,14 @@ namespace KIO {
 	 * @param slave the slave that starts working on this job
          */
         virtual void start( Slave *slave );
+
+        /**
+         * Returns the ListJob's redirection URL. This will be invalid if there
+         * was no redirection.
+         * @return the redirection url
+         * @since 3.4.1
+         */
+        const KURL& redirectionURL() const { return m_redirectionURL; }
 
         /**
          * Do not apply any KIOSK restrictions to this job.
