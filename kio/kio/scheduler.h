@@ -234,6 +234,13 @@ namespace KIO {
          */
         static void registerWindow(QWidget *wid)
         { self()->_registerWindow(wid); }
+        
+        /**
+         * @internal
+         * Unregisters the window registered by @ref registerWindow().
+         */
+        static void unregisterWindow(QObject *wid)
+        { self()->slotUnregisterWindow(wid); }
 
         /**
          * Function to connect signals emitted by the scheduler.

@@ -879,6 +879,8 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    if (it == m_windowList.end())
       return;
    long windowId = it.data();
+   disconnect( it.key(), SIGNAL(destroyed(QObject *)),
+              this, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.remove( it );
    if (kapp)
    {
