@@ -11,7 +11,7 @@ const struct HashEntry NavigatorTableEntries[] = {
    { "vendor", Navigator::Vendor, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "appCodeName", Navigator::AppCodeName, DontDelete|ReadOnly, 0, &NavigatorTableEntries[11] },
-   { 0, 0, 0, 0, 0 },
+   { "cookieEnabled", Navigator::CookieEnabled, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "product", Navigator::Product, DontDelete|ReadOnly, 0, 0 },
    { "appVersion", Navigator::AppVersion, DontDelete|ReadOnly, 0, &NavigatorTableEntries[12] },

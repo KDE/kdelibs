@@ -172,6 +172,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   location	Window::_Location	DontDelete
   name		Window::Name		DontDelete
   navigator	Window::_Navigator	DontDelete|ReadOnly
+  clientInformation	Window::ClientInformation	DontDelete|ReadOnly
   konqueror	Window::_Konqueror	DontDelete|ReadOnly
   offscreenBuffering	Window::OffscreenBuffering	DontDelete|ReadOnly
   opener	Window::Opener		DontDelete|ReadOnly
@@ -411,6 +412,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Name:
       return String(m_part->name());
     case _Navigator:
+    case ClientInformation:
       return Value(new Navigator(exec, m_part));
 #ifdef Q_WS_QWS
     case _Konqueror:

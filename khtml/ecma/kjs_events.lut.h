@@ -1,4 +1,4 @@
-/* Automatically generated from kjs_events.cpp using create_hash_table. DO NOT EDIT ! */
+/* Automatically generated from kjs_events.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
 
 namespace KJS {
 
