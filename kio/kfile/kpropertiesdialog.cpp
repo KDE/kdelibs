@@ -292,6 +292,7 @@ void KPropertiesDialog::insertPlugin (KPropsDlgPlugin* plugin)
 
 bool KPropertiesDialog::canDisplay( KFileItemList _items )
 {
+  // TODO: cache the result of those calls. Currently we parse .desktop files far too many times
   return KFilePropsPlugin::supports( _items ) ||
          KFilePermissionsPropsPlugin::supports( _items ) ||
          KDesktopPropsPlugin::supports( _items ) ||
@@ -591,6 +592,7 @@ public:
   QFrame *m_frame;
   bool bMultiple;
   bool bIconChanged;
+  bool bKDesktopMode;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
 };
@@ -601,6 +603,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
+  d->bKDesktopMode = (QCString(qApp->name()) == "kdesktop"); // nasty heh?
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
   // We set this data from the first item, and we'll
@@ -658,6 +661,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
     }
+
+    bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
+    if ( d->bKDesktopMode && isDesktopFile ) {
+        KDesktopFile config( properties->kurl().path(), true /* readonly */ );
+        if ( config.hasKey( "Name" ) ) {
+            filename = config.readName();
+        }
+    }
+
     oldName = filename;
 
     // Make it human-readable (%2F => '/', ...)
@@ -688,7 +700,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
 
     if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
-        KDesktopPropsPlugin::supports(properties->items()) ||
+        isDesktopFile ||
         KBindingPropsPlugin::supports(properties->items())) {
 
       determineRelativePath( path );
@@ -1191,6 +1203,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
   assert( properties->item() );
   assert( !properties->item()->url().isEmpty() );
+  bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
 
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
@@ -1199,13 +1212,23 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     newURL.setPath( locateLocal("mime", m_sRelativePath) );
     properties->updateUrl( newURL );
   }
-  else if (KDesktopPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
+  else if (isDesktopFile && !m_sRelativePath.isEmpty())
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
     KURL newURL;
     newURL.setPath( KDesktopFile::locateLocal(m_sRelativePath) );
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path() << endl;
     properties->updateUrl( newURL );
+  }
+
+  if ( d->bKDesktopMode && isDesktopFile ) {
+      // Renamed? Update Name field
+      if ( oldName != properties->kurl().fileName() || m_bFromTemplate ) {
+          KDesktopFile config( properties->kurl().path() );
+          QString nameStr = properties->kurl().fileName();
+          config.writeEntry( "Name", nameStr );
+          config.writeEntry( "Name", nameStr, true, false, true );
+      }
   }
 }
 
@@ -2745,8 +2768,9 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     // But let's do it in apply, not here, so that we pick up the right name.
     setDirty();
   }
+  if ( !bKDesktopMode )
+    w->nameEdit->setText(nameStr);
 
-  w->nameEdit->setText(nameStr);
   w->genNameEdit->setText( genNameStr );
   w->commentEdit->setText( commentStr );
   w->commandEdit->setText( commandStr );
@@ -2951,17 +2975,11 @@ void KDesktopPropsPlugin::applyChanges()
 
   config.writeEntry( "MimeType", mimeTypes, ';' );
 
-  QString nameStr = w->nameEdit->text();
-  if ( nameStr.isEmpty() )
-  {
-    nameStr = properties->kurl().fileName();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
+  if ( !w->nameEdit->isHidden() ) {
+      QString nameStr = w->nameEdit->text();
+      config.writeEntry( "Name", nameStr );
+      config.writeEntry( "Name", nameStr, true, false, true );
   }
-  config.writeEntry( "Name", nameStr );
-  config.writeEntry( "Name", nameStr, true, false, true );
 
   config.writeEntry("Terminal", m_terminalBool);
   config.writeEntry("TerminalOptions", m_terminalOptionStr);
