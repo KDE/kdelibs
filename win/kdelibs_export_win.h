@@ -93,6 +93,13 @@
 # define KABC_EXPORT KDE_IMPORT
 #endif
 
+
+#ifdef MAKE_KVCARD_LIB
+# define KVCARD_EXPORT KDE_EXPORT
+#else
+# define KVCARD_EXPORT KDE_IMPORT
+#endif
+
 #ifdef MAKE_KRESOURCES_LIB
 # define KRESOURCES_EXPORT KDE_EXPORT
 #else
