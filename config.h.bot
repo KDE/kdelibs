@@ -49,6 +49,7 @@ void srandom(unsigned int seed);
 #if !defined(__STDC__) || !__STDC__
 #define __STDC__  1
 #endif
+typedef int u_int32_t;
 #include <sys/types.h>       /* for size_t below */
 #include <stdarg.h>          /* va_start and the like */
 #define RTLD_GLOBAL 0        /* dlopen flag not known under Tru64  */
