@@ -341,7 +341,7 @@ namespace khtml {
 	}
         virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
         {
-            m_part->m_userSheet = sheet.copy();
+            m_part->m_userSheet = sheet;
             m_part->m_userSheetUrl = url;
 	    khtml::CSSStyleSelector::setUserStyle( m_part->m_userSheet );
 	    if ( m_part->m_doc )
