@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.31  1997/09/23 21:02:37  kalle
+// KApplication deletes -caption and the following arguments from the command line arguments
+//
 // Revision 1.30  1997/09/19 16:28:42  mark
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
@@ -203,6 +206,10 @@
 
 #ifndef _KLOCALE_H
 // Revision 1.68  1997/11/03 13:50:15  kulow
+#endif
+
+#ifndef _KDEBUG_H
+// delete theKProcessController in the destructor
 #endif
 
 // Revision 1.67  1997/10/30 13:30:15  ettrich
@@ -1102,6 +1109,22 @@ const QString& KApplication::kde_bindir()
 
 const QString& KApplication::kde_partsdir()
 {
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_PARTSDIR;
+  return dir;
+}
+  KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::tempSaveName" );
+  return pFilename;
+
+QString KApplication::localconfigdir()
+{
+  return ( localkdedir() + "/share/config" );
+}
+
+  KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::checkRecoverFile" );
+  bRecover = false;
+  return pFilename;
   if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )

@@ -1,6 +1,14 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+//
+// Revision 1.28  1997/10/11 13:32:14  kalle
+// pAppData in KApplication
+// KTabListBox now in libkdeui
+//
+// Revision 1.27  1997/10/10 22:09:18  ettrich
+// Matthias: BINARY INCOMPATIBLE CHANGES: extended session management support
+//
 // Revision 1.26  1997/10/05 12:52:41  kalle
 // Three new methods from Mark Donohoe
 //
@@ -340,6 +348,25 @@ class KApplication : public QApplication
 	*
 	* This is usually $HOME/.kde/share/config
 /**
+* Return a text for the window caption.
+*
+* This would be set either by
+* "-caption", otherwise it will be equivalent to the name of the
+* executable.
+	* @return A new filename for auto-saving.
+	* file. If file is not found, isEmpty() will return True
+	*/
+  static QString findFile( const char *file );
+
+  /** 
+	* Get the KDE font list.
+	*
+	* This method allows you to get the KDE font 
+	* list which was composed by the user with kfontmanager. Usually you should 
+	* @return The full path of the file to open.
+	*  @return true on success.
+	*/
+	*/
   const char* getCaption() const;
 
   /** Get a file name in order to make a temporary copy of your
@@ -513,6 +540,13 @@ public:
 * connect to this to monitor global font changes, especially if you are
 * using explicit fonts.
 */
+  /** 
+	* KApplication has changed its Palette due to a KDisplay request.
+	*
+	* Normally, widgets will update their palettes automatically, but you
+	* should connect to this to program special behaviour.
+	* this to program special behaviour.
+	*/
   void kdisplayStyleChanged();
 
   /**
