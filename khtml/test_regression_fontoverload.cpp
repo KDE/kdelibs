@@ -24,6 +24,8 @@
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
 #include <qfont.h>
+#include "khtml_settings.h"
+#include <qwidget.h>
 
 QFontEngine *
 QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
@@ -45,4 +47,24 @@ bool  QFontDatabase::isSmoothlyScalable( const QString &family,
                                          const QString &style) const
 {
     return true;
+}
+
+const QString &KHTMLSettings::availableFamilies()
+{
+    if ( !avFamilies ) {
+        avFamilies = new QString;
+        *avFamilies = ",Adobe Courier,Adobe Helvetica,Adobe New Century Schoolbook,Adobe Times,Adobe Utopia,Century Schoolbook L,Charter,Clean,Console,Courier,Courier 10 Pitch,Cursor,DEC Terminal,Dingbats,ETL Fixed,Fixed,Goha Tibeb Zemen,Gothic,Helvetica,Luxi Mono,Luxi Sans,Luxi Serif,Mincho,New Century Schoolbook,Newspaper,Nil,Proof,Schumacher Clean,Song Ti,Sony Fixed,Standard Symbols L,Symbol,Terminal,Times,Utopia,";
+    }
+
+  return *avFamilies;
+}
+
+int QPaintDevice::x11AppDpiY( int )
+{
+    return 100;
+}
+
+int QPaintDevice::x11AppDpiX( int )
+{
+    return 100;
 }

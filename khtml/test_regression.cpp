@@ -54,6 +54,7 @@
 #include <qvaluelist.h>
 #include <qwidget.h>
 #include <qfileinfo.h>
+#include <qtimer.h>
 
 #include "decoder.h"
 #include "dom/dom2_range.h"
@@ -62,7 +63,7 @@
 #include "html_document.h"
 #include "htmltokenizer.h"
 #include "khtml_part.h"
-#include "khtml_settings.h"
+
 #include "khtmlview.h"
 #include "rendering/render_object.h"
 #include "xml/dom_docimpl.h"
@@ -77,6 +78,8 @@
 using namespace khtml;
 using namespace DOM;
 using namespace KJS;
+
+bool visual = false;
 
 // -------------------------------------------------------------------------
 
@@ -96,13 +99,21 @@ void PartMonitor::waitForCompletion()
     }
 }
 
+void PartMonitor::timeout()
+{
+    kapp->exit_loop();
+}
+
 void PartMonitor::partCompleted()
 {
     if (!m_inLoop)
         m_completed = true;
     else {
-        kapp->exit_loop();
 	disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
+        if ( visual )
+            QTimer::singleShot( 100, this, SLOT( timeout() ) );
+        else
+            timeout();
     }
 }
 
@@ -354,15 +365,17 @@ int main(int argc, char *argv[])
     KHTMLPart *part = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     toplevel->setCentralWidget( part->widget() );
-    toplevel->resize( 800, 600);
     part->setJScriptEnabled(true);
     part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
 //    part->setJavaEnabled(true);
 
     if (args->isSet("show"))
-	toplevel->show();
+	visual = true;
 
     a.setTopWidget(part->widget());
+    a.setMainWidget( toplevel );
+    if ( visual )
+        toplevel->show();
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,args->arg(0),
@@ -493,7 +506,19 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	    return false;
 	}
 
+#if 1
+	PartMonitor pm(m_part);
+        qApp->mainWidget()->resize( 800, 600); // restore size
+        m_part->begin(KURL());
+        m_part->write("<html><body></body></html>");
+        m_part->end();
+        pm.waitForCompletion();
+        RenderObject *r = static_cast<DocumentImpl*>( m_part->document().handle() )->renderer();
+        if ( r->contentHeight() != 594 || r->contentWidth() != 796 )
+            printf( "ERROR renderer size %d %d\n", r->contentHeight(), r->contentWidth() );
+#endif
     }
+
     else {
 	if (mustExist) {
 	    fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
@@ -609,6 +634,8 @@ QString RegressionTest::getPartOutput( OutputType type)
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
+    qApp->mainWidget()->resize( 800, 600); // restore size
+
     // load page
     KURL url;
     url.setProtocol("file");
@@ -616,6 +643,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
+    m_part->closeURL();
 
     if ( m_genOutput ) {
         reportResult( checkOutput(filename+"-dom") );
@@ -673,6 +701,8 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename)
 {
+    qApp->mainWidget()->resize( 800, 600); // restore size
+
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
@@ -800,26 +830,6 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
-}
-
-const QString &KHTMLSettings::availableFamilies()
-{
-    if ( !avFamilies ) {
-        avFamilies = new QString;
-        *avFamilies = ",Adobe Courier,Adobe Helvetica,Adobe New Century Schoolbook,Adobe Times,Adobe Utopia,Century Schoolbook L,Charter,Clean,Console,Courier,Courier 10 Pitch,Cursor,DEC Terminal,Dingbats,ETL Fixed,Fixed,Goha Tibeb Zemen,Gothic,Helvetica,Luxi Mono,Luxi Sans,Luxi Serif,Mincho,New Century Schoolbook,Newspaper,Nil,Proof,Schumacher Clean,Song Ti,Sony Fixed,Standard Symbols L,Symbol,Terminal,Times,Utopia,";
-    }
-
-  return *avFamilies;
-}
-
-int QPaintDevice::x11AppDpiY( int )
-{
-    return 100;
-}
-
-int QPaintDevice::x11AppDpiX( int )
-{
-    return 100;
 }
 
 #include "test_regression.moc"

@@ -47,6 +47,7 @@ public:
     KHTMLPart *m_part;
 public slots:
     void partCompleted();
+    void timeout();
 };
 
 /**
