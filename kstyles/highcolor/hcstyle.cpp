@@ -1850,6 +1850,9 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x, y2, x2, y2);
     p->drawLine(x2, y, x2, y2);
 
+    if(text.isNull() && !pixmap)
+        return;
+
     const int pxWidth = 20;
     int textPos = pxWidth;
     QRect br(buttonRect(x, y, w, h));
