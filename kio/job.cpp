@@ -1215,7 +1215,6 @@ void FileCopyJob::slotResult( KIO::Job *job)
       }
       m_error = job->error();
       m_errorText = job->errorText();
-
       emitResult();
       return;
    }
@@ -1443,7 +1442,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
     m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
     m_processedFiles(0), m_processedDirs(0),
     m_srcList(src), m_currentStatSrc(m_srcList.begin()),
-    m_bCurrentOperationIsLink(false),
+    m_bCurrentOperationIsLink(false), m_bSingleFileCopy(false),
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0)
 {
@@ -1763,6 +1762,8 @@ void CopyJob::statNextSrc()
         // First make sure that the totals were correctly emitted
         state = STATE_STATING;
         slotReport();
+	// Check if we are copying a single file
+	m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
         // Then start copying things
         state = STATE_CREATING_DIRS;
         createNextDir();
@@ -2437,7 +2438,7 @@ void CopyJob::slotTotalSize( KIO::Job*, unsigned long size )
   // This is because some protocols don't implement stat properly
   // (e.g. HTTP), and don't give us a size in some cases (redirection)
   // so we'd rather rely on the size given for the transfer
-  if ( files.count() == 1 )
+  if ( m_bSingleFileCopy )
   {
     kdDebug(7007) << "Single file -> updating totalsize to " << size << endl;
     m_totalSize = size;

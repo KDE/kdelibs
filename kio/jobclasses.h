@@ -804,6 +804,7 @@ namespace KIO {
         KURL::List::Iterator m_currentStatSrc;
         bool m_bCurrentSrcIsDir;
         bool m_bCurrentOperationIsLink;
+        bool m_bSingleFileCopy;
         KURL m_dest;
         KURL m_currentDest;
         //
