@@ -272,6 +272,18 @@ public:
 		return ARTS_E_NOIMPL;
 	}
 
+	virtual int write(const mcopbyte *data, int size)
+	{
+		return ARTS_E_NOIMPL;
+	}
+
+	virtual int read(mcopbyte *data, int size)
+	{
+		return ARTS_E_NOIMPL;
+	}
+
+	virtual void close() = 0;
+
 	int suspend()
 	{
 		if(isAttached)
@@ -600,12 +612,7 @@ public:
 		if(!stream)
 			return;
 
-		Sender * sender = dynamic_cast<Sender *>((Stream *)stream);
-		Receiver * receiver = dynamic_cast<Receiver *>((Stream *)stream);
-		if(sender)
-			sender->close();
-		if(receiver)
-			receiver->close();
+		static_cast<Stream *>(stream)->close();
 	}
 
 	int write(arts_stream_t stream, const void *data, int size)
@@ -616,10 +623,7 @@ public:
 		if(!stream)
 			return ARTS_E_NOSTREAM;
 
-		Sender * sender = dynamic_cast<Sender *>((Stream *)stream);
-		if(sender)
-			return sender->write((const mcopbyte *)data,size);
-		return ARTS_E_NOSTREAM;
+		return static_cast<Stream *>(stream)->write((const mcopbyte *)data,size);
 	}
 
 	int read(arts_stream_t stream, void *data, int size)
@@ -630,10 +634,7 @@ public:
 		if(!stream)
 			return ARTS_E_NOSTREAM;
 
-		Receiver * receiver = dynamic_cast<Receiver *>((Stream *)stream);
-		if(receiver)
-			return receiver->read((mcopbyte *)data,size);
-		return ARTS_E_NOSTREAM;
+		return static_cast<Stream *>(stream)->read((mcopbyte *)data,size);
 	}
 
 	int stream_set(arts_stream_t stream, arts_parameter_t param, int value)
@@ -644,13 +645,7 @@ public:
 		if(!stream)
 			return ARTS_E_NOSTREAM;
 
-		Sender * sender = dynamic_cast<Sender *>((Stream *)stream);
-		Receiver * receiver = dynamic_cast<Receiver *>((Stream *)stream);
-		if(sender)
-			return sender->stream_set(param,value);
-		if(receiver)
-			return receiver->stream_set(param,value);
-		return ARTS_E_NOSTREAM;
+		return static_cast<Stream *>(stream)->stream_set(param,value);
 	}
 
 	int stream_get(arts_stream_t stream, arts_parameter_t param)
@@ -661,13 +656,7 @@ public:
 		if(!stream)
 			return ARTS_E_NOSTREAM;
 
-		Sender * sender = dynamic_cast<Sender *>((Stream *)stream);
-		Receiver * receiver = dynamic_cast<Receiver *>((Stream *)stream);
-		if(sender)
-			return sender->stream_get(param);
-		if(receiver)
-			return receiver->stream_get(param);
-		return ARTS_E_NOSTREAM;
+		return static_cast<Stream *>(stream)->stream_get(param);
 	}
 
 // allocation and freeing of the class
