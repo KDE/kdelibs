@@ -73,6 +73,7 @@ public:
 	autoReady( false ) {}
 
     ~KDictSpellingHighlighterPrivate() {
+	delete rehighlightRequest;
 	delete spell;
     }
 
