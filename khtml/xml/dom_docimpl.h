@@ -284,9 +284,6 @@ public:
     StyleSheetListImpl* styleSheets();
 
     QStringList availableStyleSheets() const;
-    void useStyleSheet( const QString & );
-    QString sheetUsed() const { return m_sheetUsed; }
-
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
 
@@ -383,7 +380,6 @@ protected:
 
     StyleSheetImpl *m_sheet;
     QString m_usersheet;
-    QString m_sheetUsed;
     QStringList m_availableSheets;
 
     CSSStyleSheetImpl *m_elemSheet;

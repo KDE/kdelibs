@@ -528,9 +528,10 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
                            // anything about the default event handler phase.
     if (evt->bubbles()) {
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
+
         it.toLast();
         for (; it.current() && !evt->propagationStopped() && !evt->defaultPrevented() && !evt->defaultHandled(); --it)
-            it.current()->defaultEventHandler(evt);
+                    it.current()->defaultEventHandler(evt);
     }
 
     // In the case of a mouse click, also send a DOMActivate event, which causes things like form submissions
@@ -655,10 +656,9 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
 
 bool NodeImpl::dispatchUIEvent(int _id, int detail)
 {
-    if (_id != EventImpl::DOMFOCUSIN_EVENT &&
+    assert (!( (_id != EventImpl::DOMFOCUSIN_EVENT &&
         _id != EventImpl::DOMFOCUSOUT_EVENT &&
-        _id != EventImpl::DOMACTIVATE_EVENT)
-        return false; // shouldn't happen
+                _id != EventImpl::DOMACTIVATE_EVENT)));
 
     bool cancelable = false;
     if (_id == EventImpl::DOMACTIVATE_EVENT)

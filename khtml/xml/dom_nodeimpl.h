@@ -171,6 +171,7 @@ public:
     bool hasStyle() const   { return m_hasStyle; }
     bool pressed() const    { return m_pressed; }
     bool active() const     { return m_active; }
+    bool focused() const { return m_focused; }
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
     bool hasChangedChild() const { return m_hasChangedChild; }

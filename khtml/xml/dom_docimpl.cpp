@@ -49,6 +49,7 @@
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
 #include "khtml_settings.h"
+#include "khtmlpart_p.h"
 
 #include "html/html_baseimpl.h"
 #include "html/html_blockimpl.h"
@@ -1673,13 +1674,6 @@ QStringList DocumentImpl::availableStyleSheets() const
     return m_availableSheets;
 }
 
-void DocumentImpl::useStyleSheet( const QString &title )
-{
-    if (m_sheetUsed == title) return;
-    m_sheetUsed = title;
-    updateStyleSelector();
-}
-
 void DocumentImpl::recalcStyleSelector()
 {
     if ( !m_render || !attached() ) return;
@@ -1720,22 +1714,23 @@ void DocumentImpl::recalcStyleSelector()
 
         }
         else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
-	    ElementImpl *e = static_cast<ElementImpl *>(n);
-	    QString title = e->getAttribute( ATTR_TITLE ).string();
-	    if ( !title.isEmpty() ) {
-		if ( m_sheetUsed.isEmpty() )
-		    m_sheetUsed = title;
-		if ( !m_availableSheets.contains( title ) )
-		    m_availableSheets.append( title );
-	    }
-	    if ( n->id() == ID_LINK ) {
+            ElementImpl *e = static_cast<ElementImpl *>(n);
+            QString title = e->getAttribute( ATTR_TITLE ).string();
+            QString sheetUsed = view()->part()->d->m_sheetUsed;
+            if ( !title.isEmpty() ) {
+                if ( sheetUsed.isEmpty() )
+                    sheetUsed = view()->part()->d->m_sheetUsed = title;
+                if ( !m_availableSheets.contains( title ) )
+                    m_availableSheets.append( title );
+            }
+            if ( n->id() == ID_LINK ) {
                 // <LINK> element
-                if (title.isEmpty() || title == m_sheetUsed)
+                if (title.isEmpty() || title == sheetUsed)
                     sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
             }
-	    else
-		// <STYLE> element
-		sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+            else
+                // <STYLE> element
+                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
 	}
 	else if (n->id() == ID_BODY) {
             // <BODY> element (doesn't contain styles as such but vlink="..." and friends
