@@ -47,7 +47,7 @@ void ReferenceClean::notifyTime()
 	time_t now;
 
 	time(&now);
-	if(last_notify-now > 4)
+	if(now-last_notify > 4)
 	{
 		list<Object_skel *> items = objectPool.enumerate();
 		list<Object_skel *>::iterator i;
