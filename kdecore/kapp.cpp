@@ -169,9 +169,7 @@ KConfig* KApplication::getSessionConfig() {
     return pSessionConfig;
 
   // create a instance specific config object
-  QString aConfigName = KGlobal::dirs()->getSaveLocation("config");
-  aConfigName += name();
-  aConfigName += "rc";
+  QString aConfigName = locateLocal("config", QString(name())+"rc");
 
   QString aSessionConfigName;
   QString num;
@@ -192,7 +190,8 @@ KConfig* KApplication::getSessionConfig() {
   if( bSuccess ){
     chown(aConfigFile.name().ascii(), getuid(), getgid());
     aConfigFile.close();
-    pSessionConfig = new KConfig(aSessionConfigName);
+    // Open config-file read/write
+    pSessionConfig = new KConfig(aSessionConfigName, false, false);
     aSessionName = name();
     aSessionName += "rc.";
     aSessionName += num;
@@ -397,30 +396,12 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    break;
 	case restore: {
 	    aSessionName = argv[i+1];
-	    QString aSessionConfigName = locate("config", argv[i+1]);
-	    if (QFile::exists(aSessionConfigName)){
-		QFile aConfigFile(aSessionConfigName);
-		bool bSuccess;
-		if ( ! checkAccess( aConfigFile.name(), W_OK ) )
-		    bSuccess = false;
-		else
-		    bSuccess = aConfigFile.open( IO_ReadWrite );
-		if( bSuccess ){
-		    // Set uid/gid (neccesary for SUID programs)
-		    chown(aConfigFile.name().ascii(), getuid(), getgid());
-		    
-		    aConfigFile.close();
-		    pSessionConfig = new KConfig(QString::null, !aSessionConfigName.isNull());
-		    
-		    // do not write back. the application will get
-		    // a new one if demanded.
-		    pSessionConfig->rollback();
-		    
-		    if (pSessionConfig){
-			bIsRestored = True;
-		    }
-		    aConfigFile.remove();
-		}
+            QString aSessionConfigName = locateLocal("config", aSessionName);
+	    if (QFile::exists(aSessionConfigName))
+	    {
+	      // Open config file read-only
+	      pSessionConfig = new KConfig( aSessionConfigName, true, false);
+	      bIsRestored = True;
 	    }
 	}
 	break;
@@ -458,6 +439,19 @@ QPixmap KApplication::getMiniIcon() const
 }
 KApplication::~KApplication()
 {
+  // Remove session config file if we were restored from it.
+  if (bIsRestored && pSessionConfig) {
+    delete pSessionConfig;
+    pSessionConfig = 0;
+    bIsRestored = false;
+    QString aSessionConfigName = locateLocal("config", aSessionName);
+    QFile sessionFile( aSessionConfigName);
+    if (sessionFile.exists()) 
+    {
+      sessionFile.remove();
+    }         
+  }
+
   removeEventFilter( this );
 
   delete smw;
@@ -490,8 +484,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  delete pSessionConfig;
 	  pSessionConfig = 0;
 	  bIsRestored = false;
+          QString aSessionConfigName = locateLocal("config", aSessionName);
+          QFile sessionFile( aSessionConfigName);
+          if (sessionFile.exists()) 
+	  {
+	    sessionFile.remove();
+	  }         
 	}
-	
 	
 	if (!topWidget() ||
 	    cme->window != topWidget()->winId()) {
