@@ -60,7 +60,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
     }
 }
 
-void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString name )
+void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldername )
 {
 
    QDir d(dirname);
@@ -73,7 +73,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString name )
    if (!list) return;
 
    if (dirname != m_fileName) 
-      emit newFolder( name, false, "" );
+      emit newFolder( foldername, false, "" );
 
    QFileInfoListIterator it( *list );
    QFileInfo *fi;
