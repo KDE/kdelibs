@@ -254,7 +254,7 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
             if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
                 num += 3;
             }
-            int size;
+            int size = 0;
             switch (num)
             {
             case 1: size = CSS_VAL_X_SMALL; break;
@@ -269,7 +269,8 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
                 else if (num < 1)
                     size = CSS_VAL_XX_SMALL;
             }
-            addCSSProperty(CSS_PROP_FONT_SIZE, size);
+            if ( size )
+                addCSSProperty(CSS_PROP_FONT_SIZE, size);
         }
         break;
     }
