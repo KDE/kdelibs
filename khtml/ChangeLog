@@ -1,5 +1,11 @@
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        * css/parser.y: Parse pseudo-elements and pseudo-classes separately.
+        * css/css_base.{h,cpp}: Treat pseudoElements and pseudoClass as differing match-types and
+        add compatibility transform from pseudoClass to pseudoElement for CSS2 pseudo-elements.
+
+2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * html/htmltokenizer.cpp: Implement SGML attribute-value white-space parsing rules.
 
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>

@@ -145,7 +145,8 @@ unsigned int CSSSelector::specificity() const
     case Set:
     case List:
     case Hyphen:
-    case Pseudo:
+    case PseudoClass:
+    case PseudoElement:
     case Contain:
     case Begin:
     case End:
@@ -161,21 +162,27 @@ unsigned int CSSSelector::specificity() const
 
 void CSSSelector::extractPseudoType() const
 {
-    if (match != Pseudo)
+    if (match != PseudoClass && match != PseudoElement)
         return;
     _pseudoType = PseudoOther;
+    bool element = false;
+    bool compat = false;
     if (!value.isEmpty()) {
         value = value.lower();
         switch (value[0]) {
             case 'a':
                 if (value == "active")
                     _pseudoType = PseudoActive;
-                else if (value == "after")
+                else if (value == "after") {
                     _pseudoType = PseudoAfter;
+                    element = compat = true;
+                }
                 break;
             case 'b':
-                if (value == "before")
+                if (value == "before") {
                     _pseudoType = PseudoBefore;
+                    element = compat = true;
+                }
                 break;
             case 'c':
                 if (value == "checked")
@@ -196,10 +203,14 @@ void CSSSelector::extractPseudoType() const
             case 'f':
                 if (value == "first-child")
                     _pseudoType = PseudoFirstChild;
-                else if (value == "first-letter")
+                else if (value == "first-letter") {
                     _pseudoType = PseudoFirstLetter;
-                else if (value == "first-line")
+                    element = compat = true;
+                }
+                else if (value == "first-line") {
                     _pseudoType = PseudoFirstLine;
+                    element = compat = true;
+                }
                 else if (value == "first-of-type")
                     _pseudoType = PseudoFirstOfType;
                 else if (value == "focus")
@@ -246,8 +257,10 @@ void CSSSelector::extractPseudoType() const
                     _pseudoType = PseudoRoot;
                 break;
             case 's':
-                if (value == "selection")
+                if (value == "selection") {
                     _pseudoType = PseudoSelection;
+                    element = true;
+                }
                 break;
             case 't':
                 if (value == "target")
@@ -259,7 +272,12 @@ void CSSSelector::extractPseudoType() const
                 break;
         }
     }
-
+    if (match == PseudoClass && element)
+        if (!compat) _pseudoType = PseudoOther;
+        else match = PseudoElement;
+    else
+    if (match == PseudoElement && !element)
+        _pseudoType = PseudoOther;
     value = DOMString();
 }
 
@@ -302,9 +320,14 @@ DOMString CSSSelector::selectorText() const
         str = ".";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::Pseudo )
+    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::PseudoClass )
     {
         str = ":";
+        str += cs->value;
+    }
+    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::PseudoElement )
+    {
+        str = "::";
         str += cs->value;
     }
     else
@@ -323,9 +346,14 @@ DOMString CSSSelector::selectorText() const
             str += ".";
             str += cs->value;
         }
-        else if ( cs->match == CSSSelector::Pseudo )
+        else if ( cs->match == CSSSelector::PseudoClass )
         {
             str += ":";
+            str += cs->value;
+        }
+        else if ( cs->match == CSSSelector::PseudoElement )
+        {
+            str += "::";
             str += cs->value;
         }
         // optional attribute

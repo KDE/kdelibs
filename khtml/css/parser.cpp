@@ -2140,7 +2140,7 @@ yyreduce:
 
     {
 	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::Pseudo;
+	yyval.selector->match = CSSSelector::PseudoClass;
 	yyval.selector->value = domString(yyvsp[0].string);
     ;}
     break;
@@ -2149,7 +2149,7 @@ yyreduce:
 
     {
 	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::Pseudo;
+	yyval.selector->match = CSSSelector::PseudoElement;
         yyval.selector->value = domString(yyvsp[0].string);
     ;}
     break;
@@ -2158,7 +2158,7 @@ yyreduce:
 
     {
         yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::Pseudo;
+        yyval.selector->match = CSSSelector::PseudoClass;
         yyval.selector->string_arg = domString(yyvsp[-1].string);
         yyval.selector->value = domString(yyvsp[-2].string);
     ;}
@@ -2168,7 +2168,7 @@ yyreduce:
 
     {
         yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::Pseudo;
+        yyval.selector->match = CSSSelector::PseudoClass;
         yyval.selector->string_arg = QString::number(yyvsp[-1].val);
         yyval.selector->value = domString(yyvsp[-2].string);
     ;}
@@ -2178,7 +2178,7 @@ yyreduce:
 
     {
         yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::Pseudo;
+        yyval.selector->match = CSSSelector::PseudoClass;
         yyval.selector->string_arg = domString(yyvsp[-1].string);
         yyval.selector->value = domString(yyvsp[-2].string);
     ;}
@@ -2188,7 +2188,7 @@ yyreduce:
 
     {
         yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::Pseudo;
+        yyval.selector->match = CSSSelector::PseudoClass;
         yyval.selector->string_arg = domString(yyvsp[-1].string);
         yyval.selector->value = domString(yyvsp[-2].string);
     ;}
@@ -2198,7 +2198,7 @@ yyreduce:
 
     {
         yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::Pseudo;
+        yyval.selector->match = CSSSelector::PseudoClass;
         yyval.selector->simpleSelector = yyvsp[-1].selector;
         yyval.selector->value = domString(yyvsp[-3].string);
     ;}
