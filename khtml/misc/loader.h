@@ -418,7 +418,7 @@ namespace khtml
 	friend class DocLoader;
 
         template<typename CachedObjectType, enum CachedObject::Type CachedType>
-        static CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const char* accept );
+        static CachedObjectType* requestObject( DocLoader* dl, const KURL& kurl, const char* accept );
 
     public:
 	/**
