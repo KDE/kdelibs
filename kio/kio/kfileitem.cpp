@@ -583,25 +583,12 @@ QString KFileItem::getToolTipText(int maxcount)
   
   KFileMetaInfo info = metaInfo();
 
-  tip = "<table cellspacing=0 cellpadding=0>"
-         "<tr>"
-          "<th colspan=2>"
-           "<center>"
-            "<b>"
-             "<nobr>";
+  tip = "<table cellspacing=0 cellpadding=0>";
 
   // if we got no or empty info, show a default tip
   if ( !info.isValid() || info.isEmpty() )
   {
     //kdDebug() << "Found no meta info" << endl;
-
-    tip += QStyleSheet::escape(m_url.fileName()) + 
-           
-             "</nobr>"
-            "</b>"
-           "</center>"
-          "</th>"
-         "</tr>";
 
     tip += "<tr><td><nobr>" + i18n("Type:") + "</nobr></td><td><nobr>";
         
@@ -626,32 +613,13 @@ QString KFileItem::getToolTipText(int maxcount)
   {
     // first the title in bold and centered
       QStringList keys = info.preferredKeys();
-      KFileMetaInfoItem item;
-    
-    // if we don't find a title, show the file name instead
-    if ( (item = info.item("Title")).isValid() && !(item.value().toString().isEmpty()))
-    {
-      tip += QStyleSheet::escape(item.value().toString());
-    }
-    else if ( (item = info.item("Name")).isValid() && !(item.value().toString().isEmpty()))
-    {
-      tip += QStyleSheet::escape(item.value().toString());
-    }
-    else
-    {
-      tip += QStyleSheet::escape(m_url.fileName());
-    }
-
-
-      
-    tip += "</nobr></b></center></th></tr>";
     
     // now the rest
     QStringList::Iterator it = keys.begin();
     for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
     {
-      item = info.item( *it );
-      if ( item.isValid() && (item.key() != "Title") && (item.key() != "Name") )
+      KFileMetaInfoItem item = info.item( *it );
+      if ( item.isValid() )
       {
         QString s;
         const QVariant& value = item.value();
