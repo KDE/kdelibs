@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include <kopenssl.h>
+
 #include <qstring.h>
 #include <qfile.h>
 #include <ksslall.h>

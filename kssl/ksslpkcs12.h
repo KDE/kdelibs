@@ -24,7 +24,9 @@
 #ifndef _KSSLPKCS12_H
 #define _KSSLPKCS12_H
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #ifdef HAVE_SSL
 #define crypt _openssl_crypt
@@ -36,7 +38,7 @@ class EVP_PKEY;
 class X509;
 #endif
 
-#include <kopenssl.h>
+//#include <kopenssl.h>
 #include <ksslcertificate.h>
 
 #ifndef STACK_OF
@@ -45,6 +47,7 @@ class X509;
 
 class KSSL;
 class KSSLPKCS12Private;
+class KOpenSSLProxy;
 
 
 class KSSLPKCS12 {
