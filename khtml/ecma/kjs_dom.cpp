@@ -23,6 +23,8 @@
 #include <kjs/operations.h>
 #include <dom_string.h>
 #include <dom_xml.h>
+#include <xml/dom_nodeimpl.h>
+#include <rendering/render_object.h>
 
 #include "kjs_text.h"
 #include "kjs_dom.h"
@@ -60,6 +62,7 @@ bool DOMNode::hasProperty(const UString &p, bool) const
 KJSO DOMNode::tryGet(const UString &p) const
 {
   KJSO result;
+  khtml::RenderObject *rend = node.handle()->renderer();
 
   if (p == "nodeName")
     result = getString(node.nodeName());
@@ -108,6 +111,11 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Normalize);
 //  else if (p == "supports") // new for DOM2 - not yet in khtml
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
+  // no DOM standard, found in IE only
+  else if (p == "clientWidth")
+      result = Number(rend->contentWidth());
+  else if (p == "clientHeight")
+      result = Number(rend->contentHeight());
   else
     result = Imp::get(p);
 
