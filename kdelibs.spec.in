@@ -1,6 +1,6 @@
 # You might want to change the next 3 lines, the rest should be ok.
 Prefix: /opt/kde2
-%define qtversion 2.1.1
+%define qtversion 2.2.0
 %define qtdir /usr/lib/qt-%{qtversion}
 
 Name: kdelibs
@@ -19,14 +19,15 @@ BuildPrereq: kdoc
 %description
 Libraries for the K Desktop Environment:
 KDE Libraries included: kdecore (KDE core library), kdeui (user interface),
-kfm (file manager), khtmlw (HTML widget), kfile (file access), kspell
-(spelling checker), jscript (javascript), kab (addressbook), kimgio (image
-manipulation), arts (sound, mixing and animation).
+khtml (HTML widget), kfile (file access), kspell
+(spelling checker), kssl (secure web browsing), kab (addressbook), kimgio (image
+manipulation), arts (sound, mixing and animation), kstyles, kparts, kjs (JavaScript),
+kio, kdesu and ksgmltools.
 
 %package devel
 Group: Development/Libraries
 Summary: Header files and documentation for compiling KDE applications.
-Requires: qt-devel, kdelibs = %{version}
+Requires: qt-devel >= %{qtversion}, kdelibs = %{version}
 
 %description devel
 This package includes the header files you will need to compile
@@ -45,7 +46,7 @@ arts and libkmid.
 %package sound-devel
 Group: Development/Libraries
 Summary: Header files and documentation for compiling KDE applications with sound
-Requires: qt-devel >= 2.1.0, %{name}-sound = %{version}, %{name} = %{version}, %{name}-devel = %{version}
+Requires: qt-devel >= %{qtversion}, %{name}-sound = %{version}, %{name} = %{version}, %{name}-devel = %{version}
 
 %description sound-devel
 This package includes the header files you will need to compile applications
@@ -64,7 +65,17 @@ export QTDIR=%{qtdir}
 ./configure --prefix=%{prefix} \
 	--includedir=%{prefix}/include/kde \
 	--enable-final
-make
+
+if [ -x /usr/bin/getconf ] ; then
+    NRPROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+    if [ $NRPROC -eq 0 ] ; then
+   NRPROC=1
+    fi
+else
+    NRPROC=1
+fi
+
+make -j $NRPROC
 
 %install
 export DESTDIR=$RPM_BUILD_ROOT
@@ -171,5 +182,9 @@ rm -rf $RPM_BUILD_DIR/file.list.%{name}*
 %files sound-devel -f ../file.list.%{name}-sound-devel
 
 %changelog
+* Sat Sep 16 2000 Robert Williams <rwilliams@kde.org>
+- Update description - libraries
+- Added check for # of CPUs
+
 * Thu Jun  1 2000 Bernhard Rosenkraenzer <bero@redhat.com>
 - initial
