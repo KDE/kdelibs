@@ -12,7 +12,7 @@ noinst_HEADERS = *.h
 
 noinst_PROGRAMS = consolekmid
 consolekmid_SOURCES = main.cc
-consolekmid_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
-consolekmid_LDADD = libplayer.a -lkdecore -lqt -lXext -lX11 $(LIBSOCKET)
+consolekmid_LDFLAGS	=
+consolekmid_LDADD = libplayer.a 
 
 DISTCLEANFILES = ./.deps/* ./.deps/.P
