@@ -278,20 +278,28 @@ int KDEsuClient::stopServer()
     return command("STOP\n");
 }
 
-int KDEsuClient::startServer()
+bool KDEsuClient::isServerSGID()
 {
     QString daemon = KStandardDirs::findExe("kdesud");
     if (daemon.isEmpty())
-	return -1;
+    {
+	kdWarning(900) << ID << "daemon not found\n";
+	return false;
+    }
 
     struct stat sbuf;
     if (stat(daemon.latin1(), &sbuf) < 0) 
     {
 	kdWarning(900) << ID << "stat(): " << ERR << "\n";
-    } else if (!(sbuf.st_mode & S_ISGID)) 
-    {
+	return false;
+    } 
+    return (sbuf.st_mode & S_ISGID);
+}
+
+int KDEsuClient::startServer()
+{
+    if (!isServerSGID())
 	kdWarning(900) << ID << "kdesud not setgid!\n";
-    }
 
     // kdesud only forks to the background after it is accepting
     // connections.
