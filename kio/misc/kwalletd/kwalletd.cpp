@@ -168,8 +168,10 @@ void KWalletD::processTransactions() {
 						++it;
 					}
 					while ((x = it.current())) {
-						if (xact->appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == xact->wallet && x->wId == xact->wId)
+						if (xact->appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == xact->wallet && x->wId == xact->wId) {
 							x->tType = KWalletTransaction::OpenFail;
+						}
+						++it;
 					}
 				}
 				break;
