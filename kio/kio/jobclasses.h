@@ -116,6 +116,14 @@ namespace KIO {
         QString errorString() const;
 
         /**
+         * Converts an error code and a non-i18n error message into an
+         * html error message in the current language. The low level (non-i18n)
+         * error message (usually a url) is put into the translated error
+         * message using %1.
+         */
+        QString htmlErrorString() const;
+
+        /**
          * Display a dialog box to inform the user of the error given by
          * this job.
          * Only call if @ref error is not 0, and only in the slot connected
@@ -129,8 +137,8 @@ namespace KIO {
          * error handling is enabled and an error occurs, then showErrorDialog
          * is called with the specified parentWidget (if supplied) , right before
          * the emission of the result signal.
-	 *
-	 * The default is false.
+         *
+         * The default is false.
          *
          * See also @ref isAutoErrorHandlingEnabled , @ref showErrorDialog
          *

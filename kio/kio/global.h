@@ -158,7 +158,8 @@ namespace KIO
     ERR_CANNOT_SYMLINK = 59,
     ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
     ERR_DISK_FULL = 61,
-    ERR_IDENTICAL_FILES = 62 // src==dest when moving/copying
+    ERR_IDENTICAL_FILES = 62, // src==dest when moving/copying
+    ERR_SLAVE_DEFINED = 63
   };
 
   /*
@@ -166,6 +167,12 @@ namespace KIO
    * additional error information provided by @p errorText.
    */
   QString buildErrorString(int errorCode, const QString &errorText);
+
+  /*
+   * Returns a translated html error message for @p errorCode using the
+   * additional error information provided by @p errorText.
+   */
+  QString buildHTMLErrorString(int errorCode, const QString &errorText);
 
   /**
    * Constants used to specify the type of a KUDSAtom.

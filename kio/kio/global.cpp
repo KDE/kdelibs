@@ -34,10 +34,14 @@
 #include "kio/global.h"
 #include "kio/job.h"
 
+#include <qfileinfo.h>
+#include <qfile.h>
+
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kstandarddirs.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -173,6 +177,11 @@ QString KIO::decodeFileName( const QString & _str )
 QString KIO::Job::errorString() const
 {
   return KIO::buildErrorString(m_error, m_errorText);
+}
+
+QString KIO::Job::htmlErrorString() const
+{
+  return KIO::buildHTMLErrorString(m_error, m_errorText);
 }
 
 QString KIO::buildErrorString(int errorCode, const QString &errorText)
@@ -370,6 +379,46 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
     }
 
   return result;
+}
+
+QString KIO::buildHTMLErrorString(int errorCode, const QString &errorText)
+{
+    // copied gratuitously from kio_help
+    QStringList search;
+
+    // assemble the local search paths
+    const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
+
+    // look up the different languages
+    for ( int id = localDoc.count() - 1; id >= 0; --id )
+    {
+        QStringList langs = KGlobal::locale()->languageList();
+        langs.append( "en" );
+        langs.remove( "C" );
+        QStringList::ConstIterator lang;
+        for (lang = langs.begin(); lang != langs.end(); ++lang)
+            search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang)
+                                .arg(QString("kioslave/errors/error%1.html").arg(errorCode)));
+    }
+
+    // try to locate the file
+    QStringList::Iterator it;
+    for ( it = search.begin(); it != search.end(); ++it )
+    {
+        QFileInfo info( *it );
+        if (info.exists() && info.isFile() && info.isReadable()) {
+          QFile docFile( *it );
+
+          if ( docFile.open( IO_ReadOnly ) ) {
+            QString doc = QString( docFile.readAll() ).arg( errorText );
+            docFile.close();
+            return doc;
+          }
+        }
+    }
+
+    // fall back to the plain error...
+    return buildErrorString( errorCode, errorText );
 }
 
 #include <limits.h>
