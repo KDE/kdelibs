@@ -27,7 +27,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
-	kpoint.h ltdl.h kprotocolmanager.h
+	kpoint.h ltdl.h kprotocolmanager.h kregexp.h
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h
 
@@ -39,7 +39,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kglobalaccel.cpp kclipboard.cpp \
 	krect.cpp ksize.cpp kpoint.cpp kprotocolmanager.cpp\
-	kurl.cpp ltdl.c
+	kurl.cpp ltdl.c kregexp.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
 libkdecore_la_LIBADD = $(LIB_QT)
