@@ -35,14 +35,15 @@ namespace KJS {
   class WindowFunc;
   class WindowQObject;
 
-  class Window : public DOMObject {
+  class Window : public HostImp {
     friend class WindowFunc;
     friend class WindowQObject;
   public:
     Window(KHTMLView *w);
     ~Window();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
     int installTimeout(const UString &handler, int t);
     void clearTimeout(int timerId);
   private:

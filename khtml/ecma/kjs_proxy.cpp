@@ -75,6 +75,9 @@ extern "C" {
     global.put("location", KJSO(new Location(khtml)));
     global.put("Image", KJSO(new ImageConstructor(global)));
 
+    // make "window" prefix implicit for shortcuts like alert()
+    global.setPrototype(window);
+
     return script;
   }
 

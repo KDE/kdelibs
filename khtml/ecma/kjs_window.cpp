@@ -46,7 +46,12 @@ Window::~Window()
   delete winq;
 }
 
-KJSO Window::tryGet(const UString &p) const
+bool Window::hasProperty(const UString &p, bool recursive) const
+{
+  return true;
+}
+
+KJSO Window::get(const UString &p) const
 {
   if (p == "location")
     return KJSO(new Location(widget->part()));
@@ -66,7 +71,7 @@ KJSO Window::tryGet(const UString &p) const
   return Imp::get(p);
 }
 
-void Window::tryPut(const UString &p, const KJSO &v)
+void Window::put(const UString &p, const KJSO &v)
 {
   if (p == "status") {
     String s = v.toString();
