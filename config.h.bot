@@ -28,9 +28,20 @@ extern "C"
 int gethostname (char *Name, int Namelen);
 #endif  
 
+/*
+ * This is needed for systems with broken headers that won't work with
+ *  gcc -ansi
+ */
 #ifndef HAVE_STRDUP
 #define kstrdup qstrdup
 #else
 #define kstrdup strdup
 #endif
 
+/*
+ * This is an ugly little hack incase someone uses the inline keyword,
+ * which is quite specific to GNU's cc
+ */
+#ifndef __GNUC__
+#define inline
+#endif
