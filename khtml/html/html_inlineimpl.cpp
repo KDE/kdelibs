@@ -105,7 +105,6 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url))
 	{
 	    inside = true;
-	    break;
 	}
 	child = child->nextSibling();
     }

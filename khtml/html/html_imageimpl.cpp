@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org) 
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -84,7 +84,8 @@ ushort HTMLImageElementImpl::id() const
 bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url)
 {
-  //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
+    //printf("          _x=%d _y=%d _tx=%d, _ty=%d\n", _x, _y, _tx, _ty);
+    //printf("image at: _x=%d _y=%d ascent=%d, descent=%d width=%d\n", x+_tx, y+_ty, ascent, descent, width);
     if (usemap.length()>0)
     {
         //cout << "usemap: " << usemap.string() << endl;
@@ -225,14 +226,14 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 			 colorGrp, true, 1 );
 	if(!alt.isEmpty())
 	{
-	    QString text = alt.string();  	    
+	    QString text = alt.string();  	
 	    p->setFont(*getFont());
 	    p->setPen( getFont()->textColor() );
 	    int ax = _tx+border+5;
 	    int ay = _ty - ascent+border+5;
 	    int ah = getHeight()-border-10;
 	    int aw = width-border-10;
-	    QFontMetrics fm(*getFont()); 
+	    QFontMetrics fm(*getFont());
 	    if (aw>15 && ah>fm.height())
     	    	p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
 	}
@@ -271,7 +272,7 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 	    p->drawPixmap( QPoint( _tx + border,
 				   _ty - ascent + border), *pixmap, rect );
     }
-    
+
     if ( border )
     {
 	QPen pen( QColor("000000"));
@@ -345,9 +346,9 @@ void HTMLImageElementImpl::layout(bool)
     case Percent:
 	// ### is this correct?
 	{
-	KHTMLWidget *htmlwidget =  
+	KHTMLWidget *htmlwidget =
 	    static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
-	int hh = imgHeight; 
+	int hh = imgHeight;
 	if (_parent->id()==ID_BODY)
 	    hh = predefinedHeight.value*htmlwidget->height()/100;	
 	if (imgHeight != hh)

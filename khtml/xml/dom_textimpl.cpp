@@ -145,7 +145,7 @@ void TextImpl::deleteSlaves()
 	TextSlave *next = s->next();
 	delete s;
 	s = next;
-    }    
+    }
 }
 
 void TextImpl::printObject( QPainter *p, int x, int y, int w, int h,
@@ -206,7 +206,7 @@ void TextImpl::calcMinMaxWidth()
 	    currMinWidth += fm.width(c);
 	    if(currMinWidth > minWidth) minWidth = currMinWidth;
 	    currMinWidth = 0;
-    	    currMaxWidth += fm.width(c);	    
+    	    currMaxWidth += fm.width(c);	
 	}
 	else if( c == QChar('\n'))
 	{
@@ -233,7 +233,7 @@ void TextImpl::calcMinMaxWidth()
 bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 			   int _tx, int _ty, DOMString &)
 {
-    //printf("Text::mouseEvent\n");
+//    printf("Text::mouseEvent\n");
     bool inside = false;
 
     TextSlave *s = first;
@@ -247,7 +247,7 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 	}
 	s=s->next();
     }
-    //if(inside) printf(" Text  --> inside\n");
+    //   if(inside) printf(" Text  --> inside\n");
 
     return inside;
 }

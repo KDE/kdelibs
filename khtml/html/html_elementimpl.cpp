@@ -25,6 +25,7 @@
 //#define DEBUG
 //#define DEBUG_LAYOUT
 //#define PAR_DEBUG
+//#define EVENT_DEBUG
 
 #include "dom_string.h"
 
@@ -222,7 +223,6 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url))
 	{
 	    inside = true;
-	    break;
 	}
 	child = child->nextSibling();
     }
@@ -238,7 +238,11 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
 void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bool inside )
 {
-    if(!hasEvents()) return;
+    if(!hasEvents())
+    {
+	setMouseInside(inside);
+	return;
+    }
 
     KHTMLWidget *htmlwidget = (KHTMLWidget *) static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
     if(!htmlwidget) return;
@@ -291,9 +295,8 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     {
 	// onmouseover and onmouseout
 	int id = ATTR_ONMOUSEOVER;
-	if(!inside)
-	    id = ATTR_ONMOUSEOUT;
-	script = getAttribute(ATTR_ONCLICK);
+	if(!inside) id = ATTR_ONMOUSEOUT;
+	script = getAttribute(id);
 	if(script.length())
 	{
 	    htmlwidget->executeScript( script.string() );
@@ -547,22 +550,23 @@ bool HTMLPositionedElementImpl::mouseEvent( int _x, int _y, int button,
     printf("%s::mouseEvent\n", nodeName().string().ascii());
 #endif
 
+    bool inside = true;
     // check if x/y is inside the element
     _ty += y;
-    if((_ty - ascent > _y) || (_ty + descent < _y)) return false;
+    if((_ty - ascent > _y) || (_ty + descent < _y)) inside = false;
     _tx += x;
-    if((_tx > _x) || (_tx + width < _x)) return false;
+    if((_tx > _x) || (_tx + width < _x)) inside = false;
 
+    if(!inside && !mouseInside()) return false;
+    
     NodeImpl *child = firstChild();
-    while(child != 0)
+    if(child)
     {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url)) break;
-	child = child->nextSibling();
-    }
-    if(!child) 
-    {
-	if(mouseInside()) mouseEventHandler(button, type, false);
-	return false;
+	while(child != 0)
+	{
+	    child->mouseEvent(_x, _y, button, type, _tx, _ty, url);
+	    child = child->nextSibling();
+	}
     }
 
 #ifdef EVENT_DEBUG
@@ -570,9 +574,9 @@ bool HTMLPositionedElementImpl::mouseEvent( int _x, int _y, int button,
 #endif
 
     // dynamic HTML...
-    mouseEventHandler(button, type, true);
+    mouseEventHandler(button, type, inside);
 
-    return true;
+    return inside;
 }
 
 void HTMLPositionedElementImpl::getAbsolutePosition(int &xPos, int &yPos)
