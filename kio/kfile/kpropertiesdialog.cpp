@@ -1341,6 +1341,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
   bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
+  bool isTrash = ( properties->kurl().path( 1 ) == KGlobalSettings::trashPath() );
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();
@@ -1634,7 +1635,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   updateAccessControls();
 
 
-  if ( isIntoTrash )
+  if ( isIntoTrash || isTrash )
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
