@@ -44,7 +44,7 @@ public:
     }
 };
 
-K_EXPORT_COMPONENT_FACTORY( kgzipfilter, KGzipFilterFactory );
+K_EXPORT_COMPONENT_FACTORY( kgzipfilter, KGzipFilterFactory )
 
 // Not really necessary anymore, now that this is a dynamically-loaded lib.
 class KGzipFilter::KGzipFilterPrivate
