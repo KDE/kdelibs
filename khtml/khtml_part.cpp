@@ -2163,22 +2163,22 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   Q_ASSERT ( prev != d->m_stringPortions.end() );
   DOM::NodeImpl* node = (*prev).node;
   Q_ASSERT( node );
-  Q_ASSERT( node->renderer() );
-
-  if ( node->renderer() )
-  {
-    int x = 0, y = 0;
-    static_cast<khtml::RenderText *>(node->renderer())
-      ->posOfChar(d->m_findPos, x, y);
-    d->m_view->setContentsPos(x-50, y-50);
-  }
 
   d->m_selectionStart = node;
   d->m_startOffset = index - (*prev).index;
 
+  Q_ASSERT( node->renderer() );
+  if ( node->renderer() )
+  {
+    int x = 0, y = 0;
+    static_cast<khtml::RenderText *>(node->renderer())
+      ->posOfChar(d->m_startOffset, x, y);
+    d->m_view->setContentsPos(x-50, y-50);
+  }
+
   // Now look for end node
   it = prev; // no need to start from beginning again
-  while ( it != d->m_stringPortions.end() && (*it).index <= index + length )
+  while ( it != d->m_stringPortions.end() && (*it).index < index + length )
   {
     prev = it;
     ++it;
@@ -2186,11 +2186,16 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   Q_ASSERT ( prev != d->m_stringPortions.end() );
 
   d->m_selectionEnd = (*prev).node;
-  d->m_endOffset = index + length - (*prev).index;
+  d->m_endOffset = index + length - (*prev).index + 1;
   d->m_startBeforeEnd = true;
 
-  //kdDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
-  //  d->m_selectionEnd.handle() << "," << d->m_endOffset << endl;
+#if 0
+  kdDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
+    d->m_selectionEnd.handle() << "," << d->m_endOffset << endl;
+  it = d->m_stringPortions.begin();
+  for ( ; it != d->m_stringPortions.end() ; ++it )
+    kdDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node << endl;
+#endif
   d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
                           d->m_selectionEnd.handle(), d->m_endOffset );
   emitSelectionChanged();
