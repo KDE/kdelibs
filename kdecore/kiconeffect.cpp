@@ -11,6 +11,7 @@
  * exact licensing terms.
  */
 
+#include <unistd.h>
 #include <math.h>
 
 #include <qstring.h>
@@ -19,6 +20,9 @@
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qcolor.h>
+#include <qwidget.h>
+#include <qpainter.h>
+#include <qpen.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -420,3 +424,61 @@ QImage KIconEffect::doublePixels(QImage src)
     }
     return dst;
 }
+
+    void
+KIconEffect::visualActivate(QWidget * widget, QRect rect)
+{
+    unsigned int actCount = 8; //KonqFMSettings::settings()->visualActivateCount();
+    unsigned int actSpeed = 80; //KonqFMSettings::settings()->visualActivateSpeed();
+
+    // actCount ranges from 1..10.
+
+    if (actCount < 1)
+        actCount = 1;
+
+    else if (actCount > 10)
+        actCount = 10;
+
+    // actSpeed ranges from 1..100.
+
+    if (actSpeed < 1)
+        actSpeed = 1;
+
+    else if (actSpeed > 100)
+        actSpeed = 100;
+
+    // actSpeed needs to be converted to actDelay.
+    // actDelay is inversely proportional to actSpeed and needs to be
+    // divided up into actCount portions.
+    // We also convert the us value to ms.
+
+    unsigned int actDelay = (1000 * (100 - actSpeed)) / actCount;
+
+    QPoint c = rect.center();
+
+    QPainter p(widget);
+
+    // Use NotROP to avoid having to repaint the pixmap each time.
+    p.setPen(QPen(Qt::black, 2, Qt::DotLine));
+    p.setRasterOp(Qt::NotROP);
+
+    // The spacing between the rects we draw.
+    // Use the minimum of width and height to avoid painting outside the
+    // pixmap area.
+    unsigned int delta(QMIN(rect.width() / actCount, rect.height() / actCount));
+
+    for (unsigned int i = 1; i < actCount; i++) {
+
+        int sz = i * delta;
+
+        rect.setRect(c.x() - sz / 2, c.y() - sz / 2, sz, sz);
+
+        p.drawRect(rect);
+        p.flush();
+
+        usleep(actDelay);
+
+        p.drawRect(rect);
+    }
+}
+

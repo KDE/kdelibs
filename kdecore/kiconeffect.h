@@ -18,6 +18,9 @@
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qcolor.h>
+#include <qrect.h>
+
+class QWidget;
 
 class KIconEffectPrivate;
 
@@ -78,6 +81,14 @@ public:
      * Returns an image twice as large, consisting of 2x2 pixels.
      */
     QImage doublePixels(QImage src);
+
+    /**
+     * Provide visual feedback to show activation of an icon on a widget.
+     *
+     * Not strictly an 'icon effect', but in practice that's what it looks
+     * like.
+     */
+    static void visualActivate(QWidget *, QRect);
 
 private:
     void toGray(QImage &image, float value);
