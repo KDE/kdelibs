@@ -247,14 +247,6 @@ InternalFunctionImp::InternalFunctionImp(const UString &n)
 {
 }
 
-String InternalFunctionImp::toString() const
-{
-  if (name().isNull())
-    return UString("(Internal function)");
-  else
-    return UString("function " + name() + "()");
-}
-
 Completion InternalFunctionImp::execute(const List &)
 {
   return Completion(ReturnValue, Undefined());

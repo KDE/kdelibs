@@ -202,10 +202,13 @@ Completion StringProtoFunc::execute(const List &args)
     break;
   case LastIndexOf:
     s2 = a0.toString();
-    if (a1.isA(UndefinedType))
+    d = a1.toNumber().value();
+    if (a1.isA(UndefinedType) || KJS::isNaN(d) || KJS::isPosInf(d))
       pos = len;
     else
       pos = a1.toInteger().intValue();
+    if (pos < 0)
+      pos = 0;
     d = s.value().rfind(s2.value(), pos);
     result = Number(d);
     break;
@@ -309,7 +312,7 @@ Completion StringProtoFunc::execute(const List &args)
 	  put("length", 0);
 	  break;
 	} else {
-	  while (i != d && i < u.size())
+	  while (i != d && i < u.size()-1)
 	    result.put(UString::from(i++), String(u.substr(p0++, 1)));
 	}
       } else {
@@ -321,7 +324,7 @@ Completion StringProtoFunc::execute(const List &args)
       }
     }
     // add remaining string, if any
-    if (i != d && (p0 < len || i == 0))
+    if (i != d)
       result.put(UString::from(i++), String(u.substr(p0)));
     result.put("length", i);
     break;

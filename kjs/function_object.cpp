@@ -159,7 +159,7 @@ Completion FunctionProtoFunc::execute(const List &args)
   switch (id) {
   case ToString: {
     Object thisObj = Object::dynamicCast(thisValue());
-    if (thisObj.isNull() || thisObj.getClass() != StringClass) {
+    if (thisObj.isNull() || thisObj.getClass() != FunctionClass) {
       result = Error::create(TypeError);
       return Completion(ReturnValue, result);
     }
