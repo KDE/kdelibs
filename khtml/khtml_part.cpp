@@ -2927,14 +2927,20 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 		if (rc == KMessageBox::Cancel)
 			return;
 	} else {                  // Going from nonSSL -> nonSSL
-		if (KSSLSettings(true).warnOnUnencrypted()) {
+		KSSLSettings kss(true);
+		if (kss.warnOnUnencrypted()) {
 			int rc = KMessageBox::warningContinueCancel(NULL,
 					i18n("Warning: Your data is about to be transmitted across the network unencrypted."
 					"\nAre you sure you wish to continue?"),
 					i18n("KDE"),
 					QString::null,
-					QString::null,
 					"WarnOnUnencryptedForm");
+			// Move this setting into KSSL instead
+			if (!kapp->config()->readBoolEntry("WarnOnUnencryptedForm", true)) {
+				kapp->config()->deleteEntry("WarnOnUnencryptedForm");
+				kss.setWarnOnUnencrypted(false);
+				kss.save();
+			}
 			if (rc == KMessageBox::Cancel)
 				return;
 		}
