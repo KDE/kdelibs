@@ -1,7 +1,6 @@
 [Image Format]
 Type=j2k
-# TODO: Is there a header that always appears?
-Header=.
+Header=^\xFF\x4F
 Name=JPEG 2000-Streams
 Read=true
 Write=false
