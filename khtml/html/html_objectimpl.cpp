@@ -132,7 +132,7 @@ void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QStr
             script += ",";
         if ((*i).first == KParts::LiveConnectExtension::TypeString) {
             script += "\"";
-            script += (*i).second;
+            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
             script += "\"";
         } else
             script += (*i).second;
