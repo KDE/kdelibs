@@ -329,6 +329,5 @@ windowBackground=255,255,255
 [KDE]
 contrast=4
 widgetStyle=basicstyle.la
-WidgetStyle=System-Series
-
+WidgetStyle=systemalt
 

@@ -257,6 +257,6 @@ windowBackground=255,255,255
 
 [KDE]
 contrast=5
+WidgetStyle=marble
 widgetStyle=basicstyle.la
-WidgetStyle=Marble
 

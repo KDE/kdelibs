@@ -222,7 +222,7 @@ Pixmap=riscos/background.png
 
 [KDE]
 widgetStyle=basicstyle.la 
-WidgetStyle=RISC OS
+WidgetStyle=riscos
 
 [Misc]
 ShadeStyle=Motif

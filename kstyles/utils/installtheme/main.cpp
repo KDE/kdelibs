@@ -38,7 +38,7 @@ const char * ver = "0.9.1";
 int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, "kinstalltheme", desc, ver);
-    KApplication qapp;
+    KApplication qapp(false, false); //We don't  allow styles.. Kind of ironic, isn't it?
 
     KGlobal::dirs()->addResourceType("themercs", KGlobal::dirs()->kde_default("data")+QString("kstyle/themes"));
     QStringList themercs = KGlobal::dirs()->findAllResources("themercs","*.themerc");
@@ -49,14 +49,12 @@ int main(int argc, char **argv)
     {
         QString file=*i;
         KSimpleConfig config(file, true);
-        config.setGroup("Misc");
-        QString name = config.readEntry("Name");
-        if (name.isEmpty())
-            name = QFileInfo(name).baseName();
+        QString name = QFileInfo(file).baseName(); //This is nice and static...
+        //So we don't have to worry about our key changing when the language does.
 
         config.setGroup( "KDE" );
 
-        if (config.readEntry("WidgetStyle").endsWith("[Pixmap]") || (config.readEntry( "widgetStyle" ) == "basicstyle.la") )
+        if (config.readEntry( "widgetStyle" ) == "basicstyle.la")
         {
             //OK, emit a style entry...
             if (!themes.contains(name)) //Only add first occurence, i.e. user local one.
@@ -86,7 +84,7 @@ int main(int argc, char **argv)
     }
 
     cache.setGroup("General");
-    cache.writeEntry("themes", themeNames.join("^e"));
+    cache.writeEntry("themes", themeNames.join("^e")+"^e");
 
     return 0;
 }

@@ -1,15 +1,15 @@
 [General]
-themes=Marble^eRISC OS^eSystem++^eSystem-Series^e
+themes=marble^eriscos^esystem^esystemalt^e
 
 [marble]
 file=marble.themerc
 
-[risc os]
+[riscos]
 file=riscos.themerc
 
-[system++]
+[system]
 file=system.themerc
 
-[system-series]
+[systemalt]
 file=systemalt.themerc
 
