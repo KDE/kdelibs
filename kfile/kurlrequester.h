@@ -30,7 +30,7 @@ class KLineEdit;
 class KURLCompletion;
 class QString;
 class QTimer;
-class QToolButton;
+class QPushButton;
 
 
 /**
@@ -118,7 +118,7 @@ public:
      * @returns a pointer to the pushbutton. It is provided so that you can
      * specify an own pixmap or a text, if you really need to.
      */
-    QToolButton * button() const { return myButton; }
+    QPushButton * button() const { return myButton; }
     
 signals:
     // forwards from LineEdit
@@ -144,7 +144,7 @@ protected:
     void		init();
 
     KLineEdit *		myEdit;
-    QToolButton *	myButton;
+    QPushButton *	myButton;
     KURLCompletion *    myCompletion;
     bool 		myModal;
 

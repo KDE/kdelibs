@@ -22,7 +22,8 @@
 #include <unistd.h>
 
 #include <qstring.h>
-#include <qtoolbutton.h>
+#include <qpushbutton.h>
+#include <qtooltip.h>
 
 #include <kaccel.h>
 #include <kdialog.h>
@@ -30,6 +31,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <klineedit.h>
+#include <klocale.h>
 #include <kurlcompletion.h>
 
 #include "kurlrequester.h"
@@ -66,9 +68,9 @@ void KURLRequester::init()
     myShowLocalProt = false;
 
     myEdit = new KLineEdit( this, "line edit" );
-    myButton = new QToolButton( this, "kfile button" );
-    myButton->setPixmap(BarIcon(QString::fromLatin1("folder")));
-    myButton->setAutoRaise( true );
+    myButton = new QPushButton( this, "kfile button" );
+    myButton->setPixmap(SmallIcon(QString::fromLatin1("folder")));
+    QToolTip::add(myButton, i18n("Open filedialog"));
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
