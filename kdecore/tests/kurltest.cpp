@@ -593,6 +593,11 @@ int main(int argc, char *argv[])
   broken = "file";
   check("Broken stuff #6 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
 
+  broken = "LABEL=USB_STICK"; // 71430, can we use KURL for this?
+  check("Broken stuff #6 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
+  check("Broken stuff #6 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
+  check("Broken stuff #6 path", broken.path(), "");
+
 #if 0 // BROKEN?
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
