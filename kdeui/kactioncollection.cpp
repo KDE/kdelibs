@@ -725,12 +725,11 @@ bool KActionShortcutList::save() const
 
 	// first, lets see if we have existing properties
 	QDomElement elem;
-	QDomElement it = doc.documentElement();
-	// KXMLGUIFactory::removeDOMComments( it ); <-- What was this for? --ellis
-	it = it.firstChild().toElement();
-	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
-		if( it.tagName() == tagActionProp ) {
-			elem = it;
+	QDomNode it = doc.documentElement().firstChild();
+	for( ; !it.isNull(); it = it.nextSibling() ) {
+	        QDomElement e = it.toElement();
+		if( e.tagName() == tagActionProp ) {
+			elem = e;
 			break;
 		}
 	}
@@ -751,9 +750,10 @@ bool KActionShortcutList::save() const
 
 		// now see if this element already exists
 		QDomElement act_elem;
-		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
-			if( it.attribute( attrName ) == sName ) {
-				act_elem = it;
+		for( it = elem.firstChild(); !it.isNull(); it = it.nextSibling() ) {
+			QDomElement e = it.toElement();		
+			if( e.attribute( attrName ) == sName ) {
+				act_elem = e;
 				break;
 			}
 		}
