@@ -203,14 +203,14 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
 	if (r->node->containingBlock() == this) {
 	    r->node->print(p, x, y, w, h, tx , ty);
 	}
-#ifdef FLOAT_DEBUG	
+#ifdef FLOAT_DEBUG
 	p->save();
 	p->setPen( Qt::magenta );
 	p->setBrush( QPainter::NoBrush );
 	//qDebug("(%p): special object at (%d/%d-%d/%d)", this, r->left, r->startY, r->width, r->endY - r->startY );
 	p->drawRect( QRect( r->left+tx, r->startY+ty, r->width, r->endY - r->startY) );
 	p->restore();
-#endif	    
+#endif
     }
 }
 
@@ -1380,7 +1380,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             boxLast = child;
         }
 
-        if ( boxFirst && 
+        if ( boxFirst &&
 	     ( !child->isInline() || !next || child == box2Start ) ) {
             // Create a new anonymous box containing all children starting from boxFirst
             // and up to (but not including) boxLast, and put it in place of the children
@@ -1432,7 +1432,7 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         QPtrListIterator<SpecialObject> it(*specialObjects);
         for (it.toLast(); (o = it.current()); --it) {
             if (o->node->containingBlock() == this &&
-                (inBox = o->node->nodeAtPoint(info, _x, _y, _tx, _ty)))
+                (inBox = o->node->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos())))
                 break;
         }
     }
