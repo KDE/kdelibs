@@ -261,9 +261,10 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
 
 void BrowserRun::slotStatResult( KIO::Job *job )
 {
-    if ( m_bHideErrorDialog && job->error() )
+    if ( job->error() ) {
+        kdDebug() << "BrowserRun::slotStatResult : " << job->errorString() << endl;
         handleError( job );
-    else
+    } else
         KRun::slotStatResult( job );
 }
 

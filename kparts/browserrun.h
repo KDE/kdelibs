@@ -93,7 +93,6 @@ namespace KParts {
         QWidget *m_window;            // QGuardedPtr?
         QString m_suggestedFilename;
         QString m_sMimeType;
-        bool m_bHideErrorDialog;
         bool m_bRemoveReferrer;
         bool m_bTrustedSource;
 
