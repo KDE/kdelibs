@@ -111,8 +111,8 @@ binary-arch:  build
 	dh_compress 
 	dh_fixperms 
 	chmod 644 debian/tmp/etc/pam.d/kde debian/tmp/usr/share/lintian/overrides/*
-	chmod 4755 debian/arts/usr/bin/artswrapper
-	dh_suidregister -parts usr/bin/artswrapper
+	chmod 4755 debian/libarts/usr/bin/artswrapper
+	dh_suidregister -plibarts usr/bin/artswrapper
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps 
@@ -120,8 +120,8 @@ binary-arch:  build
 	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
 	dh_md5sums
-	dh_builddeb -parts-dev
-	dh_builddeb -parts
+	dh_builddeb -plibarts-dev
+	dh_builddeb -plibarts
 	dh_builddeb -pkdelibs3-dev
 	dh_builddeb -pkdelibs3
 
