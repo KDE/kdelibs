@@ -54,6 +54,7 @@ class KProgress : public QFrame, public QRangeControl
 {
   Q_OBJECT
   Q_ENUMS( BarStyle )
+  Q_PROPERTY( int value READ value WRITE setValue);
   Q_PROPERTY( BarStyle barStyle READ barStyle WRITE setBarStyle )
   Q_PROPERTY( QColor barColor READ barColor WRITE setBarColor )
   Q_PROPERTY( QPixmap barPixmap READ barPixmap WRITE setBarPixmap )
@@ -140,6 +141,12 @@ public:
   */
   const QPixmap *barPixmap() const;
 
+  /**
+  * Retrive the current status
+  *
+  * @see setValue()
+  */
+  int value() const { return QRangeControl::value(); }
   /** 
   * Retrive the orientation of the progress bar.
   *
