@@ -79,6 +79,11 @@ public:
   KFileItem( const KURL &url, const QString &mimeType, mode_t mode );
 
   /**
+   * Copy constructor
+   */
+  KFileItem( const KFileItem &item );
+
+  /**
    * Destructor
    */
   virtual ~KFileItem();

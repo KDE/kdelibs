@@ -136,6 +136,24 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   init( false );
 }
 
+KFileItem::KFileItem( const KFileItem & item ) :
+  m_entry( item.m_entry ),
+  m_url( item.m_url),
+  m_bIsLocalURL( item.m_bIsLocalURL ),
+  m_strName( item.m_strName ),
+  m_strText( item.m_strText ),
+  m_fileMode( item.m_fileMode ),
+  m_permissions( item.m_permissions ),
+  m_user( item.m_user ),
+  m_group( item.m_group ),
+  m_bLink( item.m_bLink ),
+  m_pMimeType( item.m_pMimeType ),
+  m_strLowerCaseName( item.m_strLowerCaseName ),
+  m_bMarked( item.m_bMarked ),
+  d( new KFileItemPrivate(*item.d) )
+{
+}
+ 
 KFileItem::~KFileItem()
 {
   delete d;
