@@ -22,18 +22,18 @@ msgstr ""
 msgid "Paste special..."
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2153
-#: widgets/qtextedit.cpp:4148
+#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2160
+#: widgets/qtextedit.cpp:4268
 msgid "Clear"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2156
-#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4152
-#: widgets/qtextedit.cpp:4154
+#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2163
+#: widgets/qlineedit.cpp:2165 widgets/qtextedit.cpp:4272
+#: widgets/qtextedit.cpp:4274
 msgid "Select All"
 msgstr ""
 
-#: dialogs/qdialog.cpp:428
+#: dialogs/qdialog.cpp:429
 msgid "What's This?"
 msgstr ""
 
@@ -91,7 +91,7 @@ msgid "Cancel"
 msgstr ""
 
 #: dialogs/qfontdialog.cpp:300 widgets/qtitlebar.cpp:113
-#: workspace/qworkspace.cpp:1076
+#: workspace/qworkspace.cpp:1078
 msgid "Close"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: kernel/qapplication.cpp:2358
+#: kernel/qapplication.cpp:2383
 msgid ""
 "_: QT_LAYOUT_DIRECTION\n"
 "Translate this string to the string 'LTR' in left-to-right languages or to "
@@ -674,36 +674,36 @@ msgstr ""
 msgid "Cancel your edits?"
 msgstr ""
 
-#: widgets/qheader.cpp:1374 widgets/qheader.cpp:1376
+#: widgets/qheader.cpp:1378 widgets/qheader.cpp:1380
 #, c-format
 msgid "%1"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2145 widgets/qtextedit.cpp:4136
+#: widgets/qlineedit.cpp:2152 widgets/qtextedit.cpp:4256
 msgid "&Undo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2146 widgets/qtextedit.cpp:4137
+#: widgets/qlineedit.cpp:2153 widgets/qtextedit.cpp:4257
 msgid "&Redo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2149 widgets/qtextedit.cpp:4142
+#: widgets/qlineedit.cpp:2156 widgets/qtextedit.cpp:4262
 msgid "Cu&t"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2150 widgets/qtextedit.cpp:4143
+#: widgets/qlineedit.cpp:2157 widgets/qtextedit.cpp:4263
 msgid "&Copy"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2151 widgets/qtextedit.cpp:4145
+#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4265
 msgid "&Paste"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2119
+#: widgets/qmainwindow.cpp:2124
 msgid "Line up"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2121
+#: widgets/qmainwindow.cpp:2126
 msgid "Customize..."
 msgstr ""
 
@@ -723,7 +723,7 @@ msgstr ""
 msgid "Normalize"
 msgstr ""
 
-#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1052
+#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1054
 msgid "Minimize"
 msgstr ""
 
@@ -759,18 +759,157 @@ msgstr ""
 msgid "Stay on &Top"
 msgstr ""
 
-#: workspace/qworkspace.cpp:274 workspace/qworkspace.cpp:1243
+#: workspace/qworkspace.cpp:274 workspace/qworkspace.cpp:1245
 msgid "Sh&ade"
 msgstr ""
 
-#: workspace/qworkspace.cpp:844 workspace/qworkspace.cpp:996
+#: workspace/qworkspace.cpp:844 workspace/qworkspace.cpp:998
 msgid "%1 - [%2]"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1064
+#: workspace/qworkspace.cpp:1066
 msgid "Restore Down"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1241
+#: workspace/qworkspace.cpp:1243
 msgid "&Unshade"
+msgstr ""
+
+#: qxml_clean.cpp:54
+msgid ""
+"_: QXml\n"
+"no error occurred"
+msgstr ""
+
+#: qxml_clean.cpp:55
+msgid ""
+"_: QXml\n"
+"error triggered by consumer"
+msgstr ""
+
+#: qxml_clean.cpp:56
+msgid ""
+"_: QXml\n"
+"unexpected end of file"
+msgstr ""
+
+#: qxml_clean.cpp:57
+msgid ""
+"_: QXml\n"
+"more than one document type definition"
+msgstr ""
+
+#: qxml_clean.cpp:58
+msgid ""
+"_: QXml\n"
+"error occurred while parsing element"
+msgstr ""
+
+#: qxml_clean.cpp:59
+msgid ""
+"_: QXml\n"
+"tag mismatch"
+msgstr ""
+
+#: qxml_clean.cpp:60
+msgid ""
+"_: QXml\n"
+"error occurred while parsing content"
+msgstr ""
+
+#: qxml_clean.cpp:61
+msgid ""
+"_: QXml\n"
+"unexpected character"
+msgstr ""
+
+#: qxml_clean.cpp:62
+msgid ""
+"_: QXml\n"
+"invalid name for processing instruction"
+msgstr ""
+
+#: qxml_clean.cpp:63
+msgid ""
+"_: QXml\n"
+"version expected while reading the XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:64
+msgid ""
+"_: QXml\n"
+"wrong value for standalone declaration"
+msgstr ""
+
+#: qxml_clean.cpp:65
+msgid ""
+"_: QXml\n"
+"encoding declaration or standalone declaration expected while reading the "
+"XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:66
+msgid ""
+"_: QXml\n"
+"standalone declaration expected while reading the XML declaration"
+msgstr ""
+
+#: qxml_clean.cpp:67
+msgid ""
+"_: QXml\n"
+"error occurred while parsing document type definition"
+msgstr ""
+
+#: qxml_clean.cpp:68
+msgid ""
+"_: QXml\n"
+"letter is expected"
+msgstr ""
+
+#: qxml_clean.cpp:69
+msgid ""
+"_: QXml\n"
+"error occurred while parsing comment"
+msgstr ""
+
+#: qxml_clean.cpp:70
+msgid ""
+"_: QXml\n"
+"error occurred while parsing reference"
+msgstr ""
+
+#: qxml_clean.cpp:71
+msgid ""
+"_: QXml\n"
+"internal general entity reference not allowed in DTD"
+msgstr ""
+
+#: qxml_clean.cpp:72
+msgid ""
+"_: QXml\n"
+"external parsed general entity reference not allowed in attribute value"
+msgstr ""
+
+#: qxml_clean.cpp:73
+msgid ""
+"_: QXml\n"
+"external parsed general entity reference not allowed in DTD"
+msgstr ""
+
+#: qxml_clean.cpp:74
+msgid ""
+"_: QXml\n"
+"unparsed entity reference in wrong context"
+msgstr ""
+
+#: qxml_clean.cpp:75
+msgid ""
+"_: QXml\n"
+"recursive entities"
+msgstr ""
+
+#: qxml_clean.cpp:76
+msgid ""
+"_: QXml\n"
+"error in the text declaration of an external entity"
 msgstr ""
