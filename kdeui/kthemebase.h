@@ -40,7 +40,7 @@ class KThemePixmap : public KPixmap
 public:
     enum BorderType{Top=0, Bottom, Left, Right, TopLeft, TopRight, BottomLeft,
     BottomRight};
-    
+
     KThemePixmap(bool timer = true);
     KThemePixmap(const KThemePixmap &p);
     ~KThemePixmap();
@@ -51,6 +51,10 @@ public:
 protected:
     QTime *t;
     QPixmap *b[8];
+    
+private:
+    class KThemePixmapPrivate;
+    KThemePixmapPrivate *d;
 };
 
 inline QPixmap* KThemePixmap::border(BorderType type)
@@ -163,6 +167,10 @@ protected slots:
 protected:
     QIntCache<KThemePixmap> cache;
     QTimer flushTimer;
+    
+private:
+    class KThemeCachePrivate;
+    KThemeCachePrivate *d;
 };
 
 
@@ -193,11 +201,11 @@ public:
      */
     enum ScaleHint{FullScale, HorizontalScale, VerticalScale, TileScale};
     /**
-     * The default arrow types. 
+     * The default arrow types.
      */
     enum ArrowStyle{MotifArrow, LargeArrow, SmallArrow};
     /**
-     * The default frame shading styles. 
+     * The default frame shading styles.
      */
     enum ShadeStyle{Motif, Windows, Next, KDE};
     /**
@@ -274,7 +282,7 @@ public:
      */
     const QColorGroup* colorGroup(const QColorGroup &defaultGroup,
                             WidgetType widget) const;
- 
+
     QBrush pixmapBrush(const QColorGroup &group, QColorGroup::ColorRole role,
                        int w, int h, WidgetType widget);
     /**
@@ -479,6 +487,7 @@ private:
     bool focus3D;
     KThemeCache *cache;
     int cacheSize;
+    QString configFileName;
 
     /**
      * The theme pixmaps. Many of these may be NULL if no pixmap is specified.
@@ -545,14 +554,18 @@ private:
      * Duplicate border pixmapped border entries
      */
     bool pbDuplicate[WIDGETS];
-     
+
+private:
+    class KThemeBasePrivate;
+    KThemeBasePrivate *d;
+    
 };
 
 inline bool KThemeBase::isPixmap( WidgetType widget) const
 {
     return(pixmaps[widget] != NULL || gradients[widget] != GrNone);
 }
- 
+
 inline bool KThemeBase::isColor(WidgetType widget) const
 {
     return(colors[widget] != NULL);
@@ -597,7 +610,7 @@ inline QBrush KThemeBase::pixmapBrush(const QColorGroup &group,
     else
         return(group.color(role));
 }
- 
+
 inline const QColorGroup* KThemeBase::colorGroup(const QColorGroup &defaultGroup,
                                                  WidgetType widget) const
 {

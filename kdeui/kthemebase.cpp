@@ -240,7 +240,9 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     QString pixnames[WIDGETS]; // used for duplicate check
     QString brdnames[WIDGETS];
     bool loaded[WIDGETS]; // used for preloading for CopyWidget
-    KConfig config("kstylerc", true, false);
+    if (configFileName.isEmpty())
+       configFileName="kstylerc";
+    KConfig config(configFileName, true, false);
 
     // Are we initalized?
     KRootProp *testProp = new KRootProp("Misc");
@@ -287,8 +289,8 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     }
 }
 
-KThemeBase::KThemeBase(const QString &)
-    :KStyle()
+KThemeBase::KThemeBase(const QString & configFile)
+    :KStyle(), configFileName(configFile)
 {
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
