@@ -168,19 +168,19 @@ public:
     /**
      * @return the maximum number of items in the undo history
      */
-    const int &undoLimit() { return m_undoLimit; }
+    int undoLimit() const { return m_undoLimit; }
     /**
      * Sets the maximum number of items in the undo history.
      */
-    void setUndoLimit(const int &limit);
+    void setUndoLimit(int limit);
     /**
      * @return the maximum number of items in the redo history
      */
-    const int &redoLimit() { return m_redoLimit; }
+    int redoLimit() const { return m_redoLimit; }
     /**
      * Sets the maximum number of items in the redo history.
      */
-    void setRedoLimit(const int &limit);
+    void setRedoLimit(int limit);
 
 public slots:
     /**

@@ -256,7 +256,7 @@ void KCommandHistory::documentSaved() {
         d->m_savedAt=-42;
 }
 
-void KCommandHistory::setUndoLimit(const int &limit) {
+void KCommandHistory::setUndoLimit(int limit) {
 
     if(limit>0 && limit!=m_undoLimit) {
         m_undoLimit=limit;
@@ -264,7 +264,7 @@ void KCommandHistory::setUndoLimit(const int &limit) {
     }
 }
 
-void KCommandHistory::setRedoLimit(const int &limit) {
+void KCommandHistory::setRedoLimit(int limit) {
 
     if(limit>0 && limit!=m_redoLimit) {
         m_redoLimit=limit;
