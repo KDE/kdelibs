@@ -1040,7 +1040,16 @@ KRadioAction::KRadioAction( QObject* parent, const char* name )
 void KRadioAction::slotActivated()
 {
   if ( isChecked() )
+  {
+    const QObject *senderObj = sender();
+    
+    if ( !senderObj || !senderObj->inherits( "KToolBarButton" ) )
+      return;
+    
+    const_cast<KToolBarButton *>( static_cast<const KToolBarButton *>( senderObj ) )->on( true );
+    
     return;
+  }
 
   KToggleAction::slotActivated();
 }
