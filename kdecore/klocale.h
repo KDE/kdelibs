@@ -294,6 +294,16 @@ public:
     double readNumber(const QString &numStr, bool * ok=0) const;
 
     /**
+     * Converts a localized date string to a QDate. Note:
+     * This only works on short dates for the time beeing.
+     *
+     * @param str the string we want to convert.
+     *
+     * @return The string converted to a QDate
+     */
+    QDate readDate(const QString &str) const;
+
+    /**
       * Creates an alias for the string text. It will be translated
       * and stored under the integer constant index.
       * This can help you to avoid repeated translation.

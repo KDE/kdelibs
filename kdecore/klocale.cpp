@@ -677,6 +677,101 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
     return rst;
 }
 
+QDate KLocale::readDate(const QString &str) const
+{
+	QString fmt(_datefmtshort);
+	QDate date;
+	QChar	c;
+	int	i;
+	int day = 0, month = 0, year = 0;
+	uint strpos = 0;
+	uint fmtpos = 0;
+
+	while (fmt.length() > fmtpos) {
+		if (str.length() == strpos) break;
+
+		c = fmt.at(fmtpos++);
+
+		if (c != '%') {
+			if (c.isSpace())
+				while (str.length() > strpos && str.at(strpos).isSpace())
+					strpos++;
+			else if (c != str.at(strpos++))
+				return date;
+			continue;
+		}
+
+		c = fmt.at(fmtpos++);
+		switch (c) {
+		case 'd':
+		case 'e':
+			if (!str.at(strpos).isDigit())
+				return date;
+
+			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
+				i *= 10;
+				i += str.at(strpos) - '0';
+			}
+			if (i > 31)
+				return date;
+
+			day = i;
+
+			if (str.length() > strpos && str.at(strpos).isSpace())
+				while (fmt.at(fmtpos) != 0 && !fmt.at(fmtpos).isSpace())
+					fmtpos++;
+			break;
+
+		case 'n':
+		case 'm':
+			if (!str.at(strpos).isDigit())
+				return date;
+
+			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
+				i *= 10;
+				i += str.at(strpos) - '0';
+			}
+			if (i < 1 || i > 12)
+				return date;
+
+			month = i;
+
+			if (str.length() > strpos && str.at(strpos).isSpace())
+				while (fmt.at(fmtpos) != 0 && !fmt.at(fmtpos).isSpace())
+					fmtpos++;
+			break;
+
+		case 'Y':
+		case 'y':
+			if (str.length() == strpos || str.at(strpos).isSpace())
+				break;
+
+			if (!str.at(strpos).isDigit())
+				return date;
+
+			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
+				i *= 10;
+				i += str.at(strpos) - '0';
+			}
+			if (c == 'y') {
+				if (i < 69) i += 100;
+				i += 1900;
+			}
+			if (i < 0)
+				return date;
+
+			year = i;
+
+			if (str.length() > strpos && str.at(strpos).isSpace())
+				while (fmt.length() > fmtpos && !fmt.at(fmtpos).isSpace())
+					fmtpos++;
+			break;
+		}
+	}
+	date.setYMD(year, month, day);
+	return date;
+}
+
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
   QString rst(_timefmt);
