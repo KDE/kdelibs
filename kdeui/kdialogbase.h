@@ -621,9 +621,45 @@ class KDialogBase : public KDialog
 
 
   protected:
+    /**
+     * Returns the empty page when the predefined layout is used in Plain
+     * mode. This widget must used as the toplevel widget of your dialog
+     * code.
+     *
+     * @return The widget or 0 if the predefined layout mode is not Plain
+     * or if you don't use any predefined layout
+     */
     QWidget *plainPage( void );
-    QFrame  *addPage(const QString &item,const QString &header=QString::null);
+
+    /**
+     * Add a page to the predefined layout when used in TreeList or Tabbed
+     * mode. The returned widget must used as the toplevel widget for 
+     * this particular page.
+     *
+     * @param const QString &item Name used in the list (TreeList mode) or
+     * Tab name (Tabbed mode).
+     * @param const QString &header Header text use in TreeList mode. Ignored
+     * in Tabbed mode. If empty, the item text is used instead.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     * the page.
+     */
+    QFrame  *addPage( const QString &item, 
+                      const QString &header=QString::null );
+
+    /**
+     * The resize event handler. Takes care of position the components of
+     * the dialog. If you subclass KDialogBase and need to define you own
+     * resizeEvent, then make sure you the original resizeEvent it executed as
+     * well: From your resizeEvent do KDialogBase::resizeEvent().
+     */
     virtual void resizeEvent( QResizeEvent * );
+    
+    /**
+     * Maps some keys to the actions buttons. F1 is mapped to the Help
+     * button if present and Escape to the Cancel or Close if present. The
+     * button action event is animated.
+     */
     virtual void keyPressEvent( QKeyEvent * );
 
   protected slots:

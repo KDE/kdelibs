@@ -57,9 +57,6 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 
   enableButtonSeparator( separator );
   makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
-  setButtonOKText();
-  setButtonApplyText();
-  setButtonCancelText();
 }
 
 
@@ -571,7 +568,7 @@ void KDialogBase::setButtonOKText( const QString &text,
 				   const QString &tooltip,
 				   const QString &quickhelp )
 {
-  if( mButton.mask & Ok == 0 )
+  if( (mButton.mask & Ok) == 0 )
   {
     return;
   }
@@ -591,7 +588,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
 				      const QString &tooltip,
 				      const QString &quickhelp )
 {
-  if( mButton.mask & Apply == 0 )
+  if( (mButton.mask & Apply) == 0 )
   {
     return;
   }
@@ -612,7 +609,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
 				       const QString& tooltip, 
 				       const QString& quickhelp )
 {
-  if( mButton.mask & Cancel == 0 )
+  if( (mButton.mask & Cancel) == 0 )
   {
     return;
   }
