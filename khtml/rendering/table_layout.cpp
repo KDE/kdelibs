@@ -588,7 +588,7 @@ void AutoTableLayout::calcMinMaxWidth()
 	}
     }
 
-    if (false && shouldScaleColumns(table)) {
+    if (shouldScaleColumns(table)) {
         maxNonPercent = (maxNonPercent * 100 + 50) / kMax(remainingPercent, 1);
 	maxWidth = kMax( maxNonPercent, maxWidth );
 	maxWidth = kMax( maxWidth, maxPercent );
