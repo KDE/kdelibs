@@ -240,8 +240,8 @@ void Job::showErrorDialog( QWidget * parent )
   if ( m_progressId )
     Observer::self()->jobFinished( m_progressId );
   kapp->enableStyles();
-  // Show a message box, except for "user canceled"
-  if ( m_error != ERR_USER_CANCELED ) {
+  // Show a message box, except for "user canceled" or "no content"
+  if ( (m_error != ERR_USER_CANCELED) && (m_error != ERR_NO_CONTENT) ) {
     //old plain error message
     kdDebug() << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
     if ( 1 )
