@@ -301,8 +301,8 @@ namespace KStdAction
 	/**
 	* Paste the contents of clipboard at the current mouse or cursor
 	* position. Provide a button on the toolbar with the clipboard history
-    * menu if Klipper is running.
-    * @since 3.2
+	* menu if Klipper is running.
+	* @since 3.2
 	*/
 	KDEUI_EXPORT KAction *pasteText(const QObject *recvr, const char *slot,
 		KActionCollection* parent, const char *name = 0 );
