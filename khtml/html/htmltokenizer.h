@@ -121,7 +121,6 @@ namespace khtml {
 
 class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
-    Q_OBJECT
 public:
     HTMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
     HTMLTokenizer(DOM::DocumentPtr *, DOM::DocumentFragmentImpl *frag);
