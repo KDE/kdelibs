@@ -48,6 +48,7 @@
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kinstance.h"
+#include "kshell.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -990,14 +991,6 @@ static QString readEnvPath(const char *env)
    return QFile::decodeName(c_path);
 }
 
-static void fixHomeDir(QString &dir)
-{
-   if (dir[0] == '~')
-   {
-      dir = QDir::homeDirPath() + dir.mid(1);
-   }
-}
-
 void KStandardDirs::addKDEDefaults()
 {
     QStringList kdedirList;
@@ -1013,7 +1006,7 @@ void KStandardDirs::addKDEDefaults()
 	QString kdedir = readEnvPath("KDEDIR");
 	if (!kdedir.isEmpty())
         {
-           fixHomeDir(kdedir);
+           kdedir = KShell::tildeExpand(kdedir);
 	   kdedirList.append(kdedir);
         }
     }
@@ -1059,15 +1052,14 @@ void KStandardDirs::addKDEDefaults()
 
     if (localKdeDir != "-/")
     {
-        fixHomeDir(localKdeDir);
+        localKdeDir = KShell::tildeExpand(localKdeDir);
         addPrefix(localKdeDir);
     }
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
     {
-        QString dir = *it;
-        fixHomeDir(dir);
+        QString dir = KShell::tildeExpand(*it);
 	addPrefix(dir);
     }
     // end KDEDIRS
@@ -1104,14 +1096,13 @@ void KStandardDirs::addKDEDefaults()
        }
     }
 
-    fixHomeDir(localXdgDir);
+    localXdgDir = KShell::tildeExpand(localXdgDir);
     addXdgConfigPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
 	 it != xdgdirList.end(); it++)
     {
-        QString dir = *it;
-        fixHomeDir(dir);
+        QString dir = KShell::tildeExpand(*it);
 	addXdgConfigPrefix(dir);
     }
     // end XDG_CONFIG_XXX
@@ -1157,14 +1148,13 @@ void KStandardDirs::addKDEDefaults()
        }
     }
 
-    fixHomeDir(localXdgDir);
+    localXdgDir = KShell::tildeExpand(localXdgDir);
     addXdgDataPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
 	 it != xdgdirList.end(); it++)
     {
-        QString dir = *it;
-        fixHomeDir(dir);
+        QString dir = KShell::tildeExpand(*it);
 	addXdgDataPrefix(dir);
     }
     // end XDG_DATA_XXX
