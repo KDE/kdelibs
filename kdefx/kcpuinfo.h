@@ -43,7 +43,9 @@ class KCPUInfo
          * can query.
          */
         enum Extensions {
-            IntelMMX        = 0x1  //!< Intel's MMX instructions.
+            IntelMMX        = 0x1,  //!< Intel's MMX instructions.
+            IntelSSE        = 0x2,  //!< Intel's SSE instructions.
+            IntelSSE2       = 0x4   //!< Intel's SSE2 instructions.
         };
 
         /**

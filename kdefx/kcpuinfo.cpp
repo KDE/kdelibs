@@ -5,7 +5,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
@@ -24,15 +24,40 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "kcpuinfo.h"
+#include <csignal>
+#include <csetjmp>
+
 #include <config.h>
+#include "kcpuinfo.h"
 
 
-static int getCpuFeatures()
+#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#  define HAVE_GNU_INLINE_ASM
+#endif
+
+
+// Copied from kdecore/kglobal.h
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
+#  define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
+#else
+#  define KDE_NO_EXPORT
+#endif
+
+
+static jmp_buf KDE_NO_EXPORT env;
+
+// Sighandler for the SSE OS support check
+static void KDE_NO_EXPORT sighandler( int )
+{
+    std::longjmp( env, 1 );
+}
+
+
+static int KDE_NO_EXPORT getCpuFeatures()
 {
     int features = 0;
 
-#if defined(__i386__) && ( defined(__GNUC__) || defined(__INTEL_COMPILER) )
+#if defined(__i386__) && defined( HAVE_GNU_INLINE_ASM )
     bool haveCPUID = false;
     int result = 0;
 
@@ -72,11 +97,36 @@ static int getCpuFeatures()
     if ( result & 0x00800000 )
         features |= KCPUInfo::IntelMMX;
 
-#endif // __i386__ && ( __GNUC__ || __INTEL_COMPILER )
+#ifdef HAVE_X86_SSE
+    // Test bit 25 (SSE support)
+    if ( result & 0x00200000 ) {
+        features |= KCPUInfo::IntelSSE;
+
+        // OS support test for SSE.
+        // Install our own sighandler for SIGILL.
+        __sighandler_t oldhandler = std::signal( SIGILL, sighandler );
+
+        // Try executing an SSE insn to see if we get a SIGILL
+        if ( setjmp( env ) )
+            features ^= KCPUInfo::IntelSSE; // The OS support test failed
+        else
+            __asm__ __volatile__("xorps %xmm0, %xmm0");
+
+        // Restore the default sighandler
+        std::signal( SIGILL, oldhandler );
+
+        // Test bit 26 (SSE2 support)
+        if ( (result & 0x00400000) && (features & KCPUInfo::IntelSSE) )
+            features |= KCPUInfo::IntelSSE2;
+
+        // Note: The OS requirements for SSE2 are the same as for SSE
+        //       so we don't have to do any additional tests for that.
+    }
+#endif // HAVE_X86_SSE
+#endif // __i386__ && HAVE_GNU_INLINE_ASM
 
     return features;
 }
-
 
 unsigned int KCPUInfo::s_features = getCpuFeatures();
 
