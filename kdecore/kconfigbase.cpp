@@ -208,7 +208,7 @@ QString KConfigBase::group() const
 QString KConfigBase::readEntry( const QString& pKey,
 				const QString& pDefault ) const
 {
-  if( !data()->bLocaleInitialized && KGlobal::locale() )
+  if( !data()->bLocaleInitialized && KGlobal::_locale )
   {
     KConfigBase *that = const_cast<KConfigBase*>(this);
     that->setLocale();
