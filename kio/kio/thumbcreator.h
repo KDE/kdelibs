@@ -72,7 +72,7 @@ class QImage;
  * naming all mimetypes your ThumbCreator supports. You can also use simple
  * wildcards, like 
  * <pre>
- *              text/* or image/*.
+ *              text\/* or image\/*.
  * </pre>
  *
  * If your plugin is rather inexpensive (e.g. like the text preview ThumbCreator),
