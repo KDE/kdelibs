@@ -4,6 +4,10 @@
 #include <config.h>
 #endif
 
+#include "kio_job.h"
+#include "kio_simpleprogress_dlg.h"
+#include "kio_listprogress_dlg.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -52,10 +56,6 @@
 #include <kdebug.h>
 #include <kprotocolmanager.h>
 #include <kdialog.h>
-
-#include "kio_job.h"
-#include "kio_simpleprogress_dlg.h"
-#include "kio_listprogress_dlg.h"
 
 template class QIntDict<KIOJob>;
 template class QList<KIOSlavePool::Entry>;
@@ -123,10 +123,6 @@ void KIOJob::initStatic() {
   if ( !s_allJobs ) {
     s_allJobs = new jobDict;
   }
-
-  if ( !m_pListProgressDlg ) {
-    m_pListProgressDlg = new KIOListProgressDlg;
-  }
 }
 
 
@@ -179,7 +175,7 @@ void KIOJob::createGUI() {
   switch ( m_iGUImode ) {
   case LIST:
     if ( !m_pListProgressDlg )
-      return;
+      m_pListProgressDlg = new KIOListProgressDlg;
     m_pListProgressDlg->addJob( this );
     m_pListProgressDlg->show();
     break;
