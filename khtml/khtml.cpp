@@ -515,7 +515,6 @@ void KHTMLWidget::slotPost( int id )
 {
     KIOJob* job = KIOJob::find( id );
     job->data((const char *)post_data, post_data.length());
-    job->dataEnd();
 }
 
 void KHTMLWidget::slotFinished( int /*_id*/ )
