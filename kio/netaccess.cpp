@@ -78,6 +78,9 @@ bool NetAccess::upload(const QString& src, const KURL& target)
 
   // If target is local... well, just copy. This can be useful
   // when the client code uses a temp file no matter what.
+  // Let's make sure it's not the exact same file though
+  if (target.isLocalFile() && target.path() == src)
+    return true;
 
   NetAccess kioNet;
   KURL s;
