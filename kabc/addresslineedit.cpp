@@ -108,12 +108,12 @@ void AddressLineEdit::init()
       connect( box, SIGNAL( highlighted( const QString& )),
                this, SLOT( slotPopupCompletion( const QString& ) ));
       connect( box, SIGNAL( userCancelled( const QString& )),
-               SLOT( setText( const QString& )));
+               SLOT( slotSetTextAsEdited( const QString& )));
 
       m_completionInitialized = true; // don't connect muliple times. That's
                                       // ugly, tho, better have completionBox()
                                       // virtual in KDE 4
-      // Why? This is only called once. Why should this be called more 
+      // Why? This is only called once. Why should this be called more
       // than once? And why was this protected?
       // And while I'm at it: who deletes all those static objects? (pfeiffer)
   }
@@ -245,7 +245,7 @@ void AddressLineEdit::insert(const QString &t)
     }
 
     contents = contents.left(pos)+newText+contents.mid(pos);
-    setText(contents);
+    slotSetTextAsEdited(contents);
     setCursorPosition(pos+newText.length());
 }
 
@@ -328,7 +328,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             box->popup();
         }
         else if (completions.count() == 1)
-            setText(prevAddr + completions.first());
+            slotSetTextAsEdited(prevAddr + completions.first());
         else
             box->hide();
 
@@ -372,8 +372,8 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         {
             if ( !match.isNull() && match != s )
             {
-                setText( prevAddr + match );
-                cursorAtEnd();
+                slotSetTextAsEdited( prevAddr + match );
+		cursorAtEnd();
             }
             break;
         }
@@ -398,7 +398,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
 //-----------------------------------------------------------------------------
 void AddressLineEdit::slotPopupCompletion( const QString& completion )
 {
-    setText( m_previousAddresses + completion );
+    slotSetTextAsEdited( m_previousAddresses + completion );
     cursorAtEnd();
 }
 
@@ -461,6 +461,12 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
     doCompletion( false );
 }
 
+void AddressLineEdit::slotSetTextAsEdited( const QString& text )
+{
+    setText( text );
+    setEdited( true );
+}
+
 QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
 {
     QStringList src = adrs;
@@ -493,12 +499,13 @@ void AddressLineEdit::dropEvent(QDropEvent *e)
     {
       if (!ct.isEmpty()) ct.append(", ");
       KURL u(*it);
-      if ((*it).protocol() == "mailto") 
+      if ((*it).protocol() == "mailto")
           ct.append( (*it).path() );
-      else 
+      else
           ct.append( (*it).url() );
     }
     setText(ct);
+    setEdited( true );
   }
   else {
     if (m_useCompletion)
