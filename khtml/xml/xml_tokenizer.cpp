@@ -389,7 +389,8 @@ void XMLTokenizer::executeScripts()
 	DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
 	if (scriptSrc != "") {
 	    m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, m_doc->baseURL());
-	    m_cachedScript->ref(this);
+	    ++(*m_scriptsIt);
+	    m_cachedScript->ref(this); // will call executeScripts() again if already cached
 	    setLoading = true;
 	}
 	else {
@@ -402,11 +403,12 @@ void XMLTokenizer::executeScripts()
 	    // the script cannot do document.write until we support incremental parsing
 	    // ### handle the case where the script deletes the node or redirects to
 	    // another page, etc. (also in notifyFinished())
+	    // ### the script may add another script node after this one which should be executed
 	    if (m_view) {
 		m_view->part()->executeScript(scriptCode);
 	    }
+	    ++(*m_scriptsIt);
 	}
-	++(*m_scriptsIt);
     }
     if (!m_scriptsIt->current()) {
 	end(); // this actually causes us to be deleted
