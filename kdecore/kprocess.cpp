@@ -61,6 +61,9 @@
 #ifdef HAVE_VFORK_H
 #include <vfork.h>
 #endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
 
 #include <qapplication.h>
 
