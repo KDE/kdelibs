@@ -106,7 +106,7 @@ DownloadDialog::~DownloadDialog()
 
 void DownloadDialog::load()
 {
-  m_loader->load(m_filter);
+  m_loader->load(m_filter, m_providerlist);
 }
 
 void DownloadDialog::clear()
@@ -157,6 +157,8 @@ void DownloadDialog::addProvider(Provider *p)
   KListView *lvtmp_r, *lvtmp_d, *lvtmp_l;
   QTextBrowser *rt;
   QString tmp;
+  int ret;
+  QPixmap pix;
 
   if(m_map.count() == 0)
   {
@@ -166,8 +168,12 @@ void DownloadDialog::addProvider(Provider *p)
 
   kdDebug() << "addProvider()/begin" << endl;
 
-  KIO::NetAccess::download(p->icon(), tmp, this);
-  frame = addPage(p->name(), p->name(), QPixmap(tmp));
+  ret = true;
+  if(!p->icon().isValid()) ret = false;
+  else ret = KIO::NetAccess::download(p->icon(), tmp, this);
+  if(ret) pix = QPixmap(tmp);
+  else pix = KGlobal::iconLoader()->loadIcon("knewstuff", KIcon::Panel);
+  frame = addPage(p->name(), p->name(), pix);
   m_frame = frame;
 
   w2 = new QWidget(frame);
@@ -566,6 +572,11 @@ void DownloadDialog::loadProvider(Provider *p)
 void DownloadDialog::setType(QString type)
 {
   m_filter = type;
+}
+
+void DownloadDialog::setProviderList(const QString& providerList)
+{
+  m_providerlist = providerList;
 }
 
 void DownloadDialog::slotOk()

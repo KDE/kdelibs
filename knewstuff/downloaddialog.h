@@ -97,6 +97,14 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void load();
 
     /**
+      Explicitly uses this provider list instead of the one read from
+      the application configuration.
+
+      @param providerList the URL of the provider list
+    */
+    void setProviderList(const QString& providerList);
+
+    /**
       Adds another provider to the download dialog.
       This is normally done internally.
 
@@ -206,6 +214,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     QMap<KIO::Job*, Provider*> m_jobs;
     QMap<KIO::Job*, QString> m_data;
     QString m_filter;
+    QString m_providerlist;
     Engine *m_engine;
     QWidget *m_page;
 };
