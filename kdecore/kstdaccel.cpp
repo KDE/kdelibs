@@ -169,7 +169,7 @@ QString KStdAccel::description(StdAccel id)
      case RotateUp:         return i18n("Rotate Up");
      case RotateDown:       return i18n("Rotate Down");
      case PopupMenuContext: return i18n("Popup Menu Context");
-     case WhatThis:         return i18n("What This");
+     case WhatThis:         return i18n("What's This");
      case Reload:           return i18n("Reload");
      case NB_STD_ACCELS:    return QString::null;
     }
