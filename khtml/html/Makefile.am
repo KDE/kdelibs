@@ -39,7 +39,8 @@ noinst_HEADERS = \
 	html_elementimpl.h   html_miscimpl.h \
 	html_formimpl.h      html_objectimpl.h
 
-INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
+INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/dcop \
+ -I$(top_srcdir)/kio/kssl \
  -I$(top_srcdir)/kjs -I$(top_srcdir)/khtml -I$(top_srcdir) $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
