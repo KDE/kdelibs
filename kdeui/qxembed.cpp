@@ -19,7 +19,6 @@
     Boston, MA 02111-1307, USA.
 *****************************************************************************/
 
-#include "qxembed.h"
 #include <qapplication.h>
 #include <qptrlist.h>
 #include <qptrdict.h>
@@ -34,6 +33,23 @@
 #define XK_MISCELLANY
 #define XK_LATIN1
 #include <X11/keysymdef.h>
+#include <kdebug.h>
+//#include <kxeventutil.h>
+//#include <kqeventutil.h>
+#include <config.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#ifdef HAVE_USLEEP
+#define USLEEP(x) usleep(x)
+#else
+#define USLEEP(x) sleep(0)
+#endif // HAVE_USLEEP
+#else
+#define USLEEP(x) sleep(0)
+#endif // HAVE_UNISTD_H
+
+#include "qxembed.h"
 
 #ifndef XK_ISO_Left_Tab
 #define XK_ISO_Left_Tab                                 0xFE20
@@ -186,6 +202,8 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 
 static int qxembed_x11_event_filter( XEvent* e)
 {
+    //kdDebug() << "qxembed_x11_event_filter " << KXEventUtil::getX11EventInfo(e) << endl;
+
     switch ( e->type ) {
     case XKeyPress: {
         int kc = XKeycodeToKeysym(qt_xdisplay(), e->xkey.keycode, 0);
@@ -588,8 +606,22 @@ static bool wstate_withdrawn( WId winid )
     return withdrawn;
 }
 
-
-
+static int get_parent(WId winid, Window *out_parent)
+{
+    Window root, *children=0;
+    unsigned int nchildren;
+    int st = XQueryTree(qt_xdisplay(), winid, &root, out_parent, &children, &nchildren);
+    if (st) {
+        if (children) {
+            XFree(children);
+        }
+        return st;
+    } else {
+        // kdDebug() << QString("**** FAILED **** XQueryTree returns status %1").arg(st) << endl;
+    }
+    return st;
+}
+#include <unistd.h>
 /*!
 
   Embeds the window with the identifier \a w into this xembed widget.
@@ -604,9 +636,9 @@ static bool wstate_withdrawn( WId winid )
  */
 void QXEmbed::embed(WId w)
 {
+    kdDebug() << "************************** Embed "<< QString("0x%1").arg(w, 0, 16) << " into " << QString("0x%1").arg(winId(), 0, 16) << " window=" << QString("0x%1").arg(window, 0, 16) << " **********" << endl; 
     if (!w)
         return;
-
     XAddToSaveSet( qt_xdisplay(), w );
     bool has_window =  w == window;
     window = w;
@@ -617,7 +649,19 @@ void QXEmbed::embed(WId w)
             while (!wstate_withdrawn(window))
                 ;
         }
-        XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
+        Window parent;
+        get_parent(w, &parent);
+        kdDebug() << QString(">>> before reparent: parent=0x%1").arg(parent, 0, 16) << endl;
+        for (int i = 0; i < 50; i++) {
+            Window parent = 0;
+            XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
+            if (get_parent(w, &parent) && parent == winId()) {
+               kdDebug() << QString(">>> Loop %1: reparent of 0x%2 into 0x%3 successful").arg(i).arg(w, 0, 16).arg(winId(), 0, 16) << endl;
+               break;
+            }
+            kdDebug() << QString(">>> Loop %1: reparent of 0x%2 into 0x%3 failed").arg(i).arg(w, 0, 16).arg(winId(), 0, 16) << endl;
+            USLEEP(1000);
+        }
         QApplication::syncX();
     }
 
@@ -662,6 +706,7 @@ bool QXEmbed::focusNextPrevChild( bool next )
  */
 bool QXEmbed::x11Event( XEvent* e)
 {
+    //kdDebug() << "x11Event " << KXEventUtil::getX11EventInfo(e) << endl;
     switch ( e->type ) {
     case DestroyNotify:
         if ( e->xdestroywindow.window == window ) {
