@@ -3,6 +3,7 @@
    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999-2001 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002 Lukas Tinkl <lukas@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,6 +49,7 @@ static const char *maincatalogue = 0;
 class KLocalePrivate
 {
 public:
+  int weekStartDay;
   int plural_form;
   QStringList languageList;
   QValueList<KCatalogue> catalogues;
@@ -306,7 +308,7 @@ void KLocale::initFormat()
   readConfigEntry("TimeFormat", "%H:%M:%S", m_timeFormat);
   readConfigEntry("DateFormat", "%A %d %B %Y", m_dateFormat);
   readConfigEntry("DateFormatShort", "%Y-%m-%d", m_dateFormatShort);
-  readConfigBoolEntry("WeekStartsMonday", true, m_weekStartsMonday);
+  readConfigNumEntry("WeekStartDay", 1, d->weekStartDay, int);
 
   // other
   readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize, int);
@@ -807,10 +809,16 @@ QString KLocale::translateQt( const char *context, const char *source,
   return QString::null;
 }
 
-bool KLocale::weekStartsMonday() const
+int KLocale::weekStartDay() const
 {
   doFormatInit();
-  return m_weekStartsMonday;
+  return d->weekStartDay;
+}
+
+bool KLocale::weekStartsMonday() const //deprecated
+{
+  doFormatInit();
+  return (d->weekStartDay==1);
 }
 
 QString KLocale::decimalSymbol() const
@@ -1726,10 +1734,22 @@ void KLocale::setTimeFormat(const QString & format)
   m_timeFormat = format.stripWhiteSpace();
 }
 
-void KLocale::setWeekStartsMonday(bool start)
+void KLocale::setWeekStartsMonday(bool start) //deprecated
 {
   doFormatInit();
-  m_weekStartsMonday = start;
+  if (start)
+    d->weekStartDay = 1;
+  else
+    d->weekStartDay = 7;
+}
+
+void KLocale::setWeekStartDay(int day)
+{
+  doFormatInit();
+  if (day>7 || day<1)
+    d->weekStartDay = 1; //Monday is default
+  else
+    d->weekStartDay = day;
 }
 
 QString KLocale::dateFormat() const
@@ -1932,8 +1952,6 @@ KLocale::KLocale(const KLocale & rhs)
 
 KLocale & KLocale::operator=(const KLocale & rhs)
 {
-  m_weekStartsMonday = rhs.m_weekStartsMonday;
-
   // Numbers and money
   m_decimalSymbol = rhs.m_decimalSymbol;
   m_thousandsSeparator = rhs.m_thousandsSeparator;

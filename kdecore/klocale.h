@@ -1,6 +1,8 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
     Copyright (C) 1999-2001 Hans Petter Bieker <bieker@kde.org>
+    Copyright (c) 2002 Lukas Tinkl <lukas@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,7 +47,7 @@ class KCatalogue;
  *  language.
  *
  *  The argument must be an UTF-8 encoded string (If you only use
- *  characters that are in US-ASCII you're on the safe side. But
+ *  characters that are in US-ASCII, you're on the safe side. But
  *  for e.g. german umlauts or french accents should be recoded to
  *  UTF-8)
  **/
@@ -66,11 +68,13 @@ QString i18n(const char *index, const char *text);
  **/
 QString i18n(const char *singular, const char *plural, unsigned long n);
 
-// Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
-// with our i18n method. we use uic -tr tr2i18n to redirect
-// to the right i18n() function
+/**
+ * Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
+ * with our i18n method. We use uic -tr tr2i18n to redirect
+ * to the right i18n() function
+**/
 inline QString tr2i18n(const char* message, const char* =0) {
-  return i18n( message);
+  return i18n(message);
 }
 
 /**
@@ -81,7 +85,8 @@ inline QString tr2i18n(const char* message, const char* =0) {
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
   *
-  * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>, Hans Petter Bieker <bieker@kde.org>
+  * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>,
+  * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
   * @short class for supporting locale settings and national language
   */
 class KLocale
@@ -418,11 +423,22 @@ public:
   bool use12Clock() const;
 
   /**
+   * @deprecated
+   *
+   * Please use the @ref weekStartDay method instead.
+   *
    * Use this to determine if the user wants the week to start on Monday.
    *
    * @return true if the week starts on Monday
    */
-  bool weekStartsMonday() const;
+  bool weekStartsMonday() const; //### remove for KDE 4.0
+
+  /**
+   * Use this to determine which day is the first day of the week.
+   *
+   * @return an integer (Monday=1..Sunday=7)
+   */
+  int weekStartDay() const;
 
   /**
    * Returns a string containing the name of the month name.
@@ -620,11 +636,21 @@ public:
   void setTimeFormat(const QString & format);
 
   /**
+   * @deprecated
+   *
+   * Please use @ref setWeekStartDay instead.
+   *
    * Changes how KLocale defines the first day in week.
    *
    * @param start True if Monday is the first day in the week
    */
-  void setWeekStartsMonday(bool start);
+  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
+  /**
+   * Changes how KLocale defines the first day in week.
+   *
+   * @param day first day of the week (Monday=1..Sunday=7) as integer
+   */
+  void setWeekStartDay(int day);
   /**
    * Returns the currently selected date format.
    *
@@ -778,8 +804,8 @@ public:
    * The parameters are similar to i18n(), but the result
    * value has other semantics (it can be QString::null)
    **/
-  QString translateQt(const char *context, 
-		      const char *sourceText, 
+  QString translateQt(const char *context,
+		      const char *sourceText,
 		      const char *message) const;
 
   /**
@@ -875,15 +901,15 @@ private:
 
   /**
    * @internal Figures out which encoding the user prefers for filenames
-   * and sets up the appropriate QFile encoding and decoding functions. 
+   * and sets up the appropriate QFile encoding and decoding functions.
    */
   void initFileNameEncoding(KConfig *config);
-  
+
   /**
    * @internal A QFile filename encoding function (QFile::encodeFn).
    */
   static QCString encodeFileNameUTF8( const QString & fileName );
-  
+
   /**
    * @internal QFile filename decoding function (QFile::decodeFn).
    */
@@ -965,7 +991,7 @@ private:
   QString m_language;
   QString m_country;
 
-  bool m_weekStartsMonday;
+  bool m_weekStartsMonday; //### remove for KDE 4.0
   bool m_positivePrefixCurrencySymbol;
   bool m_negativePrefixCurrencySymbol;
 
