@@ -548,23 +548,12 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		handled = true;
 		break;
 	    default:
-		e = new HTMLBodyElementImpl(document);
-		inBody = true;
-		document->createSelector();
-		insertNode(e);
-		handled = true;
 		break;
 	    }
 	    break;
 	case ID_HEAD:
 	    // we can get here only if the element is not allowed in head.
-	    // This means the body starts here...
-	    popBlock(ID_HEAD);
-	    e = new HTMLBodyElementImpl(document);
-	    inBody = true;
-	    document->createSelector();
-	    insertNode(e);
-	    handled = true;
+	    // don't insert it
 	    break;
 	case ID_BODY:
 	    break;
