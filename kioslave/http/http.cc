@@ -483,50 +483,14 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
       entry.clear();
 
       KURL thisURL = KURL::decode_string( href.text() );
-      /*QString path = thisURL.path();
 
-      if ( path.length() < url.path().length() )
-        // add trailing slash for the base dir, if it doesn't exist
-        path += '/';*/
+      // don't list the base dir of a listDir()
+      if ( !stat && thisURL.path(+1).length() == url.path(+1).length() )
+        continue;
 
-      kdDebug(7113) << "Path: " << thisURL.path(+1) << " (" << url.path(+1) << ")"  <<  endl;
-
-      QString filename = thisURL.filename();
-
-      if ( thisURL.path(+1).length() == url.path(+1).length() )
-        // this is the base dir
-        if ( stat )
-          filename = "";
-        else
-          continue;
-
-      /*// strip '/' from end of directory
-      if ( filename[filename.length() - 1] == '/' )
-        filename = filename.left( filename.length() - 1 );*/
-
-      kdDebug(7113) << "Filename: " << filename << endl;
       atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = filename;
+      atom.m_str = thisURL.filename();
       entry.append( atom );
-
-      //kdDebug(7113) << "URL: " << thisURL.url() << endl;
-      /*atom.m_uds = KIO::UDS_URL;
-      atom.m_str = thisURL.url();
-      entry.append( atom );*/
-
-      /*// remove path from url
-      QString filename = href.text().right( href.text().length() - url.path().length() );
-
-      // strip '/' from start of directory/file
-      if ( filename[0] == '/' )
-        filename = filename.right( filename.length() - 1 );
-
-      // strip '/' from end of directory
-      if ( filename[filename.length() - 1] == '/' )
-        filename = filename.left( filename.length() - 1 );
-
-      // decode filename
-      filename = KURL::decode_string( thisURL.filename() );*/
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
 
@@ -892,7 +856,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
 
 void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
 {
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.path()
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
   if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
@@ -902,9 +866,9 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   KURL newDest = dest;
   newDest.setProtocol( "http" );
 
-  QString filename = src.path().right( src.path().length() - src.path().findRev('/') - 1 );
+  /*QString filename = src.path().right( src.path().length() - src.path().findRev('/') - 1 );
 
-  newDest.setPath( newDest.path() + '/' + filename );
+  newDest.setPath( newDest.path() + '/' + filename );*/
 
   m_request.method = DAV_COPY;
   m_request.path = src.path();
@@ -925,7 +889,7 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
 
 void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
 {
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.path()
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
   if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
@@ -937,7 +901,7 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
 
   m_request.method = DAV_MOVE;
   m_request.path = src.path();
-  m_request.davData.desturl = newDest.url(+1);
+  m_request.davData.desturl = newDest.url();
   m_request.davData.overwrite = overwrite;
   m_request.query = QString::null;
   m_request.cache = CC_Reload;

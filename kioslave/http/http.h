@@ -147,7 +147,7 @@ public:
   virtual void mkdir( const KURL& url, int _permissions );
 
   virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
-  virtual void copy ( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
+  virtual void copy( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
   virtual void del( const KURL& url, bool _isfile );
 
   // Send requests to lock and unlock resources
