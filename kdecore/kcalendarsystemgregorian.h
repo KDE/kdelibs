@@ -69,8 +69,6 @@ public:
 
   virtual int yearStringToInteger(const QString & sNum, int & iLength) const;
 
-  virtual QString yearLiteral (int year) const;
-  virtual QString yearLiteral (const QDate & date) const;
   virtual QString monthName (int month, int year, bool shortName = false) const;
   virtual QString monthName (const QDate & date, bool shortName = false ) const;
   virtual QString monthNamePossessive(int month, int year, bool shortName = false) const;

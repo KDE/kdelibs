@@ -321,17 +321,6 @@ bool KCalendarSystemGregorian::isSolar() const
   return true;
 }
 
-QString KCalendarSystemGregorian::yearLiteral (int year) const
-{
-   return QString::number(year);
-}
-
-QString KCalendarSystemGregorian::yearLiteral (const QDate & date) const
-{
-   return QString::number(date.year());
-}
-
-
 int KCalendarSystemGregorian::yearStringToInteger(const QString & sNum, int & iLength) const
 {
   int iYear;

@@ -64,10 +64,9 @@ public:
   virtual QString monthNamePossessive(const QDate & date, bool shortName = false ) const;
   virtual QString weekDayName (int weekDay, bool shortName = false) const;
   virtual QString weekDayName (const QDate & date, bool shortName = false) const;
-  virtual QString yearLiteral(int anInt) const;
-  virtual QString yearLiteral(const QDate &) const;
   virtual QString monthNamePossessive(int m, int y, bool = false) const;
   virtual QString monthName(int, int, bool = false) const;
+
   virtual int minValidYear () const;
   virtual int maxValidYear () const;
   virtual int weekDayOfPray () const;

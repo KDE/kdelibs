@@ -379,24 +379,6 @@ int KCalendarSystemJalali::weekNumber(const QDate& date, int * yearNum) const
 
   return week;
 }
-QString KCalendarSystemJalali::yearLiteral (int year) const
-{
-// For now! It would be fine if I know how they name iranian years
-// And couldn't get if the year should be pass in Gregorian or Jalali
-// supposed Jalali
-   return QString::number(year);
-}
-
-QString KCalendarSystemJalali::yearLiteral (const QDate & date) const
-{
-/*
-int  *year;
-gregorianToJalali(date,year,0,0);
-   return yearLiteral(*year);
- */
- SDATE *sd= gregorianToJalali(date.year(),date.month(),date.day());
-  return yearLiteral(sd->year);
-}
 
 QString KCalendarSystemJalali::monthName(int month, int year, bool shortName)
   const

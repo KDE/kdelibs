@@ -616,15 +616,6 @@ bool KCalendarSystemHebrew::isSolar() const
   return false;
 }
 
-QString KCalendarSystemHebrew::yearLiteral (int year) const
-{
-   return QString::number(year);
-}
-QString KCalendarSystemHebrew::yearLiteral (const QDate & date) const
-{
-   return yearLiteral(year(date));
-}
-
 QString KCalendarSystemHebrew::dayString(const QDate & pDate, bool bShort) const
 {
   QString sResult;
