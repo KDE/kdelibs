@@ -31,7 +31,6 @@ libkab_la_SOURCES	= \
 	businesscard.cc \
 	datepickerdialog.cc \
 	editentry.cc \
-	jpeg.cpp \
 	searchresults.cc \
 	widget.cc \
 	configDB.cc \
@@ -55,8 +54,7 @@ include_HEADERS = \
 	addressbook.h \
 	configDB.h \
 	keyvaluemap.h \
-	sections.h \
-	jpeginc.h
+	sections.h
 #	PrintDialog.h \
 #	PrintDialogData.h \
 #	SearchDialog.h \
@@ -69,8 +67,6 @@ include_HEADERS = \
 #	datepickerdialog.h \
 #	debug.h \
 #	editentry.h \
-#	jpeg.h \
-#	jpeginc.h \
 #	searchresults.h \
 #	widgets.h
 
