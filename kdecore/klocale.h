@@ -359,7 +359,7 @@ public:
       * Returns the charset name by selected locale.
       * This will be the charset defined in the config file.
       * NOTE: This is no longer the same as encoding.
-      * "unicode" is default
+      * "iso-8859-1" is default
       *
       * @return Name of the prefered charset for fonts
       */
