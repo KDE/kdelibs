@@ -89,7 +89,6 @@ protected:
   int readLimited(); // Read maximum m_iSize bytes.
   int readUnlimited(); // Read as much as possible.
 
-  void decodeChunked();
   void decodeGzip();
 
   int openStream();

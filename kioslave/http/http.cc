@@ -1244,71 +1244,6 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
   }
 }
 
-
-void HTTPProtocol::decodeChunked()
-{
-  char chunk_id[2]={0,0};
-  bool m_bLastChunk = false;
-  long m_iLeftInChunk=-1;
-  size_t offset=0;
-
-  QByteArray ar;
-
-  // A bytesleft of -1 indicates that a chunk has been read,
-  // and we should check for a new one.  If the next chunk is of
-  // zero length, we're done with the document.
-  // Technically we're supposed to decode the end result of the first pass
-  // and keep doing so until we've got a completely decoded document, but
-  // I don't think that's really necesary
-  // **
-  // The chunk format basically consists of
-  // length in hex+\n+data
-  while (!m_bLastChunk && (offset < big_buffer.size())) {
-    if (m_iLeftInChunk == -1) {
-      QString s_length;
-      while ((chunk_id[0] != '\r' && chunk_id[0] != '\n')) {
-	memset(chunk_id, 0, 2);
-	memcpy(chunk_id, big_buffer.data()+offset, 1); offset++;
-	if (offset >= big_buffer.size()) {
-	  m_iLeftInChunk=0; m_bLastChunk=true;
-	} else
-	  s_length.append(chunk_id);
-      }
-      
-      offset++;
-
-      // One extra read to catch the LF
-      // Use strtol to convert from hex to dec, thanks to libwww
-      // for that tidbit, but we should do error checking like
-      // they do, alas I put too much trust in the web servers
-      if (s_length.data()) {
-	m_iLeftInChunk=strtol(s_length.data(), 0, 16);
-      }
-      if (m_iLeftInChunk <= 0) {
-	m_bLastChunk=true;
-	m_iLeftInChunk=0;
-	break;
-      }
-
-      // Expand the buffer, and append the new data
-      long old_size = ar.size();
-      ar.resize(ar.size()+m_iLeftInChunk);
-      memcpy(ar.data()+old_size, big_buffer.data()+offset, m_iLeftInChunk);
-
-      // And then make sure to "seek" forward past any trailing garbage
-      offset+=m_iLeftInChunk+2;
-      m_iLeftInChunk = -1;
-      m_bLastChunk = false;
-      memset(chunk_id, 0, 2);
-    }
-  }
-  // Is this necesary?
-  big_buffer.resize(0);
-  big_buffer=ar;
-  big_buffer.detach();
-}
-
-
 void HTTPProtocol::decodeGzip()
 {
 #ifdef DO_GZIP
@@ -1949,8 +1884,6 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 	break;
       if ( strstr(enc, "gzip") ) {
 	decodeGzip();
-//      } else if (strncasecmp(enc, "chunked", 7)==0) {
-//	decodeChunked();
       }
     }
 
@@ -1972,9 +1905,6 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 	break;
       if ( strstr(enc, "gzip") ) {
 	decodeGzip();
-      } else if (strncasecmp(enc, "chunked", 7)==0) {
-        kdebug(KDEBUG_WARN, 7103, "Chunked _CONTENTS_ encoding!\n");
-	decodeChunked();
       }
     }
     sz = sendData(job);
