@@ -196,8 +196,10 @@ RenderFlow::~RenderFlow()
 
 FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
 {
+#if 0
     int off = offset;
     DOM::NodeImpl* nod = node;
+#endif
 
     if (!isInline()) {
         // If selection was after a line of the last block element, use the
@@ -210,15 +212,20 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
 	}
     }
 
+    return RenderBox::checkSelectionPoint(_x, _y, _tx, _ty, node, offset, state);
+
+ #if 0
     for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
         // ignore empty text boxes, they produce totally bogus information
 	// for caret navigation (LS)
         if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
 	    continue;
 
-        //kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), QMIN(static_cast<RenderText *>(child)->length(), 10)).string() + "\"" : QString::null) << endl;
+        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), QMIN(static_cast<RenderText *>(child)->length(), 10)).string() + "\"" : QString::null) << endl;
+	kdDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
-        //kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
+	kdDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;
+        kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
         switch(pos) {
         case SelectionPointBeforeInLine:
         case SelectionPointInside:
@@ -262,6 +269,7 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
     }
     //kdDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset << endl;
     return SelectionPointAfter;
+#endif
 }
 
 void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,

@@ -89,6 +89,23 @@ void InlineTextBox::operator delete(void* ptr, size_t sz)
  */
 inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
 {
+// New version from Germain Garand, better suited for contrast measurement
+#if 1
+
+#define HUE_DISTANCE 15
+#define CONTRAST_DISTANCE 10
+
+  int h1, s1, v1, h2, s2, v2;
+  c1.hsv(&h1,&s1,&v1);
+  c2.hsv(&h2,&s2,&v2);
+  return QABS(h1-h2) > HUE_DISTANCE &&
+         QABS(s1-s2) + QABS(v1-v2) > CONTRAST_DISTANCE*2;
+
+#undef CONTRAST_DISTANCE
+#undef HUE_DISTANCE
+
+#else	// orginal fast but primitive version by me (LS)
+
 // ### arbitrary value, to be adapted if necessary (LS)
 #define CONTRAST_DISTANCE 5
 
@@ -99,6 +116,8 @@ inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
   return false;
 
 #undef CONTRAST_DISTANCE
+
+#endif
 }
 
 /** finds out the background color of an element
@@ -669,11 +688,13 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
             node = element();
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore ) {
-            // x,y is before the textrun -> stop here
-            offset = 0;
-            //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
-            node = element();
-            return SelectionPointBefore;
+	    if (!lastNode) {
+                // x,y is before the textrun -> stop here
+               offset = 0;
+               //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
+               node = element();
+               return SelectionPointBefore;
+	    }
         } else if ( result == SelectionPointBeforeInLine ) {
 	    offset = s->m_start;
 	    node = element();

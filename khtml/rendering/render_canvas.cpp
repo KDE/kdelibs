@@ -385,6 +385,11 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     if (m_selectionEnd)
         m_selectionEnd->setIsSelectionBorder(true);
     m_selectionEndPos = ep;
+           
+#if 0
+    kdDebug( 6040 ) << "old selection (" << oldStart << "," << oldStartPos << "," << oldEnd << "," << oldEndPos << ")" << endl;
+    kdDebug( 6040 ) << "new selection (" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+#endif
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
     RenderObject* o = s;
@@ -483,7 +488,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
 
     // Does the selection span objects and is the new end object different, or did the position
     // in the end element change?  If so we have to draw it.
-    if (oldStart != oldEnd &&
+    if (/*(oldStart != oldEnd || !oldEnd) &&*/
         (oldEnd != m_selectionEnd ||
         (oldEnd == m_selectionEnd && oldEndPos != m_selectionEndPos))){
         m_view->updateContents( enclosingPositionedRect(m_selectionEnd) );

@@ -1135,6 +1135,7 @@ void RenderObject::arenaDelete(RenderArena *arena)
 
 FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
 {
+#if 0
     NodeInfo info(true, false);
     if ( nodeAtPoint( info, _x, _y, _tx, _ty ) && info.innerNode() )
     {
@@ -1152,6 +1153,64 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     //kdDebug(6030) << "nodeAtPoint Failed. Fallback - hmm, SelectionPointAfter" << endl;
     node = 0;
     offset = 0;
+    return SelectionPointAfter;
+#endif
+    int off = offset;
+    DOM::NodeImpl* nod = node;
+
+    for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
+        // ignore empty text boxes, they produce totally bogus information
+	// for caret navigation (LS)
+        if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
+	    continue;
+
+//        kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), QMIN(static_cast<RenderText *>(child)->length(), 10)).string() + "\"" : QString::null) << endl;
+//	kdDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
+        khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
+//	kdDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;
+//        kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
+        switch(pos) {
+        case SelectionPointBeforeInLine:
+        case SelectionPointInside:
+            //kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset << endl;
+            node = nod;
+            offset = off;
+            return SelectionPointInside;
+        case SelectionPointBefore:
+            //x,y is before this element -> stop here
+            if ( state.m_lastNode ) {
+                node = state.m_lastNode;
+                offset = state.m_lastOffset;
+                //kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before this child "
+                //              << node << "-> returning SelectionPointInside, offset=" << offset << endl;
+                return SelectionPointInside;
+            } else {
+                node = nod;
+                offset = off;
+                //kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset << endl;
+                return SelectionPointBefore;
+            }
+            break;
+        case SelectionPointAfter:
+	    if (state.m_afterInLine) break;
+	    // fall through
+        case SelectionPointAfterInLine:
+	    if (pos == SelectionPointAfterInLine) state.m_afterInLine = true;
+            //kdDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << " afterInLine: " << state.m_afterInLine << endl;
+            state.m_lastNode = nod;
+            state.m_lastOffset = off;
+            // No "return" here, obviously. We must keep looking into the children.
+            break;
+        }
+    }
+    // If we are after the last child, return lastNode/lastOffset
+    // But lastNode can be 0L if there is no child, for instance.
+    if ( state.m_lastNode )
+    {
+        node = state.m_lastNode;
+        offset = state.m_lastOffset;
+    }
+    //kdDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset << endl;
     return SelectionPointAfter;
 }
 

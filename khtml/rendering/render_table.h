@@ -112,6 +112,10 @@ public:
     virtual int borderTopExtra();
     virtual int borderBottomExtra();
 
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*& node, int & offset,
+						     SelPointState & );
+
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
@@ -183,6 +187,8 @@ protected:
     uint spacing                : 11;
     uint padding		: 11;
     uint needSectionRecalc	: 1;
+    
+    friend class TableSectionIterator;
 };
 
 // -------------------------------------------------------------------------
@@ -204,6 +210,10 @@ public:
 
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(InlineBox*, int, int, bool, int) {}
+
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*& node, int & offset,
+						     SelPointState & );
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
@@ -257,6 +267,8 @@ public:
 protected:
     void ensureRows( int numRows );
     void clearGrid();
+
+    friend class TableSectionIterator;
 };
 
 // -------------------------------------------------------------------------
@@ -404,6 +416,49 @@ public:
 
 protected:
     short _span;
+};
+
+// -------------------------------------------------------------------------
+
+/** This class provides an iterator to iterate through the sections of a
+ * render table in their visual order.
+ *
+ * In HTML, sections are specified in the order of THEAD, TFOOT, and TBODY.
+ * Visually, TBODY sections appear between THEAD and TFOOT, which this iterator
+ * takes into regard.
+ * @author Leo Savernik
+ * @internal
+ * @since 3.2
+ */
+class TableSectionIterator {
+public:
+
+  /**
+   * Initializes a new iterator
+   * @param table table whose sections to iterate
+   * @param fromEnd @p true, begin with last section, @p false, begin with
+   *	first section.
+   */
+  TableSectionIterator(RenderTable *table, bool fromEnd = false);
+
+  /**
+   * Initializes a new iterator
+   * @param start table section to start with.
+   */
+  TableSectionIterator(RenderTableSection *start) : sec(start) {}
+
+  /** Returns the current section, or @p 0 if the end has been reached.
+   */
+  RenderTableSection *operator *() const { return sec; }
+
+  /** Moves to the next section in visual order. */
+  TableSectionIterator &operator ++();
+
+  /** Moves to the previous section in visual order. */
+  TableSectionIterator &operator --();
+
+private:
+  RenderTableSection *sec;
 };
 
 }

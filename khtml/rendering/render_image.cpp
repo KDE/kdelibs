@@ -292,14 +292,28 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
 
         }
     }
-    // FIXME: consider cursor offset too, but currently it's nowhere saved.
     if (m_selectionState != SelectionNone) {
 //    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
-    	// setting the brush origin is important for compatibility,
-	// don't touch it unless you know what you're doing
-    	p->setBrushOrigin(_tx, _ty - _y);
-        p->fillRect(_tx, _ty, width(), height(),
-		QBrush(style()->palette().active().highlight(), Qt::Dense4Pattern));
+        // Draw in any case if inside selection. For selection borders, the
+	// offset will decide whether to draw selection or not
+	bool draw = true;
+	if (m_selectionState != SelectionInside) {
+	    int startPos, endPos;
+            selectionStartEnd(startPos, endPos);
+            if(selectionState() == SelectionStart)
+                endPos = 1;
+            else if(selectionState() == SelectionEnd)
+                startPos = 0;
+	    draw = endPos - startPos > 0;
+	}
+	if (draw) {
+    	    // setting the brush origin is important for compatibility,
+	    // don't touch it unless you know what you're doing
+    	    p->setBrushOrigin(_tx, _ty - _y);
+            p->fillRect(_tx, _ty, width(), height(),
+		    QBrush(style()->palette().active().highlight(),
+		    Qt::Dense4Pattern));
+	}
     }
     if(style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());

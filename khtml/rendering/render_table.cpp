@@ -649,6 +649,60 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
+FindSelectionResult RenderTable::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
+{
+    int off = offset;
+    DOM::NodeImpl* nod = node;
+
+    FindSelectionResult pos;
+    TableSectionIterator it(this);
+    for (; *it; ++it) {
+        pos = (*it)->checkSelectionPoint(_x, _y, _tx + m_x, _ty + m_y, nod, off, state);
+        switch(pos) {
+        case SelectionPointBeforeInLine:
+        case SelectionPointInside:
+            //kdDebug(6030) << "RenderTable::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset << endl;
+            node = nod;
+            offset = off;
+            return SelectionPointInside;
+        case SelectionPointBefore:
+            //x,y is before this element -> stop here
+            if ( state.m_lastNode ) {
+                node = state.m_lastNode;
+                offset = state.m_lastOffset;
+                //kdDebug(6030) << "RenderTable::checkSelectionPoint " << this << " before this child "
+                //              << node << "-> returning SelectionPointInside, offset=" << offset << endl;
+                return SelectionPointInside;
+            } else {
+                node = nod;
+                offset = off;
+                //kdDebug(6030) << "RenderTable::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset << endl;
+                return SelectionPointBefore;
+            }
+            break;
+        case SelectionPointAfter:
+	    if (state.m_afterInLine) break;
+	    // fall through
+        case SelectionPointAfterInLine:
+	    if (pos == SelectionPointAfterInLine) state.m_afterInLine = true;
+            //kdDebug(6030) << "RenderTable::checkSelectionPoint: selection after: " << nod << " offset: " << off << " afterInLine: " << state.m_afterInLine << endl;
+            state.m_lastNode = nod;
+            state.m_lastOffset = off;
+            // No "return" here, obviously. We must keep looking into the children.
+            break;
+        }
+    }
+    // If we are after the last child, return lastNode/lastOffset
+    // But lastNode can be 0L if there is no child, for instance.
+    if ( state.m_lastNode )
+    {
+        node = state.m_lastNode;
+        offset = state.m_lastOffset;
+    }
+    // Fallback
+    return SelectionPointAfter;
+}
+
 // --------------------------------------------------------------------------
 
 RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
@@ -1263,6 +1317,131 @@ void RenderTableSection::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
+/** Seeks the cell matching the given (row, col) pair.
+ * @param section table section
+ * @param row index of table row (disregarding spans)
+ * @param col index of column (disregarding spans)
+ * @return the cell matching the given (row, col) or 0 if out of bounds
+ */
+inline RenderTableCell *seekCell(RenderTableSection *section, int row, int col)
+{
+    if (row < 0 || col < 0) return 0;
+    // since a cell can be -1 (indicating a colspan) we might have to search backwards to include it
+    while ( col && section->cellAt( row, col ) == (RenderTableCell *)-1 )
+	col--;
+
+    return section->cellAt(row, col);
+}
+
+/** Looks for the first element suitable for text selection, beginning from
+ * the last.
+ * @param base search is restricted within this node. This node must have
+ *	a renderer.
+ * @return the element or @p base if no suitable element found.
+ */
+static NodeImpl *findLastSelectableNode(NodeImpl *base)
+{
+  NodeImpl *last = base;
+  // Look for last text/cdata node that has a renderer,
+  // or last childless replaced element
+  while ( last && !(last->renderer()
+  	&& ((last->nodeType() == Node::TEXT_NODE || last->nodeType() == Node::CDATA_SECTION_NODE)
+		|| (last->renderer()->isReplaced() && !last->renderer()->lastChild()))))
+  {
+    NodeImpl *next = last->lastChild();
+    if ( !next ) next = last->previousSibling();
+    while ( last != base && !next )
+    {
+      last = last->parentNode();
+      if ( last != base )
+        next = last->previousSibling();
+    }
+    last = next;
+  }
+  
+  return last ? last : base;
+}
+
+FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
+{
+    // Table sections need extra treatment for selections. The rows are scanned
+    // from top to bottom, and within each row, only the cell that matches
+    // the given position best is descended into.
+
+    unsigned int totalRows = grid.size();
+    unsigned int totalCols = table()->columns.size();
+
+//    absolutePosition(_tx, _ty, false);
+
+    _tx += m_x;
+    _ty += m_y;
+
+//    bool save_last = false;	// true to save last investigated cell
+
+    if (_y < _ty) return SelectionPointBefore;
+//    else if (_y >= _ty + height()) save_last = true;
+
+    // bluntly taken from paint (LS)
+    // check which rows and cols are visible and only paint these
+    // ### fixme: could use a binary search here
+    int row_idx = (int)totalRows - 1;
+    for ( ; row_idx >= 0; row_idx-- ) {
+	if ( _ty + rowPos[row_idx] < _y )
+	    break;
+    }
+    if (row_idx < 0) row_idx = 0;
+    int col_idx;
+    if ( style()->direction() == LTR ) {
+	for ( col_idx = (int)totalCols - 1; col_idx >= 0; col_idx-- ) {
+	    if ( _tx + table()->columnPos[col_idx] < _x )
+		break;
+	}
+	if (col_idx < 0) col_idx = 0;
+    } else {
+	for ( col_idx = 0; col_idx < (int)totalCols; col_idx++ ) {
+	    if ( _tx + table()->columnPos[col_idx] > _x )
+		break;
+	}
+	if (col_idx >= (int)totalCols) col_idx = (int)totalCols + 1;
+    }
+
+    FindSelectionResult pos = SelectionPointBefore;
+
+    RenderTableCell *cell = seekCell(this, row_idx, col_idx);
+    // ### dunno why cell can be 0, maybe due to wierd spans? (LS)
+    if (cell) {
+        SelPointState localState;
+        pos = cell->checkSelectionPoint(_x, _y, _tx, _ty, node, offset, localState);
+    }
+
+    if (pos != SelectionPointBefore) return pos;
+
+    // store last column of last line
+    row_idx--;
+    col_idx = totalCols - 1;
+    cell = seekCell(this, row_idx, col_idx);
+
+    // end of section? take previous section
+    RenderTableSection *sec = this;
+    if (!cell) {
+        sec = *--TableSectionIterator(sec);
+        if (!sec) return pos;
+
+	cell = seekCell(sec, sec->grid.size() - 1, col_idx);
+	if (!cell) return pos;
+    }
+
+    // take last child of previous cell, and store this one as last node
+    NodeImpl *element = cell->element();
+    if (!element) return SelectionPointBefore;
+
+    element = findLastSelectableNode(element);
+
+    state.m_lastNode = element;
+    state.m_lastOffset = element->maxOffset();
+    return SelectionPointBefore;
+}
+
 // -------------------------------------------------------------------------
 
 RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
@@ -1639,6 +1818,92 @@ void RenderTableCol::dump(QTextStream *stream, QString ind) const
     RenderContainer::dump(stream,ind);
 }
 #endif
+
+// -------------------------------------------------------------------------
+
+TableSectionIterator::TableSectionIterator(RenderTable *table, bool fromEnd)
+{
+  if (fromEnd) {
+    sec = table->foot;
+    if (sec) return;
+
+    sec = static_cast<RenderTableSection *>(table->lastChild());
+    while (sec && (!sec->isTableSection()
+    		|| sec == table->head || sec == table->foot))
+      sec = static_cast<RenderTableSection *>(sec->previousSibling());
+    if (sec) return;
+
+    sec = table->head;
+  } else {
+    sec = table->head;
+    if (sec) return;
+
+    sec = static_cast<RenderTableSection *>(table->firstChild());
+    while (sec && (!sec->isTableSection()
+    		|| sec == table->head || sec == table->foot))
+      sec = static_cast<RenderTableSection *>(sec->nextSibling());
+    if (sec) return;
+
+    sec = table->foot;
+  }/*end if*/
+
+}
+
+TableSectionIterator &TableSectionIterator::operator ++()
+{
+  RenderTable *table = sec->table();
+  if (sec == table->head) {
+
+    sec = static_cast<RenderTableSection *>(table->firstChild());
+    while (sec && (!sec->isTableSection()
+    		|| sec == table->head || sec == table->foot))
+      sec = static_cast<RenderTableSection *>(sec->nextSibling());
+    if (sec) return *this;
+
+  } else if (sec == table->foot) {
+    sec = 0;
+    return *this;
+
+  } else {
+
+    do {
+      sec = static_cast<RenderTableSection *>(sec->nextSibling());
+    } while (sec && (!sec->isTableSection() || sec == table->head || sec == table->foot));
+    if (sec) return *this;
+
+  }/*end if*/
+
+  sec = table->foot;
+  return *this;
+}
+
+TableSectionIterator &TableSectionIterator::operator --()
+{
+  RenderTable *table = sec->table();
+  if (sec == table->foot) {
+
+    sec = static_cast<RenderTableSection *>(table->lastChild());
+    while (sec && (!sec->isTableSection()
+    		|| sec == table->head || sec == table->foot))
+      sec = static_cast<RenderTableSection *>(sec->previousSibling());
+    if (sec) return *this;
+
+  } else if (sec == table->head) {
+    sec = 0;
+    return *this;
+
+  } else {
+
+    do {
+      sec = static_cast<RenderTableSection *>(sec->previousSibling());
+    } while (sec && (!sec->isTableSection() || sec == table->head || sec == table->foot));
+    if (sec) return *this;
+
+  }/*end if*/
+
+  sec = table->foot;
+  return *this;
+}
 
 #undef TABLE_DEBUG
 #undef DEBUG_LAYOUT

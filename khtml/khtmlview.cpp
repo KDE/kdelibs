@@ -614,6 +614,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
+//    QRect dbg_paint_rect(ex,ey,ew,eh);
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
@@ -694,6 +695,9 @@ static int cnt=0;
 	}/*end if*/
     }/*end if*/
 #endif // KHTML_NO_CARET
+
+//    p->setPen(QPen(magenta,0,DashDotDotLine));
+//    p->drawRect(dbg_paint_rect);
 
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
@@ -3989,6 +3993,7 @@ static RenderTableSection *iterateTableSections(RenderTable *table,
 		RenderTableSection *section, bool toBegin)
 {
   if (!section) {
+    // ### this is all borken for thead/tfoot/tbody
     if (toBegin)
       section = static_cast<RenderTableSection *>(table->lastChild());	// ### are sections direct children of RenderTable?
     else
