@@ -99,6 +99,12 @@ KSimpleConfig cfg("ksslcertificates", false);
 }
 
 
+bool KSSLCertificateHome::hasCertificateByName(QString name) {
+KSimpleConfig cfg("ksslcertificates", false);
+  if (!cfg.hasGroup(name)) return false;
+  return true;
+}
+
 KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString password, KSSLAuthAction *aa) {
    return KSSLCertificateHome::getCertificateByName(KSSLCertificateHome::getDefaultCertificateName(host, aa), password);
 }

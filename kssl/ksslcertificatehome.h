@@ -46,6 +46,7 @@ public:
   static QString getDefaultCertificateName(KSSLAuthAction *aa = NULL);
   static KSSLPKCS12* getDefaultCertificate(QString password, KSSLAuthAction *aa = NULL);
   static KSSLPKCS12* getDefaultCertificate(KSSLAuthAction *aa = NULL);
+  static bool hasCertificateByName(QString name);
 
 
   /*
