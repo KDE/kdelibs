@@ -325,7 +325,7 @@ NodeList::NodeList(const NodeList &other)
 
 NodeList::NodeList(const NodeListImpl *i)
 {
-    impl = (NodeListImpl *)i;
+    impl = i;
     if(impl) impl->ref();
 }
 

@@ -144,8 +144,9 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
-    if (parentNode->ownerDocument()->isHTMLDocument())
-	m_docLoader = static_cast<HTMLDocumentImpl*>(parentNode->ownerDocument())->docLoader();
+    DocumentImpl *ownerDoc = static_cast<DocumentImpl*>(parentNode->nodeType() == Node::DOCUMENT_NODE ? parentNode : parentNode->ownerDocument());
+    if (ownerDoc->isHTMLDocument())
+	m_docLoader = static_cast<HTMLDocumentImpl*>(ownerDoc)->docLoader();
     else
 	m_docLoader = 0;
 }
@@ -174,8 +175,9 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
 	m_lstChildren->append(rule);
 	rule->ref();
     }
-    if (parentNode->ownerDocument()->isHTMLDocument())
-	m_docLoader = static_cast<HTMLDocumentImpl*>(parentNode->ownerDocument())->docLoader();
+    DocumentImpl *ownerDoc = static_cast<DocumentImpl*>(parentNode->nodeType() == Node::DOCUMENT_NODE ? parentNode : parentNode->ownerDocument());
+    if (ownerDoc->isHTMLDocument())
+	m_docLoader = static_cast<HTMLDocumentImpl*>(ownerDoc)->docLoader();
     else
 	m_docLoader = 0;
 }

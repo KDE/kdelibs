@@ -22,6 +22,8 @@
 #include <kjs/function.h>
 #include <kjs/operations.h>
 
+#include <qptrdict.h>
+
 #include <khtml_part.h>
 #include <html_element.h>
 #include <html_head.h>
@@ -29,6 +31,7 @@
 #include <html_image.h>
 #include <dom_string.h>
 #include <dom_exception.h>
+#include <html_misc.h>
 
 #include "kjs_binding.h"
 #include "kjs_dom.h"
@@ -38,6 +41,13 @@
 #include "kjs_navigator.h"
 
 using namespace KJS;
+
+// ### make sure these get cleared when the corresponding nodes/objects get deleted
+QPtrDict<NodeObject> nodes;
+QPtrDict<DOMNamedNodeMap> namedNodeMaps;
+QPtrDict<DOMNodeList> nodeLists;
+QPtrDict<KJS::HTMLCollection> htmlCollections;
+QPtrDict<DOMDOMImplementation> domImplementations;
 
 KJSO DOMObject::get(const UString &p) const
 {
@@ -145,42 +155,59 @@ DOM::Node KJS::toNode(const KJSO& obj)
 
 KJSO KJS::getDOMNode(DOM::Node n)
 {
+  NodeObject *ret = 0;
   if (n.isNull())
     return Null();
+  else if ((ret = nodes[n.handle()]))
+    return ret;
 
   switch (n.nodeType()) {
     case DOM::Node::ELEMENT_NODE:
       if (static_cast<DOM::Element>(n).isHTMLElement())
-        return new HTMLElement(static_cast<DOM::HTMLElement>(n));
+        ret = new HTMLElement(static_cast<DOM::HTMLElement>(n));
       else
-        return new DOMElement(static_cast<DOM::Element>(n));
+        ret = new DOMElement(static_cast<DOM::Element>(n));
+      break;
     case DOM::Node::ATTRIBUTE_NODE:
-      return new DOMAttr(static_cast<DOM::Attr>(n));
+      ret = new DOMAttr(static_cast<DOM::Attr>(n));
+      break;
     case DOM::Node::TEXT_NODE:
     case DOM::Node::CDATA_SECTION_NODE:
-      return new DOMText(static_cast<DOM::Text>(n));
+      ret = new DOMText(static_cast<DOM::Text>(n));
+      break;
     case DOM::Node::ENTITY_REFERENCE_NODE:
-      return new DOMNode(n);
+      ret = new DOMNode(n);
+      break;
     case DOM::Node::ENTITY_NODE:
-      return new DOMEntity(static_cast<DOM::Entity>(n));
+      ret = new DOMEntity(static_cast<DOM::Entity>(n));
+      break;
     case DOM::Node::PROCESSING_INSTRUCTION_NODE:
-      return new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
+      ret = new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
+      break;
     case DOM::Node::COMMENT_NODE:
-      return new DOMCharacterData(static_cast<DOM::CharacterData>(n));
+      ret = new DOMCharacterData(static_cast<DOM::CharacterData>(n));
+      break;
     case DOM::Node::DOCUMENT_NODE:
       if (static_cast<DOM::Document>(n).isHTMLDocument())
-        return new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
+        ret = new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
       else
-        return new DOMDocument(static_cast<DOM::Document>(n));
+        ret = new DOMDocument(static_cast<DOM::Document>(n));
+      break;
     case DOM::Node::DOCUMENT_TYPE_NODE:
-      return new DOMDocumentType(static_cast<DOM::DocumentType>(n));
+      ret = new DOMDocumentType(static_cast<DOM::DocumentType>(n));
+      break;
     case DOM::Node::DOCUMENT_FRAGMENT_NODE:
-      return new DOMNode(n);
+      ret = new DOMNode(n);
+      break;
     case DOM::Node::NOTATION_NODE:
-      return new DOMNotation(static_cast<DOM::Notation>(n));
+      ret = new DOMNotation(static_cast<DOM::Notation>(n));
+      break;
     default:
-      return new DOMNode(n);
+      ret = new DOMNode(n);
   }
+  nodes.insert(n.handle(),ret);
+
+  return ret;
 }
 
 bool NodeObject::equals(const KJSO& other) const
@@ -194,11 +221,60 @@ bool NodeObject::equals(const KJSO& other) const
 
 KJSO KJS::getDOMNamedNodeMap(DOM::NamedNodeMap m)
 {
+  DOMNamedNodeMap *ret;
   if (m.isNull())
     return Null();
-  else
-    return new DOMNamedNodeMap(m);
+  else if ((ret = namedNodeMaps[m.handle()]))
+    return ret;
+  else {
+    ret = new DOMNamedNodeMap(m);
+    namedNodeMaps.insert(m.handle(),ret);
+    return ret;
+  }
 }
+
+KJSO KJS::getDOMNodeList(DOM::NodeList l)
+{
+  DOMNodeList *ret;
+  if (l.isNull())
+    return Null();
+  else if ((ret = nodeLists[l.handle()]))
+    return ret;
+  else {
+    ret = new DOMNodeList(l);
+    nodeLists.insert(l.handle(),ret);
+    return ret;
+  }
+}
+
+KJSO KJS::getHTMLCollection(DOM::HTMLCollection c)
+{
+  HTMLCollection *ret;
+  if (c.isNull())
+    return Null();
+  else if ((ret = htmlCollections[c.handle()]))
+    return ret;
+  else {
+    ret = new HTMLCollection(c);
+    htmlCollections.insert(c.handle(),ret);
+    return ret;
+  }
+}
+
+KJSO KJS::getDOMDOMImplementation(DOM::DOMImplementation i)
+{
+  DOMDOMImplementation *ret;
+  if (i.isNull())
+    return Null();
+  else if ((ret = domImplementations[i.handle()]))
+    return ret;
+  else {
+    ret = new DOMDOMImplementation(i);
+    domImplementations.insert(i.handle(),ret);
+    return ret;
+  }
+}
+
 
 KJSO KJS::getString(DOM::DOMString s)
 {
@@ -207,3 +283,7 @@ KJSO KJS::getString(DOM::DOMString s)
   else
     return String(s);
 }
+
+
+
+

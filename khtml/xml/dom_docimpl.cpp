@@ -73,14 +73,14 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
 
 // ------------------------------------------------------------------------
 
-DocumentImpl::DocumentImpl() : NodeBaseImpl(this)
+DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = 0;
     m_style = 0;
 }
 
-DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(this)
+DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = v;

@@ -103,7 +103,8 @@ DOMString StyleBaseImpl::baseUrl()
 
     if(!sheet->ownerNode()) return 0;
 
-    DocumentImpl *doc = sheet->ownerNode()->ownerDocument();
+    DocumentImpl *doc = static_cast<DocumentImpl*>(sheet->ownerNode()->nodeType() == Node::DOCUMENT_NODE ? sheet->ownerNode() : sheet->ownerNode()->ownerDocument());
+
     if(!doc->isHTMLDocument()) return 0;
 
     HTMLDocumentImpl *htmldoc = static_cast<HTMLDocumentImpl *>(doc);

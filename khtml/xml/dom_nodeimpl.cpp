@@ -89,7 +89,8 @@ NodeImpl *NodeImpl::parentNode() const
 
 NodeListImpl *NodeImpl::childNodes()
 {
-  return 0;
+  cerr << "NodeImpl::childNodes()\n";
+  return new ChildNodeListImpl(this);
 }
 
 NodeImpl *NodeImpl::firstChild() const
@@ -414,7 +415,7 @@ NodeBaseImpl::~NodeBaseImpl()
 
 NodeListImpl *NodeBaseImpl::childNodes() //
 {
-    return new ChildNodeListImpl(this);
+    return NodeImpl::childNodes();
 }
 
 NodeImpl *NodeBaseImpl::firstChild() const
@@ -651,7 +652,9 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 // check for same source document:
 void NodeBaseImpl::checkSameDocument( NodeImpl *newChild )
 {
-    if(newChild->ownerDocument() != document) {
+    DocumentImpl *ownerDocThis = static_cast<DocumentImpl*>(nodeType() == Node::DOCUMENT_NODE ? this : ownerDocument());
+    DocumentImpl *ownerDocNew = static_cast<DocumentImpl*>(newChild->nodeType() == Node::DOCUMENT_NODE ? newChild : newChild->ownerDocument());
+    if(ownerDocThis != ownerDocNew) {
 	kdDebug(6010)<< "not same document, newChild = " << newChild << "document = " << document << endl;
 	throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
     }

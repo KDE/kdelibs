@@ -23,6 +23,7 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 #include <dom/dom_node.h>
+#include <dom/dom_doc.h>
 
 namespace KJS {
 
@@ -69,6 +70,9 @@ namespace KJS {
    */
   KJSO getDOMNode(DOM::Node n);
   KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
+  KJSO getDOMNodeList(DOM::NodeList l);
+  KJSO getHTMLCollection(DOM::HTMLCollection c);
+  KJSO getDOMDOMImplementation(DOM::DOMImplementation i);
   /**
    *  Get a String object, or Null() if s is null
    */

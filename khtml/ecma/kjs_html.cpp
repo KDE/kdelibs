@@ -117,11 +117,11 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     break;
   case GetElementById:
     s = v.toString();
-    result = new DOMElement(doc.getElementById(s.value().string()));
+    result = getDOMNode(doc.getElementById(s.value().string()));
     break;
   case GetElementsByName:
     s = v.toString();
-    result = new DOMNodeList(doc.getElementsByName(s.value().string()));
+    result = getDOMNodeList(doc.getElementsByName(s.value().string()));
     break;
   }
 
@@ -129,7 +129,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   if (id == Images || id == Applets || id == Links ||
       id == Forms || id == Anchors) {
     element = coll.item((unsigned long)v.toNumber().value());
-    result = new HTMLElement(element);
+    result = getDOMNode(element);
   }
 
   return Completion(Normal, result);
@@ -151,7 +151,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "URL")
     result = getString(doc.URL());
   else if (p == "body")
-    result = new HTMLElement(doc.body());
+    result = getDOMNode(doc.body());
   else if (p == "images")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")
@@ -186,7 +186,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
       DOM::HTMLElement element = coll.namedItem(p.string());
       if (element.isNull())
 	element = doc.forms().namedItem(p.string());
-      result = new HTMLElement(element);
+      result = getDOMNode(element);
     }
   }
 
@@ -282,7 +282,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
-      if      (p == "elements")        return new HTMLCollection(form.elements()); // type HTMLCollection
+      if      (p == "elements")        return getHTMLCollection(form.elements()); // type HTMLCollection
       else if (p == "length")          return Number((unsigned long)form.length());
       else if (p == "name")            return getString(form.name());
       else if (p == "acceptCharset")   return getString(form.acceptCharset());
@@ -293,6 +293,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       // methods
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
+      // ### need to allow for thins like firstChild, etc. here
       else return new HTMLElement(form.elements().namedItem(p.string()));
     }
     break;
@@ -303,7 +304,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "value")           return getString(select.value());
       else if (p == "length")          return Number((unsigned long)select.length());
       else if (p == "form")            return getDOMNode(select.form()); // type HTMLFormElement
-      else if (p == "options")         return new HTMLCollection(select.options()); // type HTMLCollection
+      else if (p == "options")         return getHTMLCollection(select.options()); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
       else if (p == "name")            return getString(select.name());
@@ -591,7 +592,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_MAP: {
       DOM::HTMLMapElement map = element;
-      if      (p == "areas")           return new HTMLCollection(map.areas()); // type HTMLCollection
+      if      (p == "areas")           return getHTMLCollection(map.areas()); // type HTMLCollection
       else if (p == "name")            return getString(map.name());
     }
     break;
@@ -623,8 +624,8 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "caption")         return getDOMNode(table.caption()); // type HTMLTableCaptionElement
       else if (p == "tHead")           return getDOMNode(table.tHead()); // type HTMLTableSectionElement
       else if (p == "tFoot")           return getDOMNode(table.tFoot()); // type HTMLTableSectionElement
-      else if (p == "rows")            return new HTMLCollection(table.rows()); // type HTMLCollection
-      else if (p == "tBodies")         return new HTMLCollection(table.tBodies()); // type HTMLCollection
+      else if (p == "rows")            return getHTMLCollection(table.rows()); // type HTMLCollection
+      else if (p == "tBodies")         return getHTMLCollection(table.tBodies()); // type HTMLCollection
       else if (p == "align")           return getString(table.align());
       else if (p == "bgColor")         return getString(table.bgColor());
       else if (p == "border")          return getString(table.border());
@@ -668,7 +669,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "ch")              return getString(tableSection.ch());
       else if (p == "chOff")           return getString(tableSection.chOff());
       else if (p == "vAlign")          return getString(tableSection.vAlign());
-      else if (p == "rows")            return new HTMLCollection(tableSection.rows()); // type HTMLCollection
+      else if (p == "rows")            return getHTMLCollection(tableSection.rows()); // type HTMLCollection
       // methods
       else if (p == "insertRow")       return new HTMLElementFunction(element,HTMLElementFunction::InsertRow);
       else if (p == "deleteRow")       return new HTMLElementFunction(element,HTMLElementFunction::DeleteRow);
@@ -678,7 +679,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       DOM::HTMLTableRowElement tableRow = element;
       if      (p == "rowIndex")        return Number((unsigned long)tableRow.rowIndex());
       else if (p == "sectionRowIndex") return Number((unsigned long)tableRow.sectionRowIndex());
-      else if (p == "cells")           return new HTMLCollection(tableRow.cells()); // type HTMLCollection
+      else if (p == "cells")           return getHTMLCollection(tableRow.cells()); // type HTMLCollection
       else if (p == "align")           return getString(tableRow.align());
       else if (p == "bgColor")         return getString(tableRow.bgColor());
       else if (p == "ch")              return getString(tableRow.ch());
@@ -1455,7 +1456,7 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
       node = collection.namedItem(p.string());
 
     element = node;
-    result = new HTMLElement(element);
+    result = getDOMNode(element);
   }
 
   return result;

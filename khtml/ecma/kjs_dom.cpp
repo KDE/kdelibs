@@ -42,7 +42,7 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "parentNode")
     result = getDOMNode(node.parentNode());
   else if (p == "childNodes")
-    result = new DOMNodeList(node.childNodes());
+    result = getDOMNodeList(node.childNodes());
   else if (p == "firstChild")
     result = getDOMNode(node.firstChild());
   else if (p == "lastChild")
@@ -60,7 +60,7 @@ KJSO DOMNode::tryGet(const UString &p) const
 //  else if (p == "localName") // new for DOM2 - not yet in khtml
 //    result = getString(node.localName());
   else if (p == "ownerDocument")
-    result = new DOMDocument(node.ownerDocument());
+    result = getDOMNode(node.ownerDocument());
   // methods
   else if (p == "insertBefore")
     result = new DOMNodeFunc(node, DOMNodeFunc::InsertBefore);
@@ -188,7 +188,7 @@ KJSO DOMDocument::tryGet(const UString &p) const
   if (p == "doctype")
     return getDOMNode(doc.doctype());
   if (p == "implementation")
-    return new DOMDOMImplementation(doc.implementation());
+    return getDOMDOMImplementation(doc.implementation());
   else if (p == "documentElement")
     return getDOMNode(doc.documentElement());
   // methods
@@ -240,40 +240,37 @@ Completion DOMDocFunction::tryExecute(const List &args)
   String str = args[0].toString();
   DOM::DOMString s = str.value().string();
 
-  DOM::Element e;
-
   DOM::HTMLDocument d = DOM::HTMLDocument();
   DOM::Element e2 = d.createElement(DOM::DOMString("br"));
 
   switch(id) {
   case CreateElement:
-    e = doc.createElement(s);
-    result = new DOMElement(doc.createElement(s));
+    result = getDOMNode(doc.createElement(s));
     break;
   case CreateDocumentFragment:
     result = getDOMNode(doc.createDocumentFragment());
     break;
   case CreateTextNode:
-    result = new DOMText(doc.createTextNode(s));
+    result = getDOMNode(doc.createTextNode(s));
     break;
   case CreateComment:
     result = getDOMNode(doc.createComment(s));
     break;
   case CreateCDATASection:
-    result = new DOMText(doc.createCDATASection(s));  /* TODO: okay ? */
+    result = getDOMNode(doc.createCDATASection(s));  /* TODO: okay ? */
     break;
   case CreateProcessingInstruction:
     result = getDOMNode(doc.createProcessingInstruction(args[0].toString().value().string(),
                                                                  args[1].toString().value().string()));
     break;
   case CreateAttribute:
-    result = new DOMAttr(doc.createAttribute(s));
+    result = getDOMNode(doc.createAttribute(s));
     break;
   case CreateEntityReference:
     result = getDOMNode(doc.createEntityReference(args[0].toString().value().string()));
     break;
   case GetElementsByTagName:
-    result = new DOMNodeList(doc.getElementsByTagName(s));
+    result = getDOMNodeList(doc.getElementsByTagName(s));
     break;
     /* TODO */
 /*  case ImportNode: // new for DOM2 - not yet in khtml
@@ -369,7 +366,7 @@ Completion DOMElementFunction::tryExecute(const List &args)
       result = getDOMNode(element.removeAttributeNode((new DOMNode(KJS::toNode(args[0])))->toNode()));
       break;
     case GetElementsByTagName:
-      result = new DOMNodeList(element.getElementsByTagName(args[0].toString().value().string()));
+      result = getDOMNodeList(element.getElementsByTagName(args[0].toString().value().string()));
       break;
     case Normalize: {  // this is moved to Node in DOM2
         element.normalize();
