@@ -900,7 +900,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             // check if it fits in the current line.
             // If it does, position it now, otherwise, position
             // it after moving to next line (in newLine() func)
-            if (o->width()+o->marginLeft()+o->marginRight()+w <= width) {
+            if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
                 positionNewFloats();
                 width = lineWidth(m_height);
             }
@@ -984,7 +984,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
             int fb = floatBottom();
-            if(!w && m_height < fb) {
+            if(!w && m_height < fb && width < lineWidth(fb)) {
                 m_height = fb;
                 width = lineWidth(m_height);
             } 
