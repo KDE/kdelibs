@@ -145,7 +145,8 @@ void KURL::parse( const QString& _url )
     goto NodeErr;
   //Node 3: We need at least one character here
   if ( pos == len )
-    goto NodeErr;
+    goto NodeOk;
+//    goto NodeErr;
   start = pos++;
   // Node 4: Accept any amount of characters.
   // Terminate or / or @
@@ -251,7 +252,8 @@ void KURL::parse( const QString& _url )
  Node11:
   start = pos;
   if ( pos++ == len )
-    goto NodeErr;
+  	goto NodeOk;
+//    goto NodeErr;
   // Node 12: Accept the res
   setEncodedPathAndQuery( QString( buf + start, len - start ) );
   goto NodeOk;

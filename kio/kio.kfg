@@ -62,3 +62,19 @@ kioslave 'trader'
 	listing<@string> = { 'Name', 'Type' };
 	reading<bool> = true;
 };
+
+kioslave 'smb' 
+{
+	exec<string> = 'kio_smb';
+	protocol<string> = 'smb';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+	listing<@string> = { 'Name', 'Type', 'Size', 'Date', 'Access' };
+	reading<bool> = true;
+	writing<bool> = false;
+	makedir<bool> = false;
+	deleting<bool> = false;
+	linking<bool> = false;
+	moving<bool> = false;
+};
+
