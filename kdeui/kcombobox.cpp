@@ -145,15 +145,12 @@ bool KComboBox::isURLDropsEnabled() const
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-    int pos = cursorPosition();
-    if ( m_pEdit && text != m_pEdit->text() ) // no need to flicker
-        setEditText( text );
-    // Hightlight the text whenever appropriate.
-    if( marked && m_pEdit )
-    {
-        m_pEdit->setSelection( pos, text.length() );
-        m_pEdit->setCursorPosition( pos );
-    }
+    if ( marked )
+	m_pEdit->validateAndSet( text, currentText().length(),
+				 currentText().length(), text.length() );
+    else
+	if ( text != currentText() ) // no need to flicker
+	    setEditText( text );
 }
 
 void KComboBox::setCompletedText( const QString& text )
@@ -179,25 +176,24 @@ void KComboBox::makeCompletion( const QString& text )
             makeCompletionBox();
 
         QString match = comp->makeCompletion( text );
-        // If no match or the same text, simply return without completing.
-        if( match.isNull() || match == text )
-        {
-            if ( d->completionBox && match.isNull() ) {
-                d->completionBox->hide();
-                d->completionBox->clear();
-            }
+	if ( compPopup ) {
+	    if ( match.isNull() ) {
+		d->completionBox->hide();
+		d->completionBox->clear();
+	    }
+	    else
+		setCompletedItems( comp->allMatches() );
+	}
 
-            return;
-        }
+	else { // all other completion modes
+	    // If no match or the same text, simply return without completing.
+	    if( match.isNull() || match == text )
+		return;
 
-        if ( compPopup )
-            setCompletedItems( comp->allMatches() );
+	    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+			    mode == KGlobalSettings::CompletionMan );
 
-        else {
-            bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                            mode == KGlobalSettings::CompletionMan );
-
-            setCompletedText( match, marked );
+	    setCompletedText( match, marked );
         }
     }
 
@@ -256,7 +252,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 QComboBox::keyPressEvent ( e );
                 QString txt = currentText();
                 int len = txt.length();
-                if (!m_pEdit->hasMarkedText() && len && cursorPosition() == len)
+                if (!m_pEdit->hasMarkedText() && len && cursorPosition() ==len)
                 {
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
@@ -727,8 +723,8 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
         myIterateIndex++;
 	
 	// skip duplicates/empty items
-	while ( myIterateIndex < count()-1 && 
-		(currentText() == text( myIterateIndex ) || 
+	while ( myIterateIndex < count()-1 &&
+		(currentText() == text( myIterateIndex ) ||
 		 text( myIterateIndex ).isEmpty()) )
 	    myIterateIndex++;
 	
@@ -753,8 +749,8 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
         myIterateIndex--;
 
 	// skip duplicates/empty items
-	while ( myIterateIndex >= 0 && 
-		(currentText() == text( myIterateIndex ) || 
+	while ( myIterateIndex >= 0 &&
+		(currentText() == text( myIterateIndex ) ||
 		 text( myIterateIndex ).isEmpty()) )
 	    myIterateIndex--;
 	

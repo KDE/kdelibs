@@ -96,16 +96,13 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::setCompletedText( const QString& text, bool marked )
+void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
-    int pos = cursorPosition();
-    if ( text != QLineEdit::text() ) // no need to flicker if not necessary
-        setText( text );
     if ( marked )
-    {
-        setSelection( pos, text.length() );
-        setCursorPosition( pos );
-    }
+	validateAndSet( t, text().length(), text().length(), t.length() );
+    else
+	if ( t != text() ) // no need to flicker
+	    setText( t );
 }
 
 void KLineEdit::setCompletedText( const QString& text )
@@ -134,40 +131,35 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 
 void KLineEdit::makeCompletion( const QString& text )
 {
-
     KCompletion *comp = compObj();
     if ( !comp )
        return;  // No completion object...
 
-    bool compPopup = (completionMode() == KGlobalSettings::CompletionPopup);
+    KGlobalSettings::Completion mode = completionMode();
+    bool compPopup = (mode == KGlobalSettings::CompletionPopup);
 
     if ( compPopup && !d->completionBox )
         makeCompletionBox();
 
     QString match = comp->makeCompletion( text );
 
-    // If no match or the same match, simply return
-    // without completing.
-    KGlobalSettings::Completion mode = completionMode();
-    if ( match.isNull() || match == text )
-    {
-        if ( compPopup && match.isNull() )
-        {
-            d->completionBox->hide();
-            d->completionBox->clear();
-        }
-
-        return;
+    if ( compPopup ) {
+	if ( match.isNull() ) {
+	    d->completionBox->hide();
+	    d->completionBox->clear();
+	}
+	else
+	    setCompletedItems( comp->allMatches() );
     }
 
-    if ( compPopup )
-        setCompletedItems( comp->allMatches() );
+    else { // all other completion modes
+	// If no match or the same match, simply return without completing.
+	if ( match.isNull() || match == text )
+	    return;
 
-    else
-    {
-        bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                        mode == KGlobalSettings::CompletionMan );
-        setCompletedText( match, marked );
+	bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+			mode == KGlobalSettings::CompletionMan );
+	setCompletedText( match, marked );
     }
 }
 
@@ -180,7 +172,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
 	KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        
+
 	if ( mode == KGlobalSettings::CompletionAuto ||
 	     mode == KGlobalSettings::CompletionMan )
         {
@@ -190,7 +182,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 int len = txt.length();
-                if ( !hasMarkedText() && len && cursorPosition() == len )
+		if ( !hasMarkedText() && len && cursorPosition() == len )
                 {
                     if ( emitSignals() )
                         emit completion( txt );
@@ -371,7 +363,7 @@ void KLineEdit::dropEvent(QDropEvent *e)
         {
             if(!dropText.isEmpty())
                 dropText+=' ';
-            
+
             dropText += (*it).prettyURL();
         }
 
