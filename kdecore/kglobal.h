@@ -23,6 +23,7 @@
 
 class KCharsets;
 class KConfig;
+class KSharedConfig;
 class KIconLoader;
 class KLocale;
 class KStandardDirs;
@@ -64,6 +65,12 @@ public:
      * @return the global configuration object.
      */
     static KConfig		*config();
+
+    /**
+     *  Returns the general config object.
+     * @return the global configuration object.
+     */
+    static KSharedConfig        *sharedConfig();
 
     /**
      *  Returns an iconloader object.

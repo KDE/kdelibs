@@ -45,6 +45,7 @@ public:
     KMimeSourceFactory* mimeSourceFactory;
     QString configName;
     bool ownAboutdata;
+    KSharedConfig::Ptr sharedConfig;
 };
 
 KInstance::KInstance( const QCString& name)
@@ -98,6 +99,7 @@ KInstance::KInstance( KInstance* src )
 
     d = new KInstancePrivate ();
     d->ownAboutdata = src->d->ownAboutdata;
+    d->sharedConfig = src->d->sharedConfig;
 
     src->_dirs = 0L;
     src->_config = 0L;
@@ -117,7 +119,8 @@ KInstance::~KInstance()
 
     delete _iconLoader;
     _iconLoader = 0;
-    delete _config;
+
+    // delete _config; // Do not delete, stored in d->sharedConfig
     _config = 0;
     delete _dirs;
     _dirs = 0;
@@ -146,34 +149,43 @@ KConfig	*KInstance::config() const
     if( _config == 0 ) {
         if ( !d->configName.isEmpty() )
         {
-            _config = new KConfig( d->configName );
+            d->sharedConfig = KSharedConfig::openConfig( d->configName );
+            
             // Check whether custom config files are allowed.
-            _config->setGroup( "KDE Action Restrictions" );
-            if (_config->readBoolEntry( "custom_config", true))
+            d->sharedConfig->setGroup( "KDE Action Restrictions" );
+            if (d->sharedConfig->readBoolEntry( "custom_config", true))
             {
-               _config->setGroup(QString::null);
+               d->sharedConfig->setGroup(QString::null);
             }
             else
             {
-               delete _config;
-               _config = 0;
+               d->sharedConfig = 0;
             }
 
         }
 
-        if ( _config == 0 )
+        if ( d->sharedConfig == 0 )
         {
 	    if ( !_name.isEmpty() )
-	        _config = new KConfig( _name + "rc");
+	        d->sharedConfig = KSharedConfig::openConfig( _name + "rc");
 	    else
-	        _config = new KConfig();
+	        d->sharedConfig = KSharedConfig::openConfig( QString::null );
 	}
+	_config = d->sharedConfig;
         if (_dirs)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
     }
 
     return _config;
+}
+
+KSharedConfig *KInstance::sharedConfig() const
+{
+    if (_config == 0)
+       (void) config(); // Initialize config
+
+    return d->sharedConfig;
 }
 
 void KInstance::setConfigName(const QString &configName)

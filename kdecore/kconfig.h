@@ -26,6 +26,9 @@
 
 class QTimer;
 
+#include <qvaluelist.h>
+
+#include "ksharedptr.h"
 #include "kconfigbase.h"
 
 class KConfigPrivate;
@@ -249,5 +252,23 @@ private:
   KConfigPrivate *d;
 };
 
+class KSharedConfig : public KConfig, public KShared
+{
+  friend class QValueList<KSharedConfig*>;
+public:
+  typedef KSharedPtr<KSharedConfig> Ptr;
+
+public:  
+  /**
+   * Returns a ref-counted pointer to a shared read-write config object.
+   */
+  static KSharedConfig::Ptr openConfig(const QString& fileName);
+
+private:
+  KSharedConfig( const QString& fileName );
+  ~KSharedConfig();
+
+  static QValueList<KSharedConfig*> *s_list;
+};
 
 #endif

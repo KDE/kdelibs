@@ -64,6 +64,13 @@ KConfig	*KGlobal::config()
     return _instance->config();
 }
 
+KSharedConfig *KGlobal::sharedConfig()
+{
+    MYASSERT(_instance);
+
+    return _instance->sharedConfig();
+}
+
 KIconLoader *KGlobal::iconLoader()
 {
     MYASSERT(_instance);

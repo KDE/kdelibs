@@ -55,6 +55,7 @@ KConfig::KConfig( const QString& fileName,
 						      fileName,
                                                       resType,
 						      bUseKderc);
+
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;
 
@@ -314,6 +315,34 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
+QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
+KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName)
+{
+  if (s_list)
+  {
+     for(QValueList<KSharedConfig*>::ConstIterator it = s_list->begin();
+         it != s_list->end(); ++it)
+     {
+        if ((*it)->backEnd->fileName() == fileName)
+           return (*it);
+     }
+  }
+  return new KSharedConfig(fileName);
+}
+
+KSharedConfig::KSharedConfig( const QString& fileName )
+ : KConfig(fileName)
+{
+  if (!s_list)
+     s_list = new QValueList<KSharedConfig*>;
+     
+  s_list->append(this);
+}
+
+KSharedConfig::~KSharedConfig()
+{
+  s_list->remove(this);
+}
 
 #include "kconfig.moc"

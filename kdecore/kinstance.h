@@ -26,8 +26,10 @@ class KCharsets;
 class QFont;
 class KInstancePrivate;
 class KMimeSourceFactory;
+class KSharedConfig;
 
 #include <qstring.h>
+
 
 
 /**
@@ -86,6 +88,12 @@ class KInstance
      * @return the KConfig object for the instance.
      */
     KConfig            *config() const;
+
+    /**
+     * Returns the general config object ("appnamerc").
+     * @return the KConfig object for the instance.
+     */
+    KSharedConfig      *sharedConfig() const;
 
     /**
      *  Returns an iconloader object.
