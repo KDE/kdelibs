@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.24  1999/01/18 10:56:25  kulow
+ * .moc files are back in kdelibs. Built fine here using automake 1.3
+ *
  * Revision 1.23  1999/01/15 09:30:42  kulow
  * it's official - kdelibs builds with srcdir != builddir. For this I
  * automocifized it, the generated rules are easier to maintain than
@@ -156,6 +159,7 @@
 #define SOMAXCONN 5
 #endif
 
+#include <sys/resource.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -343,13 +347,11 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
       timeout.tv_usec = 0;
       timeout.tv_sec = 1;
 
-#ifdef HPUX
-      ret = select((size_t)FD_SETSIZE, (int *)&rd, (int *)&wr, (int *)0,
-                   (const struct timeval *)&timeout);
-#else
-      ret = select(getdtablesize(), (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
+      struct rlimit rlp;
+      getrlimit(RLIMIT_NOFILE, &rlp); // getdtablesize() equivalent. David Faure.
+
+      ret = select(rlp.rlim_cur, (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
                    (struct timeval *)&timeout);
-#endif
       if(ret)
           return(true);
       qApp->processEvents();
