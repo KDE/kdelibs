@@ -1773,6 +1773,9 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		if ( event->type() == QEvent::Paint
 				&& (frame = ::qt_cast<QFrame*>(object)) )
 		{
+			if (frame->frameShape() != QFrame::ToolBarPanel && frame->frameShape() != QFrame::MenuBarPanel)
+				return false;
+				
 			bool horizontal = true;
 			QPaintEvent* pe = (QPaintEvent*)event;
 			QToolBar *toolbar = ::qt_cast< QToolBar *>( frame );
