@@ -1123,7 +1123,7 @@ void RenderTable::calcRowHeight(int r)
 	rowHeights[r+1] = rowHeights[r];
 	
     // html tables with percent height are relative to view
-    if (r+1==totalRows) 
+    if (r+1==totalRows)
     {
     	Length h = style()->height();
 	int th=0;
@@ -1139,9 +1139,9 @@ void RenderTable::calcRowHeight(int r)
 	    	th = h.width(viewRect().height());
 		// not really, but this way the view height change
 		// gets propagated correctly
-		setContainsPositioned(true); 
+		setContainsPositioned(true);
 	    }
-	}  
+	}
 	if (rowHeights[r+1]<th)
 	    rowHeights[r+1]=th;
     }	
@@ -1263,7 +1263,7 @@ void RenderTable::layoutRow(int r)
     	    break;
 	}
 #ifdef DEBUG_LAYOUT
-	kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << endl;
+	kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
 #endif
 	cell->setCellTopExtra( te );
 	cell->setCellBottomExtra( rHeight - cell->height() - te);

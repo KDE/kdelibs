@@ -24,7 +24,7 @@
       TABLE           { display: table;
       	    	    	margin-left: 0;
 			margin-right: auto;
-      	    	    	border-collapse: separate
+      	    	    	border-collapse: separate;
 			vertical-align: middle;
                         text-align: justify;
 			border-spacing: 2px;
