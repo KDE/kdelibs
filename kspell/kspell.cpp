@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include <kapp.h>
 #include <kwm.h>
 
