@@ -51,6 +51,12 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
+hashtables:
+	cd $(srcdir); \
+	./create_hash_table keywords.table > lexer.lut.h; \
+	./create_hash_table array_object.cpp > array_object.lut.h; \
+	./create_hash_table math_object.cpp > math_object.lut.h
+
 ## test program (in one program for easier profiling/memory debugging)
 EXTRA_PROGRAMS = testkjs_static
 testkjs_static_SOURCES = testkjs.cpp  $(libkjs_la_SOURCES)

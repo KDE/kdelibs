@@ -32,7 +32,6 @@
 #include "operations.h"
 #include "math_object.h"
 
-#include "lookup.h"
 #include "math_object.lut.h"
 
 using namespace KJS;

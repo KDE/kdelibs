@@ -796,7 +796,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   b_ObjectPrototype = objProto;
   funcProto->setPrototype(objProto);
 
-  ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto,funcProto);
+  ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto);
   b_ArrayPrototype = arrayProto;
   StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto,funcProto);
   b_StringPrototype = stringProto;

@@ -1,6 +1,7 @@
 #! /usr/bin/perl -w
 
 $file = $ARGV[0];
+print STDERR "Creating hashtable for $file\n";
 open(IN, $file) or die "No such file $file";
 
 @keys = ();
@@ -94,6 +95,7 @@ sub output() {
     print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
   }
 
+  print "\n#include \"lookup.h\"\n";
   print "\nnamespace KJS {\n";
   print "\nconst struct HashEntry ${name}Entries[] = {\n";
   my $i = 0;

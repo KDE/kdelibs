@@ -29,6 +29,8 @@
 #include "internal.h"
 #include "error_object.h"
 
+#include "array_object.lut.h"
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -88,39 +90,56 @@ void ArrayInstanceImp::putDirect(ExecState *exec, const UString &propertyName, c
 }
 // ------------------------------ ArrayPrototypeImp ----------------------------
 
-// ECMA 15.4.4
+const ClassInfo ArrayPrototypeImp::info = {"ArrayPrototype" /* correct? */, 0, &arrayTable, 0};
 
+/* Source for array_object.lut.h
+@begin arrayTable 13
+  toString       ArrayProtoFuncImp::ToString       DontEnum|DontDelete|ReadOnly|Function 0
+  toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|DontDelete|ReadOnly|Function 0
+  concat         ArrayProtoFuncImp::Concat         DontEnum|DontDelete|ReadOnly|Function 0
+  join           ArrayProtoFuncImp::Join           DontEnum|DontDelete|ReadOnly|Function 1
+  pop            ArrayProtoFuncImp::Pop            DontEnum|DontDelete|ReadOnly|Function 0
+  push           ArrayProtoFuncImp::Push           DontEnum|DontDelete|ReadOnly|Function 1
+  reverse        ArrayProtoFuncImp::Reverse        DontEnum|DontDelete|ReadOnly|Function 0
+  shift          ArrayProtoFuncImp::Shift          DontEnum|DontDelete|ReadOnly|Function 0
+  slice          ArrayProtoFuncImp::Slice          DontEnum|DontDelete|ReadOnly|Function 0
+  sort           ArrayProtoFuncImp::Sort           DontEnum|DontDelete|ReadOnly|Function 1
+  splice         ArrayProtoFuncImp::Splice         DontEnum|DontDelete|ReadOnly|Function 1
+  unshift        ArrayProtoFuncImp::UnShift        DontEnum|DontDelete|ReadOnly|Function 1
+@end
+*/
+
+// ECMA 15.4.4
 ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
-                                     ObjectPrototypeImp *objProto,
-                                     FunctionPrototypeImp *funcProto)
+                                     ObjectPrototypeImp *objProto)
   : ArrayInstanceImp(objProto)
 {
   Value protect(this);
   setInternalValue(Null());
 
-  // The constructor will be added later in ArrayObject's constructor (?)
-
+  // The constructor will be added later, by InterpreterImp, once ArrayObjectImp has been constructed.
   put(exec,"length", Number(0), DontEnum | DontDelete);
+}
 
-  put(exec,"toString",       new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::ToString,      0), DontEnum);
-  put(exec,"toLocaleString", new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::ToLocaleString,0), DontEnum);
-  put(exec,"concat",         new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Concat,        0), DontEnum);
-  put(exec,"join",           new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Join,          1), DontEnum);
-  put(exec,"pop",            new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Pop,           0), DontEnum);
-  put(exec,"push",           new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Push,          1), DontEnum);
-  put(exec,"reverse",        new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Reverse,       0), DontEnum);
-  put(exec,"shift",          new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Shift,         0), DontEnum);
-  put(exec,"slice",          new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Slice,         0), DontEnum);
-  put(exec,"sort",           new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Sort,          1), DontEnum);
-  put(exec,"splice",         new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::Splice,        1), DontEnum);
-  put(exec,"unshift",        new ArrayProtoFuncImp(exec,funcProto,ArrayProtoFuncImp::UnShift,       1), DontEnum);
+Value ArrayPrototypeImp::get(ExecState *exec, const UString &propertyName) const
+{
+  //fprintf( stderr, "ArrayPrototypeImp::get(%s)\n", propertyName.ascii() );
+  return lookupOrCreate<ArrayProtoFuncImp, ArrayPrototypeImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
+}
+
+Value ArrayPrototypeImp::getValue(ExecState *, int) const
+{
+  // Can't be called, all properties in the hashtable have the Function bit
+  fprintf( stderr, "ArrayPrototypeImp::getValue called - impossible\n" );
+  return Null();
 }
 
 // ------------------------------ ArrayProtoFuncImp ----------------------------
 
-ArrayProtoFuncImp::ArrayProtoFuncImp(ExecState *exec,
-                                     FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+ArrayProtoFuncImp::ArrayProtoFuncImp(ExecState *exec, int i, int len)
+  : InternalFunctionImp(
+    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    ), id(i)
 {
   Value protect(this);
   put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);

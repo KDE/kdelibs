@@ -292,6 +292,23 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
       return proto;
   }
 
+  ValueImp *imp = getDirect(propertyName);
+  if ( imp )
+    return imp;
+
+  Object proto = Object::dynamicCast(prototype());
+  if (proto.isNull())
+    return Undefined();
+
+  return proto.get(exec,propertyName);
+}
+
+// This get method only looks at the property map.
+// A bit like hasProperty(recursive=false), this doesn't go to the prototype.
+// This is used e.g. by lookupOrCreate (to cache a function, we don't want
+// to look up in the prototype, it might already exist there)
+ValueImp* ObjectImp::getDirect(const UString& propertyName) const
+{
   PropertyMap *pr = _prop;
   while (pr) {
     if (pr->name == propertyName) {
@@ -299,12 +316,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
     }
     pr = pr->next;
   }
-
-  Object proto = Object::dynamicCast(prototype());
-  if (proto.isNull())
-    return Undefined();
-
-  return proto.get(exec,propertyName);
+  return 0L;
 }
 
 // ECMA 8.6.2.2

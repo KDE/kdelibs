@@ -557,6 +557,7 @@ namespace KJS {
     String toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
+    ValueImp* getDirect(const UString& propertyName) const;
   private:
     const HashEntry* findPropertyHashEntry( const UString& propertyName ) const;
     ObjectImpPrivate *_od;

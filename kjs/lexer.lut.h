@@ -1,5 +1,7 @@
 /* Automatically generated from keywords.table using ./create_hash_table. DO NOT EDIT ! */
 
+#include "lookup.h"
+
 namespace KJS {
 
 const struct HashEntry mainTableEntries[] = {

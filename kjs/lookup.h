@@ -119,8 +119,8 @@ namespace KJS {
    * @param thisObj "this"
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value lookupOrCreate( ExecState *exec, const UString &propertyName,
-                               const HashTable* table, const ThisImp* thisObj )
+  inline Value lookupOrCreate(ExecState *exec, const UString &propertyName,
+                              const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
@@ -128,20 +128,20 @@ namespace KJS {
       return thisObj->ParentImp::get(exec, propertyName);
 
     int token = entry->value;
-    //fprintf( stderr, "MathObjectImp::get, found value=%d attr=%d\n", entry->value, entry->attr );
+    //fprintf(stderr, "MathObjectImp::get, found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
     {
       // Look for cached value in dynamic map of properties (in ObjectImp)
-      Value cachedVal = thisObj->ObjectImp::get(exec, propertyName);
-      //fprintf( stderr, "MathObjectImp::get Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
-      //         cachedVal.type(),  ObjectType);
-      if ( cachedVal.type() == ObjectType )
+      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
+      /*if (cachedVal)
+        fprintf(stderr, "MathObjectImp::get Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
+                 cachedVal->type(),  ObjectType);*/
+      if (cachedVal && cachedVal->type() == ObjectType)
         return cachedVal;
 
-      cachedVal = new FuncImp(exec,
-                              entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, cachedVal, entry->attr);
-      return cachedVal;
+      Value val = new FuncImp(exec, entry->value, entry->params);
+      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, val, entry->attr);
+      return val;
     }
     return thisObj->getValue(exec, token);
   }

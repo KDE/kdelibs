@@ -1,5 +1,7 @@
 /* Automatically generated from math_object.cpp using ./create_hash_table. DO NOT EDIT ! */
 
+#include "lookup.h"
+
 namespace KJS {
 
 const struct HashEntry mathTableEntries[] = {

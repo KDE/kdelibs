@@ -33,12 +33,12 @@ namespace KJS {
     MathObjectImp(ExecState *exec,
                   ObjectPrototypeImp *objProto);
     Value get(ExecState *exec, const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
            Abs, ACos, ASin, ATan, ATan2, Ceil, Cos, Pow,
            Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
-    Value getValue(ExecState *exec, int token) const;
   };
 
   class MathFuncImp : public InternalFunctionImp {
