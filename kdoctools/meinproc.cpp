@@ -105,9 +105,27 @@ int main(int argc, char **argv) {
 
     LIBXML_TEST_VERSION
 
+    QString checkFilename = QFile::decodeName(args->arg( 0 ));
+    QFileInfo checkFile(checkFilename);
+    if (!checkFile.exists())
+    {
+        kdError() << "File '" << checkFilename << "' does not exist." << endl;
+        return ( 2 );
+    }
+    if (!checkFile.isFile())
+    {
+        kdError() << "'" << checkFilename << "' is not a file." << endl;
+        return ( 2 );
+    }
+    if (!checkFile.isReadable())
+    {
+        kdError() << "File '" << checkFilename << "' is not readable." << endl;
+        return ( 2 );
+    }
+
     if ( args->isSet( "check" ) ) {
         char pwd_buffer[250];
-        QFileInfo file( args->arg( 0 ) );
+        QFileInfo file( QFile::decodeName(args->arg( 0 )) );
         getcwd( pwd_buffer, 250 );
         chdir( QFile::encodeName( file.dirPath( true ) ) );
 
