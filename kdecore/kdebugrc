@@ -64,6 +64,11 @@ InfoOutput=4
 [7113]
 InfoOutput=4
 
+# kbzip2filter's debug info off
+[7118]
+InfoOutput=4
+WarnOutput=1
+
 # kio_nntp debug info off
 [7114]
 InfoOutput=4
