@@ -6713,6 +6713,16 @@ void KHTMLPart::saveToWallet(const QString& key, const QMap<QString,QString>& da
 
 
 void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
+  KHTMLPart *p;
+
+  for (p = parentPart(); p && p->parentPart(); p = p->parentPart()) {
+  }
+
+  if (p) {
+    p->dequeueWallet(form);
+    return;
+  }
+
   if (d->m_wq) {
     d->m_wq->callers.remove(KHTMLWalletQueue::Caller(form, form->getDocument()));
   }
