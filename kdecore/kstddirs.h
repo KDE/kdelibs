@@ -126,6 +126,9 @@ public:
 	 * Tries to find resource in the following order:
 	 * @li all hard paths (most recent first)
 	 * @li all PREFIX/<relativename> paths (most recent first)
+	 *
+	 * @return a full path to the filename specified in the second
+	 *         argument.
 	 */
 	QString findResource( const QString& type, 
 			      const QString& filename ) const;
@@ -137,6 +140,9 @@ public:
 	 * This way the application can access a couple of files
 	 * that have been installed into the same directory without
 	 * having to look for each file.
+	 *
+	 * @return the directory where the file specified in the second
+	 *         argument is located.
 	 */
 	QString findResourceDir( const QString& type,
 				 const QString& filename) const;
@@ -147,10 +153,13 @@ public:
 	 * The function will look into all specified directories
 	 * and returns all filenames in these directories.
 	 *
-	 * @param recursive specifies if the function should follow
-	 * subdirs
+	 * @param type the type of resource to locate directories for.
+	 * @param recursive specifies if the function should decend
+	 *        into subdirectories.
+	 * @return a list of directories matching the resource specified.
 	 */
-	QStringList findAllResources( const QString& type, bool recursive = false) const;
+	QStringList findAllResources( const QString& type, 
+				      bool recursive = false) const;
 
 	/** 
 	 * Finds the executable in the system path. A valid executable must
