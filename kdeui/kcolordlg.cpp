@@ -450,7 +450,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	l_left->addStretch(1);
 	
 	// add buttom for adding colors
-	button = new QPushButton( i18n("Add to Custom Colors"),
+	button = new QPushButton( i18n("&Add to Custom Colors"),
 				  this );
 	l_left->addWidget(button, 0);
 	connect( button, SIGNAL( clicked() ), 
