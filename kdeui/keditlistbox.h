@@ -48,7 +48,11 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
    Q_PROPERTY( QStringList items READ items WRITE setItems )
 
 public:
-    /// @since 3.1
+    /**
+     * Custom editor class
+     *
+     * @since 3.1
+     **/
     class CustomEditor
     {
     public:

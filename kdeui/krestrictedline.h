@@ -28,6 +28,8 @@
 #include <klineedit.h>
 
 /**
+ * @short A line editor for restricted character sets.
+ *
  * The KRestrictedLine widget is a variant of QLineEdit which
  * accepts only a restricted set of characters as input.
  * All other characters will be discarded and the signal invalidChar()
@@ -37,9 +39,7 @@
  * or set afterwards via setValidChars().
  * The default key bindings of QLineEdit are still in effect.
  *
- * @short A line editor for restricted character sets.
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
- * @version 0.0.1
  */
 class KDEUI_EXPORT KRestrictedLine : public KLineEdit
 {

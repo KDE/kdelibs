@@ -30,9 +30,11 @@ class KDCOPPropertyProxy;
 class KMainWindow;
 
 /**
+ * @short DCOP interface to KMainWindow.
+ *
  * This is the main interface to the KMainWindow.  This will provide a consistent
  * DCOP interface to all KDE applications that use it.
- * @short DCOP interface to KMainWindow.
+ *
  * @author Ian Reinhart Geiser <geiseri@yahoo.com>
  */
 class KDEUI_EXPORT KMainWindowInterface : virtual public DCOPObject

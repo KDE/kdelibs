@@ -23,7 +23,7 @@
 
 #include <qstatusbar.h>
 #include <qintdict.h>
-#include <qlabel.h> 
+#include <qlabel.h>
 #include <kdelibs_export.h>
 
 class KStatusBar;
@@ -46,9 +46,9 @@ protected:
 
   void mousePressEvent (QMouseEvent* _event);
   void mouseReleaseEvent (QMouseEvent* _event);
-  
+
 private:
-  
+
   int id;
 
 signals:
@@ -58,16 +58,18 @@ signals:
 };
 
 /**
+ *  @short %KDE statusbar widget
+ *
  *  Display status messages.
  *
  *  You can insert text labels or custom widgets. Their geometry is managed
  *  internally. KStatusBar resizes itself, but positioning is left to
- * KMainWindow (or to you, if you don't use KMainWindow ).
+ *  KMainWindow (or to you, if you don't use KMainWindow ).
  *
  *  A special type of item is a message which is a temporary text-message
  *  displayed on top of other items in full-width. Messages are visible for
  *  specified time, or until you call the slot QStatusBar::clear(). See
- * QStatusBar::message for details.
+ *  QStatusBar::message for details.
  *
  *  KStatusBar inherits QStatusBar, you can freely use all QStatusBar
  *  methods.
@@ -75,22 +77,20 @@ signals:
  *  Empty text items are not visible. They will become visible when you change
  *  (add) text.
  *
- *  @short KDE statusbar widget
  *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
- *  @version $Id$
  */
 class KDEUI_EXPORT KStatusBar : public QStatusBar
 {
   Q_OBJECT
-    
+
 public:
   /**
-   * @deprecated 
+   * @deprecated
    * WARNING: This enum is only for backward compatibility and it may be removed.
    * No method here uses it.
    */
   enum BarStatus{ Toggle, Show, Hide };
-  
+
   /**
    *  Constructs a status bar. @p parent is usually KMainWindow.
    */
@@ -117,7 +117,7 @@ public:
    *  @param permanent is item permanent or not (passed to QStatusBar::addWidget )
    *
    *  @see QStatusbar::addWidget
-   * 
+   *
    */
   void insertItem(const QString& text, int id, int stretch=0, bool permanent=false );
 
@@ -132,7 +132,7 @@ public:
    */
   inline void insertFixedItem(const QString& text, int id, bool permanent=false)
                { insertItem(text, id, 0, permanent); setItemFixed(id); }
-  
+
   /**
    *  Removes an item.
    *
@@ -164,7 +164,7 @@ public:
   /**
    * Sets the alignment of item @p id. By default all fields are aligned
    * @p AlignHCenter | @p AlignVCenter. See QLabel::setAlignment for details.
-   * 
+   *
   */
   void setItemAlignment(int id, int align);
 
@@ -183,7 +183,7 @@ signals:
    *  Emitted when mouse is pressed over item @p id.
    *
    *  Connect to this signal if you want to respond to mouse press events.
-   *  
+   *
    */
   void pressed( int );
 

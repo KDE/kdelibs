@@ -32,7 +32,7 @@ class KPanelExtensionPrivate;
 #include <kdelibs_export.h>
 
 /**
- * @short KDE Panel Extension class
+ * @short %KDE Panel Extension class
  *
  * Panel extensions
  *   @li Are small applications living in the Window Manager dock managed by the panel.

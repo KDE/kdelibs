@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * DCop client menu class for the Kicker panel that will insert a submenu into
- * the KDE menu.
+ * the %KDE menu.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  */
@@ -66,7 +66,7 @@ public:
      * Inserts an item with a icon. The icon name must be a full path.
      */
     int insertItem(const QPixmap &icon, const QString &text, int id = -1 );
-    /** 
+    /**
      * Inserts a sub menu with a icon. The icon name must be a full path.
      */
     KPanelAppMenu *insertMenu(const QPixmap &icon, const QString &text, int id=-1);
