@@ -21,12 +21,14 @@
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kcharsets.h>
 #include <qtextcodec.h>
 
 #include <sys/types.h>
 #include <stddef.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 ////////////////////
 
@@ -150,9 +152,6 @@ void KBookmarkImporter::parseBookmark( QDomElement & parentElem, QCString _text,
 void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
 {
     QFile f(m_fileName);
-    QRegExp amp("&amp;");
-    QRegExp lt("&lt;");
-    QRegExp gt("&gt;");
     QTextCodec * codec = utf8 ? QTextCodec::codecForName("UTF-8") : QTextCodec::codecForLocale();
     Q_ASSERT(codec);
     if (!codec)
@@ -184,10 +183,10 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
                 name = name.left(name.findRev('<'));
                 if ( name.right(4) == "</A>" )
                     name = name.left( name.length() - 4 );
-                name.replace( amp, "&" ).replace( lt, "<" ).replace( gt, ">" );
+                QString qname = resolveEntities( codec->toUnicode( name ) );
                 QCString additionnalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
-                emit newBookmark( KStringHandler::csqueeze(codec->toUnicode(name)),
+                emit newBookmark( KStringHandler::csqueeze(qname),
                                   link, codec->toUnicode(additionnalInfo) );
               }
             }
@@ -195,12 +194,12 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
                 int endTag = t.find('>', 7);
                 QCString name = t.mid(endTag+1);
                 name = name.left(name.findRev('<'));
-                name.replace( amp, "&" ).replace( lt, "<" ).replace( gt, ">" );
+                QString qname = resolveEntities( codec->toUnicode( name ) );
                 QCString additionnalInfo = t.mid( 8, endTag-8 );
                 bool folded = (additionnalInfo.left(6) == "FOLDED");
                 if (folded) additionnalInfo.remove(0,7);
 
-                emit newFolder( KStringHandler::csqueeze(codec->toUnicode(name)),
+                emit newFolder( KStringHandler::csqueeze(qname),
                                 !folded,
                                 codec->toUnicode(additionnalInfo) );
             }
@@ -228,6 +227,52 @@ QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
     else
         return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
                                              i18n("*.html|HTML files (*.html)") );
+}
+
+QString KNSBookmarkImporter::resolveEntities( const QString &input )
+{
+    QString text = input;
+    const QChar *p = text.unicode();
+    const QChar *end = p + text.length();
+    const QChar *ampersand = 0;
+    bool scanForSemicolon = false;
+
+    for ( ; p < end; ++p ) {
+        QChar ch = *p;
+
+        if ( ch == '&' ) {
+            ampersand = p;
+            scanForSemicolon = true;
+            continue;
+        }
+
+        if ( ch != ';' || scanForSemicolon == false )
+            continue;
+
+        assert( ampersand );
+
+        scanForSemicolon = false;
+
+        const QChar *entityBegin = ampersand + 1;
+
+        uint entityLength = p - entityBegin;
+        if ( entityLength == 0 )
+            continue;
+
+        QChar entityValue = KGlobal::charsets()->fromEntity( QConstString( entityBegin, entityLength ).string() );
+        if ( entityValue.isNull() )
+            continue;
+
+        uint ampersandPos = ( entityBegin - 1 ) - text.unicode();
+
+        text[ ampersandPos ] = entityValue;
+        text.remove( ampersandPos + 1, entityLength + 1 );
+        p = text.unicode() + ampersandPos;
+        end = text.unicode() + text.length();
+        ampersand = 0;
+    }
+
+    return text;
 }
 
 #include "kbookmarkimporter.moc"

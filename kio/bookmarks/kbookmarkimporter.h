@@ -93,6 +93,9 @@ signals:
 
 protected:
     QString m_fileName;
+
+private:
+    QString resolveEntities( const QString &input );
 };
 
 #endif
