@@ -1,3 +1,9 @@
+kdelibs (4:1.1.1-19990424-1) unstable; urgency=low
+
+  * new upstream version for KDE 1.1.1
+
+ -- Stephan Kulow <coolo@kde.org>  Sat, 24 Apr 1999 16:53:56 +0200
+
 kdelibs (4:1.1-19990306-1) unstable; urgency=low
 
   * new upstream version out of CVS (many translation updates and some
