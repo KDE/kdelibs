@@ -381,6 +381,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     mSize = config->readNumEntry("Size");
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
+    mType = KIcon::Fixed;
 
     if (mSize == 0)
         return;
