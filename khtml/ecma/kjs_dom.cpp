@@ -499,8 +499,8 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
     }
     case DOMNode::InsertAdjacentHTML:
     {
-      // see http://www.faqts.com/knowledge_base/view.phtml/aid/5756 
-      // and http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/insertAdjacentHTML.asp 
+      // see http://www.faqts.com/knowledge_base/view.phtml/aid/5756
+      // and http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/insertAdjacentHTML.asp
       Range range = node.ownerDocument().createRange();
 
       range.setStartBefore(node);
@@ -1210,12 +1210,15 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   setNamedItemNS	DOMNamedNodeMap::SetNamedItemNS		DontDelete|Function 1
   removeNamedItemNS	DOMNamedNodeMap::RemoveNamedItemNS	DontDelete|Function 2
 @end
+@begin DOMNamedNodeMapTable 7
+  length		DOMNamedNodeMap::Length			DontDelete|Function 1
+@end
 */
 DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNamedNodeMapProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
 
-const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, 0, 0 };
+const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, &DOMNamedNodeMapTable, 0 };
 
 DOMNamedNodeMap::DOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
   : DOMObject(DOMNamedNodeMapProto::self(exec)), map(m) { }
@@ -1225,12 +1228,8 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
   ScriptInterpreter::forgetDOMObject(map.handle());
 }
 
-// We have to implement hasProperty since we don't use a hashtable for 'length'
-// ## this breaks "for (..in..)" though.
 bool DOMNamedNodeMap::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  if (p == lengthPropertyName)
-    return true;
   // ## missing? array index
   return DOMObject::hasProperty(exec, p);
 }
@@ -1619,7 +1618,12 @@ Object KJS::getDOMExceptionConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection", 0, 0, 0 };
+/* Source for DOMNamedNodesCollection.
+@begin DOMNamedNodesCollectionTable 1
+  length		KJS::DOMNamedNodesCollection::Length		DontDelete|ReadOnly
+@end
+*/
+const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection", 0, &DOMNamedNodesCollectionTable, 0 };
 
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],

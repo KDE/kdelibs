@@ -181,7 +181,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
-    enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item,
+    enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item, Length,
            GetNamedItemNS, SetNamedItemNS, RemoveNamedItemNS };
     DOM::NamedNodeMap toMap() const { return map; }
   private:
@@ -260,6 +260,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     const QValueList<DOM::Node>& nodes() const { return m_nodes; }
+    enum { Length };
   private:
     QValueList<DOM::Node> m_nodes;
   };
