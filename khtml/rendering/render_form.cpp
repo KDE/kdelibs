@@ -915,6 +915,7 @@ void RenderSelect::restoreState(const QString &state)
 void RenderSelect::slotActivated(int index)
 {
     static_cast<HTMLSelectElementImpl*>(m_element)->setSelectedIndex(listToOptionIndex(index));
+    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
 }
 
 int RenderSelect::optionToListIndex(int optionIndex)

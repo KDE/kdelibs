@@ -220,7 +220,9 @@ void HTMLFormElementImpl::submit(  )
 
     QByteArray form_data = formData();
 
-    kdDebug( 6030 ) << "formdata = " << form_data.data() << endl << "m_post = " << m_post << endl << "multipart = " << m_multipart << endl;
+    // formdata is not null-terminated, so this will cause insure to scream
+    // kdDebug( 6030 ) << "formdata = " << form_data.data() << endl << "m_post = " << m_post << endl << "multipart = " << m_multipart << endl;
+
     if(m_post)
     {
         view->part()->submitForm( "post", url.string(), form_data,
@@ -443,10 +445,10 @@ void HTMLGenericFormElementImpl::onSelect()
 
 void HTMLGenericFormElementImpl::onChange()
 {
-    DOMString script = getAttribute(ATTR_ONFOCUS);
+    DOMString script = getAttribute(ATTR_ONCHANGE);
     if (!script.isEmpty())
 	view->part()->executeScript(script.string());
-}
+
 
 void HTMLGenericFormElementImpl::blur()
 {
