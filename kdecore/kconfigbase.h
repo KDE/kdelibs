@@ -151,8 +151,8 @@ public:
    * @return An invalid @ref QVariant if the key was not found.
    *
    * Note that only the following @ref QVariant::Type are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool and
-   * Double.
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const QString& pKey, QVariant::Type ) const;
   QVariant readPropertyEntry( const char *pKey, QVariant::Type ) const;
@@ -161,12 +161,12 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the type of the given default value.
    *
-   * @return The value for this key or the default value if the key was not
+   * @return The value for the key or the default value if the key was not
    *         found.
    *
    * Note that only the following @ref QVariant::Type are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool and
-   * Double.
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const QString& pKey,
                               const QVariant &adefault) const;

@@ -428,6 +428,11 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           return QVariant( readBoolEntry( pKey, aDefault.toBool() ), 0 );
       case QVariant::Double:
           return QVariant( readDoubleNumEntry( pKey, aDefault.toDouble() ) );
+      case QVariant::DateTime:
+          return QVariant( readDateTimeEntry( pKey, &tmp.asDateTime() ) );
+      case QVariant::Date:
+          return QVariant(readDateTimeEntry( pKey, &tmp.asDateTime() ).date());
+          break;
 
       case QVariant::Pixmap:
       case QVariant::Image:
@@ -442,9 +447,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::Bitmap:
       case QVariant::Cursor:
       case QVariant::SizePolicy:
-      case QVariant::Date:
       case QVariant::Time:
-      case QVariant::DateTime:
       case QVariant::ByteArray:
       case QVariant::BitArray:
       case QVariant::KeySequence:
@@ -1176,6 +1179,12 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Double:
       writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, 'g', 6, bNLS );
       return;
+    case QVariant::DateTime:
+      writeEntry( pKey, prop.toDateTime(), bPersistent, bGlobal, bNLS);
+      break;
+    case QVariant::Date:
+      writeEntry( pKey, QDateTime(prop.toDate()), bPersistent, bGlobal, bNLS);
+      break;
 
     case QVariant::Pixmap:
     case QVariant::Image:
@@ -1190,9 +1199,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::Bitmap:
     case QVariant::Cursor:
     case QVariant::SizePolicy:
-    case QVariant::Date:
     case QVariant::Time:
-    case QVariant::DateTime:
     case QVariant::ByteArray:
     case QVariant::BitArray:
     case QVariant::KeySequence:
