@@ -895,7 +895,7 @@ void KToggleAction::setChecked( bool c )
   d->m_locked = false;
   //  emit activated();
   d->m_locked = false;
-  emit toggled( isChecked() );
+  //  emit toggled( isChecked() );
 }
 
 void KToggleAction::setChecked( int id, bool checked )
@@ -923,6 +923,7 @@ void KToggleAction::slotActivated()
   setChecked( !isChecked() );
   d->m_locked = false;
   emit activated();
+  emit toggled( isChecked() );
 }
 
 bool KToggleAction::isChecked() const
