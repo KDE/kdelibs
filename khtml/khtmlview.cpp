@@ -1065,9 +1065,9 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->deref();
 	    }
 
+	    if (oldUnder)
+		oldUnder->deref();
 	}
-	if (oldUnder)
-	    oldUnder->deref();
     }
 
     if (targetNode) {
