@@ -109,7 +109,12 @@ static const char			   *cfgDebugApp		= 0;
 static bool  					cfgFullDuplex	= 0;
 static bool  					cfgForceStart	= 0;
 static const char			   *cfgDeviceName   = 0;
+#if defined(__osf__)
+// tru64 does not have sound devices so avoid the default auto-detect
+static const char              *cfgAudioIO      = "null";
+#else
 static const char              *cfgAudioIO      = 0;
+#endif
 static int                      cfgAutoSuspend  = 0;
 static int                      cfgBuffers      = 0;
 
