@@ -93,12 +93,19 @@ protected slots:
     */
    void update (const QString& dir );
 
+   /**
+    * @internal Installs crash handler
+    */
+   void installCrashHandler();
+
 protected:
 
    /**
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir, KDirWatch *dirWatch );
+
+   static void crashHandler(int);
    
 protected:
 
