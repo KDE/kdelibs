@@ -164,12 +164,10 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     {
         SpecialObject* r;
         QListIterator<SpecialObject> it(*specialObjects);
-        for ( ; (r = it.current()); ++it )
-        {
-            if (r->node->containingBlock()==this)
-            {
+        for ( ; (r = it.current()); ++it ) {
+            if (r->node->containingBlock()==this) {
                 RenderObject *o = r->node;
-                //kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+                //kdDebug(0) << renderName() << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
                 o->print(p, _x, _y, _w, _h, _tx , _ty);
             }
         }
@@ -185,7 +183,10 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     }
 
 #ifdef BOX_DEBUG
-    outlineBox(p, _tx, _ty);
+    if(isAnonymousBox())
+	outlineBox(p, _tx, _ty, "green");
+    else
+	outlineBox(p, _tx, _ty);
 #endif
 
 }
@@ -269,9 +270,9 @@ void RenderFlow::layout()
 
 void RenderFlow::layoutSpecialObjects()
 {
-    //kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
-
     if(specialObjects) {
+	//kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
+
         SpecialObject* r;
         QListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
@@ -286,7 +287,7 @@ void RenderFlow::layoutSpecialObjects()
 void RenderFlow::layoutBlockChildren()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "layoutBlockChildren( )" << endl;
+    kdDebug( 6040 ) << renderName() << " layoutBlockChildren( )" << endl;
 #endif
 
     bool _layouted = true;
@@ -322,7 +323,7 @@ void RenderFlow::layoutBlockChildren()
 
     while( child != 0 )
     {
-        //kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+        //kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
         //kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
 
@@ -330,6 +331,7 @@ void RenderFlow::layoutBlockChildren()
         {
             child->layout();
             static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
+	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl; 
             child = child->nextSibling();
             continue;
         } else if ( child->isReplaced() )
@@ -421,7 +423,7 @@ bool RenderFlow::checkClear(RenderObject *child)
 void
 RenderFlow::insertPositioned(RenderObject *o)
 {
-    //kdDebug() << "RenderFlow::insertPositioned" << this<< isAnonymousBox() << " " << o << endl;
+    //kdDebug() << renderName() << "::insertPositioned " << this<< isAnonymousBox() << " " << o << endl;
     if(!specialObjects) {
         specialObjects = new QSortedList<SpecialObject>;
         specialObjects->setAutoDelete(true);
@@ -756,7 +758,7 @@ RenderFlow::lowestPosition() const
             if ( r->type < SpecialObject::Positioned ) {
                 lp = r->startY + r->node->lowestPosition();
                 //kdDebug(0) << r->node->renderName() << " lp = " << lp << "startY=" << r->startY << endl;
-            } else if ( r->type <= SpecialObject::RelPositioned ) {
+            } else if ( r->type <= SpecialObject::Positioned ) {
                 lp = r->node->yPos() + r->node->lowestPosition();
             }
             if( lp > bottom)
@@ -800,8 +802,16 @@ RenderFlow::clearFloats()
 {
 
 //    kdDebug( 6040 ) << "clearFloats" << endl;
-    if (specialObjects)
-        specialObjects->clear();
+    if (specialObjects) {
+	SpecialObject* r;
+	specialObjects->first();
+	while ( (r = specialObjects->current() ) ) {
+	    if ( r->type != SpecialObject::Positioned )
+		specialObjects->remove( r );
+	    else
+		specialObjects->next();
+	}	
+    }
 
     if (isFloating()) return;
 

@@ -338,10 +338,11 @@ short RenderBox::containingBlockWidth() const
 
 void RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if( m_style->position() == FIXED )
+    if ( m_style->position() == FIXED )
 	f = true;
-    if(m_parent) {
-        m_parent->absolutePosition(xPos, yPos, f);
+    RenderObject *o = container();
+    if( o ) {
+        o->absolutePosition(xPos, yPos, f);
         if((!isInline() || isReplaced()) && xPos != -1)
             xPos += m_x, yPos += m_y;
     }
@@ -490,14 +491,16 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h)
     x += m_x;
     y += m_y;
     // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
-    if(m_parent) m_parent->repaintRectangle(x, y, w, h);
+    RenderObject *o = container();
+    if( o ) o->repaintRectangle(x, y, w, h);
 }
 
 void RenderBox::repaintObject(RenderObject *o, int x, int y)
 {
     x += m_x;
     y += m_y;
-    if(m_parent) m_parent->repaintObject(o, x, y);
+    RenderObject *c = container();
+    if( c ) c->repaintObject(o, x, y);
 }
 
 void RenderBox::relativePositionOffset(int &tx, int &ty)

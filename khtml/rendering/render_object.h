@@ -113,6 +113,12 @@ public:
 
         // absolute relative or fixed positioning
 
+    RenderObject *root() const;
+    /* returns the object containing this one. can be different from parent for
+     * positioned elements
+     */
+    RenderObject *container() const;
+    
     void setContainsPositioned(bool p);
 
     void setLayouted(bool b=true) { m_layouted = b; }

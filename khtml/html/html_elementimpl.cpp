@@ -87,7 +87,8 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() ) {
-	if ( m_render->style()->position() == FIXED ) {
+	EPosition pos = m_render->style()->position();
+	if ( pos == FIXED || pos == ABSOLUTE ) {
 	    m_render->absolutePosition( _tx, _ty );
 	    //kdDebug() << "positioned element at " << _tx << "/" << _ty << endl;
 	} else {

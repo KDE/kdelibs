@@ -247,7 +247,7 @@ void RenderRoot::close()
     setParsing(false);
     updateSize();
     m_view->layout(true);
-//    printTree();
+    //printTree();
 }
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)

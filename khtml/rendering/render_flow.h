@@ -139,9 +139,8 @@ protected:
         enum Type {
             FloatLeft,
             FloatRight,
-            Positioned,
-            RelPositioned
-        };
+            Positioned
+         };
 
         RenderObject* node;
         int startY;

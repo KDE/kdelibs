@@ -545,3 +545,24 @@ int RenderObject::paddingRight() const
         cw = containingBlock()->contentWidth();
     return m_style->paddingRight().minWidth(cw);
 }
+
+RenderObject *RenderObject::container() const
+{
+    EPosition pos = m_style->position();
+    RenderObject *o = 0;
+    if( pos == FIXED )
+	o = root();
+    else if ( pos == ABSOLUTE )
+	o = containingBlock();
+    else
+	o = m_parent;
+    return o;
+}
+
+RenderObject *RenderObject::root() const 
+{
+    RenderObject *o = m_parent;
+    while( o && !o->isRoot() )
+	o = o->parent();
+    return o;
+}
