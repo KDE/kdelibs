@@ -21,7 +21,7 @@ testWindow::testWindow (QWidget *, const char *name)
     menuBar = new KMenuBar (this);
     fileMenu = new QPopupMenu;
     menuBar->insertItem ("&File", fileMenu);
-    fileMenu->insertItem ("&Exit", KApplication::getKApplication(),
+    fileMenu->insertItem ("&Exit", KApplication::kApplication(),
                           SLOT( quit() ), ALT + Key_Q );
     statusbar = new KStatusBar (this);
     statusbar->insertItem("Zoom: XXXX", 0);
@@ -42,7 +42,7 @@ testWindow::testWindow (QWidget *, const char *name)
     setStatusBar (statusbar);
     setView (widget);
 
-	setCaption( KApplication::getKApplication()->getCaption() );
+	setCaption( KApplication::kApplication()->caption() );
 
     smenu = new QPopupMenu;
   

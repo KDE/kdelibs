@@ -42,27 +42,27 @@ int main(int argc, char** argv)
       debug("main: No tile loaded.");
     }
 //    about.setButtonOKText
-//      (i18n("Cl&ose"), i18n("Close this dialog."),
-//       i18n("<b>Close</b> the dialog<br>"
-//  	  "<i>(there are no settings to save).</i>"));
-  about.setCaption(i18n("KAboutDialog example"));
-  about.setVersion(i18n("KAboutDialog, Draft Study"));
+//      ("Cl&ose", "Close this dialog.",
+//       "<b>Close</b> the dialog<br>"
+//  	  "<i>(there are no settings to save).</i>");
+  about.setCaption("KAboutDialog example");
+  about.setVersion("KAboutDialog, Draft Study");
   about.setHelp("kdehelp/intro.html", "intro", "");
   // ----- set the application author:
   about.setAuthor
-    ("Mirko Sucker", "mirko@kde.org", "", i18n("Initial developer."));
+    ("Mirko Sucker", "mirko@kde.org", "", "Initial developer.");
   // ----- set the application maintainer:
   about.setMaintainer("Any One", // name
 		      "anyone@kde.org", // email address 
 		      "http://www.anyhere.com", // URL
-		      i18n("Current maintainer.")); // description
+		      "Current maintainer."); // description
   // ----- add some contributors:
   about.addContributor("Some One", "someone@kde.org", "http://www.somehere.com", 
-		       i18n("Making coffee"));
+		       "Making coffee");
   about.addContributor("Another One", 
 		       "anotherone@kde.org", 
 		       "http://www.blablax.com", 
-		       i18n("Pizza donator"));
+		       "Pizza donator");
   // ----- contents of the dialog have changed, adapt sizes:
   about.adjust(); 
   about.exec();

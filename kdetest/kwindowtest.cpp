@@ -49,7 +49,7 @@ testWindow::testWindow (QWidget *, const char *name)
     menuBar->insertItem ("&File", fileMenu);
     // We insert item "Exit" with accelerator ALT-Q, and connect
     // it to application's exit-slot.
-    fileMenu->insertItem ("&Exit", KApplication::getKApplication(),
+    fileMenu->insertItem ("&Exit", KApplication::kApplication(),
                           SLOT( quit() ), ALT + Key_Q );
 
     // Another popup...
@@ -76,7 +76,7 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
 
 	menuBar->insertSeparator();
-	helpMenu = kapp->getHelpMenu( true, "KWindowTest was programmed by Sven Radej");
+	helpMenu = kapp->helpMenu( true, "KWindowTest was programmed by Sven Radej");
 	menuBar->insertItem( "&Help", helpMenu );
 
     /**************************************************/
@@ -149,7 +149,7 @@ testWindow::testWindow (QWidget *, const char *name)
 
     // Now add another button and align it right
     pix = BarIcon("exit");
-    toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::getKApplication(),
+    toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
                           SLOT( quit() ), TRUE, "Exit");
     toolBar->alignItemRight (6);
 
@@ -417,7 +417,7 @@ void testWindow::slotExit ()
    {
      QPixmap pix;
      pix = BarIcon("exit");
-     toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::getKApplication(),
+     toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
                            SLOT( quit() ), TRUE, "Exit");
      toolBar->alignItemRight (6);
      exitB = TRUE;

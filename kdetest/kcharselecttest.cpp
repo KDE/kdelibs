@@ -9,7 +9,7 @@ int main (int argc,char **argv)
   KCharSelect selector(0L,"char selector");
   selector.resize(selector.sizeHint());
   selector.show();
-  selector.setCaption(i18n("KCharSelect Test"));
+  selector.setCaption("KCharSelect Test");
   
   app.setMainWidget(&selector);
   return app.exec();

@@ -8,7 +8,7 @@
 KDualColorWidget::KDualColorWidget(QWidget *parent, const char *name)
     : QWidget(parent, name)
 {
-    lbl = new QLabel(i18n("Testing, testing, 1, 2, 3..."), this);
+    lbl = new QLabel("Testing, testing, 1, 2, 3...", this);
     KDualColorButton *colorBtn =
         new KDualColorButton(lbl->colorGroup().text(),
                              lbl->colorGroup().background(), this);
