@@ -114,7 +114,7 @@ void ResourcesConfigPage::load()
   Resource *standardResource = mManager->standardResource();
 
   ResourceManager<Resource>::Iterator it;
-  for( it = mManager->begin(); it != mManager->end(); ++it ) {
+  for ( it = mManager->begin(); it != mManager->end(); ++it ) {
     ConfigViewItem *item = new ConfigViewItem( mListView, *it );
     if ( *it == standardResource )
       item->setStandard( true );
@@ -128,7 +128,7 @@ void ResourcesConfigPage::load()
     mManager->sync();
   } else {
     if ( !standardResource )
-      KMessageBox::error( this, i18n( "There is no standard resource! Please select one." ) );
+      KMessageBox::sorry( this, i18n( "There is no standard resource! Please select one." ) );
 
     emit changed( false );
   }
@@ -153,7 +153,7 @@ void ResourcesConfigPage::save()
   mManager->sync();
 
   if ( !mManager->standardResource() )
-    KMessageBox::error( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
+    KMessageBox::sorry( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
 
   emit changed( false );
 }
@@ -223,7 +223,7 @@ void ResourcesConfigPage::slotRemove()
     return;
 
   if ( confItem->standard() ) {
-    KMessageBox::error( this, i18n( "You cannot remove your standard resource! Please select a new standard resource first." ) );
+    KMessageBox::sorry( this, i18n( "You cannot remove your standard resource! Please select a new standard resource first." ) );
     return;
   }
 
@@ -254,7 +254,7 @@ void ResourcesConfigPage::slotEdit()
     configItem->setText( 1, resource->type() );
 
     if ( configItem->standard() && configItem->readOnly() ) {
-      KMessageBox::error( this, i18n( "You cannot use a read-only resource as standard!" ) );
+      KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard!" ) );
       configItem->setStandard( false );
     }
 
@@ -270,12 +270,12 @@ void ResourcesConfigPage::slotStandard()
     return;
 
   if ( item->readOnly() ) {
-    KMessageBox::error( this, i18n( "You cannot use a read-only resource as standard!" ) );
+    KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard!" ) );
     return;
   }
 
   if ( !item->isOn() ) {
-    KMessageBox::error( this, i18n( "You cannot use an inactive resource as standard!" ) );
+    KMessageBox::sorry( this, i18n( "You cannot use an inactive resource as standard!" ) );
     return;
   }
 
@@ -328,6 +328,12 @@ void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
 {
   ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
   if ( !configItem ) return;
+
+  if ( configItem->standard() && !configItem->isOn() ) {
+    KMessageBox::sorry( this, i18n( "You can't deactivate the standard resource, choose another standard resource first" ) );
+    configItem->setOn( true );
+    return;
+  }
 
   if ( configItem->isOn() != configItem->resource()->isActive() ) {
     emit changed( true );
