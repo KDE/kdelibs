@@ -102,7 +102,8 @@ int main(int argc, char *argv[])
 
 
     int ret = a.exec();
-
+    
+    delete doc;
     //delete dtv;
 
     khtml::Cache::clear();
