@@ -597,6 +597,9 @@ void KMultiTabBarTab::updateState()
                 else
                         setFixedWidth(m_expandedSize);
 	}
+	QApplication::sendPostedEvents();
+	qApp->processEvents();
+	QApplication::flush();
 }
 
 int KMultiTabBarTab::neededSize()
