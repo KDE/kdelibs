@@ -69,7 +69,7 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   else
     ksconfig = new KSpellConfig;
 
-  kdebug(KDEBUG_INFO, 750, "now here %s/%d", __FILE__, __LINE__);
+  //  kdebug(KDEBUG_INFO, 750, "now here %s/%d", __FILE__, __LINE__);
 
   ok=texmode=dlgon=FALSE;
   cleaning=FALSE;
@@ -109,7 +109,7 @@ KSpell::startIspell(void)
   //trystart = {0,1,2}
 {
 
-  kdebug(KDEBUG_INFO, 750, "Try #%d",trystart);
+  //  kdebug(KDEBUG_INFO, 750, "Try #%d",trystart);
 
   if (trystart>0)
     proc->resetAll();
@@ -132,7 +132,7 @@ KSpell::startIspell(void)
     {
       if (ksconfig->dictionary()[0]!='\0')
 	{
-	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary().data());
+	  //	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary().data());
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}
@@ -141,7 +141,7 @@ KSpell::startIspell(void)
   if (trystart<1)
     if (ksconfig->encoding()==KS_E_LATIN1)
       {
-	kdebug(KDEBUG_INFO, 750, "Using Latin1\n");
+	//	kdebug(KDEBUG_INFO, 750, "Using Latin1\n");
 	*proc << "-Tlatin1";
       }
 
@@ -149,7 +149,7 @@ KSpell::startIspell(void)
   /*
   if (ksconfig->personalDict()[0]!='\0')
     {
-      kdebug(KDEBUG_INFO, 750, "personal dictionary [%s]",ksconfig->personalDict());
+//      kdebug(KDEBUG_INFO, 750, "personal dictionary [%s]",ksconfig->personalDict());
       *proc << "-p";
       *proc << ksconfig->personalDict();
     }
@@ -181,14 +181,13 @@ void
 KSpell::ispellErrors (KProcess *, char *buffer, int buflen)
 {
   buffer [buflen-1] = '\0';
-  kdebug (KDEBUG_INFO, 750, "ispellErrors [%s]\n",
-	  buffer);
+  //  kdebug (KDEBUG_INFO, 750, "ispellErrors [%s]\n",	  buffer);
 }
 
 void KSpell::KSpell2 (KProcIO *)
 
 {
-  kdebug(KDEBUG_INFO, 750, "KSpell::KSpell2");
+  //  kdebug(KDEBUG_INFO, 750, "KSpell::KSpell2");
   trystart=maxtrystart;  //We've officially started ispell and don't want
        //to try again if it dies.
   if (proc->fgets (temp, TEMPsz, TRUE)==-1)
@@ -207,7 +206,7 @@ void KSpell::KSpell2 (KProcIO *)
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
     {
-      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
+      //      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
       emit ready(this);
       return;
     }
@@ -215,7 +214,7 @@ void KSpell::KSpell2 (KProcIO *)
   //We want to recognize linux in any text!
   if (ignore ("linux")==FALSE)
     {
-      kdebug(KDEBUG_INFO, 750, "@Linux was FALSE");
+      //      kdebug(KDEBUG_INFO, 750, "@Linux was FALSE");
       emit ready(this);
       return;
     }
@@ -581,7 +580,7 @@ void KSpell::checkList3 ()
 	if (tempe>0)
 	  {
 	    lastpos++;
-	    kdebug(KDEBUG_INFO, 750, "lastpos advance on [%s]", temp);
+	    //	    kdebug(KDEBUG_INFO, 750, "lastpos advance on [%s]", temp);
 	    if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 		e==REPLACE)
 	      {
@@ -623,7 +622,7 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      kdebug(KDEBUG_INFO, 750, "cklist4: lastpos==(%d)", lastpos);
+      //      kdebug(KDEBUG_INFO, 750, "cklist4: lastpos==(%d)", lastpos);
       wordlist->remove (lastpos-1);
       wordlist->insert (lastpos-1, (const char *)replacement());
       wordlist->next();
@@ -649,7 +648,7 @@ bool KSpell::check (QString _buffer)
   //set the dialog signal handler
   dialog3slot = SLOT (check3 ());
 
-  kdebug(KDEBUG_INFO, 750, "KS: check");
+  //  kdebug(KDEBUG_INFO, 750, "KS: check");
   origbuffer=_buffer;
   if ((totalpos=origbuffer.length())==0)
     {
@@ -694,11 +693,11 @@ void KSpell::check2 (KProcIO *)
   do
     {
       tempe=proc->fgets (temp, TEMPsz); //get ispell's response      
-	  kdebug(KDEBUG_INFO, 750, "2:(%d)", tempe);
+      //	  kdebug(KDEBUG_INFO, 750, "2:(%d)", tempe);
       
       if (tempe>0)
 	{
-	  kdebug(KDEBUG_INFO, 750, "2:[%s]", temp);
+	  //	  kdebug(KDEBUG_INFO, 750, "2:[%s]", temp);
 	  
 	  if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 	      e==REPLACE)
@@ -718,7 +717,7 @@ void KSpell::check2 (KProcIO *)
 	      else  //MISTAKE
 		{
 		  cwword=word;
-		  kdebug(KDEBUG_INFO, 750, "(Before dialog) word=[%s] cwword =[%s]\n",
+		  //		  kdebug(KDEBUG_INFO, 750, "(Before dialog) word=[%s] cwword =[%s]\n",
 			 (const char *)word, (const char *)cwword);
 
 		  dialog (word, &sugg, SLOT (check3()));
@@ -744,7 +743,7 @@ void KSpell::check2 (KProcIO *)
       int i;
       QString qs;
       
-      kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
+      //      kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
       
       lastpos=(lastlastline=lastline)+offset; //do we really want this?
       i=origbuffer.find('\n', lastline)+1;
@@ -758,7 +757,7 @@ void KSpell::check2 (KProcIO *)
     //  if (lastline==-1)
     {
       ksdlg->hide();
-      kdebug (KDEBUG_INFO, 750, "check2() done");
+      //      kdebug (KDEBUG_INFO, 750, "check2() done");
       newbuffer.truncate (newbuffer.length()-2);
       emitProgress();
       emit done (newbuffer.data());
@@ -770,8 +769,7 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  kdebug(KDEBUG_INFO, 750, "check3 [%s] [%s] %d", (const char *)cwword, 
-	 (const char *)replacement(), dlgresult);
+// kdebug(KDEBUG_INFO, 750, "check3 [%s] [%s] %d", (const char *)cwword, 	 (const char *)replacement(), dlgresult);
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -783,7 +781,7 @@ void KSpell::check3 ()
 			 (const char *)replacement());
       break;
     case KS_CANCEL:
-      kdebug (KDEBUG_INFO, 750, "cancelled\n");
+    //      kdebug (KDEBUG_INFO, 750, "cancelled\n");
       ksdlg->hide();
       emit done (origbuffer.data());
       return;
@@ -804,7 +802,7 @@ KSpell::slotStopCancel (int result)
   if (dialogwillprocess)
     return;
 
-  kdebug(KDEBUG_INFO, 750, "KSpell::slotStopCancel [%d]", result);
+  //  kdebug(KDEBUG_INFO, 750, "KSpell::slotStopCancel [%d]", result);
 
   if (result==KS_STOP || result==KS_CANCEL)
     if (!dialog3slot.isEmpty())
@@ -864,7 +862,6 @@ void KSpell::dialog2 (int result)
 
 KSpell:: ~KSpell ()
 {
-  kdebug(KDEBUG_INFO, 750, "KSpell:~KSpell");
 
   if (proc)  
     {
@@ -889,7 +886,6 @@ KSpellConfig KSpell::ksConfig (void) const
 
 void KSpell::cleanUp ()
 {
-  kdebug(KDEBUG_INFO, 750, "KSpell::cleanUp()");
   if (personaldict)
     writePersonalDictionary();
   cleaning=TRUE;

@@ -258,7 +258,6 @@ bool KSpellConfig::writeGlobalSettings (void)
   kc->writeEntry ("KSpell_Dictionary", dictionary (), TRUE, TRUE);
   kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), TRUE, TRUE);
   //  kc->writeEntry ("KSpell_PersonalDict", personalDict (), TRUE,  TRUE);
-  kdebug(KDEBUG_INFO, 750, "Encoding=(%d)", encoding());
   kc->writeEntry ("KSpell_Encoding", (int) encoding(),
 		  TRUE, TRUE);
   kc->sync();
@@ -268,7 +267,7 @@ bool KSpellConfig::writeGlobalSettings (void)
 void
 KSpellConfig::sChangeEncoding(int i)
 {
-  kdebug(KDEBUG_INFO, 750, "KSpellConfig::sChangeEncoding(%d)", i);
+  //  kdebug(KDEBUG_INFO, 750, "KSpellConfig::sChangeEncoding(%d)", i);
   setEncoding (i);
 }
 
@@ -284,7 +283,7 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-  kdebug(KDEBUG_INFO, 750, "KSpellConfig::interpret [%s]", (const char *)fname);
+  //  kdebug(KDEBUG_INFO, 750, "KSpellConfig::interpret [%s]", (const char *)fname);
 
   //These are mostly the ispell-langpack defaults
   if (fname=="english")
@@ -332,7 +331,7 @@ void KSpellConfig::fillInDialog (void)
   if (nodialog)
     return;
 
-  kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillinDialog");
+  //  kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillinDialog");
 
   cb1->setChecked (noRootAffix());
   cb2->setChecked (runTogether());
@@ -354,25 +353,25 @@ void KSpellConfig::fillInDialog (void)
       if (!dir.exists() || !dir.isDir())
 	return;
 
-      kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillInDialog %s %s", dir.filePath().ascii(), dir.dirPath().ascii());
+      //      kdebug(KDEBUG_INFO, 750, "KSpellConfig::fillInDialog %s %s", dir.filePath().ascii(), dir.dirPath().ascii());
 
       QDir thedir (dir.filePath(),"*.aff");
-      kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path().ascii());
+      //      kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path().ascii());
 
-      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList().count());
+      //      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList().count());
 
       for (unsigned i=0;i<thedir.entryList().count();i++)
 	{
 	  QString fname, lname, hname;
 
-	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
+	  //	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
 	  fname = (const char *)thedir [i];
 
 	  if (interpret (fname, lname, hname))
 	    { // This one is the KDE default language
 	      // so place it first in the lists (overwrite "Default")
 
-	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
+	      //	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
 	      langfnames->removeFirst();
 	      langfnames->insert (0,fname);
 
@@ -395,16 +394,16 @@ void KSpellConfig::fillInDialog (void)
       
     }
   int whichelement=-1;
-  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
+  //  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
   if (dictFromList())
     for (unsigned i=0;i<langfnames->count();i++)
       {
-	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
+	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
 	if (!strcmp(langfnames->at(i),dictionary()))
 	  whichelement=i;
       }
 
-  kdebug (KDEBUG_INFO, 750, "whiche=%d", whichelement);
+  //  kdebug (KDEBUG_INFO, 750, "whiche=%d", whichelement);
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
   if (dictionary().isEmpty() ||  whichelement!=-1)
@@ -445,12 +444,12 @@ void KSpellConfig::setDictionary (const QString s)
     if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
       qsdict.remove (qsdict.length()-4,4);
 
-  kdebug (KDEBUG_INFO, 750, "setdictionary: [%s]",qsdict.data());
+  //  kdebug (KDEBUG_INFO, 750, "setdictionary: [%s]",qsdict.data());
 }
 
 void KSpellConfig::setDictFromList (bool dfl)
 {
-  kdebug (KDEBUG_INFO, 750, "sdfl = %d", dfl);
+  //  kdebug (KDEBUG_INFO, 750, "sdfl = %d", dfl);
   dictfromlist=dfl;
 }
 
@@ -463,9 +462,7 @@ void KSpellConfig::setPersonalDict (const char *s)
 
 void KSpellConfig::setEncoding (int enctype)
 {
-  kdebug (KDEBUG_INFO, 750, "setEncoding (%d)", enctype);
   enc=enctype;
-  kdebug (KDEBUG_INFO, 750, "encoding=(%d)\n", encoding());
 }
 
 /*
@@ -531,7 +528,6 @@ void KSpellConfig::sBrowsePDict()
 
 void KSpellConfig::sSetDictionary (int i)
 {
-  kdebug (KDEBUG_INFO, 750, "SSD (%d,%d)", i, dictcombo->currentItem());
   setDictionary (langfnames->at(i));
   setDictFromList (TRUE);
 }
@@ -541,14 +537,12 @@ void KSpellConfig::sDictionary(bool on)
   if (on)
     {
       dictcombo->setEnabled (TRUE);
-      kdebug (KDEBUG_INFO, 750, "SD (%d)", dictcombo->currentItem());
       setDictionary (langfnames->at(dictcombo->currentItem()));
       setDictFromList (TRUE);
     }
   else
     {
       dictcombo->setEnabled (FALSE);
-      kdebug (KDEBUG_INFO, 750, "SDoff");
     }
 }
 
@@ -559,7 +553,6 @@ void KSpellConfig::sPathDictionary(bool on)
 
   if (on)
     {
-      kdebug (KDEBUG_INFO, 750, "spd");
       //kle1->setEnabled (TRUE);
       //      browsebutton1->setEnabled (TRUE);
       setDictionary (kle1->text());
@@ -580,7 +573,6 @@ void KSpellConfig::sHelp()
 /*
 void KSpellConfig::textChanged1 (const char *s)
 {
-  kdebug (KDEBUG_INFO, 750, "tc1");
   setDictionary (s);
 }
 
