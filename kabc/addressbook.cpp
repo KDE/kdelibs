@@ -209,7 +209,6 @@ bool AddressBook::load()
       kdDebug(5700) << "AddressBook::load(): can't load resource '" << r->name() << "'" << endl;
       ok = false;
     }
-  }
 
   return ok;
 }
