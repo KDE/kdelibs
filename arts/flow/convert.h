@@ -81,6 +81,20 @@ void interpolate_stereo_i16le_2float(unsigned long samples,
 		    double startpos, double speed,
 			unsigned char *from, float *left, float *right);
 
+void convert_mono_float_float(unsigned long samples,
+			float *from, float *to);
+
+void interpolate_mono_float_float(unsigned long samples,
+		    double startpos, double speed,
+			float *from, float *to);
+
+void convert_stereo_ifloat_2float(unsigned long samples,
+			float *from, float *left, float *right);
+
+void interpolate_stereo_ifloat_2float(unsigned long samples,
+		    double startpos, double speed,
+			float *from, float *left, float *right);
+
 // downconversions from float to integer
 void convert_mono_float_16le(unsigned long samples,
 			float *from, unsigned char *to);
@@ -95,12 +109,20 @@ void convert_stereo_2float_i16le(unsigned long samples,
 
 // returnvalue: number of samples generated
 
+/* formats for unified conversion */
+enum {
+  uni_convert_u8         = 8,		// unsigned 8 bit
+  uni_convert_s16_le     = 16,		// signed 16 bit, little endian
+  uni_convert_float_ne   = 0x100	// float, in native size/byteorder
+};
+
 unsigned long uni_convert_stereo_2float(
 		unsigned long samples,		// number of required samples
 		unsigned char *from,		// buffer containing the samples
 		unsigned long fromLen,		// length of the buffer
 	    unsigned int fromChannels,  // channels stored in the buffer
 		unsigned int fromBits,		// number of bits per sample
+									//  (also: uni_convert_ formats given above)
 	    float *left, float *right,	// output buffers for left and right channel
 		double speed,				// speed (2.0 means twice as fast)
 		double startposition		// startposition

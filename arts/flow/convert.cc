@@ -56,6 +56,8 @@ static inline long QRound (float inval)
 #define convert_8_float(x) \
 	((float)((x)-128)/128.0)
 
+#define convert_float_float(x) x
+
 /*
  * 16le, 8, float
  */
@@ -139,6 +141,7 @@ void Arts::interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long
 
 mk_converter(8,float)
 mk_converter(16le,float)
+mk_converter(float,float)
 
 /*----------------------------- new code end --------------------------- */
 
@@ -236,10 +239,13 @@ unsigned long Arts::uni_convert_stereo_2float(
 		double startposition		// startposition
 	)
 {
-	unsigned long doSamples = 0;
+	unsigned long doSamples = 0, sampleSize = fromBits/8;
+
+	if(fromBits == uni_convert_float_ne)
+		sampleSize = sizeof(float);
 
 	// how many samples does the from-buffer contain?
-	double allSamples = (fromLen*8) / (fromChannels * fromBits);
+	double allSamples = fromLen / (fromChannels * sampleSize);
 
 	// how many samples are remaining?
 	//    subtract one due to interpolation and another against rounding errors
@@ -258,7 +264,11 @@ unsigned long Arts::uni_convert_stereo_2float(
 	{
 		if(fromChannels == 1)
 		{
-			if(fromBits == 16) {
+			if(fromBits == uni_convert_float_ne) {
+				interpolate_mono_float_float(doSamples,
+							startposition,speed,(float *)from,left);
+			}
+			else if(fromBits == 16) {
 				interpolate_mono_16le_float(doSamples,
 							startposition,speed,from,left);
 			}
@@ -270,7 +280,11 @@ unsigned long Arts::uni_convert_stereo_2float(
 		}
 		else if(fromChannels == 2)
 		{
-			if(fromBits == 16) {
+			if(fromBits == uni_convert_float_ne) {
+				interpolate_stereo_ifloat_2float(doSamples,
+							startposition,speed,(float *)from,left,right);
+			}
+			else if(fromBits == 16) {
 				interpolate_stereo_i16le_2float(doSamples,
 							startposition,speed,from,left,right);
 			}
@@ -291,6 +305,7 @@ unsigned long Arts::uni_convert_stereo_2float(
 #undef convert_16le_float
 #undef conv_8_float
 #undef convert_8_float
+#undef convert_float_float
 #undef datatype_16le
 #undef datasize_16le
 #undef datatype_8
