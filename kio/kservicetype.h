@@ -38,13 +38,13 @@
  * It is associated to services according to the user profile (kuserprofile.h)
  * and there are factories and registry entry classes for it (kregfactories.h)
  */
-class KServiceType : public QShared
+class KServiceType : public KShared
 {
   K_TYPECODE( TC_KServiceType );
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef const KSharedPtr<QProperty> PropertyPtr;
+  typedef const QSharedPtr<QProperty> PropertyPtr;
 
   KServiceType( const QString& _name, const QString& _icon, 
 		const QString& _comment );

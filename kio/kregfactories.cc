@@ -22,14 +22,12 @@ KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KSe
   : KRegEntry( _reg, _file )
 {
   m_pServiceType = _mime;
-  m_pServiceType->ref();
   m_pFactory = factory;
   m_pFactory->addEntryNotify( this );
 }
 
 KServiceTypeEntry::~KServiceTypeEntry()
 {
-  m_pServiceType->deref();
   m_pFactory->removeEntryNotify( this );
 }
 
@@ -150,14 +148,12 @@ KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_
   : KRegEntry( _reg, _file )
 {
   m_pService = _service;
-  m_pService->ref();
   m_pFactory = factory;
   m_pFactory->addEntryNotify( this );
 }
 
 KServiceEntry::~KServiceEntry()
 {
-  m_pService->deref();
   m_pFactory->removeEntryNotify( this );
 }
 

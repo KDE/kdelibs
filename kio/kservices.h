@@ -47,13 +47,13 @@
  * registry.load();
  * </pre>
  */
-class KService : public QShared
+class KService : public KShared
 {
   K_TYPECODE( TC_KService )
 
 public:  
   typedef KSharedPtr<KService> Ptr;
-  typedef const KSharedPtr<QProperty> PropertyPtr;
+  typedef const QSharedPtr<QProperty> PropertyPtr;
 
   /*
    * Constructor.  You may pass in arguments to create a service with

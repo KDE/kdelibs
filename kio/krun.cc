@@ -608,7 +608,6 @@ KService::Ptr KServiceProvider::serviceByServiceType( const char *mime_type )
   }
 
   KService *s = (KService*)( *offers.begin() ).service();
-  s->ref();
   return KService::Ptr( s );
 }
 
@@ -619,7 +618,6 @@ KService::Ptr KServiceProvider::serviceByName( const QString &name )
   if ( !s )
     return 0L;
     
-  s->ref();
   return KService::Ptr( s );
 }
 
