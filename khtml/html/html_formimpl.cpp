@@ -457,7 +457,7 @@ void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
     {
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
-            current != caller && current->name() == caller->name()) {
+            current != caller && current->form() == caller->form() && current->name() == caller->name()) {
             static_cast<HTMLInputElementImpl*>(current)->setChecked(false);
         }
     }
@@ -510,6 +510,14 @@ void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLGenericFormElementImpl::attach()
+{
+    HTMLElementImpl::attach();
+
+    if (m_render)
+        m_render->updateFromElement();
 }
 
 HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
@@ -1032,6 +1040,9 @@ void HTMLInputElementImpl::attach()
 {
     HTMLGenericFormElementImpl::attach();
 
+    if (m_render)
+        m_render->updateFromElement();
+
     if (m_render && m_type == IMAGE) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
         renderImage->setImageUrl(m_src,getDocument()->docLoader());
@@ -1059,10 +1070,21 @@ DOMString HTMLInputElementImpl::altText() const
 void HTMLInputElementImpl::recalcStyle( StyleChange ch )
 {
     HTMLGenericFormElementImpl::recalcStyle( ch );
-    if (m_render && m_type == IMAGE) {
-        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
-        renderImage->setImageUrl(m_src,getDocument()->docLoader());
-        renderImage->setAlt(altText());
+    if (m_render) {
+        switch(m_type) {
+        case IMAGE:
+        {
+            RenderImage* renderImage = static_cast<RenderImage*>( m_render );
+            renderImage->setImageUrl(m_src,getDocument()->docLoader());
+            renderImage->setAlt(altText());
+        }
+        break;
+        default:
+            // reload all important widget settings (disabled, colors, checked state etc)
+            // ### optimize calls!
+            m_render->updateFromElement();
+            break;
+        }
     }
 }
 
@@ -1213,15 +1235,13 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    if (m_type == RADIO && m_form && _checked && !name().isEmpty()) {
+    if (m_type == RADIO && _checked && !name().isEmpty()) {
         m_checked = _checked;
-        m_form->radioClicked(this);
+        if (m_form) m_form->radioClicked(this);
     }
 
     if (m_checked == _checked) return;
-
     m_checked = _checked;
-
     setChanged(true);
 }
 

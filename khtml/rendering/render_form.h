@@ -76,6 +76,7 @@ public:
     // aspect ratio :-(
     virtual short calcReplacedWidth(bool* ieHack=0) const;
     virtual int   calcReplacedHeight() const;
+    virtual void updateFromElement();
 
     virtual void layout();
     virtual short baselinePosition( bool ) const;
@@ -90,7 +91,7 @@ protected:
     virtual bool isEditable() const { return false; }
 
     virtual void handleFocusOut() {};
-    
+
     DOM::HTMLGenericFormElementImpl *m_element;
     QPoint m_mousePos;
     int m_state;
@@ -124,9 +125,9 @@ public:
     RenderCheckBox(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
+    virtual void updateFromElement();
     virtual void calcMinMaxWidth();
-    virtual void layout( );
-    
+
 public slots:
     virtual void slotStateChanged(int state);
 };
@@ -144,7 +145,7 @@ public:
     virtual void setChecked(bool);
 
     virtual void calcMinMaxWidth();
-    virtual void layout();
+    virtual void updateFromElement();
 
 public slots:
     void slotClicked();
@@ -272,7 +273,7 @@ protected:
     virtual void handleFocusOut();
 
     virtual bool isEditable() const { return true; }
-    
+
     bool m_clicked;
     bool m_haveFocus;
     KLineEdit   *m_edit;

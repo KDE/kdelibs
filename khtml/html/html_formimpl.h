@@ -123,7 +123,7 @@ public:
     HTMLFormElementImpl *form() { return m_form; }
 
     virtual void parseAttribute(AttributeImpl *attr);
-
+    virtual void attach();
     virtual void reset() {}
 
     void onSelect();

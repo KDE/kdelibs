@@ -86,6 +86,74 @@ int RenderFormElement::calcReplacedHeight() const
         return RenderReplaced::calcReplacedHeight();
 }
 
+void RenderFormElement::updateFromElement()
+{
+    m_widget->setEnabled(!m_element->disabled());
+
+    QColor color = style()->color();
+    QColor backgroundColor = style()->backgroundColor();
+
+    if ( color.isValid() || backgroundColor.isValid() ) {
+        QPalette pal(m_widget->palette());
+
+        int contrast_ = KGlobalSettings::contrast();
+        int highlightVal = 100 + (2*contrast_+4)*16/10;
+        int lowlightVal = 100 + (2*contrast_+4)*10;
+
+        if (backgroundColor.isValid()) {
+            pal.setColor(QPalette::Active,QColorGroup::Background,backgroundColor);
+            pal.setColor(QPalette::Active,QColorGroup::Light,backgroundColor.light(highlightVal));
+            pal.setColor(QPalette::Active,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
+            pal.setColor(QPalette::Active,QColorGroup::Mid,backgroundColor.dark(120));
+            pal.setColor(QPalette::Active,QColorGroup::Midlight, backgroundColor.light(110));
+            pal.setColor(QPalette::Active,QColorGroup::Button,backgroundColor);
+            pal.setColor(QPalette::Active,QColorGroup::Base,backgroundColor);
+            pal.setColor(QPalette::Inactive,QColorGroup::Background,backgroundColor);
+            pal.setColor(QPalette::Inactive,QColorGroup::Light,backgroundColor.light(highlightVal));
+            pal.setColor(QPalette::Inactive,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
+            pal.setColor(QPalette::Inactive,QColorGroup::Mid,backgroundColor.dark(120));
+            pal.setColor(QPalette::Inactive,QColorGroup::Midlight, backgroundColor.light(110));
+            pal.setColor(QPalette::Inactive,QColorGroup::Button,backgroundColor);
+            pal.setColor(QPalette::Inactive,QColorGroup::Base,backgroundColor);
+            pal.setColor(QPalette::Disabled,QColorGroup::Background,backgroundColor);
+            pal.setColor(QPalette::Disabled,QColorGroup::Light,backgroundColor.light(highlightVal));
+            pal.setColor(QPalette::Disabled,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
+            pal.setColor(QPalette::Disabled,QColorGroup::Mid,backgroundColor.dark(120));
+            pal.setColor(QPalette::Disabled,QColorGroup::Text,backgroundColor.dark(120));
+            pal.setColor(QPalette::Disabled,QColorGroup::Midlight, backgroundColor.light(110));
+            pal.setColor(QPalette::Disabled,QColorGroup::Button, backgroundColor);
+            pal.setColor(QPalette::Disabled,QColorGroup::Base,backgroundColor);
+        }
+        if ( color.isValid() ) {
+            pal.setColor(QPalette::Active,QColorGroup::Foreground,color);
+            pal.setColor(QPalette::Active,QColorGroup::ButtonText,color);
+            pal.setColor(QPalette::Active,QColorGroup::Text,color);
+            pal.setColor(QPalette::Inactive,QColorGroup::Foreground,color);
+            pal.setColor(QPalette::Inactive,QColorGroup::ButtonText,color);
+            pal.setColor(QPalette::Inactive,QColorGroup::Text,color);
+
+            QColor disfg = color;
+            int h, s, v;
+            disfg.hsv( &h, &s, &v );
+            if (v > 128)
+                // dark bg, light fg - need a darker disabled fg
+                disfg = disfg.dark(lowlightVal);
+            else if (disfg != black)
+                // light bg, dark fg - need a lighter disabled fg - but only if !black
+                disfg = disfg.light(highlightVal);
+            else
+                // black fg - use darkgrey disabled fg
+                disfg = Qt::darkGray;
+            pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
+            pal.setColor(QPalette::Disabled,QColorGroup::ButtonText, color);
+        }
+
+        m_widget->setPalette(pal);
+    }
+    else
+        m_widget->unsetPalette();
+}
+
 void RenderFormElement::layout()
 {
     if ( layouted() ) return;
@@ -96,74 +164,9 @@ void RenderFormElement::layout()
     calcWidth();
     calcHeight();
 
-    if ( m_widget ) {
+    if ( m_widget )
         m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                           m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
-        m_widget->setEnabled(!m_element->disabled());
-
-	QColor color = style()->color();
-	QColor backgroundColor = style()->backgroundColor();
-
-	if ( color.isValid() || backgroundColor.isValid() ) {
-	    QPalette pal(m_widget->palette());
-
-	    int contrast_ = KGlobalSettings::contrast();
-	    int highlightVal = 100 + (2*contrast_+4)*16/10;
-	    int lowlightVal = 100 + (2*contrast_+4)*10;
-
-	    if (backgroundColor.isValid()) {
-		pal.setColor(QPalette::Active,QColorGroup::Background,backgroundColor);
-		pal.setColor(QPalette::Active,QColorGroup::Light,backgroundColor.light(highlightVal));
-		pal.setColor(QPalette::Active,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-		pal.setColor(QPalette::Active,QColorGroup::Mid,backgroundColor.dark(120));
-		pal.setColor(QPalette::Active,QColorGroup::Midlight, backgroundColor.light(110));
-		pal.setColor(QPalette::Active,QColorGroup::Button,backgroundColor);
-		pal.setColor(QPalette::Active,QColorGroup::Base,backgroundColor);
-		pal.setColor(QPalette::Inactive,QColorGroup::Background,backgroundColor);
-		pal.setColor(QPalette::Inactive,QColorGroup::Light,backgroundColor.light(highlightVal));
-		pal.setColor(QPalette::Inactive,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-		pal.setColor(QPalette::Inactive,QColorGroup::Mid,backgroundColor.dark(120));
-		pal.setColor(QPalette::Inactive,QColorGroup::Midlight, backgroundColor.light(110));
-		pal.setColor(QPalette::Inactive,QColorGroup::Button,backgroundColor);
-		pal.setColor(QPalette::Inactive,QColorGroup::Base,backgroundColor);
-		pal.setColor(QPalette::Disabled,QColorGroup::Background,backgroundColor);
-		pal.setColor(QPalette::Disabled,QColorGroup::Light,backgroundColor.light(highlightVal));
-		pal.setColor(QPalette::Disabled,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-		pal.setColor(QPalette::Disabled,QColorGroup::Mid,backgroundColor.dark(120));
-		pal.setColor(QPalette::Disabled,QColorGroup::Text,backgroundColor.dark(120));
-		pal.setColor(QPalette::Disabled,QColorGroup::Midlight, backgroundColor.light(110));
-		pal.setColor(QPalette::Disabled,QColorGroup::Button, backgroundColor);
-		pal.setColor(QPalette::Disabled,QColorGroup::Base,backgroundColor);
-	    }
-            if ( color.isValid() ) {
-		pal.setColor(QPalette::Active,QColorGroup::Foreground,color);
-		pal.setColor(QPalette::Active,QColorGroup::ButtonText,color);
-		pal.setColor(QPalette::Active,QColorGroup::Text,color);
-		pal.setColor(QPalette::Inactive,QColorGroup::Foreground,color);
-		pal.setColor(QPalette::Inactive,QColorGroup::ButtonText,color);
-		pal.setColor(QPalette::Inactive,QColorGroup::Text,color);
-
-		QColor disfg = color;
-		int h, s, v;
-		disfg.hsv( &h, &s, &v );
-		if (v > 128)
-		    // dark bg, light fg - need a darker disabled fg
-		    disfg = disfg.dark(lowlightVal);
-		else if (disfg != black)
-		    // light bg, dark fg - need a lighter disabled fg - but only if !black
-		    disfg = disfg.light(highlightVal);
-		else
-		    // black fg - use darkgrey disabled fg
-		    disfg = Qt::darkGray;
-		pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
-		pal.setColor(QPalette::Disabled,QColorGroup::ButtonText, color);
-	    }
-
-	    m_widget->setPalette(pal);
-	}
-        else
-            m_widget->unsetPalette();
-    }
 
     if ( !style()->width().isPercent() )
         setLayouted();
@@ -224,14 +227,9 @@ void RenderCheckBox::calcMinMaxWidth()
     RenderButton::calcMinMaxWidth();
 }
 
-void RenderCheckBox::layout()
+void RenderCheckBox::updateFromElement()
 {
-    if ( layouted() ) return;
-
-    QCheckBox* cb = static_cast<QCheckBox*>( m_widget );
-    cb->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-
-    RenderButton::layout();
+    static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
 }
 
 void RenderCheckBox::slotStateChanged(int state)
@@ -252,8 +250,19 @@ RenderRadioButton::RenderRadioButton(KHTMLView *view,
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
+void RenderRadioButton::updateFromElement()
+{
+    if (m_widget) {
+        qDebug("RenderRadioButton::updateFromElement!");
+        static_cast<QRadioButton*>(m_widget)->
+            setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+    }
+}
+
 void RenderRadioButton::setChecked(bool checked)
 {
+    qDebug("RenderRadioButton::setChecked(%d) from %s", checked, kdBacktrace().latin1());
+
     static_cast<QRadioButton *>(m_widget)->setChecked(checked);
 }
 
@@ -276,16 +285,6 @@ void RenderRadioButton::calcMinMaxWidth()
     setIntrinsicHeight( s.height() );
 
     RenderButton::calcMinMaxWidth();
-}
-
-void RenderRadioButton::layout()
-{
-    if ( layouted() ) return;
-
-    QRadioButton* rb = static_cast<QRadioButton*>( m_widget );
-    rb->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-
-    RenderButton::layout();
 }
 
 // -------------------------------------------------------------------------------

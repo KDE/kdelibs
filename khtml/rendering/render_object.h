@@ -208,6 +208,10 @@ public:
     virtual void updateSize();
     virtual void updateHeight() {}
 
+    // used for element state updates that can not be fixed with a
+    // repaint and do not need a relayout
+    virtual void updateFromElement() {};
+
     // The corresponding closing element has been parsed.
     virtual void close() { setParsing(false); }
 
