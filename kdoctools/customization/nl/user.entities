@@ -43,6 +43,9 @@
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
+<!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
+<!ENTITY Alt     "<keycap>Alt</keycap>">
+<!ENTITY Shift   "<keycap>Shift</keycap>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
