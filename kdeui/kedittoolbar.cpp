@@ -173,7 +173,7 @@ public:
   }
 
 
-  KActionCollection *m_collection;
+  KActionCollection m_collection;
   KInstance         *m_instance;
 
   XmlData     m_currentXmlData;
@@ -203,11 +203,9 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     enableButtonOK(false);
 }
 
-KEditToolbar::KEditToolbar(KActionCollection *collection,
-                           const QString& shellxml,
-                           const QString& partxml)
+KEditToolbar::KEditToolbar(KXMLGUIFactory* factory)
     : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
-      m_widget(new KEditToolbarWidget(collection, shellxml, partxml, this))
+      m_widget(new KEditToolbarWidget(factory, this))
 {
     setMainWidget(m_widget);
 
@@ -215,7 +213,6 @@ KEditToolbar::KEditToolbar(KActionCollection *collection,
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
 }
-
 void KEditToolbar::slotOk()
 {
   // just the fact that we got here means that we've been modified.
@@ -225,7 +222,9 @@ void KEditToolbar::slotOk()
     // some error box here is needed
   }
   else
+  {
     accept();
+  }
 }
 
 KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
@@ -235,7 +234,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
     d(new KEditToolbarWidgetPrivate(instance()))
 {
   // let's not forget the stuff that's not xml specific
-  d->m_collection = collection;
+  d->m_collection = *collection;
 
   // handle the merging
   if (global)
@@ -270,36 +269,36 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   loadToolbarCombo();
 }
 
-KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
-                                       const QString& shellxml,
-                                       const QString& partxml,
-                                       QWidget *parent)
+KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
+                                        QWidget *parent)
   : QWidget(parent),
     d(new KEditToolbarWidgetPrivate(instance()))
 {
   // reusable vars
   QDomElement elem;
 
-  // first, get all of the necessary info for our shell 
-  XmlData shell;
-  shell.m_xmlFile = shellxml;
-  shell.m_type    = XmlData::Shell;
-  shell.m_document.setContent(d->loadXMLFile(shellxml));
-  elem = shell.m_document.documentElement().toElement();
-  shell.m_barList = d->findToolbars(elem);
-  d->m_xmlFiles.append(shell);
+  setFactory( factory );
 
-  // then, get all the necessary info for our part
-  XmlData part;
-  part.m_xmlFile = partxml;
-  part.m_type    = XmlData::Part;
-  part.m_document.setContent(d->loadXMLFile(partxml));
-  elem = part.m_document.documentElement().toElement();
-  part.m_barList = d->findToolbars(elem);
-  d->m_xmlFiles.append(part);
+  // add all of the client data
+  QValueList<KXMLGUIClient*> clients(factory->clients());
+  QValueList<KXMLGUIClient*>::ConstIterator it(clients.begin());
+  for( ; it != clients.end(); ++it)
+  {
+    KXMLGUIClient *client = (*it);
 
-  // and let's not forget the stuff that's not xml specific
-  d->m_collection = collection;
+    if (client->xmlFile().isNull())
+      continue;
+
+    XmlData data;
+    data.m_xmlFile = client->xmlFile();
+    data.m_type    = XmlData::Shell;
+    data.m_document.setContent(d->loadXMLFile(client->xmlFile()));
+    elem = data.m_document.documentElement().toElement();
+    data.m_barList = d->findToolbars(elem);
+    d->m_xmlFiles.append(data);
+
+    d->m_collection += *client->actionCollection();
+  }
 
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
@@ -329,6 +328,19 @@ bool KEditToolbarWidget::save()
 
     // if we got this far, we might as well just save it
     save((*it).m_document, (*it).m_xmlFile);
+  }
+
+  QValueList<KXMLGUIClient*> clients(factory()->clients());
+  QValueList<KXMLGUIClient*>::Iterator client(clients.begin());
+  for( ; client != clients.end(); ++client)
+  {
+  #if 0
+    // this code doesn't work.  it correctly recreates the toolbars,
+    // but the menus just show up empty!
+    factory()->removeClient( *client );
+    (*client)->reloadXML();
+    factory()->addClient( *client );
+  #endif
   }
 
   return true;
@@ -671,18 +683,19 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     }
 
     // iterate through all of our actions
-    for (unsigned int i = 0;  i < d->m_collection->count(); i++)
+    for (unsigned int i = 0;  i < d->m_collection.count(); i++)
     {
-      KAction *action = d->m_collection->action(i);
+      KAction *action = d->m_collection.action(i);
 
       // do we have a match?
       if (it.attribute( attrName ) == action->name())
       {
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, action->name());
-        act->setText(1, action->text());
-        if (action->hasIconSet())
-          act->setPixmap(0, action->iconSet().pixmap(QIconSet::Small, true));
+        act->setText(1, action->plainText());
+        KIconLoader *loader = KGlobal::iconLoader();
+        if (!action->iconName().isNull())
+          act->setPixmap(0, loader->loadIcon(action->iconName(), -16, -1));
 
         active_list.insert(action->name(), true);
         break;
@@ -691,9 +704,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  for (int i = d->m_collection->count() - 1; i > -1; --i)
+  for (int i = d->m_collection.count() - 1; i > -1; --i)
   {
-    KAction *action = d->m_collection->action(i);
+    KAction *action = d->m_collection.action(i);
 
     // skip our active ones
     if (active_list.contains(action->name()))
@@ -702,12 +715,13 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // insert this into the inactive list
     // for now, only deal with buttons with icons.. later, we'll need
     // to look into actions a LOT more carefully
-    if (action->hasIconSet() == false)
+    if (action->iconName().isNull() == false)
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
-    act->setText(1, action->text());
-    act->setPixmap(0, action->iconSet().pixmap(QIconSet::Small, true));
+    act->setText(1, action->plainText());
+    KIconLoader *loader = KGlobal::iconLoader();
+    act->setPixmap(0, loader->loadIcon(action->iconName(), -16, -1));
   }
 
   // finally, add a default separator to the inactive list
@@ -717,7 +731,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
 KActionCollection *KEditToolbarWidget::actionCollection() const
 {
-  return d->m_collection;
+  return &d->m_collection;
 }
 
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)

@@ -56,19 +56,17 @@ class KEditToolbarWidgetPrivate;
  * toolbars if you have made any changes.
  *
  * Note that the procedure is a bit different for KParts applications.
- * In this case, you need to pass along an action collection with
- * @bf all actions -- shell and part combined.  You also must pass
- * along the name of your shell's xml file and your current part's xml
- * file.  The dialog aims to be semi-intelligent about where it
- * assigns any modifications.  In other words, it will not write out
- * part specific changes to your shell's xml file.
+ * In this case, you need only pass along a pointer to your
+ * application's KXMLGUIFactory object.  The editor will take care of
+ * finding all of the action collections and xml files.  The editor
+ * aims to be semi-intelligent about where it assigns any
+ * modifications.  In other words, it will not write out part specific
+ * changes to your shell's xml file.
  *
  * An example would be:
  *
  * <pre>
- * KActionCollection collection;
- * collection = *actionCollection() + *m_part->actionCollection();
- * KEditToolbar dlg(&collection, xmlFile(), m_part->xmlFile());
+ * KEditToolbar dlg(factory());
  * if (dlg.exec())
  * ...
  * </pre>
@@ -111,27 +109,23 @@ public:
                const QString& xmlfile = QString::null, bool global = true);
 
   /**
-   * Constructor for KParts based apps.  You must pass along all of
-   * the parameters.
+   * Constructor for KParts based apps.
    *
-   * The first parameter, @ref #collection, is your collection of all
-   * of the actions that appear in your application.  This is
-   * 'actionCollection() + m_part->actionCollection()' in many apps
+   * The one and only parameter, @ref #factory, is a pointer to the
+   * XML GUI factory object for your application.  It contains a list
+   * of all of the GUI clients (along with the action collections and
+   * xml files) and the toolbar editor uses that.
    *
-   * The second parameter, @ref #shellxml, is the name of your shell
-   * (or MainWindow) XML resource file.  It may be relative or
-   * absolute.  Relative is best.
+   * Use this like so:
+   * <pre>
+   * KEditToolbar edit(factory());
+   * if ( edit.exec() )
+   * ...
+   * </pre>
    *
-   * The last parameter, @ref #partxml, is the name of your currently
-   * active part's XML resource file.  It may be relative or absolute.
-   * Relative is best.
-   *
-   * @param collection The collection of actions to work on
-   * @param xmlfile The shell XML resource file
-   * @param partxml The active part's XML resource file
+   * @param factory Your application's factory object
    */
-  KEditToolbar(KActionCollection *collection, const QString& shellxml,
-               const QString& partxml);
+  KEditToolbar(KXMLGUIFactory* factory);
 
 protected slots:
   /**
@@ -202,30 +196,26 @@ public:
                      bool global = true, QWidget *parent = 0L);
 
   /**
-   * Constructor for KParts based apps.  You must pass along all of
-   * the parameters.
-   * 
-   * The first parameter, @ref #collection, is your collection of all
-   * of the actions that appear in your application.  This is
-   * 'actionCollection() + m_part->actionCollection()' in many apps
+   * Constructor for KParts based apps.
    *
-   * The second parameter, @ref #shellxml, is the name of your shell
-   * (or MainWindow) XML resource file.  It may be relative or
-   * absolute.  Relative is best.
+   * The first parameter, @ref #factory, is a pointer to the XML GUI
+   * factory object for your application.  It contains a list of all
+   * of the GUI clients (along with the action collections and xml
+   * files) and the toolbar editor uses that.
    *
-   * The third parameter, @ref #partxml, is the name of your currently
-   * active part's XML resource file.  It may be relative or absolute.
-   * Relative is best.
+   * The second parameter, @ref #parent, is the standard parent
    *
-   * The last parameter, @ref #parent, is the standard parent
+   * Use this like so:
+   * <pre>
+   * KEditToolbar edit(factory());
+   * if ( edit.exec() )
+   * ...
+   * </pre>
    *
-   * @param collection The collection of actions to work on
-   * @param xmlfile The shell XML resource file
-   * @param partxml The active part's XML resource file
+   * @param factory Your application's factory object
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(KActionCollection *collection, const QString& shellxml,
-                     const QString& partxml, QWidget *parent = 0L);
+  KEditToolbarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
 
   /**
    * Destructor.  Note that any changes done in this widget will
