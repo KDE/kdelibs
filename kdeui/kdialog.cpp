@@ -167,6 +167,7 @@ KDialogQueue::KDialogQueue()
 KDialogQueue::~KDialogQueue()
 {
    delete d; d = 0;
+   _self = 0;
 }
 
 // static 
