@@ -231,7 +231,7 @@ int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance );
-    
+
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     doConnections( button );
@@ -328,10 +328,6 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
 
     insertWidgetInternal( combo, index, id );
     combo->insertStringList (list);
@@ -358,11 +354,6 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
     insertWidgetInternal( combo, index, id );
     combo->insertItem (text);
     combo->setInsertionPolicy(policy);
@@ -1181,9 +1172,10 @@ void KToolBar::rebuildLayout()
     }
 
     if ( fullSize() ) {
-        if ( !stretchableWidget && widgets.last() &&
-             !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
-            setStretchableWidget( widgets.last() );
+        // This code sucks. It makes the last combo in a toolbar VERY big (e.g. zoom combo in kword).
+        //if ( !stretchableWidget && widgets.last() &&
+        //     !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
+        //    setStretchableWidget( widgets.last() );
         if ( !rightAligned )
             l->addStretch();
         if ( stretchableWidget )
@@ -1264,16 +1256,16 @@ QSize KToolBar::sizeHint() const
     KToolBar *this_too = (KToolBar *)this;
 
     this_too->polish();
-    
+
     int margin = ((QWidget *)this)->layout()->margin();
     switch( barPos() )
     {
      case KToolBar::Top:
      case KToolBar::Bottom:
-       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() )
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() ) 
+             !( (KToolBarSeparator*)w )->showLine() )
           {
              minSize += QSize(6, 0);
           }
@@ -1289,13 +1281,13 @@ QSize KToolBar::sizeHint() const
        minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
        minSize += QSize(margin*2, margin*2);
        break;
-       
+
      case KToolBar::Left:
      case KToolBar::Right:
-       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() )
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() ) 
+             !( (KToolBarSeparator*)w )->showLine() )
           {
              minSize += QSize(0, 6);
           }
@@ -1310,7 +1302,7 @@ QSize KToolBar::sizeHint() const
        }
        minSize += QSize(0, QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
        minSize += QSize(margin*2, margin*2);
-       break;       
+       break;
 
      default:
        minSize = QToolBar::sizeHint();
@@ -1605,24 +1597,24 @@ bool KToolBar::event( QEvent *e )
 {
     if ( (e->type() == QEvent::LayoutHint) && isUpdatesEnabled() )
        d->repaintTimer.start( 100, true );
-        
+
     if (e->type() == QEvent::ChildInserted )
     {
-       // By pass QToolBar::event, 
-       // it will show() the inserted child and we don't want to 
+       // By pass QToolBar::event,
+       // it will show() the inserted child and we don't want to
        // do that until we have rebuild the layout.
        childEvent((QChildEvent *)e);
        return true;
     }
-        
+
     return QToolBar::event( e );
 }
 
 void KToolBar::slotRepaint()
 {
     setUpdatesEnabled( FALSE );
-    // Send a resizeEvent to update the "toolbar extension arrow" 
-    // (The button you get when your toolbar-items don't fit in 
+    // Send a resizeEvent to update the "toolbar extension arrow"
+    // (The button you get when your toolbar-items don't fit in
     // the available space)
     QResizeEvent ev(size(), size());
     resizeEvent(&ev);
