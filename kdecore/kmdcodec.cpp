@@ -452,16 +452,21 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
         }
     }
 
+    // kdDebug() << "Tail size = " << tail << ", Length size = " << len << endl;
+
     // 4-byte to 3-byte conversion
-    len = tail-(len/4);
+    len = (tail>(len/4)) ? tail-(len/4) : 0;
     unsigned int sidx = 0, didx = 0;
-    while (didx < len-2)
+    if ( len > 1 )
     {
-        out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
-        out[didx+1] = (((out[sidx+1] << 4) & 255) | ((out[sidx+2] >> 2) & 017));
-        out[didx+2] = (((out[sidx+2] << 6) & 255) | (out[sidx+3] & 077));
-        sidx += 4;
-        didx += 3;
+      while (didx < len-2)
+      {
+          out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
+          out[didx+1] = (((out[sidx+1] << 4) & 255) | ((out[sidx+2] >> 2) & 017));
+          out[didx+2] = (((out[sidx+2] << 6) & 255) | (out[sidx+3] & 077));
+          sidx += 4;
+          didx += 3;
+      }
     }
 
     if (didx < len)
@@ -470,16 +475,16 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     if (++didx < len )
         out[didx] = (((out[sidx+1] << 4) & 255) | ((out[sidx+2] >> 2) & 017));
 
-    // Resize the output buffer to the actual size as needed!
-    if ( len < out.size() )
-      out.truncate(len);
+    // Resize the output buffer
+    if ( len == 0 || len < out.size() )
+      out.resize(len);
 }
 
 QCString KCodecs::uuencode( const QCString& str )
 {
     if ( str.isEmpty() )
         return "";
-    
+
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
