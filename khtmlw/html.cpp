@@ -610,7 +610,7 @@ void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
     // r.setTop( r.top() + y_offset );
     // r.setLeft( r.left() + x_offset );
 
-    r.moveBy( 0, -y_offset );
+    r.moveBy( -x_offset, -y_offset );
     
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
@@ -923,7 +923,7 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     }
     else
     {
-	int tx = x_offset + leftBorder;
+	int tx = -x_offset + leftBorder;
 	int ty = -y_offset + topBorder;
 	
 	clue->print( painter, _obj, x_offset, y_offset,
@@ -1458,9 +1458,8 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     if ( parseBody( clue, end, TRUE ) )
 	stopParser();
 
-    debugM("Calculating size\n");
-    clue->calcSize();
-    clue->setPos( 0, clue->getAscent() );
+    calcSize();
+	
     calcAbsolutePos();
 
     debugM("Restoring font\n");
@@ -1474,9 +1473,6 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     // if we have something to display in the visible area now then repaint.
     if ( lastHeight - y_offset < height() * 2 && docHeight() - y_offset > 0 )
 	scheduleUpdate( false );
-
-    debugM("document changed\n");
-    emit documentChanged();
 
     if (!reference.isNull())
     {
@@ -1555,12 +1551,23 @@ void KHTMLWidget::calcSize()
 	return;
 
     clue->reset();
-    clue->setMaxWidth( width() - leftBorder - rightBorder );
+    
+    int _max_width = width() - leftBorder - rightBorder;
+    int _min_width = clue->calcMinWidth();
+    
+    if (_min_width > _max_width)
+    {
+        _max_width = _min_width;
+    }
+    
+    clue->setMaxWidth( _max_width );
+
     clue->calcSize();
     clue->setPos( 0, clue->getAscent() );
 
     emit documentChanged();
 }
+
 
 bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
 {
@@ -4417,7 +4424,7 @@ void KHTMLWidget::slotUpdateSelectText( int )
 
 void KHTMLWidget::select( QPainter *_painter, bool _select )
 {
-    int tx = x_offset + leftBorder;
+    int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
 
     if ( clue == 0L )
@@ -4452,7 +4459,7 @@ void KHTMLWidget::select( QPainter *_painter, bool _select )
 
 void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _select )
 {
-    int tx = x_offset + leftBorder;
+    int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
     bool newPainter = FALSE;
 
@@ -4483,7 +4490,7 @@ void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _selec
 
 void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 {
-    int tx = x_offset + leftBorder;
+    int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
     bool newPainter = FALSE;
 
