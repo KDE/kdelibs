@@ -241,7 +241,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     initGUI(); // activate GM
 
     if (!d->filename_.isNull()) {
-	debugC("edit %s", debugString(locationEdit->text(0)));
+	kDebugInfo(kfile_area, "edit %s", debugString(locationEdit->text(0)));
 	checkPath(d->filename_);
 	locationEdit->setEditText(d->filename_);
     }
@@ -251,6 +251,11 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     if (w1 < w2)
 	setMinimumWidth(w2);
     resize(w, h);
+}
+
+void KFileDialog::setLocationLabel(const QString& text)
+{
+    d->locationLabel->setText(text);
 }
 
 void KFileDialog::cleanup() {
@@ -291,26 +296,30 @@ void KFileDialog::slotOk()
       }
     }
 
-    debugC("filename %s", debugString(d->filename_));
+    kDebugInfo(kfile_area, "filename %s", debugString(d->filename_));
 
     accept();
 }
 
 void KFileDialog::fileHightlighted(const KFileViewItem *i)
 {
+  debug("fileHighlighted");
     if (i->isDir())
         return;
-  
+
     d->filename_ = i->url();
     locationEdit->setEditText(d->filename_);
+    emit fileHighlighted(d->filename_);
 }
 
 void KFileDialog::fileSelected(const KFileViewItem *i)
 {
+  debug("fileSelected");
     if (i->isDir())
         return;
     d->filename_ = i->url();
     locationEdit->setEditText(d->filename_);
+    emit fileSelected(d->filename_);
 }
 
 void KFileDialog::returnPressed()
@@ -388,7 +397,7 @@ void KFileDialog::locationChanged(const QString& txt)
     QString newText = text.left(locationEdit->cursorPosition() -1);
 
     KURL url( text );
-    // debugC("Proto: %s, host: %s, dir: %s", debugString(url.protocol()),
+    // kDebugInfo(kfile_area, "Proto: %s, host: %s, dir: %s", debugString(url.protocol()),
     //       debugString(url.host()), debugString(url.directory());
 
     // don't mess with malformed urls or remote urls without directory or host
@@ -494,7 +503,7 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
-    debugC("urlEntered %s", debugString(url.url()));
+    kDebugInfo(kfile_area, "urlEntered %s", debugString(url.url()));
     toolbar->getCombo(PATH_COMBO)->clear();
 
     QStringList list;
@@ -502,7 +511,7 @@ void KFileDialog::urlEntered(const KURL& url)
 
     const QString urlstr = url.url(1);
 
-    debugC(debugString(urlstr));
+    kDebugInfo(kfile_area, debugString(urlstr));
 
     int pos = urlstr.find('/', 0); // getting past the protocol
 
@@ -552,19 +561,19 @@ void KFileDialog::urlEntered(const KURL& url)
 
 void KFileDialog::comboActivated(int)
 {
-    debugC("comboActivated");
+    kDebugInfo(kfile_area, "comboActivated");
 }
 
 void KFileDialog::addToBookmarks() // SLOT
 {
-    debugC("Add to bookmarks called");
+    kDebugInfo(kfile_area, "Add to bookmarks called");
     bookmarks->add(ops->url().url(), ops->url().url());
     bookmarks->write();
 }
 
 void KFileDialog::bookmarksChanged() // SLOT
 {
-    debugC("Bookmarks changed called");
+    kDebugInfo(kfile_area, "Bookmarks changed called");
 }
 
 void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id )
@@ -603,7 +612,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	
 	    d->showStatusLine =
 		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
-	    debugC("showStatusLine %d", d->showStatusLine);
+	    kDebugInfo(kfile_area, "showStatusLine %d", d->showStatusLine);
 
 	    initGUI(); // add them back to the layout managment
 	}
@@ -668,7 +677,7 @@ void KFileDialog::toolbarPressedCallback(int i)
 
 void KFileDialog::setSelection(const QString& name)
 {
-    debugC("setSelection %s", debugString(name));
+    kDebugInfo(kfile_area, "setSelection %s", debugString(name));
 
     if (!name) {
 	d->selection = QString::null;
@@ -702,7 +711,7 @@ void KFileDialog::setSelection(const QString& name)
 	if (sep >= 0) { // there is a / in it
 	    setURL(filename.left(sep), true);
 	    filename = filename.mid(sep+1, filename.length() - sep);
-	    debugC("filename %s", debugString(filename));
+	    kDebugInfo(kfile_area, "filename %s", debugString(filename));
 	    d->selection = filename;
 	}
 	d->filename_ = KURL(ops->url(), filename).url(); // TODO make filename_ an url
@@ -728,7 +737,7 @@ void KFileDialog::completion() // SLOT
 	      ops->makeCompletion( text.right(text.length() - base.length()));
 
 	if (!complete.isNull()) {
-	    debugC("Complete %s", debugString(complete));
+	    kDebugInfo(kfile_area, "Complete %s", debugString(complete));
 	    disconnect( locationEdit, SIGNAL(textChanged(const QString&)),
 			this, SLOT( locationChanged(const QString&) ));
 	

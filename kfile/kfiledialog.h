@@ -223,12 +223,10 @@ public:
 					QWidget * parent = 0,
 					const QString& caption = QString::null);
 
-  /**
-   * Show the widget.
-   **/
+    /**
+     * Show the widget.
+     **/
     virtual void show();
-
-    static void initIcons();
 
     /**
      * Set the mode of the dialog.
@@ -239,6 +237,14 @@ public:
      * Retrieve the mode of the filedialog.
      */
     Mode mode() const;
+
+    /**
+     * sets the text to be displayed in front of the
+     * selection. The default is "Location".
+     * Most useful if you want to make clear what
+     * the location is used for.
+     */
+    void setLocationLabel(const QString& text);
 
 signals:
     /**
