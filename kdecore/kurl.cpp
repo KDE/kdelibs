@@ -305,10 +305,18 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
 
   if (decodeDots)
   {
+#ifndef KDE_QT_ONLY
      static const QString &encodedDot = KGlobal::staticQString("%2e");
+#else
+     QString encodedDot("%2e");
+#endif
      if (path.find(encodedDot, 0, false) != -1)
      {
+#ifndef KDE_QT_ONLY
         static const QString &encodedDOT = KGlobal::staticQString("%2E"); // Uppercase!
+#else
+        QString encodedDOT("%2E");
+#endif
         path.replace(encodedDot, ".");
         path.replace(encodedDOT, ".");
         len = path.length();
