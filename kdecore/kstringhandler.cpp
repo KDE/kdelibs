@@ -645,9 +645,10 @@ KStringHandler::tagURLs( const QString& text )
 QString KStringHandler::obscure( const QString &str )
 {
   QString result;
+  const QChar *unicode = str.unicode();
   for ( uint i = 0; i < str.length(); ++i )
-    result += ( str.unicode()[ i ].unicode() < 0x20 ) ? str.unicode()[ i ] :
-        QChar( 0x1001F - str.unicode()[ i ] );
+    result += ( unicode[ i ].unicode() < 0x20 ) ? unicode[ i ] :
+        QChar( 0x1001F - unicode[ i ].unicode() );
 
   return result;
 }
