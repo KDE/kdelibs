@@ -25,7 +25,6 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <qdir.h>
 
 using namespace KIO;
 
@@ -360,17 +359,19 @@ QString Job::errorString()
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
     STRUCT_SETMNTENT mtab;
-#if 0
-    char    realname[MAXPATHLEN];
+    kdDebug( 7007 ) << "findDeviceMountPoint " << filename << endl;
+    char    realpath_buffer[MAXPATHLEN];
+    QCString realname;
 
     /* If the path contains symlinks, get the real name */
-    if (realpath(QFile::encodeName(filename), realname) == 0) {
-	if (filename.length() >= sizeof(realname))
-	    return QString::null;
-	strcpy(realname, QFile::encodeName(filename));
-    }
-#endif
-    QCString realname = QFile::encodeName( QDir( filename ).canonicalPath() );
+    if (realpath(QFile::encodeName(filename), realpath_buffer) == 0)
+      // error, keep original path
+      realname = QFile::encodeName( filename );
+    else
+      // succes, use result from realpath
+      realname = QFile::encodeName( realpath_buffer );
+
+    kdDebug( 7007 ) << "realname " << realname << endl;
 
     /* Get the list of mounted file systems */
 
@@ -389,28 +390,37 @@ QString KIO::findDeviceMountPoint( const QString& filename )
      * How kinky can you get with a filesystem?
      */
 
-    unsigned int max = 0;
+    //unsigned int max = 0;
     STRUCT_MNTENT me;
 
     QString result;
 
-    while (true) {
-      if (!GETMNTENT(mtab, me))
-	break;
+    while (GETMNTENT(mtab, me))
+    {
+      //unsigned int length = strlen(FSNAME(me));
+      kdDebug( 7007 ) << "read " << FSNAME(me) << endl;
 
-      unsigned int length = strlen(FSNAME(me));
-
+      /*
       if (!strncmp(FSNAME(me), realname.data(), length)   // mountpoint included in real path
 	  && length > max                                 // better than previous matches
           && realname.length() >= length) {               // real path long enough
 	max = length;
 	if (length == 1 || realname.length() == length || realname[length] == '/' )
         {
+        */
+
+      /// Hmm, there is a confusion here.
+      /// The input is the DEVICE name, it has to match exactly the mounted device !
+
+      if ( realname == FSNAME(me) )
+      {
           result = MOUNTPOINT(me);
-	}
+          kdDebug( 7007 ) << "result " << result << endl;
+          break;
       }
     }
 
     ENDMNTENT(mtab);
+    kdDebug( 7007 ) << "Returning result " << result << endl;
     return result;
 }
