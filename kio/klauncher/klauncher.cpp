@@ -287,6 +287,14 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       write(kdeinitSocket, &request_header, sizeof(request_header));
       destruct(0);
    }
+   else if (fun == "autoStart()")
+   {
+      kdDebug() << "KLauncher::process ---> autoStart" << endl;
+      autoStart();
+      replyType = "void";
+      return true;
+   }
+
    if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
       return true;
@@ -445,6 +453,34 @@ KLauncher::slotAppRegistered(const QCString &appId)
 }
 
 void
+KLauncher::autoStart()
+{
+   mAutoStart.loadAutoStartList();
+   connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
+   mAutoTimer.start(0, true);
+}
+
+void
+KLauncher::slotAutoStart()
+{
+   KService::Ptr s;
+   do
+   {
+      QString service = mAutoStart.startService();
+      if (service.isEmpty())
+      {
+         // Done
+         // Emit signal
+         emitDCOPSignal("autoStartDone()", QByteArray());
+         return;
+      }
+      s = new KService(service);
+   }
+   while (!start_service(s, QStringList(), false, true));
+   // Loop till we find a service that we can start.
+}
+
+void
 KLauncher::requestDone(KLaunchRequest *request)
 {
    if ((request->status == KLaunchRequest::Running) ||
@@ -462,6 +498,11 @@ KLauncher::requestDone(KLaunchRequest *request)
       DCOPresult.error = i18n("KDEInit could not launch '%1'").arg(request->name);
       DCOPresult.pid = 0;
    }
+   if (request->autoStart)
+   {
+      mAutoTimer.start(0, true);
+   }
+   
    if (request->transaction)
    {
       QByteArray replyData;
@@ -536,6 +577,7 @@ void
 KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_list)
 {
    KLaunchRequest *request = new KLaunchRequest;
+   request->autoStart = false;
    request->name = name;
    request->arg_list =  arg_list;
    request->dcop_name = 0;
@@ -603,7 +645,7 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
 }
 
 bool
-KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool blind)
+KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool blind, bool autoStart)
 {
    QStringList urls = _urls;
    if (!service->isValid())
@@ -613,6 +655,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
       return false;
    }
    KLaunchRequest *request = new KLaunchRequest;
+   request->autoStart = autoStart;
 
    if ((urls.count() > 1) && !allowMultipleFiles(service))
    {
@@ -660,7 +703,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
    request->transaction = 0;
 
    // Request will be handled later.
-   if (!blind)
+   if (!blind && !autoStart)
    {
       request->transaction = dcopClient()->beginTransaction();
    }
@@ -672,6 +715,7 @@ bool
 KLauncher::kdeinit_exec(const QString &app, const QStringList &args, bool wait)
 {
    KLaunchRequest *request = new KLaunchRequest;
+   request->autoStart = false;
 
    for(QStringList::ConstIterator it = args.begin();
        it != args.end();
@@ -958,6 +1002,7 @@ KLauncher::requestSlave(const QString &_protocol,
     kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << _protocol << endl;
 
     KLaunchRequest *request = new KLaunchRequest;
+    request->autoStart = false;
     request->name = name;
     request->arg_list =  arg_list;
     request->dcop_name = 0;

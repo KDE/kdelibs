@@ -25,7 +25,7 @@ lib_LTLIBRARIES = klauncher.la
 
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
 klauncher_la_LIBADD = $(LIB_KSYCOCA)
-klauncher_la_SOURCES = klauncher.cpp main.cpp
+klauncher_la_SOURCES = klauncher.cpp main.cpp autostart.cpp
 
 klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)
 klauncher_LDADD = klauncher.la
@@ -33,7 +33,7 @@ klauncher_SOURCES = dummy.cpp
 
 METASOURCES = AUTO
 
-noinst_HEADERS = klauncher.h
+noinst_HEADERS = klauncher.h autostart.h
 
 dummy.cpp:
 	echo > dummy.cpp

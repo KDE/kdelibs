@@ -36,6 +36,8 @@
 
 #include <kservice.h>
 
+#include "autostart.h"
+
 class IdleSlave : public QObject
 {
    Q_OBJECT
@@ -70,6 +72,7 @@ public:
    status_t status;
    DCOPClientTransaction *transaction;
    KService::DCOPServiceType_t dcop_service_type;
+   bool autoStart;
 };
 
 struct serviceResult
@@ -102,11 +105,13 @@ protected:
 
    void setLaunchEnv(const QCString &name, const QCString &value);
    void exec_blind(const QCString &name, const QValueList<QCString> &arg_list);
-   bool start_service(KService::Ptr service, const QStringList &urls, bool blind = false);
+   bool start_service(KService::Ptr service, const QStringList &urls, bool blind = false, bool autoStart = false);
    bool start_service_by_name(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls);
    bool kdeinit_exec(const QString &app, const QStringList &args, bool wait);
+
+   void autoStart();
 
    bool allowMultipleFiles(const KService::Ptr service);
 
@@ -125,6 +130,7 @@ protected:
    void queueRequest(KLaunchRequest *);
 
 public slots:
+   void slotAutoStart();
    void slotDequeue();
    void slotKDEInitData(int);
    void slotAppRegistered(const QCString &appId);
@@ -143,6 +149,8 @@ protected:
    KServerSocket *mPoolSocket;
    QList<IdleSlave> mSlaveList;
    QTimer mTimer;
+   QTimer mAutoTimer;
    bool bProcessingQueue;
+   AutoStart mAutoStart;
 };
 #endif
