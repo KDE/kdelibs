@@ -31,7 +31,7 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   // TODO connect m_edit->changed to setModified()
   
-  KParts::Plugin::loadPlugins( this, pluginDocuments() );
+  KParts::Plugin::loadPlugins( this, m_instance );
 }
 
 NotepadPart::~NotepadPart()

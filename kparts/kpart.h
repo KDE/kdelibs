@@ -84,16 +84,6 @@ public:
      */
     virtual KInstance *instance() = 0;
 
-    /**
-     * @return a list of filenames containing plugin xml documents
-     */
-    virtual QStringList plugins();
-
-    /**
-     * @return a list of QDomDocuments, containing the parsed xml documents returned by @ref plugins
-     */
-    virtual const QValueList<QDomDocument> pluginDocuments();
-
     // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
     /**

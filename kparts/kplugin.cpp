@@ -4,6 +4,8 @@
 #include <qobjectlist.h>
 
 #include <klibloader.h>
+#include <kinstance.h>
+#include <kstddirs.h>
 #include <kdebug.h>
 
 using namespace KParts;
@@ -29,42 +31,71 @@ QActionCollection* Plugin::actionCollection()
 
 QAction *Plugin::action( const QDomElement &element )
 {
-  QAction *a = action( element.attribute( "name" ).latin1() ); 
-  
+  QAction *a = action( element.attribute( "name" ).latin1() );
+
   if ( !a && parent()->inherits( "KParts::Part" ) )
     a = ((Part *)parent() )->action( element );
-  
+
   return a;
-} 
+}
 
 void Plugin::setDocument( QDomDocument doc )
 {
-  m_doc = doc; 
+  m_doc = doc;
 }
 
 QDomDocument Plugin::document() const
 {
-  return m_doc; 
-} 
+  return m_doc;
+}
 
-
-void Plugin::loadPlugins( QObject *parent, const QValueList<QDomDocument> pluginDocuments )
+//static
+const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instance )
 {
-   QValueList<QDomDocument>::ConstIterator pIt = pluginDocuments.begin();
-   QValueList<QDomDocument>::ConstIterator pEnd = pluginDocuments.end();
+  if ( !instance )
+    kDebugError( 1000, "No instance ???" );
+
+  QValueList<QDomDocument> docs;
+
+  QStringList pluginDocs = instance->dirs()->findAllResources(
+    "data", instance->instanceName()+"/kpartplugins/*", true, false );
+
+  QStringList::ConstIterator pIt = pluginDocs.begin();
+  QStringList::ConstIterator pEnd = pluginDocs.end();
+    for (; pIt != pEnd; ++pIt )
+    {
+      kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
+      QString xml = XMLGUIFactory::readConfigFile( *pIt );
+      if ( !xml.isEmpty() )
+      {
+        QDomDocument doc;
+        doc.setContent( xml );
+        if ( !doc.documentElement().isNull() )
+          docs.append( doc );
+      }
+    }
+
+  return docs;
+}
+
+void Plugin::loadPlugins( QObject *parent, const KInstance * instance )
+{
+   const QValueList<QDomDocument> docs = pluginDocuments( instance );
+   QValueList<QDomDocument>::ConstIterator pIt = docs.begin();
+   QValueList<QDomDocument>::ConstIterator pEnd = docs.end();
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).documentElement().attribute( "library" );
-     
+
      if ( library.isEmpty() )
        continue;
 
      Plugin *plugin = Plugin::loadPlugin( parent, library.latin1() );
-     
+
      if ( plugin )
        plugin->setDocument( *pIt );
    }
-} 
+}
 
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
@@ -96,17 +127,17 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 QValueList<XMLGUIServant *> Plugin::pluginServants( QObject *parent )
 {
   QValueList<XMLGUIServant *> servants;
- 
+
   if (!parent )
     return servants;
- 
+
   QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
-  
+
   QObjectListIt it( *plugins );
   while( it.current() )
     servants.append( (XMLGUIServant *)it.current() );
-  
+
   return servants;
-} 
+}
 
 #include "kplugin.moc"

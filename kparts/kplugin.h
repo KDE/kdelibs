@@ -5,16 +5,19 @@
 #include <qaction.h>
 #include <kxmlgui.h>
 
+class KInstance;
+
 namespace KParts
 {
 
 /**
  * A plugin is the way to add actions to an existing KParts application,
- * or to a Part. (David : it looks like only the latter is true currently !)
+ * or to a Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts, with
- * one small difference: the <Action> tag should have an additional
- * attribute, named "plugin".
+ * one small difference: the document tag, named kpartplugin should have an additional
+ * attribute, named "library", and containing the name of the library implementing
+ * the plugin.
  *
  * If you want this plugin to be used by a part, you need to
  * install the rc file under the directory
@@ -36,15 +39,25 @@ public:
     virtual void setDocument( QDomDocument doc );
     virtual QDomDocument document() const;
 
-    static void loadPlugins( QObject *parent, const QValueList<QDomDocument> pluginDocuments );
+    /**
+     * ... :)
+     */
+    static void loadPlugins( QObject *parent, const KInstance * instance );
+
+    static QValueList<XMLGUIServant *> pluginServants( QObject *parent );
+
+protected:
+    /**
+     * Look for plugins in the @p instance's "data" directory (+"/kpartplugins")
+     * @return a list of QDomDocuments, containing the parsed xml documents returned by plugins
+     */
+    static const QValueList<QDomDocument> pluginDocuments( const KInstance * instance );
 
     /**
      * @internal
      * @return the plugin created from the library @libname
      */
     static Plugin* loadPlugin( QObject * parent, const char* libname );
-
-    static QValueList<XMLGUIServant *> pluginServants( QObject *parent );
 
 private:
     QActionCollection m_collection;

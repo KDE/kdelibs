@@ -63,37 +63,6 @@ void Part::embed( QWidget * parentWidget )
   m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
 }
 
-QStringList Part::plugins()
-{
-  if ( !instance() )
-    return QStringList();
-
-  return instance()->dirs()->findAllResources( "data", instance()->instanceName()+"/kpartplugins/*", true, false );
-}
-
-const QValueList<QDomDocument> Part::pluginDocuments()
-{
-  QValueList<QDomDocument> docs;
- 
-  QStringList pluginDocs = plugins();
-  QStringList::ConstIterator pIt = pluginDocs.begin();
-  QStringList::ConstIterator pEnd = pluginDocs.end();
-    for (; pIt != pEnd; ++pIt )
-    {
-      kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
-      QString xml = XMLGUIFactory::readConfigFile( *pIt );
-      if ( !xml.isEmpty() )
-      {
-        QDomDocument doc;
-        doc.setContent( xml );
-        if ( !doc.documentElement().isNull() )
-          docs.append( doc );
-      }
-    }
-
-  return docs;
-}
-
 QDomDocument Part::document() const
 {
   return d->m_doc;
@@ -134,9 +103,10 @@ QActionCollection* Part::actionCollection()
 Plugin* Part::plugin( const char* libname )
 {
     QObject* ch = child( libname, "Plugin" );
-    if ( ch )
+    //if ( ch )
 	return (Plugin*)ch;
-    return Plugin::loadPlugin( this, libname );
+    // Plugin::loadPlugins has loaded all plugins, so this is useless, right ? (David)
+    //return Plugin::loadPlugin( this, libname );
 }
 
 QAction *Part::action( const QDomElement &element )
