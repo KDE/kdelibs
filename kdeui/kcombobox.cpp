@@ -421,17 +421,21 @@ QStringList KHistoryCombo::historyItems() const
 
 void KHistoryCombo::clearHistory()
 {
+    QString temp = currentText();
     KComboBox::clear();
     if ( useCompletion() )
         completionObject()->clear();
+    setEditText( temp );
 }
 
 void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
 {
-    if ( menu &&!lineEdit()->text().isEmpty())
+    if ( menu )
     {
         menu->insertSeparator();
-        menu->insertItem( i18n("Empty Contents"), this, SLOT( slotClear()));
+        int id = menu->insertItem( i18n("Clear &History"), this, SLOT( slotClear()));
+        if (!count())
+           menu->setItemEnabled(id, false);
     }
 }
 
