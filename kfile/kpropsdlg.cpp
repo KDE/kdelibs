@@ -596,7 +596,9 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   l->setText( directory );
   grid->addWidget(l, curRow++, 2);
 
-  if (S_ISREG(item->mode()) || S_ISDIR(item->mode())) {
+  if ( S_ISREG(item->mode()) ||
+       S_ISDIR(item->mode()) && item->url().isLocalFile() ) {
+    // TODO: perhaps a button to manually ask for dir size on remote protocols ?
     l = new QLabel(i18n("Size:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
