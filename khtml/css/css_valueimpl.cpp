@@ -172,7 +172,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     }
     removeProperty(id);
     int pos = m_lstValues->count();
-    parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
+    DOMString ppValue = preprocess(value.string(),true);
+    parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, m_lstValues);
 
     if( nonCSSHint && pos < (int)m_lstValues->count() ) {
 	CSSProperty *p = m_lstValues->at(pos);
@@ -217,8 +218,9 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
-    QList<CSSProperty> *props = parseProperties(propertyString.unicode(),
-						propertyString.unicode()+propertyString.length());
+    DOMString ppPropertyString = preprocess(propertyString.string(),true);
+    QList<CSSProperty> *props = parseProperties(ppPropertyString.unicode(),
+						ppPropertyString.unicode()+ppPropertyString.length());
     if(!props || !props->count())
     {
 	kdDebug( 6080 ) << "no properties returned!" << endl;

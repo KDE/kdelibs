@@ -2225,8 +2225,8 @@ CSSValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
     // Everything should be lowercase -> preprocess
-    assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP)); 
-    
+    assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP));
+
     endP--;
     while(*endP == ' ' && endP > curP) endP--;
     const QChar *split = endP;
@@ -2511,8 +2511,9 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
  *  in HTML, but case-sensitive in XML. 
  */
 
-QString StyleBaseImpl::preprocess(const QString &str)
+QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 {
+  // ### use DOMString here to avoid coversions
   QString processed;
 
   bool sq = false;	// Within single quote
@@ -2615,7 +2616,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
       if (ch->isSpace()) {
 	processed += QChar(' '); // Normalize whitespace
       } else {
-	if (curlyBracket > 0) {
+	if (curlyBracket > 0 || justOneRule) {
 	  processed += ch->lower();
 	} else {
 	  processed += *ch;

@@ -126,7 +126,7 @@ public:
 
 	void setParent(StyleBaseImpl *parent) { m_parent = parent; }
 
-	QString preprocess(const QString &str);
+	QString preprocess(const QString &str, bool justOneRule = false);
 	const QChar *parseSpace(const QChar *curP, const QChar *endP);
 	const QChar *parseToChar(const QChar *curP, const QChar *endP,
 				 QChar c, bool chkws, bool endAtBlock = false);
