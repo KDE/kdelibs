@@ -36,7 +36,7 @@
 
 #if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("visible")))
+#define KDE_EXPORT __attribute__ ((visibility("default")))
 #else
 #define KDE_NO_EXPORT
 #define KDE_EXPORT
