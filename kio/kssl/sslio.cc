@@ -169,9 +169,6 @@ IODevice::ErrorCode IODevice::setFd(int fd_)
 
 IODevice::ErrorCode IODevice::setBlocking(bool yes)
 {
-    qDebug( "IODevice::setBlocking(%d): %s",
-            yes, kdBacktrace().latin1() );
-
     int state;
     IODevice::ErrorCode rc;
     // -----
