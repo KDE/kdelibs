@@ -28,6 +28,7 @@
 
 #include <kurl.h>
 #include <kio/global.h>
+#include <kdirwatch.h>
 
 class KDirLister;
 namespace KIO { class Job; class ListJob; }
@@ -181,7 +182,7 @@ private slots:
 
 private:
   bool killJob( const QString &_url );
-  
+
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the childs.
@@ -200,9 +201,11 @@ private:
 #ifndef NDEBUG
   void printDebug();
 #endif
+
   struct DirItem
   {
-    DirItem() : rootItem(0), lstItems(new KFileItemList)
+    DirItem( const KURL &dir )
+      : url(dir), rootItem(0), lstItems(new KFileItemList)
     {
       autoUpdates = 0;
       complete = false;
@@ -211,17 +214,39 @@ private:
 
     ~DirItem()
     {
+      if ( autoUpdates )
+        kdirwatch->removeDir( url.path() );
+
       delete rootItem;
       delete lstItems;
     }
 
-    // number of KDirListers using autoUpdate for this dir
-    unsigned short autoUpdates;
+    void incAutoUpdate()
+    {
+      if ( url.isLocalFile() && autoUpdates++ == 0 )
+        kdirwatch->addDir( url.path() );
+    }
 
+    void decAutoUpdate()
+    {
+      if ( url.isLocalFile() && --autoUpdates <= 0 )
+      {
+        autoUpdates = 0;
+        kdirwatch->removeDir( url.path() );
+      }
+    }
+
+    // number of KDirListers using autoUpdate for this dir
+    short autoUpdates;
+
+    // this directory is up-to-date
     bool complete;
 
+    // the complete url of this directory
+    KURL url;
+
     // KFileItem representing the root of this directory.
-    // Remember that this is optional. FTP sites don't return '.' in 
+    // Remember that this is optional. FTP sites don't return '.' in
     // the list, so they give no root item
     KFileItem* rootItem;
     KFileItemList* lstItems;

@@ -27,7 +27,6 @@
 
 #include <kapp.h>
 #include <kdebug.h>
-#include <kdirwatch.h>
 #include <klocale.h>
 #include <kio/job.h>
 #include <kmessagebox.h>
@@ -139,7 +138,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->d->complete = false;
 
       emit lister->started( _url );
-      
+
       if ( !lister->d->rootFileItem && lister->d->url == _url )
         lister->d->rootFileItem = itemU->rootItem;
 
@@ -163,9 +162,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     {
       kdDebug(7004) << "listDir: Entry in cache: " << _url << endl;
 
-      Q_ASSERT( itemC->autoUpdates == 0 );
-
+      itemC->decAutoUpdate();
       itemsInUse.insert( _url.url(), itemC );
+      itemU = itemC;
 
       bool oldState = lister->d->complete;
       lister->d->complete = false;
@@ -201,7 +200,8 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       urlsCurrentlyListed.insert( _url.url(), list );
 
       itemsCached.remove( _url.url() );
-      itemsInUse.insert( _url.url(), new DirItem );
+      itemU = new DirItem( _url );
+      itemsInUse.insert( _url.url(), itemU );
 
 //        // we have a limit of MAX_JOBS_PER_LISTER concurrently running jobs
 //        if ( lister->d->numJobs >= MAX_JOBS_PER_LISTER )
@@ -286,13 +286,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     lister->emitItems();
   }
 
-  // Automatic updating of directories ?
-  if ( lister->d->autoUpdate && _url.isLocalFile() &&
-       itemsInUse[_url.url()]->autoUpdates++ == 0 )
-  {
-      kdDebug(7004) << "adding to kdirwatch " << kdirwatch << " " << _url.path() << endl;
-      kdirwatch->addDir( _url.path() );
-  }
+  // automatic updating of directories
+  if ( lister->d->autoUpdate )
+    itemU->incAutoUpdate();
 }
 
 void KDirListerCache::stop( KDirLister *lister )
@@ -402,13 +398,10 @@ void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
-    if ( (*it).isLocalFile() )
-    {
-      if ( enable && itemsInUse[(*it).url()]->autoUpdates++ == 0 )
-        kdirwatch->addDir( (*it).path() );
-      else if ( --itemsInUse[(*it).url()]->autoUpdates == 0 )
-        kdirwatch->removeDir( (*it).path() );
-    }
+    if ( enable )
+      itemsInUse[(*it).url()]->incAutoUpdate();
+    else
+      itemsInUse[(*it).url()]->decAutoUpdate();
   }
 }
 
@@ -448,11 +441,8 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
 
   Q_ASSERT( item );
 
-  if ( lister->d->autoUpdate && url.isLocalFile() && --item->autoUpdates == 0 )
-  {
-    kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << url.path() << endl;
-    kdirwatch->removeDir( url.path() );
-  }
+  if ( lister->d->autoUpdate )
+    item->decAutoUpdate();
 
   if ( holders->isEmpty() )
   {
@@ -481,6 +471,9 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
       {
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
         itemsCached.insert( urlStr, item ); // TODO: may return false!!
+
+        // watch cached directories
+        item->incAutoUpdate();
       }
       else
         delete item;
@@ -499,6 +492,7 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
     if ( item )
     {
       item->complete = false;
+      item->decAutoUpdate();
       kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
     }
     else
@@ -946,6 +940,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
       // Update URL in root item and in itemsInUse
       if ( dir->rootItem )
         dir->rootItem->setURL( newDirUrl );
+      dir->url = newDirUrl;
       itemsInUse.remove( itu.currentKey() ); // implies ++itu
       itemsInUse.insert( newDirUrl.url(-1), dir );
       goNext = false; // because of the implied ++itu above
@@ -1332,8 +1327,10 @@ void KDirListerCache::printDebug()
   kdDebug(7004) << "Items in use: " << endl;
   QDictIterator<DirItem> itu( itemsInUse );
   for ( ; itu.current() ; ++itu ) {
-    kdDebug(7004) << "   " << itu.currentKey() << "  rootItem: "
-                  << ( itu.current()->rootItem ? itu.current()->rootItem->url().prettyURL() : QString("NULL") )
+      kdDebug(7004) << "   " << itu.currentKey() << "  URL: " << itu.current()->url
+                    << " rootItem: " << ( itu.current()->rootItem ? itu.current()->rootItem->url() : QString("NULL") )
+                    << " autoUpdates refcount: " << itu.current()->autoUpdates
+                    << " complete: " << itu.current()->complete
                   << ( itu.current()->lstItems ? QString(" with %1 items.").arg(itu.current()->lstItems->count()) : QString(" lstItems=NULL") ) << endl;
   }
 
