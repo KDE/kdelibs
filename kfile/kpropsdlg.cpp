@@ -1995,9 +1995,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
       extensionsList->insertItem( *sit );
   }
 
-  KServiceType::List serviceTypes = KServiceType::allServiceTypes();
-  QValueListIterator<KServiceType::Ptr> it2 = serviceTypes.begin();
-  for ( ; it2 != serviceTypes.end(); ++it2 )
+  KMimeType::List mimeTypes = KMimeType::allMimeTypes();
+  QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
+  for ( ; it2 != mimeTypes.end(); ++it2 )
     addMimeType ( (*it2)->name() );
 
   connect( availableExtensionsList, SIGNAL( selected( int ) ),
