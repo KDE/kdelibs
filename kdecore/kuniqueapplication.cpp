@@ -377,8 +377,10 @@ int KUniqueApplication::newInstance()
   if (!d->firstInstance)
   {
 #ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
-     if ( mainWidget() )
+     if ( mainWidget() ) {
+	mainWidget()->setShown(true);
         KWin::setActiveWindow(mainWidget()->winId());
+     }
 #endif
   }
   d->firstInstance = false;
