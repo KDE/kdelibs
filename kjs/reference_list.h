@@ -34,7 +34,7 @@ namespace KJS {
 /**
 * An iterator for a  @ref ReferenceList.
 */
-  class ReferenceListIterator {
+  class KJS_EXPORT ReferenceListIterator {
     friend class ReferenceList;
   
   public:
@@ -51,7 +51,7 @@ namespace KJS {
 /**
 * A list of @ref Reference objects.
 */
-  class ReferenceList {
+  class KJS_EXPORT ReferenceList {
   public:
     ReferenceList();
     ReferenceList(const ReferenceList &list);
