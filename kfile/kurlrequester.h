@@ -184,7 +184,7 @@ protected slots:
     void slotOpenDialog();
 
 private slots:
-    void slotDragRequested( KPushButton * );
+    void slotUpdateURL();
 
 private:
     class KURLRequesterPrivate;

@@ -42,9 +42,11 @@ class KURLDragPushButton : public KPushButton
 {
 public:
     KURLDragPushButton( QWidget *parent, const char *name=0 )
-	: KPushButton( parent, name ) {}
+	: KPushButton( parent, name ) {
+    	setDragEnabled( true );
+    }
     ~KURLDragPushButton() {}
-    
+
     void setURL( const KURL& url ) {
 	m_urls.clear();
 	m_urls.append( url );
@@ -181,9 +183,8 @@ void KURLRequester::init()
     myButton->setPixmap(SmallIcon(QString::fromLatin1("folder")));
     QToolTip::add(myButton, i18n("Open filedialog"));
 
-    connect( button, SIGNAL( dragRequested( KPushButton * )),
-	     SLOT( slotDragRequested( KPushButton * )));
-    
+    connect( button, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
+
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
     			    myButton->sizeHint().width() );
@@ -270,11 +271,11 @@ KComboBox * KURLRequester::comboBox() const
     return d->combo;
 }
 
-void KURLRequester::slotDragRequested( KPushButton * )
+void KURLRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
-    KURL u( QDir::homeDirPath(), url() );
-    (static_cast<KURLDragPushButton *>( myButton))->setURL( url() );
+    KURL u( QDir::homeDirPath() + '/', url() );
+    (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
 }
 
 #include "kurlrequester.moc"
