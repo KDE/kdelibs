@@ -1166,7 +1166,7 @@ void KSpell::moveDlg (int x, int y)
 int
 KSpell::modalCheck( QString& text )
 {
-  modalCheck( text,0 );
+    return modalCheck( text,0 );
 }
 
 int
