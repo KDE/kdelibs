@@ -84,10 +84,6 @@ public:
     KURLRequesterPrivate() {
 	edit = 0L;
 	combo = 0L;
-
-	mode = static_cast<KFile::Mode>( KFile::File |
-					 KFile::ExistingOnly |
-					 KFile::LocalOnly );
     }
 
     void setText( const QString& text ) {
@@ -123,7 +119,6 @@ public:
 	return combo ? combo->currentText() : edit->text();
     }
 
-    KFile::Mode mode;
     KLineEdit *edit;
     KComboBox *combo;
 };
@@ -229,6 +224,8 @@ QString KURLRequester::url() const
 
 void KURLRequester::slotOpenDialog()
 {
+    emit openFileDialog( this );
+    
     KFileDialog *dlg = fileDialog();
     if ( !d->text().isEmpty() ) {
 	dlg->setSelection( url() );
@@ -245,7 +242,10 @@ KFileDialog * KURLRequester::fileDialog() const
 	QWidget *p = parentWidget();
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
 					"file dialog", myModal );
-	myFileDialog->setMode( d->mode );
+	
+	myFileDialog->setMode( (KFile::Mode) (KFile::File |
+					      KFile::ExistingOnly |
+					      KFile::LocalOnly ));
     }
 
     return myFileDialog;
@@ -281,11 +281,6 @@ void KURLRequester::slotUpdateURL()
     // bin compat, myButton is declared as QPushButton
     KURL u( QDir::currentDirPath() + '/', url() );
     (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
-}
-
-void KURLRequester::setFileDialogMode( KFile::Mode mode )
-{
-    d->mode = mode;
 }
 
 #include "kurlrequester.moc"

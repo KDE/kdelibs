@@ -141,12 +141,6 @@ public:
      */
     KURLCompletion *completionObject() const { return myCompletion; }
 
-    /**
-     * Lets you specify the mode for the filedialog that is applied upon
-     * construction of the filedialog.
-     */
-    void setFileDialogMode( KFile::Mode mode );
-
 public slots:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
@@ -158,7 +152,7 @@ public slots:
      * Clears the lineedit/combobox.
      */
     void clear();
-    
+
 signals:
     // forwards from LineEdit
     /**
@@ -178,6 +172,18 @@ signals:
      */
     void returnPressed( const QString& );
 
+    /**
+     * Emitted before the filedialog is going to open. Connect
+     * to this signal to "configure" the filedialog, e.g. set the
+     * filefilter, the mode, a preview-widget, etc. It's usually
+     * not necessary to set a URL for the filedialog, as it will
+     * get set properly from the editfield contents.
+     *
+     * If you use multiple KURLRequesters, you can connect all of them
+     * to the same slot and use the given KURLRequester pointer to know
+     * which one is going to open.
+     */
+    void openFileDialog( KURLRequester * );
 
 protected:
     void		init();
