@@ -1,3 +1,9 @@
+2004-01-25  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_image.cpp (setPixmap): handle cases when
+	we're not inserted in the tree yet, but the image is already loaded
+	(this happens when the memory cache actually works) (#73311).
+
 2004-01-23  Lubos Lunak  <l.lunak@kde.org>
 
         * html_inlineimpl.cpp (defaultEventHandler): make HTMLAnchorElementImpl

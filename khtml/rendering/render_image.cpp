@@ -138,9 +138,9 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     if( o->pixmap_size().width() != intrinsicWidth() ||
        o->pixmap_size().height() != intrinsicHeight() || iwchanged )
     {
-//          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
-//                 intrinsicWidth(), intrinsicHeight(),
-//               o->pixmap_size().width(), o->pixmap_size().height());
+//           qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
+//                  intrinsicWidth(), intrinsicHeight(),
+//                o->pixmap_size().width(), o->pixmap_size().height());
 
         if(!o->isErrorImage()) {
             setIntrinsicWidth( o->pixmap_size().width() );
@@ -150,8 +150,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         // lets see if we need to relayout at all..
         int oldwidth = m_width;
         int oldheight = m_height;
-        calcWidth();
-        calcHeight();
+        if ( parent() ) {
+            calcWidth();
+            calcHeight();
+        }
 
         if(iwchanged || m_width != oldwidth || m_height != oldheight)
             needlayout = true;
@@ -160,6 +162,9 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         m_height = oldheight;
     }
 
+    // we're not fully integrated in the tree yet.. we'll come back.
+    if ( !parent() )
+        return;
 
     if(needlayout)
     {
