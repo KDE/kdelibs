@@ -396,6 +396,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 		d->startOffset = offset;
 		d->selectionEnd = innerNode;
 		d->endOffset = offset;
+		m_part->docImpl()->clearSelection();
 		printf("setting start of selection to %p/%d\n", innerNode, offset);
 	    } else {
 		d->selectionStart = 0;
@@ -506,13 +507,21 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 		break;
 	    }
 	    NodeImpl *next = n->firstChild();
-	    if(!next) n = n->nextSibling();
+	    if(!next) next = n->nextSibling();
 	    while( !next && (n = n->parentNode()) ) {
 		next = n->nextSibling();
 	    }
 	    n = next;
 	    //viewport()->repaint(false);
 	}
+	
+	if (d->startBeforeEnd)
+	    m_part->docImpl()
+	    	->setSelection(d->selectionStart,-1,d->selectionEnd,-1);
+	else
+	    m_part->docImpl()
+	    	->setSelection(d->selectionEnd,-1,d->selectionStart,-1);
+	
     }
 }
 
@@ -583,10 +592,10 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 		break;
 	    }
 	    NodeImpl *next = n->firstChild();
-	    if(!next) n = n->nextSibling();
+	    if(!next) next = n->nextSibling();
 	    while( !next && (n = n->parentNode()) ) {
 		next = n->nextSibling();
-	    }
+	    }	    
 	    n = next;
 	}
 	if(!d->startBeforeEnd)
@@ -616,10 +625,11 @@ QString KHTMLView::selectedText() const
 	}
 	if(n == d->selectionEnd) break;
 	NodeImpl *next = n->firstChild();
-	if(!next) n = n->nextSibling();
+	if(!next) next = n->nextSibling();
 	while( !next && (n = n->parentNode()) ) {
 	    next = n->nextSibling();
-	}
+	}    
+
 	n = next;
     }
     return text;

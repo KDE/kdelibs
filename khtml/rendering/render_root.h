@@ -57,6 +57,7 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
     
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
+    virtual void clearSelection();
         
 protected:
 
@@ -66,8 +67,11 @@ protected:
     
     QTime updateTimer;
     
+    RenderObject* selectionStart;
+    RenderObject* selectionEnd;
     int selectionStartPos;
     int selectionEndPos;
+    
 };
 
 };

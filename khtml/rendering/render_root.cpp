@@ -34,6 +34,11 @@ RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     m_minWidth = view->frameWidth();
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
+    
+    selectionStart = 0;
+    selectionEnd = 0;
+    selectionStartPos = -1;
+    selectionEndPos = -1;    
     setParsing();
 }
 
@@ -123,19 +128,28 @@ void RenderRoot::close()
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
-   selectionStartPos = sp;
-   selectionEndPos = ep;
-   while (s->firstChild())
+
+    //printf("RenderRoot::setSelection(%x,%d,%x,%d)\n", s,sp,e,ep);
+
+    clearSelection();
+
+    while (s->firstChild())
     	s = s->firstChild();
-   while (e->lastChild())
-    	e = e->lastChild();      
+    while (e->lastChild())
+    	e = e->lastChild(); 
+
+    selectionStart = s;
+    selectionEnd = e;
+    selectionStartPos = sp;
+    selectionEndPos = ep;     
 	
-   RenderObject* o = s;
-   while (o && o!=e)
-   {
+    RenderObject* o = s;
+    while (o && o!=e)
+    {
     	if (o->selectionState()!=SelectionInside)
 	    o->repaint();
     	o->setSelectionState(SelectionInside);	
+//	printf("setting selected %x, %d\n",o, o->isText());
     	RenderObject* no;
     	if ( !(no = o->firstChild()) )
     	    if ( !(no = o->nextSibling()) )
@@ -147,10 +161,39 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 		    no = no->nextSibling();
 	    }
 	o=no;    	
-   }
-   s->setSelectionState(SelectionStart);
-   e->setSelectionState(SelectionEnd);     
-   e->repaint();
+    }
+    s->setSelectionState(SelectionStart);
+    e->setSelectionState(SelectionEnd);     
+    e->repaint();
+   
+}
+
+
+void RenderRoot::clearSelection()
+{	
+    RenderObject* o = selectionStart;
+    while (o && o!=selectionEnd)
+    {
+    	if (o->selectionState()!=SelectionNone)
+	    o->repaint();
+    	o->setSelectionState(SelectionNone);	
+    	RenderObject* no;
+    	if ( !(no = o->firstChild()) )
+    	    if ( !(no = o->nextSibling()) )
+	    {
+	    	no = o->parent();
+		while (no && !no->nextSibling())
+		    no = no->parent();
+		if (no)
+		    no = no->nextSibling();
+	    }
+	o=no;    	
+    }
+    if (selectionEnd)
+    {
+    	selectionEnd->setSelectionState(SelectionNone);     
+    	selectionEnd->repaint();
+    }
    
 }
 

@@ -399,3 +399,16 @@ CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
     	m_elemSheet = new CSSStyleSheetImpl(this, url);
     return m_elemSheet;
 }
+
+
+void HTMLDocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)
+{
+    static_cast<RenderRoot*>(m_render)
+    	->setSelection(s->renderer(),sp,e->renderer(),ep);
+}
+
+void HTMLDocumentImpl::clearSelection()
+{
+    static_cast<RenderRoot*>(m_render)
+    	->clearSelection();
+}

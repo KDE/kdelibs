@@ -90,6 +90,9 @@ public:
     virtual void createSelector();
 
     bool headLoaded();
+    
+    void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
+    void clearSelection();
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
