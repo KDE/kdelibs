@@ -153,9 +153,11 @@ void KService::load( QDataStream& s )
 
 void KService::save( QDataStream& s ) const
 {
+  Q_INT8 b = m_bAllowAsDefault;
+    
   s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
-    << m_strPath << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault
-    << m_mapProps << m_strActivationMode << m_lstRepoIds;
+    << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
+    << m_strActivationMode << m_lstRepoIds;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
