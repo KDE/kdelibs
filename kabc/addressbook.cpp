@@ -495,7 +495,6 @@ bool AddressBook::saveAll()
 		ok = false;
 	}
     }
-  }
 
   return ok;
 }
