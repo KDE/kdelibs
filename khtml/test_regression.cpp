@@ -116,7 +116,7 @@ void PartMonitor::partCompleted()
     else {
 	disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
         RenderWidget::flushWidgetResizes();
-        QTimer::singleShot( visual ? 100 : 0, this, SLOT( timeout() ) );
+        QTimer::singleShot( visual ? 100 : 20, this, SLOT( timeout() ) );
     }
 }
 
