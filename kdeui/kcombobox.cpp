@@ -447,11 +447,16 @@ void KHistoryCombo::addToHistory( const QString& item )
     bool wasCurrent = false;
     // remove all existing items before adding
     if ( !duplicatesEnabled() ) {
-        for ( int i = 0; i < count(); i++ ) {
+        int i = 0;
+        int itemCount = count();
+        while ( i < itemCount ) {
             if ( text( i ) == item ) {
                 if ( !wasCurrent )
                   wasCurrent = ( i == currentItem() );
                 removeItem( i );
+                --itemCount;
+            } else {
+                ++i;
             }
         }
     }
@@ -490,11 +495,16 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
         return false;
 
     bool removed = false;
-    QString temp = currentText();
-    for ( int i = 0; i < count(); i++ ) {
-        while ( item == text( i ) ) {
+    const QString temp = currentText();
+    int i = 0;
+    int itemCount = count();
+    while ( i < itemCount ) {
+        if ( item == text( i ) ) {
             removed = true;
             removeItem( i );
+            --itemCount;
+        } else {
+            ++i;
         }
     }
 
