@@ -1,5 +1,6 @@
 /*-
  * HCStyle (C)2000 Daniel M. Duley <mosfet@kde.org>
+ *         (C)2000 Dirk Mueller <mueller@kde.org>
  * Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
  *
  * All rights reserved.
@@ -157,17 +158,14 @@ void HCAniMenu::scrollOut()
 
 void HCAniMenu::slotDestroyFake()
 {
-    if(widget)
-        delete(widget);
+    delete(widget);
     widget = NULL;
 }
 
 void HCAniMenu::slotFinished()
 {
-    if(widget)
-        delete(widget);
+    delete(widget);
     // We'll be deleted when the menu is destroyed..
-//     delete this;
 }
 
 
@@ -175,9 +173,6 @@ HCStyle::HCStyle()
     :KStyle()
 {
     highlightWidget = 0L;
-    KConfig *config = KGlobal::config();
-    QString oldGrp = config->group();
-    QPalette p = kapp->palette();
     setButtonDefaultIndicatorWidth(0);
     if(QPixmap::defaultDepth() > 8){
         vSmall = new KPixmap;
@@ -202,14 +197,12 @@ HCStyle::HCStyle()
 
 HCStyle::~HCStyle()
 {
-    if(vSmall){
-        delete vSmall;
-        delete vMed;
-        delete vLarge;
-        delete hMed;
-        delete hLarge;
-        delete vDark;
-    }
+    delete vSmall;
+    delete vMed;
+    delete vLarge;
+    delete hMed;
+    delete hLarge;
+    delete vDark;
 }
 
 void HCStyle::polish(QPalette &)
@@ -240,18 +233,18 @@ void HCStyle::polish(QPalette &)
     }
 
     QColorGroup g = pal.active();
-    QColor high = g.background().light(110);
-    QColor low = g.background().dark(110);
+    gradientHight = g.background().light(110);
+    gradientLow   = g.background().dark(110);
     if(vSmall){
-        KPixmapEffect::gradient(*vSmall, high, low,
+        KPixmapEffect::gradient(*vSmall, gradientHight, gradientLow,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*vMed, high, low,
+        KPixmapEffect::gradient(*vMed, gradientHight, gradientLow,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*vLarge, high, low,
+        KPixmapEffect::gradient(*vLarge, gradientHight, gradientLow,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*hMed, high, low,
+        KPixmapEffect::gradient(*hMed, gradientHight, gradientLow,
                                 KPixmapEffect::HorizontalGradient);
-        KPixmapEffect::gradient(*hLarge, high, low,
+        KPixmapEffect::gradient(*hLarge, gradientHight, gradientLow,
                                 KPixmapEffect::HorizontalGradient);
         KPixmapEffect::gradient(*vDark, g.mid(), g.dark(),
                                 KPixmapEffect::VerticalGradient);
@@ -262,35 +255,29 @@ void HCStyle::polish(QPalette &)
 
 void HCStyle::polish(QWidget *w)
 {
-    /*if ( !w->isTopLevel() ) {
-        if (w->inherits("QPushButton")
-            || w->inherits("QComboBox")
-            //|| w->inherits("QSlider")
-            || w->inherits("QRadioButton")
-            || w->inherits("QCheckBox"))
-            w->setAutoMask(true);
-            }*/
     if(w->isTopLevel())
         return;
 
-    if(w->inherits("QPushButton")){
+    if(w->inherits("QPushButton"))
         w->installEventFilter(this);
-    }
+
     if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::NoBackground);
         return;
     }
-    if( w->inherits("QButton") || w->inherits("QComboBox")){
-        if((w->parent() && !w->parent()->inherits("KToolBar") &&
-            !w->parent()->inherits("KHTMLView")))
-            w->setBackgroundOrigin(QWidget::ParentOrigin);
-        else
+
+    if(w->parent() && w->parent()->inherits("KToolBar"))
+    {
+        if(w->inherits("QLabel"))
             w->setAutoMask(true);
-        return;
+        w->setBackgroundMode(QWidget::NoBackground);
     }
+    else if( w->inherits("QButton") || w->inherits("QComboBox"))
+        w->setBackgroundOrigin(QWidget::ParentOrigin);
+
     if(w->inherits("KToolBar")){
         w->installEventFilter(this);
-        w->setBackgroundMode(QWidget::NoBackground);
+        //w->setBackgroundMode(QWidget::NoBackground);
         return;
     }
 }
@@ -308,14 +295,15 @@ void HCStyle::unPolish(QWidget *w)
         w->setBackgroundMode(QWidget::PaletteBackground);
         return;
     }
-    if(w->inherits("QButton") || w->inherits("QComboBox")){
-        if(w->parent() && !w->parent()->inherits("KToolBar") &&
-           !w->parent()->inherits("KHTMLView"))
-            w->setBackgroundOrigin(QWidget::WidgetOrigin);
-        else
+    if(w->parent() && w->parent()->inherits("KToolBar"))
+    {
+        if(w->inherits("QLabel"))
             w->setAutoMask(false);
-        return;
+        w->setBackgroundMode(QWidget::PaletteBackground);
     }
+    else if( w->inherits("QButton") || w->inherits("QComboBox"))
+        w->setBackgroundOrigin(QWidget::WidgetOrigin);
+
     if(w->inherits("KToolBar")){
         w->removeEventFilter(this);
         w->setBackgroundMode(QWidget::PaletteBackground);
@@ -452,7 +440,7 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
 		p->drawLine(x+1, y+2, x+1, y2-1);
 		p->drawLine(x2-2, y+3, x2-2, y2-2);
 
-		drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6);
+		drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6, 0, 0, w-6, h-6);
 	    }
 	    else
 		drawButton(p, x, y, w, h, g, false);
@@ -536,7 +524,7 @@ void HCStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x+1, y2-1, x2-1, y2-1);
     p->drawLine(x2-1, y+1, x2-1, y2-1);
     if(vSmall)
-        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4, 0, 0, w-4, h-4);
     else
         p->fillRect(x+2, y+2, w-4, h-4, fill ? *fill :
                     g.brush(QColorGroup::Button));
@@ -562,7 +550,7 @@ void HCStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x2, y+1, x2, y2-1);
 
     if(vSmall)
-        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4, 0, 0, w-4, h-4);
     else
         p->fillRect(x+2, y+2, w-4, h-4, g.brush(QColorGroup::Background));
 
@@ -819,10 +807,10 @@ void HCStyle::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
         else{
             if(r.width() > r.height())
                 drawVGradient(p, g.brush(QColorGroup::Mid), r.x()+1, r.y()+1,
-                              r.width()-2, r.height()-2);
+                              r.width()-2, r.height()-2, 0, 0, r.width()-2, r.height()-2);
             else
                 drawHGradient(p, g.brush(QColorGroup::Mid), r.x()+1, r.y()+1,
-                              r.width()-2, r.height()-2);
+                              r.width()-2, r.height()-2, 0, 0, r.width()-2, r.height()-2);
         }
 
     }
@@ -1042,9 +1030,9 @@ void HCStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
     int y2 = y+h-1;
     if(vSmall){
         if(orient == Horizontal)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h, 0, 0, w, h);
         else
-            drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
+            drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h, 0, 0, w, h);
     }
     else
         p->fillRect(x, y, w, h, g.background());
@@ -1157,7 +1145,7 @@ void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 {
     if(h > w){
         if(vSmall)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h, 0, 0, w, h);
         else
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
         int x2 = x+w-1;
@@ -1184,7 +1172,7 @@ void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
         int x2 = x+w-1;
         int y2 = y+h-1;
         if(hMed)
-            drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
+            drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h, 0, 0, w, h);
         else
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
 
@@ -1225,18 +1213,18 @@ void HCStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x2, y, x2, y2);
         p->drawLine(x, y2, x2, y2);
         if(vSmall)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-1);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2, 0, 0, w-2, h-2);
         else
             p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Midlight));
     }
     else{
         qDrawShadePanel(p, x, y, w, h, g, false, 1);
         if(vSmall)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2, 0, 0, w-2, h-2);
         else
             p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
     }
-			
+
 }
 
 void HCStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
@@ -1245,9 +1233,9 @@ void HCStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
     if(vSmall){
         qDrawShadePanel(p, x, y, w, h, g, false, 1);
         if(w > h)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2, 0, 0, w-2, h-2);
         else
-            drawHGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
+            drawHGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2, 0, 0, w-2, h-2);
     }
     else
         qDrawShadePanel(p, x, y, w, h, g, false, 1,
@@ -1265,15 +1253,24 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 
     QFontMetrics fm(*font);
 
-    if(raised || sunken){
+    QToolBar* toolbar = 0;
+    if(btn->parent() && btn->parent()->isWidgetType() && btn->parent()->inherits("QToolBar"))
+        toolbar = static_cast<QToolBar*>(btn->parent());
+
+    if(!vSmall || !toolbar)
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
+    else
+    {
+        // sync with drawKToolBar
+        if(toolbar->orientation() == Qt::Horizontal)
+            drawVGradient(p, g.background(), x, y, w, h, x, y, toolbar->width(), toolbar->height());
+        else
+            drawHGradient(p, g.mid(), x, y, w, h, x, y, toolbar->width(), toolbar->height());
+    }
+
+    if(raised || sunken) {
         int x2 = x+w;
         int y2 = y+h;
-
-        if(vSmall)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
-        else
-            p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
-
         p->setPen(g.dark());
         p->drawLine(x+1, y+1, x2-2, y+1);
         p->drawLine(x, y+2, x, y2-3);
@@ -1286,57 +1283,6 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         p->setPen(sunken ? g.light() : g.mid());
         p->drawLine(x2-2, y+3, x2-2, y2-3);
         p->drawLine(x+2, y2-3, x2-2, y2-3);
-    }
-    else
-    {
-        if(btn->parent() && btn->parent()->isWidgetType()){
-            QWidget *toolbar = (QWidget*)btn->parent();
-            // horizontal toolbar
-            if(toolbar->width() > toolbar->height()){
-                // See if we are top row. Buttons are offset a few pixels
-                // but not visibly.
-                if(!vSmall)
-                    p->fillRect(x, y, w, h, g.background());
-                else if(btn->y() <= 3){
-                    if(toolbar->height() <= 24)
-                        p->drawTiledPixmap(x, y, w, h, *vSmall);
-                    else if(toolbar->height() <= 34)
-                        p->drawTiledPixmap(x, y, w, h, *vMed);
-                    else
-                        p->drawTiledPixmap(x, y, w, h, *vLarge);
-
-                }
-                // See if we are in the gradient at all. Two rows always are
-                // large.
-                else if(btn->y() <= 52){
-                    p->fillRect(x, y, w, h, g.mid());
-                    p->drawTiledPixmap(x, y, w, 64-btn->y(),
-                                       *vLarge, 0, btn->y());
-                }
-                // nope, we are not in the gradient
-                else
-                    p->fillRect(x, y, w, h, g.mid());
-            }
-            // vertical toolbar
-            else{
-                if(!vSmall)
-                    p->fillRect(x, y, w, h, g.background());
-                else if(btn->x() <= 3){
-                    if(toolbar->width() <= 34)
-                        p->drawTiledPixmap(x, y, w, h, *hMed);
-                    else
-                        p->drawTiledPixmap(x, y, w, h, *hLarge);
-
-                }
-                else if(btn->x() <= 52){
-                    p->fillRect(x, y, w, h, g.mid());
-                    p->drawTiledPixmap(x, y, 52-btn->x(), h,
-                                       *hLarge, btn->x(), 0);
-                }
-                else
-                    p->fillRect(x, y, w, h, g.mid());
-            }
-        }
     }
     p->setPen(g.text());
 
@@ -1454,7 +1400,7 @@ void HCStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
             p->drawTiledPixmap(x+1, y+1, w-2, h-2, *vDark);
         }
         else
-            qDrawShadePanel(p, x, y, w, h, g, false, 1,
+            qDrawShadePanel(p, x+1, y+1, w-1, h-1, g, false, 1,
                             &g.brush(QColorGroup::Mid));
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
@@ -1478,6 +1424,7 @@ static const int motifItemHMargin       = 3;
 static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
+
     maxpmw = QMAX( maxpmw, 20 );
 
     if ( p->font() == KGlobalSettings::generalFont() )
@@ -1540,8 +1487,8 @@ static const int windowsRightBorder     = 12;
             int m = motifItemVMargin;
             const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
             if (t >= 0) {
-                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
-                            y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
+                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
+                            y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
             }
             p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
         } else if (mi->pixmap()) {
@@ -1602,13 +1549,6 @@ void HCStyle::drawFocusRect(QPainter *p, const QRect &r,
                             const QColorGroup &g, const QColor *c,
                             bool atBorder)
 {
-    /*
-    p->setPen(g.foreground());
-    p->setBrush(NoBrush);
-    if ( atBorder )
-        p->drawWinFocusRect( QRect( r.x()+1, r.y()+1, r.width()-2, r.height()-2 ) );
-    else
-    p->drawWinFocusRect( r ); */
     KStyle::drawFocusRect(p, r, g, c, atBorder);
 }
 
@@ -1756,36 +1696,38 @@ void HCStyle::drawPanel(QPainter *p, int x, int y, int w, int h,
     }
 }
 
-// no check here, make sure your highcolor beforehand ;-)
+// no check here, make sure you're highcolor beforehand ;-)
 void HCStyle::drawVGradient(QPainter *p, const QBrush &fill, int x, int y,
-                            int w, int h)
+                            int w, int h, int sx, int sy, int tw, int th)
 {
-    if(h <= 24){
+    int grheight = th - sy;
+    if(grheight <= 24){
         p->drawTiledPixmap(x, y, w, h, *vSmall);
     }
-    else if(h <= 34){
+    else if(grheight <= 34){
         p->drawTiledPixmap(x, y, w, h, *vMed);
     }
-    else if(h <= 64){
+    else if(grheight <= 64){
         p->drawTiledPixmap(x, y, w, h, *vLarge);
     }
     else{
-        p->fillRect(x, y+vLarge->height(), w, h-vLarge->height(), fill);
+        p->fillRect(x, y+vLarge->height(), w, h-vLarge->height(), gradientLow);
         p->drawTiledPixmap(x, y, w, vLarge->height(), *vLarge);
     }
 }
 
 void HCStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
-                            int w, int h)
+                            int w, int h, int sx, int sy, int tw, int th)
 {
-    if(w <= 34){
+    int grwidth = tw - sx;
+    if(grwidth <= 34){
         p->drawTiledPixmap(x, y, w, h, *hMed);
     }
-    else if(w <= 52){
+    else if(grwidth <= 52){
         p->drawTiledPixmap(x, y, w, h, *hLarge);
     }
     else{
-        p->fillRect(x+hLarge->width(), y, w-hLarge->width(), h, fill);
+        p->fillRect(x+hLarge->width(), y, w-hLarge->width(), h, gradientLow);
         p->drawTiledPixmap(x, y, hLarge->width(), h, *hLarge);
     }
 }

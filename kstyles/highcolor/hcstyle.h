@@ -171,9 +171,9 @@ public:
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
     void drawVGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
-                       int h);
+                       int h, int sx, int sy, int tw, int th);
     void drawHGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
-                       int h);
+                       int h, int sx, int sy, int tw, int th);
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
     void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
@@ -181,6 +181,7 @@ protected:
 private:
     QColorGroup radioOnGrp;
     KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge, *vDark;
+    QColor gradientHight, gradientLow;
     QWidget *highlightWidget;
     QBrush wallpaper;
 };
