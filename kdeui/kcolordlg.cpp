@@ -43,7 +43,6 @@
 #include <qpushbutton.h>
 #include <qtimer.h>
 
-#include <dither.h>
 #include <kapp.h>
 #include <kconfig.h>
 #include <kglobal.h>
@@ -53,6 +52,7 @@
 #include <kmessagebox.h>
 #include <kseparator.h>
 #include <kpalette.h>
+#include <kimageeffect.h>
 
 #include "kcolordlg.h"
 #include "kcolordrag.h"
@@ -184,12 +184,9 @@ void KHSSelector::drawPalette()
 	if ( QColor::numBitPlanes() <= 8 )
 	{
 		createStandardPalette();
-		kFSDither dither( standardPalette, STANDARD_PAL_SIZE );
-		QImage tImage = dither.dither( image );
-		pixmap.convertFromImage( tImage );
+		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	else
-		pixmap.convertFromImage( image );
+	pixmap.convertFromImage( image );
 }
 
 //-----------------------------------------------------------------------------
@@ -231,12 +228,9 @@ void KValueSelector::drawPalette()
 	if ( QColor::numBitPlanes() <= 8 )
 	{
 		createStandardPalette();
-		kFSDither dither( standardPalette, STANDARD_PAL_SIZE );
-		QImage tImage = dither.dither( image );
-		pixmap.convertFromImage( tImage );
+		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	else
-		pixmap.convertFromImage( image );
+	pixmap.convertFromImage( image );
 }
 
 //-----------------------------------------------------------------------------
