@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.63  1999/02/05 19:16:54  ettrich
+// fixed mac-style toggling for applications with multiple toplevel windows
+//
 // Revision 1.62  1999/01/18 10:56:49  kulow
 // .moc files are back in kdelibs. Built fine here using automake 1.3
 //
@@ -195,7 +198,7 @@ static QPixmap* miniGo = 0;
 
   title = 0;
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
-  
+  : QFrame( parent, name )
 {
   Parent = parent;        // our father
   oldWFlags = getWFlags();
@@ -341,7 +344,7 @@ void KMenuBar::slotReadConfig ()
   }
 
   config->setGroup("KDE");//CT as Sven asked
-  if (!standalone_menubar && macmode) //was not and now is
+  bool macmode = false;
   if (config->readEntry("macStyle") == "on") //CT as Sven asked
     macmode = true;
 
@@ -350,7 +353,7 @@ void KMenuBar::slotReadConfig ()
       standalone_menubar = TRUE;
       if (Parent->isVisible())
 	  setMenuBarPos( FloatingSystem );
-  else if (standalone_menubar && !macmode) //was and now is not
+      else {
 	  Parent->installEventFilter(this); // to show menubar
       }
   }
@@ -683,7 +686,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
    {
      if (mpos == Floating || mpos == FloatingSystem)
       {
-	  if ( mpos == FloatingSystem && position == Floating) 
+	  lastPosition = position;
 	  position = mpos;
 	  oldX = x();
 	  oldY = y();
