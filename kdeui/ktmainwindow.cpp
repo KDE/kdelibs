@@ -35,6 +35,7 @@
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
 
 template class QList<KTMainWindow>;
+template class QList<KToolBar>;
 
 class KTLWSessionManaged : public KSessionManaged
 {

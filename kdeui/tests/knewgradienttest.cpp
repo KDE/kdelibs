@@ -3,6 +3,7 @@
 #include <qpainter.h>
 #include <qdatetime.h>
 #include <qstring.h>
+#include <stdlib.h>
 
 int cols = 3, rows = 3; // how many
 

@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.136  1999/12/04 04:50:38  granroth
+// combox should be fixed size -- they look *really* strange with 40 pixels
+//
 // Revision 1.135  1999/12/04 03:12:50  granroth
 // Quick ugly hack to allow line seperators to display correctly in
 // Vertical as well as Horizontal styles..
@@ -111,9 +114,10 @@
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
 
-
 #include "ktoolbarbutton.h"
 #include "ktoolbaritem.h"
+
+template class QList<KToolBarItem>;
 
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
