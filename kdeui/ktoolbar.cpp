@@ -1954,7 +1954,7 @@ void KToolBar::positionYourself( bool force )
     }
     // we can't test for ForceHide after moveDockWindow because QDockArea
     // does a reparent() with showIt == true
-    bool doHide = isHidden();
+    bool hidden = isHidden();
     //kdDebug(220) << name() << " positionYourself  dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " index=" << d->toolBarInfo.index << " offset=" << d->toolBarInfo.offset << endl;
     mainWindow()->moveDockWindow( this, d->toolBarInfo.dock,
                                   d->toolBarInfo.newline,
@@ -1962,8 +1962,10 @@ void KToolBar::positionYourself( bool force )
                                   d->toolBarInfo.offset );
 
     //kdDebug(220) << name() << " positionYourself dockWindowIndex=" << dockWindowIndex() << endl;
-    if ( doHide )
+    if ( hidden )
         hide();
+    else
+        show();
     // This method can only have an effect once - unless force is set
     d->positioned = true;
 }
