@@ -268,7 +268,7 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     if (!icon.isValid())
     {
 	// Try "User" group too.
-	path = iconPath(name, KIcon::User, canReturnNull);
+	path = iconPath(name, KIcon::User, true);
 	if (!path.isEmpty() || canReturnNull)
 	    return path;
 
@@ -409,7 +409,7 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     if (!icon.isValid())
     {
 	// Try "User" icon too.
-	pix = loadIcon(name, KIcon::User, size, state, path_store, canReturnNull);
+	pix = loadIcon(name, KIcon::User, size, state, path_store, true);
 	if (!pix.isNull() || canReturnNull)
 	    return pix;
 
