@@ -1,5 +1,3 @@
-#include <sys/types.h>
-
 #include <qregexp.h>
 
 #include <kfileitem.h>
