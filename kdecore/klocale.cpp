@@ -426,9 +426,9 @@ void KLocale::setLanguage(const QString &_lang)
 
 void KLocale::setCountry(const QString &number, const QString &money, const QString &time)
 {
-  if (!_number.isNull()) _number = number;
-  if (!_money.isNull()) _money = money;
-  if (!_time.isNull()) _time = time;
+  if (!number.isNull()) _number = number;
+  if (!money.isNull()) _money = money;
+  if (!time.isNull()) _time = time;
 
   initFormat(KGlobal::instance()->_config);
 }
