@@ -64,10 +64,11 @@ const struct HashEntry HTMLElementTableEntries[] = {
    { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[13] },
    { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, &HTMLElementTableEntries[12] },
    { "scrollWidth", KJS::HTMLElement::ElementScrollWidth, DontDelete|ReadOnly, 0, 0 },
-   { "children", KJS::HTMLElement::ElementChildren, DontDelete|ReadOnly, 0, 0 }
+   { "children", KJS::HTMLElement::ElementChildren, DontDelete|ReadOnly, 0, &HTMLElementTableEntries[14] },
+   { "all", KJS::HTMLElement::ElementAll, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLElementTable = { 2, 14, HTMLElementTableEntries, 8 };
+const struct HashTable HTMLElementTable = { 2, 15, HTMLElementTableEntries, 8 };
 
 }; // namespace
 

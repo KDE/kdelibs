@@ -597,6 +597,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   scrollWidth	KJS::HTMLElement::ElementScrollWidth	DontDelete|ReadOnly
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
+  all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
 @end
 @begin HTMLHtmlElementTable 1
   version	KJS::HTMLElement::HtmlVersion	DontDelete
@@ -1857,6 +1858,11 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
     return getHTMLCollection(exec,element.children());
+  case ElementAll:
+    // Disable element.all when we try to be Netscape-compatible
+    if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
+      return Undefined();
+    return getHTMLCollection(exec,element.all());
   case ElementScrollHeight: {
     khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
     // Note: lowestPosition only works on blocklevel, special or replaced elements
