@@ -29,6 +29,8 @@
 #include <kcardfactory.h>
 #include <kdebug.h>
 
+#include <stdlib.h>
+
 
 bool getReaders (QStringList & list){
 
