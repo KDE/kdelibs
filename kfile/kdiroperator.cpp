@@ -74,6 +74,7 @@ public:
 	delete viewActionSeparator;
     }
 
+    QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
     KActionSeparator *viewActionSeparator;
@@ -473,6 +474,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         ok = true;
 
     if ( ok ) {
+	d->lastURL = backup.url(-1);
         myCompletion.clear();
         myDirCompletion.clear();
         emit urlEntered(dir->url());
@@ -767,10 +769,17 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     fileView->addItemList( newone );
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
+    KFileItem *item;
     KFileItemListIterator it( newone );
-    while ( it.current() ) {
-	if ( !it.current()->isMimeTypeKnown() )
-	pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
+    while ( (item = it.current()) ) {
+	// highlight the dir we come from, if possible
+	if ( item->isDir() && item->url().url(-1) == d->lastURL ) {
+	    fileView->setCurrentItem( QString::null, (KFileViewItem*) item );
+	    fileView->ensureItemVisible( (KFileViewItem*) item );
+	}
+	    
+	if ( !item->isMimeTypeKnown() )
+	    pendingMimeTypes.append(static_cast<KFileViewItem*>(item));
 	++it;
     }
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
@@ -792,10 +801,6 @@ void KDirOperator::itemDeleted(KFileItem *item)
 
 void KDirOperator::selectFile(const KFileViewItem *item)
 {
-    // FIXME: what is this about?? (pfeiffer)
-    KURL tmp ( dir->url() );
-    tmp.setFileName(item->name());
-
     if (!finished)
         QApplication::restoreOverrideCursor();
     finished = false;
@@ -1029,7 +1034,7 @@ void KDirOperator::updateViewActions()
 {
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
 
-    separateDirsAction->setChecked( KFile::isSeparateDirs( fv ) && 
+    separateDirsAction->setChecked( KFile::isSeparateDirs( fv ) &&
 				    separateDirsAction->isEnabled() );
 
     shortAction->setChecked( KFile::isSimpleView( fv ));
