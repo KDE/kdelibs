@@ -126,7 +126,7 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     loading = false;
 
     checkNotify();
-}	
+}
 
 void CachedCSSStyleSheet::checkNotify()
 {
@@ -384,6 +384,9 @@ void CachedImage::ref( CachedObjectClient *c )
     // for mouseovers, dynamic changes
     if( m_status != Pending)
 	do_notify( pixmap(), valid_rect() );
+
+    if( m && m->paused())
+        m->unpause();
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -522,24 +525,24 @@ QRect CachedImage::valid_rect() const
 
 void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
-    QList<CachedObjectClient> updateList;
     CachedObjectClient *c;
+    bool manualUpdate = false;
+
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG
         qDebug("found a client to update...");
 #endif
-        bool manualUpdate = false; // set the pixmap, dont update yet.
+        manualUpdate = false; // set the pixmap, dont update yet.
         c->setPixmap( p, r, this, &manualUpdate );
-        if (manualUpdate)
-            updateList.append(c);
-    }
-    for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-        bool manualUpdate = true; // Update!
-        // Actually we want to do c->updateSize()
-        // This is a terrible hack which does the same.
-        // updateSize() does not exist in CachecObjectClient only
-        // in RenderBox()
-        c->setPixmap( p, r, this, &manualUpdate );
+
+        if (manualUpdate) {
+            // Update!
+            // Actually we want to do c->updateSize()
+            // This is a terrible hack which does the same.
+            // updateSize() does not exist in CachecObjectClient only
+            // in RenderBox()
+            c->setPixmap( p, r, this, &manualUpdate );
+        }
     }
 }
 
@@ -556,16 +559,8 @@ void CachedImage::movieUpdated( const QRect& r )
 
 void CachedImage::movieStatus(int status)
 {
-    if(status == QMovie::EndOfFrame)
+    if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
         movieUpdated(valid_rect()); //wow, that's ugly!
-
-    if ( m )
-    {
-	if(m->finished() && (status == QMovie::EndOfLoop))
-	    m->restart();
-	if(m->paused())
-	    m->unpause();
-    }
 }
 
 void CachedImage::clear()
@@ -1113,7 +1108,7 @@ void Cache::statistics()
     for(it.toFirst(); it.current(); ++it)
     {
         o = it.current();
-	if(o->type() == CachedObject::Image)	
+	if(o->type() == CachedObject::Image)
 	{
 	    CachedImage *im = static_cast<CachedImage *>(o);
 	    if(im->m != 0)
@@ -1153,7 +1148,7 @@ KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )
     {
 	KURL u( orig, url );
 	return u;
-    }	
+    }
     orig.setEncodedPathAndQuery(url);
     return orig;
 }
@@ -1215,7 +1210,7 @@ void Cache::autoloadImages( bool enable )
 	   status == CachedObject::Uncacheable ||
 	   status == CachedObject::Pending )
         continue;
-	
+
       img->load();
     }
 }
