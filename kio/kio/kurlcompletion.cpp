@@ -166,7 +166,7 @@ public:
 		m_onlyExe( onlyExe ),
 		m_onlyDir( onlyDir ),
 		m_noHidden( noHidden ),
-		m_appendSlashToDir( m_appendSlashToDir )
+		m_appendSlashToDir( appendSlashToDir )
 	{}
 
 	virtual void run();
