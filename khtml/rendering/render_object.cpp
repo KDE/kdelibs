@@ -39,6 +39,7 @@
 #include <qpen.h>
 #include <qsize.h>
 
+#include <assert.h>
 using namespace DOM;
 using namespace khtml;
 
@@ -282,9 +283,10 @@ RenderObject *RenderObject::containingBlock() const
     // this is just to make sure we return a valid element.
     // the case below should never happen...
     if(!o) {
-	if(!isRoot())
+	if(!isRoot()) {
+	    assert ( false );
 	    kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
-
+	}
 	return const_cast<RenderObject *>(this);
     } else
 	return o;

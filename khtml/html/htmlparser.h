@@ -129,11 +129,6 @@ protected:
      * tells the parser to discard all tags, until it reaches the one specified
      */
     int discard_until;
-    /*
-     * used for broken html. If several <html> or <body> elements appear
-     * nested, we raise the count, so we don't close the document on the first </body> or </html>
-     */
-    int nested_html;
 
     bool headLoaded;
 };

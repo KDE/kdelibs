@@ -2,8 +2,7 @@ Here's what's still missing (without order):
 
 Rendering:
 	* text-align: Justify missing
-	* more thorough checks of reordering/line width calculations
-	  in a BiDi context
+	* allow font elements in a block level context.
 
 General:
 	* reload should reload images too!
@@ -11,7 +10,6 @@ General:
 StyleSheets:
 	* @ rules in sheets
 	* lots of properties
-	* html style attribute does only parse the first property
 	* delete the old cssproperties in a style attribute in case
 	  the style attribute changes.
 

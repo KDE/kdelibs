@@ -274,7 +274,6 @@ void KHTMLParser::reset()
     end = false;
 
     discard_until = 0;
-    nested_html = 0;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -411,12 +410,13 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	{
 	case ID_COMMENT:
 	    break;
+	case ID_TITLE:
+	    if(inBody)
+		discard_until = ID_TITLE + ID_CLOSE_TAG;
+	    // fall through
 	case ID_HEAD:
 	    throw exception;
 	    break;
-	case ID_TITLE:
-	    if(inBody) discard_until = ID_TITLE + ID_CLOSE_TAG;
-	    // Fall through!
 	case ID_HTML:
 	case ID_BODY:
 	case ID_BASE:
@@ -713,16 +713,12 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     switch(t->id)
     {
     case ID_HTML:
-	// ugly hack for _really_ broken html
-	nested_html++;
 	n = new HTMLHtmlElementImpl(document);
 	break;
     case ID_HEAD:
 	n = new HTMLHeadElementImpl(document);
 	break;
     case ID_BODY:
-	// ugly hack for _really_ broken html
-	nested_html++;
 	popBlock(ID_HEAD);
 	n = new HTMLBodyElementImpl(document);
 	inBody = true;
@@ -1015,16 +1011,9 @@ void KHTMLParser::processCloseTag(Token *t)
     {
     case ID_HTML+ID_CLOSE_TAG:
     case ID_BODY+ID_CLOSE_TAG:	
-    {
-	nested_html--;
-	if(nested_html <= 0)
-	{
-	    end = true;
-	    // ### HACK!!!
-	    //document->view()->layout(true);
-	}
-	break;
-    }
+	// we never close the body tag, since some stupid web pages close it before the actual end of the doc.
+	// let's rely on the end() call to close things.
+	return;
     case ID_FORM+ID_CLOSE_TAG:
 	form = 0;
 	// this one is to get the right style on the body element
