@@ -22,6 +22,10 @@ class KGlobalAccel : public QObject
 	                 const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	bool insertAction( const QString& sAction, const QString& sDesc,
+	                 const char* cutsDef3, const char* cutsDef4,
+	                 const QObject* pObjSlot, const char* psMethodSlot,
+	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
 	//bool insertAction( const QString& sAction, KShortcuts cutsDef,
 	//                 const QObject* pObjSlot, const char* psMethodSlot,
 	//                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );

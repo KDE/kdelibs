@@ -94,7 +94,7 @@ class kdbgstream {
     }
     void flush();
     kdbgstream &operator<<(const QString& string) {
-	if (!print) return *this;
+	if (!print || string.isEmpty()) return *this;
 	output += string;
 	if (output.at(output.length() -1 ) == '\n')
 	    flush();

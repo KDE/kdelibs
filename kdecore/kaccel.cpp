@@ -38,7 +38,7 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent )
 {
 	m_pAccel = pParent;
 	m_nIDAccelNext = 1;
-	m_bAutoUpdate = false;
+	m_bAutoUpdate = true;
 	actions().setKAccel( pParent );
 }
 
@@ -53,7 +53,8 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 	KAccelAction* pAction = actions().actionPtr( sAction );
 	if( pAction ) {
 		int nID = pAction->getID();
-		bool b = actions().removeAction( sAction );
+		//bool b = actions().removeAction( sAction );
+		bool b = KAccelBase::removeAction( sAction );
 		m_pAccel->removeItem( nID );
 		return b;
 	} else
@@ -73,13 +74,13 @@ bool KAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 	if( nID && action.m_pObjSlot )
 		m_pAccel->connectItem( nID, action.m_pObjSlot, action.m_psMethodSlot );
 
-	kdDebug(125) << "KAccelPrivate::connectKey( " << action.m_sName << ", " << key.toString() << " = 0x" << QString::number(keyCombQt,16) << " ) = " << nID << endl;
+	kdDebug(125) << "KAccelPrivate::connectKey( " << action.m_sName << ", " << key.toString() << " = 0x" << QString::number(keyCombQt,16) << " ) = " << nID << " m_pObjSlot = " << action.m_pObjSlot << endl;
 	return nID != 0;
 }
-
+#include <iostream.h>
 bool KAccelPrivate::disconnectKey( KAccelAction& action, KKeySequence key )
 {
-	kdDebug(125) << "disconnectKey( " << action.m_sName << ", " << key.toString() << " )" << endl;
+	kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.m_sName << "\", " << key.toString() << " )  m_pObjSlot = " << action.m_pObjSlot << endl;
 	if( action.getID() && action.m_pObjSlot )
 		return m_pAccel->disconnectItem( action.getID(), action.m_pObjSlot, action.m_psMethodSlot );
 	return true;
@@ -194,14 +195,7 @@ bool KAccel::setActionSlot( const QString& sAction, const QObject* pObjSlot, con
 
 bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 {
-	KAccelAction* pAction = d->actionPtr( sAction );
-	if( pAction ) {
-		pAction->m_bEnabled = bEnabled;
-		if( d->getAutoUpdate() )
-			updateConnections();
-		return true;
-	} else
-		return false;
+	return d->setActionEnabled( sAction, bEnabled );
 }
 
 bool KAccel::updateConnections()
@@ -209,6 +203,7 @@ bool KAccel::updateConnections()
 
 bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
 {
+	kdDebug(125) << "KAccel::setShortcuts()" << endl;
 	KAccelAction* pAction = actions().actionPtr( sAction );
 	if( pAction ) {
 		if( pAction->m_rgShortcuts != KAccelShortcuts(rgCuts) ) {
@@ -288,6 +283,7 @@ bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& sDesc )
 
 bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate )
 {
+	kdDebug(125) << "KAccel::connectItem( " << sAction << ", " << pObjSlot << ", " << psMethodSlot << " )" << endl;
 	if( bActivate == false )
 		d->setActionEnabled( sAction, false );
 	bool bAutoUpdate = d->getAutoUpdate();

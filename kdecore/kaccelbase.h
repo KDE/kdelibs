@@ -243,6 +243,8 @@ class KAccelAction
 			int nIDMenu, QPopupMenu* pMenu,
 			bool bConfigurable, bool bEnabled );
 
+	KAccelAction& operator=( const KAccelAction& );
+
 	void clear();
 	//bool init( const QString& );
 	uint shortcutCount() const;
@@ -253,9 +255,12 @@ class KAccelAction
 	const KAccelShortcuts& shortcutDefaults() const;
 	KAccelShortcut getShortcut( uint i ) const;
 	//KKeySequence& key( uint iShortcut = 0, uint iSequence = 0, uint iKey = 0 );
+	KKeySequences keyList();
 
 	int getID() const   { return m_nIDAccel; }
 	void setID( int n ) { m_nIDAccel = n; }
+	bool isConnected() const;
+	void setConnected( bool );
 
 	QString toString( KKeySequence::I18N = KKeySequence::I18N_Yes ) const;
 
@@ -276,7 +281,7 @@ class KAccelAction
 
 //----------------------------------------------------
 
-class KAccelActions : public QValueVector<KAccelAction>
+class KAccelActions : protected QValueVector<KAccelAction>
 {
  public:
 	KAccelActions();
@@ -310,6 +315,23 @@ class KAccelActions : public QValueVector<KAccelAction>
 
 	void setKAccel( class KAccel* );
 	void emitKeycodeChanged();
+
+	bool hasChanged() const;
+	void setChanged( bool );
+	bool dataReallocated() const;
+	void dataReallocated( bool );
+
+	size_t size() const               { return QValueVector<KAccelAction>::size(); }
+	const KAccelAction* begin() const { return QValueVector<KAccelAction>::begin(); }
+	KAccelAction* begin()             { return QValueVector<KAccelAction>::begin(); }
+	const KAccelAction* end() const   { return QValueVector<KAccelAction>::end(); }
+	KAccelAction* end()               { return QValueVector<KAccelAction>::end(); }
+	void clear()                      { QValueVector<KAccelAction>::clear(); }
+	KAccelAction& operator []( unsigned int i )
+		{ return QValueVector<KAccelAction>::operator []( i ); }
+
+ protected:
+	void resize( size_t );
 
  private:
 	class KAccelActionsPrivate* d;
@@ -480,10 +502,13 @@ class KAccelBase
 	virtual bool disconnectKey( KAccelAction&, KKeySequence ) = 0;
 
 	void createKeyList( QValueVector<struct X>& rgKeys );
+	void refreshKeyMap();
 	bool insertConnection( KAccelAction& );
 	bool removeConnection( KAccelAction& );
  private:
         class KAccelBasePrivate *d;
+
+	KAccelBase& operator =( const KAccelBase& );
 };
 
 #endif // _KACCELBASE_H

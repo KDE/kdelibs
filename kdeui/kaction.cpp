@@ -97,7 +97,7 @@ public:
   KActionPrivate() : KGuiItem()
   {
     m_kaccel    = 0;
-    m_pAccelAction   = 0;
+    //m_pAccelAction   = 0;
     m_bIconSet  = false;
     m_bIconSetNotYetLoaded=false;
     m_accel     = 0;
@@ -106,7 +106,7 @@ public:
   {
   }
   KAccel *m_kaccel;
-  KAccelAction *m_pAccelAction;
+  //KAccelAction *m_pAccelAction;
 
   QString m_groupText;
   QString m_group;
@@ -262,6 +262,7 @@ KAction::KAction( QObject* parent, const char* name )
 
 KAction::~KAction()
 {
+    kdDebug(125) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
     if (d->m_kaccel)
       unplugAccel();
     if ( m_parentCollection )
@@ -326,7 +327,7 @@ void KAction::setAccel( QKeySequence qkey )
 
   if( d->m_kaccel )
   {
-    d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
+    //d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
     d->m_kaccel->setShortcuts(name(), KShortcuts(qkey));
   }
 
@@ -556,11 +557,18 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
-  kdDebug(125) << "KAction::plugAccel()" << endl; // -- ellis
+  /*static int iHomeCount = 0; // ellis
+  kdDebug(125) << "KAction::plugAccel( this = \"" << name() << "\", kacc = " << kacc << " )" << endl; // -- ellis
+  if (name() == "home") {
+    if (++iHomeCount == 1) {
+      (char*)0 = 0;
+    }
+  }*/
   if (d->m_kaccel)
     unplugAccel();
   d->m_kaccel = kacc;
-  d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->plainText(),
+  //d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->plainText(),
+  d->m_kaccel->insertAction(name(), d->plainText(),
       KKeySequence(d->m_accel),
       this, SLOT(slotActivated()),
       0, 0, configurable, isEnabled());
@@ -570,11 +578,12 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
 void KAction::unplugAccel()
 {
+  kdDebug(125) << "KAction::unplugAccel()" << endl; // -- ellis
   if ( d->m_kaccel )
   {
     d->m_kaccel->removeAction(name());
     d->m_kaccel = 0;
-    d->m_pAccelAction = 0;
+    //d->m_pAccelAction = 0;
   }
 }
 
@@ -624,10 +633,12 @@ void KAction::setEnabled( int i, bool e )
 
 void KAction::setText( const QString& text )
 {
-  if ( d->m_kaccel )
-    d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
-  if (d->m_pAccelAction)
-    d->m_pAccelAction->m_sDesc = text;
+  if (d->m_kaccel)
+  {
+    KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
+    if (pAction)
+      pAction->m_sDesc = text;
+  }
 
   d->setText( text );
 
@@ -852,7 +863,7 @@ void KAction::slotDestroyed()
   if ( sender() == d->m_kaccel )
   {
     d->m_kaccel = 0;
-    d->m_pAccelAction = 0;
+    //d->m_pAccelAction = 0;
     return;
   }
 
@@ -901,7 +912,9 @@ void KAction::removeContainer( int index )
 void KAction::slotKeycodeChanged()
 {
   kdDebug(125) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
-  setAccel(d->m_pAccelAction->getShortcut(0).front().getKey(0));
+  KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
+  if( pAction )
+    setAccel(pAction->getShortcut(0).getSequence(0).getKey(0));
 }
 
 KActionCollection *KAction::parentCollection() const
@@ -2666,15 +2679,9 @@ void KActionCollection::insert( KAction* action )
 
   emit inserted( action );
 
-  KAccelAction entry;
-
-  QKeySequence accel = action->accel();
-  entry.m_sName = action->name();
-  entry.m_sDesc = action->plainText();
-  entry.m_rgCutDefaults3 = entry.m_rgCutDefaults4 = KAccelShortcuts(KKeySequence(accel));
-  entry.setShortcuts(entry.shortcutDefaults());
-
-  d->m_keyMap.push_back( entry );
+  KAccelShortcuts cuts( KKeySequence(action->accel()) );
+  d->m_keyMap.insertAction( action->name(), action->plainText(),
+      cuts, cuts );
 }
 
 void KActionCollection::remove( KAction* action )

@@ -42,6 +42,17 @@ bool KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc,
 		nIDMenu, pMenu, bConfigurable );
 }
 
+bool KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc,
+		const char* cutsDef3, const char* cutsDef4,
+		const QObject* pObjSlot, const char* psMethodSlot,
+		int nIDMenu, QPopupMenu *pMenu, bool bConfigurable )
+{
+	return d->insertAction( sAction, sDesc,
+		KAccelShortcuts(cutsDef3), KAccelShortcuts(cutsDef4),
+		pObjSlot, psMethodSlot,
+		nIDMenu, pMenu, bConfigurable );
+}
+
 /*bool KGlobalAccel::insertAction( const QString& sAction, KShortcuts cutsDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
