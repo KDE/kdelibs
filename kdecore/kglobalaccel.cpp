@@ -8,7 +8,7 @@
 #include <qstring.h>
 #include <kaccelbase.h>
 #include <kdebug.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 #include <klocale.h>
 
 //----------------------------------------------------

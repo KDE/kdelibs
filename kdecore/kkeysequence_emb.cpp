@@ -1,4 +1,4 @@
-#include "kkeysequence.h"
+#include "kshortcut.h"
 #include <kckey.h>
 #include <kdebug.h>
 #include <klocale.h>

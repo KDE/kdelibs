@@ -25,7 +25,7 @@
 #include <kipc.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 #include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <kaccel.h>

@@ -2,7 +2,7 @@
 #define _KGLOBALACCEL_X11_H
 
 #include "kaccelbase.h"
-#include "kkeysequence.h"
+#include "kshortcut.h"
 #include <qwidget.h>
 
 class KGlobalAccelPrivate : public QWidget, public KAccelBase

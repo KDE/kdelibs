@@ -8,7 +8,7 @@
 #include <kaccelbase.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 #include <klocale.h>
 
 #include "kaccelprivate.h"
