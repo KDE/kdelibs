@@ -94,6 +94,21 @@ void KProtocolManager::scanConfig( const QString& _dir )
 
     m_protocols.insert( name, p );
   }
+  // This is where we insert a small hack for FTP-Proxy.
+  // If we want to use FTP-Proxy, then it's kio_http we want.
+  if ( useProxy() && !ftpProxy().isEmpty() )
+  {
+      Iterator it = m_protocols.find( QString::fromLatin1("ftp") );
+      if ( it != m_protocols.end() )
+      {
+        ConstIterator ithttp = m_protocols.find( QString::fromLatin1("http") );
+        if ( ithttp != m_protocols.end() )
+        {
+          // Copy all the info about HTTP into the one about FTP
+          it.data() = ithttp.data();
+        }
+      }
+  }
 }
 
 bool KProtocolManager::isSourceProtocol( const QString& _protocol ) const
@@ -267,13 +282,6 @@ QString KProtocolManager::exec( const QString& _protocol ) const
     kdError(7008) << "Protocol " << _protocol << " not found" << endl;
     return QString::null;
   }
-
-  // This is where we insert a small hack for FTP-Proxy.
-  // If we want to use FTP-Proxy, then it's kio_http we want.
-  // Something more flexible would require the possibility of having
-  // a proxy for any protocol, but we probably don't need that (David).
-  if ( _protocol == QString::fromLatin1("ftp") && useProxy() && !ftpProxy().isEmpty() )
-    return "kio_http";
 
   return it.data().exec;
 }
