@@ -352,6 +352,18 @@ public:
   static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
 
   /**
+   * Returns whether a file has an internal format that is human readable,
+   * or that would be human readable after decompression.
+   * @since 3.2
+   */
+  typedef struct { 
+     bool text : 1;
+     enum { NoCompression=0, GZipCompression } compression : 4;
+     int dummy : 27;
+  } Format;
+  static Format findFormatByFileContent( const QString &fileName );
+
+  /**
    * Get all the mimetypes.
    *
    * Useful for showing the list of

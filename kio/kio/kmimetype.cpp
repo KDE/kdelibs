@@ -278,6 +278,31 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
   return mimeType( result->mimeType() );
 }
 
+#define GZIP_MAGIC1	0x1f
+#define GZIP_MAGIC2	0x8b
+
+KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
+{
+  KMimeType::Format result;
+  result.compression = Format::NoCompression;
+  KMimeType::Ptr mime = findByFileContent(fileName);
+  
+  result.text = mime->name().startsWith("text/");
+  QVariant v = mime->property("X-KDE-text");
+  if (v.isValid())
+     result.text = v.toBool();
+     
+  QFile f(fileName);
+  if (f.open(IO_ReadOnly))
+  {
+     unsigned char buf[10+1];
+     int l = f.readBlock((char *)buf, 10);
+     if ((l > 2) && (buf[0] == GZIP_MAGIC1) && (buf[1] == GZIP_MAGIC2))
+        result.compression = Format::GZipCompression;
+  }
+  return result;
+}
+
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
                       const QString& _comment, const QStringList& _patterns )
   : KServiceType( _fullpath, _type, _icon, _comment )
