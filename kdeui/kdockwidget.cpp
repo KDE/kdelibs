@@ -673,7 +673,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
 		  if (cont)
 		  {
-			if (latestKDockContainer() ) //&& (latestKDockContainer()!=contWid)) 
+			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) 
 				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
 			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
@@ -933,16 +933,14 @@ void KDockWidget::undock()
     }
   } else {
  /*********************************************************************************************/  
-  QWidget* containerWidget = (QWidget*)parent();
+  //QWidget* containerWidget = (QWidget*)parent();
   bool undockedFromContainer=false;
-  if (containerWidget)
+  if (d->container)
   {
-  	if (containerWidget->qt_cast("KDockContainer"))
-	  {
-	  	kdDebug()<<"KDockWidget::undock() for A Widget Contained within a KDockContainer"<<endl;
-	  	undockedFromContainer=true;
+  		  kdDebug()<<"undocked from dockcontainer"<<endl;
+  		  undockedFromContainer=true;
+		  static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->undockWidget(this);
 		  applyToWidget( 0L );
-	  }
   }
    if (!undockedFromContainer) {
 /*********************************************************************************************/

@@ -68,6 +68,8 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
 
   divider->show();
   resizeEvent(0);
+  if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
+  if (fixedWidth1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
   if (((KDockWidget*)child0)->forcedFixedWidth()!=-1)
   {
   	setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
