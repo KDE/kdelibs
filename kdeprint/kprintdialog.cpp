@@ -117,7 +117,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
 	d->m_ok->setDefault(true);
 	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
-	d->m_preview = new QCheckBox(i18n("Pre&view"), m_pbox);
+	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
 	d->m_file->fileDialog()->setCaption(i18n("Print to file"));
