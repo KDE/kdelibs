@@ -226,6 +226,9 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
   if(file.open(IO_ReadOnly))
     {
       QTextStream stream(&file);
+      // We read/write utf8 strings, so we don't want that QTextStream uses local8bit
+      // Latin1 means : no conversion, when giving char*s to a QTextStream. (DF)
+      stream.setEncoding(QTextStream::Latin1);
       // -----
       while(!stream.eof())
 	{
@@ -275,6 +278,7 @@ KeyValueMap::save(const QString& filename, bool force)
   if(file.open(IO_WriteOnly))
     {
       QTextStream stream(&file);
+      stream.setEncoding(QTextStream::Latin1); // no conversion
       stream << "# saved by KeyValueMap object ($Revision$)" << endl;
       for(pos=data->begin(); pos!=data->end(); ++pos)
 	{ // values do not get coded here
@@ -2081,6 +2085,7 @@ QConfigDB::IsLocked(const QString& file)
       if(f.open(IO_ReadOnly))
 	{
 	  QTextStream stream(&f);
+	  stream.setEncoding(QTextStream::Latin1); // no conversion
 	  // -----
 	  stream >> pid;
 	  if(pid==-1)
@@ -2145,6 +2150,7 @@ QConfigDB::lock(const QString& file)
       if(f.open(IO_WriteOnly))
 	{
 	  QTextStream stream(&f);
+	  stream.setEncoding(QTextStream::Latin1); // no conversion
 	  // -----
 	  stream << getpid() << endl;
 	  f.close();
@@ -2496,6 +2502,7 @@ QConfigDB::save(const char* header, bool force)
       if(file.open(IO_WriteOnly))
 	{
 	  QTextStream stream(&file);
+	  stream.setEncoding(QTextStream::Latin1); // no conversion
 	  // -----
 	  if(header!=0)
 	    {
@@ -2549,6 +2556,7 @@ QConfigDB::load()
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::load: file access OK." << endl;
       QTextStream stream(&file);
+      stream.setEncoding(QTextStream::Latin1); // no conversion
       // -----
       clear();
       bool rc=top.readSection(stream, false);
