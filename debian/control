@@ -10,7 +10,7 @@ Package: kdelibs4
 Architecture: any
 Section: libs
 Replaces: kdelibs3
-Depends: ${shlibs:Depends}, kdelibs-bin
+Depends: ${shlibs:Depends}, kdelibs4-bin
 Suggests: libarts1, libarts-bin, libkmid0, libkmid-bin, aspell | ispell, libssl0.9.6, anti-aliasing-howto, gdb, kdelibs4-cups
 Description: KDE core libraries (runtime files)
  KDE core libraries.
