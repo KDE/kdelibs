@@ -31,6 +31,7 @@ using namespace KIO;
 DataSlave::DataSlave() :
 	Slave(true, 0, QString::null, QString::null)
 {
+  _suspended = false;
 }
 
 DataSlave::~DataSlave() {
@@ -41,11 +42,13 @@ void DataSlave::hold(const KURL &/*url*/) {
 }
 
 void DataSlave::suspend() {
-  // it's impossible to suspend data urls
+  // placebo implementation
+  _suspended = true;
 }
 
 void DataSlave::resume() {
-  // resume not possible for data urls
+  // placebo implementation
+  _suspended = false;
 }
 
 void DataSlave::send(int cmd, const QByteArray &arr) {
@@ -75,8 +78,7 @@ void DataSlave::send(int cmd, const QByteArray &arr) {
 }
 
 bool DataSlave::suspended() {
-  // cannot happen therefore always false
-  return false;
+  return _suspended;
 }
 
 void DataSlave::setHost(const QString &/*host*/, int /*port*/,
