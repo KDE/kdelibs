@@ -407,7 +407,7 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 }
 
 KAboutDialog::KAboutDialog(QWidget* parent, const char* name)
-  : DialogBase(parent, name),
+  : KDialogBase(parent, name),
     about(new KAboutWidget(this))
 {
   // ############################################################################

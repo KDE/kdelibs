@@ -34,16 +34,19 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
 		ktabctl.h kstatusbar.h ktopwidget.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
-		kbutton.h knuminput.h kseparator.h klined.h krestrictedline.h \
-		kcolorbtn.h kiconloaderdialog.h kapplet.h kwmmapp.h kbuttonbox.h ktablistbox.h \
+		kbutton.h knuminput.h kseparator.h klined.h \
+		krestrictedline.h kcolorbtn.h kiconloaderdialog.h \
+		kapplet.h kwmmapp.h kbuttonbox.h ktablistbox.h \
 		kcontainer.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
-		kthemestyle.h kcharselect.h kcolordrag.h \
-		qxembed.h knumvalidator.h kdialog.h dialogbase.h kaboutdialog.h \
-		kpixmapeffect.h kauthicon.h kmessagebox.h kdualcolorbtn.h \
-		kpalette.h ktoolbarbutton.h ktoolbarradiogroup.h
+		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
+		knumvalidator.h kdialog.h dialogbase.h kdialogbase.h \
+		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
+		kauthicon.h kmessagebox.h \
+		kdualcolorbtn.h kpalette.h ktoolbarbutton.h \
+		ktoolbarradiogroup.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -55,25 +58,28 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp \
 		kseparator.cpp krestrictedline.cpp  \
-		kcontrol.cpp kcolorbtn.cpp kapplet.cpp kwmmapp.cpp kbuttonbox.cpp\
-		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp kdbtn.cpp \
-		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
-		kruler.cpp kcursor.cpp kaccelmenu.cpp klineeditdlg.cpp \
-		kurlcompletion.cpp kthemebase.cpp kcharselect.cpp \
-		kcolordrag.cpp qxembed.cpp knumvalidator.cpp kdialog.cpp \
-		dialogbase.cpp kaboutdialog.cpp kpixmapeffect.cpp \
+		kcontrol.cpp kcolorbtn.cpp kapplet.cpp kwmmapp.cpp \
+		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp \
+		kled.cpp kdbtn.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
+		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
+		klineeditdlg.cpp kurlcompletion.cpp kthemebase.cpp \
+		kcharselect.cpp kcolordrag.cpp qxembed.cpp \
+		knumvalidator.cpp kdialog.cpp dialogbase.cpp kdialogbase.cpp \
+		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
-	kdbtn.moc keditcl.moc kfontdialog.moc kiconloaderdialog.moc kkeydialog.moc \
-	kled.moc kledlamp.moc klined.moc kmenubar.moc kpopmenu.moc kprogress.moc \
-	krestrictedline.moc kruler.moc kselect.moc kstatusbar.moc ktabbar.moc \
-	ktabctl.moc ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
-	ktopwidget.moc kurllabel.moc kwizard.moc kapplet.moc kwmmapp.moc \
-	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
+	kdbtn.moc keditcl.moc kfontdialog.moc kiconloaderdialog.moc \
+	kkeydialog.moc kled.moc kledlamp.moc klined.moc kmenubar.moc \
+	kpopmenu.moc kprogress.moc krestrictedline.moc kruler.moc \
+	kselect.moc kstatusbar.moc ktabbar.moc ktabctl.moc ktablistbox.moc \
+	ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc ktopwidget.moc \
+	kurllabel.moc kwizard.moc kapplet.moc kwmmapp.moc kaccelmenu.moc \
+	klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \
-	qxembed.moc kdialog.moc dialogbase.moc kaboutdialog.moc kauthicon.moc \
+	qxembed.moc kdialog.moc dialogbase.moc kdialogbase.moc \
+	kjanuswidget.moc kaboutdialog.moc kauthicon.moc \
 	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc
 

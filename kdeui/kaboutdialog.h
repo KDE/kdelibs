@@ -26,7 +26,7 @@
 #ifndef KABOUTDIALOG_H
 #define KABOUTDIALOG_H
 
-#include <dialogbase.h>
+#include <kdialogbase.h>
 #include <qframe.h>
 #include <qstring.h>
 #include <list>
@@ -163,11 +163,11 @@ protected:
  *  properties and show it. Do not derive it to create your own about dialog 
  *  until yoiu need some cool features that are unsupported and you have 
  *  contacted me to add them. 
- *  For the derived features, see the basic class @ref DialogBase. 
+ *  For the derived features, see the basic class @ref KDialogBase. 
  *  @author Mirko Sucker (mirko@kde.org) 
- *  @see DialogBase 
+ *  @see KDialogBase 
  */
-class KAboutDialog : public DialogBase
+class KAboutDialog : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT
