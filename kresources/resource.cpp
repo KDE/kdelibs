@@ -33,8 +33,8 @@ Resource::Resource( const KConfig* config ) :
   if ( config ) {
     mType = config->readEntry( "ResourceType" );
     mName = config->readEntry( "ResourceName" );
-    mReadOnly = config->readBoolEntry( "ResourceIsReadOnly" );
-    mActive = config->readBoolEntry( "ResourceIsActive" );
+    mReadOnly = config->readBoolEntry( "ResourceIsReadOnly", false );
+    mActive = config->readBoolEntry( "ResourceIsActive", true );
     mIdentifier = config->readEntry( "ResourceIdentifier" );
   } else {
     mType = "type";
