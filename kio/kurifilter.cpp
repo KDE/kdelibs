@@ -37,7 +37,7 @@ void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) c
 {
     if ( data.uri() != uri )
     {
-        data.m_pURI = uri.path().ascii();
+        data.m_pURI = uri;
         data.m_bFiltered = true;
         data.m_bChanged = true;
     }
