@@ -425,23 +425,24 @@ void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 
-class KBookmarkGroupMonkey {
+class KBookmarkGroupTraverser {
 protected:
-    virtual ~KBookmarkGroupMonkey() { ; }
-    void swing(const KBookmarkGroup &);
-    virtual void enterGroup(const KBookmarkGroup &) { ; }
-    virtual void sawItem(const KBookmark &) { ; }
-    virtual void exitGroup() { ; }
+    virtual ~KBookmarkGroupTraverser() { ; }
+    void traverse(const KBookmarkGroup &);
+    virtual void visit(const KBookmark &) { ; }
+    virtual void visitEnter(const KBookmarkGroup &) { ; }
+    virtual void visitLeave(const KBookmarkGroup &) { ; }
 };
 
-class KBookmarkMap : public KBookmarkGroupMonkey {
+class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
     KBookmarkMap( KBookmarkManager * );
     void update();
-    virtual void enterGroup(const KBookmarkGroup &) { ; }
-    virtual void sawItem(const KBookmark &);
-    virtual void exitGroup() { ; }
     QValueList<KBookmark> find( const KURL &url ) const;
+private:
+    virtual void visit(const KBookmark &);
+    virtual void visitEnter(const KBookmarkGroup &) { ; }
+    virtual void visitLeave(const KBookmarkGroup &) { ; }
 private:
     typedef QValueList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
@@ -458,17 +459,17 @@ void KBookmarkMap::update()
 {
     m_bk_map.clear();
     KBookmarkGroup root = m_manager->root();
-    swing(root);
+    traverse(root);
 }
 
-void KBookmarkMap::sawItem(const KBookmark &bk) {
+void KBookmarkMap::visit(const KBookmark &bk) {
     if (!bk.isSeparator()) {
         // add bookmark to url map
         m_bk_map[bk.url().url()].append(bk);
     }
 }
 
-void KBookmarkGroupMonkey::swing(const KBookmarkGroup &root)
+void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
 {
     // non-recursive bookmark iterator
     QPtrStack<KBookmarkGroup> stack;
@@ -478,37 +479,28 @@ void KBookmarkGroupMonkey::swing(const KBookmarkGroup &root)
         if (bk.isGroup()) 
         {
             KBookmarkGroup gp = bk.toGroup();
-            enterGroup(gp);
-            // only recurse into non-empty group, else skip it
+            visitEnter(gp);
             if (!gp.first().isNull()) 
             {
                  stack.push(&gp);
                  bk = gp.first();
                  continue;
             }
-            exitGroup();
+            // empty group, therefore, leave already
+            visitLeave(gp);
         } 
-        else
-        {
-            sawItem(bk);
-        }
+        else visit(bk);
 
         // find next bookmark, finishing off groups as needed
         KBookmark next;
         while (next = stack.current()->next(bk), next.isNull()) 
         {
+            // if an empty stack and no next we are done
             if (stack.isEmpty()) 
-            {
-                // an empty stack and no next 
-                // indicates the end of the road
                 return;
-            }
+            if (stack.count() > 1)
+                visitLeave(*stack.current());
             bk = *(stack.pop());
-            // umm... this is _ugly_
-            if (!stack.isEmpty())
-            {
-                exitGroup();
-            }
         }
         bk = next;
     }
