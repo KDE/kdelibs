@@ -146,7 +146,7 @@ void RenderRoot::layout()
     // ### The layoutSpecialObjects call below can unfortunately reset some layouted flags if we have fixed positioned
     // objects. This is a hack to still get everything working (all layouted flags set). It does some additional work, but fortunately
     // fixed positioned objects are rare.
-    if ( !firstChild()->layouted() )
+    if ( firstChild() && !firstChild()->layouted() )
 	RenderFlow::layout();
 
 #ifdef SPEED_DEBUG
