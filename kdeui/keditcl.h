@@ -29,7 +29,6 @@
 #include <qpopupmenu.h>
 #include <qstrlist.h>
 #include <qmultilinedit.h>
-#include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qfiledialog.h>
 #include <qcheckbox.h>
@@ -51,6 +50,7 @@
 
 #include <knumlineedit.h>
 
+class QLineEdit;
 class KApplication;
 
 ///

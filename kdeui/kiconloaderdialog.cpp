@@ -29,6 +29,7 @@
 #include "kiconloaderdialog.h"
 
 #include <kpixmap.h>
+#include <klined.h>
 #include <klocale.h>
 #include <kglobal.h>
 
@@ -247,7 +248,7 @@ void KIconLoaderDialog::init()
 {
   setCaption(i18n("Select Icon"));
   //---
-  i_filter = new QLineEdit(this);
+  i_filter = new KLineEdit(this);
   i_filter->setGeometry(310, 8, 150, 24);
   //---
   l_filter = new QLabel( i18n("Filter:"), this );

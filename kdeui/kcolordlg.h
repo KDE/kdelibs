@@ -29,10 +29,11 @@
 #include <qtableview.h>
 #include <qframe.h>
 #include <qrangecontrol.h>
-#include <qlineedit.h>
 #include <qpixmap.h>
 #include <qcombobox.h>
 #include "kselect.h"
+
+class QLineEdit;
 
 /**
 * Widget for Hue/Saturation selection.

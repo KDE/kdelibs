@@ -46,6 +46,7 @@
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kbuttonbox.h>
+#include <klined.h>
 #include <kstddirs.h>
 #include <kapp.h>
 #include <kconfig.h>
@@ -163,7 +164,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	  SLOT(charset_chosen_slot(const QString&)));
   MINSIZE(charsetsCombo);
 
-  sampleEdit = new QLineEdit(box1, "sampleEdit");
+  sampleEdit = new KLineEdit(box1, "sampleEdit");
   sampleEdit->setAlignment(Qt::AlignCenter);
   box1Layout->addMultiCellWidget(sampleEdit, 4, 4, 1, 5);
   QFont tmpFont(selFont);
@@ -285,12 +286,9 @@ void KFontChooser::style_chosen_slot(const QString& style)
 
 void KFontChooser::displaySample(const QFont& font)
 {
-  QString string;
-
   sampleEdit->setFont(font);
 
-  string = getXLFD(font);
-  xlfdLabel->setText(string);
+  xlfdLabel->setText(font.rawName());
 }
 
 void KFontChooser::setupDisplay()
@@ -411,102 +409,6 @@ void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
   familyListBox->clear(); familyListBox->insertStringList(fontList);
 }
 
-QString KFontChooser::getXLFD( const QFont& font )
-{
-  QFontInfo fi( font );
-
-  QString xlfd = "-*-"; // foundry
-  xlfd += fi.family(); // family
-  xlfd += "-";
-  switch( fi.weight() ) { // weight
-  case QFont::Light:
-	xlfd += "light-";
-	break;
-  case QFont::Normal:
-	xlfd += "normal-";
-	break;
-  case QFont::DemiBold:
-	xlfd += "demi-";
-	break;
-  case QFont::Bold:
-	xlfd += "bold-";
-	break;
-  case QFont::Black:
-	xlfd += "black-";
-	break;
-  default:
-	xlfd += "*-";
-  }
-
-  if( fi.italic() )
-	xlfd += "i-"; // slant
-  else
-	xlfd += "r-"; // slant
-
-  /* old version, why that complicated? */
-  /*
-  xlfd += "*-"; // set width
-  xlfd += "*-"; // pixels (we cannot know portably, because this
-                // depends on the screen resolution
-  */
-  xlfd += "*-*-";
-
-  char numStr[10];
-  sprintf(numStr, "%d", fi.pointSize()*10); // points
-  xlfd += numStr;
-
-  /* old version, why that complicated? */
-  /*
-  xlfd += "-";
-  xlfd += "*-"; // horz. resolution
-  xlfd += "*-"; // vert. resolution
-  */
-  xlfd += "-*-*-";
-
-  if( fi.fixedPitch() )
-	xlfd += "m-"; // spacing: monospaced
-  else
-	xlfd += "p-"; // spacing: proportional
-  xlfd += "*-"; // average width
-  // charset
-  switch( fi.charSet() ) {
-  case QFont::AnyCharSet:
-	xlfd += "*";
-	break;
-  case QFont::ISO_8859_1:
-	xlfd += "iso8859-1";
-	break;
-  case QFont::ISO_8859_2:
-	xlfd += "iso8859-2";
-	break;
-  case QFont::ISO_8859_3:
-	xlfd += "iso8859-3";
-	break;
-  case QFont::ISO_8859_4:
-	xlfd += "iso8859-4";
-	break;
-  case QFont::ISO_8859_5:
-	xlfd += "iso8859-5";
-	break;
-  case QFont::ISO_8859_6:
-	xlfd += "iso8859-6";
-	break;
-  case QFont::ISO_8859_7:
-	xlfd += "iso8859-7";
-	break;
-  case QFont::ISO_8859_8:
-	xlfd += "iso8859-8";
-	break;
-  case QFont::ISO_8859_9:
-	xlfd += "iso8859-9";
-	break;
-  default:
-	xlfd += "*";
-  }
-
-  return xlfd;
-}
-
 void KFontChooser::showXLFDArea(bool show)
 {
   if (show)
@@ -583,7 +485,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 /*
 ****************************************************************************
 *
-* $Log$ 
+* $Log$
+* Revision 1.37  1999/05/29 09:44:26  mario
+* Mario: some small fixes, and optimized bloated code
+* 
 *
 ****************************************************************************
 */

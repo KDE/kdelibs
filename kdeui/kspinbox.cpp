@@ -63,6 +63,7 @@ static const char *STR_DECR="-";
 KSpinBox::KSpinBox(QWidget *parent,const char *name,int align)
   : QWidget(parent,name)
 {
+  debug("KSpinBox is deprecated.  Please use QSpinBox instead.");
   // create the widgets
   _label=new QLabel(this,"_label");
 //  _label->setBackgroundColor(white);

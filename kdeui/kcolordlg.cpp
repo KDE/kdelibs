@@ -35,6 +35,7 @@
 #include "kcolordrag.h"
 
 #include <dither.h>
+#include <klined.h>
 #include <klocale.h>
 #include <kapp.h>
 
@@ -437,7 +438,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "H:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 0, 2);
-	hedit = new QLineEdit( this );
+	hedit = new KLineEdit( this );
 	hedit->setFixedHeight(hedit->sizeHint().height());
 	l_rbot->addWidget(hedit, 0, 3);
 	connect( hedit, SIGNAL( returnPressed() ),
@@ -446,7 +447,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "S:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 1, 2);
-	sedit = new QLineEdit( this );
+	sedit = new KLineEdit( this );
 	sedit->setFixedHeight(sedit->sizeHint().height());
 	l_rbot->addWidget(sedit, 1, 3);
 	connect( sedit, SIGNAL( returnPressed() ),
@@ -455,7 +456,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "V:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 2, 2);
-	vedit = new QLineEdit( this );
+	vedit = new KLineEdit( this );
 	vedit->setFixedHeight(vedit->sizeHint().height());
 	l_rbot->addWidget(vedit, 2, 3);
 	connect( vedit, SIGNAL( returnPressed() ),
@@ -466,7 +467,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "R:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 0, 4);
-	redit = new QLineEdit( this );
+	redit = new KLineEdit( this );
 	redit->setFixedHeight(redit->sizeHint().height());
 	l_rbot->addWidget(redit, 0, 5);
 	connect( redit, SIGNAL( returnPressed() ),
@@ -475,7 +476,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "G:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 1, 4);
-	gedit = new QLineEdit( this );
+	gedit = new KLineEdit( this );
 	gedit->setFixedHeight(gedit->sizeHint().height());
 	l_rbot->addWidget(gedit, 1, 5);
 	connect( gedit, SIGNAL( returnPressed() ),
@@ -484,7 +485,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	label = new QLabel( "B:", this );
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 2, 4);
-	bedit = new QLineEdit( this );
+	bedit = new KLineEdit( this );
 	bedit->setFixedHeight(bedit->sizeHint().height());
 	l_rbot->addWidget(bedit, 2, 5);
 	connect( bedit, SIGNAL( returnPressed() ),

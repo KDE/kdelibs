@@ -35,13 +35,14 @@
 #include <qtableview.h>
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qtimer.h>
 
 #include <kapp.h>
 #include <kiconloader.h>
+
+class QLineEdit;
 
 /**
 * Internal display class for @ref KIconLoaderDialog

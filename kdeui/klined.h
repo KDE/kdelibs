@@ -27,11 +27,6 @@
 #include <qlineedit.h>
 
 /**
- * Use of the class KLineEd is deprecated.  Please use KLineEdit instead.
- */
-#define KLineEd KLineEdit
-
-/**
  * This widget has the same behaviour as QLineEdit, but emits
  * signals for two more key-events: @ref completion when Ctrl-D is
  * pressed and  @ref rotation when Ctrl-S is pressed. 

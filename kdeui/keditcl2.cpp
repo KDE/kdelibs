@@ -28,6 +28,7 @@
 #include <qlabel.h>
 #include <qapplication.h>
 #include <klocale.h>
+#include <klined.h>
 
 #include "keditcl.h"
 
@@ -677,7 +678,7 @@ KEdSrch::KEdSrch(QWidget *parent, const char *name)
     mainLayout->addWidget(frame1);
     QVBoxLayout * frameLayout = new QVBoxLayout(frame1, 15);
 
-    value = new QLineEdit( frame1, "value");
+    value = new KLineEdit( frame1, "value");
     value->setFocus();
     value->setMinimumWidth(200);
     value->setFixedHeight(fontHeight);
@@ -781,7 +782,7 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
     mainLayout->addWidget(frame1);
     QVBoxLayout * frameLayout = new QVBoxLayout(frame1, 20);
 
-    value = new QLineEdit( frame1, "value");
+    value = new KLineEdit( frame1, "value");
     value->setFocus();
     value->setMinimumWidth(200);
     value->setFixedHeight(fontHeight);
@@ -793,7 +794,7 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
     label->setFixedSize( label->sizeHint() );
     frameLayout->addWidget(label);
 
-    replace_value = new QLineEdit( frame1, "replac_value");
+    replace_value = new KLineEdit( frame1, "replac_value");
     replace_value->setMinimumWidth(200);
     replace_value->setFixedHeight(fontHeight);
     frameLayout->addWidget(replace_value);

@@ -1,6 +1,6 @@
 /**********************************************************************
 **
-** $Id: $
+** $Id$
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 **
@@ -32,7 +32,7 @@
 //
 
 KIntLineEdit::KIntLineEdit ( QWidget * parent, const char * name )
-  : QLineEdit(parent, name)
+  : KLineEdit(parent, name)
 {
   __value = 0;
   setValidator(new KIntValidator(this));
@@ -42,7 +42,7 @@ KIntLineEdit::KIntLineEdit ( QWidget * parent, const char * name )
 
 KIntLineEdit::KIntLineEdit (  int value, QWidget * parent,
                               int bottom, int top, int base, const char * name )
-  : QLineEdit(parent, name)
+  : KLineEdit(parent, name)
 {
   __value = value;
   setValidator(new KIntValidator(bottom, top, this, base));
@@ -160,7 +160,7 @@ void KIntLineEdit::focusOutEvent ( QFocusEvent *e )
 //
 
 KFloatLineEdit::KFloatLineEdit ( QWidget * parent, const char * name )
-  : QLineEdit(parent, name)
+  : KLineEdit(parent, name)
 {
   __value = 0;
   setValidator(new KFloatValidator(this));
@@ -170,7 +170,7 @@ KFloatLineEdit::KFloatLineEdit ( QWidget * parent, const char * name )
 
 KFloatLineEdit::KFloatLineEdit (  double value, QWidget * parent,
                                   double bottom, double top, const char * name )
-  : QLineEdit(parent, name)
+  : KLineEdit(parent, name)
 {
   __value = 0;
   setValidator(new KFloatValidator(bottom, top, this));

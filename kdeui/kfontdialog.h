@@ -92,7 +92,8 @@ public:
    * @param theFont the font to convert.
    * @return a string representing the given font in XLFD format.
    */
-  static QString getXLFD( const QFont &theFont );
+  static QString getXLFD( const QFont &theFont )
+    { return theFont.rawName(); }
 
 private slots:
   void family_chosen_slot(const QString&);

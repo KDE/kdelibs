@@ -1,6 +1,6 @@
 /**********************************************************************
 **
-** $Id: $
+** $Id$
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 **
@@ -23,16 +23,16 @@
 #ifndef __KNUMLINEEDIT_H
 #define __KNUMLINEEDIT_H
 
-#include <qlineedit.h>
+#include <klined.h>
 
 /**
   LineEdit for integer data.  Uses KIntValidator validator class.
   This class can use any numeric value between 2 and 36.
 
   @author Glen Parker <glenebob@nwlink.com>
-  @version 0.0.1
+  @version 0.0.2
 */
-class KIntLineEdit : public QLineEdit {
+class KIntLineEdit : public KLineEdit {
 
   Q_OBJECT
 
@@ -114,9 +114,9 @@ class KIntLineEdit : public QLineEdit {
   LineEdit for double data.  Uses KFloatValidator validator class.
 
   @author Glen Parker <glenebob@nwlink.com>
-  @version 0.0.1
+  @version 0.0.2
 */
-class KFloatLineEdit : public QLineEdit {
+class KFloatLineEdit : public KLineEdit {
 
   Q_OBJECT
 
