@@ -382,7 +382,7 @@ namespace
   }
 
 #endif // HAVE_GETADDRINFO
-}; // namespace
+} // namespace
 
 bool KStandardWorker::sanityCheck()
 {
