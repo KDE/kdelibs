@@ -258,7 +258,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
       languages.remove(0, _lang.length() + 1);
     } else {
       _lang = languages;
-      languages = "";
+      languages = QString::null;
     }
 	
     if (_lang.isEmpty() || _lang == QString::fromLatin1("C"))
@@ -270,8 +270,8 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     int counter = 0;
     if (!ct.isEmpty()) {
       if (!chrset.isEmpty())
-	lng[counter++]=ln+QString::fromLatin1("_")+ct+QString::fromLatin1(".")+chrset;
-      lng[counter++]=ln+QString::fromLatin1("_")+ct;
+	lng[counter++]=ln + '_' + ct + '.' + chrset;
+      lng[counter++]=ln + '_' + ct;
     }
     lng[counter++]=ln;
 
@@ -320,20 +320,20 @@ void KLocale::initFormat(KConfig *config)
   numentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _decimalSymbol = config->readEntry(QString::fromLatin1("DecimalSymbol"));
-  if (_decimalSymbol.isEmpty())
+  if (_decimalSymbol.isNull())
     _decimalSymbol = numentry.readEntry(QString::fromLatin1("DecimalSymbol"), QString::fromLatin1("."));
 
   _thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
-  if (_thousandsSeparator.isEmpty())
+  if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
-  if (_positiveSign.isEmpty())
+  if (_positiveSign.isNull())
     _positiveSign = numentry.readEntry(QString::fromLatin1("PositiveSign"));
 
   config->readEntry(QString::fromLatin1("NegativeSign"));
   _negativeSign = config->readEntry(QString::fromLatin1("NegativeSign"));
-  if (_negativeSign.isEmpty())
+  if (_negativeSign.isNull())
     _negativeSign = numentry.readEntry(QString::fromLatin1("NegativeSign"), QString::fromLatin1("-"));
 
   // Monetary
@@ -341,15 +341,15 @@ void KLocale::initFormat(KConfig *config)
   monentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _currencySymbol = config->readEntry(QString::fromLatin1("CurrencySymbol"));
-  if (_currencySymbol.isEmpty())
+  if (_currencySymbol.isNull())
     _currencySymbol = monentry.readEntry(QString::fromLatin1("CurrencySymbol"), QString::fromLatin1("$"));
 
   _monetaryDecimalSymbol = config->readEntry(QString::fromLatin1("MonetaryDecimalSymbol"));
-  if (_monetaryDecimalSymbol.isEmpty())
+  if (_monetaryDecimalSymbol.isNull())
     _monetaryDecimalSymbol = monentry.readEntry(QString::fromLatin1("MonetaryDecimalSymbol"), QString::fromLatin1("."));
 
   _monetaryThousandsSeparator = config->readEntry(QString::fromLatin1("MonetaryThousendSeparator"));
-  if (_monetaryThousandsSeparator.isEmpty())
+  if (_monetaryThousandsSeparator.isNull())
     _monetaryThousandsSeparator = monentry.readEntry(QString::fromLatin1("MonetaryThousandsSeparator"), QString::fromLatin1(","));
 
   _fracDigits = config->readNumEntry(QString::fromLatin1("FractDigits"), -1);
@@ -375,15 +375,15 @@ void KLocale::initFormat(KConfig *config)
   timentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _timefmt = config->readEntry(QString::fromLatin1("TimeFormat"));
-  if (_timefmt.isEmpty())
+  if (_timefmt.isNull())
     _timefmt = timentry.readEntry(QString::fromLatin1("TimeFormat"), QString::fromLatin1("%I:%M:%S %p"));
 
   _datefmt = config->readEntry(QString::fromLatin1("DateFormat"));
-  if (_datefmt.isEmpty())
+  if (_datefmt.isNull())
     _datefmt = timentry.readEntry(QString::fromLatin1("DateFormat"), QString::fromLatin1("%A %d %B %Y"));
 
   _datefmtshort = config->readEntry(QString::fromLatin1("DateFormatShort"));
-  if (_datefmtshort.isEmpty())
+  if (_datefmtshort.isNull())
     _datefmtshort = timentry.readEntry(QString::fromLatin1("DateFormatShort"), QString::fromLatin1("%m/%d/%y"));
 }
 
@@ -810,17 +810,13 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	if (includeSecs)
 	  rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
 	else
-	{
-	  i--;
-	  rst.remove(i, 3);
-	}
+	  rst.remove(--i, 3);
 	continue;
       case 'p':
 	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
 	continue;
       default:
-	rst.remove(i, 1);
-	i--;
+	rst.remove(i--, 1);
 	continue;
       }
 
@@ -830,7 +826,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
-  return formatDate(pDateTime.date()) + QString::fromLatin1(" ") + formatTime(pDateTime.time());
+  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
 }
 
 bool KLocale::use12Clock()
@@ -846,20 +842,20 @@ void KLocale::aliasLocale( const char* text, long int index)
 QStringList KLocale::languageList() const
 {
 
-// a list to be returned
+    // a list to be returned
     QStringList list;
-// temporary copy of language list
+    // temporary copy of language list
     QString str(langs);
 
     while(!str.isEmpty()){
       int f = str.find(':');
       if (f >= 0) {
   	list.append(str.left(f));
-        str=str.right(str.length()-f-1);
+        str=str.mid(str.length());
       }
       else{
         list.append(str);
-        str="";
+        str = QString::null;
       }
     }
     return list;
@@ -967,7 +963,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
-  return formatDate(pDateTime.date()) + formatTime(pDateTime.time());
+  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
 }
 
 bool KLocale::use12Clock()
