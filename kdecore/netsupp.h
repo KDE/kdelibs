@@ -20,6 +20,9 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#ifndef _NETSUPP_H_
+#define _NETSUPP_H_
+
 #include <sys/socket.h>
 #include "config.h"
 
@@ -222,4 +225,6 @@ namespace KDE
 }
 
 # define inet_ntop	KDE::inet_ntop
+#endif
+
 #endif

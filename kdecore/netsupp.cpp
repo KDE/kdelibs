@@ -47,8 +47,17 @@
 #undef CLOBBER_IN6
 #include "netsupp.h"
 
-#define sockaddr_in6	kde_sockaddr_in6
-#define in6_addr	kde_in6_addr
+#if !defined(kde_sockaddr_in6)
+/*
+ * kde_sockaddr_in6 might have got defined even though we #undef'ed
+ * CLOBBER_IN6. This happens when we are compiling under --enable-final.
+ * However, in that case, if it was defined, that's because ksockaddr.cpp
+ * had it defined because sockaddr_in6 didn't exist, and so sockaddr_in6
+ * exists and is our kde_sockaddr_in6
+ */
+# define sockaddr_in6	kde_sockaddr_in6
+# define in6_addr	kde_in6_addr
+#endif
 
 #ifdef offsetof
 #undef offsetof
