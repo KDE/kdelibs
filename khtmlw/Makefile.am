@@ -31,7 +31,7 @@ htmlview.cpp: htmlview.moc
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h
-libkhtmlw_la_LDFLAGS = -version-info 0:91 -allow-undefined
+libkhtmlw_la_LDFLAGS = -version-info 0:91
 
 data_DATA = khtmlw_dnd.xpm
 datadir = $(kde_datadir)/khtmlw/pics

@@ -63,6 +63,8 @@ public:
 	Policy insertionPolicy() const { return policy; };
 	void setValidator( QValidator* v ) { if( lined ) lined->setValidator( v ); };
 	QValidator* validator() const { if( lined ) return lined->validator(); return NULL; };
+        void setText( const char *text );
+        void setCompletion( bool enabled = true);
 
 signals:
 	void activated( int index );

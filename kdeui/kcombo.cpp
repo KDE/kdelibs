@@ -37,13 +37,21 @@ KCombo::KCombo( bool readWrite, QWidget* parent, const char* name, WFlags f ) :
 	connect( listBox, SIGNAL(highlighted(int)), SIGNAL(highlighted(int)) );
 	if( lined ) {
 		connect( lined, SIGNAL(returnPressed()), SLOT(selectTyped()) );
-		connect( lined, SIGNAL(completion()), SLOT(complete()) );
+		setCompletion(true);
 		connect( lined, SIGNAL(completion()), SIGNAL(completion()) );
 		connect( lined, SIGNAL(rotation()), SLOT(rotate()) );
 		connect( lined, SIGNAL(rotation()), SIGNAL(rotation()) );
 	}
 	selected = 0;
 	setSizeLimit( 10 );
+}
+
+void KCombo::setCompletion( bool enabled )
+{
+    if (enabled)
+	connect( lined, SIGNAL(completion()), SLOT(complete()) );
+    else
+	disconnect( lined, SIGNAL(completion()), this, SLOT(complete()) );
 }
 
 KCombo::~KCombo()
@@ -104,6 +112,11 @@ void KCombo::selectQuiet( int item )
 	repaint( FALSE );
 	if( lined ) lined->setText( text( selected ) );
 	if( listBox ) listBox->setCurrentItem( item );
+}
+
+void KCombo::setText( const char *text)
+{
+        if (lined) lined->setText(text);
 }
 
 void KCombo::selectHide( int item )

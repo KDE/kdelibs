@@ -886,6 +886,9 @@ fi
 
 AC_DEFUN(AC_CHECK_COMPILERS,
 [
+  dnl this is somehow a fat lie, but prevents other macros from double checking
+  AC_PROVIDE([AC_PROG_CC])
+  AC_PROVIDE([AC_PROG_CPP])
   AC_ARG_ENABLE(debug,[  --enable-debug 	  creates debugging code [default=no]],
   [ 
    if test $enableval = "no"; dnl 

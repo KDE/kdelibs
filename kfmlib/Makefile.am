@@ -20,7 +20,7 @@ INCLUDES = $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
 DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkfm.la
-libkfm_la_LDFLAGS = -allow-undefined -version-info 0:90
+libkfm_la_LDFLAGS = -version-info 0:90
 
 libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp kfmipc.cpp
 BUILT_SOURCES = kfm.moc kfmclient_ipc.moc
