@@ -1235,12 +1235,12 @@ KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
 {
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
     if ( !ginfo ) {
-        kdWarning() << "Trying to append a Metadata item for a non-existant group" << endl;
+        kdWarning() << "Trying to append a Metadata item for a non-existant group:" << d->name << endl;
         return KFileMetaInfoItem();
     }
     const KFileMimeTypeInfo::ItemInfo* info = ginfo->itemInfo(key);
     if ( !info ) {
-        kdWarning() << "Trying to append a Metadata item for an unknown key (no ItemInfo)" << endl;
+        kdWarning() << "Trying to append a Metadata item for an unknown key (no ItemInfo): " << key << endl;
         return KFileMetaInfoItem();
     }
 
@@ -1508,7 +1508,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
       >> mimeType;
 
     group.d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mimeType);
-    
+
     // we need to set the item info for the items here
     QMapIterator<QString, KFileMetaInfoItem> it = group.d->items.begin();
     for ( ; it != group.d->items.end(); ++it)
@@ -1516,7 +1516,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
         (*it).d->mimeTypeInfo = group.d->mimeTypeInfo->groupInfo(group.d->name)
                                   ->itemInfo((*it).key());
     }
-    
+
     return s;
 }
 
