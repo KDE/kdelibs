@@ -24,7 +24,6 @@
 #include "matichandler.h"
 #include "apshandler.h"
 #include "lprngtoolhandler.h"
-#include "susehandler.h"
 #include "lprsettings.h"
 #include "driver.h"
 #include "editentrydialog.h"
@@ -134,8 +133,6 @@ void KMLprManager::initHandlers()
 	insertHandler(new MaticHandler(this));
 	insertHandler(new ApsHandler(this));
 	insertHandler(new LPRngToolHandler(this));
-	// FIXME: disabled until completion
-	//insertHandler(new SuSEHandler(this));
 
 	// default handler
 	insertHandler(new LprHandler("default", this));
