@@ -138,7 +138,6 @@
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
 <!ENTITY Java	"<trademark>Java</trademark>">
 <!ENTITY Jini	"<trademark>Jini</trademark>">
-<!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
@@ -156,7 +155,6 @@
 <!ENTITY kchart "<application>KChart</application>">
 <!ENTITY kcontrol "<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
-<!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
 <!ENTITY kdebugdialog	"<application>KDebugDialog</application>">
 <!ENTITY kdepasswd	"<application>kdepasswd</application>">
@@ -192,6 +190,7 @@
 <!ENTITY klipper	"<application>Klipper</application>">
 <!ENTITY kljettool	"<application>KLjettool</application>">
 <!ENTITY klpq	"<application>Klpq</application>">
+<!ENTITY klprfax "<application>Klprfax</application>">
 <!ENTITY kmahjongg	"<application>KMahjongg</application>">
 <!ENTITY kmail	"<application>KMail</application>">
 <!ENTITY kmenuedit	"<application>kmenuedit</application>">
@@ -289,6 +288,7 @@
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
+<!ENTITY Shift "<keycap>Shift</keycap>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY ThreeCom   '<trademark class="registered">3Com</trademark>'>
@@ -304,3 +304,5 @@
 <!ENTITY XSL	"<trademark>XSL</trademark>">
 
 <!-- Obsolete entities -->
+<!ENTITY kab	"<application>Kab</application>">
+<!ENTITY kdat	"<application>Kdat</application>">
