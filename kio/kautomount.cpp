@@ -24,7 +24,7 @@ KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _
       job = KIO::mount( false, 0L, _device, 0L );
   else
       job = KIO::mount( _readonly, _format, _device, _mountpoint );
-  connect( job, SIGNAL( sigResult( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 
 void KAutoMount::slotResult( KIO::Job * job )
@@ -49,7 +49,7 @@ KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _deskto
   : m_desktopFile( _desktopFile )
 {
   KIO::Job * job = KIO::unmount( _mountpoint );
-  connect( job, SIGNAL( sigResult( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 
 void KAutoUnmount::slotResult( KIO::Job * job )
