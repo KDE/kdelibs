@@ -264,7 +264,9 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
        (fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)")||
        (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)") ||
        (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)") ||
-       (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)"))
+       (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)") ||
+       (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)") ||
+       (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)"))
    {
       QDataStream stream(data, IO_ReadOnly);
       bool bNoWait = false;
@@ -288,6 +290,9 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       else if ((fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)") ||
           (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)"))
          stream >> envs;
+      else if ((fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)") ||
+          (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)"))
+         stream >> envs >> startup_id;
       bool finished;
       if (strncmp(fun, "start_service_by_name(", 22) == 0)
       {
@@ -305,15 +310,16 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
          finished = start_service_by_desktop_name(serviceName, urls, envs, startup_id, bNoWait );
       }
       else if ((fun == "kdeinit_exec(QString,QStringList)")
-              || (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)"))
+              || (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)")
+              || (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)"))
       {
          kdDebug(7016) << "KLauncher: Got kdeinit_exec('" << serviceName << "', ...)" << endl;
-         finished = kdeinit_exec(serviceName, urls, envs, false);
+         finished = kdeinit_exec(serviceName, urls, envs, startup_id, false);
       }
       else
       {
          kdDebug(7016) << "KLauncher: Got kdeinit_exec_wait('" << serviceName << "', ...)" << endl;
-         finished = kdeinit_exec(serviceName, urls, envs, true);
+         finished = kdeinit_exec(serviceName, urls, envs, startup_id, true);
       }
       if (!finished)
       {
@@ -1094,7 +1100,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QCString&
 
 bool
 KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
-   const QValueList<QCString> &envs,  bool wait)
+   const QValueList<QCString> &envs, const QCString& startup_id, bool wait)
 {
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
@@ -1115,7 +1121,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
       request->dcop_service_type = KService::DCOP_None;
    request->dcop_name = 0;
    request->pid = 0;
-   request->startup_id = "0";
+   request->startup_id = startup_id;
    request->envs = envs;
    request->transaction = dcopClient()->beginTransaction();
    queueRequest(request);

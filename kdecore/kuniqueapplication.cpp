@@ -416,23 +416,7 @@ int KUniqueApplication::newInstance()
     {
       mainWidget()->show();
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-      long activate = true;
-      if( !startupId().isEmpty() && startupId() != "0" )
-      {
-          NETRootInfo i( qt_xdisplay(), NET::Supported );
-          if( i.isSupported( NET::WM2StartupId ))
-          {
-              KStartupInfo::setWindowStartupId( mainWidget()->winId(), startupId());
-              KStartupInfo::handleAutoAppStartedSending();
-              activate = false; // WM will take care of it
-          }
-      }
-      if( activate )
-      // This is not very nice, but there's no way how to get any
-      // usable timestamp without ASN, so force activating the window.
-      // And even with ASN, it's not possible to get the timestamp here,
-      // so if the WM doesn't have support for ASN, it can't be used either.
-          KWin::setActiveWindow( mainWidget()->winId(), qt_x_time );
+      KStartupInfo::setNewStartupId( mainWidget(), kapp->startupId());
 #endif
     }
   }

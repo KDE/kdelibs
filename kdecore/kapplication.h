@@ -410,7 +410,14 @@ public:
    * @param appname     This allows you to show the help of another
    *                    application. If empty the current name() is
    *                    used
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    */
+  void invokeHelp( const QString& anchor,
+                   const QString& appname,
+                   const QCString& startup_id ) const;
+
+  // KDE4 merge with above with startup_id = ""
   void invokeHelp( const QString& anchor = QString::null,
                    const QString& appname = QString::null ) const;
 
@@ -435,14 +442,22 @@ public:
    *
    * @param address The destination address
    * @param subject Subject string. Can be QString::null.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    */
+  void invokeMailer( const QString &address, const QString &subject, const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   void invokeMailer( const QString &address, const QString &subject );
 
   /**
    * Invokes the standard email application.
    *
    * @param mailtoURL A mailto URL.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    */
+  void invokeMailer( const KURL &mailtoURL, const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   void invokeMailer( const KURL &mailtoURL );
 
   /**
@@ -457,7 +472,14 @@ public:
    * @param body        A string containing the body of the mail (exclusive with messageFile)
    * @param messageFile A file (URL) containing the body of the mail (exclusive with body) - currently unsupported
    * @param attachURLs  List of URLs to be attached to the mail.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    */
+  void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
+                    const QString &subject, const QString &body,
+                    const QString &messageFile, const QStringList &attachURLs,
+                    const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
                     const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList());
@@ -470,7 +492,11 @@ public slots:
    * or anything else than directory or HTML, prefer to use new KRun( url ).
    *
    * @param url The destination address
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    */
+  void invokeBrowser( const QString &url, const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   void invokeBrowser( const QString &url );
 
   /**
@@ -697,8 +723,13 @@ public:
    *         ignored
    * @param pid On success, the process id of the new service will be written
    *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    * @return an error code indicating success (== 0) or failure (> 0).
    */
+  static int kdeinitExec( const QString& name, const QStringList &args,
+                QString *error, int *pid, const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
 
@@ -715,8 +746,13 @@ public:
    *         ignored
    * @param pid On success, the process id of the new service will be written
    *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    * @return an error code indicating success (== 0) or failure (> 0).
    */
+  static int kdeinitExecWait( const QString& name, const QStringList &args,
+                QString *error, int *pid, const QCString& startup_id );
+  // KDE4 merge with above with startup_id = ""
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
 

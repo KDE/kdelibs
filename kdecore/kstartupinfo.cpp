@@ -60,6 +60,8 @@ DEALINGS IN THE SOFTWARE.
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kwinmodule.h> // schroder
 #include <kxmessages.h> // schroder
+#include <kwin.h>
+extern Time qt_x_time;
 #endif
 
 static const char* const NET_STARTUP_MSG = "_NET_STARTUP_INFO";
@@ -513,6 +515,28 @@ void KStartupInfo::handleAutoAppStartedSending()
     {
     if( auto_app_started_sending )
         appStarted();
+    }
+
+void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id )
+    {
+    long activate = true;
+    kapp->setStartupId( startup_id );
+    if( !startup_id.isEmpty() && startup_id != "0" )
+        {
+        NETRootInfo i( qt_xdisplay(), NET::Supported );
+        if( i.isSupported( NET::WM2StartupId ))
+            {
+            KStartupInfo::setWindowStartupId( window->winId(), startup_id );
+            KStartupInfo::handleAutoAppStartedSending();
+            activate = false; // WM will take care of it
+            }
+        }
+    if( activate )
+    // This is not very nice, but there's no way how to get any
+    // usable timestamp without ASN, so force activating the window.
+    // And even with ASN, it's not possible to get the timestamp here,
+    // so if the WM doesn't have support for ASN, it can't be used either.
+        KWin::setActiveWindow( window->winId(), qt_x_time );
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O,

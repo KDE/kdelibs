@@ -39,7 +39,7 @@ int main( int argc, char **argv )
     if ( args->count() != 1 )
         return 1;
 
-    a.invokeMailer(KURL(args->arg(0)));
+    a.invokeMailer(KURL(args->arg(0)), a.startupId());
 
     return 0;
 }

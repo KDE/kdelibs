@@ -91,6 +91,17 @@ class KStartupInfo
          * @since 3.2
          */ 
         static void appStarted( const QCString& startup_id );
+        
+        /**
+         * Use this function if the application got a request with startup
+         * notification from outside (for example, when KUniqueApplication::newInstance()
+         * is called, or e.g. when khelpcenter opens new URL in its window).
+         * The window can be either an already existing and visible window,
+         * or a new one, before being shown. Note that this function is usually
+         * needed only when a window is reused.
+         * @since 3.2
+         */
+        static void setNewStartupId( QWidget* window, const QCString& startup_id );
 
         /**
          * If your application shows temporarily some window during its startup,

@@ -2004,6 +2004,13 @@ void KApplication::installKDEPropertyMap()
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname) const
 {
+    return invokeHelp( anchor, _appname, "" );
+}
+
+void KApplication::invokeHelp( const QString& anchor,
+                               const QString& _appname,
+                               const QCString& startup_id ) const
+{
    QString url;
    QString appname;
    if (_appname.isEmpty())
@@ -2019,14 +2026,14 @@ void KApplication::invokeHelp( const QString& anchor,
    QString error;
    if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, true))
        {
            kdWarning() << "Could not launch help:\n" << error << endl;
            return;
        }
    }
    else
-       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openURL", url );
+       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url, startup_id );
 }
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
@@ -2056,16 +2063,27 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
        }
    }
    else
-       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openURL", url );
+       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url );
 }
 
 
 void KApplication::invokeMailer(const QString &address, const QString &subject)
 {
-   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null, QStringList());
+    return invokeMailer(address,subject,"");
+}
+
+void KApplication::invokeMailer(const QString &address, const QString &subject, const QCString& startup_id)
+{
+   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
+       QStringList(), startup_id );
 }
 
 void KApplication::invokeMailer(const KURL &mailtoURL)
+{
+    return invokeMailer( mailtoURL, "" );
+}
+
+void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_id )
 {
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
@@ -2088,12 +2106,20 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      //    attach = KURL::decode_string((*it).mid(7));
    }
 
-   invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList() );
+   invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList(), startup_id );
 }
 
 void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                                 const QString &subject, const QString &body,
-                                const QString & /*messageFile TODO*/, const QStringList &attachURLs)
+                                const QString & messageFile, const QStringList &attachURLs)
+{
+    return invokeMailer(to,cc,bcc,subject,body,messageFile,attachURLs,"");
+}
+
+void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
+                                const QString &subject, const QString &body,
+                                const QString & /*messageFile TODO*/, const QStringList &attachURLs,
+                                const QCString& startup_id )
 {
    KConfig config("emaildefaults");
    config.setGroup( QString::fromLatin1("PROFILE_Default") );
@@ -2152,16 +2178,23 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    }
 
    QString error;
-   if (kdeinitExec(cmd, cmdTokens, &error))
+   // TODO this should check if cmd has a .desktop file, and use data from it, together
+   // with sending more ASN data
+   if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
       kdWarning() << "Could not launch mail client:\n" << error << endl;
 }
 
 
 void KApplication::invokeBrowser( const QString &url )
 {
+    return invokeBrowser( url, "" );
+}
+
+void KApplication::invokeBrowser( const QString &url, const QCString& startup_id )
+{
    QString error;
 
-   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, "", true))
+   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, true))
    {
       kdWarning() << "Could not launch browser:\n" << error << endl;
       return;
@@ -2244,9 +2277,9 @@ startServiceInternal( const QCString &function,
        envs.append( QCString("DISPLAY=") + dpystring );
    }
 #endif
-   stream << envs;
-   if( !startup_id.isNull()) // not kdeinit_exec
-       stream << startup_id << noWait;
+   stream << envs << startup_id;
+   if( function.left( 12 ) != "kdeinit_exec" )
+       stream << noWait;
 
    if (!dcopClient->call(_launcher, _launcher,
         function, params, replyType, replyData))
@@ -2342,16 +2375,30 @@ int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid )
 {
-   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>)",
-        name, args, error, 0, pid, QCString(), false);
+    return kdeinitExec( name, args, error, pid, "" );
+}
+
+int
+KApplication::kdeinitExec( const QString& name, const QStringList &args,
+                           QString *error, int *pid, const QCString& startup_id )
+{
+   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
+        name, args, error, 0, pid, startup_id, false);
 }
 
 int
 KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid )
 {
-   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)",
-        name, args, error, 0, pid, QCString(), false);
+    return kdeinitExecWait( name, args, error, pid, "" );
+}
+
+int
+KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
+                           QString *error, int *pid, const QCString& startup_id )
+{
+   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
+        name, args, error, 0, pid, startup_id, false);
 }
 
 QString KApplication::tempSaveName( const QString& pFilename ) const
