@@ -560,7 +560,7 @@ QString whatstr;
   hostCertBG = new QHButtonGroup(i18n("Action"), tabAuth);
   hostSend = new QRadioButton(i18n("Send"), hostCertBG);
   hostPrompt = new QRadioButton(i18n("Prompt"), hostCertBG);
-  hostDont = new QRadioButton(i18n("Don't send"), hostCertBG);
+  hostDont = new QRadioButton(i18n("Do not send"), hostCertBG);
   grid->addMultiCellWidget(hostCertBG, 16, 16, 0, 5);
 
   authAdd = new QPushButton(i18n("Ne&w"), tabAuth);
