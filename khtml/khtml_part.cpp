@@ -341,9 +341,9 @@ namespace khtml {
 	}
         virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
         {
-            m_part->m_userSheet = sheet;
+            m_part->m_userSheet = sheet.copy();
             m_part->m_userSheetUrl = url;
-	    khtml::CSSStyleSelector::setUserStyle( sheet );
+	    khtml::CSSStyleSelector::setUserStyle( m_part->m_userSheet );
 	    if ( m_part->m_doc )
 		m_part->m_doc->applyChanges();
             delete this;
@@ -455,7 +455,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
   if ( !userStyleSheet.isEmpty() )
       setUserStyleSheet( KURL( userStyleSheet ) );
-  
+
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -1489,7 +1489,7 @@ void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
     d->m_userSheetUrl = DOMString();
     d->m_userSheet = DOMString();
-    new khtml::PartStyleSheetLoader(d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
+    (void) new khtml::PartStyleSheetLoader(d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
