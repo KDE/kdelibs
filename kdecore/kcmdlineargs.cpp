@@ -471,7 +471,8 @@ KCmdLineArgs::parseAllArgs()
      const KCmdLineOptions *option = appOptions->options;
      while(option && option->name)
      {
-       if (option->name[0] == '+')
+       if (option->name[0] == '+' ||
+           ( option->name[0] == '!' && option->name[1] == '+' ) )
           allowArgs = true;
 
        option++;
