@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <kdebug.h>
 #include <qtextcodec.h>
+#include <qfileinfo.h>
 
 using namespace std;
 
@@ -72,6 +73,7 @@ static KCmdLineOptions options[] =
     { "stylesheet <xsl>",  I18N_NOOP( "Stylesheet to use" ), 0 },
     { "stdout", I18N_NOOP( "output whole document to stdout" ), 0 },
     { "htdig", I18N_NOOP( "create a ht://dig compatible index" ), 0 },
+    { "check", I18N_NOOP( "check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "create a cache file for the document" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     { 0, 0, 0 } // End of options.
@@ -99,7 +101,28 @@ int main(int argc, char **argv) {
         args->usage();
         return ( 1 );
     }
+
     LIBXML_TEST_VERSION
+
+    if ( args->isSet( "check" ) ) {
+        char pwd_buffer[250];
+        QFileInfo file( args->arg( 0 ) );
+        getcwd( pwd_buffer, 250 );
+        chdir( QFile::encodeName( file.dirPath( true ) ) );
+
+        QString catalogs;
+        catalogs += locate( "dtd", "customization/catalog" );
+        catalogs += ":";
+        catalogs += locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
+
+        setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
+        int ret = system( QString::fromLatin1( "xmllint --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
+        chdir( pwd_buffer );
+        if ( ret ) {
+            exit( 1 );
+        }
+    }
+
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
     xmlSetExternalEntityLoader(meinExternalEntityLoader);

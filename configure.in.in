@@ -178,8 +178,6 @@ AC_SUBST(LIB_DCOP)
 LIB_KSSL='$(top_builddir)/kssl/libkssl.la'
 AC_SUBST(LIB_KSSL)
 
-MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
-AC_SUBST(MEINPROC)
 AC_SUBST(EXTRA_SUBDIRS)
 
 AC_MSG_CHECKING(if malloc debugging is wanted)

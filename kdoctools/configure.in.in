@@ -27,7 +27,12 @@ if test -n "$XML_CONFIG"; then
      HELP_SUBDIR=
   fi
 fi
- 
+
+if test -n "$HELP_SUBDIR"; then
+  MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
+  AC_SUBST(MEINPROC)
+fi
+
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_RPATH)

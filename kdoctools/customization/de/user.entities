@@ -15,5 +15,5 @@
 <!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!-- khelpcenter -->
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
-
+<!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 

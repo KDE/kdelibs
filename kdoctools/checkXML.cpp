@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <qfile.h>
 #include <config.h>
+#include <unistd.h>
+#include <kdebug.h>
 
 int main(int argc, char **argv) {
     if ( argc != 2 ) {
@@ -21,7 +23,7 @@ int main(int argc, char **argv) {
     KInstance ins("checkXML");
     fillInstance(ins);
 
-    QFileInfo file( argv[0] );
+    QFileInfo file( argv[1] );
     chdir( QFile::encodeName( file.dirPath( true ) ) );
 
     QString catalogs;
@@ -31,7 +33,6 @@ int main(int argc, char **argv) {
 
     setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
     system( QString::fromLatin1( "xmllint --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
-
 
     return(0);
 }
