@@ -753,9 +753,7 @@ KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Menubar"), 0, recvr, slot, parent,
                             name ? name : stdName(ShowMenubar));
-    ret->blockSignals(true);
     ret->setChecked(true);
-    ret->blockSignals(false);
     return ret;
 }
 
@@ -765,9 +763,7 @@ KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
                             name ? name : stdName(ShowToolbar));
-    ret->blockSignals(true);
     ret->setChecked(true);
-    ret->blockSignals(false);
     return ret;
 
 }
@@ -778,9 +774,7 @@ KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
                             name ? name : stdName(ShowStatusbar));
-    ret->blockSignals(true);
     ret->setChecked(true);
-    ret->blockSignals(false);
     return ret;
 }
 
