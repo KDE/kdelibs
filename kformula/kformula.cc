@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Ilya Baran (ibaran@acs.bu.edu)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 
 #include "kformula.h"
@@ -387,26 +405,26 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     //make empty boxes and put cursor into them if necessary:
     for(i = 0; i < (int)text.length(); i++) {
       if(!special().contains(text[i]) || text[i] == L_GROUP ||
-	 text[i] == R_GROUP) continue;
+	 text[i] == R_GROUP || intext().contains(text[i])) continue;
 
-      if(i == 0 || (text[i - 1] == L_GROUP && i < (int)text.length() - 1 &&
-		    text[i + 1] != QChar(MATRIX))) {
-	text.insert(i, R_GROUP);
-	INSERTED(i);
+      if(i == 0 || (text[i - 1] != R_GROUP &&
+		    special().contains(text[i - 1]))) {
 	text.insert(i, L_GROUP);
-	INSERTED(i + 1); //note! we don't move the current cursor over!
-	continue;
-      }
-
-      if(i == (int)text.length() - 1 ||
-	 (text[i + 1] == R_GROUP && text[i - 1] != QChar(MATRIX))) {
+	INSERTED(i);
 	text.insert(i + 1, R_GROUP);
-	INSERTED(i + 1);
-	text.insert(i + 1, L_GROUP);
 	INSERTED(i + 2); //note! we don't move the current cursor over!
 	continue;
       }
 
+      if(i == (int)text.length() - 1 ||
+	 (text[i + 1] != L_GROUP &&
+	  special().contains(text[i + 1]))) {
+	text.insert(i + 1, L_GROUP);
+	INSERTED(i + 1);
+	text.insert(i + 2, R_GROUP);
+	INSERTED(i + 3); //note! we don't move the current cursor over!
+	continue;
+      }
     }
 
     for(i = 0; i < (int)info->size(); i++) {

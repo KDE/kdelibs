@@ -1,0 +1,30 @@
+Hello.  kdelibs/kformula (different from koffice/kformula) is
+a widget for entering formulas.  It can also be used to evaluate
+formulas with variables which makes writing something like an
+equation grapher pretty easy.  See KFormula::evaluate(...) in
+kformula.h for more info.  Here's a list of keys it uses:
+
+CTRL+/		fraction
+CTRL+6		power
+CTRL+-		subscript
+CTRL+SHIFT+6	left superscript
+CTRL+SHIFT+-	left subscript
+(		parentheses (select something and then hit '('
+		to enclose it in parentheses)
+|		absolute value (same as with parentheses)
+CTRL+2		root
+CTRL+3		matrix (dialog pops up)
+CTRL+4		integral
+CTRL+5		sum
+CTRL+8		product
+CTRL+[		above
+CTRL+]		below
+CTRL+>		arrow (more symbols RSN)
+
+Look at KFormulaEdit::keyPressEvent(...) and box.h for all the keys.
+Although this still lacks several features (most notably, symbols, fonts,
+and colors, as well as a toolbar), it is already usable so please use it
+and send me bug reports!
+
+	-Ilya Baran
+	ibaran@acs.bu.edu

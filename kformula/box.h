@@ -1,3 +1,22 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Ilya Baran (ibaran@acs.bu.edu)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef BOX_H_INCLUDED
 #define BOX_H_INCLUDED
 
@@ -14,6 +33,9 @@
 //symbols have values above this
 #define SYMBOL_ABOVE   20000
 
+//can be set to 0 if you want to print the string out somewhere.
+//UNUSED_OFFSET is only used in this file.
+#define UNUSED_OFFSET  1000
 
 struct charinfo;
 
@@ -23,26 +45,27 @@ enum BoxType {
   PLUS = '+',
   MINUS = '-',
   TIMES = '*',
-  DIVIDE = '\\',
-  POWER = '^' + 000, //just a test to see if it works
-  SQRT = '@' + 000,
+  DIVIDE = '\\' + UNUSED_OFFSET,
+  POWER = '^' + UNUSED_OFFSET, //just a test to see if it works
+  SQRT = '@' + UNUSED_OFFSET,
   TEXT = 't',
-  CAT = '#' + 000,
-  SUB = '_' + 000,
-  LSUP = '6' + 000,
-  LSUB = '%' + 000,
-  PAREN = '(' + 000,
+  CAT = '#' + UNUSED_OFFSET,
+  SUB = '_' + UNUSED_OFFSET,
+  LSUP = '6' + UNUSED_OFFSET,
+  LSUB = '%' + UNUSED_OFFSET,
+  PAREN = '(',
   EQUAL = '=',
   MORE = '>',
   LESS = '<',
-  ABS = '|' + 000,
+  ABS = '|',
   SLASH = '/',
-  MATRIX = 'm' + 000,
-  SEPARATOR = '&' + 000, // separator for matrices
-  ABOVE = '[' + 000, //something useless
-  BELOW = ']' + 000,
-  SYMBOL = 652,
-  CURSOR = 653 // for keeping track of cursor position in undo/redo
+  MATRIX = 'm' + UNUSED_OFFSET,
+  SEPARATOR = '&' + UNUSED_OFFSET, // separator for matrices
+  ABOVE = '[' + UNUSED_OFFSET, //something useless
+  BELOW = ']' + UNUSED_OFFSET,
+  SYMBOL = 's' + UNUSED_OFFSET, // whatever
+  // char for keeping track of cursor position in undo/redo:
+  CURSOR = 'c' + UNUSED_OFFSET
 };
 
 enum SymbolType {
