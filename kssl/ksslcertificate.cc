@@ -431,9 +431,12 @@ int operator==(KSSLCertificate &x, KSSLCertificate &y) {
 
 
 KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
-  KSSLCertificate();
+  d = new KSSLCertificatePrivate;
+  d->m_stateCached = false;
+  KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
 #ifdef HAVE_SSL
-  setCert(d->kossl->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
+  d->m_cert = NULL;
+  setCert(KOSSL::self()->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
   KSSLCertChain *c = x.d->_chain.replicate();
   setChain(c->rawChain());
   delete c;
@@ -605,7 +608,7 @@ QStringList qsl;
 QList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
 
       for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
-         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
          qsl << c->toString();
       }
 
@@ -623,7 +626,7 @@ QString cert;
 
 s >> cert >> qsl;
 
-       if (r.setCert(cert))
+       if (r.setCert(cert) && !qsl.isEmpty())
           r.chain().setChain(qsl);
 
 return s;
