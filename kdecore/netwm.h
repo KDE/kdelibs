@@ -58,22 +58,20 @@ public:
        The application role is automatically set to WindowManager
        when using this constructor.
 
-       Taken arguments:
+       @param display An X11 Display struct.
 
-       @li display - an X11 Display struct.
-
-       @li supportWindow - the Window id of the supportWindow.  The supportWindow
+       @param supportWindow The Window id of the supportWindow.  The supportWindow
        must be created by the window manager as a child of the rootWindow.  The
        supportWindow must not be destroyed until the Window Manager exits.
 
-       @li wmName - a string which should be the window manager's name (ie. "KWin"
+       @param wmName A string which should be the window manager's name (ie. "KWin"
        or "Blackbox").
 
-       @li properties - an OR'ed list of all properties and protocols the window
+       @param properties An OR'ed list of all properties and protocols the window
        manager supports (see the NET base class documentation for a description
        of all properties and protocols).
 
-       @li screen - for Window Managers that support multiple screen (ie.
+       @param screen For Window Managers that support multiple screen (ie.
        "multiheaded") displays, the screen number may be explicitly defined.  If
        this argument is omitted, the default screen will be used.
     **/
@@ -85,15 +83,13 @@ public:
        will be used to query information set on the root window. The application
        role is automatically set to Client when using this constructor.
 
-       Taken arguments:
+       @param display An X11 Display struct.
 
-       @li display - an X11 Display struct.
-
-       @li properties - an OR'ed list of all properties and protocols the client
+       @param properties An OR'ed list of all properties and protocols the client
        supports (see the NET base class documentation for a description of all
        properties and protocols).
 
-       @li screen - for Clients that support multiple screen (ie. "multiheaded")
+       @param screen For Clients that support multiple screen (ie. "multiheaded")
        displays, the screen number may be explicitly defined. If this argument is
        omitted, the default screen will be used.
     **/
@@ -234,11 +230,9 @@ public:
     /**
        Sets the list of managed windows on the Root/Desktop window.
 
-       Taken arguments:
+       @param windows The array of Window id's
 
-       @li windows - the array of Window id's
-
-       @li count - the number of windows in the array
+       @param count The number of windows in the array
     **/
     void setClientList(Window *windows, unsigned int count);
 
@@ -246,22 +240,18 @@ public:
        Sets the list of managed windows in stacking order on the Root/Desktop
        window.
 
-       Taken arguments:
+       @param windows The array of Window id's
 
-       @li windows - the array of Window id's
-
-       @li count - the number of windows in the array.
+       @param count The number of windows in the array.
     **/
     void setClientListStacking(Window *windows, unsigned int count);
 
     /**
        Sets the list of KDE system tray windows on the root window.
 
-       Taken arguments:
+       @param window The array of window id's
 
-       @li window - the array of window id's
-
-       @li count - the number of windows in the array.
+       @param count The number of windows in the array.
     **/
     void setKDESystemTrayWindows(Window *windows, unsigned int count);
 
@@ -309,11 +299,9 @@ public:
     /**
        Sets the list of virtual root windows on the root window.
 
-       Taken arguments:
+       @param windows The array of Window id's
 
-       @li windows - the array of Window id's
-
-       @li count - the number of windows in the array.
+       @param count The number of windows in the array.
     **/
     void setVirtualRoots(Window *windows, unsigned int count);
 
@@ -335,15 +323,13 @@ public:
        (where the window manager controls the resize/movement) should call
        this function.  This will send a request to the Window Manager.
 
-       Taken arguments:
+       @param window The client window that would be resized/moved.
 
-       @li window - the client window that would be resized/moved.
+       @param x_root X position of the cursor relative to the root window.
 
-       @li x_root - X position of the cursor relative to the root window.
+       @param y_root Y position of the cursor relative to the root window.
 
-       @li y_root - Y position of the cursor relative to the root window.
-
-       @li direction - one of NET::Direction (see base class documentation for
+       @param direction One of NET::Direction (see base class documentation for
        a description of the different directions).
     **/
     void moveResizeRequest(Window window, int x_root, int y_root,
@@ -439,13 +425,13 @@ protected:
        A Window Manager should subclass NETRootInfo and reimplement this function
        when it wants to know when a Client made a request to start a move/resize.
 
-       Taken arguments:
+       @param window The window that wants to move/resize
 
-       @li window - the window that wants to move/resize
+       @param x_root X position of the cursor relative to the root window.
 
-       @li x_root / y_root - position of the cursor relative to the root window.
+       @param y_root Y position of the cursor relative to the root window.
 
-       @li direction - one of NET::Direction (see base class documentation for
+       @param direction One of NET::Direction (see base class documentation for
        a description of the different directions).
     **/
     // virtual void moveResize(Window window, int x_root, int y_root,
@@ -482,19 +468,17 @@ public:
        Create a NETWinInfo object, which will be used to set/read/change
        information stored on an application window.
 
-       Taken arguments:
+       @param display An X11 Display struct.
 
-       @li display - an X11 Display struct.
+       @param window The Window id of the application window.
 
-       @li window - the Window id of the application window.
+       @param rootWindow The Window id of the root window.
 
-       @li rootWindow - the Window id of the root window.
-
-       @li properties - an OR'ed list of all properties and protocols the
+       @param properties An OR'ed list of all properties and protocols the
        client/window manager supports (see the NET base class documentation
        for a description of all properties and protocols).
 
-       @li role - select the application role.  If this argument is omitted,
+       @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
     **/
     NETWinInfo(Display *display, Window window,
