@@ -672,9 +672,9 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
   QHBox* row1 = new QHBox( group );
   
-  text = i18n("Case &Sensitive");
+  text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, row1, "case");
-  text = i18n("Find &Backwards");
+  text = i18n("Find &backwards");
   direction = new QCheckBox( text, row1, "direction" );
 
   
@@ -812,9 +812,9 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
-  text = i18n("Case &Sensitive");
+  text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, group, "case");
-  text = i18n("Find &Backwards");
+  text = i18n("Find &backwards");
   direction = new QCheckBox( text, group, "direction" );
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
@@ -927,7 +927,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
 
   lineNum = new KIntNumInput( 1, page);
   lineNum->setRange(1, 1000000, 1, false);
-  lineNum->setLabel(i18n("Goto Line:"), AlignVCenter | AlignLeft);
+  lineNum->setLabel(i18n("Goto line:"), AlignVCenter | AlignLeft);
 //  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
 
