@@ -396,10 +396,9 @@ public:
     /**
     * Enables the default popup (context) menu for this widget.
     *
-    * This method only works if this widget is editable, i.e. set to
-    * read-write.  If this widget was constructed without being enabled
-    * for read-write, invoking this function will accomplish nothing.
-    * Hence, the return value will be false.
+    * This method only works if this widget is editable ( i.e. read-write ).
+    * If this widget is not editable for read-write, invoking this function
+    * will accomplish nothing.  Hence, the return value will be false.
     *
     * @return true if popup menu can be created, i.e. widget is not read-only.
     */
@@ -408,9 +407,8 @@ public:
     /**
     * Disables the default popup (context) menu for this widget.
     *
-    * This method only works if this widget is editable, i.e. set to
-    * read-write.  If this widget was constructed without being enabled
-    * for read-write, invoking this function is meaningless.
+    * This method only works if this widget is editable ( i.e. read-write ).
+    * If this widget is not editable, invoking this function is meaningless.
     *
     */
     void hideContextMenu();
@@ -595,7 +593,7 @@ private :
     // Holds the sub-menu id once created.
     // This is needed to put check marks along
     // the selected items.
-    int subMenuID;
+    int m_iSubMenuId;
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.

@@ -30,6 +30,7 @@
 KComboBox::KComboBox( QWidget *parent, const char *name ) :QComboBox( parent, name )
 {
     m_pEdit = 0;
+    m_pContextMenu = 0;
     m_bShowContextMenu = false;
     m_bShowModeChanger = false;
     initialize();
@@ -39,8 +40,11 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name,
                       bool showContext, bool showModeChanger ) :QComboBox( rw, parent, name )
 {
     QObjectList *list = queryList( "QLineEdit" );
-    QObjectListIt it( *list );
+    QObjectListIt it ( *list );
     m_pEdit = (QLineEdit*) it.current();
+    list = queryList( "QPopupMenu" );
+    it = QObjectListIt( *list );
+    m_pContextMenu = (QPopupMenu*) it.current();
     connect( m_pEdit, SIGNAL( returnPressed() ), this, SIGNAL( returnPressed() ) );
     connect( m_pEdit, SIGNAL( returnPressed() ), this, SLOT( returnKeyPressed() ) );
     m_pEdit->installEventFilter( this );
@@ -57,9 +61,7 @@ KComboBox::~KComboBox()
         m_pEdit->removeEventFilter( this );
 
     delete m_pEdit;
-    delete m_pContextMenu;
     delete m_pSubMenu;
-
     if( m_bAutoDelCompObj )
         delete m_pCompObj;
 }
@@ -90,8 +92,8 @@ void KComboBox::initialize()
 
     // Initialize the context Menu.  By default the popup
     // menu as well as the mode switching entry are enabled.
-    m_pContextMenu = 0;
     m_pSubMenu = 0;
+    m_iSubMenuId = -1;
 
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobal::completionMode();
@@ -173,34 +175,11 @@ bool KComboBox::setRotateDownKey( int rDnKey )
     return false;
 }
 
-void KComboBox::aboutToShowSubMenu( int itemID )
-{
-    if( itemID == subMenuID )
-    {
-        int id;
-        m_pSubMenu->clear();
-        id = m_pSubMenu->insertItem( i18n("None"), this, SLOT(modeNone()),0 , 1 );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionNone );
-        id = m_pSubMenu->insertItem( i18n("Automatic"), this, SLOT(modeAuto()), 0, 3 );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionAuto );
-        // The following items are not
-        if( m_pEdit != 0 )
-        {
-            id = m_pSubMenu->insertItem( i18n("Manual"), this, SLOT(modeShell()), 0, 2 );
-            m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionShell );
-            id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()), 0, 4 );
-            m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
-        }
-    }
-}
-
 bool KComboBox::showContextMenu()
 {
-    if( m_pContextMenu == 0 && m_pEdit != 0 )
+    if( m_pEdit != 0 )
     {
-        m_pContextMenu = new QPopupMenu();
         connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-        connect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
         m_bShowContextMenu = true;
         return m_bShowContextMenu;
     }
@@ -231,42 +210,48 @@ void KComboBox::hideContextMenu()
     if( m_pContextMenu != 0 )
     {
         disconnect ( m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT( aboutToShowMenu()) );
-        disconnect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
-        delete m_pContextMenu;
-        m_pContextMenu = 0;
+        if( m_iSubMenuId != -1 )
+            disconnect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
+        delete m_pSubMenu;
+        m_pSubMenu = 0;
         m_bShowContextMenu = false;
     }
 }
 
 void KComboBox::aboutToShowMenu()
 {
-    bool hasText = ( m_pEdit->text().length() > 0 );
-    bool hasMarkedText = m_pEdit->hasMarkedText();
-
-    m_pContextMenu->clear();
-    int id = m_pContextMenu->insertItem( i18n("Cut"), this, SLOT(cut()) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText );
-    id = m_pContextMenu->insertItem( i18n("Copy"), this, SLOT(copy()) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText );
-    id = m_pContextMenu->insertItem( i18n("Paste"), this, SLOT(paste()) );
-    // m_pContextMenu->setItemEnabled( id, );
-    id = m_pContextMenu->insertItem( i18n("Clear"), this, SLOT(clear()) );
-    m_pContextMenu->setItemEnabled( id, hasText );
-    m_pContextMenu->insertSeparator();
     if( m_bShowModeChanger && m_pCompObj != 0 )
     {
         if( m_pSubMenu == 0 )
             m_pSubMenu = new QPopupMenu();
-        m_pSubMenu->clear();
         // Dummy place holder so that "-->" is shown !!!
-        m_pSubMenu->insertItem( QString::null );
-        subMenuID = m_pContextMenu->insertItem( i18n("Completion Mode"), m_pSubMenu );
-        m_pContextMenu->insertSeparator();
+        if( m_iSubMenuId == -1 )
+        {
+            m_pContextMenu->insertSeparator( m_pContextMenu->count() - 1 );
+            m_iSubMenuId = m_pContextMenu->insertItem( i18n("Completion Mode"), m_pSubMenu, -1, m_pContextMenu->count() - 2 );
+            connect ( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
+        }
     }
-    id = m_pContextMenu->insertItem( i18n("Select All"), this, SLOT(select()) );
-    m_pContextMenu->setItemEnabled( id, hasText );
-    id = m_pContextMenu->insertItem( i18n("Unselect"), this, SLOT(unselect()) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText );
+}
+
+void KComboBox::aboutToShowSubMenu( int itemID )
+{
+    if( itemID == m_iSubMenuId )
+    {
+        m_pSubMenu->clear();
+        int id = m_pSubMenu->insertItem( i18n("None"), this, SLOT(modeNone()),0 , 1 );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionNone );
+        id = m_pSubMenu->insertItem( i18n("Automatic"), this, SLOT(modeAuto()), 0, 3 );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionAuto );
+        // The following items are not
+        if( m_pEdit != 0 )
+        {
+            id = m_pSubMenu->insertItem( i18n("Manual"), this, SLOT(modeShell()), 0, 2 );
+            m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionShell );
+            id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()), 0, 4 );
+            m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
+        }
+    }
 }
 
 void KComboBox::itemChanged( const QString& text )
@@ -438,14 +423,12 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
         }
         else if ( ev->type() == QEvent::MouseButtonPress )
         {
-            if( m_bShowContextMenu )
+            QMouseEvent *e = (QMouseEvent *) ev;
+            if( e->button() == Qt::RightButton )
             {
-                QMouseEvent *e = (QMouseEvent *) ev;
-                if( e->button() == Qt::RightButton )
-                {
-                    m_pContextMenu->popup ( QCursor::pos() );
+                    if( m_bShowContextMenu )
+                        return false;
                     return true;
-                }
             }
         }
     }
@@ -458,7 +441,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         m_iCompletionMode == KGlobal::CompletionAuto )
     {
         QString keycode = e->text();
-        debug ( "Key Event : %s", keycode.latin1() );
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
         {
             emit completion ( keycode );
