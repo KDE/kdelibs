@@ -49,40 +49,38 @@ public:
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST,
-                    HTTP_HEAD, HTTP_DELETE};
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE};
 
   enum CacheControl { CC_CacheOnly, // Fail request if not in cache
-                      CC_Cache, // Use cached entry if available
-                      CC_Verify, // Validate cached entry with remote site
-                      CC_Reload // Always fetch from remote site.
+                      CC_Cache,     // Use cached entry if available
+                      CC_Verify,    // Validate cached entry with remote site
+                      CC_Reload     // Always fetch from remote site.
                       };
 
   typedef struct
   {
-        QString hostname;
-        short unsigned int port;
-        QString user;
-        QString passwd;
-	bool  do_proxy;
-	QString cef; // Cache Entry File belonging to this URL.
+    QString hostname;
+    short unsigned int port;
+    QString user;
+    QString passwd;
+    bool  do_proxy;
+    QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
 
   typedef struct
   {
-	QString hostname;
-	short unsigned int port;
-	QString user;
-	QString passwd;
-	QString path;
-	QString query;
-	HTTP_METHOD method;
-	CacheControl cache;
-	unsigned long offset;
-	bool do_proxy;
-	KURL url;
-	QString window; // The window Id this request is related to.
-  QString user_headers;
+    QString hostname;
+    short unsigned int port;
+    QString user;
+    QString passwd;
+    QString path;
+    QString query;
+    HTTP_METHOD method;
+    CacheControl cache;
+    unsigned long offset;
+    bool do_proxy;
+    KURL url;
+    QString window;                 // Window Id this request is related to.
   } HTTPRequest;
 
   /**
@@ -246,7 +244,20 @@ protected:
    */
   bool retrieveHeader(bool close_connection = true);
 
+  /**
+   * Resets any per session settings.
+   */
   void resetSessionSettings();
+
+  /**
+   * Retrieves authorization info from cache or user.
+   */
+  bool getAuthorization();
+
+  /**
+   * Saves valid authorization info in the cache daemon.
+   */
+  void saveAuthorization();
 
 protected: // Members
   HTTPState m_state;
@@ -286,7 +297,7 @@ protected: // Members
   QString m_strLanguages;
 
   // Proxy related members
-  bool m_bUseProxy;  // Whether we want a proxy
+  bool m_bUseProxy;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strNoProxyFor;
@@ -300,7 +311,8 @@ protected: // Members
   QString m_strAuthString;
   QString m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
-  int m_iAuthFailed;
+  bool m_bUnauthorized;
+  bool m_bRepeatAuthFail;
 
   // Persistant connections
   bool m_bKeepAlive;
@@ -312,7 +324,10 @@ protected: // Members
 
   DCOPClient *m_dcopClient;
 
-  short unsigned int mDefaultPort;
+  short unsigned int m_DefaultPort;
+
+  unsigned int m_responseCode;
+  unsigned int m_prevResponseCode;
 
   // Values that determine the remote connection timeouts.
   int m_proxyConnTimeout, m_remoteConnTimeout, m_remoteRespTimeout;
