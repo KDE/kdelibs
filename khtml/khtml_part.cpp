@@ -407,6 +407,10 @@ KHTMLPart::~KHTMLPart()
   delete d->m_manualDetection;
 
   slotWalletClosed();
+  if (!parentPart()) { // only delete it if the top khtml_part closes
+    removeJSErrorExtension();
+  }
+
   d->m_find = 0; // deleted by its parent, the view.
 
   if ( d->m_manager )
