@@ -377,6 +377,8 @@ void RenderTable::addColInfo(RenderTableCol *colel)
     int _minSize=0;
     int _maxSize=0;
     Length _width = colel->width();
+    if (_width.type==Fixed)
+        _maxSize=_minSize=_width.value;
 
     for (int n=0; n<span; ++n)
     {
