@@ -54,8 +54,13 @@ bool StyleSurroundData::operator==(const StyleSurroundData& o) const
 }
 
 StyleBoxData::StyleBoxData()
-    : z_index( 0 ), z_auto( true )
+    : min_width( 0, Fixed ),
+      max_width(  UNDEFINED,  Fixed ),
+      min_height( 0, Fixed ),
+      max_height( UNDEFINED,  Fixed ),
+      z_index( 0 ), z_auto( true )
 {
+
 }
 
 StyleBoxData::StyleBoxData(const StyleBoxData& o )
