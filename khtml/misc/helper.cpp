@@ -143,7 +143,7 @@ using namespace khtml;
         map["inactivecaptiontext"] = globalConfig->readColorEntry( "inactiveForeground", &cg.text());
         map["graytext"] = cg.text();
 
-	KConfig *bckgrConfig = new KConfig("kdesktoprc"); // No multi-screen support
+	KConfig *bckgrConfig = new KConfig("kdesktoprc", true, false); // No multi-screen support
 	bckgrConfig->setGroup("Desktop0");
         // Desktop background.
 	map["background"] = bckgrConfig->readColorEntry("Color1", &cg.background());

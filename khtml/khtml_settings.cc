@@ -157,7 +157,7 @@ bool KHTMLSettings::hoverLink()
 
 void KHTMLSettings::init()
 {
-  KConfig global( "khtmlrc", true );
+  KConfig global( "khtmlrc", true, false );
   global.setGroup( "HTML Settings" );
   init( &global );
 
