@@ -65,6 +65,9 @@ that we would like to make for the next binary incompatible release.
   which in fact makes it more complex to handle. The part owns the widget so it
   should delete it, but not the other way round.
 
+- KParts: remove plugin loading from setInstance, add an explicit loadPlugins() call
+  in all parts that should load plugins (at the end of the derived-part ctor).
+
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
 
