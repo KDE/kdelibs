@@ -516,8 +516,10 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::Child:
         {
-		subject = false;
+	    subject = false;
             n = n->parentNode();
+            if (!strictParsing)
+                while (n && n->implicitNode()) n = n->parentNode();
             if(!n || !n->isElementNode()) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
             if(!checkOneSelector(sel, elem)) return;

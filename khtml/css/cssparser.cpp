@@ -2362,10 +2362,6 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
         {
             // attr
         }
-        else if (str.startsWith("counter("))
-        {
-            // counter
-        }
         else if (str.startsWith("open-quote"))
         {
             // open-quote
