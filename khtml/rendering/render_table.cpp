@@ -1819,12 +1819,6 @@ void RenderTableCell::repaintRectangle(int x, int y, int w, int h)
     RenderFlow::repaintRectangle(x, y, w, h);
 }
 
-void RenderTableCell::repaintObject(RenderObject *o, int x, int y)
-{
-    y += _topExtra;
-    RenderFlow::repaintObject(o, x, y);
-}
-
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 {
     bool ret = RenderFlow::absolutePosition(xPos, yPos, f);

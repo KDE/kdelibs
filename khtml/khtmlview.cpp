@@ -279,23 +279,6 @@ void KHTMLView::layout(bool)
     }
 }
 
-void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
-{
-    int yOff = contentsY();
-    if(yOff > yPos + o->height() ||
-       yOff + visibleHeight() < yPos)
-        return;
-
-    QWidget *vp = viewport();
-    QPainter p(vp);
-    int xOff = contentsX()+vp->x();
-    yOff += vp->y();
-    p.translate( -xOff, -yOff );
-
-    o->printObject( &p , xOff, yOff, visibleWidth(), visibleHeight(),
-                    xPos , yPos );
-}
-
 //
 // Event Handling
 //

@@ -392,7 +392,6 @@ public:
      */
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h);
-    virtual void repaintObject(RenderObject *o, int x, int y);
 
     virtual unsigned int length() const { return 1; }
 

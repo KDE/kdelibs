@@ -376,7 +376,6 @@ public:
     virtual int yPos() const { return m_y + _topExtra; }
 
     virtual void repaintRectangle(int x, int y, int w, int h);
-    virtual void repaintObject(RenderObject *o, int x, int y);
     virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
 protected:
@@ -394,7 +393,7 @@ protected:
     int _topExtra;
     int _bottomExtra;
     bool nWrap;
-    bool _implicitCell:1; 
+    bool _implicitCell:1;
 
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }

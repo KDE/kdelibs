@@ -30,7 +30,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
     m_root = this;
-    
+
     // init RenderObject attributes
     setInline(false);
 
@@ -100,7 +100,7 @@ void RenderRoot::layout()
     // this fixes frameset resizing
     qt.start();
 #endif
-    
+
     if(firstChild()) {
         firstChild()->setLayouted(false);
     }
@@ -122,7 +122,7 @@ void RenderRoot::layout()
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
-    
+
     //kdDebug(0) << "root: height = " << m_height << endl;
 }
 
@@ -208,11 +208,6 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 void RenderRoot::repaint()
 {
     if (m_view) m_view->updateContents(0, 0, docWidth(), docHeight());
-}
-
-void RenderRoot::repaintObject(RenderObject *o, int x, int y)
-{
-    if (m_view) m_view->paintElement(o, x, y);
 }
 
 void RenderRoot::updateSize()

@@ -207,7 +207,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
             table = static_cast<RenderTable *>(beforeChild);
         else {
 //          kdDebug( 6040 ) << "creating anonymous table" << endl;
-            table = new RenderTable();
+            table = new RenderTable;
             RenderStyle *newStyle = new RenderStyle(m_style);
             newStyle->setDisplay(TABLE);
             table->setStyle(newStyle);
@@ -400,7 +400,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
                 c = textcolor;
         }
     }
-    
+
     int half = width/2;
     switch(style)
     {
@@ -636,11 +636,6 @@ void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int t
 void RenderObject::repaintRectangle(int x, int y, int w, int h)
 {
     if(parent()) parent()->repaintRectangle(x, y, w, h);
-}
-
-void RenderObject::repaintObject(RenderObject *o, int x, int y)
-{
-    if(parent()) parent()->repaintObject(o, x, y);
 }
 
 void RenderObject::printTree(int indent) const

@@ -145,6 +145,7 @@ int RenderBox::contentHeight() const
 void RenderBox::setPos( int xPos, int yPos )
 {
     m_x = xPos; m_y = yPos;
+#if 1
     if(containsWidget() && (m_x != xPos || m_y != yPos))
     {
         int x,y;
@@ -156,6 +157,7 @@ void RenderBox::setPos( int xPos, int yPos )
                 static_cast<RenderWidget*>(child)->placeWidget(x+child->xPos(),y+child->yPos());
         }
     }
+#endif
 }
 
 QSize RenderBox::contentOffset() const
@@ -491,7 +493,8 @@ int RenderBox::bidiHeight() const
 void RenderBox::repaint()
 {
     //kdDebug( 6040 ) << "repaint!" << endl;
-    repaintRectangle(0, 0, m_width, m_height);
+    int ow = style() ? style()->outlineWidth() : 0;
+    repaintRectangle(-ow, -ow, m_width+ow*2, m_height+ow*2);
 }
 
 void RenderBox::repaintRectangle(int x, int y, int w, int h)
@@ -501,14 +504,6 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h)
     // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) o->repaintRectangle(x, y, w, h);
-}
-
-void RenderBox::repaintObject(RenderObject *o, int x, int y)
-{
-    x += m_x;
-    y += m_y;
-    RenderObject *c = container();
-    if( c ) c->repaintObject(o, x, y);
 }
 
 void RenderBox::relativePositionOffset(int &tx, int &ty)
@@ -648,9 +643,9 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
         m_marginRight = mr.minWidth(cw);
     }
     else
-    {        
-        if ( (ml.type == Variable && mr.type == Variable) || 
-             (ml.type != Variable && 
+    {
+        if ( (ml.type == Variable && mr.type == Variable) ||
+             (ml.type != Variable &&
                 containingBlock()->style()->textAlign() == KONQ_CENTER) )
         {
             m_marginRight = (cw - m_width)/2;
@@ -779,57 +774,57 @@ void RenderBox::calcAbsoluteHorizontal()
 //    printf("h1: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 
     int static_distance=0;
-    if ((style()->direction()==LTR && (l==AUTO && r==AUTO )) 
+    if ((style()->direction()==LTR && (l==AUTO && r==AUTO ))
             || style()->left().isStatic())
     {
         // calc hypothetical location in the normal flow
-        // used for 1) left=static-position 
+        // used for 1) left=static-position
         //          2) left, right, width are all auto -> calc top -> 3.
-        //          3) precalc for case 2 below  
-              
-        // all positioned elements are blocks, so that 
+        //          3) precalc for case 2 below
+
+        // all positioned elements are blocks, so that
         // would be at the left edge
         RenderObject* po = parent();
-        while (po && po!=containingBlock()) { 
-            static_distance+=po->xPos(); 
-            po=po->parent(); 
+        while (po && po!=containingBlock()) {
+            static_distance+=po->xPos();
+            po=po->parent();
         }
-        
+
         if (l==AUTO || style()->left().isStatic())
-            l = static_distance;        
-    } 
-    
-    else if ((style()->direction()==RTL && (l==AUTO && r==AUTO )) 
+            l = static_distance;
+    }
+
+    else if ((style()->direction()==RTL && (l==AUTO && r==AUTO ))
             || style()->right().isStatic())
-    {            
+    {
             RenderObject* po = parent();
-            
+
             static_distance = cw - po->width();
-                    
-            while (po && po!=containingBlock()) { 
-                static_distance-=po->xPos(); 
-                po=po->parent(); 
+
+            while (po && po!=containingBlock()) {
+                static_distance-=po->xPos();
+                po=po->parent();
             }
 
         if (r==AUTO || style()->right().isStatic())
-            r = static_distance;        
-    } 
-    
-    
-    if (l!=AUTO && w!=AUTO && r!=AUTO)        
+            r = static_distance;
+    }
+
+
+    if (l!=AUTO && w!=AUTO && r!=AUTO)
     {
         // left, width, right all given, play with margins
         int ot = l + w + r + pab;
-        
-        if (ml==AUTO && mr==AUTO) 
-        {            
-            // both margins auto, solve for equality            
+
+        if (ml==AUTO && mr==AUTO)
+        {
+            // both margins auto, solve for equality
             ml = (cw - ot)/2;
             mr = cw - ot - ml;
-        }         
+        }
         else if (ml==AUTO)
             // solve for left margin
-            ml = cw - ot - mr;        
+            ml = cw - ot - mr;
         else if (mr==AUTO)
             // solve for right margin
             mr = cw - ot - ml;
@@ -837,29 +832,29 @@ void RenderBox::calcAbsoluteHorizontal()
         {
             // overconstrained, solve according to dir
             if (style()->direction()==LTR)
-                r = cw - ( l + w + ml + mr + pab);    
+                r = cw - ( l + w + ml + mr + pab);
             else
-                l = cw - ( r + w + ml + mr + pab);                
+                l = cw - ( r + w + ml + mr + pab);
         }
-    } 
+    }
     else
     {
         // one or two of (left, width, right) missing, solve
-        
+
         // auto margins are ignored
         if (ml==AUTO) ml = 0;
         if (mr==AUTO) mr = 0;
-            
+
         //1. solve left & width.
-        if (l==AUTO && w==AUTO && r!=AUTO) 
+        if (l==AUTO && w==AUTO && r!=AUTO)
         {
             w = QMIN(m_maxWidth, cw - ( r + ml + mr + pab));
-            l = cw - ( r + w + ml + mr + pab);       
-        } 
+            l = cw - ( r + w + ml + mr + pab);
+        }
         else
 
         //2. solve left & right. use static positioning.
-        if (l==AUTO && w!=AUTO && r==AUTO) 
+        if (l==AUTO && w!=AUTO && r==AUTO)
         {
             if (style()->direction()==RTL)
             {
@@ -871,33 +866,33 @@ void RenderBox::calcAbsoluteHorizontal()
                 l = static_distance;
                 r = cw - ( l + w + ml + mr + pab);
             }
-            
+
         }
         else
 
-        //3. solve width & right. 
-        if (l!=AUTO && w==AUTO && r==AUTO) 
+        //3. solve width & right.
+        if (l!=AUTO && w==AUTO && r==AUTO)
         {
             w = QMIN(m_maxWidth, cw - ( l + ml + mr + pab));
-            r = cw - ( l + w + ml + mr + pab); 
-        } 
+            r = cw - ( l + w + ml + mr + pab);
+        }
         else
 
         //4. solve left
-        if (l==AUTO && w!=AUTO && r!=AUTO) 
+        if (l==AUTO && w!=AUTO && r!=AUTO)
             l = cw - ( r + w + ml + mr + pab);
         else
 
         //5. solve width
-        if (l!=AUTO && w==AUTO && r!=AUTO) 
+        if (l!=AUTO && w==AUTO && r!=AUTO)
             w = cw - ( r + l + ml + mr + pab);
         else
-        
+
         //6. solve right
-        if (l!=AUTO && w!=AUTO && r==AUTO) 
+        if (l!=AUTO && w!=AUTO && r==AUTO)
             r = cw - ( l + w + ml + mr + pab);
-    }    
-    
+    }
+
     m_width = w + pab;
     m_marginLeft = ml;
     m_marginRight = mr;
@@ -914,8 +909,8 @@ void RenderBox::calcAbsoluteVertical()
     // based on
     // http://www.w3.org/Style/css2-updates/REC-CSS2-19980512-errata
     // (actually updated 2000-10-24)
-    // that introduces static-position value for top, left & right        
-    
+    // that introduces static-position value for top, left & right
+
     const int AUTO = -666666;
     int t,b,h,mt,mb,ch;
 
@@ -937,7 +932,7 @@ void RenderBox::calcAbsoluteVertical()
     if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
-        if (m_height-pab>h) 
+        if (m_height-pab>h)
             h=m_height-pab;
     }
     else if (isReplaced())
@@ -946,73 +941,73 @@ void RenderBox::calcAbsoluteVertical()
     if(!style()->marginTop().isVariable())
         mt = style()->marginTop().width(ch);
     if(!style()->marginBottom().isVariable())
-        mb = style()->marginBottom().width(ch);        
-        
+        mb = style()->marginBottom().width(ch);
+
     int static_top=0;
     if ((t==AUTO && b==AUTO ) || style()->top().isStatic())
     {
         // calc hypothetical location in the normal flow
-        // used for 1) top=static-position 
+        // used for 1) top=static-position
         //          2) top, bottom, height are all auto -> calc top -> 3.
-        //          3) precalc for case 2 below  
-              
-        RenderObject* ro = previousSibling();        
+        //          3) precalc for case 2 below
+
+        RenderObject* ro = previousSibling();
         while ( ro && ro->isPositioned())
-            ro = ro->previousSibling(); 
-        
+            ro = ro->previousSibling();
+
         if (ro) static_top = ro->yPos()+ro->marginBottom()+ro->height();
-                    
+
         RenderObject* po = parent();
-        while (po && po!=containingBlock()) { 
-            static_top+=po->yPos(); 
-            po=po->parent(); 
+        while (po && po!=containingBlock()) {
+            static_top+=po->yPos();
+            po=po->parent();
         }
-        
+
         if (h==AUTO || style()->top().isStatic())
             t = static_top;
     }
-    
-      
-    
-    if (t!=AUTO && h!=AUTO && b!=AUTO)        
+
+
+
+    if (t!=AUTO && h!=AUTO && b!=AUTO)
     {
         // top, height, bottom all given, play with margins
         int ot = h + t + b + pab;
-        
-        if (mt==AUTO && mb==AUTO) 
-        {            
-            // both margins auto, solve for equality            
+
+        if (mt==AUTO && mb==AUTO)
+        {
+            // both margins auto, solve for equality
             mt = (ch - ot)/2;
             mb = ch - ot - mt;
-        }         
+        }
         else if (mt==AUTO)
             // solve for top margin
-            mt = ch - ot - mb;        
+            mt = ch - ot - mb;
         else if (mb==AUTO)
             // solve for bottom margin
             mb = ch - ot - mt;
         else
             // overconstrained, solve for bottom
             b = ch - ( h+t+mt+mb+pab);
-    } 
+    }
     else
     {
         // one or two of (top, height, bottom) missing, solve
-        
+
         // auto margins are ignored
         if (mt==AUTO) mt = 0;
         if (mb==AUTO) mb = 0;
-            
+
         //1. solve top & height. use content height.
-        if (t==AUTO && h==AUTO && b!=AUTO) 
+        if (t==AUTO && h==AUTO && b!=AUTO)
         {
-            h = m_height-pab; 
-            t = ch - ( h+b+mt+mb+pab);       
-        } 
+            h = m_height-pab;
+            t = ch - ( h+b+mt+mb+pab);
+        }
         else
 
         //2. solve top & bottom. use static positioning.
-        if (t==AUTO && h!=AUTO && b==AUTO) 
+        if (t==AUTO && h!=AUTO && b==AUTO)
         {
             t = static_top;
             b = ch - ( h+t+mt+mb+pab);
@@ -1020,35 +1015,35 @@ void RenderBox::calcAbsoluteVertical()
         else
 
         //3. solve height & bottom. use content height.
-        if (t!=AUTO && h==AUTO && b==AUTO) 
+        if (t!=AUTO && h==AUTO && b==AUTO)
         {
-            h = m_height-pab; 
+            h = m_height-pab;
             b = ch - ( h+t+mt+mb+pab);
-        } 
+        }
         else
 
         //4. solve top
-        if (t==AUTO && h!=AUTO && b!=AUTO) 
+        if (t==AUTO && h!=AUTO && b!=AUTO)
             t = ch - ( h+b+mt+mb+pab);
         else
 
         //5. solve height
-        if (t!=AUTO && h==AUTO && b!=AUTO) 
+        if (t!=AUTO && h==AUTO && b!=AUTO)
             h = ch - ( t+b+mt+mb+pab);
         else
-        
+
         //6. solve bottom
-        if (t!=AUTO && h!=AUTO && b==AUTO) 
+        if (t!=AUTO && h!=AUTO && b==AUTO)
             b = ch - ( h+t+mt+mb+pab);
     }
-    
+
 
     if (m_height<h+pab) //content must still fit
         m_height = h+pab;
 
     m_marginTop = mt;
     m_marginBottom = mb;
-    m_y = t + mt + containingBlock()->borderTop(); 
+    m_y = t + mt + containingBlock()->borderTop();
 
 //    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
 
