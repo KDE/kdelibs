@@ -18,6 +18,9 @@
 
 // $Id$
 
+#ifndef kpac_discovery_h
+#define kpac_discovery_h
+
 #include <qobject.h>
 
 #include <kurl.h>
@@ -52,3 +55,5 @@ private:
 };
 
 // vim: ts=4 sw=4 et
+
+#endif
