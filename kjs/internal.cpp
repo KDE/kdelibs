@@ -615,10 +615,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     retVal = 0L;
     if (res.isA(CompletionType)) {
       Completion *com = static_cast<Completion*>(&res);
-      if (com->complType() == ReturnValue)
+      if (com->complType() == ReturnValue || thisV)
 	retVal = com->value().imp();
-      else if (thisV)
-	retVal = res.imp();
     }
   }
 
