@@ -91,7 +91,7 @@ AudioIOSGI::AudioIOSGI()
 	requestedFragmentCount = param(fragmentCount) = 10;
 	audio_port=0;
 	audio_port1=0;
-	param(format)=16;
+	param(format)=17;
 	param(channels) = 2;
 	param(direction) = 2;
 }
@@ -112,12 +112,12 @@ bool AudioIOSGI::open()
 		_error = "invalid direction";
 		return false;
 	}
-	framesz=(_format >> 3) * _channels;
+	framesz=((_format & ~1) >> 3) * _channels;
 
 	audioconfig = alNewConfig();
 	alSetSampFmt(audioconfig,AL_SAMPFMT_TWOSCOMP);
 
-	alSetWidth(audioconfig, _format==8 ? AL_SAMPLE_8 : _format==16 ? AL_SAMPLE_16 : AL_SAMPLE_24);
+	alSetWidth(audioconfig, _format==8 ? AL_SAMPLE_8 : _format==16 || _format==17 ? AL_SAMPLE_16 : AL_SAMPLE_24);
 	alSetQueueSize(audioconfig,(requestedFragmentSize * requestedFragmentCount) / framesz);
 	alSetChannels(audioconfig,_channels);
 
@@ -139,22 +139,22 @@ bool AudioIOSGI::open()
 	if (_direction == 3){
 		audio_port1  = alOpenPort("in","r",audioconfig);
 		if (audio_port1 == (ALport) 0 ) {
-		err = oserror();
-		if (err == AL_BAD_NO_PORTS) {
-			_error = "System is out of audio ports";
-		} else if (err == AL_BAD_DEVICE_ACCESS) {
-			_error = "Couldn't access audio device";
-		} else if (err == AL_BAD_OUT_OF_MEM) {
-			_error = "Out of memory";
+			err = oserror();
+			if (err == AL_BAD_NO_PORTS) {
+				_error = "System is out of audio ports";
+			} else if (err == AL_BAD_DEVICE_ACCESS) {
+				_error = "Couldn't access audio device";
+			} else if (err == AL_BAD_OUT_OF_MEM) {
+				_error = "Out of memory";
+			}
+			close();
+			return false;
 		}
-		close();
-		return false;
-	}
 	}
 	/*
-	* Attempt to set a crystal-based sample-rate on the
-	* given device.
-	*/
+	 * Attempt to set a crystal-based sample-rate on the
+	 * given device.
+	 */
 	ALpv x[2];
 	x[0].param = AL_MASTER_CLOCK;
 	x[0].value.i = AL_CRYSTAL_MCLK_TYPE;
