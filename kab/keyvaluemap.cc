@@ -159,7 +159,10 @@ bool KeyValueMap::save(ofstream& file, int count)
   LG(GUARD, "KeyValueMap::save: saving data to given "
      "output stream.\n");
   StringStringMap::iterator pos;
-  char* prefix=new char[count+1](' '); prefix[count]=0;
+  bool ret = true;
+  char* prefix=new char[count+1]; 
+  memset(prefix, ' ', count);
+  prefix[count]=0;
   CHECK(prefix!=0);
   // -----
   for(pos=data->begin(); pos!=data->end(); pos++)
@@ -173,10 +176,12 @@ bool KeyValueMap::save(ofstream& file, int count)
 	{
 	  LG(GUARD, "KeyValueMap::save: error while "
 	     "saving data.\n");
-	  return false;
+	  ret=false;
+	  break;
 	}
     }
-  return true;
+  delete [] prefix;
+  return ret;
   // ########################################################
 }
 
