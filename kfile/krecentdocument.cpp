@@ -1,7 +1,13 @@
+/*
+ * (C) Daniel M. Duley 1999 KDE Artistic
+ */
+
 #include <krecentdocument.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <kpixmapcache.h>
 #include <kapp.h>
+#include <kurl.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
@@ -11,6 +17,7 @@
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
+    warning("KRecentDocument::add for %s", openStr.latin1());
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("RecentDocuments");
@@ -33,8 +40,10 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     QFileInfo fi(openStr);
     if(!isUrl)
         dStr = dir.absPath() + "/" + fi.fileName();
-    else
-        dStr = dir.absPath() + "/" + openStr;
+    else{
+        KURL url(openStr);
+        dStr = dir.absPath() + "/" + url.filename();
+    }
 
     int i;
     // check for duplicates
@@ -77,8 +86,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
         stream << "Name=" << fi.fileName() << "\n";
     else
         stream << "Name=" << openStr << "\n";
-
-    stream << "Icon=document.png\n";
+    stream << "Icon=document.png"  << "\n";
     dFile.close();
 }
 

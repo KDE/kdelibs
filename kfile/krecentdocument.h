@@ -1,3 +1,8 @@
+/*
+ * (C) Daniel M. Duley 1999 KDE Artistic
+ */
+
+
 #ifndef __KRECENTDOCUMENT_H
 #define __KRECENTDOCUMENT_H
 
