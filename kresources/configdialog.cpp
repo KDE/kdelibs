@@ -74,11 +74,11 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     mConfigWidget->setInEditMode( false );
     mConfigWidget->loadSettings( mResource );
     mConfigWidget->show();
-    connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ), 
+    connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ),
         SLOT( setReadOnly( bool ) ) );
   }
 
-  connect( mName, SIGNAL( textChanged(const QString &)), 
+  connect( mName, SIGNAL( textChanged(const QString &)),
       SLOT( slotNameChanged(const QString &)));
 
   slotNameChanged( mName->text() );
@@ -104,7 +104,7 @@ void ConfigDialog::setReadOnly( bool value )
 void ConfigDialog::accept()
 {
   if ( mName->text().isEmpty() ) {
-    KMessageBox::sorry( this, i18n( "Please enter a resource name" ) );
+    KMessageBox::sorry( this, i18n( "Please enter a resource name." ) );
     return;
   }
 
