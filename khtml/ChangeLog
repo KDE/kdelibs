@@ -1,5 +1,10 @@
 2004-12-01  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        * render/render_list.cpp: Implement hiragana and katakana list-styles,
+        and fix alpha/latin list-styles for values >26.
+
+2004-12-01  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * render/render_list.{cpp,h}: Implement list-style-type: decimal-leading-zero
 
 2004-11-30  Germain Garand  <germain@ebooksfrance.org>

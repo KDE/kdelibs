@@ -33,6 +33,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <qvaluelist.h>
 
 //#define BOX_DEBUG
 
@@ -72,6 +73,24 @@ static QString toRoman( int number, bool upper )
 }
 
 static QString toLetter( int number, int base ) {
+    QValueList<QChar> letters;
+    while(number > 0) {
+        number--; // number 0 is letter a
+        QChar letter = (QChar) (base + (number % 26));
+        letters.prepend(letter);
+        number /= 26;
+    }
+    QString str;
+    str.setLength(letters.size());
+    int i=0;
+    while(!letters.isEmpty()) {
+        str[i++] = letters.front();
+        letters.pop_front();
+    }
+    return str;
+}
+/*
+static QString toLetter( int number, int base ) {
     number--;
     QString letter = (QChar) (base + (number % 26));
     // Add a "'" at the end of the alphabet
@@ -79,7 +98,7 @@ static QString toLetter( int number, int base ) {
        letter += '\'';
     }
     return letter;
-}
+}*/
 
 static QString toHebrew( int number ) {
     const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
@@ -115,6 +134,68 @@ static QString toHebrew( int number ) {
         }
     }
     return letter;
+}
+
+static QString toAlphabetic( int number, int base, QChar* alphabet ) {
+    QValueList<QChar> letters;
+    while(number > 0) {
+        number--; // number 0 is letter 1
+        QChar letter = alphabet[number % base];
+        letters.prepend(letter);
+        number /= base;
+    }
+    QString str;
+    str.setLength(letters.size());
+    int i=0;
+    while(!letters.isEmpty()) {
+        str[i++] = letters.front();
+        letters.pop_front();
+    }
+    return str;
+}
+
+static QString toHiragana( int number ) {
+    static QChar hiragana[48] = {0x3042, 0x3044, 0x3046, 0x3048, 0x304A, 0x304B, 0x304D,
+                                 0x304F, 0x3051, 0x3053, 0x3055, 0x3057, 0x3059, 0x305B, 0x305D,
+                                 0x305F, 0x3061, 0x3064, 0x3066, 0x3068, 0x306A, 0x306B,
+                                 0x306C, 0x306D, 0x306E, 0x306F, 0x3072, 0x3075, 0x3078,
+                                 0x307B, 0x307E, 0x307F, 0x3080, 0x3081, 0x3082, 0x3084, 0x3086,
+                                 0x3088, 0x3089, 0x308A, 0x308B, 0x308C, 0x308D, 0x308F,
+                                 0x3090, 0x3091, 0x9092, 0x3093};
+    return toAlphabetic( number, 48, hiragana );
+}
+
+static QString toHiraganaIroha( int number ) {
+    static QChar hiragana[47] = {0x3044, 0x308D, 0x306F, 0x306B, 0x307B, 0x3078, 0x3068,
+                                 0x3061, 0x308A, 0x306C, 0x308B, 0x3092, 0x308F, 0x304B,
+                                 0x3088, 0x305F, 0x308C, 0x305D, 0x3064, 0x306D, 0x306A,
+                                 0x3089, 0x3080, 0x3046, 0x3090, 0x306E, 0x304A, 0x304F, 0x3084,
+                                 0x307E, 0x3051, 0x3075, 0x3053, 0x3048, 0x3066, 0x3042, 0x3055,
+                                 0x304D, 0x3086, 0x3081, 0x307F, 0x3057, 0x3091, 0x3072, 0x3082,
+                                 0x305B, 0x3059 };
+    return toAlphabetic( number, 47, hiragana );
+}
+
+static QString toKatakana( int number ) {
+    static QChar katakana[48] = {0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD,
+                                 0x30AF, 0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB,
+                                 0x30BD, 0x30BF, 0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA,
+                                 0x30CB, 0x30CC, 0x30CD, 0x30CE, 0x30CF, 0x30D2, 0x30D5,
+                                 0x30D8, 0x30DB, 0x30DE, 0x30DF, 0x30E0, 0x30E1, 0x30E2,
+                                 0x30E4, 0x30E6, 0x30E8, 0x30E9, 0x30EA, 0x30EB, 0x30EC,
+                                 0x30ED, 0x30EF, 0x30F0, 0x30F1, 0x90F2, 0x30F3};
+    return toAlphabetic( number, 48, katakana );
+}
+
+static QString toKatakanaIroha( int number ) {
+    static QChar katakana[47] = {0x30A4, 0x30ED, 0x30CF, 0x30CB, 0x30DB, 0x30D8, 0x30C8,
+                                 0x30C1, 0x30EA, 0x30CC, 0x30EB, 0x30F2, 0x30EF, 0x30AB,
+                                 0x30E8, 0x30BF, 0x30EC, 0x30ED, 0x30C4, 0x30CD, 0x30CA,
+                                 0x30E9, 0x30E0, 0x30A6, 0x30F0, 0x30CE, 0x30AA, 0x30AF,
+                                 0x30E4, 0x30DE, 0x30B1, 0x30D5, 0x30B3, 0x30A8, 0x30C6,
+                                 0x30A2, 0x30B5, 0x30AD, 0x30E6, 0x30E1, 0x30DF, 0x30B7,
+                                 0x30F1, 0x30D2, 0x30E2, 0x30BB, 0x90B9};
+    return toAlphabetic( number, 47, katakana );
 }
 
 static QString toNumeric( int number, int base ) {
@@ -595,6 +676,18 @@ void RenderListMarker::calcMinMaxWidth()
     case UPPER_ALPHA:
     case UPPER_LATIN:
         m_item = toLetter( m_value, 'A' );
+        break;
+    case HIRAGANA:
+        m_item = toHiragana( m_value );
+        break;
+    case HIRAGANA_IROHA:
+        m_item = toHiraganaIroha( m_value );
+        break;
+    case KATAKANA:
+        m_item = toKatakana( m_value );
+        break;
+    case KATAKANA_IROHA:
+        m_item = toKatakanaIroha( m_value );
         break;
     case LNONE:
         break;
