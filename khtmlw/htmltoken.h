@@ -157,6 +157,12 @@ protected:
 
     // Discard line breaks immediately after tags
     bool discardCR;
+
+	 // Discard the LF part of CRLF sequence
+    bool skipLF;
+
+	 // Are we in a <title> ... </title> block
+	 bool title;
     
     // Are we in a <pre> ... </pre> block
     bool pre;
@@ -164,8 +170,14 @@ protected:
     // Are we in a <script> ... </script> block
     bool script;
 
+    // Are we in a <style> ... </style> block
+    bool style;
+
     // Are we in a <select> ... </select> block
     bool select;
+
+	 // Are we in a &... character entity description?
+	 bool charEntity;
 
     // Area we in a <!-- comment --> block
     bool comment;
@@ -180,18 +192,13 @@ protected:
     // Maximal size that can be stored in @ref #scriptCode
     int scriptCodeMaxSize;
     
-    // Used to store the string "</script>" for comparison
-    const char *scriptString;
-    // Stores characters if we are scanning for "</script>"
-    char scriptBuffer[ 10 ];
-    // Counts where we are in the string "</script>"
-    int scriptCount;
+    // Stores characters if we are scanning for a string like "</script>"
+    char searchBuffer[ 10 ];
+    // Counts where we are in the string we are scanning for 
+    int searchCount;
+    // The string we are searching for
+    const char *searchFor;
     
-    // Is TRUE if we are in a <script> tag and insideof '...' quotes
-    bool squote;
-    // Is TRUE if we are in a <script> tag and insideof "..." quotes
-    bool dquote;
-
     KHTMLWidget *widget;
     
     /**

@@ -40,6 +40,10 @@
 // Include Java Script
 #include <jsexec.h>
 
+static const char *commentStart = "<!--";
+static const char *scriptEnd = "</script>";
+static const char *styleEnd = "</style>";
+
 //-----------------------------------------------------------------------------
 
 const char *BlockingToken::tokenName()
@@ -71,7 +75,6 @@ const char *BlockingToken::tokenName()
 HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
 {
     blocking.setAutoDelete( true );
-    scriptString = "</script>";
     jsEnvironment = 0L;
     widget = _widget;
     head = tail = curr = 0;
@@ -106,13 +109,15 @@ void HTMLTokenizer::begin()
     discardCR = false;
     pre = false;
     script = false;
+    style = false;
+    skipLF = false;
     select = false;
     comment = false;
     textarea = false;
-    squote = false;
-    dquote = false;
     tquote = false;
-    scriptCount = 0;
+    searchCount = 0;
+    title = false;
+    charEntity = false;
 }
 
 void HTMLTokenizer::write( const char *str )
@@ -149,19 +154,38 @@ void HTMLTokenizer::write( const char *str )
 	    buffer = newbuf;
 	    size += 1024;
 	}
-	if ( comment )
+
+	if (skipLF && (*src != '\n'))
 	{
-	    if ( !strncmp( src, "->", 2 ) )
+	    skipLF = false;
+	}
+	if (skipLF)
+	{
+	    src++;
+	} 
+	else if ( comment )
+	{
+	    // Look for '-->'
+	    if (*src == '-') 
 	    {
-		src += 2;
-		comment = false;
+	        if (searchCount < 2)	// Watch out for '--->'
+	            searchCount++;
+	    }
+	    else if ((searchCount == 2) && (*src == '>'))
+	    {
+	    	// We got a '-->' sequence
+	    	comment = false;
 	    }
 	    else
-		src++;
+	    {
+	    	searchCount = 0;
+	    }
+            src++;
 	}
-	// We are inside of the <script> tag. Look for </script>,
+	// We are inside of the <script> or <style> tag. Look for the end tag
+	// which is either </script> or </style>,
 	// otherwise print out every received character
-	else if ( script )
+	else if ( script || style )
 	{
 	    // Allocate memory to store the script. We will write maximal
 	    // 10 characers.
@@ -174,178 +198,166 @@ void HTMLTokenizer::write( const char *str )
 		scriptCodeMaxSize += 1024;
 	    }
 
-	    if ( *src == '\\' )
-	    {
-		src++;
-		scriptCode[ scriptCodeSize++ ] = *src++;
-	    }
-	    else if ( *src == '\"' && !squote)
-	    {
-		scriptCode[ scriptCodeSize++ ] = *src++;
-		dquote = !dquote;
-	    }
-	    else if ( *src == '\'' && !dquote )
-	    {
-		scriptCode[ scriptCodeSize++ ] = *src++;
-		squote = !squote;
-	    }
-	    // Did we find </script> ? => We have the complete code
-	    else if ( scriptCount == 8 && *src == '>' )
+	    if ( ( *src == '>' ) && ( searchFor[ searchCount ] == '>'))
 	    {
 		src++;
 		scriptCode[ scriptCodeSize ] = 0;
 		scriptCode[ scriptCodeSize + 1 ] = 0;
-		script = false;
-/*
-		printf("================================================================\n");
-		if ( jsEnvironment == 0L )
-		    jsEnvironment = widget->getJSEnvironment();
-		printf("================================================================\n");
-		printf("%s\n",scriptCode );
-		printf("================================================================\n");
-		JSCode *code = jsEnvironment->parse( scriptCode );
-		printf("================================================================\n");
-		int ret = jsEnvironment->exec( code );
-		printf("RETURN '%i'\n",ret );
-		delete code;
-		const char *javaOutString = jsEnvironment->readOutput();
-		printf("================================================================\n");
-		if ( srcPtr )
-		    delete [] srcPtr;
-		srcPtr = new char[ strlen( src ) + strlen( javaOutString ) + 1 ];
-		strcpy( srcPtr, javaOutString );
-		strcat( srcPtr, src );
-		src = srcPtr;
-		printf("================================================================\n");
-*/
+		if (script) 
+		{
+		    script = false;
+		    /* Parse scriptCode containing <script> info */
+		    /* Not implemented */
+		}
+		else
+		{
+		    style = false;
+		    /* Parse scriptCode containing <style> info */
+		    /* Not implemented */
+		}
 	    }
 	    // Find out wether we see a </script> tag without looking at
 	    // any other then the current character, since further characters
 	    // may still be on their way thru the web!
-	    else if ( scriptCount > 0 )
+	    else if ( searchCount > 0 )
 	    {
-		if ( tolower(*src) == scriptString[ scriptCount ] )
+		if ( tolower(*src) == searchFor[ searchCount ] )
 		{
-		    scriptBuffer[ scriptCount ] = *src;
-		    scriptCount++;
+		    searchBuffer[ searchCount ] = *src;
+		    searchCount++;
 		    src++;
 		}
 		// We were wrong => print all buffered characters and the current one;
 		else
 		{
-		    scriptBuffer[ scriptCount ] = 0;
-		    char *p = scriptBuffer;
+		    searchBuffer[ searchCount ] = 0;
+		    char *p = searchBuffer;
 		    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
 		    scriptCode[ scriptCodeSize++ ] = *src++;
-		    scriptCount = 0;
+		    searchCount = 0;
 		}
-		
 	    }
-	    // Is this perhaps the start of the </script> tag?
-	    else if ( *src == '<' && !dquote && !squote )
+	    // Is this perhaps the start of the </script> or </style> tag?
+	    else if ( *src == '<' )
 	    {
-		scriptCount = 1;
-		scriptBuffer[ 0 ] = '<';
+		searchCount = 1;
+		searchBuffer[ 0 ] = '<';
 		src++;
 	    }
 	    else
 		scriptCode[ scriptCodeSize++ ] = *src++;
 	}
+	else if (charEntity)
+	{
+            int entityValue = 0;
+	    QString res = NULL;
+
+	    searchBuffer[ searchCount] = *src;
+	    searchBuffer[ searchCount+1] = '\0';
+	    
+	    // Check for '&#000' sequence
+	    if (searchBuffer[1] == '#')
+	    {
+		if ((searchCount > 1) && 
+		    (!isdigit(*src)))
+	        {	
+	    	    searchBuffer[ searchCount] = '\0';
+	    	    entityValue = (int) strtol( &(searchBuffer[2]), 
+	    	    				NULL, 10 );
+	    	    charEntity = false;
+	        }
+	    }
+	    else
+	    {
+	        // Check for &abc sequence
+	        if (!isalpha(*src))
+	        {
+                    int len;
+		    charEntity = false;
+	    	    searchBuffer[ searchCount] = '\0';
+		    res = charsets->convertTag(searchBuffer, len).copy();
+		    if (len <= 0)
+		    {
+		    	res = NULL;
+		    }
+	        }
+	    }
+	    
+	    if (searchCount > 8)
+	    {
+	    	// This sequence is too long.. we ignore it
+	        charEntity = false;
+                memcpy(dest,searchBuffer, searchCount);
+		dest += searchCount;
+		*dest++ = *src++;
+	    }
+	    else if (charEntity)
+	    {
+	    	// Keep searching for end of character entity 	
+	        searchCount++;
+	        src++;
+	    }
+	    else
+	    {
+	    	// We have a complete sequence
+
+		if ((searchBuffer[1] == '#') &&
+		    (entityValue< 128) &&
+		    (entityValue> 0))
+		{
+		    // Just insert plain ascii
+		    *dest++ = (char) entityValue;
+		}	    	
+		else if (!tag && !textarea && !select && !title) 
+		{
+		    // add current token first
+		    if (dest > buffer)
+		    {
+		        *dest=0;
+		        appendToken(buffer,dest-buffer);
+		        dest = buffer;
+		    }
+		    
+		    // add token with the amp-sequence for further conversion
+		    appendToken(searchBuffer, searchCount);
+		    dest = buffer;
+		}
+		else if (res)
+		{
+		    // insert the characters, assuming iso-8859-1
+		    memcpy(dest,(const char *)res,res.length());
+		    dest += res.length();
+		}
+		else if ((searchBuffer[1] == '#') && (entityValue > 0)) 
+		{
+		    // insert the character, assuming iso-8859-1
+		    *dest++ = (char) entityValue;
+		}
+		else
+		{
+		    // ignore the sequence, add it to the buffer as plaintext
+		    memcpy(dest,searchBuffer, searchCount);
+		    dest += searchCount;
+		}
+		if (*src == ';')
+		    src++;
+		searchCount = 0;
+	    }
+	}
 	else if ( *src == '&' ) 
 	{
+            src++;
 	    if ( pre )
 		pre_pos++;	    
 	    space = false;
-
-	    // Is the string long enough?
-	    if ( *(src+1) != '\0' && *(src+2) != '\0' )
-	    {
-		// Special character by number?
-		if ( *(src + 1) == '#' )
-		{
-		    char *endptr;
-		    int z = (int) strtol( src+2, &endptr, 10 );
-		    // parse only ascii characters unless in quotes
-		    if (z<128 || tquote){
-		        debugM("Adding character: '%c'\n",z);
-			*dest++ = z;
-		    }
-		    else{
-		      *dest=0;
-		      // add currend token
-		      appendToken(buffer,dest-buffer);
-		      
-		      // add token with the amp-sequence for further conversion
-		      memcpy(buffer,src,endptr-src);
-		      buffer[endptr-src]=0;
-		      debugM("Adding token: '%s'\n",buffer);
-		      appendToken(buffer,endptr-src);
-		      
-		      dest=buffer;
-		    }
-		    src = endptr;
-		    // Skip a trailing ';' ?
-		    if ( *src == ';' )
-		        src++;
-		}
-		// Special character ?
-		else if ( isalpha( *(src + 1) ) )
-		{
-		     if (!tag && !textarea && !select){
-		       // add currend token
-		       debugM("Not quoted amp-seq: %0.20s\n",src);
-		       *dest=0;
-		       debugM("Adding current token: %s\n",buffer);
-		       appendToken(buffer,dest-buffer);
-		       dest=buffer;
-		    
-		       const char *endptr=src+1;
-		       while(*endptr && isalpha(*endptr)) endptr++;
-		       if (*endptr==';') endptr++;
-		       // add token with the amp-sequence for further conversion
-		       memcpy(buffer,src,endptr-src);
-		       buffer[endptr-src]=0;
-		       debugM("Adding token: '%s'\n",buffer);
-		       appendToken(buffer,endptr-src);
-		       src=endptr;
-		       *dest=0;
-		     }
-		     else{
-		       // There is no need for font switching 
-		       // when we are in tag quotes, so amp-sequences can be 
-		       // translated here. I hope noone uses non iso-8859-1
-		       // characters here.
-		       int len=0;
-		       debugM("Quted amp-seq: %0.20s\n",src);
-		       const QString res=charsets->convertTag(src,len).copy();
-		       debugM("Converted to: %s, len: %i\n",(const char *)res,len);
-		       if ( len > 0 )
-		       {
-			   memcpy(dest,(const char *)res,res.length());
-			   dest+=res.length();
-			   src+=len;
-		       }
-		       else
-		       {
-			   *dest++ = *src++;
-		       }
-		     }  
-		}
-		else
-		    *dest++ = *src++;
-	    }
-	    else
-		*dest++ = *src++;
+	    
+	    charEntity = true;
+            searchCount = 0;
+            searchBuffer[searchCount++] = '&';
 	}
 	else if ( *src == '<' && !tquote )
 	{
 	    src++;
-	    if ( strncmp( src, "!-", 2 ) == 0 )
-	    {
-		src += 2;
-		comment = true;
-		continue;
-	    }
 
 	    space = true;      // skip leading spaces
 	    discardCR = true;  // skip leading CR
@@ -362,11 +374,12 @@ void HTMLTokenizer::write( const char *str )
 	    *dest = '<';
 	    dest++;
 	    tag = true;
+	    searchCount = 1; // Look for '<!--' sequence to start comment
 	}
 	else if ( *src == '>' && tag && !tquote )
 	{
+            searchCount = 0; // Stop looking for '<!--' sequence
 	    space = false;
-//	    discardCR = true;
 	    discardCR = false;
 
 	    *dest = '>';
@@ -404,11 +417,28 @@ void HTMLTokenizer::write( const char *str )
 	    {
 		textarea = false;
 	    }
+	    else if ( strncmp( buffer+2, "title", 5 ) == 0 )
+	    {
+		title = true;
+	    }
+	    else if ( strncmp( buffer+2, "/title", 6 ) == 0 )
+	    {
+		title = false;
+	    }
 	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
 	    {
 		script = true;
-//		blocking.append(new BlockingToken(BlockingToken::Script,tail));
-
+                searchCount = 0;
+                searchFor = scriptEnd;		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+	    }
+	    else if ( strncmp( buffer+2, "style", 5 ) == 0 )
+	    {
+		style = true;
+                searchCount = 0;		
+                searchFor = styleEnd;		
 		scriptCode = new char[ 1024 ];
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
@@ -444,6 +474,7 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if (( *src == '\n' ) || ( *src == '\r' ))
 	{
+            searchCount = 0; // Stop looking for '<!--' sequence
 	    if ( !discardCR )
 	    {
 		if ( tag )
@@ -488,9 +519,9 @@ void HTMLTokenizer::write( const char *str )
 		}
 	    }
 	    /* Check for MS-DOS CRLF sequence */
-	    if ((*src == '\r') && (*(src+1) == '\n'))
+	    if (*src == '\r')
 	    {
-		src++;
+		skipLF = true;
 	    }
 	    src++;
 	}
@@ -498,6 +529,7 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tag )
 	    {
+	        searchCount = 0; // Stop looking for '<!--' sequence
 		if ( !space )
 		{
 		    *dest = ' ';
@@ -530,6 +562,7 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tag )
 	    {
+	        searchCount = 0; // Stop looking for '<!--' sequence
 		if ( !space )
 		{
 		    *dest = ' ';
@@ -565,6 +598,7 @@ void HTMLTokenizer::write( const char *str )
 	{ // we treat " & ' the same in tags
 	    if ( tag )
 	    {
+	        searchCount = 0; // Stop looking for '<!--' sequence
 		src++;
 		if ( *(dest-1) == '=' && !tquote )
 		{
@@ -605,6 +639,7 @@ void HTMLTokenizer::write( const char *str )
 
 	    if ( tag )
 	    {
+	        searchCount = 0; // Stop looking for '<!--' sequence
 		if ( tquote )
 		{
 		    space = false;
@@ -641,9 +676,31 @@ void HTMLTokenizer::write( const char *str )
 	    space = false;
 	    discardCR = false;
 
-	    if ( pre )
+	    if (tag && (searchCount > 0))
+	    {
+	    	if (*src == commentStart[searchCount])
+	    	{
+	    	    searchCount++;
+	    	    if (searchCount == 4)
+	    	    {
+	    	    	// Found '<!--' sequence
+	    	        comment = true;
+		        dest = buffer; // ignore the previous part of this tag
+		        tag = false;
+		        searchCount = 0;
+		        continue;
+	    	    }
+	    	}
+	    	else
+	    	{
+	            searchCount = 0; // Stop looking for '<!--' sequence
+                }
+	    } 
+	    else if ( pre )
+	    {
 		pre_pos++;
-
+	    }
+	    
 	    *dest = *src++;
 	    dest++;
 	}
