@@ -87,7 +87,7 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     bool do_progressive;
 
 public:
-    khtml_jpeg_source_mgr();
+    khtml_jpeg_source_mgr() KDE_NO_EXPORT;
 };
 
 
