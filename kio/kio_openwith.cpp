@@ -322,70 +322,68 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, 
 			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
-{
-
-    
-    qServiceType = KMimeType::findByURL(KURL(_url.first()))->name();
-    if (qServiceType == "application/octet-stream")
-      qServiceType = QString::null;
-
-    m_pTree = 0L;
-    m_pService = 0L;
-    haveApp = false;
-
-    setCaption(_url.first());
-
-    QBoxLayout* topLayout = new QVBoxLayout(this, 15, 10);
+{    
+  qServiceType = KMimeType::findByURL(KURL(_url.first()))->name();
+  if (qServiceType == "application/octet-stream")
+    qServiceType = QString::null;
   
-    label = new QLabel( _text , this );
-    topLayout->addWidget(label);
-    
-    QBoxLayout* l = new QHBoxLayout(topLayout, 10);    
-    edit = new KLineEdit( this, 0L );
-    edit->setMinimumWidth(200);
-    l->addWidget(edit);
-    
-    completion = new KURLCompletion();
-    connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
-    connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
-    connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
-    connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT (setText (const QString&)));
-    connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
-
-    terminal = new QCheckBox( i18n("Run in terminal"), this );
-    l->addWidget(terminal);
-        
-    m_pTree = new KApplicationTree( this );
-    topLayout->addWidget(m_pTree);
-        
-    connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
-    connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
-
-    if (!qServiceType.isNull()) {
-      remember = new QCheckBox(i18n("Remember application association for this file"), this);
-      remember->setChecked(true);
-      topLayout->addWidget(remember);
-    }
-
-    // Use KButtonBox for the aligning pushbuttons nicely
-    KButtonBox* b = new KButtonBox(this);
-    clear = b->addButton( i18n("C&lear") );
-    b->addStretch(1);
-    connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
-
-    ok = b->addButton( i18n ("&OK") );
-    ok->setDefault(true);
-    connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
-
-    cancel = b->addButton( i18n("&Cancel") );
-    connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
-
-    b->layout();
-    topLayout->addWidget(b);
-    
-    edit->setText( _value );
-    edit->setFocus();
-    haveApp = false;
+  m_pTree = 0L;
+  m_pService = 0L;
+  haveApp = false;
+  
+  setCaption(_url.first());
+  
+  QBoxLayout* topLayout = new QVBoxLayout(this, 15, 10);
+  
+  label = new QLabel( _text , this );
+  topLayout->addWidget(label);
+  
+  QBoxLayout* l = new QHBoxLayout(topLayout, 10);    
+  edit = new KLineEdit( this, 0L );
+  edit->setMinimumWidth(200);
+  l->addWidget(edit);
+  
+  completion = new KURLCompletion();
+  connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
+  connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
+  connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
+  connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT (setText (const QString&)));
+  connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
+  
+  terminal = new QCheckBox( i18n("Run in terminal"), this );
+  l->addWidget(terminal);
+  
+  m_pTree = new KApplicationTree( this );
+  topLayout->addWidget(m_pTree);
+  
+  connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
+  connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
+  
+  if (!qServiceType.isNull()) {
+    remember = new QCheckBox(i18n("Remember application association for this file"), this);
+    remember->setChecked(true);
+    topLayout->addWidget(remember);
+  } else 
+    remember = 0L;
+  
+  // Use KButtonBox for the aligning pushbuttons nicely
+  KButtonBox* b = new KButtonBox(this);
+  clear = b->addButton( i18n("C&lear") );
+  b->addStretch(1);
+  connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
+  
+  ok = b->addButton( i18n ("&OK") );
+  ok->setDefault(true);
+  connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
+  
+  cancel = b->addButton( i18n("&Cancel") );
+  connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
+  
+  b->layout();
+  topLayout->addWidget(b);
+  
+  edit->setText( _value );
+  edit->setFocus();
 }
 
 
@@ -458,6 +456,7 @@ void KOpenWithDlg::slotOK()
     accept();
     return;
   }
+
   if (remember)
     if (!remember->isChecked()) {
       haveApp = false;
@@ -465,7 +464,6 @@ void KOpenWithDlg::slotOK()
       return;
     }
 
-  qDebug("KOpenWithDlg needs to create/update a desktop entry");
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
