@@ -52,7 +52,10 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#kcharsets2">kcharsets.h / KCharsets</A></LI>
 <LI><A HREF="#get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></LI>
 <LI><A HREF="#kled">kled.h, kledlamp.h / KLed, KLedLamp</A></LI>
+<LI><A HREF="#KDockWidget">KDockWidget</A></LI>
 <LI><A HREF="#KTMainWindow">KTMainWindow</A></LI>
+<LI><A HREF="#KMainWindow">KMainWindow</A></LI>
+<LI><A HREF="#KToolBar">KToolBar</A></LI>
 <LI><A HREF="#KPixmap">KPixmap, KPixmapEffect</A></LI>
 <LI><A HREF="#KControlCenter">KDE Control Center</A></LI>
 <LI><A HREF="#KWMModuleApplication">KWMModuleApplication libkdeui/kwmmapp.h</A></LI>
@@ -239,8 +242,8 @@ i18n is no longer a macro<P>
   The methods tempSaveName() and checkRecoverFile() return QString
   now. The returned values must _not_ be free()d.<P>
 
-  helpMenu() has been moved to KTMainWindow. aboutKDE(), aboutApp() and
-  appHelpActivated() have all been removed See section for KTMainWindow
+  helpMenu() has been moved to KMainWindow. aboutKDE(), aboutApp() and
+  appHelpActivated() have all been removed See section for KMainWindow
   for more info.<P>
 
   The KApplication constructor has changed. Command line arguments and
@@ -425,13 +428,6 @@ KDialog is no longer defined in kwizard.h. Include kdialog.h instead.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="KTMainWidget">KTMainWidget</A></H3>
-
-view_* public variables do no longer exist. There is really no reason
-for an app to use this information. If you do need it anyway, use
-mainViewGeometry() instead.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="automoc">automoc</A></H3>
 
@@ -641,9 +637,7 @@ The file has been removed completely, use QString instead. (<A HREF="mailto:mirk
 
 <H3><A NAME="ktopwidget">ktopwidget.h / KTopWidget</A></H3>
 
-KTMainWindow replaces this class completly. In most cases, it should be
-enough to simply replace the declaration of your former KTopWidget with
-KTMainWindow, as it is source compatible. ktopwidget.h does not
+KMainWindow replaces this class completly. ktopwidget.h does not
 exist in KDE 2. (<A HREF="mailto:mirko@kde.org">mirko@kde.org</A>)<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
@@ -695,14 +689,44 @@ Please adjust your code accordingly.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
+<H3><A NAME="KDockWidget">KDockWidget</A></H3>
+
+KDockWidget inherits form KMainWindow instead of KTMainWindow now.
+See <A HREF="KTMainWindow>KTMainWindow</A> for more details.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
 <H3><A NAME="KTMainWindow">KTMainWindow</A></H3>
 
-helpMenu() has been moved to KTMainWindow from KApplication (kapp).<P>
+KTMainWindow has been replaced with KMainWindow.<p>
+
+The KMainWindow constructor needs a parent widget as first argument. 
+You can use 0 for this.<p>
+setView() has been replaced with setCentralWidget().<p>
+view() has been replaced with centralWidget().<p>
+addToolBar() has been revmoed, it is not needed any more.<p>
+setMenu(...) has been removed, it is not needed any more.<p>
+setStatusBar(...) has been removed, it is not needed any more.<p>
+updateRects() has been removed, it is not needed any more.<p>
+enableStatusBar(...) has been removed, use statusBar()->show() and/or
+statusBar()->hide() instead.<p>
+enableToolBar(...) has been removed, use toolBar()->show() and/or 
+toolBar()->hide() instead. <p>
+
+view_* public variables do no longer exist. There is really no reason
+for an app to use this information. If you do need it anyway, use
+mainViewGeometry() instead.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KMainWindow">KMainWindow</A></H3>
+
+helpMenu() has been moved to KMainWindow from KApplication (kapp).<P>
 
 Both the "About KDE" and the "About &lt;Application&gt;" dialog boxes
 are now modeless. "About KDE" is a completely new widget.<P>
 
-If you used in the toplevel window (that is derived from KTMainWindow)
+If you used in the toplevel window (that is derived from KMainWindow)
 "kapp-&gt;helpMenu( bool, QString )" to get the help menu
 you must now change this to "helpMenu( QString )". The QString defaults
 to QString::null so it is sufficient to write helpMenu().<P>
@@ -710,10 +734,20 @@ to QString::null so it is sufficient to write helpMenu().<P>
 The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
 have all been removed. If you need direct access to these or need
 access to a help menu in a class that is not derived from
-KTMainWindow then allocate an instance of the new class KHelpMenu.
+KMainWindow then allocate an instance of the new class KHelpMenu.
 See KDE 2.0 API reference or khelpmenu.h (kdeui) for additional info.<P>
-
 Espen Sand &lt;<A HREF="mailto:espen@kde.org">espen@kde.org</A>&gt;<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KToolBar">KToolBar</A></H3>
+
+enable(...) is depreciated, use show()/hide() instead.<p>
+enableFloating(...) has been removed, use enableMoving() instead.<p>
+setMaxHeight() is depreciated, use setMaximumHeight() instead.<p>
+maxHeight() is depreciated, use maximumHeight() instead.<p>
+setMaxWidth() is depreciated, use setMaximumWidth() instead.<p>
+maxWidth() is depreciated, use maximumWidth() instead.<p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
