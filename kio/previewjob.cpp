@@ -33,6 +33,7 @@
 #include <qfile.h>
 #include <qimage.h>
 #include <qtimer.h>
+#include <qregexp.h>
 
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kfileitem.h>

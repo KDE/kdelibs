@@ -20,6 +20,7 @@
 // -*- mode: c++; c-basic-offset: 4 -*-
 
 #include <qtimer.h>
+#include <qregexp.h>
 
 #include <kconfig.h>
 #include <kstddirs.h>

@@ -21,6 +21,7 @@
 #include <kdebug.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qregexp.h>
 #include <kcompletion.h>
 
 #include "kshellcompletion.h"

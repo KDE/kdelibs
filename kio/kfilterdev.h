@@ -58,6 +58,7 @@ public:
     void setOrigFileName( const QCString & fileName );
 
     // Not implemented
+#if QT_VERSION < 300
     virtual uint size() const;
 
     virtual int  at() const;
@@ -66,10 +67,25 @@ public:
      */
     virtual bool at( int );
 
+#else
+    virtual QIODevice::Offset size() const;
+
+    virtual QIODevice::Offset at() const;
+    /**
+     * That one can be quite slow, when going back. Use with care.
+     */
+    virtual bool at( QIODevice::Offset );
+#endif
+
     virtual bool atEnd() const;
 
+#if QT_VERSION < 300
     virtual int readBlock( char *data, uint maxlen );
     virtual int writeBlock( const char *data, uint len );
+#else
+    virtual Q_LONG readBlock( char *data, Q_ULONG maxlen );
+    virtual Q_LONG writeBlock( const char *data, Q_ULONG len );
+#endif
     //int readLine( char *data, uint maxlen );
 
     virtual int getch();

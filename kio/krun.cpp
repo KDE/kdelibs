@@ -42,6 +42,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdatetime.h>
+#include <qregexp.h>
 #include <kwin.h>
 #include <kdesktopfile.h>
 #include <kstartupinfo.h>

@@ -140,7 +140,11 @@ void KFilterDev::flush()
     // Hmm, might not be enough...
 }
 
+#if QT_VERSION < 300
 uint KFilterDev::size() const
+#else
+QIODevice::Offset KFilterDev::size() const
+#endif
 {
     // Well, hmm, Houston, we have a problem.
     // We can't know the size of the uncompressed data
@@ -153,12 +157,20 @@ uint KFilterDev::size() const
     return (uint)-1;
 }
 
+#if QT_VERSION < 300
 int KFilterDev::at() const
+#else
+QIODevice::Offset KFilterDev::at() const
+#endif
 {
     return ioIndex;
 }
 
+#if QT_VERSION < 300
 bool KFilterDev::at( int pos )
+#else
+bool KFilterDev::at( QIODevice::Offset pos )
+#endif
 {
     ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
@@ -201,7 +213,11 @@ bool KFilterDev::atEnd() const
     return filter->device()->atEnd() && (d->result == KFilterBase::END);
 }
 
+#if QT_VERSION < 300
 int KFilterDev::readBlock( char *data, uint maxlen )
+#else
+Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
+#endif
 {
     ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
@@ -270,7 +286,11 @@ int KFilterDev::readBlock( char *data, uint maxlen )
     return dataReceived;
 }
 
+#if QT_VERSION < 300
 int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
+#else
+Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
+#endif
 {
     ASSERT ( filter->mode() == IO_WriteOnly );
     // If we had an error, return 0.
