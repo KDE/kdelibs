@@ -275,8 +275,9 @@ private:
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
-  QCheckBox    *sizeIsRelativeCheckBox;
   QComboBox    *charsetsCombo;
+  QCheckBox    *sizeIsRelativeCheckBox;
+  
   KIntNumInput *sizeOfFont;
   QFont        selFont;
 
