@@ -89,7 +89,7 @@ void KClipboard::init()
     {
         initialized = true;
         KConfigGroup config( KGlobal::config(), "General" );
-        s_sync = config.readBoolEntry( "SynchronizeClipbboardAndSelection",
+        s_sync = config.readBoolEntry( "SynchronizeClipboardAndSelection",
                                        s_sync );
         s_implicitSelection = config.readBoolEntry( "ImplicitlySetSelection",
                                                     s_implicitSelection );
