@@ -32,7 +32,6 @@
 #include <kiconloader.h>
 #include <klistview.h>
 #include <krun.h>
-#include <kopenwith.h>
 #include <kmimetype.h>
 
 KFileList::KFileList(QWidget *parent, const char *name)
@@ -170,7 +169,6 @@ void KFileList::slotOpenFile()
 	QListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
-		KOpenWithHandler	handler;
 		new KRun(KURL(item->text(0)));
 	}
 }
