@@ -190,8 +190,10 @@ bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
         m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
         if ( isEditable() ) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
+
             if ( ext )  ext->editableWidgetBlurred( m_widget );
         }
+        handleFocusOut();
         break;
     case QEvent::FocusIn:
         m_element->ownerDocument()->setFocusNode(m_element);
@@ -546,6 +548,15 @@ void RenderLineEdit::slotReturnPressed()
 	fe->prepareSubmit();
 }
 
+void RenderLineEdit::handleFocusOut()
+{
+    LineEditWidget* edit = static_cast<LineEditWidget*>( m_widget );
+    if ( edit && edit->edited() ) {
+        m_element->onChange();
+        edit->setEdited( false );
+    }
+}
+
 void RenderLineEdit::calcMinMaxWidth()
 {
     if ( minMaxKnown() ) return;
@@ -597,7 +608,7 @@ void RenderLineEdit::layout()
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
     edit->setMaxLength( ml );
-
+    edit->setEdited( false );
     edit->setReadOnly(m_element->readOnly());
 
     RenderFormElement::layout();
@@ -674,6 +685,14 @@ void RenderFileButton::calcMinMaxWidth()
     RenderFormElement::calcMinMaxWidth();
 }
 
+void RenderFileButton::handleFocusOut()
+{
+    if ( m_edit && m_edit->edited() ) {
+        m_element->onChange();
+        m_edit->setEdited( false );
+    }
+}
+
 void RenderFileButton::slotClicked()
 {
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
@@ -697,6 +716,7 @@ void RenderFileButton::layout( )
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
     m_edit->setMaxLength( ml );
+    m_edit->setEdited( false );
     m_edit->setReadOnly(m_element->readOnly());
 
     RenderFormElement::layout();
@@ -1147,6 +1167,15 @@ RenderTextArea::~RenderTextArea()
     }
 }
 
+void RenderTextArea::handleFocusOut()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    if ( w && w->edited() ) {
+        m_element->onChange();
+        w->setEdited( false );
+    }
+}
+
 void RenderTextArea::calcMinMaxWidth()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
@@ -1178,6 +1207,7 @@ void RenderTextArea::layout( )
 	w->setText(f->value().string().visual());
 	w->setCursorPosition( line, col );
 	w->blockSignals(false);
+        w->setEdited(false);
     }
 
     RenderFormElement::layout();

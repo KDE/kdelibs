@@ -91,6 +91,8 @@ protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
 
+    virtual void handleFocusOut() {};
+    
     void handleMousePressed(QMouseEvent* e);
 
     DOM::HTMLGenericFormElementImpl *m_element;
@@ -222,6 +224,9 @@ public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 
+protected:
+    virtual void handleFocusOut();
+
 private:
     virtual bool isEditable() const { return true; }
 };
@@ -261,12 +266,16 @@ public:
     virtual void layout();
     void select();
 
+    KLineEdit* lineEdit() const { return m_edit; }
+
 public slots:
     virtual void slotClicked();
     virtual void slotReturnPressed();
     virtual void slotTextChanged(const QString &string);
 
 protected:
+    virtual void handleFocusOut();
+
     virtual bool isEditable() const { return true; }
     
     bool m_clicked;
@@ -384,6 +393,8 @@ protected slots:
     void slotTextChanged();
 
 protected:
+    virtual void handleFocusOut();
+
     virtual bool isEditable() const { return true; }
 };
 
