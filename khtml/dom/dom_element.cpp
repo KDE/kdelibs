@@ -152,7 +152,7 @@ Attr Element::getAttributeNode( const DOMString &name )
 Attr Element::setAttributeNode( const Attr &newAttr )
 {
   int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-  AttrImpl *r = 0;
+  Attr r = 0;
   if (impl)
       r = ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
   if ( exceptioncode )
@@ -163,7 +163,7 @@ Attr Element::setAttributeNode( const Attr &newAttr )
 Attr Element::removeAttributeNode( const Attr &oldAttr )
 {
   int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-  AttrImpl *r = 0;
+  Attr r = 0;
   if (impl)
       r = ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
   if ( exceptioncode )

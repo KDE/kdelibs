@@ -28,6 +28,7 @@
 
 #include "dom/dom_string.h"
 #include "dom_docimpl.h"
+#include "dom2_eventsimpl.h"
 
 #include "dom/dom_node.h"
 #include "misc/htmlhashes.h"
@@ -64,13 +65,16 @@ DOMString CharacterDataImpl::data() const
 
 void CharacterDataImpl::setData( const DOMString &newStr )
 {
-    if(str == newStr.impl) return;
-    if(str) str->deref();
+    if(str == newStr.impl) return; // ### fire DOMCharacterDataModified if modified?
+    DOMStringImpl *oldStr = str;
     str = newStr.impl;
     if(str) str->ref();
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
+
+    dispatchModifiedEvent(oldStr);
+    if(oldStr) oldStr->deref();
 }
 
 unsigned long CharacterDataImpl::length() const
@@ -90,47 +94,61 @@ DOMString CharacterDataImpl::substringData( const unsigned long offset, const un
 
 void CharacterDataImpl::appendData( const DOMString &arg )
 {
-    detachString();
+    DOMStringImpl *oldStr = str;
+    str = str->copy();
+    str->ref();
     str->append(arg.impl);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
     if (_parent)
         _parent->setChanged(true);
+
+    dispatchModifiedEvent(oldStr);
+    oldStr->deref();
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )
 {
-    detachString();
     exceptioncode = 0;
     if (offset > str->l) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return;
     }
+    DOMStringImpl *oldStr = str;
+    str = str->copy();
+    str->ref();
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
+
+    dispatchModifiedEvent(oldStr);
+    oldStr->deref();
 }
 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
-    detachString();
     exceptioncode = 0;
     if (offset > str->l) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return;
     }
 
+    DOMStringImpl *oldStr = str;
+    str = str->copy();
+    str->ref();
     str->remove(offset,count);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
+
+    dispatchModifiedEvent(oldStr);
+    oldStr->deref();
 }
 
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode )
 {
-    detachString();
     exceptioncode = 0;
     if (offset > str->l) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
@@ -143,21 +161,31 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     else
         realCount = count;
 
+    DOMStringImpl *oldStr = str;
+    str = str->copy();
+    str->ref();
     str->remove(offset,realCount);
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
+
+    dispatchModifiedEvent(oldStr);
+    oldStr->deref();
 }
 
-
-void CharacterDataImpl::detachString()
+void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
-    // make a copy of our string so as not to interfere with other texts that use it
-    DOMStringImpl *newStr = str->copy();
-    newStr->ref();
-    str->deref();
-    str = newStr;
+    if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
+	return;
+	
+    DOMStringImpl *newValue = str->copy();
+    newValue->ref();
+    int exceptioncode;
+    dispatchEvent(new MutationEventImpl(EventImpl::DOMCHARACTERDATAMODIFIED_EVENT,
+		  true,false,0,prevValue,newValue,0,0),exceptioncode);
+    newValue->deref();
+    dispatchSubtreeModifiedEvent();
 }
 
 // ---------------------------------------------------------------------------
@@ -233,15 +261,15 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
         return 0;
     }
 
-    TextImpl *newText = static_cast<TextImpl*>(cloneNode(true,exceptioncode));
-    if ( exceptioncode )
-        return 0;
-    newText->deleteData(0,offset,exceptioncode);
-    if ( exceptioncode )
-        return 0;
-    deleteData(offset,str->l-offset,exceptioncode);
-    if ( exceptioncode )
-        return 0;
+    DOMStringImpl *oldStr = str;
+    TextImpl *newText = createNew(str->substring(offset,str->l-offset));
+    str = str->copy();
+    str->ref();
+    str->remove(offset,str->l-offset);
+
+    dispatchModifiedEvent(oldStr);
+    oldStr->deref();
+
     if (_parent)
         _parent->insertBefore(newText,_next, exceptioncode );
     if ( exceptioncode )
@@ -377,6 +405,11 @@ bool TextImpl::childTypeAllowed( unsigned short /*type*/ )
     return false;
 }
 
+TextImpl *TextImpl::createNew(DOMStringImpl *_str)
+{
+    return new TextImpl(docPtr(),_str);
+}
+
 // ---------------------------------------------------------------------------
 
 CDATASectionImpl::CDATASectionImpl(DocumentPtr *impl, const DOMString &_text) : TextImpl(impl,_text)
@@ -412,6 +445,10 @@ bool CDATASectionImpl::childTypeAllowed( unsigned short /*type*/ )
     return false;
 }
 
+TextImpl *CDATASectionImpl::createNew(DOMStringImpl *_str)
+{
+    return new CDATASectionImpl(docPtr(),_str);
+}
 
 
 

@@ -339,6 +339,32 @@ unsigned long NodeImpl::nodeIndex() const
 
 void NodeImpl::addEventListener(int id, EventListener *listener, const bool useCapture)
 {
+    switch (id) {
+	case EventImpl::DOMSUBTREEMODIFIED_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER);
+	    break;
+	case EventImpl::DOMNODEINSERTED_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER);
+	    break;
+	case EventImpl::DOMNODEREMOVED_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER);
+	    break;
+        case EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
+	    break;
+        case EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
+	    break;
+        case EventImpl::DOMATTRMODIFIED_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER);
+	    break;
+        case EventImpl::DOMCHARACTERDATAMODIFIED_EVENT:
+	    getDocument()->addListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER);
+	    break;
+	default:
+	    break;
+    }
+
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
         m_regdListeners = new QList<RegisteredEventListener>;
@@ -562,6 +588,15 @@ bool NodeImpl::dispatchUIEvent(int _id, int detail)
     return r;
 }
 
+bool NodeImpl::dispatchSubtreeModifiedEvent()
+{
+    if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
+	return false;
+    int exceptioncode;
+    return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
+			 true,false,0,0,0,0,0),exceptioncode);
+}
+
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 {
     if (!m_regdListeners)
@@ -591,16 +626,16 @@ NodeImpl *NodeImpl::childNode(unsigned long /*index*/)
     return 0;
 }
 
-NodeImpl *NodeImpl::traverseNextNode() {
+NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) {
     if (firstChild())
 	return firstChild();
     else if (nextSibling())
 	return nextSibling();
     else {
 	NodeImpl *n = this;
-	while (n && !n->nextSibling())
+	while (n && !n->nextSibling() && (!stayWithin || n->parentNode() != stayWithin))
 	    n = n->parentNode();
-	if (n)
+	if (n && (!stayWithin || n->parentNode() != stayWithin))
 	    return n->nextSibling();
     }
     return 0;
@@ -791,13 +826,15 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
 
+        dispatchChildInsertedEvents(child,exceptioncode);
+
         prev = child;
         child = nextChild;
     }
 
     // ### set style in case it's attached
     setChanged(true);
-
+    dispatchSubtreeModifiedEvent();
     return newChild;
 }
 
@@ -867,13 +904,16 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
         child->setNextSibling(next);
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
+
+        dispatchChildInsertedEvents(child,exceptioncode);
+
         prev = child;
         child = nextChild;
     }
 
     // ### set style in case it's attached
     setChanged(true);
-
+    dispatchSubtreeModifiedEvent();
     return oldChild;
 }
 
@@ -885,7 +925,29 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     if( checkIsChild(oldChild, exceptioncode) )
         return 0;
 
-    getDocument()->notifyBeforeNodeRemoval(oldChild);
+    getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
+	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
+			     true,false,this,0,0,0,0),exceptioncode);
+	if (exceptioncode)
+	    return 0;
+    }
+
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER)) {
+	// dispatch the DOMNOdeRemovedFromDocument event to all descendants
+	NodeImpl *p = this;
+	while (p->parentNode())
+	    p = p->parentNode();
+	if (p->nodeType() == Node::DOCUMENT_NODE) {
+	    NodeImpl *c;
+	    for (c = oldChild; c; c = c->traverseNextNode(oldChild)) {
+		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
+				 false,false,0,0,0,0,0),exceptioncode);
+		if (exceptioncode)
+		    return 0;
+	    }
+	}
+    }
 
     NodeImpl *prev, *next;
     prev = oldChild->previousSibling();
@@ -903,7 +965,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
         oldChild->detach();
 
     setChanged(true);
-
+    dispatchSubtreeModifiedEvent();
     return oldChild;
 }
 
@@ -983,11 +1045,14 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
 
+        dispatchChildInsertedEvents(child,exceptioncode);
+	
         child = nextChild;
     }
 
     setChanged(true);
     // ### set style in case it's attached
+    dispatchSubtreeModifiedEvent();
     return newChild;
 }
 
@@ -1315,6 +1380,32 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
     return n;
 }
 
+void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
+{
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
+	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
+			     true,false,this,0,0,0,0),exceptioncode);
+	if (exceptioncode)
+	    return;
+    }
+
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER)) {
+	// dispatch the DOMNOdeInsertedInfoDocument event to all descendants
+	NodeImpl *p = this;
+	while (p->parentNode())
+	    p = p->parentNode();
+	if (p->nodeType() == Node::DOCUMENT_NODE) {
+	    NodeImpl *c;
+	    for (c = child; c; c = c->traverseNextNode(child)) {
+		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
+				 false,false,0,0,0,0,0),exceptioncode);
+		if (exceptioncode)
+		    return;
+	    }
+	}
+    }
+}
+
 // ---------------------------------------------------------------------------
 
 NodeImpl *NodeListImpl::item( unsigned long /*index*/ ) const
@@ -1501,14 +1592,14 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;

@@ -37,6 +37,8 @@ namespace DOM {
 
 class DOMString;
 class AttrImpl;
+class ElementImpl;
+class NamedAttrMapImpl;
 
 /**
  * The <code> Attr </code> interface represents an attribute in an
@@ -86,6 +88,8 @@ class Attr : public Node
     friend class Element;
     friend class Document;
     friend class HTMLDocument;
+    friend class ElementImpl;
+    friend class NamedAttrMapImpl;
 
 public:
     Attr();
@@ -160,7 +164,6 @@ protected:
 class NodeList;
 class Attr;
 class DOMString;
-class ElementImpl;
 
 /**
  * By far the vast majority of objects (apart from text) that authors

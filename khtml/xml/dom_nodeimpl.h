@@ -270,6 +270,7 @@ public:
     virtual bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
     virtual bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
     virtual bool dispatchUIEvent(int _id, int detail = 0);
+    virtual bool dispatchSubtreeModifiedEvent();
     virtual void handleLocalEvents(EventImpl *evt, bool useCapture);
     /**
      * Perform the default action for an event e.g. submitting a form
@@ -279,7 +280,7 @@ public:
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
-    NodeImpl *traverseNextNode();
+    NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0);
 
     DocumentPtr *docPtr() const { return document; }
 
@@ -401,6 +402,7 @@ protected:
     bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
     // find out if a node is allowed to be our child
     virtual bool childAllowed( NodeImpl *newChild );
+    void dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode );
 };
 
 // --------------------------------------------------------------------------
@@ -497,9 +499,9 @@ public:
 
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const = 0;
 
-    virtual NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
+    virtual Node setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
 
-    virtual NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
+    virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
 
     virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const = 0;
 };
@@ -517,9 +519,9 @@ public:
 
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
 
-    virtual NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode );
+    virtual Node setNamedItem ( const Node &arg, int &exceptioncode );
 
-    virtual NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode );
+    virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode );
 
     virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
 

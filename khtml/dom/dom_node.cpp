@@ -86,7 +86,7 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
 	
     int exceptioncode = 0;
-    NodeImpl *r = impl->setNamedItem(arg,exceptioncode);
+    Node r = impl->setNamedItem(arg,exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;
@@ -98,7 +98,7 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
 	
     int exceptioncode = 0;
-    NodeImpl *r = impl->removeNamedItem(name,exceptioncode);
+    Node r = impl->removeNamedItem(name,exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;

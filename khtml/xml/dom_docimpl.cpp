@@ -126,6 +126,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
     m_focusNode = 0;
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
+    m_listenerTypes = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
@@ -153,6 +154,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
     m_focusNode = 0;
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
+    m_listenerTypes = 0;
 }
 
 DocumentImpl::~DocumentImpl()

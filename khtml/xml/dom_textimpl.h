@@ -60,8 +60,10 @@ public:
 
     DOMStringImpl *string() { return str; }
 protected:
+    // note: since DOMStrings are shared, str should always be copied when making
+    // a change or returning a string
     DOMStringImpl *str;
-    void detachString();
+    void dispatchModifiedEvent(DOMStringImpl *prevValue);
 };
 
 // ----------------------------------------------------------------------------
@@ -115,6 +117,9 @@ public:
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();
     virtual bool childTypeAllowed( unsigned short type );
+
+protected:
+    virtual TextImpl *createNew(DOMStringImpl *_str);
 };
 
 // ----------------------------------------------------------------------------
@@ -130,6 +135,9 @@ public:
     virtual unsigned short nodeType() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual bool childTypeAllowed( unsigned short type );
+
+protected:
+    virtual TextImpl *createNew(DOMStringImpl *_str);
 };
 
 

@@ -246,6 +246,20 @@ public:
     AbstractViewImpl *defaultView() const;
     EventImpl *createEvent(const DOMString &eventType, int &exceptioncode);
 
+    // keep track of what types of event listeners are registered, so we don't
+    // dispatch events un-necessarily
+    enum ListenerType {
+        DOMSUBTREEMODIFIED_LISTENER          = 0x01,
+        DOMNODEINSERTED_LISTENER             = 0x02,
+        DOMNODEREMOVED_LISTENER              = 0x04,
+        DOMNODEREMOVEDFROMDOCUMENT_LISTENER  = 0x08,
+        DOMNODEINSERTEDINTODOCUMENT_LISTENER = 0x10,
+        DOMATTRMODIFIED_LISTENER             = 0x20,
+        DOMCHARACTERDATAMODIFIED_LISTENER    = 0x40
+    };
+
+    bool hasListenerType(ListenerType listenerType) { return (m_listenerTypes & listenerType); }
+    void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
 signals:
     virtual void finishedParsing();
@@ -293,6 +307,8 @@ protected:
     ElementImpl *m_focusNode;
     QList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
+
+    unsigned short m_listenerTypes;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

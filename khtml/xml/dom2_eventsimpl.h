@@ -215,6 +215,7 @@ protected:
 
 
 class MutationEventImpl : public EventImpl {
+// ### fire these during parsing (if necessary)
 public:
     MutationEventImpl();
     MutationEventImpl(EventId _id,

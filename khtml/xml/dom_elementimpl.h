@@ -25,6 +25,7 @@
 #define _DOM_ELEMENTImpl_h_
 
 #include "dom_nodeimpl.h"
+#include "dom/dom_element.h"
 
 #include "dtd.h"
 
@@ -113,8 +114,8 @@ public:
     void removeAttribute ( const DOMString &name );
 
     AttrImpl *getAttributeNode ( const DOMString &name );
-    AttrImpl *setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
-    AttrImpl *removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
+    Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
+    Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
     NodeListImpl *getElementsByTagName ( const DOMString &name );
 
@@ -167,6 +168,9 @@ public:
       return m_styleDecls;
     }
 
+    void dispatchAttrRemovalEvent(NodeImpl *attr);
+    void dispatchAttrAdditionEvent(NodeImpl *attr);
+
 protected: // member variables
 
     friend class NodeImpl;
@@ -215,16 +219,16 @@ public:
     NodeImpl *getNamedItem ( const DOMString &name ) const; // ### remove?
     AttrImpl *getIdItem ( int id ) const;
 
-    NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode );
-    AttrImpl *setIdItem ( AttrImpl *attr, int& exceptioncode );
+    Node setNamedItem ( const Node &arg, int &exceptioncode );
+    Attr setIdItem ( AttrImpl *attr, int& exceptioncode );
 
-    NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode );
-    AttrImpl *removeIdItem ( int id );
+    Node removeNamedItem ( const DOMString &name, int &exceptioncode );
+    Attr removeIdItem ( int id );
 
     NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
     NodeImpl *item ( unsigned long index ) const; // ### remove?
 
-    AttrImpl *removeAttr( AttrImpl *oldAttr, int &exceptioncode );
+    Attr removeAttr( AttrImpl *oldAttr, int &exceptioncode );
 
     // only use this during parsing !
     void insertAttr(AttrImpl* newAtt);
