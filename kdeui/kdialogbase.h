@@ -1,9 +1,9 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and 
+ *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and
  *  Espen Sand (espen@kde.org)
- *  Holger Freyther <freyther@kde.org>  
- * 
+ *  Holger Freyther <freyther@kde.org>
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -25,7 +25,7 @@
 
 #include <kdialog.h>
 #include <kjanuswidget.h>
-#include <kguiitem.h> 
+#include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <qptrlist.h>
 
@@ -60,42 +60,42 @@ class KDialogBaseTile;
  * The class takes care of the geometry management. You only need to define
  * a minimum size for the widget you want to use as the main widget.
  *
- * You can set a background tile (pixmap) for parts of the dialog. The 
- * tile you select is shared by all instances of this class in your 
+ * You can set a background tile (pixmap) for parts of the dialog. The
+ * tile you select is shared by all instances of this class in your
  * application so that they all get the same look and feel.
  *
- * There is a tutorial available on http://developer.kde.org/ (NOT YET) 
+ * There is a tutorial available on http://developer.kde.org/ (NOT YET)
  * that contains
  * copy/paste examples as well a screenshots on how to use this class.
  *
  * @sect Standard buttons (action buttons):
  *
- * You select which buttons should be displayed, but you do not choose the 
- * order in which they are displayed. This ensures a standard interface in 
+ * You select which buttons should be displayed, but you do not choose the
+ * order in which they are displayed. This ensures a standard interface in
  * KDE. The button order can be changed, but this ability is only available
  * for a central KDE control tool. The following buttons are available:
- * OK, Cancel/Close, Apply/Try, Default, Help and three user definable 
- * buttons: User1, User1 and User3. You must specify the text of the UserN 
- * buttons. Each button has a virtual slot so you can overload the method 
+ * OK, Cancel/Close, Apply/Try, Default, Help and three user definable
+ * buttons: User1, User1 and User3. You must specify the text of the UserN
+ * buttons. Each button has a virtual slot so you can overload the method
  * when required. The default slots emit a signal as well, so you can choose
  * to connect a signal instead of overriding the slot.
- * The default implementation of @ref slotHelp() will automatically enable 
- * the help system if you have provided a path to the help text. 
- * @ref slotCancel() and @ref slotClose() will run @ref QDialog::reject() 
- * while @ref slotOk() will run @ref QDialog::accept(). You define a default 
+ * The default implementation of @ref slotHelp() will automatically enable
+ * the help system if you have provided a path to the help text.
+ * @ref slotCancel() and @ref slotClose() will run @ref QDialog::reject()
+ * while @ref slotOk() will run @ref QDialog::accept(). You define a default
  * button in the constructor.
  *
  * If you don't not want any buttons at all because your dialog is special
- * in some way, then set the buttonMask argument in the constructor to zero 
- * (0). The optional button box separator line should not be enabled  
+ * in some way, then set the buttonMask argument in the constructor to zero
+ * (0). The optional button box separator line should not be enabled
  * in this case. Note that the KDialogBase will animate a button press
  * when the user press Escape. The button that is enabled is either Cancel,
- * Close or the button that is defined by @ref setEscapeButton() The 
- * animation will not take place when the buttonMask is zero. Your 
- * custom dialog code should reimplement the @ref keyPressEvent and 
- * animate the cancel button so that the dialog behaves like regular 
- * dialogs. NOTE: None of the regular slots (like @ref slotOk() ) or 
- * signals that are related to the standard action buttons will be used 
+ * Close or the button that is defined by @ref setEscapeButton() The
+ * animation will not take place when the buttonMask is zero. Your
+ * custom dialog code should reimplement the @ref keyPressEvent and
+ * animate the cancel button so that the dialog behaves like regular
+ * dialogs. NOTE: None of the regular slots (like @ref slotOk() ) or
+ * signals that are related to the standard action buttons will be used
  * when you don't use these buttons.
  *
  * @sect Dialog shapes:
@@ -104,22 +104,22 @@ class KDialogBaseTile;
  * define your own main widget. The dialog provides ready to use
  * TreeList, Tabbed, Plain, Swallow and IconList faces. KDialogBase uses
  * the @ref KJanusWidget class internally to accomplish this. If you
- * use TreeList, Tabbed or IconList mode, then add pages with @ref addPage(). 
- * If you want complete control of how the dialog contents should look, 
- * then you can define a main widget by using @ref setMainWidget(). You 
- * only need to set the minimum size of that widget and the dialog will 
- * resize itself to fit this minimum size.  The dialog is resizeable, but 
+ * use TreeList, Tabbed or IconList mode, then add pages with @ref addPage().
+ * If you want complete control of how the dialog contents should look,
+ * then you can define a main widget by using @ref setMainWidget(). You
+ * only need to set the minimum size of that widget and the dialog will
+ * resize itself to fit this minimum size.  The dialog is resizeable, but
  * can not be made smaller than its minimum size.
  *
  * @sect Layout:
  *
  * The dialog consists of a help area on top (becomes visible if you define
- * a help path and use @ref enableLinkedHelp()), the main area which is 
- * the built-in dialog face or your own widget in the middle and by default 
- * a button box at the bottom. The button box can also be placed at the 
- * right edge (to the right of the main widget). Use 
+ * a help path and use @ref enableLinkedHelp()), the main area which is
+ * the built-in dialog face or your own widget in the middle and by default
+ * a button box at the bottom. The button box can also be placed at the
+ * right edge (to the right of the main widget). Use
  * @ref setButtonBoxOrientation() to control this behavior. A separator
- * can be placed above the button box (or to the left when the button box 
+ * can be placed above the button box (or to the left when the button box
  * is at the right edge). Normally you specify that you want a separator
  * in the constructor, but you can use @ref enableButtonSeparator() as well.
  *
@@ -134,7 +134,7 @@ class KDialogBaseTile;
  * and its layout. The second argument (the border) to @ref QVBoxLayout
  * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
  * @ref addHBoxPage , @ref addGridPage , @ref makeMainWidget ,
- * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget and 
+ * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget and
  * @ref makeGridMainWidget as well.
  *
  * Example:
@@ -144,18 +144,18 @@ class KDialogBaseTile;
  *                 const QString& urltext)
  *   : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
  * {
- *   QWidget *page = new QWidget( this ); 
+ *   QWidget *page = new QWidget( this );
  *   setMainWidget(page);
  *   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
- * 
+ *
  *   QLabel *label = new QLabel( caption, page, "caption" );
  *   topLayout->addWidget( label );
- * 
+ *
  *   lineedit = new QLineEdit( urltext, page, "lineedit" );
  *   lineedit->setMinimumWidth(fontMetrics().maxWidth()*20);
  *   topLayout->addWidget( lineedit );
  *
- *   topLayout->addStretch(10); 
+ *   topLayout->addStretch(10);
  * }
  * </pre>
  *
@@ -163,20 +163,20 @@ class KDialogBaseTile;
  * simpler but you lose the ability to add a stretchable area:
  *
  * <pre>
- * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
+ * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *		const QString& urltext)
  * : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
  * {
  *   QVBox *page = makeVBoxMainWidget();
  *   QLabel *label = new QLabel( caption, page, "caption" );
- *   
+ *
  *   lineedit = new QLineEdit( urltext, page, "lineedit" );
  *   lineedit->setMinimumWidth(fontMetrics().maxWidth()*20);
  * }
  * </pre>
  *
  * This class can be used in many ways. Note that most KDE ui widgets
- * and many of KDE core applications use the KDialogBase so for more 
+ * and many of KDE core applications use the KDialogBase so for more
  * inspiration you should study the code for these.
  *
  * @short A dialog base class which standard buttons and predefined layouts.
@@ -235,12 +235,12 @@ class KDialogBase : public KDialog
     };
 
     /**
-     *  @li @p TreeList - A dialog with a tree on the left side and a 
+     *  @li @p TreeList - A dialog with a tree on the left side and a
      *                    representation of the contents on the right side.
      *  @li @p Tabbed -   A dialog using a @ref QTabWidget.
      *  @li @p Plain -    A normal dialog.
      *  @li @p Swallow
-     *  @li @p IconList - A dialog with an iconlist on the left side and a 
+     *  @li @p IconList - A dialog with an iconlist on the left side and a
      *                    representation of the contents on the right side.
      */
     enum DialogType
@@ -254,77 +254,61 @@ class KDialogBase : public KDialog
 
   public:
 
-    /** 
-     * Constructor for the standard mode where you must specify the main 
+    /**
+     * Constructor for the standard mode where you must specify the main
      * widget with @ref setMainWidget() .
-     * 
+     *
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only)
-     * @param modal Controls dialog modality. If @p false, the rest of the 
-     *        program interface (example: other dialogs) is accessible while 
+     * @param modal Controls dialog modality. If @p false, the rest of the
+     *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible. If zero 
+     * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
-     * @param defaultButton Specifies which button will be marked as 
+     * @param defaultButton Specifies which button will be marked as
      *        the default.
-     * @param separator If @p true, a separator line is drawn between the 
+     * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
-     * @param user1 User button1 text.
-     * @param user2 User button2 text.
-     * @param user3 User button3 text.
+     * @param user1 User button1 item.
+     * @param user2 User button2 item.
+     * @param user3 User button3 item.
      */
     KDialogBase( QWidget *parent=0, const char *name=0, bool modal=true,
-		 const QString &caption=QString::null,
+                 const QString &caption=QString::null,
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
-		 bool separator=false, 
-		 const QString &user1=QString::null,
-		 const QString &user2=QString::null,
-		 const QString &user3=QString::null);
-
-    KDialogBase( QWidget *parent=0, bool showPixmap=false,const char *name=0, bool modal=true,
-		  const QString &caption=QString::null,
-		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
-		 bool separator=false, 
+		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
 		 const KGuiItem &user3=KGuiItem() );
 
-    /** 
-     * Constructor for the predefined layout mode where you specify the 
+    /**
+     * Constructor for the predefined layout mode where you specify the
      * kind of layout (face).
-     * 
-     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or 
+     *
+     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible. If zero 
+     * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
-     * @param defaultButton Specifies which button will be marked as 
+     * @param defaultButton Specifies which button will be marked as
      *        the default.
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
-     * @param modal Controls dialog modality. If @p false, the rest of the 
-     *        program interface (example: other dialogs) is accessible while 
+     * @param modal Controls dialog modality. If @p false, the rest of the
+     *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
-     * @param separator If @p true, a separator line is drawn between the 
+     * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
-     * @param user1 User button1 text.
-     * @param user2 User button2 text.
-     * @param user3 User button3 text.
+     * @param user1 User button1 text item.
+     * @param user2 User button2 text item.
+     * @param user3 User button3 text item.
      */
-    KDialogBase( int dialogFace, const QString &caption, 
-		 int buttonMask, ButtonCode defaultButton, 
-		 QWidget *parent=0, const char *name=0, bool modal=true, 
-		 bool separator=false,
-		 const QString &user1=QString::null,
-		 const QString &user2=QString::null,
-		 const QString &user3=QString::null);
-
-    KDialogBase( int dialogFace, const QString &caption, 
-		 int buttonMask, ButtonCode defaultButton, bool showPixmap=false, 
-		 QWidget *parent=0, const char *name=0, bool modal=true, 
+    KDialogBase( int dialogFace, const QString &caption,
+		 int buttonMask, ButtonCode defaultButton,
+		 QWidget *parent=0, const char *name=0, bool modal=true,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
@@ -336,47 +320,38 @@ class KDialogBase : public KDialog
      * contain Yes, No, or Cancel.
      *
      * If you need other names you can rename
-     * the buttons with @ref setButtonText(). The dialog box is not resizable 
-     * by default but this can be changed by @ref setInitialSize(). If you 
-     * select 'modal' to be true, the dialog will return Yes, No, or Cancel 
-     * when closed otherwise you can use the signals @ref yesClicked(), 
+     * the buttons with @ref setButtonText(). The dialog box is not resizable
+     * by default but this can be changed by @ref setInitialSize(). If you
+     * select 'modal' to be true, the dialog will return Yes, No, or Cancel
+     * when closed otherwise you can use the signals @ref yesClicked(),
      * @ref noClicked(), or @ref cancelClicked() to determine the state.
-     * 
+     *
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible. If zero 
+     * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
-     * @param defaultButton Specifies which button will be marked as 
+     * @param defaultButton Specifies which button will be marked as
      *        the default.
      * @param escapeButton Specifies which button will be activated by
-     *        when the dialog receives a @p Key_Escape keypress. 
+     *        when the dialog receives a @p Key_Escape keypress.
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
-     * @param modal Controls dialog modality. If @p false, the rest of the 
-     *        program interface (example: other dialogs) is accessible 
+     * @param modal Controls dialog modality. If @p false, the rest of the
+     *        program interface (example: other dialogs) is accessible
      *        while the dialog is open.
-     * @param separator If @p true, a separator line is drawn between the 
+     * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
      * @param user1 User button1 text.
      * @param user2 User button2 text.
      * @param user3 User button3 text.
      */
-    KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel, 
-		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel, 
-		 QWidget *parent=0, const char *name=0, bool modal=true, 
-		 bool separator=false,
-		 QString yes = QString::null, // i18n("&Yes")
-		 QString no = QString::null, // i18n("&No"),
-		 QString cancel = QString::null // i18n("&Cancel") 
-	       );
-
-    KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel, 
-		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel, 
-		 QWidget *parent=0, bool showPixmap=false, const char *name=0, bool modal=true, 
-		 bool separator=false,
-		 KGuiItem yes = KStdGuiItem::yes(), // i18n("&Yes")
-		 KGuiItem no = KStdGuiItem::no(), // i18n("&No"),
-		 KGuiItem cancel = KStdGuiItem::cancel() // i18n("&Cancel") 
+    KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
+		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
+		 QWidget *parent=0, const char *name=0,
+                 bool modal=true, bool separator=false,
+		 const KGuiItem &yes = KStdGuiItem::yes(), // i18n("&Yes")
+		 const KGuiItem &no = KStdGuiItem::no(), // i18n("&No"),
+		 const KGuiItem &cancel = KStdGuiItem::cancel() // i18n("&Cancel")
 	         );
 
     /**
@@ -411,8 +386,8 @@ class KDialogBase : public KDialog
      * is pressed.
      *
      * Normally you should not use this function. By default,
-     * the Escape key is mapped to either the Cancel or the Close button 
-     * if one of these buttons are defined. The user expects that Escape will 
+     * the Escape key is mapped to either the Cancel or the Close button
+     * if one of these buttons are defined. The user expects that Escape will
      * cancel an operation so use this function with caution.
      *
      * @param id The button code.
@@ -424,7 +399,7 @@ class KDialogBase : public KDialog
      * Adjust the size of the dialog to fit the contents just before
      * @ref QDialog::exec() or @ref QDialog::show() is called.
      *
-     * This method will not be called if the dialog has been explicitly 
+     * This method will not be called if the dialog has been explicitly
      * resized before showing it.
      **/
     virtual void adjustSize();
@@ -444,13 +419,13 @@ class KDialogBase : public KDialog
     QFrame *plainPage();
 
     /**
-     * Add a page to the dialog when the class is used in @p TreeList , 
+     * Add a page to the dialog when the class is used in @p TreeList ,
      * @p IconList or @p Tabbed mode.
      *
-     * The returned widget must be used as the 
-     * toplevel widget for this particular page. 
+     * The returned widget must be used as the
+     * toplevel widget for this particular page.
      * Note: The returned frame widget has no
-     * layout manager associated with it. In order to use it you must 
+     * layout manager associated with it. In order to use it you must
      * create a layout yourself as the example below illustrates:
      *
      * <pre>
@@ -462,7 +437,7 @@ class KDialogBase : public KDialog
      * </pre>
      *
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in @p Tabbed 
+     * @param header Header text use in the list modes. Ignored in @p Tabbed
      *        mode. If empty, the item text is used instead.
      * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
@@ -470,7 +445,7 @@ class KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QFrame  *addPage( const QString &item, 
+    QFrame  *addPage( const QString &item,
                       const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
@@ -485,12 +460,12 @@ class KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QFrame  *addPage( const QStringList &items, 
+    QFrame  *addPage( const QStringList &items,
                       const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Add a page to the dialog when the class is used in @p TreeList, 
+     * Add a page to the dialog when the class is used in @p TreeList,
      * @p IconList or @p Tabbed mode.
      *
      * The returned widget must be used as the toplevel widget for
@@ -505,15 +480,15 @@ class KDialogBase : public KDialog
      * </pre>
      *
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in @p Tabbed 
+     * @param header Header text use in the list modes. Ignored in @p Tabbed
      *        mode. If empty, the item text is used instead.
      * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
      *
      * @return The page widget which must be used as the toplevel widget for
-     *         the page.  
+     *         the page.
      */
-    QVBox *addVBoxPage( const QString &itemName, 
+    QVBox *addVBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -528,7 +503,7 @@ class KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QVBox *addVBoxPage( const QStringList &items, 
+    QVBox *addVBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -542,7 +517,7 @@ class KDialogBase : public KDialog
      * You can use it as follows:
      *
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in Tabbed 
+     * @param header Header text use in the list modes. Ignored in Tabbed
      *        mode. If empty, the item text is used instead.
      * @param pixmap Used in IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
@@ -550,10 +525,10 @@ class KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QHBox *addHBoxPage( const QString &itemName, 
+    QHBox *addHBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
-   
+
     /**
      * This is like @ref addHBoxPage() just above, with the
      * difference that the first element is a list of strings.
@@ -565,23 +540,23 @@ class KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QHBox *addHBoxPage( const QStringList &items, 
+    QHBox *addHBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Add a page to the dialog when the class is used in @p TreeList, 
+     * Add a page to the dialog when the class is used in @p TreeList,
      * @p IconList or @p Tabbed mode.
      *
-     * The returned widget must be used as the 
-     * toplevel widget for this particular page. The widget contains a 
+     * The returned widget must be used as the
+     * toplevel widget for this particular page. The widget contains a
      * @ref QGridLayout layout so the widget children are  positioned in a grid.
      *
      * @param n Specifies the number of columns if @p dir is @ref Qt::Horizontal
      *          or the number of rows if @p dir is @ref Qt::Vertical.
      * @param dir Can be @ref Qt::Horizontal or @ref Qt::Vertical.
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes @p Ignored in @p Tabbed 
+     * @param header Header text use in the list modes @p Ignored in @p Tabbed
      *        mode. If empty, the item text is used instead.
      * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
@@ -589,8 +564,8 @@ class KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QGrid *addGridPage( int n, Orientation dir, 
-			const QString &itemName, 
+    QGrid *addGridPage( int n, Orientation dir,
+			const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -606,12 +581,12 @@ class KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QGrid *addGridPage( int n, Orientation dir, 
-			const QStringList &items, 
+    QGrid *addGridPage( int n, Orientation dir,
+			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
-  
+
     /**
      * Sets the icon used in @p TreeList Mode for the given path.
      *
@@ -630,7 +605,7 @@ class KDialogBase : public KDialog
      * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
      * @p TreeList).
      *
-     * @return The main widget or 0 if any of the rules described above 
+     * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
     QFrame *makeMainWidget();
@@ -645,7 +620,7 @@ class KDialogBase : public KDialog
      * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
      * @p TreeList, @p IconList).
      *
-     * @return The main widget or 0 if any of the rules described above 
+     * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
     QVBox *makeVBoxMainWidget();
@@ -660,7 +635,7 @@ class KDialogBase : public KDialog
      * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
      * @p TreeList, @p IconList).
      *
-     * @return The main widget or 0 if any of the rules described above 
+     * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
     QHBox *makeHBoxMainWidget();
@@ -679,7 +654,7 @@ class KDialogBase : public KDialog
      *          or the number of rows if 'dir' is Qt::Vertical.
      * @param dir Can be Qt::Horizontal or Qt::Vertical.
      *
-     * @return The main widget or 0 if any of the rules described above 
+     * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
     QGrid *makeGridMainWidget( int n, Orientation dir );
@@ -690,7 +665,7 @@ class KDialogBase : public KDialog
      * buttons an the main widget.
      */
     void enableButtonSeparator( bool state );
-    
+
     /**
      * Hide or display a general action button.
      *
@@ -699,27 +674,27 @@ class KDialogBase : public KDialog
      * not create a new button.
      *
      * @param id Button identifier.
-     * @param state true display the button(s). 
+     * @param state true display the button(s).
      */
     void showButton( ButtonCode id, bool state );
-    
+
     /**
      * Hide or display the OK button.
      *
      *  The OK button must have
      * been created in the constructor to be displayed.
      *
-     * @param state If @p true, display the button(s). 
+     * @param state If @p true, display the button(s).
      */
     void showButtonOK( bool state );
-    
+
     /**
      * Hide or display the Apply button.
      *
      *  The Apply button must have
      * been created in the constructor to be displayed.
      *
-     * @param state true display the button(s). 
+     * @param state true display the button(s).
      */
     void showButtonApply( bool state );
 
@@ -727,14 +702,14 @@ class KDialogBase : public KDialog
      * Hide or display the Cancel button. The Cancel button must have
      * been created in the constructor to be displayed.
      *
-     * @param state @p true display the button(s). 
+     * @param state @p true display the button(s).
      */
     void showButtonCancel( bool state );
 
     /**
      * Sets the page with @p index to be displayed.
      *
-     * This method will only 
+     * This method will only
      * work when the dialog is using the predefined shape of TreeList,
      * IconList or Tabbed.
      *
@@ -746,7 +721,7 @@ class KDialogBase : public KDialog
     /**
      * Returns the index of the active page.
      *
-     * This method will only work when the dialog is using the 
+     * This method will only work when the dialog is using the
      * predefined shape of Tabbed, TreeList or IconList.
      *
      * @return The page index or -1 if there is no active page.
@@ -767,7 +742,7 @@ class KDialogBase : public KDialog
      * @param widget The widget returned by @ref #addPage(), @ref #addVBoxPage(),
      *        @ref #addHBoxPage() or @ref #addGridPage().
      *
-     * @return The index or -1 if the face is not Tabbed, TreeList or 
+     * @return The index or -1 if the face is not Tabbed, TreeList or
      *         IconList
      */
     int pageIndex( QWidget *widget ) const;
@@ -776,9 +751,9 @@ class KDialogBase : public KDialog
     /**
      * Sets the main user definable widget.
      *
-     * If the dialog is using the predefined Swallow mode, the widget will 
-     * be reparented to the internal swallow control widget. If the dialog 
-     * is being used in the standard mode then the @p widget must have the 
+     * If the dialog is using the predefined Swallow mode, the widget will
+     * be reparented to the internal swallow control widget. If the dialog
+     * is being used in the standard mode then the @p widget must have the
      * dialog as parent.
      *
      * @param widget The widget to be displayed as main widget. If it
@@ -792,18 +767,18 @@ class KDialogBase : public KDialog
      *
      * @return The current main widget. Can be 0 if no widget has been defined.
      */
-    QWidget *mainWidget(); 
+    QWidget *mainWidget();
     /**
      * @deprecated
      * Use @ref mainWidget() instead
      */
-    QWidget *getMainWidget(); 
+    QWidget *getMainWidget();
 
     /**
      * Convenience method.
      *
-     *  Freezes the dialog size using the minimum size 
-     * of the dialog. This method should only be called right before 
+     *  Freezes the dialog size using the minimum size
+     * of the dialog. This method should only be called right before
      * @ref show() or @ref exec().
      */
     void disableResize();
@@ -811,9 +786,9 @@ class KDialogBase : public KDialog
     /**
      * Convenience method. Sets the initial dialog size.
      *
-     *  This method should 
+     *  This method should
      * only be called right before @ref show() or @ref exec(). The initial
-     * size will be 
+     * size will be
      * ignored if smaller than the dialog's minimum size.
      *
      * @param s Startup size.
@@ -822,10 +797,10 @@ class KDialogBase : public KDialog
     void setInitialSize( const QSize &s, bool noResize=false );
 
     /**
-     * Convenience method. Addd a size to the default minimum size of a 
+     * Convenience method. Addd a size to the default minimum size of a
      * dialog.
      *
-     * This method should only be called right before @ref show() or 
+     * This method should only be called right before @ref show() or
      * @ref exec().
      *
      * @param s  Size added to minimum size.
@@ -833,10 +808,10 @@ class KDialogBase : public KDialog
      */
     void incInitialSize( const QSize &s, bool noResize=false );
 
-    /** 
+    /**
      * Sets the text of the OK button.
      *
-     * If the default parameters are used 
+     * If the default parameters are used
      * (that is, if no parameters are given) the standard texts are set:
      * The button shows "OK", the tooltip contains "Accept settings."
      * (internationalized) and the quickhelp text explains the standard
@@ -846,14 +821,14 @@ class KDialogBase : public KDialog
      * @param tooltip Tooltip text.
      * @param quickhelp Quick help text.
      */
-    void setButtonOKText( const QString &text=QString::null, 
-			  const QString &tooltip=QString::null, 
+    void setButtonOKText( const QString &text=QString::null,
+			  const QString &tooltip=QString::null,
 			  const QString &quickhelp=QString::null );
 
-    /** 
+    /**
      * Sets the text of the Apply button.
      *
-     * If the default parameters are 
+     * If the default parameters are
      * used (that is, if no parameters are given) the standard texts are set:
      * The button shows "Apply", the tooltip contains "Apply settings."
      * (internationalized) and the quickhelp text explains the standard
@@ -863,14 +838,14 @@ class KDialogBase : public KDialog
      * @param tooltip Tooltip text.
      * @param quickhelp Quick help text.
      */
-    void setButtonApplyText( const QString &text=QString::null, 
-			     const QString &tooltip=QString::null, 
+    void setButtonApplyText( const QString &text=QString::null,
+			     const QString &tooltip=QString::null,
 			     const QString &quickhelp=QString::null );
 
-    /** 
+    /**
      * Sets the text of the Cancel button.
      *
-     *  If the default parameters are 
+     *  If the default parameters are
      * used (that is, if no parameters are given) the standard texts are set:
      * The button shows "Cancel", everything else will not be set.
      *
@@ -878,13 +853,13 @@ class KDialogBase : public KDialog
      * @param tooltip Tooltip text.
      * @param quickhelp Quick help text.
      */
-    void setButtonCancelText( const QString &text=QString::null, 
-			      const QString &tooltip=QString::null, 
+    void setButtonCancelText( const QString &text=QString::null,
+			      const QString &tooltip=QString::null,
 			      const QString &quickhelp=QString::null );
 
     /**
      * Sets the text of any button.
-     * 
+     *
      * @param id The button identifier.
      * @param text Button text.
      */
@@ -892,7 +867,7 @@ class KDialogBase : public KDialog
 
     /**
      * Sets the tooltip text of any button.
-     * 
+     *
      * @param id The button identifier.
      * @param text Button text.
      */
@@ -900,26 +875,26 @@ class KDialogBase : public KDialog
 
     /**
      * Sets the "What's this?" text of any button.
-     * 
+     *
      * @param id The button identifier.
      * @param text Button text.
      */
     void setButtonWhatsThis( ButtonCode id, const QString &text );
 
-    
+
     /**
      * This function has only effect in TreeList mode.
      *
-     * Defines how the tree list widget is resized when the dialog is 
-     * resized horizontally. By default the tree list keeps its width 
+     * Defines how the tree list widget is resized when the dialog is
+     * resized horizontally. By default the tree list keeps its width
      * when the dialog becomes wider.
      *
      * @param state The resize mode. If false (default) the tree list keeps
      *        its current width when the dialog becomes wider.
      */
      void setTreeListAutoResize( bool state );
-     
-    /** 
+
+    /**
      * This function has only effect in TreeList mode.
      *
      * This tells the widgets whether the icons given in the @ref addPage,
@@ -932,11 +907,11 @@ class KDialogBase : public KDialog
      * @param state If true the icons are shown.
      **/
     void setShowIconsInTreeList(bool state);
-  
+
     /**
      * This function has only effect in TreeList mode.
      *
-     * This tells the widgets whether the root should be decorated. 
+     * This tells the widgets whether the root should be decorated.
      * For details see @ref QListView::setRootIsDecorated
      *
      * @param state Root will be decorated if true.
@@ -946,13 +921,13 @@ class KDialogBase : public KDialog
     /**
      * This function has only effect in IconList mode.
      *
-     * Defines how the icon list widget is displayed. By default it is 
-     * the widgets in the dialog pages that decide the minimum height 
+     * Defines how the icon list widget is displayed. By default it is
+     * the widgets in the dialog pages that decide the minimum height
      * of the dialog. A vertical scrollbar can be used in the icon list
      * area.
      *
-     * @param state The visibility mode. If true, the minimum height is 
-     *        adjusted so that every icon in the list is visible at the 
+     * @param state The visibility mode. If true, the minimum height is
+     *        adjusted so that every icon in the list is visible at the
      *        same time. The vertical scrollbar will never be visible.
      */
     void setIconListAllVisible( bool state );
@@ -963,9 +938,9 @@ class KDialogBase : public KDialog
      * @return @p true if there is defined a background tile.
      */
     static bool haveBackgroundTile();
-    
-    /** 
-     * Returns a pointer to the background tile if there is one. 
+
+    /**
+     * Returns a pointer to the background tile if there is one.
      *
      * @return The tile pointer or 0 if no tile is defined.
      *
@@ -976,11 +951,11 @@ class KDialogBase : public KDialog
      * Use @ref backgroundTile() instead.
      */
     static const QPixmap *getBackgroundTile();
-    
-    /** 
+
+    /**
      * Sets the background tile.
      *
-     *  If it is Null (0), the background image is deleted. 
+     *  If it is Null (0), the background image is deleted.
      *
      * @param pix The background tile.
      */
@@ -989,44 +964,44 @@ class KDialogBase : public KDialog
     /**
      * Enable hiding of the background tile (if any).
      *
-     * @param state @p true will make the tile visible. 
+     * @param state @p true will make the tile visible.
      */
     void showTile( bool state );
 
-    /** 
+    /**
      * @deprecated
-     * Do not use this method. It is included for compatibility reasons.     
+     * Do not use this method. It is included for compatibility reasons.
      *
-     * This method returns the border widths in all directions the dialog 
-     * needs for itself. Respect this, or get bad looking results. 
+     * This method returns the border widths in all directions the dialog
+     * needs for itself. Respect this, or get bad looking results.
      * The references are upper left x (@p ulx), upper left y (@p uly),
      * lower right x (@p lrx), and lower left y (@p lly).
-     * The results are differences in pixels from the 
-     * dialogs corners. 
+     * The results are differences in pixels from the
+     * dialogs corners.
      */
     void  getBorderWidths( int& ulx, int& uly, int& lrx, int& lry ) const;
 
     /**
      * @deprecated
-     * Do not use this method. It is included for compatibility reasons. 
+     * Do not use this method. It is included for compatibility reasons.
      *
-     * This method returns the contents rectangle of the work area. Place 
-     * your widgets inside this rectangle, and use it to set up 
-     * their geometry. Be careful: The rectangle is only valid after 
-     * resizing the dialog, as it is a result of the resizing process. 
-     * If you need the "overhead" the dialog needs for its elements, 
+     * This method returns the contents rectangle of the work area. Place
+     * your widgets inside this rectangle, and use it to set up
+     * their geometry. Be careful: The rectangle is only valid after
+     * resizing the dialog, as it is a result of the resizing process.
+     * If you need the "overhead" the dialog needs for its elements,
      * use @ref getBorderWidths().
      */
     QRect getContentsRect() const;
 
-    /** 
+    /**
      * Calculate the size hint for the dialog.
      *
-     * With this method it is easy to calculate a size hint for a 
-     * dialog derived from KDialogBase if you know the width and height of 
-     * the elements you add to the widget. The rectangle returned is 
-     * calculated so that all elements exactly fit into it. Thus, you may 
-     * set it as a minimum size for the resulting dialog. 
+     * With this method it is easy to calculate a size hint for a
+     * dialog derived from KDialogBase if you know the width and height of
+     * the elements you add to the widget. The rectangle returned is
+     * calculated so that all elements exactly fit into it. Thus, you may
+     * set it as a minimum size for the resulting dialog.
      *
      * You should not need to use this method and never if you use one of
      * the predefined shapes.
@@ -1041,7 +1016,7 @@ class KDialogBase : public KDialog
     /**
      * Returns the help link text.
      *
-     *  If no text has been defined, 
+     *  If no text has been defined,
      * "Get help..." (internationalized) is returned.
      *
      * @return The help link text.
@@ -1058,7 +1033,7 @@ class KDialogBase : public KDialog
      *
      * @param id Integer identifier of the button.
      * @return The action button or 0 if the button does not exists.
-     * 
+     *
      */
     QPushButton *actionButton( ButtonCode id );
 
@@ -1067,28 +1042,28 @@ class KDialogBase : public KDialog
      * Enable or disable (gray out) a general action button.
      *
      * @param id Button identifier.
-     * @param state @p true enables the button(s). 
+     * @param state @p true enables the button(s).
      */
     void enableButton( ButtonCode id, bool state );
 
     /**
      * Enable or disable (gray out) the OK button.
      *
-     * @param state @p true enables the button. 
+     * @param state @p true enables the button.
      */
     void enableButtonOK( bool state );
 
     /**
      * Enable or disable (gray out) the Apply button.
      *
-     * @param state true enables the button. 
+     * @param state true enables the button.
      */
     void enableButtonApply( bool state );
-    
+
     /**
      * Enable or disable (gray out) the Cancel button.
      *
-     * @param state true enables the button. 
+     * @param state true enables the button.
      */
     void enableButtonCancel( bool state );
 
@@ -1102,32 +1077,32 @@ class KDialogBase : public KDialog
     /**
      * Sets the text that is shown as the linked text.
      *
-     * If text is empty, 
+     * If text is empty,
      * the text "Get help..." (internationalized) is used instead.
      *
      * @param text The link text.
      */
     void setHelpLinkText( const QString &text );
-    
-    /** 
+
+    /**
      * Sets the help path and topic.
      *
      * @param anchor Defined anchor in your docbook sources
      * @param appname Defines the appname the help belongs to
      *                If empty it's the current one
      */
-    void setHelp( const QString &anchor, 
+    void setHelp( const QString &anchor,
 		  const QString &appname = QString::null );
 
-    /** 
-     * Connected to help link label. 
+    /**
+     * Connected to help link label.
      */
     void helpClickedSlot( const QString & );
 
     /**
      * Sets the status of the Details button.
      */
-    void setDetails(bool showDetails); 
+    void setDetails(bool showDetails);
 
     /**
      * Sets the widget that gets shown when "Details" is enabled.
@@ -1135,98 +1110,98 @@ class KDialogBase : public KDialog
      * The dialog takes over ownership of the widget.
      * Any previously set widget gets deleted.
      */
-    void setDetailsWidget(QWidget *detailsWidget); 
+    void setDetailsWidget(QWidget *detailsWidget);
 
-    /** 
-     * This method is called automatically whenever the background has 
+    /**
+     * This method is called automatically whenever the background has
      * changed. You do not need to use this method.
      */
     void updateBackground();
 
   signals:
-    /** 
+    /**
      * The Help button was pressed. This signal is only emitted if
      * @ref slotHelp() is not replaced.
      */
     void helpClicked();
 
-    /** 
+    /**
      * The Default button was pressed. This signal is only emitted if
      * @ref slotDefault() is not replaced.
      */
     void defaultClicked();
 
-    
-    /** 
+
+    /**
      * The User3 button was pressed. This signal is only emitted if
      * @ref slotUser3() is not replaced.
      */
     void user3Clicked();
 
-    /** 
+    /**
      * The User2 button was pressed. This signal is only emitted if
      * @ref slotUser2() is not replaced.
      */
     void user2Clicked();
 
-    /** 
+    /**
      * The User1 button was pressed. This signal is only emitted if
      * @ref slotUser1() is not replaced.
      */
     void user1Clicked();
 
-    /** 
+    /**
      * The Apply button was pressed. This signal is only emitted if
      * @ref slotApply() is not replaced.
      */
     void applyClicked();
 
-    /** 
+    /**
      * The Try button was pressed. This signal is only emitted if
      * @ref slotTry() is not replaced.
      */
     void tryClicked();
 
-    /** 
+    /**
      * The OK button was pressed. This signal is only emitted if
      * @ref slotOk() is not replaced.
      */
     void okClicked();
 
-    /** 
+    /**
      * The Yes button was pressed. This signal is only emitted if
      * @ref slotYes() is not replaced.
      */
     void yesClicked();
 
-    /** 
+    /**
      * The No button was pressed. This signal is only emitted if
      * @ref slotNo() is not replaced.
      */
     void noClicked();
 
-    /** 
+    /**
      * The Cancel button was pressed. This signal is only emitted if
      * @ref slotCancel() is not replaced.
      */
     void cancelClicked();
-    
-    /** 
+
+    /**
      * The Close button was pressed. This signal is only emitted if
      * @ref slotClose() is not replaced.
      */
     void closeClicked();
 
-    /** 
+    /**
      * Do not use this signal. Is is kept for compatibility reasons.
      * Use @ref applyClicked() instead.
      */
     void apply();
 
-    /** 
+    /**
      * The background tile has changed.
      */
-    void backgroundChanged(); 
+    void backgroundChanged();
 
     /**
      * The dialog is about to be hidden.
@@ -1253,7 +1228,7 @@ class KDialogBase : public KDialog
      */
     void finished();
 
-    /** 
+    /**
      * The detailsWidget is about to get shown. This is your last chance
      * to call setDetailsWidget if you haven't done so yet.
      */
@@ -1272,11 +1247,11 @@ class KDialogBase : public KDialog
      * detect when a dialog has been closed.
      */
     virtual void hideEvent( QHideEvent * );
-    
+
     /**
-     * Detects when a dialog is being closed from the window manager 
+     * Detects when a dialog is being closed from the window manager
      * controls. If the Cancel or Close button is present then the button
-     * is activated. Otherwise standard @ref QDialog behavior 
+     * is activated. Otherwise standard @ref QDialog behavior
      * will take place.
      */
     virtual void closeEvent( QCloseEvent *e );
@@ -1287,7 +1262,7 @@ class KDialogBase : public KDialog
      * text has been defined, the help system will be activated.
      */
     virtual void slotHelp();
-  
+
     /**
      * Activated when the Default button has been clicked.
      */
@@ -1315,7 +1290,7 @@ class KDialogBase : public KDialog
     virtual void slotUser1();
 
     /**
-     * Activated when the Ok button has been clicked. The 
+     * Activated when the Ok button has been clicked. The
      * @ref QDialog::accept() is activated.
      */
     virtual void slotOk();
@@ -1331,26 +1306,26 @@ class KDialogBase : public KDialog
     virtual void slotTry();
 
     /**
-     * Activated when the Yes button has been clicked. The 
+     * Activated when the Yes button has been clicked. The
      * @ref QDialog::done( Yes ) is activated.
      */
     virtual void slotYes();
 
     /**
-     * Activated when the Yes button has been clicked. The 
+     * Activated when the Yes button has been clicked. The
      * @ref QDialog::done( No ) is activated.
      */
     virtual void slotNo();
 
     /**
-     * Activated when the Cancel button has been clicked. The 
+     * Activated when the Cancel button has been clicked. The
      * @ref QDialog::reject() is activated in regular mode and
      * @ref QDialog::done( Cancel ) when in message box mode.
      */
     virtual void slotCancel();
 
     /**
-     * Activated when the Close button has been clicked. The 
+     * Activated when the Close button has been clicked. The
      * @ref QDialog::reject() is activated.
      */
     virtual void slotClose();
@@ -1362,7 +1337,7 @@ class KDialogBase : public KDialog
     virtual void applyPressed();
 
     /**
-     * Updates the margins and spacings. 
+     * Updates the margins and spacings.
      */
     void updateGeometry();
 
@@ -1379,28 +1354,23 @@ class KDialogBase : public KDialog
 
     /**
      * Prepares a relay that is used to send signals between
-     * all KDialogBase instances of a program. Should only be used in the 
+     * all KDialogBase instances of a program. Should only be used in the
      * constructor.
      */
     void makeRelay();
 
     /**
-     * Makes the button box and all the buttons in it. This method must 
+     * Makes the button box and all the buttons in it. This method must
      * only be ran once from the constructor.
      *
      * @param buttonMask Specifies what buttons will be made.
-     * @param defaultButton Specifies what button we be marked as the 
+     * @param defaultButton Specifies what button we be marked as the
      * default.
-     * @param user1 User button1 text.
-     * @param user2 User button2 text.
-     * @param user2 User button3 text. 
+     * @param user1 User button1 item.
+     * @param user2 User button2 item.
+     * @param user2 User button3 item.
      */
-    void makeButtonBox( int mask, ButtonCode defaultButton, 
-			const QString &user1 = QString::null,
-			const QString &user2 = QString::null,
-			const QString &user3 = QString::null );
-
-    void makeButtonBox( int mask, ButtonCode defaultButton, 
+    void makeButtonBox( int mask, ButtonCode defaultButton,
 			const KGuiItem &user1 = KGuiItem(),
 			const KGuiItem &user2 = KGuiItem(),
 			const KGuiItem &user3 = KGuiItem() );
@@ -1409,14 +1379,14 @@ class KDialogBase : public KDialog
      * Sets the action button that is marked as default and has focus.
      *
      * @param p The action button.
-     * @param isDefault If true, make the button default 
+     * @param isDefault If true, make the button default
      * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
 
     /**
-     * Prints an error message using qDebug if @ref makeMainWidget , 
-     * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget or 
+     * Prints an error message using qDebug if @ref makeMainWidget ,
+     * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget or
      * @ref makeGridMainWidget failed.
      */
     void printMakeMainWidgetError();
@@ -1429,7 +1399,7 @@ class KDialogBase : public KDialog
      */
     void setButtonStyle( int style );
 
-    
+
   private:
     QBoxLayout   *mTopLayout;
     QWidget      *mMainWidget;
