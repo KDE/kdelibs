@@ -42,6 +42,15 @@
 #include "keramik.moc"
 #include "pixmaploader.h"
 
+
+
+/* constants from hicolor style */
+static const int itemFrame       = 1;
+static const int itemHMargin     = 3;
+static const int itemVMargin     = 0;
+static const int arrowHMargin    = 6;
+static const int rightBorder     = 12;
+
 #define loader Keramik::PixmapLoader::the()
 
 // -- Style Plugin Interface -------------------------
@@ -93,7 +102,6 @@ void KeramikStyle::polish(QWidget* widget)
 		listbox->setBackgroundMode( NoBackground );
 	    widget->installEventFilter( this );
 	}
-
 	KStyle::polish(widget);
 }
 
@@ -102,8 +110,13 @@ void KeramikStyle::unPolish(QWidget* widget)
 {
 	if ( widget->inherits( "QPushButton" ) )
 		widget->setBackgroundMode( PaletteBase );
-	else if ( widget->inherits( "QListBox" ) )
-		widget->removeEventFilter( this );
+ 	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
+	    QListBox* listbox = (QListBox*) widget;
+	    listbox->setLineWidth( 1 );
+		listbox->setBackgroundMode( PaletteBackground );
+	    widget->removeEventFilter( this );
+	}
+
 /*	if (widget->inherits("QPushButton")) {
 		widget->removeEventFilter(this);
 	}
@@ -111,6 +124,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	}
 */
+
 	KStyle::unPolish(widget);
 }
 
@@ -416,7 +430,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// GENERAL PANELS
 		// -------------------------------------------------------------------
 		case PE_Panel:
-		case PE_PanelPopup:
+*/
+
+/*
 		case PE_WindowFrame:
 		case PE_PanelLineEdit: {
 			bool sunken  = flags & Style_Sunken;
@@ -824,7 +840,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			else name = "tab-bottom-";
 
 			if ( flags & Style_Selected )
-				Keramik::RectTilePainter( name + "active", 3, 2 ).draw( p, x, y, w, h );
+				Keramik::RectTilePainter( name + "active", 3, 2 ).draw( p, x, y, w, h+1 );
 			else
 			{
 				Keramik::TabPainter::Mode mode;
@@ -865,6 +881,7 @@ void KeramikStyle::drawControl( ControlElement element,
 		}
 
 
+*/
 		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
@@ -1052,7 +1069,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
 				int dim = (h-2*itemFrame) / 2;
 				QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
-							y + h / 2 - dim / 2, dim, dim), r );
+ + h / 2 - dim / 2, dim, dim), r );
 
 				// Draw an arrow at the far end of the menu item
 				if ( active ) {
@@ -1069,7 +1086,6 @@ void KeramikStyle::drawControl( ControlElement element,
 			}
 			break;
 		}
-*/
 		default:
 			KStyle::drawControl(element, p, widget, r, cg, flags, opt);
 	}
@@ -1320,7 +1336,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return loader.pixmap( "scrollbar-vbar-slider-small" ).height();
 
 		case PM_DefaultFrameWidth:
-			return 2;
+			return 1;
 
 		default:
 			return KStyle::pixelMetric(m, widget);
