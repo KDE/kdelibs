@@ -1240,7 +1240,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0L;
     emit p->browserExtension()->createNewWindow("", uargs,winargs,newPart);
-    if (newPart && newPart->inherits("KHTMLPart")) {
+    if (newPart && ::qt_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
       khtmlpart->setOpener(p);
@@ -1770,7 +1770,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   // we are potentially fetching a reference to a another Window object here.
   // i.e. we may be accessing objects from another interpreter instance.
   // Therefore we have to be a bit careful with memory management.
-  if (frame && frame->inherits("KHTMLPart")) {
+  if (frame && ::qt_cast<KHTMLPart*>(frame)) {
     KHTMLPart *khtml = static_cast<KHTMLPart*>(frame);
     return Window::retrieve(khtml);
   }
