@@ -195,7 +195,7 @@ void FileProtocol::get( const KURL& url )
     KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
-    off64_t processed_size = 0;
+    KIO::filesize_t processed_size = 0;
 
     QString resumeOffset = metaData("resume");
     if ( !resumeOffset.isEmpty() )
