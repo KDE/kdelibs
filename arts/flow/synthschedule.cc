@@ -27,6 +27,9 @@
 #include "synthschedule.h"
 #include "debug.h"
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 // well, this was tuneable once...
 

@@ -40,10 +40,13 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <iostream>
 
 #include "audiosubsys.h"
 
 #define DEVICE_NAME "/dev/dsp"
+
+using namespace std;
 
 //--- automatic startup class
 

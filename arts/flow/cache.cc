@@ -25,6 +25,10 @@
 
 #include "cache.h"
 #include "debug.h"
+#include <iostream>
+#include <cassert>
+
+using namespace std;
 
 bool CachedObject::isValid()
 {

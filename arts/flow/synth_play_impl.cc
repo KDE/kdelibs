@@ -32,6 +32,9 @@
 #include "dispatcher.h"
 #include "iomanager.h"
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 						virtual public ASProducer,

@@ -1,6 +1,7 @@
 
 /*  A Bison parser, made from yacc.yy
-    by GNU Bison version 1.28  */
+ by  GNU Bison version 1.27
+  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
@@ -42,6 +43,8 @@
 #include <string>
 #include "core.h"
 
+using namespace std;
+
 extern int idl_line_no;
 extern string idl_filename;
 
@@ -59,7 +62,7 @@ void yyerror( const char *s )
 }
 
 
-#line 47 "yacc.yy"
+#line 49 "yacc.yy"
 typedef union
 {
   // generic data types
@@ -173,11 +176,11 @@ static const short yyrhs[] = {    33,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   110,   112,   112,   114,   114,   114,   114,   116,   128,   141,
-   141,   143,   150,   156,   164,   171,   193,   195,   197,   205,
-   209,   214,   220,   222,   236,   238,   241,   261,   263,   264,
-   265,   269,   279,   284,   291,   296,   305,   320,   322,   324,
-   328,   347,   348,   360,   362,   363,   364,   365,   366,   370
+   112,   114,   114,   116,   116,   116,   116,   118,   130,   143,
+   143,   145,   152,   158,   166,   173,   195,   197,   199,   207,
+   211,   216,   222,   224,   238,   240,   243,   263,   265,   266,
+   267,   271,   281,   286,   293,   298,   307,   322,   324,   326,
+   330,   349,   350,   362,   364,   365,   366,   367,   368,   372
 };
 #endif
 
@@ -287,8 +290,8 @@ static const short yycheck[] = {     2,
     -1,    42
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/local/share/bison.simple"
-/* This file comes from bison-1.28.  */
+#line 3 "/opt/local/share/bison.simple"
+/* This file comes from bison-1.27.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -501,7 +504,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/usr/local/share/bison.simple"
+#line 216 "/opt/local/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -830,14 +833,14 @@ yyreduce:
   switch (yyn) {
 
 case 8:
-#line 122 "yacc.yy"
+#line 124 "yacc.yy"
 {
 		addStructTodo(new TypeDef(yyvsp[-4]._str,*yyvsp[-2]._typeComponentSeq));
 	    free(yyvsp[-4]._str);
 	  ;
     break;}
 case 9:
-#line 134 "yacc.yy"
+#line 136 "yacc.yy"
 {
 	  	addEnumTodo(new EnumDef(yyvsp[-4]._str,*yyvsp[-2]._enumComponentSeq));
 		free(yyvsp[-4]._str);
@@ -845,15 +848,15 @@ case 9:
 	  ;
     break;}
 case 10:
-#line 141 "yacc.yy"
+#line 143 "yacc.yy"
 { yyval._str = yyvsp[0]._str; ;
     break;}
 case 11:
-#line 141 "yacc.yy"
+#line 143 "yacc.yy"
 { yyval._str = strdup(""); ;
     break;}
 case 12:
-#line 145 "yacc.yy"
+#line 147 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent *>;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[0]._str,0));
@@ -861,7 +864,7 @@ case 12:
 	  ;
     break;}
 case 13:
-#line 151 "yacc.yy"
+#line 153 "yacc.yy"
 {
 	  	yyval._enumComponentSeq = new vector<EnumComponent *>;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
@@ -869,7 +872,7 @@ case 13:
 	  ;
     break;}
 case 14:
-#line 157 "yacc.yy"
+#line 159 "yacc.yy"
 {
 	  	EnumComponent *last = (*yyvsp[-2]._enumComponentSeq)[yyvsp[-2]._enumComponentSeq->size()-1];
 
@@ -879,7 +882,7 @@ case 14:
 	  ;
     break;}
 case 15:
-#line 165 "yacc.yy"
+#line 167 "yacc.yy"
 {
 		yyval._enumComponentSeq = yyvsp[-4]._enumComponentSeq;
 		yyval._enumComponentSeq->push_back(new EnumComponent(yyvsp[-2]._str,yyvsp[0]._int));
@@ -887,7 +890,7 @@ case 15:
 	  ;
     break;}
 case 16:
-#line 177 "yacc.yy"
+#line 179 "yacc.yy"
 {
 	    vector<char *>::iterator ii;
 		for(ii=yyvsp[-4]._strs->begin(); ii != yyvsp[-4]._strs->end(); ii++)
@@ -904,35 +907,35 @@ case 16:
 	  ;
     break;}
 case 17:
-#line 194 "yacc.yy"
+#line 196 "yacc.yy"
 { yyval._strs = new vector<char *>; ;
     break;}
 case 18:
-#line 195 "yacc.yy"
+#line 197 "yacc.yy"
 { yyval._strs = yyvsp[0]._strs; ;
     break;}
 case 20:
-#line 206 "yacc.yy"
+#line 208 "yacc.yy"
 {
 	  	yyval._interfaceDef = new InterfaceDef();
 	  ;
     break;}
 case 21:
-#line 210 "yacc.yy"
+#line 212 "yacc.yy"
 {
 		yyval._interfaceDef = yyvsp[0]._interfaceDef;
 		yyval._interfaceDef->methods.insert(yyval._interfaceDef->methods.begin(),yyvsp[-1]._methodDef);
 	  ;
     break;}
 case 22:
-#line 215 "yacc.yy"
+#line 217 "yacc.yy"
 {
 	    yyval._interfaceDef = yyvsp[0]._interfaceDef;
 	    yyval._interfaceDef->attributes.insert(yyval._interfaceDef->attributes.begin(),yyvsp[-1]._attributeDefSeq->begin(),yyvsp[-1]._attributeDefSeq->end());
 	  ;
     break;}
 case 24:
-#line 223 "yacc.yy"
+#line 225 "yacc.yy"
 {
 	    // 16 == attribute
 		vector<char *>::iterator i;
@@ -946,15 +949,15 @@ case 24:
 	  ;
     break;}
 case 25:
-#line 237 "yacc.yy"
+#line 239 "yacc.yy"
 { yyval._int = 1+2; /* in&out (read & write) */ ;
     break;}
 case 26:
-#line 238 "yacc.yy"
+#line 240 "yacc.yy"
 { yyval._int = 2; /* out (readonly) */ ;
     break;}
 case 27:
-#line 242 "yacc.yy"
+#line 244 "yacc.yy"
 {
 	    // 8 == stream
 		vector<char *>::iterator i;
@@ -968,23 +971,23 @@ case 27:
 	  ;
     break;}
 case 28:
-#line 262 "yacc.yy"
+#line 264 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 29:
-#line 263 "yacc.yy"
+#line 265 "yacc.yy"
 { yyval._int = 5 ;
     break;}
 case 30:
-#line 264 "yacc.yy"
+#line 266 "yacc.yy"
 { yyval._int = 2; ;
     break;}
 case 31:
-#line 265 "yacc.yy"
+#line 267 "yacc.yy"
 { yyval._int = 6 ;
     break;}
 case 32:
-#line 272 "yacc.yy"
+#line 274 "yacc.yy"
 {
 	  	yyval._methodDef = new MethodDef(yyvsp[-4]._str,yyvsp[-5]._str,0,*yyvsp[-2]._paramDefSeq);
 		free(yyvsp[-4]._str);
@@ -992,26 +995,26 @@ case 32:
 	  ;
     break;}
 case 33:
-#line 281 "yacc.yy"
+#line 283 "yacc.yy"
 {
 	  	yyval._paramDefSeq = new vector<ParamDef *>;
 	  ;
     break;}
 case 34:
-#line 285 "yacc.yy"
+#line 287 "yacc.yy"
 {
 	  	yyval._paramDefSeq = yyvsp[0]._paramDefSeq;
 		yyval._paramDefSeq->insert(yyval._paramDefSeq->begin(),yyvsp[-1]._paramDef);
 	  ;
     break;}
 case 35:
-#line 293 "yacc.yy"
+#line 295 "yacc.yy"
 {
 	  	yyval._paramDefSeq = new vector<ParamDef *>;
 	  ;
     break;}
 case 36:
-#line 297 "yacc.yy"
+#line 299 "yacc.yy"
 {
 	  	yyval._paramDefSeq = yyvsp[-2]._paramDefSeq;
 		yyval._paramDefSeq->push_back(yyvsp[0]._paramDef);
@@ -1019,7 +1022,7 @@ case 36:
 	  ;
     break;}
 case 37:
-#line 306 "yacc.yy"
+#line 308 "yacc.yy"
 {
 	  	yyval._paramDef = new ParamDef(string(yyvsp[-1]._str),string(yyvsp[0]._str));
 		free(yyvsp[-1]._str);
@@ -1027,22 +1030,22 @@ case 37:
 	  ;
     break;}
 case 38:
-#line 321 "yacc.yy"
+#line 323 "yacc.yy"
 { yyval._strs = new vector<char *>; yyval._strs->push_back(yyvsp[0]._str); ;
     break;}
 case 39:
-#line 322 "yacc.yy"
+#line 324 "yacc.yy"
 { yyval._strs = yyvsp[-2]._strs; yyval._strs->push_back(yyvsp[0]._str); ;
     break;}
 case 40:
-#line 324 "yacc.yy"
+#line 326 "yacc.yy"
 {
 		// is empty by default
 		yyval._typeComponentSeq = new vector<TypeComponent *>;
 	  ;
     break;}
 case 41:
-#line 328 "yacc.yy"
+#line 330 "yacc.yy"
 {
 	    yyval._typeComponentSeq = yyvsp[0]._typeComponentSeq;
 		vector<char *>::reverse_iterator i;
@@ -1057,7 +1060,7 @@ case 41:
 	  ;
     break;}
 case 43:
-#line 349 "yacc.yy"
+#line 351 "yacc.yy"
 {
 	  	// a sequence<long> is for instance coded as *long
 
@@ -1070,34 +1073,34 @@ case 43:
 	  ;
     break;}
 case 44:
-#line 361 "yacc.yy"
+#line 363 "yacc.yy"
 { yyval._str = strdup("boolean"); ;
     break;}
 case 45:
-#line 362 "yacc.yy"
+#line 364 "yacc.yy"
 { yyval._str = strdup("string"); ;
     break;}
 case 46:
-#line 363 "yacc.yy"
+#line 365 "yacc.yy"
 { yyval._str = strdup("long"); ;
     break;}
 case 47:
-#line 364 "yacc.yy"
+#line 366 "yacc.yy"
 { yyval._str = strdup("object"); ;
     break;}
 case 48:
-#line 365 "yacc.yy"
+#line 367 "yacc.yy"
 { yyval._str = strdup("float"); ;
     break;}
 case 49:
-#line 366 "yacc.yy"
+#line 368 "yacc.yy"
 {
 		yyval._str = yyvsp[0]._str;
 	  ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/usr/local/share/bison.simple"
+#line 542 "/opt/local/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1317,7 +1320,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 371 "yacc.yy"
+#line 373 "yacc.yy"
 
 
 void mcopidlParse( const char *_code )

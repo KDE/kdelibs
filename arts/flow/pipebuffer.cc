@@ -24,6 +24,9 @@
     */
 
 #include "pipebuffer.h"
+#include <cassert>
+
+using namespace std;
 
 PipeSegment::PipeSegment(long size, void *buffer)
 {

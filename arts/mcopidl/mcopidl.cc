@@ -29,6 +29,9 @@
 #include <stack>
 #include <ctype.h>
 #include "core.h"
+#include <iostream>
+
+using namespace std;
 
 int idl_in_include;
 int idl_line_no;
@@ -514,7 +517,7 @@ bool haveIncluded(string filename)
 {
 	list<string>::iterator i;
 
-	for(i = includes.begin();i != includes.end();i++)
+	for(i = ::includes.begin();i != ::includes.end();i++)
 		if(*i == filename) return true;
 
 	return false;
@@ -525,7 +528,7 @@ void doIncludeHeader(FILE *header)
 	list<string>::iterator i;
 	bool done_something = false;
 
-	for(i = includes.begin();i != includes.end();i++)
+	for(i = ::includes.begin();i != ::includes.end();i++)
 	{
 		char *include = strdup((*i).c_str());
 		if(strlen(include) >= 4)
@@ -1358,7 +1361,7 @@ void preprocess(vector<char>& input, vector<char>& output)
 		{
 			if(!haveIncluded(filename))
 			{
-				includes.push_back(filename);
+				::includes.push_back(filename);
 
 				string location = searchFile(filename.c_str(),includePath);
 				append_file_to_vector(location.c_str(),output);

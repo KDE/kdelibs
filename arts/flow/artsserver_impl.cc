@@ -27,6 +27,9 @@
 #include "debug.h"
 #include "synthschedule.h"
 #include <map>
+#include <iostream>
+
+using namespace std;
 
 class SynthPortWrapper {
 public:

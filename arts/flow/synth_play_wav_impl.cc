@@ -505,5 +505,8 @@ void Synth_PLAY_PITCHED_WAV::Initialize()
 #endif
 
 #else
+#ifdef __GNUC__
 #warning "No libaudiofile available, that means, you won't be able to play wavs"
 #endif
+#endif
+

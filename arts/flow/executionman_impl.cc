@@ -117,10 +117,14 @@ long ExecutionManager_impl::createStructure(const StructureDesc& structuredesc)
 
 bool ExecutionManager_impl::isExecuting(long id)
 {
+  // TODO
+  return false;
 }
 
 bool ExecutionManager_impl::freeStructure(long id)
 {
+  // TODO
+  return false;
 }
 
 void ExecutionManager_impl::forceTermination()

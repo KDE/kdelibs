@@ -26,6 +26,8 @@
 #include <string>
 #include "core.h"
 
+using namespace std;
+
 extern int idl_line_no;
 extern string idl_filename;
 

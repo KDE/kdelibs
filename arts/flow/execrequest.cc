@@ -25,6 +25,8 @@
 
 #include "execrequest.h"
 
+using namespace std;
+
 ExecRequest::ExecRequest(ArtsServer *Server, long StructureID,
 										const string& structureName)
 {

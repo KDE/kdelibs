@@ -34,6 +34,8 @@
 #include <ctype.h>
 #include "core.h"
 
+using namespace std;
+
 #ifndef KDE_USE_FINAL
 #include "yacc.cc.h"
 #endif
