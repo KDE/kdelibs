@@ -149,13 +149,13 @@ class KAboutData
      *        in any manner. The author information from @ref addAuthor is not
      *        used.
      *
-     * @param webAddress The program homepage string.
-     *        Start the address with "http://". "http://some.domain" is
-     *        is correct, "some.domain" is not.
-     *
      * @param text Some free form text, that can contain any kind of
      *        information. The text can contain newlines. This string
      *        should be marked for translation.
+     *
+     * @param homePageAddress The program homepage string.
+     *        Start the address with "http://". "http://some.domain" is
+     *        is correct, "some.domain" is not.
      *
      * @param bugsEmailAddress The bug report email address string.
      *
