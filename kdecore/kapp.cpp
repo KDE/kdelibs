@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.26  1997/09/04 19:51:26  kdecvs
+// Coolo: set KApp first, if we can make sure, that the current instance is
+// 	complete
+//
 // Revision 1.25  1997/09/04 16:31:57  kdecvs
 // Coolo: I have introduced some dependecies, that I can't resolve.
 // 	Kalle knows about it.
@@ -902,7 +906,7 @@ void KApplication::kdisplaySetPalette()
 	  if( filename.isEmpty() )
 		filename = aAppName + '/' + aAppName + ".html";
       QString path = KApplication::kdedir();
-      path.append("/doc/HTML/");
+      path.append("/share/doc/HTML/");
       path.append(filename);
 						backgroundColor.dark(), 
 	  if( !topic.isEmpty() )
