@@ -35,11 +35,11 @@ include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h \
 	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h \
-	kcustommenueditor.h knotifywidgetbase.h
+	kcustommenueditor.h
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
-	kfilespeedbar.h
+	kfilespeedbar.h knotifywidgetbase.h
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
