@@ -53,9 +53,6 @@ KProcessController::KProcessController()
   if (0 > pipe(fd))
 	printf(strerror(errno));
   
-  if (-1 == fcntl(fd[0], F_SETFL, O_NONBLOCK))
-	printf(strerror(errno));
-
   notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
   notifier->setEnabled(true);
   QObject::connect(notifier, SIGNAL(activated(int)),
@@ -124,23 +121,29 @@ void KProcessController::slotDoHousekeeping(int )
 
   if (bytes_read != sizeof(int)+sizeof(pid_t))
 	fprintf(stderr,"Error: Could not read info from signal handler!\n");
+
+  bool found = false;
  
   proc = processList->first();
 
   while (0L != proc) {
 	if (proc->pid == pid) {
+          found = true;
 	  // process has exited, so do emit the respective events
 	  if (proc->run_mode == KProcess::Block) {
 	    // If the reads are done blocking then set the status in proc
 	    // but do nothing else because KProcess will perform the other
 	    // actions of processHasExited.
 	    proc->status = status;
+            proc->runs = false;
 	  } else {
 	    proc->processHasExited(status);
 	  }
 	}
 	proc = processList->next();
   }
+  if (!found)
+    fprintf(stderr, "Unknown child process %d died\n", pid);
 }
 
 KProcessController::~KProcessController()

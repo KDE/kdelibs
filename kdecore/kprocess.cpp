@@ -270,11 +270,13 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	if (run_mode == Block) {
 	  commClose();
 
-	  // Its possible that the child's exit was caught by the SIGCHLD handler
-	  // which will have set status for us.
-	  if (waitpid(pid, &status, 0) != -1) this->status = status;
-
-	  runs = FALSE;
+	  // The SIGCHLD handler of the process controller will catch
+	  // the exit and set the status
+          while(runs)
+          {
+             KProcessController::theKProcessController->
+	          slotDoHousekeeping(0);
+          }
 	  emit processExited(this);
 	}
   }
@@ -782,9 +784,13 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	if (run_mode == Block) {
 	  commClose();
 
-	  // Its possible that the child's exit was caught by the SIGCHLD handler
-	  // which will have set status for us.
-	  if (waitpid(pid, &status, 0) != -1) this->status = status;
+	  // The SIGCHLD handler of the process controller will catch
+	  // the exit and set the status
+          while(runs)
+          {
+             KProcessController::theKProcessController->
+	          slotDoHousekeeping(0);
+          }
 
 	  runs = FALSE;
 	  emit processExited(this);
