@@ -1,3 +1,10 @@
+kdelibs-cvs (4:2.0-19990624-1) experimental; urgency=low
+
+  * New upstream CVS version
+  * Adding in a /etc/kderc file
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 25 Jun 1999 23:50:28 -0400
+
 kdelibs-cvs (4:2.0-19990620-1) experimental; urgency=low
 
   * New upstream CVS version

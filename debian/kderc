@@ -1,0 +1,15 @@
+[Directories]
+dir_config=/etc/kde
+dir_html=/usr/doc/kde/HTML
+dir_icon=/usr/share/icons
+dir_mini=/usr/share/icons/mini
+dir_apps=/usr/share/applnk
+dir_sound=/usr/share/sounds
+dir_data=/usr/share/apps
+dir_locale=/usr/share/locale
+dir_mime=/usr/share/mimelnk
+dir_cgi=/usr/lib/cgi-bin
+dir_exe=/usr/bin
+dir_toolbar=/usr/share/toolbar
+dir_wallpaper=/usr/share/wallpapers
+dir_lib=/usr/lib
