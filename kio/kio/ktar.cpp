@@ -117,6 +117,7 @@ KTar::KTar( QIODevice * dev )
     : KArchive( dev )
 {
     d = new KTarPrivate;
+    m_tarEnd = 0;
 }
 
 KTar::~KTar()
@@ -367,7 +368,7 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    device()->at(m_tarEnd); // Go to end of archive as might have moved with a read
+    if ( mode() & IO_ReadWrite ) device()->at(m_tarEnd); // Go to end of archive as might have moved with a read
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( dirName.length() > 99 )
@@ -392,7 +393,7 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
 
     // Write header
     device()->writeBlock( buffer, 0x200 );
-    m_tarEnd = device()->at();
+    if ( mode() & IO_ReadWrite )  m_tarEnd = device()->at();
 
     d->dirList.append( dirName ); // contains trailing slash
     return true; // TODO if wanted, better error control
@@ -436,7 +437,7 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    device()->at(m_tarEnd); // Go to end of archive as might have moved with a read
+    if ( mode() & IO_ReadWrite ) device()->at(m_tarEnd); // Go to end of archive as might have moved with a read
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )
@@ -468,7 +469,7 @@ bool KTar::doneWriting( uint size )
 {
     // Write alignment
     int rest = size % 0x200;
-    m_tarEnd = device()->at() + (0x200 - rest); // Record our new end of archive
+    if ( mode() & IO_ReadWrite ) m_tarEnd = device()->at() + (0x200 - rest); // Record our new end of archive
     if ( rest )
     {
         char buffer[ 0x201 ];
