@@ -71,13 +71,17 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
     acceptUrls = acceptURLs;
 
     if (!lastDirectory)
-	lastDirectory = new QString(QDir::currentDirPath());
+    {
+        if (dirName.isEmpty()) // no dir specified -> current dir
+	  lastDirectory = new QString(QDir::currentDirPath());
+        else
+          lastDirectory = new QString(dirName);
+    }
+    // we remember the selected name for init()
+    filename_ = *lastDirectory;
 
     dir = new KDir(*lastDirectory);
     visitedDirs = new QStringList();
-
-    // we remember the selected name for init()
-    filename_ = dirName;
 
     // For testing
     connect(dir, SIGNAL(dirEntry(KFileInfo *)),
