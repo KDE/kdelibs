@@ -1039,7 +1039,8 @@ void KHTMLPart::launchJSErrorDialog() {
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
+  // The script is now printed by KJS's Parser::parse
+  kdDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine /*<< " script=" << script*/ << endl;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1072,7 +1073,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " << script << endl;
+  kdDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */ << endl;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1171,10 +1172,26 @@ bool KHTMLPart::pluginsEnabled() const
   return d->m_bPluginsEnabled;
 }
 
+static int s_DOMTreeIndentLevel = 0;
+
 void KHTMLPart::slotDebugDOMTree()
 {
   if ( d->m_doc && d->m_doc->firstChild() )
     qDebug("%s", d->m_doc->firstChild()->toString().string().latin1());
+
+  // Now print the contents of the frames that contain HTML
+
+  int indentLevel = s_DOMTreeIndentLevel++;
+
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
+      KParts::ReadOnlyPart* p = ( *it )->m_part;
+      kdDebug(6050) << QString().leftJustify(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->name() << " " << endl;
+      static_cast<KHTMLPart*>( p )->slotDebugDOMTree();
+    }
+  s_DOMTreeIndentLevel = indentLevel;
 }
 
 void KHTMLPart::slotDebugScript()
@@ -1756,10 +1773,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     emit setWindowCaption( i18n( "[Untitled]" ) );
 
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if (args.serviceType == "text/xml")
+  if (args.serviceType == "text/xml") {
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
-  else
+  } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
+  }
 #ifndef KHTML_NO_CARET
 //  d->m_view->initCaret();
 #endif
@@ -3456,7 +3474,6 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 //
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
-  kdDebug() << k_funcinfo << url << endl;
   bool hasTarget = false;
 
   QString target = _target;
@@ -4802,9 +4819,17 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
   return 0L;
 }
 
+#ifndef NDEBUG
+static int s_saveStateIndentLevel = 0;
+#endif
+
 void KHTMLPart::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "KHTMLPart::saveState this = " << this << " saving URL " << m_url.url() << endl;
+#ifndef NDEBUG
+  QString indent = QString().leftJustify( s_saveStateIndentLevel * 4, ' ' );
+  int indentLevel = ++s_saveStateIndentLevel;
+  kdDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
+#endif
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY()
          << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight() << (Q_INT32) d->m_view->marginWidth() << (Q_INT32) d->m_view->marginHeight();
@@ -4879,6 +4904,9 @@ void KHTMLPart::saveState( QDataStream &stream )
   // Save frame data
   stream << (Q_UINT32) frameNameLst.count();
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
+#ifndef NDEBUG
+  s_saveStateIndentLevel = indentLevel;
+#endif
 }
 
 void KHTMLPart::restoreState( QDataStream &stream )
