@@ -304,7 +304,7 @@ protected:
      * Reimplement this change handler in order to adjust the look of your
      * applet.
      **/
-    virtual void alignmentChange( Alignment a ) {};
+    virtual void alignmentChange( Alignment /*a*/ ) {};
 
     /**
      * The orientation changed to @p orientation. Reimplement this
