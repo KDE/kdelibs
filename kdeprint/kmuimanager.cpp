@@ -80,7 +80,10 @@ int KMUiManager::dialogFlags()
 {
 	int	f = m_printdialogflags;
 	if (KMFactory::self()->settings()->application == KPrinter::StandAlone)
+	{
 		f &= ~(KMUiManager::Preview);
+		f |= KMUiManager::FileSelect;
+	}
 	return f;
 }
 

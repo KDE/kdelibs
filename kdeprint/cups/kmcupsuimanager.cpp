@@ -36,6 +36,10 @@
 #include "kmconfigcups.h"
 #include "kmconfigcupsdir.h"
 #include "kmwfax.h"
+#include "kmwquota.h"
+#include "kmpropquota.h"
+#include "kmwusers.h"
+#include "kmpropusers.h"
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
@@ -62,6 +66,8 @@ void KMCupsUiManager::setupPropertyPages(KMPropertyPage *p)
 	p->addPropPage(new KMPropBackend(p, "Backend"));
 	p->addPropPage(new KMPropDriver(p, "Driver"));
 	p->addPropPage(new KMPropBanners(p, "Banners"));
+	p->addPropPage(new KMPropQuota(p, "Quotas"));
+	p->addPropPage(new KMPropUsers(p, "Users"));
 }
 
 void KMCupsUiManager::setupWizard(KMWizard *wizard)
@@ -119,6 +125,8 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	wizard->addPage(new KMWIppSelect(wizard));
 	wizard->addPage(new KMWIppPrinter(wizard));
 	wizard->addPage(new KMWFax(wizard));
+	wizard->addPage(new KMWQuota(wizard));
+	wizard->addPage(new KMWUsers(wizard));
 }
 
 void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)

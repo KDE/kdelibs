@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,24 +17,28 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMCUPSJOBMANAGER_H
-#define KMCUPSJOBMANAGER_H
+#ifndef KMPROPQUOTA_H
+#define KMPROPQUOTA_H
 
-#include "kmjobmanager.h"
-#include "ipprequest.h"
+#include "kmpropwidget.h"
 
-class KMCupsJobManager : public KMJobManager
+class QLabel;
+
+class KMPropQuota : public KMPropWidget
 {
 public:
-	KMCupsJobManager(QObject *parent = 0, const char *name = 0);
-	virtual ~KMCupsJobManager();
+	KMPropQuota(QWidget *parent = 0, const char *name = 0);
+	~KMPropQuota();
 
-	int actions();
+	void setPrinter(KMPrinter*);
 
 protected:
-	bool listJobs();
-	bool sendCommandSystemJob(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	void parseListAnswer(IppRequest& req);
+	void configureWizard(KMWizard*);
+
+private:
+	QLabel	*m_period;
+	QLabel	*m_sizelimit;
+	QLabel	*m_pagelimit;
 };
 
 #endif

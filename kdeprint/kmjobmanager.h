@@ -32,6 +32,8 @@ class KMThreadJob;
 class KMJobManager : public QObject
 {
 public:
+	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
+
 	KMJobManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMJobManager();
 
@@ -39,6 +41,8 @@ public:
 	void removePrinter(const QString& pr);
 	const QStringList& filter() const;
 	void clearFilter();
+	JobType jobType() const;
+	void setJobType(JobType);
 
 	KMJob* findJob(int ID);
 	bool sendCommand(int ID, int action, const QString& arg = QString::null);
@@ -62,6 +66,7 @@ protected:
 	QList<KMJob>	m_jobs;
 	QStringList	m_printers;
 	KMThreadJob	*m_threadjob;
+	JobType		m_jobtype;
 };
 
 inline void KMJobManager::addPrinter(const QString& pr)
@@ -78,5 +83,11 @@ inline void KMJobManager::clearFilter()
 
 inline KMThreadJob* KMJobManager::threadJob()
 { return m_threadjob; }
+
+inline KMJobManager::JobType KMJobManager::jobType() const
+{ return m_jobtype; }
+
+inline void KMJobManager::setJobType(JobType t)
+{ m_jobtype = t; }
 
 #endif

@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,24 +17,30 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMCUPSJOBMANAGER_H
-#define KMCUPSJOBMANAGER_H
+#ifndef KMWQUOTA_H
+#define KMWQUOTA_H
 
-#include "kmjobmanager.h"
-#include "ipprequest.h"
+#include <kmwizardpage.h>
 
-class KMCupsJobManager : public KMJobManager
+class QSpinBox;
+class QComboBox;
+
+class KMWQuota : public KMWizardPage
 {
+	Q_OBJECT
 public:
-	KMCupsJobManager(QObject *parent = 0, const char *name = 0);
-	virtual ~KMCupsJobManager();
+	KMWQuota(QWidget *parent = 0, const char *name = 0);
+	virtual ~KMWQuota();
 
-	int actions();
+	bool isValid(QString&);
+	void initPrinter(KMPrinter*);
+	void updatePrinter(KMPrinter*);
 
-protected:
-	bool listJobs();
-	bool sendCommandSystemJob(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	void parseListAnswer(IppRequest& req);
+private:
+	QSpinBox	*m_period;
+	QSpinBox	*m_sizelimit;
+	QSpinBox	*m_pagelimit;
+	QComboBox	*m_timeunit;
 };
 
 #endif

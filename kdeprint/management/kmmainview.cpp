@@ -34,6 +34,7 @@
 #include "kmconfigdialog.h"
 #include "kmspecialprinterdlg.h"
 #include "plugincombobox.h"
+#include "kiconselectaction.h"
 
 #include <qtimer.h>
 #include <qsplitter.h>
@@ -160,8 +161,10 @@ void KMMainView::saveSettings()
 
 void KMMainView::initActions()
 {
-	KSelectAction	*vact = new KSelectAction(i18n("View"),0,m_actions,"view_change");
-	vact->setItems(QStringList::split(',',i18n("Icons,List,Tree"),false));
+	KIconSelectAction	*vact = new KIconSelectAction(i18n("View"),0,m_actions,"view_change");
+	QStringList	iconlst;
+	iconlst << "view_icon" << "view_detailed" << "view_tree";
+	vact->setItems(QStringList::split(',',i18n("Icons,List,Tree"),false), iconlst);
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
@@ -177,8 +180,10 @@ void KMMainView::initActions()
 	new KAction(i18n("Configure manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
 
-	KSelectAction	*dact = new KSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
-	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false));
+	KIconSelectAction	*dact = new KIconSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
+	iconlst.clear();
+	iconlst << "view_top_bottom" << "view_left_right";
+	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false), iconlst);
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
 
@@ -187,7 +192,7 @@ void KMMainView::initActions()
 
 	KToggleAction	*tact = new KToggleAction(i18n("View Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
-	tact = new KToggleAction(i18n("View Printer Informations"),0,m_actions,"view_printerinfos");
+	tact = new KToggleAction(i18n("View Printer Informations"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
@@ -210,6 +215,11 @@ void KMMainView::initActions()
 	m_toolbar->insertLineSeparator();
 	m_actions->action("manager_configure")->plug(m_toolbar);
 	m_actions->action("view_refresh")->plug(m_toolbar);
+	m_toolbar->insertLineSeparator();
+	m_actions->action("view_change")->plug(m_toolbar);
+	m_actions->action("orientation_change")->plug(m_toolbar);
+	m_toolbar->insertSeparator();
+	m_actions->action("view_printerinfos")->plug(m_toolbar);
 
 	slotPrinterSelected(0);
 }
@@ -274,6 +284,9 @@ void KMMainView::setViewType(int ID)
 	((KSelectAction*)m_actions->action("view_change"))->setCurrentItem(ID);
 	slotChangeView(ID);
 }
+
+int KMMainView::viewType() const
+{ return m_printerview->viewType(); }
 
 void KMMainView::slotChangeView(int ID)
 {
@@ -455,6 +468,9 @@ void KMMainView::setOrientation(int o)
 	slotChangeDirection(ID);
 }
 
+int KMMainView::orientation() const
+{ return m_splitter->orientation(); }
+
 void KMMainView::slotChangeDirection(int d)
 {
 	m_splitter->setOrientation((d == 1 ? Qt::Horizontal : Qt::Vertical));
@@ -538,6 +554,7 @@ void KMMainView::slotShowPrinterInfos(bool on)
 		m_printerpages->show();
 	else
 		m_printerpages->hide();
+	m_actions->action("orientation_change")->setEnabled(on);
 }
 
 void KMMainView::enableToolbar(bool on)
@@ -564,6 +581,17 @@ void KMMainView::slotPluginChange()
 void KMMainView::reload()
 {
 	slotTimer();
+}
+
+void KMMainView::showPrinterInfos(bool on)
+{
+	static_cast<KToggleAction*>(m_actions->action("view_printerinfos"))->setChecked(on);
+	slotShowPrinterInfos(on);
+}
+
+bool KMMainView::printerInfosShown() const
+{
+	return (static_cast<KToggleAction*>(m_actions->action("view_printerinfos"))->isChecked());
 }
 
 #include "kmmainview.moc"

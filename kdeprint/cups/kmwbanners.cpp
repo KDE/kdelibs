@@ -62,7 +62,7 @@ KMWBanners::KMWBanners(QWidget *parent, const char *name)
 {
 	m_ID = KMWizard::Banners;
 	m_title = i18n("Banner selection");
-	m_nextpage = KMWizard::Name;
+	m_nextpage = KMWizard::Custom+3;
 
 	m_start = new QComboBox(this);
 	m_end = new QComboBox(this);

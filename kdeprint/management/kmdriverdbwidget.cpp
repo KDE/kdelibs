@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -140,13 +140,17 @@ bool KMDriverDbWidget::isRaw()
 void KMDriverDbWidget::init()
 {
 	QApplication::setOverrideCursor(waitCursor);
+	if (m_manu->count() == 0)
+	{
+		m_manu->insertItem(i18n("Loading..."));
+	}
 	KMDriverDB::self()->init(this);
 }
 
 void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 {
 	QApplication::restoreOverrideCursor();
-	if (reloaded || m_manu->count() == 0)
+	if (reloaded || m_manu->count() == 0 || (m_manu->count() == 1 && m_manu->text(0) == i18n("Loading...")))
 	{ // do something only if DB reloaded
 		m_manu->clear();
 		m_model->clear();

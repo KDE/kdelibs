@@ -28,6 +28,7 @@
 #include <qdir.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <kstddirs.h>
 
 KMDBCreator::KMDBCreator(QObject *parent, const char *name)
 : QObject(parent,name)
@@ -75,18 +76,7 @@ bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
 
 bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename, QWidget *parent)
 {
-	// first create the dialog
-	if (m_dlg)
-	{
-		delete m_dlg;
-		m_dlg = 0;
-	}
-	m_dlg = new QProgressDialog(parent,"progress-dialog",true);
-	m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
-	m_dlg->setCaption(i18n("Driver database"));
-	m_dlg->setMinimumDuration(0);	// always show the dialog
-	m_dlg->setProgress(0);		// to force showing
-	connect(m_dlg,SIGNAL(cancelled()),SLOT(slotCancelled()));
+	bool	started(true);
 
 	// initialize status
 	m_status = false;
@@ -95,16 +85,34 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	// start the child process
 	m_proc.clearArguments();
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
-	if (exestr.isEmpty())
-		return true;
 	m_proc.setExecutable(exestr);
 	m_proc << dirname << filename;
-	if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
+	if (exestr.isEmpty() || KStandardDirs::findExe(exestr).isEmpty() || !m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 	{
-		KMFactory::self()->manager()->setErrorMsg(i18n("Unable to start child process '%1' !").arg(KMFactory::self()->manager()->driverDbCreationProgram()));
-		return false;
+		KMFactory::self()->manager()->setErrorMsg(i18n("Unable to start child process '%1' !").arg(exestr));
+		started = false;
 	}
-	return true;
+
+	// Create the dialog is the process is running
+	if (started)
+	{
+		if (m_dlg)
+		{
+			delete m_dlg;
+			m_dlg = 0;
+		}
+		m_dlg = new QProgressDialog(parent,"progress-dialog",true);
+		m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
+		m_dlg->setCaption(i18n("Driver database"));
+		m_dlg->setMinimumDuration(0);	// always show the dialog
+		m_dlg->setProgress(0);		// to force showing
+		connect(m_dlg,SIGNAL(cancelled()),SLOT(slotCancelled()));
+	}
+	else
+		// be sure to emit this signal otherwise the DB widget won't never be notified
+		emit dbCreated();
+
+	return started;
 }
 
 void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
@@ -157,5 +165,7 @@ void KMDBCreator::slotCancelled()
 {
 	if (m_proc.isRunning())
 		m_proc.kill();
+	else
+		emit dbCreated();
 }
 #include "kmdbcreator.moc"

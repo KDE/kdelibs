@@ -207,7 +207,7 @@ dumpRequest(request_);
 #endif
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 	httpClose(HTTP);
-	if (!request_ || request_->state == IPP_ERROR)
+	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
 		return false;
 #if 0
 kdDebug() << "---------------------\nAnswer\n---------------------" << endl;

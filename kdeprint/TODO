@@ -5,22 +5,28 @@
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 
-- Add icon for view selection in the toolbar
-
 - Implement a generic page selection mechanism around the psselect
   utility if available
 
-- Pamphlet printing:
-    * psbook to reorder the pages
-    * psnup to put 2 pages on 1 sheet
-    * psselect to separate in even and odd pages
-    * print successively odd then even pages (asking user to put
-      printed pages again in slot)
-  OR
-    * use 2 different filters to print: one for even pages, the other
-      for odd pages (no code change needed then)
+- Pamphlet printing: automate page size option in the command line
+  using a tag "%psl"
 
 - Use another tool for preview (maybe difficult to know if we want to
   continue or not)
 
 - Possibility to specify a different input slot for first page???
+
+- make use global instance file
+
+- make a backup of the CUPS config file before overwriting it
+
+- change DCOP call of kdeprintd so that the command is a QStrList to
+  avoid quoting problems.
+
+- integration of some features into kicker "start" menu
+	Add printer
+	Global settings
+	---------------
+	pr34copy
+	pr34cpaper
+	...

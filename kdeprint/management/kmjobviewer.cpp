@@ -112,6 +112,9 @@ void KMJobViewer::init()
 		m_view->addColumn(i18n("Owner"));
 		m_view->addColumn(i18n("Status", "State"));
 		m_view->addColumn(i18n("Size (KB)"));
+		m_view->setColumnAlignment(5,Qt::AlignRight|Qt::AlignVCenter);
+		m_view->addColumn(i18n("Page(s)"));
+		m_view->setColumnAlignment(6,Qt::AlignRight|Qt::AlignVCenter);
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
 		m_view->setSorting(0);
@@ -133,11 +136,16 @@ void KMJobViewer::initActions()
 	KAction	*hact = new KAction(i18n("Hold"),"stop",0,this,SLOT(slotHold()),actionCollection(),"job_hold");
 	KAction	*ract = new KAction(i18n("Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
 	KAction	*dact = new KAction(i18n("Remove"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
+	KAction *sact = new KAction(i18n("Restart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
 	KActionMenu *mact = new KActionMenu(i18n("Move to printer..."),"fileprint",actionCollection(),"job_move");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(),SIGNAL(activated(int)),SLOT(slotMove(int)));
 	connect(mact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
 	connect(mact->popupMenu(),SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
+	KToggleAction	*tact = new KToggleAction(i18n("Toggle Completed Jobs"),"history",0,actionCollection(),"view_completed");
+	tact->setChecked(m_manager->jobType() == KMJobManager::CompletedJobs);
+	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
+	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
 
 	if (!m_pop)
 	{
@@ -148,8 +156,9 @@ void KMJobViewer::initActions()
 		ract->plug(m_pop);
 		m_pop->insertSeparator();
 		dact->plug(m_pop);
-		m_pop->insertSeparator();
 		mact->plug(m_pop);
+		m_pop->insertSeparator();
+		sact->plug(m_pop);
 	}
 
 	// Filter actions
@@ -168,8 +177,11 @@ void KMJobViewer::initActions()
 		ract->plug(toolbar);
 		toolbar->insertSeparator();
 		dact->plug(toolbar);
-		toolbar->insertSeparator();
 		mact->plug(toolbar);
+		toolbar->insertSeparator();
+		sact->plug(toolbar);
+		toolbar->insertSeparator();
+		tact->plug(toolbar);
 	}
 	else
 	{// stand-alone application
@@ -212,7 +224,7 @@ void KMJobViewer::initPrinterActions()
 		if (!it.current()->instanceName().isEmpty())
 			continue;
 		mact->popupMenu()->insertItem(SmallIcon(it.current()->pixmap()),it.current()->printerName(),i);
-		KToggleAction	*nact = new KToggleAction(it.current()->printerName(),0,actionCollection(),("printer_"+it.current()->printerName()).utf8());
+		KToggleAction	*nact = new KToggleAction(it.current()->printerName(),it.current()->pixmap(),0,actionCollection(),("printer_"+it.current()->printerName()).utf8());
 		nact->setGroup("printer_group");
 		connect(nact,SIGNAL(toggled(bool)),this,SLOT(slotPrinterToggled(bool)));
 		if (m_manager->filter().contains(it.current()->printerName()) > 0)
@@ -262,6 +274,7 @@ void KMJobViewer::slotSelectionChanged()
 	int	acts = m_manager->actions();
 	int	state(-1);
 	int	thread(0);
+	bool	completed(true);
 
 	QListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
@@ -278,13 +291,16 @@ void KMJobViewer::slotSelectionChanged()
 
 			if (state == -1) state = it.current()->job()->state();
 			else if (state != 0 && state != it.current()->job()->state()) state = 0;
+
+			completed = (completed && it.current()->job()->isCompleted());
 		}
 	}
 
-	actionCollection()->action("job_remove")->setEnabled((thread == 1) || ((state >= 0) && (acts & KMJob::Remove)));
-	actionCollection()->action("job_hold")->setEnabled((thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
-	actionCollection()->action("job_resume")->setEnabled((thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
-	actionCollection()->action("job_move")->setEnabled((thread == 2) && (state >= 0) && (acts & KMJob::Move));
+	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (!completed && (state >= 0) && (acts & KMJob::Remove)));
+	actionCollection()->action("job_hold")->setEnabled(!completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
+	actionCollection()->action("job_resume")->setEnabled(!completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
+	actionCollection()->action("job_move")->setEnabled(!completed && (thread == 2) && (state >= 0) && (acts & KMJob::Move));
+	actionCollection()->action("job_restart")->setEnabled((thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
 }
 
 void KMJobViewer::jobSelection(QList<KMJob>& l)
@@ -324,6 +340,11 @@ void KMJobViewer::slotRemove()
 	send(KMJob::Remove,i18n("Remove"));
 }
 
+void KMJobViewer::slotRestart()
+{
+	send(KMJob::Restart,i18n("Restart"));
+}
+
 void KMJobViewer::slotMove(int prID)
 {
 	if (prID >= 0 && prID < (int)(m_printers.count()))
@@ -346,8 +367,8 @@ void KMJobViewer::loadPrinters()
 	QListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
 	for (;it.current();++it)
 	{
-		// keep only real printers (no class, no instance, no implicit)
-		if ((it.current()->isPrinter()) && (it.current()->name() == it.current()->printerName()))
+		// keep only real printers (no instance, no implicit)
+		if ((it.current()->isPrinter() || it.current()->isClass(false)) && (it.current()->name() == it.current()->printerName()))
 			m_printers.append(it.current());
 	}
 }
@@ -410,4 +431,11 @@ void KMJobViewer::slotOnViewport()
 {
 	m_view->setCursor(KCursor::arrowCursor());
 }
+
+void KMJobViewer::slotShowCompleted(bool on)
+{
+	m_manager->setJobType((on ? KMJobManager::CompletedJobs : KMJobManager::ActiveJobs));
+	slotRefresh();
+}
+
 #include "kmjobviewer.moc"

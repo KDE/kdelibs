@@ -31,6 +31,7 @@
 #include <qfileinfo.h>
 #include <kstddirs.h>
 #include <kapp.h>
+#include <kmessagebox.h>
 
 KMDriverDB* KMDriverDB::m_self = 0;
 
@@ -71,12 +72,17 @@ void KMDriverDB::init(QWidget *parent)
 	QString		dirname = KMFactory::self()->manager()->driverDirectory();
 
 	if (!m_creator->checkDriverDB(dirname,dbfi.lastModified()))
+	{
 		// starts DB creation and wait for creator signal
-		m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent);
+		if (!m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent))
+			KMessageBox::error(parent, KMFactory::self()->manager()->errorMsg());
+	}
 	else if (m_entries.count() == 0)
+	{
 		// call directly the slot as the DB won't be re-created
 		// this will (re)load the driver DB
 		slotDbCreated();
+	}
 	else
 		// no need to refresh, and already loaded, just emit signal
 		emit dbLoaded(false);
@@ -89,8 +95,9 @@ void KMDriverDB::slotDbCreated()
 	{
 		// OK, load DB and emit signal
 		loadDbFile();
-		emit dbLoaded(true);
 	}
+	// be sure to emit this signal to notify the DB widget
+	emit dbLoaded(true);
 }
 
 KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)

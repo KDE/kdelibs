@@ -204,7 +204,8 @@ void KMWizard::slotNext()
 		QString	msg;
 		if (!page->isValid(msg))
 		{
-			KMessageBox::error(this,msg,page->title());
+			if (!msg.isEmpty())
+				KMessageBox::error(this,msg,page->title());
 		}
 		else
 		{

@@ -28,6 +28,7 @@ KMJobManager::KMJobManager(QObject *parent, const char *name)
 {
 	m_jobs.setAutoDelete(true);
 	m_threadjob = new KMThreadJob(this, "ThreadJob");
+	m_jobtype = KMJobManager::ActiveJobs;
 }
 
 KMJobManager::~KMJobManager()

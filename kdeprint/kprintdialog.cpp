@@ -30,6 +30,7 @@
 #include "kprintdialogpage.h"
 #include "kprinterpropertydialog.h"
 #include "plugincombobox.h"
+#include "kfilelist.h"
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
@@ -93,9 +94,11 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_plugin = new PluginComboBox(this);
 	QLabel	*pluginlabel = new QLabel(i18n("Print system currently used:"), this);
 	pluginlabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+	m_fileselect = new KFileList(this);
 
 	// layout creation
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
+	l1->addWidget(m_fileselect, 0);
 	l1->addWidget(m_pbox,0);
 	l1->addWidget(m_dummy,1);
 	QHBoxLayout	*ll1 = new QHBoxLayout(0, 0, 10);
@@ -159,6 +162,7 @@ KPrintDialog::~KPrintDialog()
 
 void KPrintDialog::setFlags(int f)
 {
+	SHOWHIDE(m_fileselect, (f & KMUiManager::FileSelect));
 	SHOWHIDE(m_properties, (f & KMUiManager::Properties))
 	SHOWHIDE(m_default, (f & KMUiManager::Default))
 	SHOWHIDE(m_preview, (f & KMUiManager::Preview))
@@ -248,6 +252,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 		m_preview->setChecked(true);
 	m_preview->setEnabled(!m_printer->previewOnly());
 	m_cmd->setText(m_printer->option("kde-printcommand"));
+	m_fileselect->setFileList(QStringList::split(QRegExp(",\\s*"), m_printer->option("kde-filelist"), false));
 	QListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->setOptions(m_printer->options());
@@ -333,6 +338,8 @@ void KPrintDialog::done(int result)
 		opts["kde-preview"] = (m_preview->isChecked() ? "1" : "0");
 		opts["kde-isspecial"] = (prt->isSpecial() ? "1" : "0");
 		opts["kde-special-command"] = prt->option("kde-special-command");
+		if (m_fileselect->isVisible())
+			opts["kde-filelist"] = m_fileselect->fileList().join(", ");
 
 		// merge options with KMPrinter object options
 		QMap<QString,QString>	popts = (prt->isEdited() ? prt->editedOptions() : prt->defaultOptions());

@@ -139,19 +139,23 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
-	QString	command(cmd);
+	QString	command(cmd), filestr;
 	QStringList	printfiles;
 	if (command.find("%in") == -1) command.append(" %in");
 
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
+		{
+			// quote and encode filenames
+			filestr.append("'").append(QFile::encodeName(*it)).append("' ");
 			printfiles.append(*it);
+		}
 		else
 			kdDebug() << "File not found: " << (*it) << endl;
 
 	if (printfiles.count() > 0)
 	{
-		command.replace(QRegExp("%in"),printfiles.join(" "));
+		command.replace(QRegExp("%in"),filestr);
 		int pid = dcopPrint(command,files,flag);
 		if (pid > 0)
 		{

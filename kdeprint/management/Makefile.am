@@ -13,12 +13,12 @@ libkdeprint_management_la_SOURCES = \
 	kmwbackend.cpp kmwsocket.cpp kmwdriver.cpp kmwdriverselect.cpp kmwdrivertest.cpp \
 	kmwinfobase.cpp kmwname.cpp kmwend.cpp kmwclass.cpp kmwlpd.cpp kmwfile.cpp kmdriverdialog.cpp \
 	kmwsmb.cpp smbview.cpp kmconfigdialog.cpp kmconfigpage.cpp kmconfiggeneral.cpp kmspecialprinterdlg.cpp \
-	kmwlocal.cpp
+	kmwlocal.cpp kiconselectaction.cpp
 libkdeprint_management_la_LDFLAGS = $(all_libraries) -version-info 0:1 -no-undefined
 libkdeprint_management_la_LIBADD = ../libkdeprint.la
 libkdeprint_management_la_METASOURCES = AUTO
 
-kdeprint_HEADERS = kmmainview.h kmjobviewer.h kmprinterpage.h
+kdeprint_HEADERS = kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h
 kdeprintdir = $(includedir)/kdeprint
 
 noinst_HEADERS = kmdbcreator.h kmdriverdb.h kmdriverdbwidget.h kmiconview.h \

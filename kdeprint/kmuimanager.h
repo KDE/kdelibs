@@ -45,7 +45,8 @@ public:
 		OutputToFile   = 0x0008,
 		Options        = 0x0010,
 		PrintCommand   = 0x0020,
-		PrintDialogAll = 0x00DF
+		FileSelect     = 0x0040,
+		PrintDialogAll = 0x001F
 	};
 	enum CopyFlagType
 	{

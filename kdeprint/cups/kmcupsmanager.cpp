@@ -129,6 +129,15 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 				bans.append("none");
 			req.addName(IPP_TAG_PRINTER,"job-sheets-default",bans);
 		}
+		req.addInteger(IPP_TAG_PRINTER,"job-quota-period",p->option("job-quota-period").toInt());
+		req.addInteger(IPP_TAG_PRINTER,"job-k-limit",p->option("job-k-limit").toInt());
+		req.addInteger(IPP_TAG_PRINTER,"job-page-limit",p->option("job-page-limit").toInt());
+		if (!p->option("requesting-user-name-denied").isEmpty())
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-denied",QStringList::split(",",p->option("requesting-user-name-denied"),false));
+		else if (!p->option("requesting-user-name-allowed").isEmpty())
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QStringList::split(",",p->option("requesting-user-name-allowed"),false));
+		else
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QString::fromLatin1("all"));
 	}
 	req.addText(IPP_TAG_PRINTER,"printer-info",p->description());
 	req.addText(IPP_TAG_PRINTER,"printer-location",p->location());
@@ -221,6 +230,11 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	keys.append("printer-uri-supported");
 	keys.append("job-sheets-default");
 	keys.append("job-sheets-supported");
+	keys.append("job-quota-period");
+	keys.append("job-k-limit");
+	keys.append("job-page-limit");
+	keys.append("requesting-user-name-allowed");
+	keys.append("requesting-user-name-denied");
 	if (p->isClass(true))
 	{
 		keys.append("member-uris");
@@ -258,6 +272,24 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		p->setOption("kde-banners",values.join(QString::fromLatin1(",")));
 		if (req.name("job-sheets-supported",values)) p->setOption("kde-banners-supported",values.join(QString::fromLatin1(",")));
 
+		// quotas
+		int	ival;
+		if (req.integer("job-quota-period",ival)) p->setOption("job-quota-period",QString::number(ival));
+		if (req.integer("job-k-limit",ival)) p->setOption("job-k-limit",QString::number(ival));
+		if (req.integer("job-page-limit",ival)) p->setOption("job-page-limit",QString::number(ival));
+
+		// access permissions (allow and deny are mutually exclusives)
+		if (req.name("requesting-user-name-allowed",values) && values.count() > 0)
+		{
+			p->removeOption("requesting-user-name-denied");
+			p->setOption("requesting-user-name-allowed",values.join(","));
+		}
+		if (req.name("requesting-user-name-denied",values) && values.count() > 0)
+		{
+			p->removeOption("requesting-user-name-allowed");
+			p->setOption("requesting-user-name-denied",values.join(","));
+		}
+
 		return true;
 	}
 
@@ -281,7 +313,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 	uri = printerURI(p);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
-	if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
+	if (!CupsInfos::self()->realLogin().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
 	req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
 	if (req.doFileRequest("/printers/",testpage))
 		return true;

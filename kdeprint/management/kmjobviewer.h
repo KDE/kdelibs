@@ -54,6 +54,7 @@ protected slots:
 	void slotHold();
 	void slotResume();
 	void slotRemove();
+	void slotRestart();
 	void slotRightClicked(QListViewItem*,const QPoint&,int);
 	void slotMove(int prID);
 	void slotPrinterToggled(bool);
@@ -63,6 +64,7 @@ protected slots:
 	void slotHideMenu();
 	void slotOnItem(QListViewItem*);
 	void slotOnViewport();
+	void slotShowCompleted(bool);
 
 protected:
 	void init();

@@ -42,6 +42,7 @@ void JobItem::init(KMJob *job)
 		setText(3,m_job->owner());
 		setText(4,m_job->stateString());
 		setText(5,QString::number(m_job->size()));
+		setText(6,QString::number(m_job->processedPages()));
 		m_ID = m_job->id();
 	}
 	widthChanged();

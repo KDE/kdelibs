@@ -248,6 +248,7 @@ void HelpWindow::print()
 #endif
     printer.setFullPage(TRUE);
     printer.setDocName("Help Viewer");
+    printer.setPreviewOnly(true);
 #ifdef KDE_PRINT
     printer.addDialogPage(new RichPage());
 #endif

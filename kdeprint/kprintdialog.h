@@ -35,6 +35,7 @@ class QPushButton;
 class QLineEdit;
 class QVBox;
 class PluginComboBox;
+class KFileList;
 
 class KPrintDialog : public KDialog, public KPReloadObject
 {
@@ -74,6 +75,7 @@ protected:
 	QComboBox	*m_printers;
 	QVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
+	KFileList	*m_fileselect;
 
 	QList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;

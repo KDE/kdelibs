@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -36,6 +36,7 @@ public:
 	int port() const;
 	const QString& login() const;
 	const QString& password() const;
+	const QString& realLogin() const;
 
 	void setHost(const QString& s);
 	void setPort(int p);
@@ -54,6 +55,7 @@ private:
 	int	port_;
 	QString	login_;
 	QString	password_;
+	QString	reallogin_;
 
 	int	count_;
 };
@@ -69,5 +71,8 @@ inline const QString& CupsInfos::login() const
 
 inline const QString& CupsInfos::password() const
 { return password_; }
+
+inline const QString& CupsInfos::realLogin() const
+{ return reallogin_; }
 
 #endif

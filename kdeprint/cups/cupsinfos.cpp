@@ -111,6 +111,7 @@ void CupsInfos::load()
 	login_ = conf_->readEntry("Login",QString::fromLatin1(cupsUser()));
 	password_ = QString::null;
 	if (login_.isEmpty()) login_ = QString::null;
+	reallogin_ = cupsUser();
 
 	// synchronize with CUPS
 	cupsSetServer(host_.latin1());

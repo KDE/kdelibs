@@ -82,14 +82,14 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	lay2->addWidget(l1);
 	lay2->addWidget(m_uri);
 	lay2->addSpacing(10);
-	lay2->addWidget(m_info);
+	lay2->addWidget(m_info, 1);
 	lay2->addWidget(sep);
 	lay2->addWidget(l3);
 	lay2->addSpacing(10);
 	lay2->addWidget(m_bar);
 	lay2->addSpacing(10);
 	lay2->addLayout(lay1);
-	lay2->addStretch(1);
+	//lay2->addStretch(1);
 	lay1->addWidget(settings_);
 	lay1->addWidget(scan_);
 }
@@ -174,7 +174,7 @@ void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
 		int 	state;
 		if (req.name("printer-name",value)) txt.append(i18n("<b>Name</b>: %1<br>").arg(value));
 		if (req.text("printer-location",value) && !value.isEmpty()) txt.append(i18n("<b>Location</b>: %1<br>").arg(value));
-		if (req.text("printer-info",value) && !value.isEmpty()) txt.append(i18n("<b>Description</b>: %1<br>").arg(value));
+		if (req.text("printer-info",value) && !value.isEmpty()) txt.append(i18n("<b>Description</b>: %1<br>").arg(value.replace(QRegExp(";"),"<br>")));
 		if (req.uri("printer-uri-supported",value))
 		{
 			if (value[0] == '/')

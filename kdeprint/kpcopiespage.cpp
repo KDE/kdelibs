@@ -32,6 +32,7 @@
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qtooltip.h>
+#include <qwhatsthis.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -52,6 +53,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	m_range = new QRadioButton(i18n("Range"), m_pagebox);
 	m_rangeedit = new QLineEdit(m_pagebox);
 	QToolTip::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
+	QWhatsThis::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	//QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	//m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Copies"), this);

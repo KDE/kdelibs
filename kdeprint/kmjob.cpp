@@ -24,14 +24,25 @@
 #include <klocale.h>
 
 KMJob::KMJob()
-: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0), m_type(KMJob::System)
+: KMObject()
 {
+	init();
 }
 
 KMJob::KMJob(const KMJob& j)
-: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0), m_type(KMJob::System)
+: KMObject()
 {
+	init();
 	copy(j);
+}
+
+void KMJob::init()
+{
+	m_ID = -1;
+	m_state = KMJob::Error;
+	m_size = m_processedsize = 0;
+	m_type = KMJob::System;
+	m_pages = m_processedpages = 0;
 }
 
 void KMJob::copy(const KMJob& j)
@@ -44,6 +55,9 @@ void KMJob::copy(const KMJob& j)
 	m_size = j.m_size;
 	m_uri = j.m_uri;
 	m_type = j.m_type;
+	m_pages = j.m_pages;
+	m_processedsize = j.m_processedsize;
+	m_processedpages = j.m_processedpages;
 
 	setDiscarded(false);
 }
@@ -89,6 +103,15 @@ QString KMJob::stateString()
 			break;
 		case KMJob::Error:
 			str = i18n("Error");
+			break;
+		case KMJob::Cancelled:
+			str = i18n("Cancelled");
+			break;
+		case KMJob::Aborted:
+			str = i18n("Aborted");
+			break;
+		case KMJob::Completed:
+			str = i18n("Completed");
 			break;
 		default:
 			str = i18n("Unknown State", "Unknown");

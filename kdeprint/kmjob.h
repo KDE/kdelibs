@@ -29,18 +29,23 @@ class KMJob : public KMObject
 {
 public:
 	enum JobAction {
-		Remove = 0x01,
-		Move   = 0x02,
-		Hold   = 0x04,
-		Resume = 0x08,
-		All    = 0xFF
+		Remove        = 0x01,
+		Move          = 0x02,
+		Hold          = 0x04,
+		Resume        = 0x08,
+		Restart       = 0x10,
+		ShowCompleted = 0x20,
+		All           = 0xFF
 	};
 	enum JobState {
-		Printing = 1,
-		Queued   = 2,
-		Held     = 3,
-		Error    = 4,
-		Unknown  = 5
+		Printing  = 1,
+		Queued    = 2,
+		Held      = 3,
+		Error     = 4,
+		Cancelled = 5,
+		Aborted   = 6,
+		Completed = 7,
+		Unknown   = 8
 	};
 	enum JobType {
 		System   = 0,
@@ -53,6 +58,8 @@ public:
 	void copy(const KMJob& j);
 	QString pixmap();
 	QString stateString();
+	bool isCompleted() const		{ return (m_state >= Cancelled && m_state <= Completed); }
+	bool isActive() const			{ return !isCompleted(); }
 
 	// inline access functions
 	int id() const				{ return m_ID; }
@@ -71,6 +78,15 @@ public:
 	void setUri(const QString& s)		{ m_uri = s; }
 	int type() const			{ return m_type; }
 	void setType(int t)			{ m_type = t; }
+	int pages() const			{ return m_pages; }
+	void setPages(int p)			{ m_pages = p; };
+	int processedPages() const		{ return m_processedpages; }
+	void setProcessedPages(int p)		{ m_processedpages = p; }
+	int processedSize() const		{ return m_processedsize; }
+	void setProcessedSize(int s)		{ m_processedsize = s; }
+
+protected:
+	void init();
 
 protected:
 	// normal members
@@ -81,6 +97,9 @@ protected:
 	int	m_state;
 	int	m_size;
 	int	m_type;
+	int	m_pages;
+	int	m_processedsize;
+	int	m_processedpages;
 
 	// internal members
 	QString	m_uri;

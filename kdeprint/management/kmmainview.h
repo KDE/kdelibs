@@ -47,9 +47,13 @@ public:
 	void startTimer();
 	void stopTimer();
 	void setOrientation(int);
+	int orientation() const;
 	void setViewType(int);
+	int viewType() const;
 	void enableToolbar(bool on = true);
 	KAction* action(const char *name);
+	void showPrinterInfos(bool on);
+	bool printerInfosShown() const;
 
 public slots:
 	void slotTimer();
@@ -71,11 +75,11 @@ protected slots:
 	void slotPrinterSelected(KMPrinter*);
 	void slotShowMenu();
 	void slotHideMenu();
-	void slotChangeView(int);
 	void slotRightButtonClicked(KMPrinter*, const QPoint&);
-	void slotChangeDirection(int);
 	void slotToggleToolBar(bool);
 	void slotPluginChange();
+	void slotChangeView(int);
+	void slotChangeDirection(int);
 
 protected:
 	void initActions();

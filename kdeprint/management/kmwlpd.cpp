@@ -29,6 +29,7 @@
 #include <qlabel.h>
 #include <kdebug.h>
 #include <qlineedit.h>
+#include <kmessagebox.h>
 
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -66,8 +67,8 @@ bool KMWLpd::isValid(QString& msg)
 	// check LPD queue
 	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
 	{
-		msg = i18n("<nobr>Can't find queue <b>%1</b> on <b>%2</b> !</nobr>").arg(text(1)).arg(text(0));
-		return false;
+		if (KMessageBox::warningYesNo(this, i18n("<nobr>Can't find queue <b>%1</b> on <b>%2</b> !</nobr><br>Do you wish to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
+			return false;
 	}
 	return true;
 }
