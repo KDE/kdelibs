@@ -19,7 +19,7 @@
 */
 
 #ifndef KAUDIO_H
-#define KAUDIO_H
+#define KAUDIO_H "$Id$"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -32,38 +32,70 @@ class KAudio : public QObject
 {
   Q_OBJECT
 public:
-  /// Create an Audio player
+
+  /**
+    * Create an Audio player
+    */
   KAudio();
-  /// Play the Wav last set via setFilename(filename) or play(filename)
+
+  /**
+    * Play the Wav last set via setFilename(filename) or play(filename)
+    */
   bool play();
-  /// Set filename as current media name and play it
+
+  /**
+    * Set filename as current media name and play it
+    */
   bool play(const char *filename);
-  /// Set filename as current media name and play it
+
+  /**
+    * Set filename as current media name and play it
+    */
   bool play(QString& filename);
-  /// Set the "current" Filename. This file can be played later with ::play()
+
+  /**
+    * Set the "current" Filename. This file can be played later with ::play()
+    */
   bool setFilename(const char *filename);
-  /// Set the "current" Filename. This file can be played later with ::play()
+
+  /**
+    * Set the "current" Filename. This file can be played later with ::play()
+    */
   bool setFilename(QString& filename);
-  /// If true is given, every play call is synced directly.
+
+  /**
+    * If true is given, every play call is synced directly.
+    */
   void setAutosync(bool autosync);
+
   /** If you want to recieve a Qt signal when your media is finished, you must
-      call setSignals(true) before you play your media. */
+    *  call setSignals(true) before you play your media.
+    */
   void setSignals(bool sigs=true);
-  /// Stop current media
+
+  /**
+    * Stop current media
+    */
   bool stop();
+
   /** Sync media. This effectively blocks the calling process until the
-      media is played fully */
+    * media is played fully
+    */
   void sync();
+
   /** Query Server status. 0 means OK. You MUST check server status after
-      creating a KAudio object */
+    * creating a KAudio object.
+    */
   int  serverStatus();
 
-
 signals:
-  /** Signal gets emitted after current media has been finished.
-      This signal only gets emitted, if setSignals(true) was called before.
-      Do not forget to include this signal in your own derived class if you
-      want signals. */
+
+  /** 
+    * Signal gets emitted after current media has been finished.
+    * This signal only gets emitted, if setSignals(true) was called before.
+    * Do not forget to include this signal in your own derived class if you
+    * want signals.
+    */
   void playFinished();
 
 private:
@@ -79,9 +111,11 @@ private:
   uint8		currentId;
 
 private slots:
-  /// Internal check for "finished play media", called upon finishTimer
+
+  /**
+    * Internal check for "finished play media", called upon finishTimer
+    */
   void checkFinished();
 };
 
 #endif
-  
