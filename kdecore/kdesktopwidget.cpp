@@ -23,7 +23,9 @@
 
 #include <X11/Xlib.h>
 #ifdef HAVE_XINERAMA
-#include <X11/extensions/Xinerama.h>
+extern "C" {
+  #include <X11/extensions/Xinerama.h>
+}
 #endif
 
 class KDesktopWidgetPrivate
