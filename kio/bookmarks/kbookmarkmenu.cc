@@ -989,7 +989,7 @@ void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &ne
    // add group unconditionally
    config.setGroup("DynamicMenu-" + id);
    config.writeEntry("Show", newMenu.show);
-   config.writeEntry("Location", newMenu.location);
+   config.writePathEntry("Location", newMenu.location);
    config.writeEntry("Type", newMenu.type);
    config.writeEntry("Name", newMenu.name);
 
@@ -1004,7 +1004,7 @@ void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &ne
          DynMenuInfo xbelSetting;
          xbelSetting = showDynamicBookmarks("netscape");
          config.writeEntry("Show", xbelSetting.show);
-         config.writeEntry("Location", xbelSetting.location);
+         config.writePathEntry("Location", xbelSetting.location);
          config.writeEntry("Type", xbelSetting.type);
          config.writeEntry("Name", xbelSetting.name);
       }
