@@ -28,3 +28,9 @@ extern "C"
 int gethostname (char *Name, int Namelen);
 #endif  
 
+#ifndef HAVE_STRDUP
+#define kstrdup qstrdup
+#else
+#define kstrdup strdup
+#endif
+

@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.21  1998/07/29 09:07:50  ssk
+   Fixed a whole lot of -Wall -ansi -pedantic warnings.
+
    Revision 1.20  1998/03/10 18:59:22  mario
    Mario: fixed a memory leak in KShellProcess (shell not freed)
 
@@ -53,6 +56,9 @@
 
 #include "qapp.h"
 
+// to define kstrdup
+#include <config.h>
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -62,7 +68,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <fcntl.h>
-
+#include <signal.h>
 #include <stdio.h>
 
 #include "kprocess.moc"
@@ -122,7 +128,7 @@ bool KProcess::setExecutable(const char *proc)
 
   arguments.removeFirst();
   if (0 != proc) {
-    hlp = strdup(proc);
+    hlp = kstrdup(proc);
     CHECK_PTR(hlp);
     arguments.insert(0,hlp);
   }
@@ -137,7 +143,7 @@ bool KProcess::setExecutable(const char *proc)
 
 KProcess &KProcess::operator<<(const char *arg)
 {
-  char *new_arg= strdup(arg);
+  char *new_arg= kstrdup(arg);
 
   CHECK_PTR(new_arg);
   arguments.append(new_arg);
@@ -520,7 +526,7 @@ KShellProcess::KShellProcess(const char *shellname):
   KProcess()
 {
   if (0 != shellname)
-    shell = strdup(shellname);
+    shell = kstrdup(shellname);
   else
     shell = 0;
 }
@@ -622,7 +628,7 @@ char *KShellProcess::searchShell()
   // CC: now get the name of the shell we have to use
   hlp = getenv("SHELL");
   if (isExecutable(hlp)) {
-    copy = strdup(hlp);
+    copy = kstrdup(hlp);
     CHECK_PTR(copy);
   }
 
@@ -631,7 +637,7 @@ char *KShellProcess::searchShell()
     QString stmp = QString(shell);
     QString shell_stripped = stmp.stripWhiteSpace();
     if (isExecutable(shell_stripped.data())) {
-      copy = strdup(shell_stripped.data());
+      copy = kstrdup(shell_stripped.data());
       CHECK_PTR(copy);
     }
   }

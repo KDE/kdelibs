@@ -33,7 +33,7 @@
 #include <fcntl.h>
 
 #include <stdio.h>
-
+#include <config.h>
 #include "kprocess.h"
 
 #include "kprocctrl.h"

@@ -80,3 +80,6 @@
 /* Where KDE config files should be installed */
 #undef KDE_CONFIGDIR
 
+/* If the platform supports strdup */
+#undef HAVE_STRDUP
+
