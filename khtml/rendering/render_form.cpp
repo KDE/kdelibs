@@ -365,9 +365,6 @@ void RenderRadioButton::slotClicked()
 {
     m_element->setAttribute(ATTR_CHECKED,"");
 
-    if (m_element->ownerDocument()->isHTMLDocument())
-        static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
-
     // emit mouseClick event etc
     RenderButton::slotClicked();
 }
