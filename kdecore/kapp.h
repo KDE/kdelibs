@@ -83,6 +83,10 @@ public:
   /**
    * Constructor. Parses command-line arguments.
    *
+   * @param rAppName application name. Will be used for finding the 
+   * associated message files and icon files, and as the default 
+   * registration name for DCOP. Now mandatory.
+   *
    * @param allowStyles Set to false to disable the loading on plugin based
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with allowStyles set to false
@@ -503,6 +507,14 @@ public:
 #endif
 
 // $Log$
+// Revision 1.117  1999/10/23 16:16:23  kulow
+// here comes KInstance - "KApplication light"
+// It's a new KLibGlobal and KGlobal only keeps a pointer to a global
+// instance. KApplication is derived from KInstance - making it possible
+// to move things out of KApplication into KInstance to make Components
+// easier.
+// Needs some testings and I bet some tweaks here and there :)
+//
 // Revision 1.116  1999/10/22 21:08:44  mosfet
 // Added an additional bool parameter for disabling of plugin styles. Intended
 // only for apps that link to kdecore but don't display a GUI. For apps that

@@ -39,10 +39,10 @@ class KUniqueApplication : public KApplication, DCOPObject
 public:
   /**
    * Constructor. Parses command-line arguments.
-   *
+   * Parameters : See KApplication constructor.
    */
   KUniqueApplication( int& argc, char** argv,
-		      const QCString& rAppName = 0);
+		      const QCString& rAppName = 0, bool allowStyles=true);
   
   /** Destructor */
   virtual ~KUniqueApplication();

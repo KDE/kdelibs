@@ -22,8 +22,9 @@
 #include "kuniqueapp.moc"
 
 KUniqueApplication::KUniqueApplication(int& argc, char** argv,
-				       const QCString& rAppName)
-  : KApplication(argc, argv, rAppName), DCOPObject(name())
+				       const QCString& rAppName,
+                                       bool allowStyles)
+  : KApplication(argc, argv, rAppName, allowStyles), DCOPObject(name())
 {
   DCOPClient *dc = dcopClient();
   if (dc->attach()) {
