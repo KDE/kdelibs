@@ -217,6 +217,8 @@ public:
         else if (s[0] == '*') \
         { b = true; s = s.mid(1); } \
         else b = false;
+#define checkEqual(s, b) \
+        b = (s == "=");
 
      URLActionRule(const QString &act,
                    const QString &bProt, const QString &bHost, const QString &bPath,
@@ -233,6 +235,8 @@ public:
                       checkEndWildCard(destProt, destProtWildCard);
                       checkStartWildCard(destHost, destHostWildCard);
                       checkEndWildCard(destPath, destPathWildCard);
+                      checkEqual(destProt, destProtEqual);
+                      checkEqual(destHost, destHostEqual);
                    }
 
      bool baseMatch(const KURL &url)
@@ -270,11 +274,16 @@ public:
         return true;
      }
 
-     bool destMatch(const KURL &url)
+     bool destMatch(const KURL &url, const KURL &base)
      {
         if (destProtWildCard)
         {
            if (!destProt.isEmpty() && !url.protocol().startsWith(destProt))
+              return false;
+        }
+        else if (destProtEqual)
+        {
+           if (url.protocol() != base.protocol())
               return false;
         }
         else
@@ -285,6 +294,11 @@ public:
         if (destHostWildCard)
         {
            if (!destHost.isEmpty() && !url.host().endsWith(destHost))
+              return false;
+        }
+        else if (destHostEqual)
+        {
+           if (url.host() != base.host())
               return false;
         }
         else
@@ -318,6 +332,8 @@ public:
      bool destProtWildCard : 1;
      bool destHostWildCard : 1;
      bool destPathWildCard : 1;
+     bool destProtEqual    : 1;
+     bool destHostEqual    : 1;
      bool permission;
   };
   QPtrList<URLActionRule> urlActionRestrictions;
@@ -2355,6 +2371,14 @@ void KApplication::initUrlActionRestrictions()
   ("link", QString::null, QString::null, QString::null, "news", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("link", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "http*", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "ftp*", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
 }
 
 bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
@@ -2365,9 +2389,10 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL
   for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
       rule; rule = d->urlActionRestrictions.next())
   {
-     if ((action == rule->action) &&
+     if ((result != rule->permission) && // No need to check if it doesn't make a difference
+         (action == rule->action) &&
          rule->baseMatch(baseURL) &&
-         rule->destMatch(destURL))
+         rule->destMatch(destURL, baseURL))
      {
         result = rule->permission;
 //qWarning("APPLIED: %s %s %s %s %s %s %s %s", rule->action.latin1(), rule->baseProt.latin1(), rule->baseHost.latin1(), rule->basePath.latin1(), rule->destProt.latin1(), rule->destHost.latin1(), rule->destPath.latin1(), rule->permission ? "true" : "false");
