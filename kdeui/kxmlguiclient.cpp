@@ -825,17 +825,20 @@ KXMLGUIClient::StateChange KXMLGUIClient::getActionsToChangeForState(const QStri
 }
 
 
-void KXMLGUIClient::stateChanged(const QString &newstate)
+void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::ReverseStateChange reverse)
 {
   StateChange stateChange = getActionsToChangeForState(newstate);
 
+  bool setTrue = (reverse == StateNoReverse);
+  bool setFalse = !setTrue;
+  
   // Enable actions which need to be enabled...
   //
   for ( QStringList::Iterator it = stateChange.actionsToEnable.begin();
         it != stateChange.actionsToEnable.end(); ++it ) {
 
     KAction *action = actionCollection()->action((*it).latin1());
-    if (action) action->setEnabled(true);
+    if (action) action->setEnabled(setTrue);
   }
 
   // and disable actions which need to be disabled...
@@ -844,7 +847,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate)
         it != stateChange.actionsToDisable.end(); ++it ) {
 
     KAction *action = actionCollection()->action((*it).latin1());
-    if (action) action->setEnabled(false);
+    if (action) action->setEnabled(setFalse);
   }
     
 }

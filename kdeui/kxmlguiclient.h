@@ -191,7 +191,7 @@ public:
 
   void addStateActionDisabled(const QString& state, const QString& action);
 
-
+  enum ReverseStateChange { StateNoReverse, StateReverse };
   struct StateChange
   {
     QStringList actionsToEnable;
@@ -248,7 +248,18 @@ protected:
    */
   virtual void conserveMemory();
 
-  virtual void stateChanged(const QString &newstate);
+  /**
+   * Actions can collectively be assigned a "State". To accomplish this
+   * the respective actions are tagged as <enable> or <disable> in
+   * a <State> </State> group of the XMLfile. During program execution the
+   * programmer can call stateChanged() to set actions to a defined state.
+   *
+   * @param newstate Name of a State in the XMLfile. 
+   * @param reverse If the flag reverse is set to StateReverse, the State is reversed.
+   * (actions to be enabled will be disabled and action to be disabled will be enabled)
+   * Default is reverse=false.
+   */
+   virtual void stateChanged(const QString &newstate, ReverseStateChange reverse = StateNoReverse);
 
 private:
   struct DocStruct
