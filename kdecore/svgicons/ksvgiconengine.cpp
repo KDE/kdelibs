@@ -389,14 +389,14 @@ public:
 		}
 		else if(element.tagName() == "path")
 		{
-			bool filled = false;
+			bool filled = true;
 
-			if(element.hasAttribute("fill") && !element.attribute("fill").contains("none"))
-				filled = true;
-			
-			if(element.attribute("style").contains("fill") && !element.attribute("style").stripWhiteSpace().contains("fill:none"))
-				filled = true;
-			
+			if(element.hasAttribute("fill") && element.attribute("fill").contains("none"))
+				filled = false;
+
+			if(element.attribute("style").contains("fill") && element.attribute("style").stripWhiteSpace().contains("fill:none"))
+				filled = false;
+
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
 		}
 		else if(element.tagName() == "linearGradient")
