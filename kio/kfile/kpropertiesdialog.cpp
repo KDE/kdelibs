@@ -158,7 +158,8 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
 KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
+  : KDialogBase (KDialogBase::Tabbed, 
+		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal)
 {
@@ -180,7 +181,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now unused */,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
+  : KDialogBase (KDialogBase::Tabbed, 
+		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
   m_singleUrl( _url )
@@ -200,7 +202,8 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now u
 KPropertiesDialog::KPropertiesDialog (const KURL& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
+  : KDialogBase (KDialogBase::Tabbed, 
+		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
   m_singleUrl( _url )
@@ -220,7 +223,8 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
                                       const QString& _defaultName,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_tempUrl.fileName())),
+  : KDialogBase (KDialogBase::Tabbed, 
+		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_tempUrl.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
@@ -839,7 +843,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if ( !hasDirs ) // Only files [and symlinks]
   {
-    m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)));
+    m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize))
+			 .arg(KGlobal::locale()->formatNumber(totalSize, 0)));
     m_sizeDetermineButton = 0L;
     m_sizeStopButton = 0L;
   }
@@ -878,8 +883,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
       KDiskFreeSp * job = new KDiskFreeSp;
-      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& ) ) );
+      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+					     const unsigned long&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+						const unsigned long&, const QString& ) ) );
       job->readDF( mountPoint );
   }
 
@@ -977,22 +984,30 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
         while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
 }
 
-void KFilePropsPlugin::slotFoundMountPoint( const QString&, unsigned long kBSize, unsigned long /*kBUsed*/, unsigned long kBAvail )
+void KFilePropsPlugin::slotFoundMountPoint( const QString&, 
+					    unsigned long kBSize, 
+					    unsigned long /*kBUsed*/, 
+					    unsigned long kBAvail )
 {
-    d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
-                               .arg(KIO::convertSizeFromKB(kBAvail))
-                               .arg(KIO::convertSizeFromKB(kBSize))
-                               .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+    d->m_freeSpaceLabel->setText( 
+	i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+	.arg(KIO::convertSizeFromKB(kBAvail))
+	.arg(KIO::convertSizeFromKB(kBSize))
+	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 // attention: copy&paste below, due to compiler bug
 // it doesn't like those unsigned long parameters -- unsigned long& are ok :-/
-void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& /*kBUsed*/, const unsigned long& kBAvail, const QString& )
+void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
+					    const unsigned long& /*kBUsed*/,
+					    const unsigned long& kBAvail,
+					    const QString& )
 {
-    d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
-                               .arg(KIO::convertSizeFromKB(kBAvail))
-                               .arg(KIO::convertSizeFromKB(kBSize))
-                               .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+    d->m_freeSpaceLabel->setText(
+	i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+	.arg(KIO::convertSizeFromKB(kBAvail))
+	.arg(KIO::convertSizeFromKB(kBSize))
+	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
@@ -1002,7 +1017,9 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
   else
   {
     KIO::filesize_t totalSize = static_cast<KDirSize*>(job)->totalSize();
-    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)")
+			  .arg(KIO::convertSize(totalSize))
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)
@@ -1176,7 +1193,8 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     if ( !sIcon.isEmpty() || f.exists() )
     {
         if ( !f.open( IO_ReadWrite ) ) {
-          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
+				      "have sufficient access to write to <b>%1</b>.</qt>").arg(path));
           return;
         }
         f.close();
@@ -1391,16 +1409,23 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  QWhatsThis::add(l, i18n("Specifies the actions that all users, who are neither owner nor in the group, are allowed to do."));
+  QWhatsThis::add(l, i18n("Specifies the actions that all users, who are neither "
+			  "owner nor in the group, are allowed to do."));
 
   if (!isLink) {
-    l = d->extraCheckbox = new QCheckBox(hasDir ? i18n("Only own&er can rename and delete directory content") :
+    l = d->extraCheckbox = new QCheckBox(hasDir ? 
+					 i18n("Only own&er can rename and delete directory content") :
 					 i18n("Is &executable"),
 					 d->m_frame );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addMultiCellWidget(l, 4, 4, 0, 1);
-    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to delete or rename the contained files and directories. Other users can only add new files, which requires the 'Modify Content' permission.")
-		    : i18n("Enable this option to mark the file as executable. This only makes sense for programs and scripts. It is required when you want to execute them."));
+    QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to "
+				     "delete or rename the contained files and directories. Other "
+				     "users can only add new files, which requires the 'Modify "
+				     "Content' permission.")
+		    : i18n("Enable this option to mark the file as executable. This only makes "
+			   "sense for programs and scripts. It is required when you want to "
+			   "execute them."));
 
     l = new QPushButton(i18n("A&dvanced Permissions..."), gb);
     gl->addWidget(l, 5, 1);
@@ -1593,7 +1618,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget (l, 1, 2);
   QString writeWhatsThis;
   if (isDir)
-    writeWhatsThis = i18n("This flag allows adding, renaming and deleting of files. Note that deleting and renaming can be limited using the Sticky flag.");
+    writeWhatsThis = i18n("This flag allows adding, renaming and deleting of files. "
+			  "Note that deleting and renaming can be limited using the Sticky flag.");
   else
     writeWhatsThis = i18n("The Write flag allows modifying the content of the file.");
   QWhatsThis::add(l, writeWhatsThis);
@@ -1618,9 +1644,11 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addMultiCellWidget(l, 1, 1, 4, 5);
   QString specialWhatsThis;
   if (isDir)
-    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact meaning of the flag can be seen in the right hand column.");
+    specialWhatsThis = i18n("Special flag. Valid for the whole directory, the exact "
+			    "meaning of the flag can be seen in the right hand column.");
   else
-    specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen in the right hand column.");
+    specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen "
+			    "in the right hand column.");
   QWhatsThis::add(l, specialWhatsThis);
 
   cl[0] = new QLabel( i18n("User"), gb );
@@ -1636,27 +1664,34 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget(l, 2, 5);
   QString setUidWhatsThis;
   if (isDir)
-    setUidWhatsThis = i18n("If this flag is set, the owner of this directory will be the owner of all new files.");
+    setUidWhatsThis = i18n("If this flag is set, the owner of this directory will be "
+			   "the owner of all new files.");
   else
-    setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will be executed with the permissions of the owner.");
+    setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
+			   "be executed with the permissions of the owner.");
   QWhatsThis::add(l, setUidWhatsThis);
 
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
   QString setGidWhatsThis;
   if (isDir)
-    setGidWhatsThis = i18n("If this flag is set, the group of this directory will be set for all new files.");
+    setGidWhatsThis = i18n("If this flag is set, the group of this directory will be "
+			   "set for all new files.");
   else
-    setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will be executed with the permissions of the group.");
+    setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
+			   "be executed with the permissions of the group.");
   QWhatsThis::add(l, setGidWhatsThis);
 
   l = new QLabel(i18n("File permission, sets user or group ID on execution", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
   QString stickyWhatsThis;
   if (isDir)
-    stickyWhatsThis = i18n("If the Sticky flag is set on a directory, only the owner and root can delete or rename files. Otherwise everybody with write permissions can do this.");
+    stickyWhatsThis = i18n("If the Sticky flag is set on a directory, only the owner "
+			   "and root can delete or rename files. Otherwise everybody "
+			   "with write permissions can do this.");
   else
-    stickyWhatsThis = i18n("The Sticky flag on a file is ignored on Linux, but may be used on some systems");
+    stickyWhatsThis = i18n("The Sticky flag on a file is ignored on Linux, but may "
+			   "be used on some systems");
   QWhatsThis::add(l, stickyWhatsThis);
 
   mode_t aPermissions, aPartialPermissions;
@@ -1736,7 +1771,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   if (dlg.exec() != KDialogBase::Accepted)
     return;
 
-  mode_t andPermissions = ~0;
+  mode_t andPermissions = mode_t(~0);
   mode_t orPermissions = 0;
   for (int row = 0; row < 3; ++row)
     for (int col = 0; col < 4; ++col) {
@@ -1953,8 +1988,8 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
 						     mode_t &andDirPermissions,
 						     mode_t &orFilePermissions,
 						     mode_t &orDirPermissions) {
-  andFilePermissions = ~UniSpecial;
-  andDirPermissions = ~(S_ISUID|S_ISGID);
+  andFilePermissions = mode_t(~UniSpecial);
+  andDirPermissions = mode_t(~(S_ISUID|S_ISGID));
   orFilePermissions = 0;
   orDirPermissions = 0;
   if (d->isIrregular)
@@ -2216,7 +2251,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), 
+						  QString::fromLatin1("konsole"));
 
   int posOptions = 1;
   d->nocloseonexitCheck = 0L;
@@ -2393,7 +2429,8 @@ void KExecPropsPlugin::applyChanges()
   QFile f( path );
 
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
+				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -2511,7 +2548,8 @@ void KURLPropsPlugin::applyChanges()
 
   QFile f( path );
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
+				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -2743,7 +2781,8 @@ void KApplicationPropsPlugin::applyChanges()
   QFile f( path );
 
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
+				"have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -2959,7 +2998,8 @@ void KBindingPropsPlugin::applyChanges()
 
   if ( !f.open( IO_ReadWrite ) )
   {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
+				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -2970,7 +3010,8 @@ void KBindingPropsPlugin::applyChanges()
 
   config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true ); // for compat
+  config.writeEntry( QString::fromLatin1("Comment"), 
+		     commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
       config.deleteEntry( QString::fromLatin1("X-KDE-AutoEmbed"), false );
@@ -3146,7 +3187,8 @@ void KDevicePropsPlugin::applyChanges()
   QFile f( path );
   if ( !f.open( IO_ReadWrite ) )
   {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient "
+				"access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
