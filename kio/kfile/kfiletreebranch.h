@@ -38,9 +38,9 @@ class KFileTreeView;
 
 /**
  * This is the branch class of the KFileTreeView, which represents one
- * branch in the treeview. Every branch has a root which is an url. The branch lists
- * the files unter the root. Every branch uses its own dirlister and can have
- * its own filter etc.
+ * branch in the treeview. Every branch has a root which is an url. The branch
+ * lists the files under the root. Every branch uses its own dirlister and can
+ * have its own filter etc.
  *
  * @short Branch object for @ref KFileTreeView object.
  *

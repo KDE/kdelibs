@@ -541,7 +541,7 @@ private:
  * [Desktop Entry]
  * Type=Application
  *
- * Such files are used to represent a program in kpanel and kfm.
+ * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
 class KExecPropsPlugin : public KPropsDlgPlugin
@@ -595,7 +595,7 @@ private:
  * [Desktop Entry]
  * URL=....
  *
- * Such files are used to represent a program in kpanel and kfm.
+ * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
 class KURLPropsPlugin : public KPropsDlgPlugin
@@ -631,7 +631,7 @@ private:
  * [Desktop Entry]
  * Type=Application
  *
- * Such files are used to represent a program in kpanel and kfm.
+ * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
 class KApplicationPropsPlugin : public KPropsDlgPlugin
