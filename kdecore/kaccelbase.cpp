@@ -559,7 +559,10 @@ bool KAccelActions::init( KAccelActions& actions )
 
 bool KAccelActions::init( KConfigBase& config, QString sGroup )
 {
+	kdDebug(125) << "KAccelActions::init( " << sGroup << " )" << endl;
 	QMap<QString, QString> mapEntry = config.entryMap( sGroup );
+	reserve( mapEntry.size() );
+	resize( 0 );
 
 	QMap<QString, QString>::Iterator it( mapEntry.begin() );
 	for( ; it != mapEntry.end(); ++it ) {
@@ -568,7 +571,8 @@ bool KAccelActions::init( KConfigBase& config, QString sGroup )
 			kdDebug(125) << it.key() << " = " << sShortcuts << endl;
 			KAccelAction action;
 			action.m_sName = it.key();
-			action.setShortcuts( KAccelShortcuts( sShortcuts ) );
+			if( sShortcuts != "none" )
+				action.setShortcuts( KAccelShortcuts( sShortcuts ) );
 			push_back( action );
 		}
 	}
@@ -795,7 +799,7 @@ void KAccelActions::emitKeycodeChanged()
 KAccelBase::KAccelBase()
 {
     m_bEnabled = true;
-    m_sConfigGroup = "Keys";
+    m_sConfigGroup = "Shortcuts";
     m_bConfigIsGlobal = false;
     m_bAutoUpdate = false;
     d = 0;

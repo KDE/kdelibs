@@ -91,7 +91,7 @@ bool KGlobalAccelPrivate::gm_bKeyEventsEnabled = true;
 
 KGlobalAccelPrivate::KGlobalAccelPrivate()
 {
-	m_sConfigGroup = "Global Keys";
+	m_sConfigGroup = "Global Shortcuts";
 	kapp->installX11EventFilter( this );
 }
 
