@@ -76,13 +76,14 @@ QString KPACImpl::proxyForURL(const KURL &url)
                 {
                     proxy = proxy.mid(p + 1).stripWhiteSpace();
                     time_t badMark = blackList.readNumEntry(proxy);
-                    if (badMark < time(0) + 1800)
+                    if (badMark < time(0) - 1800)
+                    {
+                        if (badMark)
+                            blackList.deleteEntry(proxy, false);
                         return proxy;
-                    else if (badMark)
-                        blackList.deleteEntry(proxy, false);
+                    }
                 }
             }
-            break;
         }
     }
     return QString::null;
@@ -126,7 +127,7 @@ bool KPACImpl::setConfig(const KURL &url)
 
 void KPACImpl::badProxy(const QString &proxy)
 {
-    KSimpleConfig blackList(locate("tmp", "badproxies"));
+    KSimpleConfig blackList(locateLocal("tmp", "badproxies"));
     blackList.writeEntry(proxy, time(0));
 }
 
