@@ -1,11 +1,11 @@
 // programm to test the new khtml implementation
 
 
-#include "khtmldecoder.h"
+#include "decoder.h"
 #include "kapp.h"
 #include "qfile.h"
 #include "html_document.h"
-#include "khtmltokenizer.h"
+#include "htmltokenizer.h"
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging
 #define protected public

@@ -19,13 +19,13 @@
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
-noinst_LTLIBRARIES = libkhtmlmisc.la
-libkhtmlmisc_la_SOURCES = \
+noinst_LTLIBRARIES = libkhtmlcss.la
+libkhtmlcss_la_SOURCES = \
 	css_stylesheetimpl.cpp  cssparser.cpp \
 	css_ruleimpl.cpp        css_valueimpl.cpp
 #	css_extensionsimpl.cpp  
 
-libkhtmlmisc_la_METASOURCES = AUTO
+libkhtmlcss_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
 	css_extensionsimpl.h  css_stylesheetimpl.h  cssparser.h \

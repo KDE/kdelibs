@@ -39,14 +39,14 @@
 #include <kdebug.h>
 #include "khtml.h"
 #include "khtmldata.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kimgio.h>
 #include <kstddirs.h>
 
-#include "khtmldecoder.h"
+#include "decoder.h"
 #include "html_documentimpl.h"
 
 #include "khtmlio.h"

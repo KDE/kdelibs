@@ -32,54 +32,24 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = java kjs
+SUBDIRS = misc dom css xml html java kjs
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = dtd.cpp\
-	khtmltoken.cpp khtmltokenizer.cpp khtmlparser.cpp\
-	khtmldecoder.cpp khtml.cpp khtmlio.cpp\
-	khtmldata.cpp khtmltext.cpp \
-	khtmlstyle.cpp khtmlfont.cpp \
-	dom_doc.cpp dom_docimpl.cpp dom_element.cpp dom_elementimpl.cpp \
-	dom_misc.cpp dom_node.cpp dom_nodeimpl.cpp \
-	dom_string.cpp dom_stringimpl.cpp dom_text.cpp dom_textimpl.cpp \
-	dom_xml.cpp \
-	html_base.cpp html_baseimpl.cpp html_block.cpp html_blockimpl.cpp \
-	html_document.cpp html_documentimpl.cpp html_element.cpp \
-	html_elementimpl.cpp html_form.cpp html_formimpl.cpp \
-	html_head.cpp html_headimpl.cpp html_image.cpp \
-	html_imageimpl.cpp html_inline.cpp html_inlineimpl.cpp html_list.cpp \
-	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
-	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp 
-#	css_parser.cpp \
-#	css_stylesheet.cpp css_stylesheetimpl.cpp css_rule.cpp css_ruleimpl.cpp \
-#	css_value.cpp css_valueimpl.cpp #css_extensions.cpp css_extensionsimpl.cpp
-
+libkhtml_la_SOURCES = khtml.cpp       khtmlstyle.cpp  khtmltext.cpp 
 
 libkhtml_la_METASOURCES = AUTO
 
-include_HEADERS = khtml.h khtmlio.h \
-	dom_core.h dom_doc.h dom_element.h dom_exception.h \
-	dom_misc.h dom_node.h dom_string.h dom_text.h \
-	dom_xml.h \
-	html_base.h html_block.h html_document.h html_element.h \
-	html_form.h html_head.h html_image.h \
-	html_inline.h html_list.h html_misc.h html_table.h html_object.h
+include_HEADERS = khtml.h 
 
-noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
-	khtmldata.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
-	dom_docimpl.h dom_elementimpl.h dom_nodeimpl.h dom_stringimpl.h \
-	dom_textimpl.h html_baseimpl.h \
-	html_blockimpl.h html_documentimpl.h html_elementimpl.h \
-	html_formimpl.h html_headimpl.h html_imageimpl.h \
-	html_inlineimpl.h html_listimpl.h html_miscimpl.h html_tableimpl.h \
-	html_objectimpl.h
+noinst_HEADERS = \
+	design.h       khtmlstyle.h   khtmltext.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la 
+libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la 
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes)
+	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes) -I./misc \
+	-I./dom -I./xml -I./html -I./css
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
@@ -102,12 +72,12 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-check_PROGRAMS 	= testkhtml 
+check_PROGRAMS 	= testkhtml testcss
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
 testkhtml_LDADD = $(LIB_KHTML) $(LIB_QT)
 testkhtml_LDADD = $(LIB_KHTML)
-#testcss_SOURCES = testcss.cpp
-#testcss_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
+testcss_SOURCES = testcss.cpp
+testcss_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
 

@@ -35,7 +35,7 @@
 #include <stdio.h>
 
 #include "khtmlstyle.h"
-#include "khtmltokenizer.h"
+#include "htmlhashes.h"
 
 #include <qstring.h>
 #include <dom_stringimpl.h>
