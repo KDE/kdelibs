@@ -122,7 +122,7 @@ private:
 };
 
 class KWritePermsIconPrivate;
-/** 
+/**
  * Auth icon for write permission display.
  *
  * @see KAuthIcon
@@ -131,6 +131,7 @@ class KWritePermsIconPrivate;
 class KWritePermsIcon : public KAuthIcon
 {
   Q_OBJECT
+  Q_PROPERTY( QString fileName READ fileName WRITE setFileName )
 
 public:
   KWritePermsIcon(const QString & fileName, QWidget *parent = 0, const char *name = 0);
@@ -146,11 +147,16 @@ public:
    */
   void setFileName(const QString & fileName) { fi.setFile(fileName); updateStatus(); }
 
+  /**
+  * return the filename of the currently watched file.
+  */
+  QString fileName() const { return fi.fileName(); }
+
 public slots:
   void updateStatus();
 
 protected:
-  bool writable; 
+  bool writable;
   QFileInfo fi;
 
 protected:
