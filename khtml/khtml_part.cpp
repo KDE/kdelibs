@@ -1626,7 +1626,9 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  urlSelected( u );
+  QString target;
+  u = splitUrlTarget( u, &target );
+  urlSelected( u, 0, 0, target );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)

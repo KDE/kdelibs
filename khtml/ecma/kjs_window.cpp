@@ -315,7 +315,7 @@ void Window::put(const UString &p, const KJSO &v)
     String s = v.toString();
     part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
-    QString str = v.toString().value().qstring();
+    QString str = v.toString().value().qstring().prepend( "target://_self/#" );
     part->scheduleRedirection(0, str);
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
@@ -686,7 +686,7 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "protocol")  url.setProtocol(str);
   if (p == "search"){ /* TODO */}
 
-  part->scheduleRedirection(0, url.url());
+  part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
 
 }
 
@@ -711,10 +711,10 @@ Completion LocationFunc::tryExecute(const List &args)
   if (!part.isNull()) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString().value().qstring());
+      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ) );
       break;
     case Reload:
-      part->scheduleRedirection(0, part->url().url());
+      part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
       break;
     }
   }
