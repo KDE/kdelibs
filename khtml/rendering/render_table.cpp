@@ -1742,6 +1742,8 @@ RenderTableRow::RenderTableRow()
 
 RenderTableRow::~RenderTableRow()
 {
+    if (table)
+        table->setNeedsCellsRecalc();
 }
 
 
@@ -1821,6 +1823,8 @@ RenderTableCell::RenderTableCell()
 
 RenderTableCell::~RenderTableCell()
 {
+    if (m_table)
+        m_table->setNeedsCellsRecalc();
 }
 
 void RenderTableCell::calcMinMaxWidth()
