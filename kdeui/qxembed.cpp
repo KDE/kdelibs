@@ -178,7 +178,7 @@ class QPublicWidget : public QWidget
 public:
     QTLWExtra* topData() { return QWidget::topData(); }
     QFocusData *focusData(){ return QWidget::focusData(); }
-    bool focusNextPrevChild(bool b) { return QWidget::focusNextPrevChild(b); }
+    bool focusNextPrev(bool b) { return focusNextPrevChild(b); }
 };
 
 // L0400: This sets a very low level filter for X11 messages.
@@ -361,11 +361,11 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
             if ( !(k->state() & ControlButton || k->state() & AltButton) ) {
                 if ( k->key() == Key_Backtab || (k->key() == Key_Tab && (k->state() & ShiftButton)) ) {
                     QFocusEvent::setReason( QFocusEvent::Backtab );
-                    res = ((QPublicWidget*)w)->focusNextPrevChild( tabForward = false );
+                    res = ((QPublicWidget*)w)->focusNextPrev( tabForward = false );
                     QFocusEvent::resetReason();
                 } else if ( k->key() == Key_Tab ) {
                     QFocusEvent::setReason( QFocusEvent::Tab );
-                    res = ((QPublicWidget*)w)->focusNextPrevChild( tabForward = true );
+                    res = ((QPublicWidget*)w)->focusNextPrev( tabForward = true );
                     QFocusEvent::resetReason();
                 }
             }
@@ -486,7 +486,7 @@ static int qxembed_x11_event_filter( XEvent* e)
                             // L0684: Search first widget in tab chain
                             QFocusEvent::setReason( QFocusEvent::Tab );
                             w->topLevelWidget()->setFocus();
-                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrevChild(true);
+                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrev(true);
                             QFocusEvent::resetReason();
                         }
                         break;
@@ -495,7 +495,7 @@ static int qxembed_x11_event_filter( XEvent* e)
                             // L0686: Search last widget in tab chain
                             QFocusEvent::setReason( QFocusEvent::Tab );
                             w->topLevelWidget()->setFocus();
-                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrevChild(false);
+                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrev(false);
                             QFocusEvent::resetReason();
                         }
                         break;
