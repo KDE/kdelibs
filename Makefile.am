@@ -37,14 +37,22 @@ AUTOMAKE_OPTIONS = foreign 1.4
 include_HEADERS = kde.pot
 
 messages:
-	dirs=`find . -type d | grep -v CVS`  ;\
+	find . -type d | grep -v CVS | sed -e 's,$$,/,' > dirs
+	mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'` ;\
+	for dir in $$mfs; do \
+	  if test ! "$$dir" = "./Makefile.am"; then \
+	    dir=`dirname $$dir` ;\
+	    egrep -v "^$$dir" dirs > dirs.new && mv dirs.new dirs ;\
+	  fi ;\
+	done
+	dirs=`cat dirs` ;\
 	find $$dirs -maxdepth 1 -name "*.cpp" -print > files ;\
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
 	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc"` > rc.cpp	;\
 	: > kde.pot ;\
 	$(XGETTEXT) -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot;
 	$(XGETTEXT) common_texts.cpp -o kde.pot
-	rm -f rc.cpp
+	rm -f rc.cpp dirs
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot configure.in.bot \
 	COMPILING COMPILING.html COPYING.BSD DEBUG \
