@@ -34,10 +34,27 @@
 int XMapWindow(Display *, Window);
 int XMapRaised(Display *, Window);
 
+/* overridden functions, need these to call the real function */
 typedef Window (*KDE_XMapRequestSignature)(Display *, Window);
 
 KDE_XMapRequestSignature KDE_RealXMapWindow = NULL;
 KDE_XMapRequestSignature KDE_RealXMapRaised = NULL;
+
+/* other functions from X11, so we don't need to link at build time */
+typedef Atom (*KDE_XInternAtomSignature)(Display *, char *, Bool);
+typedef Atom *(*KDE_XListPropertiesSignature)(Display *, Window, int *);
+typedef void (*KDE_XSetTextPropertySignature)(Display *, Window,
+  XTextProperty *, Atom);
+typedef int (*KDE_XChangePropertySignature)(Display *, Window, Atom,
+  Atom, int, int, unsigned char *, int);
+typedef Status (*KDE_XStringListToTextPropertySignature)(char **list,
+  int, XTextProperty *);
+
+KDE_XInternAtomSignature KDE_XInternAtom = NULL;
+KDE_XListPropertiesSignature KDE_XListProperties = NULL;
+KDE_XSetTextPropertySignature KDE_XSetTextProperty = NULL;
+KDE_XChangePropertySignature KDE_XChangeProperty = NULL;
+KDE_XStringListToTextPropertySignature KDE_XStringListToTextProperty = NULL;
 
 static long KDE_initialDesktop = 0;
 
@@ -59,7 +76,7 @@ XMapWindow(Display * d, Window w)
    * that already has properties */
   if (KDE_initialDesktop) {
     int num;
-    (void)XListProperties(d, w, &num);
+    (void)KDE_XListProperties(d, w, &num);
     if (num>1) {
       KDE_SetInitialDesktop(d, w);
       KDE_initialDesktop=0;
@@ -84,7 +101,7 @@ XMapRaised(Display * d, Window w)
    * that already has properties */
   if (KDE_initialDesktop) {
     int num;
-    (void)XListProperties(d, w, &num);
+    (void)KDE_XListProperties(d, w, &num);
     if (num>1) {
       KDE_SetInitialDesktop(d, w);
       KDE_initialDesktop=0;
@@ -145,18 +162,60 @@ KDE_InterceptXMapRequest(Display * d, Window w)
     exit(1);
   }
 
+  KDE_XInternAtom =
+    (KDE_XInternAtomSignature)lt_dlsym(libX11Handle, "XInternAtom");
+
+  if (NULL == KDE_XInternAtom) {
+    fprintf(stderr, "KDE: Could not find symbol XInternAtom in libX11\n");
+    exit(1);
+  }
+
+  KDE_XListProperties =
+    (KDE_XListPropertiesSignature)lt_dlsym(libX11Handle,  "XListProperties");
+
+  if (NULL == KDE_XListProperties) {
+    fprintf(stderr, "KDE: Could not find symbol XListProperties in libX11\n");
+    exit(1);
+  }
+
+  KDE_XSetTextProperty =
+    (KDE_XSetTextPropertySignature)lt_dlsym(libX11Handle, "XSetTextProperty");
+
+  if (NULL == KDE_XSetTextProperty) {
+    fprintf(stderr, 
+      "KDE: Could not find symbol XSetTextProperty in libX11\n");
+    exit(1);
+  }
+
+  KDE_XChangeProperty =
+    (KDE_XChangePropertySignature)lt_dlsym(libX11Handle, "XChangeProperty");
+
+  if (NULL == KDE_XChangeProperty) {
+    fprintf(stderr, "KDE: Could not find symbol XChangeProperty in libX11\n");
+    exit(1);
+  }
+
+  KDE_XStringListToTextProperty = (KDE_XStringListToTextPropertySignature)
+    lt_dlsym(libX11Handle, "XStringListToTextProperty");
+
+  if (NULL == KDE_XStringListToTextProperty) {
+    fprintf(stderr, 
+      "KDE: Could not find symbol XStringListToTextProperty in libX11\n");
+    exit(1);
+  }
+
   /* Set property on initial window ***************************************/
 
-  netMapNotify = XInternAtom(d, "_NET_MAP_NOTIFY", False);
+  netMapNotify = KDE_XInternAtom(d, "_NET_WM_PID", False);
 
   pidString = (char *)malloc(32);
 
   snprintf(pidString, 32, "%d", getpid());
 
-  status = XStringListToTextProperty(&pidString, 1, &prop);
+  status = KDE_XStringListToTextProperty(&pidString, 1, &prop);
 
   if (0 != status)
-    XSetTextProperty(d, w, &prop, netMapNotify);
+    KDE_XSetTextProperty(d, w, &prop, netMapNotify);
   else
     fprintf(stderr, "KDE: kmapnotify: Could not set text property\n");
 }
@@ -166,11 +225,9 @@ KDE_SetInitialDesktop(Display *d, Window w) {
 
   Atom a;
 
-  /* FIXME - what name to use for the atom?
-     read by kdebase/kwin/client.cpp Client::manage */
-  a = XInternAtom(d, "KWIN_INITIAL_DESKTOP", False); /* _NET_INITIAL_DESKTOP? */
+  a = KDE_XInternAtom(d, "_NET_WM_DESKTOP", False);
 
-  XChangeProperty(d, w, a, a, 32, PropModeReplace, (unsigned char *)
+  KDE_XChangeProperty(d, w, a, a, 32, PropModeReplace, (unsigned char *)
     &KDE_initialDesktop, 1);
 
 }
