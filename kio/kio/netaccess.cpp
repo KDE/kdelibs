@@ -42,8 +42,8 @@
 
 using namespace KIO;
 
-QString * NetAccess::lastErrorMsg = 0L;
-QStringList* NetAccess::tmpfiles = 0L;
+QString * NetAccess::lastErrorMsg;
+QStringList* NetAccess::tmpfiles;
 
 bool NetAccess::download(const KURL& u, QString & target)
 {
@@ -303,7 +303,7 @@ void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
 void qt_enter_modal( QWidget *widget );
 void qt_leave_modal( QWidget *widget );
 
-void NetAccessnews.::enter_loop()
+void NetAccess::enter_loop()
 {
   QWidget dummy(0,0,WType_Dialog | WShowModal);
   dummy.setFocusPolicy( QWidget::NoFocus );
