@@ -221,7 +221,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
 	error_text = i18n("can't talk to klauncher");
-	error = KIO::ERR_INTERNAL;
+	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
 	return 0;
     }
@@ -232,7 +232,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!pid)
     {
 	error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
-	error = KIO::ERR_INTERNAL;
+	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
 	return 0;
     }
