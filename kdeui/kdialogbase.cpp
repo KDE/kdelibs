@@ -220,7 +220,6 @@ KDialogBase::~KDialogBase()
 KPushButton *SButton::append( int key, const KGuiItem &item )
 {
   KDialogBaseButton *p = new KDialogBaseButton( item, key, box );
-  p->setAutoDefault( false );
   list.append( p );
   return( p );
 }
