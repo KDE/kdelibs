@@ -2512,7 +2512,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       else
       {
         float d = (float) buff.st_size/1024.0;
-        text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
+        text = i18n("%2 (%1 K)").arg(KGlobal::locale()->formatNumber(d, 2)).arg(text2); // was %.2f
       }
       text += "  ";
       text += com;
