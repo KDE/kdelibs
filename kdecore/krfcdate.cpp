@@ -59,7 +59,7 @@ KRFCDate::parseDate(const QString &_date)
 
      if (!*dateString)
      	return result;  // Invalid expire date
-     	
+
      // ' 09-Nov-99 23:12:40 GMT'
      day = strtol(dateString, &newPosStr, 10);
      dateString = newPosStr;
@@ -96,7 +96,7 @@ KRFCDate::parseDate(const QString &_date)
 
      if (!*dateString)
      	return result;  // Invalid expire date
-     	
+
      // '-99 23:12:40 GMT'
      if ((*dateString != '-') && (*dateString != ' '))
      	return result;  // Invalid expire date
@@ -131,7 +131,7 @@ KRFCDate::parseDate(const QString &_date)
 
      if (!*dateString)
      	return result;  // Invalid expire date
-          	
+
      // ':12:40 GMT'
      if (*dateString++ != ':')
      	return result;  // Invalid expire date
@@ -178,6 +178,9 @@ KRFCDate::parseDate(const QString &_date)
 //   time_t now = time(0);
 //   printf("now = %ld (expire is in %s)\n", now, result > now ? "future" : "past");
 ////////////////
-
+     // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
+     // This is so that parse error and valid epoch 0 return values won't
+     // be the same for sensitive applications...
+     if( !result ) result++;
      return result;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
    
@@ -32,10 +32,13 @@ class KRFCDate
 {
 public:
    /**
-    * This function tries to parse a string containing a date/time in any 
+    * This function tries to parse a string containing a date/time in any
     * of the formats specified by RFC822, RFC850, RFC1036 and RFC1123.
     *
-    * If the date/time could not be parsed, 0 is returned.
+    * If the date/time could not be parsed, 0 is returned.  If the
+    * parsed date is epoch, then epoch+1 is returned so that a valid
+    * date will not be confused with an improper date string.
+    *
     * The date/time returned is converted to the current timezone.
     *
     * BUGS: Not all possible formats are covered yet.
