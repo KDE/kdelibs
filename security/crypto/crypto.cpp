@@ -762,9 +762,9 @@ void KCryptoConfig::slotGeneratePersonal() {
                << i18n("SSL Personal Request")
                << i18n("SSL Server Request")
                << i18n("Netscape SSL")
-               << i18n("Server CA")
-               << i18n("Personal CA")
-               << i18n("S/MIME CA");
+               << i18n("Server certificate authority", "Server CA")
+               << i18n("Personal certificate authority", "Personal CA")
+               << i18n("Secure MIME certificate authority", "S/MIME CA");
 #endif
    
 }
