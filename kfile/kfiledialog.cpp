@@ -222,10 +222,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(filterWidget, SIGNAL(filterChanged()),
 	    SLOT(filterChanged()));
 
-    connect( this, SIGNAL( cancelClicked() ), SLOT( reject() ) );
-
     connect( locationEdit, SIGNAL( returnPressed() ),
-	     SLOT( returnPressed()));
+    	     SLOT( slotOk()));
 
     if (d->filename_ == QString::fromLatin1(".") || d->filename_.isEmpty())
 	d->filename_ = QString::fromLatin1("file:") + QDir::currentDirPath();
@@ -266,7 +264,16 @@ void KFileDialog::setFilter(const QString& filter)
 
 void KFileDialog::slotOk()
 {
+    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
+        return;
+
     d->filename_ = locationEdit->currentText();
+
+    // TODO
+    if ( mode() == Directory ) {
+      //    KFileRea
+
+    }
 
     KURL u( d->filename_ );
     if ( u.isLocalFile() ) {
@@ -283,22 +290,28 @@ void KFileDialog::slotOk()
 
 void KFileDialog::fileHightlighted(const KFileViewItem *i)
 {
+    if (i->isDir())
+        return;
+  
     d->filename_ = i->url();
     locationEdit->setEditText(d->filename_);
 }
 
 void KFileDialog::fileSelected(const KFileViewItem *i)
 {
+    if (i->isDir())
+        return;
+    
     d->filename_ = i->url();
     locationEdit->setEditText(d->filename_);
 }
 
 void KFileDialog::returnPressed()
 {
-  if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
-    return;
+    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
+        return;
 
-  slotOk();
+    slotOk();
 }
 
 void KFileDialog::initGUI()

@@ -165,7 +165,9 @@ void KFileIconView::selected( QIconViewItem *item )
     const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
     if ( fi ) {
 	select( const_cast<KFileViewItem*>( fi ) );
-	setContentsPos( 0, 0 ); // scroll to top left
+	// FIXME: why is selected() called, when we just highlighted a file?
+	// on highlighting, we can't scroll away...
+	// setContentsPos( 0, 0 ); // scroll to top left
     }
 }
 

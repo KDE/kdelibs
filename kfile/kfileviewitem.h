@@ -102,7 +102,7 @@ public:
       * Returns the name of the file
       *
       * Note: If this object does not refer to a real file
-      * (broken symlink), it will return 0
+      * (broken symlink), it will return QString::null
       **/
     QString name() const { return myName; }
 
