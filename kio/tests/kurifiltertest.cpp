@@ -28,10 +28,11 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     if (KURIFilter::self()->filterURI(*m_filterData, list))
     {
         // From minicli
-        if ( m_filterData->uri().isLocalFile() && !m_filterData->uri().hasRef() )
-            cmd = m_filterData->uri().path();
+        KURL uri = m_filterData->uri();
+        if ( uri.isLocalFile() && !uri.hasRef() && uri.query().isEmpty() )
+            cmd = uri.path();
         else
-            cmd = m_filterData->uri().url();
+            cmd = uri.url();
         switch( m_filterData->uriType() )
             {
                 case KURIFilterData::LOCAL_FILE:
@@ -96,6 +97,15 @@ int main(int argc, char **argv) {
     filter( "file:/etc/passwd#q8", "file:/etc/passwd#q8", KURIFilterData::LOCAL_FILE );
         // local file with query (can be used by javascript)
     filter( "file:/etc/passwd?foo=bar", "file:/etc/passwd?foo=bar", KURIFilterData::LOCAL_FILE );
+        // local file with ? in the name (#58990)
+    QFile tmpFile( "/tmp/kurifiltertest?foo" ); // Yeah, I know, security risk blah blah. This is a test prog!
+    if ( tmpFile.open( IO_ReadWrite ) ) {
+        QCString fname = QFile::encodeName( tmpFile.name() );
+        filter(fname, fname, KURIFilterData::LOCAL_FILE);
+        tmpFile.close();
+        tmpFile.remove();
+    } else
+        kdDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
         // hostnames are lowercased by KURL
     filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
             "http://www.mydomain.commyport/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
