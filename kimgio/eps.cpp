@@ -155,7 +155,9 @@ void kimgio_eps_write( QImageIO *imageio )
   inFile.open( IO_ReadOnly );
 
   QTextStream in( &inFile );
+  in.setEncoding( QTextStream::Latin1 );
   QTextStream out( imageio->ioDevice() );
+  out.setEncoding( QTextStream::Latin1 );
 
   QString szInLine = in.readLine();
   out << szInLine << '\n';
