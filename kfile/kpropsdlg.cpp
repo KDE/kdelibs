@@ -1609,10 +1609,6 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
   for( ; sit != extensions.end(); ++sit )
     extensionsList->inSort( *sit );
 
-  addMimeType( QString::fromLatin1("all") );
-  addMimeType( QString::fromLatin1("alldirs") );
-  addMimeType( QString::fromLatin1("allfiles") );
-
   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
   QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
   for ( ; it2 != mimeTypes.end(); ++it2 )
