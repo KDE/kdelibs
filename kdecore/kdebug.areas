@@ -139,6 +139,9 @@
 9005	kdevelop (qextmdi)
 9006	kdevelop (cvs interface)
 9007	kdevelop (cpp support)
+9008	kdevelop (gcc options)
+9009	kdevelop (projectview)
+9020	kdevelop (kdeprojectspace)
 
 # toys and games
 10000   amor
