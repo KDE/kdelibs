@@ -795,6 +795,14 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 popBlock(ID_OPTION);
                 handled = true;
             }
+            else if(id == ID_SELECT)
+            {
+                break;
+            }
+            else {
+                popBlock(ID_SELECT);
+                handled = true;
+            }
             break;
             // head elements in the body should be ignored.
         case ID_ADDRESS:
