@@ -383,7 +383,7 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 	QPtrList<KMJob>	l;
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
-		KMessageBox::error(this,i18n("Unable to perform action \"%1\" on selected jobs.").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p>");
+		KMessageBox::error(this,i18n("<p>Unable to perform action \"%1\" on selected jobs.</p>").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p>");
 
 	triggerRefresh();
 
@@ -555,7 +555,7 @@ void KMJobViewer::pluginActionActivated(int ID)
 	QPtrList<KMJob>	joblist;
 	jobSelection(joblist);
 	if (!m_manager->doPluginAction(ID, joblist))
-		KMessageBox::error(this, i18n("Operation failed.")+"<p>"+KMManager::self()->errorMsg()+"</p>");
+		KMessageBox::error(this, i18n("<p>Operation failed.</p>")+"<p>"+KMManager::self()->errorMsg()+"</p>");
 
 	triggerRefresh();
 	KMTimer::self()->release();

@@ -256,7 +256,7 @@ void KMInstancePage::slotTest()
 			KMessageBox::error(this,i18n("Unable to locate test page."));
 		else if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
-		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on <b>%1</b>. Do you want to continue?").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		else if (KMessageBox::warningContinueCancel(this, i18n("<p>You are about to print a test page on <b>%1</b>. Do you want to continue?</p>").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			KPrinter::setApplicationType(KPrinter::StandAlone);
 			KPrinter	pr;

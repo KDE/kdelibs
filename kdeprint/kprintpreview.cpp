@@ -196,10 +196,10 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 		QString	exe = conf->readEntry("PreviewCommand", "gv");
 		if (KStandardDirs::findExe(exe).isEmpty())
 		{
-			KMessageBox::error(NULL, i18n("The preview program <b>%1</b> cannot be found. "
+			KMessageBox::error(NULL, i18n("<p>The preview program <b>%1</b> cannot be found. "
 						      "Check that the program is correctly installed and "
 						      "located in a directory included in your <b>PATH</b> "
-						      "environment variable.").arg(exe));
+						      "environment variable.</p>").arg(exe));
 			return false;
 
 		}
@@ -209,7 +209,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			proc << exe << file;
 			if (!proc.startPreview())
 			{
-				KMessageBox::error(NULL, i18n("Preview failed: unable to start program <b>%1</b>.").arg(exe));
+				KMessageBox::error(NULL, i18n("<p>Preview failed: unable to start program <b>%1</b>.</p>").arg(exe));
 				return false;
 			}
 			else

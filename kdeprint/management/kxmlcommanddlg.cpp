@@ -473,7 +473,7 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 	{
 		if (m_name->text().isEmpty() || m_name->text() == "__root__")
 		{
-			KMessageBox::error(this, i18n("Invalid identification name. Empty strings and <b>__root__</b> are not allowed."));
+			KMessageBox::error(this, i18n("<p>Invalid identification name. Empty strings and <b>__root__</b> are not allowed.</p>"));
 			return;
 		}
 

@@ -400,14 +400,14 @@ void KMMainView::slotRemove()
 	{
 		KMTimer::self()->hold();
 		bool	result(false);
-		if (KMessageBox::warningYesNo(this,i18n("Do you really want to remove <b>%1</b>?").arg(m_current->printerName())) == KMessageBox::Yes)
+		if (KMessageBox::warningYesNo(this,i18n("<p>Do you really want to remove <b>%1</b>?</p>").arg(m_current->printerName())) == KMessageBox::Yes)
 			if (m_current->isSpecial())
 			{
 				if (!(result=m_manager->removeSpecialPrinter(m_current)))
-					showErrorMsg(i18n("Unable to remove special printer <b>%1</b>.").arg(m_current->printerName()));
+					showErrorMsg(i18n("<p>Unable to remove special printer <b>%1</b>.</p>").arg(m_current->printerName()));
 			}
 			else if (!(result=m_manager->removePrinter(m_current)))
-				showErrorMsg(i18n("Unable to remove printer <b>%1</b>.").arg(m_current->printerName()));
+				showErrorMsg(i18n("<p>Unable to remove printer <b>%1</b>.</p>").arg(m_current->printerName()));
 		KMTimer::self()->release(result);
 	}
 }
@@ -507,12 +507,12 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on <b>%1</b>. Do you want to continue?").arg(m_current->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		if (KMessageBox::warningContinueCancel(this, i18n("<p>You are about to print a test page on <b>%1</b>. Do you want to continue?</p>").arg(m_current->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
-				KMessageBox::information(this,i18n("Test page successfully sent to printer <b>%1</b>.").arg(m_current->printerName()));
+				KMessageBox::information(this,i18n("<p>Test page successfully sent to printer <b>%1</b>.</p>").arg(m_current->printerName()));
 			else
-				showErrorMsg(i18n("Unable to test printer <b>%1</b>.").arg(m_current->printerName()));
+				showErrorMsg(i18n("<p>Unable to test printer <b>%1</b>.</p>").arg(m_current->printerName()));
 		}
 		KMTimer::self()->release(true);
 	}
@@ -523,14 +523,20 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 	QString	s(msg);
 	if (usemgr)
 	{
+		s.prepend("<p>");
 		s.append(" ");
-		s += i18n("Error message received from manager:<p>%1</p>");
+		s += i18n("Error message received from manager:</p><p>%1</p>");
 		if (m_manager->errorMsg().isEmpty())
 			s = s.arg(i18n("Internal error (no error message)."));
 		else
 			s = s.arg(m_manager->errorMsg());
 		// clean up error message
 		m_manager->setErrorMsg(QString::null);
+	}
+	else
+	{
+		s.prepend("<p>");
+		s.append("</p>");
 	}
 	KMTimer::self()->hold();
 	KMessageBox::error(this,s);

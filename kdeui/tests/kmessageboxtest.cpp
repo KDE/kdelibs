@@ -77,7 +77,7 @@ int main( int argc, char *argv[] )
          switch(test)
          {
 case 1:
-  i = KMessageBox::questionYesNo(0, "Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.");
+  i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>");
   break;
 
 case 2:
@@ -92,8 +92,16 @@ case 3:
   break;
 
 case 4:
-  i = KMessageBox::warningYesNo(0, "Your printer has been added.\n"
-		"Do you want to update your configuration?");
+  i = KMessageBox::warningYesNo(0, 
+                               "KDVI could not locate the program 'dvipdfm' on your computer. That program is "
+			       "absolutely needed by the export function. You can, however, convert "
+			       "the DVI-file to PDF using the print function of KDVI, but that will often "
+			       "produce files which print ok, but are of inferior quality if viewed in the "
+			       "Acrobat Reader. It may be wise to upgrade to a more recent version of your "
+			       "TeX distribution which includes the 'dvipdfm' program.\n"
+			       "Hint to the perplexed system administrator: KDVI uses the shell's PATH variable "
+			       "when looking for programs."
+		);
   break;
 
 
