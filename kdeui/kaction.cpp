@@ -623,12 +623,13 @@ int KAction::plug( QWidget *w, int index )
  	return -1;
   }
 
-#ifndef NDEBUG
+  // Ellis: print warning if there is a shortcut, but no KAccel available (often due to no widget available in the actioncollection)
+  // David: Well, it doesn't matter much, things still work (e.g. Undo in koffice) via QAccel.
+  // We should probably re-enable the warning for things that only KAccel can do, though - e.g. WIN key (mapped to Meta).
+#if 0 //ndef NDEBUG
   KAccel* kaccel = kaccelCurrent();
-  // If there is a shortcut, but no KAccel available
   if( !d->m_cut.isNull() && !kaccel ) {
-    kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
-    kdDebug(129) << kdBacktrace() << endl;
+    kdDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
   }
 #endif
 
