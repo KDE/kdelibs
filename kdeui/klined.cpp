@@ -229,7 +229,7 @@ void KLineEdit::rotateText( const QString& input )
     if( input.length() == 0 || input == text() )
         return;
 
-    // Allow rotation only in manual modes.
+    // Allow rotation only in the "manual" modes.
     if( (m_iCompletionMode == KGlobal::CompletionMan ||
          m_iCompletionMode == KGlobal::CompletionShell) &&
          comp != 0 && comp->hasMultipleMatches() )
@@ -262,9 +262,9 @@ void KLineEdit::slotRotateDown()
 void KLineEdit::slotReturnPressed()
 {
     // When the user presses enter, if the completion mode is not
-    // CompletionNone and the input has changed since the last time
-    // the ENTER key is pressed, attempt to add the text to KCompletion's
-    // list.
+    // CompletionNone, the input has changed since the last time
+    // the ENTER key is pressed, and completion has not been diabled
+    // attempt to add the text to KCompletion's list.
     if( m_bHasInputChanged && comp != 0 &&
         m_iCompletionMode != KGlobal::CompletionNone )
     {
