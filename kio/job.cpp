@@ -2198,6 +2198,14 @@ void CopyJob::copyNextFile()
 
     if (bCopyFile) // any file to create, finally ?
     {
+        if ( (*it).uDest == (*it).uSource )
+        {
+            m_error = ERR_IDENTICAL_FILES;
+            m_errorText = (*it).uDest.prettyURL();
+            emitResult();
+            return;
+        }
+
         // Do we set overwrite ?
         bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
         QString destFile = (*it).uDest.path();
@@ -2211,7 +2219,7 @@ void CopyJob::copyNextFile()
         KIO::Job * newjob;
         if ( m_mode == Link )
         {
-            kdDebug(7007) << "Linking" << endl;
+            //kdDebug(7007) << "Linking" << endl;
             if (
                 ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
                 ((*it).uSource.host() == (*it).uDest.host()) &&
@@ -2278,7 +2286,7 @@ void CopyJob::copyNextFile()
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
                     m_error = ERR_CANNOT_SYMLINK;
-                    m_errorText = (*it).uDest.url();
+                    m_errorText = (*it).uDest.prettyURL();
                     emitResult();
                     return;
                 }

@@ -96,8 +96,7 @@ namespace KIO
     ERR_NO_SOURCE_PROTOCOL = 7,
     ERR_UNSUPPORTED_ACTION = 8,
     ERR_IS_DIRECTORY = 9, // ... where a file was expected
-    // If one tries to get a listing of a file. This only works for directories :-)
-    ERR_IS_FILE = 10,
+    ERR_IS_FILE = 10, // ... where a directory was expected (e.g. listing)
     ERR_DOES_NOT_EXIST = 11,
     ERR_FILE_ALREADY_EXIST = 12,
     ERR_DIR_ALREADY_EXIST = 13,
@@ -136,8 +135,7 @@ namespace KIO
     ERR_UNKNOWN_PROXY_HOST = 45,
     ERR_COULD_NOT_AUTHENTICATE = 46,
     ERR_ABORTED = 47, // Action got aborted from application side
-    // ERR_IS_REALLY_A_WARNING = 47, // HUH???
-    // ERR_WARNING = 47, // Errors terminate the job now. Use warning() instead.
+    // ERR_WARNING, // Errors terminate the job now. Use warning() instead.
     ERR_INTERNAL_SERVER = 48,
     ERR_SERVER_TIMEOUT = 49,
     ERR_SERVICE_NOT_AVAILABLE = 50,
@@ -151,7 +149,8 @@ namespace KIO
     ERR_NEED_PASSWD = 58,
     ERR_CANNOT_SYMLINK = 59,
     ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
-    ERR_DISK_FULL = 61
+    ERR_DISK_FULL = 61,
+    ERR_IDENTICAL_FILES = 62 // src==dest when moving/copying
   };
 
   /**

@@ -379,6 +379,9 @@ QString KIO::Job::errorString()
     case KIO::ERR_DISK_FULL:
       result = i18n( "Could not write file %1.\nDisk full." ).arg( m_errorText );
       break;
+    case KIO::ERR_IDENTICAL_FILES:
+      result = i18n( "The source and destination are the same file.\n%1" ).arg( m_errorText );
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg( m_error ).arg( m_errorText );
       break;
