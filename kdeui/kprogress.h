@@ -8,7 +8,7 @@
 #define _KPROGRES_H
 
 #include <qframe.h>
-#include <qrangect.h>
+#include <qrangecontrol.h>
 
 /** 
 * KProgress is derived from QFrame and QRangeControl, so you can use all 

@@ -27,17 +27,17 @@
 #ifndef KICONLOADERDIALOG_H
 #define KICONLOADERDIALOG_H
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qlist.h>
 #include <qpixmap.h>
 #include <qstrlist.h>
 #include <qstring.h>
-#include <qtablevw.h>
+#include <qtableview.h>
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qlined.h>
-#include <qpushbt.h>
-#include <qcombo.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
 #include <qtimer.h>
 
 #include <kapp.h>

@@ -37,7 +37,7 @@
 
 #include <qfile.h>
 #include <qimage.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 #include <qmovie.h>
 
 #include "htmlobj.moc"

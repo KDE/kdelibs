@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.18  1998/08/22 20:02:47  kulow
+ * make kdecore have nicer output, when compiled with -Weffc++ :)
+ *
  * Revision 1.17  1998/03/28 11:02:08  kulow
  * undef NULL for egcs's sake
  *
@@ -114,7 +117,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 
-#include <qsocknot.h>
+#include <qsocketnotifier.h>
 
 /** 
  * A TCP/IP client socket. You can connect this socket to any internet address. 

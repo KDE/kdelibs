@@ -20,7 +20,7 @@
 #include "kbutton.h"
 
 #include <qpainter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 
 KButton::KButton( QWidget *_parent, const char *name )
     : QButton( _parent , name)

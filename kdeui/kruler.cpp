@@ -20,7 +20,7 @@
 #include "kruler.moc"
 
 #include <qpainter.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <qfont.h>
 
 #define INIT_VALUE 0

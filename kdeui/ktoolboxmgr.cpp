@@ -21,7 +21,7 @@
 
 #include <qcursor.h>
 #include <qobject.h>
-#include <qapp.h>
+#include <qapplication.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.11  1998/08/10 13:33:54  radej
+ // sven: Added X-only and Y-only resizing.
+ //
  // Revision 1.10  1998/07/29 12:48:30  ssk
  // Removed more warnings, possible portability problems and ANSI violations.
  //

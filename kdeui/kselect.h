@@ -25,8 +25,8 @@
 
 #include <qdialog.h>
 #include <qframe.h>
-#include <qrangect.h>
-#include <qlined.h>
+#include <qrangecontrol.h>
+#include <qlineedit.h>
 #include <qpixmap.h>
 
 /// 2D value selector.

@@ -13,7 +13,7 @@
 
 #include <string>
 #include <qpainter.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <qtooltip.h>
 #include "businesscard.h"
 extern "C" {

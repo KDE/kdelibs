@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.38  1998/08/09 14:01:19  radej
+// sven: reintroduced makeDisabledPixmap code, and dumped QIconSet. Fixed a bug
+//       with paletteChange too.
+//
 // Revision 1.37  1998/08/06 15:39:03  radej
 // sven: Popups & delayedPopups. Uses QIconSet. Needs Qt-1.4x
 //
@@ -44,7 +48,7 @@
 #include <qlist.h>
 #include <qframe.h>
 #include <qpixmap.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qbutton.h>
 #include <qfont.h>
 #include <qsize.h>

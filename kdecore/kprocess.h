@@ -35,7 +35,7 @@
 #include <unistd.h>
 #include <qstrlist.h>
 #include <qobject.h>
-#include <qsocknot.h>
+#include <qsocketnotifier.h>
 
 
 /**

@@ -25,14 +25,14 @@
 #include <qdialog.h>
 #include <qlistbox.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qchkbox.h>
-#include <qlined.h>
-#include <qbttngrp.h>
-#include <qtablevw.h>
+#include <qpushbutton.h>
+#include <qcheckbox.h>
+#include <qlineedit.h>
+#include <qbuttongroup.h>
+#include <qtableview.h>
 #include <qstrlist.h>
-#include <qpopmenu.h>
-#include <qgrpbox.h>
+#include <qpopupmenu.h>
+#include <qgroupbox.h>
 #include <qobject.h>
 
 #include <kapp.h>

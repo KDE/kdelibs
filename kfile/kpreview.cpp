@@ -21,7 +21,7 @@
 
 #include <qlayout.h>
 #include <qfile.h>
-#include <qtstream.h>
+#include <qtextstream.h>
 #include <qpixmap.h>
 #include <qwmatrix.h>
 #include <qstring.h>

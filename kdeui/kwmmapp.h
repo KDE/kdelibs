@@ -26,7 +26,7 @@
 #ifndef KWM_MODULE_APPLICATION_H
 #define KWM_MODULE_APPLICATION_H
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qlist.h>
 #include <qwidget.h>
 #include <kapp.h>

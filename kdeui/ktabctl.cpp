@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  1998/07/13 08:39:32  hoss
+ * Fixed small bug in showTab. pages[i]->raise() does only work with more than
+ * one widget!
+ *
  * Revision 1.12  1998/06/16 21:23:36  hoss
  * Added support for setFont and setShape
  *
@@ -92,7 +96,7 @@
  */
 
 #include "qtabbar.h"
-#include "qpushbt.h"
+#include "qpushbutton.h"
 #include "qpainter.h"
 #include "qpixmap.h"
 

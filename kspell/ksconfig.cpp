@@ -1,7 +1,7 @@
-#include <qchkbox.h>
-#include <qpushbt.h>
+#include <qcheckbox.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
-#include <qfiledlg.h>
+#include <qfiledialog.h>
 
 #include <klined.h>
 #include <kapp.h>

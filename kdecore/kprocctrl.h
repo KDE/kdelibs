@@ -29,7 +29,7 @@
 #define __KPROCCTRL_H__
 
 
-#include <qsocknot.h>
+#include <qsocketnotifier.h>
 #include "kprocess.h"
 
 /**

@@ -24,7 +24,7 @@
 
 #include <qdict.h>
 #include <qaccel.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 
 #include <kconfig.h>
 

@@ -23,7 +23,7 @@
 
 #ifndef _KLINED_H
 #define _KLINED_H
-#include <qlined.h>
+#include <qlineedit.h>
 
 /**
  * This widget has the same behaviour as QLineEditor, but emits

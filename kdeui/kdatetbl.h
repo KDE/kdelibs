@@ -34,8 +34,8 @@
 // When a date is selected by the user, it emits a signal: 
 //      dateSelected(QDate)
 
-#include <qtablevw.h>
-#include <qdatetm.h>
+#include <qtableview.h>
+#include <qdatetime.h>
 #include <qsize.h>
 
 /**

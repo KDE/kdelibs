@@ -23,9 +23,9 @@
 #ifndef KFILEDIALOGCONF_H
 #define KFILEDIALOGCONF_H
 
-#include <qchkbox.h>
-#include <qtabdlg.h>
-#include <qradiobt.h>
+#include <qcheckbox.h>
+#include <qtabdialog.h>
+#include <qradiobutton.h>
 #include <qlabel.h>
 #include <qslider.h>
 

@@ -14,7 +14,7 @@
 
 #define Inherited QDialog
 
-#include <qpushbt.h>
+#include <qpushbutton.h>
 
 PrintDialogData::PrintDialogData
 (

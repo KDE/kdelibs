@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.22  1998/07/29 10:14:28  kulow
+   porting to a virtual plattform called "tajsandmineansiplatform" :)
+
    Revision 1.21  1998/07/29 09:07:50  ssk
    Fixed a whole lot of -Wall -ansi -pedantic warnings.
 
@@ -54,7 +57,7 @@
 #define _MAY_INCLUDE_KPROCESSCONTROLLER_
 #include "kprocctrl.h"
 
-#include "qapp.h"
+#include <qapplication.h>
 
 // to define kstrdup
 #include <config.h>

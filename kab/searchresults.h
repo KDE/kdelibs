@@ -17,7 +17,7 @@
 #include "stl_headers.h"
 #include <qwidget.h>
 #include <qlistbox.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qframe.h>
 #include <qsize.h>
 

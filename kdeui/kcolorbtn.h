@@ -20,7 +20,7 @@
 #ifndef __COLBTN_H__
 #define __COLBTN_H__
 
-#include <qpushbt.h>
+#include <qpushbutton.h>
 
 /**
 * This widget can be used to display or allow user selection of a colour.

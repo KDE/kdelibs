@@ -25,7 +25,7 @@
 #ifndef KRESTRICTEDLINE_H
 #define KRESTRICTEDLINE_H
 
-#include "qlined.h"
+#include "qlineedit.h"
 
 /** Restricted Editline: Only selected Characters are valid input. 
     All other characters will be discarded and the signal invalidChar() 

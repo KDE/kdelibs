@@ -47,7 +47,7 @@
 
 
 #include <qframe.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <qsize.h>
 
 class KDateTable;

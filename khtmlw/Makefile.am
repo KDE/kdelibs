@@ -21,14 +21,14 @@
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp jpeg.cpp formats.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp htmltable.cpp
 
-BUILT_SOURCES = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
+SRC_META = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
 htmlobj.cpp: htmlobj.moc
 htmlform.cpp: htmlform.moc
 htmlframe.cpp: htmlframe.moc
 htmlview.cpp: htmlview.moc
 
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(SRC_META)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h htmltable.h jpeg.h jpeginc.h
 libkhtmlw_la_LDFLAGS = -version-info 2:0
 

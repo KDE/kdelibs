@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <qregexp.h>
 
 #include <kapp.h>

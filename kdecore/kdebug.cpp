@@ -22,8 +22,8 @@
 #include "kapp.h"
 
 #include <qfile.h>
-#include <qmsgbox.h>
-#include <qbitarry.h>
+#include <qmessagebox.h>
+#include <qbitarray.h>
 
 #include <stdlib.h> // abort
 #include <stdarg.h> // vararg stuff

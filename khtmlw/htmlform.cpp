@@ -24,13 +24,13 @@
 
 #include <qobject.h>
 #include <qlistbox.h>
-#include <qcombo.h>
-#include <qchkbox.h>
-#include <qradiobt.h>
-#include <qpushbt.h>
-#include <qlined.h>
-#include <qmlined.h>
-#include <qfontmet.h>
+#include <qcombobox.h>
+#include <qcheckbox.h>
+#include <qradiobutton.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qmultilinedit.h>
+#include <qfontmetrics.h>
 #include "htmlform.h"
 #include <strings.h>
 #include "htmlform.moc"

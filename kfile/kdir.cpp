@@ -20,7 +20,7 @@
 */
 
 #include <qdir.h>
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <sys/stat.h> 
 #include <sys/types.h>
 #include <dirent.h>

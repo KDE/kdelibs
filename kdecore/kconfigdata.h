@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1998/08/22 20:02:39  kulow
+// make kdecore have nicer output, when compiled with -Weffc++ :)
+//
 // Revision 1.8  1998/04/26 02:24:45  ssk
 // Some classes marked internal.
 //
@@ -32,7 +35,7 @@
 #define _KCONFIGDATA_H
 
 #include <qdict.h> // QDict
-#include <qtstream.h> // QTextStream
+#include <qtextstream.h> // QTextStream
 
 /**
 * Entry-dictionary entry.

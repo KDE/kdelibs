@@ -26,13 +26,13 @@ Cambridge, MA 02139, USA.
 #ifndef KTREE_LIST_H
 #define KTREE_LIST_H
 
-#include <qapp.h>       // used for QApplication::closingDown()
+#include <qapplication.h>       // used for QApplication::closingDown()
 #include <qkeycode.h>           // used for keyboard interface
 #include <qpainter.h>		// used to paint items
 #include <qpixmap.h>		// used in items
 #include <qstack.h>		// used to specify tree paths
 #include <qstring.h>		// used in items
-#include <qtablevw.h>		// base class for widget
+#include <qtableview.h>		// base class for widget
 
 // use stack of strings to represent path information
 typedef QStack<QString> KPath;

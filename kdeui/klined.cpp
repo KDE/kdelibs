@@ -21,7 +21,7 @@
 // changed to accept Tab, maybe this should be switchable (constructor)
 // 'cause a tabbed dialog will stop working ..
 
-#include <qlined.h>
+#include <qlineedit.h>
 #include "klined.moc"
 
 #include <qkeycode.h>

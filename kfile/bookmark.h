@@ -27,7 +27,7 @@
 #define __BOOKMARK_H__
 
 #include <qobject.h>
-#include <qtstream.h>
+#include <qtextstream.h>
 #include "booktoken.h"
 
 class KBookmark

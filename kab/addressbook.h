@@ -17,7 +17,7 @@
 #define ADDRESSBOOK_H
 
 #include "configDB.h"
-#include <qdatetm.h>
+#include <qdatetime.h>
 
 // -----------------------------
 // this will be incremented when kab's file format changes

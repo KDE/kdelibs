@@ -16,8 +16,8 @@
 #include "kab.h"
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qmsgbox.h>
+#include <qpushbutton.h>
+#include <qmessagebox.h>
 #include <qkeycode.h>
 #include <kapp.h>
 #include "debug.h"

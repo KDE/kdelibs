@@ -22,7 +22,7 @@
 #define KRULER_H
 
 #include <qframe.h>
-#include <qrangect.h>
+#include <qrangecontrol.h>
 
 /**
  * The vertical ruler looks similar to this:

@@ -24,7 +24,7 @@
 #define KWM_H
 
 #include <qstring.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qpixmap.h>
 #include <X11/Xlib.h>
 

@@ -14,7 +14,7 @@
 #define StringListSelectSetDialogData_included
 
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlistbox.h>
 #include <qframe.h>
 

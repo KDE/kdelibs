@@ -1,7 +1,7 @@
 #ifndef _KPOPUP_H
 #define _KPOPUP_H
 
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 
 
 /// Popup menus with a title bar

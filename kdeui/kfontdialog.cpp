@@ -23,6 +23,9 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.24  1998/08/31 12:43:26  esken
+    GPL -> LGPL
+
     Revision 1.23  1998/06/15 12:49:33  kulow
     applied patch to replace .kde with localkdedir()
 
@@ -136,8 +139,8 @@
 #include "qfile.h"
 #include <qstrlist.h> 
 #include <qfile.h>
-#include <qtstream.h> 
-#include <qapp.h>
+#include <qtextstream.h> 
+#include <qapplication.h>
 #include <X11/Xlib.h>
 
 #include <klocale.h>

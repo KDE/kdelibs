@@ -34,7 +34,7 @@
 #include <string.h>
 
 #include <qimage.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 
 //#define CLUE_DEBUG
 //#define DEBUG_ALIGN

@@ -15,9 +15,9 @@
 
 #include <qdialog.h>
 #include <qlabel.h>
-#include <qpushbt.h>
-#include <qlined.h>
-#include <qcombo.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qcombobox.h>
 #include <qframe.h>
 
 class SearchDialogData : public QDialog

@@ -2,11 +2,10 @@
 #define DATEPICKERDIALOG_H_INCL
 
 #include <qdialog.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include "widgets.h"
 #include <qlabel.h>
 #include <qcolor.h>
-#include <qdatetm.h>
 
 class QPushButton;
 

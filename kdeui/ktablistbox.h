@@ -25,7 +25,7 @@
 
 #undef del_item
 #include <qdict.h>
-#include <qtablevw.h>
+#include <qtableview.h>
 #include <qcolor.h>
 #include <qpixmap.h>
 #include <drag.h>

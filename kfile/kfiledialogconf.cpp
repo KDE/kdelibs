@@ -20,10 +20,10 @@
 */
 
 #include <qlayout.h>
-#include <qlined.h>
-#include <qbttngrp.h>
-#include <qgrpbox.h>
-#include <qchkbox.h>
+#include <qlineedit.h>
+#include <qbuttongroup.h>
+#include <qgroupbox.h>
+#include <qcheckbox.h>
 #include "kfiledialogconf.h"
 #include <kapp.h>
 

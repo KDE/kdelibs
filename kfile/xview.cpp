@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <qiodev.h>
+#include <qiodevice.h>
 #include <qcolor.h>
 #include <qfile.h>
 #include <qwmatrix.h>

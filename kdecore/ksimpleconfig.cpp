@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.10  1998/01/18 14:39:01  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.8  1998/01/15 13:22:30  kalle
 // Read-only mode for KSimpleConfig
 //
@@ -49,7 +55,7 @@
 #include <ksimpleconfig.h>
 #include "ksimpleconfig.moc"
 
-#include <qfileinf.h>
+#include <qfileinfo.h>
 
 KSimpleConfig::KSimpleConfig( const char* pFile )
 {

@@ -21,7 +21,7 @@
 #define KCHARSETS_CPP 
 #include "kcharsetsdata.h"
 #include "qstrlist.h"
-#include "qfontinf.h"
+#include "qfontinfo.h"
 #include "qregexp.h"
 #include <kapp.h>
 

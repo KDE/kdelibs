@@ -24,7 +24,7 @@
 #define KFILEINFO_H
 
 #include <qstring.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 #include <qlist.h>
 #include <time.h>
 

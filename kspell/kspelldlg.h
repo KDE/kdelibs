@@ -3,10 +3,10 @@
 
 //#include "dialog1.h"
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qbutton.h>
 #include <qlabel.h>
-#include <qlined.h>
+#include <qlineedit.h>
 #include <qlistbox.h>
 #include <qlayout.h>
 

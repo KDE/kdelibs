@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qapp.h>		// for beep()
+#include <qapplication.h>	     // for beep()
 
 #include "kspinbox.h"
 #include "kspinbox.moc"

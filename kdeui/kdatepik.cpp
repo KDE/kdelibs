@@ -41,11 +41,10 @@
 //    kdatepik.h kdatepik.cpp kdatetbl.h kdatetbl.cpp
 // ------------------------------------------------------------
 
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
-#include <qpushbt.h>
 #include <qfont.h>
-#include <qdatetm.h>
+#include <qdatetime.h>
 
 #include "kdatepik.h"
 #include "kdatepik.moc"

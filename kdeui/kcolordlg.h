@@ -26,12 +26,12 @@
 #define __KCOLORDLG_H__
 
 #include <qdialog.h>
-#include <qtablevw.h>
+#include <qtableview.h>
 #include <qframe.h>
-#include <qrangect.h>
-#include <qlined.h>
+#include <qrangecontrol.h>
+#include <qlineedit.h>
 #include <qpixmap.h>
-#include <qcombo.h>
+#include <qcombobox.h>
 #include "kselect.h"
 
 //-----------------------------------------------------------------------------

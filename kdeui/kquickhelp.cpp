@@ -31,7 +31,7 @@
 #include <qpixmap.h>
 #include <stdio.h>
 #include <kapp.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qbitmap.h>
 #include <qregexp.h>
 

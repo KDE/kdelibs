@@ -1,7 +1,7 @@
 #ifndef _KFILEFILTER_H
 #define _KFILEFILTER_H
 
-#include <qcombo.h>
+#include <qcombobox.h>
 
 class QStrList;
 

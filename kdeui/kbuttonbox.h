@@ -29,7 +29,7 @@
 #define __KBUTTONBOX__H__
 
 #include <qwidget.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlist.h>
 
 /**

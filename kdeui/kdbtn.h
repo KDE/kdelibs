@@ -24,7 +24,7 @@
 #include <qbutton.h>
 #include <qpainter.h>
 #include <qpen.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 
 /**
 * KDirectionButton is a helper class for KTabBar and KWizard. It provides the buttons

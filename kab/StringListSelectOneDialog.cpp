@@ -3,7 +3,7 @@
  */
 
 #include "StringListSelectOneDialog.h"
-#include <qcombo.h>
+#include <qcombobox.h>
 #include <kapp.h>
 
 extern "C" {

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.77  1998/08/30 21:04:33  radej
+// sven: Minor improvement for docking in KTM
+//
 // Revision 1.76  1998/08/09 17:49:28  radej
 // sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
 //
@@ -124,7 +127,7 @@
 
 #include <qpainter.h>
 #include <qtooltip.h> 
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qstring.h>

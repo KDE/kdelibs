@@ -23,8 +23,8 @@
 
 #include <qdir.h>
 #include <qstring.h>
-#include <qmsgbox.h>
-#include <qapp.h>
+#include <qmessagebox.h>
+#include <qapplication.h>
 
 #include "kfm.h"
 #include <kapp.h>

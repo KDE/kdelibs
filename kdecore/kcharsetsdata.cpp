@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <qfontinf.h>
+#include <qfontinfo.h>
 #include <qintdict.h>
 #include <kapp.h>
 #include <ksimpleconfig.h>

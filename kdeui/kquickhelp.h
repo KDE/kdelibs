@@ -30,7 +30,7 @@
 
 #include <qframe.h>
 #include <qlist.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 
 
 /**

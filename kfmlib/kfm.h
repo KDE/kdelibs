@@ -21,8 +21,8 @@
 
 #include <qobject.h>
 #include <qdialog.h>
-#include <qlined.h>
-#include <qpushbt.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <qstring.h>
 #include <kurl.h>

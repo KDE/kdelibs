@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.13  1998/08/26 18:37:48  neerfeld
+   bug fix for loadInternal;  changed email address
+
    Revision 1.12  1998/08/22 20:02:41  kulow
    make kdecore have nicer output, when compiled with -Weffc++ :)
 
@@ -44,7 +47,7 @@
 #include <kconfig.h>
 #endif
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qlist.h>
 #include <qpixmap.h>
 #include <qstrlist.h>

@@ -13,9 +13,9 @@
  */
 
 #include "editentry.h"
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qframe.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include "kabapi.h"
 #include <debug.h>
 

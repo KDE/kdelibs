@@ -31,7 +31,7 @@
 #include<assert.h>
 
 #include"qimage.h"
-#include"qdstream.h"
+#include"qdatastream.h"
 #include"qcolor.h"
 #include"qpixmap.h"
 #include"jpeg.h"

@@ -2,15 +2,15 @@
 #define __KSCONFIG_H__
 
 #include <qwidget.h>
-#include <qchkbox.h>
+#include <qcheckbox.h>
 #include <qlayout.h>
 #include <qstrlist.h>
-#include <qradiobt.h>
-#include <qbttngrp.h>
-#include <qcombo.h>
+#include <qradiobutton.h>
+#include <qbuttongroup.h>
+#include <qcombobox.h>
 #include <kconfig.h>
 #include <klined.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 
 /**
  *  KSpellConfig v 0.2

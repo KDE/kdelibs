@@ -26,11 +26,11 @@
 
 #include <qdialog.h>
 #include <kapp.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qaccel.h>
 #include <qfont.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qpainter.h>
 #include <qpen.h>
 #include <kdbtn.h>

@@ -25,9 +25,9 @@
 
 
 #include <qtabbar.h>
-#include <qtabdlg.h>
+#include <qtabdialog.h>
 #include <qstrlist.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 
 #include <kapp.h>
 

@@ -22,10 +22,10 @@
 #include <qkeycode.h>
 #include <qlayout.h>
 #include <qpainter.h>
-#include <qapp.h>
-#include <qdrawutl.h>
-#include <qmsgbox.h>
-#include <qradiobt.h>
+#include <qapplication.h>
+#include <qdrawutil.h>
+#include <qmessagebox.h>
+#include <qradiobutton.h>
 
 #include <kapp.h>
 #include <kbuttonbox.h>

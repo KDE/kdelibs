@@ -49,12 +49,12 @@
                       
 #include "ktablistbox.h"
 
-#include <qfontmet.h>
+#include <qfontmetrics.h>
 #include <qpainter.h>
 #include <qkeycode.h>
 #include <qbitmap.h>
-#include <qdrawutl.h>
-#include <qscrbar.h>
+#include <qdrawutil.h>
+#include <qscrollbar.h>
 #include <kapp.h>
 
 // This is only for flushKeys().

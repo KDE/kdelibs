@@ -16,8 +16,8 @@
 #include "kab.h"
 #include <kprocess.h>
 #include <qpainter.h>
-#include <qpdevmet.h> 
-#include <qmsgbox.h>
+#include <qpaintdevicemetrics.h> 
+#include <qmessagebox.h>
 #include "PrintDialog.h"
 #include "debug.h"
 #include "functions.h"

@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.16  1998/08/23 15:58:32  kulow
+// fixed some more advanced warnings
+//
 // Revision 1.15  1998/07/23 12:05:15  ettrich
 // Matthias: small bugfix. Writing of simple KConfig objects (without
 //  arguments constructed) was broken.
@@ -76,7 +79,7 @@
 
 #include <kconfig.h>
 #include "kconfig.moc"
-#include <qfileinf.h>
+#include <qfileinfo.h>
 #include <stdlib.h>
 
 #include "kapp.h"

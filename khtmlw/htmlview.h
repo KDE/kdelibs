@@ -27,7 +27,7 @@
 #ifndef HTMLVIEW_H
 #define HTMLVIEW_H
 
-#include <qscrbar.h>
+#include <qscrollbar.h>
 #include <qlist.h>
 #include <html.h>
 #include <drag.h>

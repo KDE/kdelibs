@@ -25,8 +25,8 @@
 #ifndef _KSPINBOX_H
 #define _KSPINBOX_H
 
-#include <qpushbt.h>
-#include <qlined.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qstrlist.h>

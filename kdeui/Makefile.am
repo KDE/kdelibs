@@ -21,7 +21,7 @@
 
 INCLUDES= -I../kdecore -I../kfile $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(SRC_META)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 2:0  
@@ -51,7 +51,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp
 
-BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
+SRC_META = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \

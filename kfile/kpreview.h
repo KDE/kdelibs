@@ -23,9 +23,9 @@
 #define __KPREVIEW_H__
 
 #include <qpixmap.h>
-#include <qgrpbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
-#include <qmlined.h>
+#include <qmultilinedit.h>
 #include <qdict.h>
 
 #include "kfileinfo.h"

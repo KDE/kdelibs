@@ -45,7 +45,7 @@
 #include <qregexp.h>
 #include <qkeycode.h>
 #include <qprinter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 
 #include <X11/Xlib.h>
 

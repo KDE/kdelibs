@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1998/08/03 15:24:24  ssk
+ * Wrote documentation.
+ * Eliminated dead and commented-out code.
+ *
  * Revision 1.7  1998/01/03 19:47:30  kulow
  * changed the defaults for yesNo and co. It's no longer "Yes" and co, but
  * 0 to enable translation in case.
@@ -79,9 +83,8 @@
 #ifndef _KMSGBOX_H_
 #define _KMSGBOX_H_
 
-#include <qobjdefs.h>
 #include <qdialog.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <qframe.h>
 #include <qpixmap.h>

@@ -1,7 +1,7 @@
 #ifndef _KCOMBO_H_
 #define _KCOMBO_H_
 
-#include <qcombo.h>
+#include <qcombobox.h>
 
 class KCombo : public QComboBox {
 	Q_OBJECT

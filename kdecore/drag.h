@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.19  1998/08/23 15:58:30  kulow
+ * fixed some more advanced warnings
+ *
  * Revision 1.18  1998/08/22 20:02:34  kulow
  * make kdecore have nicer output, when compiled with -Weffc++ :)
  *
@@ -114,7 +117,7 @@
 #include <config.h>
 #endif
 
-#include <qapp.h> // for the TrueColor problem
+#include <qapplication.h> // for the TrueColor problem
 #include <qwidget.h>
 #include <qpixmap.h>
 #include <qstrlist.h>

@@ -21,7 +21,7 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qdir.h>
 #include <qpainter.h>
 #include <qwmatrix.h>

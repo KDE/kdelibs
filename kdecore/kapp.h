@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.54  1998/08/22 20:02:35  kulow
+// make kdecore have nicer output, when compiled with -Weffc++ :)
+//
 // Revision 1.53  1998/07/16 14:49:23  ssk
 // Removed extra KApplication:: qualification that caused an egcs warning.
 //
@@ -196,9 +199,9 @@ class KCharsets;
 
 #include <drag.h>
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qfile.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qstrlist.h>
 
 #define kapp KApplication::getKApplication()

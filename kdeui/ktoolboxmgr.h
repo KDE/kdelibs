@@ -21,7 +21,7 @@
 #ifndef K_OWN_WM
 #define K_OWN_WM
 
-#include <qwindefs.h>
+#include <qwindowdefs.h>
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qlist.h>
@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.5  1998/08/10 13:33:55  radej
+ // sven: Added X-only and Y-only resizing.
+ //
  // Revision 1.4  1998/07/29 12:48:31  ssk
  // Removed more warnings, possible portability problems and ANSI violations.
  //

@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 #include <qpainter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 #include <qpalette.h>
 #include <qstring.h>
 #include <qframe.h>
@@ -38,6 +38,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.31  1998/09/01 20:22:03  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
+// Revision 1.30  1998/08/31 00:52:11  torben
 // Torben: One new function and made others virtual
 // => binary incompatible. Sorry. Please use virtual whenever it is
 // not a performance problem.

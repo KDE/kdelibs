@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include <qimage.h>
 #include <qpainter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 #include <qevent.h>
-#include <qpushbt.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <kconfig.h>
 #include "kcolordlg.h"

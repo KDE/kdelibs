@@ -23,6 +23,9 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.12  1998/08/31 12:43:25  esken
+    GPL -> LGPL
+
     Revision 1.11  1998/06/01 09:13:35  kalle
     Added static getFontAndText()
 
@@ -90,21 +93,21 @@
 #ifndef _K_FONT_DIALOG_H_
 #define _K_FONT_DIALOG_H_
 
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <qpixmap.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qframe.h> 
-#include <qbttngrp.h>
-#include <qchkbox.h>
-#include <qcombo.h>
+#include <qbuttongroup.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
 #include <qframe.h>
-#include <qgrpbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
-#include <qlined.h>
+#include <qlineedit.h>
 #include <qlistbox.h>
-#include <qpushbt.h>
-#include <qradiobt.h>
-#include <qscrbar.h>
+#include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qscrollbar.h>
 #include <qtooltip.h>
 
 #include <qstring.h>

@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.108  1998/08/23 15:58:31  kulow
+// fixed some more advanced warnings
+//
 // Revision 1.107  1998/08/11 00:24:57  steffen
 // KProcess stuff removed
 //
@@ -269,8 +272,8 @@
 #include <qobjcoll.h>
 #include <qstrlist.h>
 #include <qfile.h>
-#include <qmsgbox.h>
-#include <qtstream.h>
+#include <qmessagebox.h>
+#include <qtextstream.h>
 #include <qregexp.h>
 #include <qkeycode.h>
 #ifdef HAVE_SYS_STAT_H

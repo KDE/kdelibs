@@ -1,5 +1,5 @@
 #include <qpainter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 #include <qkeycode.h>
 #include "kcombo.h"
 #include "kcombo.moc"

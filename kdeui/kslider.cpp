@@ -35,7 +35,7 @@
 #endif
 
 #include <qpainter.h>
-#include <qdrawutl.h>
+#include <qdrawutil.h>
 
 #include "kslider.h"
 #include "kslider.moc"

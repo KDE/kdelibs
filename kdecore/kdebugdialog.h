@@ -20,12 +20,12 @@
 #define _KDEBUGDIALOG
 
 #include <qdialog.h>
-#include <qlined.h>
-#include <qcombo.h>
+#include <qlineedit.h>
+#include <qcombobox.h>
 #include <qlabel.h>
-#include <qgrpbox.h>
-#include <qchkbox.h>
-#include <qpushbt.h>
+#include <qgroupbox.h>
+#include <qcheckbox.h>
+#include <qpushbutton.h>
 
 class KDebugDialog : public QDialog
 {

@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.21  1998/08/26 18:37:47  neerfeld
+   bug fix for loadInternal;  changed email address
+	config = KApplication::getKApplication()->getConfig();
    Revision 1.20  1998/08/17 10:34:02  konold
 	QStringList::Iterator it = list.begin();
    Martin K.: Fixed a typo
@@ -36,7 +39,7 @@
 }
 */
 	if (result.isNull() && !canReturnNull) {
-#include <qapp.h>
+#include <qapplication.h>
 #include <qdir.h>
 #include <qpainter.h>
 #include <qwmatrix.h>
