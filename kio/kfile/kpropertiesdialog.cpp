@@ -1245,11 +1245,11 @@ const mode_t KFilePermissionsPropsPlugin::standardPermissions[4] = { 0, UniRead,
 const char *KFilePermissionsPropsPlugin::permissionsTexts[4][4] = { 
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can Read"),
-    I18N_NOOP("Can Read And Write"),
+    I18N_NOOP("Can Read and Write"),
     0 }, 
   { I18N_NOOP("Forbidden"),
     I18N_NOOP("Can View Content"),
-    I18N_NOOP("Can View And Modify Content"),
+    I18N_NOOP("Can View and Modify Content"),
     0 }, 
   { 0, 0, 0, 0}, // no texts for links
   { I18N_NOOP("Forbidden"),
@@ -1393,8 +1393,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QWhatsThis::add(l, i18n("Specifies the actions that all users, who are neither owner nor in the group, are allowed to do."));
 
   if (!isLink) {
-    l = d->extraCheckbox = new QCheckBox(hasDir ? i18n("Only Own&er Can Rename And Delete Directory Content") : 
-					 i18n("Is &Executable"), 
+    l = d->extraCheckbox = new QCheckBox(hasDir ? i18n("Only own&er can rename and delete directory content") : 
+					 i18n("Is &executable"), 
 					 d->m_frame );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addMultiCellWidget(l, 4, 4, 0, 1);
