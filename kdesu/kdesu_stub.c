@@ -55,6 +55,11 @@
 #include <sched.h>
 #endif
 
+/*
+ * Note that this is a C program, so checking for Q_WS_X11 is rather strange. 
+ */
+#define Q_WS_X11
+
 /**
  * Params sent by the peer.
  */
