@@ -1812,6 +1812,11 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 
 }
 
+void RenderTableRow::repaint()
+{
+    if ( table ) table->repaint();
+}
+
 // -------------------------------------------------------------------------
 
 RenderTableCell::RenderTableCell()
@@ -2003,6 +2008,11 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
 
     if(style()->hasBorder())
         printBorder(p, _tx, _ty, w, h, style());
+}
+
+void RenderTableCell::repaint()
+{
+    if ( m_table ) m_table->repaint();
 }
 
 // -------------------------------------------------------------------------

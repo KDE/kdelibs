@@ -309,6 +309,8 @@ public:
 
     virtual void close();
 
+    virtual void repaint();
+
     virtual void setTable(RenderTable *t) { table = t; }
 
 protected:
@@ -354,6 +356,7 @@ public:
     virtual void calcMinMaxWidth();
     virtual void calcWidth();
     virtual void setStyle( RenderStyle *style );
+    virtual void repaint();
 
     void setRowHeight(int h) { rowHeight = h; }
 

@@ -82,7 +82,7 @@ public:
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;
 
-    void repaint();
+    virtual void repaint();
 
     virtual void repaintRectangle(int x, int y, int w, int h);
 
