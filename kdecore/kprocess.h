@@ -176,7 +176,7 @@ public:
       
       For example, doning a "ls -l /usr/local/bin" can be achieved by:
       <pre>
-      KProcoess p;
+      KProcess p;
       ...
       p << "ls" << "-l" << "/usr/local/bin"
       </pre>
@@ -364,7 +364,7 @@ protected:
   */
   QStrList arguments;
   /**
-     How to run the process (blocking, notify_on_exit, dontcare). You should
+     How to run the process (Block, NotifyOnExit, DontCare). You should
      not modify this data member directly from derived classes.
   */
   RunMode run_mode;
@@ -387,7 +387,7 @@ protected:
 
   pid_t pid;
 
-  /** The process' exit status as retrned by "waitpid". You should not 
+  /** The process' exit status as returned by "waitpid". You should not 
       modify the value of this data member from derived classes. You should
       rather use "getStatus()" than accessing this data member directly
       since it will probably be made private in further versions of
@@ -438,7 +438,7 @@ protected:
   virtual int commSetupDoneP();
  
   /**
-     Called right after a (successful) for, but before an "exec" on the child
+     Called right after a (successful) fork, but before an "exec" on the child
      process' side. It usually just closes the unused communication ends of
      "in", "out" and "err" (like the writing end of the "in" communication
      channel.
