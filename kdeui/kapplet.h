@@ -53,10 +53,21 @@ public:
     virtual void init( Orientation orientation, int width, int height );
 
     QSize sizeHint() const;
+    
+    
+    /**
+       Returns  the current orientation set by the last KApplet::init() call.
+    */
+    Orientation orientation() const;
 
 private:
+    Orientation orient;
 
 };
 
 
+inline Qt::Orientation KApplet::orientation() const
+{
+    return orient;
+}
 #endif

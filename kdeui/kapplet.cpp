@@ -121,8 +121,9 @@ void KApplet::setup( int& argc, char ** argv )
 
 
 
-void KApplet::init( Orientation /* orientation */, int width, int height  )
+void KApplet::init( Orientation orientation , int width, int height  )
 {
+    orient = orientation;
     resize(width, height );
 }
 
