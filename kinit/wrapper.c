@@ -1,4 +1,3 @@
-
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
@@ -19,20 +18,24 @@
   Boston, MA 02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "klauncher_cmds.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>
+
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pwd.h>
 
 /*
  * Write 'len' bytes from 'buffer' into 'sock'.
@@ -161,9 +164,9 @@ int main(int argc, char **argv)
       p++;
    start = p;
 
-   size += sizeof(long); // Number of arguments;
+   size += sizeof(long); /* Number of arguments*/
 
-   size += strlen(start)+1; // Size of first argument.
+   size += strlen(start)+1; /* Size of first argument. */
 
    for(i = 1; i < argc; i++)
    {
@@ -215,4 +218,5 @@ int main(int argc, char **argv)
       fprintf(stderr, "Unexected response from KInit (response = %ld).\n", header.cmd);
       exit(255);
    }
+   exit(2);
 }

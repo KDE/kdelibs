@@ -81,6 +81,7 @@
 #  if __FreeBSD__ >= 2
 #   include <osreldate.h>
 #   if __FreeBSD_version >= 199512      /* 2.2-current when it appeared */
+#    include <sys/types.h>
 #    include <libutil.h>
 #    define SPT_TYPE    SPT_BUILTIN
 #   endif

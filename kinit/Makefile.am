@@ -24,7 +24,7 @@ bin_PROGRAMS = kinit kinit_wrapper
 kinit_SOURCES = kinit.cpp setproctitle.cpp
 
 kinit_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) 
-kinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KIO) $(LIB_KIMGIO) $(LIB_KDECORE)
+kinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KIO) $(LIB_KIMGIO) $(LIB_KDECORE) $(LIBUTIL)
 
 kinit_METASOURCES = AUTO
 
