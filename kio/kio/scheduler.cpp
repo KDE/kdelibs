@@ -388,6 +388,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     {
 //          kdDebug(7006) << "No slaves available" << endl;
 //          kdDebug(7006) << " -- active: " << protInfo->activeSlaves.count() << endl;
+       slaveTimer.start(0, true);
        return false;
     }
 
