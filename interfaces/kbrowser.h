@@ -26,8 +26,8 @@
 #include <qdatastream.h>
 
 #include <qaction.h>
-#include <kpart.h>
-#include <kevent.h>
+#include <kparts/part.h>
+#include <kparts/event.h>
 
 class KFileItem;
 typedef QList<KFileItem> KFileItemList;
@@ -40,6 +40,7 @@ class OpenURLEvent : public Event
 {
 public:
   // arghl, shouldn't we move this into *some* lib, in order to make that string a static const char * ?
+  // do we need a lib for that ? (David) - we can add this to kparts anyway.
   OpenURLEvent( ReadOnlyPart *part, const KURL &url ) 
   : Event( "BrowserExtension/OpenURLEvent" ), m_part( part ), m_url( url ) {}
 
