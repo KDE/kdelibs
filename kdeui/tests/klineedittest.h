@@ -6,13 +6,14 @@
 
 class QString;
 class QPushButton;
+
 class KLineEdit;
 
 class KLineEditTest : public QWidget
 {
     Q_OBJECT
 
-public :
+public:
    KLineEditTest ( QWidget *parent=0, const char *name=0 );
    ~KLineEditTest();
    KLineEdit* lineEdit() const { return lineedit; }
@@ -22,7 +23,7 @@ private slots:
    void slotReturnPressed();
    void resultOutput( const QString& );
 
-protected :
+protected:
    QGuardedPtr<KLineEdit> lineedit;
    QPushButton* button;
 };

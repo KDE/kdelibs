@@ -15,6 +15,7 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
               :QWidget( widget, name )
 {
     QVBoxLayout* layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
+
     QStringList list;
     list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"
          << "Slashdot" << "Sand" << "Peables" << "Mankind" << "Ocean"
@@ -23,13 +24,13 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
 
     lineedit = new KLineEdit( this, "klineedittest" );
     lineedit->completionObject()->setItems( list );
-    connect( lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
     lineedit->setFixedSize(500,30);
     lineedit->setFocus();
+    connect( lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
 
     button = new QPushButton( "E&xit", this );
     button->setFixedSize(100,30);
-    QObject::connect( button, SIGNAL( clicked() ), SLOT( quitApp() ) );
+    connect( button, SIGNAL( clicked() ), SLOT( quitApp() ) );
 
     layout->addWidget( lineedit );
     layout->addWidget( button );
