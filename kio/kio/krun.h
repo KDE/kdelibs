@@ -42,13 +42,6 @@ namespace KIO {
  * It can execute any desktop entry, as well as any file, using
  * the default application or another application "bound" to the file type.
  *
- * You need to create an instance of KFileOpenWithHandler before,
- * so that in case the mime-type of the file is unknown, or if there is
- * no application associated, KRun will bring up the "open with" dialog.
- * Example:
- * KFileOpenWithHandler fowh;
- * new KRun( url );
- *
  * In that example, the mimetype of the file is not known by the application,
  * so a KRun instance must be created. It will determine the mimetype by itself.
  * If the mimetype is known, or if you even know the service (application) to
@@ -168,6 +161,12 @@ public:
   static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon );
 
   /**
+   * Display the Open-With dialog for those URLs, and run the chosen application.
+   * @return false if the dialog was canceled
+   */
+  static bool displayOpenWithDialog( const KURL::List& lst );
+
+  /**
    * Quotes a string for the shell
    */
   static void shellQuote( QString &_str );
@@ -238,46 +237,20 @@ protected:
   KRunPrivate *d;
 };
 
+#ifndef KDE_NO_COMPAT
 /**
- * This class handles the displayOpenWithDialog call, made by KRun
- * when it has no idea what to do with a URL.
- * The default implementation is to print a huge fat warning
- * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
- * which displays the real open-with dialog box.
- *
- * If you use KRun you @em need to create an instance of KFileOpenWithHandler
- * (except if you can make sure you only use it for executables or
- *  Type=Application desktop files)
- *
- * @see KFileOpenWithHandler
- * @short Handler for KRun's displayOpenWithDialog() call
+ * @deprecated. Kept for source compatibility, does nothing nowadays.
+ * Do not use in new source.
+ * KRun can open the openwith dialog directly now.
+ * Use KRun::displayOpenWithDialog() if you were using KOpenWithHandler directly.
  */
 class KOpenWithHandler
 {
 public:
-  KOpenWithHandler() { pOpenWithHandler = this; }
-  virtual ~KOpenWithHandler() { pOpenWithHandler = 0; }
-
-  /**
-   * Opens an open-with dialog box for @p urls
-   * @returns true if the operation succeeded
-   */
-  virtual bool displayOpenWithDialog( const KURL::List& urls );
-
-  /**
-   * Call this to get the (only) instance of KOpenWithHandler
-   */
-  static KOpenWithHandler * getOpenWithHandler() {
-    if (!pOpenWithHandler)
-      pOpenWithHandler = new KOpenWithHandler;
-    return pOpenWithHandler;
-  }
-
-  static bool exists() { return pOpenWithHandler != 0L; }
-
-private:
-  static KOpenWithHandler * pOpenWithHandler;
+  KOpenWithHandler() {}
+  static bool exists() { return true; }
 };
+#endif
 
 /**
  * @internal

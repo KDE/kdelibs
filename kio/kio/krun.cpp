@@ -29,6 +29,7 @@
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
+#include "kfile/kopenwith.h"
 
 #include <kdatastream.h>
 #include <kmessageboxwrapper.h>
@@ -48,8 +49,6 @@
 #include <kdesktopfile.h>
 #include <kstartupinfo.h>
 #include <typeinfo>
-
-KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
 class KRun::KRunPrivate
 {
@@ -93,11 +92,27 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
   if ( !offer )
   {
     // Open-with dialog
-    // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog ! KDE 3.0
-    return KOpenWithHandler::getOpenWithHandler()->displayOpenWithDialog( lst );
+    // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog !
+    // Hmm, in fact KOpenWithDlg::setServiceType already guesses the mimetype from the first URL of the list...
+    return displayOpenWithDialog( lst );
   }
 
   return KRun::run( *offer, lst );
+}
+
+bool KRun::displayOpenWithDialog( const KURL::List& lst )
+{
+    KOpenWithDlg l( lst, i18n("Open With:"), QString::null, 0L );
+    if ( l.exec() )
+    {
+      KService::Ptr service = l.service();
+      if ( !!service )
+        return KRun::run( *service, lst );
+
+      kdDebug(250) << "No service set, running " << l.text() << endl;
+      return KRun::run( l.text(), lst );
+    }
+    return false;
 }
 
 void KRun::shellQuote( QString &_str )
@@ -1024,12 +1039,6 @@ void KRun::abort()
 }
 
 /****************/
-bool KOpenWithHandler::displayOpenWithDialog( const KURL::List& )
-{
-    kdError(7010) << "displayOpenWithDialog : Application " << kapp->name()
-                  << " - should create a KFileOpenWithHandler !" << endl;
-    return 0;
-}
 
 pid_t
 KProcessRunner::run(KProcess * p, const QString & binName)
