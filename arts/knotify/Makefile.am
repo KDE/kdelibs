@@ -7,12 +7,12 @@ bin_PROGRAMS	= knotify
 lib_LTLIBRARIES = knotify.la
 
 knotify_la_SOURCES	= knotify.cpp knotify.skel
-knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI)
+knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI) $(top_builddir)/arts/kde/libartskde.la
 knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
 knotify_la_METASOURCES = AUTO
 
 knotify_SOURCES = dummy.cpp
-knotify_LDADD = knotify.la $(top_builddir)/arts/kde/libartskde.la
+knotify_LDADD = knotify.la
 knotify_LDFLAGS  = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS		= knotifytest
