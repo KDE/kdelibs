@@ -176,7 +176,7 @@ KMenuBar::~KMenuBar()
 }
 
     }
-void KMenuBar::paintEvent(QPaintEvent *e)
+  }
 }
 
 

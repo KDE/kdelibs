@@ -435,13 +435,13 @@ kde_includes=""
 AC_CACHE_VAL(ac_cv_have_kde,
 [#try to guess kde locations
 
-kde_incdirs="/usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include $x_includes $qt_includes"
+kde_incdirs="/usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
 
 test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
 ac_kde_includes=$kde_incdir
 
-kde_libdirs="/usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /usr/X11R6/kde/lib"
+kde_libdirs="/usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 ac_kde_libraries=$kde_libdir
