@@ -17,22 +17,18 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_FIELD_H
-#define KDB_FIELD_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "kdb.h"
-#include "object.h"
-#include "handler.h"
-#include "value.h"
+#define KDB_FIELD_H "$Id$"
 
 #include <qlist.h>
 #include <qstring.h>
 #include <qdatetime.h>
 
+#include <kdb/kdb.h>
+#include <kdb/object.h>
+#include <kdb/handler.h>
+#include <kdb/value.h>
 
 namespace KDB {
 
@@ -147,5 +143,3 @@ class Field :public Object {
 }
 
 #endif
-
-

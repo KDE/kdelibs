@@ -17,19 +17,16 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_CONNECTOR_H
-#define KDB_CONNECTOR_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_CONNECTOR_H
+#define KDB_CONNECTOR_H "$Id$"
 
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include "exception.h"
-#include "object.h"
-#include "kdb.h"
+#include <kdb/exception.h>
+#include <kdb/object.h>
+#include <kdb/kdb.h>
 
 namespace KDB {
 
@@ -51,7 +48,8 @@ class Query;
  * @version kdbcore 0.0.2
  */
  
-class Connector :public Object {
+class Connector :
+	public Object {
 
  public:
     Connector();
@@ -244,6 +242,3 @@ class Connector :public Object {
 
 };
 #endif
-
-
-

@@ -17,21 +17,18 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_RECORDSET_H
-#define KDB_RECORDSET_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_RECORDSET_H
+#define KDB_RECORDSET_H "$Id$"
 
 #include <qstring.h>
 #include <qlist.h>
 
-#include "dataobject.h"
-#include "field.h"
-#include "record.h"
-#include "recordsetiterator.h"
-#include "handler.h"
+#include <kdb/dataobject.h>
+#include <kdb/field.h>
+#include <kdb/record.h>
+#include <kdb/recordsetiterator.h>
+#include <kdb/handler.h>
 
 namespace KDB {
 
@@ -133,7 +130,3 @@ class Recordset : public DataObject {
 }
 
 #endif
-
-
-
-

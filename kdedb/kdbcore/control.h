@@ -17,14 +17,11 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_CONTROL_H
-#define KDB_CONTROL_H
+#define KDB_CONTROL_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "capability.h"
+#include <kdb/capability.h>
 
 class KConfigBase;
 class QWidget;
@@ -61,5 +58,3 @@ class Control : public Capability {
 }
 
 #endif
-
-

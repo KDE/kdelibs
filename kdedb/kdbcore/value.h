@@ -17,15 +17,13 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_VALUE_H
-#define KDB_VALUE_H
+#define KDB_VALUE_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "kdb.h"
 #include <qvariant.h>
+
+#include <kdb/kdb.h>
 
 class QDate;
 class QTime;
@@ -133,5 +131,3 @@ class Value :public QVariant {
  
 
 #endif
-
-

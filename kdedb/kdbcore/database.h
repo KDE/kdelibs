@@ -17,12 +17,9 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_DATABASE_H
-#define KDB_DATABASE_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_DATABASE_H
+#define KDB_DATABASE_H "$Id$"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -34,9 +31,7 @@
 #include <kdb/table.h>
 #include <kdb/query.h>
 #include <kdb/recordset.h>
-
-#include "object.h"
-
+#include <kdb/object.h>
 
 namespace KDB {
 
@@ -189,5 +184,3 @@ class Database : public Object{
 }
 
 #endif
-
-

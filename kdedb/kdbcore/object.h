@@ -18,11 +18,7 @@
    Boston, MA 02111-1307, USA.
 */     
 #ifndef KDB_OBJECT_H
-#define KDB_OBJECT_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#define KDB_OBJECT_H "$Id$"
 
 class QObject;
 
@@ -80,11 +76,3 @@ class Object: public QObject {
 }
 
 #endif
-
-
-
-
-
-
-
-

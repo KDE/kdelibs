@@ -105,11 +105,7 @@
  */
 
 #ifndef KDB_H
-#define KDB_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#define KDB_H "$Id$"
 
 #ifndef KDB_ULONG
 #define KDB_ULONG unsigned long
@@ -174,5 +170,3 @@ namespace KDB {
 
 
 #endif
-
-

@@ -17,15 +17,12 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_CAPABILITY_H
-#define KDB_CAPABILITY_H
+#define KDB_CAPABILITY_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "object.h"
-#include "kdb.h"
+#include <kdb/object.h>
+#include <kdb/kdb.h>
 
 namespace KDB {
 

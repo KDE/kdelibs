@@ -17,19 +17,16 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_PLUGIN_H
-#define KDB_PLUGIN_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_PLUGIN_H
+#define KDB_PLUGIN_H "$Id$"
 
 #include <qstring.h>
 #include <qlist.h>
 
-#include "kdb.h"
-#include "object.h"
-#include "connection.h"
+#include <kdb/kdb.h>
+#include <kdb/object.h>
+#include <kdb/connection.h>
 
 namespace KDB {
 

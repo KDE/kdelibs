@@ -17,17 +17,14 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_INDEX_H
-#define KDB_INDEX_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_INDEX_H
+#define KDB_INDEX_H "$Id$"
 
 #include <qlist.h>
 #include <qstring.h>
 
-#include "object.h"
+#include <kdb/object.h>
 
 namespace KDB {
 
@@ -56,5 +53,3 @@ public:
 
 }
 #endif
-
-

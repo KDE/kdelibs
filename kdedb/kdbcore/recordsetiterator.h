@@ -17,17 +17,15 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_RECORDSETITERATOR_H
-#define KDB_RECORDSETITERATOR_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "object.h"
-#include "record.h"
-#include "handler.h"
-#include "field.h"
-#include "value.h"
+#ifndef KDB_RECORDSETITERATOR_H
+#define KDB_RECORDSETITERATOR_H "$Id$"
+
+#include <kdb/object.h>
+#include <kdb/record.h>
+#include <kdb/handler.h>
+#include <kdb/field.h>
+#include <kdb/value.h>
 
 namespace KDB {
 
@@ -88,4 +86,3 @@ class RecordsetIterator: public Object {
  
 } 
 #endif
-

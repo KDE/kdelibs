@@ -18,11 +18,7 @@
    Boston, MA 02111-1307, USA.
 */     
 #ifndef KDB_QUERY_H
-#define KDB_QUERY_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#define KDB_QUERY_H "$Id$"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -31,8 +27,8 @@
 
 #include <ksharedptr.h>
 
-#include "recordset.h"
-#include "dataobject.h"
+#include <kdb/recordset.h>
+#include <kdb/dataobject.h>
 
 namespace KDB {
 

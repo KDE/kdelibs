@@ -17,21 +17,18 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef KDB_DBENGINE_H
-#define KDB_DBENGINE_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_DBENGINE_H
+#define KDB_DBENGINE_H "$Id$"
 
 #include <qlist.h>
 #include <qstringlist.h>
 
 #include <ktrader.h>
 
-#include "object.h"
-#include "plugin.h"
-#include "connection.h"
+#include <kdb/object.h>
+#include <kdb/plugin.h>
+#include <kdb/connection.h>
 
 class KConfigBase;
 
@@ -194,6 +191,7 @@ class DBEngine : public Object{
 };
 
 }
+
 #define DBENGINE KDB::DBEngine::self()
 
 #endif

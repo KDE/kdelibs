@@ -17,20 +17,17 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef KDB_RECORD_H
-#define KDB_RECORD_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef KDB_RECORD_H
+#define KDB_RECORD_H "$Id$"
 
 #include <qlist.h>
 #include <qstring.h>
 
-#include "kdb.h"
-#include "field.h"
-#include "dataobject.h"
-#include "handler.h"
+#include <kdb/kdb.h>
+#include <kdb/field.h>
+#include <kdb/dataobject.h>
+#include <kdb/handler.h>
 
 namespace KDB {
 
@@ -97,5 +94,3 @@ class Record : public DataObject {
 }
 
 #endif
-
-

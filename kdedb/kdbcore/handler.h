@@ -17,19 +17,19 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_HANDLER_H
-#define KDB_HANDLER_H
+#define KDB_HANDLER_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "connector.h"
 #include <ksharedptr.h>
+
+#include <kdb/connector.h>
 
 namespace KDB {
 
-// will contain the handler to a set of records
+/**
+  * will contain the handler to a set of records
+  **/
 class Handler : public Object, public KShared {
 
 public:
@@ -54,4 +54,3 @@ typedef KSharedPtr<Handler> HandlerPtr;
 }
 
 #endif
-

@@ -17,15 +17,13 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
 #ifndef KDB_DATAOBJECT_H
-#define KDB_DATAOBJECT_H
+#define KDB_DATAOBJECT_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <ksharedptr.h>
 
-#include "object.h"
-#include "ksharedptr.h"
+#include <kdb/object.h>
 
 namespace KDB {
 
@@ -58,5 +56,3 @@ class DataObject : public Object, public KShared {
 
 
 #endif
-
-
