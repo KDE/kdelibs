@@ -36,7 +36,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kwalletentry.h>
 #include <kwin.h>
 
