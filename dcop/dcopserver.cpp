@@ -861,11 +861,11 @@ if (opcode == DCOPCall)
     }
 }
 
-static IcePaVersionRec DCOPServerVersions[] = {
+static const IcePaVersionRec DCOPServerVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-static IcePoVersionRec DUMMYVersions[] = {
+static const IcePoVersionRec DUMMYVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor, 0 }
 };
 
@@ -965,7 +965,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
         IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
 				    const_cast<char *>("DUMMY"),
 				    const_cast<char *>("DUMMY"),
-				    1, DUMMYVersions,
+				    1, const_cast<IcePoVersionRec *>(DUMMYVersions),
 				    DCOPAuthCount, const_cast<char **>(DCOPAuthNames),
 				    DCOPClientAuthProcs, 0);
     if (_KDE_IceLastMajorOpcode < 1 )
@@ -975,7 +975,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
     if (( majorOpcode = IceRegisterForProtocolReply (const_cast<char *>("DCOP"),
 						     const_cast<char *>(DCOPVendorString),
 						     const_cast<char *>(DCOPReleaseString),
-						     1, DCOPServerVersions,
+						     1, const_cast<IcePaVersionRec *>(DCOPServerVersions),
 						     1, const_cast<char **>(DCOPAuthNames),
 						     DCOPServerAuthProcs,
 						     HostBasedAuthProc,
