@@ -73,7 +73,7 @@ class KDialogBaseTile : public QObject
  * dialog as well as the capability to define at most three configurable
  * buttons. You can define a main widget that contains your specific
  * dialog layout or you can use a predefined layout. Currently, @p
- * TreeList/Paged, @p Tabbed, @p Plain,@p Swallow and @p IconList
+ * TreeList/Paged, @p Tabbed, @p Plain, @p Swallow and @p IconList
  * mode layouts (faces) are available.
  *
  * The class takes care of the geometry management. You only need to define
@@ -131,6 +131,7 @@ class KDialogBaseTile : public QObject
  * can not be made smaller than its minimum size.
  *
  * @sect Layout:
+ *
  * The dialog consists of a help area on top (becomes visible if you define
  * a help path and use @ref enableLinkedHelp()), the main area which is 
  * the built-in dialog face or your own widget in the middle and by default 
@@ -151,7 +152,7 @@ class KDialogBaseTile : public QObject
  * The example below (from kedit) shows how you use the top level widget
  * and its layout. The second argument (the border) to @ref QVBoxLayout
  * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
- * @ref addHBoxPage , @ref addGridPage , @ref makeMainWidget, 
+ * @ref addHBoxPage , @ref addGridPage , @ref makeMainWidget ,
  * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget and 
  * @ref makeGridMainWidget as well.
  *
@@ -455,8 +456,8 @@ class KDialogBase : public KDialog
     QFrame *plainPage();
 
     /**
-     * Add a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode.
+     * Add a page to the dialog when the class is used in @p TreeList , 
+     * @p IconList or @p Tabbed mode.
      *
      * The returned widget must be used as the 
      * toplevel widget for this particular page. 
@@ -492,7 +493,7 @@ class KDialogBase : public KDialog
      * These strings are used to form a path
      * of folders down to the given page. The initial elements are names
      * for the folders, while the last element is the name of the page.
-     * Note: This does yet only work for the TreeList face. Later this may
+     * Note: This does yet only work for the @p TreeList face. Later this may
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
