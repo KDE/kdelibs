@@ -105,5 +105,5 @@ void ksprintf(QString *str, const char *fmt, ...)
 
     *str = tmp_data; // makes deep copy, that is also resized
     
-    delete tmp_data; // clear the heap
+    delete [] tmp_data; // clear the heap
 }
