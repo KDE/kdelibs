@@ -183,20 +183,29 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
-    return recursive_toHTML( );
+    return recursive_toHTML(true);
 }
 
-QString NodeImpl::recursive_toHTML( ) const
+QString NodeImpl::recursive_toHTML(bool start) const
 {
-    QString me;
+    QString me = "";
 
     // Copy who I am into the htmlText string
     if ( nodeType() == Node::TEXT_NODE )
         me = nodeValue().string();
     else
-    {   // If I am an element, not a text
-        me = QChar('<') + nodeName().string();
-
+    {   
+	// If I am an element, not a text
+	NodeImpl* temp = previousSibling();
+	if(temp)
+	{
+	    if( !start && (temp->nodeType() != Node::TEXT_NODE && nodeType() != Node::TEXT_NODE ) )
+		me = QString("    ") + QChar('<') + nodeName().string();
+	    else
+		me = QChar('<') + nodeName().string();
+	}
+	else
+	    me = QChar('<') + nodeName().string();
         // print attributes
         if( nodeType() == Node::ELEMENT_NODE )
         {
@@ -216,9 +225,20 @@ QString NodeImpl::recursive_toHTML( ) const
 
         // print ending bracket of start tag
         if( firstChild() == 0 )     // if element has no endtag
-            me += " />";
+        	me += " />\n"
         else                        // if element has endtag
-            me += ">";
+	{
+		NodeImpl* temp = nextSibling();
+		if(temp)
+		{
+		    if( (temp->nodeType() != Node::TEXT_NODE) )
+			me += ">\n";
+		    else
+			me += ">";
+		}
+		else
+		    me += ">";
+	}
     }
 
     NodeImpl* n;
@@ -230,7 +250,7 @@ QString NodeImpl::recursive_toHTML( ) const
 
         // Print my ending tag
         if ( nodeType() != Node::TEXT_NODE )
-            me += "</" + nodeName().string() + ">";
+            me += "</" + nodeName().string() + ">\n";
     }
     // print next sibling
     if( (n = nextSibling()) )

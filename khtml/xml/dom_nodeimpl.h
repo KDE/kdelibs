@@ -225,7 +225,7 @@ public:
     virtual bool isInline() const { return true; }
     virtual void printTree(int indent=0);
     virtual QString toHTML() const;
-    QString recursive_toHTML() const;
+    QString recursive_toHTML(bool start = false) const;
 
     virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
