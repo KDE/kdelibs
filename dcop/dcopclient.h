@@ -719,6 +719,7 @@ class DCOP_EXPORT DCOPClient : public QObject
   /**
    * @deprecated
    * For backwards compatibility with KDE 2.x
+   * // KDE4 remove
    */
   static QCString dcopServerFileOld(const QCString &hostname=0) KDE_DEPRECATED;
 
