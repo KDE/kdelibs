@@ -22,8 +22,10 @@
  * $Id$
  */
 #include <table_layout.h>
-
 #include <render_table.h>
+
+#include <kglobal.h>
+
 using namespace khtml;
 
 //#define DEBUG_LAYOUT
@@ -241,20 +243,20 @@ void FixedTableLayout::calcMinMaxWidth()
     // only need to calculate the minimum width as the sum of the
     // cols/cells with a fixed width.
     //
-    // The maximum width is QMAX( minWidth, tableWidth ) if table
+    // The maximum width is kMax( minWidth, tableWidth ) if table
     // width is fixed. If table width is percent, we set maxWidth to
     // unlimited.
 
 
     table->m_minWidth = 0;
     table->m_maxWidth = 0;
-    int tableWidth = table->style()->width().type == Fixed ? table->style()->width().value - table->borderLeft() - table->borderRight() - table->cellSpacing() : 0;
+    short tableWidth = table->style()->width().type == Fixed ? table->style()->width().value - table->borderLeft() - table->borderRight() - table->cellSpacing() : 0;
 
     table->m_minWidth = calcWidthArray( tableWidth );
     int bs = table->bordersAndSpacing();
     table->m_minWidth += bs;
 
-    table->m_minWidth = QMAX( table->m_minWidth, tableWidth );
+    table->m_minWidth = kMax( table->m_minWidth, tableWidth );
     table->m_maxWidth = table->m_minWidth;
     if ( !tableWidth ) {
 	bool haveNonFixed = false;
@@ -397,24 +399,13 @@ void AutoTableLayout::recalcColumn( int effCol )
 			}
 			break;
 		    case Percent:
-			if ( w.value > 0 ) {
-			    hasPercent = true;
-			    if ( l.width.type == Percent ) {
-				if ( w.value > l.width.value )
-				    l.width = w;
-			    } else {
-				l.width = w;
-			    }
-			}
+                        hasPercent = true;
+                        if ( w.value > 0 && (l.width.type != Percent || w.value > l.width.value ) )
+                            l.width = w;
 			break;
 		    case Relative:
-			if ( w.type == Relative ) {
-			    if ( w.value > l.width.value )
+			if ( w.type == Variable || (w.type == Relative && w.value > l.width.value ) )
 				l.width = w;
-			} else if ( w.type == Variable ) {
-			    l.width = w;
-			}
-			break;
 		    default:
 			break;
 		    }
@@ -440,7 +431,7 @@ void AutoTableLayout::recalcColumn( int effCol )
     }
 #endif
 
-    l.maxWidth = QMAX(l.maxWidth, l.minWidth);
+    l.maxWidth = kMax(l.maxWidth, l.minWidth);
 #ifdef DEBUG_LAYOUT
     qDebug("col %d, final min=%d, max=%d, width=%d(%d)", effCol, l.minWidth, l.maxWidth, l.width.value,  l.width.type );
 #endif
@@ -525,7 +516,7 @@ void AutoTableLayout::calcMinMaxWidth()
 	maxWidth += layoutStruct[i].effMaxWidth;
 	if ( layoutStruct[i].effWidth.type == Percent ) {
 	    int pw = (layoutStruct[i].effMaxWidth * 100 + 50) / layoutStruct[i].effWidth.value;
-	    maxPercent = QMAX( pw,  maxPercent );
+	    maxPercent = kMax( pw,  maxPercent );
 	} else {
 	    maxNonPercent += layoutStruct[i].effMaxWidth;
 	}
@@ -534,10 +525,10 @@ void AutoTableLayout::calcMinMaxWidth()
     int totalpct = totalPercent();
     if ( totalpct < 100 ) {
 	maxNonPercent = (maxNonPercent * 100 + 50) / (100-totalpct);
-	maxWidth = QMAX( maxNonPercent,  maxWidth );
+	maxWidth = kMax( maxNonPercent,  maxWidth );
     }
-    maxWidth = QMAX( maxWidth, maxPercent );
-    maxWidth = QMAX( maxWidth, spanMaxWidth );
+    maxWidth = kMax( maxWidth, maxPercent );
+    maxWidth = kMax( maxWidth, spanMaxWidth );
 
     int bs = table->bordersAndSpacing();
     minWidth += bs;
@@ -545,7 +536,7 @@ void AutoTableLayout::calcMinMaxWidth()
 
     Length tw = table->style()->width();
     if ( tw.isFixed() ) {
-	minWidth = QMAX( minWidth, tw.value );
+	minWidth = kMax( minWidth, int( tw.value ) );
 	maxWidth = minWidth;
     }
 
@@ -606,11 +597,14 @@ int AutoTableLayout::calcEffectiveWidth()
 		allColsAreFixed = false;
 		break;
 	    case Fixed:
-		fixedWidth += layoutStruct[lastCol].width.value + spacing;
-		allColsArePercent = false;
-		// IE resets effWidth to Variable here, but this breaks the konqueror about page and seems to be some bad
-		// legacy behaviour anyway. mozilla doesn't do this so I decided we don't neither.
-		break;
+                if (layoutStruct[lastCol].width.value > 0) {
+                    fixedWidth += layoutStruct[lastCol].width.value + spacing;
+                    allColsArePercent = false;
+                    // IE resets effWidth to Variable here, but this breaks the konqueror about page and seems to be some bad
+                    // legacy behaviour anyway. mozilla doesn't do this so I decided we don't neither.
+                    break;
+                }
+                // fall through
 	    case Variable:
 		haveVariable = true;
 		// fall through
@@ -682,7 +676,6 @@ int AutoTableLayout::calcEffectiveWidth()
 			cMinWidth -= w;
 			layoutStruct[pos].effMinWidth = w;
 		    }
-
 
 		} else {
 #ifdef DEBUG_LAYOUT
@@ -794,7 +787,6 @@ void AutoTableLayout::layout()
     int numVariable = 0;
     int numFixed = 0;
     int totalVariable = 0;
-    int totalFixed = 0;
     int totalPercent = 0;
     int allocVariable = 0;
 
@@ -814,9 +806,11 @@ void AutoTableLayout::layout()
 	    totalRelative += width.value;
             break;
         case Fixed:
-            numFixed++;
-            totalFixed += layoutStruct[i].effMaxWidth;
-            break;
+            if (width.value > 0) {
+                numFixed++;
+                break;
+            }
+            // treat as variable
         case Variable:
         case Static:
 	    numVariable++;
@@ -831,7 +825,7 @@ void AutoTableLayout::layout()
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Percent ) {
-		int w = QMAX( layoutStruct[i].minWidth, width.minWidth( tableWidth ) );
+                int w = kMax ( int( layoutStruct[i].minWidth ), width.minWidth( tableWidth ) );
 		totalAllocated += w;
 #if 0
 		if ( !htmlHacks )
@@ -848,10 +842,10 @@ void AutoTableLayout::layout()
 	    for ( int i = nEffCols-1; i >= 0; i-- ) {
 		if ( layoutStruct[i].effWidth.type == Percent ) {
 		    int w = layoutStruct[i].calcWidth;
-		    int reduction = QMIN( w,  excess );
+		    int reduction = kMin( w,  excess );
 		    // the lines below might look inconsistent, but that's the way it's handled in mozilla
 		    excess -= reduction;
-		    int newWidth = QMAX( w - reduction,  layoutStruct[i].effMinWidth );
+		    int newWidth = kMax( int (layoutStruct[i].effMinWidth), w - reduction );
 		    available += w - newWidth;
 		    layoutStruct[i].calcWidth = newWidth;
 		    //qDebug("col %d: reducing to %d px (reduction=%d)", i, newWidth, reduction );
@@ -865,7 +859,7 @@ void AutoTableLayout::layout()
 
     // then allocate width to fixed cols
     if ( available > 0 ) {
-	for ( int i = 0; i < nEffCols; i++ ) {
+	for ( int i = 0; i < nEffCols; ++i ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Fixed && width.value > layoutStruct[i].calcWidth ) {
 		int w = width.value;
@@ -898,7 +892,7 @@ void AutoTableLayout::layout()
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Variable && totalVariable != 0 ) {
-		int w = QMAX( layoutStruct[i].calcWidth, available * layoutStruct[i].effMaxWidth / totalVariable );
+		int w = kMax( int ( layoutStruct[i].calcWidth ), available * layoutStruct[i].effMaxWidth / totalVariable );
 		available -= w;
 		totalVariable -= layoutStruct[i].effMaxWidth;
 		layoutStruct[i].calcWidth = w;
@@ -915,10 +909,9 @@ void AutoTableLayout::layout()
 	for ( int i = 0; i < nEffCols; i++ ) {
             Length &width = layoutStruct[i].effWidth;
             if ( width.isFixed() ) {
-		int w = QMAX( layoutStruct[i].calcWidth, available * layoutStruct[i].effMaxWidth / totalFixed );
+		int w = kMax(0, kMin( available, available * (layoutStruct[i].effMaxWidth - layoutStruct[i].effMinWidth) / numFixed ));
                 available -= w;
                 layoutStruct[i].calcWidth += w;
-		totalFixed -= layoutStruct[i].effMaxWidth;
             }
 	}
     }
@@ -931,7 +924,7 @@ void AutoTableLayout::layout()
         int total = nEffCols;
         // still have some width to spread
         for ( int i = 0; i < nEffCols; i++ ) {
-            int w = available/total;
+            int w = available / total;
             available -= w;
             total--;
             layoutStruct[i].calcWidth += w;
