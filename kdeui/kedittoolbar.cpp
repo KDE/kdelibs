@@ -1081,6 +1081,8 @@ void KEditToolbarWidget::slotInsertButton()
   // we're modified, so let this change
   emit enableOk(true);
 
+  // TODO: #### this causes #97572.
+  // It would be better to just "delete item; loadActions( ... , ActiveListOnly );" or something.
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
