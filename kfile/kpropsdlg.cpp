@@ -646,30 +646,42 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   vbl->addLayout(grid);
   curRow = 0;
 
-  l = new QLabel(i18n("Created:"), d->m_frame );
-  grid->addWidget(l, curRow, 0);
-
   QDateTime dt;
-  dt.setTime_t( item->time(KIO::UDS_CREATION_TIME) );
-  tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, d->m_frame );
-  grid->addWidget(l, curRow++, 2);
+  time_t tim = item->time(KIO::UDS_CREATION_TIME);
+  if ( tim )
+  {
+    l = new QLabel(i18n("Created:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
 
-  l = new QLabel(i18n("Modified:"), d->m_frame );
-  grid->addWidget(l, curRow, 0);
+    dt.setTime_t( tim );
+    tempstr = KGlobal::locale()->formatDateTime(dt);
+    l = new QLabel(tempstr, d->m_frame );
+    grid->addWidget(l, curRow++, 2);
+  }
 
-  dt.setTime_t( item->time(KIO::UDS_MODIFICATION_TIME) );
-  tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, d->m_frame );
-  grid->addWidget(l, curRow++, 2);
+  tim = item->time(KIO::UDS_MODIFICATION_TIME);
+  if ( tim )
+  {
+    l = new QLabel(i18n("Modified:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
 
-  l = new QLabel(i18n("Accessed:"), d->m_frame );
-  grid->addWidget(l, curRow, 0);
+    dt.setTime_t( tim );
+    tempstr = KGlobal::locale()->formatDateTime(dt);
+    l = new QLabel(tempstr, d->m_frame );
+    grid->addWidget(l, curRow++, 2);
+  }
 
-  dt.setTime_t( item->time(KIO::UDS_ACCESS_TIME) );
-  tempstr = KGlobal::locale()->formatDateTime(dt);
-  l = new QLabel(tempstr, d->m_frame );
-  grid->addWidget(l, curRow++, 2);
+  tim = item->time(KIO::UDS_ACCESS_TIME);
+  if ( tim )
+  {
+    l = new QLabel(i18n("Accessed:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
+
+    dt.setTime_t( tim );
+    tempstr = KGlobal::locale()->formatDateTime(dt);
+    l = new QLabel(tempstr, d->m_frame );
+    grid->addWidget(l, curRow++, 2);
+  }
 
   vbl->addStretch(1);
 }
