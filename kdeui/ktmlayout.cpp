@@ -28,6 +28,15 @@
 #include <ktoolbar.h>
 #include <ktmlayout.h>
 
+
+//
+// 2000-03-25 Espen Sand
+// Added a fix (using sizeHint().height() instead of height()) to reduce the 
+// height of the status bar to something sensible. If this needs to be 
+// reverted for some reason, then search for "/*ES*/"
+//
+
+
 KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 					 const char *name) :
 	QLayout(parent, border, space, name)
@@ -91,7 +100,7 @@ KTMLayout::setGeometry(const QRect& rect)
 
 	/* position main layout */
 	int bottomHeight = toolBarHeight(rect.width(), bottomToolBars) +
-		(statusBar ? statusBar->height() : 0) +
+	  (statusBar ? /*ES*/statusBar->sizeHint().height() : 0) +
 		(bottomMenuBar ? bottomMenuBar->sizeHint().height() : 0);
 	int mwh = rect.height() - currY - bottomHeight;
 	mainLayout(QRect(rect.x(), currY, rect.width(), mwh));
@@ -105,7 +114,7 @@ KTMLayout::setGeometry(const QRect& rect)
 	{
 		int hfw = statusBar->heightForWidth(rect.width());
 		if (hfw == 0)
-			hfw = statusBar->height();
+		  hfw = /*ES*/statusBar->sizeHint().height();
         int rect_width = rect.width();
 
         /* position the indicator widget */
@@ -227,7 +236,7 @@ KTMLayout::minimumSize() const
 		flatBarHeight(geometry().width()) +
 		toolBarHeight(geometry().width(), topToolBars) +
 		toolBarHeight(geometry().width(), bottomToolBars) +
-		(statusBar ? statusBar->height() : 0);
+	  (statusBar ? /*ES*/statusBar->sizeHint().height() : 0);
 
 	/* Find out if there is a horizontal bar that needs more space than the
 	 * have determinded so far. */
