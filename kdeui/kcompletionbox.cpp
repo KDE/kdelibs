@@ -25,6 +25,7 @@
 #include <qevent.h>
 #include <qstyle.h>
 
+#include <kdebug.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
@@ -102,14 +103,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
                     case Key_BackTab:
-                        if ( d->tabHandling ) {
+                        if ( d->tabHandling && (ev->state() == NoButton ||
+                             (ev->state() & ShiftButton)) ) {
                             up();
                             ev->accept();
                             return true;
                         }
                         break;
                     case Key_Tab:
-                        if ( d->tabHandling ) {
+                        if ( d->tabHandling && (ev->state() == NoButton) ) {
                             down(); // Only on TAB!!
                             ev->accept();
                             return true;
@@ -166,8 +168,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 // the key sequences we use here...
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                    case Key_Tab:
-                    case Key_BackTab:
                     case Key_Down:
                     case Key_Up:
                     case Key_Prior:
@@ -178,7 +178,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                       ev->accept();
                       return true;
                       break;
-
+                    case Key_Tab:
+                    case Key_BackTab:
+                        if ( ev->state() == NoButton ||
+                            (ev->state() & ShiftButton))
+                        {
+                            ev->accept();
+                            return true;
+                        }
+                        break;
                     case Key_Home:
                     case Key_End:
                         if ( ev->state() & ControlButton )
