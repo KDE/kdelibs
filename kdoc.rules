@@ -4,7 +4,7 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = kdecore kdeui kimgio kfile khtmlw kspell kab 
+kde_MODULES = kdecore kdeui kfmlib kfile kspell khtmlw kimgio kab 
 
 kdecore_FILES= *.h
 kdecore_LIBS= -lqt
@@ -12,8 +12,8 @@ kdecore_LIBS= -lqt
 kdeui_FILES= *.h
 kdeui_LIBS= -lkdecore -lqt
 
-kdeui_FILES= *.h
-kdeui_LIBS= -lkdecore -lqt
+kfmlib_FILES= *.h
+kfmlib_LIBS= -lkdecore -lqt
 
 kfile_FILES= *.h
 kfile_LIBS= -lkdecore -lkdeui -lqt
