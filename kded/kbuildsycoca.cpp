@@ -346,9 +346,8 @@ bool KBuildSycoca::build()
                 ++it3 )
            {
                // Check if file matches filter
-               if (res.filter.search(*it3) == -1) continue;
-
-               createEntry(*it3, true);
+               if ((*it3).endsWith(res.extension))
+                   createEntry(*it3, true);
            }
         }
         if ((g_factory == g_bsf) && (strcmp(g_resource, "services") == 0))

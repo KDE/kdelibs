@@ -28,19 +28,18 @@ class KSycocaEntry;
 struct KSycocaResource
 {
    QString resource;
-   QRegExp filter; 
+   QString extension; 
 };
 
 class KSycocaResourceList : public QValueList<KSycocaResource>
 {
 public:
    KSycocaResourceList() { };
-   /* KDE 4.0: Make them const QString & */
-   void add(QString resource, QString filter)
+   void add(const QString &resource, const QString &filter)
    { 
      KSycocaResource res;
      res.resource = resource;
-     res.filter = QRegExp(filter, true, true);
+     res.extension = filter.mid(1);
      append(res);
    }
 };
