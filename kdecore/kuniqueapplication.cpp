@@ -309,6 +309,7 @@ KUniqueApplication::start()
      int exitCode;
      rs >> exitCode;
      delete dc;	// Clean up DCOP commmunication
+     KStartupInfo::appStarted();
      ::exit(exitCode);
      break;
   }
