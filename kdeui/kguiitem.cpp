@@ -132,11 +132,11 @@ QString KGuiItem::plainText() const {
     stripped.setLength(len);
 
     const QChar* data    = d->m_text.unicode();
-    for (int pos = 1; pos < len; pos++)
+    for (int pos = 0; pos < len; pos++)
     {
         //We pass through any non-ampersand character,
         //and any ampersand that's preceeded by an ampersand
-        if (data[pos] != '&' || data[pos-1] == '&')
+        if (data[pos] != '&' || (pos >= 1 && data[pos-1] == '&') )
             stripped[resultLength++] = data[pos];
     }
 
