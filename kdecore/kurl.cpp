@@ -226,6 +226,16 @@ bool KURL::isRelativeURL(const QString &_url)
   return true; // Relative URL
 }
 
+KURL::List::List(const QStringList &list)
+{
+  for (QStringList::ConstIterator it = list.begin();
+       it != list.end();
+       it++)
+    {
+      append( KURL(*it) );
+    }
+}
+
 QStringList KURL::List::toStringList() const
 {
   QStringList lst;
