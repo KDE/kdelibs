@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     ((QScrollView *)doc->widget())->viewport()->show();
 
     Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+       QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
              dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
     doc->openURL( KURL( argv[1] ) );
 

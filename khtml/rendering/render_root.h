@@ -36,7 +36,7 @@ class RenderRoot : public RenderFlow
 {
 public:
     RenderRoot(KHTMLView *view);
-    virtual ~RenderRoot() {}
+    virtual ~RenderRoot();
 
     virtual const char *renderName() const { return "RenderRoot"; }
 

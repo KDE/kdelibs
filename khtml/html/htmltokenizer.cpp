@@ -27,7 +27,7 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-// #define TOKEN_DEBUG
+//#define TOKEN_DEBUG
 //#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H
@@ -196,7 +196,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
     // which is either </script> or </style>,
     // otherwise print out every received character
 
-  //kdDebug( 6030 ) << "HTMLTokenizer::parseListing()" << endl;
+    kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
 
     while ( src.length() )
     {
@@ -224,7 +224,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLView::executeScript...
 	    	KJSProxy *jscript = view->part()->jScript();
-		//kdDebug( 6030 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
+		kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
 	  	if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);
 	    }
 	    else if (style)
@@ -421,7 +421,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 	    QConstString cStr(entityBuffer, entityPos);
 	    QChar res = charsets->fromEntity(cStr.string());
 	
-	    //kdDebug( 6030 ) << "ENTITY " << res.unicode() << ", " << res << endl;
+	    //kdDebug( 6036 ) << "ENTITY " << res.unicode() << ", " << res << endl;
 	
 	    if (tag && src[0] != ';' ) {
 		// Don't translate entities in tags with a missing ';'
@@ -455,7 +455,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 		if (src[0] == ';')
 		    ++src;
 	    } else {
-		kdDebug( 6030 ) << "unknown entity!" << endl;
+		kdDebug( 6036 ) << "unknown entity!" << endl;
 
 		checkBuffer(10);
 		// ignore the sequence, add it to the buffer as plaintext
@@ -535,7 +535,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		    kdDebug( 6030 ) << "bad HTML in parseTag: TagName" << endl;
+		    kdDebug( 6036 ) << "bad HTML in parseTag: TagName" << endl;
 		    searchCount = 0;
 		    ++src;
 		    break;
@@ -548,7 +548,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			if (searchCount == 4)
 			{
 #ifdef TOKEN_DEBUG
-			    kdDebug( 6030 ) << "Found comment" << endl;
+			    kdDebug( 6036 ) << "Found comment" << endl;
 #endif
 			    // Found '<!--' sequence
 			    comment = true;
@@ -602,14 +602,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    QConstString tmp(ptr, len);
 		    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
 		    if (!tagID) {
-			kdDebug( 6030 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
+			kdDebug( 6036 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
 			dest = buffer;
 			tag = SearchEnd; // ignore the tag
 		    }
 		    else
 		    {
 #ifdef TOKEN_DEBUG
-			kdDebug( 6030 ) << "found tag id=" << tagID << endl;
+			kdDebug( 6036 ) << "found tag id=" << tagID << endl;
 #endif
 			if (beginTag)
 			    currToken->id = tagID;
@@ -626,7 +626,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		    kdDebug( 6030 ) << "broken HTML in parseTag: SearchAttribute " << endl;
+		    kdDebug( 6036 ) << "broken HTML in parseTag: SearchAttribute " << endl;
 		    tquote=NoQuote;
 		    ++src;
 		    break;
@@ -672,13 +672,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    dest = buffer;
 		    if (!a) {
 			// unknown attribute, ignore
-			kdDebug( 6030 ) << "Unknown attribute: \"" << tmp.string() << "\"" << endl;
+			kdDebug( 6036 ) << "Unknown attribute: \"" << tmp.string() << "\"" << endl;
                         *dest++ = 0x0; /* ignore */
 		    }
 		    else
 		    {
 #ifdef TOKEN_DEBUG
-			kdDebug( 6030 ) << "Known attribute: \"" << tmp.string() << "\"" << endl;
+			kdDebug( 6036 ) << "Known attribute: \"" << tmp.string() << "\"" << endl;
 #endif
 			*dest++ = a;
 		    }		
@@ -691,7 +691,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		      kdDebug( 6030 ) << "bad HTML in parseTag: SearchEqual" << endl;
+		      kdDebug( 6036 ) << "bad HTML in parseTag: SearchEqual" << endl;
 		      // this is moslty due to a missing '"' somewhere before..
 		      // so let's start searching for a new tag
 		      tquote = NoQuote;
@@ -792,7 +792,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		  // additional quote. discard it, and define as end of
 		  // attribute
-		    kdDebug( 6030 ) << "bad HTML in parseTag: Value" << endl;
+		    kdDebug( 6036 ) << "bad HTML in parseTag: Value" << endl;
 		    ++src;
 		    tquote = NoQuote;
 		}
@@ -849,7 +849,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		}
 		uint tagID = currToken->id;
 #ifdef TOKEN_DEBUG
-		kdDebug( 6030 ) << "appending Tag: " << tagID << endl;
+		kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
 		bool beginTag = (tagID < ID_CLOSE_TAG);
 		if(beginTag)
@@ -887,6 +887,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    if (beginTag)
 		    {
+			kdDebug( 6036 ) << "start of script, token->id = " << currToken->id << endl; 
 			script = true;
 			searchCount = 0;
 			searchFor = scriptEnd;		
@@ -894,7 +895,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			scriptCodeSize = 0;
 			scriptCodeMaxSize = 1024;
 			parseScript(src);
-			kdDebug( 6030 ) << "end of script" << endl;
+			kdDebug( 6036 ) << "end of script" << endl;
 		    }
 		}
 		else if ( tagID == ID_STYLE )
@@ -931,7 +932,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    }
 	    default:
 	    {
-		kdDebug( 6030 ) << "error in parseTag! " << __LINE__ << endl;
+		kdDebug( 6036 ) << "error in parseTag! " << __LINE__ << endl;
 		return;
 	    }
 	
@@ -983,7 +984,7 @@ void HTMLTokenizer::addPending()
 	    break;
 	
 	default:
-	    kdDebug( 6030 ) << "Assertion failed: pending = " << (int) pending << endl;
+	    kdDebug( 6036 ) << "Assertion failed: pending = " << (int) pending << endl;
 	    break;
 	}
     }
@@ -1012,7 +1013,7 @@ void HTMLTokenizer::write( const QString &str )
     // we have to make this function reentrant. This is needed, because some
     // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
-    kdDebug( 6030 ) << "Tokenizer::write(\"" << str << "\")" << endl;
+    kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\")" << endl;
 #endif
 
     if ( str.isEmpty() || buffer == 0L )
@@ -1227,7 +1228,7 @@ void HTMLTokenizer::processToken()
     if ( dest > buffer )
     {
 	if(currToken->id)
-	    kdDebug( 6030 ) << "Error in processToken!!!" << endl;
+	    kdDebug( 6036 ) << "Error in processToken!!!" << endl;
 /*
 	if(!pre && dest - buffer == 1 && *buffer == ' ')
 	{
@@ -1240,7 +1241,7 @@ void HTMLTokenizer::processToken()
     }
     else if(!currToken->id)
     {
-//      kdDebug( 6030 ) << "Empty token!" << endl;
+//      kdDebug( 6036 ) << "Empty token!" << endl;
 	return;
     }
     dest = buffer;
@@ -1249,31 +1250,31 @@ void HTMLTokenizer::processToken()
     QString name = getTagName(currToken->id).string();
     QString text = currToken->text.string();
 
-    kdDebug( 6030 ) << "Token --> " << name << "   id = " << currToken->id << endl;
+    kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken->id << endl;
     if(currToken->text != 0)
-	kdDebug( 6030 ) << "text: \"" << text << "\"" << endl;
+	kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
 #else
 #ifdef TOKEN_DEBUG
     QString name = getTagName(currToken->id).string();
     QString text = currToken->text.string();
 
-    kdDebug( 6030 ) << "Token --> " << name << "   id = " << currToken->id << endl;
+    kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken->id << endl;
     if(currToken->text != 0)
-	kdDebug( 6030 ) << "text: \"" << text << "\"" << endl;
+	kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
     int l = currToken->attrs.length();
     if(l>0)
     {
 	int i = 0;
-	kdDebug( 6030 ) << "Attributes: " << l << endl;
+	kdDebug( 6036 ) << "Attributes: " << l << endl;
 	while(i<l)
 	{
 	    name = currToken->attrs.name(i).string();
 	    text = currToken->attrs.value(i).string();
-	    kdDebug( 6030 ) << "    " << currToken->attrs.id(i) << " " << name << "=" << text << endl;
+	    kdDebug( 6036 ) << "    " << currToken->attrs.id(i) << " " << name << "=" << text << endl;
 	    i++;
 	}
     }
-    kdDebug( 6030 ) << endl;
+    kdDebug( 6036 ) << endl;
 #endif
 #endif
     // pass the token over to the parser, the parser deletes the token

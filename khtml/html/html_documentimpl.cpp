@@ -54,7 +54,7 @@ template class QStack<DOM::NodeImpl>;
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
-    kdDebug( 6030 ) << "HTMLDocumentImpl constructor this = " << this << endl;
+    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -68,7 +68,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     : DocumentImpl(v)
 {
-    kdDebug( 6030 ) << "HTMLDocumentImpl constructor2 this = " << this << endl;
+    kdDebug( 6090 ) << "HTMLDocumentImpl constructor2 this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -83,7 +83,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
-    kdDebug( 6030 ) << "HTMLDocumentImpl destructor this = " << this << endl;
+    kdDebug( 6090 ) << "HTMLDocumentImpl destructor this = " << this << endl;
 }
 
 DOMString HTMLDocumentImpl::referrer() const

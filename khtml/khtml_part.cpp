@@ -487,6 +487,7 @@ bool KHTMLPart::autoloadImages() const
 
 void KHTMLPart::clear()
 {
+    kdDebug( 6090 ) << "KHTMLPart::clear()" << endl;
   if ( d->m_bCleared )
     return;
   d->m_bCleared = true;
@@ -494,6 +495,7 @@ void KHTMLPart::clear()
   d->m_bClearing = true;
   if ( d->m_doc )
   {
+    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
     d->m_doc->detach();
     d->m_doc->deref();
   }

@@ -45,9 +45,14 @@ RenderRoot::RenderRoot(KHTMLView *view)
     setParsing();
 }
 
+RenderRoot::~RenderRoot() 
+{
+    kdDebug( 6090 ) << "renderRoot desctructor called" << endl;
+}
 
 void RenderRoot::calcWidth()
 {
+    
     // the width gets set by KHTMLView::print when printing to a printer.
     if(printingMode) return;
 

@@ -6,10 +6,7 @@ Rendering:
 	  in a BiDi context
 
 General:
-	* move all internal classes into namespace khtml
-	* KHTMLWidget::enableImages()
-	* find()
-	* ad filter
+	* reload should reload images too!
 
 StyleSheets:
 	* @ rules in sheets
@@ -33,11 +30,6 @@ XML:
 	* style sheet processing instructions
 
 misc:
-	* mouse handling
-	* selection --> mostly done, still a bit buggy
-
-JScript:
-	* return value for events/ event propagation
 
 Java:
 	* support for the object element
@@ -46,7 +38,7 @@ Java:
 	* turn kjava into a kpart
 
 Attributes:
-	* check fro unimplemented attributes
+	* check for unimplemented attributes
 
 Memory usage:
 	* use bitfields for lots of things (especially in the

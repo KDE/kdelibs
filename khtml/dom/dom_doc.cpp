@@ -68,6 +68,7 @@ Document::Document() : Node()
     // we always wan't an implementation
     impl = new DocumentImpl();
     impl->ref();
+    kdDebug(6090) << "Document::Document()" << endl;
 }
 
 Document::Document(bool create) : Node()
@@ -79,14 +80,17 @@ Document::Document(bool create) : Node()
     }
     else
 	impl = 0;
+    kdDebug(6090) << "Document::Document(bool)" << endl;
 }
 
 Document::Document(const Document &other) : Node(other)
 {
+    kdDebug(6090) << "Document::Document(Document &)" << endl;
 }
 
 Document::Document(DocumentImpl *i) : Node(i)
 {
+    kdDebug(6090) << "Document::Document(DocumentImpl)" << endl;
 }
 
 Document &Document::operator = (const Node &other)
@@ -95,7 +99,7 @@ Document &Document::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Node::operator =(other);
     return *this;
 }
@@ -108,6 +112,7 @@ Document &Document::operator = (const Document &other)
 
 Document::~Document()
 {
+    kdDebug(6090) << "Document::~Document\n" << endl;
 }
 
 DocumentType Document::doctype() const
@@ -226,7 +231,7 @@ DocumentFragment &DocumentFragment::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Node::operator =(other);
     return *this;
 }
@@ -261,7 +266,7 @@ DocumentType &DocumentType::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
 
     Node::operator =(other);
     return *this;

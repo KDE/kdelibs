@@ -118,6 +118,7 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
+    //kdDebug( 6090 ) << "RenderObject::~RenderObject" << endl;
     // previous and next node may still reference this!!!
     // hope this fix is fine...
     if(m_previous) m_previous->setNextSibling(0);
