@@ -18,6 +18,7 @@
 
 #include "ktempfile.h"
 #include "kapp.h"
+#include "kstddirs.h"
 #include <qstring.h>
 
 #include <unistd.h>
@@ -39,6 +40,9 @@ main(int argc, char *argv[])
    printf("Making tempfile in home directory.\n");
    KTempFile f3(QString((const char *)getenv("HOME"))+"/test");
    printf("Filename = %s\n", f3.name().ascii());
+
+   QString name = locateLocal("socket", "test");
+   printf("Socket Filename = %s\n", name.ascii());
 
    printf("Done.\n");
 }

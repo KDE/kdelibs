@@ -222,6 +222,10 @@ int main(int argc, char *argv[])
      KURL waba2( waba1, "relative.html#with_reference");
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
   }
+  waba1.setUser("waldo");
+  check("http: Set user", waba1.url(), "http://waldo@www.website.com/directory/filename?bla#blub");
+  waba1.setUser("waldo/bastian");
+  check("http: Set user with slash in it", waba1.url(), "http://waldo%2Fbastian@www.website.com/directory/filename?bla#blub");
 
   // Empty queries should be preserved!
   waba1 = "http://www.kde.org/cgi/test.cgi?";
