@@ -25,6 +25,8 @@
 // on some systems
 #ifdef HAVE_SSL
 #include <unistd.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -107,7 +109,7 @@ return false;
 
 bool KSSL::initialize() {
 #ifdef HAVE_SSL
-  // kdDebug() << "KSSL initialize" << endl;
+  kdDebug() << "KSSL initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -127,6 +129,10 @@ bool KSSL::initialize() {
     d->m_meth = SSLv3_client_method();
   else
     d->m_meth = SSLv2_client_method();
+
+  if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug() << "Double method" << endl;
+  else if (m_cfg->sslv2()) kdDebug() << "SSL2 method" << endl;
+  else if (m_cfg->sslv3()) kdDebug() << "SSL3 method" << endl;
 
   OpenSSL_add_ssl_algorithms();
   OpenSSL_add_all_algorithms();
@@ -202,11 +208,28 @@ int KSSL::connect(int sock) {
   rc = SSL_connect(d->m_ssl);
   if (rc == 1) {
     setConnectionInfo();
-    setPeerInfo();
+    setPeerInfo(sock);
     // kdDebug() << "KSSL connected OK" << endl;
   } else {
-    kdDebug() << "KSSL connect FAILED" << endl;
-    return -1;
+    if (m_cfg->sslv2() && m_cfg->sslv3()) {
+      m_cfg->setSSLv2(true);
+      m_cfg->setSSLv3(false);
+      m_bAutoReconfig = false;
+      m_bInit = false;
+      SSL_CTX_free(d->m_ctx);
+      kdDebug() << "KSSL connecting again" << endl;
+      initialize();
+      rc = KSSL::connect(sock);
+      if (rc == 1) {
+	setConnectionInfo();
+	setPeerInfo(sock);
+      } else {
+	m_cfg->setSSLv3(true);
+	m_bAutoReconfig = true;
+	kdDebug() << "KSSL connect FAILED" << endl;
+	return -1;
+      }
+    }
   }
   return rc;
 #else
@@ -287,11 +310,24 @@ void KSSL::setConnectionInfo() {
 }
 
 
-void KSSL::setPeerInfo() {
+void KSSL::setPeerInfo(int sock) {
 #ifdef HAVE_SSL
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
+  struct sockaddr_in sa;
+  socklen_t nl = sizeof(struct sockaddr_in);
+  int rc = getpeername (sock, (sockaddr *)&sa, &nl);
 
+  if (rc != -1) {
+    QString haddr;
+    Q_UINT32 iaddr = ntohl(sa.sin_addr.s_addr);
+    haddr.sprintf("%u.%u.%u.%u", (iaddr >> 24) &0xff,
+                                 (iaddr >> 16) &0xff,
+                                 (iaddr >> 8)  &0xff,
+                                 (iaddr)       &0xff);
+    m_pi.setPeerAddress(haddr);
+    m_pi.setPeerIP(iaddr);
+  }
   m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
 #endif
 }

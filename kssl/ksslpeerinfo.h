@@ -21,11 +21,14 @@
 #ifndef _KSSLPEERINFO_H
 #define _KSSLPEERINFO_H
 
-#include <qstring.h>
-
 class KSSL;
+class QString;
+
+#include <qglobal.h>
 
 #include <ksslcertificate.h>
+
+class KSSLPeerInfoPrivate;
 
 class KSSLPeerInfo {
 friend class KSSL;
@@ -33,16 +36,19 @@ public:
   ~KSSLPeerInfo();
 
   KSSLCertificate& getPeerCertificate();
-  // peer IP address
-  // peer port
+  bool certMatchesAddress();
+  Q_UINT32 getPeerIP();
+  QString getPeerAddress();
+  
  
 protected:
   KSSLPeerInfo();
 
   KSSLCertificate m_cert;
+  void setPeerAddress(QString& addr);
+  void setPeerIP(Q_UINT32 ip);
 
 private:
-  class KSSLPeerInfoPrivate;
   KSSLPeerInfoPrivate *d;
 
 };

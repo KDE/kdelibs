@@ -89,7 +89,7 @@ private:
   KSSLPrivate *d;
 
   void setConnectionInfo();
-  void setPeerInfo();
+  void setPeerInfo(int sock);
   bool setVerificationLogic();
 };
 

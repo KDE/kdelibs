@@ -2,6 +2,8 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
+- Report if CN == this host using the method in KSSLPeerInfo
+
 - KSSL needs to be integrated into the slave base in some
   way or another so that kio_pop3 and friends can use it.
 
