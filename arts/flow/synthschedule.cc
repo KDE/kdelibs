@@ -895,12 +895,26 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 	}
 }
 
-void StdFlowSystem::disconnectObject(Object /*sourceObject*/,
-				     const string& /*sourcePort*/, 
-				     Object /*destObject*/,
-				     const string& /*destPort*/)
+void StdFlowSystem::disconnectObject(Object sourceObject,
+  	const string& sourcePort, Object destObject, const std::string& destPort)
 {
-	assert(false);
+	arts_debug("disconnect port %s and %s",sourcePort.c_str(),destPort.c_str());
+	StdScheduleNode *sn =
+		(StdScheduleNode *)sourceObject._node()->cast("StdScheduleNode");
+	assert(sn);
+
+	Port *port = sn->findPort(sourcePort);
+	assert(port);
+
+	StdScheduleNode *destsn =
+		(StdScheduleNode *)destObject._node()->cast("StdScheduleNode");
+	if(destsn)
+	{
+		sn->disconnect(sourcePort,destsn,destPort);
+		return;
+	}
+
+	assert(false);		// TODO: local-remote connections
 }
 
 AttributeType StdFlowSystem::queryFlags(Object node, const std::string& port)
