@@ -496,7 +496,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
       if (ignoreUnknown)
          return;
       enable_i18n();
-      usage( i18n("Unknown option '%1'.").arg(_opt));
+      usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
    }
 
    if ((result & 4) != 0)
@@ -512,7 +512,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
          if (ignoreUnknown)
             return;
          enable_i18n();
-         usage( i18n("Unknown option '%1'.").arg(_opt));
+         usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
       }
       if (argument.isEmpty())
       {
@@ -645,7 +645,7 @@ KCmdLineArgs::parseAllArgs()
             if (ignoreUnknown)
                continue;
             enable_i18n();
-            usage( i18n("Unexpected argument '%1'.").arg( argv[i]));
+            usage( i18n("Unexpected argument '%1'.").arg(QString::fromLocal8Bit(argv[i])));
          }
          else
          {
