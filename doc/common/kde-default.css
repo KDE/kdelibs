@@ -69,11 +69,6 @@ P { text-align: justify; }
 
 DIV.navbar P { text-align: right; }
 
-/* Lauri */
-LI P { padding-top: -2em;
-       padding-bottom: 2em; }
-
-
 /* Temporary patch: browsers break on bad HTML */
 P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif; 
     }
