@@ -52,7 +52,6 @@ DCOPObject::DCOPObject(QObject *obj)
   }
   if ( ident[0] == '/' )
       ident = ident.mid(1);
-  qDebug("set dcopobject id to %s",ident.data());
 
   objMap()->insert(ident, this);
 }

@@ -123,7 +123,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			 data, replyType, replyData );
 
     if ( !b && app != "*" )
-	qWarning("DCOP failure in application %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+	qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
 
     if (opcode != DCOPCall)
       return;
@@ -458,13 +458,13 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	  QCString r;
 	  ds >> r;
 	  emit applicationRegistered( r );
-	  return TRUE;
+	  return true;
       } else if ( fun == "applicationRemoved(QCString)" ) {
 	  QDataStream ds( data, IO_ReadOnly );
 	  QCString r;
 	  ds >> r;
 	  emit applicationRemoved( r );
-	  return TRUE;
+	  return true;
       }
       return process( fun, data, replyType, replyData );
   }
