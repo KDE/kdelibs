@@ -26,7 +26,7 @@ Name[ru]=Стиль Web
 Name[sk]=Web štýl
 Name[sl]=Spletni slog
 Name[sv]=Webbstil
-Name[tr]=Ağ stili
+Name[tr]=Web stili
 Name[uk]=Стиль 'а ля Web'
 Name[zh_CN.GB2312]=网站风格
 Comment=Web widget style
@@ -56,7 +56,7 @@ Comment[ru]=стиль web widget
 Comment[sk]=Štýl prvku Web
 Comment[sl]=Slog spletnega gradnika
 Comment[sv]=Webbskärmdels-stil
-Comment[tr]=Ağ aleti benzeri stil
+Comment[tr]=Web aleti benzeri stil
 Comment[uk]=Стиль 'а ля Віджет Веб'
 Comment[zh_CN.GB2312]=Web 部件风格
 [KDE]
