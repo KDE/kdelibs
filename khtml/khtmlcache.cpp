@@ -132,7 +132,6 @@ KHTMLCachedImage::~KHTMLCachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
-    if ( formatType ) delete formatType;
 }
 
 void 
@@ -180,10 +179,9 @@ KHTMLCachedImage::clear()
 	delete p;
 	p = 0;
     }
-    if ( formatType ) {
-      delete formatType;
-      formatType = 0;
-    }
+
+    formatType = 0;
+
     typeChecked = false;
     size = 0;
 
