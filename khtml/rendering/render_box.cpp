@@ -582,7 +582,7 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     Length w = style()->width();
     short width;
     if ( ieHack )
-        *ieHack = style()->height().isPercent() || (w.isVariable() || w.isPercent());
+        *ieHack = style()->height().isPercent() || w.isPercent();
 
     switch( w.type ) {
     case Variable:
