@@ -138,7 +138,9 @@ struct QIconViewPrivate
     int cachedContentsX, cachedContentsY;
     int resizeEvents;
     QBrush itemTextBrush;
-
+    bool drawAllBack;
+    QRegion clipRegion;
+    
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -790,7 +792,7 @@ void QIconViewItem::setText( const QString &text )
 /*!
   Sets \a k as key of the iconview item. This is
   used for sorting.
-  
+
   \sa compareItems()
 */
 
@@ -881,7 +883,7 @@ void QIconViewItem::setDropEnabled( bool allow )
 
 /*!
   Returns the text of the iconview item.
-  
+
   \sa setText()
 */
 
@@ -892,7 +894,7 @@ QString QIconViewItem::text() const
 
 /*!
   Returns the key of the iconview item.
-  
+
   \sa setKey(), compareItems()
 */
 
@@ -903,7 +905,7 @@ QString QIconViewItem::key() const
 
 /*!
   Returns the icon of the iconview item.
-  
+
   \sa setIcon()
 */
 
@@ -915,7 +917,7 @@ QIconSet QIconViewItem::icon() const
 /*!
   Returns TRUE, if the item can be renamed ny the user with in-place renaming,
   else FALSE.
-  
+
   \sa setRenameEnabled()
 */
 
@@ -926,7 +928,7 @@ bool QIconViewItem::renameEnabled() const
 
 /*!
   Returns TRUE, if the user is allowed to drag the iconview item, else FALSE.
-  
+
   \sa setDragEnabled()
 */
 
@@ -938,7 +940,7 @@ bool QIconViewItem::dragEnabled() const
 /*!
   Returns TRUE, if the user is allowed to drop something onto the item,
   otherwise FALSE.
-  
+
   \sa setDropEnabled()
 */
 
@@ -1037,7 +1039,7 @@ void QIconViewItem::setSelectable( bool s )
 
 /*!
   Returns TRUE, if the item is selected, else FALSE.
-  
+
   \sa setSelected()
 */
 
@@ -1048,7 +1050,7 @@ bool QIconViewItem::isSelected() const
 
 /*!
   Returns TRUE, of the item is selectable, else FALSE.
-  
+
   \sa setSelectable()
 */
 
@@ -1253,7 +1255,7 @@ void QIconViewItem::setColor( const QColor &color )
 
 /*!
   Returns the text color of this item.
-  
+
   \sa setColor()
 */
 
@@ -1266,7 +1268,7 @@ QColor QIconViewItem::color() const
 
 /*!
   Returns the text font of this item.
-  
+
   \sa setFont()
 */
 
@@ -1346,7 +1348,7 @@ void QIconViewItem::rename()
 
   The default implementation uses QIconViewItem::key() to compare the
   items. A reimplementation may use different values.
-  
+
   \sa key()
 */
 
@@ -1727,8 +1729,8 @@ void QIconViewItem::calcTmpText()
   QIconView::clearSelection(), QIconView::setSelected(),
   QIconView::setCurrentItem(), QIconView::currentItem() and much more.
 
-  As the internal structure to store the iconview items is linear (a double 
-  linked list), no iterator class is needed to iterate over all items. This can 
+  As the internal structure to store the iconview items is linear (a double
+  linked list), no iterator class is needed to iterate over all items. This can
   be easily done with a code like
 
   \code
@@ -1751,14 +1753,14 @@ void QIconViewItem::calcTmpText()
   around. If you want, that drag shapes (the rectangles of the dragged items with
   exact positions) are drawn, you have to choose the more complicated way. Here
   first the simple case is described:
-  
-  In the simple case you only need for starting a drag to reimplement 
+
+  In the simple case you only need for starting a drag to reimplement
   QIconView::dragObject(). There you create a QDragObject with the data
-  you want to drag and return it. And for entering drags you don't need to do 
+  you want to drag and return it. And for entering drags you don't need to do
   anything special then. Just connect to dropped() signal to get notified about
-  drops onto the viewport and reimplement QIconViewItem::acceptDrop() and 
+  drops onto the viewport and reimplement QIconViewItem::acceptDrop() and
   QIconViewItem::dropped() to be able to react on drops onto an iconview item.
-  
+
   If you want to have drag shapes drawn, you have to do quite a bit more and
   complex things:
 
@@ -2076,7 +2078,8 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->fullRedrawTimer = new QTimer( this );
     d->resizeEvents = 0;
     d->itemTextBrush = Qt::NoBrush;
-
+    d->drawAllBack = TRUE;
+    
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2260,8 +2263,8 @@ void QIconView::slotUpdate()
 
 /*!
   Takes the iconview item \a item out of the iconview. The item is not
-  deleted. You should never need to call this method yourself, just delete an item 
-  to get rid of it. The destructor of QIconViewItem does everything, which is required 
+  deleted. You should never need to call this method yourself, just delete an item
+  to get rid of it. The destructor of QIconViewItem does everything, which is required
   for removing and item.
 */
 
@@ -2402,13 +2405,13 @@ void QIconView::setCurrentItem( QIconViewItem *item )
 }
 
 /*!
-  Selects / Unselects the \a item depending on the selectionMode() 
+  Selects / Unselects the \a item depending on the selectionMode()
   of the iconview.
 
   If \a s is FALSE, the item gets unselected. If \a s is TRUE
   <li> and QIconView::selectionMode() is Single, the item gets selected and the
   item which was selected, gets unselected
-  <li> and QIconView::selectionMode() is Extended the \a item gets selected. If 
+  <li> and QIconView::selectionMode() is Extended the \a item gets selected. If
   \a cb is TRUE other items are not touched, else all others get unselected.
   <li> and QIconView::selectionMode() is Multi the item gets selected.
 
@@ -2453,7 +2456,7 @@ void QIconView::setViewMode( QIconSet::Size mode )
 
 /*!
   Returns the viewmode of the iconview.
-  
+
   \sa setViewMode()
 */
 
@@ -2483,8 +2486,9 @@ void QIconView::doAutoScroll()
     bool changed = FALSE;
     bool block = signalsBlocked();
 
-    QList<QIconViewItem> lst;
-
+    QRect rr;
+    QRegion region( 0, 0, visibleWidth(), visibleHeight() );
+    
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     viewport()->setUpdatesEnabled( FALSE );
@@ -2493,14 +2497,18 @@ void QIconView::doAutoScroll()
 	    if ( item->isSelected() ) {
 		item->setSelected( FALSE );
 		changed = TRUE;
-		lst.append( item );
+		rr = rr.unite( item->rect() );
 	    }
 	} else if ( item->intersects( d->rubber->normalize() ) ) {
 	    if ( !item->isSelected() ) {
 		item->setSelected( TRUE, TRUE );
 		changed = TRUE;
-		lst.append( item );
+		rr = rr.unite( item->rect() );
+	    } else {
+		region = region.subtract( QRect( contentsToViewport( item->pos() ),
+						 item->size() ) );
 	    }
+	    
 	    ++selected;
 	    minx = QMIN( minx, item->x() - 1 );
 	    miny = QMIN( miny, item->y() - 1 );
@@ -2525,8 +2533,10 @@ void QIconView::doAutoScroll()
     *d->rubber = r;
 
     if ( changed ) {
-	for ( item = lst.first(); item; item = lst.next() )
-	    item->repaint();
+	d->drawAllBack = FALSE;
+	d->clipRegion = region;
+	repaintContents( rr, FALSE );
+	d->drawAllBack = TRUE;
     }
 
     ensureVisible( pos.x(), pos.y() );
@@ -2573,10 +2583,15 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
     p->save();
     p->resetXForm();
     QRect r( contentsToViewport( QPoint( cx, cy ) ), QSize( cw, ch ) );
-    p->setClipRect( r );
+    if ( d->drawAllBack )
+	p->setClipRect( r );
+    else {
+	QRegion reg = d->clipRegion.intersect( r );
+	p->setClipRegion( reg );
+    }
     drawBackground( p, r );
     p->restore();
-
+    
     if ( !d->firstItem )
 	return;
 
@@ -2758,7 +2773,7 @@ QIconView::SelectionMode QIconView::selectionMode() const
 
   You have to switch the iconview to single click mode first, to
   make these setting working using setUseSingleClickMode()
-  
+
   \sa QIconView::setUseSingleClickMode()
 */
 
@@ -2833,7 +2848,7 @@ bool QIconView::useSingleClickMode() const
 /*!
   Sets the \a font for the text of all items in the iconview.
   New items which are inserted also get this settings.
-  
+
   By default the normal font() of the iconview is used
   for the item text.
 */
@@ -2852,7 +2867,7 @@ void QIconView::setItemFont( const QFont &font )
 /*!
   Sets the \a color for the text of all items in the iconview.
   New items which are inserted also get this settings.
-  
+
   By default the text color of QIconView's colorGroup()
   is used.
 */
@@ -4308,9 +4323,9 @@ void QIconView::drawDragShapes( const QPoint &pos )
   e.g. try to decode the drag.
 
   So, if you want to have the iconview drawing drag shapes,
-  read further in and reimplement this method. Else you don't 
+  read further in and reimplement this method. Else you don't
   need to care about that.
-  
+
   There are three possibilities:
   <ul>
   <li>Knowing the drag very well: The drag can be decoded and it contains
@@ -4325,7 +4340,7 @@ void QIconView::drawDragShapes( const QPoint &pos )
   QIconView::initDragEnter().
   </ul>
 
-  See the qt/examples/qfileiconview/qfileiconview.cpp example for a 
+  See the qt/examples/qfileiconview/qfileiconview.cpp example for a
   demonstration of using this method.
 
   \sa QIconView::setDragObjectIsKnown(), QIconView::setNumDragItems()
