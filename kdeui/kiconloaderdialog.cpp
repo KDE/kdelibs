@@ -298,3 +298,27 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
   return pixmap;
 }
 
+KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) : QPushButton( _parent )
+{
+    iconStr = "";
+    connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
+}
+
+void KIconLoaderButton::slotChangeIcon()
+{
+    QString name;
+    QPixmap pix = loaderDialog.selectIcon( name, "*" );
+    if( !pix.isNull() )
+    {
+	setPixmap(pix);
+	iconStr = name.data();
+	emit iconChanged( iconStr );
+    }    
+}
+
+void KIconLoaderButton::setIcon( const char *_icon )
+{
+    iconStr = _icon;
+    
+    setPixmap( KApplication::getKApplication()->getIconLoader()->loadIcon( iconStr ) );      
+}

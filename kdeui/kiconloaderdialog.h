@@ -21,6 +21,9 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+// CHANGES
+// Torben, added KIconLoaderButton
+
 #ifndef KICONLOADERDIALOG_H
 #define KICONLOADERDIALOG_H
 
@@ -144,6 +147,50 @@ protected:
   QLabel            *text;
   QComboBox         *cb_dirs;
   KIconLoader       *icon_loader;
+};
+
+/**
+ * This is a button that uses the @ref KIconLoaderDialog.
+ * It shows the currently selected icon. Pressing on
+ * the icon will open the dialog. If the icon changes, a
+ * signal is emitted and the buttons pixmap becomes updated.
+ */
+class KIconLoaderButton : public QPushButton
+{
+    Q_OBJECT
+public:
+    /**
+     * Creates a new button.
+     */
+    KIconLoaderButton( QWidget *_widget );
+
+    /**
+     * Set the buttons icon. 
+     *
+     * @param _icon is a parameter as usually passed to @ref KIconLoader.
+     */
+    void setIcon( const char *_icon );
+    /**
+     * @return the name of the icon without path.
+     */
+    const char* icon() { return iconStr.data(); }
+    /**
+     * @return a reference to the icon loader dialog used.
+     */
+    KIconLoaderDialog& iconLoaderDialog() { return loaderDialog; }
+    
+public slots:
+    void slotChangeIcon();
+    
+signals:
+    /**
+     * Emitted if the icons has changed.
+     */
+    void iconChanged( const char *icon );
+    
+protected:
+    KIconLoaderDialog loaderDialog;
+    QString iconStr;
 };
 
 

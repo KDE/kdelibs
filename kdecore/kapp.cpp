@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.46  1997/10/07 06:52:15  kulow
+// my new path modell
+//
 // Revision 1.45  1997/10/05 21:32:32  ettrich
 // Matthias: set the default icon/miniicon for the mainwidget
 //
@@ -244,7 +247,7 @@
 //
 // KApplication implementation
 //
-// (C) 1996 Matthias Kalle Dalheimer <mda@stardivision.de>
+// (C) 1996 Matthias Kalle Dalheimer <kalle@kde.org>
 //
 // DND stuff by Torben Weis <weis@stud.uni-frankfurt.de>
 // 09.12.96
@@ -353,7 +356,7 @@
 #include <qmsgbox.h>
 #include <qtstream.h>
 #include <qregexp.h>
-  QString aGlobalAppConfigName = kdedir() + "/config/" + aAppName + "rc";
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #include <sys/types.h>
@@ -370,7 +373,7 @@ KCharsets* KApplication::pCharsets = 0L;
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
-  aConfigName += "/.kde/config/";
+extern bool bAreaCalculated;
 
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
@@ -830,6 +833,12 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
 			  lastEnteredDropZone = result;
 			}
+		}
+	  else
+		{
+		  // Notify the last DropZone that the pointer has left the drop zone.
+		  if ( lastEnteredDropZone != 0L )
+			lastEnteredDropZone->leave();
 
 	  return TRUE;
     }
@@ -1087,28 +1096,29 @@ void KApplication::kdisplaySetPalette()
 	emit appearanceChanged();
 
 	// send a resize event to all windows so that they can resize children
-  if ( fork	() == 0 )	
+	QWidgetList *widgetList = QApplication::topLevelWidgets();
 	QWidgetListIt it( *widgetList );
-	  if( filename.isEmpty() )
-		filename = aAppName + '/' + aAppName + ".html";
-      QString path = KApplication::kdedir();
-      path.append("/share/doc/HTML/default/");
-      path.append(filename);
+							 backgroundColor.dark(), 
+	while ( it.current() )
+							 darkGray, windowColor );
+		it.current()->resize( it.current()->size() );
+		++it;
+						backgroundColor.light(150),
 						backgroundColor.dark(), 
-	  if( !topic.isEmpty() )
-		{
-		  path.append( "#" );
-		  path.append(topic);
-		}
+						backgroundColor.dark(120),
+						textColor, windowColor );
 
-	  /* Since this is a library, we must conside the possibilty that
-	   * we are being used by a suid root program. These next two
-	   * lines drop all privileges.
-	   */
-	  setuid( getuid() );
-	  setgid( getgid() );
-      execlp( "kdehelp", "kdehelp", path.data(), 0 ); 
-      exit( 1 );
+	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
+
+	emit kdisplayPaletteChanged();
+    if ( fork() == 0 )	
+
+	if( filename.isEmpty() )
+
+void KApplication::kdisplaySetFont()
+	QString path = KApplication::kdedir();
+	execlp( "kdehelp", "kdehelp", path.data(), 0 ); 
+	    path.append( "#" );
 	    path.append(topic);
 	}
 
@@ -1141,7 +1151,7 @@ void KApplication::resizeAll()
   return dir;
 }
 
-  fontfilename = fontfilename + "/.kde/config/kdefonts";
+const QString& KApplication::kde_cgidir()
 {
   static QString dir;
   if (dir.isNull()) 
