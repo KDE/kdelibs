@@ -300,9 +300,10 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
 
         if (contentData->_contentType == CONTENT_TEXT)
         {
-            RenderText* t = new (renderArena()) RenderText( element(), contentData->contentText());
+            RenderText* t = new (renderArena()) RenderText( element(), 0);
             t->setIsAnonymous( true );
             t->setStyle(style);
+            t->setText(contentData->contentText());
             pseudoContainer->addChild(t);
         }
         else if (contentData->_contentType == CONTENT_OBJECT)
