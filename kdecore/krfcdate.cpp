@@ -337,7 +337,7 @@ KRFCDate::parseDate(const QString &_date)
 }
 
 time_t
-KRFCDate::parseDateISO8601( const QString& input)
+KRFCDate::parseDateISO8601( const QString& input_ )
 {
   // These dates look like this:
   // YYYY-MM-DDTHH:MM:SS
@@ -354,11 +354,23 @@ KRFCDate::parseDateISO8601( const QString& input)
 
   int offset = 0;
 
-  // First find the 'T' separator.
+  QString input = input_;
+
+  // First find the 'T' separator, if any.
   int tPos = input.find('T');
 
-  if (-1 == tPos)
-    return 0;
+  // If there is no time, no month or no day specified, fill those missing
+  // fields so that 'input' matches YYYY-MM-DDTHH:MM:SS
+  if (-1 == tPos) {
+    const int dashes = input.contains('-');
+    if (0 == dashes) {
+      input += "-01-01";
+    } else if (1 == dashes) {
+      input += "-01";
+    }
+    tPos = input.length();
+    input += "T12:00:00";
+  }
 
   // Now parse the date part.
 
