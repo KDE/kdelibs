@@ -680,9 +680,9 @@ void DCOPServer::ioError( IceConn /* iceConn */ )
 void DCOPServer::processData( int /*socket*/ )
 {
     IceConn iceConn = ((DCOPConnection*)sender())->iceConn;
-    IceProcessMessagesStatus pstatus = IceProcessMessages( iceConn, 0, 0 );
-    if ( pstatus == IceProcessMessagesIOError ) {
-	IceCloseStatus cstatus = IceCloseConnection( iceConn );
+    IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
+    if ( status == IceProcessMessagesIOError ) {
+	(void) IceCloseConnection( iceConn );
     }
 }
 
