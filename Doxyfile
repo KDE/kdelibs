@@ -27,7 +27,7 @@ SHOW_INCLUDE_FILES     = YES
 JAVADOC_AUTOBRIEF      = NO
 INHERIT_DOCS           = YES
 INLINE_INFO            = YES
-SORT_MEMBER_DOCS       = YES
+SORT_MEMBER_DOCS       = NO
 DISTRIBUTE_GROUP_DOC   = NO
 TAB_SIZE               = 8
 GENERATE_TODOLIST      = YES
@@ -64,16 +64,14 @@ INPUT                  = dcop \
                          arts/kde
 FILE_PATTERNS          = *.h
 RECURSIVE              = YES
-EXCLUDE                = \
-arts/tests     kdeprint/tests  khtml/java/tests  kio/kfile/tests  kioslave/http/kcookiejar/tests  kwallet/backend/tests \
-kdecore/tests  kdeui/tests     kinit/tests       kio/tests        kparts/tests                    libkmid/tests
-# */tests doesn't seem to work :(
+EXCLUDE                = dcop/testdcop.h
 
 # If the value of the INPUT tag contains directories, you can use the 
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
 # certain files from those directories.
 
-EXCLUDE_PATTERNS       = *.moc.* Makefile.* ChangeLog CHANGES CHANGES.* README \
+EXCLUDE_PATTERNS       = */tests/* \
+                         *.moc.* Makefile.* ChangeLog CHANGES CHANGES.* README \
                          README.* *.png AUTHORS DESIGN DESIGN.* *.desktop \
                          DESKTOP* COMMENTS HOWTO magic NOTES TODO THANKS
 
@@ -97,9 +95,9 @@ REFERENCES_RELATION    = YES
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
-ALPHABETICAL_INDEX     = NO
-COLS_IN_ALPHA_INDEX    = 5
-IGNORE_PREFIX          = 
+ALPHABETICAL_INDEX     = YES
+COLS_IN_ALPHA_INDEX    = 3
+IGNORE_PREFIX          = K
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
 #---------------------------------------------------------------------------
@@ -108,7 +106,7 @@ HTML_OUTPUT            =
 HTML_HEADER            = 
 HTML_FOOTER            = 
 HTML_STYLESHEET        = 
-HTML_ALIGN_MEMBERS     = YES
+HTML_ALIGN_MEMBERS     = NO
 GENERATE_HTMLHELP      = NO
 GENERATE_CHI           = NO
 BINARY_TOC             = NO
@@ -120,7 +118,7 @@ TREEVIEW_WIDTH         = 250
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 LATEX_OUTPUT           = 
 COMPACT_LATEX          = NO
 PAPER_TYPE             = a4wide
@@ -141,7 +139,7 @@ RTF_EXTENSIONS_FILE    =
 #---------------------------------------------------------------------------
 # configuration options related to the man page output
 #---------------------------------------------------------------------------
-GENERATE_MAN           = YES
+GENERATE_MAN           = NO
 MAN_OUTPUT             = man
 MAN_EXTENSION          = .kde3
 MAN_LINKS              = YES
