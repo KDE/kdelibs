@@ -68,6 +68,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     QVBox *box = new QVBox( parentWidget, widgetName );
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart" );
+    m_khtml->autoloadImages( true );
 
     setWidget( box );
 
@@ -193,6 +194,12 @@ int KHTMLImageBrowserExtension::yOffset()
 void KHTMLImageBrowserExtension::print()
 {
     static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->print();
+}
+
+void KHTMLImageBrowserExtension::reparseConfiguration()
+{
+    static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->reparseConfiguration();
+    m_imgPart->doc()->autoloadImages( true );
 }
 
 #include "khtmlimage.moc"

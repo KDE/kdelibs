@@ -84,6 +84,7 @@ public:
 
 protected slots:
     void print();
+    void reparseConfiguration();
 
 private:
     KHTMLImage *m_imgPart;
