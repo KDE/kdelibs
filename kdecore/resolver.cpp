@@ -989,8 +989,7 @@ static QValueList<QCString> splitLabels(const QCString& asciiDomain)
 }
 
 // IDN functions forward declarations
-static const char ACEPrefix[] = "zz--"; // FIXME! Change this to the right value 
-				        // it's been published!
+static const char ACEPrefix[] = "xn--"; // Defined in RFC 3490
 
 static QString nameprep(const QString& unprepped);
 static QCString punyencode(const QString& uncoded);
