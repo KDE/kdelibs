@@ -31,6 +31,8 @@
 #include <kdebug.h>
 #include <kurlrequester.h>
 #include <kmessagebox.h>
+#include <kconfig.h>
+#include <kapplication.h>
 
 #include "engine.h"
 #include "entry.h"
@@ -97,6 +99,33 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->addMultiCellWidget( summaryLabel, 7, 7, 0, 1 );
   mSummaryEdit = new KTextEdit( topPage );
   topLayout->addMultiCellWidget( mSummaryEdit, 8, 8, 0, 1 );
+
+  KConfig *conf = kapp->config();
+  conf->setGroup("KNewStuffUpload");
+  QString name = conf->readEntry("name");
+  QString author = conf->readEntry("author");
+  QString version = conf->readEntry("version");
+  QString release = conf->readEntry("release");
+  QString preview = conf->readEntry("preview");
+  QString summary = conf->readEntry("summary");
+  QString lang = conf->readEntry("language");
+  QString licence = conf->readEntry("licence");
+
+  if(!name.isNull())
+  {
+    int prefill = KMessageBox::questionYesNo(this, i18n("Old upload information found, fill out fields?"));
+    if(prefill == KMessageBox::Yes)
+    {
+      mNameEdit->setText(name);
+      mAuthorEdit->setText(author);
+      mVersionEdit->setText(version);
+      mReleaseSpin->setValue(release.toInt());
+      mPreviewUrl->setURL(preview);
+      mSummaryEdit->setText(summary);
+      if(!lang.isEmpty()) mLanguageCombo->setCurrentText(lang);
+      if(!licence.isEmpty()) mLicenceCombo->setCurrentText(licence);
+    }
+  }
 }
 
 UploadDialog::~UploadDialog()
@@ -122,6 +151,18 @@ void UploadDialog::slotOk()
   entry->setLicence( mLicenceCombo->currentText() );
   entry->setPreview( KURL( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
   entry->setSummary( mSummaryEdit->text(), mLanguageCombo->currentText() );
+
+  KConfig *conf = kapp->config();
+  conf->setGroup("KNewStuffUpload");
+  conf->writeEntry("name", mNameEdit->text());
+  conf->writeEntry("author", mAuthorEdit->text());
+  conf->writeEntry("version", mVersionEdit->text());
+  conf->writeEntry("release", mReleaseSpin->value());
+  conf->writeEntry("licence", mLicenceCombo->currentText());
+  conf->writeEntry("preview", mPreviewUrl->url());
+  conf->writeEntry("summary", mSummaryEdit->text());
+  conf->writeEntry("language", mLanguageCombo->currentText());
+  conf->sync();
 
   mEngine->upload( entry );
 

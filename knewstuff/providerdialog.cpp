@@ -20,6 +20,7 @@
 
 #include <qlayout.h>
 #include <qstring.h>
+#include <qlabel.h>
 
 #include <klistview.h>
 #include <klocale.h>
@@ -41,9 +42,9 @@ class ProviderItem : public KListViewItem
     {
       setText( 0, provider->name() );
     }
-      
+
     Provider *provider() { return mProvider; }
-    
+
   private:
     Provider *mProvider;
 };
@@ -54,9 +55,12 @@ ProviderDialog::ProviderDialog( Engine *engine, QWidget *parent ) :
   mEngine( engine )
 {
   QFrame *topPage = plainPage();
-  
+
   QBoxLayout *topLayout = new QVBoxLayout( topPage );
-  
+
+  QLabel *description = new QLabel( i18n("Please select one of the providers listed below:"), topPage );
+  topLayout->addWidget( description );
+
   mListView = new KListView( topPage );
   mListView->addColumn( i18n("Name") );
   topLayout->addWidget( mListView );
