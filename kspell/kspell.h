@@ -44,13 +44,21 @@ public:
    * Start spellchecker.
    *
    * @ref KSpell emits @ref ready() when it has verified that 
-   * ISpell/ASpell is
-   *  working properly.  Pass the name of a slot -- do not pass zero!
+   * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
    * Be sure to call @ref cleanUp() when you are done with @ref KSpell.
    *
-   * If KSpell could not be started correctly, death() is emitted.
+   * If KSpell could not be started correctly, @ref death() is emitted.
+   *
+   * @param _parent      Parent of @ref KSpellConfig dialg..
+   * @param _caption     Caption of @ref KSpellConfig dialog.
+   * @param _receiver    Receiver.
+
+   * @param _slot        Receivers SLOT.
+   * @param _kcs         Configuration for @ref KSpell.
+   * @param _progressbar Indicates if progress bar should be shown.
+   * @param _modal       Indicates modal or non-modal dialog.
    */
-  KSpell(QWidget *_parent, QString,
+  KSpell(QWidget *_parent, QString _caption,
 	 QObject *obj, const char *slot, KSpellConfig *_kcs=0,
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
