@@ -45,6 +45,8 @@ public:
     bool m_regexpDialogQueryDone;
     bool m_hasCursor;
     bool m_hasSelection;
+    QStringList findStrings;
+    QString pattern;
 };
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
@@ -198,7 +200,8 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
         m_promptOnReplace->hide();
         m_replaceGrp->hide();
     }
-    setFindHistory(findStrings);
+
+    d->findStrings = findStrings;
     m_find->setFocus();
     enableButtonOK( !pattern().isEmpty() );
 }
@@ -206,6 +209,20 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 void KFindDialog::textSearchChanged( const QString & text)
 {
     enableButtonOK( !text.isEmpty() );
+}
+
+void KFindDialog::showEvent( QShowEvent *e )
+{
+    kdDebug() << "showEvent\n";
+    if (!d->findStrings.isEmpty())
+        setFindHistory(d->findStrings);
+    d->findStrings = QStringList();
+    if (!d->pattern.isEmpty()) {
+        m_find->lineEdit()->setText( d->pattern );
+        m_find->lineEdit()->selectAll();
+        d->pattern = QString::null;
+    }
+    KDialogBase::showEvent(e);
 }
 
 long KFindDialog::options() const
@@ -236,6 +253,8 @@ void KFindDialog::setPattern (const QString &pattern)
 {
     m_find->lineEdit()->setText( pattern );
     m_find->lineEdit()->selectAll();
+    d->pattern = pattern;
+    kdDebug() << "setPattern " << pattern;
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)

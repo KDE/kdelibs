@@ -178,6 +178,10 @@ protected slots:
     void showPatterns();
     void showPlaceholders();
     void textSearchChanged( const QString &);
+
+protected:
+    virtual void showEvent ( QShowEvent * );
+
 private:
 
     QGroupBox *m_findGrp;

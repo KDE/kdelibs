@@ -136,6 +136,7 @@ public:
 protected slots:
 
     void slotOk();
+    virtual void showEvent ( QShowEvent * );
 
 private:
 

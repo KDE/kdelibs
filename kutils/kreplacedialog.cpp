@@ -26,16 +26,33 @@
 #include <qlayout.h>
 #include <kcombobox.h>
 
+/**
+ * we need to insert the strings after the dialog is set
+ * up, otherwise QComboBox will deliver an aweful big sizeHint
+ * for long replacement texts.
+ */
+struct KReplaceDialog::KReplaceDialogPrivate {
+    QStringList replaceStrings;
+};
+
 KReplaceDialog::KReplaceDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, const QStringList &replaceStrings, bool hasSelection) :
     KFindDialog(parent, name, true)
 {
+    d = new KReplaceDialogPrivate;
+    d->replaceStrings = replaceStrings;
     init(true, findStrings, hasSelection);
     setOptions(options);
-    setReplacementHistory(replaceStrings);
 }
 
 KReplaceDialog::~KReplaceDialog()
 {
+    delete d;
+}
+
+void KReplaceDialog::showEvent( QShowEvent *e )
+{
+    setReplacementHistory(d->replaceStrings);
+    KFindDialog::showEvent(e);
 }
 
 long KReplaceDialog::options() const
@@ -57,7 +74,7 @@ QWidget *KReplaceDialog::replaceExtension()
       m_replaceExtension = new QWidget(m_replaceGrp);
       m_replaceLayout->addMultiCellWidget(m_replaceExtension, 3, 3, 0, 1);
     }
-    
+
     return m_replaceExtension;
 }
 
