@@ -315,7 +315,7 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
 
-    virtual unsigned int length() const { return 0; }
+    virtual unsigned int length() const { return 1; }
 
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
     /*

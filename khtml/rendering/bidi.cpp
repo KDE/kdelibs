@@ -879,7 +879,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
-        kdDebug(6041) << "new object width = " << w <<" tmpw = " << tmpW << endl;
+        kdDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW << endl;
 #endif
         if(o->isBR()) {
             if( w + tmpW <= width ) {
@@ -979,16 +979,26 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
         } else
             assert( false );
 
-        if( w + tmpW > width ) {
+        if( w + tmpW > width+1 ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
+	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
             int fb = floatBottom();
             if(!w && m_height < fb) {
                 m_height = fb;
                 width = lineWidth(m_height);
-            } else if( !w && (o != start.obj || pos != start.pos) ) {
-                lBreak.obj = o;
-                lBreak.pos = pos;
+            } 
+	    if( !w && w + tmpW > width+1 && (o != start.obj || pos != start.pos) ) {
+		// getting below floats wasn't enough...
+		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
+		lBreak.obj = o;
+	    if(last != o) {
+		//kdDebug() << " using last " << last << endl; 
+		//lBreak.obj = last;
+		lBreak.pos = 0;//last->length() - 1;
+	    } else {
+		lBreak.pos = pos;
+	    }
                 return lBreak;
             } else {
                 return lBreak;
@@ -1022,19 +1032,25 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
                 lBreak.pos = last->length();
             }
         } else if( lBreak.obj ) {
-            int w = 0;
-            if( lBreak.obj->isText() )
-                w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-            else
-                w += lBreak.obj->width();
-            while( lBreak.obj && w < width ) {
-                ++lBreak;
-                if( !lBreak.obj ) break;
-                if( lBreak.obj->isText() )
-                    w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-                else
-                    w += lBreak.obj->width();
-            }
+	    if( last != o ) {
+		// better break between object boundaries than in the middle of a word
+		lBreak.obj = o;
+		lBreak.pos = 0;
+	    } else {
+		int w = 0;
+		if( lBreak.obj->isText() )
+		    w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
+		else
+		    w += lBreak.obj->width();
+		while( lBreak.obj && w < width ) {
+		    ++lBreak;
+		    if( !lBreak.obj ) break;
+		    if( lBreak.obj->isText() )
+			w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
+		    else
+			w += lBreak.obj->width();
+		}
+	    }
         }
     }
 
