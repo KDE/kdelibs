@@ -446,13 +446,12 @@ AttributeList *ElementImpl::defaultMap() const
 void ElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement(this);
-    khtml::RenderObject *r = _parent->renderer();
-    if(r)
+    if(_parent && _parent->renderer())
     {
 	m_render = khtml::RenderObject::createObject(this);
 	if(m_render)
 	{
-	    r->addChild(m_render, _next ? _next->renderer() : 0);
+	    _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
 	    m_render->ref();
 	}
     }
