@@ -20,6 +20,7 @@
 
 #include "kwalletbackend.h"
 #include <kglobal.h>
+#include <kdebug.h>
 #include <kstddirs.h>
 #include <qfile.h>
 #include "blowfish.h"
@@ -206,15 +207,13 @@ int KWalletBackend::unlock(QByteArray& password) {
 	password2hash(password, passhash);
 
 
-	bf.setKey((void *)passhash.data(), 448);
+	bf.setKey((void *)passhash.data(), passhash.size()*8);
 
-	for (unsigned int i = 0; i < encrypted.size() % blksz; i++) {
-		int rc = bf.decrypt(encrypted.data() + i*blksz, blksz);
-		if (rc != 0) {
-			passhash.fill(0);
-			encrypted.fill(0);
-			return -6;	// decrypt error
-		}
+	int rc = bf.decrypt(encrypted.data(), encrypted.size());
+	if (rc < 0) {
+		passhash.fill(0);
+		encrypted.fill(0);
+		return -6;	// decrypt error
 	}
 
 	passhash.fill(0);        // passhash is UNUSABLE NOW
@@ -257,17 +256,16 @@ int KWalletBackend::unlock(QByteArray& password) {
 	}
 	
 	sha.reset();
-	// get rid of the trailing data
-	encrypted.truncate(fsize+blksz+4);
 	
 	// Load the data structures up
 	/* LOOK HERE DAWIT */
-	
 
-	// "0" out all the structures that we are done with
-	// that are not encrypted
-
+	// chop off the leading blksz+4 bytes
+	QByteArray tmpenc;
+	tmpenc.duplicate(encrypted.data()+blksz+4, fsize);
 	encrypted.fill(0);
+	encrypted.duplicate(tmpenc.data(), tmpenc.size());
+	tmpenc.fill(0);
 
 	_open = true;
 	return 0;
@@ -350,13 +348,17 @@ int KWalletBackend::lock(QByteArray& password) {
 	password2hash(password, passhash);
 	
 	// encrypt the data
-	for (unsigned int i = 0; i < wholeFile.size() % blksz; i++) {
-		int rc = bf.encrypt(wholeFile.data() + i*blksz, blksz);
-		if (rc != 0) {
-			passhash.fill(0);
-			wholeFile.fill(0);
-			return -2;	// encrypt error
-		}
+	if (!bf.setKey(passhash.data(), passhash.size()*8)) {
+		passhash.fill(0);
+		wholeFile.fill(0);
+		return -2;
+	}
+
+	int rc = bf.encrypt(wholeFile.data(), wholeFile.size());
+	if (rc < 0) {
+		passhash.fill(0);
+		wholeFile.fill(0);
+		return -2;	// encrypt error
 	}
 
 	passhash.fill(0);        // passhash is UNUSABLE NOW
