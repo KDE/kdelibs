@@ -310,9 +310,13 @@ void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
         deleteChildrenOf( ftvi );
     }
 }
-
 void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
 {
+    // for some strange reason, slotDirlisterClearURL() sometimes calls us
+    // with a 0L parent.
+    if ( !parent )
+        return;
+    
     QListViewItem *child = parent->firstChild();
     QListViewItem *next = child;
 
