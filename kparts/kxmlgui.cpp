@@ -69,11 +69,12 @@ template class QList<XMLGUIContainerNode>;
  */
 struct XMLGUIContainerNode
 {
-  XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent = 0L, XMLGUIServant *_servant = 0L, bool _merged = false );
+  XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent = 0L, XMLGUIServant *_servant = 0L, bool _merged = false, int id = -1 );
 
   XMLGUIContainerNode *parent;
   XMLGUIServant *servant;
   QObject *container;
+  int containerId;
 
   QString tagName;
   QString name;
@@ -152,9 +153,10 @@ XMLGUIFactory *XMLGUIServant::factory() const
   return d->m_factory;
 }
 
-XMLGUIContainerNode::XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent, XMLGUIServant *_servant, bool _merged )
+XMLGUIContainerNode::XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent, XMLGUIServant *_servant, bool _merged, int id )
 {
   container = _container;
+  containerId = id;
   parent = _parent;
   servant = _servant;
   tagName = _tagName;
@@ -386,7 +388,9 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	 * we use QObject as container type), like with separators for example.
 	 */
 	
-        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, *idx, e, stateBuffer );
+	int id;
+	
+        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, *idx, e, stateBuffer, id );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
@@ -396,7 +400,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	
 	containerList.append( container );
 	
-        XMLGUIContainerNode *containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, merged );
+        XMLGUIContainerNode *containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, merged, id );
 	
         buildRecursive( e, containerNode );
       }
@@ -418,14 +422,6 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 
   if ( mergingIt != mergingEnd )
     mergingIdx = & mergingIt.data();
-
-  QListIterator<XMLGUIContainerNode> childIt( node->children );
-  while ( childIt.current() )
-    // removeRecursive returns true in case the container really got deleted
-    if ( removeRecursive( childIt.current() ) )
-      node->children.removeRef( childIt.current() );
-    else
-      ++childIt;
 
   QListIterator<XMLGUIContainerClient> clientIt( node->clients );
 
@@ -459,6 +455,14 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       else
         ++clientIt;
 
+  QListIterator<XMLGUIContainerNode> childIt( node->children );
+  while ( childIt.current() )
+    // removeRecursive returns true in case the container really got deleted
+    if ( removeRecursive( childIt.current() ) )
+      node->children.removeRef( childIt.current() );
+    else
+      ++childIt;
+  
   if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
        node->servant == m_servant )
   {
@@ -496,7 +500,7 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
     //remove/kill the container and give the builder a chance to store abitrary state information of
     //the container in a QByteArray. This information will be re-used for the creation of the same
     //container in case we add the same servant again later.
-    QByteArray containerStateBuffer = m_builder->removeContainer( node->container, parentContainer );
+    QByteArray containerStateBuffer = m_builder->removeContainer( node->container, parentContainer, node->containerId );
 
     if ( containerStateBuffer.size() > 0 )
       m_servant->storeContainerStateBuffer( node->tagName + node->name, containerStateBuffer );

@@ -117,13 +117,15 @@ void MainWindow::setXML( const QString &document )
   */
 }
 
-QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer )
+QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
 {
   kDebugArea( 1001, "MainWindow::createContainer()" );
   kDebugInfo( 1001, "tagName() : %s", element.tagName().ascii() );
   if ( parent )
    kDebugInfo( 1001, "parent.className() : %s", parent->className() );
 
+  id = -1;
+  
   if ( element.tagName() == "MenuBar" )
   {
     KMenuBar *bar = menuBar();
@@ -139,9 +141,9 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
     QString text = i18n(element.namedItem( "text" ).toElement().text().latin1());
 
     if ( parent->inherits( "KMenuBar" ) )
-      ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
+      id = ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
     else if ( parent->inherits( "QPopupMenu" ) )
-      ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
+      id = ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
 
     return popup;
   }
@@ -221,7 +223,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
   return 0L;
 }
 
-QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
+QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int id )
 {
   // Warning parent can be 0L
   QByteArray stateBuff;
@@ -237,6 +239,11 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
   }
   else if ( container->inherits( "QPopupMenu" ) )
   {
+    if ( parent->inherits( "KMenuBar" ) )
+      ((KMenuBar *)parent)->removeItem( id );
+    else if ( parent->inherits( "QPopupMenu" ) )
+      ((QPopupMenu *)parent)->removeItem( id );
+    
     delete container;
   }
   else if ( container->inherits( "KToolBar" ) )

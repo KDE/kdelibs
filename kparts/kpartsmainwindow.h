@@ -77,10 +77,10 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
   virtual QDomDocument document() const;
 
   // KXMLGUIBuilder interface (internal)
-  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer );
+  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id );
 
   // KXMLGUIBuilder interface (internal)
-  virtual QByteArray removeContainer( QObject *container, QWidget *parent );
+  virtual QByteArray removeContainer( QObject *container, QWidget *parent, int id );
 
 protected slots:
 

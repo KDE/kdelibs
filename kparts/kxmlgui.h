@@ -61,7 +61,7 @@ class XMLGUIBuilder
    * @param containerStateBuffer a buffer which possibibly contains previously saved container state
    *        information, return via @ref removeContainer .
    */
-  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer ) = 0;
+  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id ) = 0;
 
   /**
    * Remove the given (and previously via @ref createContainer ) created container.
@@ -69,7 +69,7 @@ class XMLGUIBuilder
    *         a toolbar container for example) . The buffer is passed again to @ref createContainer when
    *         the same container is about to be created again later.
    */
-  virtual QByteArray removeContainer( QObject *container, QWidget *parent ) = 0;
+  virtual QByteArray removeContainer( QObject *container, QWidget *parent, int id ) = 0;
 };
 
 class XMLGUIServantPrivate;
