@@ -28,6 +28,7 @@
 
 #include "kbufferedio.h"
 #include "ksockaddr.h"
+#include "kdemacros.h"
 
 /* External reference to netdb.h */
 struct addrinfo;
@@ -76,10 +77,15 @@ class KExtendedSocketPrivate;
  * to make sure only IPv4 and IPv6 sockets are selected, even if future implementations
  * support newer IP protocols, ipv4Socket | ipv6Socket is your guy.
  *
+ * @deprecated
+ *	This class is now deprecated. Please use the classes in @ref KNetwork for
+ *	new programs. In special, this class is replaced by @ref KNetwork::KStreamSocket
+ *	and @ref KNetwork::KServerSocket.
+ *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an extended socket
  */
-class KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
+class KDE_DEPRECATED KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
 {
   Q_OBJECT
 
@@ -152,6 +158,16 @@ public:
 
   /**
    * Creates a socket with the given hostname and port.
+   *
+   * If this is a connecting (active) socket, the hostname and port specify
+   * the remote address to which we will connect.
+   *
+   * If this is a listening (passive) socket, the hostname and port specify
+   * the address to listen on. In order to listen on every interface
+   * available on this node, set @p host to QString::null. To let the operating
+   * system select a port, set it to 0.
+   *
+   * @sa setAddress
    * @param host	the hostname
    * @param port	the port number
    * @param flags	flags
@@ -160,6 +176,16 @@ public:
 
   /**
    * Creates a socket with the given hostname and service.
+   *
+   * If this is a connecting (active) socket, the hostname and service specify
+   * the remote address to which we will connect.
+   *
+   * If this is a listening (passive) socket, the hostname and service specify
+   * the address to listen on. In order to listen on every interface
+   * available on this node, set @p host to QString::null. To let the operating
+   * system select a port, set the service to "0".
+   *
+   * @sa setAddress
    * @param host	the hostname
    * @param service	the service
    * @param flags	flags
@@ -213,7 +239,15 @@ public:
   int socketFlags() const;
 
   /**
-   * Sets the hostname to the given value.
+   * Sets the hostname to the given value. 
+   *
+   * If this is a listening (passive) socket, the hostname is the host to which the socket
+   * will bind in order to listen. If you want to listen in every interface, set it
+   * to "*" or QString::null.
+   *
+   * If this is a connecting (active) socket, the hostname is the host to which we will try
+   * to connect.
+   *
    * @param host	the hostname
    * @return true on success, false on error
    */
@@ -233,6 +267,10 @@ public:
 
   /**
    * Sets the port/service.
+   *
+   * In the case of Unix-domain sockets, the port is the filename for the socket.
+   * If the name is not an absolute path, "/tmp/" will be prepended.
+   *
    * @param port	the port
    * @return true if successful, false on error (e.g. connection already established)
    */
@@ -246,6 +284,9 @@ public:
 
   /**
    * Sets the address where we will connect to.
+   *
+   * See @ref setHost and @ref setPort for information on the parameters.
+   *
    * @param host	the hostname
    * @param port	port number
    * @return true if successful, false on error (e.g. connection already established)
@@ -254,6 +295,9 @@ public:
 
   /**
    * Sets the address where we will connect to.
+   *
+   * See @ref setHost and @ref setPort for information on the parameters.
+   *
    * @param host	the hostname
    * @param serv	the service
    * @return true if successful, false on error (e.g. connection already established)
@@ -900,7 +944,7 @@ public:
   static int resolve(::KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 
   /** @deprecated
-   * This function is now deprecated. Please use @ref QResolver::resolve.
+   * This function is now deprecated. Please use @ref KNetwork::KResolver::resolve.
    *
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
@@ -967,7 +1011,7 @@ private:
 };
 
 /** @deprecated
- * This class is now deprecated. Please see @ref QResolver for the new API.
+ * This class is now deprecated. Please see @ref KNetwork::KResolver for the new API.
  *
  * Contains information about an internet address. It wraps addrinfo,
  * see getaddrinfo(3) for more information.
