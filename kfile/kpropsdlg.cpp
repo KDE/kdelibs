@@ -1631,7 +1631,7 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDesktopGroup();
   commentStr = config.readEntry( QString::fromLatin1("Comment") );
-  extensions = config.readListEntry( QString::fromLatin1("MimeType") );
+  extensions = config.readListEntry( QString::fromLatin1("MimeType"), ';' );
   nameStr = config.readEntry( QString::fromLatin1("Name") );
   if ( nameStr.isEmpty() ) {
     // We'll use the file name if no name is specified
@@ -1645,8 +1645,10 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
   if ( !nameStr.isNull() )
     nameEdit->setText( nameStr );
   QStringList::Iterator sit = extensions.begin();
-  for( ; sit != extensions.end(); ++sit )
-    extensionsList->inSort( *sit );
+  for( ; sit != extensions.end(); ++sit ) {
+    if ( !((*sit).isEmpty()) )
+      extensionsList->inSort( *sit );
+  }
 
   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
   QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
@@ -1709,11 +1711,17 @@ void KApplicationPropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
 
-  extensions.clear();
-  for ( uint i = 0; i < extensionsList->count(); i++ )
-    extensions.append( extensionsList->text( i ) );
+  // we can't simply write the stringlist, as it has to end with a ";". So we
+  // just create a QString with ; as separators after each mimetype. 
+  QString e;
+  for ( uint i = 0; i < extensionsList->count(); i++ ) {
+    if ( !extensionsList->text( i ).isEmpty() ) {
+      e.append( extensionsList->text( i ) );
+      e += ';';
+    }
+  }
 
-  config.writeEntry( QString::fromLatin1("MimeType"), extensions );
+  config.writeEntry( QString::fromLatin1("MimeType"), e );
   QString nameStr = nameEdit->text();
   if ( nameStr.isEmpty() )
   {
