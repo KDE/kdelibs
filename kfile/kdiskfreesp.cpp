@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kprocess.h>
 #include <kio/global.h>
+#include <config-kfile.h>
 
 #include "kdiskfreesp.moc"
 

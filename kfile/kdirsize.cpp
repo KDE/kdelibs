@@ -21,6 +21,7 @@
 #include <kdebug.h>
 #include <qapplication.h>
 #include <qtimer.h>
+#include <config-kfile.h>
 
 using namespace KIO;
 
