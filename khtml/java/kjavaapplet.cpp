@@ -256,31 +256,27 @@ void KJavaApplet::stateChange( const int newStateInt ) {
             break;
         case INSTANCIATED:
             if (ok) {
-                // FIXME enable after 3.1
-                //showStatus(i18n("Java Applet \"$1\" loaded").arg(appletName()));
+                showStatus(i18n("Initializing Applet \"$1\" ...").arg(appletName()));
             }
             ok = (d->state == CLASS_LOADED);
             break;
         case INITIALIZED:
             ok = (d->state == INSTANCIATED);
             if (ok) { 
-                // FIXME enable after 3.1
-                //showStatus(i18n("Java Applet \"%1\" initialized").arg(appletName()));
+                showStatus(i18n("Starting Applet \"%1\" ...").arg(appletName()));
                 start();
             }
             break;
         case STARTED:
             ok = (d->state == INITIALIZED || d->state == STOPPED);
             if (ok) {    
-                // FIXME enable after 3.1
-                //showStatus(i18n("Java Applet \"%1\" started").arg(appletName()));
+                showStatus(i18n("Applet \"%1\" started").arg(appletName()));
             }
             break;
         case STOPPED:
             ok = (d->state == INITIALIZED || d->state == STARTED);
             if (ok) {    
-                // FIXME enable after 3.1
-                //showStatus(i18n("Java Applet \"%1\" stopped").arg(appletName()));
+                showStatus(i18n("Applet \"%1\" stopped").arg(appletName()));
             }
             break;
         case DESTROYED:

@@ -47,14 +47,14 @@ public class JSObject extends netscape.javascript.JSObject {
         
         for (off = 0; (idx = script.indexOf("\\", off)) >= 0; off = idx + 1) {
             sb.append(script.substring(off, idx));
-            sb.append("\\\\\\\\");
+            sb.append("\\\\");
         }
         sb.append(script.substring(off, script.length()));
         script = sb.toString();
         sb = new StringBuffer();
         for (off = 0; (idx = script.indexOf("\"", off)) >= 0; off = idx + 1) {
             sb.append(script.substring(off, idx));
-            sb.append("\\\\\\\"");
+            sb.append("\\\"");
         }
         sb.append(script.substring(off, script.length()));
         script = sb.toString();
@@ -64,7 +64,7 @@ public class JSObject extends netscape.javascript.JSObject {
         //String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
 
-        kc.evaluateJavaScript("window.__lc[1](" + id + ",\\\"" + script + "\\\",this" + (global ? ",true)" : ")"), appletID, this);
+        kc.evaluateJavaScript("window.__lc[1](" + id + ",\"" + script + "\",this" + (global ? ",true)" : ")"), appletID, this);
         boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);

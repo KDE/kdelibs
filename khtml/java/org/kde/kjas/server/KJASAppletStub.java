@@ -209,8 +209,6 @@ public final class KJASAppletStub
                 panel.setApplet( app );
                 app.setSize(appletSize.getWidth() > 0 ? appletSize : panel.getSize());
 
-                context.showStatus("Initializing Applet " + appletName + " ...");
-
                 try {
                     app.init();
                 } catch (Error er) {
@@ -232,7 +230,6 @@ public final class KJASAppletStub
                 app.setVisible(true);
                 //panel.validate();
                
-                context.showStatus("Starting Applet " + appletName + " ...");
                 // stop the loading... animation 
                 panel.stopAnimation();
                 // create a new thread, so we know, when the applet was started
@@ -263,7 +260,6 @@ public final class KJASAppletStub
                     public void run() {
                         frame.validate();
                         app.start();
-                        context.showStatus("Applet " + appletName + " started.");
                         app.repaint();
                         appletThread = null;
                     }
