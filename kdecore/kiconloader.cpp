@@ -574,6 +574,187 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     return pix;
 }
 
+QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
+	int state, QString *path_store, bool canReturnNull) const
+{
+    QString name = _name;
+    QImage img;
+    QString key;
+    bool absolutePath=false;
+
+    if (d->mpThemeRoot == 0L)
+	return img;
+
+    // Special case for absolute path icons.
+    if (name.at(0) == '/') absolutePath=true;
+
+    // Special case for "User" icons.
+    if (group == KIcon::User)
+    {
+	key = "$kicou_";
+	key += name;
+//	bool inCache = QPixmapCache::find(key, pix);
+//	if (inCache && (path_store == 0L))
+//	    return pix;
+
+	QString path = (absolutePath) ? name :
+			iconPath(name, KIcon::User, canReturnNull);
+	if (path.isEmpty())
+	{
+	    if (canReturnNull)
+		return img;
+	    // We don't know the desired size: use small
+	    path = iconPath("unknown", KIcon::Small, true);
+	    if (path.isEmpty())
+	    {
+		kdDebug(264) << "Warning: Cannot find \"unknown\" icon.\n";
+		return img;
+	    }
+	}
+
+	if (path_store != 0L)
+	    *path_store = path;
+//	if (inCache)
+//	    return pix;
+	img.load(path);
+//	QPixmapCache::insert(key, pix);
+	return img;
+    }
+
+    // Regular case: Check parameters
+
+    if ((group < -1) || (group >= KIcon::LastGroup))
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	group = 0;
+    }
+
+    int overlay = (state & KIcon::OverlayMask);
+    state &= ~KIcon::OverlayMask;
+    if ((state < 0) || (state >= KIcon::LastState))
+    {
+	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	state = 0;
+    }
+
+    if ((size == 0) && (group < 0))
+    {
+	kdDebug(264) << "Neither size nor group specified!\n";
+	group = 0;
+    }
+
+    if (!absolutePath)
+    {
+	QString ext = name.right(4);
+	if ((ext == ".png") || (ext == ".xpm"))
+	{
+	    kdDebug(264) << "Application "
+		<< KGlobal::instance()->instanceName()
+		<< " loads icon " << name << " with extension.\n";
+	    name = name.left(name.length() - 4);
+	}
+    }
+
+    // If size == 0, use default size for the specified group.
+    if (size == 0)
+    {
+	size = d->mpGroups[group].size;
+    }
+
+    // Generate a unique cache key for the icon.
+
+    key = "$kico_";
+    key += name; key += "_";
+    key += QString().setNum(size); key += "_";
+    if (group >= 0)
+    {
+	key += d->mpEffect.fingerprint(group, state);
+	if (d->mpGroups[group].dblPixels)
+	    key += QString::fromLatin1(":dblsize");
+    } else
+	key += QString::fromLatin1("noeffect");
+    key += "_";
+    key += QString().setNum(overlay);
+
+    // Is the icon in the cache?
+    bool inCache = false;
+
+//    bool inCache = QPixmapCache::find(key, pix);
+//    if (inCache && (path_store == 0L))
+//	return pix;
+
+    // No? load it.
+    KIcon icon;
+    if (absolutePath)
+    {
+        icon.context=KIcon::Any;
+	icon.type=KIcon::Scalable;
+	icon.path=name;
+    }
+    else
+    {
+	icon = findMatchingIcon(name, size);
+	if (!icon.isValid())
+	{
+	    // Try "User" icon too. Some apps expect this.
+	    img = loadIcon(name, KIcon::User, size, state, path_store, true);
+	    if (!img.isNull() || canReturnNull)
+		return img;
+
+	    icon = findMatchingIcon("unknown", size);
+	    if (!icon.isValid())
+	    {
+		kdDebug(264)
+		    << "Warning: could not find \"Unknown\" icon for size = "
+		    << size << "\n";
+		return img;
+	    }
+	}
+    }
+
+    if (path_store != 0L)
+	*path_store = icon.path;
+//    if (inCache)
+//eturn pix;
+
+    img.load(icon.path);
+    if (img.isNull())
+	return img;
+
+    // Blend in all overlays
+    if (overlay)
+    {
+	QImage *ovl;
+	KIconTheme *theme = d->mpThemeRoot->theme;
+	if ((overlay & KIcon::LockOverlay) &&
+		((ovl = loadOverlay(theme->lockOverlay(), size)) != 0L))
+	    KIconEffect::overlay(img, *ovl);
+	if ((overlay & KIcon::LinkOverlay) &&
+		((ovl = loadOverlay(theme->linkOverlay(), size)) != 0L))
+	    KIconEffect::overlay(img, *ovl);
+	if ((overlay & KIcon::ZipOverlay) &&
+		((ovl = loadOverlay(theme->zipOverlay(), size)) != 0L))
+	    KIconEffect::overlay(img, *ovl);
+    }
+
+    // Scale the icon and apply effects if necessary
+    if ((icon.type == KIcon::Scalable) && (size != img.width()))
+    {
+	img = img.smoothScale(size, size);
+    }
+    if ((group >= 0) && d->mpGroups[group].dblPixels)
+    {
+	img = d->mpEffect.doublePixels(img);
+    }
+    if (group >= 0)
+    {
+	img = d->mpEffect.apply(img, group, state);
+    }
+
+//    QPixmapCache::insert(key, pix);
+    return img;
+}
+
 QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 {
     QImage *image = d->imgDict.find(name);

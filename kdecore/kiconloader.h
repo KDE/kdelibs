@@ -109,6 +109,9 @@ public:
 		     int state=KIcon::DefaultState, QString *path_store=0L,
 		     bool canReturnNull=false) const;
 
+    QImage loadIconImage(const QString& name, int group, int size=0,
+		     int state=KIcon::DefaultState, QString *path_store=0L,
+		     bool canReturnNull=false) const;
     /**
      * Returns the path of an icon.
      * @param name The name of the icon, without extension.
