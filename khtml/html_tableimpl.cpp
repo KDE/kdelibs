@@ -712,6 +712,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	    tmin = distributeMinWidth(tmin,type,tt,col,span);
     	    switch (type)
 	    {
+	    case Undefined:
     	    case Variable: tt=Relative; break;	
 	    case Relative: tt=Percent; break;
 	    case Percent: tt=Fixed; break;
@@ -928,6 +929,7 @@ void HTMLTableElementImpl::calcColMinMax()
 	    totalRelative += colValue[i] ;
 	    minRel += colMinWidth[i] + spacing;
 	    break;
+	case Undefined:
 	case Variable:
 	    hasVar=true;
 	    minVar += colMinWidth[i] + spacing;
@@ -1086,6 +1088,7 @@ void HTMLTableElementImpl::calcColWidth(void)
 	    maxRel += colMaxWidth[i];
 	    numRel++;
 	    break;
+	case Undefined:
 	case Variable:
 	    minVar += colMinWidth[i];
 	    maxVar += colMaxWidth[i];
@@ -1421,8 +1424,28 @@ void HTMLTableElementImpl::layout(bool deep)
 	    //columnPos[indx] + padding, rowHeights[rindx]);
 	    cellHeight = rowHeights[r+1] - rowHeights[rindx] -
 		spacing;
+
+	    VAlign va = cell->vAlign();
+	    switch (va)
+	    {
+	    case Baseline: 
+    		if (cell->firstChild()) 
+    		    cell->setAscent( getBaseline(r) - cell->firstChild()->getYPos() );
+		break;
+	    case VNone:
+	    case VCenter:
+    		cell->setAscent((cellHeight-2*padding-cell->getDescent())/2);
+		break;
+	    case Bottom:
+    		cell->setAscent((cellHeight-2*padding-cell->getDescent()));
+		break;
+	    case Top:
+        	cell->setAscent(0);
+    		break;
+	    }
+	    
 	    cell->setPos( columnPos[indx] + padding,
-			  rowHeights[rindx] );
+			  rowHeights[rindx] + cell->getAscent());
 	    cell->setRowHeight(cellHeight);
 	}
     }
@@ -2067,32 +2090,7 @@ void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
     if((_tx > _x + _w) || (_tx + width < _x)) return;
     
     // background etc
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
-    
-            
-    // vertical alignment
-    int hh = rowHeight-table->cellPadding()*2;
-    
-    int vdelta=0;
-    VAlign va = vAlign();
-    switch (va)
-    {
-    case Baseline: 
-    	if (firstChild()) 
-    	    vdelta = table->getBaseline(row()) - firstChild()->getYPos();
-	break;
-    case VNone:
-    case VCenter:
-    	vdelta=(hh-descent)/2;
-	break;
-    case Bottom:
-    	vdelta=(hh-descent);
-	break;
-    case Top:
-    	break;
-    }
- 
-    _ty += vdelta;   
+    printObject(p, _x, _y, _w, _h, _tx, _ty-ascent);      
     
     // print children 
 
@@ -2146,6 +2144,7 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
 
 void HTMLTableCellElementImpl::layout(bool deep)
 {
+
     HTMLBlockElementImpl::layout(deep);
 }
 
@@ -2173,38 +2172,6 @@ int HTMLTableCellElementImpl::getHeight()
     return MAX(predefinedHeight.minWidth(0),ascent+descent);
 }
 
-bool  HTMLTableCellElementImpl::mouseEvent( int _x, int _y, int button,
-					    MouseEventType type,
-					    int _tx, int _ty, DOMString &url)
-{
-    // vertical alignment
-    int hh = rowHeight-table->cellPadding()*2;
-    
-    int vdelta=0;
-    VAlign va = vAlign();
-    switch (va)
-    {
-    case Baseline: 
-    	if (firstChild()) 
-    	    vdelta = table->getBaseline(row()) - firstChild()->getYPos();
-	break;
-    case VNone:
-    case VCenter:
-    	vdelta=(hh-descent)/2;
-	break;
-    case Bottom:
-    	vdelta=(hh-descent);
-	break;
-    case Top:
-    	break;
-    }
-    
-    _ty+=vdelta;
-    
-    return HTMLBlockElementImpl::
-    	mouseEvent(_x, _y, button, type, _tx, _ty, url);
-
-}					    
 
 // -------------------------------------------------------------------------
 
