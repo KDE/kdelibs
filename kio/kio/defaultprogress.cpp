@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qpushbutton.h>
 #include <qtimer.h>
 #include <qlayout.h>
 #include <qtooltip.h>
@@ -29,6 +28,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 #include <kwin.h>
 
 #include "jobclasses.h"
@@ -110,7 +111,7 @@ DefaultProgress::DefaultProgress( bool showNow )
 
   hBox->addStretch(1);
 
-  QPushButton *pb = new QPushButton( i18n("Cancel"), this );
+  KPushButton *pb = new KPushButton( KStdGuiItem::cancel(), this );
   connect( pb, SIGNAL( clicked() ), SLOT( slotStop() ) );
   hBox->addWidget( pb );
 
