@@ -517,13 +517,26 @@ public:
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
+   * The same as equals(), just with a less obvious name.
+   * Compares this url with @p u.
+   * @param ignore_trailing set to true to ignore trailing '/' characters.
+   * @return true if both urls are the same
+   * @see operator==. This function should be used if you want to
+   * ignore trailing '/' characters.
+   * @deprecated
+   */
+  bool cmp( const KURL &u, bool ignore_trailing = false ) const {
+    return equals( u, ignore_trailing );
+  }
+
+  /**
    * Compares this url with @p u.
    * @param ignore_trailing set to true to ignore trailing '/' characters.
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
    */
-  bool cmp( const KURL &u, bool ignore_trailing = false ) const;
+  bool equals( const KURL &u, bool ignore_trailing = false ) const;
 
   /**
    * @return true if this url is a parent of @p u (or the same URL as @p u)

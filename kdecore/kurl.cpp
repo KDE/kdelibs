@@ -894,12 +894,12 @@ bool KURL::operator==( const QString& _u ) const
   return ( *this == u );
 }
 
-bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
+bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
 {
   if ( isMalformed() || _u.isMalformed() )
     return false;
 
-  if ( _ignore_trailing )
+  if ( ignore_trailing )
   {
     QString path1 = path(1);
     QString path2 = _u.path(1);
@@ -1739,7 +1739,7 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
   KURL::List::Iterator it1 = list1.begin();
   KURL::List::Iterator it2 = list2.begin();
   for( ; it1 != list1.end() ; ++it1, ++it2 )
-    if ( !(*it1).cmp( *it2, _ignore_trailing ) )
+    if ( !(*it1).equals( *it2, _ignore_trailing ) )
       return false;
 
   return true;
