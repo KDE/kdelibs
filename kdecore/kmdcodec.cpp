@@ -586,7 +586,8 @@ void KMD5::finalize ()
         return;
     }
 
-    encode (bits, m_count, 8);
+    //encode (bits, m_count, 8);
+    memcpy( bits, m_count, 8 );
 
     // Pad out to 56 mod 64.
     index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3f);
@@ -597,7 +598,8 @@ void KMD5::finalize ()
     update (bits, 8);
 
     // Store state in digest
-    encode (m_digest, m_state, 16);
+    //encode (m_digest, m_state, 16);
+    memcpy( m_digest, m_state, 16 );
 
     // Fill sensitive information with zero's
     memset ( (void *)m_buffer, 0, sizeof(*m_buffer));
@@ -728,7 +730,8 @@ void KMD5::transform( Q_UINT8 block[64] )
 
     Q_UINT32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
 
-    decode (x, block, 64);
+    //decode (x, block, 64);
+    memcpy( x, block, 64 );
     ASSERT(!m_finalized);  // not just a user error, since the method is private
 
     /* Round 1 */
@@ -864,10 +867,12 @@ void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
     a = rotate_left (a, s) +b;
 }
 
+/*
 void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 {
-#if !defined(WORDS_BIGENDIAN)
+ #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
+
 #else
     Q_UINT32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
@@ -884,8 +889,9 @@ void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 // multiple of 4.
 void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
 {
-#if !defined(WORDS_BIGENDIAN)
+ #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
+
 #else
     Q_UINT32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
@@ -895,3 +901,4 @@ void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
                     (static_cast<Q_UINT32>(in[j+3]) << 24);
 #endif
 }
+*/

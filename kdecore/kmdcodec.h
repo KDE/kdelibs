@@ -631,8 +631,10 @@ protected:
   bool isDigestMatch( const char * msg_digest, DigestType type );
 
 private:
-  void encode( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len );
-  void decode( Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len );
+/*
+   void encode( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len );
+   void decode( Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len );
+*/
   Q_UINT32 rotate_left( Q_UINT32 x, Q_UINT32 n );
   Q_UINT32 F( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
   Q_UINT32 G( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
