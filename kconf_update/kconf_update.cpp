@@ -40,6 +40,7 @@
 
 static KCmdLineOptions options[] =
 {
+        { "debug", I18N_NOOP("Keep output results from scripts"), 0 },
 	{ "check <update-file>", I18N_NOOP("Check whether config file itself requires updating"), 0 },
 	{ "+[file]", I18N_NOOP("File to read update instructions from"), 0 },
         KCmdLineLastOption
@@ -79,6 +80,7 @@ protected:
    KConfig *config;
    QString currentFilename;
    bool skip;
+   bool debug;
    QString id;
 
    QString oldFile;
@@ -115,6 +117,8 @@ KonfUpdate::KonfUpdate()
 
    QStringList updateFiles;
    KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
+   
+   debug = args->isSet("debug");
 
    m_bUseConfigInfo = false;
    if (args->isSet("check"))
@@ -830,6 +834,12 @@ void KonfUpdate::gotScript(const QString &_script)
 
    if (!oldConfig1)
       return; // Nothing to merge
+
+   if (debug)
+   {
+      tmp2.setAutoDelete(false);
+      log() << "Script output stored in " << tmp2.name() << endl;
+   }
 
    // Deleting old entries
    {
