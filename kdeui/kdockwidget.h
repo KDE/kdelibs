@@ -285,7 +285,7 @@ public:
  * KDockMainWindow* mainWidget;
  * ...
  * KDockWidget* dock = 0L;
- * dock = mainWidget->createDockWidget( "Any window caption", nicePixmap);
+ * dock = mainWidget->createDockWidget( "Any window caption", nicePixmap, 0L, i18n("window caption")); // 0L==no parent
  * QWidget actualWidget( dock);
  * dock->setWidget( actualWidget);
  * ...
@@ -313,9 +313,10 @@ public:
    * @param name        object instance name
    * @param pixmap      an icon (for instance shown when docked centered)
    * @param parent      parent widget
+   * @param strCaption  title of the dockwidget window and title of the tab page (when in tab page mode)
    */
   KDockWidget( KDockManager* dockManager, const char* name,
-               const QPixmap &pixmap, QWidget* parent = 0L );
+               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L);
 
   /**
    * Destructs a dockwidget.
@@ -892,7 +893,7 @@ private:
  *   setMainDockWidget( mainDock);
  *   ...
  *   KDockWidget* dockLeft;
- *   dockLeft = createDockWiget( "Intially left one", anyOtherPixmap);
+ *   dockLeft = createDockWiget( "Intially left one", anyOtherPixmap, 0L, i18n("The left dockwidget"));
  *   AnotherWidget* aw( dockLeft);
  *   dockLeft->manualDock( mainDock,              // dock target
  *                         KDockWidget::DockLeft, // dock site
@@ -959,12 +960,13 @@ public:
    * The KDockMainWindow creates a new dockwidget object here that usually should encapsulate the user's widget.
    * The new dockwidget is automatically taken under control by the dockmanager of the dockmainwindow.
    *
-   * @param name   dockwidget caption (window title)
+   * @param name   QObject name (default dockwidget caption)
    * @param pixmap window icon (for instance shown when docked as tabwidget entry)
    * @param parent parent widget for the new dockwidget
+   * @param strCaption  window title and title of the tab page (visible when in tab page mode)
    * @return    a pointer to the new created dockwidget
    */
-  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L );
+  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L);
 
   /** 
    * It writes the current dock state in the given section of KConfig.

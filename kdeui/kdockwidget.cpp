@@ -239,9 +239,9 @@ void KDockMainWindow::setView( QWidget *view )
   updateRects();
 }
 
-KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent )
+KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption)
 {
-  return new KDockWidget( dockManager, name.latin1(), pixmap, parent );
+  return new KDockWidget( dockManager, name.latin1(), pixmap, parent, strCaption );
 }
 
 void KDockMainWindow::slotDockChange()
@@ -626,7 +626,7 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
   slotStayClicked();
 }
 /*************************************************************************/
-KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent )
+KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption)
 : QWidget( parent, name )
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
@@ -641,7 +641,10 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
-  setCaption( name );
+  if( strCaption == 0L)
+    setCaption( name );
+  else
+    setCaption( strCaption);
 
   eDocking = DockFullDocking;
   sDocking = DockFullSite;
