@@ -1,0 +1,27 @@
+# Slovenian file for ASCII ISO to TeX sequence translation
+# This should really be ISO 8859-2 to TeX translation, not
+# only Slovenian to TeX.
+#
+# WARNING: This is a Perl file. Please respect Perl syntax.
+#  format is:  'hexa_ascii',   'tex_sequence',
+
+%diacritics = (
+  '\xE8','\\v{c}',
+  '\xB9','\\v{s}',
+  '\xBE','\\v{z}',
+  '\xE6','\\\'{c}',
+  '\xC8','\\v{C}',
+  '\xA9','\\v{S}',
+  '\xAE','\\v{Z}',
+  '\xC6','\\\'{C}',
+  '\xBA','\\c{s}',
+  '\xAA','\\c{S}',
+  '\xFE','\\c{t}',
+  '\xDE','\\c{T}',
+  '\xE3','\\u{a}',
+  '\xC3','\\u{A}',
+  '\xE2','\\^{a}',
+  '\xC2','\\^{A}',
+  '\xEE','\\^{\\i}',
+  '\xCE','\\^{I}'
+);
