@@ -197,6 +197,8 @@ public:
     };
 
     QIntDict<LocalTransactionResult> localTransActionList;
+    
+    QTimer eventLoopTimer;
 };
 
 class DCOPClientTransaction
@@ -598,6 +600,7 @@ DCOPClient::DCOPClient()
     d->transactionList = 0L;
     d->transactionId = 0;
     QObject::connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
+    QObject::connect( &d->eventLoopTimer, SIGNAL( timeout() ), this, SLOT( eventLoopTimeout() ) );
 
     if ( !mainClient() )
         setMainClient( this );
@@ -1819,17 +1822,23 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     IceProcessMessagesStatus s;
 
     timeval time_start;
+    int time_left = -1;
     if( timeout >= 0 )
+    {
         gettimeofday( &time_start, NULL );
+        time_left = timeout;
+    }
     for(;;) {
-        bool timed_out = false;
+        bool checkMessages = true;
         if ( useEventLoop
              ? d->notifier != NULL  // useEventLoop needs a socket notifier and a qApp
              : timeout >= 0 ) {     // !useEventLoop doesn't block only for timeout >= 0
+            const int guiTimeout = 100;
+            checkMessages = false;
 
             int msecs = useEventLoop
-                ? 100  // timeout for the GUI refresh
-                : timeout; // timeout for the whole call
+                ? guiTimeout  // timeout for the GUI refresh
+                : time_left; // time remaining for the whole call
             fd_set fds;
             struct timeval tv;
             FD_ZERO( &fds );
@@ -1837,7 +1846,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
             tv.tv_sec = msecs / 1000;
             tv.tv_usec = (msecs % 1000) * 1000;
             if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
-                if( useEventLoop ) {
+                if( useEventLoop && (time_left > guiTimeout)) {
                     // nothing was available, we got a timeout. Reactivate
                     // the GUI in blocked state.
                     bool old_lock = d->non_blocking_call_lock;
@@ -1845,14 +1854,18 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
                         d->non_blocking_call_lock = true;
                         emit blockUserInput( true );
                     }
-                        qApp->enter_loop();
+                    d->eventLoopTimer.start(time_left - guiTimeout, true);
+                    qApp->enter_loop();
+                    d->eventLoopTimer.stop();
                     if ( !old_lock ) {
                         d->non_blocking_call_lock = false;
                         emit blockUserInput( false );
                     }
                 }
-                else
-                    timed_out = true;
+            }
+            else
+            {
+                checkMessages = true;
             }
         }
         if (!d->iceConn)
@@ -1866,7 +1879,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
                break; // Async call
         }
 
-        if( !timed_out ) { // something is available
+        if( checkMessages ) { // something is available
             s = IceProcessMessages(d->iceConn, &waitInfo,
                                     &readyRet);
             if (s == IceProcessMessagesIOError) {
@@ -1888,8 +1901,18 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
             continue;
         timeval time_now;
         gettimeofday( &time_now, NULL );
-        if( time_start.tv_sec * 1000000 + time_start.tv_usec + timeout * 1000
-                 < time_now.tv_sec * 1000000 + time_now.tv_usec ) { // timeout
+        time_left = timeout -
+                        ((time_now.tv_sec - time_start.tv_sec) * 1000) -
+                        ((time_now.tv_usec - time_start.tv_usec) / 1000);
+        if( time_left <= 0)
+        {
+             if (useEventLoop)
+             {
+                // Before we fail, check one more time if something is available
+                time_left = 0;
+                useEventLoop = false;
+                continue;
+             } 
              *(replyStruct->replyType) = QCString();
              *(replyStruct->replyData) = QByteArray();
              replyStruct->status = ReplyStruct::Failed;
@@ -1904,6 +1927,11 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
     d->currentKey = oldCurrentKey;
     return replyStruct->status != ReplyStruct::Failed;
+}
+
+void DCOPClient::eventLoopTimeout()
+{
+    qApp->exit_loop();
 }
 
 void DCOPClient::processSocketData(int fd)

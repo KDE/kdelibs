@@ -799,6 +799,7 @@ protected slots:
 private slots:
   void processPostedMessagesInternal();
   void asyncReplyReady();
+  void eventLoopTimeout();
 
 public:
   class ReplyStruct;
