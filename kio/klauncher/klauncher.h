@@ -152,5 +152,6 @@ protected:
    QTimer mAutoTimer;
    bool bProcessingQueue;
    AutoStart mAutoStart;
+   QCString mSlaveDebug;
 };
 #endif

@@ -156,6 +156,12 @@ KLauncher::KLauncher(int _kdeinitSocket)
    kdeinitNotifier->setEnabled( true );
    lastRequest = 0;
    bProcessingQueue = false;
+
+   mSlaveDebug = getenv("KDE_SLAVE_DEBUG_WAIT");
+   if (!mSlaveDebug.isEmpty())
+   {
+      qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", mSlaveDebug.data());
+   }
 }
 
 KLauncher::~KLauncher()
@@ -989,6 +995,13 @@ KLauncher::requestSlave(const QString &_protocol,
     arg_list.append(arg3);
 
     kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << _protocol << endl;
+    if (mSlaveDebug == arg1)
+    {
+       klauncher_header request_header;
+       request_header.cmd = LAUNCHER_DEBUG_WAIT;
+       request_header.arg_length = 0;
+       write(kdeinitSocket, &request_header, sizeof(request_header));
+    }
 
     KLaunchRequest *request = new KLaunchRequest;
     request->autoStart = false;

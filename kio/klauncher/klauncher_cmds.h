@@ -99,4 +99,14 @@ typedef struct
  * Suicide is painless
  */
 #define LAUNCHER_TERMINATE_KDEINIT	8
+
+#define LAUNCHER_DEBUG_WAIT		9
+/*
+ * LAUNCHER_DEBUG_WAIT
+ *
+ * Next process started will do a sleep(1000000)
+ * before calling main()/kdemain()
+ *
+ * (Used for debugging io-slaves)
+ */
 #endif
