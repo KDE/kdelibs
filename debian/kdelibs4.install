@@ -107,3 +107,5 @@ debian/tmp/usr/lib/libktexteditor.so.*
 debian/tmp/usr/lib/libkutils.so.*
 debian/tmp/usr/lib/libshellscript.so.*
 debian/tmp/usr/lib/libvcard.so.*
+debian/tmp/usr/lib/libkdefakes.so.*
+
