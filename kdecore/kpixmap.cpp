@@ -339,7 +339,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         }
         paint.end();
     }
-    else if ( direction == Diagonal ) 
+    else if ( direction == Diagonal || direction == CrossDiagonal) 
     {
         // Diagonal dgradient code inspired by BlackBox (mosfet)
         // BlackBox dgradient is (C) Brad Hughes, <bhughes@tcac.net> and
@@ -356,10 +356,13 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         rfd = (float)rDiff/w;
         gfd = (float)gDiff/w;
         bfd = (float)bDiff/w;
+
+	int dir;
         for (x = 0; x < width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
-            xtable[x][0] = (unsigned char) rd;
-            xtable[x][1] = (unsigned char) gd;
-            xtable[x][2] = (unsigned char) bd;
+	    dir = direction == Diagonal? x : width() - x - 1;
+            xtable[dir][0] = (unsigned char) rd;
+            xtable[dir][1] = (unsigned char) gd;
+            xtable[dir][2] = (unsigned char) bd;
         }
         rfd = (float)rDiff/h;
         gfd = (float)gDiff/h;
