@@ -40,6 +40,11 @@ namespace KJS {
   private:
     KHTMLPart *m_part;
   };
+
+  // Hashtable enums
+  enum { Plugins_Refresh, Plugins_Length, Plugins_Item, Plugins_NamedItem };
+  enum { MimeTypes_Length, MimeTypes_Item, MimeTypes_NamedItem };
+
 } // namespace
 
 #endif
