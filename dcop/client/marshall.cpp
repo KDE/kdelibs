@@ -314,8 +314,12 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	    arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
 	else
 	    arg << QVariant( s );
-    } else if ( type.startsWith("QValueList<")) {
-	type = type.mid(11, type.length() - 12);
+    } else if ( type.startsWith("QValueList<") ||
+	        type == "KURL::List" ) {
+	if ( type == "KURL::List" )
+            type = "KURL";
+        else
+	    type = type.mid(11, type.length() - 12);
 	QStringList list;
 	QString delim = s;
 	if (delim == "[")
