@@ -38,7 +38,20 @@ public:
   KProtocolInfoFactory();
   virtual ~KProtocolInfoFactory();
 
+  /*
+   * Returns protocol info for @p protocol
+   *
+   * Does not take proxy settings into account
+   */
   KProtocolInfo *findProtocol(const QString &protocol);
+
+  /* 
+   * Returns protocol info for @p url
+   *
+   * Does take proxy setings into account. If @p url is 
+   * handled by a proxy, the protocol used for the proxy is
+   * returned.
+   */
   KProtocolInfo *findProtocol(const KURL &url);
 
   /**

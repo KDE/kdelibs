@@ -461,7 +461,8 @@ bool KProtocolInfo::isSourceProtocol( const KURL &url )
 
 bool KProtocolInfo::isFilterProtocol( const KURL &url )
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  // We use url.protocol() to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
   if ( !prot )
   {
     kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
@@ -473,7 +474,8 @@ bool KProtocolInfo::isFilterProtocol( const KURL &url )
 
 bool KProtocolInfo::isHelperProtocol( const KURL &url )
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  // We use url.protocol() to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
   if ( !prot )
   {
     kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
@@ -485,7 +487,8 @@ bool KProtocolInfo::isHelperProtocol( const KURL &url )
 
 bool KProtocolInfo::isKnownProtocol( const KURL &url )
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  // We use url.protocol() to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
   return ( prot != 0);
 }
 
