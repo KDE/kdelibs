@@ -106,6 +106,7 @@
 #define ERR_SERVER_TIMEOUT  49
 #define ERR_SERVICE_NOT_AVAILABLE  50
 #define ERR_UNKNOWN 51
+#define ERR_CHECKSUM_MISMATCH 52
 
 /************
  *
