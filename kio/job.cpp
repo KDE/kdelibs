@@ -966,7 +966,7 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 	}
 
 	// The destination URL is the destination dir + the filename
-	KURL destUrl( destDir.url(1) + srcUrl.filename() );
+	KURL destUrl( destDir.url(1) + srcUrl.fileName() );
 	kdDebug(1202) << "destUrl = " << destUrl.url() << endl;
 
 	// Do we link a file on the local disk?
@@ -1320,7 +1320,7 @@ void CopyJob::slotResultStating( Job *job )
         m_bCurrentSrcIsDir = true; // used by slotEntries
         if ( destinationState == DEST_IS_DIR ) // (case 1)
             // Use <desturl>/<directory_copied> as destination, from now on
-            m_currentDest.addPath( srcurl.filename() );
+            m_currentDest.addPath( srcurl.fileName() );
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
             m_error = ERR_IS_FILE;

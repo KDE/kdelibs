@@ -706,7 +706,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 
     QCString f ( QFile::encodeName(kurl.path( -1 )) );
     QCString d ( QFile::encodeName(kurl.directory()) );
-    QCString n ( QFile::encodeName(kurl.filename()) );
+    QCString n ( QFile::encodeName(kurl.fileName()) );
 
     replaceArg(request->arg_list, "%f", f);
     replaceArg(request->arg_list, "%F", f, "%F");

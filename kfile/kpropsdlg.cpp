@@ -469,7 +469,7 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   // Extract the file name only
   QString filename = properties->defaultName();
   if ( filename.isEmpty() ) // no template
-    filename = properties->kurl().filename();
+    filename = properties->kurl().fileName();
   else
   {
     m_bFromTemplate = true;
@@ -695,7 +695,7 @@ bool KFilePropsPage::supports( KFileItemList /*_items*/ )
 
 void KFilePropsPage::applyChanges()
 {
-  QString fname = properties->kurl().filename();
+  QString fname = properties->kurl().fileName();
   QString n;
   if (nameArea->isA("QLabel"))
     n = KIO::encodeFileName(((QLabel *) nameArea)->text());
@@ -837,7 +837,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
   QString path = properties->kurl().path(-1);
-  QString fname = properties->kurl().filename();
+  QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
 
   bool IamRoot = (geteuid() == 0);
@@ -1669,7 +1669,7 @@ void KApplicationPropsPage::applyChanges()
   QString nameStr = nameEdit->text();
   if ( nameStr.isEmpty() )
   {
-    nameStr = properties->kurl().filename();
+    nameStr = properties->kurl().fileName();
     if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
       nameStr.truncate( nameStr.length() - 8 );
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )

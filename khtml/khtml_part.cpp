@@ -1235,7 +1235,7 @@ void KHTMLPart::slotSaveBackground()
 					d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save background image as"));
 
-  dlg->setSelection( backgroundURL.filename() );
+  dlg->setSelection( backgroundURL.fileName() );
   if ( dlg->exec() )
   {
     KURL destURL( dlg->selectedURL());
@@ -1262,7 +1262,7 @@ void KHTMLPart::slotSaveDocument()
 				      d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save as"));
 
-  dlg->setSelection( srcURL.filename() );
+  dlg->setSelection( srcURL.fileName() );
   if ( dlg->exec() )
   {
      KURL destURL( dlg->selectedURL() );
@@ -2418,7 +2418,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
 
   dlg->setCaption( caption );
 
-  dlg->setSelection( url.filename() );
+  dlg->setSelection( url.fileName() );
 
   if ( dlg->exec() )
   {

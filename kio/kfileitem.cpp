@@ -90,7 +90,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_entry(), // warning !
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
-  m_strText( KIO::decodeFileName( _url.filename() ) ),
+  m_strText( KIO::decodeFileName( _url.fileName() ) ),
   m_fileMode ( _mode ),
   m_permissions( _permissions ),
   m_bLink( false ),
@@ -102,7 +102,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
 KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 :  m_url( url ),
   m_bIsLocalURL( url.isLocalFile() ),
-  m_strText( KIO::decodeFileName( url.filename() ) ),
+  m_strText( KIO::decodeFileName( url.fileName() ) ),
   m_fileMode( mode ),
   m_permissions( 0 ),
   m_bLink( false ),

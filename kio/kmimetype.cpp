@@ -179,7 +179,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
     return mimeType( "application/x-executable" );
 
-  QString fileName ( _url.filename() );
+  QString fileName ( _url.fileName() );
 
   if ( ! fileName.isNull() )
     {

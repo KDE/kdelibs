@@ -59,7 +59,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
         dStr = path + fi.fileName();
     else{
         KURL url(openStr);
-        dStr = path + url.filename();
+        dStr = path + url.fileName();
     }
     
     QString ddesktop = dStr + QString::fromLatin1(".desktop");

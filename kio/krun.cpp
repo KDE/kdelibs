@@ -139,7 +139,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     shellQuote( tmp );
     D += tmp;
     D += " ";
-    tmp = url.filename();
+    tmp = url.fileName();
     shellQuote( tmp );
     N += tmp;
     N += " ";
@@ -279,7 +279,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     shellQuote( f );
     QString d ( url.directory() );
     shellQuote( d );
-    QString n ( url.filename() );
+    QString n ( url.fileName() );
     shellQuote( n );
     QString u ( (*it).url() );
     shellQuote( u );

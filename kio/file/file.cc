@@ -704,7 +704,7 @@ void FileProtocol::stat( const QString & path, const QString& /*query*/ )
     // Extract filename out of path
     KURL url;
     url.setPath(path);
-    QString filename = url.filename();
+    QString filename = url.fileName();
 
     UDSEntry entry;
     createUDSEntry( filename, path, entry );

@@ -235,7 +235,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
     {
         text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
                      "If the program is not listed, enter the name or click "
-                     "the browse button.</qt>").arg( _urls.first().filename() );
+                     "the browse button.</qt>").arg( _urls.first().fileName() );
     }
     else
         // Should never happen ??

@@ -1544,7 +1544,7 @@ void HTTPProtocol::stat(const QString& path, const QString& query)
       UDSEntry entry;
       UDSAtom atom;
       // Extract filename out of path (not very important, I guess...)
-      QString filename = KURL( path ).filename();
+      QString filename = KURL( path ).fileName();
       atom.m_uds = KIO::UDS_NAME;
       atom.m_str = filename;
       entry.append( atom );

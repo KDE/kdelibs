@@ -943,8 +943,8 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
   // Let's use KURL's function (even if building it as a local one)
   KURL tempurl( path );
   QString listarg = tempurl.directory(false /*keep trailing slash*/);
-  QString search = tempurl.filename();
-  QString filename = tempurl.filename();
+  QString search = tempurl.fileName();
+  QString filename = tempurl.fileName();
 
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)

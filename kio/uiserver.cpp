@@ -170,7 +170,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
 void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
   setText( listProgress->lv_operation, i18n("Copying") );
   setText( listProgress->lv_url, from.url() );
-  setText( listProgress->lv_filename, to.filename() );
+  setText( listProgress->lv_filename, to.fileName() );
 
   defaultProgress->slotCopying( 0, from, to );
 }
@@ -179,7 +179,7 @@ void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
 void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
   setText( listProgress->lv_operation, i18n("Moving") );
   setText( listProgress->lv_url, from.url() );
-  setText( listProgress->lv_filename, to.filename() );
+  setText( listProgress->lv_filename, to.fileName() );
 
   defaultProgress->slotMoving( 0, from, to );
 }
@@ -188,7 +188,7 @@ void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
 void ProgressItem::setCreatingDir( const KURL& dir ) {
   setText( listProgress->lv_operation, i18n("Creating") );
   setText( listProgress->lv_url, dir.url() );
-  setText( listProgress->lv_filename, dir.filename() );
+  setText( listProgress->lv_filename, dir.fileName() );
 
   defaultProgress->slotCreatingDir( 0, dir );
 }
@@ -197,7 +197,7 @@ void ProgressItem::setCreatingDir( const KURL& dir ) {
 void ProgressItem::setDeleting( const KURL& url ) {
   setText( listProgress->lv_operation, i18n("Deleting") );
   setText( listProgress->lv_url, url.url() );
-  setText( listProgress->lv_filename, url.filename() );
+  setText( listProgress->lv_filename, url.fileName() );
 
   defaultProgress->slotDeleting( 0, url );
 }
