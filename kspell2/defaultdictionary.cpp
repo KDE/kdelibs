@@ -48,36 +48,61 @@ DefaultDictionary::~DefaultDictionary()
     delete d; d = 0;
 }
 
+bool DefaultDictionary::isValid() const
+{
+    //if d->dict exists then we're valid
+    return d->dict;
+}
+
 bool DefaultDictionary::check( const QString& word )
 {
-    return d->dict->check( word );
+    if ( d->dict )
+        return d->dict->check( word );
+    else
+        return true;
 }
 
 QStringList DefaultDictionary::suggest( const QString& word )
 {
-    return d->dict->suggest( word );
+    if ( d->dict )
+        return d->dict->suggest( word );
+    else
+        return QStringList();
+
 }
 
 bool DefaultDictionary::checkAndSuggest( const QString& word,
                                          QStringList& suggestions )
 {
-    return d->dict->checkAndSuggest( word, suggestions );
+    if ( d->dict )
+        return d->dict->checkAndSuggest( word, suggestions );
+    else
+        return true;
 }
 
 bool DefaultDictionary::storeReplacement( const QString& bad,
                                           const QString& good )
 {
-    return d->dict->storeReplacement( bad, good );
+    if ( d->dict )
+        return d->dict->storeReplacement( bad, good );
+    else
+        return false;
 }
 
 bool DefaultDictionary::addToPersonal( const QString& word )
 {
-    return d->dict->addToPersonal( word );
+    if ( d->dict )
+        return d->dict->addToPersonal( word );
+    else
+        return false;
 }
 
 bool DefaultDictionary::addToSession( const QString& word )
 {
-    return d->dict->addToSession( word );
+    if ( d->dict )
+        return d->dict->addToSession( word );
+    else
+        return false;
 }
 
 void DefaultDictionary::defaultConfigurationChanged()

@@ -37,6 +37,14 @@ namespace KSpell2
         DefaultDictionary( const QString& lang, Broker *broker );
         ~DefaultDictionary();
     public:
+        /**
+         * Returns true whether the default dictionary object is
+         * valid.
+         * It might not be if there's no dictionary object
+         * for the default language.
+         */
+        bool isValid() const;
+
         //Dictionary interface
         virtual bool check( const QString& word );
         virtual QStringList suggest( const QString& word );
