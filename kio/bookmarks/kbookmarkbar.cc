@@ -378,7 +378,8 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     return false;
 }
 
-class ToolbarFilter : private KBookmarkGroupTraverser {
+// usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
+class ToolbarFilter : public KXBELBookmarkImporterImpl {
 public:
     ToolbarFilter() : m_visible(false) { ; }
     void filterInto( const KBookmarkGroup &grp ) { traverse(grp); }
@@ -393,25 +394,39 @@ signals:
     void endFolder();
 private:
     bool m_visible;
-    KBookmarkGroup m_group;
+    KBookmarkGroup m_visibleStart;
 };
 
-void ToolbarFilter::visit( const KBookmark &/*bk*/ ) {
-    // kdDebug() << "visit(" << bk.text() << ")" << endl;
-    // make sure that visit never includes groups, if so, do a isgroup here
-    // if showintoolbar() or visible then emit newBookmark or newSeparator
+static bool showInToolbar( const KBookmark &bk ) {
+    return true; // iff bk has the flag "showintoolbar"
 }
 
-void ToolbarFilter::visitEnter( const KBookmarkGroup &/*grp*/ ) {
-    // kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+void ToolbarFilter::visit( const KBookmark &bk ) {
+    kdDebug() << "visit(" << bk.text() << ")" << endl;
+    if ( showInToolbar(bk) || m_visible )
+        KXBELBookmarkImporterImpl::visit(bk);
+}
+
+void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
+    kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
     // if showintoolbar() and not already visible then set entergroup and make visible
-    // if visible emit a newfolder
+    if ( showInToolbar(grp) )
+    {
+        m_visibleStart = grp;
+        m_visible = true;
+    }
+    if ( m_visible )
+        KXBELBookmarkImporterImpl::visitEnter(grp);
 }
 
-void ToolbarFilter::visitLeave( const KBookmarkGroup &/*grp*/ ) {
-    // kdDebug() << "visitLeave()" << endl;
-    // if visible emit a endfolder
-    // if entergroup then make invisible
+void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
+    kdDebug() << "visitLeave()" << endl;
+    if ( m_visible )
+    {
+        KXBELBookmarkImporterImpl::visitLeave(grp);
+        if ( grp.address() == m_visibleStart.address() )
+            m_visible = false;
+    }
 }
 
 #undef dptr
