@@ -28,19 +28,13 @@
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>f.eks.</abbrev>">
+<!ENTITY Enter  "<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>osv.</abbrev>">
 <!ENTITY FAQ    '<acronym>OSS</acronym>'>
-<!ENTITY ftp    '<acronym>FTP</acronym>'>
 <!ENTITY ie     "<abbrev>dvs.</abbrev>">
-<!ENTITY kcontrolcenter	"<application>&kde;'s kontrolcenter</application>">
-<!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknap">
-<!ENTITY MMB    "<mousebutton>midterste</mousebutton> museknap">
-<!ENTITY OS "operativsystem"><!-- <acronym>OS</acronym>-->
-<!ENTITY RMB    "<mousebutton>højre</mousebutton> museknap">
-<!ENTITY Shift	"<keycap>Shift</keycap>">
 <!ENTITY infocenter     "<application>Infocenter</application>">
-<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
+<!ENTITY kcontrolcenter	"<application>&kde;'s kontrolcenter</application>">
 <!ENTITY kicon  "<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-ikon</title></objectinfo>
@@ -48,3 +42,11 @@
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
 </guiicon> icon">
+<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
+<!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknap">
+<!ENTITY MMB    "<mousebutton>midterste</mousebutton> museknap">
+<!ENTITY OS "operativsystem"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "<mousebutton>højre</mousebutton> museknap">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemtray "<application>statusfelt</application>">
+<!ENTITY Tab    "<keycap>Tab</keycap>">
