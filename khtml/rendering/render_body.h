@@ -25,12 +25,19 @@
 
 #include "render_flow.h"
 
+namespace DOM 
+{
+    class HTMLBodyElementImpl;
+}
+
+class QScrollView;
+
 namespace khtml {
 
     class RenderBody : public RenderFlow
     {
     public:
-	RenderBody();
+	RenderBody(DOM::HTMLBodyElementImpl* view);
 	virtual ~RenderBody();
 
         virtual bool isBody() const { return true; }
@@ -45,7 +52,7 @@ namespace khtml {
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
-    
+        DOM::HTMLBodyElementImpl* m_element;
         bool scrollbarsStyled;
 
     };

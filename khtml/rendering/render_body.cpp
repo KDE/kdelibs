@@ -30,10 +30,11 @@
 
 using namespace khtml;
 
-RenderBody::RenderBody()
+RenderBody::RenderBody(HTMLBodyElementImpl* _element)
     : RenderFlow()
 {
     scrollbarsStyled = false;
+    m_element = _element;
 }
 
 RenderBody::~RenderBody()
@@ -43,6 +44,7 @@ RenderBody::~RenderBody()
 void RenderBody::setStyle(RenderStyle* style)
 {
     RenderFlow::setStyle(style);
+    m_element->ownerDocument()->setTextColor( DOMString( style->color().name() ) );
     scrollbarsStyled = false;
 }
 
@@ -85,11 +87,11 @@ void RenderBody::repaint()
 void RenderBody::layout()
 {
     RenderFlow::layout();
-    
+
     if (!scrollbarsStyled)
     {
         root()->view()->horizontalScrollBar()->setPalette(style()->palette());
-        root()->view()->verticalScrollBar()->setPalette(style()->palette());    
+        root()->view()->verticalScrollBar()->setPalette(style()->palette());
         scrollbarsStyled=true;
     }
 }
