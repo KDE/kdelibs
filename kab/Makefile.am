@@ -31,7 +31,7 @@ libkab_la_SOURCES	= \
 #	StringListEditWidget.cpp \
 #	StringListEditWidgetData.cpp
 
-libkab_la_LDFLAGS = -version-info 3:0 $(X_LDFLAGS) $(QT_LDFLAGS) $(USER_LDFLAGS) -no-undefined
+libkab_la_LDFLAGS = -version-info 3:0 -no-undefined
 libkab_la_LIBADD = $(LIB_KDEUI) ../nana/libnana.la
 
 libkab_la_METASOURCES = AUTO
