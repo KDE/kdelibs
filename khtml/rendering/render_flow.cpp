@@ -997,7 +997,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
 		special->left = r->left - xoff;
-		if (flow != parent())
+		if (flow == parent())
 		    special->left += flow->marginLeft();
 		if ( !child ) {
 		    special->left -= marginLeft();
