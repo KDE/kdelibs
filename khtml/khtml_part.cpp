@@ -1690,11 +1690,16 @@ void KHTMLPart::slotSelectionChanged()
 void KHTMLPart::slotIncFontSizes()
 {
   updateFontSize( ++d->m_fontBase );
+  if ( !d->m_paDecFontSizes->isEnabled() )
+    d->m_paDecFontSizes->setEnabled( true );
 }
 
 void KHTMLPart::slotDecFontSizes()
 {
-  updateFontSize( --d->m_fontBase );
+  if ( d->m_fontBase > 1 )
+    updateFontSize( --d->m_fontBase );
+  else
+    d->m_paDecFontSizes->setEnabled( false );
 }
 
 void KHTMLPart::updateFontSize( int add )
