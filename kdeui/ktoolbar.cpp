@@ -1649,7 +1649,6 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   if (!tooltiptext.isNull())
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
-  combo->setAutoResize(false);
 
   //
   // 2000-04-17 Espen Sand. If size is -1, then resize the combo
@@ -1669,7 +1668,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     size += fontMetrics().maxWidth() * 3;
   }
 
-  item->resize(size, 22);
+  item->resize(size, 30);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1699,7 +1698,6 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   if (!tooltiptext.isNull())
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
-  combo->setAutoResize(false);
 
   //
   // 2000-04-17 Espen Sand. If size is -1, then resize the combo
@@ -1716,7 +1714,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     size += fontMetrics().maxWidth() * 3;
   }
   
-  item->resize(size, 20);
+  item->resize(size, 30);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1746,8 +1744,8 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   if (!tooltiptext.isNull())
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
-  combo->setAutoResize(false);
-  item->resize(size, 20);
+
+  item->resize(size, 30);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
