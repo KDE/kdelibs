@@ -17,8 +17,6 @@ These are:
 
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
   interface in the standard namespace
-- add automatic "cleanup" inside the flow system - for instance, if you delete
-  an object, remove all connections
 - do dynamic loading of plugins
 - port visual objects
 - do streaming between servers again

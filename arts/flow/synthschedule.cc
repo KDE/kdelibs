@@ -87,6 +87,10 @@ AudioPort *Port::audioPort()
 	return 0;
 }
 
+void Port::disconnectAll()
+{
+}
+
 void Port::setPtr(void *ptr)
 {
 	_ptr = ptr;
@@ -100,6 +104,7 @@ AudioPort::AudioPort(string name, void *ptr, long flags,StdScheduleNode *parent)
 	position = 0;
 	destcount = 0;
 	sourcemodule = 0;
+	source = 0;
 	lbuffer = buffer = new SynthBuffer(0.0, rbSize);
 }
 
@@ -118,22 +123,38 @@ void AudioPort::setFloatValue(float f)
 	buffer->setValue(f);
 }
 
+void AudioPort::removeDestination(AudioPort *dest)
+{
+	list<AudioPort *>::iterator i;
+
+	for(i=destinations.begin(); i != destinations.end(); i++)
+	{
+		AudioPort *p = *i;
+		if(p == dest)
+		{
+			destinations.erase(i);
+			return;
+		}
+	}
+	assert(false);
+}
 
 void AudioPort::connect(Port *psource)
 {
-	AudioPort *source = psource->audioPort();
+	source = psource->audioPort();
 	assert(source);
 
 	buffer = source->buffer;
 	position = buffer->position;
 	source->destcount++;
+	source->destinations.push_back(this);
 	sourcemodule = source->parent;
 }
 
 void AudioPort::disconnect(Port *psource)
 {
-	AudioPort *source = psource->audioPort();
 	assert(source);
+	assert(source == psource->audioPort());
 
 	assert(sourcemodule == source->parent);
 	sourcemodule = 0;
@@ -141,9 +162,21 @@ void AudioPort::disconnect(Port *psource)
 	// skip the remaining stuff in the buffer
 	read(buffer->position - position);
 	source->destcount--;
+	source->removeDestination(this);
+	source = 0;
 
 	position = lbuffer->position;
 	buffer = lbuffer;
+}
+
+void AudioPort::disconnectAll()
+{
+	if(source) disconnect(source);
+	while(!destinations.empty())
+	{
+		AudioPort *dest = *destinations.begin();
+		dest->disconnect(this);
+	}
 }
 
 // --------- MultiPort ----------
@@ -275,7 +308,8 @@ StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem *flowSystem)
 {
 	this->object = object;
 	this->flowSystem = flowSystem;
-	this->module = 0;
+	running = false;
+	module = 0;
 	inConn = outConn = 0;
 	inConnCount = outConnCount = 0;
 	Busy = BusyHit = NeedCycles = CanPerform = 0;
@@ -283,7 +317,15 @@ StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem *flowSystem)
 
 StdScheduleNode::~StdScheduleNode()
 {
+	/* stop module if still running */
+	if(running) stop();
+
+	/* disconnect all ports */
 	list<Port *>::iterator i;
+	for(i=ports.begin();i != ports.end();i++)
+		(*i)->disconnectAll();
+
+	/* free them */
 	for(i=ports.begin();i != ports.end();i++)
 		delete (*i);
 	ports.clear();
@@ -329,6 +371,9 @@ void StdScheduleNode::removeDynamicPort(Port *port)
 
 void StdScheduleNode::start()
 {
+	assert(!running);
+	running = true;
+
 	//cout << "start" << endl;
 	accessModule();
 	module->firstInitialize();
@@ -338,6 +383,9 @@ void StdScheduleNode::start()
 
 void StdScheduleNode::stop()
 {
+	assert(running);
+	running = false;
+
 	accessModule();
 	module->deInitialize();
 }

@@ -70,11 +70,18 @@ public:
 
 	virtual class AudioPort *audioPort();
 
+	virtual void disconnectAll();
 	virtual void connect(Port *) = 0;
 	virtual void disconnect(Port *) = 0;
 };
 
 class AudioPort : public Port {
+protected:
+	list<AudioPort *> destinations;
+	AudioPort *source;
+
+	void removeDestination(AudioPort *dest);
+
 public:
 	StdScheduleNode *sourcemodule;
 	SynthBuffer *buffer, *lbuffer;
@@ -88,6 +95,7 @@ public:
 	void setFloatValue(float f);
 	void connect(Port *psource);
 	void disconnect(Port *psource);
+	void disconnectAll();
 
 //------------- I/O ---------------------------------------------------------
 
@@ -163,6 +171,8 @@ public:
 
 class StdScheduleNode :public ScheduleNode
 {
+	bool running;
+
 	Object_skel *object;
 	SynthModule *module;
 	FlowSystem *flowSystem;
