@@ -584,7 +584,7 @@ bool _IPmatchesCN;
            }
           break;
          default:
-          kdDebug() << "TCPSlaveBase/SSL error in cert code."
+          kdDebug(7029) << "TCPSlaveBase/SSL error in cert code."
                     << "  Please report this to kfm-devel@kde.org." << endl;
           break;
          }
@@ -665,7 +665,7 @@ bool _IPmatchesCN;
    }   // if ssl_activate_warnings
 
 
-kdDebug() << "SSL connection information follows:" << endl
+kdDebug(7029) << "SSL connection information follows:" << endl
           << "+-----------------------------------------------" << endl
           << "| Cipher: " << d->kssl->connectionInfo().getCipher() << endl
           << "| Description: " << d->kssl->connectionInfo().getCipherDescription()
