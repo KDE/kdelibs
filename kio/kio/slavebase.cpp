@@ -321,7 +321,7 @@ void SlaveBase::setMetaData(const QString &key, const QString &value)
    mOutgoingMetaData.replace(key, value);
 }
 
-QString SlaveBase::metaData(const QString &key)
+QString SlaveBase::metaData(const QString &key) const
 {
    if (mIncomingMetaData.contains(key))
       return mIncomingMetaData[key];
@@ -330,13 +330,21 @@ QString SlaveBase::metaData(const QString &key)
    return QString::null;
 }
 
-bool SlaveBase::hasMetaData(const QString &key)
+bool SlaveBase::hasMetaData(const QString &key) const
 {
    if (mIncomingMetaData.contains(key))
       return true;
    if (d->configData.contains(key))
       return true;
    return false;
+}
+
+// ### remove the next two methods for KDE4 (they miss the const)
+QString SlaveBase::metaData(const QString &key) {
+   return const_cast<const SlaveBase*>(this)->metaData( key );
+}
+bool SlaveBase::hasMetaData(const QString &key) {
+   return const_cast<const SlaveBase*>(this)->hasMetaData( key );
 }
 
 KConfigBase *SlaveBase::config()

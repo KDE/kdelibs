@@ -258,10 +258,25 @@ public:
     /**
      * Queries for the existance of a certain config/meta-data entry
      * send by the application to the slave.
+     * @since 3.2
+     */
+    bool hasMetaData(const QString &key) const;
+
+    /**
+     * Queries for config/meta-data send by the application to the slave.
+     * @since 3.2
+     */
+    QString metaData(const QString &key) const;
+
+    /**
+     * @obsolete kept for binary compatibility
+     * Queries for the existance of a certain config/meta-data entry
+     * send by the application to the slave.
      */
     bool hasMetaData(const QString &key);
 
     /**
+     * @obsolete kept for binary compatibility
      * Queries for config/meta-data send by the application to the slave.
      */
     QString metaData(const QString &key);
