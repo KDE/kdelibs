@@ -33,7 +33,7 @@
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
                     const KParts::URLArgs &args, bool showErrorDialog )
 : KRun( url, 0, false, false /* No GUI */ ) , m_part( part ),
-  m_child( child ), m_args( args ), m_showErrorDialog( showErrorDialog )
+  m_args( args ), m_child( child ), m_showErrorDialog( showErrorDialog )
 {
 }
 
