@@ -623,7 +623,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // special handling for FONT: (_0 | 3)
         return check_array(childID, tag_list_3) || check_array(childID, tag_list_0);
     case ID__KONQBLOCK:
-        if ( childID == ID__KONQBLOCK ) return false;
+        if ( childID == ID__KONQBLOCK || childID == ID_TABLE ) return false;
         // Fall through!
     case ID_LI:
     case ID_DT:
