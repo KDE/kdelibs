@@ -702,11 +702,11 @@ public:
     /**
    * Set toolbar to full parent size (default).
    *
-   *  In full size mode the bar
-   * extends over the parent's full width or height. If the mode is disabled
-   * the toolbar tries to take as much space as it needs without wrapping, but
-   * it does not exceed the parent box. You can force a certain width or
-   * height with @ref setMaxWidth() or @ref setMaxHeight().
+   * In full size mode the bar extends over the parent's full width or height.
+   * If the mode is disabled the toolbar tries to take as much space as it
+   * needs without wrapping, but it does not exceed the parent box. You can
+   * force a certain width or height with @ref setMaxWidth() or @ref
+   * setMaxHeight().
    *
    * If you want to use right-aligned items or auto-sized items you must use
    * full size mode.
@@ -720,8 +720,8 @@ public:
     bool fullSize() const;
 
     /**
-   * @deprecated use setMovingEnabled(bool) instead.
    * Enable or disable moving of toolbar.
+   * @deprecated use setMovingEnabled(bool) instead.
    */
     void enableMoving(bool flag = true);
 
@@ -738,18 +738,18 @@ public:
     BarPosition barPos() const;
 
   /**
-   * @deprecated
    * Show, hide, or toggle toolbar.
    *
    * This method is provided for compatibility only,
    * please use show() and/or hide() instead.
    * @see BarStatus
+   * @deprecated
    */
     bool enable(BarStatus stat);
 
   /**
-   * @deprecated
    * Use setMaximumHeight() instead.
+   * @deprecated
    */
     void setMaxHeight (int h);  // Set max height for vertical toolbars
 
@@ -762,17 +762,17 @@ public:
     int maxHeight();
 
   /**
-   * @deprecated
    * Use setMaximumWidth() instead.
    * Set maximal width of horizontal (top or bottom) toolbar.
+   * @deprecated
    */
     void setMaxWidth (int dw);
 
   /**
    * Returns the value set with @ref setMaxWidth().
-   * @deprecated
    * Use maximumWidth() instead.
    * @return the value set with @ref setMaxWidth().
+   * @deprecated
    */
     int maxWidth();
 
@@ -785,8 +785,8 @@ public:
     void setTitle (const QString& _title);
 
   /**
-   * @deprecated
    * Use setMovingEnabled(bool) instead.
+   * @deprecated
    */
     void enableFloating (bool flag);
 
@@ -1018,11 +1018,11 @@ signals:
     void moved( BarPosition );
 
     /**
-     * @internal
      * This signal is emitted when toolbar detects changing of
      * following parameters:
      * highlighting, button-size, button-mode. This signal is
      * internal, aimed to buttons.
+     * @internal
      */
     void modechange ();
 
