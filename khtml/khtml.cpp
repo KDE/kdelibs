@@ -186,6 +186,8 @@ void KHTMLWidget::init()
   findPos = -1;
   findNode = 0;
 
+  bIsTextSelected = false;
+
   resizeContents(clipper()->width(), clipper()->height());
 }
 
