@@ -616,7 +616,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
-   kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
+   //kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -708,19 +708,17 @@ int TCPSlaveBase::verifyCertificate()
             }
          default:
           kdDebug(7029) << "TCPSlaveBase/SSL error in cert code."
-                              << "Please report this to kfm-devel@kde.org."
-                              << endl;
+                        << "Please report this to kfm-devel@kde.org."
+                        << endl;
           break;
          }
       }
 
-
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
-      // don't do this: d->cc->saveToDisk(); 
-      // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
+      int result;
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
@@ -733,25 +731,88 @@ int TCPSlaveBase::verifyCertificate()
       if (ksv == KSSLCertificate::Ok && _IPmatchesCN) {
         if (certAndIPTheSame) {       // success
           rc = 1;
+          setMetaData("ssl_action", "accept");
         } else {
-          if (true) {     // success   FIXME: prompt to continue
+          result = messageBox(WarningYesNo,
+                              i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
+                              i18n("Server Authentication"));
+          if (result == KMessageBox::Yes) {     // success
             rc = 1;
+            setMetaData("ssl_action", "accept");
           } else {    // fail
             rc = -1;
+            setMetaData("ssl_action", "reject");
           }
         }
       } else {
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
+             setMetaData("ssl_action", "accept");
            } else {   // fail
-             rc = -1;
+             result = messageBox(WarningYesNo,
+                                 i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it.  Do you wish to continue loading?"),
+                                 i18n("Server Authentication"));
+	     if (result == KMessageBox::Yes) {
+	       rc = 1;
+               setMetaData("ssl_action", "accept");
+	     } else {
+               rc = -1;
+               setMetaData("ssl_action", "reject");
+	     }
            }
-        } else {      // fail
-          rc = -1;
+        } else if (cp == KSSLCertificateCache::Reject) {      // fail
+	  messageBox(Information, i18n("SSL certificate is being rejected as requested.  You can disable this in the KDE control center."),
+			          i18n("Server Authentication"));
+	  rc = -1;
+          setMetaData("ssl_action", "reject");
+	} else {
+          do {
+             QString msg = i18n("The server certificate failed the "
+                                "authenticity test (%1).");
+             result = messageBox(WarningYesNoCancel,
+                                 msg.arg(d->host),
+                                 i18n("Server Authentication"),
+                                 i18n("&Details..."),
+                                 i18n("Co&ntinue"));
+                if (result == KMessageBox::Yes) {
+                   if (!d->dcc) {
+                      d->dcc = new DCOPClient;
+                      d->dcc->attach();
+                   }
+                   QByteArray data, ignore;
+                   QCString ignoretype;
+                   QDataStream arg(data, IO_WriteOnly);
+                   arg << theurl << mOutgoingMetaData;
+                        d->dcc->call("kio_uiserver", "UIServer",
+                                "showSSLInfoDialog(QString,KIO::MetaData)",
+                                data, ignoretype, ignore);
+                }
+	  } while (result == KMessageBox::Yes);
+
+          if (result == KMessageBox::No) {
+             setMetaData("ssl_action", "accept");
+             rc = 1;
+             cp = KSSLCertificateCache::Accept;
+                result = messageBox( WarningYesNo,
+                               i18n("Would you like to accept this "
+                                    "certificate forever without "
+                                    "being prompted?"),
+                               i18n("Server Authentication"),
+                               i18n("&Forever"),
+                               i18n("&Current Sessions Only"));
+                if (result == KMessageBox::Yes)
+                   permacache = true;
+                else
+                   permacache = false;
+          } else {
+             setMetaData("ssl_action", "reject");
+             rc = -1;
+             cp = KSSLCertificateCache::Prompt;
+          }
+          d->cc->addCertificate(pc, cp, permacache);
         }
       }
-      // FIXME: failure message boxes are needed
     }
 
 
