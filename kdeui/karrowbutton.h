@@ -36,7 +36,8 @@ class KArrowButtonPrivate;
 class KDEUI_EXPORT KArrowButton : public QPushButton
 {
 	Q_OBJECT
-
+	Q_PROPERTY( int arrowType READ arrowTp WRITE setArrowTp )
+	
 	public:
 		/**
 		 * Constructs an arrow button.
@@ -58,6 +59,15 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		 */
 		virtual QSize sizeHint() const;
 
+		/**
+		* Returns the arrow type
+		* @since 3.4
+		*/
+		Qt::ArrowType arrowType() const;
+
+		// hacks for moc braindamages with enums
+		int arrowTp() const { return (int) arrowType(); }
+		void setArrowTp( int tp ) { setArrowType( (Qt::ArrowType) tp ); }
 	public slots:
 		/**
 		 * Defines in what direction the arrow is pointing to. Will repaint the
