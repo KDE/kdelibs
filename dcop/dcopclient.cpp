@@ -137,7 +137,7 @@ bool DCOPClient::attach()
   if (d->serverAddr.isEmpty())
     // here, we will check some environment variable and find the
     // DCOP server.  Now, we hardcode it.  CHANGE ME
-    d->serverAddr = "local/faui06f:/tmp/.ICE-unix/5000";
+    d->serverAddr = "local/localhost:/tmp/.ICE-unix/5432";
     //    serverAddr = "tcp/faui06e:5000";
   
   if ((d->iceConn = IceOpenConnection((char *) d->serverAddr.ascii(), 

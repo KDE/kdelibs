@@ -3,6 +3,12 @@
 #include <dcopclient.h>
 #include <dcopobject.h>
 
+/**
+ g++ -o dcoptest dcoptest.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore
+
+**/
+
+
 class MyDCOPObject : public DCOPObject
 {
 public:
