@@ -25,45 +25,6 @@
 #include <qvaluestack.h>
 #include <qregexp.h>
 
-class KMacroExpanderBase {
-
-public:
-    KMacroExpanderBase( QChar c = '%' );
-    virtual ~KMacroExpanderBase();
-    void expandMacros( QString &str );
-    /*
-     * Explicitly supported constructs:
-     *   \ '' "" $'' $"" {} () $(()) ${} $() ``
-     * Implicitly supported constructs:
-     *   (())
-     * Unsupported constructs that will cause problems:
-     *   Shortened "case $v in pat)" syntax. Use "case $v in (pat)" instead.
-     * The rest of the shell (incl. bash) syntax is simply ignored,
-     * as it is not expected to cause problems.
-     */
-    bool expandMacrosShellQuote( QString &str );
-    bool expandMacrosShellQuote( QString &str, uint &pos );
-    void setEscapeChar( QChar c );
-    QChar escapeChar() const;
-
-protected:
-    virtual bool expandPlainMacro( const QString &str, uint pos, uint &len, QString &ret ) = 0;
-    virtual bool expandEscapedMacro( const QString &str, uint pos, uint &len, QString &ret ) = 0;
-
-private:
-    enum Quoting { noquote, singlequote, doublequote, dollarquote, 
-		parent, subst, group, math };
-    typedef struct {
-	Quoting current;
-	bool dquote;
-    } State;
-    typedef struct {
-	QString str;
-	uint pos;
-    } Save;
-    QChar escapechar;
-};
-
 class KSelfDelimitingMacroMapExpander : public KMacroExpanderBase {
 
 public:
@@ -137,11 +98,23 @@ void KMacroExpanderBase::expandMacros( QString &str )
     }
 }
 
-bool KMacroExpanderBase::expandMacrosShellQuote( QString &str )
-{
-    uint pos = 0;
-    return expandMacrosShellQuote( str, pos );
+
+namespace KMacroExpander {
+
+    enum Quoting { noquote, singlequote, doublequote, dollarquote, 
+                   parent, subst, group, math };
+    typedef struct {
+        Quoting current;
+        bool dquote;
+    } State;
+    typedef struct {
+        QString str;
+        uint pos;
+    } Save;
+
 }
+
+using namespace KMacroExpander;
 
 bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
 {
@@ -398,31 +371,45 @@ KHandDelimitedMacroMapExpander::expandEscapedMacro( const QString &str, uint pos
 
 /////// KMacroExpander
 
-void
-KMacroExpander::expandMacros( QString &str, const QMap<QChar,QString> &map, QChar c )
+QString
+KMacroExpander::expandMacros( const QString &ostr, const QMap<QChar,QString> &map, QChar c )
 {
+    QString str( ostr );
     KSelfDelimitingMacroMapExpander kmx( map, c );
     kmx.expandMacros( str );
+    return str;
 }
 
-bool
-KMacroExpander::expandMacrosShellQuote( QString &str, const QMap<QChar,QString> &map, QChar c )
+QString
+KMacroExpander::expandMacrosShellQuote( const QString &ostr, const QMap<QChar,QString> &map, QChar c )
 {
+    QString str( ostr );
     KSelfDelimitingMacroMapExpander kmx( map, c );
-    return kmx.expandMacrosShellQuote( str );
+    uint pos = 0;
+    if (kmx.expandMacrosShellQuote( str, pos ) && pos == str.length())
+        return str;
+    else
+        return QString::null;
 }
 
-void
-KMacroExpander::expandMacros( QString &str, const QMap<QString,QString> &map, QChar c )
+QString
+KMacroExpander::expandMacros( const QString &ostr, const QMap<QString,QString> &map, QChar c )
 {
+    QString str( ostr );
     KHandDelimitedMacroMapExpander kmx( map, c );
     kmx.expandMacros( str );
+    return str;
 }
 
-bool
-KMacroExpander::expandMacrosShellQuote( QString &str, const QMap<QString,QString> &map, QChar c )
+QString
+KMacroExpander::expandMacrosShellQuote( const QString &ostr, const QMap<QString,QString> &map, QChar c )
 {
+    QString str( ostr );
     KHandDelimitedMacroMapExpander kmx( map, c );
-    return kmx.expandMacrosShellQuote( str );
+    uint pos = 0;
+    if (kmx.expandMacrosShellQuote( str, pos ) && pos == str.length())
+        return str;
+    else
+        return QString::null;
 }
 
