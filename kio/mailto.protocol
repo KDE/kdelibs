@@ -1,0 +1,9 @@
+[Protocol]
+protocol=mailto
+input=none
+output=none
+reading=false
+Icon=kmail
+Class=:internet
+Description=Support for mailto URIs
+URIMode=mailto

@@ -1,0 +1,9 @@
+[Protocol]
+protocol=mms
+input=none
+output=none
+reading=false
+Icon=www
+Class=:internet
+Description=Microsoft Media Server Protocol
+URIMode=url
