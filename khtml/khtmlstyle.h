@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1999 Waldo Bastian (bastian@kde.org)
@@ -65,22 +65,22 @@ typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 class HTMLStackElem
 {
 public:
-    HTMLStackElem( int _id, 
-		   int _level, 
+    HTMLStackElem( int _id,
+		   int _level,
 		   CSSStyle * _style,
 		   DOM::NodeImpl *_node,
-		   blockFunc _exitFunc, 
+		   blockFunc _exitFunc,
 		   int _miscData1,
 		   HTMLStackElem * _next
-	) 
+	)
 	:	
-	id(_id), 
+	id(_id),
 	level(_level),
 	style(_style),
 	node(_node),
-	exitFunc(_exitFunc), 
-	miscData1(_miscData1), 
-	next(_next) 
+	exitFunc(_exitFunc),
+	miscData1(_miscData1),
+	next(_next)
 	{ }
 
     int       id;
@@ -90,7 +90,7 @@ public:
     DOM::NodeImpl *node;
 
     blockFunc exitFunc;
-   
+
     int       miscData1;
 
     HTMLStackElem *next;
@@ -125,9 +125,9 @@ class CSSStyleText
 public:
 	enum valEnum { valBaseline = 0, valOffset, valTop, valTextTop, valMiddle,
 		valBottom, valTextBottom };
-	valEnum valign; 
+	valEnum valign;
 	int     valignOffset; // sub, super and percentage set valOffset and
-	                      // should specify with valigOffset the number of 
+	                      // should specify with valigOffset the number of
 	                      // pixels the element should be raised above the
 	                      // bottomline.
     enum transEnum { transNormal = 0, transCapital, transUpper, transLower};
@@ -136,7 +136,7 @@ public:
     int     halign;
     int     indent;
     enum heightEnum { heightNormal = 0, heightScaled, heightFixed };
-    int     height;    
+    int     height;
     int     heightValue; // the scaling factor or fixed height
 };
 
@@ -152,8 +152,8 @@ public:
     int     paddingP;
     int     border;
     QColor  borderColor;
-    enum borderEnum { borderNone=0, borderDotted, borderDashed, 
-           borderSolid, borderDouble, borderGroove, 
+    enum borderEnum { borderNone=0, borderDotted, borderDashed,
+           borderSolid, borderDouble, borderGroove,
            borderRidge, borderInset, borderOutset };
     int     borderStyle;
 };
@@ -218,32 +218,32 @@ public:
      *
      */
     CSSStyle *newStyle(CSSStyle *parentStyle);
-    
+
     /*
      * getStyle
      *
      * Fills styleElem in with info from the style sheet
      *
      */
-    void getStyle(int tagID, HTMLStackElem *tagStack, 
-                  CSSStyle *styleElem, const char *klass, const char *id);
+    void getStyle(int tagID, HTMLStackElem *tagStack,
+                  CSSStyle *styleElem, const QChar *klass, const QChar *id);
 
-    void addStyle(CSSStyle *currentStyle, const char *CSSString);   
+    void addStyle(CSSStyle *currentStyle, const QChar *CSSString);
 
 protected:
-    const HTMLSettings *settings;    
-    
-    const char *parseSpace(const char *curP, const char *endP);
-    const char *parseToChar(const char *curP, const char *endP, 
-                            int c, bool chkws);
-    const char *parseAt(const char *curP, const char *endP);
-    CSSSelector *parseSelector2(const char *curP, const char *endP);
-    CSSSelector *parseSelector1(const char *curP, const char *endP);
-    CSSSelecList *parseSelector(const char *curP, const char *endP);
-    CSSProperty *parseProperty(const char *curP, const char *endP);
-    CSSPropList *parseProperties(const char *curP, const char *endP);
-    const char *parseRule(const char *curP, const char *endP);
-    void parseSheet(const char *src, int len);
+    const HTMLSettings *settings;
+
+    const QChar *parseSpace(const QChar *curP, const QChar *endP);
+    const QChar *parseToChar(const QChar *curP, const QChar *endP,
+                            QChar c, bool chkws);
+    const QChar *parseAt(const QChar *curP, const QChar *endP);
+    CSSSelector *parseSelector2(const QChar *curP, const QChar *endP);
+    CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
+    CSSSelecList *parseSelector(const QChar *curP, const QChar *endP);
+    CSSProperty *parseProperty(const QChar *curP, const QChar *endP);
+    CSSPropList *parseProperties(const QChar *curP, const QChar *endP);
+    const QChar *parseRule(const QChar *curP, const QChar *endP);
+    void parseSheet(const QChar *src, int len);
 };
 
 #endif // HTMLSTYLE_H

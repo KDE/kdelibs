@@ -34,8 +34,13 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#include "khtmltokenizer.h"
 #include "khtmlstyle.h"
+#include "khtmltokenizer.h"
+
+#include "khtmlattrs.h"
+#include "khtmltags.h"
+
+#include <qstring.h>
 
 //
 // Classes for internal use only
@@ -67,7 +72,7 @@ public:
     int   contentId;
     // contentId determines how contentValue should be interpreted
     int   contentValue;
-    const char *contentString;
+    const QChar *contentString;
 #else
     QString value;
 #endif
@@ -80,9 +85,10 @@ public:
     CSSSelector(void);
     ~CSSSelector(void);
     void print(void);
+    // tag == 0 means apply to all elements (Selector = *) 
     int          tag;
-    QString      id;
-    QString      klass;
+    int          attr;
+    QString      value;
     CSSSelector *tagHistory;
     CSSPropList *propList;
 };
@@ -90,6 +96,7 @@ public:
 CSSSelector::CSSSelector(void)
 : tag(-1), tagHistory(0), propList(0)
 {
+    attr = 0;
 }
 
 CSSSelector::~CSSSelector(void)
@@ -102,8 +109,8 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-    printf("[Selector: tag = %d, id = \"%s\", class = \"%s\"\n",
-    	tag, id.data(), klass.data());
+    printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\"\n",
+    	tag, attr, value.data());
 }
 
 CSSStyleSheet::CSSStyleSheet(const HTMLSettings *_settings)
@@ -167,17 +174,17 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
 void
 CSSStyleSheet::getStyle(int /*tagID*/, HTMLStackElem */*tagStack*/,
                         CSSStyle */*styleElem*/,
-                        const char */*klass*/, const char */*id*/)
+                        const QChar */*klass*/, const QChar */*id*/)
 {
 }
 
 void
-CSSStyleSheet::addStyle(CSSStyle */*currentStyle*/, const char */*CSSString*/)
+CSSStyleSheet::addStyle(CSSStyle */*currentStyle*/, const QChar */*CSSString*/)
 {
 }
 
-const char *
-CSSStyleSheet::parseSpace(const char *curP, const char *endP)
+const QChar *
+CSSStyleSheet::parseSpace(const QChar *curP, const QChar *endP)
 {
   bool sc = false;     // possible start comment?
   bool ec = false;     // possible end comment?
@@ -222,8 +229,8 @@ CSSStyleSheet::parseSpace(const char *curP, const char *endP)
  * Search for an expected character.  Deals with escaped characters,
  * quoted strings, and pairs of braces/parens/brackets.
  */
-const char *
-CSSStyleSheet::parseToChar(const char *curP, const char *endP, int c, bool chkws)
+const QChar *
+CSSStyleSheet::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws)
 {
     bool sq = false; /* in single quote? */
     bool dq = false; /* in double quote? */
@@ -271,8 +278,8 @@ CSSStyleSheet::parseToChar(const char *curP, const char *endP, int c, bool chkws
     return(0);
 }
 
-const char *
-CSSStyleSheet::parseAt(const char *curP, const char *endP)
+const QChar *
+CSSStyleSheet::parseAt(const QChar *curP, const QChar *endP)
 {
 //    const char *startP = curP;
     while (curP < endP)
@@ -296,41 +303,66 @@ CSSStyleSheet::parseAt(const char *curP, const char *endP)
 }
 
 CSSSelector *
-CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
+CSSStyleSheet::parseSelector2(const QChar *curP, const QChar *endP)
 {
     CSSSelector *cs = new CSSSelector();
-    QString selecString( QString( curP + 1 ).left( endP - curP ));
+    QString selecString( curP, endP - curP );
 
-    if (*curP == '#') cs->id = selecString;
-    else if (*curP == '.') cs->klass = selecString;
-    else if (*curP == ':') cs->klass = ":" + selecString;
+printf("selectString = \"%s\"\n", selecString.ascii());
+    
+    if (*curP == '#')
+    {
+	cs->tag = 0;
+	cs->attr = ATTR_ID;
+	cs->value = QString( curP + 1, endP - curP -1 );
+    }
+    else if (*curP == '.')
+    {
+	cs->tag = 0;
+	cs->attr = ATTR_CLASS;
+	cs->value = QString( curP + 1, endP - curP -1 );
+    }
+    else if (*curP == ':')
+    {
+	cs->tag = 0;
+	cs->attr = ATTR_CLASS;
+	cs->value = QString( curP, endP - curP );
+    }
     else
     {
-        const char *startP = curP;
+        const QChar *startP = curP;
+	QString tag;
         while (curP < endP)
         {
             if (*curP =='#')
             {
-                QString tag( QString( startP ).left( curP-startP + 1 ) );
-                QString tmp( QString( curP + 1 ).left( endP - curP ) );
-                cs->tag = getTagID(tag.lower().data(), tag.length());
-                cs->id = tmp;
+                tag = QString( startP, curP-startP );
+                QString tmp( curP + 1, endP - curP - 1);
+                cs->attr = ATTR_ID;
+		cs->value = tmp;
                 break;
             }
             else if (*curP == '.')
             {
-                QString tag( QString( startP ).left( curP - startP + 1 ) );
-                QString tmp( QString( curP + 1 ).left( endP - curP ) );
-                cs->tag = getTagID(tag.lower().data(), tag.length());
-                cs->klass = tmp;
+                tag = QString( startP, curP - startP );
+                QString tmp( curP + 1, endP - curP - 1);
+		cs->attr = ATTR_CLASS;
+                cs->value = tmp;
                 break;
             }
             else if (*curP == ':')
             {
-                QString tag( QString( startP ).left( curP - startP + 1 ) );
-                QString tmp( QString( curP + 1 ).left( endP - curP ) );
-                cs->tag = getTagID(tag.lower().data(), tag.length());
-                cs->klass = ":" + tmp;
+                tag = QString( startP, curP - startP );
+                QString tmp( curP, endP - curP );
+                cs->value = tmp;
+                break;
+            }
+            else if (*curP == '[')
+            {
+		// ### FIXME
+                tag = QString( startP, curP - startP );
+                QString tmp( curP, endP - curP );
+                cs->value = tmp;
                 break;
             }
             else
@@ -340,9 +372,13 @@ CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
         }
         if (curP == endP)
         {
-            QString tag( QString( startP ).left( curP - startP + 1 ) );
-            cs->tag = getTagID(tag.lower().data(), tag.length());
+            tag = QString( startP, curP - startP );
         }
+	if(tag == "*")
+	    cs->tag = 0;
+	else
+	    cs->tag = getTagID(tag.lower().data(), tag.length());
+	printf("found tag \"%s\"\n", tag.ascii());
    }
    cs->print();
    if (cs->tag == 0)
@@ -354,7 +390,7 @@ CSSStyleSheet::parseSelector2(const char *curP, const char *endP)
 }
 
 CSSSelector *
-CSSStyleSheet::parseSelector1(const char *curP, const char *endP)
+CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
 {
     CSSSelector *selecStack=0;
 
@@ -362,7 +398,7 @@ CSSStyleSheet::parseSelector1(const char *curP, const char *endP)
     if (!curP)
         return(0);
 
-    const char *startP = curP;
+    const QChar *startP = curP;
     while (curP <= endP)
     {
         if ((curP == endP) || isspace(*curP))
@@ -388,10 +424,10 @@ CSSStyleSheet::parseSelector1(const char *curP, const char *endP)
 }
 
 CSSSelecList *
-CSSStyleSheet::parseSelector(const char *curP, const char *endP)
+CSSStyleSheet::parseSelector(const QChar *curP, const QChar *endP)
 {
     CSSSelecList *slist  = 0;
-    const char *startP;
+    const QChar *startP;
 
     while (curP < endP)
     {
@@ -415,9 +451,9 @@ CSSStyleSheet::parseSelector(const char *curP, const char *endP)
 }
 
 CSSProperty *
-CSSStyleSheet::parseProperty(const char *curP, const char *endP)
+CSSStyleSheet::parseProperty(const QChar *curP, const QChar *endP)
 {
-    const char *colon;
+    const QChar *colon;
     // Get rid of space in front of the declaration
 
     curP = parseSpace(curP, endP);
@@ -429,7 +465,7 @@ CSSStyleSheet::parseProperty(const char *curP, const char *endP)
     if (!colon)
         return(0);
 
-    QString propName( QString( curP ).left( colon - curP + 1 ) );
+    QString propName( curP, colon - curP );
 
 printf("Property-name = \"%s\"\n", propName.data());
     // May have only reached white space before
@@ -454,10 +490,10 @@ printf("Property-name = \"%s\"\n", propName.data());
         endP--;
     }
 
-    QString propVal( QString( curP ).left( endP - curP + 1 ) );
+    QString propVal( curP , endP - curP );
 printf("Property-value = \"%s\"\n", propVal.data());
 
-    const struct props *propPtr = findProp(propName.lower().data(), propName.length());
+    const struct props *propPtr = findProp(propName.lower().ascii(), propName.length());
     if (!propPtr)
     {
          printf("Unknown property\n");
@@ -471,13 +507,13 @@ printf("Property-value = \"%s\"\n", propVal.data());
 }
 
 CSSPropList *
-CSSStyleSheet::parseProperties(const char *curP, const char *endP)
+CSSStyleSheet::parseProperties(const QChar *curP, const QChar *endP)
 {
     CSSPropList *propList=0;
 
     while (curP < endP)
     {
-        const char *startP = curP;
+        const QChar *startP = curP;
         curP = parseToChar(curP, endP, ';', false);
         if (!curP)
             curP = endP;
@@ -496,10 +532,10 @@ CSSStyleSheet::parseProperties(const char *curP, const char *endP)
     return(propList);
 }
 
-const char *
-CSSStyleSheet::parseRule(const char *curP, const char *endP)
+const QChar *
+CSSStyleSheet::parseRule(const QChar *curP, const QChar *endP)
 {
-    const char *startP;
+    const QChar *startP;
     CSSSelecList *slist;
     CSSPropList *plist;
 
@@ -538,10 +574,10 @@ CSSStyleSheet::parseRule(const char *curP, const char *endP)
 }
 
 void
-CSSStyleSheet::parseSheet(const char *src, int len)
+CSSStyleSheet::parseSheet(const QChar *src, int len)
 {
-    const char *curP = src;
-    const char *endP = src+len;
+    const QChar *curP = src;
+    const QChar *endP = src+len;
 
     curP = parseSpace(curP, endP);
     while (curP && (curP < endP))
@@ -565,19 +601,21 @@ CSSStyleSheet::test(void)
 {
     char buf[40000];
 
-    int fd = open("/home/waba/test.css", O_RDONLY);
+    int fd = open("/home/kde/test.css", O_RDONLY);
 
     if (fd < 0)
     {
-        perror("Couldn't open /home/waba/test.css:");
+        perror("Couldn't open /home/kde/test.css:");
         return;
     }
 
     int len = read(fd, buf, 40000);
 
+    QString str = buf;
+    
     close(fd);
 
-    parseSheet(buf, len);
+    parseSheet(str.unicode(), len);
 }
 
 // ------------------------------------------------------------------------
@@ -589,14 +627,14 @@ const HTMLFont *getFont(CSSStyle *currentStyle)
 	fontsize = 0;
     else if ( fontsize >= MAXFONTSIZES )
 	fontsize = MAXFONTSIZES - 1;
-    
+
     currentStyle->font.size = fontsize;
 
-    HTMLFont f( currentStyle->font.family, 
-                fontsize, 
+    HTMLFont f( currentStyle->font.family,
+                fontsize,
                 currentStyle->font.fixed ? pSettings->fixedFontSizes : pSettings->fontSizes,
-                currentStyle->font.weight / 10, 
-                (currentStyle->font.style != CSSStyleFont::stNormal), 
+                currentStyle->font.weight / 10,
+                (currentStyle->font.style != CSSStyleFont::stNormal),
                 pSettings->charset );
     f.setTextColor( currentStyle->font.color );
     f.setUnderline( currentStyle->font.decoration == CSSStyleFont::decUnderline );
@@ -628,5 +666,5 @@ void setNamedColor(QColor &color, const QString name)
     else
     {
         color.setNamedColor(name);
-    }   
+    }
 }

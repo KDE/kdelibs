@@ -27,6 +27,8 @@
 
 // #define PARSER_DEBUG
 
+#define CSS_TEST
+
 #ifdef GrayScale
 #undef GrayScale
 #endif
