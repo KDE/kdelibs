@@ -189,7 +189,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator
 
     int start = sor.pos;
     RenderObject *obj = sor.obj;
-    while( obj != eor.obj ) {
+    while( obj && obj != eor.obj ) {
 	if(!obj->isHidden()) {
 	    //kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
 	    runs.append( new BidiRun(start, obj->length(), obj, context, dir) );
