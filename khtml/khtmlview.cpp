@@ -750,23 +750,22 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    if (d->ignoreEvents)
+    if (d->ignoreEvents) {
         return true;
-    // First make sure we actually have focus
-    if (focusWidget() != this)
-        setFocus();
+    }
 
     // Now try to find the next child
     if (m_part->xmlDocImpl()) {
         focusNextPrevNode(next);
-        if (m_part->xmlDocImpl()->focusNode() != 0) // focus node found
+        if (m_part->xmlDocImpl()->focusNode() != 0) { // focus node found
             return true;
+        }
     }
 
     // If we get here, there is no next/previous child to go to, so pass up to the next/previous child in our parent
-    if (m_part->parentPart() && m_part->parentPart()->view())
+    if (m_part->parentPart() && m_part->parentPart()->view()) {
         return m_part->parentPart()->view()->focusNextPrevChild(next);
-    m_part->overURL(QString(), 0);
+    }
 
     return QWidget::focusNextPrevChild(next);
 }
