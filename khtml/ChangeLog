@@ -1,3 +1,8 @@
+2003-11-11  Dirk Mueller  <mueller@kde.org>
+
+	* misc/loader.cpp (CachedCSSStyleSheet): add "*/*;q=0.1" to the
+	accept header (#67803).
+
 2003-11-07  Stephan Kulow  <coolo@kde.org>
 
 	* css/cssparser.cpp (parseValue): set the background-* properties

@@ -162,7 +162,11 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     : CachedObject(url, CSSStyleSheet, _cachePolicy, _expireDate, 0)
 {
     // Set the type we want (probably css or xml)
-    setAccept( QString::fromLatin1(accept) );
+    QString ah = QString::fromLatin1( accept );
+    if ( ah.length() )
+        ah += ",";
+    ah += "*/*;q=0.1";
+    setAccept( ah );
     m_hadError = false;
     m_err = 0;
     // load the file
