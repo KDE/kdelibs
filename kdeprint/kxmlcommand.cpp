@@ -33,6 +33,15 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kdialogbase.h>
+#include <kdebug.h>
+
+static void setOptionText(DrBase *opt, const QString& s)
+{
+	if (s.isEmpty())
+		opt->set("text", opt->name());
+	else
+		opt->set("text", i18n(s.local8Bit()));
+}
 
 class KXmlCommand::KXmlCommandPrivate
 {
@@ -228,8 +237,9 @@ void KXmlCommand::loadXml()
 		if (!e.isNull())
 		{
 			d->m_driver = new DrMain;
+			d->m_driver->setName(d->m_name);
 			parseGroup(e, d->m_driver);
-			d->m_driver->set("text", i18n(d->m_name.local8Bit()));
+			setOptionText(d->m_driver, d->m_name);
 		}
 
 		// input/output
@@ -261,7 +271,7 @@ DrGroup* KXmlCommand::parseGroup(const QDomElement& e, DrGroup *grp)
 	if (!grp)
 		grp = new DrGroup;
 	grp->setName(e.attribute("name"));
-	grp->set("text", i18n(e.attribute("description").local8Bit()));
+	setOptionText(grp, e.attribute("description"));
 
 	QDomElement	elem = e.firstChild().toElement();
 	while (!elem.isNull())
@@ -314,7 +324,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 			{
 				DrBase	*choice = new DrBase;
 				choice->setName(elem.attribute("name"));
-				choice->set("text", i18n(elem.attribute("description").local8Bit()));
+				setOptionText(choice, elem.attribute("description"));
 				lopt->addChoice(choice);
 			}
 			elem = elem.nextSibling().toElement();
@@ -324,7 +334,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 		return 0;
 
 	opt->setName("_kde-" + d->m_name + "-" + e.attribute("name"));
-	opt->set("text", i18n(e.attribute("description").local8Bit()));
+	setOptionText(opt, e.attribute("description"));
 	opt->set("format", e.attribute("format"));
 	opt->set("default", e.attribute("default"));
 	opt->setValueText(opt->get("default"));
