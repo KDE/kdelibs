@@ -33,7 +33,11 @@ extern HelpProtocol *slave;
 #define INFO( x )
 #endif
 
-extern "C" void warningsFunc(void *ctx, const char *msg, ...);
+extern "C" void warningsFunc(void *ctx, const char *msg, ...)
+#ifdef __GNUC__
+  __attribute__ (( format ( printf, 2, 3 ) ) )
+#endif
+;
 
 bool warnings_exist = false;
 
