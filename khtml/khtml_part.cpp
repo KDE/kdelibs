@@ -4686,8 +4686,39 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
   QGuardedPtr<QObject> guard( client );
 
-  args.serviceType = QString::fromLatin1( "text/html" );
+  QString mimetype = QString::fromLatin1( "text/html" );
   args.metaData()["referrer"] = referrer;
+
+  if (!linkUrl.isEmpty())				// over a link
+  {
+    if (popupURL.isLocalFile())				// safe to do this
+    {
+      mimetype = KMimeType::findByURL(popupURL,0,true,false)->name();
+    }
+    else						// look at "extension" of link
+    {
+      const QString fname(popupURL.fileName(false));
+      if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
+      {
+        KMimeType::Ptr pmt = KMimeType::findByPath(fname,0,true);
+
+        // Further check for mime types guessed from the extension which,
+        // on a web page, are more likely to be a script delivering content
+        // of undecidable type. If the mime type from the extension is one
+        // of these, don't use it.  Retain the original type 'text/html'.
+        if (pmt->name() != KMimeType::defaultMimeType() &&
+            !pmt->is("application/x-perl") &&
+            !pmt->is("application/x-perl-module") &&
+            !pmt->is("application/x-php") &&
+            !pmt->is("application/x-python-bytecode") &&
+            !pmt->is("application/x-python") &&
+            !pmt->is("application/x-shellscript"))
+          mimetype = pmt->name();
+      }
+    }
+  }
+
+  args.serviceType = mimetype;
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, itemflags, S_IFREG /*always a file*/);
 
