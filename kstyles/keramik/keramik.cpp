@@ -64,6 +64,8 @@
 #include "bitmaps.h"
 #include "pixmaploader.h"
 
+#define loader Keramik::PixmapLoader::the()
+
 // -- Style Plugin Interface -------------------------
 class KeramikStylePlugin : public QStylePlugin
 {
@@ -81,7 +83,7 @@ public:
 
 	QStyle* create( const QString& key )
 	{
-		if ( key == "keramik" ) return new KeramikStyle;
+		if ( key == "keramik" ) return new KeramikStyle();
 		return 0;
 	}
 };
@@ -107,9 +109,10 @@ namespace
 	const int arrowHMargin    = 6;
 	const int rightBorder     = 12;
 	const char* kdeToolbarWidget = "kde toolbar widget";
-	
+
 	const int smallButMaxW    = 27;
 	const int smallButMaxH    = 20;
+	const int titleBarH       = 22;
 }
 // ---------------------------------------------------------------------------
 
@@ -218,8 +221,8 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 			if (cb->text().isEmpty() && (cb->pixmap() == 0) )
 			{
 				QRect bounding = cb->rect();
-				QSize checkDim = Keramik::PixmapLoader::the().size( keramik_checkbox_on);
-				int   cw = checkDim.width();;
+				QSize checkDim = loader.size( keramik_checkbox_on);
+				int   cw = checkDim.width();
 				int   ch = checkDim.height();
 
 				QRect checkbox(bounding.x() + 1, bounding.y() + 1 + (bounding.height() - ch)/2,
@@ -265,8 +268,6 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 	return KStyle::stylePixmap(stylepixmap, widget, opt);
 }
 
-
-#define loader Keramik::PixmapLoader::the()
 
 KeramikStyle::KeramikStyle()
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
@@ -349,9 +350,73 @@ void KeramikStyle::unPolish(QWidget* widget)
 	KStyle::unPolish(widget);
 }
 
+
 void KeramikStyle::polish( QPalette& )
 {
 	loader.clear();
+}
+
+static void renderToolbarWidgetBackground(QPainter* painter, const QWidget* widget)
+{
+	// Draw a gradient background for custom widgets in the toolbar
+	// that have specified a "kde toolbar widget" name, or
+	// are caught as toolbar widgets otherwise
+
+	// Find the top-level toolbar of this widget, since it may be nested in other
+	// widgets that are on the toolbar.
+	QWidget *parent = static_cast<QWidget*>(widget->parentWidget());
+	int x_offset = widget->x(), y_offset = widget->y();
+	while (parent && parent->parent() && !qstrcmp( parent->name(), kdeToolbarWidget ) )
+	{
+		x_offset += parent->x();
+		y_offset += parent->y();
+		parent = static_cast<QWidget*>(parent->parent());
+	}
+
+	QRect pr = parent->rect();
+	bool horiz_grad = pr.width() > pr.height();
+
+	int  toolHeight = parent->height();
+	int  toolWidth  = parent->width ();
+
+	// Check if the parent is a QToolbar, and use its orientation, else guess.
+	//Also, get the height to use in the gradient from it.
+	QToolBar* tb = dynamic_cast<QToolBar*>(parent);
+	if (tb)
+	{
+		horiz_grad = tb->orientation() == Qt::Horizontal;
+
+		//If floating, we need to skip the titlebar.
+		if (tb->place() == QDockWindow::OutsideDock)
+		{
+			toolHeight = tb->height() - titleBarH - 2*tb->frameWidth() + 2;
+			//Calculate offset here by looking at the bottom edge difference, and height.
+			//First, calculate by how much the widget needs to be extended to touch
+			//the bottom edge, minus the frame (except we use the current y_offset
+			// to map to parent coordinates)
+			int needToTouchBottom = tb->height() - tb->frameWidth() -
+									(widget->rect().bottom() + y_offset);
+
+			//Now, with that, we can see which portion to skip in the full-height
+			//gradient -- which is the stuff other than the extended
+			//widget
+			y_offset = toolHeight - (widget->height() + needToTouchBottom) - 1;
+		}
+	}
+
+	if (painter)
+	{
+		Keramik::GradientPainter::renderGradient( painter, widget->rect(),
+			 widget->colorGroup().button(), horiz_grad, false,
+			 x_offset, y_offset, toolWidth, toolHeight);
+	}
+	else
+	{
+		QPainter p( widget );
+		Keramik::GradientPainter::renderGradient( &p, widget->rect(),
+			 widget->colorGroup().button(), horiz_grad, false,
+			 x_offset, y_offset, toolWidth, toolHeight);
+	}
 }
 
 // This function draws primitive elements as well as their masks.
@@ -484,45 +549,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			if (toolbarBlendWidget && !flatMode )
 			{
-				// Draw a gradient background for custom widgets in the toolbar
-				// that have specified a "kde toolbar widget" name.
-
-				// Find the top-level toolbar of this widget, since it may be nested in other
-				// widgets that are on the toolbar.
-				QWidget *parent = static_cast<QWidget*>(toolbarBlendWidget->parent());
-				int x_offset = toolbarBlendWidget->x(), y_offset = toolbarBlendWidget->y();
-				while (parent && parent->parent() && !qstrcmp( parent->name(), kdeToolbarWidget ) )
-				{
-					x_offset += parent->x();
-					y_offset += parent->y();
-					parent = static_cast<QWidget*>(parent->parent());
-				}
-
-				QRect pr = parent->rect();
-				bool horiz_grad = pr.width() > pr.height();
-
-				// Check if the parent is a QToolbar, and use its orientation, else guess.
-				QToolBar* tb = dynamic_cast<QToolBar*>(parent);
-				if (tb) horiz_grad = tb->orientation() == Qt::Horizontal;
-
-				Keramik::GradientPainter::renderGradient( p,
-						QRect(0, 0, pr.width(), pr.height()),
-						parent->colorGroup().button(), horiz_grad, false , x_offset, y_offset);
+				//Render the toolbar gradient.
+				renderToolbarWidgetBackground(p, toolbarBlendWidget);
 
 				//Draw and blend the actual bevel..
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(),
 					disabled, Keramik::TilePainter::PaintFullBlend  );
-
-
 			}
 			else if (!flatMode)
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode() );
 			else {
 				Keramik::ScaledPainter( name + KeramikTileCC, Keramik::ScaledPainter::Vertical).draw(
 					p, r, cg.button(), cg.background(), disabled, pmode() );
-				
+
 				p->setPen(cg.button().light(75));
-				
+
 				p->drawLine(x, y, x2, y);
 				p->drawLine(x, y, x, y2);
 				p->drawLine(x, y2, x2, y2);
@@ -570,7 +611,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// FOCUS RECT
 			// -------------------------------------------------------------------
 		case PE_FocusRect:
-			p->drawWinFocusRect( r );
+			//Qt may pass the background color to use for the focus indicator
+			//here. This particularly happens within the iconview.
+			//If that happens, pass it on to drawWinFocusRect() so it can
+			//honor it
+			if ( opt.isDefault() )
+				p->drawWinFocusRect( r );
+			else
+				p->drawWinFocusRect( r, opt.color() );
 			break;
 
 			// HEADER SECTION
@@ -840,7 +888,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				: opt.lineWidth();
 			if (lw)
 			{
-				p->setPen(cg.dark());
+				p->setPen(cg.mid());
 				p->drawLine(x2, y, x2, y2);
 			}
 
@@ -849,54 +897,66 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 		case PE_PanelDockWindow:		// Toolbar
 		{
-			Keramik::GradientPainter::renderGradient( p, r, cg.button(), r.width() > r.height() );
-			//Keramik::ScaledPainter( keramik_toolbar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
-			int x2 = r.x()+r.width()-1;
-			int y2 = r.y()+r.height()-1;
+			bool horiz = r.width() > r.height();
+
+			//Here, we just draw the border.
+			int x  = r.x();
+			int y  = r.y();
+			int x2 = r.x() + r.width()  - 1;
+			int y2 = r.y() + r.height() - 1;
 			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
 				: opt.lineWidth();
 
 			if (lw)
 			{
-				p->setPen(cg.dark());
-				p->drawLine(x2, y, x2, y2);
-			}
+				//Gradient border colors.
+				//(Same as in gradients.cpp)
+				QColor gradTop = Keramik::ColorUtil::lighten(cg.button(),110);
+				QColor gradBot = Keramik::ColorUtil::lighten(cg.button(),109);
+				if (horiz)
+				{
+					//Top line
+					p->setPen(gradTop);
+					p->drawLine(x, y, x2, y);
 
+					//Bottom line
+					p->setPen(gradBot);
+					p->drawLine(x, y2, x2, y2);
+
+					//Left line
+					Keramik::GradientPainter::renderGradient(
+						p, QRect(r.x(), r.y(), 1, r.height()),
+						cg.button(), true);
+
+					//Right end-line
+					p->setPen(cg.mid());
+					p->drawLine(x2, y, x2, y2);
+				}
+				else
+				{
+					//Left line
+					p->setPen(gradTop);
+					p->drawLine(x, y, x, y2);
+
+					//Right line
+					p->setPen(gradBot);
+					p->drawLine(x2, y, x2, y2);
+
+					//Top line
+					Keramik::GradientPainter::renderGradient(
+						p, QRect(r.x(), r.y(), r.width(), 1),
+						cg.button(), false);
+
+					//Bottom end-line
+					p->setPen(cg.mid());
+					p->drawLine(x, y2, x2, y2);
+				}
+			}
 			break;
 		}
 
-/*		case PE_PanelDockWindow:		// Toolbar
-		{
-			int x2 = r.x()+r.width()-1;
-			int y2 = r.y()+r.height()-1;
-			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
-				: opt.lineWidth();
-
-			if (lw)
-			{
-				p->setPen(cg.light());
-				p->drawLine(x, y, x2-1, y);
-				p->drawLine(x, y, x, y2-1);
-				p->setPen(cg.dark());
-				p->drawLine(x, y2, x2, y2);
-				p->drawLine(x2, y, x2, y2);
-
-				// ### Qt should specify Style_Horizontal where appropriate
-				renderGradient( p, QRect( x + 1, y, x2 - 1, y2 - 1),
-						cg.button(), (w < h) && (pe != PE_PanelMenuBar) );
-			}
-			else
-			{
-				renderGradient( p, QRect(x, y, x2, y2),
-						cg.button(), (w < h) && (pe != PE_PanelMenuBar) );
-			}
-			break;
-		}*/
-
-
-
-			// TOOLBAR SEPARATOR
-			// -------------------------------------------------------------------
+		// TOOLBAR SEPARATOR
+		// -------------------------------------------------------------------
 		case PE_DockWindowSeparator:
 		{
 			Keramik::GradientPainter::renderGradient( p, r, cg.button(),
@@ -1029,9 +1089,16 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			int x2 = r.x() + r.width()-1;
 			int y2 = r.y() + r.height()-1;
 
+			//Here, we assume the usual 1-pixel border, to better match
+			//the containing button in the normal case.
+			//### TODO: Take advantage of parent widget to do
+			//proper calculations
 			if (flags & Style_Horizontal) {
 
-				Keramik::GradientPainter::renderGradient( p, r, cg.button(), true);
+				Keramik::GradientPainter::renderGradient( p, r, cg.button(), true, false,
+														  0, 1, /*offsets*/
+														  r.width(), r.height() + 2
+														  /*gradient geom*/ );
 				p->setPen(cg.light());
 				p->drawLine(x+1, y+4, x+1, y2-4);
 				p->drawLine(x+3, y+4, x+3, y2-4);
@@ -1041,10 +1108,12 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				p->drawLine(x+2, y+4, x+2, y2-4);
 				p->drawLine(x+4, y+4, x+4, y2-4);
 				p->drawLine(x+6, y+4, x+6, y2-4);
-
 			} else {
 
-				Keramik::GradientPainter::renderGradient( p, r, cg.button(), false);
+				Keramik::GradientPainter::renderGradient( p, r, cg.button(), false, false,
+														  1, 0, /*offsets*/
+														  r.width() + 2, r.height()
+														  /*gradient geom*/ );
 				p->setPen(cg.light());
 				p->drawLine(x+4, y+1, x2-4, y+1);
 				p->drawLine(x+4, y+3, x2-4, y+3);
@@ -1258,7 +1327,14 @@ void KeramikStyle::drawControl( ControlElement element,
 			              tabBar->shape() == QTabBar::TriangularBelow;
 
 			if ( flags & Style_Selected )
-				Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button(), cg.background(), !tabBar->isEnabled(), pmode());
+			{
+				QRect tabRect = r;
+				//If not the last tab, readjust the painting to be one pixel wider
+				//to avoid a doubled line
+				if (tabBar->indexOf( opt.tab()->identifier() ) != (tabBar->count() - 1))
+					tabRect.setWidth( tabRect.width() + 1);
+				Keramik::ActiveTabPainter( bottom ).draw( p, tabRect, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
+			}
 			else
 			{
 				Keramik::InactiveTabPainter::Mode mode;
@@ -1284,13 +1360,29 @@ void KeramikStyle::drawControl( ControlElement element,
 			break;
 		}
 
-#if (QT_VERSION-0 >= 0x030100)
+		case CE_DockWindowEmptyArea:
+		{
+			QRect pr = r;
+			if (widget && widget->inherits("QDockWindow"))
+			{
+				const QDockWindow* dw = static_cast<const QDockWindow*>(widget);
+				if (dw->place() == QDockWindow::OutsideDock)
+				{
+					//Readjust the paint rectangle to skip the titlebar
+					pr = QRect(r.x(), titleBarH + dw->frameWidth(),
+						r.width(), dw->height() - titleBarH - 2*dw->frameWidth()+2);
+					//2 at the end = the 2 pixels of border of a "regular"
+					//toolbar we normally paint over.
+				}
+			}
+			Keramik::GradientPainter::renderGradient( p, pr, cg.button(), r.width() > r.height());
+			break;
+		}
 		case CE_MenuBarEmptyArea:
 		{
 			Keramik::GradientPainter::renderGradient( p, r, cg.button(), true, true);
 			break;
 		}
-#endif
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
@@ -1825,8 +1917,10 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 		case CC_ToolButton: {
 			const QToolButton *toolbutton = (const QToolButton *) widget;
 			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
-			bool onExtender = !onToolbar && widget->parentWidget() && widget->parentWidget()->inherits( "QToolBarExtensionWidget" );
-			
+			bool onExtender = !onToolbar &&
+				widget->parentWidget() && widget->parentWidget()->inherits( "QToolBarExtensionWidget") &&
+				widget->parentWidget()->parentWidget()->inherits( "QToolBar" );
+
 			bool onControlButtons = false;
 			if (!onToolbar && !onExtender && widget->parentWidget() &&
 				 !qstrcmp(widget->parentWidget()->name(),"qt_maxcontrols" ) )
@@ -1871,21 +1965,56 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				else if (onToolbar)
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
-					QRect pr = parent->rect();
+					bool horiz = parent->orientation() == Qt::Horizontal;
+
+					//Calculate the toolbar geometry.
+					//The initial guess is the size of the parent widget
+					int  toolWidth  = parent->width();
+					int  toolHeight = parent->height();
+
+					//If we're floating, however, wee need to fiddle
+					//with height to skip the titlebar
+					if (parent->place() == QDockWindow::OutsideDock)
+					{
+						toolHeight = toolHeight - titleBarH - 2*parent->frameWidth() + 2;
+						//2 at the end = the 2 pixels of border of a "regular"
+						//toolbar we normally paint over.
+					}
+
+					//Calculate where inside the toolbar we're
+					int xoff = 0, yoff = 0;
+					if (horiz)
+						yoff = (toolHeight - r.height())/2;
+					else
+						xoff = (toolWidth - r.width())/2;
 
 					Keramik::GradientPainter::renderGradient( p, r, cg.button(),
-												parent->orientation() == Qt::Horizontal, false /*Not a menubar*/,
-												r.x(), r.y(), pr.width()-2, pr.height()-2);
+						horiz, false /*Not a menubar*/,
+						xoff, yoff,
+						toolWidth, toolHeight);
 				}
 				else if (onExtender)
 				{
-					QWidget* parent = (QWidget*)widget->parent();
-					QToolBar* toolbar = (QToolBar*)parent->parent();
-					QRect tr = toolbar->rect();
-					//QPainter p2(toolbar);
-					//p2.fillRect(tr, Qt::red);
-					//p2.end();
-					Keramik::GradientPainter::renderGradient( p, QRect(r.x(), r.y(), tr.width(), tr.height()), cg.button(), toolbar->orientation() != Qt::Vertical );
+					// Thos assumes floating toolbars can't have extenders,
+					//(so if we're on an extender, we're not floating)
+					QWidget*  parent  = static_cast<QWidget*> (widget->parent());
+					QToolBar* toolbar = static_cast<QToolBar*>(parent->parent());
+					QRect tr    = toolbar->rect();
+					bool  horiz = toolbar->orientation() == Qt::Horizontal;
+
+					//Calculate offset. We do this by translating our coordinates,
+					//which are relative to the parent, to be relative to the toolbar,
+					//and shift by the usual 1-pixel border.
+					int xoff = 0, yoff = 0;
+					if (horiz)
+						yoff = parent->mapToParent(widget->pos()).y() + 1;
+					else
+						xoff = parent->mapToParent(widget->pos()).x() + 1;
+
+					Keramik::GradientPainter::renderGradient( p, r, cg.button(),
+							horiz, false, /*Not a menubar*/
+							xoff,  yoff,
+							tr.width(), tr.height());
 				}
 			}
 
@@ -1988,9 +2117,12 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 
 		case PM_TabBarTabVSpace:
 			return 12;
-			
+
+		case PM_TabBarTabOverlap:
+			return 0;
+
 		case PM_TitleBarHeight:
-			return 22;
+			return titleBarH;
 
 		default:
 			return KStyle::pixelMetric(m, widget);
@@ -2151,6 +2283,16 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 						return QRect( 6, 4, widget->width() - arrow - 22, widget->height() - 9 );
 				}
 
+				case SC_ComboBoxListBoxPopup:
+				{
+					QRect def = opt.rect();
+					if ( widget->inherits( "KCompletionBox" ) )
+						def.addCoords( -4, 4, 10, 8 );
+					else def.addCoords( 4, -4, -6, 4 );
+
+					return def;
+				}
+
 				default: break;
 			}
 			break;
@@ -2224,6 +2366,16 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 			int size = pixelMetric( PM_SliderControlThickness, widget );
 			int handleSize = pixelMetric( PM_SliderThickness, widget );
 			int len = pixelMetric( PM_SliderLength, widget );
+
+			//Shrink the metrics if the widget is too small
+			//to fit our normal values for them.
+			if (horizontal)
+				handleSize = QMIN(handleSize, sl->height());
+			else
+				handleSize = QMIN(handleSize, sl->width());
+
+			size = QMIN(size, handleSize);
+
 			switch ( subcontrol )
 			{
 				case SC_SliderGroove:
@@ -2331,7 +2483,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		//CHECKME: Not sure the rects are perfect..
 		XRectangle rects[5] = {
 			{0, 0, resize->size().width()-2, resize->size().height()-6},
-			{1, resize->size().height()-6, resize->size().width()-3, 1},
+			{0, resize->size().height()-6, resize->size().width()-2, 1},
 			{1, resize->size().height()-5, resize->size().width()-3, 1},
 			{2, resize->size().height()-4, resize->size().width()-5, 1},
 			{3, resize->size().height()-3, resize->size().width()-7, 1}
@@ -2351,11 +2503,10 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		QPaintEvent* paint = (QPaintEvent*) event;
 
 
-
 		if ( !listbox->contentsRect().contains( paint->rect() ) )
 		{
 			QPainter p( listbox );
-			Keramik::RectTilePainter( keramik_combobox_list, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
+			Keramik::RectTilePainter( keramik_combobox_list, false, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
 					listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
 					listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
 
@@ -2366,45 +2517,13 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			return true;
 		}
 	}
-	else if ( event->type() == QEvent::Show && object->inherits( "QListBox" ) )
-	{
-		QListBox* listbox = (QListBox*) object;
-		QRect geometry = listbox->geometry();
-		if ( listbox->inherits( "KCompletionBox" ) )
-			geometry.addCoords( -4, 4, 10, 8 );
-		else geometry.addCoords( 4, -4, -6, 4 );
-		listbox->setGeometry( geometry );
-	}
+	//Toolbar background gradient handling
 	else if (event->type() == QEvent::Paint &&
 			 object->parent() && !qstrcmp(object->name(), kdeToolbarWidget) )
 	{
 		// Draw a gradient background for custom widgets in the toolbar
 		// that have specified a "kde toolbar widget" name.
-
-		// Find the top-level toolbar of this widget, since it may be nested in other
-		// widgets that are on the toolbar.
-		QWidget *widget = static_cast<QWidget*>(object);
-		QWidget *parent = static_cast<QWidget*>(object->parent());
-		int x_offset = widget->x(), y_offset = widget->y();
-		while (parent && parent->parent() && !qstrcmp( parent->name(), kdeToolbarWidget ) )
-		{
-			x_offset += parent->x();
-			y_offset += parent->y();
-			parent = static_cast<QWidget*>(parent->parent());
-		}
-
-//		QRect r  = widget->rect();
-		QRect pr = parent->rect();
-		bool horiz_grad = pr.width() > pr.height();
-
-		// Check if the parent is a QToolbar, and use its orientation, else guess.
-		QToolBar* tb = dynamic_cast<QToolBar*>(parent);
-		if (tb) horiz_grad = tb->orientation() == Qt::Horizontal;
-		QPainter p( widget );
-
-		Keramik::GradientPainter::renderGradient( &p,
-				QRect(0, 0, pr.width(), pr.height()),
-			   	parent->colorGroup().button(), horiz_grad, false , x_offset, y_offset);
+		renderToolbarWidgetBackground(0, static_cast<QWidget*>(object));
 
 		return false;	// Now draw the contents
 	}
@@ -2419,7 +2538,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 		Keramik::GradientPainter::renderGradient( &p, QRect(0 , 0, wr.width(), wr.height()),
 			widget->colorGroup().button(), tr.width() > tr.height() );
-		p.setPen( toolbar->colorGroup().dark() );
+		p.setPen( toolbar->colorGroup().mid() );
 		if ( toolbar->orientation() == Qt::Horizontal )
 			p.drawLine( wr.width()-1, 0, wr.width()-1, wr.height()-1 );
 		else
