@@ -243,6 +243,8 @@ public:
    * @param _version A version.
    * @param noKApp Set this true to not add commandline options for
    *        QApplication / KApplication
+   *
+   * @since 3.2
    */
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
