@@ -23,7 +23,6 @@
 #include <kio_error.h>
 
 #include <assert.h>
-#include <string.h>
 
 #include <kurl.h>
 #include <kapp.h>

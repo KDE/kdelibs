@@ -35,8 +35,6 @@
 
 #include <khtmlview.h>
 
-#include <string>
-
 class QPainter;
 class KBrowser;
 
