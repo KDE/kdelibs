@@ -18,6 +18,7 @@ private slots:
 
 private:
   bool m_first;
+  bool m_found;
   KHTMLPart *m_part;
 };
 
