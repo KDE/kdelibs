@@ -191,7 +191,7 @@ void KHTMLWidget::executeScript(const QString &c)
 { 
     if(!_jScriptEnabled) return;
     if(!jscript) jscript = new KJSWorld(this);
-    jscript->evaluate(c); 
+    jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length()); 
 }
 
 
