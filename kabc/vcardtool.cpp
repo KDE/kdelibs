@@ -92,7 +92,16 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       address.append( (*it).country().replace( ';', "\\;" ) );
 
       VCardLine adrLine( "ADR", address.join( ";" ) );
+      if ( version == VCard::v2_1 ) {
+        adrLine.addParameter( "CHARSET", "UTF-8" );
+        adrLine.addParameter( "ENCODING", "8BIT" );
+      }
+
       VCardLine labelLine( "LABEL", (*it).label() );
+      if ( version == VCard::v2_1 ) {
+        labelLine.addParameter( "CHARSET", "UTF-8" );
+        labelLine.addParameter( "ENCODING", "8BIT" );
+      }
 
       bool hasLabel = !(*it).label().isEmpty();
       QMap<QString, int>::Iterator typeIt;
@@ -123,7 +132,13 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       for ( catIt = categories.begin(); catIt != categories.end(); ++catIt )
         (*catIt).replace( ',', "\\," );
 
-      card.addLine( VCardLine( "CATEGORIES", categories.join( "," ) ) );
+      VCardLine catLine( "CATEGORIES", categories.join( "," ) );
+      if ( version == VCard::v2_1 ) {
+        catLine.addParameter( "CHARSET", "UTF-8" );
+        catLine.addParameter( "ENCODING", "8BIT" );
+      }
+
+      card.addLine( catLine );
     }
 
     // CLASS
@@ -136,6 +151,10 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     bool pref = true;
     for ( strIt = emails.begin(); strIt != emails.end(); ++strIt ) {
       VCardLine line( "EMAIL", *strIt );
+      if ( version == VCard::v2_1 ) {
+        line.addParameter( "CHARSET", "UTF-8" );
+        line.addParameter( "ENCODING", "8BIT" );
+      }
       if ( pref == true && emails.count() > 1 ) {
         line.addParameter( "TYPE", "PREF" );
         pref = false;
@@ -144,7 +163,12 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     }
 
     // FN
-    card.addLine( VCardLine( "FN", (*addrIt).formattedName() ) );
+    VCardLine fnLine( "FN", (*addrIt).formattedName() );
+    if ( version == VCard::v2_1 ) {
+      fnLine.addParameter( "CHARSET", "UTF-8" );
+      fnLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( fnLine );
 
     // GEO
     Geo geo = (*addrIt).geo();
@@ -164,7 +188,12 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     card.addLine( createPicture( "LOGO", (*addrIt).logo() ) );
 
     // MAILER
-    card.addLine( VCardLine( "MAILER", (*addrIt).mailer() ) );
+    VCardLine mailerLine( "MAILER", (*addrIt).mailer() );
+    if ( version == VCard::v2_1 ) {
+      mailerLine.addParameter( "CHARSET", "UTF-8" );
+      mailerLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( mailerLine );
 
     // N
     QStringList name;
@@ -174,20 +203,40 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     name.append( (*addrIt).prefix().replace( ';', "\\;" ) );
     name.append( (*addrIt).suffix().replace( ';', "\\;" ) );
 
-    card.addLine( VCardLine( "N", name.join( ";" ) ) );
+    VCardLine nLine( "N", name.join( ";" ) );
+    if ( version == VCard::v2_1 ) {
+      nLine.addParameter( "CHARSET", "UTF-8" );
+      nLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( nLine );
 
     // NAME
-    card.addLine( VCardLine( "NAME", (*addrIt).name() ) );
+    VCardLine nameLine( "NAME", (*addrIt).name() );
+    if ( version == VCard::v2_1 ) {
+      nameLine.addParameter( "CHARSET", "UTF-8" );
+      nameLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( nameLine );
 
     // NICKNAME
     if ( version == VCard::v3_0 )
       card.addLine( VCardLine( "NICKNAME", (*addrIt).nickName() ) );
 
     // NOTE
-    card.addLine( VCardLine( "NOTE", (*addrIt).note() ) );
+    VCardLine noteLine( "NOTE", (*addrIt).note() );
+    if ( version == VCard::v2_1 ) {
+      noteLine.addParameter( "CHARSET", "UTF-8" );
+      noteLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( noteLine );
 
     // ORG
-    card.addLine( VCardLine( "ORG", (*addrIt).organization() ) );
+    VCardLine orgLine( "ORG", (*addrIt).organization() );
+    if ( version == VCard::v2_1 ) {
+      orgLine.addParameter( "CHARSET", "UTF-8" );
+      orgLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( orgLine );
 
     // PHOTO
     card.addLine( createPicture( "PHOTO", (*addrIt).photo() ) );
@@ -200,7 +249,12 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     card.addLine( VCardLine( "REV", createDateTime( (*addrIt).revision() ) ) );
 
     // ROLE
-    card.addLine( VCardLine( "ROLE", (*addrIt).role() ) );
+    VCardLine roleLine( "ROLE", (*addrIt).role() );
+    if ( version == VCard::v2_1 ) {
+      roleLine.addParameter( "CHARSET", "UTF-8" );
+      roleLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( roleLine );
 
     // SORT-STRING
     if ( version == VCard::v3_0 )
@@ -225,7 +279,12 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     }
 
     // TITLE
-    card.addLine( VCardLine( "TITLE", (*addrIt).title() ) );
+    VCardLine titleLine( "TITLE", (*addrIt).title() );
+    if ( version == VCard::v2_1 ) {
+      titleLine.addParameter( "CHARSET", "UTF-8" );
+      titleLine.addParameter( "ENCODING", "8BIT" );
+    }
+    card.addLine( titleLine );
 
     // TZ
     TimeZone timeZone = (*addrIt).timeZone();
@@ -263,7 +322,12 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       if ( value.isEmpty() )
         continue;
 
-      card.addLine( VCardLine( identifier, value ) );
+      VCardLine line( identifier, value );
+      if ( version == VCard::v2_1 ) {
+        line.addParameter( "CHARSET", "UTF-8" );
+        line.addParameter( "ENCODING", "8BIT" );
+      }
+      card.addLine( line );
     }
 
     vCardList.append( card );
