@@ -22,6 +22,7 @@
  */
 #include "khtml_run.h"
 #include "khtml_part.h"
+#include <kio/job.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url )
 : KRun( url.url(), 0, false, false /* No GUI */ )
@@ -37,5 +38,43 @@ void KHTMLRun::foundMimeType( const QString &mimetype )
   m_bFinished = true;
   m_timer.start( 0, true );
 }
+
+void KHTMLRun::scanFile()
+{
+  if (m_strURL.protocol().left(4) != "http") // http and https
+  {
+     KRun::scanFile();
+     return;
+  }
+
+  // No check for well-known extensions, since we don't trust HTTP
+
+  KIO::TransferJob *job = KIO::get(m_strURL, false, false);
+  //job->setWindow((KMainWindow *)m_pMainWindow);
+  connect( job, SIGNAL( result( KIO::Job *)),
+           this, SLOT( slotKHTMLScanFinished(KIO::Job *)));
+  connect( job, SIGNAL( mimetype( KIO::Job *, const QString &)),
+           this, SLOT( slotKHTMLMimetype(KIO::Job *, const QString &)));
+  m_job = job;
+
+}
+
+void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)
+{
+  KRun::slotScanFinished(job);
+}
+
+void KHTMLRun::slotKHTMLMimetype(KIO::Job *, const QString &type)
+{
+  KIO::SimpleJob *job = (KIO::SimpleJob *) m_job;
+
+  // Make copy to avoid dead reference
+  QString _type = type;
+  job->putOnHold();
+  m_job = 0;
+
+  foundMimeType( _type );
+}
+
 
 #include "khtml_run.moc"

@@ -41,6 +41,13 @@ public:
 
   virtual void foundMimeType( const QString &mimetype );
 
+protected:
+  virtual void scanFile();
+
+protected slots:
+  void slotKHTMLScanFinished(KIO::Job *job);
+  void slotKHTMLMimetype(KIO::Job *job, const QString &type);
+
 private:
   KHTMLPart *m_part;
   khtml::ChildFrame *m_child;
