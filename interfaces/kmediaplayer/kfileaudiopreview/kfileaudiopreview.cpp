@@ -54,7 +54,6 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
     : KPreviewWidgetBase( parent, name )
 {
     QStringList formats = KDE::PlayObjectFactory::mimeTypes();
-    setSupportedMimeTypes( formats );
     // ###
     QStringList::ConstIterator it = formats.begin();
     for ( ; it != formats.end(); ++it )
@@ -67,20 +66,24 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
     (void) new QWidget( box ); // spacer
 
     d = new KFileAudioPreviewPrivate( 0L ); // not box -- being reparented anyway
-    KMediaPlayer::View *view = d->player->view();
-    view->setEnabled( false );
-
-    // if we have access to the video widget, show it above the player
-    // So, reparent first the video widget, then the view.
-    if ( view->videoWidget() )
+    if ( d->player ) // only if there actually is a component...
     {
-        QHBox *frame = new QHBox( box );
-        frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-        frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-        view->videoWidget()->reparent( frame, QPoint(0,0) );
-    }
+        setSupportedMimeTypes( formats );
+        KMediaPlayer::View *view = d->player->view();
+        view->setEnabled( false );
 
-    view->reparent( box, QPoint(0,0) );
+        // if we have access to the video widget, show it above the player
+        // So, reparent first the video widget, then the view.
+        if ( view->videoWidget() )
+        {
+            QHBox *frame = new QHBox( box );
+            frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+            frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+            view->videoWidget()->reparent( frame, QPoint(0,0) );
+        }
+
+        view->reparent( box, QPoint(0,0) );
+    }
 
     m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
     KConfigGroup config( KGlobal::config(), ConfigGroup );
@@ -98,7 +101,7 @@ KFileAudioPreview::~KFileAudioPreview()
 
 void KFileAudioPreview::showPreview( const KURL &url )
 {
-    if ( url.isMalformed() )
+    if ( !d->player || url.isMalformed() )
         return;
 
     KMimeType::Ptr mt = KMimeType::findByURL( url );
@@ -114,12 +117,18 @@ void KFileAudioPreview::showPreview( const KURL &url )
 
 void KFileAudioPreview::clearPreview()
 {
-    d->player->stop();
-    d->player->closeURL();
+    if ( d->player )
+    {
+        d->player->stop();
+        d->player->closeURL();
+    }
 }
 
 void KFileAudioPreview::toggleAuto( bool on )
 {
+    if ( !d->player )
+        return;
+
     if ( on && m_currentURL.isValid() && d->player->view()->isEnabled() )
         d->player->play();
     else
