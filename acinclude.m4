@@ -1,7 +1,7 @@
-## Checks for the QT environment (library and header path)
-## It's styled after the autoconf X11 check, first tries
-## to compile a program without any flags in case everything
-## is accessible that way.
+## KDE/acinclude.m4 (Macros for autoconf)
+##
+## (C) 1997 Janos Farkas
+## (C) 1997 Stephan Kulow
 
 ## ------------------------------------------------------------------------
 ## Find a file (or one of more files in a list of dirs)
