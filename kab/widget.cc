@@ -175,7 +175,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
      "from file \n             \"%s\".\n", path.c_str());
   card->setBackground(path.c_str());
 
-  DialogBase::setBackgroundTile( &Icon( QString( dlgBackground.c_str()) ) );
+  QPixmap tmppix = Icon( QString( dlgBackground.c_str());
+  DialogBase::setBackgroundTile( &tmppix );
 
   // -----
   timer=new QTimer(this);
