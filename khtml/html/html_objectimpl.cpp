@@ -256,6 +256,7 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
 
 void HTMLObjectElementImpl::detach()
 {
+  NodeBaseImpl::detach();
 }
 
 // -------------------------------------------------------------------------
