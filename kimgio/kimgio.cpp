@@ -19,7 +19,8 @@ static int registered = 0;
 #include <qstring.h>
 #include <qregexp.h>
 
-#include "ltdl.h"
+#include <ltdl.h>
+#include "kimgio-config.h"
 
 void kimgioRegister(void)
 {
@@ -39,6 +40,7 @@ void kimgioRegister(void)
 	    if (libname.isNull())
 		break;
 
+	    libname = dir.path() + "/" + libname;
 	    lt_dlhandle libhandle = lt_dlopen(libname);
 	    if (libhandle == 0) {
 		warning("couldn't dlopen %s (%s)", 
@@ -46,7 +48,7 @@ void kimgioRegister(void)
 	    }
 	    
 	    libname.replace(QRegExp("^.*kimg_"), "kimgio_init_");
-	    libname.replace(QRegExp("\.la$"), "");
+	    libname.replace(QRegExp("\\.la$"), "");
 	    
 	    lt_ptr_t init_func = lt_dlsym(libhandle, libname );
 	
@@ -59,4 +61,17 @@ void kimgioRegister(void)
 		func();
 	    }
 	}
+
+#ifdef LINKED_png
+	kimgio_init_png();
+#endif
+
+#ifdef LINKED_jpeg
+	kimgio_init_jpeg();
+#endif
+
+#ifdef LINKED_tiff
+	kimgio_init_tiff();
+#endif
+      
 }
