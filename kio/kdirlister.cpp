@@ -329,18 +329,9 @@ void KDirLister::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
           delete item;
         continue;
       }
-      // make sure we save and emit every item only once
-      KFileItem* kit;
-      for ( kit = m_lstFileItems.first(); kit; kit = m_lstFileItems.next() )
-        if ( kit->url() == item->url() )
-          break;
 
-      if ( !kit )
-      {
-        lstNewItems.append( item );
-        m_lstFileItems.append( item );
-      }
-      // TODO: else add to items to be refreshed?
+      lstNewItems.append( item );
+      m_lstFileItems.append( item );
     }
   }
 
