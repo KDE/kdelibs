@@ -127,7 +127,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
             color.setNamedColor(name);
             if(!color.isValid()) {
                 bool hasalpha = false;
-                for(int i = 0; i < name.length(); i++)
+                for(unsigned int i = 0; i < name.length(); i++)
                     if(name[i].isLetterOrNumber()) {
                         hasalpha = true;
                         break;
