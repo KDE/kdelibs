@@ -679,7 +679,7 @@ QMovie KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size)
     if (file.isEmpty())
 	return QMovie();
     int dirLen = file.findRev('/');
-    QString icon = iconPath(name, group, size);
+    QString icon = iconPath(name, size ? -size : group, true);
     if (!icon.isEmpty() && file.left(dirLen) != icon.left(dirLen))
 	return QMovie();
     return QMovie(file);
