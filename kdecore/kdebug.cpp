@@ -169,12 +169,8 @@ void kdebug( ushort nLevel, ushort nArea,
   int nPriority = 0; // for syslog
   QString aCaption;
   QString aAppName = getDescrFromNum(nArea);
-  if (aAppName.isEmpty() || aAppName.isNull()) {
-    if (kapp)
-      aAppName=kapp->appName();
-    else
-      aAppName=strdup("unknown");
-  }
+  if (aAppName.isEmpty())
+    aAppName=kapp?kapp->appName():QString("unknown");
   switch( nLevel )
         {
         case KDEBUG_INFO:
