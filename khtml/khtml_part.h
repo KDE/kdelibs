@@ -472,6 +472,8 @@ signals:
    */
   void popupMenu(const QString &url, const QPoint &point);
 
+  void selectionChanged();
+
 protected:
 
   virtual bool event( QEvent *event );
@@ -589,10 +591,11 @@ private slots:
    */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
-  void slotSelectionChanged();
-
   void checkCompleted();
+
 private:
+  void emitSelectionChanged();
+
   void init( KHTMLView *view );
 
   void clear();

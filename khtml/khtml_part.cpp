@@ -251,9 +251,6 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_view = view;
   setWidget( d->m_view );
 
-  connect( d->m_view, SIGNAL( selectionChanged() ),
-	   this, SLOT( slotSelectionChanged() ) );
-
   d->m_extension = new KHTMLPartBrowserExtension( this );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
 
@@ -1810,10 +1807,11 @@ DOM::Node KHTMLPart::nodeUnderMouse() const
     return d->m_view->nodeUnderMouse();
 }
 
-void KHTMLPart::slotSelectionChanged()
+void KHTMLPart::emitSelectionChanged()
 {
   emit d->m_extension->enableAction( "copy", hasSelection() );
   emit d->m_extension->selectionInfo( selectedText() );
+  emit selectionChanged();
 }
 
 void KHTMLPart::slotIncFontSizes()
@@ -1981,7 +1979,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
         d->m_selectionStart = DOM::Node();
 	d->m_selectionEnd = DOM::Node();
       }
-      slotSelectionChanged();
+      emitSelectionChanged();
     }
   }
 
@@ -2138,7 +2136,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 	d->m_selectionEnd = 0;
 	d->m_startOffset = 0;
 	d->m_endOffset = 0;
-        slotSelectionChanged();
+        emitSelectionChanged();
     } else {
 	// we have to get to know if end is before start or not...
 	DOM::Node n = d->m_selectionStart;
@@ -2171,7 +2169,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 	QClipboard *cb = QApplication::clipboard();
 	cb->setText(text);
 	//kdDebug( 6000 ) << "selectedText = " << text << endl;
-        slotSelectionChanged();
+        emitSelectionChanged();
     }
 }
 
