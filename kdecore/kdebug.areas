@@ -88,10 +88,10 @@
 4300        kdvi (kdegraphics)
 4400        kpaint (kdegraphics)
 4500        kghostview (kdegraphics)
-4600        [1;31mkview[0;39m
-4610        [1;32mkviewviewer[0;39m
-4620        [1;33mkviewcanvas[0;39m
-4630        [1;34mkview_plugin[0;39m
+4600        kview
+4610        kviewviewer
+4620        kviewcanvas
+4630        kview_plugin
 
 # kdenetwork
 5001        kget
