@@ -2309,6 +2309,7 @@ bool KHTMLPart::isCaretMode() const
 
 void KHTMLPart::setEditable(bool enable)
 {
+#if 0 // editable documents are not implemented in KDE 3.2
 #ifndef KHTML_NO_CARET
   if (isEditable() == enable) return;
   d->setFlagRecursively(&KHTMLPartPrivate::m_designMode, enable);
@@ -2321,6 +2322,7 @@ void KHTMLPart::setEditable(bool enable)
       view()->caretOff();
   }/*end if*/
 #endif // KHTML_NO_CARET
+#endif
 }
 
 bool KHTMLPart::isEditable() const
