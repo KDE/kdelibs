@@ -502,6 +502,8 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 		}
 		mcount++;
 	}
+	cout << "warning: _lookupMethod " << md.type << " " << md.name << " failed." << endl;
+	cout << "  this is caused by incompatible IDL files and is likely to result in crashes" << endl; 
 	return -1;
 }
 
@@ -891,7 +893,7 @@ void Object_stub::_releaseRemote()
 
 FlowSystem Object_stub::_flowSystem()
 {
-	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000200000000000000");
+	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d0011000000417274733a3a466c6f7753797374656d000200000000000000");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
