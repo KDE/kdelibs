@@ -298,8 +298,8 @@ private:
  *
  *  test1 = "This is a simple test.";
  *  KMD5 context( test1 );
- *  context.rawDigest( rawDigest );
- *  context.hexDigest( hexDigest );
+ *  context.rawDigest( rawResult );
+ *  context.hexDigest( hexResult );
  *  printf ( "Raw Digest output: %s", rawResult );
  *  printf ( "Hex Digest output: %s", hexResult );
  * </PRE>
