@@ -27,16 +27,18 @@ main(int argc, char *argv[])
 #ifndef NOFORK     // define NOFORK to debug kded in gdb
      switch(fork()) {
      case -1:
-	  fprintf(stderr, "kded: fork() failed!");
+	  fprintf(stderr, "kded: fork() failed!\n");
 	  break;
      case 0:
 	  // ignore in child
 	  break;
      default:
 	  // parent: exit immediatly
+          fprintf(stdout, "kded now running in the background\n");
 	  _exit(0);
      }
 #endif
+
 
      k.exec(); // keep running
 }
