@@ -106,7 +106,9 @@ KIconLoader::KIconLoader(QString appname)
     {
 	kdDebug(264) << "Using theme locolor instead of " << mTheme 
 		     << " because display depth is too small.\n";
+	delete root;
 	mTheme = "locolor";
+	root = new KIconTheme(mTheme);
     }
 
     // Add global themes to the theme tree.
