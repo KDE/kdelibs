@@ -73,8 +73,6 @@ template class QList<QRegExp>;
 **
 */
 
-static bool probably_slow_mounted(const char *filename);
-
 KFileReader::KFileReader()
     : QObject(0, "KFileReader")
 {
@@ -429,118 +427,5 @@ void KFileReader::setShowHiddenFiles(bool b)
 
 #include "kfilereader.moc"
 
-#ifndef MNTTAB
-#ifdef MTAB_FILE
-#define MNTTAB MTAB_FILE
-#else
-#define MNTTAB "/etc/mnttab"
-#endif
-#endif
-
-// hopefully there are only two kind of APIs. If not we need a configure test
-#ifdef HAVE_SETMNTENT
-#define SETMNTENT setmntent
-#define ENDMNTENT endmntent
-#define STRUCT_MNTENT struct mntent *
-#define STRUCT_SETMNTENT FILE *
-#define GETMNTENT(file, var) ((var = getmntent(file)) != NULL)
-#define MOUNTPOINT(var) var->mnt_dir
-#define MOUNTTYPE(var) var->mnt_type
-#define FSNAME(var) var->mnt_fsname
-#elif defined(BSD)
-#define SETMNTENT(x, y) setfsent()
-#define ENDMNTENT(x) endfsent()
-#define STRUCT_MNTENT struct fstab *
-#define STRUCT_SETMNTENT int
-#define GETMNTENT(file, var) ((var=getfsent()) != NULL)
-#define MOUNTPOINT(var) var->fs_file
-#define MOUNTTYPE(var) var->fs_type
-#define FSNAME(var) var->fs_spec
-#else /* no setmntent and no BSD */
-#define SETMNTENT fopen
-#define ENDMNTENT fclose
-#define STRUCT_MNTENT struct mnttab
-#define STRUCT_SETMNTENT FILE *
-#define GETMNTENT(file, var) (getmntent(file, &var) == 0)
-#define MOUNTPOINT(var) var.mnt_mountp
-#define MOUNTTYPE(var) var.mnt_fstype
-#define FSNAME(var) var.mnt_special
-#endif
-
-/**
- * Idea and code by Olaf Kirch <okir@caldera.de>
- **/
-static bool probably_slow_mounted(const char *filename)
-{
-    STRUCT_SETMNTENT	mtab;
-    char		realname[MAXPATHLEN];
-    int		        length, max;
-
-    memset(realname, 0, MAXPATHLEN);
-
-    /* If the path contains symlinks, get the real name */
-    if (realpath(filename, realname) == NULL) {
-	if (strlen(filename) >= sizeof(realname))
-	    return false;
-	strcpy(realname, filename);
-    }
-
-    /* Get the list of mounted file systems */
-
-    if ((mtab = SETMNTENT(MNTTAB, "r")) == NULL) {
-	perror("setmntent");
-	return false;
-    }
-
-    /* Loop over all file systems and see if we can find our
-     * mount point.
-     * Note that this is the mount point with the longest match.
-     * XXX: Fails if me->mnt_dir is not a realpath but goes
-     * through a symlink, e.g. /foo/bar where /foo is a symlink
-     * pointing to /local/foo.
-     *
-     * How kinky can you get with a filesystem?
-     */
-
-    max = 0;
-    STRUCT_MNTENT me;
-
-    enum { Unseen, Right, Wrong } isauto = Unseen, isslow = Unseen;
-
-    while (true) {
-      if (!GETMNTENT(mtab, me))
-	break;
-
-      length = strlen(MOUNTPOINT(me));
-
-      if (!strncmp(MOUNTPOINT(me), realname, length)
-	  && length > max) {
-	  max = length;
-	  if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
-
-	      bool nfs = !strcmp(MOUNTTYPE(me), "nfs");
-	      bool autofs = !strcmp(MOUNTTYPE(me), "autofs");
-	      bool pid = (strstr(FSNAME(me), ":(pid") != 0);
-
-	      if (nfs && !pid)
-		  isslow = Right;
-	      else if (isslow == Right)
-		  isslow = Wrong;
-
-	      /* Does this look like automounted? */
-	      if (autofs || (nfs && pid)) {
-		  isauto = Right;
-		  isslow = Right;
-	      }
-	  }
-      }
-    }
-
-    if (isauto == Right && isslow == Unseen)
-	isslow = Right;
-
-    ENDMNTENT(mtab);
-    return (isslow == Right);
-}
 
 

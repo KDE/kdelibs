@@ -133,7 +133,7 @@ void Kded::dirDeleted(const QString& /*path*/)
   m_pTimer->start( 2000, true /* single shot */ );
 }
 
-void Kded::update(const QString& path)
+void Kded::update(const QString& )
 {
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
      bool needUpdate = kded->needUpdate();
      if (needUpdate)
         kded->recreate();
-  
+
      if (check)
         return 0;
 

@@ -92,7 +92,7 @@ QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedS
     int hr = secs / ( 60 * 60 );
     int mn = ( secs - hr * 60 * 60 ) / 60;
     int sc = ( secs - hr * 60 * 60 - mn * 60 );
-    
+
     remainingTime.setHMS( hr, mn, sc );
   }
 
@@ -372,7 +372,7 @@ QString Job::errorString()
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
 #define FSNAME(var) var->mnt_fsname
-#elif BSD
+#elif HAVE_SETFSENT
 #define SETMNTENT(x, y) setfsent()
 #define ENDMNTENT(x) /* nope */
 #define STRUCT_MNTENT struct fstab *
@@ -381,7 +381,7 @@ QString Job::errorString()
 #define MOUNTPOINT(var) var->fs_file
 #define MOUNTTYPE(var) var->fs_vftype
 #define FSNAME(var) var->fs_spec
-#else /* no setmntent and no BSD */
+#else /* no setmntent and no setfsent */
 #define SETMNTENT fopen
 #define ENDMNTENT fclose
 #define STRUCT_MNTENT struct mnttab
@@ -460,3 +460,81 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     //kdDebug( 7007 ) << "Returning result " << result << endl;
     return result;
 }
+
+/**
+ * Idea and code by Olaf Kirch <okir@caldera.de>
+ **/
+bool probably_slow_mounted(const QString& filename)
+{
+    STRUCT_SETMNTENT	mtab;
+    char		realname[MAXPATHLEN];
+    int		        length, max;
+
+    memset(realname, 0, MAXPATHLEN);
+
+    /* If the path contains symlinks, get the real name */
+    if (realpath(filename, realname) == NULL) {
+	if (filename.length() >= sizeof(realname))
+	    return false;
+	strcpy(realname, filename);
+    }
+
+    /* Get the list of mounted file systems */
+
+    if ((mtab = SETMNTENT(MNTTAB, "r")) == NULL) {
+	perror("setmntent");
+	return false;
+    }
+
+    /* Loop over all file systems and see if we can find our
+     * mount point.
+     * Note that this is the mount point with the longest match.
+     * XXX: Fails if me->mnt_dir is not a realpath but goes
+     * through a symlink, e.g. /foo/bar where /foo is a symlink
+     * pointing to /local/foo.
+     *
+     * How kinky can you get with a filesystem?
+     */
+
+    max = 0;
+    STRUCT_MNTENT me;
+
+    enum { Unseen, Right, Wrong } isauto = Unseen, isslow = Unseen;
+
+    while (true) {
+      if (!GETMNTENT(mtab, me))
+	break;
+
+      length = strlen(MOUNTPOINT(me));
+
+      if (!strncmp(MOUNTPOINT(me), realname, length)
+	  && length > max) {
+	  max = length;
+	  if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
+
+	      bool nfs = !strcmp(MOUNTTYPE(me), "nfs");
+	      bool autofs = !strcmp(MOUNTTYPE(me), "autofs");
+	      bool pid = (strstr(FSNAME(me), ":(pid") != 0);
+
+	      if (nfs && !pid)
+		  isslow = Right;
+	      else if (isslow == Right)
+		  isslow = Wrong;
+
+	      /* Does this look like automounted? */
+	      if (autofs || (nfs && pid)) {
+		  isauto = Right;
+		  isslow = Right;
+	      }
+	  }
+      }
+    }
+
+    if (isauto == Right && isslow == Unseen)
+	isslow = Right;
+
+    ENDMNTENT(mtab);
+    return (isslow == Right);
+}
+
+
