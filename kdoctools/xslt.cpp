@@ -384,16 +384,17 @@ QCString fromUnicode( const QString &data )
     uint buffer_len = 0;
     uint len = 0;
     uint offset = 0;
+    const int part_len = 5000;
 
     QString part;
 
     while ( offset < data.length() )
     {
-        part = data.mid( offset, 5000 );
+        part = data.mid( offset, part_len );
         QCString test = locale->fromUnicode( part );
         if ( locale->toUnicode( test ) == part ) {
             result += test;
-            offset += 5000;
+            offset += part_len;
             continue;
         }
         len = part.length();
@@ -412,7 +413,7 @@ QCString fromUnicode( const QString &data )
             }
         }
         result += QCString( buffer, buffer_len );
-        offset += 5000;
+        offset += part_len;
     }
     return result;
 }
