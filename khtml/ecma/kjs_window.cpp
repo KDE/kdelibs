@@ -928,12 +928,14 @@ KJSO Location::get(const UString &p) const
     str = url.query();
   else if (p == "[[==]]")
     return toString();
+  else if (HostImp::hasProperty(p))
+    return HostImp::get(p);
   else if (p == "replace")
     return Function(new LocationFunc(part, LocationFunc::Replace));
   else if (p == "reload")
     return Function(new LocationFunc(part, LocationFunc::Reload));
   else
-    return HostImp::get(p);
+    return Undefined();
 
   return String(str);
 }
