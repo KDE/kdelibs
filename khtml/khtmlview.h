@@ -233,6 +233,9 @@ private:
 
     // ------------------------------------- member variables ------------------------------------
  private:
+
+    void setWidgetVisible(::khtml::RenderWidget*, bool visible);
+
     int _width;
     int _height;
 
