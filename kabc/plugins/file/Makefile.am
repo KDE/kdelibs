@@ -14,6 +14,7 @@ kde_module_LTLIBRARIES = kabc_file.la
 kabc_file_la_SOURCES = resourcefileplugin.cpp
 kabc_file_la_LDFLAGS = -module $(KDE_PLUGIN) $(KDE_RPATH) $(all_libraries) -no-undefined
 kabc_file_la_LIBADD = libkabc_file.la
+kabc_file_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 
 METASOURCES = AUTO
 
