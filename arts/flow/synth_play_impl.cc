@@ -102,8 +102,8 @@ public:
 			}
 			else
 			{
-				arts_info("Synth_PLAY: audio subsystem init failed\n");
-				arts_info("ASError = %s\n",as->error());
+				arts_info("Synth_PLAY: audio subsystem init failed");
+				arts_info("ASError = %s",as->error());
 			}
 		}
 	}

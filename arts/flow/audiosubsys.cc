@@ -246,15 +246,15 @@ int AudioSubSystem::open()
 	if(ioctl(audio_fd,SNDCTL_DSP_GETCAPS,&device_caps) == -1)
             device_caps=0;
 
-	artsdebug("device capabilities: ");
-	artsdebug("revision%d ",device_caps & DSP_CAP_REVISION);
-	if(device_caps & DSP_CAP_DUPLEX) artsdebug("duplex ");
-	if(device_caps & DSP_CAP_REALTIME) artsdebug("realtime ");
-	if(device_caps & DSP_CAP_BATCH) artsdebug("batch ");
-	if(device_caps & DSP_CAP_COPROC) artsdebug("coproc ");
-	if(device_caps & DSP_CAP_TRIGGER) artsdebug("trigger ");
-	if(device_caps & DSP_CAP_MMAP) artsdebug("mmap ");
-	artsdebug("\n");
+	string caps = "";
+	if(device_caps & DSP_CAP_DUPLEX) caps += "duplex ";
+	if(device_caps & DSP_CAP_REALTIME) caps += "realtime ";
+	if(device_caps & DSP_CAP_BATCH) caps += "batch ";
+	if(device_caps & DSP_CAP_COPROC) caps += "coproc ";
+	if(device_caps & DSP_CAP_TRIGGER) caps += "trigger ";
+	if(device_caps & DSP_CAP_MMAP) caps += "mmap ";
+	artsdebug("device capabilities: revision%d %s",
+					device_caps & DSP_CAP_REVISION, caps.c_str());
 
 	int format = AFMT_S16_LE;  
 	if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &format)==-1)  
@@ -385,7 +385,7 @@ int AudioSubSystem::open()
 	_fragmentCount = info.fragstotal;
 
 	artsdebug("buffering: %d fragments with %d bytes "
-		"(audio latency is %1.1f ms)\n", _fragmentCount, _fragmentSize,
+		"(audio latency is %1.1f ms)", _fragmentCount, _fragmentSize,
 		(float)(_fragmentSize*_fragmentCount) /
 		(float)(2.0 * _samplingRate * _channels)*1000.0);
 

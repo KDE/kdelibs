@@ -124,10 +124,11 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	// we want everything converted to little endian unconditionally
 	afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_LITTLEENDIAN);
 
-	arts_debug("loaded wav %s\n",filename.c_str());
-	arts_debug("  sample format: %d, sample width: %d\n",
+	arts_debug("loaded wav %s",filename.c_str());
+	arts_debug("  sample format: %d, sample width: %d",
 		sampleFormat,sampleWidth);
-	arts_debug("  channelCount: %d\n",channelCount);
+	arts_debug("   channelCount: %d",channelCount);
+	arts_debug("     frameCount: %d",frameCount);
 
 	// different handling required for other sample widths
 	assert(sampleWidth == 16 || sampleWidth == 8);
