@@ -22,6 +22,7 @@
 
 #include <kjs/kjs.h>
 #include <kjs/object.h>
+#include <kjs/global_object.h>
 #include <kjs/function.h>
 
 #include <khtml_part.h>
@@ -117,7 +118,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   KJS::KJSO thisNode = n.isNull() ? KJSO( Window::retrieve( m_part ) ) : getDOMNode(n);
 
-  KJS::Global::current().setExtra(m_part);
+//  KJS::Global::current().setExtra(m_part);
   bool success = m_script->evaluate(thisNode, c, len);
 //  if (m_script->recursion() == 0)
 //    KJS::Global::current().setExtra(0L);
@@ -162,7 +163,6 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 
   initScript();
   m_script->init(); // set a valid current interpreter
-  KJS::Global::current().setExtra(m_part);
   KJS::Constructor constr(KJS::Global::current().get("Function").imp());
   KJS::List args;
   args.append(KJS::String("event"));
@@ -234,7 +234,13 @@ void KJSProxyImpl::initScript()
   m_script->setDebuggingEnabled(m_debugEnabled);
 #endif
   m_script->enableDebug();
-  KJS::Imp *global = m_script->globalObject();
+
+  KJS::Imp* global = m_script->globalObject();
+  // Set the part as the "extra" data in the global object (once and for all)
+  m_script->setExtra(m_part);
+  
+  // The Window object is the prototype of the global object's imp (per the spec)
+  // (this makes all the Window methods available at the toplevel namespace)
   global->setPrototype(new Window(m_part));
 }
 

@@ -88,6 +88,9 @@ bool DOMNode::hasProperty(const UString &p, bool recursive) const
 
 KJSO DOMNode::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMNode::tryGet " << p.qstring().latin1() << endl;
+#endif
   KJSO result;
   khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
 
@@ -487,6 +490,9 @@ bool DOMDocument::hasProperty(const UString &p, bool recursive) const
 
 KJSO DOMDocument::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMDocument::tryGet " << p.qstring().latin1() << endl;
+#endif
   DOM::Document doc = static_cast<DOM::Document>(node);
 
   if (p == "doctype")
