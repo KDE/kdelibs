@@ -247,6 +247,8 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
         if (found = (b && (*it)->isPlugged(ttb, b->id())), found)
             break;
 
+    int id;
+
     if (found)
     {
         index = ttb->itemIndex(b->id());
@@ -257,28 +259,26 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
 
         // if in 0th position or in second half of button then we are done
         if (pos.x() > ((r.left() + r.right())/2) || index == 0)
-        {
-            a = (*it);
-            tb = ttb;
-            return true;
-        }
+            goto okay_exit;
      
         // else we jump to the previous index
         index--;
     }
     else
     {
-        return false;
+        found = false;
+        goto failure_exit;
     }
 
-    int id = ttb->idAt(index);
+    id = ttb->idAt(index);
 
     // don't drop on our own seperator
     // drop after it, i.e, go back again
     if (id == -9999) // fixme with define for num?
     {
         index++;
-        return false;
+        found = false;
+        goto failure_exit;
     }
 
     kdDebug(7043) << "id for prev index == " << id << endl;
@@ -297,6 +297,13 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     a = (*it);
     index = ttb->itemIndex(id);
     kdDebug(7043) << "new index = " << index << endl;
+
+okay_exit:
+    a = (*it);
+    tb = ttb;
+    found = true;
+
+failure_exit:
     return found;
 }
 
