@@ -1,10 +1,13 @@
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qfiledialog.h>
+// $Id$
 
-#include <klined.h>
+#include <qcheckbox.h>
+#include <qfiledialog.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+
 #include <kapp.h>
+#include <kdebug.h>
+#include <klined.h>
 
 #include "ksconfig.moc"
 
@@ -363,14 +366,14 @@ void KSpellConfig::fillInDialog (void)
 	{
 	  QString fname, lname, hname;
 
-	  dsdebug ("%s\n",(const char *)thedir [i]);
+	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
 	  fname = (const char *)thedir [i];
 
 	  if (interpret (fname, lname, hname))
 	    { // This one is the KDE default language
 	      // so place it first in the lists (overwrite "Default")
 
-	      dsdebug ("default is [%s][%s]\n",hname.data(),fname.data());
+	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
 	      langfnames->removeFirst();
 	      langfnames->insert (0,fname);
 
@@ -393,16 +396,16 @@ void KSpellConfig::fillInDialog (void)
       
     }
   int whichelement=-1;
-  dsdebug ("dfl=%d\n",dictFromList());
+  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
   if (dictFromList())
     for (unsigned i=0;i<langfnames->count();i++)
       {
-	dsdebug ("[%s]==[%s]?\n",langfnames->at(i),dictionary());
+	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary());
 	if (!strcmp(langfnames->at(i),dictionary()))
 	  whichelement=i;
       }
 
-  dsdebug ("whiche=%d\n",whichelement);
+  kdebug (KDEBUG_INFO, 750, "whiche=%d", whichelement);
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
   if (dictionary()[0]=='\0' ||  whichelement!=-1)
@@ -443,12 +446,12 @@ void KSpellConfig::setDictionary (const char *s)
     if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
       qsdict.remove (qsdict.length()-4,4);
 
-  dsdebug ("setdictionary: [%s]\n",qsdict.data());
+  kdebug (KDEBUG_INFO, 750, "setdictionary: [%s]",qsdict.data());
 }
 
 void KSpellConfig::setDictFromList (bool dfl)
 {
-  dsdebug ("sdfl = %d\n",dfl);
+  kdebug (KDEBUG_INFO, 750, "sdfl = %d", dfl);
   dictfromlist=dfl;
 }
 
@@ -461,9 +464,9 @@ void KSpellConfig::setPersonalDict (const char *s)
 
 void KSpellConfig::setEncoding (int enctype)
 {
-  dsdebug ("setEncoding (%d)\n",enctype);
+  kdebug (KDEBUG_INFO, 750, "setEncoding (%d)", enctype);
   enc=enctype;
-  dsdebug ("encoding=(%d)\n",encoding());
+  kdebug (KDEBUG_INFO, 750, "encoding=(%d)\n", encoding());
 }
 
 /*
@@ -529,7 +532,7 @@ void KSpellConfig::sBrowsePDict()
 
 void KSpellConfig::sSetDictionary (int i)
 {
-  dsdebug ("SSD (%d,%d)\n",i,dictcombo->currentItem());
+  kdebug (KDEBUG_INFO, 750, "SSD (%d,%d)", i, dictcombo->currentItem());
   setDictionary (langfnames->at(i));
   setDictFromList (TRUE);
 }
@@ -539,14 +542,14 @@ void KSpellConfig::sDictionary(bool on)
   if (on)
     {
       dictcombo->setEnabled (TRUE);
-      dsdebug ("SD (%d)\n",dictcombo->currentItem());
+      kdebug (KDEBUG_INFO, 750, "SD (%d)", dictcombo->currentItem());
       setDictionary (langfnames->at(dictcombo->currentItem()));
       setDictFromList (TRUE);
     }
   else
     {
       dictcombo->setEnabled (FALSE);
-      dsdebug ("SDoff\n");
+      kdebug (KDEBUG_INFO, 750, "SDoff");
     }
 }
 
@@ -557,7 +560,7 @@ void KSpellConfig::sPathDictionary(bool on)
 
   if (on)
     {
-      dsdebug ("spd\n");
+      kdebug (KDEBUG_INFO, 750, "spd");
       //kle1->setEnabled (TRUE);
       //      browsebutton1->setEnabled (TRUE);
       setDictionary (kle1->text());
@@ -576,7 +579,7 @@ void KSpellConfig::sHelp()
 /*
 void KSpellConfig::textChanged1 (const char *s)
 {
-  dsdebug ("tc1\n");
+  kdebug (KDEBUG_INFO, 750, "tc1");
   setDictionary (s);
 }
 
@@ -590,7 +593,7 @@ void KSpellConfig::operator= (const KSpellConfig &ksc)
 {
   //We want to copy the data members, but not the
   //pointers to the child widgets
-  dsdebug ("op=\n");
+  kdebug (KDEBUG_INFO, 750, "op=");
   setNoRootAffix (ksc.noRootAffix());
   setRunTogether (ksc.runTogether());
   setDictionary (ksc.dictionary());
