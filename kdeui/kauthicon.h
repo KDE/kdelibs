@@ -129,7 +129,7 @@ class KWritePermsIcon : public KAuthIcon
   Q_OBJECT
 
 public:
-  KWritePermsIcon(QString fileName, QWidget *parent = 0, const char *name = 0);
+  KWritePermsIcon(const QString & fileName, QWidget *parent = 0, const char *name = 0);
   ~KWritePermsIcon();
   /**
    * @return whether or not the monitored file is writable.
@@ -140,7 +140,8 @@ public:
    * make the icon watch a new filename.
    * @param fileName the new file to monitor / display status for.
    */
-  void setFileName(QString fileName) { fi.setFile(fileName); updateStatus(); }
+  void setFileName(const QString & fileName) { fi.setFile(fileName); updateStatus(); }
+
 public slots:
   void updateStatus();
 

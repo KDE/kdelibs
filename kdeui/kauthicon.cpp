@@ -166,7 +166,7 @@ void KRootPermsIcon::updateStatus()
 
 /************************************************************************/
 
-KWritePermsIcon::KWritePermsIcon(QString fileName,
+KWritePermsIcon::KWritePermsIcon(const QString & fileName,
 				 QWidget *parent, const char *name)
   : KAuthIcon(parent, name)
 {

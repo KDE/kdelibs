@@ -1355,7 +1355,7 @@ int KDialogBase::pageIndex( QWidget *widget ) const
 
 
 // Deprecated
-QRect KDialogBase::getContentsRect()
+QRect KDialogBase::getContentsRect() const
 {
   QRect r;
   r.setLeft( marginHint() );
@@ -1394,7 +1394,7 @@ void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
 }
 
 
-QSize KDialogBase::calculateSize(int w, int h)
+QSize KDialogBase::calculateSize(int w, int h) const
 {
   int ulx, uly, lrx, lry;
   getBorderWidths(ulx, uly, lrx, lry);
@@ -1402,7 +1402,7 @@ QSize KDialogBase::calculateSize(int w, int h)
 }
 
 
-QString KDialogBase::helpLinkText()
+QString KDialogBase::helpLinkText() const
 {
   return( mHelpLinkText==QString::null ? i18n("Get help...") : mHelpLinkText );
 }

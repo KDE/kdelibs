@@ -1037,7 +1037,7 @@ class KDialogBase : public KDialog
      * If you need the "overhead" the dialog needs for its elements, 
      * use @ref getBorderWidths().
      */
-    QRect getContentsRect();
+    QRect getContentsRect() const;
 
     /** 
      * Calculate the size hint for the dialog.
@@ -1056,7 +1056,7 @@ class KDialogBase : public KDialog
      * @return The minimum width and height of the dialog using @p w and @p h
      * as the size of the main widget.
      */
-    QSize calculateSize( int w, int h );
+    QSize calculateSize( int w, int h ) const;
 
     /**
      * Returns the help link text.
@@ -1066,7 +1066,7 @@ class KDialogBase : public KDialog
      *
      * @return The help link text.
      */
-    QString helpLinkText();
+    QString helpLinkText() const;
 
     /**
      * Returns the action button that corresponds to the @p id.
