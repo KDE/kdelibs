@@ -23,12 +23,22 @@
 // (c) Martin R. Jones 1996
 //
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <qfile.h>
-#include "kfilebookmark.h"
 #include "kfilebookmark.h"
 
 #include <klocale.h>
 #include <kapp.h>
+
+/* FIXME 
+ * kfilebookmarks should be rewritten to use Qt, and not things like
+ * strcasecmp
+ */
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 
 template class QList<KFileBookmark>;
 
