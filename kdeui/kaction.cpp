@@ -303,6 +303,13 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
 
 void KAction::setAccel( int a )
 {
+  // Make sure that we are really
+  //  using the right modifier combination by converting to it's X equivalent
+  //  and back. Neccessary for punctuation keys on varying layouts.
+  uint keySymX, keyModX;
+  KAccel::keyQtToKeyX( a, 0, &keySymX, &keyModX );
+  a = KAccel::keySymXToKeyQt( keySymX, keyModX );
+
   d->m_accel = a;
 
   if ( m_parentCollection )

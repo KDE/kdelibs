@@ -222,6 +222,15 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 
     KKeyEntry entry;
 
+    // If this is an application shortcut, make sure that we are really
+    //  using the right modifier combination by converting to it's X equivalent
+    //  and back. Neccessary for punctuation keys on varying layouts.
+    if( id ) {
+        uint keySymX, keyModX;
+        keyQtToKeyX( defaultKeyCode3.key(), 0, &keySymX, &keyModX );
+        defaultKeyCode3 = keySymXToKeyQt( keySymX, keyModX );
+    }
+
     entry.aDefaultKeyCode = defaultKeyCode3.key();
     //entry.aDefaultKeyCode4 = defaultKeyCode4.key();
     entry.aCurrentKeyCode = /*entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
