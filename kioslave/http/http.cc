@@ -2,6 +2,10 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_LIBZ
+#define DO_GZIP
+#endif
+
 #include <kio_manager.h>
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
