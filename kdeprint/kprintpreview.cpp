@@ -84,6 +84,7 @@ public:
 		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
 		actions_ = new KActionCollection(dlg);
 		accel_ = new KAccel(dlg);
+		previewonly_ = false;
 	}
 	~KPrintPreviewPrivate()
 	{
@@ -100,7 +101,43 @@ public:
 	KActionCollection	*actions_;
 	QWidget			*mainwidget_;
 	KAccel			*accel_;
+	bool			previewonly_;
 };
+
+KLibFactory* componentFactory()
+{
+	kdDebug() << "kdeprint: querying trader for 'application/postscript' service" << endl;
+	KLibFactory	*factory(0);
+	KTrader::OfferList	offers = KTrader::self()->query(QString::fromLatin1("application/postscript"), QString::fromLatin1("'KParts/ReadOnlyPart' in ServiceTypes"));
+	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
+	{
+		KService::Ptr	service = *it;
+		factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
+		if (factory)
+			break;
+	}
+	if (!factory)
+	{
+		// nothing has been found, try to load directly the KGhostview part
+		factory = KLibLoader::self()->factory("libkghostview");
+	}
+	return factory;
+}
+
+bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly)
+{
+	QString	msg(msg_);
+	if (previewOnly)
+	{
+		KMessageBox::error(parent, msg);
+		return false;
+	}
+	else
+	{
+		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
+		return (KMessageBox::warningYesNo(parent, msg, QString::null, i18n("Print"), i18n("Cancel")) == KMessageBox::Yes);
+	}
+}
 
 //*******************************************************************************************
 
@@ -109,6 +146,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 {
 	kdDebug() << "kdeprint: creating preview dialog" << endl;
 	d = new KPrintPreviewPrivate(this);
+	d->previewonly_ = previewOnly;
 
 	// create main view and actions
 	setMainWidget(d->mainwidget_);
@@ -120,29 +158,20 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 		new KAction(i18n("Cancel"), "stop", Qt::Key_Escape, this, SLOT(reject()), d->actions_, "stop_print");
 	}
 
-	// ask the trader for service handling postscript
-	kdDebug() << "kdeprint: querying trader for 'application/postscript' service" << endl;
-	KTrader::OfferList	offers = KTrader::self()->query(QString::fromLatin1("application/postscript"), QString::fromLatin1("'KParts/ReadOnlyPart' in ServiceTypes"));
-	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
-	{
-		KService::Ptr	service = *it;
-		KLibFactory	*factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
-		if (factory)
-		{
-			d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
-			break;
-		}
-	}
-	if (!d->gvpart_)
-	{
-		// nothing has been found, try to load directly KGhostview part
-		KLibFactory	*factory = KLibLoader::self()->factory("libkghostview");
-		if (factory)
-			d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
-	}
+}
+
+KPrintPreview::~KPrintPreview()
+{
+	delete d;
+}
+
+void KPrintPreview::initView(KLibFactory *factory)
+{
+	// load the component
+	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
 
 	// populate the toolbar
-	if (previewOnly)
+	if (d->previewonly_)
 		d->plugAction(d->actions_->action("close_print"));
 	else
 	{
@@ -166,8 +195,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	d->toolbar_->setIconText(KToolBar::IconTextRight);
 	d->toolbar_->setBarPos(KToolBar::Top);
 	d->toolbar_->setMovingEnabled(false);
-	//static_cast<QWidget*>(d->toolbar_)->layout()->setMargin(1);
-	d->toolbar_->adjustSize();
+	//d->adjustSize();
 
 	// construct the layout
 	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_, 0, 0);
@@ -177,11 +205,6 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 
 	resize(855, 500);
 	setCaption(i18n("Print Preview"));
-}
-
-KPrintPreview::~KPrintPreview()
-{
-	delete d;
 }
 
 void KPrintPreview::openFile(const QString& file)
@@ -198,70 +221,76 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 {
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
-	if (conf->readBoolEntry("ExternalPreview", false))
+	KLibFactory	*factory(0);
+	bool	externalPreview = conf->readBoolEntry("ExternalPreview", false);
+	QWidget	*parentW = QWidget::find(parentId);
+	QString	exe;
+	if (!externalPreview && (factory = componentFactory()) != 0)
 	{
-		QString	exe = conf->readEntry("PreviewCommand", "gv");
-		if (KStandardDirs::findExe(exe).isEmpty())
-		{
-			KMessageBox::error(NULL, i18n("The preview program %1 cannot be found. "
-						      "Check that the program is correctly installed and "
-						      "located in a directory included in your PATH "
-						      "environment variable.").arg(exe));
-			return false;
-
-		}
-		else
-		{
-			KPreviewProc	proc;
-			proc << exe << file;
-			if (!proc.startPreview())
-			{
-				KMessageBox::error(NULL, i18n("Preview failed: unable to start program %1.").arg(exe));
-				return false;
-			}
-			else
-				return !previewOnly;
-		}
-	}
-	else
-	{
-		QWidget	*parentW = QWidget::find(parentId);
 		KPrintPreview	dlg(parentW, previewOnly);
+		dlg.initView(factory);
 
 		if (dlg.isValid())
 		{
 			dlg.openFile(file);
 			return dlg.exec();
 		}
-		else if (previewOnly)
-                {
-			KService::Ptr serv = KServiceTypeProfile::preferredService( "application/postscript", QString::null );
-			if ( serv )
-			{
-				KURL url;
-				url.setPath( file );
-				QStringList args = KRun::processDesktopExec( *serv, url, false );
-				KPreviewProc	proc;
-				proc << args;
-				//kdDebug() << args.join(" ") << endl;
-				if (!proc.startPreview())
-				{
-					KMessageBox::error(NULL, i18n("Preview failed: unable to start program %1.").arg(serv->name()));
-					return false;
-				}
-				return !previewOnly;
-			} else {
-				KMessageBox::error(NULL, i18n("Preview failed: no postscript viewer found."));
-				return false;
-			}
-                }
-                else
-			return (KMessageBox::warningYesNo(parentW,
-				i18n("KDE was unable to locate an appropriate object "
-				     "for print previewing. Do you want to continue "
-					 "printing anyway?"),
-				i18n("Warning"), i18n("Print"), i18n("Cancel")) == KMessageBox::Yes);
+		else
+			// do nothing at that point: try to use the other way around by
+			// using an external PS viewer if possible
+			;
 	}
+
+	// Either the PS viewer component was not found, or an external
+	// preview program has been specified
+	KPreviewProc	proc;
+	if (externalPreview)
+	{
+		exe = conf->readEntry("PreviewCommand", "gv");
+		if (KStandardDirs::findExe(exe).isEmpty())
+		{
+			QString	msg = i18n("The preview program %1 cannot be found. "
+						       "Check that the program is correctly installed and "
+						       "located in a directory included in your PATH "
+						       "environment variable.").arg(exe);
+			return continuePrint(msg, parentW, previewOnly);
+		}
+		proc << exe << file;
+	}
+	else
+	{
+		KService::Ptr serv = KServiceTypeProfile::preferredService( "application/postscript", QString::null );
+		if ( serv )
+		{
+			KURL url;
+			url.setPath( file );
+			QStringList args = KRun::processDesktopExec( *serv, url, false );
+			proc << args;
+			exe = serv->name();
+		}
+		else
+		{
+			// in that case, the PS viewer component could not be loaded and no service
+			// could be found to view PS
+			QString	msg = i18n("Preview failed: neither the internal KDE PostScript "
+			                   "viewer (kghostview) nor any other external PostScript "
+			                   "viewer could be found.");
+			return continuePrint(msg, parentW, previewOnly);
+		}
+	}
+
+	// start the preview process
+	if (!proc.startPreview())
+	{
+		QString	msg = i18n("Preview failed: unable to start program %1.").arg(exe);
+		return continuePrint(msg, parentW, previewOnly);
+	}
+	else if (!previewOnly)
+	{
+		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString::null, i18n("Print"), i18n("Cancel"), "continuePrinting") == KMessageBox::Yes);
+	}
+	else
+		return false;
 }
 
 #include "kprintpreview.moc"

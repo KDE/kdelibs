@@ -26,6 +26,8 @@
 #include <qstring.h>
 #include <kprocess.h>
 
+class KLibFactory;
+
 class KPrintPreview : public KDialogBase
 {
 	Q_OBJECT
@@ -37,6 +39,9 @@ public:
 	bool isValid() const;
 
 	static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
+
+private:
+	void initView(KLibFactory*);
 
 private:
 	class KPrintPreviewPrivate;

@@ -40,9 +40,9 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 	m_program = new KURLRequester(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "
-					  "KDE built-in preview system."
-					  "<p><b><u>Warning:</u></b> using an external program means that "
-					  "printing can not be canceled from the preview."));
+					  "KDE built-in preview system. Note that if the KDE default PS viewer "
+					  "(kghostview) can be found, KDE tries automatically to find another "
+					  "external PostScript viewer"));
 	lab->setTextFormat(Qt::RichText);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
