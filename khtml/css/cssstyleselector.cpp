@@ -91,7 +91,9 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     userStyle = 0;
     userSheet = 0;
     paintDeviceMetrics = doc->paintDeviceMetrics();
-    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
+	
+	if(paintDeviceMetrics) // this may be null, not everyone uses khtmlview (Niko)
+	    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
