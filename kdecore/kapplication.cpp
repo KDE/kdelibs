@@ -1346,6 +1346,7 @@ bool KApplication::sessionSaving() const
 
 void KApplication::startKdeinit()
 {
+#ifndef Q_WS_WIN //TODO
   // Try to launch kdeinit.
   QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
   if (srv.isEmpty())
@@ -1357,6 +1358,7 @@ void KApplication::startKdeinit()
   my_system(QFile::encodeName(srv)+" --suicide");
   if (kapp && (Tty != kapp->type()))
     restoreOverrideCursor();
+#endif
 }
 
 void KApplication::dcopFailure(const QString &msg)
