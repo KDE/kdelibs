@@ -185,6 +185,7 @@ namespace KIO
 
     // Size of the file
     UDS_SIZE = 8 | UDS_LONG,
+    UDS_SIZE_LARGE = 32768 | UDS_LONG, // For internal use only
     // User ID of the file owner
     UDS_USER = 16 | UDS_STRING,
     // Group ID of the file owner

@@ -291,10 +291,12 @@ private:
 
 inline QDataStream &operator >>(QDataStream &s, KIO::UDSAtom &a )
 {
+    long l;
     s >> a.m_uds;
 
     if ( a.m_uds & KIO::UDS_LONG ) {
-        s >> a.m_long;
+        s >> l;
+        a.m_long = l;
         a.m_str = QString::null;
     } else if ( a.m_uds & KIO::UDS_STRING ) {
         s >> a.m_str;
@@ -310,7 +312,7 @@ inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
     s << a.m_uds;
 
     if ( a.m_uds & KIO::UDS_LONG )
-        s << a.m_long;
+        s << (long) a.m_long;
     else if ( a.m_uds & KIO::UDS_STRING )
         s << a.m_str;
     else {} // DIE!
@@ -318,5 +320,8 @@ inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
 
     return s;
 }
+
+QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
+QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
 
 #endif
