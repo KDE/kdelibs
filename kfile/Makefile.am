@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
+AM_CPPFLAGS = -DQT_NO_CAST_ASCII
 
 INCLUDES= -I$(top_srcdir) -I$(srcdir)/../libltdl/ -I$(top_srcdir)/kio $(all_includes)
 
