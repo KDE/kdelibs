@@ -9,7 +9,7 @@
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
-#include <kintegerline.h>
+#include <kintlineedit.h>
 
 class KRuler;
 class QWidget;
@@ -70,7 +70,7 @@ private:
   QLabel *mouse_message;
   QGroupBox *showMarks, *lineEdit;
   QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM;
-  KIntegerLine *beginMark, *endMark;
+  KIntLineEdit *beginMark, *endMark;
   QButtonGroup *metricstyle;
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 

@@ -124,11 +124,11 @@ KRulerTest::KRulerTest( const char *name = 0L )
   lineEdit = new QGroupBox("Value of begin/end", bigwidget);
   lineEdit->setFixedSize(140, 60);
   lineEdit->move(330,4+120);
-  beginMark = new KIntegerLine(lineEdit);
+  beginMark = new KIntLineEdit(lineEdit);
   beginMark->move(5, 15);
   beginMark->setValue(0);
   beginMark->setFixedSize(60, 20);
-  endMark = new KIntegerLine(lineEdit);
+  endMark = new KIntLineEdit(lineEdit);
   endMark->move(5, 35);
   endMark->setFixedSize(60, 20);
 
