@@ -451,11 +451,12 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
   // WebDAV Stat or List...
   m_request.method = DAV_PROPFIND;
-  m_request.path = url.path();
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
   m_request.davData.depth = stat ? 0 : 1;
+  if (!stat)
+     m_request.url.adjustPath(+1);
 
   retrieveContent( true );
 
@@ -842,6 +843,9 @@ QString HTTPProtocol::davProcessLocks()
 
 bool HTTPProtocol::davHostOk()
 {
+  // FIXME needs to be reworked. Switched off for now.
+  return true;
+
   // cached?
   if ( m_davHostOk )
   {
