@@ -101,16 +101,6 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-short RenderReplaced::lineHeight( bool ) const
-{
-    return height()+marginTop()+marginBottom();
-}
-
-short RenderReplaced::baselinePosition( bool ) const
-{
-    return height()+marginTop()+marginBottom();
-}
-
 void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
 {
     setPos( box->xPos() + marginLeft(), box->yPos() + marginTop() );

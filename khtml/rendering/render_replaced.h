@@ -43,10 +43,6 @@ public:
 
     virtual const char *renderName() const { return "RenderReplaced"; }
 
-
-    virtual short lineHeight( bool firstLine) const;
-    virtual short baselinePosition( bool firstLine ) const;
-
     virtual void calcMinMaxWidth();
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
