@@ -35,12 +35,16 @@ class QString;
 class QGridLayout;
 class KLineEdit;
 class KBookmark;
+class KBookmarkGroup;
 class KAction;
 class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
+class QPopupMenu;
+// class KEBListViewItem;
+
 namespace KIO { class Job; }
 
 /**
@@ -198,7 +202,8 @@ protected slots:
     void slotCancel();
 
 private:
-    void init(QString title, QString url);
+    // void drawRoot();
+    // void fillGroup( KEBListViewItem * parentItem, KBookmarkGroup group );
 
     QGridLayout *m_pGrid;
     QWidget *m_pMain;

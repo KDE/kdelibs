@@ -316,164 +316,12 @@ void KBookmarkMenu::fillBookmarkMenu()
   }
 }
 
-
-BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, 
-                                 QWidget *parent, const char *name)
-    : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
-{
-    init(title, url);
-}
-
-
-// TODO i18n-ize the messages
-
-void BookmarkEditDialog::init(QString title, QString url)
-{
-   m_pMain = new QWidget(this);
-   setMainWidget(m_pMain);
-
-   m_pGrid = new QGridLayout(m_pMain, 2, 2, 10, 0);
-   m_pGrid->addColSpacing(1, 10);
-
-   ed1 = new KLineEdit(m_pMain);
-   ed1->setText(title);
-   m_pGrid->addWidget(ed1, 0, 1, AlignRight);
-   ed2 = new KLineEdit(m_pMain);
-   ed2->setText(url);
-   m_pGrid->addWidget(ed2, 1, 1, AlignRight);
-
-   QLabel *lbl;
-
-   lbl = new QLabel(m_pMain);
-   lbl->setAlignment(AlignLeft|AlignVCenter);
-   lbl->setText("Title:");
-   lbl->setFixedSize(lbl->sizeHint());
-   m_pGrid->addWidget(lbl, 0, 0, AlignLeft);
-
-   m_pGrid->addRowSpacing(8, 10);
-   lbl = new QLabel(m_pMain);
-   lbl->setAlignment(AlignLeft|AlignVCenter);
-   lbl->setText("Url:");
-   lbl->setFixedSize(lbl->sizeHint());
-   m_pGrid->addWidget(lbl, 1, 0, AlignLeft);
-}
-
-BookmarkEditDialog::~BookmarkEditDialog() { }
-void BookmarkEditDialog::slotOk()      { accept(); }
-void BookmarkEditDialog::slotCancel()  { reject(); } 
-
-#if 0
-
-class KEBListViewItem : public QListViewItem
-{
-   public:
-      // toplevel item (there should be only one!)
-      KEBListViewItem(QListView *parent, const KBookmark & group );
-      // bookmark (first of its group)
-      KEBListViewItem(KEBListViewItem *parent, const KBookmark & bk );
-      // bookmark (after another)
-      KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmark & bk );
-      // group
-      KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp );
-      // empty group item
-      KEBListViewItem(KEBListViewItem *parent, QListViewItem *after );
-
-      virtual void setOpen( bool );
-      const KBookmark & bookmark() { return m_bookmark; }
-
-   private:
-      void init( const KBookmark & bk );
-
-      KBookmark m_bookmark;
-      int render;
-};
-
-void BookmarkEditDialog::drawRoot()
-{
-   m_pListView->clear();
-   // (re)create root item
-   KBookmarkGroup root = s_pManager->root();
-   KEBListViewItem * rootItem = new KEBListViewItem( m_pListView, root );
-   fillGroup( rootItem, root );
-   rootItem->QListViewItem::setOpen(true);
-}
-
-void KEBListViewItem::init( const KBookmark & bk )
-{
-   setPixmap(0, SmallIcon( bk.icon() ) );
-}
-
-// toplevel item (there should be only one!)
-KEBListViewItem::KEBListViewItem(QListView *parent, const KBookmark & group )
-   : QListViewItem(parent, i18n("Bookmarks") ), m_bookmark(group)
-{
-   setPixmap(0, SmallIcon("bookmark"));
-   setExpandable(true); // Didn't know this was necessary :)
-}
-
-// bookmark (first of its group)
-   KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, const KBookmark & bk )
-: QListViewItem(parent, bk.fullText(), bk.url().prettyURL()), m_bookmark(bk)
-{
-   init(bk);
-}
-
-// bookmark (after another)
-KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmark & bk )
-: QListViewItem(parent, after, bk.fullText(), bk.url().prettyURL()), m_bookmark(bk)
-{
-   init(bk);
-}
-
-// group
-KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp )
-: QListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
-{
-   init(gp);
-   setExpandable(true);
-}
-
-// empty folder item
-KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, QListViewItem *after )
-   : QListViewItem(parent, after, i18n("Empty folder") )
-{
-   setPixmap(0, SmallIcon("bookmark"));
-}
-
-void BookmarkEditDialog::fillGroup( KEBListViewItem * parentItem, KBookmarkGroup group )
-{
-   KEBListViewItem * lastItem = 0L;
-   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
-   {
-      //kdDebug() << "KEBTopLevel::fillGroup group=" << group.text() << " bk=" << bk.text() << endl;
-      if ( bk.isGroup() )
-      {
-         KBookmarkGroup grp = bk.toGroup();
-         KEBListViewItem * item = new KEBListViewItem( parentItem, lastItem, grp );
-         fillGroup( item, grp );
-         if (grp.isOpen())
-            item->QListViewItem::setOpen(true); // no need to save it again :)
-         if (grp.first().isNull()) {
-            // kdWarning() << "found an empty group!!!" << endl;
-            new KEBListViewItem( item, item );
-         }
-         lastItem = item;
-      }
-      else
-      {
-         lastItem = new KEBListViewItem( parentItem, lastItem, bk );
-      }
-   }
-}
-
-#endif
-
 void KBookmarkMenu::slotAddBookmark()
 {
   QString url = m_pOwner->currentURL();
   if (url.isEmpty())
   {
-    // AK - would be nice to get this to actually work.
+    // AK - check this out, don't think it happens anymore???
     KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
     return;
   }
@@ -622,5 +470,128 @@ void KBookmarkMenuNSImporter::endFolder()
 {
   mstack.pop();
 }
+
+BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, 
+                                       QWidget * parent, const char * name)
+    : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
+{
+  m_pMain = new QWidget(this);
+  setMainWidget(m_pMain);
+
+  // add new horiz layout
+
+  // m_pListView = new KListView();
+  // add m_pListView to horiz layout
+  // and a single example item
+
+  m_pGrid = new QGridLayout(m_pMain, 2, 2, 10, 0);
+  m_pGrid->addColSpacing(1, 10);
+
+  ed1 = new KLineEdit(m_pMain);
+  ed1->setText(title);
+  m_pGrid->addWidget(ed1, 0, 1, AlignRight);
+  ed2 = new KLineEdit(m_pMain);
+  ed2->setText(url);
+  m_pGrid->addWidget(ed2, 1, 1, AlignRight);
+
+  QLabel *lbl;
+  lbl = new QLabel(m_pMain);
+  lbl->setAlignment(AlignLeft|AlignVCenter);
+  lbl->setText("Title:");
+  lbl->setFixedSize(lbl->sizeHint());
+  m_pGrid->addWidget(lbl, 0, 0, AlignLeft);
+
+  m_pGrid->addRowSpacing(8, 10);
+  lbl = new QLabel(m_pMain);
+  lbl->setAlignment(AlignLeft|AlignVCenter);
+  lbl->setText("Url:");
+  lbl->setFixedSize(lbl->sizeHint());
+  m_pGrid->addWidget(lbl, 1, 0, AlignLeft);
+
+  // add m_pGrid to the horiz layout;
+}
+
+BookmarkEditDialog::~BookmarkEditDialog() 
+{ 
+}
+
+void BookmarkEditDialog::slotOk()
+{ 
+  accept();
+}
+
+void BookmarkEditDialog::slotCancel()
+
+{ 
+  reject();
+} 
+
+#if 0
+
+void BookmarkEditDialog::drawRoot()
+{
+  m_pListView->clear();
+  KBookmarkGroup root = s_pManager->root();
+  KEBListViewItem * rootItem = new KEBListViewItem( m_pListView, root );
+  fillGroup( rootItem, root );
+  rootItem->QListViewItem::setOpen(true);
+}
+
+void BookmarkEditDialog::fillGroup( KEBListViewItem * parentItem, KBookmarkGroup group )
+{
+  KEBListViewItem * lastItem = 0L;
+  for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
+  {
+    //kdDebug() << "KEBTopLevel::fillGroup group=" << group.text() << " bk=" << bk.text() << endl;
+    if ( bk.isGroup() )
+    {
+      KBookmarkGroup grp = bk.toGroup();
+      KEBListViewItem * item = new KEBListViewItem( parentItem, lastItem, grp );
+      fillGroup( item, grp );
+      if (grp.isOpen())
+        item->QListViewItem::setOpen(true); // no need to save it again :)
+      if (grp.first().isNull()) {
+        // kdWarning() << "found an empty group!!!" << endl;
+        new KEBListViewItem( item, item );
+      }
+      lastItem = item;
+    }
+    else
+    {
+      lastItem = new KEBListViewItem( parentItem, lastItem, bk );
+    }
+  }
+}
+
+class KEBListViewItem : public QListViewItem
+{
+  public:
+    KEBListViewItem(QListView *parent, const KBookmark & group );
+    KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp );
+
+    virtual void setOpen( bool );
+    const KBookmark & bookmark() { return m_bookmark; }
+
+  private:
+    KBookmark m_bookmark;
+};
+
+// toplevel item (there should be only one!)
+KEBListViewItem::KEBListViewItem(QListView *parent, const KBookmark & group )
+   : QListViewItem(parent, i18n("Bookmarks")), m_bookmark(group)
+{
+  setPixmap(0, SmallIcon("bookmark"));
+  setExpandable(true); // Didn't know this was necessary :)
+}
+
+// group
+KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp )
+   : QListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
+{
+  setPixmap(0, SmallIcon( gp.icon() ) );
+  setExpandable(true);
+}
+
+#endif
 
 #include "kbookmarkmenu.moc"
