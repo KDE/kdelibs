@@ -41,7 +41,7 @@ class KSpellDlg : public QWidget
   QGridLayout *layout;
 
 public:
-  KSpellDlg::KSpellDlg (QWidget *parent, const char *name,
+  KSpellDlg (QWidget *parent, const char *name,
 			char *ID);
   char *replacement (void)
     { return newword.data(); }
