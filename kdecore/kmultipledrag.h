@@ -38,10 +38,12 @@ class KMultipleDragPrivate;
  *
  * Sample code for this:
  *
+ * <pre>
  * KMultipleDrag *drag = new KMultipleDrag( parentWidget );
  * drag->addDragObject( new QImageDrag( someQImage, 0L ) );
  * drag->addDragObject( KURLDrag::newDrag( someKURL, 0L ) );
  * drag->drag();
+ * </pre>
  *
  * Note that the drag objects added to the multiple drag become owned by it.
  * For that reason their parent should be 0L.
@@ -53,15 +55,37 @@ class KMultipleDrag : public QDragObject
     Q_OBJECT
 
 public:
+    /**
+     * Create a new KMultipleDrag object.
+     * @param dragSource the parent object which is the source of the data,
+     *                   0 for a parent-less object
+     * @param name the name of the object, can be 0
+     */
     KMultipleDrag( QWidget *dragSource = 0L, const char *name = 0L );
 
     /**
-     * Call this to add each underlying drag object to the multipledrag.
+     * Call this to add each underlying drag object to the multiple drag object.
+     * The drag object should not have a parent because the multiple drag object
+     * will own it.
+     * 
+     * @param dragObject the drag object to add. Should have no parent object.
      */
     void addDragObject( QDragObject *dragObject );
 
 protected:
+    /** 
+     * Returns the data of a drag object with that supports the given
+     * mime type.
+     * @param mime the mime type to search
+     * @return the data, or a null byte array if not found
+     */
     virtual QByteArray encodedData( const char *mime ) const;
+
+    /**
+     * Returns the @p i'th supported format, or 0.
+     * @param i the number of the format to check
+     * @return the format with the number @p i, or 0 otherwise
+     */
     virtual const char* format( int i ) const;
 
     QPtrList<QDragObject> m_dragObjects;
