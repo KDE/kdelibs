@@ -51,6 +51,7 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   valueOf		StringProtoFuncImp::ValueOf	DontEnum|Function	0
   charAt		StringProtoFuncImp::CharAt	DontEnum|Function	1
   charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|Function	1
+  concat		StringProtoFuncImp::Concat	DontEnum|Function	1
   indexOf		StringProtoFuncImp::IndexOf	DontEnum|Function	2
   lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|Function	2
   match			StringProtoFuncImp::Match	DontEnum|Function	1
@@ -163,6 +164,14 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     result = Number(d);
     break;
+  case Concat: {
+    ListIterator it = args.begin();
+    for ( ; it != args.end() ; ++it) {
+        s += it->toString(exec);
+    }
+    result = String(s);
+    break;
+  }
   case IndexOf:
     u2 = a0.toString(exec);
     if (a1.type() == UndefinedType)

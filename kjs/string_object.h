@@ -64,7 +64,7 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
-    enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
+    enum { ToString, ValueOf, CharAt, CharCodeAt, Concat, IndexOf, LastIndexOf,
 	   Match, Replace, Search, Slice, Split,
 	   Substr, Substring, FromCharCode, ToLowerCase, ToUpperCase
 #ifndef KJS_PURE_ECMA
