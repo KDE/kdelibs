@@ -1108,6 +1108,13 @@ CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
 
   SeekBoxParams sbp(seekBox, seekOutside, seekOutsideEnd, seekObject, iter);
 
+  // ### hacky workaround for the <li> InlineFlowBox corruption bug
+  // Please fix me soon!
+  if (!basicFlowBox->object() || basicFlowBox->object()->style()->display() == LIST_ITEM) {
+    iter = result->end();
+    return result;
+  }
+
   // iterate recursively, I'm too lazy to do it iteratively
   result->addConvertedInlineBox(basicFlowBox, sbp);
 
