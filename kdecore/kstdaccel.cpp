@@ -151,6 +151,11 @@ uint KStdAccel::next()
   return readKey(KAccel::Next, Qt::Key_Next);
 }
 
+uint KStdAccel::addBookmark()
+{
+  return readKey(KAccel::AddBookmark, Qt::CTRL+Qt::Key_B);
+}
+
 uint KStdAccel::help()
 {
   return readKey(KAccel::Help, Qt::Key_F1);

@@ -134,7 +134,7 @@ class KAccel
  public:
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
 		Paste, Undo, Redo, Find, Replace, Insert, Home, End, Prior,
-		Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut };
+		Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut, AddBookmark };
 	/**
 	 * Creates a KAccel object with a parent widget and a name.
 	 */

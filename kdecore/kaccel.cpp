@@ -324,6 +324,10 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 			name=i18n("Next") ;
 			key = "Next";
 			break;
+		case AddBookmark:
+			name=i18n("Add Bookmark") ;
+			key = "Ctrl+B";
+			break;
 		case Help:
 			name=i18n("Help") ;
 			key = "F1";
@@ -554,6 +558,9 @@ QString KAccel::stdAction( StdAccel id ) {
 			break;
 		case Next:
 			action = "Next";
+			break;
+		case AddBookmark:
+			action = "Add Bookmark";
 			break;
 		case Help:
 			action = "Help";

@@ -103,6 +103,9 @@ public:
   /** Scroll down one page. Default: Next */
   static uint next();
 
+  /** Add current page to bookmarks. Default: Ctrl+B */
+  static uint addBookmark();
+
   /** Help the user in the current situation. Default: F1 */
   static uint help();
 
