@@ -190,6 +190,8 @@ void PreviewJob::startPreview()
         else
             d->sizeName = QString::fromLatin1("%1x%2").arg(d->width).arg(d->height);
     }
+    else
+        d->bSave = false;
 /*    // Check if we're in a thumbnail dir already
     if ( m_iconView->url().isLocalFile() )
     {
