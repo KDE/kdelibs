@@ -232,7 +232,7 @@ void KURLRequester::slotOpenDialog()
     }
 
     if ( dlg->exec() == QDialog::Accepted )
-	setURL( dlg->selectedURL().url() );
+	setURL( dlg->selectedURL().prettyURL() );
 }
 
 
