@@ -115,7 +115,7 @@ Here is an alphabetical list:
 * libkscreensaver
     Library for making KDE screensavers.
 
-* libtldl
+* libltdl
     System independed dlopen() handler.
 
 * licenses
