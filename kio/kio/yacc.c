@@ -105,6 +105,7 @@
 #line 1 "yacc.y"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "ktraderparse.h"
 
 void yyerror(const char *s);
@@ -127,7 +128,7 @@ void KTraderParse_initFlex( const char *s );
 #endif
 
 #ifndef YYSTYPE
-#line 12 "yacc.y"
+#line 13 "yacc.y"
 typedef union {
      char valb;
      int vali;
@@ -136,7 +137,7 @@ typedef union {
      void *ptr;
 } yystype;
 /* Line 193 of /usr/share/bison/yacc.c.  */
-#line 140 "yacc.tab.c"
+#line 141 "yacc.tab.c"
 # define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
@@ -157,7 +158,7 @@ typedef struct yyltype
 
 
 /* Line 213 of /usr/share/bison/yacc.c.  */
-#line 161 "yacc.tab.c"
+#line 162 "yacc.tab.c"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
@@ -336,10 +337,10 @@ static const yysigned_char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned char yyrline[] =
 {
-       0,    55,    55,    56,    59,    62,    63,    66,    67,    70,
-      71,    72,    73,    74,    75,    76,    79,    80,    83,    84,
-      87,    88,    89,    92,    93,    94,    97,    98,   101,   102,
-     103,   104,   105,   106,   107,   108,   109
+       0,    56,    56,    57,    60,    63,    64,    67,    68,    71,
+      72,    73,    74,    75,    76,    77,    80,    81,    84,    85,
+      88,    89,    90,    93,    94,    95,    98,    99,   102,   103,
+     104,   105,   106,   107,   108,   109,   110
 };
 #endif
 
@@ -1010,177 +1011,177 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 55 "yacc.y"
+#line 56 "yacc.y"
     { KTraderParse_setParseTree( 0L ); }
     break;
 
   case 3:
-#line 56 "yacc.y"
+#line 57 "yacc.y"
     { KTraderParse_setParseTree( yyvsp[0].ptr ); }
     break;
 
   case 4:
-#line 59 "yacc.y"
+#line 60 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 5:
-#line 62 "yacc.y"
+#line 63 "yacc.y"
     { yyval.ptr = KTraderParse_newOR( yyvsp[-2].ptr, yyvsp[0].ptr ); }
     break;
 
   case 6:
-#line 63 "yacc.y"
+#line 64 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 7:
-#line 66 "yacc.y"
+#line 67 "yacc.y"
     { yyval.ptr = KTraderParse_newAND( yyvsp[-2].ptr, yyvsp[0].ptr ); }
     break;
 
   case 8:
-#line 67 "yacc.y"
+#line 68 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 9:
-#line 70 "yacc.y"
+#line 71 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); }
     break;
 
   case 10:
-#line 71 "yacc.y"
+#line 72 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); }
     break;
 
   case 11:
-#line 72 "yacc.y"
+#line 73 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); }
     break;
 
   case 12:
-#line 73 "yacc.y"
+#line 74 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); }
     break;
 
   case 13:
-#line 74 "yacc.y"
+#line 75 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 5 ); }
     break;
 
   case 14:
-#line 75 "yacc.y"
+#line 76 "yacc.y"
     { yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 6 ); }
     break;
 
   case 15:
-#line 76 "yacc.y"
+#line 77 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 16:
-#line 79 "yacc.y"
+#line 80 "yacc.y"
     { yyval.ptr = KTraderParse_newIN( yyvsp[-2].ptr, KTraderParse_newID( yyvsp[0].name ) ); }
     break;
 
   case 17:
-#line 80 "yacc.y"
+#line 81 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 18:
-#line 83 "yacc.y"
+#line 84 "yacc.y"
     { yyval.ptr = KTraderParse_newMATCH( yyvsp[-2].ptr, yyvsp[0].ptr ); }
     break;
 
   case 19:
-#line 84 "yacc.y"
+#line 85 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 20:
-#line 87 "yacc.y"
+#line 88 "yacc.y"
     { yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); }
     break;
 
   case 21:
-#line 88 "yacc.y"
+#line 89 "yacc.y"
     { yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); }
     break;
 
   case 22:
-#line 89 "yacc.y"
+#line 90 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 23:
-#line 92 "yacc.y"
+#line 93 "yacc.y"
     { yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); }
     break;
 
   case 24:
-#line 93 "yacc.y"
+#line 94 "yacc.y"
     { yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); }
     break;
 
   case 25:
-#line 94 "yacc.y"
+#line 95 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 26:
-#line 97 "yacc.y"
+#line 98 "yacc.y"
     { yyval.ptr = KTraderParse_newNOT( yyvsp[0].ptr ); }
     break;
 
   case 27:
-#line 98 "yacc.y"
+#line 99 "yacc.y"
     { yyval.ptr = yyvsp[0].ptr; }
     break;
 
   case 28:
-#line 101 "yacc.y"
+#line 102 "yacc.y"
     { yyval.ptr = KTraderParse_newBRACKETS( yyvsp[-1].ptr ); }
     break;
 
   case 29:
-#line 102 "yacc.y"
+#line 103 "yacc.y"
     { yyval.ptr = KTraderParse_newEXIST( yyvsp[0].name ); }
     break;
 
   case 30:
-#line 103 "yacc.y"
+#line 104 "yacc.y"
     { yyval.ptr = KTraderParse_newID( yyvsp[0].name ); }
     break;
 
   case 31:
-#line 104 "yacc.y"
+#line 105 "yacc.y"
     { yyval.ptr = KTraderParse_newNUM( yyvsp[0].vali ); }
     break;
 
   case 32:
-#line 105 "yacc.y"
+#line 106 "yacc.y"
     { yyval.ptr = KTraderParse_newFLOAT( yyvsp[0].vald ); }
     break;
 
   case 33:
-#line 106 "yacc.y"
+#line 107 "yacc.y"
     { yyval.ptr = KTraderParse_newSTRING( yyvsp[0].name ); }
     break;
 
   case 34:
-#line 107 "yacc.y"
+#line 108 "yacc.y"
     { yyval.ptr = KTraderParse_newBOOL( yyvsp[0].valb ); }
     break;
 
   case 35:
-#line 108 "yacc.y"
+#line 109 "yacc.y"
     { yyval.ptr = KTraderParse_newMAX2( yyvsp[0].name ); }
     break;
 
   case 36:
-#line 109 "yacc.y"
+#line 110 "yacc.y"
     { yyval.ptr = KTraderParse_newMIN2( yyvsp[0].name ); }
     break;
 
@@ -1188,7 +1189,7 @@ yyreduce:
     }
 
 /* Line 1016 of /usr/share/bison/yacc.c.  */
-#line 1192 "yacc.tab.c"
+#line 1193 "yacc.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1407,7 +1408,7 @@ yyreturn:
 }
 
 
-#line 114 "yacc.y"
+#line 115 "yacc.y"
 
 
 void yyerror ( const char *s )  /* Called by yyparse on error */

@@ -75,7 +75,7 @@
 
 
 #ifndef YYSTYPE
-#line 12 "yacc.y"
+#line 13 "yacc.y"
 typedef union {
      char valb;
      int vali;
