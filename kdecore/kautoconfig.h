@@ -9,7 +9,7 @@ class KConfig;
 class QWidget;
 
 /**
- * @author Benjamin C Meyer <ben-devel %40 meyerhome.net>
+ * @author Benjamin C Meyer <ben-devel at meyerhome.net>
  * 
  * The KAutoConfig class provides a means of automaticly retrieving,
  * saving and reseting basic settings.
@@ -131,7 +131,7 @@ public:
    * @param group - Name of the group from which all of the settings for this
    * widget will be located.  If a child of 'widget' needs to be in a separate
    * group it should be added separately and also ignored.
-   * @ref ignoreSubWidget()
+   * @see ignoreSubWidget()
    */ 
   void addWidget(QWidget *widget, const QString &group);
 
@@ -163,7 +163,6 @@ public:
    * KAutoConfig finds widgetName in @ref retrieveSettings() it will know
    * how to connect its signal that it has changed to KAutoConfig's signal
    * widgetModifed().  This function should be called before 
-   * @ref retrieveSettings().
    *
    * Example: <pre>
    * addWidgetChangedSignal("QCheckbox", SIGNAL(stateChanged(int)));

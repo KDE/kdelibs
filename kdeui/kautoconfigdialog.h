@@ -6,15 +6,15 @@ class KAutoConfig;
 #include <qasciidict.h>
 
 /**
- * @author Benjamin C Meyer <ben at meyerhome.net>
+ * @author Benjamin C Meyer <ben-devel at meyerhome.net>
  * 
  * The KAutoConfigDialog class provides an easy and uniform means of displaying
  * a settings dialog use KDialogBase and KAutoConfig.
  *
  * KAutoConfigDialog handles the enabling and disabling of buttons, creation
- * of the dialog, and deletion of the widgets,
+ * of the dialog, and deletion of the widgets.
  *
- * Because of KAutoConfig it also manages: restoring the settings,
+ * Because of KAutoConfig, this class also manages: restoring the settings,
  * reseting them to the default values, and saving the values.
  * 
  * Here is an example usage of KAutoConfigDialog:
@@ -25,8 +25,7 @@ class KAutoConfig;
  *     return;
  *   KAutoConfigDialog *dialog = new KAutoConfigDialog(this, "settings");
  *   dialog->addPage(new General(0, "General"), i18n("General"), "General", "package_settings");
- *   dialog->addPage(new Ai(0, "Ai"), i18n("Ai"), "Game", "package_system");
- *   dialog->addPage(new Appearance(0, "Appearance"), i18n("Appearance"), "Game", "style");
+ *   dialog->addPage(new Appearance(0, "Appearance"), i18n("Appearance"), "Style", "style");
  *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(readSettings()));
  *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
  *   dialog->show();
@@ -71,7 +70,7 @@ public:
 		  bool modal=false);
   /**
    * Deconstructor, removes name from openDialogs list.  Deletes private class.
-   * @ref exists()
+   * @see exists()
    */ 
   ~KAutoConfigDialog();
   
@@ -94,18 +93,18 @@ public:
 				  const QString &header=QString::null); 
  
   /**
-   * See if a dialog already exists.
-   * @ref showDialog()
-   * @param name dialog name to look for.
-   * @return pointer to widget or NULL if does not exist.
+   * See if a dialog with the name 'name' already exists.
+   * @see showDialog()
+   * @param name - Dialog name to look for.
+   * @return Pointer to widget or NULL if it does not exist.
    */ 
   static KAutoConfigDialog* exists(const char* name);
  
   /**
-   * Attempts to show a dialog specified by 'name'.
-   * @ref exists()
+   * Attempts to show the dialog with the name 'name'.
+   * @see exists()
    * @param name - The name of the dialog to show.
-   * @return true if the dialog 'name' exists and was shown. 
+   * @return True if the dialog 'name' exists and was shown. 
    */ 
   static bool showDialog(const char* name);
   
@@ -116,20 +115,20 @@ public:
    * buttons are enabled.  This can be set to false as a temporary measure,
    * but applications in general should leave it on.  This paramater only
    * matters the first time this function is called.
-   * @ref hide()
+   * @see hide()
    */ 
   virtual void show(bool track=true);
   
   /**
    * Hides the dialog.  A program shouldn't normally need to use this function.
-   * @ref show()
+   * @see show()
    */ 
   inline void hide(){ kdialogbase->hide(); };
 
 
 protected slots:
   /**
-   * Some setting were modified, updates the Apply and Default buttons.
+   * Some setting was modified, updates the Apply and Default buttons.
    */ 
   virtual void settingModified();
 
@@ -140,6 +139,7 @@ protected:
   KDialogBase *kdialogbase;
   
 private:
+  // The list of existing dialogs.
   static QAsciiDict<QObject> openDialogs;
   
   class KAutoConfigDialogPrivate;
