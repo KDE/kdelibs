@@ -49,7 +49,7 @@ public:
      * Defaults to ~/.kderc.
      */
     KThemeStyle(const QString &configFile = QString::null) :
-        KThemeBase(configFile) {;}
+         KThemeBase(configFile) {;}
     virtual void polish(QWidget* );
     virtual void unPolish(QWidget* );
     /**
@@ -58,6 +58,11 @@ public:
      */
     virtual void polish(QApplication *app);
     virtual void unPolish(QApplication*);
+
+    /// @internal
+    // to make it possible for derived classes to overload this function
+    virtual void polish(QPalette& pal) { KThemeBase::polish(pal); }
+
     /**
      * This is a convenience method for drawing widgets with
      * borders, highlights, pixmaps, colors, etc...

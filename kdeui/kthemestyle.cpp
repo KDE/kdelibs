@@ -27,22 +27,23 @@
 
 void KThemeStyle::polish(QApplication *app)
 {
-    oldPalette = app->palette();
-    if(isPixmap(Background)){
-        QBrush bgBrush(app->palette().color(QPalette::Normal,
-                                             QColorGroup::Background),
-                       *uncached(Background));
-        app->palette().setBrush(QPalette::Normal, QColorGroup::Background,
-                                 bgBrush);
-        bgBrush.setColor(app->palette().color(QPalette::Disabled,
-                                               QColorGroup::Background));
-        app->palette().setBrush(QPalette::Disabled, QColorGroup::Background,
-                               bgBrush);
-        bgBrush.setColor(app->palette().color(QPalette::Active,
-                                               QColorGroup::Background));
-        app->palette().setBrush(QPalette::Active, QColorGroup::Background,
-                                bgBrush);
-    }
+  oldPalette = app->palette();
+  if(isPixmap(Background)){
+    QBrush bgBrush(oldPalette.color(QPalette::Normal,
+					QColorGroup::Background),
+		   *uncached(Background));
+    oldPalette.setBrush(QPalette::Normal, QColorGroup::Background,
+			    bgBrush);
+    bgBrush.setColor(oldPalette.color(QPalette::Disabled,
+					  QColorGroup::Background));
+    oldPalette.setBrush(QPalette::Disabled, QColorGroup::Background,
+			  bgBrush);
+    bgBrush.setColor(oldPalette.color(QPalette::Active,
+					QColorGroup::Background));
+    oldPalette.setBrush(QPalette::Active, QColorGroup::Background,
+			  bgBrush);
+    app->setPalette(oldPalette);
+  }
 }
 
 void KThemeStyle::unPolish(QApplication *app)
