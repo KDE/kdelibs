@@ -24,6 +24,7 @@
 #include "kcolordrag.h"
 
 static const char * const color_mime_string = "application/x-color";
+static const char * const text_mime_string = "text/plain";
 
 KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource,
 			const char *name)
@@ -61,10 +62,42 @@ KColorDrag::setColor( const QColor &color)
      setPixmap(colorpix, QPoint(-5,-7));
 }
 
+const char *KColorDrag::format(int i) const
+{
+     if (i==1)
+        return text_mime_string;
+     else
+        return QStoredDrag::format(i);
+}
+
+QByteArray KColorDrag::encodedData ( const char * m ) const
+{
+     if (qstrcmp(m, text_mime_string) == 0)
+     {
+        QByteArray data = QStoredDrag::encodedData( color_mime_string );
+        unsigned short int rgba[4];
+        if( data.size() != sizeof(rgba)) return QByteArray();
+        memcpy( rgba, data.data(), sizeof( rgba));
+        QColor color;
+        color.setRgb( rgba[0] / 0xFF, rgba[1] / 0xFF, rgba[2] / 0xFF); 
+        QCString result = color.name().latin1();
+        ((QByteArray&)result).resize(result.length());
+        return result;
+     }
+     return QStoredDrag::encodedData(m);
+}
+
 bool 
 KColorDrag::canDecode( QMimeSource *e)
 {
-     return e->provides( color_mime_string);
+     if (e->provides(color_mime_string))
+        return true;
+     if (e->provides(text_mime_string))
+     {
+        QColor dummy;
+        return decode(e, dummy);
+     }
+     return false;
 }
 
 bool
@@ -72,10 +105,18 @@ KColorDrag::decode( QMimeSource *e, QColor &color)
 {
      QByteArray data = e->encodedData( color_mime_string);
      unsigned short int rgba[4];
-     if( data.size() != sizeof(rgba)) return false;
-     memcpy( rgba, data.data(), sizeof( rgba));
-     color.setRgb( rgba[0] / 0xFF, rgba[1] / 0xFF, rgba[2] / 0xFF); 
-     return true;
+     if( data.size() == sizeof(rgba)) 
+     { 
+          memcpy( rgba, data.data(), sizeof( rgba));
+          color.setRgb( rgba[0] / 0xFF, rgba[1] / 0xFF, rgba[2] / 0xFF); 
+          return true;
+     }
+     data = e->encodedData( text_mime_string);
+     QString colorName = QString::fromLatin1(data.data(), data.size());
+     if ((colorName.length() < 4) || (colorName[0] != '#'))
+        return false;
+     color.setNamedColor(colorName);
+     return color.isValid();
 }
 
 
