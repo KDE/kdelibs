@@ -20,51 +20,24 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kfileviewitem.h"
-#include <qdir.h>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <sys/time.h>
+#include <qdir.h>
 #include <sys/types.h>
-
-#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
-#ifdef HAVE_SYS_MNTTAB_H
-#include <sys/mnttab.h>
-#endif
-#ifdef HAVE_MNTENT_H
-#include <mntent.h>
-#endif
-
-#include <unistd.h>
 #include <dirent.h>
-#include <time.h>
-#include <stdlib.h>
 
-#ifdef HAVE_FSTAB_H
-#include <fstab.h>
-#endif
-
-#include <qapplication.h>
 #include <qstringlist.h>
-#include <qpixmap.h>
 
-#include "kfilereader.h"
+#include <kio/global.h>
 #include <kio/job.h>
 #include <kdebug.h>
-#include <config-kfile.h>
 
-template class QList<QRegExp>;
+#include "config-kfile.h"
+#include "kfilereader.h"
+#include "kfileviewitem.h"
 
 /*
 ** KFileReader - URL aware directory operator
@@ -76,239 +49,57 @@ class KFileReader::KFileReaderPrivate
 public:
     KFileReaderPrivate() {}
     ~KFileReaderPrivate() {}
-
-    KDirWatch *dirWatch;
-    bool autoUpdate;
 };
 
 
 KFileReader::KFileReader()
-    : QObject(0, "KFileReader")
+    : KDirLister(true)
 {
     init();
-    setURL(QDir::currentDirPath());
+    openURL(QDir::currentDirPath(), showingDotFiles());
 }
 
 KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
-    : QObject(0, "KFileReader")
+    : KDirLister(true)
 {
     init();
     if (!nameFilter.isNull())
 	setNameFilter(nameFilter);
-    setURL(url);
+    openURL(url, showingDotFiles());
 }
 
 void KFileReader::init()
 {
-    d = new KFileReaderPrivate();
-    readable  = false;
-
-    d->autoUpdate = false;
-    myDirtyFlag  = true;
-    showHidden   = false;
-    d->dirWatch = new KDirWatch();
-    myJob = 0L;
-    myEntries.setAutoDelete(true);
-    myNewEntries.setAutoDelete(false);
-    filters.setAutoDelete(true);
+    setShowingDotFiles( false );
 }
 
 KFileReader::~KFileReader()
 {
-    delete d->dirWatch;
-    delete d;
 }
 
-void KFileReader::setURL(const KURL& url)
+KFileItem * KFileReader::createFileItem( const KIO::UDSEntry& entry,
+					 const KURL& url, bool, bool )
 {
-    KURL oldurl = *this;
-    KURL::operator=(url);
+    return new KFileViewItem( url, entry );
+}
 
-    if (isLocalFile()) { // we can check, if the file is there
-	struct stat buf;
-	QString ts = path(+1);
-	int ret = ::stat( ts.local8Bit(), &buf);
-	readable = (ret == 0);
-	if (readable) { // further checks
-	    DIR *test;
-	    test = opendir( ts.local8Bit() ); // we do it just to test here
-	    readable = (test != 0);
-	    if (test) {
-		closedir(test);
-		if ( d->autoUpdate ) {
-                    if (oldurl.isLocalFile()) {
-#ifdef __GNUC__
-			#warning fixme (KDirWatch)
-#endif
-			// d->dirWatch->removeDir( oldurl.path() );
-                    }
-		    // d->dirWatch->addDir( path() );
-		}
-	    }
-	}
-    } else {
-	readable = true; // what else can we say?
+bool KFileReader::isReadable() const
+{
+    if ( !url().isLocalFile() )
+	return true; // what else can we say?
 
-        if ( d->autoUpdate && oldurl.isLocalFile()) {
-	    // d->dirWatch->removeDir( oldurl.path() );
-	}
+    struct stat buf;
+    QString ts = url().path(+1);
+    bool readable = ( ::stat( QFile::encodeName( ts ), &buf) == 0 );
+    if (readable) { // further checks
+	DIR *test;
+	test = opendir( QFile::encodeName( ts )); // we do it just to test here
+	readable = (test != 0);
+	if (test)
+	    closedir(test);
     }
-
-    root = (path() == QChar('/'));
-
-    if (!readable)
-	return;  // nothing more we can do here
-
-    myDirtyFlag= true;
-    currentSize = 50;
+    return readable;
 }
 
-
-void KFileReader::setNameFilter(const QString& nameFilter)
-{
-    filters.clear();
-    // Split on white space
-
-    QStringList list = QStringList::split(' ', nameFilter);
-
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
-	filters.append(new QRegExp(*it, false, true ));
-
-    myDirtyFlag = true;
-}
-
-
-void KFileReader::setAutoUpdate( bool b )
-{
-    if ( b == d->autoUpdate )
-	return;
-
-    d->autoUpdate = b;
-}
-
-bool KFileReader::autoUpdate() const
-{
-    return d->autoUpdate;
-}
-
-uint KFileReader::count() const
-{
-    return myEntries.count();
-}
-
-uint KFileReader::dirCount() const
-{
-    return myEntries.count() + myPendingEntries.count();
-}
-
-void KFileReader::getEntries()
-{
-    if (myDirtyFlag) {
-	myEntries.clear();
-	myDirtyFlag = false;
-    }
-
-    myDirtyFlag = true;
-    startLoading();
-}
-
-void KFileReader::listContents()
-{
-    if (myDirtyFlag)
-	getEntries();
-    else
-        emit contents( myEntries, true );
-}
-
-bool KFileReader::match(const QString& name) const
-{
-    bool matched = false;
-    for (QListIterator<QRegExp> it(filters);
-	 it.current(); ++it)
-	if ( it.current()->match( name ) != -1 ) {
-	    matched = true;
-	    break;
-	}
-
-    return matched;
-}
-
-bool KFileReader::filterEntry(KFileViewItem *i)
-{
-    static const QString &up = KGlobal::staticQString("..");
-    if (i->name() == up)
-	return !root;
-
-    if (!showHidden && i->name()[0] == '.')
-	return false;
-
-    static QChar dot('.');
-    if (i->name() == dot)
-	return false;
-
-    if (i->isDir())
-	return true;
-
-    if (filters.isEmpty() || match(i->name()))
-	return true;
-
-    return false;
-}
-
-void KFileReader::startLoading()
-{
-    if (myJob != 0) // sorry, get out of my way
-	myJob->kill();
-    // kdDebug() << "KFileReader::startLoading( " << this->url() << " )" << endl;
-    myJob = KIO::listDir(*this, false /* no progress info */);
-    CHECK_PTR(myJob);
-
-    connect(myJob, SIGNAL(result(KIO::Job*)),
-	    SLOT(slotIOFinished(KIO::Job*)));
-    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-	    SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
-}
-
-void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
-{
-    KIO::UDSEntryListConstIterator it = entries.begin();
-    KIO::UDSEntryListConstIterator end = entries.end();
-    myNewEntries.clear();
-    QString baseurl = url();
-    for (; it != end; ++it) {
-      KFileViewItem *i= new KFileViewItem(baseurl, *it);
-      CHECK_PTR(i);
-
-      if (!filterEntry(i)) {
-	  delete i;
-	  continue;
-      }
-
-      myEntries.append(i);
-      myNewEntries.append(i);
-    }
-
-    if ( myNewEntries.count() > 0 )
-      emit contents( myNewEntries, false);
-}
-
-void KFileReader::slotIOFinished( KIO::Job * job )
-{
-    kdDebug(kfile_area) << "slotIOFinished" << endl;
-    myJob= 0;
-    myNewEntries.clear();
-    myDirtyFlag = false;
-    if (job->error())
-	emit error( job->error(), job->errorText() );
-    else
-	emit contents(myNewEntries, true);
-}
-
-void KFileReader::setShowHiddenFiles(bool b)
-{
-    myDirtyFlag = (showHidden != b);
-    showHidden = b;
-}
 
 #include "kfilereader.moc"
-

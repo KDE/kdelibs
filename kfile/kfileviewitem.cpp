@@ -25,14 +25,6 @@
 
 #include "kfileviewitem.h"
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <grp.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include <unistd.h>
-#include <time.h>
-
 #include <qfileinfo.h>
 #include <qpixmap.h>
 #include <qregexp.h>
@@ -44,8 +36,6 @@
 #include <kmimetype.h>
 #include <kurl.h>
 #include "config-kfile.h"
-
-template class QList<KFileViewItem>;
 
 
 class KFileViewItem::KFileViewItemPrivate
@@ -61,7 +51,7 @@ public:
 
 };
 
-KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
+KFileViewItem::KFileViewItem(const KURL& baseURL, const KIO::UDSEntry &e)
     : KFileItem( e, baseURL, true, true )
 {
     d = new KFileViewItemPrivate();
@@ -78,60 +68,6 @@ KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url
 
     init();
 }
-
-#if 0
-void KFileViewItem::stat(bool alreadyindir)
-{
-    // #warning adopt in KFileItem?
-
-    struct stat buf;
-    myIsSymLink = false;
-    QCString local8;
-    if (alreadyindir)
-	local8 = myName.local8Bit();
-    else {
-	if (url().isLocalFile())
-	    local8 = QFile::encodeName( url().path(-1) );
-	else
-	    local8 = QFile::encodeName(urlString());
-    }
-
-    if (lstat(local8, &buf) == 0) {
-	myIsDir = S_ISDIR(buf.st_mode) != 0;
-        // check if this is a symlink to a directory
-	if (S_ISLNK(buf.st_mode)) {
-	  myIsSymLink = true;
-	  struct stat st;
-	  if (::stat(local8, &st) == 0) {
-	      myIsDir = S_ISDIR(st.st_mode) != 0;
-	  }
-	  else {
-	      myName = QString::null; // indicate, that the link is broken
-	  }
-	} else
-	    myIsSymLink = false;
-
-	myDate_t = buf.st_mtime;
-	mySize = buf.st_size;
-	myIsFile = !myIsDir;
-	d->isReadable = testReadable( local8, buf );
-	
-	myPermissions = buf.st_mode;
-	myOwner_t = buf.st_uid;
-	myGroup_t = buf.st_gid;
-
-    } else {
-	// default
-	myName.insert(0, '?');
-	mySize = 0;
-	myIsFile = false;
-	myIsDir = false;
-	d->isReadable = false;
-	myPermissions = 0;
-	parsePermissions(permissions());
-    }
-}
-#endif
 
 KFileViewItem::~KFileViewItem()
 {
@@ -229,6 +165,19 @@ QString KFileViewItem::access() const {
     return d->access;
 }
 
+
+QPixmap KFileViewItem::pixmap() const
+{
+    return pixmap( d->pixmapSize );
+}
+
+/*
+bool KFileViewItem::isReadable() const
+{
+    return d->isReadable;
+}
+*/
+
 #if 0
 // Tests if a file is readable. We don't just call ::access(), because we
 // already have a stat-structure and know about the groups.
@@ -259,47 +208,3 @@ bool KFileViewItem::testReadable( const QCString& file, struct stat& buf )
 }
 #endif
 
-
-/////////////
-
-void KFileViewItemList::append( const KFileViewItem *item )
-{
-    if ( !item )
-	return;
-
-    KFileViewBaseList::append( item );
-    dictdirty = true;
-}
-
-
-void KFileViewItemList::clear()
-{
-    KFileViewBaseList::clear();
-    myDict.clear();
-    dictdirty = false;
-}
-
-const KFileViewItem * KFileViewItemList::findByName( const QString& url ) const
-{
-    if (dictdirty) {
-	KFileViewItemList *that = const_cast<KFileViewItemList*>(this);
-	that->myDict.clear();
-
-	QListIterator<KFileViewItem> it(*this);
-	for ( ; it.current(); ++it)
-	    that->myDict.insert( it.current()->name(), it.current() );
-	that->dictdirty = false;
-    }
-
-    return myDict.find( url );
-}
-
-QPixmap KFileViewItem::pixmap() const
-{
-    return pixmap( d->pixmapSize );
-}
-
-bool KFileViewItem::isReadable() const
-{
-    return d->isReadable;
-}

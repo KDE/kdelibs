@@ -21,13 +21,12 @@
 #ifndef KFILEVIEW_H
 #define KFILEVIEW_H
 
-class KFileViewItem;
-class KFileViewItemList;
 class QSignal;
 class QPoint;
 
 #include <qwidget.h>
 
+#include "kfileviewitem.h"
 #include "kfilereader.h"
 #include "kfile.h"
 

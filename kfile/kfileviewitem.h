@@ -43,8 +43,9 @@ class QPixmap;
 class KFileViewItem;
 class KFileView;
 
-typedef QList<KFileViewItem> KFileViewBaseList;
+// typedef QList<KFileViewItem> KFileViewBaseList;
 
+/*
 class KFileViewItemList : public KFileViewBaseList
 {
 public:
@@ -56,11 +57,11 @@ private:
     QDict<KFileViewItem> myDict;
     bool dictdirty;
 };
-
+*/
 
 /**
-  * Provides information about a file that has been examined
-  * with KDir.
+  * Provides information about a file that has been created
+  * by KDirLister/KIO.
   *
   * @author rich@kde.org
   * @version $Id$
@@ -71,12 +72,11 @@ public:
     /**
       * Construct a KFileViewItem
       */
-    KFileViewItem(const QString& baseURL, const KIO::UDSEntry &);
+    KFileViewItem(const KURL& baseURL, const KIO::UDSEntry &);
 
     /**
       * Constructs a "little" KFileViewItem (just for local files)
-      **/
-    //    KFileViewItem(const QString& baseURL, const QString& name, bool delaystat = false);
+      */
     KFileViewItem( mode_t _mode, mode_t _permissions, const KURL& _url,
 		   bool _determineMimeTypeOnDemand );
 
@@ -98,7 +98,7 @@ public:
      * @returns the pixmap.
      * @see KFileItem::pixmap
      */
-    QPixmap pixmap( int size, int state = 0 ) const { 
+    QPixmap pixmap( int size, int state = 0 ) const {
 	return KFileItem::pixmap( size, state );
     }
 
@@ -124,9 +124,7 @@ public:
     /**
      * Return true if the file is readable
      */
-    bool isReadable() const;
-
-    //    void stat(bool alreadyindir);
+    //    bool isReadable() const;
 
     void setViewItem( const KFileView *view, const void *item );
     const void *viewItem( const KFileView *view ) const;
@@ -157,7 +155,7 @@ private:
 
 };
 
-// typedef QList<KFileViewItem> KFileViewItemList;
+typedef QList<KFileViewItem> KFileViewItemList;
 typedef QListIterator<KFileViewItem> KFileViewItemListIterator;
 
 #endif // KFILEINFO_H

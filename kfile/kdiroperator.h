@@ -194,9 +194,6 @@ class KDirOperator : public QWidget {
      */
     bool onlyDoubleClickSelectsFiles() const;
 
-    /// @internal
-    virtual bool close(bool b) { return QWidget::close(b); }
-
 protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
@@ -205,7 +202,7 @@ protected:
     void updateViewActions();
     void setupMenu();
     void prepareCompletionObjects();
-
+    void insertIntoView(const KFileItemList& items);
 
  private:
     /**
@@ -292,11 +289,10 @@ protected:
   protected slots:
     void resetCursor();
     void readNextMimeType();
-    void slotKIOError(int, const QString& );
     void pathChanged();
     void filterChanged();
-    void insertNewFiles(const KFileViewItemList &newone, bool ready);
-    void itemsDeleted(const KFileViewItemList &);
+    void insertNewFiles(const KFileItemList &newone);
+    void itemDeleted(KFileItem *);
 
     void selectDir(const KFileViewItem*);
     void selectFile(const KFileViewItem*);
@@ -313,7 +309,6 @@ protected:
     void deleteOldView();
 
     void slotCompletionMatch(const QString&);
-    void slotCompletionMatches(const QStringList&);
 
 private slots:
     void slotDetailedView();
@@ -326,6 +321,8 @@ private slots:
     void slotSortReversed();
     void slotToggleDirsFirst();
     void slotToggleIgnoreCase();
+
+    void slotIOFinished();
 
 signals:
     void urlEntered(const KURL& );
