@@ -43,6 +43,7 @@ namespace KJS {
 
   class Screen : public ObjectImp {
   public:
+    Screen(ExecState *exec);
     enum {
       Height, Width, ColorDepth, PixelDepth, AvailLeft, AvailTop, AvailHeight,
       AvailWidth

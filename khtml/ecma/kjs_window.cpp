@@ -105,8 +105,15 @@ namespace KJS {
 
 const ClassInfo Screen::info = { "Screen", 0, &ScreenTable, 0 };
 
+// We set the object prototype so that toString is implemented
+Screen::Screen(ExecState *exec)
+  : ObjectImp(exec->interpreter()->builtinObjectPrototype()) {}
+
 Value Screen::get(ExecState *exec, const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "Screen::get " << p.qstring() << endl;
+#endif
   return lookupGetValue<Screen,ObjectImp>(exec,p,&ScreenTable,this);
 }
 
@@ -429,7 +436,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
     case _Screen:
       return Value(screen ? screen :
-                   (const_cast<Window*>(this)->screen = new Screen()));
+                   (const_cast<Window*>(this)->screen = new Screen(exec)));
     case Image:
       return Value(new ImageConstructorImp(exec, m_part->document()));
     case Option:
