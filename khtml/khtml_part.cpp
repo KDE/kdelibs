@@ -5862,7 +5862,7 @@ KWallet::Wallet* KHTMLPart::wallet()
     return p->wallet();
 
   if (!d->m_wallet) {
-    d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet(), d->m_view->winId());
+    d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet(), widget() ? widget()->topLevelWidget()->winId() : 0);
     if (d->m_wallet) {
       connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
       d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
