@@ -266,12 +266,55 @@ void KStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         
 }
 
-void KStyle::drawKickerTaskButton(QPainter *, int, int, int, int,
-                                  const QColorGroup &,
-                                  const QString &, bool,
-                                  QPixmap *, QBrush *)
+void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
+                                  const QColorGroup &g,
+                                  const QString &text, bool sunken,
+                                  QPixmap *pixmap, QBrush *)
 {
-    ;
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    p->fillRect(x+1, y+1, w-2, h-2, sunken ? g.brush(QColorGroup::Mid) :
+                g.brush(QColorGroup::Button));
+    p->setPen(sunken ? Qt::black : g.light());
+    p->drawLine(x, y, x2-1, y);
+    p->drawLine(x, y, x, y2-1);
+    p->setPen(sunken ? g.midlight() : g.mid());
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    p->drawLine(x2-1, y+1, x2-1, y2-1);
+    p->setPen(sunken ? g.light() : Qt::black);
+    p->drawLine(x, y2, x2, y2);
+    p->drawLine(x2, y, x2, y2);
+
+    const int pxWidth = 20;
+    QRect br(buttonRect(x, y, w, h));
+
+    if ( pixmap && !pixmap->isNull() ) {
+        int dx = ( pxWidth - pixmap->width() ) / 2;
+        int dy = ( h - pixmap->height() ) / 2;
+        if (sunken) {
+            dx++;
+            dy++;
+        }
+        p->drawPixmap( br.x()+dx, dy, *pixmap );
+    }
+    if(sunken)
+        p->setPen(g.light());
+    else
+        p->setPen(g.buttonText());
+
+    if (!text.isNull()){
+        QString s2 = text;
+        if (p->fontMetrics().width(s2) > br.width()-pxWidth){
+            while (s2.length()>0 &&
+                   p->fontMetrics().width(s2) > br.width() - pxWidth
+                   - p->fontMetrics().width("...")) {
+                s2.truncate( s2.length() - 1 );
+            }
+            s2.append("...");
+        }
+        p->drawText(br.x()+ pxWidth, 0, w-pxWidth, h,
+                    AlignLeft|AlignVCenter, s2);
+    }
 }
 
 void KStyle::getKickerBackground(int, int, Orientation,
