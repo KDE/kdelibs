@@ -416,7 +416,7 @@ PARAM  {
 }
 
 SELECT { 
-        font-size: sans-serif;
+        font-family: sans-serif;
         color: windowtext; 
         margin: 0__qem;
 }
