@@ -1377,7 +1377,7 @@ void RenderTable::layoutRows(int yoff)
         else if (containing->parent() && containing->parent()->parent()
                  && containing->parent()->parent()->isRoot())
         {
-            th = h.width(viewRect().height());
+            th = h.width(viewRect().height())-5;
             // not really, but this way the view height change
             // gets propagated correctly
             setContainsPositioned(true);
@@ -1385,9 +1385,7 @@ void RenderTable::layoutRows(int yoff)
     }
     if (th && totalRows && rowHeights[totalRows])
     {
-        int ax,ay;
-        absolutePosition(ax,ay);
-        th-=(totalRows+1)*spacing+ay;
+        th-=(totalRows+1)*spacing;
         int dh = th-rowHeights[totalRows];
         if (dh>0)
         {
