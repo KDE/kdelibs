@@ -262,12 +262,12 @@ int kde_getaddrinfo(const char *name, const char *service,
       err = getaddrinfo(name, service, &our_hint, &res->data);
 # if KDE_IPV6_LOOKUP_MODE == 1
     }
+  else
 # endif
-#else  // KDE_IPV6_LOOKUP_MODE == 0
-
-  // do the actual resolution
-  err = getaddrinfo(name, service, hint, &res->data);
-
+#endif
+#if KDE_IPV6_LOOKUP_MODE != 2
+      // do the IPV6 resolution
+      err = getaddrinfo(name, service, hint, &res->data);
 #endif
 
   // Now we have to check whether the user could want a Unix socket
