@@ -76,6 +76,12 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
       return (v1.toString().value() == v2.toString().value());
     if (t1 == BooleanType)
       return (v1.toBoolean().value() == v2.toBoolean().value());
+    if (t1 == HostType) {
+	KJSO h1 = v1.get("[[==]]");
+	KJSO h2 = v2.get("[[==]]");
+	if (!h1.isA(UndefinedType) && !h2.isA(UndefinedType))
+	    return equal(h1, h2);
+    }
     return (v1.imp() == v2.imp());
   }
 
