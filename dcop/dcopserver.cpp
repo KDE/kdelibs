@@ -394,11 +394,13 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	// handle a broadcast.
 	QDictIterator<DCOPConnection> aIt(appIds);
 	while (aIt.current()) {
-	  IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
-		       sizeof(DCOPMsg), DCOPMsg, pMsg);
-	  int datalen = ba.size();
-	  pMsg->length += datalen;
-	  IceSendData(aIt.current()->iceConn, datalen, (char *) ba.data());
+	  if (aIt.current() != "DCOPServer") {
+	    IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
+			 sizeof(DCOPMsg), DCOPMsg, pMsg);
+	    int datalen = ba.size();
+	    pMsg->length += datalen;
+	    IceSendData(aIt.current()->iceConn, datalen, (char *) ba.data());
+	  }
 	}
       }
     }
