@@ -587,6 +587,13 @@ void KFileDialog::initGUI()
     }
 
     d->boxLayout->addSpacing(3);
+
+	setTabOrder(ops,  locationEdit);
+	setTabOrder(locationEdit, filterWidget);
+	setTabOrder(filterWidget, d->okButton);
+	setTabOrder(d->okButton, d->cancelButton);
+	setTabOrder(d->cancelButton, d->pathCombo);
+
 }
 
 KFileDialog::~KFileDialog()
