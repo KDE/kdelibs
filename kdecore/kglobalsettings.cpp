@@ -442,27 +442,25 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     s_documentPath = new QString();
 
     KConfig *config = KGlobal::config();
-    bool dollarExpansion = config->isDollarExpansion();
-    config->setDollarExpansion(true);
     KConfigGroupSaver cgs( config, "Paths" );
 
     // Desktop Path
-    *s_desktopPath = QDir::homeDirPath() + "/" + "Desktop" + "/";
-    *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
-    if ( (*s_desktopPath)[0] != '/' )
+    *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
+    *s_desktopPath = config->readPathEntry( "Desktop", *s_desktopPath);
+    if ( !s_desktopPath->startsWith("/") )
       s_desktopPath->prepend( QDir::homeDirPath() + "/" );
     *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
-    if ( s_desktopPath->right(1) != "/")
-        *s_desktopPath += "/";
+    if ( !s_desktopPath->endsWith("/") )
+      s_desktopPath->append('/');
 
     // Trash Path
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
-    *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
-    if ( (*s_trashPath)[0] != '/' )
+    *s_trashPath = config->readPathEntry( "Trash" , *s_trashPath);
+    if ( !s_trashPath->startsWith("/") )
       s_trashPath->prepend( QDir::homeDirPath() + "/" );
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
-    if ( s_trashPath->right(1) != "/")
-        *s_trashPath += "/";
+    if ( !s_trashPath->endsWith("/") )
+      s_trashPath->append('/');
     // We need to save it in any case, in case the language changes later on,
     if ( !config->hasKey( "Trash" ) )
     {
@@ -471,24 +469,21 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     }
 
     // Autostart Path
-    *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart" + "/";
-    *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
-    if ( (*s_autostartPath)[0] != '/' )
+    *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
+    *s_autostartPath = config->readPathEntry( "Autostart" , *s_autostartPath);
+    if ( !s_autostartPath->startsWith("/") )
       s_autostartPath->prepend( QDir::homeDirPath() + "/" );
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
-    if ( s_autostartPath->right(1) != "/")
-        *s_autostartPath += "/";
+    if ( !s_autostartPath->endsWith("/") )
+      s_autostartPath->append('/');
 
     // Document Path
-    *s_documentPath = QString::null;
-    *s_documentPath = config->readEntry( "Documents" , *s_documentPath);
-    if ( (*s_documentPath)[0] != '/' )
+    *s_documentPath = config->readPathEntry( "Documents" );
+    if ( !s_documentPath->startsWith("/") )
       s_documentPath->prepend( QDir::homeDirPath() + "/" );
     *s_documentPath = QDir::cleanDirPath( *s_documentPath );
-    if ( s_documentPath->right(1) != "/")
-        *s_documentPath += "/";
-
-    config->setDollarExpansion(dollarExpansion);
+    if ( !s_documentPath->endsWith("/"))
+      s_documentPath->append('/');
 
     // Make sure this app gets the notifications about those paths
     if (kapp)
