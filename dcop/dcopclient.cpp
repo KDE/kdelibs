@@ -809,8 +809,7 @@ QCString DCOPClient::senderId() const
 
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
-		      const QCString &remFun, const QByteArray &data,
-		      bool)
+		      const QCString &remFun, const QByteArray &data)
 {
     DCOPClient *localClient = findLocalClient( remApp );
 
@@ -857,8 +856,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 }
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
-		      const QCString &remFun, const QString &data,
-		      bool)
+		      const QCString &remFun, const QString &data)
 {
     QByteArray ba;
     QDataStream ds(ba, IO_WriteOnly);
@@ -869,7 +867,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
                             const QCString &remFun, const QByteArray &data,
                             QCString &foundApp, QCString &foundObj,
-                            bool useEventLoop, bool fast)
+                            bool useEventLoop)
 {
     QCStringList appList;
     QCString app = remApp;
@@ -906,7 +904,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
         QCString replyType;
         QByteArray replyData;
         if (callInternal((*it), remObj, remFun, data,
-                     replyType, replyData, useEventLoop, fast, DCOPFind))
+                     replyType, replyData, useEventLoop, DCOPFind))
         {
            if (replyType == "DCOPRef")
            {
@@ -1418,7 +1416,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData,
-                      bool useEventLoop, bool fast)
+                      bool useEventLoop)
 {
     DCOPClient *localClient = findLocalClient( remApp );
 
@@ -1430,13 +1428,13 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
     }
 		
     return callInternal(remApp, remObjId, remFun, data,
-                         replyType, replyData, useEventLoop, fast, DCOPCall);
+                         replyType, replyData, useEventLoop, DCOPCall);
 }
 
 bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData,
-                      bool useEventLoop, bool, int minor_opcode)
+                      bool useEventLoop, int minor_opcode)
 {
     if ( !isAttached() )
 	return false;

@@ -190,25 +190,18 @@ class DCOPClient : public QObject
    * @param remObj The name of the remote object.
    * @param remFun The remote function in the specified object to call.
    * @param data The data to provide to the remote function.
-   * @param fast (KDE 3.0: remove this) 
-   *        Tf set to @p true, a "fast" form of IPC will be used.
-   *        Fast connections are not guaranteed to be implemented, but
-   *        if they are they work only on the local machine, not across
-   *        the network.  "fast" is only a hint not an order.
    *
    * @return Whether or not the server was able to accept the send.
    */
   bool send(const QCString &remApp, const QCString &remObj,
-	    const QCString &remFun, const QByteArray &data,
-	    bool fast=false);
+	    const QCString &remFun, const QByteArray &data);
 
   /**
    * This function acts exactly the same as the above, but the data
    * parameter can be specified as a @ref QString for convenience.
    */
   bool send(const QCString &remApp, const QCString &remObj,
-	    const QCString &remFun, const QString &data,
-	    bool fast=false);
+	    const QCString &remFun, const QString &data);
 
   /**
    * Performs a synchronous send and receive.
@@ -229,7 +222,7 @@ class DCOPClient : public QObject
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
-	    bool useEventLoop=false, bool fast=false);
+	    bool useEventLoop=false);
 
   /**
    * Searches for an object which matches a criteria.
@@ -242,10 +235,6 @@ class DCOPClient : public QObject
    * @param data The data to provide to the remote function.
    * @param foundApp The remote application id that matched the criteria.
    * @param foundObj The remote object that matched the criteria.
-   * @param fast Tf set to true, a "fast" form of IPC will be used.
-   *        Fast connections are not guaranteed to be implemented, but
-   *        if they are they work only on the local machine, not across
-   *        the network.  "fast" is only a hint not an order.
    *
    * findObject calls @p remFun in the applications and objects identified
    * by @p remApp and @p remObj until @p remFun returns true. The name of
@@ -270,7 +259,7 @@ class DCOPClient : public QObject
   bool findObject(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString &foundApp, QCString &foundObj,
-	    bool useEventLoop=false, bool fast=false);
+	    bool useEventLoop=false);
 
 
   /**
@@ -602,7 +591,7 @@ private:
   bool callInternal(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
-	    bool useEventLoop, bool fast, int minor_opcode);
+	    bool useEventLoop, int minor_opcode);
 };
 
 #endif
