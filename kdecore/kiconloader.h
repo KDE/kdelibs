@@ -109,9 +109,6 @@ public:
 		     int state=KIcon::DefaultState, QString *path_store=0L,
 		     bool canReturnNull=false) const;
 
-    QImage loadIconImage(const QString& name, int group, int size=0,
-		     int state=KIcon::DefaultState, QString *path_store=0L,
-		     bool canReturnNull=false) const;
     /**
      * Returns the path of an icon.
      * @param name The name of the icon, without extension.
@@ -171,9 +168,28 @@ public:
     KIconEffect *iconEffect();
 
     /**
+     * Returns the image associated with a given serialNumber. You should
+     * use the serialNumber of a pixmap returned by loadIcon (or any of
+     * the [Group]Icon helper functions).
+     */
+    QImage *image(int serialNumber) const;
+
+    /**
      * Called by KInstance::newIconLoader to reconfigure the icon loader
      */
     void reconfigure( const QString& _appname, KStandardDirs *_dirs );
+
+    /**
+     * Returns the unknown icon. An icon that is used when no other icon
+     * can be found.
+     */ 
+    static QPixmap unknown();
+
+    /**
+     * Returns if the user wants to use blend the icons with the background
+     *  using the alpha channel information.
+     */
+    bool alphaBlending() const;
 
  private:
     /**
