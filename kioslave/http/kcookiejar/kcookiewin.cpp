@@ -242,6 +242,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     grid->addWidget( label, 1, 0 );
     m_name = new QLineEdit( this );
     m_name->setReadOnly( true );
+    m_name->setFrame (false);
     m_name->setText( cookie->name() );
     m_name->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_name, 1 ,1 );
@@ -251,6 +252,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     grid->addWidget( label, 2, 0 );
     m_value = new QLineEdit( this );
     m_value->setReadOnly( true );
+    m_value->setFrame (false);
     m_value->setText( cookie->value() );
     m_value->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_value, 2, 1);
@@ -259,6 +261,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     grid->addWidget( label, 3, 0 );
     m_expires = new QLineEdit( this );
     m_expires->setReadOnly( true );
+    m_expires->setFrame (false);
     QDateTime cookiedate;
     cookiedate.setTime_t( cookie->expireDate() );
     if ( cookie->expireDate() )
@@ -272,6 +275,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     grid->addWidget( label, 4, 0 );
     m_path = new QLineEdit( this );
     m_path->setReadOnly( true );
+    m_path->setFrame (false);
     m_path->setText( cookie->path() );
     m_path->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_path, 4, 1);
@@ -282,6 +286,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     m_domain->setReadOnly( true );
     QString val = cookie->domain();
     m_domain->setText( val.isEmpty()?i18n("Not specified"):val );
+    m_domain->setFrame (false);
     m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_domain, 5, 1);
 
@@ -289,6 +294,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     grid->addWidget( label, 6, 0 );
     m_secure = new QLineEdit( this );
     m_secure->setReadOnly( true );
+    m_secure->setFrame (false);    
     m_secure->setText( cookie->isSecure() ? i18n("True"):i18n("False") );
     m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_secure, 6, 1 );
