@@ -128,14 +128,6 @@ public:
   static void iconifyListGUI( bool _mode);
 
   /**
-   * Dock / undock list progress dialog.
-   *
-   * @param  _mode  if true - dock dialog.
-   *               if false - undock dialog.
-   */
-  static void dockListGUI( bool _mode);
-
-  /**
    * Connect specified little progress dialog with this KIOJob.
    *
    * @param  _dlg   pointer to KIOLittleProgressDlg. This progress dialog is normally created

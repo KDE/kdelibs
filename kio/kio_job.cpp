@@ -230,11 +230,6 @@ void KIOJob::iconifyListGUI( bool _mode ) {
 }
 
 
-void KIOJob::dockListGUI( bool ) { // !!!
-  KWM::setDockWindow ( m_pListProgressDlg->winId());
-}
-
-
 bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point ) {
   QString error;
   int errid;
