@@ -746,7 +746,6 @@ void DocumentImpl::open(  )
 
 void DocumentImpl::close(  )
 {
-    RenderObject *o;
     for ( RenderObject* o = m_render; o; o = o->lastChild() )
         o->setParsing( false );
     if ( m_render )
