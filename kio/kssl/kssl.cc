@@ -204,6 +204,7 @@ return false;
 
 
 bool KSSL::setSession(const KSSLSession *session) {
+#ifdef KSSL_HAVE_SSL
 	if (!session) {
 		delete d->session;
 		d->session = 0L;
@@ -217,6 +218,9 @@ bool KSSL::setSession(const KSSLSession *session) {
 	d->session->_session = session->_session;
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 
