@@ -236,15 +236,15 @@ public:
         }
 
     private:
-        /** @Internal */
+        /** @internal */
         GroupInfo( const QString& name, const QString& translatedName);
 
-        /** @Internal */
+        /** @internal */
         KFileMimeTypeInfo::ItemInfo* addItemInfo( const QString& key,
                                                   const QString& translatedKey,
                                                   QVariant::Type type);
 
-        /** @Internal */
+        /** @internal */
         void addVariableInfo( QVariant::Type type, uint attr );
 
         QString         m_name;
@@ -266,7 +266,7 @@ public:
     friend class KFilePlugin;
     friend class GroupInfo;
     public:
-        /** @Internal */
+        /** @internal */
         ItemInfo() {}     // ### should be private?
 
         /**
@@ -372,7 +372,7 @@ public:
         }
 
     private:
-        /** @Internal */
+        /** @internal */
         ItemInfo(const QString& key, const QString& translatedKey,
                  QVariant::Type type)
             : m_key(key), m_translatedKey(translatedKey),
@@ -474,7 +474,7 @@ public:
 
 // ### this should be made private instead, but this would be BIC
 protected:
-    /** @Internal */
+    /** @internal */
     KFileMimeTypeInfo( const QString& mimeType );
 
     QDict<GroupInfo> m_groups;
@@ -497,7 +497,7 @@ public:
     typedef KFileMimeTypeInfo::Attributes Attributes;
 
     /**
-     * @Internal
+     * @internal
      * You usually don't need to use this constructor yourself. Let
      * KFileMetaInfo do it for you.
      **/
@@ -660,7 +660,7 @@ class KFileMetaInfoGroup
 public:
     class Data;
     /**
-     * @Internal
+     * @internal
      * You usually don't need to use this constructor yourself. Let
      * KFileMetaInfo do it for you.
      **/
@@ -1142,7 +1142,7 @@ private:
 
 
 /**
- * @Internal
+ * @internal
  *
  * Synchronous access to metadata of a local file. Ususally, you don't want
  * to use this class. Use @ref KFileMetaInfo directly.
