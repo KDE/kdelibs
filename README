@@ -7,9 +7,9 @@ In this file:
 * Compile Problems
 * More Info
 
+
 About kdelibs
 -------------
-
 This is the version 2.1 (beta2) release of the KDE libraries.  We have
 libraries that are central to the development and execution of a KDE
 program, internationalization files for these libraries, misc HTML
@@ -100,9 +100,9 @@ documentation, theme modules, and regression tests. Here is a list:
 * pics
     Database of icons.
 
+
 Licensing
 ---------
-
 The libraries themselves have been covered (since Saturday, June 21st, 1997)
 by the GNU Library General Public License (LGPL). Any other programs (such as
 the examples) are covered by the GNU General Public License (GPL). All the
@@ -116,17 +116,17 @@ Theo de Raadt.
 When in doubt, check the individual file, they should all have license
 headings and other identifying marks.
 
+
 Common Mistakes
 ---------------
-
 If configure claims Qt cannot be found, have a look at http://www.troll.no
 to get a copy of Qt, version 2.2.1 or newer. If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 
+
 Debugging
 ---------
-
 You can use --enable-debug with the configure script, if you want to have
 debug code in your KDE libs. If you have the space and can stand code that's
 somewhat slower, this is worth it. The extra information really
@@ -137,16 +137,16 @@ to a faster and cleaner desktop.
 
 See also the file DEBUG.
 
+
 Upgrading
 ---------
-
 If you have an kdebase older than 2.0 installed, just copy all your .k*rc
 files from $HOME to $HOME/.kde/share/config. In the other case, default
 values are used for most apps.
 
+
 Compile Problems
 ----------------
-
 Often, KDE compile failures are not KDE's faults but the one of the
 compiler or the distribution used. For that reason, please have a look at
 http://www.kde.org/compilationfaq.html for know issues in certain OS
@@ -181,10 +181,40 @@ and then recompiling whatever you were working on with -fsquangle. It
 should help, and more information about this is available on the egcs FAQ
 available at http://egcs.cygnus.com
 
-More Info
+
+How to report
+-------------
+Reporting bugs is an art. Why?  Because bug reports can help and hinder.
+
+They hinder if the developers are just buried in an avanche of bug reports.
+They spend hours figuring out which bug reports are valid and which non,
+which bug reports are due to bugs or due to installation problems.
+
+The can be a tremendous help to notify developers on problems in areas that
+they normally don't access (e.g. KDE on AIX) to.
+
+So, here are some tips on bug reporting:
+
+* make sure your bug is due to KDE ... and not due to a packaging problem of
+  your Linux distrubutor. For example, most "I can not install the XYZ.rpm"
+  problem are due to packaging issues. Refer with such questions to your
+  Linux Distrubutor and his appropriate mailing list or bug reporting tool.
+
+* The chance is high that your bug has already been dealt with ... so look
+  if there is a newer version of kdelibs available. Reporting bugs for
+  older, deprecated versions usually don't get that much attention :-)
+
+* Also the chance is high that another one experienced your problem. Spend
+  some time on http://bugs.kde.org to find out if your problem has already
+  been reported.
+
+* The best bug report for a project based on voluentary work is of course a
+  bugfix patch. :-)
+
+
+More info
 ---------
-
-Please direct any bug reports to me (kalle@kde.org). General KDE
-discussions should go to the KDE mailing list (kde@kde.org).
-
-Cow!
+http://www.kde.org is a good starting point for info on KDE. If you are a
+developer, you may also point your browser to http://developer.kde.org.
+There is a plethora of mailing lists available, you can gain an overview
+quickly by looking at http://list.kde.org.
