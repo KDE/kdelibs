@@ -564,10 +564,12 @@ QString KIOCache::localKey(const KIOCacheEntry *entry)
     static int sequence = 0;
     time_t timestamp = time(0l);
     K2URL url(entry->url());
-    QString localName;
 
-    if (timestamp != lastCall) sequence = 0;
-    localName.sprintf("entry-%ld.%d-%s", timestamp, sequence, url.filename().c_str());
+    if ( timestamp != lastCall ) 
+      sequence = 0;
+    
+    QString localName( "entry-%1.%2-%3" );
+    localName = localName.arg( timestamp ).arg(sequence).arg(url.filename().c_str() );
 
     lastCall = timestamp;
     
