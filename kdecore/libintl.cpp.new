@@ -72,13 +72,12 @@ extern "C" {
 # include <argz.h>
 #ifdef _ARGZ_H_WORKAROUND_
 }
-#endif
 #undef __BEGIN_DECLS
 #undef __END_DECLS
-#ifdef HAVE_SYS_CDEFS_H
-#include <sys/cdefs.h>
-#endif
-#endif
+#define __BEGIN_DECLS extern "C" {
+#define __END_DECLS }
+#endif // _ARGZ_H_WORKAROUND_
+#endif // HAVE_ARGZ_H
 
 #if defined STDC_HEADERS
 # include <stdlib.h>
