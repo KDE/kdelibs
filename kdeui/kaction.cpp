@@ -2021,9 +2021,9 @@ void KFontSizeAction::setFontSize( int size )
         setCurrentItem( index );
 
 
-    emit KAction::activated();
-    emit activated( index );
-    emit activated( QString::number( size ) );
+    //emit KAction::activated();
+    //emit activated( index );
+    //emit activated( QString::number( size ) );
     emit fontSizeChanged( size );
 }
 
