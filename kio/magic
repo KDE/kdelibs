@@ -471,6 +471,7 @@
 0	string		\320\317\021\340\241\261	application/msword
 0	string		\333\245-\0\0\0			application/msword
 2080    string		Microsoft\ Word\ 6.0\ Document  application/msword
+2112    string          Microsoft Word document data    application/msword
 
 # excel
 2080    string  Microsoft\ Excel\ 5.0\ Worksheet	application/msexcel
