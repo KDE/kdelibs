@@ -596,11 +596,13 @@ int skipInfString(const char *start)
   return c-start;
 }
 
-double UString::toDouble( bool tolerant ) const
+double UString::toDouble( bool tolerateTrailingJunk, bool tolerateEmptyString ) const
 {
   double d;
   double sign = 1;
 
+  // FIXME: If tolerateTrailingJunk is true, then we want to tolerate non-8-bit junk
+  // after the number, so is8Bit is too strict a check.
   if (!is8Bit())
     return NaN;
 
@@ -612,7 +614,7 @@ double UString::toDouble( bool tolerant ) const
 
   // empty string ?
   if (*c == '\0')
-    return tolerant ? NaN : 0.0;
+    return tolerateEmptyString ? 0.0 : NaN;
 
   if (*c == '-') {
     sign = -1;
@@ -656,15 +658,25 @@ double UString::toDouble( bool tolerant ) const
   while (isspace(*c))
     c++;
   // don't allow anything after - unless tolerant=true
-  if (!tolerant && *c != '\0')
+  if (!tolerateTrailingJunk && *c != '\0')
     return NaN;
 
   return d*sign;
 }
 
-unsigned long UString::toULong(bool *ok) const
+double UString::toDouble(bool tolerateTrailingJunk) const
 {
-  double d = toDouble();
+  return toDouble(tolerateTrailingJunk, true);
+}
+
+double UString::toDouble() const
+{
+  return toDouble(false, true);
+}
+
+unsigned long UString::toULong(bool *ok, bool tolerateEmptyString) const
+{
+  double d = toDouble(false, tolerateEmptyString);
   bool b = true;
 
   if (isNaN(d) || d != static_cast<unsigned long>(d)) {
@@ -676,6 +688,11 @@ unsigned long UString::toULong(bool *ok) const
     *ok = b;
 
   return static_cast<unsigned long>(d);
+}
+
+unsigned long UString::toULong(bool *ok) const
+{
+  return toULong(ok, true);
 }
 
 UString UString::toLower() const

@@ -1,3 +1,9 @@
+2003-12-10  Stephan Kulow  <coolo@kde.org>
+
+        * kjs/ustring.cpp (UString::toDouble): Separate the "tolerant"
+	parameter into two separate ones: tolerateTrailingJunk and
+	tolerateEmptyString (patch by Apple)
+
 2003-11-25  David Faure  <faure@kde.org>
 
 	* regexp_object.cpp (construct): Add check for (regexp,flags) case 

@@ -924,7 +924,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     if (isHex)
       res = Number(0);
     else
-      res = Number(str.toDouble( true /*tolerant*/ ));
+      res = Number(str.toDouble( true /*tolerant*/, false ));
     }
     break;
   case IsNaN:
