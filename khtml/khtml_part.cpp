@@ -617,7 +617,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
 bool KHTMLPart::openURL( const KURL &url )
 {
-  kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
+  kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
 #ifdef SPEED_DEBUG
@@ -625,17 +625,18 @@ bool KHTMLPart::openURL( const KURL &url )
 #endif
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
-
-  // in case we have a) no frameset, b) the url is identical with the currently
+  // in case we have a) no frameset (don't test m_frames.count(), iframes get in there)
+  // b) the url is identical with the currently
   // displayed one (except for the htmlref!) , c) the url request is not a POST
   // operation and d) the caller did not request to reload the page we try to
   // be smart and instead of reloading the whole document we just jump to the
   // request html anchor
-  if ( d->m_frames.count() == 0 &&
+  bool isFrameSet = (d->m_doc && d->m_doc->isHTMLDocument() && (static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->id() == ID_FRAMESET));
+  if ( !isFrameSet &&
        urlcmp( url.url(), m_url.url(), true, true ) &&
        url.hasRef() && !args.doPost() && !args.reload )
   {
-    kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
+    kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
     m_url = url;
     emit started( 0L );
 
@@ -768,7 +769,7 @@ bool KHTMLPart::closeURL()
   for (; it != end; ++it )
     if ( !( *it ).m_part.isNull() )
       ( *it ).m_part->closeURL();
-      
+
   d->m_bPendingChildRedirection = false;
 
   // Stop any started redirections as well!! (DA)
@@ -1352,7 +1353,7 @@ void KHTMLPart::showError( KIO::Job* job )
     // (so that 'back' works)
     m_url = d->m_workingURL;
     d->m_workingURL = KURL();
-    emit started( 0 ); 
+    emit started( 0 );
     emit completed();
   }
 }
@@ -1685,7 +1686,7 @@ void KHTMLPart::checkCompleted()
         }
       }
   }
-  
+
   // check that the view has not been moved by the user
   if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 )
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
@@ -1697,7 +1698,7 @@ void KHTMLPart::checkCompleted()
     // deferred until the parent emits a completed signal.
     if ( parentPart() == 0 )
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-    
+
     emit completed( true );
   }
   else
