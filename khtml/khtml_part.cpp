@@ -4947,6 +4947,23 @@ bool KHTMLPart::restored() const
   return d->m_restored;
 }
 
+bool KHTMLPart::pluginPageQuestionAsked(const QString& mimetype) const
+{
+  // parentPart() should be const!
+  KHTMLPart* parent = const_cast<KHTMLPart *>(this)->parentPart();
+  if ( parent )
+    return parent->pluginPageQuestionAsked(mimetype);
+
+  return d->m_pluginPageQuestionAsked.contains(mimetype);
+}
+
+void KHTMLPart::setPluginPageQuestionAsked(const QString& mimetype)
+{
+  if ( parentPart() )
+    parentPart()->setPluginPageQuestionAsked(mimetype);
+
+  d->m_pluginPageQuestionAsked.append(mimetype);
+}
+
 using namespace KParts;
 #include "khtml_part.moc"
-

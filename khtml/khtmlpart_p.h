@@ -341,6 +341,8 @@ public:
 
   QTimer m_progressUpdateTimer;
 
+  QStringList m_pluginPageQuestionAsked;
+
   /////////// 'Find' feature
   struct StringPortion
   {
