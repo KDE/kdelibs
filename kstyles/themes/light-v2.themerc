@@ -2,6 +2,7 @@
 Name=Light Style, 2nd revision
 Name[da]=Light Style, 2d revision
 Name[es]=Estilo ligero, 2nda revisión
+Name[fi]=Light Style, toinen versio
 Name[fr]=Style lumière, 2ème version
 Name[hu]=Light stílus, 2. változat
 Name[lv]=Gaismas Stils, 2-ā revīzija
@@ -12,6 +13,7 @@ Name[sv]=Lätt stil, andra revisionen
 Comment=Second revision of the simple and elegant 'Light' widget style.
 Comment[da]=Anden revision af den simple og elegante 'Light' dims-stil.
 Comment[es]=Segunda revisión del elegante estilo de widgets 'Ligero'.
+Comment[fi]=Toinen versio yksinkertaisesta ja elegantista 'Light' tyylistä
 Comment[fr]=Deuxième version du style graphique «Lumière», simple et élégant
 Comment[hu]=Az egyszerű, de elegáns 'Light' elemstílus 2. változata.
 Comment[lv]= Vienkāršā un elegantā 'Gaismas' vidžeta stila otrā revīzija.
