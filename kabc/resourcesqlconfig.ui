@@ -47,7 +47,7 @@
                         <cstring>userLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>Username</string>
+                        <string>Username:</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -55,7 +55,7 @@
                         <cstring>passwordLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>Password</string>
+                        <string>Password:</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="3" column="0">
@@ -63,7 +63,7 @@
                         <cstring>hostLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>Host</string>
+                        <string>Host:</string>
                     </property>
                 </widget>
                 <widget class="KLineEdit" row="0" column="1">
@@ -76,7 +76,7 @@
                         <cstring>nameLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>Database</string>
+                        <string>Database:</string>
                     </property>
                 </widget>
                 <widget class="KLineEdit" row="2" column="1">

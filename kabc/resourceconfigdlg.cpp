@@ -50,7 +50,7 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
 
     resourceName = new KLineEdit( groupBox );
 
-    resourceIsReadOnly = new QCheckBox( i18n( "Read-Only" ), groupBox );
+    resourceIsReadOnly = new QCheckBox( i18n( "Read-only" ), groupBox );
 
     resourceIsFast = new QCheckBox( i18n( "Fast resource" ), groupBox );
 
