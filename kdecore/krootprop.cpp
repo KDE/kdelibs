@@ -30,6 +30,7 @@ KRootProp::KRootProp()
 KRootProp::~KRootProp()
 {
 	sync();
+	propDict.clear();
 }
 
 void KRootProp::sync()
@@ -51,8 +52,7 @@ void KRootProp::sync()
 		XChangeProperty(kde_display, root, at,
 			XA_STRING, 8, PropModeReplace,
 			(unsigned char *)propString.data(), propString.length());
-			
-		propDict.clear();
+					
 	}
 }
 
