@@ -342,7 +342,7 @@ void KLocale::initFormat(KConfig *config)
   _timefmt = config->readEntry(QString::fromLatin1("TimeFormat"));
   if (_timefmt.isNull())
     _timefmt = entry.readEntry(QString::fromLatin1("TimeFormat"),
-			       QString::fromLatin1("%I:%M:%S %p"));
+			       QString::fromLatin1("%H:%M:%S"));
 
   _datefmt = config->readEntry(QString::fromLatin1("DateFormat"));
   if (_datefmt.isNull())
@@ -352,7 +352,7 @@ void KLocale::initFormat(KConfig *config)
   _datefmtshort = config->readEntry(QString::fromLatin1("DateFormatShort"));
   if (_datefmtshort.isNull())
     _datefmtshort = entry.readEntry(QString::fromLatin1("DateFormatShort"),
-				    QString::fromLatin1("%m/%d/%y"));
+				    QString::fromLatin1("%Y-%m-%d"));
 
   m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
   m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
