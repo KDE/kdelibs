@@ -45,6 +45,7 @@ I chose the below paths - following Andreas's settings.
 /usr			prefix
 /usr/bin		kde binaries (was KDE/bin)
 /usr/lib		kde shared libraries (was KDE/lib)
+/usr/lib/kde2           kde module directory
 /usr/include/kde	kde include files (was KDE/include)
 /usr/lib/cgi-bin	kde cgi binaries (was KDE/cgi-bin)
 /usr/share/doc/kde/HTML kde online documentation (was KDE/share/doc)
