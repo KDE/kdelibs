@@ -17,18 +17,15 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES= -I$(top_srcdir)/kio $(all_includes)
+LDADD = $(top_builddir)/kio/libkio.la
+LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-check_PROGRAMS = ksycocatest getalltest kruntest
+check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest
 
-ksycocatest_LDADD = $(top_builddir)/kio/libkio.la
-ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+METASOURCES = AUTO
+
 ksycocatest_SOURCES = ksycocatest.cpp
-
-getalltest_LDADD = $(top_builddir)/kio/libkio.la
-getalltest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 getalltest_SOURCES = getalltest.cpp
-
-kruntest_LDADD = $(top_builddir)/kio/libkio.la
-kruntest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kruntest_SOURCES = kruntest.cpp
-kruntest_METASOURCES = AUTO
+ktartest_SOURCES = ktartest.cpp
+kopenwithtest_SOURCES = kopenwithtest.cpp
