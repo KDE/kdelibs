@@ -483,7 +483,6 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
 
 KKeyChooser::~KKeyChooser()
 {
-	delete wList;
 }
 
 void KKeyChooser::updateAction( int index )
@@ -531,21 +530,11 @@ void KKeyChooser::readGlobalKeys()
 	aIt->toFirst();
 	while ( aIt->current() ) {
 		if ( globalDict->find( aIt->currentKey() ) ) {
-			
-			// Tried removing but it didn't work. Hence set them to zero
-			// instead
-			keyCode = new int;
-			*keyCode = 0;
-			if ( globalDict->remove( aIt->currentKey() ) )
-				debug("remove: %s", aIt->currentKey() );
-			//debug("%s, %d", aIt->currentKey(), *globalDict->find(
-			//aIt->currentKey() ));
-			
+		  debug("remove: %s", aIt->currentKey() );
+		  globalDict->remove( aIt->currentKey());
 		}
 		++ ( *aIt );
 	}
-	
-	globalDict->clear();
 	
 	debug("Global dict contents");
 	
@@ -980,7 +969,7 @@ bool KKeyChooser::isKeyPresent()
 	gIt.toFirst();
 	while ( gIt.current() ) {
 		debug("current %s:%d code %d", gIt.currentKey(), *gIt.current(), pEntry->aConfigKeyCode);
-		if ( *gIt.current() == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
+		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
 

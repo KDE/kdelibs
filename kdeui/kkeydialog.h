@@ -50,6 +50,7 @@ class KSplitListItem : public QObject, public QListBoxItem
 	
 public:
     KSplitListItem( const char *s );
+    ~KSplitListItem (){};
 
 protected:
     virtual void paint( QPainter * );
