@@ -48,6 +48,8 @@ public class KJASProtocolHandler
     private int cmd_index;
     private final char sep = (char) 0;
 
+    private byte[] currentcommand = null;
+
     public KJASProtocolHandler( InputStream  _commands,
                                 OutputStream _signals )
     {
@@ -279,27 +281,36 @@ public class KJASProtocolHandler
         } else
         if (cmd_code_value == CallMember)
         {
-            String contextID = getArg( command );
-            String appletID  = getArg( command );
-            int objid  = Integer.parseInt( getArg( command ) );
-            String name  = getArg( command );
-            int [] ret_type_obj = { -1, 0 };
-            StringBuffer value = new StringBuffer();
-            java.util.List args = new java.util.Vector();
-            try { // fix getArg
-                String param = getArg(command);
-                while (param != null) {
-                    args.add(param);
-                    param = getArg(command);
-                }
-            } catch (Exception e) {}
-            int type = 0;
+            currentcommand = command;
+            new Thread() {
+                public void run() {
+                    String contextID = getArg( currentcommand );
+                    String appletID  = getArg( currentcommand );
+                    int objid  = Integer.parseInt( getArg( currentcommand ) );
+                    String name  = getArg( currentcommand );
+                    int [] ret_type_obj = { -1, 0 };
+                    StringBuffer value = new StringBuffer();
+                    java.util.List args = new java.util.Vector();
+                    try { // fix getArg
+                        String param = getArg(currentcommand);
+                        while (param != null) {
+                            args.add(param);
+                            param = getArg(currentcommand);
+                        }
+                    } catch (Exception e) {}
+                    int type = 0;
 
-            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-            if ( context != null )
+                    KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+                    if ( context != null )
+                        ret_type_obj = context.callMember(appletID, objid, name, value, args);
+                    Main.debug( "CallMember " + name + "=" + value.toString());
+                    sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+                }
+            }.start();
+        /*    if ( context != null )
                 ret_type_obj = context.callMember(appletID, objid, name, value, args);
             Main.debug( "CallMember " + name + "=" + value.toString());
-            sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+            sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); */
         } else
         if (cmd_code_value == DerefObject)
         {
