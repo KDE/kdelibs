@@ -1,5 +1,5 @@
 Matthias Kalle Dalheimer <kalle@kde.org>:
-classes KConfig, KTextStream, KColorSet, 
+classes KApplication, KConfig, KTextStream, KColorSet, 
 automake, autoconf, maintenance
 
 Richard Moore <moorer@cs.man.ac.uk>:
@@ -35,6 +35,10 @@ Key configuration classes, bug fixes
 
 Christoph Neerfeld <Christoph.Neerfeld@mail.bonn.netsurf.de>
 KIconLoader class
+
+Sven Radej <sven.radej@iname.com>
+KFloater, KLineEdit, KCombo
+
 
 
 

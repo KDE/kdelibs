@@ -2,6 +2,14 @@
  * $Id$
  * $Log$
  *
+ * Revision 1.10  1997/10/21 20:44:52  kulow
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
+ * Revision 1.9  1997/10/16 11:15:03  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.8  1997/09/18 12:16:04  kulow
  * corrected some header dependencies. Removed most of them in drag.h and put
  * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
@@ -67,7 +75,7 @@ KSocket::KSocket( const char *_host, unsigned short int _port )
 #include <sys/socket.h>
 	    readNotifier->setEnabled( TRUE );
 # include <sys/time.h>
-  else if ( readNotifier == 0L )
+  else if ( readNotifier != 0L )
 	readNotifier->setEnabled( FALSE );
 # if HAVE_SYS_TIME_H
 #  include <sys/time.h>
@@ -78,13 +86,13 @@ KSocket::KSocket( const char *_host, unsigned short int _port )
 	  if ( writeNotifier == 0L )
 #include <netinet/in.h>
 #include <arpa/inet.h>
-		  QObject::connect( readNotifier, SIGNAL( activated(int) ), this, 
+#include <netdb.h>
 #endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port ) :
 	    writeNotifier->setEnabled( TRUE );
 {
-  else if ( writeNotifier == 0L )
+  else if ( writeNotifier != 0L )
 	writeNotifier->setEnabled( FALSE );
 }
 

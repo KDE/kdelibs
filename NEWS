@@ -1,3 +1,15 @@
+17.07.97:	new stopsign.xpm
+			KConfig: environment variables are resolved in readEntry()
+			(meaning you can write() an entry with an environment
+			variable and read it back in, and the value gets properly
+			expanded).
+			Fixed three bugs in ksock.cpp
+			Added KFloater
+			Added KCombo
+			Added KLineEdit
+			New KToolbar
+			New KToplevelWidget
+
 29.06.97:	KConfig reads and writes string lists
 			Torben's patches to ktoolbar.*, kurl.h
 

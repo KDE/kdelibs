@@ -1,6 +1,13 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.9  1997/06/29 18:26:32  kalle
+ * 29.06.97:	KConfig reads and writes string lists
+ * 			Torben's patches to ktoolbar.*, kurl.h
+ *
+ * 22.06.97:	KApplications save and restore position and size of their top
+ * (unstable)	level widget.
+ *
  * Revision 1.8  1997/05/13 05:48:58  kalle
  * Kalle: Default arguments for KConfig::read*Entry()
  * app-specific config files don't start with a dot
@@ -251,33 +258,6 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
 		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 );
 	  pEntry->bDirty = false;
 
-      // check for environment variables and make necessary translations
-      int nDollarPos = pEntry->aValue.find( '$' );
-      while( nDollarPos != -1 )
-	{
-	  // there is at least one $
-	  if( (pEntry->aValue)[nDollarPos+1] != '$' )
-	    {
-	      uint nEndPos = nDollarPos;
-	      // the next character is no $
-	      do
-		{
-		  nEndPos++;
-		} while ( isalnum( (pEntry->aValue)[nEndPos] ) || 
-				  nEndPos > pEntry->aValue.length() );
-	      QString aVarName = pEntry->aValue.mid( nDollarPos+1, 
-												 nEndPos-nDollarPos-1 );
-	      char* pEnv = getenv( aVarName );
-	      if( pEnv )
-		pEntry->aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
-	      else
-		pEntry->aValue.remove( nDollarPos, nEndPos-nDollarPos );
-	    }
-	  else
-	    // remove one of the dollar signs
-	    pEntry->aValue.remove( nDollarPos, nDollarPos+1 );
-	  nDollarPos = pEntry->aValue.find( '$', nDollarPos+2 );
-	};
 
       pCurrentGroupDict->insert( aCurrentLine.left( nEqualsPos ),
 								 pEntry );
@@ -317,6 +297,35 @@ QString KConfig::readEntry( const QString& rKey,
 	  else if( pDefault )
 		aValue = *pDefault;
     }
+
+  // check for environment variables and make necessary translations
+  int nDollarPos = aValue.find( '$' );
+  while( nDollarPos != -1 )
+	{
+	  // there is at least one $
+	  if( (aValue)[nDollarPos+1] != '$' )
+	    {
+	      uint nEndPos = nDollarPos;
+	      // the next character is no $
+	      do
+			{
+			  nEndPos++;
+			} while ( isalnum( (aValue)[nEndPos] ) || 
+					  nEndPos > aValue.length() );
+	      QString aVarName = aValue.mid( nDollarPos+1, 
+										 nEndPos-nDollarPos-1 );
+	      char* pEnv = getenv( aVarName );
+	      if( pEnv )
+			aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
+	      else
+			aValue.remove( nDollarPos, nEndPos-nDollarPos );
+	    }
+	  else
+	    // remove one of the dollar signs
+	    aValue.remove( nDollarPos, nDollarPos+1 );
+	  nDollarPos = aValue.find( '$', nDollarPos+2 );
+	};
+
   return aValue;
 }
 
