@@ -1,6 +1,6 @@
 [Image Format]
 Type=RGB
-Header=^\x01\xda[\x00|\x01][\x01|\x02]
+Header=^\x01\xda\x01[\x01\x02]
 Name=SGI Image (RGB)
 Name[ar]=صورة من نوع SGI (RGB)
 Name[be]=Выява SGI (RGB)
