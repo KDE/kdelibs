@@ -224,6 +224,7 @@ protected:
 
     /**
      * @internal
+     * KDE 4.0: Remove
      */
     static void sigpipe_handler(int);
 

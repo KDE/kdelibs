@@ -149,13 +149,8 @@ public:
 
 SlaveInterface::SlaveInterface( Connection * connection )
 {
-    struct sigaction act;
     m_pConnection = connection;
     m_progressId = 0;
-    act.sa_handler = sigpipe_handler;
-    sigemptyset( &act.sa_mask );
-    act.sa_flags = 0;
-    sigaction( SIGPIPE, &act, 0 );
 
     d = new SlaveInterfacePrivate;
     connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
@@ -523,6 +518,8 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     }
 }
 
+// No longer used.
+// Remove in KDE 4.0
 void SlaveInterface::sigpipe_handler(int)
 {
     int saved_errno = errno;
