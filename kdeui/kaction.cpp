@@ -133,6 +133,7 @@ void KAction::unplug( QWidget *w )
 
     bar->removeItem( menuId( idx ) );
   }
+  QAction::unplug( w );
 }
 
 void KAction::setEnabled( bool b )
