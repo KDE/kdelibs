@@ -1,3 +1,10 @@
 [Desktop Entry]
 X-KDE-ServiceType=Browser/View
 Name=Browser View
+
+[PropertyDef::X-KDE-BrowserView-Args]
+Type=QString
+
+[PropertyDef::X-KDE-BrowserView-AllowAsDefault]
+Type=bool
+

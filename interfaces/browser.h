@@ -23,6 +23,7 @@
 #include <qwidget.h>
 #include <qpoint.h>
 #include <qlist.h>
+#include <qdatastream.h>
 
 #include <kaction.h>
 
@@ -90,6 +91,13 @@ public:
   virtual int xOffset() = 0;
   virtual int yOffset() = 0;
   virtual void stop() = 0;
+
+  virtual void saveState( QDataStream &stream )
+  { stream << url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
+  
+  virtual void restoreState( QDataStream &stream )
+  { QString u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
+    openURL( u, false, xOfs, yOfs ); }
 
   QValueList<ViewAction> *actions() { return &m_actionCollection; }
 

@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qasciidict.h>
 
 #include "ltdl.h"
@@ -59,7 +60,7 @@ public:
     KLibFactory( QObject* parent = 0, const char* name = 0 );
     virtual ~KLibFactory();
 
-    QObject* create( ClassType type, QObject* parent = 0, const char* name = 0 );
+    QObject* create( ClassType type, QObject* parent = 0, const char* name = 0, const QStringList &args = QStringList() );
     /**
      * Creates a new object. The returned object has to be derived from the requested classname.
      *
@@ -68,7 +69,7 @@ public:
      * But if asked for a "QWidget", it could create a wrapper widget, that encapsulates the Koffice
      * specific features.
      */
-    virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject" ) = 0;
+    virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
 signals:
     void objectCreated( QObject *obj );

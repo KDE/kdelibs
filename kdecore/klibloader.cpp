@@ -13,18 +13,18 @@ KLibFactory::~KLibFactory()
 {
 }
 
-QObject* KLibFactory::create( ClassType type, QObject* parent, const char* name )
+QObject* KLibFactory::create( ClassType type, QObject* parent, const char* name, const QStringList &args )
 {
     switch( type )
     {
     case Object:
-	return create( parent, name, "QObject" );
+	return create( parent, name, "QObject", args );
     case Widget:
-	return create( parent, name, "Widget" );
+	return create( parent, name, "Widget", args );
     case Part:
-	return create( parent, name, "Part" );
+	return create( parent, name, "Part", args );
     case KofficeDocument:
-	return create( parent, name, "KofficeDocument" );
+	return create( parent, name, "KofficeDocument", args );
     }
     return 0L;
 }
