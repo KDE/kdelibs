@@ -7,4 +7,4 @@ reading=true
 defaultMimetype=text/html
 mimetypesExcludedFromFastMode=application/x-executable,application/x-perl,application/x-python,application/x-python-bytecode,application/x-shellscript
 patternsExcludedFromFastMode=*.stm,*.rpm
-
+Icon=www
