@@ -413,7 +413,6 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
 
   if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
     return false;
-
   ///set the dialog signal handler
   dialog3slot = SLOT(checkWord3());
 
@@ -426,6 +425,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   }
   else
     ksdlg->hide();
+
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 

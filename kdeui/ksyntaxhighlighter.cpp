@@ -357,11 +357,16 @@ void KSpellingHighlighter::setIntraWordEditing( bool editing )
     d->intraWordEditing = editing;
 }
 
-void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, const QStringList &suggestions, unsigned int)
+void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, const QStringList &suggestions,
+                                                unsigned int pos)
 {
     Q_UNUSED( suggestions );
     // kdDebug() << suggestions.join( " " ).latin1() << endl;
     d->sDict()->replace( originalWord, NotOkay );
+
+    //Emit this baby so that apps that want to have suggestions in a popup over
+    //the misspelled word can catch them.
+    emit newSuggestions( originalword, suggestions, pos );
 
     // this is slow but since kspell is async this will have to do for now
     d->rehighlightRequest->start( 0, true );
