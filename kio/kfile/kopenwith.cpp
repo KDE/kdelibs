@@ -404,10 +404,10 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   edit->setURL( _value );
   QWhatsThis::add(edit,i18n(
-    "Following the command, you can have several place holders which will be replaced"
+    "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
     "%f - a single file name\n"
-    "%F - a list of files; use for apps that can open several local files at once\n"
+    "%F - a list of files; use for applications that can open several local files at once\n"
     "%u - a single URL\n"
     "%U - a list of URLs\n"
     "%d - the directory of the file to open\n"
