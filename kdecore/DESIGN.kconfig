@@ -84,7 +84,7 @@ is this needed? Nobody seems to use it.
 Open Question: The bPersistent flag doesn't seem to be used... could it be removed?
 
 Open Question: Is the bNLS flag needed? Localised entries seem to be mostly
-usefull for default files, are they ever created by the user itself?
+useful for default files, are they ever created by the user itself?
 
 Open Question: Would it be worthwhile to lock a user option that is equal to the 
 default so that it doesn't change when the default changes?
@@ -116,13 +116,11 @@ not uncommon to have them defined in three places:
   3) In the settings dialog when selecting "Use defaults".
 
 * Provide type-information about config entries to facilate "KConfEdit" like 
-tools. Ideally type-information also includes range-information.
+tools. Ideally type-information also includes range-information; this is even
+mandatory if enums become an explicit type.
 
 * Facilitate the documentation of config entries.
 
-
-Plan A
-======
 
 Instead of relying on the defaults that are hard-coded in the application, 
 rely on default configuration files being installed in $KDEDIR. The technical
@@ -153,9 +151,17 @@ e.g. the default high score user name which is determined by the user
 currently logged in.
 
 
-Plan B
-======
+Some random ideas:
+* The format of the entries would be something like this:
 
-There is no plan B.
+[Mail Settings]
+#!Type=string
+#!Description=SMTP server to use for sending mail
+#!Description[nl]=SMTP server voor het versturen van mail
+Host=wantelbos.zogje.fr
 
+- the type could be subclassed more, e.g. strings can be "email", "hostname",
+  "url", etc.
 
+- having translations in these files is very arguable. external po's would be
+  better.
