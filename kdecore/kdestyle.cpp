@@ -351,7 +351,7 @@ void KDEStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
         drawItem(p, x1, y1, btn->width(), btn->height(),
                  AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
                  btn->pixmap(), btn->text(), -1, act ?
-                 &btn->colorGroup().light() : &btn->colorGroup().text());
+                 &btn->colorGroup().light() : &btn->colorGroup().buttonText());
     }
     else{
         drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
@@ -1031,7 +1031,7 @@ void KDEStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     {
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
     }
-    p->setPen(g.text());
+    p->setPen(g.buttonText());
 
     if (icontext == Icon){ // icon only
         if (pixmap){
@@ -1140,13 +1140,13 @@ void KDEStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                       -1, &g.text());
+                                       -1, &g.buttonText());
     }
     else
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                       -1, &g.text() );
+                                       -1, &g.buttonText() );
 }
 
 void KDEStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
@@ -1195,10 +1195,10 @@ static const int windowsRightBorder     = 12;
                                y+motifItemFrame, mw, mh, itemg, act, dis );
             }
         }
-        p->setPen(itemg.text());
+        p->setPen(itemg.buttonText());
         QColor discol;
         if (dis) {
-            discol = itemg.text();
+            discol = itemg.buttonText();
             p->setPen(discol);
         }
         int xm = motifItemFrame + checkcol + motifItemHMargin;
@@ -1223,7 +1223,7 @@ static const int windowsRightBorder     = 12;
         if (mi->popup()) {
             int dim = (h-2*motifItemFrame) / 2;
             if (!dis)
-                discol = itemg.text();
+                discol = itemg.buttonText();
             QColorGroup g2(discol, itemg.highlight(),
                            white, white,
                            dis ? discol : white,
