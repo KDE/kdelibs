@@ -202,11 +202,14 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
   // export parameter
   QString attrStr = attr->name().string() + "=\"" + val + "\"";
   param.append( attrStr );
-
+  int pos;
   switch ( attr->attrId )
   {
      case ATTR_TYPE:
-	serviceType = val.lower(); // FIXME: is this correct? are MIME types case insensitive???? look also into pluginscan.cpp
+        serviceType = val.lower();
+        pos = serviceType.find( ";" );
+        if ( pos!=-1 )
+            serviceType = serviceType.left( pos );
 	break;
      case ATTR_SRC:
 	url = val;
@@ -275,9 +278,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
       m_render->setStyle(m_style);
       r->addChild( m_render, _next ? _next->renderer() : 0 );
    } else
-   {
       r->setStyle(m_style);
-   }
 
   NodeBaseImpl::attach( w );
 }
@@ -316,10 +317,14 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  int pos;
   switch ( attr->attrId )
   {
     case ATTR_TYPE:
-      serviceType = val;
+      serviceType = val.lower();
+      pos = serviceType.find( ";" );
+      if ( pos!=-1 )
+          serviceType = serviceType.left( pos );
       break;
     case ATTR_DATA:
       url = val;
