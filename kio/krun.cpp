@@ -641,7 +641,10 @@ void KRun::slotScanFinished( KIO::Job *job )
      slotStatResult( job ); // hacky - we just want to use the same code on error
      return;
   }
-  foundMimeType( ((KIO::MimetypeJob *)job)->mimetype() );
+  QString mimetype = ((KIO::MimetypeJob *)job)->mimetype();
+  if ( mimetype.isEmpty() )
+    kdWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug." << endl;
+  foundMimeType( mimetype );
 }
 
 void KRun::foundMimeType( const QString& type )
