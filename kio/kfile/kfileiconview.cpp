@@ -655,7 +655,7 @@ void KFileIconView::listingCompleted()
 void KFileIconView::showEvent( QShowEvent *e )
 {
     KIconView::showEvent( e );
-#if QT_VERSION >= 302
+#if QT_VERSION <= 302
     sort( !isReversed() );
 #endif
 }
