@@ -229,7 +229,7 @@ public:
 
 class KJSContext {
 public:
-  KJSContext(CodeType type, KJSContext *callingContext = 0L,
+  KJSContext(CodeType type = GlobalCode, KJSContext *callingContext = 0L,
 	     KJSFunction *func = 0L, KJSArgList *args = 0L);
   ~KJSContext();
   KJSScope *firstScope() const { return scopeChain; }
@@ -244,7 +244,6 @@ public:
 private:
   KJSO *variable;
   KJSScope *scopeChain;
-  CodeType codeType;
 };
 
 class KJSMath : public KJSObject {

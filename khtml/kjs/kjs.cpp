@@ -43,6 +43,7 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
 {
   printf("KJSWorld::KJSWorld()\n");
 
+  // due to yacc's C nature the parser isn't reentrant
   assert(nodeCount == 0);
   assert(lexer == 0);
   assert(context == 0);
@@ -69,8 +70,8 @@ void KJSWorld::evaluate(const QString &code)
   if (!parseError) {
     fprintf(stderr, "nodeCount = %d\n", nodeCount);
 
-    global = new KJS::KJSGlobal();
-    context = new KJSContext(GlobalCode);
+    global = new KJSGlobal();
+    context = new KJSContext();
     context->insertScope(global);
 
     assert(prog);

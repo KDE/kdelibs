@@ -1,3 +1,7 @@
+1999-10-16  Harri Porten  <porten@kde.org>
+
+	* object.cpp: enter execution context on function calls 
+
 1999-10-15  Harri Porten  <porten@kde.org>
 
 	* first steps for calls of user declared functions

@@ -36,7 +36,29 @@ KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
-  return func->execute();
+  KJSContext *save = KJSWorld::context;
+  CodeType ctype;
+  switch(func->type()) {
+    case InternalFunction:
+      ctype = HostCode;
+      break;
+    case DeclaredFunction:
+      ctype = FunctionCode;
+      break;
+    case AnonymousFunction:
+      ctype = AnonymousCode;
+      break;
+    default:
+      assert(!"KJSO::executeCall(): unhandled switch case");
+  }
+
+  KJSWorld::context = new KJSContext(ctype, save, func, 0L /* TODO */ );
+
+  KJSO *result = func->execute();
+
+  KJSWorld::context = save;
+
+  return result;
 }
 
 // ECMA 8.7.1
@@ -127,10 +149,12 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
   // TODO:
   // put("Prototype", _Object.prototype_ );
   put("callee", func, DontEnum);
-  int iarg = args->numArgs();
-  put("length", new KJSNumber(iarg), DontEnum);
-  for (int i = 0; i < iarg; i++) {
+  if(args) {
+    int iarg = args->numArgs();
+    put("length", new KJSNumber(iarg), DontEnum);
+    for (int i = 0; i < iarg; i++) {
     /* TODO */
+    }
   }
 }
 
@@ -158,8 +182,6 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
 {
   KJSGlobal *glob = KJSWorld::global;
   assert(glob);
-
-  codeType = type;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
@@ -189,6 +211,7 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
     case FunctionCode:
     case AnonymousCode:
       scopeChain = new KJSScope(activation);
+      scopeChain->append(glob);
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
       if (callingContext->thisValue->isA(Object))
 	thisValue = callingContext->thisValue;
