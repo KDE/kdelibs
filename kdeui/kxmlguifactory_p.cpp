@@ -371,7 +371,7 @@ QDomElement ContainerNode::findElementForChild( const QDomElement &baseElement,
     // ### slow
     for ( e = baseElement.firstChild().toElement(); !e.isNull();
           e = e.nextSibling().toElement() )
-        if ( e.tagName() == childNode->tagName &&
+        if ( e.tagName().lower() == childNode->tagName &&
              e.attribute( attrName ) == childNode->name )
             return e;
 
@@ -385,11 +385,16 @@ void ContainerNode::unplugActions( BuildState &state )
 
     ContainerClientListIt clientIt( clients );
 
+    /*
+        Disabled because it means in KToolBar::saveState isHidden is always true then,
+        which is clearly wrong.
+
     if ( clients.count() == 1 && clientIt.current()->client == client &&
          client == state.guiClient )
         container->hide(); // this container is going to die, that's for sure.
                            // in this case let's just hide it, which makes the
                            // destruction faster
+     */
 
     while ( clientIt.current() )
         //only unplug the actions of the client we want to remove, as the container might be owned
