@@ -118,6 +118,7 @@ KServiceType::load( QDataStream& _str )
   _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
        >> b;
   m_bValid = b;
+  m_bDerived = m_mapProps.contains("X-KDE-Derived");
 }
 
 void
