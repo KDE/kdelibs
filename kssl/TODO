@@ -2,13 +2,6 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
-- make install should chmod 400 the .crt file I think....
-
-- The ASN1 date conversion code doesn't take international issues into
-  account by any means.
-
-- Fix the problem with https not working when a proxy is set
-
 - do the openssl randomization calls for non-linux/bsd systems as per bug
   report #11888
 
@@ -47,8 +40,6 @@ This TODO happens to cover SSL in all of KDE though.
   certificates (self signed) for users.
 
 - The certificate home is not done.  It will manage the user's certificates.
-
-- Should "Supports SSL/HTTPS" be on in all cases if we're linked with OpenSSL?
 
 - Document libkssl interface
 
