@@ -48,7 +48,7 @@ public:
 KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  KConfigSkeleton *config,
 		  KDialogBase::DialogType dialogType,
-		  KDialogBase::ButtonCode dialogButtons,
+		  int dialogButtons,
 		  bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
 		  parent, name, modal, i18n("Configure"), dialogButtons ),

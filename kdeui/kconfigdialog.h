@@ -110,8 +110,7 @@ public:
   KConfigDialog( QWidget *parent, const char *name,
                  KConfigSkeleton *config,
 		 KDialogBase::DialogType dialogType = KDialogBase::IconList,
-		 KDialogBase::ButtonCode dialogButtons =
-		    (KDialogBase::ButtonCode) (KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help),
+		 int dialogButtons = KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help,
 		 bool modal=false );
 
   /**
