@@ -44,8 +44,8 @@
 
 #include "config.h"
 #ifdef Q_WS_X11
-#include <X11/X.h> 
-#include <X11/Xlib.h> 
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #endif
 
 #else
@@ -1614,13 +1614,13 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 
   d->readyToDrag = false;
   d->mainDockWidget=0;
-  
+
 #ifndef NO_KDE2
   d->splitterOpaqueResize = KGlobalSettings::opaqueResize();
 #else
   d->splitterOpaqueResize = false;
 #endif
-  
+
   d->splitterKeepSize = false;
   d->splitterHighResolution = false;
   d->m_readDockConfigMode = WrapExistingWidgetsOnly; // default as before
@@ -2315,9 +2315,9 @@ void KDockManager::readConfig(QDomElement &base)
         if (childEl.isNull()) continue;
 
         KDockWidget *obj = 0;
-    
+
 	if (childEl.tagName() == "dockContainer") {
-		
+
 		KDockWidget *cont=getDockWidgetFromName(stringEntry(childEl, "name"));
 		kdDebug()<<"dockContainer: "<<stringEntry(childEl,"name")<<endl;
 		if (!(cont->d->isContainer)) {
@@ -2329,7 +2329,7 @@ void KDockManager::readConfig(QDomElement &base)
 					dc->load(childEl);
 					removeFromAutoCreateList(cont);
 				}
-			
+
 		}
 	}
 	else
@@ -2392,15 +2392,15 @@ void KDockManager::readConfig(QDomElement &base)
         }
     }
 
-    // thirdly, now that all ordinary dockwidgets are created, 
+    // thirdly, now that all ordinary dockwidgets are created,
     // iterate them again and link them with their corresponding dockwidget for the dockback action
     for( QDomNode n = base.firstChild(); !n.isNull(); n = n.nextSibling() )
     {
         QDomElement childEl = n.toElement();
 
         if (childEl.tagName() != "dock" && childEl.tagName() != "tabGroup")
-            continue;            
-        
+            continue;
+
         KDockWidget *obj = 0;
 
         if (!boolEntry(childEl, "hasParent")) {
@@ -2414,7 +2414,7 @@ void KDockManager::readConfig(QDomElement &base)
             obj->updateHeader();
         }
     }
-    
+
     if (main->inherits("KDockMainWindow")) {
         KDockMainWindow *dmain = (KDockMainWindow*)main;
 
@@ -2443,7 +2443,7 @@ void KDockManager::readConfig(QDomElement &base)
         main->move(mr.topLeft());
         main->resize(mr.size());
     }
-    
+
     if (isMainVisible)
         main->show();
 
@@ -2656,7 +2656,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
-    
+
     if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
       QRect r = c->readRectEntry( oname + ":geometry" );
       obj = getDockWidgetFromName( oname );
@@ -2686,7 +2686,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     }
     nameList.next();
   }
-  
+
   // secondly, after the common dockwidgets, restore the groups and tabgroups
   nameList.first();
   while ( nameList.current() ){
@@ -2718,7 +2718,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       KDockWidget* d2 = getDockWidgetFromName( list.current() );
       tabDockGroup = d2->manualDock( d1, KDockWidget::DockCenter );
       if ( tabDockGroup ){
-        KDockTabGroup* tab = (KDockTabGroup*)tabDockGroup->widget;
+        KDockTabGroup* tab = dynamic_cast<KDockTabGroup*>(tabDockGroup->widget);
         list.next();
         while ( list.current() && tabDockGroup ){
           KDockWidget* tabDock = getDockWidgetFromName( list.current() );
@@ -2728,7 +2728,8 @@ void KDockManager::readConfig( KConfig* c, QString group )
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
           c->setGroup( group );
-          tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
+          if (tab)
+            tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
         }
       }
       obj = tabDockGroup;
@@ -2741,7 +2742,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     nameList.next();
   }
 
-  // thirdly, now that all ordinary dockwidgets are created, 
+  // thirdly, now that all ordinary dockwidgets are created,
   // iterate them again and link the toplevel ones of them with their corresponding dockwidget for the dockback action
   nameList.first();
   while ( nameList.current() ){
@@ -2749,7 +2750,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
-    
+
     if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
       obj = getDockWidgetFromName( oname );
       c->setGroup( group );
@@ -2762,7 +2763,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
 
     nameList.next();
   }
-  
+
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
 
@@ -2790,7 +2791,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     }
 
   }
-  
+
   // delete all autocreate dock
   if (d->m_readDockConfigMode == WrapExistingWidgetsOnly) {
     finishReadDockConfig(); // remove empty dockwidgets
@@ -2909,7 +2910,7 @@ void KDockManager::drawDragRectangle()
 {
 #ifdef BORDERLESS_WINDOWS
 	return
-#endif	
+#endif
   if (d->oldDragRect == d->dragRect)
     return;
 
@@ -2922,7 +2923,7 @@ void KDockManager::drawDragRectangle()
   for (i = 0; i <= 1; i++) {
     if (oldAndNewDragRect[i].isEmpty())
       continue;
-	
+
     KDockWidget* pDockWdgAtRect = (KDockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft(), true );
     if (!pDockWdgAtRect)
       continue;
