@@ -282,3 +282,19 @@ IncludeFile=kanimwidget.h
 ToolTip=This is a widget used to display animation using multiple individual pixmaps.
 Group=Display (KDE)
 ConstructorArgs=("kde",0,parent,name)
+
+[KValueSelector]
+IncludeFile=kcolordialog.h
+ToolTip=Widget for color value selection.
+Group=Graphics (KDE)
+
+[KSeparator]
+IncludeFile=kseparator.h
+ToolTip=Standard horizontal or vertical separator.
+Group=Display (KDE)
+
+[KTabWidget]
+IncludeFile=ktabwidget.h
+ToolTip=KDE tab widget container.
+IsContainer=true
+Group=Container (KDE)
