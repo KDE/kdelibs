@@ -314,7 +314,7 @@ RenderObject *RenderObject::containingBlock() const
         while (o && o->style()->position() == STATIC && !o->isHtml())
             o = o->parent();
     } else {
-        while(o && o->style()->display() == INLINE)
+        while(o && o->isInline())
             o = o->parent();
     }
     // this is just to make sure we return a valid element.
