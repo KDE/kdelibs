@@ -37,6 +37,7 @@
     <Action name="game_end"/>
         <MergeLocal name="end_merge"/>
     <Separator/>
+    <Action name="game_pause"/>
     <Action name="game_highscores"/>
     <Action name="game_print"/>
 	<MergeLocal name="misc_merge"/>
