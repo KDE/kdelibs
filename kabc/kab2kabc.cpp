@@ -137,8 +137,11 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
     } else if ( fieldName == "X-Suffix" ) {
     } else if ( fieldName == "X-FileAs" ) {
     } else if ( fieldName == "EMAIL" ) {
+      a.insertEmail( fieldValue, true );
     } else if ( fieldName == "X-E-mail2" ) {
+      a.insertEmail( fieldValue );
     } else if ( fieldName == "X-E-mail3" ) {
+      a.insertEmail( fieldValue );
     } else if ( fieldName == "X-Notes" ) {
     } else {
       a.insertCustom( "KADDRESSBOOK", fieldName, fieldValue );
