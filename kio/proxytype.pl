@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+# the script is called with interpreter, so don't worry about the path
+
 while(<>)
 {
     $useproxy = 1 if /UseProxy=true/;
