@@ -327,13 +327,11 @@ public:
      * @ref KGlobalSettings::CompletionPopup.
      * This method will create a completion-box by calling
      * @ref makeCompletionBox, if none is there, yet.
+     * 
+     * @param create Set this to false if you don't want the box to be created
+     *               i.e. to test if it is available.
      */
-    KCompletionBox * completionBox();
-
-    /**
-     * @returns the completion box or 0L if none is available
-     */
-    KCompletionBox * completionBox( bool create );
+    KCompletionBox * completionBox( bool create = true );
 
     /**
      * Reimplemented for internal reasons, the API is not affected.
@@ -750,7 +748,7 @@ protected:
     /**
      * @returns if we can modify the completion object or not.
      */
-    bool useCompletion() { return completionObject(false, true) != 0L; }
+    bool useCompletion() const { return compObj() != 0L; }
 
 private slots:
     /**

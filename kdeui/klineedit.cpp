@@ -221,7 +221,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
             QString txt = text();
-            int len = txt.length();            
+            int len = txt.length();
             QString keycode = e->text();
 
             if ( txt != old_txt && len && cursorPosition() == len )
@@ -281,6 +281,18 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     emit textRotation( KCompletionBase::NextCompletionMatch );
                 if ( handleSignals() )
                     rotateText( KCompletionBase::NextCompletionMatch );
+                return;
+            }
+        }
+
+        // substring completion
+        if ( handleSignals() && compObj() ) {
+            int key = ( keys[SubstringCompletion] == 0 ) ?
+                      KStdAccel::key(KStdAccel::SubstringCompletion) :
+                      keys[SubstringCompletion];
+            if ( KStdAccel::isEqual( e, key ) ) {
+                setCompletedItems( compObj()->substringCompletion( text() ) );
+                e->accept();
                 return;
             }
         }
@@ -500,43 +512,26 @@ void KLineEdit::makeCompletionBox()
     }
 }
 
-// FIXME: make pure virtual in KCompletionBase!
 void KLineEdit::setCompletedItems( const QStringList& items )
 {
-    if ( completionMode() == KGlobalSettings::CompletionPopup ||
-         completionMode() == KGlobalSettings::CompletionShell )
+    QString txt = text();
+    if ( !items.isEmpty() &&
+         !(items.count() == 1 && txt == items.first()) )
     {
-        QString txt = text();
-        if ( !items.isEmpty() &&
-             !(items.count() == 1 && txt == items.first()) )
-        {
-            if ( !d->completionBox )
-                makeCompletionBox();
+        if ( !d->completionBox )
+            makeCompletionBox();
 
-            if ( !txt.isEmpty() )
-                d->completionBox->setCancelledText( txt );
-            d->completionBox->clear();
-            d->completionBox->insertStringList( items );
-            d->completionBox->popup();
-        }
-        else
-        {
-            if ( d->completionBox && d->completionBox->isVisible() )
-                d->completionBox->hide();
-        }
+        if ( !txt.isEmpty() )
+            d->completionBox->setCancelledText( txt );
+        d->completionBox->clear();
+        d->completionBox->insertStringList( items );
+        d->completionBox->popup();
     }
-
-    else {
-        if ( !items.isEmpty() ) // fallback
-            setCompletedText( items.first() );
+    else
+    {
+        if ( d->completionBox && d->completionBox->isVisible() )
+            d->completionBox->hide();
     }
-}
-
-// ### merge these two for 3.0
-KCompletionBox * KLineEdit::completionBox()
-{
-    makeCompletionBox();
-    return d->completionBox;
 }
 
 KCompletionBox * KLineEdit::completionBox( bool create )
@@ -579,8 +574,6 @@ QPopupMenu* KLineEdit::contextMenuInternal()
     d->popupMenu->insertSeparator();
     d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
     d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
-    connect ( d->popupMenu, SIGNAL(aboutToShow()),
-              SIGNAL(aboutToShowContextMenu()) );
     return d->popupMenu;
 }
 

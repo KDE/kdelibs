@@ -341,6 +341,20 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     d->completionBox->hide();
             }
 
+
+            // substring completion
+            if ( handleSignals() && compObj() ) {
+                int key = ( keys[SubstringCompletion] == 0 ) ?
+                          KStdAccel::key(KStdAccel::SubstringCompletion) :
+                          keys[SubstringCompletion];
+                if ( KStdAccel::isEqual( e, key ) ) {
+                    setCompletedItems( compObj()->substringCompletion( currentText() ) );
+                    e->accept();
+                    return;
+                }
+            }
+
+
             // handle rotation
             if ( mode != KGlobalSettings::CompletionNone )
             {
@@ -634,40 +648,23 @@ void KComboBox::makeCompletionBox()
 // FIXME: make pure virtual in KCompletionBase!
 void KComboBox::setCompletedItems( const QStringList& items )
 {
-    if ( completionMode() == KGlobalSettings::CompletionPopup ||
-         completionMode() == KGlobalSettings::CompletionShell )
+    QString txt = currentText();
+    if ( !items.isEmpty() && !(items.count() == 1 && txt == items.first()) )
     {
-        QString txt = currentText();
-        if ( !items.isEmpty() &&
-             !(items.count() == 1 && txt == items.first()) )
-        {
-            if ( !d->completionBox )
-                makeCompletionBox();
+        if ( !d->completionBox )
+            makeCompletionBox();
 
-            if ( !txt.isEmpty() )
-              d->completionBox->setCancelledText( txt );
-            d->completionBox->clear();
-            d->completionBox->insertStringList( items );
-            d->completionBox->popup();
-        }
-        else
-        {
-            if ( d->completionBox && d->completionBox->isVisible() )
-            d->completionBox->hide();
-        }
+        if ( !txt.isEmpty() )
+            d->completionBox->setCancelledText( txt );
+        d->completionBox->clear();
+        d->completionBox->insertStringList( items );
+        d->completionBox->popup();
     }
     else
     {
-        if ( !items.isEmpty() ) // fallback
-            setCompletedText( items.first() );
+        if ( d->completionBox && d->completionBox->isVisible() )
+            d->completionBox->hide();
     }
-}
-
-// ### merge these two for 3.0
-KCompletionBox * KComboBox::completionBox()
-{
-    makeCompletionBox();
-    return d->completionBox;
 }
 
 KCompletionBox * KComboBox::completionBox( bool create )
@@ -694,7 +691,6 @@ void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 
 QPopupMenu* KComboBox::contextMenuInternal()
 {
-
     d->popupMenu = new QPopupMenu( this );
     d->popupMenu->insertItem( SmallIconSet("editcut"),
                               i18n( "Cut" ), Cut );
