@@ -218,6 +218,8 @@ public:
 
   /**
    * Returns the mimetype of the file item.
+   * If determineMimeTypeOnDemand was used, this will determine the mimetype first.
+   * Equivalent to determineMimeType()->name()
    */
   QString mimetype() const;
 
@@ -226,6 +228,7 @@ public:
    * If determineMimeTypeOnDemand was used, this will determine the mimetype first.
    */
   KMimeType::Ptr determineMimeType();
+
   /**
    * Returns the currently known mimetype of the file item.
    * This will not try to determine the mimetype if unknown.
@@ -275,7 +278,7 @@ public:
    * information specific to the mimetype of the file
    */
   QString getToolTipText(int maxcount = 6);
-  
+
   /**
    * Returns true if files can be dropped over this item.
    * Contrary to popular belief, not only dirs will return true :)
