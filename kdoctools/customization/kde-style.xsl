@@ -20,4 +20,36 @@
 
 <xsl:attribute-set name="kde.body.attrs">
 </xsl:attribute-set>
+
+<xsl:template match="command">
+  <span class="command">
+    <xsl:call-template name="inline.boldseq"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="option">
+  <span class="option">
+    <xsl:call-template name="inline.monoseq"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="parameter">
+  <span class="parameter">
+    <xsl:call-template name="inline.italicmonoseq"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="envar">
+  <span class="envar">
+    <xsl:call-template name="inline.monoseq"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="replaceable" priority="1">
+  <span class="replaceable">
+    <xsl:call-template name="inline.italicmonoseq"/>
+  </span>
+</xsl:template>
+
+
 </xsl:stylesheet>
