@@ -53,11 +53,6 @@
 char *k_dcgettext (const char* __domainname, const char* __msgid,
 		   const char* _language);
 
-/* Set the current default message catalog to DOMAINNAME.
-   If DOMAINNAME is null, return the current default.
-   If DOMAINNAME is "", reset to the default of "messages".  */
-char *k_textdomain (const QString& __domainname);
-
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
 char *k_bindtextdomain (const char* __domainname,
@@ -854,7 +849,6 @@ void KLocale::aliasLocale( const char* text, long int index)
 
 QStringList KLocale::languageList() const
 {
-
     // a list to be returned
     QStringList list;
     // temporary copy of language list
