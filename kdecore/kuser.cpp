@@ -22,13 +22,15 @@
 #include <kuser.h>
 
 #include "kstringhandler.h"
-
+#include <qvaluelist.h>
 #include <qstringlist.h>
 
 #include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <grp.h>
+
 
 class KUserPrivate : public KShared
 {
@@ -87,6 +89,21 @@ KUser::KUser(const QString& name) {
 
 KUser::KUser(const char *name) {
 	fillName( name );
+}
+
+KUser::KUser(struct passwd *p) {
+    fillPasswd(p);
+}
+
+KUser::KUser(const KUser & user) 
+  : d(user.d) 
+{
+}
+
+KUser& KUser::operator =(const KUser& user) 
+{
+  d = user.d;
+  return *this;
 }
 
 bool KUser::operator ==(const KUser& user) const {
@@ -196,5 +213,213 @@ QString KUser::shell() const {
 		return QString::null;
 }
 
+QValueList<KUserGroup> KUser::groups() const {
+  QValueList<KUserGroup> result;
+  QValueList<KUserGroup> allGroups = KUserGroup::allGroups();
+  QValueList<KUserGroup>::const_iterator it;
+  for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
+    QValueList<KUser> users = (*it).users();
+    if ( users.find( *this ) != users.end()) {
+       result.append(*it);
+    }
+  }
+  return result;
+}
+
+QStringList KUser::groupNames() const {
+  QStringList result;
+  QValueList<KUserGroup> allGroups = KUserGroup::allGroups();
+  QValueList<KUserGroup>::const_iterator it;
+  for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
+    QValueList<KUser> users = (*it).users();
+    if ( users.find( *this ) != users.end()) {
+       result.append((*it).name());
+    }
+  }
+  return result;
+}
+
+
+QValueList<KUser> KUser::allUsers() {
+  QValueList<KUser> result;
+
+  struct passwd* p;
+
+  while ((p = getpwent()))  {
+    result.append(KUser(p));
+  }
+
+  endpwent();
+
+  return result;
+}
+
+QStringList KUser::allUserNames() {
+  QStringList result;
+
+  struct passwd* p;
+
+  while ((p = getpwent()))  {
+    result.append(QString::fromLocal8Bit(p->pw_name));
+  }
+
+  endpwent();
+  return result;
+}
+
+
 KUser::~KUser() {
 }
+
+class KUserGroupPrivate : public KShared
+{
+public:
+  bool valid;
+  long gid;
+  QString name;
+  QValueList<KUser> users;
+  
+  KUserGroupPrivate() : valid(false) {}
+  
+  KUserGroupPrivate(long _gid, 
+                const QString & _name, 
+                const QValueList<KUser> & _users):
+    valid(true), 
+    gid(_gid), 
+    name(_name),
+    users(_users) {}
+};
+
+KUserGroup::KUserGroup(KUser::UIDMode mode) {
+  KUser user(mode);
+  fillGroup(getgrgid(user.gid()));
+}
+
+KUserGroup::KUserGroup(long gid) {
+  fillGroup(getgrgid(gid));
+}
+
+KUserGroup::KUserGroup(const QString& name) {
+  fillName(name.local8Bit().data());
+}
+
+KUserGroup::KUserGroup(const char *name) {
+  fillName(name);
+}
+
+KUserGroup::KUserGroup(struct group *g) {
+  fillGroup(g);
+}
+
+
+KUserGroup::KUserGroup(const KUserGroup & group) 
+  : d(group.d)
+{
+}
+
+KUserGroup& KUserGroup::operator =(const KUserGroup& group) {
+  d = group.d;
+  return *this;
+}
+
+bool KUserGroup::operator ==(const KUserGroup& group) const {
+  if (isValid() != group.isValid())
+    return false;
+  if (isValid())
+    return gid() == group.gid();
+  else
+    return true;
+}
+
+bool KUserGroup::operator !=(const KUserGroup& user) const {
+  return !operator ==(user);
+}
+
+void KUserGroup::fillName(const char *name) {
+  fillGroup(name ? ::getgrnam( name ) : 0);
+}
+
+void KUserGroup::fillGroup(struct group *p) {
+  if (!p) {
+    d = new KUserGroupPrivate();
+    return;
+  }
+  
+  QString name = KStringHandler::from8Bit(p->gr_name); 
+  QValueList<KUser> users;
+  
+  char **user = p->gr_mem;  
+  for ( ; *user; user++) {
+    KUser kUser(QString::fromLocal8Bit(*user));
+    users.append(kUser);
+  }
+  
+  d = new KUserGroupPrivate(p->gr_gid,
+            QString::fromLocal8Bit(p->gr_name),
+            users);  
+
+}
+
+bool KUserGroup::isValid() const {
+  return d->valid;
+}
+
+long KUserGroup::gid() const {
+  if (d->valid)
+    return d->gid;
+  else
+    return -1;
+}
+
+QString KUserGroup::name() const {
+  if (d->valid)
+    return d->name;
+  else
+    return QString::null;
+}
+
+const QValueList<KUser>& KUserGroup::users() const {
+  return d->users;
+}
+
+QStringList KUserGroup::userNames() const {
+  QStringList result;
+  QValueList<KUser>::const_iterator it;
+  for ( it = d->users.begin(); it != d->users.end(); ++it ) {
+    result.append((*it).loginName());
+  }
+  return result;
+}
+
+
+
+QValueList<KUserGroup> KUserGroup::allGroups() {
+  QValueList<KUserGroup> result;
+  
+  struct group* g;
+  while ((g = getgrent()))  {
+     result.append(KUserGroup(g));
+  }
+
+  endgrent();
+
+  return result;
+}
+
+QStringList KUserGroup::allGroupNames() {
+  QStringList result;
+  
+  struct group* g;
+  while ((g = getgrent()))  {
+     result.append(QString::fromLocal8Bit(g->gr_name));
+  }
+
+  endgrent();
+
+  return result;
+}
+
+
+KUserGroup::~KUserGroup() {
+}
+
