@@ -128,6 +128,8 @@ binary-arch:  build install
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc
+	echo "[General]" >> $$debianrc
+	echo "TerminalApplication=x-1terminal-emulator" >> $$debianrc
 	cp debian/kdelibs3/etc/kde2/system.kdeglobals debian/kdelibs3/etc/kderc
 	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
 	dh_installdocs -a
