@@ -654,7 +654,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
     bool checkboxResult;
 
     createKMessageBox(dialog, QMessageBox::Information, text, QStringList(),
-		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"),
+		dontShowAgainName.isEmpty() ? QString::null : i18n("&Do not show this message again"),
                 &checkboxResult, options);
 
     if (!dontShowAgainName.isEmpty())
