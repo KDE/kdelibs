@@ -97,7 +97,11 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
           break;
 
         case EntityLabel:
-//          a.setLabel( readTextValue( cl ) );
+/**
+    not supported by kabc
+
+          a.setLabel( readTextValue( cl ) );
+*/
           break;
 
         case EntityMailer:
@@ -148,6 +152,9 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
           a.setBirthday( readDateValue( cl ) );
           break;
 
+	case EntityRevision:
+	  a.setRevision( readDateTimeValue( cl ) );
+
         case EntityVersion:
           break;
           
@@ -186,6 +193,8 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
   vcardlist.setAutoDelete( true );
   ContentLine cl;
   QString value;
+
+    kdDebug() << "overjump" << endl;
 
   AddressBook::Iterator it;
   for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
@@ -240,6 +249,7 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
     addTextValue( v, EntityCategories, (*it).categories().join(",") );
 
     addDateValue( v, EntityBirthday, (*it).birthday().date() );
+    addDateTimeValue( v, EntityRevision, (*it).revision() );
 
     vcardlist.append( v );
   }
@@ -281,15 +291,25 @@ void VCardFormatImpl::addTextValue( VCard *v, EntityType type, const QString &tx
 void VCardFormatImpl::addDateValue( VCard *vcard, EntityType type,
                                     const QDate &date )
 {
-//  kdDebug(5700) << "VCardFormatImpl::addDateValue(): " << date.toString()
-//                << endl;
-
   if ( !date.isValid() ) return;
 
   ContentLine cl;
   cl.setName( EntityTypeToParamName( type ) );
 
   DateValue *v = new DateValue( date );
+  cl.setValue( v );
+  vcard->add(cl);
+}
+
+void VCardFormatImpl::addDateTimeValue( VCard *vcard, EntityType type,
+                                    const QDateTime &dateTime )
+{
+  if ( !dateTime.isValid() ) return;
+
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  DateValue *v = new DateValue( dateTime );
   cl.setValue( v );
   vcard->add(cl);
 }
@@ -475,4 +495,10 @@ QDate VCardFormatImpl::readDateValue( ContentLine *cl )
 {
   DateValue *dateValue = (DateValue *)cl->value();
   return dateValue->qdate();
+}
+
+QDateTime VCardFormatImpl::readDateTimeValue( ContentLine *cl )
+{
+  DateValue *dateValue = (DateValue *)cl->value();
+  return dateValue->qdt();
 }
