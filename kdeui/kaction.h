@@ -79,7 +79,7 @@
  *
  * Here is an example of enabling a "New [document]" action
  * <PRE>
- * KAction *newAct = KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
                              KStdAccel::openNew(), this, SLOT(fileNew()),
                              this);
  * </PRE>
