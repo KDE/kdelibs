@@ -19,6 +19,7 @@
 #include <qpushbutton.h>
 #include <qtimer.h>
 #include <qlayout.h>
+#include <qtooltip.h>
 #include <qdatetime.h>
 
 #include <kapp.h>
@@ -195,8 +196,10 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
   sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
+  QToolTip::add( sourceLabel, from.prettyURL() );
   setDestVisible( true );
   destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
+  QToolTip::add( destLabel, to.prettyURL() );
 }
 
 
@@ -205,8 +208,10 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
   setCaption(i18n("Move file(s) progress"));
   mode = Move;
   sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
+  QToolTip::add( sourceLabel, from.prettyURL() );
   setDestVisible( true );
   destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
+  QToolTip::add( destLabel, to.prettyURL() );
 }
 
 
@@ -215,6 +220,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
   setCaption(i18n("Creating directory"));
   mode = Create;
   sourceLabel->setText( KStringHandler::csqueeze(dir.prettyURL()) );
+  QToolTip::add( sourceLabel, dir.prettyURL() );
   setDestVisible( false );
 }
 
@@ -224,6 +230,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
   sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
+  QToolTip::add( sourceLabel, url.prettyURL() );
   setDestVisible( false );
 }
 
@@ -231,6 +238,7 @@ void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining file progress"));
   sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
+  QToolTip::add( sourceLabel, url.prettyURL() );
   setDestVisible( false );
 }
 
@@ -251,8 +259,7 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 void DefaultProgress::slotCanResume( KIO::Job*, unsigned long resume )
 {
   if ( resume ) {
-    // TODO i18n(Resuming from %1).arg(resume)
-    resumeLabel->setText( i18n("Resumable") );
+    resumeLabel->setText( i18n("Resuming from %1").arg(resume) );
   } else {
     resumeLabel->setText( i18n("Not resumable") );
   }
