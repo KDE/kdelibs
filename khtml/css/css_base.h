@@ -51,7 +51,7 @@ namespace DOM {
     {
     public:
 	CSSSelector()
-	    : tagHistory(0), attr(0), tag(-1), relation( Descendant ),
+	    : tagHistory(0), attr(0), tag(0xffff), relation( Descendant ),
 	      match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed) {}
 
 	~CSSSelector() {
@@ -125,8 +125,8 @@ namespace DOM {
 
 	mutable DOM::DOMString value;
 	CSSSelector *tagHistory;
-	int          attr;
-	int          tag;
+	unsigned int attr;
+	unsigned int tag;
 
 	Relation relation     : 2;
 	Match 	 match         : 4;

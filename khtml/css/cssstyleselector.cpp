@@ -540,7 +540,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 
     // hack. We can't allow :hover, as it would trigger a complete
     // relayout with every mouse event.
-    bool single = ( sel->tag == -1 );
+    bool single = ( (sel->tag & 0xffff) == 0xffff );
 
     bool affectedByHover = style->affectedByHoverRules();
 
@@ -551,7 +551,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     CSSSelector::Relation relation = sel->relation;
     while((sel = sel->tagHistory))
     {
-        if (strictParsing || sel->tag != -1) single = false;
+        if (strictParsing || (sel->tag & 0xffff) != 0xffff) single = false;
         if(!n->isElementNode()) return;
         switch(relation)
         {
@@ -695,7 +695,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 //     sel->print();
 
 
-    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
+    // ###### fix namespace
+    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != 0xffff) return false;
 
     if(sel->attr)
     {

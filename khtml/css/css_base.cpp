@@ -135,7 +135,7 @@ unsigned int CSSSelector::specificity()
     if ( nonCSSHint )
         return 0;
 
-    int s = ((tag == -1) ? 0 : 1);
+    int s = ((tag == 0xffff) ? 0 : 1);
     switch(match)
     {
     case Id:
@@ -231,26 +231,27 @@ bool CSSSelector::operator == ( const CSSSelector &other )
 
 DOMString CSSSelector::selectorText() const
 {
+    // #### fix namespace
     DOMString str;
     const CSSSelector* cs = this;
-    if ( cs->tag == -1 && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+    if ( cs->tag == 0xffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
     {
         str = "#";
         str += cs->value;
     }
-    else if ( cs->tag == -1 && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+    else if ( cs->tag == 0xffff && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
     {
         str = ".";
         str += cs->value;
     }
-    else if ( cs->tag == -1 && cs->match == CSSSelector::Pseudo )
+    else if ( cs->tag == 0xffff && cs->match == CSSSelector::Pseudo )
     {
         str = ":";
         str += cs->value;
     }
     else
     {
-        if ( cs->tag == -1 )
+        if ( cs->tag == 0xffff )
             str = "*";
         else
             str = getTagName( cs->tag );

@@ -88,7 +88,7 @@ static inline int getValueID(const char *tagStr, int len)
     float val;
     int prop_id;
     int attribute;
-    int element;
+    unsigned int element;
     CSSSelector::Relation relation;
     bool b;
     char tok;
@@ -114,7 +114,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %}
 
-%expect 16
+%expect 18
 
 %token S SGML_CD
 
@@ -132,12 +132,15 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token ':'
 %token '.'
 %token '['
+%token '|'
+%token '*'
 
 %token IMPORT_SYM
 %token PAGE_SYM
 %token MEDIA_SYM
 %token FONT_FACE_SYM
 %token CHARSET_SYM
+%token NAMESPACE_SYM
 %token KONQ_RULE_SYM
 %token KONQ_DECLS_SYM
 %token KONQ_VALUE_SYM
@@ -184,6 +187,9 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <string> ident_or_string
 %type <string> medium
 %type <string> hexcolor
+%type <string> ns_prefix
+%type <string> maybe_ns_prefix
+%type <element> ns_selector
 
 %type <mediaList> media_list
 %type <mediaList> maybe_media_list
@@ -217,13 +223,15 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <value> function
 
 %type <element> element_name
+%type <element> ns_element
 
 %type <attribute> attrib_id
+%type <attribute> ns_attrib_id
 
 %%
 
 stylesheet:
-    maybe_charset maybe_sgml import_list rule_list
+    maybe_charset maybe_sgml import_list maybe_namespace rule_list
   | konq_rule maybe_space
   | konq_decls maybe_space
   | konq_value maybe_space
@@ -301,6 +309,42 @@ import_list:
  }
  ;
 
+import:
+    IMPORT_SYM maybe_space string_or_uri maybe_space maybe_media_list ';' {
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "@import: " << qString($3) << endl;
+#endif
+	CSSParser *p = static_cast<CSSParser *>(parser);
+	if ( p->styleElement && p->styleElement->isCSSStyleSheet() )
+	    $$ = new CSSImportRuleImpl( p->styleElement, domString($3), $5 );
+	else
+	    $$ = 0;
+    }
+  | IMPORT_SYM error invalid_block {
+        $$ = 0;
+    }
+  | IMPORT_SYM error ';' {
+        $$ = 0;
+    }
+  ;
+
+maybe_namespace
+  : /* empty */
+  | namespace maybe_sgml
+;
+
+namespace
+  : NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';'
+  ;
+
+ns_prefix
+  : IDENT
+  ;
+
+maybe_ns_prefix:
+    /* empty */ { $$.string = 0; $$.length = 0; }
+  | ns_prefix S
+  ;
 
 rule_list:
    /* empty */
@@ -322,25 +366,6 @@ rule:
   | invalid_rule
   | invalid_at
     ;
-
-import:
-    IMPORT_SYM maybe_space string_or_uri maybe_space maybe_media_list ';' {
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "@import: " << qString($3) << endl;
-#endif
-	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( p->styleElement && p->styleElement->isCSSStyleSheet() )
-	    $$ = new CSSImportRuleImpl( p->styleElement, domString($3), $5 );
-	else
-	    $$ = 0;
-    }
-  | IMPORT_SYM error invalid_block {
-        $$ = 0;
-    }
-  | IMPORT_SYM error ';' {
-        $$ = 0;
-    }
-  ;
 
 string_or_uri:
     STRING
@@ -518,19 +543,31 @@ selector:
     ;
 
 simple_selector:
-    element_name maybe_space {
+    ns_element maybe_space {
 	$$ = new CSSSelector();
 	$$->tag = $1;
     }
-    | element_name specifier_list maybe_space {
+    | ns_element specifier_list maybe_space {
 	$$ = $2;
 	$$->tag = $1;
     }
     | specifier_list maybe_space {
 	$$ = $1;
-	$$->tag = -1;
+	$$->tag = 0xffff;
     }
   ;
+
+ns_element:
+    ns_selector element_name { $$ = ($1<<16) | $2; }
+  | element_name { $$ = $1; }
+;
+
+ns_selector:
+    '|' { $$ = 0; }
+  | IDENT '|' { $$ = 1; }
+  | '*' '|' { $$ = 0xffff; } 
+;
+
 
 element_name:
     IDENT {
@@ -549,9 +586,7 @@ element_name:
 // 	    assert($$ != 0);
 	}
     }
-    | '*' {
-	$$ = -1;
-    }
+  | '*' { $$ = 0xffff; }
   ;
 
 specifier_list:
@@ -592,7 +627,12 @@ class:
     }
   ;
 
-attrib_id:
+ns_attrib_id:
+    ns_selector attrib_id { $$ = ($1<<16) | $2; }
+  | attrib_id { $$ = $1; }
+;
+
+attrib_id: 
     IDENT maybe_space {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
@@ -613,12 +653,12 @@ attrib_id:
     ;
 
 attrib:
-    '[' maybe_space attrib_id ']' {
+    '[' maybe_space ns_attrib_id ']' {
 	$$ = new CSSSelector();
 	$$->attr = $3;
 	$$->match = CSSSelector::Set;
     }
-    | '[' maybe_space attrib_id match maybe_space ident_or_string maybe_space ']' {
+    | '[' maybe_space ns_attrib_id match maybe_space ident_or_string maybe_space ']' {
 	$$ = new CSSSelector();
 	$$->attr = $3;
 	$$->match = (CSSSelector::Match)$4;

@@ -45,6 +45,7 @@ range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|
 "@media"                {yyTok = MEDIA_SYM; return yyTok;}
 "@font-face"            {yyTok = FONT_FACE_SYM; return yyTok;}
 "@charset"              {yyTok = CHARSET_SYM; return yyTok;}
+"@namespace"		{yyTok = NAMESPACE_SYM; return yyTok; }
 "@-konq-rule"    {yyTok = KONQ_RULE_SYM; return yyTok; }
 "@-konq-decls"   {yyTok = KONQ_DECLS_SYM; return yyTok; }
 "@-konq-value"   {yyTok = KONQ_VALUE_SYM; return yyTok; }

@@ -54,7 +54,7 @@ namespace DOM {
     };
 
     struct Value {
-	int id;
+	unsigned int id;
 	union {
 	    double fValue;
 	    int iValue;
@@ -127,7 +127,7 @@ namespace DOM {
 	bool strict;
 	bool important;
 	bool nonCSSHint;
-	int id;
+	unsigned int id;
 	DOM::StyleListImpl *styleElement;
 	DOM::CSSRuleImpl *rule;
 	ValueList *valueList;
