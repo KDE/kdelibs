@@ -142,6 +142,7 @@
 #include <qfile.h>
 #include <qfileinf.h>
 #include <kdebug.h>
+#include <ksimpleconfig.h>
 
 // Standard Qt widgets
 
@@ -327,6 +328,9 @@ int main( int argc, char **argv )
   else
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
   free( pRecoverFile );
+
+ KSimpleConfig sc( "/tmp/sc.cfg" );
+	sc.writeEntry( "Bua", "Brumm" );
 
   return a.exec();
 }

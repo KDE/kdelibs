@@ -441,7 +441,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 	if( bAboutQtMenu )
 	{
 	id = pMenu->insertItem( klocale->translate( "About Qt" ) );
-										 "Please send bug reports to kde-bugs@kde.org.\n\n\n"
+	pMenu->connectItem( id, this, SLOT( aboutQt() ) );
 	}
   */
 										 "Please report bug at http://buglist.kde.org.\n\n\n"
