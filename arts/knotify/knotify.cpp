@@ -429,7 +429,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
             factory.setAudioManagerPlay( d->audioManager );
         KURL soundURL;
         soundURL.setPath(soundFile);
-        KDE::PlayObject *playObject = factory.createPlayObject(soundURL, true);
+        KDE::PlayObject *playObject = factory.createPlayObject(soundURL, false);
 
         if (playObject->isNull())
         {
@@ -442,27 +442,30 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
         {
             // It works to access the playObject immediately because we don't allow
             // non-file URLs for sounds.
-            Arts::PlayObject player = playObject->object();
-            Arts::Synth_BUS_UPLINK uplink = Arts::DynamicCast(player._getChild( "uplink" ));
-
-            uplink.stop();
-            player._node()->stop();
-            Arts::disconnect( player, "left", uplink, "left" );
-            Arts::disconnect( player, "right", uplink, "right" );
-
             Arts::StereoVolumeControl volumeControl = Arts::DynamicCast(soundServer->server().createObject("Arts::StereoVolumeControl"));
-            player._addChild( volumeControl, "volume" );
-            uplink.start();
-            volumeControl.start();
-            player._node()->start();
+            Arts::PlayObject player = playObject->object();
+            Arts::Synth_AMAN_PLAY ap = d->audioManager->amanPlay();
+            if( ! volumeControl.isNull() && ! player.isNull() && ! ap.isNull() )
+            {
+                volumeControl.scaleFactor( d->volume/100.0 );
 
-            Arts::connect(player,"left",volumeControl,"inleft");
-            Arts::connect(player,"right",volumeControl,"inright");
+                ap.stop();
+                player._node()->stop();
+                Arts::disconnect( player, "left", ap, "left" );
+                Arts::disconnect( player, "right", ap, "right" );
 
-            Arts::connect(volumeControl,"outleft",uplink,"left");
-            Arts::connect(volumeControl,"outright",uplink,"right");
+                ap.start();
+                volumeControl.start();
+                player._node()->start();
 
-            volumeControl.scaleFactor( d->volume/100.0 );
+                Arts::connect(player,"left",volumeControl,"inleft");
+                Arts::connect(player,"right",volumeControl,"inright");
+
+                Arts::connect(volumeControl,"outleft",ap,"left");
+                Arts::connect(volumeControl,"outright",ap,"right");
+
+                player._addChild( volumeControl, "volume" );
+            }
         }
 
         playObject->play();
