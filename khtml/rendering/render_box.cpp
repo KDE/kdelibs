@@ -100,30 +100,9 @@ RenderBox::~RenderBox()
     //kdDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
-QSize RenderBox::contentSize() const
-{
-    int w = m_width;
-    int h = m_height;
-    if(style()->hasBorder())
-    {
-        w -= borderLeft() + borderRight();
-        h -= borderTop() + borderBottom();
-    }
-    if(style()->hasPadding())
-    {
-        w -= paddingLeft() + paddingRight();
-        h -= paddingTop() + paddingBottom();
-    }
-
-    return QSize(w, h);
-}
-
 short RenderBox::contentWidth() const
 {
-    short w = m_width;
-    //kdDebug( 6040 ) << "RenderBox::contentWidth(1) = " << m_width << endl;
-    if(style()->hasBorder())
-        w -= borderLeft() + borderRight();
+    short w = m_width - style()->borderLeftWidth() - style()->borderRightWidth();
     if(style()->hasPadding())
         w -= paddingLeft() + paddingRight();
 
@@ -133,9 +112,7 @@ short RenderBox::contentWidth() const
 
 int RenderBox::contentHeight() const
 {
-    int h = m_height;
-    if(style()->hasBorder())
-        h -= borderTop() + borderBottom();
+    int h = m_height - style()->borderTopWidth() - style()->borderBottomWidth();
     if(style()->hasPadding())
         h -= paddingTop() + paddingBottom();
 
@@ -164,24 +141,6 @@ void RenderBox::setPos( int xPos, int yPos )
         }
     }
 #endif
-}
-
-QSize RenderBox::contentOffset() const
-{
-    // ###
-    //int xOff = 0;
-    //int yOff = 0;
-    return QSize(0, 0);
-}
-
-QSize RenderBox::paddingSize() const
-{
-    return QSize(0, 0);
-}
-
-QSize RenderBox::size() const
-{
-    return QSize(0, 0);
 }
 
 short RenderBox::width() const
@@ -524,7 +483,7 @@ void RenderBox::calcWidth()
             if (isReplaced())
             {
                 m_width = w.width(cw);
-                m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+                m_width += paddingLeft() + paddingRight() + style()->borderLeftWidth() + style()->borderRightWidth();
 
                 if(m_width < m_minWidth) m_width = m_minWidth;
             }
@@ -550,7 +509,7 @@ void RenderBox::calcWidth()
         {
 //          kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
             m_width = w.width(cw);
-            m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+            m_width += paddingLeft() + paddingRight() + style()->borderLeftWidth() + style()->borderRightWidth();
 
             calcHorizontalMargins(ml,mr,cw);
         }

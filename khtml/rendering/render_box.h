@@ -51,11 +51,6 @@ public:
     virtual void updateHeight();
     virtual void close();
 
-    virtual QSize contentSize() const;
-    virtual QSize contentOffset() const;
-    virtual QSize paddingSize() const;
-    virtual QSize size() const;
-
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
 
@@ -76,7 +71,6 @@ public:
     virtual short marginLeft() const { return m_marginLeft; }
     virtual short marginRight() const { return m_marginRight; }
 
-    virtual void setSize( int width, int height ) { m_width = width; m_height = height; }
     virtual void setWidth( int width ) { m_width = width; }
     virtual void setHeight( int height ) { m_height = height; }
 
