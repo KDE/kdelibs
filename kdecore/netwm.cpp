@@ -22,7 +22,7 @@
 
 */
 
-#undef NETWMDEBUG
+// #define NETWMDEBUG
 
 #include "netwm.h"
 
@@ -48,7 +48,6 @@ static Atom net_active_window        = 0;
 static Atom net_workarea             = 0;
 static Atom net_supporting_wm_check  = 0;
 static Atom net_virtual_roots        = 0;
-static Atom net_kde_system_tray_windows  = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
@@ -65,14 +64,35 @@ static Atom net_wm_icon_geometry     = 0;
 static Atom net_wm_icon              = 0;
 static Atom net_wm_pid               = 0;
 static Atom net_wm_handled_icons     = 0;
-static Atom net_wm_kde_system_tray_window_for = 0;
-static Atom net_wm_kde_frame_strut   = 0;
+
+// KDE extensions
+static Atom kde_net_system_tray_windows       = 0;
+static Atom kde_net_wm_system_tray_window_for = 0;
+static Atom kde_net_wm_frame_strut            = 0;
+static Atom kde_net_wm_window_type_override   = 0;
 
 // application protocols
-static Atom net_wm_ping              = 0;
+static Atom net_wm_ping = 0;
+
+// application window types
+static Atom net_wm_window_type_normal  = 0;
+static Atom net_wm_window_type_desktop = 0;
+static Atom net_wm_window_type_dock    = 0;
+static Atom net_wm_window_type_toolbar = 0;
+static Atom net_wm_window_type_menu    = 0;
+static Atom net_wm_window_type_dialog  = 0;
+
+// application window state
+static Atom net_wm_state_modal        = 0;
+static Atom net_wm_state_sticky       = 0;
+static Atom net_wm_state_max_vert     = 0;
+static Atom net_wm_state_max_horiz    = 0;
+static Atom net_wm_state_shaded       = 0;
+static Atom net_wm_state_skip_taskbar = 0;
+static Atom net_wm_state_stays_on_top     = 0;
 
 // used to determine whether application window is managed or not
-static Atom xa_wm_state              = 0;
+static Atom xa_wm_state = 0;
 
 static Bool netwm_atoms_created      = False;
 
@@ -157,7 +177,8 @@ static int wcmp(const void *a, const void *b) {
 
 
 static void create_atoms(Display *d) {
-    static const char *names[29] =
+    static const int atomCount = 43;
+    static const char *names[atomCount] =
     {
 	"_NET_SUPPORTED",
 	    "_NET_SUPPORTING_WM_CHECK",
@@ -172,6 +193,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WORKAREA",
 	    "_NET_VIRTUAL_ROOTS",
 	    "_NET_CLOSE_WINDOW",
+	    
 	    "_NET_WM_MOVERESIZE",
 	    "_NET_WM_NAME",
 	    "_NET_WM_VISIBLE_NAME",
@@ -184,13 +206,31 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_PID",
 	    "_NET_WM_HANDLED_ICONS",
 	    "_NET_WM_PING",
-	    "_NET_KDE_SYSTEM_TRAY_WINDOWS",
-	    "_NET_KDE_SYSTEM_TRAY_WINDOW_FOR",
-	    "WM_STATE",
-	    "_NET_WM_KDE_FRAME_STRUT"
+	    
+	    "_NET_WM_WINDOW_TYPE_NORMAL",
+	    "_NET_WM_WINDOW_TYPE_DESKTOP",
+	    "_NET_WM_WINDOW_TYPE_DOCK",
+	    "_NET_WM_WINDOW_TYPE_TOOLBAR",
+	    "_NET_WM_WINDOW_TYPE_MENU",
+	    "_NET_WM_WINDOW_TYPE_DIALOG",
+	    
+	    "_NET_WM_STATE_MODAL",
+	    "_NET_WM_STATE_STICKY",
+	    "_NET_WM_STATE_MAXIMIZED_VERT",
+	    "_NET_WM_STATE_MAXIMIZED_HORIZ",
+	    "_NET_WM_STATE_SHADED",
+	    "_NET_WM_STATE_SKIP_TASKBAR",
+	    "_NET_WM_STATE_STAYS_ON_TOP",
+
+	    "_KDE_NET_SYSTEM_TRAY_WINDOWS",
+	    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
+	    "_KDE_NET_WM_FRAME_STRUT",
+	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
+
+	    "WM_STATE"
 	    };
 
-    Atom atoms[29], *atomsp[29] =
+    Atom atoms[atomCount], *atomsp[atomCount] =
     {
 	&net_supported,
 	    &net_supporting_wm_check,
@@ -205,6 +245,7 @@ static void create_atoms(Display *d) {
 	    &net_workarea,
 	    &net_virtual_roots,
 	    &net_close_window,
+	    
 	    &net_wm_moveresize,
 	    &net_wm_name,
 	    &net_wm_visible_name,
@@ -217,19 +258,37 @@ static void create_atoms(Display *d) {
 	    &net_wm_pid,
 	    &net_wm_handled_icons,
 	    &net_wm_ping,
-	    &net_kde_system_tray_windows,
-	    &net_wm_kde_system_tray_window_for,
+	    
+	    &net_wm_window_type_normal,
+	    &net_wm_window_type_desktop,
+	    &net_wm_window_type_dock,
+	    &net_wm_window_type_toolbar,
+	    &net_wm_window_type_menu,
+	    &net_wm_window_type_dialog,
+	    
+	    &net_wm_state_modal,
+	    &net_wm_state_sticky,
+	    &net_wm_state_max_vert,
+	    &net_wm_state_max_horiz,
+	    &net_wm_state_shaded,
+	    &net_wm_state_skip_taskbar,
+	    &net_wm_state_stays_on_top,
+	    
+	    &kde_net_system_tray_windows,
+	    &kde_net_wm_system_tray_window_for,
+	    &kde_net_wm_frame_strut,
+	    &kde_net_wm_window_type_override,
+	    
 	    &xa_wm_state,
-	    &net_wm_kde_frame_strut
 	    };
 
-    int i = 29;
+    int i = atomCount;
     while (i--)
 	atoms[i] = 0;
 
-    XInternAtoms(d, (char **) names, 29, False, atoms);
+    XInternAtoms(d, (char **) names, atomCount, False, atoms);
 
-    i = 29;
+    i = atomCount;
     while (i--)
 	*atomsp[i] = atoms[i];
 
@@ -275,13 +334,18 @@ static void readIcon(NETWinInfoPrivate *p) {
 
     // read data
     while (after_ret > 0) {
-	XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
-			   (long) BUFSIZE, False, XA_CARDINAL, &type_ret,
-			   &format_ret, &nitems_ret, &after_ret, &data_ret);
-	memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
-	buffer_offset += nitems_ret * sizeof(long);
- 	offset += nitems_ret;
-	XFree(data_ret);
+	if (XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
+			       (long) BUFSIZE, False, XA_CARDINAL, &type_ret,
+			       &format_ret, &nitems_ret, &after_ret, &data_ret)
+	    == Success) {
+	    memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
+	    buffer_offset += nitems_ret * sizeof(long);
+	    offset += nitems_ret;
+	    
+	    XFree(data_ret);
+	} else {
+	    after_ret = 0;
+	}
     }
 
     CARD32 *data32;
@@ -512,7 +576,8 @@ void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
     p->stacking = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::SetClientListStacking: setting list with %ld windows\n",
+    fprintf(stderr,
+	    "NETRootInfo::setClientListStacking: setting list with %ld windows\n",
 	    p->clients_count);
 #endif
 
@@ -530,11 +595,12 @@ void NETRootInfo::setKDESystemTrayWindows(Window *windows, unsigned int count) {
     p->kde_system_tray_windows = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::setKDESystemTrayWindows: setting list with %ld windows\n",
+    fprintf(stderr,
+	    "NETRootInfo::setKDESystemTrayWindows: setting list with %ld windows\n",
 	    p->kde_system_tray_windows_count);
 #endif
 
-    XChangeProperty(p->display, p->root, net_kde_system_tray_windows, XA_WINDOW, 32,
+    XChangeProperty(p->display, p->root, kde_net_system_tray_windows, XA_WINDOW, 32,
 		    PropModeReplace,
 		    (unsigned char *) p->kde_system_tray_windows,
 		    p->kde_system_tray_windows_count);
@@ -544,7 +610,8 @@ void NETRootInfo::setKDESystemTrayWindows(Window *windows, unsigned int count) {
 void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::setNumberOfDesktops: setting desktop count to %d (%s)\n",
+    fprintf(stderr,
+	    "NETRootInfo::setNumberOfDesktops: setting desktop count to %d (%s)\n",
 	    numberOfDesktops, (role == WindowManager) ? "WM" : "Client");
 #endif
 
@@ -645,7 +712,8 @@ void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopGeometry(%d, { %d, %d }) (%s)\n",
-	    desktop, geometry.width, geometry.height, (role == WindowManager) ? "WM" : "Client");
+	    desktop, geometry.width, geometry.height,
+	    (role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (desktop <  1) return;
@@ -655,7 +723,6 @@ void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
 
 	int d, i, l;
 	l = p->geometry.size() * 2;
-	// CARD32 *data = new CARD32[l];
 	long *data = new long[l];
 	for (d = 0, i = 0; d < p->geometry.size(); d++) {
 	    data[i++] = p->geometry[d].width;
@@ -777,7 +844,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_virtual_roots;
 
     if (p->protocols & KDESystemTrayWindows)
-	atoms[pnum++] = net_kde_system_tray_windows;
+	atoms[pnum++] = kde_net_system_tray_windows;
 
     if (p->protocols & CloseWindow)
 	atoms[pnum++] = net_close_window;
@@ -816,10 +883,10 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_wm_ping;
 
     if (p->protocols & WMKDESystemTrayWinFor)
-	atoms[pnum++] = net_wm_kde_system_tray_window_for;
+	atoms[pnum++] = kde_net_wm_system_tray_window_for;
 
     if (p->protocols & WMKDEFrameStrut)
-	atoms[pnum++] = net_wm_kde_frame_strut;
+	atoms[pnum++] = kde_net_wm_frame_strut;
 
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
@@ -1106,7 +1173,7 @@ unsigned long NETRootInfo::event(XEvent *event) {
 		dirty |= ClientList;
 	    else if (pe.xproperty.atom == net_client_list_stacking)
 		dirty |= ClientListStacking;
-	    else if (pe.xproperty.atom == net_kde_system_tray_windows)
+	    else if (pe.xproperty.atom == kde_net_system_tray_windows)
 		dirty |= KDESystemTrayWindows;
 	    else if (pe.xproperty.atom == net_desktop_names)
 		dirty |= DesktopNames;
@@ -1223,7 +1290,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & KDESystemTrayWindows) {
-	if (XGetWindowProperty(p->display, p->root, net_kde_system_tray_windows,
+	if (XGetWindowProperty(p->display, p->root, kde_net_system_tray_windows,
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
@@ -1818,25 +1885,132 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
     if (role == Client && p->mapping_state != Withdrawn) {
 	XEvent e;
-
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = net_wm_state;
 	e.xclient.display = p->display;
 	e.xclient.window = p->window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = state;
-	e.xclient.data.l[1] = mask;
-	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
-
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    
+	if (mask & Modal && p->state & Modal != state & Modal) {
+	    e.xclient.data.l[0] = (state & Modal) ? 1 : 0;
+	    e.xclient.data.l[1] = net_wm_state_modal;
+	    e.xclient.data.l[2] = 0l;
+	    
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	}
+	    
+	if (mask & Sticky && p->state & Sticky != state & Sticky) {
+	    e.xclient.data.l[0] = (state & Sticky) ? 1 : 0;
+	    e.xclient.data.l[1] = net_wm_state_sticky;
+	    e.xclient.data.l[2] = 0l;
+	    
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	}
+	
+	if (mask & Max && p->state & Max != state & Max) {
+	    if (state & Max == Max) {
+		// client wants to be fully maximized
+		e.xclient.data.l[0] = 1;
+		e.xclient.data.l[1] = net_wm_state_max_vert;
+		e.xclient.data.l[2] = net_wm_state_max_horiz;
+		
+		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    } else if (state & Max == MaxVert) {
+		// client wants to be maximized vertically
+		
+		if (p->state & MaxHoriz) {
+		    // if we are maximized horizontally, we need to clear it
+		    e.xclient.data.l[0] = 0;
+		    e.xclient.data.l[1] = net_wm_state_max_horiz;
+		    e.xclient.data.l[2] = 0l;
+		    
+		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		}
+		
+		e.xclient.data.l[0] = 1;
+		e.xclient.data.l[1] = net_wm_state_max_vert;
+		e.xclient.data.l[2] = 0l;
+		
+		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    } else if (state & Max == MaxHoriz) {
+		// client wants to be maximized horizontally
+		
+		if (p->state & MaxVert) {
+		    // if we are maximized vertically, we need to clear it
+		    e.xclient.data.l[0] = 0;
+		    e.xclient.data.l[1] = net_wm_state_max_vert;
+		    e.xclient.data.l[2] = 0l;
+		    
+		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		}
+		
+		e.xclient.data.l[0] = 1;
+		e.xclient.data.l[1] = net_wm_state_max_horiz;
+		e.xclient.data.l[2] = 0l;
+		
+		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    } else {
+		// client doesn't want to be maximized at all
+		e.xclient.data.l[0] = 0;
+		e.xclient.data.l[1] = net_wm_state_max_vert;
+		e.xclient.data.l[2] = net_wm_state_max_horiz;
+		
+		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    }
+	}
+	
+	if (mask & Shaded && p->state & Shaded != state & Shaded) {
+	    e.xclient.data.l[0] = (state & Shaded) ? 1 : 0;
+	    e.xclient.data.l[1] = net_wm_state_shaded;
+	    e.xclient.data.l[2] = 0l;
+	    
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	}
+	
+	if (mask & SkipTaskbar && p->state & SkipTaskbar != state & SkipTaskbar) {
+	    e.xclient.data.l[0] = (state & SkipTaskbar) ? 1 : 0;
+	    e.xclient.data.l[1] = net_wm_state_skip_taskbar;
+	    e.xclient.data.l[2] = 0l;
+	    
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);   
+	}
+	
+	if (mask & StaysOnTop && p->state & StaysOnTop != state & StaysOnTop) {
+	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
+	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
+	    e.xclient.data.l[2] = 0l;
+	    
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);   
+	}
     } else {
 	p->state &= ~mask;
 	p->state |= state;
-        long data = p->state;
-	XChangeProperty(p->display, p->window, net_wm_state, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &data, 1);
+	
+	long data[7];
+	int count = 0;
+	
+	// hints
+	if (p->state & Modal) data[count++] = net_wm_state_modal;
+	if (p->state & MaxVert) data[count++] = net_wm_state_max_vert;
+	if (p->state & MaxHoriz) data[count++] = net_wm_state_max_horiz;
+	if (p->state & Shaded) data[count++] = net_wm_state_shaded;
+	
+	// policy
+	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
+	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
+	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
+	
+#ifdef NETWMDEBUG
+	fprintf(stderr, "NETWinInfo::setState: setting state property (%d)\n", count);
+	for (int i = 0; i < count; i++)
+	    fprintf(stderr, "NETWinInfo::setState:   state %ld '%s'\n",
+		    data[i], XGetAtomName(p->display, (Atom) data[i]));
+#endif
+	
+	XChangeProperty(p->display, p->window, net_wm_state, XA_ATOM, 32,
+			PropModeReplace, (unsigned char *) data, count);
     }
 }
 
@@ -1844,9 +2018,58 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 void NETWinInfo::setWindowType(WindowType type) {
     if (role != Client) return;
 
-    long data = type;
-    XChangeProperty(p->display, p->window, net_wm_window_type, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &data, 1);
+    int len;
+    long data[2];
+    
+    switch (type) {
+    case Override:
+	// spec extension: override window type.  we must comply with the spec
+	// and provide a fall back (normal seems best)
+	data[0] = kde_net_wm_window_type_override;
+	data[1] = net_wm_window_type_normal;
+	len = 2;
+	break;
+	
+    case  Dialog:
+	data[0] = net_wm_window_type_dialog;
+	data[1] = None;
+	len = 1;
+	break;
+	
+    case Menu:
+	data[0] = net_wm_window_type_menu;
+	data[1] = None;
+	len = 1;
+	break;
+	
+    case Tool:
+	data[0] = net_wm_window_type_toolbar;
+	data[1] = None;
+	len = 1;
+	break;
+	
+    case Dock:
+	data[0] = net_wm_window_type_dock;
+	data[1] = None;
+	len = 1;
+	break;
+	
+    case Desktop:
+	data[0] = net_wm_window_type_desktop;
+	data[1] = None;
+	len = 1;
+	break;
+	
+    default:
+    case Normal:
+	data[0] = net_wm_window_type_normal;
+	data[1] = None;
+	len = 1;
+	break;
+    }
+    
+    XChangeProperty(p->display, p->window, net_wm_window_type, XA_ATOM, 32,
+		    PropModeReplace, (unsigned char *) &data, len);
 }
 
 
@@ -1938,7 +2161,7 @@ void NETWinInfo::setKDESystemTrayWinFor(Window window) {
     if (role != Client) return;
 
     p->kde_system_tray_win_for = window;
-    XChangeProperty(p->display, p->window, net_wm_kde_system_tray_window_for,
+    XChangeProperty(p->display, p->window, kde_net_wm_system_tray_window_for,
 		    XA_WINDOW, 32, PropModeReplace,
 		    (unsigned char *) &(p->kde_system_tray_win_for), 1);
 }
@@ -1955,7 +2178,7 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
     d[2] = strut.top;
     d[3] = strut.bottom;
 
-    XChangeProperty(p->display, p->window, net_wm_kde_frame_strut, XA_CARDINAL, 32,
+    XChangeProperty(p->display, p->window, kde_net_wm_frame_strut, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) d, 4);
 }
 
@@ -2020,8 +2243,65 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	event->xclient.format == 32) {
 	if (event->xclient.message_type == net_wm_state) {
 	    dirty = WMState;
-
-	    changeState(event->xclient.data.l[0], event->xclient.data.l[1]);
+	    
+	    // we need to generate a change mask
+	    
+#ifdef NETWMDEBUG
+	    fprintf(stderr,
+		    "NETWinInfo::event: state client message, getting new state/mask\n");
+#endif
+	    
+	    int i;
+	    long state = 0, mask = 0;
+	    	    
+	    for (i = 1; i < 3; i++) {
+#ifdef NETWMDEBUG
+		fprintf(stderr, "NETWinInfo::event:  message %ld '%s'\n",
+			event->xclient.data.l[i],
+			XGetAtomName(p->display, (Atom) event->xclient.data.l[i]));
+#endif
+		
+		if ((Atom) event->xclient.data.l[i] == net_wm_state_modal)
+		    mask |= Modal;
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_sticky)
+		    mask |= Sticky;
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_max_vert)
+		    mask |= MaxVert;
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_max_horiz)
+		    mask |= MaxHoriz;
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_shaded) {
+		    fprintf(stderr, "NETWinInfo::event: shaded!\n");
+		    mask |= Shaded;
+		}
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_taskbar)
+		    mask |= SkipTaskbar;
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
+		    mask |= StaysOnTop;
+	    }
+	    
+	    // when removing, we just leave newstate == 0
+	    switch (event->xclient.data.l[0]) {
+	    case 1: // set
+		// to set... the change state should be the same as the mask
+		state = mask;
+		break;
+		
+	    case 2: // toggle
+		// to toggle, we need to xor the current state with the new state
+		state = (p->state & mask) ^ mask;
+		break;
+		
+	    default:
+		// to clear state, the new state should stay zero
+		;
+	    }
+	    
+#ifdef NETWMDEBUG
+	    fprintf(stderr, "NETWinInfo::event: calling changeState(%lx, %lx)\n",
+		    state, mask);
+#endif
+	    
+	    changeState(state, mask);
 	} else if (event->xclient.message_type == net_wm_desktop) {
 	    dirty = WMDesktop;
 
@@ -2063,9 +2343,9 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		dirty |= WMState;
 	    else if (pe.xproperty.atom == net_wm_desktop)
 		dirty |= WMDesktop;
-	    else if (pe.xproperty.atom == net_wm_kde_frame_strut)
+	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
 		dirty |= WMKDEFrameStrut;
-	    else if (pe.xproperty.atom == net_wm_kde_system_tray_window_for)
+	    else if (pe.xproperty.atom == kde_net_wm_system_tray_window_for)
 		dirty |= WMKDESystemTrayWinFor;
 	    else {
 
@@ -2130,12 +2410,44 @@ void NETWinInfo::update(unsigned long dirty) {
     dirty &= p->properties;
 
     if (dirty & WMState) {
-	if (XGetWindowProperty(p->display, p->window, net_wm_state, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
+	p->state = 0;
+	if (XGetWindowProperty(p->display, p->window, net_wm_state, 0l, 2048l,
+			       False, XA_ATOM, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->state = *((long *) data_ret);
+	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
+		// determine window state
+#ifdef NETWMDEBUG
+		fprintf(stderr, "NETWinInfo::update: updating window state (%ld)\n",
+			nitems_ret);
+#endif
+		
+		long *states = (long *) data_ret;
+		unsigned long count;
+		
+		for (count = 0; count < nitems_ret; count++) {
+#ifdef NETWMDEBUG
+		    fprintf(stderr,
+			    "NETWinInfo::update:   adding window state %ld '%s'\n",
+			    states[count],
+			    XGetAtomName(p->display, (Atom) states[count]));
+#endif
+		    
+		    if ((Atom) states[count] == net_wm_state_modal)
+			p->state |= Modal;
+		    else if ((Atom) states[count] == net_wm_state_sticky)
+			p->state |= Sticky;
+		    else if ((Atom) states[count] == net_wm_state_max_vert)
+			p->state |= MaxVert;
+		    else if ((Atom) states[count] == net_wm_state_max_horiz)
+			p->state |= MaxHoriz;
+		    else if ((Atom) states[count] == net_wm_state_shaded)
+			p->state |= Shaded;
+		    else if ((Atom) states[count] == net_wm_state_skip_taskbar)
+			p->state |= SkipTaskbar;
+		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
+			p->state |= StaysOnTop;
+		}
 	    }
 
 	    XFree(data_ret);
@@ -2194,14 +2506,50 @@ void NETWinInfo::update(unsigned long dirty) {
 
     if (dirty & WMWindowType) {
 	p->type = Unknown;
-	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
+	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
+			       False, XA_ATOM, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 1)
-		p->type = (WindowType) *((long *) data_ret);
-
+	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
+		// determine the window type
+#ifdef NETWMDEBUG
+		fprintf(stderr, "NETWinInfo::update: getting window type (%ld)\n",
+			nitems_ret);
+#endif
+		
+		unsigned long count = 0;
+		long *types = (long *) data_ret;
+		
+		while (p->type == Unknown && count < nitems_ret) {
+		    // check the types for the types we know about... types[count] is
+		    // not known, p->type is unchanged (Unknown)
+		    
+#ifdef NETWMDEBUG
+		    fprintf(stderr,
+			    "NETWinInfo::update:   examining window type %ld %s\n",
+			    types[count],
+			    XGetAtomName(p->display, (Atom) types[count]));
+#endif
+		    
+		    if ((Atom) types[count] == net_wm_window_type_normal)
+			p->type = Normal;
+		    else if ((Atom) types[count] == net_wm_window_type_desktop)
+			p->type = Desktop;
+		    else if ((Atom) types[count] == net_wm_window_type_dock)
+			p->type = Dock;
+		    else if ((Atom) types[count] == net_wm_window_type_toolbar)
+			p->type = Tool;
+		    else if ((Atom) types[count] == net_wm_window_type_menu)
+			p->type = Menu;
+		    else if ((Atom) types[count] == net_wm_window_type_dialog)
+			p->type = Dialog;
+		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
+			p->type = Override;
+		    
+		    count++;
+		}
+	    }
+	    
 	    XFree(data_ret);
 	}
     }
@@ -2248,7 +2596,7 @@ void NETWinInfo::update(unsigned long dirty) {
 
     if (dirty & WMKDESystemTrayWinFor) {
 	p->kde_system_tray_win_for = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_kde_system_tray_window_for,
+	if (XGetWindowProperty(p->display, p->window, kde_net_wm_system_tray_window_for,
 			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
@@ -2264,7 +2612,7 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMKDEFrameStrut) {
-	if (XGetWindowProperty(p->display, p->window, net_wm_kde_frame_strut,
+	if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_strut,
 			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {

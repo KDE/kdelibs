@@ -69,7 +69,7 @@ private:
 
 /**
    Private data for the NETRootInfo class.
- **/
+**/
 
 struct NETRootInfoPrivate {
     // information about the X server
