@@ -213,7 +213,7 @@ protected:
    KMdiChildArea           *m_pMdi;
    KMdiTaskBar             *m_pTaskBar;
    QPtrList<KMdiChildView> *m_pDocumentViews;
-   QMap<QWidget*,KMdiToolViewAccessor*> m_pToolViews;
+   QMap<QWidget*,KMdiToolViewAccessor*> *m_pToolViews;
    KMdiChildView           *m_pCurrentWindow;
    QPopupMenu              *m_pWindowPopup;
    QPopupMenu              *m_pTaskBarPopup;
