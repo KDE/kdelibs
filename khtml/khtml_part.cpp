@@ -1082,6 +1082,7 @@ void KHTMLPart::clear()
   {
     kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
     d->m_doc->detach();
+    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing done.." << endl;
   }
 
   // Moving past doc so that onUnload works.
@@ -1204,7 +1205,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
     d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
-    
+
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
@@ -1522,7 +1523,7 @@ void KHTMLPart::slotFinishedParsing()
   checkCompleted();
 }
 
-void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj )
+void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &/*baseURL*/, khtml::CachedObject *obj )
 {
 
   if ( obj && obj->type() == khtml::CachedObject::Image )
@@ -1636,7 +1637,7 @@ void KHTMLPart::checkCompleted()
 
 void KHTMLPart::checkEmitLoadEvent()
 {
-  if ( d->m_bLoadEventEmitted )
+  if ( d->m_bLoadEventEmitted || d->m_bParsing )
     return;
   kdDebug(6050) << "KHTMLPart::checkEmitLoadEvent " << this << endl;
   ConstFrameIt it = d->m_frames.begin();
@@ -1650,6 +1651,7 @@ void KHTMLPart::checkEmitLoadEvent()
 void KHTMLPart::emitLoadEvent()
 {
   d->m_bLoadEventEmitted = true;
+
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
 
