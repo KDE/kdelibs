@@ -51,10 +51,12 @@ public:
     {
       topLevel = false;
       forcedTopLevel = false;
+      wasTopLevel = false;
     }
     bool forcedTopLevel;
     bool topLevel;
     int frameStyle;
+    bool wasTopLevel; // when TLW is fullscreen, remember state
 };
 
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
@@ -82,24 +84,43 @@ void KMenuBar::setTopLevelMenu(bool top_level)
   setTopLevelMenuInternal( top_level );
 }
 
+#if QT_VERSION < 310
+namespace
+{
+class QWidgetHack
+    : public QWidget
+    {
+    public:
+        bool isFullScreen() { return isTopLevel() && topData()->fullscreen; }
+    };
+}
+#endif
+
 void KMenuBar::setTopLevelMenuInternal(bool top_level)
 {
-    if (d->forcedTopLevel)
-	top_level = true;
+  if (d->forcedTopLevel)
+    top_level = true;
 
-    if ( isTopLevelMenu() == top_level )
-        return;
+  if( parentWidget()
+#if QT_VERSION >= 310
+      && parentWidget()->topLevelWidget()->isFullScreen()) {
+#else
+      && static_cast<QWidgetHack*>(parentWidget()->topLevelWidget())->isFullScreen()) {
+#endif
+    d->wasTopLevel = top_level;
+    top_level = false;
+  }
+      
+  if ( isTopLevelMenu() == top_level )
+    return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
-      bool wasVisible = isVisibleTo(0);
+      bool wasVisible = isVisible();
       d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
-      reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false  );
-      hide(); // worakround for a qt < 2.2.2  bug
+      reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false );
 #ifndef Q_WS_QWS //FIXME
       KWin::setType( winId(), NET::Menu );
-      KWin::setOnAllDesktops( winId(), true );
-      KWin::setState( winId(), NET::StaysOnTop );
 #endif
       setFrameStyle( MenuBarPanel );
       installEventFilter( parentWidget()->topLevelWidget() );
@@ -107,7 +128,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
           show();
   } else {
       if ( parentWidget() ) {
-          reparent( parentWidget(), QPoint(0,0), TRUE );
+          reparent( parentWidget(), QPoint(0,0), isVisible());
           setBackgroundMode( PaletteButton );
           installEventFilter( topLevelWidget() );
           setFrameStyle( d->frameStyle );
@@ -150,11 +171,20 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 		    return TRUE;
 	    }
 
-	    if ( ev->type() == QEvent::Show && isHidden() )
-		show();
-	    else if ( ev->type() == QEvent::WindowActivate )
+//	    if ( ev->type() == QEvent::Show && isHidden())
+//		show();  doesn't seem to do anything besides breaking things
+//	    else
+            if ( ev->type() == QEvent::WindowActivate )
 		raise();
+            else if(ev->type() == QEvent::ShowFullScreen )
+                // will update the state properly
+                setTopLevelMenuInternal( d->topLevel );
 	}
+    } else {
+        if( topLevelWidget() && obj == topLevelWidget()) {
+            if( ev->type() == QEvent::ShowNormal )
+                setTopLevelMenuInternal( d->wasTopLevel );
+        }
     }
     return QMenuBar::eventFilter( obj, ev );
 }
