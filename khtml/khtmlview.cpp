@@ -153,6 +153,7 @@ void KHTMLView::init()
 void KHTMLView::clear()
 {
     resizeContents(clipper()->width(), clipper()->height());
+    viewport()->erase();
 
     //setVScrollBarMode(Auto);
     //setHScrollBarMode(Auto);
