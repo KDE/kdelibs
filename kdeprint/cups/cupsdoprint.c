@@ -59,23 +59,27 @@ const char* getPasswordCB(const char* prompt)
 	{
 		int	len = 0;
 		char	buf[256], *c;
+		FILE	*output;
 
-		fprintf(stderr, "?password:%s\n", cupsUser());
-		fgets(buf, 256, stdin);
-		len = strlen(buf);
-		while (len > 0 && isspace(buf[len-1]))
-			buf[--len] = 0;
-		pwd_asked = 1;
-		if (len == 0)
-			return NULL;
-		if ((c=strchr(buf, ':')) != NULL)
+		sprintf(buf, "dcop kded kdeprintd openPassDlg %s", cupsUser());
+		output = popen(buf, "r");
+		while (fgets(buf, 256, output))
 		{
-			*c = 0;
-			cupsSetUser(buf);
-			strncpy(passwd, ++c, BUFSIZE2);
+			len = strlen(buf);
+			while (len > 0 && isspace(buf[len-1]))
+				buf[--len] = 0;
+			pwd_asked = 1;
+			if (len == 0 || strcmp(buf, "<QString>") == 0)
+				return NULL;
+			if ((c=strchr(buf, ':')) != NULL)
+			{
+				*c = 0;
+				cupsSetUser(buf);
+				strncpy(passwd, ++c, BUFSIZE2);
+			}
+			else
+				strncpy(passwd, buf, BUFSIZE2);
 		}
-		else
-			strncpy(passwd, buf, BUFSIZE2);
 	}
 	return passwd;
 }

@@ -32,9 +32,6 @@ public:
 	bool print();
 	QString errorMessage() const;
 
-signals:
-	void passwordRequested(KProcess*, const QString&);
-
 protected slots:
 	void slotReceivedStderr(KProcess*, char*, int);
 

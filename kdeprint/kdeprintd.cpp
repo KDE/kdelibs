@@ -110,13 +110,12 @@ void KDEPrintd::slotProcessExited(KProcess *proc)
 	}
 }
 
-void KDEPrintd::slotPasswordRequested(KProcess *proc, const QString& login)
+QString KDEPrintd::openPassDlg(const QString& user)
 {
-	QString	user(login), passwd, str;
-	if (KIO::PasswordDialog::getNameAndPassword(user, passwd, NULL) == KDialog::Accepted)
-		str.append(user).append(":").append(passwd);
-	str.append("\n");
-	proc->writeStdin(str.local8Bit().data(), str.length());
+	QString	user_(user), pass_, result;
+	if (KIO::PasswordDialog::getNameAndPassword(user_, pass_, NULL) == KDialog::Accepted)
+		result.append(user_).append(":").append(pass_);
+	return result;
 }
 
 #include "kdeprintd.moc"

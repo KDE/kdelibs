@@ -48,13 +48,7 @@ void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
 	if (proc == this)
 	{
 		QCString	str = QCString(buf,len).stripWhiteSpace();
-		if (str.find("?password:") == 0)
-		{
-			QString	login(str.mid(10));
-			emit passwordRequested(this, login);
-		}
-		else
-			m_buffer.append(str.append("\n"));
+		m_buffer.append(str.append("\n"));
 	}
 }
 #include "kprintprocess.moc"

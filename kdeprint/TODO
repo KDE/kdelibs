@@ -5,12 +5,6 @@
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 
-- Implement a generic page selection mechanism around the psselect
-  utility if available
-
-- Pamphlet printing: automate page size option in the command line
-  using a tag "%psl"
-
 - Use another tool for preview (maybe difficult to know if we want to
   continue or not)
 

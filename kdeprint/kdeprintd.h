@@ -39,10 +39,10 @@ public:
 
 k_dcop:
 	int print(const QString& cmd, const QStringList& files, bool remove);
+	QString openPassDlg(const QString& user);
 
 protected slots:
 	void slotProcessExited(KProcess*);
-	void slotPasswordRequested(KProcess*, const QString&);
 
 protected:
 	void cleanTempFiles();
