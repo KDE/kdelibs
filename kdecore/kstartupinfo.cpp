@@ -95,6 +95,8 @@ struct KStartupInfoPrivate
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
 	// contains silenced ASN's only if !AnnounceSilencedChanges
         QMap< KStartupInfoId, KStartupInfo::Data > silent_startups;
+        // contains ASN's that had change: but no new: yet
+        QMap< KStartupInfoId, KStartupInfo::Data > uninited_startups;
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
         KWinModule* wm_module;
         KXMessages msgs;
@@ -215,17 +217,17 @@ void KStartupInfo::window_added( WId w_P )
         }
     }
 
-void KStartupInfo::got_startup_info( const QString& msg_P, bool update_only_P )
+void KStartupInfo::got_startup_info( const QString& msg_P, bool update_P )
     {
     KStartupInfoId id( msg_P );
     if( id.none())
         return;
     KStartupInfo::Data data( msg_P );
-    new_startup_info_internal( id, data, update_only_P );
+    new_startup_info_internal( id, data, update_P );
     }
 
 void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
-    Data& data_P, bool update_only_P )
+    Data& data_P, bool update_P )
     {
     if( d == NULL )
         return;
@@ -262,9 +264,26 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
         emit gotStartupChange( id_P, d->startups[ id_P ] );
         return;
         }
-    if( update_only_P )
+    if( d->uninited_startups.contains( id_P ))
+        {
+        d->uninited_startups[ id_P ].update( data_P );
+        kdDebug( 172 ) << "updating uninited" << endl;
+        if( !update_P ) // uninited finally got new:
+            {
+            d->startups[ id_P ] = d->uninited_startups[ id_P ];
+            d->uninited_startups.remove( id_P );
+            emit gotNewStartup( id_P, d->startups[ id_P ] );
+            return;
+            }
+        // no change announce, it's still uninited
         return;
-    if( data_P.silent() != Data::Yes || d->flags & AnnounceSilenceChanges )
+        }
+    if( update_P ) // change: without any new: first
+        {
+        kdDebug( 172 ) << "adding uninited" << endl;
+	d->uninited_startups.insert( id_P, data_P );
+        }
+    else if( data_P.silent() != Data::Yes || d->flags & AnnounceSilenceChanges )
 	{
         kdDebug( 172 ) << "adding" << endl;
         d->startups.insert( id_P, data_P );
@@ -308,6 +327,11 @@ void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
 	kdDebug( 172 ) << "removing silent" << endl;
 	d->silent_startups.remove( id_P );
 	}
+    else if( d->uninited_startups.contains( id_P ))
+	{
+	kdDebug( 172 ) << "removing uninited" << endl;
+	d->uninited_startups.remove( id_P );
+	}
     return;
     }
 
@@ -339,6 +363,8 @@ void KStartupInfo::remove_startup_pids( const KStartupInfoId& id_P,
 	data = &d->startups[ id_P ];
     else if( d->silent_startups.contains( id_P ))
 	data = &d->silent_startups[ id_P ];
+    else if( d->uninited_startups.contains( id_P ))
+        data = &d->uninited_startups[ id_P ];
     else
 	return;
     for( QValueList< pid_t >::ConstIterator it2 = data_P.pids().begin();
@@ -805,7 +831,8 @@ void KStartupInfo::startups_cleanup()
     {
     if( d == NULL )
         return;
-    if( d->startups.count() == 0 && d->silent_startups.count() == 0 )
+    if( d->startups.count() == 0 && d->silent_startups.count() == 0
+        && d->uninited_startups.count() == 0 )
         {
         d->cleanup->stop();
         return;
@@ -838,6 +865,25 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         }
     for( QMap< KStartupInfoId, Data >::Iterator it = d->silent_startups.begin();
          it != d->silent_startups.end();
+         )
+        {
+        if( age_P )
+            ( *it ).age++;
+	int tout = timeout;
+	if( ( *it ).silent() == Data::Yes ) // TODO
+	    tout *= 20;
+        if( ( *it ).age >= timeout )
+            {
+            const KStartupInfoId& key = it.key();
+            ++it;
+            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
+            remove_startup_info_internal( key );
+            }
+        else
+            ++it;
+        }
+    for( QMap< KStartupInfoId, Data >::Iterator it = d->uninited_startups.begin();
+         it != d->uninited_startups.end();
          )
         {
         if( age_P )
