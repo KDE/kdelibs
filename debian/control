@@ -4,12 +4,12 @@ Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
-Standards-Version: 3.5.4
+Standards-Version: 3.5.5
 
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1)
+Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1), kdevelop (<= 1:1.4.0-3.4)
 Depends: ${shlibs:Depends}, python-base
 Recommends: libarts, libkmid, kdelibs3-cups
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
@@ -88,7 +88,7 @@ Suggests: kdelibs3, artsbuilder
 Enhances: kdebase
 Conflicts: suidmanager (<< 0.50)
 Provides: libarts
-Description: aRts Sound system
+Description: aRts Sound system (built with alsa support)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
  These may be create a waveform (oscillators), play samples, filter data, add

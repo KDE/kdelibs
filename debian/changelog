@@ -1,3 +1,11 @@
+ikdelibs (4:2.2.0-0beta1-3) unstable; urgency=low
+ 
+  * Fix description (Closes: #103206)
+  * Sync with upstream
+  * Update build-depends
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 02 Jul 2001 13:18:00 -0700
+
 kdelibs (4:2.2.0-0beta1-2) unstable; urgency=low
  
   * Move over a cups file that didn't get into -cups package

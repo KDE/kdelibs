@@ -8,10 +8,10 @@ set -e
 case "$1" in
     configure)
 	if [ -x /usr/sbin/update-alternatives ]; then
-		/usr/sbin/update-alternatives --install /usr/lib/kde2/kio_https.la kio_https.la /usr/lib/kde2/kio_https-nossl.la 40
-		/usr/sbin/update-alternatives --install /usr/lib/kde2/kio_https.so kio_https.so /usr/lib/kde2/kio_https-nossl.so 40
-		/usr/sbin/update-alternatives --install /usr/lib/libkssl.la libkssl.la /usr/lib/libkssl-nossl.la 40
-		/usr/sbin/update-alternatives --install /usr/lib/libkssl.so.2.0.2 libkssl.so.2.0.2 /usr/lib/libkssl-nossl.so.2.0.2 40
+		/usr/sbin/update-alternatives --install /usr/lib/kde2/kio_https.la kio_https.la /usr/lib/kde2/kio_https-nossl.la 30
+		/usr/sbin/update-alternatives --install /usr/lib/kde2/kio_https.so kio_https.so /usr/lib/kde2/kio_https-nossl.so 30
+		/usr/sbin/update-alternatives --install /usr/lib/libkssl.la libkssl.la /usr/lib/libkssl-nossl.la 30
+		/usr/sbin/update-alternatives --install /usr/lib/libkssl.so.2.0.2 libkssl.so.2.0.2 /usr/lib/libkssl-nossl.so.2.0.2 30
 	fi
       if [ ! -e /usr/share/doc/kde/HTML ]; then
         install -d /usr/share/doc/kde/HTML
