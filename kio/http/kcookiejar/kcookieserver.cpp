@@ -227,7 +227,7 @@ void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
                 {
                     kdDebug(7104) << "Asking user for advice for cookie from " << cookie->host() << endl;
                     mPendingCookies->prepend(cookie);
-                    KCookieWin *kw = new KCookieWin( 0L, cookie);
+                    KCookieWin *kw = new KCookieWin( 0L, cookie, mCookieJar);
 	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
 	            delete kw;
                     mPendingCookies->take(0);

@@ -39,7 +39,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qmessagebox.h>
         
-KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie) :
+KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookiejar) :
     KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
 		 KDialogBase::Yes, KDialogBase::No, 
 		 parent, 
@@ -79,16 +79,23 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie) :
     QVButtonGroup *bg = new QVButtonGroup( i18n("Apply to:"), contents);
     bg->setExclusive( true );
     layout->addMultiCellWidget(bg , 4, 4, 0, 2);
-    
+
+    int defaultRadioButton = cookiejar->defaultRadioButton;
+
     rb1 = new QRadioButton( i18n("&This cookie only"), bg );
     rb1->adjustSize();
-    rb1->setChecked( true );
+    if (defaultRadioButton == 0)
+      rb1->setChecked( true );
      
     rb2 = new QRadioButton( i18n("All cookies from this &domain"), bg );
     rb2->adjustSize();
+    if (defaultRadioButton == 1)
+      rb2->setChecked( true );
 
     rb3 = new QRadioButton( i18n("All &cookies"), bg );
     rb3->adjustSize();
+    if (defaultRadioButton == 2)
+      rb3->setChecked( true );
 
     bg->adjustSize();
 
@@ -106,6 +113,13 @@ KCookieAdvice
 KCookieWin::advice(KCookieJar *cookiejar)
 {
    int result = exec();
+   if (rb1->isChecked())
+      cookiejar->defaultRadioButton = 0;
+   if (rb2->isChecked())
+      cookiejar->defaultRadioButton = 1;
+   if (rb3->isChecked())
+      cookiejar->defaultRadioButton = 2;
+
    if (result == Yes)
    {
       if (rb2->isChecked())

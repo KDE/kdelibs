@@ -987,6 +987,9 @@ void KCookieJar::saveConfig(KConfig *_config)
     if (!configChanged)
         return;
 
+    _config->setGroup(QString::null);
+    _config->writeEntry("DefaultRadioButton", defaultRadioButton);
+
     QStringList domainSettings;
     _config->setGroup("Cookie Policy");
     _config->writeEntry("CookieGlobalAdvice", adviceToStr( globalAdvice));
@@ -1018,6 +1021,9 @@ void KCookieJar::loadConfig(KConfig *_config)
 {
     QString value;
     QStringList domainSettings;
+
+    _config->setGroup(QString::null);
+    defaultRadioButton = _config->readNumEntry("DefaultRadioButton", 0);
 
     // Reset current domain settings first
     for ( QStringList::Iterator it=domainList.begin();

@@ -36,7 +36,7 @@ class KCookieWin : public KDialogBase
 {
 public:
     
-    KCookieWin( QWidget *parent, KHttpCookie *_cookie );
+    KCookieWin( QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookiejar );
     ~KCookieWin();
  
     /**

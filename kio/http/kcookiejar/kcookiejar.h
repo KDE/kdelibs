@@ -262,7 +262,9 @@ public:
                               QString &_fqdn,
                               QString &_domain,
                               QString &_path);
-
+ 
+    // Save this in the config file...
+    int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies
 protected:
     QDict<KHttpCookieList> cookieDomains;
 
