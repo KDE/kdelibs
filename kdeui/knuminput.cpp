@@ -37,6 +37,7 @@
 #include <qsize.h>
 #include <qslider.h>
 #include <qspinbox.h>
+#include <qstyle.h>
 
 #include "knumvalidator.h"
 #include "knuminput.h"
@@ -735,9 +736,11 @@ void KDoubleNumInput::doLayout()
 
     if ( edit->frame() ) {
         h += 8;
-// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
 #if QT_VERSION < 300
         if ( edit->style().guiStyle() == WindowsStyle && h < 26 )
+            h = 22;
+#else
+        if ( edit->style().styleHint( QStyle::SH_GUIStyle ) == WindowsStyle && h < 26 )
             h = 22;
 #endif
         m_sizeEdit.setWidth(w + 8);

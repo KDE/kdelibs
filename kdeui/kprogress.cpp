@@ -218,6 +218,9 @@ void KProgress::adjustStyle()
 {
 #if QT_VERSION < 300
 	switch (style().guiStyle()) {
+#else
+	switch (style().styleHint(QStyle::SH_GUIStyle)) {
+#endif
 		case WindowsStyle:
 			setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
 			break;
@@ -227,11 +230,6 @@ void KProgress::adjustStyle()
 			setLineWidth( 2 );
 			break;
 	}
-#else
-// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
-	setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	setLineWidth( 2 );
-#endif
 	update();
 }
 
