@@ -69,10 +69,6 @@ TABLE[class~=screen] { border-style: none;
                        }
 */
 
-/* Lauri */
-/* Removed 7/30/00 - Mike McBride*/
-/* LI { padding-bottom: -2em; } */
-
 P { text-align: justify; }
 
 /* More specific settings */
@@ -80,7 +76,7 @@ P { text-align: justify; }
 DIV.navbar P { text-align: right; }
 
 /* Temporary patch: browsers break on bad HTML */
-P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif; 
+P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
     }
 
 /* Lauri @ Hack Session in Erlangen - Test */
