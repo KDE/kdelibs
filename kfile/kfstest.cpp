@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getOpenFileURL("/text.txt");
 	break;
     case Normal:
-	name1 = KFileDialog::getOpenFileURL();
+	name1 = KFileDialog::getOpenFileURL("/home/coolo/", "*.txt");
         break;
     case Preview:
         // this is how you activate the new preview module
