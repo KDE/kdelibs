@@ -46,6 +46,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kdebug.h>
+#include <kdesktopfile.h>
 
 template class KSharedPtr<KMimeType>;
 template class QValueList<KMimeType::Ptr>;

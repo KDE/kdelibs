@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <assert.h>
+#include <kdesktopfile.h>
 
 template class QDict<KMimeType>;
 

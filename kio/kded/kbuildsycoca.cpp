@@ -118,12 +118,11 @@ void KBuildSycoca::build()
            {
                // Check if file matches filter
 	       if (res.filter.match(*it3) == -1) continue;
-	       
+	
 	       // Check if file is accessible
 	       if (::access(QFile::encodeName(
 		   KGlobal::dirs()->findResource(resource, *it3)), R_OK)) {
-		   kDebugInfo("skipping resource %s, not readable",
-			      (*it3).latin1());
+		   kdDebug() << "skipping resource " << *it3 << ", not readable\n";
 		   continue;
 	       }
 

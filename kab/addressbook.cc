@@ -177,7 +177,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 
   filename = locate( "data", STD_CONFIGFILENAME);
   if (filename.isEmpty())
-  { 
+  {
      filename = locateLocal( "data", STD_CONFIGFILENAME );
      // config does not exist yet
       if(createConfigFile()!=NoError)
@@ -202,7 +202,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 
   // ----- check and possibly create user standard file:
   filename = locate( "data", STD_USERFILENAME );
-  
+
   if(filename.isEmpty()) // if it does not exist
     {
       filename = locateLocal( "data", STD_USERFILENAME);
@@ -832,8 +832,8 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
       nextKey=nextAvailEntryKey();
       if(!theEntries->add(nextKey.getKey(), newEntry))
 	{
-	  kDebugInfo("AddressBook::add: Cannot insert section.");
-	  rc=InternError;
+	    kdDebug() << "AddressBook::add: Cannot insert section.\n";
+	    rc=InternError;
 	} else {
 	  key=nextKey;
 	  rc=NoError;
@@ -994,8 +994,7 @@ AddressBook::nextAvailEntryKey()
 	  temp=(*pos).first.toInt(&good);
 	  if(!good)
 	    {
-	      kDebugInfo("AddressBook::nextAvailEntryKey: non-integer entry "
-			 "key.");
+	      kdDebug() << "AddressBook::nextAvailEntryKey: non-integer entry " << endl;
 	    }
 	  if(temp>max)
 	    {
@@ -1228,13 +1227,12 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
   // ----- first create "addresses" subsection:
   if(!section.add(ADDRESS_SUBSECTION))
     {
-      kDebugInfo("AddressBook::makeSectionFromEntry: cannot create %s "
-		 "subsection.", ADDRESS_SUBSECTION);
+      kdDebug() << "AddressBook::makeSectionFromEntry: cannot create " << "subsection." << " " << endl;
       return InternError;
     }
   if(!section.find(ADDRESS_SUBSECTION, addresses))
     {
-      kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new section.");
+      kdDebug() << "AddressBook::makeSectionFromEntry: cannot get new section." << endl;
       return InternError;
     }
   // ----- now insert addresses:
@@ -1244,14 +1242,12 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
       key.setNum(count);
       if(!addresses->add(key))
 	{
-	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot create address "
-		     "subsection %s.", (const char*)key);
+	  kdDebug() << "AddressBook::makeSectionFromEntry: cannot create address " << endl;
 	  return InternError;
 	}
       if(!addresses->find(key, address))
 	{
-	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new "
-		     "subsection.");
+	  kdDebug() << "AddressBook::makeSectionFromEntry: cannot get new " << endl;
 	  return InternError;
 	}
       keys=address->getKeys();
@@ -1269,8 +1265,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
 	 !keys->insert("country", (*addPos).country) ||
 	 !keys->insert("state", (*addPos).state))
 	{
-	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot completely "
-		     "create address subsection.");
+	  kdDebug() << "AddressBook::makeSectionFromEntry: cannot completely " << endl;
 	  return InternError;
 	}
     }
@@ -1295,8 +1290,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
      !keys->insert("user3", entry.user3) ||
      !keys->insert("user4", entry.user4))
     {
-      kDebugInfo("AddressBook::makeEntryFromSection: cannot insert all fields of the "
-	"entry into its section!");
+      kdDebug() << "AddressBook::makeEntryFromSection: cannot insert all fields of the " << endl;
       return InternError;
     }
   // -----

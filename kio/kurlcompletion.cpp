@@ -494,7 +494,7 @@ QString KURLCompletion::unescape(const QString &text)
  * Only executables beginning with 'filter' are listed
  * If 'add_dir' is true 'dir' is prepended to the matches
  */
-void KURLCompletion::list(QString dir, QString filter,
+void KURLCompletion::list(const QString& dir, const QString& filter,
 		QStringList &matches, bool only_exe)
 {
 	DIR *dp;
@@ -502,8 +502,8 @@ void KURLCompletion::list(QString dir, QString filter,
 	
 	dp = opendir( dir.latin1() );
 	if ( dp == NULL ) {
-		kDebugInfo("Failed to open dir: %s", dir.latin1());
-		return;
+	    kdDebug() << "Failed to open dir: " << dir << endl;
+	    return;
 	}
 
 	//kDebugInfo("Listing dir: %s  filter = %s", dir.latin1(), filter.latin1());

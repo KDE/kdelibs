@@ -19,7 +19,7 @@
 
 // $Id$
 
-
+#include "kservice.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -37,10 +37,10 @@
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
-#include "kservice.h"
 #include "kservicetype.h"
 #include "kuserprofile.h"
 #include "ksycoca.h"
+#include <kdesktopfile.h>
 
 KService::KService( const QString & _fullpath )
 {

@@ -130,7 +130,8 @@ protected slots:
 
 private:
 	// List a directory using readdir()
-	void list(QString dir, QString file, QStringList &list, bool only_exe);
+	void list(const QString& dir, const QString& file,
+		  QStringList &list, bool only_exe);
 
 	// Expand environment variables and user home dirs in text
 	bool expandEnv( QString &text );

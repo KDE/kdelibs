@@ -19,8 +19,7 @@
 #define __ko_trader_h__
 
 #include <qstring.h>
-
-#include <ksharedptr.h>
+#include <qobject.h>
 #include <kservice.h>
 
 /**
@@ -31,7 +30,7 @@ class KTrader : public QObject
 public:
     // A list of services
     typedef QValueList<KService::Ptr> OfferList;
-  
+
     virtual ~KTrader();
 
     virtual OfferList query( const QString& servicetype,
@@ -39,10 +38,10 @@ public:
 			     const QString& preferences = QString::null) const;
 
     static KTrader* self();
-    
+
 protected:
     KTrader();
-    
+
 private:
     static KTrader* s_self;
 };

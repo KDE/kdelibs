@@ -27,7 +27,6 @@
 class QTimer;
 
 #include "kconfigbase.h"
-#include <qdatetime.h>
 
 class KConfigPrivate;
 

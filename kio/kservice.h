@@ -20,22 +20,16 @@
 #ifndef __kservices_h__
 #define __kservices_h__
 
-#include <qlist.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <qshared.h>
 #include <qmap.h>
 #include <qdatastream.h>
 #include <qvariant.h>
 
-#include <kiconloader.h>
-#include <kdesktopfile.h>
-
 #include "ksycocaentry.h"
-#include "ksycocatype.h"
 
+class KDesktopFile;
 class KService;
-//class KServiceList;
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
  * (or servicetypes) as written in its desktop entry file.

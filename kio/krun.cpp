@@ -40,7 +40,7 @@
 #include <dcopclient.h>
 #include <qfile.h>
 #include <qtextstream.h>
-
+#include <kdesktopfile.h>
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 

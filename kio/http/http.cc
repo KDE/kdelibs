@@ -36,6 +36,7 @@
 #include <utime.h>
 
 #include <string>
+#include <kconfig.h>
 
 #ifdef DO_SSL
 #include <openssl/ssl.h>
@@ -962,12 +963,12 @@ bool HTTPProtocol::http_open()
   }
 
   bool res = true;
-  
+
   if (moreData)
      res = sendBody();
 
   infoMessage( i18n( "%1 Contacted. Waiting for reply..." ).arg( m_request.hostname ) );
-  
+
   return res;
 }
 
@@ -1327,16 +1328,16 @@ bool HTTPProtocol::readHeader()
   }
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
-  // Web-servers really shouldn't do this: They let Content-Size refer 
-  // to the size of the tgz file, not to the size of the tar file, 
-  // while the Content-Type refers to "tar" instead of "tgz". 
-  if ((m_qContentEncodings.last() == "gzip") && 
+  // Web-servers really shouldn't do this: They let Content-Size refer
+  // to the size of the tgz file, not to the size of the tar file,
+  // while the Content-Type refers to "tar" instead of "tgz".
+  if ((m_qContentEncodings.last() == "gzip") &&
       (m_strMimeType == "application/x-tar"))
   {
      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
      m_strMimeType = QString::fromLatin1("application/x-tgz");
   }
-  
+
   if (!m_qContentEncodings.isEmpty())
   {
      // If we still have content encoding we can't rely on the Content-Length.
@@ -2168,7 +2169,7 @@ bool HTTPProtocol::readBody( )
 	       big_buffer.size());
 #endif
 
-    // now decode all of the content encodings 
+    // now decode all of the content encodings
     // -- Why ?? We are not
     // -- a proxy server, be a client side implementation!!  The applications
     // -- are capable of determinig how to extract the encoded implementation.
