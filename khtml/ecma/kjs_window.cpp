@@ -253,9 +253,15 @@ Window::~Window()
 Window *Window::retrieveWindow(KHTMLPart *p)
 {
   ValueImp *imp = retrieve( p ).imp();
-  assert( imp );
+#ifndef NDEBUG
+  // imp should never be 0L, except when javascript has been disabled in that part.
+  if ( p && p->jScriptEnabled() )
+  {
+    assert( imp );
 #ifndef QWS
-  assert( dynamic_cast<KJS::Window*>(imp) );
+    assert( dynamic_cast<KJS::Window*>(imp) );
+#endif
+  }
 #endif
   return static_cast<KJS::Window*>(imp);
 }
