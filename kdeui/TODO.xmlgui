@@ -16,6 +16,8 @@ KToolBarPosList KMainWindow::toolBarPositionList() const;
 
 The remaining problem is to know when to call it:
 * when we know in advance that we'll be able to remove toolbars?
+  (when creating the client we could remember if we created a toolbar and store
+   that bit of information, to re-use it when removing the client again)
 * when removing the first toolbar (of a given client); then we need
 to differenciate between first and following toolbars
 * always, if fast enough? With tons of plugins that might not be a good idea.
