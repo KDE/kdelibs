@@ -1,5 +1,7 @@
 2003-11-25  Stephan Kulow  <coolo@kde.org>
 
+	* html/html_baseimpl.cpp (parseAttribute): fix parsing of body attributes (safari merge)
+
 	* rendering/render_box.cpp (calcAbsoluteVertical): basically reverting commit 1.218
 	for height calculation. It broke floating images (#67839)
 
