@@ -137,11 +137,6 @@ void KLineEdit::setCompletionMode( KGlobal::Completion mode )
     {
         //Sync KCompletion mode with ours.
         comp->setCompletionMode( m_iCompletionMode );
-        // Enable beep only on Shell completions.
-        if( mode == KGlobal::CompletionShell )
-            comp->setBeepEnabled( true );
-        else
-            comp->setBeepEnabled( false );
     }
     m_iCompletionMode = mode;
 }
@@ -229,10 +224,8 @@ void KLineEdit::rotateText( const QString& input )
     if( input.length() == 0 || input == text() )
         return;
 
-    // Allow rotation only in the "manual" modes.
-    if( (m_iCompletionMode == KGlobal::CompletionMan ||
-         m_iCompletionMode == KGlobal::CompletionShell) &&
-         comp != 0 && comp->hasMultipleMatches() )
+    if( m_iCompletionMode != KGlobal::CompletionNone &&
+	comp != 0 && comp->hasMultipleMatches() )
     {
         if( m_iCompletionMode == KGlobal::CompletionShell )
         {
@@ -359,7 +352,7 @@ void KLineEdit::initialize( bool showMenu, bool showChanger )
 
 void KLineEdit::keyPressEvent( QKeyEvent *ev )
 {
-    // Filter key-events iff EchoMode is normal and
+    // Filter key-events if EchoMode is normal and
     // the completion mode is not CompletionNone or
     // it is disabled.
     if(  m_iCompletionMode != KGlobal::CompletionNone &&
@@ -369,7 +362,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         int key = ( m_iCompletionKey == 0 ) ? KStdAccel::completion() : m_iCompletionKey;
         if( KStdAccel::isEqual( ev, key ) )
         {
-            // Emit completion iff the completion mode is NOT
+            // Emit completion if the completion mode is NOT
             // CompletionAuto and if the mode is CompletionShell,
             // the cursor is at the end of the string.
             int len = text().length();
