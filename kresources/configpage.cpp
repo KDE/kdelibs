@@ -178,6 +178,7 @@ void ConfigPage::load()
   int currentFamily = mConfig->readNumEntry( "CurrentFamily", 0 );
   mFamilyCombo->setCurrentItem( currentFamily );
   slotFamilyChanged( currentFamily );
+  emit changed( false );
 }
 
 void ConfigPage::save()

@@ -38,7 +38,8 @@ KCMKResources::KCMKResources( QWidget *parent, const char *name, const QStringLi
   QVBoxLayout *layout = new QVBoxLayout( this );
   mConfigPage = new KRES::ConfigPage( this );
   layout->addWidget( mConfigPage );
-  connect( mConfigPage, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
+  connect( mConfigPage, SIGNAL( changed( bool ) ), SLOT( setChanged( bool ) ) );
+  setButtons( Help | Apply );
 }
 
 void KCMKResources::load()
