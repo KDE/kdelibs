@@ -553,4 +553,4 @@ QDataStream &KABC::operator>>( QDataStream &s, Address &addr )
 
     return s;
 }
-// vim:tw=78 cin et sw comments=sr\:/*,mb\:\ ,ex\:*/,\://
+// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://

@@ -24,10 +24,11 @@
 #include <qvaluelist.h>
 
 #include "addressee.h"
-#include "field.h"
 
 namespace KABC {
 
+class Field;
+    
 /**
  * Each trait must implement one static function for equality, one for "less 
  * than". Class name should be the field name. A trait does not necessarily 
@@ -137,7 +138,12 @@ class AddresseeList : public QValueList<Addressee>
      */
     void sortBy( SortingCriterion c );
 
-    void sortByField( Field *field );
+    /** 
+     * Sorts this list by a specific field. If no parameter is given, the 
+     * last used Field object will be used.
+     * @param field    pointer to the Field object to be sorted by
+     */
+    void sortByField( Field *field = 0 );
 
     /**
      * Sorts this list by its active sorting criterion. This normally is the 
@@ -185,11 +191,19 @@ class AddresseeList : public QValueList<Addressee>
      */
     SortingCriterion sortingCriterion() const { return mActiveSortingCriterion; }
 
+    /**
+     * Returns the active sorting field, ie a pointer to the Field object
+     * which was used for the last {@link #sortByField} operation.
+     */
+    Field* sortingField() const { return mActiveSortingField; }
+
   private:
     bool mReverseSorting;
     SortingCriterion mActiveSortingCriterion;
+    Field* mActiveSortingField;
 };
 
 };
 
 #endif
+// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://

@@ -21,6 +21,7 @@
 #include <kdebug.h>
 
 #include "addresseelist.h"
+#include "field.h"
 
 using namespace KABC;
 
@@ -105,6 +106,7 @@ AddresseeList::AddresseeList()
 {
   mReverseSorting = false;
   mActiveSortingCriterion = FormattedName;
+  mActiveSortingField = 0;
 }
 
 AddresseeList::~AddresseeList()
@@ -214,6 +216,13 @@ void AddresseeList::sortByTrait()
 
 void AddresseeList::sortByField( Field *field )
 {
+  if ( field ) {
+    mActiveSortingField = field;
+  }
+  if ( !mActiveSortingField ) {
+    kdWarning(5700) << "sortByField called with no active sort field" << endl;
+    return;
+  }
   iterator i1 = begin();
   iterator endIt = end();
   --endIt;
@@ -226,8 +235,8 @@ void AddresseeList::sortByField( Field *field )
     iterator j2 = j1;
     ++j2;
     while( j1 != i2 ) {
-      if ( !mReverseSorting && ( QString::localeAwareCompare( field->value( *j2 ), field->value( *j1 ) ) < 0 )
-           || mReverseSorting && ( QString::localeAwareCompare( field->value( *j1 ), field->value( *j2 ) ) < 0 ) ) {
+      if ( !mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j2 ), mActiveSortingField->value( *j1 ) ) < 0 )
+           || mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j1 ), mActiveSortingField->value( *j2 ) ) < 0 ) ) {
         qSwap( *j1, *j2 );
       }
       ++j1;
@@ -237,3 +246,6 @@ void AddresseeList::sortByField( Field *field )
     --i2;
   }
 }
+
+
+// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://
