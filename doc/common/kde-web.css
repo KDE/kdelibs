@@ -21,7 +21,7 @@
 
 /*
    Important note: these setting may be overridden by localised CSS.  Do not 
-   add here any localisation-sensitive style declarations.
+   add here any localization-sensitive style declarations.
 
    Any updates should be validated, e.g. http://jigsaw.w3.org/css-validator/ */
 
@@ -161,7 +161,7 @@ DIV.mediaobject { /* float: right; */
                   }
 
 /* An idea that could be nice: a search engine looking for specific
-classes could display them in some conspicuous colour.  All that is
+classes could display them in some conspicuous color.  All that is
 needed is an on the fly generated style element/style sheet. */
 
 /* Only used in the hand-made HTML license texts */
