@@ -32,11 +32,13 @@ public:
 	int view_left;
 	int view_right;
   
+protected slots:
+	void updateRects();
+
 protected:
 	void resizeEvent( QResizeEvent *e);
 	void focusInEvent ( QFocusEvent *);
 	void focusOutEvent ( QFocusEvent *);
-	void updateRects();
 
 private:
 	QList <KToolBar> toolbars;

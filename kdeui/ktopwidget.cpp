@@ -28,6 +28,8 @@ int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
 	else
 		toolbars.insert( index, toolbar );
 	index = toolbars.at();
+	connect ( toolbar, SIGNAL( moved (Position) ),
+		this, SLOT( updateRects() ) );
 	updateRects();
 	return index;
 }

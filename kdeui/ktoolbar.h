@@ -22,9 +22,8 @@ public:
 protected:
 	void paletteChange(const QPalette &);
 
-private:
+protected:
 	int id;
-
 	QPixmap enabledPixmap;
 	
 
@@ -86,6 +85,7 @@ signals:
 	void clicked(int);
 	void pressed(int);
 	void released(int);
+	void moved( Position );
 };
 
 #endif

@@ -1,7 +1,6 @@
 #include <qpainter.h>  
 #include <ktoolbar.h>
 #include <qtooltip.h> 
-#include <ktopwidget.h>
 #include <qdrawutl.h>
 #include <qpalette.h>
 #include <qbitmap.h>
@@ -178,10 +177,7 @@ void KToolBar::setPos( Position pos )
 		
 		position = pos;
 		updateRects( TRUE );
-		
-		
-		
-		( (KTopLevelWidget*) parent() )->updateRects();
+	 	emit moved ( pos );	
 	}
 }
 
