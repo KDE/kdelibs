@@ -54,6 +54,8 @@ class QPixmap;
  * signal @ref leftClickedURL() would be emitted with "http://www.home.com/~me"
  * as its argument.
  *
+ * \image html kurllabel.png "KDE URL Label"
+ *
  * @short A drop-in replacement for QLabel that displays hyperlinks.
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)

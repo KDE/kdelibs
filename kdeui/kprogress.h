@@ -38,6 +38,8 @@
  * to subclass KProgress just to change the format of the indicator text.
  *
  * @sect Details
+ * 
+ * \image html kprogress.png "KDE Progress Widget"
  *
  * @short A progress indicator widget.
  * @author Aaron Seigo

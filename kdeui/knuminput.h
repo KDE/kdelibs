@@ -173,7 +173,9 @@ private:
  * It uses @ref KIntValidator validator class. KIntNumInput enforces the
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
- *
+ * 
+ * \image html kintnuminput.png "KDE Int Number Input Spinbox"
+ * 
  * @short An input widget for integer numbers, consisting of a spinbox and a slider.
  * @version $Id$
  */

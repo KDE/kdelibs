@@ -25,6 +25,8 @@
 /**
  * This widget can be used to display or allow user selection of time.
  *
+ * \image html ktimewidget.png "KDE Time Widget"
+ *
  * @short A combination of a time selection widget.
  * @author Hans Petter Bieker <bieker@kde.org>
  * @version $Id$

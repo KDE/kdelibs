@@ -35,6 +35,8 @@ class QColor;
  * It may display itself in a performant flat view, a round view with
  * light spot or a round view sunken in the screen.
  *
+ * \image html kled.png "KDE LED Widget"
+ *
  * @short An LED widget.
  * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
  */

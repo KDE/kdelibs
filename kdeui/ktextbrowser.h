@@ -30,6 +30,8 @@
  * activated, or it can emit the signal @ref urlClick() or @ref mailClick()
  * when a link is activated.
  *
+ * \image html ktextbrowser.png "KDE Text Browser"
+ *
  * @short Extended QTextBrowser.
  * @author Espen Sand (espensa@online.no)
  * @version $Id$

@@ -30,7 +30,9 @@
  * Example:
  * http://www.kde.org/documentation/index.html could be squeezed to
  * http://www.kde...ion/index.html
-
+ *
+ * \image html ksqueezedtextlabel.png "KSqueezedTextLabel Widget"
+ *
  * @short A replacement for QLabel that squeezes its text
  * @author Ronny Standtke <Ronny.Standtke@gmx.de>
  * @version $Id$
