@@ -10,7 +10,10 @@
 	# vtable and typeinfo symbols not matched below
 	KJS::Lexer::*;
 	KJS::Parser::*;
+	KJS::Collector::*;
+	KJS::InterpreterImp::*;
 	KJS::ListImp*;
+	*KJS::*InstanceImp*;
         KJS::CompletionImp*;
         KJS::StringObjectImp*;
         KJS::BooleanObjectImp*;
@@ -22,6 +25,6 @@
         KJS::RegExpObjectImp*;
         KJS::ErrorObjectImp*;
         KJS::ObjectObjectImp*;
-        KJS::ProtoFuncIm*
+        KJS::*ProtoFuncIm*
    };
 };
