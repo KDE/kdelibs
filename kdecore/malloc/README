@@ -1,0 +1,46 @@
+
+ This malloc is based on Doug Lea's malloc ( ftp://gee.cs.oswego.edu/pub/misc/ ), the changes
+are listed below. See http://lists.kde.org/?l=kde-core-devel&m=101351949010285&w=2 for details.
+Basically, it's here because for now it has better performance than both glibc-2.2.x and
+FreeBSD's libc.
+
+ There's a new configure switch, --enable-fast-malloc. By default it's turned off, disabling
+this malloc and using the system libc one. Using --enable-fast-malloc=full enables this
+malloc unconditionally, aiming for the maximum performance. By using only --enable-fast-malloc,
+it's possible to select both malloc implementations at runtime. When $KDE_MALLOC is set to 1,
+this malloc is used, the system libc one is used otherwise.
+
+ For now, the requirements are :
+ - x86 CPU (because of the spinlock implementation in assembler), it should be easy to add
+   new ones
+ - glibc (for --enable-fast-malloc=yes, =full doesn't need it), because it needs to refer
+   to the libc implementation of malloc (__libc_malloc etc.)
+ - gcc (for __inline__ , nothing else should depend on gcc)
+
+
+changes (against malloc-2.7.0):
+
+#define USE_MALLOC_LOCK
+#define INLINE __inline__
+made all functions INLINE
+reordered all functions in order to avoid 'warning: `XYZ' declared inline after being called'
+    especially moved the public_* ones at the end of the file
+commented out #including malloc.h
+added #include <config.h> at the top and enclosed whole file in #ifdef KDE_MALLOC
+taken posix_memalign() from glibc
+removed public icalloc(),icomalloc(),mtrim(),musable()  (they don't exist everywhere anyway)
+enclosed the pthreads part by #if 0 and replaced it with spinlock from glibc CVS (in x86.h)
+    also added :
+----------
+static mutex_t spinlock = MUTEX_INITIALIZER;
+#define MALLOC_PREACTION   lock( &spinlock )
+#define MALLOC_POSTACTION  unlock( &spinlock )
+----------
+public functions call either functions in this malloc or in libc, depending on $KDE_MALLOC
+
+
+TODO:
+malloc_set_state/malloc_get_state ?
+
+
+Lubos Lunak <l.lunak@kde.org>
