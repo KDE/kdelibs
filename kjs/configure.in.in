@@ -20,7 +20,12 @@ AC_DEFUN(AC_CHECK_PCREPOSIX,
   AC_CACHE_VAL(ac_cv_have_pcreposix,
   [
     ac_save_libs="$LIBS"
-    LIBS="-lpcre -lpcreposix"
+    if pcre-config --libs >/dev/null 2>&1; then
+        LIBS=`pcre-config --libs --libs-posix`
+        CPPFLAGS="$CPPFLAGS `pcre-config --cflags`"
+    else
+        LIBS="-lpcre -lpcreposix"
+    fi
     ac_CPPFLAGS_save="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS $all_includes"
     ac_LDFLAGS_save="$LDFLAGS"
