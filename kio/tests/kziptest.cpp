@@ -13,10 +13,10 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   for( ; it != l.end(); ++it )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
-    printf("mode=%07o %s %s s: %d p: %d %s%s isdir=%d", entry->permissions(), 
-	entry->user().latin1(), entry->group().latin1(), 
-	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(), 
-	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(), 
+    printf("mode=%07o %s %s size: %d pos: %d %s%s isdir=%d", entry->permissions(),
+	entry->user().latin1(), entry->group().latin1(),
+	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
+	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
 	path.latin1(), (*it).latin1(), entry->isDirectory());
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
@@ -27,7 +27,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 }
 
 
-void recursive_transfer(const KArchiveDirectory * dir, 
+void recursive_transfer(const KArchiveDirectory * dir,
 	    const QString & path, KZip * zip)
 {
     QStringList l = dir->entries();
@@ -47,14 +47,14 @@ void recursive_transfer(const KArchiveDirectory * dir,
     	    printf("SIZE=%i\n",arr.size() );
     	    QString str( arr );
     	    printf("DATA=%s\n", str.latin1());
-	    
+
 	    zip->writeFile( path+e->name().latin1(),
 			    "holgi", "holgrp",
 			    arr.size() , f->data() );
 	}
 	else if (e->isDirectory())
 	{
-	    recursive_transfer((KArchiveDirectory *)e , 
+	    recursive_transfer((KArchiveDirectory *)e ,
 			path+e->name()+"/", zip);
 	}
     }
@@ -66,10 +66,10 @@ int main( int argc, char** argv )
   {
     printf("\n"
  " Usage :\n"
- " ./ktartest list /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n"
- " ./ktartest readwrite newfile.tar.gz                 will create the tar.gz, then close and reopen it.\n"
- " ./ktartest maxlength newfile.tar.gz                 tests the maximum filename length allowed.\n"
- " ./ktartest iodevice /path/to/existing_file.tar.gz   tests KArchiveFile::device()\n");
+ " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
+ " ./kziptest readwrite newfile.zip                 will create the zip, then close and reopen it.\n"
+ " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
+ " ./kziptest iodevice /path/to/existing_file.zip   tests KArchiveFile::device()\n");
     return 1;
   }
   KInstance instance("kziptest");
@@ -172,7 +172,7 @@ int main( int argc, char** argv )
     // Result of this test : it fails at 482 (instead of 154 previously).
     // Ok, I think we can do with that :)
     zip.close();
-    printf("Now run 'tar tvzf %s'\n", argv[2]);
+    printf("Now run 'unzip -l %s'\n", argv[2]);
     return 0;
   }
   else if ( command == "iodevice" )
@@ -226,7 +226,7 @@ int main( int argc, char** argv )
     if (argc != 4)
     {
         printf("usage: kziptest.cpp print2 archivename filename");
-	return 1; 
+	return 1;
     }
     KZip zip( argv[2] );
     if ( !zip.open( IO_ReadOnly ) )
@@ -254,7 +254,7 @@ int main( int argc, char** argv )
     if (argc != 4)
     {
         printf("usage: kziptest.cpp print2 sourcefile destfile");
-	return 1; 
+	return 1;
     }
     KZip zip1( argv[2] );
     KZip zip2( argv[3] );
@@ -274,8 +274,8 @@ int main( int argc, char** argv )
 
     zip1.close();
     zip2.close();
-    
-/*    
+
+/*
     zip.writeFile( "empty", "weis", "users", 0, "" );
     zip.writeFile( "test1", "weis", "users", 5, "Hallo" );
     zip.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
@@ -322,11 +322,11 @@ int main( int argc, char** argv )
     zip.close();
 
     return 0;
-    
-    
-    
-    
-    
+
+
+
+
+
     const KArchiveEntry* e = dir1->entry( argv[3] );
     Q_ASSERT( e && e->isFile() );
     const KArchiveFile* f = (KArchiveFile*)e;
