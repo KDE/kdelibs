@@ -487,20 +487,27 @@ bool ReadWritePart::queryClose()
                 "Do you want to save it?" ).arg( docName ),
           i18n( "Save Document?" ), KStdGuiItem::save(), KStdGuiItem::discard() );
 
+  bool abortClose=false;
+  bool handled=false;
+
   switch(res) {
   case KMessageBox::Yes :
-    if (m_url.isEmpty())
+    sigQueryClose(&handled,&abortClose);
+    if (!handled)
     {
-        KURL url = KFileDialog::getSaveURL();
-        if (url.isEmpty())
-          return false;
+      if (m_url.isEmpty())
+      {
+          KURL url = KFileDialog::getSaveURL();
+          if (url.isEmpty())
+            return false;
 
-        saveAs( url );
-    }
-    else
-    {
-        save();
-    }
+          saveAs( url );
+      }
+      else
+      {
+          save();
+      }
+    } else if (abortClose) return false;
     return waitSaveComplete();
   case KMessageBox::No :
     return true;

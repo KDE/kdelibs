@@ -618,6 +618,16 @@ public:
    */
   virtual void setModified( bool modified );
 
+signals:
+   /**
+    * @since 3.2, remove in KDE 4, when queryClose is made virtual
+    *
+    * set handled to true, if you don't want the default handling
+    * set abortClosing to true, if you handled the request, 
+    * but for any reason don't  want to allow closing the document
+    */
+   void sigQueryClose(bool *handled, bool* abortClosing);
+
 public slots:
   /**
    * Call setModified() whenever the contents get modified.
