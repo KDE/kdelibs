@@ -2,24 +2,24 @@
 
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************/
 
 #include <unistd.h>
@@ -70,7 +70,7 @@ static char *remAuthFile = 0;
 
 static IceListenObj *listenObjs = 0;
 int numTransports = 0;
-    
+
 static IceIOErrorHandler prev_handler;
 
 static Bool HostBasedAuthProc ( char* /*hostname*/)
@@ -116,7 +116,7 @@ static const char *hex_table[] = {            /* for printing hex digits */
 static void fprintfhex (FILE *fp, unsigned int len, char *cp)
 {
   unsigned char *ucp = (unsigned char *) cp;
-  
+
   for (; len > 0; len--, ucp++) {
     const char *s = hex_table[*ucp];
     putc (s[0], fp);
@@ -127,7 +127,7 @@ static void fprintfhex (FILE *fp, unsigned int len, char *cp)
 /*
  * We use temporary files which contain commands to add/remove entries from
  * the .ICEauthority file.
- */ 
+ */
 static void
 write_iceauth (FILE *addfp, FILE *removefp, IceAuthDataEntry *entry)
 {
@@ -138,7 +138,7 @@ write_iceauth (FILE *addfp, FILE *removefp, IceAuthDataEntry *entry)
 	   entry->auth_name);
   fprintfhex (addfp, entry->auth_data_length, entry->auth_data);
   fprintf (addfp, "\n");
-  
+
   fprintf (removefp,
 	   "remove protoname=%s protodata=\"\" netid=%s authname=%s\n",
 	   entry->protocol_name,
@@ -158,7 +158,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #else
   char tempFile[PATH_MAX];
   char *tmp;
-  
+
   sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
   tmp = (char *) mktemp (tempFile);
   if (tmp)
@@ -173,7 +173,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #else
   char tempFile[PATH_MAX];
   char *ptr;
-  
+
   sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
   ptr = (char *)malloc(strlen(tempFile) + 1);
   if (ptr != NULL)
@@ -188,7 +188,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
 #define MAGIC_COOKIE_LEN 16
 
 Status
-SetAuthentication (int count, IceListenObj *listenObjs, 
+SetAuthentication (int count, IceListenObj *listenObjs,
 		   IceAuthDataEntry **authDataEntries)
 {
   FILE        *addfp = NULL;
@@ -200,9 +200,9 @@ SetAuthentication (int count, IceListenObj *listenObjs,
 #ifdef HAS_MKSTEMP
   int         fd;
 #endif
-  
+
   original_umask = umask (0077);      /* disallow non-owner access */
-  
+
   path = getenv ("DCOP_SAVE_DIR");
   if (!path) {
     path = getenv ("HOME");
@@ -212,80 +212,80 @@ SetAuthentication (int count, IceListenObj *listenObjs,
 #ifndef HAS_MKSTEMP
   if ((addAuthFile = unique_filename (path, ".dcop")) == NULL)
     goto bad;
-  
+
   if (!(addfp = fopen (addAuthFile, "w")))
     goto bad;
-  
+
   if ((remAuthFile = unique_filename (path, ".dcop")) == NULL)
     goto bad;
-  
+
   if (!(removefp = fopen (remAuthFile, "w")))
     goto bad;
 #else
   if ((addAuthFile = unique_filename (path, ".dcop", &fd)) == NULL)
     goto bad;
-  
+
   if (!(addfp = fdopen(fd, "wb")))
     goto bad;
-  
+
   if ((remAuthFile = unique_filename (path, ".dcop", &fd)) == NULL)
     goto bad;
- 
+
   if (!(removefp = fdopen(fd, "wb")))
     goto bad;
 #endif
-  
+
   if ((*authDataEntries = (IceAuthDataEntry *) malloc (
 						       count * 2 * sizeof (IceAuthDataEntry))) == NULL)
     goto bad;
- 
+
   for (i = 0; i < numTransports * 2; i += 2) {
     (*authDataEntries)[i].network_id =
       IceGetListenConnectionString (listenObjs[i/2]);
     (*authDataEntries)[i].protocol_name = (char *) "ICE";
     (*authDataEntries)[i].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
- 
+
     (*authDataEntries)[i].auth_data =
       IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
     (*authDataEntries)[i].auth_data_length = MAGIC_COOKIE_LEN;
- 
+
     (*authDataEntries)[i+1].network_id =
       IceGetListenConnectionString (listenObjs[i/2]);
     (*authDataEntries)[i+1].protocol_name = (char *) "DCOP";
     (*authDataEntries)[i+1].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
-   
+
     (*authDataEntries)[i+1].auth_data =
       IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
     (*authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
-    
+
     write_iceauth (addfp, removefp, &(*authDataEntries)[i]);
     write_iceauth (addfp, removefp, &(*authDataEntries)[i+1]);
- 
+
     IceSetPaAuthData (2, &(*authDataEntries)[i]);
-    
+
     IceSetHostBasedAuthProc (listenObjs[i/2], HostBasedAuthProc);
   }
- 
+
   fclose (addfp);
   fclose (removefp);
-  
+
   umask (original_umask);
-  
+
   sprintf (command, "iceauth source %s", addAuthFile);
   system (command);
- 
+
   unlink (addAuthFile);
- 
+
   return (1);
- 
+
  bad:
- 
+
   if (addfp)
     fclose (addfp);
-  
+
   if (removefp)
     fclose (removefp);
-  
+
   if (addAuthFile) {
     unlink(addAuthFile);
     free(addAuthFile);
@@ -294,7 +294,7 @@ SetAuthentication (int count, IceListenObj *listenObjs,
     unlink(remAuthFile);
     free(remAuthFile);
   }
-  
+
   return (0);
 }
 
@@ -305,22 +305,22 @@ void
 FreeAuthenticationData(int count, IceAuthDataEntry *authDataEntries)
 {
   /* Each transport has entries for ICE and XSMP */
-  
+
   char command[256];
   int i;
-  
+
   for (i = 0; i < count * 2; i++) {
     free (authDataEntries[i].network_id);
     free (authDataEntries[i].auth_data);
   }
-  
+
   free (authDataEntries);
-   
+
   sprintf (command, "iceauth source %s", remAuthFile);
   system(command);
-  
+
   unlink(remAuthFile);
-  
+
   free(addAuthFile);
   free(remAuthFile);
 }
@@ -358,13 +358,13 @@ void DCOPWatchProc ( IceConn iceConn, IcePointer client_data, Bool opening, IceP
   }
 }
 
-void DCOPProcessMessage( IceConn iceConn, IcePointer /*clientData*/, 
+void DCOPProcessMessage( IceConn iceConn, IcePointer /*clientData*/,
 			 int opcode, unsigned long length, Bool swap)
 {
   the_server->processMessage( iceConn, opcode, length, swap );
 }
 
-void DCOPServer::processMessage( IceConn iceConn, int opcode, 
+void DCOPServer::processMessage( IceConn iceConn, int opcode,
 				 unsigned long length, Bool /*swap*/)
 {
   switch( opcode ) {
@@ -397,13 +397,11 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	// handle a broadcast.
 	QDictIterator<DCOPConnection> aIt(appIds);
 	while (aIt.current()) {
-	  if ((char const *) aIt.current() != "DCOPServer") {
 	    IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
 			 sizeof(DCOPMsg), DCOPMsg, pMsg);
 	    int datalen = ba.size();
 	    pMsg->length += datalen;
 	    IceSendData(aIt.current()->iceConn, datalen, (char *) ba.data());
-	  }
 	}
       }
     }
@@ -488,18 +486,18 @@ struct DCOPServerConnStruct
   /*
    * We use ICE to esablish a connection with the client.
    */
-  
+
   IceConn		iceConn;
-  
-  
+
+
   /*
    * Major and minor versions of the XSMP.
    */
-  
+
   int			proto_major_version;
   int			proto_minor_version;
-  
-  
+
+
   QCString clientId;
 };
 
@@ -507,7 +505,7 @@ struct DCOPServerConnStruct
 static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
 					    int majorVersion, int minorVersion,
 					    char* vendor, char* release,
-					    IcePointer *clientDataRet, 
+					    IcePointer *clientDataRet,
 					    char **/*failureReasonRet*/)
 {
     DCOPServerConn serverConn;
@@ -549,7 +547,7 @@ CloseListeners ()
   QCString fName(::getenv("HOME"));
   fName += "/.DCOPserver";
   unlink(fName.data());
-  
+
   FreeAuthenticationData(numTransports, authDataEntries);
 }
 
@@ -563,7 +561,7 @@ DCOPServer::DCOPServer()
 {
   the_server = this;
   if (( majorOpcode = IceRegisterForProtocolReply ((char *) "DCOP",
-						   (char *) DCOPVendorString, 
+						   (char *) DCOPVendorString,
 						   (char *) DCOPReleaseString,
 						   1, DCOPVersions,
 						   1, (char **) DCOPAuthNames,
@@ -595,14 +593,14 @@ DCOPServer::DCOPServer()
       fprintf(f, IceComposeNetworkIdList(numTransports, listenObjs));
       fclose(f);
     }
-      
+
   if (!SetAuthentication(numTransports, listenObjs, &authDataEntries)) {
     qDebug("dcopserver could not set authorization");
     exit(1);
   }
 
   IceAddConnectionWatch (DCOPWatchProc, (IcePointer) this);
-  
+
   listener.setAutoDelete( TRUE );
   DCOPListener* con;
   for ( int i = 0; i < numTransports; i++) {
