@@ -1,6 +1,6 @@
 LIB_CUPS = @LIB_CUPS@
 LIBVERSION = 1:0
-INCLUDES = -I.. $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdeprint -I$(top_srcdir) -I$(top_builddir)/kdeprint $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint_cups.la
 

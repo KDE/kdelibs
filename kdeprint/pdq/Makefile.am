@@ -1,4 +1,4 @@
-INCLUDES = -I.. $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdeprint -I$(top_srcdir) -I$(top_builddir)/kdeprint $(all_includes)
 LIBVERSION = 1:0
 
 ####### Files
@@ -19,10 +19,10 @@ libkdeprint_pdq_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
 ####### Build rules
 
 parser.cpp: parser.yy
-	bison -t -d -v -o parser.cpp parser.yy
+	cd $(srcdir) && bison -t -d -v -o parser.cpp parser.yy
 
 scanner.cpp: scanner.ll parser.cpp
-	flex -B -8 -oscanner.cpp scanner.ll
+	cd $(srcdir) && flex -B -8 -oscanner.cpp scanner.ll
 
 EXTRA_DIST = scanner.ll parser.yy
 
