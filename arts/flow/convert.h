@@ -68,6 +68,13 @@ void interpolate_mono_16le_float(unsigned long samples,
 		    double startpos, double speed,
 			unsigned char *from, float *to);
 
+void convert_mono_16be_float(unsigned long samples,
+			unsigned char *from, float *to);
+
+void interpolate_mono_16be_float(unsigned long samples,
+		    double startpos, double speed,
+			unsigned char *from, float *to);
+
 void convert_stereo_i8_2float(unsigned long samples,
 			unsigned char *from, float *left, float *right);
 
@@ -79,6 +86,13 @@ void convert_stereo_i16le_2float(unsigned long samples,
 			unsigned char *from, float *left, float *right);
 
 void interpolate_stereo_i16le_2float(unsigned long samples,
+		    double startpos, double speed,
+			unsigned char *from, float *left, float *right);
+
+void convert_stereo_i16be_2float(unsigned long samples,
+			unsigned char *from, float *left, float *right);
+
+void interpolate_stereo_i16be_2float(unsigned long samples,
 		    double startpos, double speed,
 			unsigned char *from, float *left, float *right);
 
@@ -103,6 +117,12 @@ void convert_mono_float_16le(unsigned long samples,
 void convert_stereo_2float_i16le(unsigned long samples,
 			float *left, float *right, unsigned char *to);
 
+void convert_mono_float_16be(unsigned long samples,
+			float *from, unsigned char *to);
+
+void convert_stereo_2float_i16be(unsigned long samples,
+			float *left, float *right, unsigned char *to);
+
 void convert_mono_float_8(unsigned long samples,
 			float *from, unsigned char *to);
 
@@ -121,6 +141,7 @@ void convert_stereo_2float_i8(unsigned long samples,
 enum {
   uni_convert_u8         = 8,		// unsigned 8 bit
   uni_convert_s16_le     = 16,		// signed 16 bit, little endian
+  uni_convert_s16_be     = 17,		// signed 16 bit, big endian
   uni_convert_float_ne   = 0x100	// float, in native size/byteorder
 };
 

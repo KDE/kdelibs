@@ -45,10 +45,14 @@ static inline long QRound (float inval)
 #define compose_16le(ptr) \
 	((((*((ptr)+1)+128)&0xff) << 8)+*(ptr))
 
-#define conv_16le_float(x) \
+#define compose_16be(ptr) \
+	((((*(ptr)+128)&0xff) << 8)+*((ptr)+1))
+
+#define conv_16_float(x) \
 	((float)((x)-32768)/32768.0)
 
-#define convert_16le_float(x) conv_16le_float(compose_16le(&(x)))
+#define convert_16le_float(x) conv_16_float(compose_16le(&(x)))
+#define convert_16be_float(x) conv_16_float(compose_16be(&(x)))
 
 #define conv_8_float(x) \
 	((float)((x)-128)/128.0)
@@ -59,11 +63,14 @@ static inline long QRound (float inval)
 #define convert_float_float(x) x
 
 /*
- * 16le, 8, float
+ * 16le, 16be, 8, float
  */
 
 #define datatype_16le unsigned char
 #define datasize_16le 2
+
+#define datatype_16be unsigned char
+#define datasize_16be 2
 
 #define datatype_8 unsigned char
 #define datasize_8 1
@@ -141,6 +148,7 @@ void Arts::interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long
 
 mk_converter(8,float)
 mk_converter(16le,float)
+mk_converter(16be,float)
 mk_converter(float,float)
 
 /*----------------------------- new code end --------------------------- */
@@ -228,6 +236,47 @@ void Arts::convert_mono_float_16le(unsigned long samples, float *from, unsigned 
 	}	
 }
 
+void Arts::convert_stereo_2float_i16be(unsigned long samples, float *left, float *right, unsigned char *to)
+{
+	float *end = left+samples;
+	long syn;
+
+	while(left < end)
+	{
+		syn = QRound((*left++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
+		*to++ = (syn >> 8) & 0xff;
+		*to++ = syn & 0xff;
+
+		syn = QRound((*right++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
+		*to++ = (syn >> 8) & 0xff;
+		*to++ = syn & 0xff;
+	}	
+}
+
+void Arts::convert_mono_float_16be(unsigned long samples, float *from, unsigned char *to)
+{
+	float *end = from+samples;
+
+	while(from < end)
+	{
+		long syn = QRound((*from++)*32767);
+
+		if(syn < -32768) syn = -32768;				/* clipping */
+		if(syn > 32767) syn = 32767;
+
+		*to++ = (syn >> 8) & 0xff;
+		*to++ = syn & 0xff;
+	}	
+}
+
 void Arts::convert_stereo_2float_i8(unsigned long samples, float *left, float *right, unsigned char *to)
 {
 	float *end = left+samples;
@@ -306,7 +355,11 @@ unsigned long Arts::uni_convert_stereo_2float(
 				interpolate_mono_float_float(doSamples,
 							startposition,speed,(float *)from,left);
 			}
-			else if(fromBits == 16) {
+			else if(fromBits == uni_convert_s16_be) {
+				interpolate_mono_16be_float(doSamples,
+							startposition,speed,from,left);
+			}
+			else if(fromBits == uni_convert_s16_le) {
 				interpolate_mono_16le_float(doSamples,
 							startposition,speed,from,left);
 			}
@@ -322,7 +375,11 @@ unsigned long Arts::uni_convert_stereo_2float(
 				interpolate_stereo_ifloat_2float(doSamples,
 							startposition,speed,(float *)from,left,right);
 			}
-			else if(fromBits == 16) {
+			else if(fromBits == uni_convert_s16_be) {
+				interpolate_stereo_i16be_2float(doSamples,
+							startposition,speed,from,left,right);
+			}
+			else if(fromBits == uni_convert_s16_le) {
 				interpolate_stereo_i16le_2float(doSamples,
 							startposition,speed,from,left,right);
 			}
@@ -339,13 +396,17 @@ unsigned long Arts::uni_convert_stereo_2float(
 
 // undefine all that stuff (due to --enable-final)
 #undef compose_16le
-#undef conv_16le_float
+#undef compose_16be
+#undef conv_16_float
 #undef convert_16le_float
+#undef convert_16be_float
 #undef conv_8_float
 #undef convert_8_float
 #undef convert_float_float
 #undef datatype_16le
 #undef datasize_16le
+#undef datatype_16be
+#undef datasize_16be
 #undef datatype_8
 #undef datasize_8
 #undef datatype_float
