@@ -34,12 +34,11 @@ uint KStdAccel::key(StdAccel id)
     QString s = saver.config()->readEntry(a);
     if( s.isEmpty() || s == "default" )  // old code used to write just "default"
         return 0;                           //  which is not enough
-    if( s.startsWith( "default(" ))
-        {
-        unsigned int pos = s.findRev( ')' );
+    if( s.startsWith( "default(" )) {
+        int pos = s.findRev( ')' );
         if( pos >= 0 ) // this should be really done with regexp
             s = s.mid( 8, pos - 8 );
-        }
+    }
     return KAccel::stringToKey(s);
 }
 
