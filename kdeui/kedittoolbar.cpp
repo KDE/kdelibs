@@ -74,25 +74,25 @@ typedef QValueList<XmlData> XmlDataList;
 class ToolbarItem : public QListViewItem
 {
 public:
-  ToolbarItem(KListView *parent, const QString& name)
+  ToolbarItem(KListView *parent, const QString& name, const QString& statusText)
     : QListViewItem(parent),
-      m_name(name)
+      m_name(name),
+      m_statusText(statusText)
   {
   }
 
-  ToolbarItem(KListView *parent, QListViewItem *item, const QString& name)
+  ToolbarItem(KListView *parent, QListViewItem *item, const QString& name, const QString& statusText)
     : QListViewItem(parent, item),
-      m_name(name)
+      m_name(name),
+      m_statusText(statusText)
   {
   }
 
-  QString internalName() const
-  {
-    return m_name;
-  }
-
+  QString internalName() const { return m_name; }
+  QString statusText() const { return m_statusText; }
 private:
   QString m_name;
+  QString m_statusText;
 };
 
 class KEditToolbarWidgetPrivate
@@ -102,6 +102,7 @@ public:
   {
     m_instance = instance;
     m_isPart   = false;
+    m_helpArea = 0L;
   }
   ~KEditToolbarWidgetPrivate()
   {
@@ -170,6 +171,8 @@ public:
   ToolbarList        m_barList;
 
   XmlDataList m_xmlFiles;
+
+  QLabel * m_helpArea;
 };
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
@@ -182,7 +185,7 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
-    incInitialSize( QSize( 200, 150 ) );
+    incInitialSize( QSize( 200, 200 ) );
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
@@ -194,7 +197,7 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char*
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
-    incInitialSize( QSize( 200, 150 ) );
+    incInitialSize( QSize( 200, 200 ) );
 }
 
 void KEditToolbar::slotOk()
@@ -418,6 +421,9 @@ void KEditToolbarWidget::setupLayout()
   connect(m_downAction, SIGNAL(clicked()),
           this,         SLOT(slotDownButton()));
 
+  d->m_helpArea = new QLabel(this);
+  d->m_helpArea->setAlignment( Qt::WordBreak );
+
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 5);
 
@@ -452,6 +458,7 @@ void KEditToolbarWidget::setupLayout()
   top_layout->addLayout(name_layout);
   top_layout->addWidget(new KSeparator(this));
   top_layout->addLayout(list_layout);
+  top_layout->addWidget(d->m_helpArea);
   top_layout->addWidget(new KSeparator(this));
 }
 
@@ -531,7 +538,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   {
     if (it.tagName() == tagSeparator)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, sep_name.arg(sep_num++));
+      ToolbarItem *act = new ToolbarItem(m_activeList, sep_name.arg(sep_num++), QString::null);
       act->setText(1, "-----");
       it.setAttribute( attrName, act->internalName() );
       continue;
@@ -541,7 +548,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     {
       // Merge can be named or not - use the name if there is one
       QString name = it.attribute( attrName );
-      ToolbarItem *act = new ToolbarItem(m_activeList, name);
+      ToolbarItem *act = new ToolbarItem(m_activeList, name, i18n("This is where elements from an embedded component are merged into this list. You can move it, but if you remove it you won't be able to readd it. If it is removed, the merged elements are appended at the end.") );
       if ( name.isEmpty() )
           act->setText(1, i18n("<Merge>"));
       else
@@ -551,7 +558,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     if (it.tagName() == tagActionList)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, it.attribute(attrName));
+      ToolbarItem *act = new ToolbarItem(m_activeList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you won't be able to readd it.") );
       act->setText(1, i18n("ActionList: %1").arg(it.attribute(attrName)));
       continue;
     }
@@ -565,7 +572,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       if (it.attribute( attrName ) == action->name())
       {
         // we have a match!
-        ToolbarItem *act = new ToolbarItem(m_activeList, action->name());
+        ToolbarItem *act = new ToolbarItem(m_activeList, action->name(), action->statusText());
         act->setText(1, action->plainText());
         if (!action->icon().isEmpty())
           act->setPixmap(0, BarIcon(action->icon(), 16));
@@ -591,13 +598,13 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if ( action->icon().isEmpty() )
       continue;
 
-    ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
+    ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name(), action->statusText());
     act->setText(1, action->plainText());
     act->setPixmap(0, BarIcon(action->icon(), 16));
   }
 
   // finally, add a default separator to the inactive list
-  ToolbarItem *act = new ToolbarItem(m_inactiveList, sep_name.arg(sep_num++));
+  ToolbarItem *act = new ToolbarItem(m_inactiveList, sep_name.arg(sep_num++), QString::null);
   act->setText(1, "-----");
 }
 
@@ -659,9 +666,16 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 {
   if (item)
+  {
     m_insertAction->setEnabled(true);
+    QString statusText = static_cast<ToolbarItem *>(item)->statusText();
+    d->m_helpArea->setText( statusText );
+  }
   else
+  {
     m_insertAction->setEnabled(false);
+    d->m_helpArea->setText( QString::null );
+  }
 }
 
 void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
@@ -679,12 +693,15 @@ void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
       m_downAction->setEnabled(true);
     else
       m_downAction->setEnabled(false);
+    QString statusText = static_cast<ToolbarItem *>(item)->statusText();
+    d->m_helpArea->setText( statusText );
   }
   else
   {
     m_removeAction->setEnabled(false);
     m_upAction->setEnabled(false);
     m_downAction->setEnabled(false);
+    d->m_helpArea->setText( QString::null );
   }
 }
 
@@ -792,7 +809,8 @@ void KEditToolbarWidget::slotUpButton()
       // cool, i found me.  now clone myself
       ToolbarItem *clone = new ToolbarItem(m_activeList,
                                            item->itemAbove()->itemAbove(),
-                                           item->internalName());
+                                           item->internalName(),
+                                           item->statusText());
       clone->setText(1, item->text(1));
 
       // only set new pixmap if exists
@@ -842,7 +860,8 @@ void KEditToolbarWidget::slotDownButton()
       // cool, i found me.  now clone myself
       ToolbarItem *clone = new ToolbarItem(m_activeList,
                                            item->itemBelow(),
-                                           item->internalName());
+                                           item->internalName(),
+                                           item->statusText());
       clone->setText(1, item->text(1));
 
       // only set new pixmap if exists
