@@ -193,8 +193,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "ChangeCursor" ) )
     m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
-  if ( reset || config->hasKey( "UnderlineLink" ) )
-    m_underlineLink = config->readBoolEntry( "UnderlineLink", true ); //huh, can't find default define
+  if ( reset || config->hasKey( "UnderlineLinks" ) )
+    m_underlineLink = config->readBoolEntry( "UnderlineLinks", true ); //huh, can't find default define
   //    m_underlineLink = config->readBoolEntry( "UnderlineLink", KDE_DEFAULT_UNDERLINELINKS );
 
   // Other
