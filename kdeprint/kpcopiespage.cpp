@@ -49,7 +49,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	setId(KPrinter::CopiesPage);
 
 	// widget creation
-	QButtonGroup	*m_pagebox = new QButtonGroup(0, Qt::Vertical, i18n("Page selection"), this);
+	QButtonGroup	*m_pagebox = new QButtonGroup(0, Qt::Vertical, i18n("Page Selection"), this);
 	m_all = new QRadioButton(i18n("&All"), m_pagebox);
 	m_current = new QRadioButton(i18n("Cu&rrent"), m_pagebox);
 	m_range = new QRadioButton(i18n("Ran&ge"), m_pagebox);

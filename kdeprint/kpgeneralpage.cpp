@@ -133,8 +133,8 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	m_papertypelabel->setBuddy(m_papertype);
 	m_inputslotlabel->setBuddy(m_inputslot);
 	m_orientbox = new QButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-	m_duplexbox = new QButtonGroup(0, Qt::Vertical, i18n("Duplex printing"), this);
-	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per sheet"), this);
+	m_duplexbox = new QButtonGroup(0, Qt::Vertical, i18n("Duplex Printing"), this);
+	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
 	m_bannerbox = new QGroupBox(0, Qt::Vertical, i18n("Banners"), this);
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);

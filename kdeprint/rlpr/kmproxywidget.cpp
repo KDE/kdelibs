@@ -29,7 +29,7 @@
 #include <kcursor.h>
 
 KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
-: QGroupBox(0, Qt::Vertical, i18n("Proxy settings"), parent, name)
+: QGroupBox(0, Qt::Vertical, i18n("Proxy Settings"), parent, name)
 {
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);

@@ -120,7 +120,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     m_showDetails ? m_detailView->show():m_detailView->hide();
 
     // Cookie policy choice...
-    m_btnGrp = new QVButtonGroup( i18n("Apply choice to"), this );
+    m_btnGrp = new QVButtonGroup( i18n("Apply Choice To"), this );
     m_btnGrp->setRadioButtonExclusive( true );
 
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
