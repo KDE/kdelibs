@@ -19,6 +19,10 @@
 
 /*
  * $Log$
+ * Revision 1.32  1999/06/21 15:31:15  welk
+ * continued the int -> unsigned short int change for port address what Alex
+ * started (Yeah, konqueror shows html-pages again :-)
+ *
  * Revision 1.31  1999/05/07 16:45:21  kulow
  * adding more explicit calls to ascii()
  *
@@ -280,7 +284,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
       switch (ret)
       {
 	  case 0: break; // Timeout
-	  case 1: return(true); // Success
+	  case 1: case 2: return(true); // Success
 	  default: // Error
 	      ::close(sock);
 	      sock = -1;
