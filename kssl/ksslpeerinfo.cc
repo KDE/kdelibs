@@ -21,4 +21,12 @@
 #include "ksslpeerinfo.h"
 
 
+KSSLPeerInfo::KSSLPeerInfo() {
+
+}
+
+KSSLPeerInfo::~KSSLPeerInfo() {
+
+}
+
 

@@ -21,6 +21,21 @@
 #ifndef _KSSLCERTIFICATE_H
 #define _KSSLCERTIFICATE_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
+#ifdef HAVE_SSL
+#include <openssl/ssl.h>
+#endif
+ 
+#include <kssl.h>
+ 
+ 
+class KSSLCertificate {
+
+};
+
 
 #endif
 

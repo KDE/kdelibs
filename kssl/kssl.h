@@ -65,8 +65,8 @@ private:
   bool m_bInit;
   bool m_bAutoReconfig;
   KSSLSettings *m_cfg;
-//  KSSLConnectionInfo *m_ci;
-//  KSSLPeerInfo *m_pi;
+//  KSSLConnectionInfo m_ci;
+  KSSLPeerInfo m_pi;
 };
 
 

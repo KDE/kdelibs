@@ -29,19 +29,28 @@
 #include <openssl/ssl.h>
 #endif
 
-#include <kssl.h>
+#include <qstring.h>
 
+class KSSL;
 
 class KSSLPeerInfo {
 friend class KSSL;
 public:
-//  ~KSSLPeerInfo();
+  ~KSSLPeerInfo();
+
+  enum KSSLType {KSSL_SSLv2, KSSL_SSLv3, KSSL_TLSv1};
+
+  QString getCipher() const;
+  int getCipherUsedBits() const;
+  int getCipherBits() const;
+  // KSSLCertificate *getCertificate() const;
+  KSSLType getSSLType() const;
 
 private:
 
 
 protected:
-//  KSSLPeerInfo();
+  KSSLPeerInfo();
 
 };
 

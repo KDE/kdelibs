@@ -166,6 +166,8 @@ LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
 AC_SUBST(LIB_KHTML)
 LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
 AC_SUBST(LIB_DCOP)
+LIB_KSSL='$(top_builddir)/kssl/libkssl.la'
+AC_SUBST(LIB_KSSL)
 KDB2HTML_UNINSTALLED='$(SHELL) $(top_srcdir)/ksgmltools/kdb2html_uninstalled $(top_builddir)/ksgmltools/kdb2html'
 AC_SUBST(KDB2HTML_UNINSTALLED)
 
