@@ -38,7 +38,7 @@ class KLined : public QLineEdit
   Q_OBJECT
         
 public:
-  KLined ( QWidget *_parent, const char *_name );
+  KLined ( QWidget *parent=0, const char *name=0 );
   ~KLined ();
 
   /**
