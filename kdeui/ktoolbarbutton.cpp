@@ -462,11 +462,12 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
   {
     QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), LeftButton, e->state() );
     QToolButton::mouseReleaseEvent(&ev);
-    emit buttonClicked( d->m_id, state );
-    return;
   }
-  QToolButton::mouseReleaseEvent(e);
-  emit buttonClicked( d->m_id, state );
+  else
+    QToolButton::mouseReleaseEvent(e);
+
+  if ( hitButton( e->pos() ) )
+    emit buttonClicked( d->m_id, state );
 }
 
 void KToolBarButton::drawButton( QPainter *_painter )
