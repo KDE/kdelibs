@@ -1747,6 +1747,7 @@ void CopyJob::slotReport()
                 observer->slotProcessedDirs( this, m_processedDirs );
                 observer->slotCreatingDir( this,m_currentDestURL);
             }
+            emit processedDirs( this, m_processedDirs );
             emit creatingDir( this, m_currentDestURL );
             break;
 
@@ -2364,11 +2365,8 @@ void CopyJob::copyNextFile()
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.prettyURL() << endl;
                 //emit linking( this, (*it).uSource.path(), (*it).uDest );
                 m_bCurrentOperationIsLink = true;
-                if (m_progressId)
-                {
-                    m_currentSrcURL=(*it).uSource;
-                    m_currentDestURL=(*it).uDest;
-                };
+                m_currentSrcURL=(*it).uSource;
+                m_currentDestURL=(*it).uDest;
                 //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
@@ -2435,11 +2433,8 @@ void CopyJob::copyNextFile()
             newjob = newJob;
             kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.prettyURL() << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
-            if (m_progressId)
-            {
-                m_currentSrcURL=(*it).linkDest;
-                m_currentDestURL=(*it).uDest;
-            };
+            m_currentSrcURL=(*it).linkDest;
+            m_currentDestURL=(*it).uDest;
             //Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
@@ -2450,11 +2445,8 @@ void CopyJob::copyNextFile()
             newjob = moveJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
-            if (m_progressId)
-            {
-                m_currentSrcURL=(*it).uSource;
-                m_currentDestURL=(*it).uDest;
-            };
+            m_currentSrcURL=(*it).uSource;
+            m_currentDestURL=(*it).uDest;
             //Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
@@ -2469,14 +2461,8 @@ void CopyJob::copyNextFile()
             copyJob->setSourceSize( (*it).size );
             newjob = copyJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
-            //emit copying( this, (*it).uSource, (*it).uDest );
-            if (m_progressId)
-            {
-                m_currentSrcURL=(*it).uSource;
-                m_currentDestURL=(*it).uDest;
-            };
-            //if ( m_progressId ) // Did we get an ID from the observer ?
-            //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+            m_currentSrcURL=(*it).uSource;
+            m_currentDestURL=(*it).uDest;
         }
         addSubjob(newjob);
         connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
