@@ -1635,7 +1635,11 @@ void KSelectAction::slotActivated( const QString &text )
     }
   }
 
-  setCurrentItem( items().findIndex( text ) );
+  int i = items().findIndex( text );
+  if ( i > -1 )
+      setCurrentItem( i );
+  else
+      setCurrentItem( comboItems().findIndex( text ) );
   // Delay this. Especially useful when the slot connected to activated() will re-create
   // the menu, e.g. in the recent files action. This prevents a crash.
   QTimer::singleShot( 0, this, SLOT( slotActivated() ) );
@@ -1644,6 +1648,7 @@ void KSelectAction::slotActivated( const QString &text )
 void KSelectAction::slotActivated()
 {
   KAction::slotActivated();
+  kdDebug() << "KSelectAction::slotActivated currentItem=" << currentItem() << " currentText=" << currentText() << endl;
   emit activated( currentItem() );
   emit activated( currentText() );
 }
