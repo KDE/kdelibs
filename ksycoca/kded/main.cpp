@@ -15,6 +15,7 @@ main(int argc, char *argv[])
 
      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
      
+     // It is very important to build the servicetype one first
      KServiceTypeFactory *factory = new KServiceTypeFactory;
      sycoca->addFactory(factory);
      KServiceFactory *sfactory = new KServiceFactory;

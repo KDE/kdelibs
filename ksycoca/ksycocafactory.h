@@ -21,13 +21,15 @@
 
 #include "ksycocatype.h"
 
+#include <qdict.h>
 #include <qlist.h>
 #include <qstring.h>
 class KSycoca;
 class QStringList;
 class KSycocaDict;
 class KSycocaEntry;
-class KSycocaEntryList;
+
+typedef QDict<KSycocaEntry> KSycocaEntryDict;
 
 /**
  * Base class for sycoca factories
@@ -87,11 +89,11 @@ private:
 
 protected:
    QStringList *m_pathList;
-   KSycocaEntryList *m_entryList;
-   KSycocaDict *m_entryDict;
+   KSycocaEntryDict *m_entryDict;
+   KSycocaDict *m_sycocaDict;
 };
 
-// (David) what about a typedef here ?
+// This, instead of a typedef, allows to declare "class ..." in header files
 class KSycocaFactoryList : public QList<KSycocaFactory>
 {
 public:

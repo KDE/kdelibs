@@ -76,13 +76,13 @@ KServiceFactory::findServiceByName(const QString &_name)
 KService *
 KServiceFactory::_findServiceByName(const QString &_name)
 {
-   if (!m_entryDict) return 0; // Error!
+   if (!m_sycocaDict) return 0; // Error!
 
    // Warning : this assumes we're NOT building a database
    // But since findServiceByName isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
-   int offset = m_entryDict->find_string( _name );
+   int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
 
    KService *newService = createService(offset);

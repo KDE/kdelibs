@@ -75,24 +75,6 @@ KSycocaDict::add(const QString &key, KSycocaEntry *payload)
    d->append(entry);
 }
    
-KSycocaEntry * KSycocaDict::findEntryInMemory( const QString & key )
-{
-  if ( !d )
-    return 0L;
-
-  // This is a building database. Use the in-memory list.
-  // VERY SLOW. But who cares. :)
-  // Used for looking up the mimetype(s) when reading services...
-  // Well we might want to replace the list with a dict...
-  QListIterator<string_entry> it ( *d );
-  for ( ; it.current(); ++it )
-  {
-    if ( it.current()->key == key )
-      return it.current()->payload;
-  }
-  return 0L;
-}
-
 int 
 KSycocaDict::find_string(const QString &key )
 {

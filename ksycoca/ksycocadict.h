@@ -64,12 +64,6 @@ public:
    int find_string(const QString &key );
    
    /**
-    * Look for an entry in memory
-    * Only valid when building the database.
-    */
-   KSycocaEntry * findEntryInMemory( const QString & key );
-   
-   /**
     * The number of entries in the dictionary.
     *
     * Only valid when building the database.

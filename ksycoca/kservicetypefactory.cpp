@@ -100,15 +100,15 @@ KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 KServiceType *
 KServiceTypeFactory::_findServiceTypeByName(const QString &_name)
 {
-   if (!m_entryDict) return 0L; // Error!
+   if (!m_sycocaDict) return 0L; // Error!
    if (KSycoca::isBuilding())
    {
      // We're building a database - the service type must be in memory
-     return (KServiceType *) m_entryDict->findEntryInMemory( _name );
+     return (KServiceType *) (*m_entryDict)[ _name ];
    }
    else
    {
-     int offset = m_entryDict->find_string( _name );
+     int offset = m_sycocaDict->find_string( _name );
      if (!offset) return 0; // Not found
      KServiceType * newServiceType = createServiceType(offset);
 

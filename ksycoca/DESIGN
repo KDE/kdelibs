@@ -19,8 +19,7 @@ For each factory
  | Dict
  | | * hashtable size
  | | Hash list
- | | | * .  (?)
- | | | * .  (?)
+ | | | * list of values used to compute a hash key
  | | Hash table
  | | | * id (positive = entry offset)
  | | | * id (negative = - offset in duplicates list )

@@ -71,10 +71,4 @@ private:
    int mOffset;
 };
 
-class KSycocaEntryList : public QList<KSycocaEntry>
-{
-public:
-   KSycocaEntryList() { };
-};
-
 #endif
