@@ -542,20 +542,6 @@ void KMdiDockContainer::load(QDomElement& dockEl)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void KMdiDockContainer::save(KConfig* cfg,const QString& group_or_prefix)
 {
   QString grp=cfg->group();
