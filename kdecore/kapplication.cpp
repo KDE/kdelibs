@@ -69,7 +69,7 @@
 #include <kmimesourcefactory.h>
 #include <kstdaccel.h>
 #include <kaccel.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qptrdict.h>
@@ -481,13 +481,14 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     QEvent::Type t = event->type();
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
     {
-       static uint _selectAll = KStdAccel::selectAll();
+       static const KShortcut& _selectAll = KStdAccel::selectAll();
        if (receiver && receiver->inherits("QLineEdit"))
        {
           QLineEdit *edit = static_cast<QLineEdit *>(receiver);
           // We have a keypress for a lineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          if (KStdAccel::isEqual(kevent, _selectAll))
+          KKey key(kevent);
+          if (_selectAll.contains(key))
           {
              if (t == QEvent::KeyPress)
              {
@@ -500,7 +501,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
              }
           }
           // Ctrl-U deletes from start of line.
-          if (KStdAccel::isEqual(kevent, Qt::CTRL + Qt::Key_U))
+          if (key == KKey(Qt::CTRL + Qt::Key_U))
           {
              if (t == QEvent::KeyPress)
              {
@@ -524,7 +525,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
           QMultiLineEdit *medit = static_cast<QMultiLineEdit *>(receiver);
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          if (KStdAccel::isEqual(kevent, _selectAll))
+          if (_selectAll.contains(KKey(kevent)))
           {
              if (t == QEvent::KeyPress)
              {
@@ -748,9 +749,9 @@ void KApplication::init(bool GUIenabled)
     KConfigGroupSaver saver( config, "Development" );
     QString sKey = config->readEntry( "CheckAccelerators" ).stripWhiteSpace();
     if( !sKey.isEmpty() ) {
-      KKeySequences keys( sKey );
-      if( keys.size() > 0 ) {
-        d->checkAccelerators = new KCheckAccelerators( this, keys[0] );
+      KShortcut cuts( sKey );
+      if( cuts.count() > 0 ) {
+        d->checkAccelerators = new KCheckAccelerators( this, cuts.seq(0).qt() );
         d->checkAccelerators->strictMenuCheck = config->readBoolEntry( "StrictMenuCheck", false );
       }
     }

@@ -112,23 +112,19 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
         m_pCompObj->setCompletionMode( m_iCompletionMode );
 }
 
-bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
+bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
 {
     if ( m_delegate )
-        return m_delegate->setKeyBinding( item, key );
-        
-    
-    if( key >= 0 )
+        return m_delegate->setKeyBinding( item, cut );
+
+
+    if( !cut.isNull() )
     {
-        if( key > 0 )
-        {
-            for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
-                if( it.data() == key )  return false;
-        }
-        m_keyMap.replace( item, key );
-        return true;
+        for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
+            if( it.data() == cut )  return false;
     }
-    return false;
+    m_keyMap.replace( item, cut );
+    return true;
 }
 
 void KCompletionBase::useGlobalKeyBindings()

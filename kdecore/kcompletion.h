@@ -28,6 +28,7 @@
 #include <qguardedptr.h>
 
 #include <kglobalsettings.h>
+#include <kshortcut.h>
 
 class KCompTreeNode;
 class KCompletionPrivate;
@@ -557,7 +558,7 @@ public:
 
 
     // Map for the key binding types mentioned above.
-    typedef QMap<KeyBindingType, int> KeyBindingMap;
+    typedef QMap<KeyBindingType, KShortcut> KeyBindingMap;
 
     /**
      * Default constructor.
@@ -767,7 +768,7 @@ public:
      * @return  true if key-binding can successfully be set.
      * @see #getKeyBinding
      */
-    bool setKeyBinding( KeyBindingType /*item*/ , int key = 0 );
+    bool setKeyBinding( KeyBindingType /*item*/ , const KShortcut& cut );
 
     /**
      * Returns the key-binding used for the specified item.
@@ -780,7 +781,7 @@ public:
      * @return the key-binding used for the feature given by @p item.
      * @see #setKeyBinding
      */
-    int getKeyBinding( KeyBindingType item ) const {
+    const KShortcut& getKeyBinding( KeyBindingType item ) const {
         return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
     }
 

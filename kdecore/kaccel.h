@@ -1,15 +1,85 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef _KACCEL_H
 #define _KACCEL_H
 
 #include <qaccel.h>
-#include <kshortcuts.h>
+#include <kshortcut.h>
 #include <kstdaccel.h>
 
-class QPopupMenu;
+class QPopupMenu; // for obsolete insertItem() methods below
 class QWidget;
 class KAccelAction;
 class KAccelActions;
 class KConfig;
+
+/**
+ * Handle shortcuts.
+ *
+ * Allow a user to configure shortcuts
+ * through application configuration files or through the
+ * @ref KKeyChooser GUI.
+ *
+ * A @ref KAccel contains a list of @ref KAccelAction objects.
+ *
+ * For example, "Ctrl+P" could be a shortcut for printing a document. The key
+ * codes are listed in qkeycode.h. "Print" could be the action name for printing.
+ * The action name identifies the shortcut in configuration files and the
+ * @ref KKeyChooser GUI.
+ *
+ * A KAccel object handles key events sent to its parent widget and to all
+ * children of this parent widget.
+ * When a shortcut pressed, KAccel calls the slot to which it has been
+ * connected.
+ *
+ * Reconfiguration of a given shortcut can be prevented by specifying
+ * that an accelerator item is not configurable when it is inserted. A special
+ * group of non-configurable key bindings are known as the
+ * standard accelerators.
+ *
+ * The standard accelerators appear repeatedly in applications for
+ * standard document actions such as printing and saving. Convenience methods are
+ * available to insert and connect these accelerators which are configurable on
+ * a desktop-wide basis.
+ *
+ * It is possible for a user to choose to have no key associated with
+ * an action.
+ *
+ * The translated first argument for @ref insertItem() is used only
+ * in the configuration dialog.
+ *<pre>
+ * KAccel* pAccel = new KAccel( this );
+ *
+ * // Insert an action "Scroll Up" which is associated with the "Up" key:
+ * pAccel->insertAction( "Scroll Up", i18n("Scroll up"), QString::null,
+ *                       Qt::Key_Up, this, SLOT(slotScrollUp()) );
+ * // Insert an action "Scroll Down" which is not associated with any key:
+ * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
+ * pAccel->insertAction( KStdAccel::Print, this, SLOT(slotPrint()) );
+ *
+ * pAccel->readSettings();
+ *</pre>
+ *
+ * @short Configurable shortcut support.
+ * @version $Id$
+ */
 
 class KAccel : public QAccel
 {
@@ -18,8 +88,9 @@ class KAccel : public QAccel
 	KAccel( QWidget* pParent, const char* psName = 0 );
 	virtual ~KAccel();
 
-	class KAccelBase* basePtr();
+	//class KAccelBase* basePtr();
 	KAccelActions& actions();
+	const KAccelActions& actions() const;
 
 	bool isEnabled();
 	void setEnabled( bool bEnabled );
@@ -28,38 +99,88 @@ class KAccel : public QAccel
 	// return value of AutoUpdate flag before this call.
 	bool setAutoUpdate( bool bAuto );
 
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
-	                 const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
+	/**
+	 * Create an accelerator action.
+	 *
+	 * @param sAction The name of the action.
+	 * @param sDesc An i18n'ized short description of the action displayed when
+	 *  using @ref KKeyChooser to reconfigure the shortcuts.
+	 * @param sHelp An extended description of the action.
+	 * @param cutDef3 The default 3-modifier shortcut.
+	 * @param cutDef4 The default 4-modifier shortcut.
+	 * @param pObjSlot Pointer to the slot object.
+	 * @param psMethodSlot Pointer to the slot method.
+	 * @param bConfigurable Allow the user to change this shortcut if set to 'true'.
+	 * @param bEnabled The action will be activated by the shortcut if set to 'true'.
+	 */
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
-	                 const QString& cutsDef,
+	/**
+	 * Same as first insertAction(), but with 3- & 4- modifier shortcuts
+	 * both defined by @p cutDef.
+	 */
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const KShortcut& cutDef,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
-	                 KKeySequence cutsDef,
+	/**
+	 * Same as first insertAction(), but with 3- & 4- modifier shortcuts
+	 * passed as strings instead of KShortcut objects.
+	 */
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const char* cutDef3, const char* cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
+	                 bool bConfigurable = true, bool bEnabled = true );
+	/**
+	 * Same as above, but with 3- & 4- modifier shortcuts
+	 * both defined by @p cutDef.
+	 */
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const char* cutDef,
+	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	KAccelAction* insertAction( const char* psAction, const char* psShortcuts,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
 	                 bool bConfigurable = true, bool bEnabled = true );
+	/**
+	 * Similar to the first insertAction() method, but with the action
+	 * name, short description, help text, and default shortcuts all
+	 * set according to one of the standard accelerators.  @see KStdAccel.
+	 */
 	KAccelAction* insertAction( KStdAccel::StdAccel id,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
 	                 bool bConfigurable = true, bool bEnabled = true );
 
 	bool removeAction( const QString& sAction );
-	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
-	bool setActionEnabled( const QString& sAction, bool bEnabled );
-
 	bool updateConnections();
-	bool setShortcuts( const QString& sAction, const KShortcuts& );
 
+	/** Return the shortcut associated with the action named by @p sAction. */
+	const KShortcut& shortcut( const QString& sAction ) const;
+
+	/** Set the shortcut to be associated with the action named by @p sAction. */
+	bool setShortcut( const QString& sAction, const KShortcut& );
+	/** Set the slot to be called when the shortcut of the action named
+	  * by @p sAction is pressed. */
+	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+	/** Enable or disable the action named by @p sAction. */
+	bool setEnabled( const QString& sAction, bool bEnabled );
+
+	/**
+	 * Read all shortcuts from @p pConfig, or (if @p pConfig
+	 * is zero) from the application's configuration file
+	 * @ref KGlobal::config().
+	 *
+	 * The group in which the configuration is stored can be
+	 * set with @ref setConfigGroup().
+	 */
 	void readSettings( KConfig* pConfig = 0 );
+	/**
+	 * Write the current shortcuts to @p pConfig,
+	 * or (if @p pConfig is zero) to the application's
+	 * configuration file.
+	 */
 	void writeSettings( KConfig* pConfig = 0 ) const;
 	void setConfigGroup( const QString& );
 
@@ -68,6 +189,7 @@ class KAccel : public QAccel
  signals:
 	void keycodeChanged();
 
+#ifndef KDE_NO_COMPAT
  public:
 	// Source compatibility to KDE 2.x
 	bool insertItem( const QString& sDesc, const QString& sAction,
@@ -78,7 +200,6 @@ class KAccel : public QAccel
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
 	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
 	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
-	// OBSOLETE!
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insertAction( accel, pObjSlot, psMethodSlot ); }
 	bool removeItem( const QString& sAction );
@@ -88,7 +209,7 @@ class KAccel : public QAccel
 	static int stringToKey( const QString& );
 
 	/**
-	 * Obsolete.
+	 * @depricated.  Use shortcut().
 	 * Retrieve the key code of the accelerator item with the action name
 	 * @p action, or zero if either the action name cannot be
 	 * found or the current key is set to no key.
@@ -96,18 +217,16 @@ class KAccel : public QAccel
 	int currentKey( const QString& action ) const;
 
 	/**
-	 * Obsolete.
+	 * @depricated.  Use actions().actionPtr().
 	 * Return the name of the accelerator item with the keycode @p key,
 	 * or @ref QString::null if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
-
-	// This is temporary until Friday, when I'll make QAccel
-	//  a parent class of KAccel.  Where did I put this? -- ellis
-	QAccel* qaccelPtr();
+#endif // !KDE_NO_COMPAT
 
  private:
 	class KAccelPrivate* d;
+	friend class KAccelPrivate;
 };
 
 #endif // _KACCEL_H

@@ -32,46 +32,47 @@ void KGlobalAccel::clearActions()
 KAccelActions& KGlobalAccel::actions()
 	{ return d->actions(); }
 
-bool KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
+const KAccelActions& KGlobalAccel::actions() const
+	{ return d->actions(); }
+
+KAccelAction* KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+		const KShortcut& cutDef3, const KShortcut& cutDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
 	return d->insertAction( sAction, sDesc, sHelp,
-		cutsDef3, cutsDef4,
+		cutDef3, cutDef4,
 		pObjSlot, psMethodSlot,
-		0, bConfigurable, bEnabled );
+		bConfigurable, bEnabled );
 }
 
-bool KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const char* cutsDef3, const char* cutsDef4,
+KAccelAction* KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+		const char* cutDef3, const char* cutDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
 	return d->insertAction( sAction, sDesc, sHelp,
-		KAccelShortcuts(cutsDef3), KAccelShortcuts(cutsDef4),
+		KShortcut(cutDef3), KShortcut(cutDef4),
 		pObjSlot, psMethodSlot,
-		0, bConfigurable, bEnabled );
+		bConfigurable, bEnabled );
 }
-
-/*bool KGlobalAccel::insertAction( const QString& sAction, KShortcuts cutsDef,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu*, bool bConfigurable )
-{
-	return d->insertAction( sAction, i18n(sAction.latin1()),
-		cutsDef, cutsDef,
-		pObjSlot, psMethodSlot,
-		nIDMenu, bConfigurable );
-}*/
 
 bool KGlobalAccel::insertLabel( const QString& sName, const QString& sDesc )
 	{ return d->insertLabel( sName, sDesc ); }
-bool KGlobalAccel::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
-	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 bool KGlobalAccel::updateConnections()
 	{ return d->updateConnections(); }
-bool KGlobalAccel::setShortcuts( const QString& sAction, const KShortcuts& cuts )
-	{ return d->setShortcuts( sAction, cuts ); }
+
+const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
+{
+	const KAccelAction* pAction = actions().actionPtr( sAction );
+	return (pAction) ? pAction->shortcut() : KShortcut::null();
+}
+
+bool KGlobalAccel::setShortcut( const QString& sAction, const KShortcut& cut )
+	{ return d->setShortcut( sAction, cut ); }
+bool KGlobalAccel::setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
+
 void KGlobalAccel::readSettings( KConfig* pConfig )
 	{ d->readSettings( pConfig ); }
 void KGlobalAccel::writeSettings( KConfig* pConfig ) const

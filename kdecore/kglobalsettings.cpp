@@ -131,17 +131,13 @@ bool KGlobalSettings::showContextMenusOnPress ()
     return cgs.config()->readBoolEntry("ShowOnPress", true);
 }
 
-// FIXME: should probably return KKeySequences.
 int KGlobalSettings::contextMenuKey ()
 {
     KConfig *c = KGlobal::config();
-    KConfigGroupSaver cgs (c, "Keys");
+    KConfigGroupSaver cgs (c, "Shortcuts");
 
-    KKeySequences keys (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
-    if( keys.size() > 0 )
-    	return keys[0].keyQt();
-    else
-        return 0;
+    KShortcut cut (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
+    return cut.keyPrimaryQt();
 }
 
 bool KGlobalSettings::honorGnome()

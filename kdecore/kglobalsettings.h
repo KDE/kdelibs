@@ -284,7 +284,7 @@ private:
     static QFont *_generalFont;
     static QFont *_fixedFont;
     static QFont *_toolBarFont;
-    static QFont *_menuFont; 
+    static QFont *_menuFont;
     static QFont *_windowTitleFont;
     static QFont *_taskbarFont;
     static QColor * kde2Gray;

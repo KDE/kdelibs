@@ -15,18 +15,20 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	virtual void setEnabled( bool );
 
 	virtual bool emitSignal( Signal );
-	virtual bool connectKey( KAccelAction&, KKeySequence );
-	virtual bool disconnectKey( KAccelAction&, KKeySequence );
+	virtual bool connectKey( KAccelAction&, const KKey& );
+	virtual bool connectKey( const KKey& );
+	virtual bool disconnectKey( KAccelAction&, const KKey& );
+	virtual bool disconnectKey( const KKey& );
 
  signals:
 	void activated();
 	void activated( int );
-	void activated( const QString& sAction, const QString& sDesc, int keyCode );
+	void activated( const QString& sAction, const QString& sDesc, const KKeySequence& seq );
 
  protected:
  	static bool gm_bKeyEventsEnabled;
 
-	bool grabKey( KKeySequence, bool );
+	bool grabKey( const KKey&, bool );
 
 	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
@@ -38,6 +40,10 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	virtual bool x11Event( XEvent* );
 	void x11MappingNotify();
 	bool x11KeyPress( const XEvent *pEvent );
+	void activate( KAccelAction* pAction, const KKeySequence& seq );
+
+ protected slots:
+	void slotActivated( int iAction );
 };
 
 #endif // _KGLOBALACCEL_X11_H

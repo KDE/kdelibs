@@ -1,11 +1,31 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
 #include <qobject.h>
-#include <kshortcuts.h>
+#include <kshortcut.h>
 
 class QPopupMenu;
 class QWidget;
+class KAccelAction;
 class KAccelActions;
 class KConfig;
 
@@ -19,19 +39,24 @@ class KGlobalAccel : public QObject
 	void clearActions();
 
 	KAccelActions& actions();
-	bool insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-	                 const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
+	const KAccelActions& actions() const;
+
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	bool insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-	                 const char* cutsDef3, const char* cutsDef4,
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	                 const char* cutDef3, const char* cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	bool insertLabel( const QString& sName, const QString& sDesc );
-	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	bool updateConnections();
-	bool setShortcuts( const QString& sAction, const KShortcuts& );
+
+	const KShortcut& shortcut( const QString& sAction ) const;
+
+	bool setShortcut( const QString& sAction, const KShortcut& );
+	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	void readSettings( KConfig* pConfig = 0 );
 	void writeSettings( KConfig* pConfig = 0 ) const;

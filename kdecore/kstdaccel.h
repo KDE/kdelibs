@@ -20,8 +20,7 @@
 #define KSTDACCEL_H
 
 #include <qstring.h>
-#include <kkeysequence.h>
-#include <kshortcuts.h>
+#include <kshortcut.h>
 
 class QKeyEvent;
 
@@ -34,11 +33,8 @@ class QKeyEvent;
  * If you want real configurable keybindings in your applications,
  * please checkout the class @ref KAccel in kaccel.h
  */
-class KStdAccel
+namespace KStdAccel
 {
-public:
-  KStdAccel() {}
-
   // Always add new std-accels to the end of this enum, never in the middle!
   enum StdAccel {
     // File menu
@@ -50,140 +46,173 @@ public:
     Home, End, Prior, Next, GotoLine, AddBookmark, ZoomIn, ZoomOut,
     Up, Back, Forward, Reload, PopupMenuContext, ShowMenubar,
     // Help menu
-    Help, WhatThis,
+    Help, WhatsThis,
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
     RotateUp, RotateDown,
     NB_STD_ACCELS
+#ifndef KDE_NO_COMPAT
+    , WhatThis = WhatsThis
+#endif
   };
 
+  /** Returns the keybinding for @p accel. */
+  const KShortcut& shortcut(StdAccel id);
+
+  /** Returns a unique name for the given @p accel. */
+  QString name(StdAccel id);
+
+  /** Returns a localized description of @p accel. */
+  QString desc(StdAccel id);
+
+  /**
+   * @internal
+   * Returns the hardcoded default keybinding for @p accel.
+   * This does not take into account the user's configuration.
+   */
+  KShortcut shortcutDefault(StdAccel id);
+  KShortcut shortcutDefault3(StdAccel id);
+  KShortcut shortcutDefault4(StdAccel id);
+
   /** Open file. Default: Ctrl-o */
-  static uint open();
+  const KShortcut& open();
 
   /** Create a new document (or whatever). Default: Ctrl-n */
-  static uint openNew();
+  const KShortcut& openNew();
 
   /** Close current document. Default: Ctrl-w */
-  static uint close();
+  const KShortcut& close();
 
   /** Save current document. Default: Ctrl-s */
-  static uint save();
+  const KShortcut& save();
 
   /** Print current document. Default: Ctrl-p */
-  static uint print();
+  const KShortcut& print();
 
   /** Quit the program. Default: Ctrl-q */
-  static uint quit();
-
-  /** Cut selected area and store it in the clipboard. Default: Ctrl-x */
-  static uint cut();
-
-  /** Copy selected area into the clipboard. Default: Ctrl-c */
-  static uint copy();
-
-  /** Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v */
-  static uint paste();
-
-  /** Delete a word back from mouse/cursor position. Default: Ctrl-Backspace */
-  static uint deleteWordBack();
-
-  /** Delete a word forward from mouse/cursor position. Default: Ctrl-Delete */
-  static uint deleteWordForward();
+  const KShortcut& quit();
 
   /** Undo last operation. Default: Ctrl-z */
-  static uint undo();
+  const KShortcut& undo();
 
   /** Redo. Default: Shift-Ctrl-z */
-  static uint redo();
+  const KShortcut& redo();
+
+  /** Cut selected area and store it in the clipboard. Default: Ctrl-x */
+  const KShortcut& cut();
+
+  /** Copy selected area into the clipboard. Default: Ctrl-c */
+  const KShortcut& copy();
+
+  /** Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v */
+  const KShortcut& paste();
+
+  /** Reload. Default: Ctrl-A **/
+  const KShortcut& selectAll();
+
+  /** Delete a word back from mouse/cursor position. Default: Ctrl-Backspace */
+  const KShortcut& deleteWordBack();
+
+  /** Delete a word forward from mouse/cursor position. Default: Ctrl-Delete */
+  const KShortcut& deleteWordForward();
 
   /** Find, search. Default: Ctrl-f */
-  static uint find();
+  const KShortcut& find();
 
   /** Find/search next. Default: F3 */
-  static uint findNext();
+  const KShortcut& findNext();
 
   /** Find/search previous. Default: Shift-F3 */
-  static uint findPrev();
+  const KShortcut& findPrev();
 
   /** Find and replace matches. Default: Ctrl-r */
-  static uint replace();
+  const KShortcut& replace();
 
   /** Zoom in. Default: Ctrl-Plus */
-  static uint zoomIn();
+  const KShortcut& zoomIn();
 
   /** Zoom out. Default: Ctrl-Minus */
-  static uint zoomOut();
+  const KShortcut& zoomOut();
 
   /** Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert */
-  static uint insert();
+  const KShortcut& insert();
 
   /** Goto beginning of current line. Default: Home */
-  static uint home();
+  const KShortcut& home();
 
   /** Goto end of current line. Default: End */
-  static uint end();
+  const KShortcut& end();
 
   /** Scroll up one page. Default: Prior */
-  static uint prior();
+  const KShortcut& prior();
 
   /** Scroll down one page. Default: Next */
-  static uint next();
+  const KShortcut& next();
 
   /** Go to line. Default: Ctrl+G */
-  static uint gotoLine();
+  const KShortcut& gotoLine();
 
   /** Add current page to bookmarks. Default: Ctrl+B */
-  static uint addBookmark();
+  const KShortcut& addBookmark();
 
   /** Help the user in the current situation. Default: F1 */
-  static uint help();
+  const KShortcut& help();
 
   /** Complete text in input widgets. Default Ctrl+E **/
-  static uint completion();
+  const KShortcut& completion();
 
   /** Iterate through a list when completion returns
       mutiple items. Default: Ctrl+Up **/
-  static uint prevCompletion();
+  const KShortcut& prevCompletion();
 
   /** Iterate through a list when completion returns
       mutiple items. Default: Ctrl+Down **/
-  static uint nextCompletion();
+  const KShortcut& nextCompletion();
 
-  /** Find a string within another string or list of strings. 
+  /** Find a string within another string or list of strings.
       Default: Ctrl-T */
-  static uint substringCompletion();
+  const KShortcut& substringCompletion();
 
   /** Help users iterate through a list of entries. Default: Up **/
-  static uint rotateUp();
+  const KShortcut& rotateUp();
 
   /** Help users iterate through a list of entries. Default: Down **/
-  static uint rotateDown();
+  const KShortcut& rotateDown();
 
   /** popup a context menu. Default: Menu **/
-  static uint popupMenuContext();
+  const KShortcut& popupMenuContext();
 
   /** What's This button. Default: Shift+F1 **/
-  static uint whatsThis();
+  const KShortcut& whatsThis();
 
   /** Reload. Default: F5 **/
-  static uint reload();
-
-  /** Reload. Default: Ctrl-A **/
-  static uint selectAll();
+  const KShortcut& reload();
 
   /** Up. Default: Alt+Up **/
-  static uint up();
+  const KShortcut& up();
 
   /** Back. Default: Alt+Left **/
-  static uint back();
+  const KShortcut& back();
 
   /** Forward. Default: ALT+Right **/
-  static uint forward();
+  const KShortcut& forward();
 
   /** Show Menu Bar.  Default: Ctrl-M **/
-  static uint showMenubar();
+  const KShortcut& showMenubar();
+
+#ifndef KDE_NO_COMPAT
+  /** Obsolete.  Use name().  Returns a string representation for @p accel. */
+  QString action(StdAccel id);
+  /** Obsolete.  Use desc().  Returns a localized description of @p accel. */
+  QString description(StdAccel id);
+  /** Obsolete.  Use shortcut().  Returns the keybinding for @p accel. */
+  int key(StdAccel);
+  /** Obsolete.  Use shortcutDefault(). */
+  int defaultKey(StdAccel accel);
 
   /**
+   * @depricated.  Use KKey(const QKeyEvent*) == KKey(int).
+   *
    * Compare the keys generated by the key event with
    * the value of the integer.
    *
@@ -191,42 +220,14 @@ public:
    * @ref QKeyEvent, its sum with the actual key value
    * is used for comparing it with the integer parameter.
    *
-   * @param ev the key event to be used in the comparison.
-   * @param key the int value to be compared to the key event.
+   * @param pEvent the key event to be used in the comparison.
+   * @param keyQt the int value to be compared to the key event.
    *
    * @return true if the int value matches the integer representation of the @ref QKeyEvent
    */
-  static bool isEqual(QKeyEvent* /*ev*/, int /*key*/);
+  bool isEqual(const QKeyEvent* pEvent, int keyQt);
+#endif // !KDE_NO_COMPAT
 
-  /**
-   * Returns the keybinding for @p accel.
-   */
-  // TODO: Replace all calls to key() with shortcuts() and remove key();
-  static uint key(StdAccel accel);
-  static KShortcuts shorcuts(StdAccel accel);
-  /**
-   * Returns a string representation for @p accel.
-   */
-  static QString action(StdAccel accel);
-  /**
-   * Returns a localized description of @p accel.
-   */
-  static QString description(StdAccel);
-
-  /**
-   * @internal
-   * Returns the hardcoded default keybinding for @p accel.
-   * This does not take into account the user's configuration.
-   */
-  // Remove these three: they should be replaced by
-  //  defaultShortcuts.
-  static KKeySequence defaultKey(StdAccel accel);
-  static KKeySequence defaultKey3(StdAccel accel);
-  static KKeySequence defaultKey4(StdAccel accel);
-
-  static KShortcuts defaultShortcuts(StdAccel accel);
-  static KShortcuts defaultShortcuts3(StdAccel accel);
-  static KShortcuts defaultShortcuts4(StdAccel accel);
 };
 
 #endif

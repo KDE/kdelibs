@@ -4,12 +4,13 @@
 #include "kglobalaccel_x11.h"
 #include "kglobalaccel.h"
 
+#include <qpopupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kkeysequence.h>
 #include <kkey_x11.h>
+#include <kshortcut.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -90,6 +91,7 @@ bool KGlobalAccel::areKeyEventsEnabled()
 bool KGlobalAccelPrivate::gm_bKeyEventsEnabled = true;
 
 KGlobalAccelPrivate::KGlobalAccelPrivate()
+: KAccelBase( KAccelBase::NATIVE_KEYS )
 {
 	m_sConfigGroup = "Global Shortcuts";
 	kapp->installX11EventFilter( this );
@@ -106,37 +108,49 @@ bool KGlobalAccelPrivate::emitSignal( Signal )
 	return false;
 }
 
-bool KGlobalAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
+bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKey& spec )
 {
-	kdDebug(125) << "KGlobalAccel::connectKey( " << action.m_sName << ", " << key.toString() << " )" << endl;
-	return grabKey( key, true );
+	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << spec.toString() << " )" << endl;
+	return grabKey( spec, true );
 }
 
-bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, KKeySequence key )
+bool KGlobalAccelPrivate::connectKey( const KKey& spec )
 {
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.m_sName << ", " << endl;
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.m_sName << ", " << key.toString() << " )" << endl;
-	return grabKey( key, false );
+	kdDebug(125) << "KGlobalAccel::connectKey( " << spec.toString() << " )" << endl;
+	return grabKey( spec, true );
 }
 
-bool KGlobalAccelPrivate::grabKey( KKeySequence key, bool bGrab )
+bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKey& spec )
 {
-	if( key.m_keyMod == -1 || !key.m_keyCode )
+	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << spec.toString() << " )" << endl;
+	return grabKey( spec, false );
+}
+
+bool KGlobalAccelPrivate::disconnectKey( const KKey& spec )
+{
+	kdDebug(125) << "KGlobalAccel::disconnectKey( " << spec.toString() << " )" << endl;
+	return grabKey( spec, false );
+}
+
+bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab )
+{
+	KKeyNative key( spec );
+	if( !key.code() )
 		return false;
 
 	// Make sure that grab masks have been initialized.
 	if( g_keyModMaskXOnOrOff == 0 )
 		calculateGrabMasks();
 
-	uchar keyCodeX = key.m_keyCode;
-	uint keyModX = key.m_keyMod;
+	uchar keyCodeX = key.code();
+	uint keyModX = key.mod();
 
 	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
 
 #ifndef __osf__
 // this crashes under Tru64 so .....
-	kdDebug(125) << QString( "grabKey( key: 0x%1, bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
-		.arg( key.m_keyCombQt, 0, 16 ).arg( bGrab )
+	kdDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
+		.arg( spec.toString() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
 
@@ -211,61 +225,78 @@ void KGlobalAccelPrivate::x11MappingNotify()
 
 bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
-	// What's QWidget::keyboardGrabber() here for? -- ellis
 	// Will this cause a locking up of the keyboard if
 	//  gm_bKeyEventsEnabled == true?  Should we ungrab keyboard before
 	//  returning?
-	if( !gm_bKeyEventsEnabled ) //|| QWidget::keyboardGrabber() )
+	if( !gm_bKeyEventsEnabled || QWidget::keyboardGrabber() )
 		return false;
 
 	XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
 
 	// TODO: Don't do conversion -- search in m_mapKeyToAction directly.
-	KKeySequence key = KKeyX11::keyEventXToKey( pEvent );
-	key.m_keyMod &= g_keyModMaskXAccel;
-	uint keySymX = key.m_keySym;
-	uint keyModX = key.m_keyMod;
+	KKeyNative key( pEvent );
+	uint keySymX = key.sym();
+	uint keyModX = key.mod() & g_keyModMaskXAccel;
+	KKey spec = key;
 
-	kdDebug(125) << "x11KeyPress: seek " << key.toString()
+	kdDebug(125) << "x11KeyPress: seek " << spec.toString()
 		<< QString( " keyCodeX: %1 state: %2 keySym: %3 keyMod: %4\n" )
 			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 ).arg( keySymX, 0, 16 ).arg( keyModX, 0, 16 );
 	if( keySymX == 0 )
 		return false;
 
 	// Search for which accelerator activated this event:
-	if( !m_mapKeyToAction.contains( key ) )
+	if( !m_mapKeyToAction.contains( spec ) )
 		return false;
-	KAccelAction* pAction = m_mapKeyToAction[key];
+	KAccelAction* pAction = m_mapKeyToAction[spec].pAction;
 
-	kdDebug(125) << "received action " << pAction->m_sName << endl;
-	if( !pAction->m_pObjSlot || !pAction->m_bEnabled ) {
+	if( !pAction ) {
+		KKeySequence seq( spec );
+		QPopupMenu* pMenu = createPopupMenu( 0, seq );
+		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
+		pMenu->exec();
+	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed(" << KKeyX11::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
-	} else {
-		QRegExp rexPassIndex( "([ ]*int[ ]*)" );
-		QRegExp rexPassInfo( " QString" );
-		QRegExp rexIndex( " ([0-9]+)$" );
-		// If the slot to be called accepts an integer index
-		//  and an index is present at the end of the action's name,
-		//  then send the slot the given index #.
-		if( rexPassIndex.search( pAction->m_psMethodSlot ) >= 0 && rexIndex.search( pAction->m_sName ) >= 0 ) {
-			int n = rexIndex.cap(1).toInt();
-			kdDebug(125) << "Calling " << pAction->m_psMethodSlot << " int = " << n << endl;
-			connect( this, SIGNAL(activated(int)), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-			emit activated( n );
-			disconnect( this, SIGNAL(activated(int)), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-		} else if( rexPassInfo.search( pAction->m_psMethodSlot ) ) {
-			connect( this, SIGNAL(activated(const QString&, const QString&, int)), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-			emit activated( pAction->m_sName, pAction->m_sDesc, key.keyQt() );
-			disconnect( this, SIGNAL(activated(const QString&, const QString&, int)), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-		} else {
-			connect( this, SIGNAL(activated()), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-			emit activated();
-			disconnect( this, SIGNAL(activated()), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-		}
-	}
+	} else
+		activate( pAction, KKeySequence(spec) );
 
 	return true;
+}
+
+void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& seq )
+{
+	kdDebug(125) << "KGlobalAccelPrivate::activate( \"" << pAction->name() << "\" ) " << endl;
+
+	QRegExp rexPassIndex( "([ ]*int[ ]*)" );
+	QRegExp rexPassInfo( " QString" );
+	QRegExp rexIndex( " ([0-9]+)$" );
+
+	// If the slot to be called accepts an integer index
+	//  and an index is present at the end of the action's name,
+	//  then send the slot the given index #.
+	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
+		int n = rexIndex.cap(1).toInt();
+		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
+		connect( this, SIGNAL(activated(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+		emit activated( n );
+		disconnect( this, SIGNAL(activated(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
+		connect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+		emit activated( pAction->name(), pAction->desc(), seq );
+		disconnect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+	} else {
+		connect( this, SIGNAL(activated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+		emit activated();
+		disconnect( this, SIGNAL(activated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+	}
+}
+
+void KGlobalAccelPrivate::slotActivated( int iAction )
+{
+	KAccelAction* pAction = actions().actionPtr( iAction );
+	if( pAction )
+		activate( pAction, KKeySequence() );
 }
 
 #include "kglobalaccel_x11.moc"

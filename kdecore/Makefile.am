@@ -32,8 +32,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h \
-	kkeysequence.h kkey_x11.h kaccelbase.h kshortcuts.h \
-	kaccel.h kglobalaccel.h kstdaccel.h kcatalogue.h \
+	kshortcut.h kaccelaction.h kaccel.h kglobalaccel.h kstdaccel.h \
+	kcatalogue.h \
 	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kde_dmalloc.h kallocator.h kcrash.h krfcdate.h \
@@ -44,28 +44,30 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kextsock.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
 	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h 
+	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 4:0
 
-noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
-	ksycocafactory.h ksycocadict.h kextsocklookup.h
+noinst_HEADERS = kaccelbase.h kaccelprivate.h kckey.h kcompletion_private.h \
+	kextsocklookup.h kglobalaccel_x11.h kkey_x11.h kkeysequence.h \
+	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
+libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
 	kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kckey.cpp kkeysequence.cpp kkey_x11.cpp kkeysequence_emb.cpp \
-	kaccelbase.cpp kaccel.cpp kglobalaccel.cpp kglobalaccel_x11.cpp \
-	kstdaccel.cpp \
+	kckey.cpp kshortcut.cpp kkey_x11.cpp kkeynative_x11.cpp \
+	kkeysequence.cpp kkeysequence_emb.cpp \
+	kaccelaction.cpp kaccelbase.cpp kaccel.cpp kglobalaccel.cpp \
+	kglobalaccel_x11.cpp kstdaccel.cpp \
 	kcrash.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kuniqueapplication.cpp \
+	kapplication.cpp kuniqueapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
