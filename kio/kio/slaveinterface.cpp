@@ -107,6 +107,8 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
           {
              if (a.m_uds == KIO::UDS_SIZE)
              {
+                if (a.m_long < 0)
+                   a.m_long += (long long) 1 << 32;
                 a.m_long += msb << 32;
              }
              e.append(a);
