@@ -55,6 +55,9 @@
 * @version $Id$
 * @short A class for URL processing.
 */
+
+struct KURL_intern;
+
 class KURL
 { 
 public:
@@ -69,9 +72,14 @@ public:
      *
      * A KURL object is always constructed, but if you plan to use it, 
      * you should check it with isMalformed().
+     *
+     * if the parameter is an absolute filename, it adds a file: prefix 
+     * and encodes the path.
      */
     KURL( const char* _url);
-    
+
+    ~KURL();
+
     /** 
      * Construct a KURL object from its components. 
      */
@@ -125,14 +133,13 @@ public:
     /** 
      * The function returns the protocolname up to, but not including the ":".
      */
-    char* protocol() const { if (protocol_part.isNull()) return ""; 
-    else return protocol_part.data(); }
+    const char* protocol() const;
     
     /** 
      * This function returns the host. If there is no host (i.e.
      * the URL refers to a local file) this function returns "".
      */
-    char* host() const;
+    const char* host() const;
     
     /** 
      * This function returns the path-part of the URL.
@@ -140,7 +147,7 @@ public:
      * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
      * returns "/bar/stuff.tar.gz".
      */
-    char* path() const;
+    const char* path() const;
     
     /**
      * If we parse for example ftp://weis@localhost then we dont have a path.
@@ -166,7 +173,7 @@ public:
      * would return "" since there is no reference. The stuff behind
      * the '#' is a subprotocol!
      */
-    char* reference() const;
+    const char* reference() const;
     
     /**
      * This function returns the user name or an empty string if
@@ -251,7 +258,7 @@ public:
      * Sets the protocol to newProto. Useful for example if an app hits
      * "file:/tmp/interesting.zip", then it might do setProtocol( "zip").
      */ 
-    void setProtocol( const char* newProto) { protocol_part = newProto; }
+    void setProtocol( const char* newProto) ;
     
     /**
      * Set the password.
@@ -334,20 +341,14 @@ protected:
      * @see #hasPath
      */
     bool bNoPath;
-    
-    QString protocol_part;
-    QString host_part;
-    QString path_part;
-    QString ref_part;
-    // This variable is only valid after calling 'directory'.
-    QString dir_part;
-    QString user_part;
-    QString passwd_part;
-    int port_number;
+    int port_number; 
+    KURL_intern *data;
     
 private:
-  void detach();
+    void detach();
 };
+
+
 
 #endif
 
