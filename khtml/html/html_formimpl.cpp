@@ -716,6 +716,12 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+void HTMLButtonElementImpl::attach()
+{
+    // skip the generic handler
+    HTMLElementImpl::attach();
+}
+
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT)) {

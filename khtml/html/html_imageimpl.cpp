@@ -198,16 +198,17 @@ void HTMLImageElementImpl::attach()
 {
     assert(!attached());
     assert(!m_render);
-    assert(parentNode() && parentNode()->renderer());
+    assert(parentNode());
 
-    m_render = new RenderImage(this);
-    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
+    if (parentNode()->renderer()) {
+        m_render = new RenderImage(this);
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+        static_cast<RenderImage*>(m_render)->setAlt(altText());
+        static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
+    }
 
     NodeBaseImpl::attach();
-
-    static_cast<RenderImage*>(m_render)->setAlt(altText());
-    static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
 }
 
 void HTMLImageElementImpl::recalcStyle( StyleChange ch )

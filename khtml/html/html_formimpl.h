@@ -181,7 +181,7 @@ public:
     virtual Id id() const;
 
     DOMString type() const;
-
+    virtual void attach();
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);

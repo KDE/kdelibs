@@ -208,16 +208,18 @@ void HTMLEmbedElementImpl::attach()
     assert(!attached());
     assert(!m_render);
 
-    KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled()) {
-        if (parentNode()->id() != ID_OBJECT)
-            m_render = new RenderPartObject(this);
-    }
+    if (parentNode()->renderer()) {
+        KHTMLView* w = getDocument()->view();
+        if (w->part()->pluginsEnabled()) {
+            if (parentNode()->id() != ID_OBJECT)
+                m_render = new RenderPartObject(this);
+        }
 
-    if (m_render) {
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-        static_cast<RenderPartObject*>(m_render)->updateWidget();
+        if (m_render) {
+            m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+            parentNode()->renderer()->addChild(m_render, nextRenderer());
+            static_cast<RenderPartObject*>(m_render)->updateWidget();
+        }
     }
 
     NodeBaseImpl::attach();
@@ -297,7 +299,7 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled()) {
+    if (w->part()->pluginsEnabled() && parentNode()->renderer()) {
         needWidgetUpdate = false;
         m_render = new RenderPartObject(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));

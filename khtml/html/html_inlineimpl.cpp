@@ -229,11 +229,12 @@ void HTMLBRElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
-    assert(parentNode()->renderer());
 
-    m_render = new RenderBR(this);
-    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
+    if (parentNode()->renderer()) {
+        m_render = new RenderBR(this);
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
 }
 
 // -------------------------------------------------------------------------
