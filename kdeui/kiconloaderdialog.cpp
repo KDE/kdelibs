@@ -102,7 +102,7 @@ void KIconLoaderCanvas::process()
   for( int i = 0; i < 10 && current != file_list.end(); i++, curr_indx++ )
     {
       new_xpm = new KPixmap;
-      new_xpm->load( /*dir_name + '/' + */ *current, 0, KPixmap::LowColor );
+      new_xpm->load( dir_name + '/' + *current, 0, KPixmap::LowColor );
       if( new_xpm->isNull() )
         {
           delete new_xpm;
@@ -127,10 +127,7 @@ void KIconLoaderCanvas::process()
        max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
        max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
 
-       QString name = *current;
-       name.remove(0,dir_name.length() + 1);
-       
-       name_list.append( name );
+       name_list.append( *current );
        pixmap_list.append(new_xpm);
        ++current;
     }
@@ -140,7 +137,7 @@ void KIconLoaderCanvas::process()
       QApplication::restoreOverrideCursor();
       file_list.clear();
     }
-  else 
+  else
       timer->start( 0, true );
 
   // progressive display is nicer if these don't change too often

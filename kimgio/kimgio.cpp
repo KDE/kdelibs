@@ -63,7 +63,7 @@ void kimgioRegister(void)
 	    if (libname.isNull())
 		break;
 
-	    libname = /*dir.path() + "/" +*/ libname;
+	    libname = dir.path() + "/" + libname;
 	    lt_dlhandle libhandle = lt_dlopen(libname.ascii());
 	    if (libhandle == 0) {
 		warning("couldn't dlopen %s (%s)",
