@@ -5,45 +5,52 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 void usage()
 {
-    fprintf( stderr, "dcopidl2cpp [ --no-skel | --no-stub ] file\n" );
+    fprintf( stderr, "dcopidl2cpp [ --no-skel | --no-stub ] [--c++-suffix <suffix>] file\n" );
 }
 
 int main( int argc, char** argv )
 {
-    if ( argc < 2 || argc > 3 )
-    {
-	usage();
-	exit(1);
-    }
-
     int argpos = 1;
     bool generate_skel = TRUE;
     bool generate_stub = TRUE;
 
-    if ( strcmp( argv[argpos], "--no-skel" ) == 0 )
-    {
-	generate_skel = FALSE;
-	if ( argc != 3 )
-        {
-	    usage();
-	    exit(1);
-	}
-	argpos++;
-    }
-    else if ( strcmp( argv[argpos], "--no-stub" ) == 0 )
-    {
-	generate_stub = FALSE;
-	if ( argc != 3 )
-        {
-	    usage();
-	    exit(1);
-	}
-	argpos++;
-    }
+    QString suffix = "cpp";
 
+    while (argc > 2) {
+
+	if ( strcmp( argv[argpos], "--no-skel" ) == 0 )
+	{
+	    generate_skel = FALSE;
+	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
+	    argc--;
+	}
+	else if ( strcmp( argv[argpos], "--no-stub" ) == 0 )
+	{
+	    generate_stub = FALSE;
+	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
+	    argc--;
+	} 
+	else if ( strcmp( argv[argpos], "--c++-suffix" ) == 0)
+	{
+	    if (argc - 1 < argpos) {
+		usage();
+		exit(1);
+	    }
+	    suffix = argv[argpos+1];
+	    for (int i = argpos; i < argc - 2; i++) argv[i] = argv[i+2];
+	    argc -= 2;
+	} else {
+	    usage();
+	    exit(1);
+
+	}
+
+    }
+	
     QFile in( argv[argpos] );
     if ( !in.open( IO_ReadOnly ) )
     {
@@ -65,11 +72,11 @@ int main( int argc, char** argv )
     /**
      * Write the skeleton
      */
-    QFile skel( basename + "_skel.cpp" );
+    QFile skel( basename + "_skel." + suffix );
     bool b = skel.open( IO_WriteOnly );
     if ( !b )
     {
-	qDebug("Could not write to %s", ( basename + "_skel.cpp" ).latin1() );
+	qDebug("Could not write to %s", ( basename + "_skel." + suffix).latin1() );
 	exit(1);
     }
 
@@ -200,7 +207,7 @@ int main( int argc, char** argv )
     bool b = stub.open( IO_WriteOnly );
     if ( !b )
     {
-	qDebug("Could not write to %s", ( basename + "_stub.cpp" ).latin1() );
+	qDebug("Could not write to %s", ( basename + "_stub." + suffix ).latin1() );
 	exit(1);
     }
 
@@ -326,11 +333,11 @@ int main( int argc, char** argv )
     /**
      * Write the stub implementation
      */
-    QFile s2( basename + "_stub.cpp" );
+    QFile s2( basename + "_stub." + suffix );
     b = s2.open( IO_WriteOnly );
     if ( !b )
     {
-	qDebug("Could not write to %s", ( basename + "_stub.cpp" ).latin1() );
+	qDebug("Could not write to %s", ( basename + "_stub." + suffix).latin1() );
 	exit(1);
     }
 
