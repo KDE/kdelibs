@@ -1267,17 +1267,38 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 }
 
 
-void KApplication::invokeMailer(const QString &address,const QString &subject )
+void KApplication::invokeMailer(const QString &address, const QString &subject)
 {
-   KURL url;
-   url.setProtocol("mailto");
-   url.setPath(address);
-   if (!subject.isEmpty())
-      url.setQuery("?subject="+KURL::encode_string(subject));
+   KConfig config("emaildefaults");
+   config.setGroup("ClientInfo");
+   QString command = config.readEntry("EmailClient", "kmail -s %s %t");
+
+   // TODO: Take care of the preferred terminal app (instead of hardcoding
+   // Konsole), this will probably require a rewrite of the configurable
+   // terminal client option because the placeholder for the program which
+   // has to be executed by the terminal has to be supplied (e.g. something
+   // like '/opt/kde2/bin/konsole -e %p'). - Frerich
+   if (config.readBoolEntry("TerminalClient", false))
+      command = "konsole -e " + command;
+
+   // WARNING: This will only work as long as the path of the
+   // email client doesn't contain spaces (this is currently
+   // impossible due to an evil hack in kcmemail but should
+   // be changed after KDE 2.0!). - Frerich
+   QStringList cmdTokens = QStringList::split(' ', command.simplifyWhiteSpace());
+   QString cmd = cmdTokens[0];
+   cmdTokens.remove(cmdTokens.begin());
+
+   for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); ++it)
+     if ((*it).find("%t") >= 0)
+       (*it).replace(QRegExp("%t"), address);
+     else
+     if ((*it).find("%s") >= 0)
+       (*it).replace(QRegExp("%s"), subject);
 
    QString error;
-   QString mailClient( "kmail");
-   if (startServiceByDesktopName(mailClient, url.url(), &error))
+
+   if (kdeinitExec(cmd, cmdTokens, &error))
    {
       qWarning("Could not launch mail client:\n%s\n", error.local8Bit().data());
       return;
