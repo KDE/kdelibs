@@ -490,20 +490,14 @@ void KBookmarkMenu::slotAddBookmark()
   } 
   else 
   {
-    BookmarkEditDialog *dlg = new BookmarkEditDialog( title, url, m_pManager );
-    int ret = dlg->exec();
-
-    if (ret != KDialogBase::Accepted) 
-    {
-      delete dlg;
+    BookmarkEditDialog dlg( title, url, m_pManager );
+    if ( dlg.exec() != KDialogBase::Accepted )
       return;
-    }
 
-    parentBookmark = m_pManager->findByAddress( dlg->finalAddress() ).toGroup();
+    parentBookmark = m_pManager->findByAddress( dlg.finalAddress() ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
 
-    parentBookmark.addBookmark( m_pManager, dlg->finalTitle(), dlg->finalUrl() );
-    delete dlg;
+    parentBookmark.addBookmark( m_pManager, dlg.finalTitle(), dlg.finalUrl() );
   }
 
   m_pManager->emitChanged( parentBookmark );
