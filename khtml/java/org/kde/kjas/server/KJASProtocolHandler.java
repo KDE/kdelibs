@@ -35,6 +35,7 @@ public class KJASProtocolHandler
 
     //used for parsing each command as it comes in
     private int cmd_index;
+    private final char sep = (char) 0;
 
     public KJASProtocolHandler( InputStream  _commands,
                                 OutputStream _signals )
@@ -243,35 +244,56 @@ public class KJASProtocolHandler
     /**************************************************************
      *****  Methods for talking to the applet server **************
      **************************************************************/
+    public void sendGetURLDataCmd( String loaderID, String url )
+    {
+        Main.debug( "sendGetURLCmd from loader: " + loaderID + " url = " + url );
+        //length  = length of args plus 1 for code, 2 for seps and 1 for end
+        int length = loaderID.length() + url.length() + 4;
+        char[] chars = new char[ length + 8 ];
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) GetURLDataCode;
+        chars[index++] = sep;
+
+        tmpchar = loaderID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = url.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+
     public void sendShowDocumentCmd( String contextID, String url )
     {
         Main.debug( "sendShowDocumentCmd from context#" + contextID + " url = " + url );
 
-        //figure out how long this will be, 4 extra for 2 seps, end, and code
+        //length = length of args + 2 for seps + 1 for end + 1 for code
         int length = contextID.length() + url.length() + 4;
         char[] chars = new char[ length + 8 ]; //8 for the length of this message
-        int index = 0;
-        char sep = (char) 0;
         char[] tmpchar = getPaddedLength( length );
+        int index = 0;
 
-        //fill in the length of the command
-        for( int i = 0; i < 8; i++ )
-        {
-            chars[index++] = tmpchar[i];
-        }
-
-        //fill chars array to print it with the PrintStream
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = (char) ShowDocumentCode;
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = url.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         signals.print( chars );
@@ -285,33 +307,27 @@ public class KJASProtocolHandler
         //length = length of args plus code, 3 seps, end
         int length = contextID.length() + url.length() + frame.length() + 5;
         char[] chars = new char[ length + 8 ]; //for length of message
-        int index = 0;
-        char sep = (char) 0;
         char[] tmpchar = getPaddedLength( length );
+        int index = 0;
 
-        //fill in the length of the command
-        for( int i = 0; i < 8; i++ )
-        {
-            chars[index++] = tmpchar[i];
-        }
-
-        //fill chars array to print it with the PrintStream
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = (char) ShowURLInFrameCode;
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = url.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = frame.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         signals.print( chars );
@@ -323,28 +339,22 @@ public class KJASProtocolHandler
 
         int length = contextID.length() + msg.length() + 4;
         char[] chars = new char[ length + 8 ]; //for length of message
-        int index = 0;
-        char sep = (char) 0;
         char[] tmpchar = getPaddedLength( length );
+        int index = 0;
 
-        //fill in the length of the command
-        for( int i = 0; i < 8; i++ )
-        {
-            chars[index++] = tmpchar[i];
-        }
-
-        //fill chars array to print it with the PrintStream
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = (char) ShowStatusCode;
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = msg.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         signals.print( chars );
@@ -362,38 +372,32 @@ public class KJASProtocolHandler
         int length = contextID.length() + appletID.length() + width_str.length() +
                      height_str.length() + 6;
         char[] chars = new char[ length + 8 ]; //for length of message
-        int index = 0;
-        char sep = (char) 0;
         char[] tmpchar = getPaddedLength( length );
+        int index = 0;
 
-        //fill in the length of the command
-        for( int i = 0; i < 8; i++ )
-        {
-            chars[index++] = tmpchar[i];
-        }
-
-        //fill chars array to print it with the PrintStream
-        chars[index++] = (char) ResizeAppletCode;
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) ShowStatusCode;
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = appletID.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = width_str.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         tmpchar = height_str.toCharArray();
-        for( int i = 0; i < tmpchar.length; i++ )
-            chars[index++] = tmpchar[i];
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
         chars[index++] = sep;
 
         signals.print( chars );

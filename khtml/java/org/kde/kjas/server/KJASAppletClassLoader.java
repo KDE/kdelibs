@@ -131,10 +131,14 @@ public class KJASAppletClassLoader
             }
 
             Main.debug( "codeBaseURL = " + codeBaseURL );
-            super.addURL( codeBaseURL );
         }catch( Exception e )
         {
         }
+    }
+
+    public void paramsDone()
+    {
+        super.addURL( codeBaseURL );
     }
 
     public String getKey()

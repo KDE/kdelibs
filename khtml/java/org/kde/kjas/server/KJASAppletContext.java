@@ -80,6 +80,7 @@ public class KJASAppletContext implements AppletContext
                     loader.addJar( jar );
                 }
             }
+            loader.paramsDone();
 
             Dimension size = new Dimension( Integer.parseInt(width),
                                             Integer.parseInt(height) );
