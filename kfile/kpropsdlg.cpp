@@ -107,7 +107,9 @@ public:
   ~KPropertiesDialogPrivate()
   {
   }
-  bool m_aborted;
+  bool m_aborted:1;
+  bool modal:1;
+  bool autoShow:1;
 };
 
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
@@ -161,7 +163,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
   init (modal, autoShow);
 }
 
-KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
+KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now unused */,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
@@ -170,12 +172,14 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
   m_singleUrl( _url )
 {
   d = new KPropertiesDialogPrivate;
+  d->modal = modal;
+  d->autoShow = autoShow;
 
   assert(!_url.isEmpty());
 
-  // Create a KFileItem from the information we have
-  m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
-  init (modal, autoShow);
+  KIO::StatJob * job = KIO::stat( _url );
+  connect( job, SIGNAL( result( KIO::Job * ) ),
+           SLOT( slotStatResult( KIO::Job * ) ) );
 }
 
 KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _currentDir,
@@ -208,10 +212,17 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
   if (!modal)
     XSetTransientForHint(qt_xdisplay(), winId(), winId());
 
+  kdDebug() << "KPropertiesDialog::init x()=" << x() << " y=" << y() << endl;
   setGeometry( x(), y(), 400, 400 );
 
   insertPages();
 
+  kdDebug() << "KPropertiesDialog sizeHint " << sizeHint().width() << "x" << sizeHint().height() << endl;
+  // This HACK forces KDialogBase to recompute the layout
+  // It is necessary for the case where init is not called from the constructor,
+  // but from slotStatResult. And I'm way too lazy to look into KDialogBase...
+  enableLinkedHelp( true );
+  enableLinkedHelp( false );
   resize(sizeHint());
 
   if (autoShow)
@@ -223,6 +234,20 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
     }
 }
 
+void KPropertiesDialog::slotStatResult( KIO::Job * job )
+{
+    if (job->error())
+    {
+        job->showErrorDialog( this );
+        delete this;
+    }
+    else
+    {
+        KIO::StatJob * statJob = static_cast<KIO::StatJob*>(job);
+        m_items.append( new KFileItem( statJob->statResult(), statJob->url() ) );
+        init (d->modal, d->autoShow);
+    }
+}
 
 KPropertiesDialog::~KPropertiesDialog()
 {
@@ -847,6 +872,9 @@ void qt_leave_modal( QWidget *widget );
 
 void KFilePropsPlugin::applyChanges()
 {
+  if ( d->dirSizeJob )
+      slotSizeStop();
+
   kdDebug(250) << "KFilePropsPlugin::applyChanges" << endl;
   QString fname = properties->kurl().fileName();
   QString n;
