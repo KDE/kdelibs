@@ -290,7 +290,7 @@ void TransferJob::slotFinished()
     if ( m_redirectionURL.isEmpty() || m_error )
         SimpleJob::slotFinished();
     else {
-        // tell the user that we havn't finished yet
+        // tell the user that we haven't finished yet
         emit redirection(m_redirectionURL);
         // Honour the redirection
         // We take the approach of "redirecting this same job"
@@ -456,7 +456,7 @@ void MimetypeJob::slotFinished( )
     // Do stuff
 
     // Return slave to the scheduler
-    SimpleJob::slotFinished();
+    TransferJob::slotFinished();
 }
 
 MimetypeJob *KIO::mimetype(const KURL& url )
