@@ -234,11 +234,13 @@ public:
 
     /**
      * Allow empty passwords? - Default: false
+     * @since 3.4
      */
     void setAllowEmptyPasswords(bool allowed);
 
     /**
      * Allow empty passwords?
+     * @since 3.4
      */
     bool allowEmptyPasswords() const;
 
