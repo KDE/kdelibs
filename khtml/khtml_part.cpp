@@ -575,6 +575,8 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
+  args.metaData().insert("cross-domain", toplevelURL().url());
+
   if (d->m_restored)
   {
      args.metaData().insert("referrer", d->m_pageReferrer);
@@ -3258,6 +3260,16 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
+  // WABA: When we select the link explicitly we should treat this new URL as the 
+  // toplevel url and it should never be considered cross-domain.
+  // However this function is also called for javascript and META-tag based
+  // redirections:
+  //   - In such case, we don't take cross-domain-ness in consideration if we are the 
+  //   toplevel frame because the new URL may be in a different domain as the current URL 
+  //   but that's ok.
+  //   - If we are not the toplevel frame then we check against the toplevelURL()
+  if (args.redirectedRequest() && parentPart())
+      args.metaData().insert("cross-domain", toplevelURL().url());
 
   if ( hasTarget )
   {
@@ -3672,6 +3684,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_args.metaData().insert("ssl_was_in_use",
                                   d->m_ssl_in_use ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
+  child->m_args.metaData().insert("cross-domain", toplevelURL().url());
 
   // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
   if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
@@ -4064,6 +4077,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                          parentPart() == 0 ? "TRUE":"FALSE");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
+//WABA: When we post a form we should treat it as the main url
+//the request should never be considered cross-domain
+//args.metaData().insert("cross-domain", toplevelURL().url());
   args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
   // Handle mailto: forms
@@ -6058,6 +6074,18 @@ void KHTMLPart::setFormNotification(KHTMLPart::FormNotification fn) {
 
 KHTMLPart::FormNotification KHTMLPart::formNotification() const {
   return d->m_formNotification;
+}
+
+KURL KHTMLPart::toplevelURL()
+{
+  KHTMLPart* part = this;
+  while (part->parentPart())
+    part = part->parentPart();
+  
+  if (!part)
+    return KURL();
+       
+  return part->url();
 }
 
 using namespace KParts;

@@ -888,6 +888,16 @@ public:
    */
   FormNotification formNotification() const;
 
+  /**
+   * Returns the toplevel (origin) URL of this document, even if this
+   * part is a frame or an iframe.
+   *
+   * @return the actual orginal url.
+   * @since 3.2
+   */
+  KURL toplevelURL();
+
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

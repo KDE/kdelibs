@@ -488,30 +488,6 @@ static QString buildAcceptHeader()
     return result;
 }
 
-static bool crossDomain(const QString &a, const QString &b)
-{
-    if (a == b) return false;
-
-    QStringList l1 = QStringList::split('.', a);
-    QStringList l2 = QStringList::split('.', b);
-
-    while(l1.count() > l2.count())
-        l1.pop_front();
-
-    while(l2.count() > l1.count())
-        l2.pop_front();
-
-    while(l2.count() >= 2)
-    {
-        if (l1 == l2)
-           return false;
-
-        l1.pop_front();
-        l2.pop_front();
-    }
-    return true;
-}
-
 // -------------------------------------------------------------------------------------
 
 CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, time_t _expireDate)
@@ -1130,17 +1106,15 @@ void Loader::servePendingRequests()
             job->addMetaData("accept", req->object->accept());
         if ( req->m_docLoader )
         {
-            KURL r = req->m_docLoader->doc()->URL();
-            job->addMetaData("referrer", r.url());
-            QString domain = r.host();
-            if (req->m_docLoader->doc()->isHTMLDocument())
-                domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
-            if (crossDomain(u.host(), domain))
-                job->addMetaData("cross-domain", "true");
+            job->addMetaData( "referrer",  req->m_docLoader->doc()->URL() );
 
             KHTMLPart *part = req->m_docLoader->part();
-            if (part && part->widget() && part->widget()->topLevelWidget())
-                job->setWindow (part->widget()->topLevelWidget());
+            if (part )
+            {
+                job->addMetaData( "cross-domain", part->toplevelURL().url() );
+                if (part->widget())
+                    job->setWindow (part->widget()->topLevelWidget());
+            }
         }
 
         connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );

@@ -101,6 +101,44 @@ static char * trimLead (char *orig_string)
   return orig_string;
 }
 
+static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL )
+{
+  if (originURL == "true") // Backwards compatibility
+     return true;
+     
+  KURL url = originURL;
+    
+  // Document Origin domain              
+  QString a = url.host();
+  
+  // Current request domain
+  QString b = fqdn;
+  
+  if (a == b)
+    return false;
+
+  QStringList l1 = QStringList::split('.', a);
+  QStringList l2 = QStringList::split('.', b);
+
+  while(l1.count() > l2.count())
+      l1.pop_front();
+
+  while(l2.count() > l1.count())
+      l2.pop_front();
+
+  while(l2.count() >= 2)
+  {
+      if (l1 == l2)
+          return false;
+
+      l1.pop_front();
+      l2.pop_front();
+  }
+  
+  return true;
+}
+
+
 #define NO_SIZE		((KIO::filesize_t) -1)
 
 #ifdef HAVE_STRTOLL
@@ -3262,7 +3300,8 @@ bool HTTPProtocol::readHeader()
     if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.bUseCookiejar)
     {
       // Give cookies to the cookiejar.
-      if (config()->readBoolEntry("cross-domain"))
+      QString domain = config()->readEntry("cross-domain");
+      if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain))
          cookieStr = "Cross-Domain\n" + cookieStr;
       addCookies( m_request.url.url(), cookieStr );
     }
