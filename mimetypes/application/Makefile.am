@@ -33,6 +33,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-font-ghostscript.desktop x-font-snf.desktop x-font-ttf.desktop \
 	vnd.ms-asf.desktop x-msdos-program.desktop \
 	starwriter.desktop starcalc.desktop starimpress.desktop \
+	x-oowriter.desktop x-ooimpress.desktop x-magicpoint.desktop \
 	x-kugarmixed.desktop
 
 datadir = $(kde_mimedir)/application
