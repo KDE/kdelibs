@@ -96,8 +96,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
     d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
-    actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
   }
+
+  actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
 
   if ( !url.isEmpty() )
   {
