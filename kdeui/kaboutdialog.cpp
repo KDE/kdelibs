@@ -24,7 +24,7 @@
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qmultilineedit.h>
+#include <qtextedit.h>
 #include <qobjectlist.h>
 #include <qpainter.h>
 #include <qrect.h>
@@ -479,18 +479,11 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
   }
   else
   {
-    QMultiLineEdit *lineEdit = new QMultiLineEdit( page, "text" );
-    lineEdit->setReadOnly( true );
-    lineEdit->setText( text );
-#if QT_VERSION < 300
-    lineEdit->setMinimumWidth( lineEdit->maxLineWidth() + 20 );
-#else
-#if defined(Q_CC_GNU)
-#warning is that really necessary?
-#endif
-#endif
-    lineEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
-    vbox->addWidget( lineEdit );
+    QTextEdit *textEdit = new QTextEdit( page, "text" );
+    textEdit->setReadOnly( true );
+    textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
+    textEdit->setWordWrap( QTextEdit::NoWrap );
+    vbox->addWidget( textEdit );
   }
 
   return( page );
@@ -505,13 +498,13 @@ QFrame *KAboutContainerBase::addLicensePage( const QString &title,
 
   QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
 
-  QMultiLineEdit *lineEdit = new QMultiLineEdit( page, "license" );
-  lineEdit->setFont( KGlobalSettings::fixedFont());
-  lineEdit->setReadOnly( true );
-  lineEdit->setText( text );
-//  lineEdit->setMinimumWidth( lineEdit->maxLineWidth() + 20 );
-  lineEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
-  vbox->addWidget( lineEdit );
+  QTextEdit *textEdit = new QTextEdit( page, "license" );
+  textEdit->setFont( KGlobalSettings::fixedFont() );
+  textEdit->setReadOnly( true );
+  textEdit->setWordWrap( QTextEdit::NoWrap );
+  textEdit->setText( text ); 
+  textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
+  vbox->addWidget( textEdit );
 
   return( page );
 }
@@ -915,28 +908,7 @@ void KAboutContainer::addImage( const QString &fileName, int alignment )
   label->setAlignment( alignment );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #if 0
-
 
 /** Every person displayed is stored in a KAboutContributor object.
  *  Every contributor, the author and/or the maintainer of the application are
