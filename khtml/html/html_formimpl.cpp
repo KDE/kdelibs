@@ -91,7 +91,7 @@ static QCString encodeCString(const QCString& e)
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    QCString encoded(e.length()*3+1);
+    QCString encoded(( e.length()+e.contains( '\n' ) )*3+1);
     int enclen = 0;
 
     QCString orig(e.data(), e.size());
