@@ -1225,15 +1225,6 @@ int RenderObject::paddingRight() const
     return w;
 }
 
-RenderCanvas* RenderObject::canvas() const
-{
-    RenderObject* o = const_cast<RenderObject*>( this );
-    while ( o->parent() ) o = o->parent();
-
-    KHTMLAssert( o->isCanvas() );
-    return static_cast<RenderCanvas*>( o );
-}
-
 RenderObject *RenderObject::container() const
 {
     EPosition pos = m_style->position();

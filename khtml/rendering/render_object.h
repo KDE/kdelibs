@@ -34,6 +34,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
+#include "xml/dom_docimpl.h"
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
 #include "misc/helper.h"
@@ -247,7 +248,10 @@ public:
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
 
-    RenderCanvas* canvas() const;
+    // Cannot use static_cast because RenderCanvas depends on RenderObject.
+    // Thus, the class hierarchy cannot be known at this point.
+    RenderCanvas* canvas() const
+    { return reinterpret_cast<RenderCanvas*>(document()->renderer()); }
     // don't even think about making this method virtual!
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
