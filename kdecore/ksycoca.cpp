@@ -377,8 +377,14 @@ KSycoca * KSycoca::_self = 0L;
 
 void KSycoca::flagError()
 {
+   qWarning("ERROR: KSycoca database corruption!");
    if (_self)
+   {
+      if (_self->d->readError)
+         return;
       _self->d->readError = true;
+      system("kbuildsycoca"); // Rebuild the damned thing.
+   }
 }
 
 bool KSycoca::readError()
