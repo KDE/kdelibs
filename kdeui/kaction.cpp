@@ -159,6 +159,28 @@ KAction::KAction( const QString& text, const KShortcut& cut,
     connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
+KAction::KAction( const KGuiItem& item, const KShortcut& cut,
+                  const QObject* receiver,
+                  const char* slot, QObject* parent, const char* name )
+: QObject( parent, name )
+{
+    d = new KActionPrivate;
+
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection ) {
+        d->m_cut = cut;      // default key binding
+        m_parentCollection->insert( this );
+    }
+
+    setShortcut( cut );
+    setText( item.text() );
+    if( item.hasIconSet() )
+        setIcon( item.iconName() );
+
+    if ( receiver )
+        connect( this, SIGNAL( activated() ), receiver, slot );
+}
+
 KAction::KAction( const QString& text, const QIconSet& pix,
                   const KShortcut& cut,
                   QObject* parent, const char* name )
@@ -716,7 +738,7 @@ QString KAction::plainText() const
 
 void KAction::setIcon( const QString &icon )
 {
-  d->setIconName(  icon );
+  d->setIconName( icon );
 
   // We load the "Small" icon as the main one (for menu items)
   // and we let setIcon( int, QString ) deal with toolbars
@@ -2506,7 +2528,7 @@ KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
                                           const QObject* receiver,
                                           const char* slot, QObject* parent,
                                           const char* name )
-  : KAction( item.text(), item.iconSet(), cut, receiver, slot, parent, name )
+  : KAction( item, cut, receiver, slot, parent, name )
 {
   m_popup = 0;
   m_delayed = true;

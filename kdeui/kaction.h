@@ -225,6 +225,24 @@ public:
              const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
+     * Constructs an action with a KGuiItem providing the text and icon,
+     * potential keyboard accelerator, and a SLOT to call when this action is
+     * invoked by the user.
+     *
+     * If you do not want or have a keyboard accelerator,
+     * set the @p accel param to 0.
+     *
+     * @param item The KGuiItem with the text and (optional) icon.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param receiver The SLOT's parent.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KAction( const KGuiItem& item, const KShortcut& cut,
+             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
      * Constructs an action with text, icon, and a potential keyboard
      * accelerator.
      *
