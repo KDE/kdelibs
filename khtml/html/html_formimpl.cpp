@@ -478,7 +478,9 @@ void HTMLGenericFormElementImpl::onBlur()
 
 void HTMLGenericFormElementImpl::onFocus()
 {
-    //view->setLinkCursor(this);
+    // ###:-| this is called from JS _and_ from event handlers.
+    // Split into two functions (BIC)
+    view->setLinkCursor(this);
     DOMString script = getAttribute(ATTR_ONFOCUS);
     if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
@@ -503,14 +505,14 @@ void HTMLGenericFormElementImpl::blur()
 {
     if(m_render)
         static_cast<RenderFormElement*>(m_render)->blur();
-    onBlur(); // ### enable this - but kjs needs to support re-entry
+    onBlur();
 }
 
 void HTMLGenericFormElementImpl::focus()
 {
     if(m_render)
         static_cast<RenderFormElement*>(m_render)->focus();
-    onFocus(); // ### enable this - but kjs needs to support re-entry
+    onFocus();
 }
 
 // -------------------------------------------------------------------------
@@ -1599,7 +1601,7 @@ void HTMLTextAreaElementImpl::select(  )
 {
     if (m_render)
         static_cast<RenderTextArea*>(m_render)->select();
-//    onSelect(); // ### enable this - but kjs needs to support re-entry
+    onSelect();
 }
 
 void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
