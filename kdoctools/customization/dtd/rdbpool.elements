@@ -76,7 +76,7 @@
         "lang           (af|az|bg|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
                         |es|et|eu|fi|fr|ga|gl|he|hr|hu|id|is|it|ja|ko|lt|lv
                         |mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT|ro|ru|si
-                        |sk|sl|sr|st|sv|ta|th|tr|uk|x-wa|xh|zh|zh-CN|zh-TW|zu)
+                        |sk|sl|sr|st|sv|ta|tg|th|tr|uk|vi|x-wa|xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
 <!-- List of languages
      An new version of ISO 639 is due quite soon; also RFC1766 may be replaced
@@ -132,9 +132,11 @@ sr      Serbian
 st	Sesotho (souther Sotho)
 sv      Swedish
 ta      Tamil
+tg	Tajik
 th      Thai
 tr      Turkish
 uk      Ukrainian
+vi	Vietnamese
 xh	Xhosa
 zh      Chinese
 zu	Zulu
