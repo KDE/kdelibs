@@ -1637,11 +1637,16 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::updateStyleSelector()
 {
+    recalcStyleSelector();
+    recalcStyle();
+#if 0    
+    
     m_styleSelectorDirty = true;
     if ( renderer() ) {
 	renderer()->setLayouted( false );
 	renderer()->setMinMaxKnown( false );
     }
+#endif    
 }
 
 void DocumentImpl::recalcStyleSelector()
