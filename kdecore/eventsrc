@@ -36,7 +36,7 @@ Comment[ta]=KDE ¸½¢É¢ «È¢Å¢ôÒ¸û
 Comment[tr]=KDE Sistem Bildirimleri
 Comment[uk]=Системні повідомлення KDE
 Comment[zh_CN.GB2312]=KDE 系统通知
-Comment[zh_TW.Big5]=KDE 系統告知
+Comment[zh_TW.Big5]=KDE 系統通知
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
@@ -664,6 +664,7 @@ Name[sv]=Logga in
 Name[ta]=ÐÅì¸õ
 Name[tr]=Giriş
 Name[uk]=Реєстрація
+Name[zh_TW.Big5]=登入
 Comment=KDE is Starting Up
 Comment[bg]=KDE ñå Ñòàðòèðà
 Comment[ca]=KDE està engegant
@@ -698,6 +699,7 @@ Comment[sv]=KDE är under uppstart
 Comment[ta]=KDE ÐÅíÌ¸¢ÈÐ
 Comment[tr]=KDE Masaüstü Başlıyor
 Comment[uk]=Запуск KDE.
+Comment[zh_TW.Big5]=KDE 快速開始導引。
 default_presentation=1
 default_sound=KDE_Startup.wav
  
@@ -731,6 +733,7 @@ Name[sv]=Logga ut
 Name[ta]=ÓÊò¾ø
 Name[tr]=Çıkış
 Name[uk]=Кінець сеансу
+Name[zh_TW.Big5]=登出
 Comment=KDE is Exiting
 Comment[bg]=KDE ñå Ñïèðà
 Comment[ca]=KDE està aturant
@@ -765,6 +768,7 @@ Comment[sv]=KDE är på väg att avslutas
 Comment[ta]=KDE ¦ÅÇ¢§ÂÚ¸¢ÈÐ
 Comment[tr]=KDE'den Çıkılıyor
 Comment[uk]=Вихід KDE
+Comment[zh_TW.Big5]=KDE 結束中
 default_presentation=1
 default_sound=KDE_Logout.wav
 
