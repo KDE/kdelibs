@@ -1019,8 +1019,8 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		      tmp = p_name;
 		      int i = tmp.findRev( " -> " );
 		      if ( i != -1 ) {
-			de.link = p_name + i + 3;  
-			tmp.truncate( i-1 );
+			de.link = p_name + i + 4;  
+			tmp.truncate( i );
 			p_name = tmp;
 		      }
 		      else
