@@ -203,7 +203,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
+    setInstance( KHTMLFactory::instance(), false );
     init( new KHTMLView( this, parentWidget, widgetname ), prof );
 }
 
@@ -212,7 +212,7 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIPro
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
+    setInstance( KHTMLFactory::instance(), false );
     assert( view );
     init( view, prof );
 }
@@ -427,6 +427,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_dcopobject = new KHTMLPartIface(this);
 
+  if ( prof == BrowserViewGUI && !parentPart() )
+          loadPlugins( partObject(), this, instance() );
+  
   // "khtml" catalog does not exist, our translations are in kdelibs.
   // removing this catalog from KGlobal::locale() prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
