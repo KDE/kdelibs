@@ -1,8 +1,8 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
-              (C) 1997 Sven Radej (sven@bootko.exp.univie.ac.at)
-              (C) 1997 Mark Donohoe (donohoe@kde.org)
-              (C) 1997 Matthias Ettrich (ettrich@kde.org)
+    Copyright (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
+              (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+              (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
+              (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
               
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,6 +19,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef _KTOOLBAR_H
 #define _KTOOLBAR_H
 
@@ -28,14 +29,19 @@
 #include <qframe.h>
 #include <qpixmap.h>
 #include <qpopmenu.h>
+#include <qbutton.h>
+#include <qfont.h>
+#include <qsize.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include "kbutton.h"
+//#include "kbutton.h"
 #include "kcombo.h"
 #include "klined.h"
+
+class KToolBar;
 
 /**
  * This is internal class for use in toolbar
@@ -116,24 +122,28 @@ class KToolBarLined : public KLined
  *
  * @short Internal Button class for toolbar
  */
-class KToolBarButton : public KButton
+class KToolBarButton : public QButton
  {
    Q_OBJECT
 
  public:
    KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent,
-                  const char *name=0L, int item_size = 26);
+                  const char *name=0L, int item_size = 26, const char *txt=0);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
+   ~KToolBarButton() {};
    void enable(bool enable);
    void makeDisabledPixmap();
-   QPixmap disabledPixmap;
-   virtual void setPixmap( const QPixmap & );
+   
+   void setPixmap( const QPixmap & );
    int ID() {return id;};
    bool isRight () {return right;};
    void alignRight (bool flag) {right = flag;};
    void on(bool flag);
    void toggle();
    void beToggle(bool);
+
+ public slots:
+   void modeChange();
    
  protected:
    void paletteChange(const QPalette &);
@@ -141,17 +151,25 @@ class KToolBarButton : public KButton
    void enterEvent(QEvent *e);
    void drawButton(QPainter *p);
    
- protected:
+ private:
    int id;
    QPixmap enabledPixmap;
+   QPixmap disabledPixmap;
    bool right;
-
+   int icontext;
+   int highlight;
+   bool raised;
+   int _size;
+   KToolBar *parentWidget;
+   QString btext;
+   QFont buttonFont;
+   
    protected slots:
      void ButtonClicked();
      void ButtonPressed();
      void ButtonReleased();
      void ButtonToggled();
-     
+
  signals:
      void clicked(int);
      void pressed(int);
@@ -163,45 +181,44 @@ class KToolBarButton : public KButton
  * KToolBar is a self resizing, floatable widget.
  * It is usually managed from KTopLevelWidget, but can be
  * used even if you don't use KTopLevelWidget. If you want
- * to handle this without or with subclassed KTopLevelWidget,
- * see @ref #updateRects .<BR>
- * KToolBar can contain buttons ( @ref #insertButton ), Line inputs
- * ( @ref #insertLined ), Combo Boxes, ( @ref #insertCombo )  and frames
- * ( @ref #insertFrame ). Combos, Frames and Lineds can
- * be autosized to full width. Items can be right aligned, and
- * buttons can be toggle buttons ( @ref #setToggle ). Item height is
- * adjustable on constructor invocation.
- * Toolbar can float, and autoresizes itself. This may lead to
+ * to handle this without KTopLevelWidget, see updateRects .<BR>
+ * KToolBar can contain buttons Line inputs Combo Boxes, and frames
+ * Combos, Frames and Lineds can be  autosized to full width. Items
+ * can be right aligned, and buttons can be toggle buttons. Item height,
+ * type of buttons (icon pr icon+text), and option for highlighting is
+ * adjustable on constructor invocation by reading global config file.
+ * Toolbar will reread config-file when it recieves signal
+ * Kapplication:appearanceChanged.
+ * Toolbar can float, dragged from and docked back to parent window.
+ * It autoresizes itself. This may lead to
  * some flickering, but there is no way to solve it (as far as I
  * know). <BR>
- * If you want to bind popups to buttons, see @ref #setButton .
- * You normaly use toolbar from subclassed @ref KTopLevelWidget. When
+ * If you want to bind popups to buttons, see setButton(). <BR>
+ * You normaly use toolbar from subclassed KTopLevelWidget. When
  * you create toolbar object, insert items that you want to be in it.
- * Items can be inserted or removed ( @ref #removeItem ) later, when toolbar
+ * Items can be inserted or removed ( removeItem() ) later, when toolbar
  * is displayed. It will updte itself.
- * Then set their propperties ( @ref #alignItemRight , @ref #setItemAutoSized ,
- * @ref #setToggle ...) After that set the toolbar itself ( @ref #setFullWidth ,
- * @ref #enable , @ref #setBarPos ...). Then simply do addToolbar (toolbar),
+ * Then set their propperties ( alignItemRight , setItemAutoSized ,
+ * setToggle ...) After that set the toolbar itself, enable ,setBarPos ...).
+ * Then simply do addToolbar (toolbar),
  * and you're on. See how it's done in kwindowtest.
  * @short KDE Toolbar widget
- * @author Maintained by Sven Radej <a9509961@unet.univie.ac.at> 
+ * @author Stephan Kullow <coolo@kde.org> Maintained by Sven Radej <sven@lisa.exp.univie.ac.at>
  */
  class KToolBar : public QFrame
   {
 
   Q_OBJECT
 
+  friend class KToolBarButton;
 public:
   enum BarStatus{Toggle, Show, Hide};
   enum BarPosition{Top, Left, Bottom, Right, Floating};
 
   /**
-   * Constructor. If you want to pass a height other than default you must do this:
-   * <pre>
-   * toolbar = new KToolBar (this, 0, 50);
-   * </pre>
-   * Currently, pixmaps in buttons are not resized, becouse it looks ugly.
-   * On-the-fly changing of toolbar height will be added later.
+   * Constructor.
+   * Toolbar will read global-config file for intem Size higlight
+   * option and button type.
    */
   KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = 26);
 
@@ -329,7 +346,7 @@ public:
   /**
    * If button is toggle (@ref #setToggle must be called first)
    * this will set him to state flag. This will also emit signal
-   * #ref toggled. <BR>
+   * #ref toggled . <BR>
    * If button is not toggle, calling with flag = false will
    * unhighlight this button.
    * You will want to do this if you want buttons to have popups.
@@ -582,7 +599,13 @@ public:
    * @see KtopLevelWidget#updateRects
    */
   void updateRects(bool resize = false);
-  
+
+  /**
+     * Returns minimal width for top-level window, so that toolbar
+     * has only one row.
+     */
+  QSize sizeHint();
+    
   // OLD  INTERFACE
   
   /**
@@ -647,6 +670,14 @@ signals:
      * @see #updateRects
      */
     void moved( BarPosition );
+
+    /**
+     * Internal This signal is emited when toolbar detects changing of
+     * following parameters:
+     * highlighting, button-size, button-mode. This signal is
+     * internal, aimed to buttons.
+     */
+    void modechange ();
   
 private:
     
@@ -698,7 +729,7 @@ protected slots:
   void ButtonPressed(int);
   void ButtonReleased(int);
   void ContextCallback(int);
-
+  void slotReadConfig ();
 
 protected:
   void mouseMoveEvent(QMouseEvent*);
@@ -707,6 +738,9 @@ protected:
 private:
    QPoint pointerOffset;
    QPoint parentOffset;
-   int item_size;
+   int item_size;  // normal: 26
+   int icon_text;  // 1 = icon+text, 0 icon+tooltip
+   bool highlight; // yes/no
+   QSize szh;      // Size for sizeHint
 };
 #endif

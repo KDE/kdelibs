@@ -1,8 +1,8 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
-              (C) 1997 Mark Donohoe (donohoe@kde.org)
-              (C) 1997 Sven Radej (sven@bootko.exp.univie.ac.at)
-              (C) 1997 Matthias Ettrich (ettrich@kde.org)
+    Copyright (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
+              (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
+              (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+              (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
               
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,6 +29,18 @@
 // Merged sven's & Matthias' changes 23-25. 1.98
 // Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
 // boolett proofing by Marcin Dalecki 06.03.1998
+// BINARY INCOMPATIBLE CHANGES sven 19.3. 1998:
+//  - optional icons+text, variable size  with reading options from
+//    from ~/.kderc
+//  - Fixing of bug reported by Antonio Larrosa (Thanks!)
+//  - Optional highlighting of buttons
+//  - added sizeHint()
+//  - sample (default) ~./kderc group for toolbar:
+//      [Toolbar style]
+//      IconText=0        0=icons, 1=icons+text
+//      Highlighting=1    0=No, 1=yes
+//      Size=26           height of one row in toolbar
+
 //-------------------------------------------------------------------------
 
 #include <qpainter.h>
@@ -39,12 +51,13 @@
 #include <qstring.h>
 
 #include <qlist.h>
+#include <qpainter.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qstring.h>
 #include <qframe.h>
 #include <qbutton.h>
-#include "kbutton.h"
+//#include "kbutton.h"
 #include "klined.h"
 #include "kcombo.h"
 #include "ktopwidget.h"
@@ -79,6 +92,7 @@ enum {
     ITEM_FRAME = 3,
     ITEM_TOGGLE = 4,
 };
+
 
 #define KToolBarItem QWidget
 
@@ -115,38 +129,54 @@ void KToolBarLined::enable (bool enable)
   QWidget::setEnabled (enable);
 }
 
-
+//------------------------------Buttons
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int ID,
-		QWidget *parent, const char *name, int item_size) : KButton( parent, name )
+                                QWidget *_parent, const char *name,
+                                int item_size, const char *txt) : QButton( _parent, name )
 {
-  resize(item_size-2,item_size-2);
+  parentWidget = (KToolBar *) _parent;
+  raised = false;
+  setFocusPolicy( NoFocus );
   id = ID;
+  if (txt)
+  btext=txt;
+  modeChange ();
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
   else
     {
       warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
       enabledPixmap.resize( item_size-4, item_size-4);
-    };
+    }
   makeDisabledPixmap();
   setPixmap( enabledPixmap );
-  connect( this, SIGNAL( clicked() ), 
-	   this, SLOT( ButtonClicked() ) );
+  connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
+  
+  connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
   connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
   connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
   right = false;
 }
 
-void KToolBarButton::leaveEvent(QEvent *e)
+void KToolBarButton::leaveEvent(QEvent *)
 {
   if (isToggleButton() == false)
-    KButton::leaveEvent(e);
+    if( raised != false )
+    {
+      raised = false;
+      repaint();
+    }
 }
 
-void KToolBarButton::enterEvent(QEvent *e)
+void KToolBarButton::enterEvent(QEvent *)
 {
-  if (isToggleButton() == false)
-    KButton::enterEvent(e);
+  if (highlight == 1)
+    if (isToggleButton() == false)
+      if ( isEnabled() )
+      {
+        raised = true;
+        repaint(false);
+      }
 }
 
 void KToolBarButton::beToggle(bool flag)
@@ -165,20 +195,67 @@ void KToolBarButton::on(bool flag)
   else
   {
     setDown(flag);
-    KButton::leaveEvent((QEvent *) 0);
+    leaveEvent((QEvent *) 0);
   }
   repaint();
 }
   init();
 void KToolBarButton::drawButton( QPainter *_painter )
 {
-#if 0 /* Don't ask why, but the widget works without it prefectly! */
-  QColorGroup g = QWidget::colorGroup();
+  /* Don't ask why, but the widget works without it prefectly! */
+  //  QColorGroup g = QWidget::colorGroup();
+  //
+  //  if (isOn())
+  //    qDrawShadePanel(_painter, 0, 0, width(), height(), g , true, 2);
+
+  // We are not using KButton any more!
+  if ( isDown() || isOn() )
+  {
+    if ( style() == WindowsStyle )
+      qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
+    else
+      qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
+  }
+  else if ( raised )
+  {
+    if ( style() == WindowsStyle )
+      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
+    else
+      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
+  }
+
+  int dx, dy;
   
-  if (isOn())
-    qDrawShadePanel(_painter, 0, 0, width(), height(), g , true, 2);
-#endif  
-  KButton::drawButton(_painter);
+  if ( pixmap() )
+    if (!icontext)
+    {
+      dx = ( width() - pixmap()->width() ) / 2;
+      dy = ( height() - pixmap()->height() ) / 2;
+      if ( isDown() && style() == WindowsStyle ) {
+        ++dx;
+        ++dy;
+      }
+      _painter->drawPixmap( dx, dy, *pixmap() );
+    }
+    else
+    {
+      dx = 1;
+      dy = ( height() - pixmap()->height() ) / 2;
+      if ( isDown() && style() == WindowsStyle ) {
+        ++dx;
+        ++dy;
+      }
+      _painter->drawPixmap( dx, dy, *pixmap() );
+
+      int tf = AlignVCenter|AlignLeft;
+      if (!isEnabled())
+        tf |= GrayText;
+      dx= pixmap()->width();
+      _painter->setFont(buttonFont);
+      if(raised)
+        _painter->setPen(blue);
+      _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
+    }
 }
 
 void KToolBarButton::toggle()
@@ -195,7 +272,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
     warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
     enabledPixmap.resize(width()-4, height()-4);
   }
-  KButton::setPixmap( enabledPixmap );
+  QButton::setPixmap( enabledPixmap );
 }            
 
 void KToolBarButton::makeDisabledPixmap()
@@ -235,13 +312,40 @@ void KToolBarButton::paletteChange(const QPalette &)
   if( ID() != -1 )  {
     makeDisabledPixmap();
     if ( !isEnabled() ) 
-      KButton::setPixmap( disabledPixmap );    
+      QButton::setPixmap( disabledPixmap );
     repaint(false); // no need to delete it first therefore only false
   }
 }
   bool doUpdate=false;
+
+void KToolBarButton::modeChange()
+{
+  buttonFont.setFamily("Helvetica");
+  buttonFont.setPointSize(10);
+  buttonFont.setBold(false);
+  buttonFont.setItalic(false);
+  buttonFont.setCharSet(font().charSet());
+  
+  QFontMetrics fm(buttonFont);
+  
+  icontext=parentWidget->icon_text;
+  _size=parentWidget->item_size;
+  highlight=parentWidget->highlight;
+  if (icontext) //Calculate my size
+  {
+    QToolTip::remove(this);
+    resize (fm.width(btext)+_size, _size-2); // +2+_size-2
+  }
+  else
+  {
+    QToolTip::remove(this);
+    QToolTip::add(this, btext);
+    resize (_size-2, _size-2);
+  }
+}
+  int rightOffset;
 KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
-  : KButton( parentWidget , name)
+  : QButton( parentWidget , name)
 {
   resize(6,6);
   hide();
@@ -251,7 +355,7 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
     else
 void KToolBarButton::enable( bool enabled )
 {
-  KButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
+  QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
   setEnabled( enabled );
 }
   if (fullWidth == true)
@@ -343,6 +447,67 @@ void KToolBar::init()
   // To make touch-sensitive handle - sven 040198
   setMouseTracking(true);
   haveAutoSized=false;      // do we have autosized item - sven 220198
+  connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+  slotReadConfig();
+}
+
+void KToolBar::slotReadConfig()
+{
+  int tsize;
+  int _highlight;
+  int icontext;
+  
+  KConfig *config = kapp->getConfig();
+  config->setGroup("Toolbar style");
+
+  icontext=config->readNumEntry("IconText", -1);
+  if (icontext==-1)
+  {
+    config->writeEntry("IconText", 0 , true, true);
+    config->sync();
+    icontext=0;
+  }
+  
+  tsize=config->readNumEntry("Size", -1);
+  if (tsize==-1)
+  {
+    config->writeEntry("Size", item_size, true, true);
+    config->sync();
+    tsize=26;
+  }
+
+  _highlight =config->readNumEntry("Highlighting", -1);
+  if (_highlight==-1)
+  {
+    config->writeEntry("Highlighting", 1, true, true);
+    config->sync();
+    _highlight=1;
+  }
+
+  bool doUpdate=false;
+ /********************\
+  if (tsize != item_size && tsize>20)
+  {
+    item_size = tsize;
+    doUpdate=true;
+  }
+
+  if (icontext != icon_text)
+  {
+    icon_text=icontext;
+    doUpdate=true;
+  }
+  
+  if (_highlight != highlight)
+  {
+    highlight = _highlight;
+    doUpdate=true;
+  }
+  
+  if (doUpdate)
+    emit modechange(); // tell buttons what happened
+    if (isVisible ())
+      updateRects(true);
 }
     emit (moved(position));
 void KToolBar::drawContents ( QPainter *)
@@ -383,34 +548,36 @@ void KToolBar::layoutHorizontal ()
   int rightOffset;
   int yOffset=1;
   KToolBarItem *autoSize = 0;
-  int maxwidth;
-
+  int mywidth;
+  int widest=0;
+  
   horizontal = true; // sven - 040198
   if (position == Floating)
   //debug ("Ho, ho, hooo... Up-Date!!! (horizontal)");
   
   if (position == Floating)
       if (haveAutoSized == false)
-          maxwidth = width();
+          mywidth = width();
       else
-          maxwidth = (width()>100+offset)?width():100+offset;
+          mywidth = (width()>100+offset)?width():100+offset;
 
   else
     if (max_width != -1)
-      maxwidth = max_width;
+      mywidth = max_width;
     else
-      maxwidth = Parent->width();
+      mywidth = Parent->width();
 
   if (fullWidth == true)
-    toolbarWidth = maxwidth;
+    toolbarWidth = mywidth;
   else
     toolbarWidth = offset;
   item->show();
-  rightOffset=maxwidth;
+  rightOffset=mywidth;
   toolbarHeight= item_size;
     updateRects( true );
   for ( KToolBarItem *b = items.first(); b; b=items.next() )
    {
+     widest = (b->width()>widest)?b->width():widest;
      if (fullWidth == true)
       {
         if (isItemRight(b) == true)
@@ -452,7 +619,7 @@ void KToolBar::layoutHorizontal ()
       }
      else // Not fullwidth, autosize
       {
-        if (offset > (maxwidth-b->width()-3))
+        if (offset > (mywidth-b->width()-3) && offset != 16)
          {
            offset = 3+9+4;
            yOffset += item_size;
@@ -471,6 +638,7 @@ void KToolBar::layoutHorizontal ()
    }
   if (autoSize != 0)
     autoSize->resize(rightOffset - autoSize->x()-1, autoSize->height() );
+  toolbarWidth=(toolbarWidth<(widest+16))?(widest+16):toolbarWidth;
 }
 
 void KToolBar::layoutVertical ()
@@ -780,9 +948,10 @@ void KToolBar::ButtonReleased( int id )
 
 /// Inserts a button.
 int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
-			    const char *tooltiptext, int index )
+			    const char *_text, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size );
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this,
+                                               0L, item_size, _text);
   if ( index == -1 )
     items.append( button );
   else
@@ -793,8 +962,6 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
   button->enable( enabled );
 
-  if ( tooltiptext )
-    QToolTip::add( button, tooltiptext );
   button->show();
   updateRects( true );
   return items.at();
@@ -804,16 +971,14 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
 
 int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 			    const QObject *receiver, const char *slot, bool enabled,
-			    const char *tooltiptext, int index )
+			    const char *_text, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size );
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this,
+                                               0L, item_size, _text);
   if ( index == -1 ) 
     items.append( button );
   else
     items.insert( index, button );
-		
-  if ( tooltiptext )
-    QToolTip::add( button, tooltiptext );
 		
   connect( button, signal, receiver, slot );
   button->enable( enabled );
@@ -1316,7 +1481,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 
 void KToolBar::enableFloating (bool arrrrrrgh)
 {
-  context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
+    context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
 }
 
 
@@ -1337,6 +1502,16 @@ bool KToolBar::enable(BarStatus stat)
   return ( isVisible() == mystat );
 }
 
+QSize KToolBar::sizeHint ()
+{
+  int w=16;
+  
+  for (KToolBarItem *b = items.first(); b; b=items.next())
+    w+=isItemAutoSized(b)?100:b->width();
+  szh.setWidth(w);
+
+  return szh;
+}
 /*********************************************************/
 /***********    O L D     I N T E R F A C E   ************/
 /*********************************************************/
@@ -1346,6 +1521,7 @@ int KToolBar::insertItem(const QPixmap& _pixmap, int _ID, bool enabled,
 
 {
   warning ("KToolBar: insertItem is obsolete. Use insertButton");
+  warning ("******insertItem WILL SOON BE REMOVED!! USE insertButton*****");
   return (this->insertButton (_pixmap, _ID, enabled, ToolTipText, index));
 }
 
@@ -1355,12 +1531,14 @@ int KToolBar::insertItem(const QPixmap& _pixmap, int _ID, const char *signal,
                char *tooltiptext, int index)
 {
   warning ("KToolBar: insertItem is obsolete. Use InsertButton");
+  warning ("******insertItem WILL SOON BE REMOVED!! USE insertButton*****");
   return (this->insertButton (_pixmap, _ID, signal, receiver, slot, enabled, tooltiptext, index));
 }
 
 void KToolBar::setItemPixmap( int _id, const QPixmap& _pixmap )
 {
   warning ("KToolBar: setItemPixmap is obsolete. Use setButtonPixmap");
+  warning ("******setItemPixmap WILL SOON BE REMOVED!! USE setButtonPixmap*****");
   this->setButtonPixmap (_id, _pixmap);
 }
 
