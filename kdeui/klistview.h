@@ -21,7 +21,6 @@
 
 #include <qlistview.h>
 
-#include <qvector.h>
 #include <qlist.h>
 
 class QDragObject;
@@ -341,7 +340,7 @@ signals:
    * each and every item moved, in order.  The first element in @param items associates
    * with the first of afterFirst and afterNow.
    **/
-  void moved(QVector<QListViewItem> &items, QVector<QListViewItem> &afterFirst, QVector<QListViewItem> &afterNow);
+  void moved(QList<QListViewItem> &items, QList<QListViewItem> &afterFirst, QList<QListViewItem> &afterNow);
 
   /**
    * This signal gets emitted when an item is renamed via in-place renaming.

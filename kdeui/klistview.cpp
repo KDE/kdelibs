@@ -551,57 +551,25 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
 void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 {
-  bool slowVectorCrap = static_cast<bool>
-    (receivers(SIGNAL(moved(QVector<QListViewItem>&, QVector<QListViewItem>&, QVector<QListViewItem>&))));
+  QList<QListViewItem> *items, *afterFirsts, *afterNows;
 
-  QVector<QListViewItem> *items, *afterFirsts, *afterNows;
-  if (slowVectorCrap)
-    {
-      items = new QVector<QListViewItem>(5);
-      afterFirsts = new QVector<QListViewItem>(5);
-      afterNows = new QVector<QListViewItem>(5);
-    }
-  uint itempos = 0;
-  
   for (QListViewItem *i = firstChild(); i != 0; i = i->itemBelow())
     {
       if (!i->isSelected())
         continue;
-
+      
       QListViewItem *afterFirst = i->itemAbove();
       moveItem(i, parent, afterme);
       emit moved(i, afterFirst, afterme);
       
-      if (slowVectorCrap)
-        {
-          if (itempos >= items->size())
-            {
-              static const uint increment = 3;
-              items->resize(itempos+1+increment);
-              afterFirsts->resize(itempos+1+increment);
-              afterNows->resize(itempos+1+increment);
-              itempos += increment;
-            }
-          
-          items->insert(itempos,i);
-          afterFirsts->insert(itempos,afterFirst);
-          afterNows->insert(itempos,afterme);
-          
-          ++itempos;
-        }
+      items->append (i);
+      afterFirsts->append (afterFirst);
+      afterNows->append (afterme);
       
       afterme = i;
     }
-  
-  if (slowVectorCrap)
-    {
-      // shrink down the vector to the minimum size.
-      items->resize(itempos);
-      afterFirsts->resize(itempos);
-      afterNows->resize(itempos);
-      
-      emit moved(*items,*afterFirsts,*afterNows);
-    }
+     
+  emit moved(*items,*afterFirsts,*afterNows);
   
   if (firstChild())
     emit moved();
