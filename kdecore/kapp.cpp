@@ -480,8 +480,9 @@ bool KApplication::requestShutDown()
 
 void KApplication::propagateSessionManager()
 {
-    QCString fName = ::getenv("HOME");
-    fName += "/.KSMserver";
+    QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
+    QCString display = ::getenv("DISPLAY");
+    fName += "-"+display;
     QCString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
