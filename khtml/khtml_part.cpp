@@ -1324,11 +1324,11 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     else if ( S_ISREG( buff.st_mode ) )
     {
       if (buff.st_size < 1024)
-	text = QString("%1 (%2 %3)").arg(text2).arg((long) buff.st_size).arg(i18n("bytes"));
+	text = i18n("%1 (%2 bytes)").arg(text2).arg((long) buff.st_size);
       else
       {
 	float d = (float) buff.st_size/1024.0;
-	text = QString("%1 (%2 K)").arg(text2).arg(d, 0, 'f', 2); // was %.2f
+	text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
       }
       text += "  ";
       text += com;
