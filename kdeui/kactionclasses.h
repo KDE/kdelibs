@@ -1192,7 +1192,8 @@ private:
  * An action for switching between to/from full screen mode. Note that
  * QWidget::isFullScreen() may reflect the new or the old state
  * depending on how the action was triggered (by the application or
- * from the window manager). Rely on this action's state instead.
+ * from the window manager). Also don't try to track the window state
+ * yourself. Rely on this action's state (isChecked()) instead.
  *
  * Important: If you need to set/change the fullscreen state manually,
  * use the relevant QWidget function (showFullScreen etc.), do not
