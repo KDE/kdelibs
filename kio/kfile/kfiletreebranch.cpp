@@ -299,6 +299,11 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         }
 
         kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
+        if( m_lastFoundURL.equals( it->url(), true ))
+        {
+          m_lastFoundURL = KURL();
+          m_lastFoundItem = 0L;
+        }
         delete( kfti );
     }
     else
