@@ -341,12 +341,9 @@ AnonymousFunction::AnonymousFunction()
 }
 
 DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
-					 FunctionBodyNode *b, const List *sc,
-					 int len)
+					 FunctionBodyNode *b, const List *sc)
   : ConstructorImp(n), body(b), scopes(sc->copy())
 {
-  if (len >= 0)
-    setLength(len);
 }
 
 DeclaredFunctionImp::~DeclaredFunctionImp()

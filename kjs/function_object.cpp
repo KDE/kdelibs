@@ -41,7 +41,7 @@ Object FunctionObject::construct(const List &args)
   int argsSize = args.size();
   if (argsSize == 0) {
     body = "";
-  } if (argsSize == 1) {
+  } else if (argsSize == 1) {
     body = args[0].toString().value();
   } else {
     p = args[0].toString().value();
@@ -61,13 +61,12 @@ Object FunctionObject::construct(const List &args)
   scopeChain.append(Global::current());
   FunctionBodyNode *bodyNode = KJScriptImp::current()->progNode;
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
-					      &scopeChain,
-					      argsSize > 1 ? argsSize-1 : 0);
+					      &scopeChain);
 
   // parse parameter list. throw syntax error on illegal identifiers
   int len = p.size();
   const UChar *c = p.data();
-  int i = 0;
+  int i = 0, params = 0;
   UString param;
   while (i < len) {
       while (*c == ' ' && i < len)
@@ -84,9 +83,11 @@ Object FunctionObject::construct(const List &args)
 	      c++, i++;
 	  if (i == len) {
 	      fimp->addParameter(param);
+	      params++;
 	      break;
 	  } else if (*c == ',') {
 	      fimp->addParameter(param);
+	      params++;
 	      c++, i++;
 	      continue;
 	  } // else error
@@ -96,6 +97,7 @@ Object FunctionObject::construct(const List &args)
 				 -1);
   }
 
+  fimp->setLength(params);
   fimp->setPrototype(Global::current().functionPrototype());
   return Object(fimp);
 }

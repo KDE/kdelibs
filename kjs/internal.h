@@ -236,7 +236,7 @@ namespace KJS {
   class DeclaredFunctionImp : public ConstructorImp {
   public:
     DeclaredFunctionImp(const UString &n, FunctionBodyNode *b,
-			const List *sc, int len = -1);
+			const List *sc);
     ~DeclaredFunctionImp();
     Completion execute(const List &);
     Object construct(const List &);
