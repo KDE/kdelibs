@@ -22,6 +22,7 @@
 #include "kjs_css.h"
 #include "kjs_css.lut.h"
 
+#include <dom/html_head.h> // for HTMLStyleElement
 #include <qptrdict.h>
 
 #include <css/cssparser.h>
@@ -312,20 +313,55 @@ DOMStyleSheetList::~DOMStyleSheetList()
 
 Value DOMStyleSheetList::tryGet(ExecState *exec, const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMStyleSheetList::tryGet " << p.qstring() << endl;
+#endif
   if (p == "length")
     return Number(styleSheetList.length());
   else if (p == "item")
     return lookupOrCreateFunction<DOMStyleSheetListFunc>(exec,p,this,DOMStyleSheetList::Item,1,DontDelete|Function);
 
+  // Retrieve stylesheet by index
   bool ok;
   long unsigned int u = p.toULong(&ok);
   if (ok)
     return getDOMStyleSheet(exec, DOM::StyleSheetList(styleSheetList).item(u));
 
+  // IE also supports retrieving a stylesheet by name, using the name/id of the <style> tag
+  // (this is consistent with all the other collections)
+#if 0
+  // Bad implementation because DOM::StyleSheet doesn't inherit DOM::Node
+  // so we can't use DOMNamedNodesCollection.....
+  // We could duplicate it for stylesheets though - worth it ?
+  // Other problem of this implementation: it doesn't look for the ID attribute!
+  DOM::NameNodeListImpl namedList( m_doc.documentElement().handle(), p.string() );
+  int len = namedList.length();
+  if ( len ) {
+    QValueList<DOM::Node> styleSheets;
+    for ( int i = 0 ; i < len ; ++i ) {
+      DOM::HTMLStyleElement elem = DOM::Node(namedList.item(i));
+      if (!elem.isNull())
+        styleSheets.append(elem.sheet());
+    }
+    if ( styleSheets.count() == 1 ) // single result
+      return getDOMStyleSheet(exec, styleSheets[0]);
+    else if ( styleSheets.count() > 1 ) {
+      return new DOMNamedItemsCollection(exec,styleSheets);
+    }
+  }
+#endif
+  // ### Bad implementation because returns a single element (are IDs always unique?)
+  // and doesn't look for name attribute (see implementation above).
+  // But unicity of stylesheet ids is good practice anyway ;)
+  DOM::DOMString pstr = p.string();
+  DOM::HTMLStyleElement styleElem = m_doc.getElementById( pstr );
+  if (!styleElem.isNull())
+    return getDOMStyleSheet(exec, styleElem.sheet());
+
   return DOMObject::tryGet(exec, p);
 }
 
-Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl)
+Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::Document doc)
 {
   DOMStyleSheetList *ret;
   if (ssl.isNull())
@@ -333,7 +369,7 @@ Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl)
   else if ((ret = styleSheetLists[ssl.handle()]))
     return ret;
   else {
-    ret = new DOMStyleSheetList(exec, ssl);
+    ret = new DOMStyleSheetList(exec, ssl, doc);
     styleSheetLists.insert(ssl.handle(),ret);
     return ret;
   }
@@ -341,11 +377,10 @@ Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl)
 
 Value DOMStyleSheetListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
   DOM::StyleSheetList styleSheetList = static_cast<DOMStyleSheetList *>(thisObj.imp())->toStyleSheetList();
   if (id == DOMStyleSheetList::Item)
-    result = getDOMStyleSheet(exec, styleSheetList.item(args[0].toInteger(exec)));
-  return result;
+    return getDOMStyleSheet(exec, styleSheetList.item(args[0].toInteger(exec)));
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------

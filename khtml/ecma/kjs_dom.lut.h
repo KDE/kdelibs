@@ -117,7 +117,7 @@ namespace KJS {
 const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "createCDATASection", DOMDocument::CreateCDATASection, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[30] },
+   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[29] },
    { 0, 0, 0, 0, 0 },
    { "getElementsByTagName", DOMDocument::GetElementsByTagName, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[25] },
    { 0, 0, 0, 0, 0 },
@@ -138,30 +138,30 @@ const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "createNodeIterator", DOMDocument::CreateNodeIterator, DontDelete|Function, 3, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createElementNS", DOMDocument::CreateElementNS, DontDelete|Function, 2, &DOMDocumentProtoTableEntries[29] },
+   { "createElementNS", DOMDocument::CreateElementNS, DontDelete|Function, 2, 0 },
    { "createAttributeNS", DOMDocument::CreateAttributeNS, DontDelete|Function, 2, 0 },
    { "getElementsByTagNameNS", DOMDocument::GetElementsByTagNameNS, DontDelete|Function, 2, 0 },
    { "getElementById", DOMDocument::GetElementById, DontDelete|Function, 1, 0 },
    { "createRange", DOMDocument::CreateRange, DontDelete|Function, 0, 0 },
    { "createEvent", DOMDocument::CreateEvent, DontDelete|Function, 1, 0 },
-   { "styleSheets", DOMDocument::StyleSheets, DontDelete|Function, 0, 0 },
    { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|Function, 2, 0 }
 };
 
-const struct HashTable DOMDocumentProtoTable = { 2, 31, DOMDocumentProtoTableEntries, 23 };
+const struct HashTable DOMDocumentProtoTable = { 2, 30, DOMDocumentProtoTableEntries, 23 };
 
 }; // namespace
 
 namespace KJS {
 
 const struct HashEntry DOMDocumentTableEntries[] = {
+   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, 0 },
+   { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[4] },
+   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[3] },
-   { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, 0 },
-   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, 0 }
+   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMDocumentTable = { 2, 4, DOMDocumentTableEntries, 3 };
+const struct HashTable DOMDocumentTable = { 2, 5, DOMDocumentTableEntries, 4 };
 
 }; // namespace
 

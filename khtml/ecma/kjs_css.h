@@ -23,6 +23,7 @@
 #define _KJS_CSS_H_
 
 #include <dom/dom_node.h>
+#include <dom/dom_doc.h>
 #include <kjs/object.h>
 #include <dom/css_value.h>
 #include <dom/css_stylesheet.h>
@@ -72,7 +73,8 @@ namespace KJS {
 
   class DOMStyleSheetList : public DOMObject {
   public:
-    DOMStyleSheetList(ExecState *, DOM::StyleSheetList ssl) : styleSheetList(ssl) { }
+    DOMStyleSheetList(ExecState *, DOM::StyleSheetList ssl, DOM::Document doc)
+      : styleSheetList(ssl), m_doc(doc) { }
     virtual ~DOMStyleSheetList();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
@@ -83,9 +85,11 @@ namespace KJS {
     enum { Item, Length };
   private:
     DOM::StyleSheetList styleSheetList;
+    DOM::Document m_doc;
   };
 
-  Value getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ss);
+  // The document is only used for get-stylesheet-by-name (make optional if necessary)
+  Value getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ss, DOM::Document doc);
 
   class DOMMediaList : public DOMObject {
   public:

@@ -251,6 +251,16 @@ namespace KJS {
   Object getNodeConstructor(ExecState *exec);
   Object getDOMExceptionConstructor(ExecState *exec);
 
+  // Internal class, used for the collection return by e.g. document.forms.myinput
+  // when multiple nodes have the same name.
+  class DOMNamedNodesCollection : public DOMObject {
+  public:
+    DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes );
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+  private:
+    QValueList<DOM::Node> m_nodes;
+  };
+
 }; // namespace
 
 #endif

@@ -111,14 +111,6 @@ namespace KJS {
     DOM::HTMLSelectElement element;
   };
 
-  class HTMLNamedItemsCollection : public DOMObject {
-  public:
-    HTMLNamedItemsCollection(ExecState *exec, QValueList<DOM::Node>& nodes );
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-  private:
-    QValueList<DOM::Node> m_nodes;
-  };
-
   ////////////////////// Option Object ////////////////////////
 
   class OptionConstructorImp : public ObjectImp {

@@ -136,6 +136,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
+    //kdDebug() << "document.write: " << str.ascii() << endl;
     doc.write(str.string());
     return Undefined();
   }
@@ -388,7 +389,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::tryGet " << p.qstring() << " thisTag=" << element.tagName().string() << endl;
 #endif
 
   switch (element.elementId()) {
@@ -1199,7 +1200,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
   DOM::Node n = (new DOMNode(exec, KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << " str=" << str.string() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::tryPut " << p.qstring() << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
 #endif
 
   switch (element.elementId()) {
@@ -1826,7 +1827,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
         nodes.append(next);
         next = collection.nextNamedItem(pstr);
       } while (!next.isNull());
-      return new HTMLNamedItemsCollection(exec,nodes);
+      return new DOMNamedNodesCollection(exec,nodes);
     }
   }
   return Undefined();
@@ -1922,29 +1923,6 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
   }
   // finally add the new element
   element.add(option, before);
-}
-
-// Such a collection is usually very short-lived, it only exists
-// for constructs like document.forms.<name>[1],
-// so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-HTMLNamedItemsCollection::HTMLNamedItemsCollection(ExecState *, QValueList<DOM::Node>& nodes )
-  : DOMObject(), m_nodes(nodes)
-{
-  // Maybe we should ref (and deref in the dtor) the nodes, though ?
-}
-
-Value HTMLNamedItemsCollection::tryGet(ExecState *exec, const UString &propertyName) const
-{
-  if (propertyName == "length")
-    return Number(m_nodes.count());
-  // index?
-  bool ok;
-  unsigned int u = propertyName.toULong(&ok);
-  if (ok) {
-    DOM::Node node = m_nodes[u];
-    return getDOMNode(exec,node);
-  }
-  return DOMObject::tryGet(exec,propertyName);
 }
 
 ////////////////////// Option Object ////////////////////////
