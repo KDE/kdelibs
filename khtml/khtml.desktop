@@ -42,3 +42,4 @@ Name=KHTML
 Name[da]=KHtml
 ServiceTypes=KParts/ReadOnlyPart,Browser/View
 X-KDE-Library=libkhtml
+InitialPreference=10
