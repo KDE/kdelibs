@@ -1154,6 +1154,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
   // Entry* e = static_cast<Entry*>(fe->userdata);
 
+#if 0 // #88538
   kdDebug(7001) << "Processing FAM event ("
 		<< ((fe->code == FAMChanged) ? "FAMChanged" :
 		    (fe->code == FAMDeleted) ? "FAMDeleted" :
@@ -1167,6 +1168,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 		<< ", " << fe->filename
 		<< ", Req " << FAMREQUEST_GETREQNUM(&(fe->fr))
 		<< ")" << endl;
+#endif
 
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
