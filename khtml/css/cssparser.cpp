@@ -1213,46 +1213,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
 	// close-quote | no-open-quote | no-close-quote ]+ | inherit
         {
-            if (len>0)
-            {
-                const QString str(value.stripWhiteSpace()); // ### Optimize
-	        if (str.left(4).lower() == "url(")
-                {
-		    DOMString value(curP, endP - curP);
-		    value = khtml::parseURL(value);
-            	    parsedValue = new CSSImageValueImpl(value, this);
-#ifdef CSS_DEBUG
-		    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
-#endif
-	        }
-                else
-                {
-                    while(curP < endP && *curP == ' ')
-                        curP++;
-                    if(curP >= endP ) {
-                        break;
-                    }
-                    const QChar* endVal = curP;
-                    if(*curP == '\'') {
-                        curP++;
-                        endVal++;
-                        while(endVal < endP && *endVal != '\'')
-                            endVal++;
-                    } else if(*curP == '\"') {
-                        curP++;
-                        endVal++;
-                        while(endVal < endP && *endVal != '\"')
-                            endVal++;
-                    } else {
-                      while(endVal < endP)
-                        endVal++;
-                    }
-                    QString str = QConstString( const_cast<QChar*>( curP ), endVal - curP ).string();
-                    str = str.replace(QRegExp("\\\\a"),"\n");
-                    parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);
-                }
-            }
-            break;
+            parsedValue = parseContent(curP,endP);
         }
 
       case CSS_PROP__KONQ_JS_CLIP:
@@ -2361,6 +2322,110 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
     //kdDebug(6080) << "found background property!" << endl;
     return found;
 }
+
+
+CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
+{
+    CSSValueListImpl* values = new CSSValueListImpl();
+    
+    QPtrList<QChar> list = splitContent(curP, endP);
+    for(int n=0; n<list.count(); n+=2)
+    {
+        QString str(list.at(n), list.at(n+1)-list.at(n));
+        CSSValueImpl* parsedValue=0;
+
+        if (str.left(4) == "url(")
+        {
+            // url
+	    DOMString value(curP, endP - curP);
+	    value = khtml::parseURL(value);
+            parsedValue = new CSSImageValueImpl(value, this);
+    #ifdef CSS_DEBUG
+	    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
+    #endif
+        }
+        else if (str.left(5) == "attr(")
+        {
+            // attr
+        }           
+        else if (str.left(8) == "counter(")
+        {
+            // counter
+        }   
+        else if (str == "open-quote")
+        {
+            // open-quote
+        }    
+        else if (str == "close-quote")
+        {
+            // open-quote
+        }    
+        else if (str == "no-open-quote")
+        {
+            // no-open-quote
+        }    
+        else if (str == "no-close-quote")   
+        {
+            // no-close-quote
+        }                      
+        else
+        {
+            // string
+            QString str = QConstString( list.at(n), list.at(n+1)-list.at(n)).string();
+            str = str.replace(QRegExp("\\\\a"),"\n");
+            parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);
+        }
+        if (parsedValue)
+            values->append(parsedValue);
+
+    }
+    return values;
+}    
+    
+
+
+QPtrList<QChar> StyleBaseImpl::splitContent(const QChar *curP, const QChar *endP)
+{
+    bool last = false;
+
+    QPtrList<QChar> list;
+    while(!last) {
+        const QChar *nextP = curP;
+        bool q = false;
+        bool dq = false;        
+        if(*nextP=='\'')
+            q=true;
+        else if (*nextP=='\"')
+            dq=true;
+        while(!(nextP->isSpace()) || q || dq) {            
+            nextP++;
+            if(nextP >= endP){
+                last = true;
+                break;
+            }
+            if((q&&*nextP=='\'') || (dq&&*nextP=='\"')){
+                nextP++;
+                if(nextP >= endP) last= true;
+                break;
+            }            
+        }
+        
+        list.append(curP+((q||dq)?1:0));
+        list.append(nextP-((q||dq)?1:0));
+        
+        if ( last ) break;
+        while(nextP->isSpace()) { // skip over WS between tokens
+            nextP++;
+            curP = nextP;
+            if(curP >= endP) {
+                last = true;
+                break;
+            }
+        }
+    }
+    return list;
+}
+
 
 QPtrList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QChar *endP)
 {

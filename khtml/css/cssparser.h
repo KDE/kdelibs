@@ -169,6 +169,9 @@ public:
 	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId);
 
+        CSSValueImpl* parseContent(const QChar *curP, const QChar *endP);
+        QPtrList<QChar> splitContent(const QChar *curP, const QChar *endP);
+                
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
 	{

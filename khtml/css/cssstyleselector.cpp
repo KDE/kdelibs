@@ -2254,19 +2254,28 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
     {
-        if (primitiveValue  && (style->styleType()==RenderStyle::BEFORE ||
+        if (!(style->styleType()==RenderStyle::BEFORE ||
                 style->styleType()==RenderStyle::AFTER))
-        {
-            if(primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_STRING)
+            break;
+                
+        if(!value->isValueList()) return;
+        CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
+        int len = list->length();
+        
+        for(int i = 0; i < len; i++) {
+            CSSValueImpl *item = list->item(i);
+            if(!item->isPrimitiveValue()) continue;
+            CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
+            if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
+            {                
+                style->setContent(val->getStringValue());
+            } 
+            else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
-
-                style->setContent(primitiveValue->getStringValue());
-            }
-            else if (primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_URI)
-            {
-                CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
+                CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
                 style->setContent(image->image());
-            }
+            }    
+
         }
         break;
     }
