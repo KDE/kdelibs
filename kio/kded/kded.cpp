@@ -270,7 +270,7 @@ bool Kded::process(const QCString &fun, const QByteArray &data,
                            QCString &replyType, QByteArray &replyData)
 {
   if (fun == "recreate()") {
-    kdDebug() << "got a recreate signal!" << endl;
+    kdDebug(7020) << "got a recreate signal!" << endl;
     if (m_requests.isEmpty())
     {
        m_pTimer->start(0, true /* single shot */ );
@@ -286,7 +286,7 @@ bool Kded::process(const QCString &fun, const QByteArray &data,
 
 void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
 {
-  // kdDebug(7020) << QString("reading %1").arg(_path) << endl;
+  //kdDebug(7020) << QString("reading %1").arg(_path) << endl;
 
   QString path( _path );
   if ( path.right(1) != "/" )
