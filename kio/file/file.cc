@@ -879,15 +879,21 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
     {
-        // Look in /etc/fstab ? If no fstype nor mountpoint or on second step.
-        if ( (fstype.isEmpty() && point.isEmpty()) || step == 1 )
+        // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
+        if ( !dev.isEmpty() && point.isEmpty() && fstype.isEmpty() )
             buffer.sprintf( "mount %s 2>%s", dev.data(), tmp );
         else
-            if ( fstype.isEmpty() && !point.isEmpty() )
-                buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
+          // Mount using the mountpoint, if no fstype nor device (impossible in first step)
+          if ( !point.isEmpty() && dev.isEmpty() && fstype.isEmpty() )
+            buffer.sprintf( "mount %s 2>%s", point.data(), tmp );
+          else
+            // mount giving device + mountpoint but no fstype
+            if ( !point.isEmpty() && !dev.isEmpty() && fstype.isEmpty() )
+              buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
             else
-                buffer.sprintf( "mount %s -t %s %s %s 2>%s", readonly.data(),
-                                fstype.data(), dev.data(), point.data(), tmp );
+              // mount giving device + mountpoint + fstype
+              buffer.sprintf( "mount %s -t %s %s %s 2>%s", readonly.data(),
+                              fstype.data(), dev.data(), point.data(), tmp );
 
         kdDebug(7101) << buffer << endl;
 
@@ -914,7 +920,20 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             else
             {
                 if ( step == 0 )
-                    kdDebug(7101) << "Mounting with all options didn't work, trying 'mount device'" << endl;
+                {
+                    kdDebug(7101) << err << endl;
+                    kdDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
+                    fstype = "";
+                    dev = "";
+                    // The reason for trying with only mountpoint (instead of
+                    // only device) is that some people (hi Malte!) have the
+                    // same device associated with two mountpoints
+                    // for different fstypes, like /dev/fd0 /mnt/e2floppy and
+                    // /dev/fd0 /mnt/dosfloppy.
+                    // If the user has the same mountpoint associated with two
+                    // different devices, well they shouldn't specify the
+                    // mountpoint but just the device.
+                }
                 else
                 {
                     error( KIO::ERR_COULD_NOT_MOUNT, err );
