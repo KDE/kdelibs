@@ -1,0 +1,24 @@
+Index: admin/ltcf-cxx.sh
+===================================================================
+RCS file: /home/kde/kde-common/admin/ltcf-cxx.sh,v
+retrieving revision 1.36
+diff -u -r1.36 ltcf-cxx.sh
+--- admin/ltcf-cxx.sh	2002/01/25 17:31:45	1.36
++++ admin/ltcf-cxx.sh	2002/02/18 05:31:03
+@@ -35,6 +35,7 @@
+ 
+ # Object file extension for compiled C++ test sources.
+ objext=o
++archiveext=a
+ 
+ # Code to be used in simple compile tests
+ lt_simple_compile_test_code="int some_variable = 0;"
+@@ -999,7 +1000,7 @@
+        fi
+        ;;
+ 
+-    *.$objext)
++    *.$objext | *.$archiveext)
+        # This assumes that the test object file only shows up
+        # once in the compiler output.
+        if test "$p" = "conftest.$objext"; then
