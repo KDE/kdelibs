@@ -40,9 +40,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
-#ifdef HAVE_VORK_H
-#include <vfork.h>
-#endif
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -849,12 +846,12 @@ int main( int argc, char* argv[] )
 
   if (!nofork)
   {
-    if (vfork() > 0)
+    if (fork() > 0)
       exit(0); // I am the parent
 
     setsid();
 
-    if (vfork() > 0)
+    if (fork() > 0)
       exit(0); // get rid of controlling terminal
   }
 
