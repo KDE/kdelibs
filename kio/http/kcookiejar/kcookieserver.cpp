@@ -59,7 +59,7 @@ KCookieServer::KCookieServer()
   : KUniqueApplication()
 {
    mCookieJar = new KCookieJar;
-   mPendingCookies = new KCookieList;
+   mPendingCookies = new KHttpCookieList;
    mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = 0;
@@ -171,7 +171,7 @@ KCookieServer::cookiesPending( const QString &url )
   // Check whether 'url' has cookies on the pending list
   if (!KCookieJar::extractDomain( url, fqdn, domain, path))
      return false;
-  for( KCookie *cookie = mPendingCookies->first();
+  for( KHttpCookie *cookie = mPendingCookies->first();
        cookie;
        cookie = mPendingCookies->next())
   {
@@ -184,7 +184,7 @@ KCookieServer::cookiesPending( const QString &url )
 void
 KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
 {
-    KCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader);
+    KHttpCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader);
 
     if (mAdvicePending)
     {
@@ -203,14 +203,14 @@ KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
 
 }
 
-void KCookieServer::checkCookies(KCookie *cookie, bool queue)
+void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
 {
     KCookieAdvice userAdvice = KCookieDunno;
     QString host;
     if (cookie) host = cookie->host();
     while (cookie)
     {
-        KCookiePtr next_cookie = cookie->next();
+        KHttpCookiePtr next_cookie = cookie->next();
         KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
         if ((advice == KCookieAsk) || (advice == KCookieDunno))
         {

@@ -28,9 +28,9 @@
 #include <dcopobject.h>
 #include <kuniqueapp.h>
 
-class KCookieList;
+class KHttpCookieList;
 class KCookieJar;
-class KCookie;
+class KHttpCookie;
 class QTimer;
 class RequestList;
 
@@ -48,7 +48,7 @@ public:
 
   bool cookiesPending(const QString &url);
   void addCookies(const QString &url, const QCString &cookieHeader);
-  void checkCookies(KCookie *cookie, bool queue);
+  void checkCookies(KHttpCookie *cookie, bool queue);
 
 public slots:
   /**
@@ -58,7 +58,7 @@ public slots:
 
 protected:
   KCookieJar *mCookieJar;
-  KCookieList *mPendingCookies;
+  KHttpCookieList *mPendingCookies;
   RequestList *mRequestList;
   QTimer *mTimer;
   bool mAdvicePending;

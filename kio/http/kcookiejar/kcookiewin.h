@@ -29,14 +29,14 @@
 #include "kdialogbase.h"
 #include "kcookiejar.h"                                                
 
-class KCookie;
+class KHttpCookie;
 class QRadioButton;
 
 class KCookieWin : public KDialogBase
 {
 public:
     
-    KCookieWin( QWidget *parent, KCookie *_cookie );
+    KCookieWin( QWidget *parent, KHttpCookie *_cookie );
     ~KCookieWin();
  
     /**
@@ -45,7 +45,7 @@ public:
     KCookieAdvice advice(KCookieJar *cookiejar); 
     
 protected:
-    KCookie      *cookie;
+    KHttpCookie      *cookie;
     QRadioButton *rb1;
     QRadioButton *rb2;
     QRadioButton *rb3;

@@ -39,7 +39,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qmessagebox.h>
         
-KCookieWin::KCookieWin(QWidget *parent, KCookie *_cookie) :
+KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie) :
     KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
 		 KDialogBase::Yes, KDialogBase::No, 
 		 parent, 

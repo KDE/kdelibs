@@ -34,9 +34,9 @@
 class KCookieJar;
 class KConfig;
 
-class KCookieList;
-class KCookie;
-typedef KCookie *KCookiePtr;
+class KHttpCookieList;
+class KHttpCookie;
+typedef KHttpCookie *KHttpCookiePtr;
 
 enum KCookieAdvice { 
     KCookieDunno=0, 
@@ -45,10 +45,10 @@ enum KCookieAdvice {
     KCookieAsk 
 };
 
-class KCookie 
+class KHttpCookie 
 {
     friend KCookieJar;
-    friend KCookieList;
+    friend KHttpCookieList;
 
 protected:
     QString mHost;
@@ -59,11 +59,11 @@ protected:
     time_t  mExpireDate;
     int     mProtocolVersion;
 
-    KCookiePtr nextCookie;
+    KHttpCookiePtr nextCookie;
 
     QString cookieStr(void);
 public:
-    KCookie(const QString &_host=QString::null, 
+    KHttpCookie(const QString &_host=QString::null, 
             const QString &_domain=QString::null, 
             const QString &_path=QString::null,
             const QString &_name=QString::null, 
@@ -83,17 +83,17 @@ public:
     bool    match(const QString &domain, const QString &fqdn, 
                   const QString &path);
 
-    KCookiePtr next() { return nextCookie; }
+    KHttpCookiePtr next() { return nextCookie; }
 };
 
-class KCookieList : public QList<KCookie>
+class KHttpCookieList : public QList<KHttpCookie>
 {
 public:
-    KCookieList() : QList<KCookie>(), advice( KCookieDunno ) 
+    KHttpCookieList() : QList<KHttpCookie>(), advice( KCookieDunno ) 
     { setAutoDelete(true); }
-    virtual ~KCookieList() { }
+    virtual ~KHttpCookieList() { }
 
-    virtual int compareItems( KCookie * item1, KCookie * item2);
+    virtual int compareItems( KHttpCookie * item1, KHttpCookie * item2);
 
     KCookieAdvice getAdvice(void) { return advice; }
     void setAdvice(KCookieAdvice _advice) { advice = _advice; }
@@ -153,23 +153,23 @@ public:
 
     /**
      * This function parses cookie_headers and returns a linked list of
-     * valid KCookie objects for all cookies found in cookie_headers.
+     * valid KHttpCookie objects for all cookies found in cookie_headers.
      * If no cookies could be found 0 is returned.
      *
      * cookie_headers should be a concatenation of all lines of a HTTP-header
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
-    KCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers);
+    KHttpCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers);
 
     /**
-     * This function hands a KCookie object over to the cookie jar.
+     * This function hands a KHttpCookie object over to the cookie jar.
      * 
      * On return cookiePtr is set to 0.
      */
-    void addCookie(KCookiePtr &cookiePtr);
+    void addCookie(KHttpCookiePtr &cookiePtr);
 
     /**
-     * This function advices whether a single KCookie object should 
+     * This function advices whether a single KHttpCookie object should 
      * be added to the cookie jar.
      *
      * Possible return values are:
@@ -177,7 +177,7 @@ public:
      *     - KCookieReject, the cookie should not be added
      *     - KCookieAsk, the user should decide what to do 
      */
-    KCookieAdvice cookieAdvice(KCookiePtr cookiePtr);
+    KCookieAdvice cookieAdvice(KHttpCookiePtr cookiePtr);
 
     /**
      * This function gets the advice for all cookies originating from 
@@ -212,7 +212,7 @@ public:
      *     - KCookieReject, reject all cookies for _domain 
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
-    void setDomainAdvice(KCookiePtr _cookie, KCookieAdvice _advice);
+    void setDomainAdvice(KHttpCookiePtr _cookie, KCookieAdvice _advice);
 
     /**
      * This function sets the global advice for cookies 
@@ -237,16 +237,16 @@ public:
     /**
      * Get a list of all cookies in the cookie jar originating from _domain.
      */
-    const KCookieList *getCookieList(const QString &_domain);
+    const KHttpCookieList *getCookieList(const QString &_domain);
 
     /**
      * Remove & delete a cookie from the jar.
      *
-     * cookiePtr should be one of the entries in a KCookieList.
-     * Update your KCookieList by calling getCookieList after 
+     * cookiePtr should be one of the entries in a KHttpCookieList.
+     * Update your KHttpCookieList by calling getCookieList after 
      * calling this function.
      */
-    void eatCookie(KCookiePtr cookiePtr);
+    void eatCookie(KHttpCookiePtr cookiePtr);
 
     /**
      * Remove & delete all cookies
@@ -263,7 +263,7 @@ public:
                               QString &_path);
 
 protected:  
-    QDict<KCookieList> cookieDomains;
+    QDict<KHttpCookieList> cookieDomains;
 
     QStringList domainList;
 
