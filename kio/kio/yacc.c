@@ -71,7 +71,7 @@
      GR = 264,
      OR = 265,
      AND = 266,
-     IN = 267,
+     TOKEN_IN = 267,
      EXIST = 268,
      MAX = 269,
      MIN = 270,
@@ -91,7 +91,7 @@
 #define GR 264
 #define OR 265
 #define AND 266
-#define IN 267
+#define TOKEN_IN 267
 #define EXIST 268
 #define MAX 269
 #define MIN 270
@@ -345,7 +345,7 @@ static const unsigned char yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "NOT", "EQ", "NEQ", "LEQ", "GEQ", "LE", 
-  "GR", "OR", "AND", "IN", "EXIST", "MAX", "MIN", "VAL_BOOL", 
+  "GR", "OR", "AND", "TOKEN_IN", "EXIST", "MAX", "MIN", "VAL_BOOL", 
   "VAL_STRING", "VAL_ID", "VAL_NUM", "VAL_FLOAT", "'~'", "'+'", "'-'", 
   "'*'", "'/'", "'('", "')'", "$accept", "constraint", "bool", "bool_or", 
   "bool_and", "bool_compare", "expr_in", "expr_twiddle", "expr", "term", 

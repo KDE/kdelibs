@@ -38,7 +38,7 @@
      GR = 264,
      OR = 265,
      AND = 266,
-     IN = 267,
+     TOKEN_IN = 267,
      EXIST = 268,
      MAX = 269,
      MIN = 270,
@@ -58,7 +58,7 @@
 #define GR 264
 #define OR 265
 #define AND 266
-#define IN 267
+#define TOKEN_IN 267
 #define EXIST 268
 #define MAX 269
 #define MIN 270

@@ -728,7 +728,7 @@ YY_RULE_SETUP
 case 10:
 YY_RULE_SETUP
 #line 32 "lex.l"
-{ return IN; }
+{ return TOKEN_IN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
