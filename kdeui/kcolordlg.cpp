@@ -621,16 +621,16 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   // the entry fields should be wide enought to hold 88888
   //
   int w = hedit->fontMetrics().width("888888");
-  hedit->setMinimumWidth(w);
-  sedit->setMinimumWidth(w);
-  vedit->setMinimumWidth(w);
+  hedit->setFixedWidth(w);
+  sedit->setFixedWidth(w);
+  vedit->setFixedWidth(w);
 
-  redit->setMinimumWidth(w);
-  gedit->setMinimumWidth(w);
-  bedit->setMinimumWidth(w);
+  redit->setFixedWidth(w);
+  gedit->setFixedWidth(w);
+  bedit->setFixedWidth(w);
 	
   tl_layout->activate();
-  page->setMinimumSize(  page->sizeHint() );
+  page->setMinimumSize( page->sizeHint() );
 
   readSettings();
   setRgbEdit();
