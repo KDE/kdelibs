@@ -53,8 +53,14 @@ static struct sockaddr_in *parse_tcp_url(const char *url)
 	long portno = atol(port);
 	if(portno < 1 || portno > 65535) return 0;
 
-    struct hostent *server = gethostbyname(host);                                        
-    memset((void *) &addr, '\0', sizeof(addr));
+    struct hostent *server = gethostbyname(host);
+   	if(server == 0)
+	{
+		fprintf(stderr,"parse_tcp_url: unknown host '%s'\n",host);
+		return 0;
+	}
+
+	memset((void *) &addr, '\0', sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = *(u_long *)server->h_addr;
     addr.sin_port = htons(portno);
