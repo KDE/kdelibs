@@ -172,17 +172,19 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
+  // image and form elements with the name p will be looked up first
   DOM::HTMLCollection coll = doc.all();
   DOM::HTMLElement element = coll.namedItem(p.string());
-  if(!element.isNull())
-      return getDOMNode(element);
+  if (!element.isNull() &&
+      (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
+    return getDOMNode(element);    
 
   if (p == "title")
     return getString(doc.title());
   else if (p == "referrer")
     return String(doc.referrer());
   else if (p == "domain")
-    return getString(doc.domain());
+    return String(doc.domain());
   else if (p == "URL")
     return getString(doc.URL());
   else if (p == "body")
@@ -205,6 +207,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::All);
   else if (p == "cookie")
     return String(doc.cookie());
+  else if (HostImp::hasProperty(p))	// expandos override functions
+    return HostImp::get(p);
   else if (p == "open")
     return new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
@@ -218,10 +222,9 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "getElementsByName")
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
   else {
-      // look in base class (Document)
-      KJSO result;
-      result = DOMDocument::tryGet(p);
-      return result;
+    if(!element.isNull())
+      return getDOMNode(element);
+    return Undefined();
   }
 }
 
