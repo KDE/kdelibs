@@ -36,7 +36,7 @@ Connector::Connector(const Connector &)
 
 Connector::~Connector()
 {
-    kdDebug(20000) << "Connector::~Connector " << this << endl;
+    //    kdDebug(20000) << "Connector::~Connector " << this << endl;
     /*
       if ( _connected )
       this->close();

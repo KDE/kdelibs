@@ -82,8 +82,7 @@ Connection::open()
     QCString pwd;
 
     if (connector) {
-        delete connector;
-        connector = 0L;
+        close(false);
     }
 
     Plugin * plugin = DBENGINE->findPlugin(m_plugin);

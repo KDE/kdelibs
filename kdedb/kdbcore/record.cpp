@@ -43,6 +43,11 @@ Record::Record(Recordset *r, FieldList fields, Row values )
 
 }
 
+Record::Record(const Record &r)
+    : DataObject(r.parent(), "Record"), m_fields(r.m_fields)
+{
+}
+
 Record::~Record()
 {
     //kdDebug(20000) << "Record::~Record" << endl;
@@ -99,5 +104,11 @@ Record::update()
     // TODO!
 }
 
-
+Record &
+Record::operator =(const Record &r)
+{
+    m_fields = r.m_fields;
+    return *this;
+}
+    
 

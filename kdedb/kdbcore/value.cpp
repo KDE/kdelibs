@@ -234,8 +234,13 @@ Value::toDate() const
 {
     if ( type() == Date )
 	return *((QDate*)ptr);
-    if ( type() == String )
-	return KLocale().readDate(toString());
+    if ( type() == String ) {
+	QDate d = KLocale().readDate(toString());
+        if (d.isValid())
+            return d;
+        else
+            return QDate(); 
+    }
     return QDate();
 }
 
@@ -254,19 +259,37 @@ Value::toString() const
 {
     //kdDebug(20000) << k_funcinfo << typeToName(type()) << endl;
     if ( type() == DateTime ) {
-        QString d = KLocale().formatDate(((QDateTime*)ptr)->date(),true);
-        QString t = KLocale().formatTime(((QDateTime*)ptr)->time());
-	return QString("%1 %2").arg(d).arg(t);
+        QDateTime dt = toDateTime();
+        if (dt.isValid()) {
+            QString d = KLocale().formatDate(toDateTime().date(),true);
+            QString t = KLocale().formatTime(toDateTime().time());
+            return QString("%1 %2").arg(d).arg(t);
+        } else {
+            return QString();
+        }
     }
-    if ( type() == Date )
-	return KLocale().formatDate(((QDateTime*)ptr)->date(),true);
-    if ( type() == Time )
-        return KLocale().formatTime(((QDateTime*)ptr)->time());
+    if ( type() == Date ) {
+        QDate d = toDate();
+        if (d.isValid()) 
+            return KLocale().formatDate(toDate(),true);
+        else
+            return QString();
+    }
+    if ( type() == Time ) {
+        QTime t = toTime();
+        if (t.isValid())
+            return KLocale().formatTime(toTime());
+        else
+            return QString();
+    }
     if ( type() == Long )
-        return QString("%1").arg(*(long*)ptr);
+        return QString("%1").arg(toLong());
     if ( type() == ULong )
-        return QString("%1").arg(*(KDB_ULONG*)ptr);
-    
+        return QString("%1").arg(toULong());
+    if ( type() == Double) {
+        kdDebug(20000) << "Double val " << toDouble() << endl;
+        return QString("%1").arg(toDouble());
+    }    
     return QVariant::toString();
 }
 

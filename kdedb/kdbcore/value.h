@@ -67,8 +67,6 @@ class Value :public QVariant {
 	Image,
 	Int,
 	UInt,
-        Long,
-        ULong,
 	Bool,
 	Double,
 	CString,
@@ -80,7 +78,9 @@ class Value :public QVariant {
 	Date,
 	Time,
 	DateTime,
-	ByteArray
+	ByteArray,
+        Long,
+        ULong
     };
     
     Value();

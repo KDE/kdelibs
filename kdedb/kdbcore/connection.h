@@ -175,7 +175,7 @@ class Connection : public Object {
      * optional connection number. The config file must exists
      * and must refer to the correct section.
      */
-    void saveToConfig( KConfigBase *config, int number = -1);
+    void saveToConfig( KConfigBase *config, int number = 0);
 
  public slots:
     void slotDeleteYourself();

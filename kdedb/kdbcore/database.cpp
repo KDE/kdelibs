@@ -101,7 +101,7 @@ Database::tableNames(bool system)
         for( it = m_tables.begin() ; it != m_tables.end() ; ++it ) {
             //kdDebug(20000) << *it << endl;
             if( (*it).startsWith("__") ) {
-                result.remove( it );
+                result.remove( *it );
 	    }
 	}
     }
@@ -273,9 +273,9 @@ Database::open()
 void
 Database::close()
 {
-    kdDebug(20000) << "Database::close" << endl;
+    // kdDebug(20000) << "Database::close" << endl;
     if (m_open) {
-        kdDebug(20000) << "was open" << endl;
+        kdDebug(20000) << "Database::close: was open" << endl;
         connector->close();
         m_tables.clear();
         m_queries.clear();

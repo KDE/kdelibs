@@ -65,7 +65,10 @@ class Record : public DataObject {
 
  public:
     Record(Recordset *r, FieldList fields, Row values);
+    Record(const Record &);
 
+    Record & operator = (const Record &);
+    
     ~Record();
 
     FieldIterator begin();

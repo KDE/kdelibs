@@ -271,11 +271,11 @@ DBEngine::loadConnections(KConfigBase *config)
 
     unsigned int maxConn = config->readUnsignedNumEntry( "NumberOfConnections", 0 );
 
-    //kdDebug(20010) << "Number of connections: " << maxConn << endl;
+    kdDebug(20010) << "Number of connections: " << maxConn << endl;
     
     for( unsigned int count = 0; count < maxConn; count++ )
         {
-            //kdDebug(20010) << "Loading connection number  " << count << endl;
+            kdDebug(20010) << "Loading connection number  " << count << endl;
 
             QString prefix, plugin, host, user, password, name;
             int port;
@@ -292,7 +292,7 @@ DBEngine::loadConnections(KConfigBase *config)
             Connection * conn = addConnection(plugin, host, port, user, password);
             conn->setName(name.utf8());
         
-            //kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
+            kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
         }
 
     if (clean)
