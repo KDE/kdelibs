@@ -407,8 +407,10 @@ bool CSSParser::parseValue( int propId, bool important )
     if ( id == CSS_VAL_INHERIT ) {
         addProperty( propId, new CSSInheritedValueImpl(), important );
         return true;
+    } else if (id == CSS_VAL_INITIAL) {
+        addProperty(propId, new CSSInitialValueImpl(), important);
+        return true;
     }
-
     bool valid_primitive = false;
     CSSValueImpl *parsedValue = 0;
 
@@ -1206,6 +1208,13 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
             return false;
         }
     }
+
+    // Fill in any remaining properties with the initial value.
+    for (int i = 0; i < numProperties; ++i) {
+        if (!fnd[i])
+            addProperty(properties[i], new CSSInitialValueImpl(), important);
+    }
+
     inParseShortHand = false;
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "parsed shorthand" << endl;

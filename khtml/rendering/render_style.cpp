@@ -54,13 +54,10 @@ bool StyleSurroundData::operator==(const StyleSurroundData& o) const
 }
 
 StyleBoxData::StyleBoxData()
-    : min_width( 0, Fixed ),
-      max_width(  UNDEFINED,  Fixed ),
-      min_height( 0, Fixed ),
-      max_height( UNDEFINED,  Fixed ),
-      z_index( 0 ), z_auto( true )
+    : z_index( 0 ), z_auto( true )
 {
-
+    min_width = min_height = RenderStyle::initialMinSize();
+    max_width = max_height = RenderStyle::initialMaxSize();
 }
 
 StyleBoxData::StyleBoxData(const StyleBoxData& o )
@@ -86,7 +83,8 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 }
 
 StyleVisualData::StyleVisualData()
-     : textDecoration(TDNONE), counter_increment( 0 ), counter_reset( 0 ),
+     : textDecoration(RenderStyle::initialTextDecoration()),
+       counter_increment( 0 ), counter_reset( 0 ),
       palette( QApplication::palette() )
 {
 }
@@ -105,7 +103,7 @@ StyleVisualData::StyleVisualData(const StyleVisualData& o )
 
 
 StyleBackgroundData::StyleBackgroundData()
-    : image( 0 )
+    : image( RenderStyle::initialBackgroundImage() )
 {
 }
 
@@ -130,10 +128,11 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 
 
 StyleInheritedData::StyleInheritedData()
-    : indent( Fixed ), line_height( -100, Percent ), style_image( 0 ),
-      font(), color( Qt::black ),
-      border_hspacing( 0 ), border_vspacing( 0 )
-
+    : indent( RenderStyle::initialTextIndent() ), line_height( RenderStyle::initialLineHeight() ),
+      style_image( RenderStyle::initialListStyleImage() ),
+      font(), color( RenderStyle::initialColor() ),
+      border_hspacing( RenderStyle::initialBorderHorizontalSpacing() ),
+      border_vspacing( RenderStyle::initialBorderVerticalSpacing() )
 {
 }
 

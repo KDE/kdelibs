@@ -1,5 +1,10 @@
 2004-01-19  Stephan Kulow  <coolo@kde.org>
 
+	* rendering/render_style.h: providing an initial property
+	function for every css property and using it in macros 
+	from cssselector.cpp to unify the handling of short hand
+	properties (based on safari patch)
+
        * css/cssstyleselector.cpp (parseValue): unify handling
        of inherited css properties (based on safari patch)
 
