@@ -41,9 +41,9 @@ extern "C" {
 #endif
 
 #define DCOPVendorString "KDE"
-#define DCOPReleaseString "1.1"
-#define DCOPVersionMajor 1
-#define DCOPVersionMinor 1
+#define DCOPReleaseString "2.0"
+#define DCOPVersionMajor 2
+#define DCOPVersionMinor 0
 
 #define DCOPSend 1
 #define DCOPCall 2
@@ -51,8 +51,7 @@ extern "C" {
 #define DCOPReplyFailed 4
 #define DCOPReplyWait 5
 #define DCOPReplyDelayed 6
-#define DCOPCallRejected 7
-#define DCOPFind 8
+#define DCOPFind 7
 
 /**
  * @libdoc
@@ -69,23 +68,23 @@ extern "C" {
  * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
  *
  * DCOPReply is the successfull reply to a DCOPCall message
- * data: << replyType << replyDataSize + replyData[replyDataSize]
+ * data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
  *
  * DCOPReplyFailed indicates failure of a DCOPCall message
- * data:
+ * data: << fromId << toId
  *
  * DCOPReplyWait indicates that a DCOPCall message is succesfully
  * being processed but that response will come later.
- * data: << transactionId
+ * data: << fromId << toId << transactionId
  *
  * DCOPReplyDelayed is the successfull reply to a DCOPCall message
  * after a DCOPReplyWait message.
  * data: << fromId << toId << transactionId << replyType << replyData
  *
  * DCOPFind is a message much like a "call" message. It can however
- * be send to multiple objects within a client. If a function in a 
+ * be send to multiple objects within a client. If a function in a
  * object that is being called returns a boolean with the value "true",
- * a DCOPReply will be send back containing the DCOPRef of the object 
+ * a DCOPReply will be send back containing the DCOPRef of the object
  * who returned "true".
  *
  * All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
@@ -117,7 +116,7 @@ struct DCOPMsg {
   CARD8 minorOpcode;
   CARD8 data[2];
   CARD32 length B32;
-  CARD32 time;
+  CARD32 key;
 };
 
 #endif

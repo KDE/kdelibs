@@ -168,14 +168,14 @@ class DCOPClient : public QObject
    * Temporarily suspend processing of DCOP events.
    * This can be usefull if you need to show e.g. a dialog before
    * your application is ready to accept DCOP requests. Normally the
-   * dialog would start an event loop and in this event loop DCOP 
+   * dialog would start an event loop and in this event loop DCOP
    * requests will be handled.
    *
    * Be aware that not responding to DCOP requests may cause other
    * programs that want to communicate with your application, to hang.
    */
   void suspend();
-  
+
   /**
    * Resume the processing of DCOP events.
    * See @ref suspend().
@@ -272,10 +272,10 @@ class DCOPClient : public QObject
 
 
   /**
-   * Emit @p signal as DCOP signal from object @p object with @data as 
+   * Emit @p signal as DCOP signal from object @p object with @data as
    * arguments
    */
-  void emitDCOPSignal( const QCString &object, const QCString &signal, 
+  void emitDCOPSignal( const QCString &object, const QCString &signal,
                        const QByteArray &data);
 
   /* For backwards compatibility */
@@ -301,7 +301,7 @@ class DCOPClient : public QObject
    * @li @p Volatile is true and @p sender  does not exist.
    * @li @p signal and @p slot do not have matching arguments.
    */
-  bool connectDCOPSignal( const QCString &sender, const QCString &senderObj, 
+  bool connectDCOPSignal( const QCString &sender, const QCString &senderObj,
                           const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
                           bool Volatile);
@@ -323,7 +323,7 @@ class DCOPClient : public QObject
    * If empty all slots will be disconnected.
    *
    * A special case is when both sender & signal are empty. In this
-   * case all connections related to @param receiverObj in the current client 
+   * case all connections related to @param receiverObj in the current client
    * are disconnected. (Both connections from as well as to this object!)
    *
    * @return false if no connection(s) where removed.
@@ -394,7 +394,7 @@ class DCOPClient : public QObject
    * of application @p remApp
   */
   QCStringList remoteInterfaces( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
-    
+
   /**
    * Retrieves the list of functions of the remote object @p remObj
    * of application @p remApp
@@ -528,8 +528,11 @@ signals:
 
 public slots:
 
-  protected slots:
+protected slots:
   void processSocketData(int socknum);
+    
+private slots:
+  void processPostedMessagesInternal();
 
 protected:
 

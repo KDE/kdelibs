@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qvariant.h>
+#include <qtimer.h>
 // end of qt <-> dcop integration
 
 #include <config.h>
@@ -71,6 +72,13 @@ template class QList<DCOPObjectProxy>;
 template class QList<DCOPClientTransaction>;
 template class QList<_IceConn>;
 
+struct DCOPClientMessage
+{
+    int opcode;
+    CARD32 key;
+    QByteArray data;
+};
+
 class DCOPClientPrivate
 {
 public:
@@ -96,20 +104,25 @@ public:
     Q_INT32 transactionId;
     int opcode;
 
-    CARD32 time;
+    CARD32 key;
+    CARD32 currentKey;
+
+    QTimer postMessageTimer;
+    QList<DCOPClientMessage> messages;
 };
 
 class DCOPClientTransaction
 {
 public:
     Q_INT32 id;
+    CARD32 key;
     QCString senderId;
 };
 
 struct ReplyStruct
 {
 
-    enum ReplyStatus { Pending, Ok, Rejected, Failed };
+    enum ReplyStatus { Pending, Ok, Failed };
     ReplyStruct() {
 	status = Pending;
 	replyType = 0;
@@ -151,38 +164,32 @@ static void registerXSM()
 
 
 
+static void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  );
+
 /**
  * Callback for ICE.
  */
-void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
+static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 			int opcode, unsigned long length, Bool /*swap*/,
 			IceReplyWaitInfo *replyWait,
 			Bool *replyWaitRet)
 {
     DCOPMsg *pMsg = 0;
     DCOPClientPrivate *d = static_cast<DCOPClientPrivate *>(clientObject);
-    DCOPClient *c = d->parent;
 
     IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
+    CARD32 key = pMsg->key;
+    if ( d->key == 0 )
+	d->key = key; // received a key from the server
 
-    if ( pMsg->time > d->time )
-	d->time = pMsg->time;
+    QByteArray dataReceived( length );
+    IceReadData(iceConn, length, dataReceived.data() );
 
     d->opcode = opcode;
     switch (opcode ) {
-    case DCOPCallRejected:
-	if ( replyWait ) {
-	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Rejected;
-	    *replyWaitRet = True;
-	    return;
-	} else {
-	    qWarning("Very strange! got a DCOPCallRejected opcode, but we were not waiting for a reply!");
-	    return;
-	}
+	
     case DCOPReplyFailed:
 	if ( replyWait ) {
-	    QByteArray tmp( length );
-	    IceReadData(iceConn, length, tmp.data() );
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
 	    *replyWaitRet = True;
 	    return;
@@ -192,16 +199,13 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	}
     case DCOPReply:
 	if ( replyWait ) {
-	    QByteArray tmp( length );
-	    IceReadData(iceConn, length, tmp.data() );
-
 	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
 	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
 
-	    // TODO: avoid this data copying
-	    QDataStream tmpStream( tmp, IO_ReadOnly );
-	    tmpStream >> *t >> *b;
+	    QCString calledApp, app;
+	    QDataStream ds( dataReceived, IO_ReadOnly );
+	    ds >> calledApp >> app >> *t >> *b;
 
 	    *replyWaitRet = True;
 	    return;
@@ -211,12 +215,10 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	}
     case DCOPReplyWait:
 	if ( replyWait ) {
-	    QByteArray tmp( length );
-	    IceReadData(iceConn, length, tmp.data() );
-
+	    QCString calledApp, app;
 	    Q_INT32 id;
-	    QDataStream tmpStream( tmp, IO_ReadOnly );
-	    tmpStream >> id;
+	    QDataStream ds( dataReceived, IO_ReadOnly );
+	    ds >> calledApp >> app >> id;
 	    static_cast<ReplyStruct*>(replyWait->reply)->replyId = id;
 	    return;
 	} else {
@@ -225,14 +227,11 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	}
     case DCOPReplyDelayed:
 	if ( replyWait ) {
-	    QByteArray tmp( length );
-	    IceReadData(iceConn, length, tmp.data() );
-
 	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
 	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
 
-	    QDataStream ds( tmp, IO_ReadOnly );
+	    QDataStream ds( dataReceived, IO_ReadOnly );
 	    QCString calledApp, app;
 	    Q_INT32 id;
 
@@ -250,79 +249,123 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     case DCOPCall:
     case DCOPFind:
     case DCOPSend:
-	QByteArray tmp( length );
-	IceReadData(iceConn, length, tmp.data() );
-	QDataStream ds( tmp, IO_ReadOnly );
-	QCString app, objId, fun;
-	QByteArray data;
-	ds >> d->senderId >> app >> objId >> fun >> data;
-	
-	QCString replyType;
-	QByteArray replyData;
-	bool b;
-	
-	{
-	    // block any new requests via the socket notifier while we are
-	    // processing a call. This makes it possible for clients to
-	    // re-enter the main event loop for user interaction in
-	    // process() without confusing the DCOP call stack.
-	    bool old_notifier_enabled = d->notifier_enabled;
-	    d->notifier_enabled = false;
-	    if (opcode == DCOPFind)
-		b = c->find(app, objId, fun, data, replyType, replyData );
-	    else
-		b = c->receive( app, objId, fun, data, replyType, replyData );
-	    // set notifier back to previous state
-	    d->notifier_enabled = old_notifier_enabled;
-	}
-	
-	if (opcode == DCOPSend)
-	    return;
-
-	QByteArray reply;
-	QDataStream replyStream( reply, IO_WriteOnly );
-
-	Q_INT32 id = c->transactionId();
-	if (id) {
-	    // Call delayed. Send back the transaction ID.
-	    replyStream << id;
-
-	    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyWait,
-			  sizeof(DCOPMsg), DCOPMsg, pMsg );
-	    pMsg->time = d->time;
-	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
-	    return;
-	}
-
-	if ( !b )	{
-	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
-	    // Call failed. No data send back.
-
-	    IceGetHeader( iceConn, d->majorOpcode, DCOPReplyFailed,
-			  sizeof(DCOPMsg), DCOPMsg, pMsg );
-	    pMsg->time = d->time;
-	    pMsg->length += reply.size();
-	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
-	    return;
-	}
-
-	// Call successfull. Send back replyType and replyData.
-	replyStream << replyType << replyData.size();
-
-	// we are calling, so we need to set up reply data
-	IceGetHeader( iceConn, d->majorOpcode, DCOPReply,
-		      sizeof(DCOPMsg), DCOPMsg, pMsg );
-	int datalen = reply.size() + replyData.size();
-	pMsg->time = d->time;
-	pMsg->length += datalen;
-	// use IceSendData not IceWriteData to avoid a copy.  Output buffer
-	// shouldn't need to be flushed.
-	IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
-	IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()));
-	return;
+	DCOPProcessInternal( d, opcode, key, dataReceived, TRUE );
     }
 }
+
+
+void DCOPClient::processPostedMessagesInternal()
+{
+    if ( d->messages.isEmpty() )
+	return;
+    QListIterator<DCOPClientMessage> it (d->messages );
+    DCOPClientMessage* msg ;
+    while ( ( msg = it.current() ) ) {
+	++it;
+	if ( d->currentKey && msg->key != d->currentKey )
+	    continue;
+	d->messages.removeRef( msg );
+	DCOPProcessInternal( d, msg->opcode, msg->key, msg->data, FALSE );
+	delete msg;
+    }
+    if ( !d->messages.isEmpty() )
+	d->postMessageTimer.start( 0, TRUE );
+}
+
+/**
+   Processes DCOPCall, DCOPFind and DCOPSend
+ */
+void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  )
+{
+    IceConn iceConn = d->iceConn;
+    DCOPMsg *pMsg = 0;
+    DCOPClient *c = d->parent;
+    QDataStream ds( dataReceived, IO_ReadOnly );
+    QCString fromApp, app, objId, fun;
+    QByteArray data;
+    ds >> fromApp >> app >> objId >> fun >> data;
+    d->senderId = fromApp;
+	
+    if ( canPost && d->currentKey && key != d->currentKey ) {
+	DCOPClientMessage* msg = new DCOPClientMessage;
+	msg->opcode = opcode;
+	msg->key = key;
+	msg->data = dataReceived;
+	d->messages.append( msg );
+	d->postMessageTimer.start( 0, TRUE );
+	return;
+    }
+
+	
+    QCString replyType;
+    QByteArray replyData;
+    bool b;
+    // block any new requests via the socket notifier while we are
+    // processing a call. This makes it possible for clients to
+    // re-enter the main event loop for user interaction in
+    // process() without confusing the DCOP call stack.
+    bool old_notifier_enabled = d->notifier_enabled;
+    d->notifier_enabled = false;
+    CARD32 oldCurrentKey = d->currentKey;
+    if ( opcode != DCOPSend ) // DCOPSend doesn't change the current key
+	d->currentKey = key;
+    if (opcode == DCOPFind)
+	b = c->find(app, objId, fun, data, replyType, replyData );
+    else
+	b = c->receive( app, objId, fun, data, replyType, replyData );
+    // set notifier back to previous state
+    d->notifier_enabled = old_notifier_enabled;
+    d->currentKey = oldCurrentKey;
+	
+    if (opcode == DCOPSend)
+	return;
+
+    QByteArray reply;
+    QDataStream replyStream( reply, IO_WriteOnly );
+
+    Q_INT32 id = c->transactionId();
+    if (id) {
+	// Call delayed. Send back the transaction ID.
+	replyStream << d->appId << fromApp << id;
+
+	IceGetHeader( iceConn, d->majorOpcode, DCOPReplyWait,
+		      sizeof(DCOPMsg), DCOPMsg, pMsg );
+	pMsg->key = key;
+	pMsg->length += reply.size();
+	IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+	return;
+    }
+
+    if ( !b )	{
+	qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+	// Call failed. No data send back.
+
+	replyStream << d->appId << fromApp;
+	IceGetHeader( iceConn, d->majorOpcode, DCOPReplyFailed,
+		      sizeof(DCOPMsg), DCOPMsg, pMsg );
+	int datalen = reply.size();
+	pMsg->key = key;
+	pMsg->length += datalen;
+	IceSendData( iceConn, datalen, const_cast<char *>(reply.data()));
+	return;
+    }
+
+    // Call successfull. Send back replyType and replyData.
+    replyStream << d->appId << fromApp << replyType << replyData.size();
+
+    // we are calling, so we need to set up reply data
+    IceGetHeader( iceConn, d->majorOpcode, DCOPReply,
+		  sizeof(DCOPMsg), DCOPMsg, pMsg );
+    int datalen = reply.size() + replyData.size();
+    pMsg->key = key;
+    pMsg->length += datalen;
+    // use IceSendData not IceWriteData to avoid a copy.  Output buffer
+    // shouldn't need to be flushed.
+    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+    IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()));
+}
+
+
 
 static IcePoVersionRec DCOPVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
@@ -334,7 +377,8 @@ DCOPClient::DCOPClient()
     d->parent = this;
     d->iceConn = 0L;
     d->majorOpcode = 0;
-    d->time = 0;
+    d->key = 0;
+    d->currentKey = 0;
     d->appId = 0;
     d->notifier = 0L;
     d->notifier_enabled = true;
@@ -342,6 +386,7 @@ DCOPClient::DCOPClient()
     d->registered = false;
     d->transactionList = 0L;
     d->transactionId = 0;
+    connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
 }
 
 DCOPClient::~DCOPClient()
@@ -649,8 +694,8 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
     IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend,
 		 sizeof(DCOPMsg), DCOPMsg, pMsg);
 
+    pMsg->key = 1; // DCOPSend always uses the magic key 1
     int datalen = ba.size() + data.size();
-    pMsg->time = d->time;
     pMsg->length += datalen;
 
     IceSendData( d->iceConn, ba.size(), const_cast<char *>(ba.data()) );
@@ -1229,90 +1274,83 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     if ( !isAttached() )
 	return false;
 
-    bool success = FALSE;
+    DCOPMsg *pMsg;
 
-    while ( 1 ) {
-	DCOPMsg *pMsg;
+    CARD32 oldCurrentKey = d->currentKey;
+    if ( !d->currentKey )
+	d->currentKey = d->key; // no key yet, initiate new call
 
-	QByteArray ba;
-	QDataStream ds(ba, IO_WriteOnly);
-	ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
+    QByteArray ba;
+    QDataStream ds(ba, IO_WriteOnly);
+    ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
-	IceGetHeader(d->iceConn, d->majorOpcode, minor_opcode,
-		     sizeof(DCOPMsg), DCOPMsg, pMsg);
+    IceGetHeader(d->iceConn, d->majorOpcode, minor_opcode,
+		 sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-	pMsg->time = d->time;
-	int datalen = ba.size() + data.size();
-	pMsg->length += datalen;
+    pMsg->key = d->currentKey;
+    int datalen = ba.size() + data.size();
+    pMsg->length += datalen;
 
-	IceSendData(d->iceConn, ba.size(), const_cast<char *>(ba.data()));
-	IceSendData(d->iceConn, data.size(), const_cast<char *>(data.data()));
+    IceSendData(d->iceConn, ba.size(), const_cast<char *>(ba.data()));
+    IceSendData(d->iceConn, data.size(), const_cast<char *>(data.data()));
 
 
-	if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
-	    return false;
+    if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
+	return false;
 
-	IceFlush (d->iceConn);
+    IceFlush (d->iceConn);
 
-	IceReplyWaitInfo waitInfo;
-	waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
-	waitInfo.major_opcode_of_request = d->majorOpcode;
-	waitInfo.minor_opcode_of_request = minor_opcode;
-	ReplyStruct tmp;
-	tmp.replyType = &replyType;
-	tmp.replyData = &replyData;
-	waitInfo.reply = static_cast<IcePointer>(&tmp);
+    IceReplyWaitInfo waitInfo;
+    waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
+    waitInfo.major_opcode_of_request = d->majorOpcode;
+    waitInfo.minor_opcode_of_request = minor_opcode;
+    ReplyStruct replyStruct;
+    replyStruct.replyType = &replyType;
+    replyStruct.replyData = &replyData;
+    waitInfo.reply = static_cast<IcePointer>(&replyStruct);
 
-	Bool readyRet = False;
-	IceProcessMessagesStatus s;
+    Bool readyRet = False;
+    IceProcessMessagesStatus s;
 
-	do {
-	
-	    if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
+    do {
+	if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
 		
-		int msecs = 100; // timeout for the GUI refresh
-		fd_set fds;
-		struct timeval tv;
-		FD_ZERO( &fds );
-		FD_SET( socket(), &fds );
-		tv.tv_sec = msecs / 1000;
-		tv.tv_usec = (msecs % 1000) * 1000;
-		if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
-		    // nothing was available, we got a timeout. Reactivate
-		    // the GUI in blocked state.
-		    bool old_lock = d->non_blocking_call_lock;
-		    if ( !old_lock ) {
-			d->non_blocking_call_lock = true;
-			emit blockUserInput( true );
-		    }
-		    qApp->enter_loop();
-		    if ( !old_lock ) {
-			d->non_blocking_call_lock = false;
-			emit blockUserInput( false );
-		    }
+	    int msecs = 100; // timeout for the GUI refresh
+	    fd_set fds;
+	    struct timeval tv;
+	    FD_ZERO( &fds );
+	    FD_SET( socket(), &fds );
+	    tv.tv_sec = msecs / 1000;
+	    tv.tv_usec = (msecs % 1000) * 1000;
+	    if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
+		// nothing was available, we got a timeout. Reactivate
+		// the GUI in blocked state.
+		bool old_lock = d->non_blocking_call_lock;
+		if ( !old_lock ) {
+		    d->non_blocking_call_lock = true;
+		    emit blockUserInput( true );
+		}
+		qApp->enter_loop();
+		if ( !old_lock ) {
+		    d->non_blocking_call_lock = false;
+		    emit blockUserInput( false );
 		}
 	    }
-	
-	    // something is available
-	    s = IceProcessMessages(d->iceConn, &waitInfo,
-				   &readyRet);
-	    if (s == IceProcessMessagesIOError) {
-		IceCloseConnection(d->iceConn);
-		return false;
-	    }
-	} while (!readyRet);
-	
-	// if we were rejected by the server, we try again, otherwise we return
-	if ( tmp.status == ReplyStruct::Rejected ) {
-	    // WABA: Looks like an attempt to keep your CPU usage at 100%
-	    continue;
 	}
 	
-	success = tmp.status == ReplyStruct::Ok;
-	break;
-    }
-
-    return success;
+	// something is available
+	s = IceProcessMessages(d->iceConn, &waitInfo,
+			       &readyRet);
+	if (s == IceProcessMessagesIOError) {
+	    IceCloseConnection(d->iceConn);
+	    d->currentKey = oldCurrentKey;
+	    return false;
+	}
+	
+    } while (!readyRet);
+	
+    d->currentKey = oldCurrentKey;
+    return replyStruct.status == ReplyStruct::Ok;
 }
 
 void DCOPClient::processSocketData(int)
@@ -1360,6 +1398,7 @@ DCOPClient::beginTransaction()
     if (!d->transactionId)  // transactionId should not be 0!
 	d->transactionId++;
     trans->id = ++(d->transactionId);
+    trans->key = d->currentKey;
 
     d->transactionList->append( trans );
     return trans;
@@ -1403,7 +1442,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     IceGetHeader(d->iceConn, d->majorOpcode, DCOPReplyDelayed,
 		 sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-    pMsg->time = d->time;
+    pMsg->key = trans->key;
     pMsg->length += ba.size();
 
     IceSendData( d->iceConn, ba.size(), const_cast<char *>(ba.data()) );

@@ -64,7 +64,6 @@ public:
     QCString plainAppId;
     IceConn iceConn;
     bool notifyRegister;
-    CARD32 time;
     QList <_IceConn> waitingForReply;
     QList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
@@ -102,7 +101,7 @@ private slots:
 
 private:
     int majorOpcode;
-    CARD32 time;
+    CARD32 serverKey;
     QList<DCOPListener> listener;
     QAsciiDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;

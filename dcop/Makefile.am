@@ -27,14 +27,11 @@ INCLUDES=  $(all_includes)
 LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
-check_PROGRAMS = testdcop testdcopc
+check_PROGRAMS = testdcop
 
-lib_LTLIBRARIES  = libDCOP.la dcopserver.la libDCOPC.la
+lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 libDCOP_la_LIBADD = $(LIBSM) -lICE  $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
-
-libDCOPC_la_LIBADD = -lICE $(LIBDL)
-libDCOPC_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h
@@ -45,7 +42,6 @@ METASOURCES = dcopclient.moc dcopserver.moc testdcop.moc
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
-libDCOPC_la_SOURCES = dcopc.c
 
 dcopserver_la_LDFLAGS = -module -avoid-version
 dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
@@ -58,5 +54,3 @@ dcopserver_LDADD   = libDCOP.la
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
-testdcopc_SOURCES = testdcopc.cpp
-testdcopc_LDADD = libDCOPC.la

@@ -39,7 +39,6 @@
 enum {
   DCOP_REPLY_PENDING,
   DCOP_REPLY_OK,
-  DCOP_REPLY_REJECTED,
   DCOP_REPLY_FAILED
 };
 
@@ -77,7 +76,7 @@ static char           * dcop_requested_name = 0;
 static char           * dcop_app_name       = 0;
 static int              dcop_major_opcode   = 0;
 static IceConn          dcop_ice_conn       = 0L;
-static CARD32           dcop_time           = 0;
+static CARD32           dcop_key           = 0;
 static int              dcop_reply_id       = 0;
 
 static IcePoVersionRec DCOPVersions[] = {
@@ -110,7 +109,7 @@ dcop_read_int(char * buf, int * i)
   *p++ = buf[2];
   *p++ = buf[1];
   *p   = buf[0];
-  
+
   return buf + 4;
 }
 
@@ -208,14 +207,12 @@ dcop_process_message(
     pMsg
   );
 
-  if (pMsg->time > dcop_time)
-    dcop_time = pMsg->time;
 
   switch (opcode) {
 
     case DCOPReply:
       fprintf(stderr, "dcop_process_message(): DCOPReply received\n");
-      
+
       fprintf(stderr, "dcop_process_message(): length == %ld\n", length);
       buf = (char *)malloc(length);
       status = IceReadData(dcop_ice_conn, length, buf);
@@ -247,16 +244,12 @@ dcop_process_message(
       fprintf(stderr, "dcop_process_message(): DCOPReplyDelayed received\n");
       break;
 
-    case DCOPCallRejected:
-      fprintf(stderr, "dcop_process_message(): DCOPCallRejected received\n");
-      break;
-    
     case DCOPFind:
       fprintf(stderr, "dcop_process_message(): DCOPFind received\n");
       break;
 
     case DCOPSend:
-      
+
       fprintf(stderr, "dcop_process_message(): DCOPSend received\n");
 
       buf = (char *)malloc(length);
@@ -282,14 +275,13 @@ dcop_process_message(
 
     case DCOPCall:
       fprintf(stderr, "dcop_process_message(): DCOPCall not yet implemented\n");
-      replyVal = DCOP_REPLY_REJECTED;
       break;
 
     default:
       fprintf(stderr, "dcop_process_message(): Invalid opcode %d\n", opcode);
       break;
   }
-  
+
   if (0 != replyWait)
     ((struct dcop_reply_struct *)replyWait->reply)->status = replyVal;
 
@@ -325,7 +317,7 @@ dcop_send_signal(
    * it (ICE manages that buffer internally)
    */
   IceGetHeader(
-    dcop_ice_conn, 
+    dcop_ice_conn,
     dcop_major_opcode,
     DCOPSend,
     sizeof(struct DCOPMsg),
@@ -333,7 +325,7 @@ dcop_send_signal(
     pMsgPtr
   );
 
-  /* 
+  /*
    * Marshall the arguments for the DCOP message header (callerApp, destApp,
    * destObj, destFunc. The last argument is actually part of the data part of
    * the call, but we add it to the header. It's the size of the marshalled
@@ -357,8 +349,8 @@ dcop_send_signal(
 
   headerLength = pos - header;
 
-  pMsgPtr->time = 0;
-  /* 
+  pMsgPtr->key = dcop_key;
+  /*
    * The length field tells the dcopserver how much bytes the dcop message
    * takes up. We add that size to the already by IceGetHeader initialized
    * length value, as it seems that under some circumstances (depending on the
@@ -408,13 +400,12 @@ dcop_call(
   char  * pos               = 0L;
   char  * outputData        = 0L;
   int     outputDataLength  = 0;
-  int     temp              = 0; 
+  int     temp              = 0;
   Bool    success           = False;
   Bool    readyRet          = False;
-  unsigned long replyStatus = (unsigned long)-1;
 
-  /* silence gcc warning */
-  replyStatus = replyStatus;
+  struct DCOPMsg * pMsg;
+
 
   fprintf(stderr, "dcop_call() ...\n");
 
@@ -423,94 +414,80 @@ dcop_call(
     return False;
   }
 
-  while (1) {
 
-    struct DCOPMsg * pMsg;
+  temp += strlen(appId);
+  temp += strlen(remApp);
+  temp += strlen(remObjId);
+  temp += strlen(remFun);
+  temp += dataLength;
+  temp += 1024; /* Extra space for marshalling overhead */
 
-    temp += strlen(appId);
-    temp += strlen(remApp);
-    temp += strlen(remObjId);
-    temp += strlen(remFun);
-    temp += dataLength;
-    temp += 1024; /* Extra space for marshalling overhead */
+  outputData = (char *)malloc(temp);
 
-    outputData = (char *)malloc(temp);
+  temp = 0;
 
-    temp = 0;
+  pos = outputData;
+  pos = dcop_write_string(pos, appId);
+  pos = dcop_write_string(pos, remApp);
+  pos = dcop_write_string(pos, remObjId);
+  pos = dcop_write_string(pos, remFun);
+  pos = dcop_write_int(pos, dataLength);
 
-    pos = outputData;
-    pos = dcop_write_string(pos, appId);
-    pos = dcop_write_string(pos, remApp);
-    pos = dcop_write_string(pos, remObjId);
-    pos = dcop_write_string(pos, remFun);
-    pos = dcop_write_int(pos, dataLength);
+  outputDataLength = pos - outputData;
 
-    outputDataLength = pos - outputData;
+  IceGetHeader(
+	       dcop_ice_conn,
+	       dcop_major_opcode,
+	       DCOPCall,
+	       sizeof(struct DCOPMsg),
+	       struct DCOPMsg,
+	       pMsg
+	       );
 
-    IceGetHeader(
-      dcop_ice_conn,
-      dcop_major_opcode,
-      DCOPCall,
-      sizeof(struct DCOPMsg),
-      struct DCOPMsg,
-      pMsg
-    );
+  pMsg->length += outputDataLength + dataLength;
 
-    pMsg->time = dcop_time;
-    pMsg->length += outputDataLength + dataLength;
+  IceSendData(dcop_ice_conn, outputDataLength, outputData);
+  IceSendData(dcop_ice_conn, dataLength, (char *)data);
 
-    IceSendData(dcop_ice_conn, outputDataLength, outputData);
-    IceSendData(dcop_ice_conn, dataLength, (char *)data);
+  IceFlush(dcop_ice_conn);
 
-    IceFlush(dcop_ice_conn);
-    
-    free(outputData);
+  free(outputData);
 
-    if (IceConnectionStatus(dcop_ice_conn) != IceConnectAccepted) {
+  if (IceConnectionStatus(dcop_ice_conn) != IceConnectAccepted) {
       fprintf(stderr, "dcop_call(): Connection not accepted\n");
       return False;
-    }
+  }
 
-    waitInfo.sequence_of_request = IceLastSentSequenceNumber(dcop_ice_conn);
-    waitInfo.major_opcode_of_request = dcop_major_opcode;
-    waitInfo.minor_opcode_of_request = DCOPCall;
+  waitInfo.sequence_of_request = IceLastSentSequenceNumber(dcop_ice_conn);
+  waitInfo.major_opcode_of_request = dcop_major_opcode;
+  waitInfo.minor_opcode_of_request = DCOPCall;
 
-    replyStruct.status = DCOP_REPLY_PENDING;
-    replyStruct.replyId = dcop_reply_id++;
-    replyStruct.replyType = replyType;
-    replyStruct.replyData = replyData;
-    replyStruct.replyDataLength = replyDataLength;
+  replyStruct.status = DCOP_REPLY_PENDING;
+  replyStruct.replyId = dcop_reply_id++;
+  replyStruct.replyType = replyType;
+  replyStruct.replyData = replyData;
+  replyStruct.replyDataLength = replyDataLength;
 
-    waitInfo.reply = (IcePointer)(&replyStruct);
+  waitInfo.reply = (IcePointer)(&replyStruct);
 
-    readyRet = False;
+  readyRet = False;
 
-    do { 
-
+  do {
       fprintf(stderr, "dcop_call(): Doing IceProcessMessages\n");
       status = IceProcessMessages(dcop_ice_conn, &waitInfo, &readyRet);
 
       if (status == IceProcessMessagesIOError) {
-        fprintf(stderr, "dcop_call(): IceProcessMessagesIOError\n");
-        IceCloseConnection(dcop_ice_conn);
-        free(outputData);
-        return False;
+	  fprintf(stderr, "dcop_call(): IceProcessMessagesIOError\n");
+	  IceCloseConnection(dcop_ice_conn);
+	  free(outputData);
+	  return False;
       }
 
       fprintf(stderr, "dcop_call(): readyRet == %s\n", readyRet ? "True" : "False");
-
-    } while (!readyRet);
-
-    /* if we were rejected by the server, we try again, otherwise we return */
-    if (replyStruct.status == DCOP_REPLY_REJECTED)
-      continue;
-
-    success = (replyStruct.status == DCOP_REPLY_OK) ? True : False;
-    break;
-  }
+  } while (!readyRet);
 
   fprintf(stderr, "dcop_call(): Finished\n");
-  return success;
+  return (replyStruct.status == DCOP_REPLY_OK) ? True : False;
 }
 
 /***************************************************************************/
@@ -594,7 +571,7 @@ dcop_register(const char * app_name, Bool add_pid)
       "", /* Object irrelevant */
       "registerAs(QCString)",
       data,
-      dataLength, 
+      dataLength,
       &replyType,
       &replyData,
       &replyLen
@@ -612,12 +589,12 @@ dcop_register(const char * app_name, Bool add_pid)
 
   if (replyLen == 0)
     return 0L;
-  
+
   dcop_read_string(replyData, &dcop_app_name);
 
   return dcop_app_name;
 }
- 
+
 /***************************************************************************/
 
   Bool
@@ -635,7 +612,7 @@ dcop_ice_register()
       DCOPClientAuthProcs,
       0L /* What's this ? */
     );
-  
+
   return (dcop_major_opcode >= 0) ? True : False;
 }
 
@@ -728,7 +705,7 @@ dcop_protocol_setup()
 
   status =
     IceProtocolSetup(
-      dcop_ice_conn, 
+      dcop_ice_conn,
       dcop_major_opcode,
       clientData,
       True,

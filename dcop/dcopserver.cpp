@@ -102,7 +102,6 @@ DCOPConnection::DCOPConnection( IceConn conn )
 {
     iceConn = conn;
     notifyRegister = false;
-    time = 0;
     _signalConnectionList = 0;
 }
 
@@ -396,53 +395,51 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	{
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
+	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( ba, IO_ReadOnly );
-	    QCString appFrom, app;
-	    ds >> appFrom >> app;
-	    DCOPConnection* target = findApp( app );
+	    QCString fromApp, toApp;
+	    ds >> fromApp >> toApp;
+	    DCOPConnection* target = findApp( toApp );
 	    DCOPConnection* conn = clients.find( iceConn );
+	    int datalen = ba.size();
 	    if ( opcode == DCOPReplyDelayed ) {
-// 		qDebug("DCOPServer::Got DCOPReplyDelayed (from: \"%s\" to: \"%s\")",
-// 		       appFrom.data(), app.data());
 		if ( !target )
 		    qWarning("DCOPServer::DCOPReplyDelayed for unknown connection.");
 		else if ( !conn )
 		    qWarning("DCOPServer::DCOPReplyDelayed from unknown connection.");
-		else if (!conn->waitingForDelayedReply.remove( target->iceConn ))
+		else if (!conn->waitingForDelayedReply.removeRef( target->iceConn ))
 		    qWarning("DCOPServer::DCOPReplyDelayed from/to does not match. (#2)");
 	    }
 	    if ( target ) {
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->time = ++time;
-		int datalen = ba.size();
+		pMsg->key = key;
 		pMsg->length += datalen;
 		IceSendData(target->iceConn, datalen, (char *) ba.data());
-	    } else if ( app == "DCOPServer" ) {
+	    } else if ( toApp == "DCOPServer" ) {
 		QCString obj, fun;
 		QByteArray data;
 		ds >> obj >> fun >> data;
 		QCString replyType;
 		QByteArray replyData;
-		if ( !receive( app, obj, fun, data, replyType, replyData, iceConn ) ) {
-		    qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
+		if ( !receive( toApp, obj, fun, data, replyType, replyData, iceConn ) ) {
+		    qWarning("%s failure: object '%s' has no function '%s'", toApp.data(), obj.data(), fun.data() );
 		}
-	    } else if ( app[app.length()-1] == '*') {
+	    } else if ( toApp[toApp.length()-1] == '*') {
 		// handle a multicast.
 		QAsciiDictIterator<DCOPConnection> aIt(appIds);
-		int l = app.length()-1;
+		int l = toApp.length()-1;
 		for ( ; aIt.current(); ++aIt) {
 		    DCOPConnection *client = aIt.current();
-		    if (!l || (strncmp(client->appId.data(), app.data(), l) == 0))
+		    if (!l || (strncmp(client->appId.data(), toApp.data(), l) == 0))
 			{
 			    IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
 					 sizeof(DCOPMsg), DCOPMsg, pMsg);
-			    pMsg->time = ++time;
-			    int msglen = ba.size();
-			    pMsg->length += msglen;
-			    IceSendData(client->iceConn, msglen, const_cast<char *>(ba.data()) );
+			    pMsg->key = key;
+			    pMsg->length += datalen;
+			    IceSendData(client->iceConn, datalen, const_cast<char *>(ba.data()) );
 			}
 		}
 	    }
@@ -453,63 +450,62 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	{
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
+	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( ba, IO_ReadOnly );
-	    QCString appFrom, app;
-	    ds >> appFrom >> app;
-	    DCOPConnection* target = findApp( app );
+	    QCString fromApp, toApp;
+	    ds >> fromApp >> toApp;
+	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
-	
-	    DCOPConnection* conn = clients.find( iceConn );
-	    if ( (!conn->waitingForReply.isEmpty() && conn->time > pMsg->time)
-		 || ( target && !target->waitingForReply.isEmpty() && target->time > pMsg->time ) ) {
-		//qDebug("reject call  %ld < %ld", pMsg->time, conn->time);
-		IceGetHeader( iceConn, majorOpcode, DCOPCallRejected,
-			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->time = ++time; // oldtime;
-		IceFlush( iceConn );
-		return;
-	    }
 	
 	    if ( target ) {
 		target->waitingForReply.append( iceConn );
+
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->time = ++time;
-		target->time = pMsg->time;
+		pMsg->key = key;
 		pMsg->length += datalen;
 		IceSendData(target->iceConn, datalen, const_cast<char *>(ba.data()) );
+ 		IceFlush( target->iceConn );
 	    } else {
 		QCString replyType;
 		QByteArray replyData;
 		bool b = FALSE;
-                // DCOPServer itself does not do DCOPFind.
-		if ( (opcode == DCOPCall) && (app == "DCOPServer") ) {
+		// DCOPServer itself does not do DCOPFind.
+		if ( (opcode == DCOPCall) && (toApp == "DCOPServer") ) {
 		    QCString obj, fun;
 		    QByteArray data;
 		    ds >> obj >> fun >> data;
-		    b = receive( app, obj, fun, data, replyType, replyData, iceConn );
+		    b = receive( toApp, obj, fun, data, replyType, replyData, iceConn );
 		    if ( !b )
-			qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
+			qWarning("%s failure: object '%s' has no function '%s'", toApp.data(), obj.data(), fun.data() );
 		}
 
 		if (b) {
 		    QByteArray reply;
 		    QDataStream replyStream( reply, IO_WriteOnly );
-		    replyStream << replyType << replyData.size();
+		    replyStream << toApp << fromApp << replyType << replyData.size();
 		    int replylen = reply.size() + replyData.size();
 		    IceGetHeader( iceConn, majorOpcode, DCOPReply,
 				  sizeof(DCOPMsg), DCOPMsg, pMsg );
-		    pMsg->time = ++time;
+		    if ( key != 0 )
+			pMsg->key = key;
+		    else
+			pMsg->key = serverKey++;
 		    pMsg->length += replylen;
 		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
 		    IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()) );
 		} else {
 		    QByteArray reply;
+		    QDataStream replyStream( reply, IO_WriteOnly );
+		    replyStream << toApp << fromApp;
 		    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
 				  sizeof(DCOPMsg), DCOPMsg, pMsg );
-		    pMsg->time = ++time;
+		    if ( key != 0 )
+			pMsg->key = key;
+		    else
+			pMsg->key = serverKey++;
 		    pMsg->length += reply.size();
 		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
 		}
@@ -522,23 +518,30 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	{
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
+	    CARD32 key = pMsg->key;
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
+	    QDataStream ds( ba, IO_ReadOnly );
+	    QCString fromApp, toApp;
+	    ds >> fromApp >> toApp;
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( !conn ) {
 		qWarning("DCOPServer::DCOPReply from unknown connection.");
 		break;
 	    }
-	    DCOPConnection* connreply = clients.find( conn->waitingForReply.take(0) );
+	    DCOPConnection* connreply = findApp( toApp );
+	    int datalen = ba.size();
+	
+// 	    DCOPConnection* connreply = clients.find( conn->waitingForReply.take(0) );
 	    if ( !connreply )
 		qWarning("DCOPServer::DCOPReply for unknown connection.");
 	    else {
+		conn->waitingForReply.removeRef( connreply->iceConn );
 		if ( opcode == DCOPReplyWait )
 		    conn->waitingForDelayedReply.append( connreply->iceConn );
 		IceGetHeader( connreply->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->time = ++time;
-		int datalen = ba.size();
+		pMsg->key = key;
 		pMsg->length += datalen;
 		IceSendData(connreply->iceConn, datalen, const_cast<char *>(ba.data()) );
 	    }
@@ -630,7 +633,7 @@ extern "C" int _IceTransNoListen(const char *protocol);
 DCOPServer::DCOPServer(bool _only_local)
     : QObject(0,0), appIds(263), clients(263)
 {
-    time = 0; // the beginning of time....
+    serverKey = 42;
 
     only_local = _only_local;
 
@@ -803,7 +806,7 @@ void DCOPServer::removeConnection( void* data )
 	    DCOPMsg *pMsg;
 	    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
-	    pMsg->time = ++time;
+	    pMsg->key = 1;
 	    pMsg->length += reply.size();
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	}
@@ -819,7 +822,7 @@ void DCOPServer::removeConnection( void* data )
 	    DCOPMsg *pMsg;
 	    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
-	    pMsg->time = ++time;
+	    pMsg->key = 1;
 	    pMsg->length += reply.size();
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
 	}
@@ -845,13 +848,13 @@ void DCOPServer::removeConnection( void* data )
 	    if ( c->notifyRegister && (c != conn) ) {
 		IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->time = ++time;
+		pMsg->key = 1;
 		pMsg->length += datalen;
 		IceSendData(c->iceConn, datalen, const_cast<char *>(ba.data()));
 	    }
 	}
     }
-    
+
     delete conn;
 }
 
@@ -863,10 +866,9 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     if ( obj == "emit")
     {
         DCOPConnection* conn = clients.find( iceConn );
-        if (conn)
-        {
-           //qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
-           dcopSignals->emitSignal(conn, fun, data, false);
+        if (conn) {
+	    //qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
+	    dcopSignals->emitSignal(conn, fun, data, false);
         }
         replyType = "void";
         return true;
@@ -909,8 +911,6 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		else
 		    conn->plainAppId = conn->appId;
 		
-		qDebug("plain app id is %s", conn->plainAppId.data() );
-
 		QPtrDictIterator<DCOPConnection> it( clients );
 		QByteArray data;
 		QDataStream datas( data, IO_WriteOnly );
@@ -927,7 +927,6 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    if ( c->notifyRegister && (c != conn) ) {
 			IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 				      sizeof(DCOPMsg), DCOPMsg, pMsg );
-			pMsg->time = ++time;
 			pMsg->length += datalen;
 			IceWriteData( c->iceConn, datalen, const_cast<char *>(ba.data()));
 			IceFlush( c->iceConn );
@@ -1017,7 +1016,6 @@ DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
 
    IceGetHeader( conn->iceConn, majorOpcode, DCOPSend,
                  sizeof(DCOPMsg), DCOPMsg, pMsg );
-   pMsg->time = ++time;
    pMsg->length += datalen;
    IceSendData(conn->iceConn, datalen, const_cast<char *>(ba.data()));
 }
@@ -1085,24 +1083,22 @@ int main( int argc, char* argv[] )
 
     pipe(ready);
 
-    if (!nofork)
-	{
-	    if (fork() > 0)
-		{
-		    char c;
-		    close(ready[1]);
-		    read(ready[0], &c, 1); // Wait till dcopserver is started
-		    close(ready[0]);
-		    return 0; // I am the parent
-		}
+    if (!nofork) {
+	if (fork() > 0) {
+	    char c;
+	    close(ready[1]);
+	    read(ready[0], &c, 1); // Wait till dcopserver is started
 	    close(ready[0]);
-
-	    if (!nosid)
-		setsid();
-
-	    if (fork() > 0)
-		return 0; // get rid of controlling terminal
+	    return 0; // I am the parent
 	}
+	close(ready[0]);
+
+	if (!nosid)
+	    setsid();
+
+	if (fork() > 0)
+	    return 0; // get rid of controlling terminal
+    }
 
     signal(SIGHUP, sighandler);
     signal(SIGTERM, sighandler);
