@@ -221,10 +221,28 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     out.resize( tail-(len/4) );
     Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
-    // ascii printable to 0-63 conversion
-    for (unsigned int idx = 0; idx < len; idx++)
-    {
-        buf[idx] = Base64DecMap[buf[idx]];
+    // ACSII printable to 0-63 conversion
+    // This *looks* more tedious, but in fact, this is faster
+    // especially for superscalar CPUs.
+    Q_UINT8 *pbuf = buf;
+    int count = len;
+    while (count >= 4) {
+        pbuf[0] = Base64DecMap[pbuf[0]];
+        pbuf[1] = Base64DecMap[pbuf[1]];
+        pbuf[2] = Base64DecMap[pbuf[2]];
+        pbuf[3] = Base64DecMap[pbuf[3]];
+        count-=4;
+        pbuf+=4;
+    }
+
+    if (count > 0) {
+        pbuf[0] = Base64DecMap[pbuf[0]];
+        if (count > 1) {
+            pbuf[1] = Base64DecMap[pbuf[1]];
+            if (count > 2) {
+                pbuf[2] = Base64DecMap[pbuf[2]];
+            }
+        }
     }
 
     // 4-byte to 3-byte conversion
