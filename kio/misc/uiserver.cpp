@@ -527,8 +527,7 @@ void ListProgress::writeSettings() {
       if (!m_lpcc[i].enabled)
          continue;
       m_lpcc[i].width=columnWidth(m_lpcc[i].index);
-      QString tmps;
-      tmps.sprintf( "Col%d", i);
+      QString tmps="Col"+QString::number(i);
       config.writeEntry( tmps, m_lpcc[i].width);
    }
    config.writeEntry("ShowListHeader", m_showHeader);
