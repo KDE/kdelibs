@@ -171,70 +171,7 @@ const QVariant& KFileMetaInfoItem::value() const
 
 QString KFileMetaInfoItem::string( bool mangle ) const
 {
-    QString s;
-
-    switch (d->value.type())
-    {
-        case QVariant::Invalid :
-            return "---";
-
-        case QVariant::Bool :
-            s = d->value.toBool() ? i18n("Yes") : i18n("No");
-            break;
-
-        case QVariant::Int :
-            if (d->mimeTypeInfo->unit() == KFileMimeTypeInfo::Seconds)
-            {
-              int seconds = d->value.toInt() % 60;
-              int minutes = d->value.toInt() / 60 % 60;
-              int hours   = d->value.toInt() / 3600;
-              s = hours ? QString().sprintf("%d:%02d:%02d",hours, minutes, seconds)
-                        : QString().sprintf("%02d:%02d", minutes, seconds);
-            } else
-                s = KGlobal::locale()->formatNumber( d->value.toInt() , 0);
-            break;
-
-        case QVariant::UInt :
-            s = KGlobal::locale()->formatNumber( d->value.toUInt() , 0);
-            break;
-
-        case QVariant::Double :
-            s = KGlobal::locale()->formatNumber( d->value.toDouble(), 3);
-            break;
-
-        case QVariant::Date :
-            s = KGlobal::locale()->formatDate( d->value.toDate(), true );
-            break;
-
-        case QVariant::Time :
-            s = KGlobal::locale()->formatTime( d->value.toTime(), true );
-            break;
-
-        case QVariant::DateTime :
-            s = KGlobal::locale()->formatDateTime( d->value.toDateTime(),
-                                                   true, true );
-            break;
-
-        case QVariant::Size :
-            s = QString("%1x%2").arg(d->value.toSize().width())
-                                .arg(d->value.toSize().height());
-            break;
-
-        case QVariant::Point :
-            s = QString("%1/%2").arg(d->value.toSize().width())
-                                .arg(d->value.toSize().height());
-            break;
-
-        default:
-            s = d->value.toString();
-    }
-
-    if (mangle && !s.isNull())
-    {
-        s.prepend(prefix());
-        s.append(suffix());
-    }
-    return s;
+    return d->mimeTypeInfo->string(d->value, mangle);
 }
 
 QVariant::Type KFileMetaInfoItem::type() const
@@ -822,6 +759,42 @@ void KFilePlugin::setHint(KFileMimeTypeInfo::ItemInfo* item, uint hint)
 void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
 {
     item->m_unit = unit;
+    // set prefix and suffix
+    switch (unit)
+    {
+        case KFileMimeTypeInfo::Seconds:         
+            item->m_suffix = i18n("s"); break;
+
+        case KFileMimeTypeInfo::MilliSeconds:
+            item->m_suffix = i18n("ms"); break;
+
+        case KFileMimeTypeInfo::BitsPerSecond:
+            item->m_suffix = i18n("bps"); break;
+
+        case KFileMimeTypeInfo::Pixels:
+            item->m_suffix = i18n("pixels"); break;
+
+        case KFileMimeTypeInfo::Inches:
+            item->m_suffix = i18n("in"); break;
+
+        case KFileMimeTypeInfo::Centimeters:
+            item->m_suffix = i18n("cm"); break;
+
+        case KFileMimeTypeInfo::Bytes:
+            item->m_suffix = i18n("B"); break;
+
+        case KFileMimeTypeInfo::FramesPerSecond:
+            item->m_suffix = i18n("fps"); break;
+
+        case KFileMimeTypeInfo::DotsPerInch:
+            item->m_suffix = i18n("dpi"); break;
+            
+        case KFileMimeTypeInfo::BitsPerPixel:
+            item->m_suffix = i18n("bpp"); break;
+            
+        case KFileMimeTypeInfo::Hertz:
+            item->m_suffix = i18n("bpp");
+    }
 }
 
 void KFilePlugin::setPrefix(KFileMimeTypeInfo::ItemInfo* item, const QString& prefix)
@@ -1428,6 +1401,78 @@ void KFileMimeTypeInfo::GroupInfo::addVariableInfo( QVariant::Type type,
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+QString KFileMimeTypeInfo::ItemInfo::string(QVariant value, bool mangle) const
+{
+    QString s;
+
+    switch (value.type())
+    {
+        case QVariant::Invalid :
+            return "---";
+
+        case QVariant::Bool :
+            s = value.toBool() ? i18n("Yes") : i18n("No");
+            break;
+
+        case QVariant::Int :
+            if (unit() == KFileMimeTypeInfo::Seconds)
+            {
+              int seconds = value.toInt() % 60;
+              int minutes = value.toInt() / 60 % 60;
+              int hours   = value.toInt() / 3600;
+              s = hours ? QString().sprintf("%d:%02d:%02d",hours, minutes, seconds)
+                        : QString().sprintf("%02d:%02d", minutes, seconds);
+              return s; // no suffix wanted
+            } else
+                s = KGlobal::locale()->formatNumber( value.toInt() , 0);
+            break;
+
+        case QVariant::UInt :
+            s = KGlobal::locale()->formatNumber( value.toUInt() , 0);
+            break;
+
+        case QVariant::Double :
+            s = KGlobal::locale()->formatNumber( value.toDouble(), 3);
+            break;
+
+        case QVariant::Date :
+            s = KGlobal::locale()->formatDate( value.toDate(), true );
+            break;
+
+        case QVariant::Time :
+            s = KGlobal::locale()->formatTime( value.toTime(), true );
+            break;
+
+        case QVariant::DateTime :
+            s = KGlobal::locale()->formatDateTime( value.toDateTime(),
+                                                   true, true );
+            break;
+
+        case QVariant::Size :
+            s = QString("%1x%2").arg(value.toSize().width())
+                                .arg(value.toSize().height());
+            break;
+
+        case QVariant::Point :
+            s = QString("%1/%2").arg(value.toSize().width())
+                                .arg(value.toSize().height());
+            break;
+
+        default:
+            s = value.toString();
+    }
+
+    if (mangle && !s.isNull())
+    {
+        s.prepend(prefix());
+        s.append(" " + suffix());
+    }
+    return s;
+}
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 
 

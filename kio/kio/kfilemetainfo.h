@@ -139,7 +139,8 @@ public:
         Bytes           = 7,
         FramesPerSecond = 8,
         DotsPerInch     = 9,
-        BitsPerPixel    = 10
+        BitsPerPixel    = 10,
+        Hertz           = 11
     };
 
 
@@ -305,6 +306,16 @@ public:
         }
 
         /**
+         * @return a string for the specified value, if possible. If not,
+         * QString::null is returned. This can be used by programs if they want
+         * to display a sum or an average of some item for a list of files.
+         * 
+         * if @p mangle is true, the string will already contain prefix and
+         * suffix
+         */
+        QString string( QVariant value, bool mangle = true ) const;
+
+        /**
          * Is this item the variable item?
          *
          * @return true if it is, false if not
@@ -372,7 +383,7 @@ public:
         QString           m_suffix;
     };
 
-    // ### could it be made private?
+    // ### could it be made private? Would this be BC?
     ~KFileMimeTypeInfo();
 
     /**
@@ -399,12 +410,11 @@ public:
     QStringList translatedGroups() const;
 
     /**
-     * This is the same as @ref supportedGroups , but it returns the list of
-     * groups in the preferred order that's specified in the .desktop file.
+     * This returns the list of groups in the preferred order that's specified
+     * in the .desktop file.
      *
      * @return the list of groups
      */
-     // ### is this correct?
     QStringList preferredGroups() const
     {
         return m_preferredGroups;
