@@ -228,6 +228,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     document->doc = this;
 
     m_paintDeviceMetrics = 0;
+    m_decoderMibEnum = 0;
 
     m_view = v;
 
