@@ -1,3 +1,7 @@
+2003-11-26  Lubos Lunak  <l.lunak@kde.org>
+
+	* khtmlview.cpp, xml/dom2_eventsimpl.cpp : generate correctly keydown,keypress and keyup events
+
 2003-11-26  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmlparser.cpp (parseToken): ignore flat on <select>. maybe
