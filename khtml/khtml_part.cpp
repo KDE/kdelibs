@@ -3201,7 +3201,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
      docState = d->m_doc->state();
   }
-  stream << (Q_UINT32) d->m_settings->charset() << docState;
+  stream << (Q_UINT32) d->m_settings->charset() << d->m_encoding << docState;
 
   // Save font data
   stream << fontSizes() << d->m_fontBase;
@@ -3264,7 +3264,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   KURL::List visitedLinks;
   Q_INT32 charset;
   long old_cacheId = d->m_cacheId;
-
+  QString encoding;
+  
   stream >> u >> xOffset >> yOffset;
 
   // restore link cursor position
@@ -3275,9 +3276,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> d->m_cacheId;
 
-  stream >> charset >> docState;
+  stream >> charset >> encoding >> docState;
   d->m_charset = (QFont::CharSet) charset;
-
+  d->m_encoding = encoding;
+  if ( d->m_settings ) d->m_settings->setCharset( d->m_charset );
+  kdDebug(6050)<<"restoring charset to:"<< charset << endl;
+  
+  
   stream >> fSizes >> d->m_fontBase;
   // ### odd: this doesn't appear to have any influence on the used font
   // sizes :(
@@ -3371,6 +3376,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
     // frames.
     d->m_bCleared = false;
     clear();
+    d->m_charset = (QFont::CharSet) charset;
+    d->m_encoding = encoding;
+    if ( d->m_settings ) d->m_settings->setCharset( (QFont::CharSet)charset );
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();
