@@ -1,3 +1,12 @@
+//----------------------------------------------------------------------------
+//
+//    This program is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU Library General Public License as
+//    published by the Free Software Foundation; either version 2 of the
+//    License, or (at your option) any later version.
+//
+//----------------------------------------------------------------------------
+
 #ifndef _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 #define _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 
