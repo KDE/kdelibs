@@ -1148,7 +1148,7 @@ void HTMLTokenizer::addPending()
             p = TAB_SIZE - ( prePos % TAB_SIZE );
             for ( int x = 0; x < p; x++ )
             {
-                *dest = QChar(0xa0);
+                *dest = QChar(' ');
                 dest++;
             }
             prePos += p;

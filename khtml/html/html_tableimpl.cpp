@@ -722,6 +722,7 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 	return child;
     }
     default:
+	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 	break;
 	// ####
     }
