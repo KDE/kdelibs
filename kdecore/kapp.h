@@ -108,8 +108,14 @@
 //
 // Sorry if this breaks anything; it is the last of the binary incompatible
 // changes that Kalle announced yesterday.
+//
 // Revision 1.20  1997/09/11 19:44:54  kalle
 // New debugging scheme for KDE (binary incompatible!)
+
+#ifndef _KAPP_H
+#define _KAPP_H
+
+#include <kconfig.h>
 
 
 #ifndef klocale
