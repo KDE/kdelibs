@@ -154,6 +154,27 @@ MegaStyle::~MegaStyle()
     ;
 }
 
+void MegaStyle::polish(QApplication *app)
+{
+
+    KStyle::polish(app);
+    menuAni = app->isEffectEnabled(UI_AnimateMenu);
+    menuFade = app->isEffectEnabled(UI_FadeMenu);
+    if(menuAni)
+        app->setEffectEnabled(UI_AnimateMenu, false);
+    if(menuFade)
+        app->setEffectEnabled(UI_FadeMenu, false);
+}
+
+void MegaStyle::unPolish(QApplication *app)
+{
+    KStyle::unPolish(app);
+    app->setEffectEnabled(UI_AnimateMenu, menuAni);
+    app->setEffectEnabled(UI_FadeMenu, menuFade);
+}
+
+
+
 void MegaStyle::polish(QPalette &)
 {
     KConfig *config = KGlobal::config();

@@ -74,9 +74,9 @@ public:
     ~MegaStyle();
     virtual void polish(QWidget *w);
     virtual void unPolish(QWidget *w);
-    virtual void polish(QApplication *a) { KStyle::polish(a); }
-    virtual void unPolish(QApplication *a) { KStyle::unPolish(a); }
     virtual void polish(QPalette &p);
+    virtual void polish(QApplication *app);
+    virtual void unPolish(QApplication *app);
     void drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken = FALSE,
                     const QBrush *fill = 0 );
@@ -198,6 +198,7 @@ private:
     QBitmap maskBmp;
     QBitmap xBmp;
     TransMenuHandler *menuHandler;
+    bool menuAni, menuFade;
 
     QIntDict<GradientSet>gDict;
 };
