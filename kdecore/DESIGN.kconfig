@@ -24,8 +24,7 @@ Currently the localisation bit is the least significant sort criteria, that
 means that the localised version always follows the non-localised version
 immediately.
 
-<planned changes>
-[WABA: Possible scenario #1 for enhancement]
+<Changed for KDE 3.0>
 Entries that are being read from a location other than the location to
 which is written back are marked as "default" and will be added both as
 normal entry as well as an entry with the key marked as default.
@@ -35,27 +34,24 @@ is equal to the default, if so the entry will not be written. The default
 entry always follows directly after the normal entry, due to the sorting.
 (After that the localised version follows)
 
-[WABA: Possible scenario #2 for enhancement]
-The "KEntry" structure is expanded with a "default" field. Entries that 
-are being read from a location other than the location to which is written 
-back will fill in the default field as well.
-
 When entries are written to disk, it is checked whether the entry to write 
 is equal to the default, if so the entry will not be written.
+</Changed>
 
 Open question:
 Should unmodified entries that are written back be compared with the default
 too? This seems to be mostly a transition issue.
 
+<Changed during KDE 3.0 / 3.2>
 Extra functions:
 
-bool isEntryFixed(key); // Can entry be modified?
-bool isEntryDefault(key); // Is entry equal to the default?
-void resetEntry(key); // Restore to default
+bool entryIsImmutable(key); // Can entry be modified?
+bool hasDefault(key); // Is there a system wide default set for the entry?
+void revertToDefault(key); // Restore to default
 void deleteEntry(key); // Remove entry
 
-Note that there is a subtle difference between resetEntry() and deleteEntry().
-resetEntry() will change the entry to the default value set by the system 
+Note that there is a subtle difference between revertToDefault() and deleteEntry().
+revertToDefault() will change the entry to the default value set by the system 
 administrator (Via e.g. $KDEDIR/share/config) or, if no such default was set,
 non-existant.
 deleteEntry() will make the entry non-existant.
@@ -68,8 +64,7 @@ is needed if the system administrator has specified a default value but the
 entry was deleted (made 'non-existant'). In that case we can't just leave 
 the entry out since that would mean we get the default from the system 
 administrator back the next time we read the file.
-</planned changes>
-
+</changed>
 
 When an entry is read with readEntry(key, defaultValue), non-existing
 entries will return "defaultValue" while hasKey(key) will return "false"
@@ -89,7 +84,7 @@ is this needed? Nobody seems to use it.
 Open Question: The bPersistent flag doesn't seem to be used... could it be removed?
 
 Open Question: Is the bNLS flag needed? Localised entries seem to be mostly
-usefull for default files, are they ever created by the suer itself?
+usefull for default files, are they ever created by the user itself?
 
 Open Question: Would it be worthwhile to lock a user option that is equal to the 
 default so that it doesn't change when the default changes?
@@ -139,6 +134,7 @@ comment.
 Work to be done:
 * KConfig needs to be extended to provide access to the default values provided 
 by the default config files. KConfig already stores this information internally.
+(DONE)
 * A formal comment structure needs to be designed that can convey type-information.
 Preferably in such a way that it is easily parsable by both machine and user.
 * KConfig needs to be extended, or another class created, that is able to parse
@@ -150,8 +146,11 @@ Drawbacks:
 * We rely on default configuration files being properly installed. 
 * The user can break applications by making improper modifications to these 
 files.
-* Settings such as the default high score user name (the person who is currently
-logged in) or the current system background which is determined at run time.
+* It is not possible to store defaults settings in a config file that are 
+of a dynamic nature. Examples are settings derived from other settings, 
+e.g. a color setting could be derived from the current color theme, or
+e.g. the default high score user name which is determined by the user
+currently logged in.
 
 
 Plan B
