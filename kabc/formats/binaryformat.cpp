@@ -161,7 +161,7 @@ void BinaryFormat::writeHeader( QDataStream &stream )
 void BinaryFormat::loadAddressee( Addressee &addressee, QDataStream &stream )
 {
   stream >> addressee;
-
+/*
   // load pictures
   Picture photo = addressee.photo();
   Picture logo = addressee.logo();
@@ -184,12 +184,13 @@ void BinaryFormat::loadAddressee( Addressee &addressee, QDataStream &stream )
 
   // load sound
   // TODO: load sound data from file
+*/
 }
 
 void BinaryFormat::saveAddressee( const Addressee &addressee, QDataStream &stream )
 {
   stream << addressee;
-
+/*
   // load pictures
   Picture photo = addressee.photo();
   Picture logo = addressee.logo();
@@ -212,4 +213,5 @@ void BinaryFormat::saveAddressee( const Addressee &addressee, QDataStream &strea
 
   // save sound
   // TODO: save the sound data to file
+*/
 }
