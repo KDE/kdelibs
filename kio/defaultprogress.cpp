@@ -35,6 +35,7 @@
 class DefaultProgress::DefaultProgressPrivate
 {
 public:
+  bool noCaption;
   QString sourceLabelText;
   QString destLabelText;
   QFontMetrics *fontMetrics;
@@ -102,6 +103,7 @@ DefaultProgress::DefaultProgress( bool showNow )
   resize( sizeHint() );
   setMaximumHeight(sizeHint().height());
 
+  d->noCaption = true;
   if ( showNow ) {
     show();
   }
@@ -205,7 +207,11 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
-  setCaption(i18n("Copy file(s) progress"));
+  if ( d->noCaption )
+  {
+    setCaption(i18n("Copy file(s) progress"));
+    d->noCaption = false;
+  }
   mode = Copy;
   d->sourceLabelText = from.prettyURL();
   squeezeStringToLabel( d->sourceLabelText, sourceLabel);
@@ -217,7 +223,11 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 
 void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
-  setCaption(i18n("Move file(s) progress"));
+  if ( d->noCaption )
+  {
+    setCaption(i18n("Move file(s) progress"));
+    d->noCaption = false;
+  }
   mode = Move;
   d->sourceLabelText = from.prettyURL();
   squeezeStringToLabel( d->sourceLabelText, sourceLabel);
@@ -229,7 +239,11 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 
 void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
-  setCaption(i18n("Creating directory"));
+  if ( d->noCaption )
+  {
+    setCaption(i18n("Creating directory"));
+    d->noCaption = false;
+  }
   mode = Create;
   d->sourceLabelText = dir.prettyURL();
   squeezeStringToLabel( d->sourceLabelText, sourceLabel);
@@ -239,7 +253,11 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 
 void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
-  setCaption(i18n("Delete file(s) progress"));
+  if ( d->noCaption )
+  {
+    setCaption(i18n("Delete file(s) progress"));
+    d->noCaption = false;
+  }
   mode = Delete;
   d->sourceLabelText = url.prettyURL();
   squeezeStringToLabel( d->sourceLabelText, sourceLabel);
