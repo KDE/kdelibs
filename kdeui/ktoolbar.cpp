@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.72  1998/07/23 09:42:26  radej
+// sven: improved styles
+//
 // Revision 1.71  1998/06/18 13:41:42  radej
 // sven: fixed invisible disabled buttons (I already wanted to defend it as
 //       a feature, like You don't have to see it, it's disabled!)
@@ -1166,7 +1169,8 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
 }  
 /* A poem all in G-s! No, any widget */
 
-int KToolBar::insertWidget(int _id, int _size, QWidget *_widget, int _index=-1)
+int KToolBar::insertWidget(int _id, int _size, QWidget *_widget, 
+		int _index )
 {
   KToolBarItem *item = new KToolBarItem(_widget, ITEM_FRAME, _id, false);
   

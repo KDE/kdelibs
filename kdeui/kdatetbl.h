@@ -104,4 +104,4 @@ private:  // Disabled copy constructor and operator=
   KDateTable &operator=(const KDateTable &) { return *this; }
 };
 
-#endif _KDATETBL_H
+#endif // _KDATETBL_H

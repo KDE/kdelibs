@@ -860,6 +860,6 @@ bool KTMainWindow::hasStatusBar(){
   return kstatusbar != 0;
 }
 
-bool KTMainWindow::hasToolBar( int ID = 0){
+bool KTMainWindow::hasToolBar( int ID ){
   return toolbars.at( ID ) != 0;
 }

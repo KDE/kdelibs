@@ -403,7 +403,7 @@ protected:
 
 };
 
-#endif __KNOTEBOOK_H
+#endif //  __KNOTEBOOK_H
 
 
 

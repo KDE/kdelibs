@@ -1302,9 +1302,9 @@ void KDirDialog::updateStatusLine()
 }
 
 
-KFilePreviewDialog::KFilePreviewDialog(const char *dirName, const char *filter= 0,
-                                       QWidget *parent= 0, const char *name= 0, 
-                                       bool modal = false, bool acceptURLs = true)
+KFilePreviewDialog::KFilePreviewDialog( const char *dirName, 
+		const char *filter, QWidget *parent, const char *name, 
+		bool modal, bool acceptURLs )
     : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs) 
 {
     init();

@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.9  1998/06/18 09:15:01  radej
+ // sven: made transparent resizer's lines thicker  (3.pts)
+ //
  // Revision 1.8  1998/06/18 08:54:31  radej
  // sven: removed debug outpot before 1.0
  //
@@ -451,3 +454,4 @@ void KToolBoxManager::deleteLastRectangle()
 }
 
 #include "ktoolboxmgr.moc"
+

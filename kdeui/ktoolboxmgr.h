@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.3  1998/05/07 16:50:42  radej
+ // Docs update: you don't get mouseRelease
+ //
  // Revision 1.2  1998/05/04 16:39:34  radej
  // Docs update.
  //
@@ -310,3 +313,4 @@ signals:
 };
 
 #endif
+

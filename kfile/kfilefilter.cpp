@@ -13,7 +13,7 @@ KFileFilter::~KFileFilter()
     delete filters;
 }
 
-void KFileFilter::changed(const char *filter)
+void KFileFilter::changed( const char * )
 {
     emit filterChanged();
 }
