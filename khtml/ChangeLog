@@ -1,5 +1,8 @@
 2003-11-29  Dirk Mueller  <mueller@kde.org>
 
+	* css/cssstyleselector.cpp: add indigo/crimson colorhandling as it is not in X11's rgb
+	names list.
+
 	* misc/loader.cpp (CachedCSSStyleSheet/CachedScript::data): add some utf8/utf16 encoding
 	handling. Workaround Qt bugs (#69115). Initial investigation and patch by Harri.
 
