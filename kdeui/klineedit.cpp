@@ -53,7 +53,7 @@ public:
     }
     bool grabReturnKeyEvents;
     bool handleURLDrops;
-    bool hasReference;;
+    bool hasReference;
     KCompletionBox *completionBox;
     QPopupMenu* popupMenu;
     QPopupMenu* subMenu;
