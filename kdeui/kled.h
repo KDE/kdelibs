@@ -41,9 +41,7 @@ class QColor;
 class KLed : public QWidget
 {
     Q_OBJECT
-    Q_ENUMS( State )
-    Q_ENUMS( Shape )
-    Q_ENUMS( Look )
+    Q_ENUMS( State Shape Look )
     Q_PROPERTY( State state READ state WRITE setState )
     Q_PROPERTY( Shape shape READ shape WRITE setShape )
     Q_PROPERTY( Look look READ look WRITE setLook )
