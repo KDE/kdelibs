@@ -4020,7 +4020,8 @@ QDOM_ElementPrivate* QDOM_DocumentPrivate::createElement( const QString& tagName
 
 QDOM_DocumentFragmentPrivate* QDOM_DocumentPrivate::createDocumentFragment()
 {
-    QDOM_DocumentFragmentPrivate* f = new QDOM_DocumentFragmentPrivate( this, 0 );
+    QDOM_DocumentFragmentPrivate* f = new QDOM_DocumentFragmentPrivate( this, 
+					     (QDOM_NodePrivate*)0 );
     f->deref();
     return f;
 }
