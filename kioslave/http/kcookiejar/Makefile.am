@@ -6,7 +6,8 @@ INCLUDES=	$(all_includes)
 ####### Files
 
 bin_PROGRAMS = kcookiejar
-lib_LTLIBRARIES = kcookiejar.la kded_kcookiejar.la
+lib_LTLIBRARIES = kcookiejar.la
+kde_module_LTLIBRARIES = kded_kcookiejar.la
 
 kcookiejar_la_SOURCES = main.cpp
 METASOURCES = AUTO
