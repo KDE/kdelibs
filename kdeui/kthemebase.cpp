@@ -283,7 +283,7 @@ void KThemeBase::applyConfigFile(const QString &file)
 {
     // Do copy ourselves
     QFile src(file);
-    QFile dest(KGlobal::dirs()->findResource("config", "kstylerc"));
+    QFile dest(locateLocal("config", "kstylerc"));
 
     if(!src.open(IO_ReadOnly)){
         warning("Cannot open theme file for reading!");
