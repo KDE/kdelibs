@@ -28,7 +28,7 @@ $(BUILDDIR)/build:
 #	kde_toolbardir=/usr/share/toolbar \
 #	kde_wallpaperdir=/usr/share/wallpaper \
 #	kde_bindir=/usr/X11R6/bin \
-#	kde_partsdir=/usr/lib/parts \
+#	kde_partsdir=/usr/lib/parts 
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	$$pwd/configure --prefix=/opt/kde2pre --enable-debug \
