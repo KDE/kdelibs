@@ -53,7 +53,8 @@ namespace KJS {
 	      DeclaredFunctionType,
 	      AnonymousFunctionType,
 	      ConstructorType,
-	      ActivationType
+	      ActivationType,
+	      ArgumentsType
   };
 
   /**

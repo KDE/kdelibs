@@ -187,6 +187,9 @@ GlobalImp::GlobalImp()
   Object regObj(new RegExpObject(funcProto, regexpProto));
   Object errObj(new ErrorObject(funcProto, errorProto));
 
+  // ECMA 15.3.4.1
+  funcProto.put("constructor", funcObj, DontEnum);
+
   Imp::put("Object", objectObj, DontEnum);
   Imp::put("Function", funcObj, DontEnum);
   Imp::put("Array", arrayObj, DontEnum);

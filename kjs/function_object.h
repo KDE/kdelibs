@@ -25,6 +25,14 @@
 
 namespace KJS {
 
+  class FunctionObject : public ConstructorImp {
+  public:
+    FunctionObject(const Object &funcProto);
+    Completion execute(const List &);
+    Object construct(const List &);
+    virtual String toString() const;
+  };
+
   class FunctionPrototype : public FunctionImp {
   public:
     FunctionPrototype(const Object &p);
@@ -32,12 +40,13 @@ namespace KJS {
     virtual CodeType codeType() const { return HostCode; }
   };
 
-  class FunctionObject : public ConstructorImp {
+  class FunctionProtoFunc : public InternalFunctionImp {
   public:
-    FunctionObject(const Object &funcProto);
+    FunctionProtoFunc(const Object &objProto, int i, int len);
     Completion execute(const List &);
-    Object construct(const List &);
-    virtual String toString() const;
+    enum { ToString, Apply, Call };
+  private:
+    int id;
   };
 
 }; // namespace

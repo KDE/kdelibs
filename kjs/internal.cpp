@@ -46,6 +46,7 @@ const TypeInfo StringImp::info = { "String", StringType, 0, 0, 0 };
 const TypeInfo BooleanImp::info = { "Boolean", BooleanType, 0, 0, 0 };
 const TypeInfo CompletionImp::info = { "Completion", CompletionType, 0, 0, 0 };
 const TypeInfo ReferenceImp::info = { "Reference", ReferenceType, 0, 0, 0 };
+const TypeInfo ArgumentsImp::info = { "Arguments", ArgumentsType, &ObjectImp::info, 0, 0 };
 
 UndefinedImp *UndefinedImp::staticUndefined = 0;
 
@@ -408,14 +409,10 @@ Completion AnonymousFunction::execute(const List &)
 }
 
 // ECMA 10.1.8
-class ArgumentsObject : public ObjectImp {
-public:
-  ArgumentsObject(FunctionImp *func, const List *args);
-};
-
-ArgumentsObject::ArgumentsObject(FunctionImp *func, const List *args)
+ArgumentsImp::ArgumentsImp(FunctionImp *func, const List *args)
   : ObjectImp(UndefClass)
 {
+  setPrototype(Global::current().objectPrototype());
   put("callee", Function(func), DontEnum);
   if (args) {
     put("length", Number(args->size()), DontEnum);
@@ -431,7 +428,7 @@ const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 // ECMA 10.1.6
 ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
-  KJSO aobj(new ArgumentsObject(f, args));
+  KJSO aobj(new ArgumentsImp(f, args));
   put("arguments", aobj, DontDelete);
   /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
      I can't see this described in the spec but it's possible in browsers. */

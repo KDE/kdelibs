@@ -261,6 +261,13 @@ namespace KJS {
     CodeType codeType() const { return AnonymousCode; }
   };
 
+  class ArgumentsImp : public ObjectImp {
+  public:
+    ArgumentsImp(FunctionImp *func, const List *args);
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+  };
+
   class ActivationImp : public Imp {
   public:
     ActivationImp(FunctionImp *f, const List *args);

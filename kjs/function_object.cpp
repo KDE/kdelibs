@@ -132,11 +132,101 @@ FunctionPrototype::FunctionPrototype(const Object &p)
 {
   setPrototype(p);
   put("length",Number(0),DontDelete|ReadOnly|DontEnum);
+
+  put("toString", new FunctionProtoFunc(p,FunctionProtoFunc::ToString, 0), DontEnum);
+  put("apply",    new FunctionProtoFunc(p,FunctionProtoFunc::Apply,    2), DontEnum);
+  put("call",     new FunctionProtoFunc(p,FunctionProtoFunc::Call,     1), DontEnum);
 }
 
 // ECMA 15.3.4 invoking Function.prototype() returns undefined
 Completion FunctionPrototype::execute(const List &/*args*/)
 {
   return Completion(ReturnValue, Undefined());
+}
+
+// ECMA 15.3.4
+FunctionProtoFunc::FunctionProtoFunc(const Object &objProto, int i, int len)
+  : id(i)
+{
+  setPrototype(objProto);
+  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+Completion FunctionProtoFunc::execute(const List &args)
+{
+  KJSO result;
+
+  switch (id) {
+  case ToString: {
+    Object thisObj = Object::dynamicCast(thisValue());
+    if (thisObj.isNull() || thisObj.getClass() != StringClass) {
+      result = Error::create(TypeError);
+      return Completion(ReturnValue, result);
+    }
+    FunctionImp *func = static_cast<FunctionImp*>(thisObj.imp());
+    if (func->name().isNull())
+      result = String("(Internal function)");
+    else
+      result = String("function " + func->name() + "()");
+    }
+    break;
+  case Apply: {
+    KJSO thisArg = args[0];
+    KJSO argArray = args[1];
+    KJSO func = thisValue();
+
+    if (!func.implementsCall()) {
+      result = Error::create(TypeError);
+      return Completion(ReturnValue, result);
+    }
+
+    KJSO thisV;
+    if (thisArg.isA(NullType) || thisArg.isA(UndefinedType))
+      thisV = Global::current();
+    else
+      thisV = args[0];
+
+    List applyArgs;
+    if (!argArray.isA(NullType) && !argArray.isA(UndefinedType)) {
+      if ((argArray.isA(ObjectType) &&
+           Object::dynamicCast(argArray).getClass() == ArrayClass) ||
+           argArray.isA(ArgumentsType)) {
+
+        unsigned int length = argArray.get("length").toUInt32();
+        for (uint i = 0; i < length; i++)
+          applyArgs.append(argArray.get(UString::from(i)));
+      }
+      else {
+        result = Error::create(TypeError);
+        return Completion(ReturnValue, result);
+      }
+    }
+    result = func.executeCall(thisV,&applyArgs);
+    }
+    break;
+  case Call: {
+    KJSO thisArg = args[0];
+    KJSO func = thisValue();
+
+    if (!func.implementsCall()) {
+      result = Error::create(TypeError);
+      return Completion(ReturnValue, result);
+    }
+
+    KJSO thisV;
+    if (thisArg.isA(NullType) || thisArg.isA(UndefinedType))
+      thisV = Global::current();
+    else
+      thisV = args[0];
+
+    List *callArgs = args.copy();
+    callArgs->removeFirst();
+    result = func.executeCall(thisV,callArgs);
+    delete callArgs;
+    }
+    break;
+  }
+
+  return Completion(ReturnValue, result);
 }
 
