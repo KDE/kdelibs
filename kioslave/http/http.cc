@@ -156,7 +156,7 @@ const char *create_digest_auth (const char *header, const char *user, const char
       while (p[i] != '"') i++;
       qop.assign(p,i);
     }
-    
+
     p+=i;
     p++;
   }
@@ -182,7 +182,7 @@ const char *create_digest_auth (const char *header, const char *user, const char
   char szNonceCount[9] = "00000001";
 
 
-  
+
   DigestCalcHA1("md5", user, realm.c_str(), passwd, nonce.c_str(), szCNonce, HA1);
   DigestCalcResponse(HA1, nonce.c_str(), szNonceCount, szCNonce, qop.c_str(), "GET", domain.c_str(), HA2, Response);
   t1 += "qop=\"auth\", ";
@@ -239,13 +239,13 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
 /* Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
    nplist is "inka.de,hadiko.de" or if host is "localhost" and
    nplist is "localhost" */
-   
+
 bool revmatch(const char *host, const char *nplist)
 {
   const char *hptr = host + strlen( host ) - 1;
   const char *nptr = nplist + strlen( nplist ) - 1;
   const char *shptr = hptr;
-    
+
   while( nptr >= nplist ) {
     if ( *hptr != *nptr ) {
       hptr = shptr;
@@ -437,40 +437,36 @@ bool HTTPProtocol::eof()
  * 2) Format our request/header
  * 3) Send the header to the remote server
  */
-bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
-                             unsigned long _offset )
+bool HTTPProtocol::http_open(KURL &_url)
 {
   // let's store our current state
   m_state.url    = _url;
-  m_state.reload = _reload;
-  m_state.offset = _offset;
-  m_state.postDataSize = _post_data_size;
 
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
 
   // try to ensure that the port is something reasonable
-  unsigned short int port = _url.port();
-  if ( port == 0 ) {
+  m_state.port = _url.port();
+  if ( m_state.port == 0 ) {
 #ifdef DO_SSL
     if (_url.protocol()=="https") {
       struct servent *sent = getservbyname("https", "tcp");
       if (sent) {
-        port = ntohs(sent->s_port);
+        m_state.port = ntohs(sent->s_port);
       } else
-        port = DEFAULT_HTTPS_PORT;
+        m_state.port = DEFAULT_HTTPS_PORT;
     } else
 #endif
       if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") ) {
         struct servent *sent = getservbyname("http", "tcp");
 	if (sent) {
-	  port = ntohs(sent->s_port);
+	  m_state.port = ntohs(sent->s_port);
 	} else
-	  port = DEFAULT_HTTP_PORT;
+	  m_state.port = DEFAULT_HTTP_PORT;
       } else {
 	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", _url.protocol().ascii()); fflush(stderr);
-	port = 80;
+	m_state.port = 80;
       }
   }
 
@@ -492,15 +488,15 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   }
 
   // do we want to use a proxy?
-  bool do_proxy = m_bUseProxy;
+  m_state.do_proxy = m_bUseProxy;
 
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
-  if (do_proxy && !m_strNoProxyFor.isEmpty()) 
-    do_proxy = !revmatch(_url.host(), m_strNoProxyFor);    
-  
+  if (m_state.do_proxy && !m_strNoProxyFor.isEmpty())
+    m_state.do_proxy = !revmatch(_url.host(), m_strNoProxyFor);
+
   // do we still want a proxy after all that?
-  if( do_proxy ) {
+  if( m_state.do_proxy ) {
     kdebug( KDEBUG_INFO, 7103, "http_open 0");
     // yep... open up a connection to the proxy instead of our host
     if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
@@ -512,11 +508,11 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
       error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
       return false;
     }
-  } else { 
+  } else {
     // apparently we don't want a proxy.  let's just connect directly
     struct sockaddr_in server_name;
 
-    if(!KSocket::initSockaddr(&server_name, _url.host(), port)) {
+    if(!KSocket::initSockaddr(&server_name, _url.host(), m_state.port)) {
       error( ERR_UNKNOWN_HOST, _url.host() );
       return false;
     }
@@ -527,7 +523,19 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     }
   }
 
-  // Placeholder
+  return true;
+}
+  
+bool HTTPProtocol::http_request(KURL &_url, int _post_data_size, bool _reload,
+				unsigned long _offset )
+{
+    // let's store our current state
+    m_state.url    = _url;
+    m_state.reload = _reload;
+    m_state.offset = _offset;
+    m_state.postDataSize = _post_data_size;
+
+    // Placeholder
   if (!openStream())
     error( ERR_COULD_NOT_CONNECT, _url.host() );
 
@@ -544,8 +552,8 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   // format the URI
   char c_buffer[64];
   memset(c_buffer, 0, 64);
-  if(do_proxy) {
-    sprintf(c_buffer, ":%u", port);
+  if(m_state.do_proxy) {
+    sprintf(c_buffer, ":%u", m_state.port);
     header += "http://";
     header += _url.host();
     header += c_buffer;
@@ -583,12 +591,12 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   // Language negotiation:
   if ( !m_strLanguages.isEmpty() )
     header += "Accept-Language: " + m_strLanguages + "\r\n";
-  
+
   header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
   header += _url.host();
   if (_url.port() != 0) {
     memset(c_buffer, 0, 64);
-    sprintf(c_buffer, ":%u", port);
+    sprintf(c_buffer, ":%u", m_state.port);
     header += c_buffer;
   }
   header += "\r\n";
@@ -612,7 +620,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   }
 
   // the proxy might need authorization of it's own. do that now
-  if( do_proxy ) {
+  if( m_state.do_proxy ) {
     kdebug( KDEBUG_INFO, 7103, "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
@@ -655,13 +663,13 @@ bool HTTPProtocol::readHeader()
   char buffer[1024];
   bool unauthorized = false;
   bool cont = false;
-  while(len && (gets(buffer, sizeof(buffer)))) { 
+  while(len && (gets(buffer, sizeof(buffer)))) {
     // strip off \r and \n if we have them
     len = strlen(buffer);
 
     while(len && (buffer[len-1] == '\n' || buffer[len-1] == '\r'))
       buffer[--len] = 0;
-    
+
     // if there was only a newline then continue
     if (!len)
       continue;
@@ -670,7 +678,7 @@ bool HTTPProtocol::readHeader()
     if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
 	m_bCanResume = false;
-    }    
+    }
 
     // get the size of our data
     else if (strncasecmp(buffer, "Content-length:", 15) == 0) {
@@ -682,7 +690,7 @@ bool HTTPProtocol::readHeader()
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
       m_strMimeType = trimLead(buffer + 13);
-      
+
       //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
       int semicolonPos = m_strMimeType.find( ';' );
       if ( semicolonPos != -1 )
@@ -739,12 +747,14 @@ bool HTTPProtocol::readHeader()
       KURL u(m_state.url, trimLead(buffer + 9));
       redirection(u.url());
 
-      if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
-	return false;
-
+      if ( !http_open(u) )
+	  return false;
+      else if ( !http_request(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+	  return false;
+	      
       return readHeader();
     }
-    
+
     // check for direct authentication
     else if (strncasecmp(buffer, "WWW-Authenticate:", 17) == 0) {
       configAuth(trimLead(buffer + 17), false);
@@ -779,7 +789,7 @@ bool HTTPProtocol::readHeader()
 	// were applied.
 	addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
       }
-    
+
       // md5 signature
       else if (strncasecmp(buffer, "Content-MD5:", 12) == 0) {
 	m_sContentMD5 = strdup(trimLead(buffer + 12));
@@ -802,7 +812,7 @@ bool HTTPProtocol::readHeader()
     QString pass = m_state.url.pass();
     if (m_strRealm.isEmpty())
       m_strRealm = m_state.url.host();
-    
+
     if (!open_PassDlg(m_strRealm, user, pass)) {
       error(ERR_ACCESS_DENIED, m_state.url.url());
       return false;
@@ -813,13 +823,15 @@ bool HTTPProtocol::readHeader()
     u.setPass(pass);
 
     m_qContentEncodings.clear();    // clear encodings of last try
-    m_qTransferEncodings.clear(); 
-    if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
-      return false;
+    m_qTransferEncodings.clear();
+    if ( !http_open(u) )
+	return false;
+    else if ( !http_request(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+	return false;
 
     return readHeader();
   }
-  
+
   // FINALLY, let the world know what kind of data we are getting
   // and that we do indeed have a header
   mimeType(m_strMimeType);
@@ -942,16 +954,17 @@ void HTTPProtocol::slotGetSize(const char *_url)
   }
 
   m_cmd = CMD_GET_SIZE;
-  
-  m_bIgnoreErrors = false;  
-  if (http_open(usrc, 0, false)) {
 
-    if (readHeader())
-      totalSize( m_iSize );
+  m_bIgnoreErrors = false;
+  if (http_open(usrc)) {
+      if (http_request(usrc, 0, false)) {
 
-    http_close();
-    
-    finished();
+	  if (readHeader())
+	      totalSize( m_iSize );
+
+	  http_close();
+      }
+      finished();
   }
 
   m_cmd = CMD_NONE;
@@ -986,7 +999,7 @@ const char *HTTPProtocol::getUserAgentString ()
  *
  * The basic procedure is *very* simple now with a lot of the actual work
  * being done elsewhere:
- * 
+ *
  * 1) Make sure that this URL is valid
  * 2) Let the world know that we are doing a Get
  * 3) Start the process going with an http_open()
@@ -998,7 +1011,7 @@ void HTTPProtocol::slotGet( const char *_url )
 {
   // transform this URL into a KURL for easy manipulating
   KURL usrc(_url);
-  
+
   // make sure it is a "good" URL in more ways than one
   if (usrc.isMalformed()) {
     error(ERR_MALFORMED_URL, strdup(_url));
@@ -1013,16 +1026,17 @@ void HTTPProtocol::slotGet( const char *_url )
   }
 
   m_cmd = CMD_GET;
-  
-  m_bIgnoreErrors = false;  
-  if (http_open(usrc, 0, false)) {
-    if ( readHeader() )
-      slotDataEnd();
 
-    http_close();
-    finished();
+  m_bIgnoreErrors = false;
+  if (http_open(usrc)) {
+      if(http_request(usrc, 0, false)) {
+	  if ( readHeader() )
+	      slotDataEnd();
+
+	  http_close();
+	  finished();
+      }
   }
-
   m_cmd = CMD_NONE;
 }
 
@@ -1044,7 +1058,7 @@ void HTTPProtocol::slotGet( const char *_url )
  * 5) Call slotDataEnd to get the content data
  * 6) Close the connection
  */
-void HTTPProtocol::slotPut(const char *_url, int /*_mode*/, 
+void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
 			   bool /*_overwrite*/,
                            bool /*_resume*/, int _len)
 {
@@ -1068,17 +1082,18 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
   // need this later
   m_cmd = CMD_PUT;
 
-  m_bIgnoreErrors = false;  
-  if (http_open(usrc, _len, false)) {
-    
-    if ( _len > 0 )
-      ready();
-    else if ( readHeader() )
-      {
-	slotDataEnd();
-        http_close();
-        finished();
-	m_cmd = CMD_NONE;
+  m_bIgnoreErrors = false;
+  if (http_open(usrc)) {
+      if(http_request(usrc, _len, false)) {
+	  if ( _len > 0 )
+	      ready();
+	  else if ( readHeader() )
+	      {
+		  slotDataEnd();
+		  http_close();
+		  finished();
+		  m_cmd = CMD_NONE;
+	      }
       }
   }
 }
@@ -1113,7 +1128,7 @@ void HTTPProtocol::decodeChunked()
 	} else
 	  s_length.append(chunk_id);
       }
-      
+
       offset++;
 
       // One extra read to catch the LF
@@ -1222,7 +1237,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   QStringList lst;
   lst.append( _source );
-  
+
   slotCopy( lst, _dest);
 }
 
@@ -1246,7 +1261,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
       m_cmd = CMD_NONE;
       return;
     }
-  
+
   QString exec = KProtocolManager::self().executable( udest.protocol() );
 
   if ( exec.isEmpty() ) {
@@ -1261,7 +1276,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
     m_cmd = CMD_NONE;
     return;
   }
-      
+
   m_cmd = CMD_COPY;
 
   KIOSlave slave( exec );
@@ -1270,7 +1285,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
     m_cmd = CMD_NONE;
     return;
   }
-  
+
   HTTPIOJob job( &slave, this );
 
   /*****
@@ -1285,9 +1300,9 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
   totalFiles( _source.count() );
 
   m_bIgnoreJobErrors = true;
-  
+
   QStringList::Iterator fit = _source.begin();
-  for( ; fit != _source.end(); fit++ ) { 
+  for( ; fit != _source.end(); fit++ ) {
     bool overwrite = false;
     bool skip_copying = false;
     bool resume = false;
@@ -1299,7 +1314,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
       m_cmd = CMD_NONE;
       return;
     }
-      
+
     if (!isValidProtocol(&u1)) {
       error( ERR_INTERNAL, "kio_http got non http/https/httpf protocol as source in copy command" );
       m_cmd = CMD_NONE;
@@ -1316,21 +1331,21 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
     }
 
     QString d = ud.url();
-    
+
     // Repeat until we got no error
-    do { 
+    do {
       job.clearError();
 
       m_bIgnoreErrors = true;
-      if ( !http_open( u1, 0, false, offset ) ) {
-	m_bIgnoreErrors = false;
-	/* if ( !m_bGUI )
-	   {
-	   http_close();
-	   releaseError();
-	   m_cmd = CMD_NONE;
-	   return;
-	   } */
+      if ( !http_open( u1 ) || !http_request( u1, 0, false, offset ) ) {
+	  m_bIgnoreErrors = false;
+	  /* if ( !m_bGUI )
+	     {
+	     http_close();
+	     releaseError();
+	     m_cmd = CMD_NONE;
+	     return;
+	     } */
 	
 	QString tmp = "Could not read\n";
 	tmp += *fit;
@@ -1370,7 +1385,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	  canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
 
 	  copyingFile( *fit, d );
-    
+
 	  job.put( d, -1, overwrite_all || overwrite,
 		   resume_all || resume, m_iSize + offset );
 
@@ -1380,7 +1395,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	  // Did we have an error ?
 	  if ( job.hasError() ) {
 	    int currentError = job.errorId();
-	    
+	
 	    kdebug( KDEBUG_INFO, 7103, "kio_http : ################# COULD NOT PUT %d",currentError);
 	    if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
 	      // Should we skip automatically ?
@@ -1412,16 +1427,16 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	    }
 	    // Can we prompt the user and ask for a solution ?
 	    else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
-		      currentError == ERR_DOES_ALREADY_EXIST_FULL ) {    
+		      currentError == ERR_DOES_ALREADY_EXIST_FULL ) {
 	      // Should we skip automatically ?
 	      if ( auto_skip ) {
 		job.clearError();
 		continue;
 	      }
-	      
+	
 	      RenameDlg_Result r;
 	      QString n;
-	      
+	
 	      if ( KProtocolManager::self().autoResume() && m_bCanResume &&
 		   currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 		r = R_RESUME_ALL;
@@ -1494,7 +1509,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 		assert( "Unhandled command!" );
 	    }
 	    // No need to ask the user, so raise an error and finish
-	    else {    
+	    else {
 	      http_close();
 	      error( currentError, job.errorText() );
 	      m_cmd = CMD_NONE;
@@ -1504,15 +1519,15 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	}
     }
     while( job.hasError() );
-    
+
     if ( skip_copying )
       continue;
-    
+
     slotDataEnd( &job );
-    
+
     job.dataEnd();
     http_close();
-    
+
     while( !job.hasFinished() )
       job.dispatch();
     //	  finished();
@@ -1527,7 +1542,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
  * This function is called in response to a client KIOJob::data(..)
  * request.  In practice, this is during a client "put" event.  The
  * procedure is like:
- * 
+ *
  * 1) Client sends KIOJob::put(..)
  * 2) HTTPProtocol::slotPut(...) gets called and, in the process,
  *    calls HTTPProtocol::http_open(...).
@@ -1545,7 +1560,7 @@ void HTTPProtocol::slotData(void *_p, int _len)
     abort();
     return;
   }
-  
+
   // good.  now send our data to the remote server
   if (write(_p, _len) == -1) {
     error(ERR_CONNECTION_BROKEN, m_state.url.host());
@@ -1749,11 +1764,11 @@ HTTPIOJob::HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_HTTP ) : KIOJobBase( 
   m_pHTTP = _HTTP;
 }
 
-  
+
 void HTTPIOJob::slotError( int _errid, const char *_txt )
 {
   KIOJobBase::slotError( _errid, _txt );
-  
+
   m_pHTTP->jobError( _errid, _txt );
 }
 

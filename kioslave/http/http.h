@@ -51,6 +51,8 @@ typedef struct
 	int   postDataSize;
 	bool  reload;
 	unsigned long offset;
+        bool do_proxy;
+        short unsigned int port;
 } HTTPState;
 
 class HTTPProtocol : public KIOProtocol
@@ -70,14 +72,14 @@ public:
 		                bool _resume, int _len );
   virtual void slotCopy( QStringList& _source, const char *_dest );
   virtual void slotCopy( const char *_source, const char *_dest );
-  
+
   virtual void slotData(void *_p, int _len);
   virtual void slotDataEnd( HTTPIOJob *job = 0 );
 
   virtual bool error( int _err, const char *_txt );
 
   void jobError( int _errid, const char *_txt );
-  
+
   KIOConnection* connection() { return KIOConnectionSignals::m_pConnection; }
 
 protected:
@@ -126,8 +128,15 @@ protected:
 
   size_t sendData( HTTPIOJob *job = 0 );
 
-  bool http_open( KURL &_url, int _post_data_len, bool _reload, unsigned long _offset = 0 );
-  void http_close();
+    /* open a connection to the server specified ni _url 
+     */
+    bool http_open( KURL &_url);
+    /* request a file from the server. Opens the connection if not already open
+     */
+    bool http_request( KURL &_url, int _post_data_len, bool _reload, unsigned long _offset = 0 );
+    /* close the connection to the server
+     */
+    void http_close();
 
   void clearError() { m_iSavedError = 0; }
   void releaseError() {
@@ -160,11 +169,11 @@ protected: // Members
   // Language/Encoding
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
-  QString m_sContentMD5, 
+  QString m_sContentMD5,
           m_strMimeType,
           m_strCharsets,
           m_strLanguages;
-  
+
   // Proxy related members
   bool m_bUseProxy;
   int m_strProxyPort;
@@ -175,8 +184,8 @@ protected: // Members
   struct sockaddr_in m_proxySockaddr;
 
   // Authentication
-  QString m_strRealm, 
-          m_strAuthString, 
+  QString m_strRealm,
+          m_strAuthString,
           m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
 
@@ -184,7 +193,7 @@ protected: // Members
   int m_iSavedError;
   QString m_strSavedError;
   bool m_bIgnoreJobErrors,
-       m_bIgnoreErrors; 
+       m_bIgnoreErrors;
 
   bool m_bCanResume;
 
@@ -202,7 +211,7 @@ class HTTPIOJob : public KIOJobBase
 {
 public:
   HTTPIOJob( KIOConnection *_conn, HTTPProtocol *_gzip );
-  
+
   virtual void slotError( int _errid, const char *_txt );
 
 protected:
