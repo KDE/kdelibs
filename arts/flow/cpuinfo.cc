@@ -20,6 +20,7 @@
 
     */
 
+#include <config.h>
 #include "startupmanager.h"
 #include "cpuinfo.h"
 
@@ -52,7 +53,7 @@ void CpuInfoStartup::sseCheckHandler(int)
 
 void CpuInfoStartup::startup()
 {
-#if defined(__GNUC__) && defined(__i386__)
+#ifdef HAVE_X86_SSE
 /*
  * Taken with thanks from mmx.h:
  * 
@@ -217,7 +218,7 @@ void CpuInfoStartup::startup()
 		}
 		signal(SIGILL, oldHandler);
 	}
-#endif /* GCC and x86 */
+#endif /* HAVE_X86_SSE */
 }
 
 static CpuInfoStartup cpuInfoStartup;

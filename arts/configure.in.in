@@ -191,6 +191,30 @@ if eval "test \"`echo `$ac_cv_x86_float_int\" = yes"; then
 fi
 ])
 
+dnl check if the assembler supports SSE instructions
+AC_DEFUN(AC_CHECK_X86_SSE,
+[
+AC_MSG_CHECKING([for x86 SSE instructions])
+AC_CACHE_VAL(ac_cv_x86_sse,
+[
+AC_TRY_COMPILE(,
+[
+#if defined(__GNUC__) && defined(__i386__)
+__asm__("movups %xmm0, (%esp)");
+#else
+#error Not gcc on x86
+#endif
+],
+ac_cv_x86_sse=yes,
+ac_cv_x86_sse=no)
+])
+AC_MSG_RESULT($ac_cv_x86_sse)
+if eval "test \"`echo `$ac_cv_x86_sse\" = yes"; then
+	AC_DEFINE(HAVE_X86_SSE,1,
+		[Define if your assembler supports x86 SSE instructions])
+fi
+])
+
 dnl check whether we should try to emulate stdio fopen/fclose via
 dnl glibc facilities (this *really* depends on glibc internals)
 
@@ -230,6 +254,7 @@ AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
 AC_CHECK_IOCTL_TYPE
 AC_CHECK_X86_FLOAT_INT
+AC_CHECK_X86_SSE
 AC_CHECK_ARTSDSP_STDIO_EMU
 KDE_CHECK_THREADING
 
