@@ -1,7 +1,8 @@
 /* This file is part of the KDE File Manager
 
-   Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
-
+   Copyright (C) 1998,1999,2000,2001 Waldo Bastian (bastian@kde.org)
+   Copyright (C) 2000,2001           Dawit Alemayehu (adawit@kde.org)
+   
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
@@ -21,18 +22,17 @@
 */
 //----------------------------------------------------------------------------
 //
-// KDE File Manager -- HTTP Cookies
+// KDE HTTP Cookie Manager
 // $Id$
 
 //
 // The cookie protocol is a mess. RFC2109 is a joke since nobody seems to
-// use it. Apart from that it is badly written.
-// We try to implement Netscape Cookies and try to behave us according to
-// RFC2109 as much as we can.
+// use it. Apart from that it is badly written.  We try to implement Netscape 
+// Cookies and try to behave according to RFC2109 as much as we can.
 //
-// We assume cookies do not contain any spaces (Netscape spec.)
-// According to RFC2109 this is allowed though.
-//
+// We assume cookies do not contain any spaces (Netscape spec.)  According to 
+// RFC2109 this is allowed though.
+
 
 #include <config.h>
 #include <sys/types.h>
@@ -45,9 +45,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
 
 #include <qstring.h>
 #include <qstrlist.h>
@@ -250,7 +247,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
         it != domains.end();
         ++it)
     {
-       KHttpCookieList *cookieList = cookieDomains[(*it)];  // Why not simply use the deref'ed string directly ?
+       KHttpCookieList *cookieList = cookieDomains[(*it)]; 
 
        if (!cookieList)
           continue; // No cookies for this domain
