@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
     doc->setJScriptEnabled(true);
     doc->setJavaEnabled(true);
-    doc->setURLCursor(QCursor(PointingHandCursor));
+    doc->setURLCursor(QCursor(Qt::PointingHandCursor));
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
 		     doc->widget(), SLOT(setCaption(const QString &)));
