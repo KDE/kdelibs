@@ -975,7 +975,7 @@ int KateBuffer::lineLength ( uint i )
   
   TextLine::Ptr l = buf->line(i - buf->startLine());
    
-  return l->length();
+  return l ? l->length() : 0;
 }
 
 QString KateBuffer::text()
