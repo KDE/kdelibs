@@ -83,10 +83,13 @@ KLocale::KLocale( const char *_catalogue )
     const char *g_lang = getenv("LANG");
     
     if (! g_lang ) {
-      
-      KConfig* config = kapp->getConfig();
-      config->setGroup("Locale");
-      languages = config->readEntry("Language", "C");
+
+	if (kapp) {
+	    KConfig* config = kapp->getConfig();
+	    config->setGroup("Locale");
+	    languages = config->readEntry("Language", "C");
+	} else
+	    languages = "C";
     } else
       languages = g_lang;
     
