@@ -455,5 +455,15 @@
 100001       reaktivate (proxy)
 100100       geheimnis
 100101       geheimnis (backends)
+
 100200       kfs
+
+# rosegarden
+
+200000       rosegarden
+200001       rosegarden (notation)
+200002       rosegarden (matrix)
+200003       rosegarden (sequencer)
+200004       rosegarden (sequence manager)
+
 
