@@ -152,16 +152,20 @@ void Job::emitSpeed( unsigned long bytes_per_second )
 
 void Job::kill( bool quietly )
 {
-  // kill all subjobs
+  kdDebug(7007) << "Job::kill this=" << this << endl;
+  // kill all subjobs, without triggering their result slot
   QListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
-     (*it)->kill();
+     (*it)->kill( true );
+  subjobs.clear();
 
   if ( ! quietly ) {
-    emit canceled( this );
+    m_error = ERR_USER_CANCELED;
+    emit result(this);
+    emit canceled( this ); // Not very useful (deprecated)
   }
 
-  delete this;
+ delete this;
 }
 
 void Job::slotResult( Job *job )
@@ -920,7 +924,7 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
 
 void FileCopyJob::slotResult( KIO::Job *job)
 {
-   kdDebug(7007) << "FileCopyJob::slotResult(" << job << ")" << endl;
+   kdDebug(7007) << "FileCopyJob this=" << this << " ::slotResult(" << job << ")" << endl;
    // Did job have an error ?
    if ( job->error() )
    {
@@ -940,13 +944,15 @@ void FileCopyJob::slotResult( KIO::Job *job)
       }
       else if (job == m_getJob)
       {
+        m_getJob = 0L;
         if (m_putJob)
-          m_putJob->kill();
+          m_putJob->kill(true);
       }
       else if (job == m_putJob)
       {
+        m_putJob = 0L;
         if (m_getJob)
-          m_getJob->kill();
+          m_getJob->kill(true);
       }
       m_error = job->error();
       m_errorText = job->errorText();

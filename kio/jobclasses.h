@@ -73,7 +73,7 @@ namespace KIO {
         /**
         * Abort job
         * This kills all subjobs and deletes the job
-         * @param quietly if true, Job will not emit signal @ref canceled
+        * @param quietly if true, Job will not emit signal @ref result
         */
         virtual void kill( bool quietly = false );
 
@@ -126,7 +126,10 @@ namespace KIO {
         void result( KIO::Job *job );
 
         /**
-         * Emitted when the job is canceled
+         * Emitted when the job is canceled.
+         * @deprecated. Don't use !
+         * @sig result is emitted as well, and error() is,
+         * in this case, ERR_USER_CANCELED.
          */
         void canceled( KIO::Job *job );
 
