@@ -20,6 +20,10 @@
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qtimer.h>
 
 #include "kssld.h"
@@ -43,6 +47,7 @@
 #include <kmdcodec.h>
 #include <kopenssl.h>
 
+// See design notes at end
 
 extern "C" {
    KDEDModule *create_kssld(const QCString &name) {
@@ -331,4 +336,48 @@ bool KSSLD::cacheRemoveByCertificate(KSSLCertificate cert) {
 
 
 #include "kssld.moc"
+
+
+/*
+
+  DESIGN
+  ------
+
+  This is the first implementation and I think this cache actually needs
+  experimentation to determine which implementation works best.  My current
+  options are:
+
+   (1) Store copies of the X509 certificates in a QList using a self
+       organizing heuristic as described by Munro and Suwanda.
+   (2) Store copies of the X509 certificates in a tree structure, perhaps
+       a redblack tree, avl tree, or even just a simple binary tree.
+   (3) Store the CN's in a tree or list and use them as a hash to retrieve
+       the X509 certificates.
+   (4) Create "nodes" containing the X509 certificate and place them in
+       two structures concurrently, one organized by CN, the other by
+       X509 serial number.
+
+  This implementation uses (1).  (4) is definitely attractive, but I don't
+  think it will be necessary to go so crazy with performance, and perhaps
+  end up performing poorly in situations where there are very few entries in
+  the cache (which is most likely the case most of the time).  The style of
+  heuristic is move-to-front, not swap-forward.  This seems to make more
+  sense because the typical user will hit a site at least a few times in a
+  row before moving to a new one.
+
+  What I worry about most with respect to performance is that cryptographic
+  routines are expensive and if we have to perform them on each X509
+  certificate until the right one is found, we will perform poorly.
+
+  All in all, this code is actually quite crucial for performance on SSL
+  website, especially those with many image files loaded via SSL.  If a
+  site loads 15 images, we will have to run through this code 15 times.
+  A heuristic for self organization will make each successive lookup faster.
+  Sounds good, doesn't it?
+
+  DO NOT ATTEMPT TO GUESS WHICH CERTIFICATES ARE ACCEPTIBLE IN YOUR CODE!!
+  ALWAYS USE THE CACHE.  IT MAY CHECK THINGS THAT YOU DON'T THINK OF, AND
+  ALSO IF THERE IS A BUG IN THE CHECKING CODE, IF IT IS ALL CONTAINED IN
+  THIS LIBRARY, A MINOR FIX WILL FIX ALL APPLICATIONS.
+ */
 
