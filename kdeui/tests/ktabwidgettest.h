@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <qvbox.h>
 #include <time.h>
+#include <qcheckbox.h>
 
 class Test : public QVBox
 {
@@ -20,6 +21,7 @@ public:
 
 private slots:
   void timerDone();
+
   void addTab();
   void removeCurrentTab();
   void toggleLeftButton(bool);
@@ -28,20 +30,29 @@ private slots:
   void toggleRightPopup(bool);
   void toggleTabPosition(bool);
   void toggleTabShape(bool);
-  void leftPopupActivated(int);
-  void rightPopupActivated(int);
+
   void currentChanged(QWidget*);
   void contextMenu(QWidget*, const QPoint&);
-  void contextMenuActivated(int);
+  void tabbarContextMenu(const QPoint&);
   void mouseDoubleClick(QWidget*);
   void mouseMiddleClick(QWidget*);
+
+  void leftPopupActivated(int);
+  void rightPopupActivated(int);
+  void contextMenuActivated(int);
+  void tabbarContextMenuActivated(int);
 
 private:
   KTabWidget*     mWidget;
   int             mChange;
 
+  QCheckBox *     mLeftButton;
+  QCheckBox *     mRightButton;
+  QCheckBox *     mTabsBottom;
+
   QPopupMenu*     mLeftPopup;
   QPopupMenu*     mRightPopup;
+  QPopupMenu*     mTabbarContextPopup;
   QPopupMenu*     mContextPopup;
   QWidget*        mContextWidget;
 

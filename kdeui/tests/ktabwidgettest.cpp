@@ -4,13 +4,11 @@
 #include "tab.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :QVBox( parent, name ), mChange(0), mRed( false ), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false )
+  :QVBox( parent, name ), mChange(0), mRed( false ), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false ), mTabbarContextPopup( false )
 {
   resize( 600,300 );
 
   mWidget = new KTabWidget( this );
-  mWidget->setRightButton( true );
-  mWidget->setLeftButton( true );
   mWidget->setLeftButtonPixmap( SmallIcon( "tab_new" ) );
   mWidget->setRightButtonPixmap( SmallIcon( "tab_remove" ) );
   mList.append( mWidget->addChangeableTab( "One" ) );
@@ -26,6 +24,7 @@ Test::Test( QWidget* parent, const char *name )
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), this, SLOT( currentChanged( QWidget * ) ) );
   connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), this, SLOT(contextMenu( QWidget *, const QPoint & )));
+  connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), this, SLOT(tabbarContextMenu( const QPoint & )));
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
 
@@ -35,34 +34,36 @@ Test::Test( QWidget* parent, const char *name )
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
   gridlayout->addWidget( addTab, 0, 0 );
   connect( addTab, SIGNAL( clicked() ), this, SLOT( addTab() ) );
-  connect( mWidget, SIGNAL( leftButtonClicked() ), this, SLOT( addTab() ) );
+  connect( mWidget, SIGNAL( LeftButtonClicked() ), this, SLOT( addTab() ) );
 
   QPushButton * removeTab = new QPushButton( "Remove Current Tab", grid );
   gridlayout->addWidget( removeTab, 0, 1 );
   connect( removeTab, SIGNAL( clicked() ), this, SLOT( removeCurrentTab() ) );
   connect( mWidget, SIGNAL( rightButtonClicked() ), this, SLOT( removeCurrentTab() ) );
 
-  QCheckBox * leftButton = new QCheckBox( "Show left button", grid );
-  gridlayout->addWidget( leftButton, 1, 0 );
-  leftButton->setChecked(true);
-  connect( leftButton, SIGNAL( toggled(bool) ), this, SLOT( toggleLeftButton(bool) ) );
+  mLeftButton = new QCheckBox( "Show left button", grid );
+  gridlayout->addWidget( mLeftButton, 1, 0 );
+  connect( mLeftButton, SIGNAL( toggled(bool) ), this, SLOT( toggleLeftButton(bool) ) );
+  mLeftButton->setChecked(true);
 
   QCheckBox * leftPopup = new QCheckBox( "Enable left popup", grid );
   gridlayout->addWidget( leftPopup, 2, 0 );
   connect( leftPopup, SIGNAL( toggled(bool) ), this, SLOT( toggleLeftPopup(bool) ) );
+  leftPopup->setChecked(true);
 
-  QCheckBox * rightButton = new QCheckBox( "Show right button", grid );
-  gridlayout->addWidget( rightButton, 1, 1 );
-  rightButton->setChecked(true);
-  connect( rightButton, SIGNAL( toggled(bool) ), this, SLOT( toggleRightButton(bool) ) );
+  mRightButton = new QCheckBox( "Show right button", grid );
+  gridlayout->addWidget( mRightButton, 1, 1 );
+  connect( mRightButton, SIGNAL( toggled(bool) ), this, SLOT( toggleRightButton(bool) ) );
+  mRightButton->setChecked(true);
 
   QCheckBox * rightPopup = new QCheckBox( "Enable right popup", grid );
   gridlayout->addWidget( rightPopup, 2, 1 );
   connect( rightPopup, SIGNAL( toggled(bool) ), this, SLOT( toggleRightPopup(bool) ) );
+  rightPopup->setChecked(true);
 
-  QCheckBox * tabsbottom = new QCheckBox( "Show tabs at bottom", grid );
-  gridlayout->addWidget( tabsbottom, 3, 0 );
-  connect( tabsbottom, SIGNAL( toggled(bool) ), this, SLOT( toggleTabPosition(bool) ) );
+  mTabsBottom = new QCheckBox( "Show tabs at bottom", grid );
+  gridlayout->addWidget( mTabsBottom, 3, 0 );
+  connect( mTabsBottom, SIGNAL( toggled(bool) ), this, SLOT( toggleTabPosition(bool) ) );
 
   QCheckBox * tabshape = new QCheckBox( "Triangular tab shape", grid );
   gridlayout->addWidget( tabshape, 3, 1 );
@@ -188,13 +189,19 @@ void Test::toggleTabShape(bool state)
 
 void Test::contextMenu(QWidget *w, const QPoint &p)
 {
-  if (!mContextPopup) {
-      mContextPopup = new QPopupMenu(this);
-      mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
-      mContextPopup->insertItem(SmallIcon( "konqueror" ), "Set This Icon", 1);
-      mContextPopup->insertItem(SmallIcon( "kicker" ), "Set This Icon", 2);
-      connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
-  }
+  if (mContextPopup)
+      delete mContextPopup;
+
+  mContextPopup = new QPopupMenu(this);
+  mContextPopup->insertItem( "Activate Tab", 4);
+  mContextPopup->insertSeparator();
+  mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
+  mContextPopup->insertItem(SmallIcon( "konqueror" ), "Set This Icon", 1);
+  mContextPopup->insertSeparator();
+  mContextPopup->insertItem( mWidget->isTabEnabled(w) ? "Disable Tab" : "Enable Tab", 2);
+  mContextPopup->insertItem( mWidget->tabToolTip(w).isEmpty() ? "Set Tooltip" : "Remove Tooltip", 3);
+  connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
+
   mContextWidget = w;
   mContextPopup->popup(p);
 }
@@ -202,13 +209,49 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
 void Test::contextMenuActivated(int item)
 {
   switch (item) {
-    case 0: mWidget->changeTab( mContextWidget, SmallIcon( "konsole" ), "Konsole" );
+    case 0: mWidget->changeTab( mContextWidget, SmallIcon( "konsole" ), mWidget->label( mWidget->indexOf( mContextWidget ) )  );
             break;
-    case 1: mWidget->changeTab( mContextWidget, SmallIcon( "konqueror" ), "Konqueror" );
+    case 1: mWidget->changeTab( mContextWidget, SmallIcon( "konqueror" ), mWidget->label( mWidget->indexOf( mContextWidget ) ) );
             break;
-    case 2: mWidget->changeTab( mContextWidget, SmallIcon( "kicker" ), "Kicker" );
+    case 2: mWidget->setTabEnabled( mContextWidget, !(mWidget->isTabEnabled(mContextWidget)) );
             break;
+    case 3: if ( mWidget->tabToolTip(mContextWidget).isEmpty() )
+              mWidget->setTabToolTip( mContextWidget, "This is a tool tip.");
+            else
+              mWidget->removeTabToolTip( mContextWidget );
+            break;
+    case 4: mWidget->showPage( mContextWidget );
   }
+  delete mContextPopup;
+  mContextPopup = 0;
+}
+
+void Test::tabbarContextMenu(const QPoint &p)
+{
+  if (mTabbarContextPopup)
+      delete mTabbarContextPopup;
+
+  mTabbarContextPopup = new QPopupMenu(this);
+  mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mWidget->isLeftButton() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
+  mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mWidget->isRightButton() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
+  mTabbarContextPopup->insertSeparator();
+  mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::Top ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
+  connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
+
+  mTabbarContextPopup->popup(p);
+}
+
+void Test::tabbarContextMenuActivated(int item)
+{
+  switch (item) {
+    case 0: mLeftButton->toggle();
+            break;
+    case 1: mRightButton->toggle();
+            break;
+    case 2: mTabsBottom->toggle();
+  }
+  delete mTabbarContextPopup;
+  mTabbarContextPopup = 0;
 }
 
 void Test::mouseDoubleClick(QWidget *w)
