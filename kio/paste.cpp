@@ -38,16 +38,17 @@ void KIO::pasteClipboard( const KURL& dest_url, bool move )
 
   QMimeSource *data = QApplication::clipboard()->data();
 
-  QStringList uris;
-  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, uris ) ) {
+  QStrList uris;
+  // don't use ::decodeToUnicodeUris, which decodes the urls, but ::decode
+  if ( QUriDrag::canDecode( data ) && QUriDrag::decode( data, uris ) ) {
     if ( uris.count() == 0 ) {
       KMessageBox::error( 0L, i18n("The clipboard is empty"));
       return;
     }
 
     KURL::List urls;
-    for (QStringList::ConstIterator it = uris.begin(); it != uris.end(); it++)
-      urls.append(KURL(*it));
+    for (QStrListIterator it(uris); *it; ++it)
+      urls.append(KURL(QString::fromLatin1(*it))); // *it is encoded already (David)
 
     if ( move )
       (void) KIO::move( urls, dest_url );
