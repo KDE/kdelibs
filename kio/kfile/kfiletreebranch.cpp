@@ -53,7 +53,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 
    m_root->setPixmap( 0, pix );
    m_root->setText( 0, name );
-   m_root->setOpen( true );
+   // m_root->setOpen( true );
    m_currParent= m_root;
 
    setShowingDotFiles( showHidden );

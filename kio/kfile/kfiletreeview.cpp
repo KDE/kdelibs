@@ -466,13 +466,13 @@ void KFileTreeView::setDirOnlyMode( KFileTreeBranch* branch, bool bom )
 
 void KFileTreeView::populateBranch( KFileTreeBranch *brnch )
 {
+   startAnimation( brnch->root() );
+   kdDebug(250) << "Starting to populate !" << endl;
+
    if( brnch )
    {
       brnch->populate();
    }
-
-   startAnimation( brnch->root() );
-   kdDebug(250) << "Starting to populate !" << endl;
 }
 
 void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
