@@ -65,7 +65,6 @@ struct KDockTabBar_PrivateStruct
  * set tooltip string.
  *
  * @author Falk Brettschneider (using the Qt example called tooltip).
- * @version $Id$
  */
 class KDockDynTabBarToolTip : public QToolTip
 {

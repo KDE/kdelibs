@@ -80,7 +80,6 @@ static const char*not_close_xpm[]={
  * Furthermore, the KDockMainWindow has got the KDocManager and some data about the dock states.
  *
  * @author Max Judin.
- * @version $Id$
 */
 KDockMainWindow::KDockMainWindow( QWidget* parent, const char *name, WFlags f)
 :KMainWindow( parent, name, f )
