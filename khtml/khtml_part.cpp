@@ -2939,7 +2939,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if (u.protocol().left(5) != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
-					"\nA third party may be able to intercept and viewthis information."
+					"\nA third party may be able to intercept and view this information."
 					"\nAre you sure you wish to continue?"),
 				i18n("SSL"));
 		if (rc == KMessageBox::Cancel)
