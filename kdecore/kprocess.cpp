@@ -704,14 +704,18 @@ void KProcess::commClose()
           }
         }
 
-        if (b_in)
+        if (b_in) {
+	    communication = (Communication) (communication & ~Stdin);
             close(in[1]);
-        if (b_out)
+        }
+        if (b_out) {
+	    communication = (Communication) (communication & ~Stdout);
             close(out[0]);
-        if (b_err)
+        }
+        if (b_err) {
+	    communication = (Communication) (communication & ~Stderr);
             close(err[0]);
-
-        communication = NoCommunication;
+        }
   }
 }
 
