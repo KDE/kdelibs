@@ -252,6 +252,9 @@ private:
 class KIO_EXPORT KIconButton: public QPushButton
 {
     Q_OBJECT
+    Q_PROPERTY( QString icon READ icon WRITE setIcon RESET resetIcon )
+    Q_PROPERTY( int iconSize READ iconSize WRITE setIconSize)
+    Q_PROPERTY( bool strictIconSize READ strictIconSize WRITE setStrictIconSize )
 
 public:
     /**
