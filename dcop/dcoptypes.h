@@ -63,6 +63,7 @@ class QTime; inline const char* dcopTypeName( const QTime& ) { return "QTime"; }
 class QDateTime; inline const char* dcopTypeName( const QDateTime& ) { return "QDateTime"; }
 class QBitArray; inline const char* dcopTypeName( const QBitArray& ) { return "QBitArray"; }
 class QKeySequence; inline const char* dcopTypeName( const QKeySequence& ) { return "QKeySequence"; }
+class QVariant; inline const char* dcopTypeName( const QVariant& ) { return "QVariant"; }
 
 // generic template fallback for unknown types
 template <class T> inline const char* dcopTypeName( const T& ) { return "<unknown>"; }
