@@ -532,20 +532,32 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
         kdWarning() << "KIconViewItem::paintItem called but wordwrap not ready - calcRect not called, or aborted!" << endl;
         return;
     }
-    KIconView *kview = static_cast<KIconView *>(iconView());
-    int textX = textRect( FALSE ).x();
-    int textY = textRect( FALSE ).y();
-    int iconX = pixmapRect( FALSE ).x();
-    int iconY = pixmapRect( FALSE ).y();
 
     p->save();
+
+    paintPixmap(p, cg);
+    paintText(p, cg);
+
+    p->restore();
+}
+
+KWordWrap * KIconViewItem::wordWrap()
+{
+    return m_wordWrap;
+}
+
+void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
+{
+    KIconView *kview = static_cast<KIconView *>(iconView());
+    int iconX = pixmapRect( false ).x();
+    int iconY = pixmapRect( false ).y();
 
 #ifndef QT_NO_PICTURE
     if ( picture() ) {
 	QPicture *pic = picture();
 	if ( isSelected() ) {
             // TODO something as nice as selectedIconPixmap if possible ;)
-	    p->fillRect( pixmapRect( FALSE ), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
+	    p->fillRect( pixmapRect( false ), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
 	}
 	p->drawPicture( x()-pic->boundingRect().x(), y()-pic->boundingRect().y(), *pic );
     } else
@@ -561,20 +573,24 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
             p->drawPixmap( iconX, iconY, *pix );
         }
     }
+}
+
+void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
+{
+    int textX = textRect( false ).x();
+    int textY = textRect( false ).y();
 
     if ( isSelected() ) {
-        p->fillRect( textRect( FALSE ), cg.highlight() );
+        p->fillRect( textRect( false ), cg.highlight() );
         p->setPen( QPen( cg.highlightedText() ) );
     } else {
-        if ( view->itemTextBackground() != NoBrush )
-            p->fillRect( textRect( FALSE ), view->itemTextBackground() );
-	p->setPen( cg.text() );
+        if ( iconView()->itemTextBackground() != NoBrush )
+            p->fillRect( textRect( false ), iconView()->itemTextBackground() );
+        p->setPen( cg.text() );
     }
 
-    int align = view->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
+    int align = iconView()->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
     m_wordWrap->drawText( p, textX, textY, align );
-
-    p->restore();
 }
 
 void KIconView::virtual_hook( int, void* )

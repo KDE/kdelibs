@@ -200,6 +200,10 @@ protected:
     void init();
     virtual void calcRect( const QString& text_ = QString::null );
     virtual void paintItem( QPainter *p, const QColorGroup &c );
+    KWordWrap *wordWrap();
+    void paintPixmap( QPainter *p, const QColorGroup &c );
+    void paintText( QPainter *p, const QColorGroup &c );
+
 private:
     KWordWrap* m_wordWrap;
     class KIconViewItemPrivate;
