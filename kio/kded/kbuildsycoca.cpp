@@ -104,7 +104,7 @@ void KBuildSycoca::recreate()
 
   QFile qFile;
   qFile.open(IO_WriteOnly, database.fstream());
-  str = new QDataStream(&qFile);
+  m_str = new QDataStream(&qFile);
 
   kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
@@ -117,8 +117,8 @@ void KBuildSycoca::recreate()
   save(); // Save database
   clear(); // save memory usage
 
-  delete str;
-  str = 0L;
+  delete m_str;
+  m_str = 0L;
   if (!database.close())
   {
      kdebug(KDEBUG_ERROR, 7020, "Error writing database to %s", database.name().ascii());
@@ -236,14 +236,14 @@ void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
       {
          if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
          {
-            (*str) << (Q_INT32) it.current()->offset();
-            (*str) << (Q_INT32) itserv.current()->offset();
+            (*m_str) << (Q_INT32) it.current()->offset();
+            (*m_str) << (Q_INT32) itserv.current()->offset();
             //kdebug(KDEBUG_INFO, 7020, QString("<< %1 %2")
             //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
          }
       }
    }
-   (*str) << (Q_INT32) 0;               // End of list marker (0)
+   (*m_str) << (Q_INT32) 0;               // End of list marker (0)
 }
 
 void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory, 
@@ -295,36 +295,36 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
    QStringList::ConstIterator it = fastPatterns.begin();
    for ( ; it != fastPatterns.end() ; ++it )
    {
-     int start = str->device()->at();
+     int start = m_str->device()->at();
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
      //kdebug(KDEBUG_INFO, 7020, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
-     (*str) << paddedPattern;
-     (*str) << dict[(*it)]->offset();
+     (*m_str) << paddedPattern;
+     (*m_str) << dict[(*it)]->offset();
      // Check size remains constant
-     assert( !entrySize || ( entrySize == str->device()->at() - start ) );
-     entrySize = str->device()->at() - start;
+     assert( !entrySize || ( entrySize == m_str->device()->at() - start ) );
+     entrySize = m_str->device()->at() - start;
    }
    // For the other patterns
-   otherIndexOffset = str->device()->at();
+   otherIndexOffset = m_str->device()->at();
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
      //kdebug(KDEBUG_INFO, 7020, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
-     (*str) << (*it);
-     (*str) << dict[(*it)]->offset();
+     (*m_str) << (*it);
+     (*m_str) << dict[(*it)]->offset();
    }
    
-   (*str) << QString(""); // end of list marker (has to be a string !)
+   (*m_str) << QString(""); // end of list marker (has to be a string !)
 }
 
 void KBuildSycoca::save()
 {
    // Write header (#pass 1)
-   str->device()->at(0);
+   m_str->device()->at(0);
 
-   (*str) << (Q_INT32) KSYCOCA_VERSION;
+   (*m_str) << (Q_INT32) KSYCOCA_VERSION;
    KSycocaFactory * servicetypeFactory = 0L;
    KSycocaFactory * serviceFactory = 0L;
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -339,37 +339,37 @@ void KBuildSycoca::save()
       else if ( aId == KST_KServiceFactory )
          serviceFactory = factory;
       aOffset = factory->offset();
-      (*str) << aId;
-      (*str) << aOffset;
+      (*m_str) << aId;
+      (*m_str) << aOffset;
    }
-   (*str) << (Q_INT32) 0; // No more factories.
-   (*str) << (Q_INT32) 0; // Offer list offset
-   (*str) << (Q_INT32) 0; // Mimetype patterns index offset
-   (*str) << (Q_INT32) 0; // 'Other' patterns index offset
-   (*str) << (Q_INT32) 0; // Entry size in the mimetype-patterns index ("fast" part)
+   (*m_str) << (Q_INT32) 0; // No more factories.
+   (*m_str) << (Q_INT32) 0; // Offer list offset
+   (*m_str) << (Q_INT32) 0; // Mimetype patterns index offset
+   (*m_str) << (Q_INT32) 0; // 'Other' patterns index offset
+   (*m_str) << (Q_INT32) 0; // Entry size in the mimetype-patterns index ("fast" part)
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())
    {
-      factory->save(*str);
+      factory->save(*m_str);
    }
 
-   Q_INT32 offerListOffset = str->device()->at();
+   Q_INT32 offerListOffset = m_str->device()->at();
    saveOfferList( serviceFactory, servicetypeFactory );
 
-   Q_INT32 mimeTypesPatternsOffset = str->device()->at();
+   Q_INT32 mimeTypesPatternsOffset = m_str->device()->at();
    Q_INT32 entrySize;
    Q_INT32 otherIndexOffset;
    saveMimeTypePattern( servicetypeFactory, entrySize, otherIndexOffset );
    
-   int endOfData = str->device()->at();
+   int endOfData = m_str->device()->at();
 
    // Write header (#pass 2)
-   str->device()->at(0);
+   m_str->device()->at(0);
 
-   (*str) << (Q_INT32) KSYCOCA_VERSION;
+   (*m_str) << (Q_INT32) KSYCOCA_VERSION;
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())
@@ -378,26 +378,26 @@ void KBuildSycoca::save()
       Q_INT32 aOffset;
       aId = factory->factoryId();
       aOffset = factory->offset();
-      (*str) << aId;
-      (*str) << aOffset;
+      (*m_str) << aId;
+      (*m_str) << aOffset;
    }
-   (*str) << (Q_INT32) 0; // No more factories.
+   (*m_str) << (Q_INT32) 0; // No more factories.
    kdebug(KDEBUG_INFO, 7020, QString("offerListOffset : %1").
           arg(offerListOffset,8,16));
-   (*str) << offerListOffset;
+   (*m_str) << offerListOffset;
    kdebug(KDEBUG_INFO, 7020, QString("mimeTypesPatternsOffset : %1").
           arg(mimeTypesPatternsOffset,8,16));
-   (*str) << mimeTypesPatternsOffset;;
+   (*m_str) << mimeTypesPatternsOffset;;
    kdebug(KDEBUG_INFO, 7020, QString("otherIndexOffset : %1").
           arg(otherIndexOffset,8,16));
-   (*str) << otherIndexOffset;;
-   (*str) << entrySize;
+   (*m_str) << otherIndexOffset;;
+   (*m_str) << entrySize;
 
    kdebug(KDEBUG_INFO, 7020, QString("endOfData : %1").
           arg(endOfData,8,16));
 
    // Jump to end of database
-   str->device()->at(endOfData);
+   m_str->device()->at(endOfData);
 }
 
 bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,

@@ -100,8 +100,10 @@ public:
 
 protected:
    void checkVersion();
+   void openDatabase();
+   void closeDatabase();
    KSycocaFactoryList *m_lstFactories;
-   QDataStream *str;
+   QDataStream *m_str;
    static KSycoca *_self;
 };
 

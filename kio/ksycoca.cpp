@@ -35,19 +35,7 @@
 KSycoca::KSycoca() 
   : DCOPObject("ksycoca")
 {
-   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
-   QFile *database = new QFile(path);
-   if (!database->open( IO_ReadOnly ))
-   {
-     // No database file
-     // TODO launch kded here, using KProcess, and upon completion
-     // retry again (but not more than once)
-     fprintf(stderr, "Error can't open database! Run kded !\n");
-     exit(-1);
-   }
-   str = new QDataStream(database);
-   m_lstFactories = new KSycocaFactoryList();
-   m_lstFactories->setAutoDelete( true );
+   openDatabase();
    _self = this;
 
    // Register app as able to receive DCOP messages
@@ -60,6 +48,23 @@ KSycoca::KSycoca()
       debug("registering as dcopclient...");
       kapp->dcopClient()->registerAs( kapp->name() ); 
    }
+}
+
+void KSycoca::openDatabase()
+{
+   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
+   QFile *database = new QFile(path);
+   if (!database->open( IO_ReadOnly ))
+   {
+     // No database file
+     // TODO launch kded here, using KProcess, and upon completion
+     // retry again (but not more than once)
+     fprintf(stderr, "Error can't open database! Run kded !\n");
+     exit(-1);
+   }
+   m_str = new QDataStream(database);
+   m_lstFactories = new KSycocaFactoryList();
+   m_lstFactories->setAutoDelete( true );
 }
 
 // Read-write constructor - only for KBuildSycoca
@@ -80,16 +85,25 @@ KSycoca * KSycoca::self()
 
 KSycoca::~KSycoca()
 {
+   closeDatabase();
+   _self = 0L;
+}
+
+void KSycoca::closeDatabase()
+{
    QIODevice *device = 0;
-   if (str)
-      device = str->device();
+   if (m_str)
+      device = m_str->device();
    if (device)
       device->close();
       
-   delete str;
+   delete m_str;
    delete device;
+   m_str = 0L;
+   // It is very important to delete all factories here
+   // since they cache information about the database file
    delete m_lstFactories;
-   _self = 0L;
+   m_lstFactories = 0L;
 }
 
 void KSycoca::addFactory( KSycocaFactory *factory )
@@ -104,10 +118,10 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
   if (fun == "databaseChanged()") {
     debug("got a databaseChanged signal !");
     // kded tells us the database file changed
-    // Let's just delete everything
+    // Close the database and forget all about what we knew
     // The next call to any public method will recreate
     // everything that's needed.
-    delete this;
+    closeDatabase();
     // same for KUserProfile
     KServiceTypeProfile::clear();
 
@@ -121,19 +135,24 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
 
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
+   if ( !m_str )
+      openDatabase();
    //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
-   str->device()->at(offset);
+   m_str->device()->at(offset);
    Q_INT32 aType;
-   (*str) >> aType;
+   (*m_str) >> aType;
    type = (KSycocaType) aType;
    //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::found type %1").arg(aType) );
-   return str;
+   return m_str;
 }
 
 void KSycoca::checkVersion()
 {
+   if ( !m_str )
+      openDatabase();
+   m_str->device()->at(0);
    Q_INT32 aVersion;
-   (*str) >> aVersion;
+   (*m_str) >> aVersion;
    if ( aVersion != KSYCOCA_VERSION )
    {
       // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
@@ -144,13 +163,12 @@ void KSycoca::checkVersion()
 
 QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 {
-   str->device()->at(0);
    checkVersion();
    Q_INT32 aId;
    Q_INT32 aOffset;
    while(true)
    {
-      (*str) >> aId;
+      (*m_str) >> aId;
       assert( aId > 0 && aId <= 2 ); // to update in case of new factories
       //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
@@ -158,12 +176,12 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
          kdebug(KDEBUG_ERROR, 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
          break;
       }
-      (*str) >> aOffset;
+      (*m_str) >> aOffset;
       if (aId == id)
       {
          //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
-         str->device()->at(aOffset);
-         return str;
+         m_str->device()->at(aOffset);
+         return m_str;
       }
    }
    return 0;
@@ -171,21 +189,20 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 
 QDataStream * KSycoca::findHeader()
 {
-   str->device()->at(0);
    checkVersion();
    Q_INT32 aId;
    Q_INT32 aOffset;
    // skip factories offsets
    while(true)
    {
-      (*str) >> aId;
+      (*m_str) >> aId;
       if ( aId )
-        (*str) >> aOffset;
+        (*m_str) >> aOffset;
       else
         break; // just read 0
    }
    // We now point to the header
-   return str;
+   return m_str;
 }
 
 QString KSycoca::determineRelativePath( const QString & _fullpath, const QString & _resource )
