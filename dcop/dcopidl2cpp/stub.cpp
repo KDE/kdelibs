@@ -81,6 +81,24 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 		    DCOPParent = s.firstChild().toText().data();
 	    }
 
+            QString classNameFull = className; // class name with possible namespaces prepended
+                                               // namespaces will be removed from className now
+            int namespace_count = 0;
+            QString namespace_tmp = className;
+            for(;;) {
+                int pos = namespace_tmp.find( "::" );
+                if( pos < 0 )
+                    {
+                    className = namespace_tmp;
+                    break;
+                    }
+                str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
+                ++namespace_count;
+                namespace_tmp = namespace_tmp.mid( pos + 2 );
+            }
+
+            str << endl;
+
 	    // Stub class definition
 	    str << "class " << className;
 
@@ -152,6 +170,13 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 
 	    str << "};" << endl;
 	    str << endl;
+
+            for(;
+                 namespace_count > 0;
+                 --namespace_count )
+                str << "} // namespace" << endl;
+            str << endl;
+
 	}
     }
 

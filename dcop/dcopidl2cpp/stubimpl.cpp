@@ -70,6 +70,25 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    DCOPParent = s.firstChild().toText().data();
 	    }
 	
+            QString classNameFull = className; // class name with possible namespaces prepended
+                                               // namespaces will be removed from className now
+            int namespace_count = 0;
+            QString namespace_tmp = className;
+            str << endl;
+            for(;;) {
+                int pos = namespace_tmp.find( "::" );
+                if( pos < 0 )
+                    {
+                    className = namespace_tmp;
+                    break;
+                    }
+                str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
+                ++namespace_count;
+                namespace_tmp = namespace_tmp.mid( pos + 2 );
+            }
+
+            str << endl;
+
 	    // Write constructors
 	    str << className << "::" << className << "( const QCString& app, const QCString& obj )" << endl;
 	    str << "  : ";
@@ -219,6 +238,12 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    str << "}" << endl << endl;
 		}
 	    }
+
+            for(;
+                 namespace_count > 0;
+                 --namespace_count )
+                str << "} // namespace" << endl;
+            str << endl;
 	}
     }
     impl.close();

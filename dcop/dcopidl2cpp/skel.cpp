@@ -163,6 +163,28 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    bool useHashing = functions.count() > 7;
 	    if ( useHashing ) {
 		str << "#include <qasciidict.h>" << endl;
+	    }
+
+            QString classNameFull = className; // class name with possible namespaces prepended
+                                               // namespaces will be removed from className now
+            int namespace_count = 0;
+            QString namespace_tmp = className;
+            str << endl;
+            for(;;) {
+                int pos = namespace_tmp.find( "::" );
+                if( pos < 0 )
+                    {
+                    className = namespace_tmp;
+                    break;
+                    }
+                str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
+                ++namespace_count;
+                namespace_tmp = namespace_tmp.mid( pos + 2 );
+            }
+
+            str << endl;
+
+	    if ( useHashing ) {
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    }
 	    str << "static const char* const " << className << "_ftable[" << functions.count() + 1 << "][3] = {" << endl;
@@ -292,7 +314,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    } else {
 		str << "    QCStringList ifaces;" << endl;
 	    }
-	    str << "    ifaces += \"" << className << "\";" << endl;
+	    str << "    ifaces += \"" << classNameFull << "\";" << endl;
 	    str << "    return ifaces;" << endl;
 	    str << "}" << endl << endl;
 	    
@@ -313,6 +335,13 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "    }" << endl;
 	    str << "    return funcs;" << endl;
 	    str << "}" << endl << endl;
+
+            for(;
+                 namespace_count > 0;
+                 --namespace_count )
+                str << "} // namespace" << endl;
+            str << endl;
+
 	}
     }
 	

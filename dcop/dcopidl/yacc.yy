@@ -40,6 +40,8 @@ extern int function_mode;
 
 static int dcop_area = 0;
 
+static QString in_namespace( "" );
+
 void dcopidlInitFlex( const char *_code );
 
 void yyerror( const char *s )
@@ -99,6 +101,7 @@ void yyerror( const char *s )
 %token T_ACCESS
 %token T_ENUM
 %token T_NAMESPACE
+%token T_USING
 %token T_UNKNOWN
 %token T_TRIPLE_DOT
 %token T_TRUE
@@ -170,7 +173,7 @@ declaration
 	: T_CLASS Identifier class_header dcoptag body T_SEMICOLON
 	  {
 	 	if ($4)
-			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *$2 ).latin1(), $3->latin1(), $5->latin1() );
 	  }
 	| T_CLASS Identifier T_SEMICOLON
 	  {
@@ -181,9 +184,24 @@ declaration
 	| T_STRUCT Identifier T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET  T_SEMICOLON
 	  {
 	  }
-	| T_NAMESPACE T_IDENTIFIER T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET T_SEMICOLON
-	  {
-	  }
+	| T_NAMESPACE T_IDENTIFIER T_LEFT_CURLY_BRACKET
+                  {
+                      in_namespace += *$2; in_namespace += "::";
+                  } 
+            main T_RIGHT_CURLY_BRACKET opt_semicolon
+                  {
+                      int pos = in_namespace.findRev( "::", -3 );
+                      if( pos >= 0 )
+                          in_namespace = in_namespace.left( pos + 2 );
+                      else
+                          in_namespace = "";
+                  }
+        | T_USING T_NAMESPACE T_IDENTIFIER T_SEMICOLON
+          {
+          }
+        | T_USING T_IDENTIFIER T_SCOPE T_IDENTIFIER T_SEMICOLON
+          {
+          }
 	| T_EXTERN T_SEMICOLON
 	  {
 	  }
@@ -287,6 +305,13 @@ class_header
 	  }
 	;
 
+opt_semicolon
+        : /* empty */
+          {
+          }
+        | T_SEMICOLON
+	  ;
+
 body
 	: T_RIGHT_CURLY_BRACKET
 	  {
@@ -328,6 +353,10 @@ body
 	  {
 		$$ = $4;
 	  }
+        | T_USING T_IDENTIFIER T_SCOPE T_IDENTIFIER T_SEMICOLON body
+          {
+                $$ = $6;
+          }
 
 enum
 	: T_ENUM T_IDENTIFIER T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_IDENTIFIER T_SEMICOLON

@@ -202,6 +202,7 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 const			return T_CONST;
 enum			return T_ENUM;
 namespace		return T_NAMESPACE;
+using			return T_USING;
 class			return T_CLASS;
 struct			return T_STRUCT;
 operator		return T_FUNOPERATOR;
