@@ -139,7 +139,7 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
     output << cmd_code;
 
     //store the arguments...
-    if( args.count() == 0 )
+    if( args.isEmpty() )
     {
         output << sep;
     }
@@ -241,7 +241,7 @@ void KJavaProcess::slotWroteData( )
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
     kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
-    if ( d->BufferList.count() > 0 )
+    if ( !d->BufferList.isEmpty() )
     {
         popBuffer();
     }
@@ -280,7 +280,7 @@ bool KJavaProcess::invokeJVM()
     if( !d->extraArgs.isEmpty() )
     {
         // BUG HERE: if an argument contains space (-Dname="My name")
-        // this parsing will fail. Need more sophisticated parsing
+        // this parsing will fail. Need more sophisticated parsing -- use KShell?
         QStringList args = QStringList::split( " ", d->extraArgs );
         for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
             *javaProcess << *it;
@@ -320,15 +320,21 @@ void KJavaProcess::killJVM()
 /*  In this method, read one command and send it to the d->appletServer
  *  then return, so we don't block the event handling
  */
-void KJavaProcess::slotReceivedData( int fd, int& )
+void KJavaProcess::slotReceivedData( int fd, int& len )
 {
     //read out the length of the message,
     //read the message and send it to the applet server
     char length[9] = { 0 };
     int num_bytes = ::read( fd, length, 8 );
+    if( !num_bytes )
+    {
+        len = 0;
+        return;
+    }
     if( num_bytes == -1 )
     {
         kdError(6100) << "could not read 8 characters for the message length!!!!" << endl;
+        len = 0;
         return;
     }
 
@@ -338,27 +344,30 @@ void KJavaProcess::slotReceivedData( int fd, int& )
     if( !ok )
     {
         kdError(6100) << "could not parse length out of: " << lengthstr << endl;
+        len = num_bytes;
         return;
     }
 
     //now parse out the rest of the message.
     char* msg = new char[num_len];
-    num_bytes = ::read( fd, msg, num_len );
-    if( num_bytes == -1 ||  num_bytes != num_len )
+    int num_bytes_msg = ::read( fd, msg, num_len );
+    if( num_bytes_msg == -1 || num_bytes_msg != num_len )
     {
-        kdError(6100) << "could not read the msg, num_bytes = " << num_bytes << endl;
+        kdError(6100) << "could not read the msg, num_bytes_msg = " << num_bytes_msg << endl;
         delete[] msg;
+        len = num_bytes;
         return;
     }
 
     QByteArray qb;
     emit received( qb.duplicate( msg, num_len ) );
     delete[] msg;
+    len = num_bytes + num_bytes_msg;
 }
 
 void KJavaProcess::slotExited( KProcess *process )
 {
-  if (process && process == javaProcess) {
+  if (process == javaProcess) {
     int status = -1;
     if (!d->processKilled) {
      status = javaProcess->exitStatus();
