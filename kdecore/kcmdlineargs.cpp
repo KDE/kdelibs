@@ -434,7 +434,7 @@ KCmdLineArgs::parseAllArgs()
    }
    for(int i = 1; i < argc; i++)
    {
-      if ((argv[i][0] == '-') && inOptions)
+      if (argv[i] && (argv[i][0] == '-') && inOptions)
       {
          bool enabled = true;
          const char *option = &argv[i][1];
