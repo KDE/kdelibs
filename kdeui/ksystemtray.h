@@ -125,10 +125,16 @@ protected:
        Reimplemented for internal reasons.
      */
     void enterEvent( QEvent* );
-    
+
+signals:
+    /**
+      Emitted when quit is selected in the menu. If you want to perform any other
+      action than to close the main application window please connect to this signal.
+    */
+    void quitSelected();
+
 private slots:
     void toggleMinimizeRestore();
-
 private:
     KPopupMenu* menu;
     int minimizeRestoreId;

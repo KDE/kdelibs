@@ -63,14 +63,16 @@ void KSystemTray::showEvent( QShowEvent * )
 {
     if ( !hasQuit ) {
 	menu->insertSeparator();
+	int quitID;
 	if ( parentWidget() ) {
 	    minimizeRestoreId = menu->insertItem(i18n("Minimize"), this, SLOT( toggleMinimizeRestore() ) );
-	    menu->insertItem(SmallIcon("exit"), i18n("&Quit"), parentWidget(), SLOT(close() ) );
+	    quitID=menu->insertItem(SmallIcon("exit"), i18n("&Quit"), parentWidget(), SLOT(close() ) );
 	}
 	else {
 	    minimizeRestoreId = -1;
-	    menu->insertItem(SmallIcon("exit"), i18n("&Quit"), qApp, SLOT(closeAllWindows() ) );
+	    quitID=menu->insertItem(SmallIcon("exit"), i18n("&Quit"), qApp, SLOT(closeAllWindows() ) );
 	}
+	menu->connectItem(quitID,this,SIGNAL(quitSelected()));
 	hasQuit = 1;
     }
 }
