@@ -10,6 +10,7 @@ EPS	<read>
 NETPBM	<incomplete>
 PNG	<read> <write, only with newer libraries>
 TIFF	<read>
+KRL	<read>
 
 To use these formats, you must 
 

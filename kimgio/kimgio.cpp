@@ -34,6 +34,8 @@ extern "C" void kimgio_init_jpeg();
 extern "C" void kimgio_init_tiff();
 #endif
 
+extern "C" void kimgio_init_krl();
+
 void kimgioRegister(void)
 {
 	if( registered ) {
@@ -95,4 +97,5 @@ void kimgioRegister(void)
 	kimgio_init_tiff();
 #endif
       
+      	kimgio_init_krl();
 }

@@ -1,4 +1,5 @@
-Sirtaj Singh Kang <taj@kde.org> -- kimgio and jpeg, tiff, png readers
+Sirtaj Singh Kang <taj@kde.org> -- kimgio and jpeg, tiff, png, krl readers
 Dirk Schoenberger <> -- eps, netpbm readers
 Torben Weis <weis@kde.org> -- XV format reader/writer
 Thomas Tanghus <tanghus@kde.org> -- PNG writer
+Antonio Larossa	<larossa@kde.org> -- initial version of KRL reader

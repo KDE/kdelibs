@@ -1,7 +1,7 @@
 
 LDFLAGS = $(all_libraries)
 
-lib_LTLIBRARIES= libkimgio.la kimg_eps.la kimg_xview.la \
+lib_LTLIBRARIES= libkimgio.la kimg_eps.la kimg_xview.la kimg_krl.la \
 	$(JPEG_MODULE) $(PNG_MODULE) $(TIFF_MODULE)
 
 if HAVE_LIBJPEG
@@ -31,6 +31,10 @@ kimg_tiff_la_LIBADD = $(LIBTIFF)
 kimg_xview_la_SOURCES = xview.cpp
 kimg_xview_la_LDFLAGS = -module -avoid-version
 kimg_xview_la_LIBADD = 
+
+kimg_krl_la_SOURCES = krl.cpp
+kimg_krl_la_LDFLAGS = -module -avoid-version
+kimg_krl_la_LIBADD = 
 
 kimg_eps_la_SOURCES = eps.cpp
 kimg_eps_la_LDFLAGS = -module -avoid-version
@@ -77,7 +81,7 @@ libkimgio_la_SOURCES = kimgio.cpp
 $(srcdir)/kimgio.cpp: kimgio-config.h
 include_HEADERS = kimgio.h
 
-noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h pngr.h
+noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h pngr.h krl.h
 
 INCLUDES = -I$(top_srcdir)/libltdl $(all_includes)
 
