@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Python sources
+Icon=py_src
+Type=MimeType
+MimeType=text/x-python
+Patterns=*.py;

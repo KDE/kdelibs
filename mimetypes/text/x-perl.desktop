@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Perl sources
+Icon=pl_src
+Type=MimeType
+MimeType=text/x-perl
+Patterns=*.pl;*.pm;
