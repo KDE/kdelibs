@@ -53,6 +53,8 @@ class KImageFilePreview : public KPreviewWidgetBase
 		QLabel *infoLabel;
 		QCheckBox *autoPreview;
 		QPushButton *previewButton;
+                class KImageFilePreviewPrivate;
+                KImageFilePreviewPrivate *d;
 };
 
 #endif // KIMAGEFILEPREVIEW_H

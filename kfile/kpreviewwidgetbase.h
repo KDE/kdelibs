@@ -52,7 +52,7 @@ class KPreviewWidgetBase : public QWidget
 		 *
 		 * @param parent The KFileDialog this preview widget is going to be used in
 		 */
-		KPreviewWidgetBase(KFileDialog *parent) : QWidget(parent) {}
+		KPreviewWidgetBase(KFileDialog *parent, const char *name=0) : QWidget(parent,name) {}
 
 	public slots:
 		/**
