@@ -55,7 +55,7 @@ extern "C" {
 
 class KWalletTransaction {
 	public:
-		KWalletTransaction() { 
+		KWalletTransaction() {
 			tType = Unknown;
 			transaction = 0L;
 			client = 0L;
@@ -97,7 +97,7 @@ KWalletD::KWalletD(const QCString &name)
 	_dw->startScan(true);
 	connect(_dw, SIGNAL(dirty(const QString&)), this, SLOT(emitWalletListDirty()));
 }
-  
+
 
 KWalletD::~KWalletD() {
 	delete _timeouts;
@@ -212,7 +212,7 @@ int KWalletD::open(const QString& wallet, uint wId) {
 				x->tType = KWalletTransaction::OpenFail;
 		}
 	}
-	
+
 	processTransactions();
 
 	return rc;
@@ -343,7 +343,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		_wallets.insert(rc = generateHandle(), b);
 		_passwords[wallet] = p;
 		_handles[appid].append(rc);
-		
+
 		if (brandNew) {
 			createFolder(rc, KWallet::Wallet::PasswordFolder());
 			createFolder(rc, KWallet::Wallet::FormDataFolder());
@@ -369,7 +369,8 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 
 		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
 			if (appid.isEmpty()) {
-				response = KMessageBox::questionYesNoCancel(0L, i18n("<qt>KDE has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(wallet)), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+				response = KMessageBox::questionYesNoCancel(0L, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)),
+                                                            i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 			} else {
 				response = KMessageBox::questionYesNoCancel(0L, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 			}
@@ -493,7 +494,7 @@ bool reclose = false;
 	}
 
 	delete kpd;
-	
+
 	if (reclose) {
 		close(handle, true);
 	}
@@ -1076,7 +1077,7 @@ void KWalletD::reconfigure() {
 
 	// Update if wallet was enabled/disabled
 	if (!_enabled) { // close all wallets
-		while (!_wallets.isEmpty()) { 
+		while (!_wallets.isEmpty()) {
 			QIntDictIterator<KWallet::Backend> it(_wallets);
 			if (!it.current()) { // necessary?
 				break;
