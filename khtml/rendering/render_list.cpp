@@ -106,11 +106,12 @@ void RenderListItem::calcListValue()
         m_marker->val = predefVal;
     else if(!m_previous)
         m_marker->val = 1;
-    else
-    {
-        if( m_previous && m_previous->isListItem() && m_previous->style()->listStyleType() != LNONE )
-        {
-            RenderListItem *item = static_cast<RenderListItem *>(m_previous);
+    else {
+	RenderObject *o = m_previous;
+	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) ) 
+	    o = o->previousSibling();
+        if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
+            RenderListItem *item = static_cast<RenderListItem *>(o);
             m_marker->val = item->value() + 1;
         }
         else
