@@ -34,6 +34,7 @@ namespace KSpell2
     public:
         Dialog( BackgroundChecker *checker,
                 QWidget *parent, const char *name=0 );
+        ~Dialog();
 
         QString originalBuffer() const;
         QString buffer() const;

@@ -105,6 +105,11 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   }
 }
 
+KMimeTypeChooser::~KMimeTypeChooser()
+{
+  delete d;
+}
+
 void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 {
   QStringList selMimeTypes;

@@ -72,6 +72,11 @@ Dialog::Dialog( BackgroundChecker *checker,
     setMainWidget( d->ui );
 }
 
+Dialog::~Dialog()
+{
+    delete d;
+}
+
 void Dialog::initConnections()
 {
     connect( d->ui->m_addBtn, SIGNAL(clicked()),

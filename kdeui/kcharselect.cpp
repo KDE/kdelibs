@@ -435,6 +435,11 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     setFocusProxy( charTable );
 }
 
+KCharSelect::~KCharSelect()
+{
+    delete d;
+}
+
 //==================================================================
 QSize KCharSelect::sizeHint() const
 {

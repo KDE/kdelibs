@@ -63,7 +63,7 @@ class KIO_EXPORT KMimeTypeChooser : public QVBox
                       const QStringList &groupsToShow=QStringList(),
                       int visuals=Comments|Patterns|EditButton,
                       QWidget *parent=0, const char *name=0 );
-    ~KMimeTypeChooser() {};
+    ~KMimeTypeChooser();
 
     /**
      * @return a list of all selected selected mimetypes represented by their name.
