@@ -335,7 +335,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
-    if(m_part->mousePressHook(_mouse)) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -357,6 +356,9 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
+    printf("Her har vi long'n: %d \n", offset);
+    if(m_part->mousePressHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
+    
     if(url != 0)
     {
 	//printf("mouseEvent: overURL %s\n", url.string().latin1());
@@ -392,7 +394,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
-    if(m_part->mouseDoubleClickHook(_mouse)) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -404,6 +405,8 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick, 0, 0, url, innerNode, offset );
 
+    if(m_part->mouseDoubleClickHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
+
     // ###
     //if ( url.length() )
     //emit doubleClick( url.string(), _mouse->button() );
@@ -412,7 +415,17 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if(!m_part->docImpl()) return;
-    if(m_part->mouseMoveHook(_mouse)) return;
+
+
+    int xm, ym;
+    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
+
+    DOMString url;
+    NodeImpl *innerNode=0;
+    long offset=0;
+    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
+    
+    if(m_part->mouseMoveHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
 
     // drag of URL
 
@@ -433,13 +446,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	return;
     }
 
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-
-    DOMString url;
-    NodeImpl *innerNode=0;
-    long offset=0;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
+ 
 
     if ( !pressed && url.length() )
     {
@@ -495,8 +502,20 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( !m_part->docImpl() ) return;
-    if(m_part->mouseReleaseHook(_mouse)) return;
 
+    int xm, ym;
+    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
+
+    //printf("\nmouseReleaseEvent: x=%d, y=%d\n", xm, ym);
+
+    DOMString url=0;
+    NodeImpl *innerNode=0;
+    long offset;
+    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
+
+    if(m_part->mouseReleaseHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
+
+    
     if ( pressed )
     {
 	// in case we started an autoscroll in MouseMove event
@@ -509,15 +528,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     // the mouse is pressed again.
     pressed = false;
 
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-
-    //printf("\nmouseReleaseEvent: x=%d, y=%d\n", xm, ym);
-
-    DOMString url=0;
-    NodeImpl *innerNode=0;
-    long offset;
-    m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
 
     if ( m_strSelectedURL.isEmpty() )
 	return;

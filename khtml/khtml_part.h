@@ -377,10 +377,10 @@ protected:
     virtual bool keyPressHook(QKeyEvent *) { return false; }
     virtual bool keyReleaseHook(QKeyEvent*) {return false; }
     
-    virtual bool mousePressHook( QMouseEvent * ){ return false; }
-    virtual bool mouseDoubleClickHook( QMouseEvent * ){ return false; }
-    virtual bool mouseMoveHook(QMouseEvent *){ return false; }
-    virtual bool mouseReleaseHook(QMouseEvent *){ return false; }
+    virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
+    virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
+    virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
+    virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
 
 
 protected slots:
