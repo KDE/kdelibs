@@ -80,13 +80,13 @@ class KCModuleProxy::KCModuleProxyPrivate
 
 		~KCModuleProxyPrivate()
 		{
+			delete rootInfo; // Delete before embedWidget!
+			delete embedWidget; // Delete before embedFrame!
 			delete embedFrame;
 			delete dcopClient;
 			delete dcopObject;
-			delete embedWidget;
 			delete rootCommunicator;
 			delete rootProcess;
-			delete rootInfo;
 			delete kcm;
 		}
 
@@ -386,11 +386,10 @@ void KCModuleProxy::runAsRoot()
 	}
 
 	/* Clean up in case of failure */
-	delete d->embedFrame;
-	d->embedFrame = 0;
 	delete d->embedWidget;
 	d->embedWidget = 0;
-	delete lblBusy;
+	delete d->embedFrame;
+	d->embedFrame = 0;
 
 	QApplication::restoreOverrideCursor();
 }
