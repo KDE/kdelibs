@@ -883,6 +883,10 @@ const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
 
 KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
 :QWidget( parent, name )
+  ,up_xpm(0L)
+  ,down_xpm(0L)
+  ,left_xpm(0L)
+  ,right_xpm(0L)
 {
   /* Set up bitmaps */
   left_xpm = new QPixmap( 16, 16 );
@@ -932,6 +936,10 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
 KDockTabBar::~KDockTabBar()
 {
   delete mainData;
+  delete left_xpm;
+  delete right_xpm;
+  delete down_xpm;
+  delete up_xpm;
 }
 
 void KDockTabBar::paintEvent(QPaintEvent *)
