@@ -141,6 +141,7 @@ KHTMLPageCache::createCacheEntry()
   if (d->expireQueue.count() > EXPIRE_QUEUE_LENGTH)
   {
      KHTMLPageCacheEntry *entry = d->expireQueue.take(0);
+     d->dict.remove(entry->m_id); 
      delete entry;
   }
   return (d->newId++);
@@ -167,7 +168,10 @@ KHTMLPageCache::cancelEntry(long id)
 {
   KHTMLPageCacheEntry *entry = d->dict.take(id);
   if (entry) 
+  {
+     d->expireQueue.removeRef(entry);
      delete entry;
+  }
 }
 
 bool
