@@ -95,12 +95,12 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 
     if ( !m_mimeFilters.isEmpty() ) {
         // correct or guessed mimetype -- we don't mind
-        const QString& mime = item->mimeTypePtr()->name();
+        KMimeType::Ptr mime = item->mimeTypePtr();
         bool ok = false;
 
         QStringList::ConstIterator it = m_mimeFilters.begin();
         for ( ; it != m_mimeFilters.end(); ++it ) {
-            if ( (*it) == mime ) { // match!
+            if ( mime->is(*it) ) { // match!
                 ok = true;
                 break;
             }
