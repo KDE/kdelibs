@@ -499,8 +499,9 @@ int main(int argc, char **argv)
    KLocale::setMainCatalogue("kdelibs");
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
-                KAboutData::License_GPL, "(c) 1999,2000 David Faure");
+                KAboutData::License_GPL, "(c) 1999-2002 KDE Developers");
    d.addAuthor("David Faure", I18N_NOOP("Author"), "faure@kde.org");
+   d.addAuthor("Waldo Bastian", I18N_NOOP("Author"), "bastian@kde.org");
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
