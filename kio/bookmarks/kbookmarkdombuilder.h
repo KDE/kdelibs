@@ -20,7 +20,7 @@
 #define __kbookmarkdombuilder_h
 
 #include <kbookmark.h>
-#include <qptrstack.h>
+#include <qvaluestack.h>
 #include <qobject.h>
 
 class KBookmarkDomBuilder : public QObject {
@@ -35,7 +35,7 @@ protected slots:
    void newSeparator();
    void endFolder();
 private:
-   QPtrStack<KBookmarkGroup> m_stack;
+   QValueStack<KBookmarkGroup> m_stack;
    QValueList<KBookmarkGroup> m_list;
    KBookmarkManager *m_manager;
 };

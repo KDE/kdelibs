@@ -18,6 +18,7 @@
 */
 
 #include <kbookmarkmanager.h>
+#include <kdebug.h>
 
 #include "kbookmarkdombuilder.h"
 
@@ -47,7 +48,7 @@ void KBookmarkDomBuilder::connectImporter(const QObject *importer) {
 void KBookmarkDomBuilder::newBookmark(
    const QString &text, const QCString &url, const QString &additionnalInfo
 ) {
-   KBookmark bk = m_stack.top()->addBookmark( 
+   KBookmark bk = m_stack.top().addBookmark( 
                                     m_manager, text, 
                                     QString::fromUtf8(url),
                                     QString::null, false);
@@ -59,9 +60,9 @@ void KBookmarkDomBuilder::newFolder(
    const QString & text, bool open, const QString & additionnalInfo 
 ) {
    // we use a qvaluelist so that we keep pointers to valid objects in the stack
-   KBookmarkGroup gp = m_stack.top()->createNewFolder(m_manager, text, false);
+   KBookmarkGroup gp = m_stack.top().createNewFolder(m_manager, text, false);
    m_list.append(gp);
-   m_stack.push(&(m_list.last()));
+   m_stack.push(m_list.last());
    // store additionnal info
    QDomElement element = m_list.last().internalElement();
    element.setAttribute("netscapeinfo", additionnalInfo);
@@ -69,7 +70,7 @@ void KBookmarkDomBuilder::newFolder(
 }
 
 void KBookmarkDomBuilder::newSeparator() {
-   m_stack.top()->createNewSeparator();
+   m_stack.top().createNewSeparator();
 }
 
 void KBookmarkDomBuilder::endFolder() {
