@@ -178,8 +178,9 @@ bool KGlobalAccelPrivate::x11Event( XEvent* pEvent )
 	//kdDebug(125) << "x11EventFilter( type = " << pEvent->type << " )" << endl;
 	switch( pEvent->type ) {
 	 case MappingNotify:
+	        XRefreshKeyboardMapping( &pEvent->xmapping );
 		x11MappingNotify();
-		return true;
+		return false;
 	 case XKeyPress:
 		if( x11KeyPress( pEvent ) )
 			return true;
