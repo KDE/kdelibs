@@ -1046,6 +1046,7 @@ Completion WindowFunc::tryExecute(const List &args)
            dest.y()+tl->height() <= QApplication::desktop()->height() )
           tl->move( dest );
     }
+    result = Undefined();
     break;
   case MoveTo:
     if(args.size() == 2 && widget)
@@ -1058,6 +1059,7 @@ Completion WindowFunc::tryExecute(const List &args)
            dest.y()+tl->height() <= QApplication::desktop()->height() )
           tl->move( dest );
     }
+    result = Undefined();
     break;
   case ResizeBy:
     if(args.size() == 2 && widget)
@@ -1070,6 +1072,7 @@ Completion WindowFunc::tryExecute(const List &args)
            dest.width() >= 100 && dest.height() >= 100 )
           tl->resize( dest );
     }
+    result = Undefined();
     break;
   case ResizeTo:
     if(args.size() == 2 && widget)
@@ -1082,6 +1085,7 @@ Completion WindowFunc::tryExecute(const List &args)
            dest.width() >= 100 && dest.height() >= 100 )
           tl->resize( dest );
     }
+    result = Undefined();
     break;
   case SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
