@@ -541,7 +541,8 @@ QString KLocale::formatMoney(double num) const
 {
     // the number itself
     bool neg = num < 0;
-    QString res = QString::number(neg?-num:num, 'f', fracDigits());
+    // QString craches if fracDigits() > 80...
+    QString res = QString::number(neg?-num:num, 'f', fracDigits()>80?80:fracDigits());
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, monetaryDecimalSymbol());
@@ -645,8 +646,7 @@ double KLocale::readMoney(const QString &str, bool * ok) const
 
 double KLocale::readNumber(const QString &str, bool * ok) const
 {
-    bool neg = str.find(negativeSign()) != 0;
-
+    bool neg = str.find(negativeSign()) == 0;
     QString buf = decimalSymbol();
     int pos = str.find(buf);
 
