@@ -742,16 +742,13 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 				     QWidget *parent,
 				     const QString& caption)
 {
-    QString filename;
-    KFileDialog *dlg= new KFileDialog(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
-    dlg->setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
-    if (dlg->exec() == QDialog::Accepted){
-      filename = dlg->selectedURL().path();
-      KRecentDocument::add(filename, false);
-    }
-    delete dlg;
+    QString filename = dlg.selectedFile();
+    if (!filename.isEmpty())
+        KRecentDocument::add(filename, false);
 
     return filename;
 }
@@ -760,16 +757,14 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 					  QWidget *parent,
 					  const QString& caption)
 {
-    QString filename;
     KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
     dlg.setMode(Directory);
 
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
 
-    if ( dlg.exec() == QDialog::Accepted ) {
-	filename = dlg.selectedURL().path();
-	KRecentDocument::add(filename, false);
-    }
+    QString filename = dlg.selectedFile();
+    if (!filename.isEmpty())
+        KRecentDocument::add(filename, false);
 
     return filename;
 }
@@ -777,9 +772,20 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 KURL KFileDialog::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-	return d->filename_;
+	return KURL( d->filename_ );
     else
 	return KURL();
+}
+
+QString KFileDialog::selectedFile() const
+{
+    if ( result() == QDialog::Accepted )
+    {
+       KURL url( d->filename_);
+       if (url.isLocalFile())
+          return url.path();
+    } 
+    return QString::null;
 }
 
 QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
@@ -790,12 +796,9 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
-    QString filename;
-
-    if (dlg.exec() == QDialog::Accepted){
-        filename= dlg.selectedURL().path();
+    QString filename = dlg.selectedFile();
+    if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
-    }
 
     return filename;
 }

@@ -97,6 +97,11 @@ public:
     KURL selectedURL() const;
 
     /**
+      * @return full path in local filesystem. (Local files only)
+      */
+    QString selectedFile() const;
+
+    /**
      * Sets the directory to view
      * @param name URL to show
      * @param clearforward indicate, if the forward queue
