@@ -535,6 +535,7 @@ enum EDisplay {
 
 class RenderStyle : public DOM::DomShared
 {
+    friend class CSSStyleSelector;
 public:
     static void cleanup();
 
