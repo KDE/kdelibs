@@ -30,7 +30,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Konqueror/Embedded is to be a small as possible to fit on embedded
 // devices. For this it's also useful to strip out unneeded features of
 // Qt, like for example QToolTip or QWhatsThis. The availability (or the
-// lack thereof) can be determined using these preprocessor defines. (Simon)
+// lack thereof) can be determined using these preprocessor defines.
+// The same applies to the QT_NO_ACCEL ifdef below. I hope it doesn't make
+// too much trouble... (Simon)
 
 #include <qhbox.h>
 #include <qvbox.h>
@@ -154,8 +156,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     m_button->setDefault( true );
     m_button = bbox->addButton( i18n("&Reject"), this, SLOT(reject()), false );
     bbox->addStretch();
+#ifndef QT_NO_ACCEL
     QAccel* a = new QAccel( this );
     a->connectItem( a->insertItem(Qt::Key_Escape), m_button, SLOT(animateClick()) );
+#endif
     m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
                                 this, SLOT(slotCookieDetails()), false );
 #ifndef QT_NO_WHATSTHIS
