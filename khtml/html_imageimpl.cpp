@@ -323,7 +323,7 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 void HTMLImageElementImpl::layout(bool)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Image)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
+    printf("%s(Image)::layout(?) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
 
     calcMinMaxWidth(); // ### just to be sure here...
@@ -336,7 +336,7 @@ void HTMLImageElementImpl::layout(bool)
 	imgHeight = predefinedHeight.value;
 	break;
     case Percent:
-	// ### is this correct????
+	// ### is this correct?
 	{
 	KHTMLWidget *htmlwidget =  
 	    static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();

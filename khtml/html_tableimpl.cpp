@@ -1869,7 +1869,7 @@ void HTMLTableSectionElementImpl::layout(bool)
     descent -= spacing;
 #endif
 #ifdef DEBUG_LAYOUT
-     printf("%s(TableSection)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
+     printf("%s(TableSection)::layout(?) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
 
     setLayouted();
