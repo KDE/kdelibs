@@ -321,12 +321,66 @@ failure_exit:
     return a;
 }
 
-bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
+static KAction* handleToolbarMouseButtonRelease(QPoint pos, QPtrList<KAction> actions, KBookmarkManager *mgr) 
+{
+    KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
+    Q_ASSERT(tb);
+
+    kdDebug(7043) << "1" << endl;
+
+    KToolBarButton* b;
+    b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
+    if (!b)
+        return 0;
+
+    kdDebug(7043) << "2" << endl;
+
+    KAction *a = 0;
+    a = findPluggedAction(actions, tb, b->id());
+    Q_ASSERT(a);
+
+    return a;
+}
+
+// TODO    *** for dragging ***
+// init    - validDrag == false
+// release - validDrag == false
+// press   - validDrag == true
+//           and set startDragDos = ev->pos
+// move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
+//           validDrag == false 
+//           and do the funky kbookmarkdrag stuff
+
+// TODO    *** for right click ***
+// make right click give the correct menu
+
+// TODO    *** drop improvements ***
+// open submenus on drop interactions
+
+// TODO    *** generic rmb improvements ***
+// don't *ever* show the rmb on press, always relase, possible???
+
+bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
+{
     static bool atFirst = false;
     static KAction* a = 0;
     if (dptr()->m_readOnly)
-        return false;
-    if ( e->type() == QEvent::DragLeave )
+        return false; // todo: make this limit the actions
+    kdDebug(7043) << "got an event (" << e << ") of type" << e->type() << endl;
+    if ( 0 && e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonPress )
+    {
+        kdDebug(7043) << "got an mouse button release" << endl;
+        QMouseEvent *mev = (QMouseEvent*)e;
+        KAction *_a; 
+        _a = handleToolbarMouseButtonRelease(mev->pos(), dptr()->m_actions, m_pManager);
+        if (_a || e->type() == QEvent::MouseButtonRelease)
+        {
+            a = _a;
+            mev->accept();
+            return true;
+        }
+    }
+    else if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep();
         a = 0;
@@ -362,8 +416,8 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        KAction *_a; 
         bool _atFirst;
+        KAction *_a; 
         _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
         if (_a)
         {

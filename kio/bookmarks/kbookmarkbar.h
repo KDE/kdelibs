@@ -68,7 +68,7 @@ public slots:
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );
-    bool eventFilter( QObject *o, QEvent *e );
+    virtual bool eventFilter( QObject *o, QEvent *e );
 
 private:
     KBookmarkGroup getToolbar();
