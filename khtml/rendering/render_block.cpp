@@ -655,7 +655,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // make sure we relayout children if we need it.
-        if ( relayoutChildren || (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
+        if ( relayoutChildren || floatBottom() > m_y ||
+            (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
             child->setLayouted( false );
 
         //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->needsLayout() << endl;
