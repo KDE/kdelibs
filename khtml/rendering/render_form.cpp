@@ -464,19 +464,12 @@ void LineEditWidget::keyReleaseEvent(QKeyEvent* e)
     emit onKeyUp();
 }
 
-void LineEditWidget::create( WId id, bool initializeWindow, 
-                             bool destroyOldWindow )
-{
-    KLineEdit::create( id, initializeWindow, destroyOldWindow );
-    setMouseTracking( true ); // we need that for cursor-autohiding
-}
-
 // -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
 {
-    LineEditWidget *edit = new LineEditWidget(view);
+    LineEditWidget *edit = new LineEditWidget(view->viewport());
     connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
@@ -1066,7 +1059,7 @@ void RenderSelect::setOptionsChanged(bool /*ptionsChanged*/)
 
 ListBoxWidget *RenderSelect::createListBox()
 {
-    ListBoxWidget *lb = new ListBoxWidget(m_view);
+    ListBoxWidget *lb = new ListBoxWidget(m_view->viewport());
     connect(lb,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(lb,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     lb->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
@@ -1075,7 +1068,7 @@ ListBoxWidget *RenderSelect::createListBox()
 
 ComboBoxWidget *RenderSelect::createComboBox()
 {
-    ComboBoxWidget *cb = new ComboBoxWidget(m_view);
+    ComboBoxWidget *cb = new ComboBoxWidget(m_view->viewport());
     connect(cb,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(cb,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     return cb;
@@ -1156,12 +1149,6 @@ bool TextAreaWidget::event( QEvent *e )
     return QMultiLineEdit::event( e );
 }
 
-void TextAreaWidget::create( WId id, bool initializeWindow, 
-                             bool destroyOldWindow )
-{
-    QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
-    setMouseTracking( true ); // we need that for cursor-autohiding
-}
 
 // -------------------------------------------------------------------------
 
@@ -1171,7 +1158,7 @@ void TextAreaWidget::create( WId id, bool initializeWindow,
 RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element)
     : RenderFormElement(view, element)
 {
-    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
+    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view->viewport());
     setQWidget(edit, false);
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));

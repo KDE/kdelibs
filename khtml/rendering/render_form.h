@@ -313,13 +313,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent *);
     virtual void keyReleaseEvent(QKeyEvent *);
     virtual bool event( QEvent *e );
-    
-    // Qt resets mouseTracking to false upon reparenting
-    // we should get rid of this workaround once QEvent::Create or Reparent
-    // work.
-    virtual void create( WId = 0, bool initializeWindow = TRUE, 
-                         bool destroyOldWindow = TRUE );
-
 signals:
     void focused();
     void blurred();
@@ -496,12 +489,6 @@ protected:
     virtual void focusOutEvent(QFocusEvent *);
     virtual bool event (QEvent *e );
 
-    // Qt resets mouseTracking to false upon reparenting
-    // we should get rid of this workaround once QEvent::Create or Reparent
-    // work.
-    virtual void create( WId = 0, bool initializeWindow = TRUE, 
-                         bool destroyOldWindow = TRUE );
-    
 signals:
     void focused();
     void blurred();
