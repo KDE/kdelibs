@@ -4,6 +4,7 @@ This library allows applications that use the Qt library to read and
 write images in extra formats. Current formats include:
 
 JPEG	<read>
+JPEG2000 <read>
 XV	<read> <write>
 EPS	<read> <write>
 NETPBM	<incomplete>
