@@ -26,10 +26,6 @@
 
 #include <libkmid/midiout.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 struct snd_seq_event;
 typedef struct snd_seq_event snd_seq_event_t;
 
