@@ -905,7 +905,8 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   
   bool found = false;
   FtpEntry *e;
-  while( ( e = readdir() ) && !found ) {
+  while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
+  {
     if ( m_error ) {
       kdebug(0, KDEBUG_ERROR, "FAILED: Read %s %s", error(), errorText().ascii());
       return 0L;
