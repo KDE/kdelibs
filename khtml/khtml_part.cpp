@@ -1731,7 +1731,15 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
   if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) {
-    if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url)) {
+    KURL urlFrom(m_url);
+    KURL urlTo(url);
+    if (urlTo.protocol().isEmpty() || 
+        (urlTo.protocol() == "file" && !(url.lower().startsWith("file")))) {
+        urlTo.setProtocol(urlFrom.protocol());
+        if (urlTo.host().isEmpty())
+            urlTo.setHost(urlFrom.host());
+    }
+    if (!kapp || !kapp->kapp->authorizeURLAction("redirect", urlFrom, urlTo)) {
       kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << m_url.prettyURL() << " to " << url << " REJECTED!" << endl;
       return;
     }
