@@ -11,7 +11,8 @@ artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl
 
 ####### libsoundserver_idl, libkmedia2_idl (idl files as library)
 
-lib_LTLIBRARIES = libkmedia2_idl.la libsoundserver_idl.la
+lib_LTLIBRARIES = libkmedia2_idl.la libsoundserver_idl.la \
+						libartswavplayobject.la
 
 libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
@@ -21,13 +22,18 @@ libkmedia2_idl_la_SOURCES = kmedia2.cc
 libkmedia2_idl_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la
 libkmedia2_idl_la_LDFLAGS = -no-undefined
 
+libartswavplayobject_la_SOURCES = wavplayobject_impl.cc
+libartswavplayobject_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la \
+								  libsoundserver_idl.la $(FLOWLIBS)
+libartswavplayobject_la_LDFLAGS = -no-undefined -module
+
+
 ###### "real" programs
 
 bin_PROGRAMS = artsd artsplay artscat artswrapper
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
-artsd_SOURCES = simplesoundserver_impl.cc artsd.cc wavplayobject_impl.cc \
-				cpuusage.cc
+artsd_SOURCES = simplesoundserver_impl.cc artsd.cc cpuusage.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
