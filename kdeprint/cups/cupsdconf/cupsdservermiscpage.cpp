@@ -25,8 +25,9 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
-#include <qframe.h>
 #include <qwhatsthis.h>
+
+#include <kseparator.h>
 
 #include "cupsdconf.h"
 #include "cupsdoption.h"
@@ -44,10 +45,7 @@ CupsdServerMiscPage::CupsdServerMiscPage(QWidget *parent, const char *name)
 	preservejobhistory_ = new QCheckBox(i18n("Preserve job history (after completion)"), opt_[0]);
 	preservejobfiles_ = new QCheckBox(i18n("Preserve job file (after completion)"), opt_[1]);
 
-	QFrame	*fr = new QFrame(this);
-	fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	fr->setLineWidth(1);
-	fr->setFixedHeight(10);
+        KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 
 	printcap_ = new QDirLineEdit(opt_[2]);
 	printcap_->setFileEdit(true);
@@ -62,7 +60,8 @@ CupsdServerMiscPage::CupsdServerMiscPage(QWidget *parent, const char *name)
 	main_->addWidget(deflabel_, 0, 1, Qt::AlignRight|Qt::AlignVCenter);
 	main_->addMultiCellWidget(opt_[0], 1, 1, 0, 1);
 	main_->addMultiCellWidget(opt_[1], 2, 2, 0, 1);
-	main_->addMultiCellWidget(fr, 3, 3, 0, 1);
+	main_->addMultiCellWidget(sep, 3, 3, 0, 1);
+        main_->addRowSpacing(3, 10);
 	main_->addWidget(opt_[2], 4, 1);
 	main_->addWidget(opt_[3], 5, 1);
 	main_->addWidget(opt_[4], 6, 1);

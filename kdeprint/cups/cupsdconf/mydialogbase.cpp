@@ -26,10 +26,10 @@
 #include <qwidgetstack.h>
 #include <qsplitter.h>
 #include <qlayout.h>
-#include <qframe.h>
 #include <qpixmap.h>
 #include <qwhatsthis.h>
 
+#include <kseparator.h>
 #include <klocale.h>
 
 class MyPage : public QListViewItem
@@ -81,17 +81,13 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
 
         title_ = new QLabel("Title", right_);
 
-        QFrame  *fr1 = new QFrame(right_);
-        fr1->setFrameStyle(QFrame::HLine|QFrame::Plain);
-        fr1->setLineWidth(1);
-        fr1->setFixedHeight(5);
+        KSeparator* sep1 = new KSeparator( KSeparator::HLine, right_);
+        sep1->setFixedHeight(5);
 
         stack_ = new QWidgetStack(right_);
 
-        QFrame  *fr2 = new QFrame(this);
-        fr2->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        fr2->setLineWidth(1);
-        fr2->setFixedHeight(15);
+        KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
+        sep2->setFixedHeight(15);
 
         QPushButton     *ok_ = new QPushButton(i18n("OK"), this);
         QPushButton     *cancel_ = new QPushButton(i18n("Cancel"), this);
@@ -110,7 +106,7 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
 	mainLayout->addLayout(panelLayout, 1);
 	panelLayout->addWidget(tree_, 0);
 	panelLayout->addWidget(right_, 1);
-        mainLayout->addWidget(fr2, 0);
+        mainLayout->addWidget(sep2, 0);
         mainLayout->addLayout(btnLayout, 0);
         btnLayout->addWidget(help_, 0);
         btnLayout->addStretch(1);
@@ -118,7 +114,7 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         btnLayout->addWidget(apply_, 0);
         btnLayout->addWidget(cancel_, 0);
         rightLayout->addWidget(title_, 0);
-        rightLayout->addWidget(fr1, 0);
+        rightLayout->addWidget(sep1, 0);
         rightLayout->addWidget(stack_, 1);
 }
 

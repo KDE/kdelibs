@@ -20,10 +20,10 @@
 #include "cupsdbrowsingconnpage.h"
 
 #include <klocale.h>
+#include <kseparator.h>
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <qframe.h>
 #include <qwhatsthis.h>
 
 #include "cupsdconf.h"
@@ -44,10 +44,7 @@ CupsdBrowsingConnPage::CupsdBrowsingConnPage(QWidget *parent, const char *name)
 	browseport_ = new QLineEdit(opt_[1]);
 	browsepoll_ = new CupsListBox(opt_[2]);
 
-	QFrame	*fr = new QFrame(this);
-	fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	fr->setLineWidth(1);
-	fr->setFixedHeight(10);
+        KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 
 	QLabel	*l1 = new QLabel(i18n("Broadcast addresses:"), this);
 	QLabel	*l2 = new QLabel(i18n("Broadcast port:"), this);
@@ -58,7 +55,8 @@ CupsdBrowsingConnPage::CupsdBrowsingConnPage(QWidget *parent, const char *name)
 	main_->addMultiCellWidget(opt_[0], 1, 2, 1, 1);
 	main_->addMultiCellWidget(opt_[2], 5, 6, 1, 1);
 	main_->addWidget(opt_[1], 3, 1);
-	main_->addWidget(fr, 4, 1);
+	main_->addWidget(sep, 4, 1);
+        main_->addRowSpacing(4, 10);
 	main_->addWidget(l1, 1, 0, Qt::AlignLeft|Qt::AlignTop);
 	main_->addWidget(l2, 3, 0);
 	main_->addWidget(l3, 5, 0, Qt::AlignLeft|Qt::AlignTop);

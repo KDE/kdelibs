@@ -28,6 +28,7 @@
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
+#include <kseparator.h>
 #include <qwhatsthis.h>
 
 #include "cupsdconf.h"
@@ -53,11 +54,9 @@ CupsdServerSecurityPage::CupsdServerSecurityPage(QWidget *parent, const char *na
 	sub1_->addWidget(l1);
 	sub1_->addWidget(opt_[0]);
 
-	QFrame	*fr = new QFrame(this);
-	fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	fr->setFixedHeight(20);
-	fr->setLineWidth(1);
-	main_->addWidget(fr);
+        KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(20);
+	main_->addWidget(sep);
 
 	locations_ = new QListView(this);
 	locations_->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
