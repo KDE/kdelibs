@@ -699,6 +699,46 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
+    // Handles pixmapped arrows. A little inefficent because you can specify
+    // some as pixmaps and some as default types.
+    switch(type){
+    case UpArrow:
+        if(isPixmap(ArrowUp)){
+        p->drawPixmap(x+(w-uncached(ArrowUp)->width())/2,
+                      y+(h-uncached(ArrowUp)->height())/2,
+                      *uncached(ArrowUp));
+        return;
+        }
+        break;
+    case DownArrow:
+        if(isPixmap(ArrowDown)){
+        p->drawPixmap(x+(w-uncached(ArrowDown)->width())/2,
+                      y+(h-uncached(ArrowDown)->height())/2,
+                      *uncached(ArrowDown));
+        return;
+        }
+        break;
+    case LeftArrow:
+        if(isPixmap(ArrowLeft)){
+        p->drawPixmap(x+(w-uncached(ArrowLeft)->width())/2,
+                      y+(h-uncached(ArrowLeft)->height())/2,
+                      *uncached(ArrowLeft));
+        return;
+        }
+        break;
+    case RightArrow:
+        if(isPixmap(ArrowRight)){
+        p->drawPixmap(x+(w-uncached(ArrowRight)->width())/2,
+                      y+(h-uncached(ArrowRight)->height())/2,
+                      *uncached(ArrowRight));
+        return;
+        }
+        break;
+    default:
+        break;
+    }
+
+    // Standard arrow types
     if(arrowType() == MotifArrow)
         qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);
     else if(arrowType() == SmallArrow){
