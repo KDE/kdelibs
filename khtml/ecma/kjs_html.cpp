@@ -148,11 +148,17 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   // Keep in sync with tryGet
   DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
-  if ( list->length() )
+  if ( list->length() ) {
+    delete list;
     return true;
+  }
+  delete list;
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
-  if ( list->length() )
+  if ( list->length() ) {
+    delete list;
     return true;
+  }
+  delete list;
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
   if ( view && view->part() )
   {
@@ -175,25 +181,37 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   // We don't use the images collection because
   DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
   int len = list->length();
-  if ( len == 1 )
-    return getDOMNode( exec, list->item( 0 ) );
+  if ( len == 1 ) {
+    Value v = getDOMNode( exec, list->item( 0 ) );
+    delete list;
+    return v;
+  }
   else if ( len > 1 )
   {
     // Get all the items with the same name
-    return getDOMNodeList( exec, list );
+    Value v = getDOMNodeList( exec, list );
+    delete list;
+    return v;
   }
 
   // Check for forms with name==propertyName, return item or list if found
   // Note that document.myform should only look at forms
+  delete list;
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
   len = list->length();
-  if ( len == 1 )
-    return getDOMNode( exec, list->item( 0 ) );
+  if ( len == 1 ) {
+    Value v = getDOMNode( exec, list->item( 0 ) );
+    delete list;
+    return v;
+  }
   else if ( len > 1 )
   {
     // Get all the items with the same name
-    return getDOMNodeList( exec, list );
+    Value v = getDOMNodeList( exec, list );
+    delete list;
+    return v;
   }
+  delete list;
 
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
 
