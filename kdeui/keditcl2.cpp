@@ -673,7 +673,7 @@ void KEdFind::slotUser1( void )
 }
 
 
-QString KEdFind::getText()
+QString KEdFind::getText() const
 {
   return value->text();
 }
@@ -684,14 +684,22 @@ void KEdFind::setText(QString string)
   value->setText(string);
 }
 
+void KEdFind::setCaseSensitive( bool b )
+{
+  sensitive->setChecked( b ); 
+} 
 
-bool KEdFind::case_sensitive()
+bool KEdFind::case_sensitive() const
 {
   return sensitive->isChecked();
 }
 
+void KEdFind::setDirection( bool b )
+{
+  direction->setChecked( b ); 
+} 
 
-bool KEdFind::get_direction()
+bool KEdFind::get_direction() const
 {
   return direction->isChecked();
 }

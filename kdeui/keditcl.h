@@ -55,15 +55,19 @@ private:
 class KEdFind : public KDialogBase
 {
     Q_OBJECT
-
+    Q_PROPERTY( QString text READ getText WRITE setText );
+    Q_PROPERTY( bool caseSensitivity READ case_sensitive WRITE setCaseSensitive );
+    Q_PROPERTY( bool direction READ get_direction WRITE setDirection );
 public:
 
     KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);
 
-    QString getText();
+    QString getText() const;
     void setText(QString string);
-    bool case_sensitive();
-    bool get_direction();
+    void setCaseSensitive( bool b );
+    bool case_sensitive() const;
+    void setDirection( bool b );
+    bool get_direction() const;
 
 protected slots:
     void slotCancel( void );
@@ -156,7 +160,7 @@ public:
      **/
     void saveText(QTextStream *);
 
-    /** 
+    /**
      * Retrieve the currently marked text.
      */
     QString 	markedText();
@@ -167,12 +171,12 @@ public:
      **/
     void 	selectFont();
 
-    /** 
+    /**
      * Present a search dialog to the user
      **/
     void 	search();
 
-    /** 
+    /**
      * Repeat the last search specified on the search dialog.
      *
      *  If the user hasn't searched for anything until now, this method
@@ -182,12 +186,12 @@ public:
      **/
     bool 	repeatSearch();
 
-    /**  
+    /**
      * Present a Search and Replace Dialog to the user.
      **/
     void 	replace();
 
-    /** 
+    /**
      * Present a "Goto Line" dialog to the user.
      */
     void 	doGotoLine();
@@ -203,9 +207,9 @@ public:
     bool 	isModified();
 
     /**
-     * Set the modification status of the document. 
+     * Set the modification status of the document.
      *
-     *  @true = Modified, @false = UNMODIFIED. 
+     *  @true = Modified, @false = UNMODIFIED.
      *  This can be used to test whether the document needs to be saved.
      **/
     void 	setModified( bool = true);
@@ -224,7 +228,7 @@ public:
      **/
     int 	currentLine();
 
-    /** 
+    /**
      * Retrieve the actual column number the cursor is on.
      *
      *  This call differs
@@ -239,12 +243,12 @@ public:
     /**
      * Start spellchecking mode.
      */
-    void spellcheck_start(); 
+    void spellcheck_start();
 
     /**
      * Exit spellchecking mode.
      */
-    void spellcheck_stop();    
+    void spellcheck_stop();
 
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
@@ -338,7 +342,7 @@ protected:
     void 	mouseMoveEvent 	 ( QMouseEvent* );
 
     // DnD inteface
-    
+
     void        dragMoveEvent(QDragMoveEvent* e);
     void        dragEnterEvent(QDragEnterEvent* e);
     void        dropEvent(QDropEvent* e);
