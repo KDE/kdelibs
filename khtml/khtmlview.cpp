@@ -629,6 +629,7 @@ bool KHTMLView::gotoLink(bool forward)
     ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(forward);
     if (!nextTarget)
     {
+	//kdDebug(6000)<<"A"<<endl;
 	if (scrollTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
 	{
 	    if (m_part->xmlDocImpl()->focusNode()) m_part->xmlDocImpl()->setFocusNode(0);
@@ -637,12 +638,25 @@ bool KHTMLView::gotoLink(bool forward)
 	}
 	return true;
     }
-    else if (!m_part->xmlDocImpl()->focusNode() && !d->borderTouched)
+    else if (!m_part->xmlDocImpl()->focusNode())
     {
-	kdDebug(6000)<<"B"<<endl;
-	// we're just about entering the view, so let's set reasonable initial values.
-	setContentsPos(contentsX(), (forward?0:contentsHeight()));
-	d->borderTouched = true;
+	if (!d->borderTouched)
+	{
+	    kdDebug(6000)<<"B"<<endl;
+	    // we're just about to enter the view, so let's set reasonable initial values.
+	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
+	    d->borderTouched = true;
+	}
+	else
+	{
+	    //kdDebug(6000)<<"C"<<endl;
+	    // we've already inside the view, so let's scroll until we reach the document borders or the first link becomes visible.
+	    if (scrollTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
+	    {
+		d->borderTouched = false;
+		return false;
+	    }
+	}
 	if (nextTarget->getRect().top()  < contentsY() ||
 	    nextTarget->getRect().bottom() > contentsY()+visibleHeight())
 	    return true;
