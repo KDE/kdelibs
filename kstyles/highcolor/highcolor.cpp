@@ -216,7 +216,7 @@ void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg 
 	QColor col = cg.button();
 
 #ifdef Q_WS_X11 // Only draw menu gradients on TrueColor, X11 visuals
-	if ( type == HighColor && QPaintDevice::x11AppDepth() >= 24 )
+	if ( QPaintDevice::x11AppDepth() >= 24 )
 		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
 				KPixmapEffect::HorizontalGradient );
 	else
@@ -1205,13 +1205,16 @@ void HighColorStyle::drawControl( ControlElement element,
 		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
-			int x, y, w, h;
-			r.rect( &x, &y, &w, &h );
-
 			const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+
 			QMenuItem *mi = opt.menuItem();
-			if ( !mi )
+			if ( !mi ) {
+				// Don't leave blank holes if we set NoBackground for the QPopupMenu.
+				// This only happens when the popupMenu spans more than one column.
+				if (! (widget->erasePixmap() && !widget->erasePixmap()->isNull()) )
+					p->fillRect(r, cg.brush(QColorGroup::Button) );
 				break;
+			}
 
 			int  tab        = opt.tabWidth();
 			int  checkcol   = opt.maxIconWidth();
@@ -1220,6 +1223,8 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool active     = flags & Style_Active;
 			bool etchtext   = styleHint( SH_EtchDisabledText );
 			bool reverse    = QApplication::reverseLayout();
+			int x, y, w, h;
+			r.rect( &x, &y, &w, &h );
 
 			if ( checkable )
 				checkcol = QMAX( checkcol, 20 );
