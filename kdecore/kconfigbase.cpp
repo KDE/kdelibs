@@ -1,6 +1,9 @@
 // $Id$
-// Kalle: Copyright headers
+//
 // $Log$
+//
+// Revision 1.10  1997/10/16 11:14:30  torben
+// Kalle: Copyright headers
 // kdoctoolbar removed
 //
 // Revision 1.8  1997/10/11 19:41:30  kalle
@@ -137,7 +140,7 @@ void KConfigBase::parseOneConfigFile( QFile& rFile,
 	  pEntry->aValue = 
 		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 ).stripWhiteSpace(); 
 	  pEntry->bDirty = false;
-const char* KConfigBase::readEntry( const char* pKey, 
+	  pEntry->bGlobal = bGlobal;
 									const char* pDefault = NULL ) const
 
   if( !data()->bLocaleInitialized && kapp->localeConstructed() )

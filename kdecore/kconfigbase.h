@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.1.1.3  1997/12/11 07:19:11  jacek
+// Imported sources from KDE CVS
+//
 // Revision 1.1.1.2  1997/12/10 07:08:31  jacek
 // Imported sources from KDE CVS
 //
@@ -160,7 +163,7 @@ public:
   /** 
 	* Retrieve the group where keys are currently searched in.
 	*
-  const char* readEntry( const char* pKey, 
+	* @return The current group
 						 const char* pDefault = NULL ) const;
   const char* group() const;
 
