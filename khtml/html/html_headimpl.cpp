@@ -265,13 +265,10 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             if(pos < (int)str.length()) str = str.mid(pos);
-            if(strncasecmp(str, "url=", 4) == 0)
-            {
-                str = str.mid(4).simplifyWhiteSpace();
-                str = parseURL( DOMString(str) ).string();
-                if ( ok )
-                    v->part()->scheduleRedirection(delay, str);
-            }
+            if(strncasecmp(str, "url=", 4) == 0)  str = str.mid(4).simplifyWhiteSpace();
+            str = parseURL( DOMString(str) ).string();
+            if ( ok )
+                v->part()->scheduleRedirection(delay, str);
         }
     }
     else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())
