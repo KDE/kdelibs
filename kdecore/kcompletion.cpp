@@ -243,9 +243,13 @@ QString KCompletion::makeCompletion( const QString& string )
 
 QStringList KCompletion::substringCompletion( const QString& string ) const
 {
-    QStringList matches;
-    QStringList list = items(); // ### maybe cache this!
+    // get all items in the tree, eventually in sorted order
+    bool sorted = (myOrder == Weighted);
+    KCompletionMatchesWrapper allItems( sorted );
+    extractStringsFromNode( myTreeRoot, QString::null, &allItems, false );
 
+    QStringList list = allItems.list();
+    
     // subStringMatches is invoked manually, via a shortcut, so we should
     // beep here, if necessary.
     if ( list.isEmpty() ) {
@@ -258,6 +262,7 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
         return list;
     }
 
+    QStringList matches;
     QStringList::ConstIterator it = list.begin();
 
     for( ; it != list.end(); ++it ) {
