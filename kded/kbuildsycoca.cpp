@@ -58,6 +58,28 @@ static KBuildServiceFactory *g_bsf = 0;
 
 static QStringList *g_changeList = 0;
 
+static const char *cSycocaPath = 0;
+
+void crashHandler(int)
+{
+   // If we crash while reading sycoca, we delete the database
+   // in an attempt to recover.
+   if (cSycocaPath)
+      unlink(cSycocaPath);
+}
+
+static QString sycocaPath()
+{
+  QString path;
+  QCString ksycoca_env = getenv("KDESYCOCA");
+  if (ksycoca_env.isEmpty())
+     path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
+  else
+     path = QFile::decodeName(ksycoca_env);
+
+  return path;     
+}
+
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
 {
@@ -267,19 +289,14 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
 
 void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
 {
-  QString path;
-  QCString ksycoca_env = getenv("KDESYCOCA");
-  if (ksycoca_env.isEmpty())
-     path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
-  else
-     path = QFile::decodeName(ksycoca_env);
+  QString path(sycocaPath());
 
   // KSaveFile first writes to a temp file.
   // Upon close() it moves the stuff to the right place.
   KSaveFile database(path);
   if (database.status() != 0)
   {
-    fprintf(stderr, "Error can't open database!\n");
+    fprintf(stderr, "Error can't create database!\n");
     exit(-1);
   }
 
@@ -490,7 +507,7 @@ int main(int argc, char **argv)
    k.disableSessionManagement();
 
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
-   KCrash::setEmergencySaveFunction(NULL);
+   KCrash::setEmergencySaveFunction(crashHandler);
    KCrash::setApplicationName(QString(appName));
 
    // this program is in kdelibs so it uses kdelibs as catalogue
@@ -553,6 +570,8 @@ int main(int argc, char **argv)
 
    if( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp ))
    {
+      QCString qSycocaPath = QFile::encodeName(sycocaPath());
+      cSycocaPath = qSycocaPath.data();
 
       KBuildSycoca::KSycocaEntryListList *allEntries = 0;
       QDict<Q_UINT32> *ctimeDict = 0;
@@ -584,6 +603,7 @@ int main(int argc, char **argv)
          ctimeInfo->fillCTimeDict(*ctimeDict);
          delete oldSycoca;
       }
+      cSycocaPath = 0;
 
       KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
       sycoca->recreate(allEntries, ctimeDict);
