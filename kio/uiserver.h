@@ -55,6 +55,7 @@ public:
   int jobId() { return m_iJobId; }
 
   void setVisible( bool visible );
+  bool isVisible() const { return m_visible; }
 
   void setTotalSize( unsigned long bytes );
   void setTotalFiles( unsigned long files );
@@ -277,6 +278,8 @@ protected:
   ProgressItem* findItem( int id );
 
   void closeEvent( QCloseEvent * );
+
+  void setItemVisible( ProgressItem * item, bool visible );
 
   QTimer* updateTimer;
   ListProgress* listProgress;

@@ -257,7 +257,6 @@ void ProgressItem::slotShowDefaultProgress() {
 }
 
 void ProgressItem::setVisible( bool visible ) {
-    // TODO listProgress ?
     m_visible = visible;
     if ( defaultProgress )
     {
@@ -362,7 +361,8 @@ UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
   connect( updateTimer, SIGNAL( timeout() ),
 	   SLOT( slotUpdate() ) );
 
-  updateTimer->start( 1000 );
+  if (m_bShowList)
+    updateTimer->start( 1000 );
 
   setCaption("Progress Dialog");
   setMinimumSize( 350, 150 );
@@ -417,6 +417,27 @@ ProgressItem* UIServer::findItem( int id )
   return 0L;
 }
 
+
+void UIServer::setItemVisible( ProgressItem * item, bool visible )
+{
+  kdDebug() << "setItemVisible " << visible << endl;
+  item->setVisible( visible );
+  // Check if we were the last one to be visible
+  // or the first one
+  if ( m_bShowList )
+  {
+    QListViewItemIterator it( listProgress );
+    for ( ; it.current(); ++it )
+      if ( ((ProgressItem*)it.current())->isVisible() )
+      {
+        kdDebug() << "show " << endl;
+        listProgress->show();
+        return;
+      }
+    kdDebug() << "hide " << endl;
+    listProgress->hide();
+  }
+}
 
 void UIServer::jobFinished( int id )
 {
@@ -623,10 +644,21 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
 
 void UIServer::slotUpdate() {
   // don't do anything if we don't have any inserted progress item
-  if ( listProgress->childCount() == 0 ) {
+  // or if they're all hidden
+  QListViewItemIterator lvit( listProgress );
+  bool visible = false;
+  for ( ; lvit.current(); ++lvit )
+    if ( ((ProgressItem*)lvit.current())->isVisible() ) {
+      visible = true;
+      break;
+    }
+
+  if ( !visible ) {
     hide();
     return;
   }
+
+  show();
 
   int iTotalFiles = 0;
   int iTotalSize = 0;
@@ -659,10 +691,6 @@ void UIServer::slotUpdate() {
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
-  // show only when desired
-  if ( m_bShowList ) {
-    show();
-  }
 }
 
 void UIServer::setListMode( bool list )
@@ -676,9 +704,15 @@ void UIServer::setListMode( bool list )
   }
 
   if (m_bShowList)
+  {
     show();
+    updateTimer->start( 1000 );
+  }
   else
+  {
     hide();
+    updateTimer->stop();
+  }
 }
 
 void UIServer::slotDefaultProgress( QListViewItem *item ) {
@@ -771,7 +805,7 @@ QByteArray UIServer::open_RenameDlg( int id,
   // Hide existing dialog box if any
   ProgressItem *item = findItem( id );
   if ( item )
-      item->setVisible( false );
+    setItemVisible( item, false );
   QString newDest;
   kdDebug(7024) << "Calling KIO::open_RenameDlg" << endl;
   KIO::RenameDlg_Result result = KIO::open_RenameDlg( caption, src, dest,
@@ -784,7 +818,7 @@ QByteArray UIServer::open_RenameDlg( int id,
   QDataStream stream( data, IO_WriteOnly );
   stream << Q_UINT8(result) << newDest;
   if ( item )
-      item->setVisible( true );
+    setItemVisible( item, true );
   return data;
 }
 
@@ -795,11 +829,11 @@ int UIServer::open_SkipDlg( int id,
   // Hide existing dialog box if any
   ProgressItem *item = findItem( id );
   if ( item )
-      item->setVisible( false );
+    setItemVisible( item, false );
   kdDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
   KIO::SkipDlg_Result result = KIO::open_SkipDlg( (bool)multi, error_text );
   if ( item )
-      item->setVisible( true );
+    setItemVisible( item, true );
   return (KIO::SkipDlg_Result) result;
 }
 
@@ -812,6 +846,7 @@ void UIServer::readSettings() {
 }
 
 
+// This is useless IMHO (David)
 void UIServer::writeSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
