@@ -97,8 +97,10 @@ public:
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 
+    CSSStyleSheetImpl* elementSheet();
 protected:
     void clear();
+    
 
     KHTMLParser *parser;
     HTMLTokenizer *tokenizer;
@@ -108,6 +110,8 @@ protected:
 
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
+    
+    CSSStyleSheetImpl *m_elemSheet;
 };
 
 }; //namespace

@@ -63,6 +63,7 @@ public:
     void addCSSLength(int id, const DOMString &value, bool important);
     void addCSSProperty(int id, const DOMString &value, bool important);
     void addCSSProperty(const DOMString &property);
+    
     virtual DOMString toHTML(DOMString _string);
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;

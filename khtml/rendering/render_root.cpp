@@ -34,6 +34,7 @@ RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     m_minWidth = view->frameWidth();
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
+    setParsing();
 }
 
 
@@ -89,7 +90,14 @@ void RenderRoot::updateSize()
     {
     	printf("resizing %d,%d\n",m_width,m_height);
     	m_view->resizeContents(m_width,m_height);
-	repaint();
+//	repaint();
     }
 }
 
+void RenderRoot::close()
+{
+    setParsing(false);
+    updateSize();
+    repaint();
+    printTree();
+}

@@ -36,6 +36,7 @@
 
 #include "rendering/render_object.h"
 #include "css/css_valueimpl.h"
+#include "css_stylesheetimpl.h"
 
 #include <stdio.h>
 
@@ -235,19 +236,25 @@ void HTMLElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important)
 {
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(id, value, important);
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important)
-{
+{   
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setLengthProperty(id, value, important);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
 {
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(property);
 }
 

@@ -114,8 +114,6 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 
     if(!isInline())
     {
-    	if(!layouted())
-    	    return;
 	_tx += m_x;
 	_ty += m_y;
     }
@@ -136,7 +134,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 {
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
-#endif
+#endif    
 
 
     // 1. print background, borders etc
@@ -163,7 +161,10 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     while(child != 0)
     {
 	if(!child->isFloating())
+	{
+	    printf("%d,%d",child->xPos(),child->yPos());
 	    child->print(p, _x, _y, _w, _h, _tx, _ty);
+	}
 	child = child->nextSibling();
     }
 
@@ -913,6 +914,7 @@ void RenderFlow::close()
 	calcMinMaxWidth();
     }
 //    if(containingBlockWidth() < m_minWidth && m_parent)
+    if (!isAnonymousBox())
     	containingBlock()->updateSize();
 
 #ifdef DEBUG_LAYOUT
@@ -946,9 +948,10 @@ void RenderFlow::addChild(RenderObject *newChild)
 
     if(m_last && !m_last->isInline() && !m_last->isFloating())
     {
-	m_height += m_last->height();
+    	if (!layouted())
+	    m_height += m_last->height();
 	margin = m_last->marginBottom();
-	//printf("last's margin = %d, last's height = %d\n", margin, m_last->height());
+	printf("last's margin = %d, last's height = %d\n", margin, m_last->height());
     }
 
     if(m_childrenInline && !newChild->isInline() && !newChild->isFloating())
@@ -956,7 +959,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	// put all inline children we have up to now in a anonymous block box
 	if(m_last)
 	{
-//	    printf("no inline child, moving previous inline children!\n");
+	    printf("no inline child, moving previous inline children!\n");
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(BLOCK);
 	    RenderFlow *newBox = new RenderFlow(newStyle);
@@ -975,8 +978,10 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    newBox->setPos(xPos, m_height);
 	    newBox->setParent(this);
 	    m_first = m_last = newBox;
-	    newBox->close();
+	    newBox->close();	    
 	    newBox->layout();
+	    printf("%d,%d,%d,%d,%d\n",newBox->paddingLeft(),newBox->marginLeft()
+	    	,newBox->firstChild()->xPos(),newBox->xPos(),newBox->yPos());	    
 	    m_height += newBox->height();
 	}
 	m_childrenInline = false;
@@ -985,10 +990,10 @@ void RenderFlow::addChild(RenderObject *newChild)
     {
 	if(newChild->isInline() || newChild->isFloating())
 	{
-//	    printf("adding inline child to anonymous box\n");
+	    printf("adding inline child to anonymous box\n");
 	    if(!haveAnonymousBox())
 	    {
-		//printf("creating anonymous box\n");
+		printf("creating anonymous box\n");
 		RenderStyle *newStyle = new RenderStyle(m_style);
 		newStyle->setDisplay(BLOCK);
 		RenderFlow *newBox = new RenderFlow(newStyle);
@@ -1012,7 +1017,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    m_last->layout();
 	    m_height += m_last->height();
 	    setHaveAnonymousBox(false);
-//	    printf("closing anonymous box\n");
+	    printf("closing anonymous box\n");
 	}
     }
     else if(!newChild->isInline() && !newChild->isFloating())
@@ -1029,7 +1034,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	margin = MAX(margin, newChild->marginTop());
 	//printf("margin = %d\n", margin);
 	m_height += margin;
-//	printf("positioning new block child at (%d/%d)\n", xPos, m_height);
+	printf("positioning new block child at (%d/%d)\n", xPos, m_height);
 	newChild->calcWidth();
 	newChild->setPos(xPos + getIndent(newChild), m_height);
     }

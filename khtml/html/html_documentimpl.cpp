@@ -56,6 +56,8 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     bodyElement = 0;
 
     m_loadingSheet = false;
+    
+    m_elemSheet=0;
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -70,6 +72,8 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     m_styleSelector = new CSSStyleSelector(this);
 
     m_loadingSheet = false;
+    
+    m_elemSheet=0;
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -114,6 +118,9 @@ void HTMLDocumentImpl::open(  )
 
 void HTMLDocumentImpl::close(  )
 {
+    if (m_render)
+    	m_render->close();
+
     if(parser && !parser->hasQueued())
     {
 	delete parser;
@@ -292,7 +299,6 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
     m_render = new RenderRoot(m_style, w);
     m_render->ref();
-    m_render->layout(true);
 
     NodeBaseImpl::attach(w);
 }
@@ -387,3 +393,9 @@ void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMSt
     createSelector();
 }
 
+CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
+{
+    if (!m_elemSheet)
+    	m_elemSheet = new CSSStyleSheetImpl(this, url);
+    return m_elemSheet;
+}

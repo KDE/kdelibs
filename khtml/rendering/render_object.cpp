@@ -298,8 +298,9 @@ bool RenderObject::isSpecial() const
 void RenderObject::printTree(int indent) const
 {
     for (int i=0; i<indent; i++) printf(" ");	
-    printf("%s: %p il=%d fl=%d rp=%d laytd=%d\n",
-	renderName(),this,isInline(),isFloating(),isReplaced(),layouted());
+    printf("%s: %p il=%d fl=%d rp=%d laytd=%d (%d,%d,%d,%d)\n",
+	renderName(),this,isInline(),isFloating(),isReplaced(),layouted(),
+	xPos(),yPos(),width(),height());
     RenderObject *child = firstChild();
     while( child != 0 )
     {    	
