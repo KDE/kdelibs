@@ -206,6 +206,11 @@ KProcess &KProcess::operator<<(const QStringList& args)
   return *this;
 }
 
+KProcess &KProcess::operator<<(const QCString& arg)
+{
+  return operator<< (arg.data());
+}
+
 KProcess &KProcess::operator<<(const char* arg)
 {
   arguments.append(arg);

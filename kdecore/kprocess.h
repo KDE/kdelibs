@@ -228,6 +228,10 @@ public:
    * Similar to previous method, takes a char *, supposed to be in locale 8 bit already.
    */
   KProcess &operator<<(const char * arg);
+  /**
+   * Similar to previous method, takes a QCString, supposed to be in locale 8 bit already.
+   */
+  KProcess &operator<<(const QCString & arg);
 
   /**
    * Sets the executable and the command line argument list for this process,
