@@ -1,8 +1,14 @@
 [Misc]
 Name=B2/KDE
+Name[pt]=B2/KDE     
+Name[pt_BR]=B2/KDE     
 Comment=B2/KKDE unthemed style
 Comment[ca]=Estil sense tema B2/KDE
+Comment[cs]=B2/KDE styl (netémovaný)
 Comment[da]=B2/KDEstil uden tema
+Comment[hu]=B2/KDE téma nélküli stílus
+Comment[pt]=Estilo B2/KDE
+Comment[pt_BR]=Estilo B2/KDE
 Comment[sl]=Netematski slog B2/KKDE
 [KDE]
 widgetStyle=b2style.la
