@@ -125,7 +125,7 @@ void KHTMLRun::scanFile()
       job->addMetaData("content-type", m_args.contentType());
   }
   else
-      job = KIO::get(m_strURL, false, false);
+      job = KIO::get(m_strURL, m_args.reload, false);
 
   job->addMetaData(m_args.metaData());
 

@@ -2644,6 +2644,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = child->m_serviceType;
 
   child->m_args = args;
+  child->m_args.reload = d->m_bReloading;
   child->m_serviceName = QString::null;
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
