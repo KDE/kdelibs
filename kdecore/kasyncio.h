@@ -38,7 +38,7 @@
  */
 class KAsyncIO: public QObject, public QIODevice
 {
-  Q_OBJECT;
+  Q_OBJECT
 protected:
   KAsyncIO()			// cannot be accessed externally
   { }

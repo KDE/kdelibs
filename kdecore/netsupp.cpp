@@ -277,7 +277,7 @@ int kde_getaddrinfo(const char *name, const char *service,
     goto out;			// can't be Unix if no service was requested
 
   // Unix sockets must be localhost
-  // That is, either name is NULL or, if it's not, it must be empty, 
+  // That is, either name is NULL or, if it's not, it must be empty,
   // "*" or "localhost"
   if (name != NULL && !(name[0] == '\0' || (name[0] == '*' && name[1] == '\0') ||
 			strcmp("localhost", name) == 0))
@@ -751,8 +751,8 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
     }
 
   return inet_lookup(name, portnum, protonum, p, hint, result);
-}	  
-	    
+}
+
 
 int getaddrinfo(const char *name, const char *serv,
 		const struct addrinfo* hint,
@@ -1104,8 +1104,6 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
 #define KRF_inet_pton		KRF_USING_OWN_INET_PTON
 int inet_pton(int af, const char *cp, void *buf)
 {
-  int i;
-
   if (af == AF_INET)
     {
       // Piece of cake
@@ -1121,7 +1119,7 @@ int inet_pton(int af, const char *cp, void *buf)
       q[1] = p[1];
       q[2] = p[2];
       q[3] = p[3];
-      
+
       return 1;
     }
 

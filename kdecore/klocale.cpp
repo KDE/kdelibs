@@ -577,21 +577,18 @@ QString KLocale::translate( const char *singular, const char *plural,
     case 0: // NoPlural
         EXPECT_LENGTH( 1 );
         return put_n_in( forms[0], n);
-        break;
     case 1: // TwoForms
         EXPECT_LENGTH( 2 );
         if ( n == 1 )
             return put_n_in( forms[0], n);
         else
             return put_n_in( forms[1], n);
-        break;
     case 2: // French
         EXPECT_LENGTH( 2 );
         if ( n == 1 || n == 0 )
             return put_n_in( forms[0], n);
         else
             return put_n_in( forms[1], n);
-        break;
     case 3: // Gaeilge
         EXPECT_LENGTH( 3 );
         if ( n == 1 )
@@ -600,7 +597,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n);
         else
             return put_n_in( forms[2], n);
-        break;
     case 4: // Russian, corrected by mok
         EXPECT_LENGTH( 3 );
         if ( n%10 == 1  &&  n%100 != 11)
@@ -609,7 +605,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n); // dva faila
         else
             return put_n_in( forms[2], n); // desyat' failov
-        break;
     case 5: // Polish
         EXPECT_LENGTH( 3 );
         if ( n == 1 )
@@ -618,7 +613,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n);
         else
             return put_n_in( forms[2], n);
-        break;
     case 6: // Slovenian
         EXPECT_LENGTH( 4 );
         if ( n%100 == 1 )
@@ -629,7 +623,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[3], n); // tri datoteke
         else
             return put_n_in( forms[0], n); // sto datotek
-        break;
     case 7: // Lithuanian
         EXPECT_LENGTH( 3 );
         if ( n%10 == 0 || (n%100>=11 && n%100<=19) )
@@ -638,7 +631,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[0], n);
         else
             return put_n_in( forms[1], n);
-        break;
     case 8: // Czech
         EXPECT_LENGTH( 3 );
         if ( n%100 == 1 )
@@ -647,7 +639,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n);
         else
             return put_n_in( forms[2], n);
-        break;
     case 9: // Slovak
         EXPECT_LENGTH( 3 );
         if ( n == 1 )
@@ -656,7 +647,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n);
         else
             return put_n_in( forms[2], n);
-        break;
     case 10: // Maltese
         EXPECT_LENGTH( 4 );
         if ( n == 1 )
@@ -667,7 +657,6 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[2], n );
         else
             return put_n_in( forms[3], n );
-        break;
     }
     kdFatal() << "The function should have been returned in another way\n";
 

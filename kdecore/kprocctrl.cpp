@@ -50,20 +50,20 @@ KProcessController::KProcessController()
   // initialize theKProcessList
   processList = new QList<KProcess>();
   CHECK_PTR(processList);
- 
+
   if (0 > pipe(fd))
 	printf(strerror(errno));
-  
+
   notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
   notifier->setEnabled(true);
   QObject::connect(notifier, SIGNAL(activated(int)),
 				   this, SLOT(slotDoHousekeeping(int)));
- 		 
+
   act.sa_handler=theSigCHLDHandler;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
   // Make sure we don't block this signal. gdb tends to do that :-(
-  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0); 
+  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0);
 
   act.sa_flags = SA_NOCLDSTOP;
 
@@ -74,7 +74,7 @@ KProcessController::KProcessController()
   act.sa_flags |= SA_RESTART;
 #endif
 
-  sigaction( SIGCHLD, &act, 0L); 
+  sigaction( SIGCHLD, &act, 0L);
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
@@ -102,7 +102,7 @@ void KProcessController::theSigCHLDHandler(int )
       ::write(theKProcessController->fd[1], &status, sizeof(status));
     }
   }
-  while (this_pid > 0); 
+  while (this_pid > 0);
 
   errno = saved_errno;
 }
@@ -140,13 +140,13 @@ void KProcessController::slotDoHousekeeping(int )
   pid    = *reinterpret_cast<pid_t *>(buf);
   status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
 
-  bool found = false;
- 
+//   bool found = false;
+
   proc = processList->first();
 
   while (0L != proc) {
 	if (proc->pid() == pid) {
-          found = true;
+// 	  found = true;
 	  // process has exited, so do emit the respective events
 	  if (proc->run_mode == KProcess::Block) {
 	    // If the reads are done blocking then set the status in proc
@@ -174,7 +174,7 @@ KProcessController::~KProcessController()
   sigaddset(&(act.sa_mask), SIGCHLD);
   act.sa_flags = 0;
   sigaction( SIGCHLD, &act, 0L);
-  
+
   close(fd[0]);
   close(fd[1]);
   delete processList;

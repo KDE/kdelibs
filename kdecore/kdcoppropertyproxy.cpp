@@ -240,7 +240,6 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       DEMARSHAL( Double, double )
       default:
         return false;
-        break;
     }
 
     replyType = "void";
@@ -293,7 +292,6 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       MARSHAL( Double )
       default:
         return false;
-        break;
     }
 
 #undef MARSHAL
