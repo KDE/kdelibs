@@ -77,7 +77,7 @@ P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif;
 /* Lauri @ Hack Session in Erlangen - Test */
 
 .GUIMENU, .GUIMENUITEM, .GUISUBMENU { background-color: rgb(240,240,240); }
-.GUILABEL, .INTERFACE { background-color: rgb(240,240,240); }
+.GUILABEL, .INTERFACE, .GUIBUTTON { background-color: rgb(240,240,240); }
 .SHORTCUT { background-color: rgb(240,240,240); }
 .SHORTCUT .KEYCAP { background-color: rgb(240,240,240); }
 
