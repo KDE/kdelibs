@@ -1,25 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX Device Independent file
-Comment[ca]=Fitxer DVI (Device Independent) TeX
-Comment[cs]=TeX DVI soubor
-Comment[da]=TeX DVI-fil
-Comment[de]=TeX DVI Datei
-Comment[es]=Archivo TeX DVI
-Comment[fi]=TeX DVI -tiedosto
-Comment[fr]=Fichier DVI de TeX
-Comment[is]=TeX DVI skjal
-Comment[it]=File TeX DVI
-Comment[nl]=TeX apperaat onafhankelijk bestand
-Comment[no]=TeX-DVI-fil
-Comment[pl]=Plik TeX DVI
-Comment[pt]=Ficheiro TeX DVI
-Comment[pt_BR]=Arquivo TeX DVI
-Comment[ro]=Fi╨ier de tip TeX - DVI
-Comment[ru]=Независимый от устройства файл TeX'а
-Comment[sk]=TeX DVI -- sЗbor nezАvislЩ na zariadenМ
-Comment[sl]=Datoteka DVI (TeX)
-Comment[sv]=Dokument i TeX enhetsoberoende format (DVI)
 Icon=dvi.xpm
 Type=MimeType
 MimeType=application/x-dvi

@@ -1,26 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Pascal sources
-Comment[ca]=Fonts Pascal
-Comment[cs]=Zdrojový kód v jazyku Pascal
-Comment[da]=Pascal kilder
-Comment[de]=Pascal Quelldatei
-Comment[es]=Código pascal
-Comment[fi]=Pascal -lähdekoodi
-Comment[fr]=Fichier source Pascal
-Comment[hr]=Pascal izvorni kod
-Comment[is]=Pascal forritstextar
-Comment[it]=Sorgenti Pascal
-Comment[nl]=Pascal broncodebestand
-Comment[no]=Pascal-kildekode
-Comment[pl]=¬ród³o Pascala
-Comment[pt]=Programa Pascal
-Comment[pt_BR]=Programas Pascal
-Comment[ro]=Sursã Pascal
-Comment[ru]=ðÒÏÇÒÁÍÍÁ ÎÁ ÑÚÙËÅ Pascal
-Comment[sk]=Zdrojový kód v jazyku Pascal
-Comment[sl]=Izvorna koda Pascal
-Comment[sv]=Pascal-källkod
 Icon=p_src.xpm
 Type=MimeType
 MimeType=text/x-pascal

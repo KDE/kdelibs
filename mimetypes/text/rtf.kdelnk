@@ -2,17 +2,6 @@
 [KDE Desktop Entry]
 MimeType=text/rtf
 Comment=Rich Text Format
-Comment[ca]=Format RTF
-Comment[da]=Rigt tekst format
-Comment[fi]=Rich Text -formaatti
-Comment[fr]=Format de texte enrichi
-Comment[is]=RTF skjal
-Comment[it]=Formato Rich Text (rtf)
-Comment[no]=Rikt tekstformat
-Comment[ro]=Text Нn format RTF
-Comment[ru]=Документ RTF
-Comment[sl]=Besedilo v RTF (Rich Text Format)
-Comment[sv]=Dokument i RTF-format (Rich Text)
 DefaultApp=kwrite
 Icon=txt.xpm
 Type=MimeType

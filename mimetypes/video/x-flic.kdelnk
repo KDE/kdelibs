@@ -5,5 +5,4 @@ MimeType=video/x-flic
 Icon=aktion.xpm
 Patterns=*.fli;*.flc;*.FLI;*.FLC;
 Comment=Autodesk's FLIC files
-Comment[es]=Archivos FLIC de Autodesk
 

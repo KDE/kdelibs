@@ -2,25 +2,6 @@
 [KDE Desktop Entry]
 MimeType=text/x-moc
 Comment=Qt Meta Object File
-Comment[ca]=Fitxer meta objecte Qt (moc)
-Comment[cs]=Meta-objektový soubor Qt
-Comment[da]=Qt metaobjektfil
-Comment[de]=Qt Meta Object Datei
-Comment[es]=Fichero Meta-Objeto de QT
-Comment[fi]=Qt Meta -objektitiedosto
-Comment[fr]=Fichier Méta-objet pour Qt
-Comment[is]=Qt metahlutsskrá (meta object)
-Comment[it]=Qt File Meta-OggetTo
-Comment[nl]=Qt-metaobject bestand
-Comment[no]=Qt-metaobjektfil
-Comment[pl]=Metaobjekt Qt
-Comment[pt]=Meta-Objeto Qt
-Comment[pt_BR]=Meta-Objeto Qt
-Comment[ro]=Fiºier meta-obiect de Qt
-Comment[ru]=íÅÔÁÏÂßÅËÔ Qt
-Comment[sk]=Qt Meta-objektový súbor
-Comment[sl]=meta-objektna datoteka Qt
-Comment[sv]=Qt metaobjektfil
 DefaultApp=kwrite
 Icon=unknown.xpm
 Type=MimeType

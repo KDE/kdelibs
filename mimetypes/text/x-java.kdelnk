@@ -1,26 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Java sources
-Comment[ca]=Fonts Java
-Comment[cs]=Zdrojovı kód v jazyku Java
-Comment[da]=Java kilder
-Comment[de]=Java Quelldatei
-Comment[es]=Código java
-Comment[fi]=Java -lähdekoodi
-Comment[fr]=Fichier source Java
-Comment[hr]=Java izvorni kod
-Comment[is]=Java forritstexti
-Comment[it]=Sorgente Java
-Comment[nl]=Java bronbestand
-Comment[no]=Java-kildekode
-Comment[pl]=¬ród³o Javy
-Comment[pt]=Programa Java
-Comment[pt_BR]=Programas Java
-Comment[ro]=Sursã Java
-Comment[ru]=ğÒÏÇÒÁÍÍÁ ÎÁ ÑÚÙËÅ Java
-Comment[sk]=Zdrojovı kód v jazyku Java
-Comment[sl]=Izvorna koda Java
-Comment[sv]=Java-källkod
 Icon=java_src.xpm
 Type=MimeType
 MimeType=text/x-java

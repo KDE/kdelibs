@@ -1,25 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Generic Font files
-Comment[ca]=Fitxers font genèrics
-Comment[cs]=Obecné znakové sady
-Comment[da]=Generiske skriftfiler
-Comment[de]=Allgemeine Schriftdateien
-Comment[es]=Archivo genérico de fuentes
-Comment[fi]=Yleiset kirjasintiedostot
-Comment[fr]=Fichier de police de caractères pour TeX
-Comment[is]=Almennar stafaskrár
-Comment[it]=File di Font Generico
-Comment[nl]=Algemeen-lettertype bestand
-Comment[no]=Generelle skrifttypefiler
-Comment[pl]=Czcionka Tex'a
-Comment[pt]=Ficheiro de genérico de fontes
-Comment[pt_BR]=Arquivo genérico de fontes
-Comment[ro]=Fiºier de fonturi generice
-Comment[ru]=ûÒÉÆÔÙ × ÏÂİÅÍ ÆÏÒÍÁÔÅ ÄÌÑ TeX'Á
-Comment[sk]=V¹eobecné znakové sady
-Comment[sl]=Splo¹na pisava za TeX
-Comment[sv]=Generell typsnittsfil
 Icon=gf.xpm
 Type=MimeType
 Mimetype=application/x-tex-gf

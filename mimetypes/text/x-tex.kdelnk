@@ -1,26 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX file
-Comment[ca]=Fitxer TeX
-Comment[cs]=Dokument s·zecÌho systÈmu TeX
-Comment[da]=TeX-fil
-Comment[de]=TeX Dokument
-Comment[es]=Documento TeX
-Comment[fi]=TeX -dokumentti
-Comment[fr]=Document TeX
-Comment[hr]=TeX datoteka
-Comment[is]=TeX skjal
-Comment[it]=Documento TeX
-Comment[nl]=TeX document
-Comment[no]=TeX-fil
-Comment[pl]=Dokument TeX
-Comment[pt]=Documento TeX
-Comment[pt_BR]=Documento TeX
-Comment[ro]=Document Ón format TeX
-Comment[ru]=‰œÀ’Õ≈Œ‘ TeX
-Comment[sk]=Dokument s·dzacieho systÈmu TeX
-Comment[sl]=Spis v TeX
-Comment[sv]=Dokumentk‰llkod i TeX-format
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

@@ -1,25 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Unknown
-Comment[ca]=Desconegut
-Comment[cs]=Neznámı
-Comment[da]=Ukendt
-Comment[de]=Unbekannt
-Comment[es]=Desconocido
-Comment[fi]=Tuntematon
-Comment[fr]=Inconnu
-Comment[hr]=Nepoznat
-Comment[is]=Óşekkt
-Comment[it]=Sconosciuto
-Comment[no]=Ukjent
-Comment[pl]=Nieznany
-Comment[pt]=Desconhecido
-Comment[pt_BR]=Desconhecido
-Comment[ro]=Fiºier de tip necunoscut
-Comment[ru]=îÅÉÚ×ÅÓÔÎÙÊ
-Comment[sk]=Neznámy
-Comment[sl]=Neznano
-Comment[sv]=Okänt filformat
 Icon=unknown.xpm
 Type=MimeType
 MimeType=application/octet-stream

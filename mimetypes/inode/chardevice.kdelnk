@@ -1,24 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Character Device
-Comment[ca]=Dispositiu de caràcter
-Comment[cs]=Znakové zaøízení
-Comment[da]=Tegnenhed
-Comment[de]=Zeichen-Orientiertes Gerät
-Comment[es]=Dispositivo de Caracteres
-Comment[fi]=Tekstilaite
-Comment[fr]=Périphérique de type Caractère
-Comment[is]=Stafatæki
-Comment[it]=Dispositivo caratteri
-Comment[no]=Teghenhet
-Comment[pl]=Urz±dzenie znakowe
-Comment[pt]=Dispositivo Caracter
-Comment[pt_BR]=Dispositivo de Caractere
-Comment[ro]=Dispozitiv de tip caracter
-Comment[ru]=óÉÍ×ÏÌØÎÏÅ ÕÓÔÒÏÊÓÔ×Ï
-Comment[sk]=Znakové zariadenie
-Comment[sl]=Znakovna enota
-Comment[sv]=Enhet av teckentyp (t ex seriellport)
 Icon=chardevice.xpm
 Type=MimeType
 MimeType=inode/chardevice

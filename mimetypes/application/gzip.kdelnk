@@ -2,26 +2,6 @@
 [KDE Desktop Entry]
 MimeType=application/x-gzip
 Comment=Gzip file
-Comment[ca]=Fitxer gzip
-Comment[cs]=Soubor komprimovaný gzipem
-Comment[da]=Gzip-fil
-Comment[de]=GZip Datei
-Comment[es]=Archivo comprimido con gzip
-Comment[fi]=Gzip -paketti
-Comment[fr]=Fichier compressé par gzip
-Comment[hr]=Gzip datoteka
-Comment[is]=Þjöppuð skrá ( gzip )
-Comment[it]=File Compresso Gzip
-Comment[nl]=GZip bestand
-Comment[no]=GZip-fil
-Comment[pl]=Plik GZip
-Comment[pt]=Ficheiro GZip
-Comment[pt_BR]=Arquivo GZip
-Comment[ro]=Fiºier comprimat cu GZip
-Comment[ru]=áÒÈÉ× Gzip
-Comment[sk]=GZip súbor
-Comment[sl]=Stisnjena datoteka (gzip)
-Comment[sv]=Fil som är komprimerad med gzip
 DefaultApp=ark
 Icon=tgz.xpm
 Type=MimeType

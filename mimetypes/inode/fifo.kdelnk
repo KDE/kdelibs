@@ -1,18 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Pipe
-Comment[ca]=Tub (pipe)
-Comment[cs]=FIFO roura
-Comment[es]=Tubería
-Comment[fi]=Putki
-Comment[fr]=FIFO (canal de communication)
-Comment[is]=Pípa
-Comment[pl]=Kolejka
-Comment[ro]=Canal de comunicaþie de tip FIFO
-Comment[ru]=ëÁÎÁÌ FIFO
-Comment[sk]=FIFO rúra
-Comment[sl]=Cev
-Comment[sv]=FIFO-rör (kommunikationskanal)
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

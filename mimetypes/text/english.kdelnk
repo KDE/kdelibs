@@ -2,26 +2,6 @@
 [KDE Desktop Entry]
 MimeType=text/english
 Comment=English Text
-Comment[ca]=Text anglès
-Comment[cs]=Anglickı text
-Comment[da]=Engelsk tekst
-Comment[de]=Englischer Text
-Comment[es]=Texto en inglés
-Comment[fi]=Englanninkielinen teksti
-Comment[fr]=Texte en anglais
-Comment[hr]=Tekst na engleskom
-Comment[is]=Enskur texti
-Comment[it]=Testo Inglese
-Comment[nl]=english tekst
-Comment[no]=Engelsk tekst
-Comment[pl]=Tekst angielski
-Comment[pt]=Texto em Inglês
-Comment[pt_BR]=Texto em Inglês
-Comment[ro]=Text
-Comment[ru]=áÎÇÌÉÊÓËÉÊ ÔÅËÓÔ
-Comment[sk]=Anglickı text
-Comment[sl]=Angle¹ko besedilo
-Comment[sv]=Engelsk text
 DefaultApp=KEdit
 Icon=txt.xpm
 Type=MimeType

@@ -1,27 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C++ headers
-Comment[br]=Restr reollin C++
-Comment[ca]=Capçaleres C++
-Comment[cs]=Hlavièkový soubor C++
-Comment[da]=C++ hovedfiler
-Comment[de]=C++ Header
-Comment[es]=Cabecera C++
-Comment[fi]=C++ -otsikot
-Comment[fr]=Fichier d'en-tête C++
-Comment[hr]=C++ datoteke sa zaglavljima
-Comment[is]=C++ skilgreiningar
-Comment[it]=Header C++
-Comment[nl]=C++ header
-Comment[no]=C++-hodefil
-Comment[pl]=Nag³ówek C++
-Comment[pt]=Header C++
-Comment[pt_BR]=Cabeçalhos C++
-Comment[ro]=Fiºier de Header C++
-Comment[ru]=úÁÇÏÌÏ×ÏË C++
-Comment[sk]=Hlavièka C++
-Comment[sl]=Glava C++
-Comment[sv]=C++-headerfil
 DefaultApp=kwrite
 Icon=h_src.xpm
 Type=MimeType

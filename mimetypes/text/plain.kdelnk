@@ -2,26 +2,6 @@
 [KDE Desktop Entry]
 MimeType=text/plain
 Comment=Plain Text
-Comment[ca]=Text planer
-Comment[cs]=Prost˝ text
-Comment[da]=Almindelig tekst
-Comment[de]=Einfacher Text
-Comment[es]=Archivo de texto
-Comment[fi]=Puhdas teksti
-Comment[fr]=Texte simple
-Comment[hr]=»isti tekst
-Comment[is]=Texti
-Comment[it]=Testo Semplice
-Comment[nl]=Platte tekst
-Comment[no]=Enkel tekst
-Comment[pl]=Czysty tekst
-Comment[pt]=Texto Plano
-Comment[pt_BR]=Texto Plano
-Comment[ro]=Text simplu
-Comment[ru]=“œ”‘œ  ‘≈À”‘
-Comment[sk]=Jednoduch˝ text
-Comment[sl]=Navadno besedilo
-Comment[sv]=Ren text
 DefaultApp=KEdit
 Icon=txt.xpm
 Type=MimeType
