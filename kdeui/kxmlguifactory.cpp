@@ -326,6 +326,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
     d->m_rootNode->destruct( doc.documentElement(), *d );
 
+    d->builder->finalizeGUI( d->guiClient ); //JoWenn
+
     // reset some variables
     d->BuildState::reset();
 

@@ -59,6 +59,7 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
+#include <klocale.h>
 
 /**
 * How it works.
@@ -2721,6 +2722,139 @@ int KActionMenu::plug( QWidget* widget, int index )
   }
 
   return -1;
+}
+
+////////
+
+
+class KToolbarMenuAction::KToolbarMenuActionPrivate
+{
+	public:
+	KMainWindow *window;
+	QMap<KToolBar*,	KToggleToolBarAction*> toolbarActionMap;
+        KPopupMenu *popup;
+
+};
+
+KToolbarMenuAction::KToolbarMenuAction( KMainWindow* parent,
+                 const char* name):KAction(parent->actionCollection(),name)
+{
+	d=new KToolbarMenuActionPrivate;
+	d->window=parent;
+        d->popup = new KPopupMenu(parent,"KToolbarMenuAction::KToolbarMenuAction");
+}
+
+KToolbarMenuAction::~KToolbarMenuAction()
+{
+	delete d;
+ 	d=0;
+}   
+
+void KToolbarMenuAction::clear()
+{
+	d->popup->clear();
+	for (QMap<KToolBar*,KToggleToolBarAction*>::iterator it=d->toolbarActionMap.begin();it!=d->toolbarActionMap.end();++it)
+	{
+		delete it.data();
+	}
+	d->toolbarActionMap.clear();
+}
+
+void KToolbarMenuAction::addToolbar(KToolBar *bar)
+{
+	bool oldcount=d->toolbarActionMap.count();
+	KToggleToolBarAction *act;
+	d->toolbarActionMap.insert(bar,act=new KToggleToolBarAction(
+                bar->name(), i18n("Show %1").arg(bar->label()),
+                0, 0));
+	if (oldcount==0)
+	{
+		setText(i18n("Show %1").arg(d->toolbarActionMap.begin().key()->label()));
+		act->plug(d->popup);
+		for (int i=0;i<containerCount();i++)
+		{
+		  	if ( container(i)->inherits("QPopupMenu") )
+			{
+
+				QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
+				int id=itemId(i);
+				int pos=menu->indexOf(id);
+				unplug(menu);
+				plug(menu,pos);
+//				menu->removeItem(id);  I don't know why that doesn't work
+//				menu->insertItem(text(),d->popup,id,pos);		I don't know why that doesn't work
+			}
+		}
+	}
+	else if (oldcount==1)
+	{
+		setText(i18n("Toolbars"));
+		act->plug(d->popup);
+		for (int i=0;i<containerCount();i++)
+		{
+		  	if ( container(i)->inherits("QPopupMenu") )
+			{
+
+				QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
+				int id=itemId(i);
+				int pos=menu->indexOf(id);
+				unplug(menu);
+				plug(menu,pos);
+//				menu->removeItem(id);  I don't know why that doesn't work
+//				menu->insertItem(text(),d->popup,id,pos);		I don't know why that doesn't work
+			}
+		}
+
+	}
+	else
+	{
+		act->plug(d->popup);
+	}
+}
+
+void KToolbarMenuAction::removeToolbar(KToolBar *bar)
+{
+//	d->toolbarActionMap.remove(bar);
+
+}
+
+int KToolbarMenuAction::plug( QWidget* widget, int index )
+{
+//  return KAction::plug(widget,index);
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
+  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  if ( widget->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
+    int id;
+      if (d->toolbarActionMap.count()>1)
+	      id = menu->insertItem( text(), d->popup, -1, index );
+	else 
+	if (d->toolbarActionMap.count()==1)
+	{
+		id=menu->insertItem(text(),-1,index);
+		menu->setItemChecked(id,d->toolbarActionMap.begin().data()->isChecked());
+		menu->connectItem(id,d->toolbarActionMap.begin().data(),SLOT(slotActivated()));
+	}
+	else 
+	{
+		id=menu->insertItem(text(),-1,index);
+		menu->setItemEnabled(id,false);
+	}
+
+    if ( !isEnabled() )
+        menu->setItemEnabled( id, false );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;
+  } else return -1;
+}
+
+void KToolbarMenuAction::internalActivated()
+{
 }
 
 ////////

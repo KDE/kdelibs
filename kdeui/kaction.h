@@ -41,6 +41,7 @@ class QComboBox;
 class QPoint;
 class QIconSet;
 class QString;
+class KToolBar;
 
 class KAccel;
 class KAccelActions;
@@ -51,6 +52,7 @@ class KInstance;
 class KToolBar;
 class KActionCollection;
 class KPopupMenu;
+class KMainWindow;
 
 /**
  * The KAction class (and derived and super classes) provides a way to
@@ -1408,6 +1410,7 @@ private:
     KFontSizeActionPrivate *d;
 };
 
+
 /**
  * A KActionMenu is an action that holds a sub-menu of other actions.
  * insert() and remove() allow to insert and remove actions into this action-menu.
@@ -1483,6 +1486,31 @@ private:
     class KActionMenuPrivate;
     KActionMenuPrivate *d;
 };
+
+
+/**
+ Automatically handle toolbars created by the xmlgui framework
+ */
+
+class KToolbarMenuAction: public KAction
+{
+    Q_OBJECT
+public:
+    KToolbarMenuAction( KMainWindow* parent = 0,
+                 const char* name = 0 );
+    virtual ~KToolbarMenuAction();
+    void addToolbar(KToolBar *bar);
+    void removeToolbar(KToolBar *bar);
+    void clear();
+    virtual int plug( QWidget* widget, int index =-1);
+private:
+    class KToolbarMenuActionPrivate;
+    KToolbarMenuActionPrivate *d;
+public slots:
+    void internalActivated();
+
+};
+
 
 /**
  * This action is a normal action everywhere, except in a toolbar

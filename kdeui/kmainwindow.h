@@ -451,6 +451,15 @@ public slots:
      */
     void setSettingsDirty();
 
+    /**
+     * @internal. Used by kxmlguibuilder to add an entry to the toolbar popup
+     */
+    void addToolbarEntry(KToolBar *b);
+    /**
+     * @internal. Used by kxmlguibuilder to remove an entry from the toolbar popup
+     */
+    void removeToolbarEntry(KToolBar *b);
+
 protected:
     void paintEvent( QPaintEvent* e );
     void childEvent( QChildEvent* e);
