@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,38 +17,18 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef JOBITEM_H
-#define JOBITEM_H
+#include "pluginaction.h"
 
-#include <qlistview.h>
-#include "kmobject.h"
-
-class KMJob;
-
-class JobItem : public QListViewItem, public KMObject
+// automatically connect to "pluginActionActived(int)" in the receiver.
+PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent, const char *name)
+: KAction(txt, icon, accel, parent, name), m_id(ID)
 {
-public:
-	JobItem(QListView *parent, KMJob *job = 0);
-	void init(KMJob *job);
-	int compare(QListViewItem*, int, bool) const;
+	connect(this, SIGNAL(activated()), SLOT(slotActivated()));
+}
 
-	int jobID() const;
-	QString jobUri() const;
-	KMJob* job() const;
+void PluginAction::slotActivated()
+{
+	emit activated(m_id);
+}
 
-private:
-	KMJob	*m_job;
-	int	m_ID;
-	QString	m_uri;
-};
-
-inline int JobItem::jobID() const
-{ return m_ID; }
-
-inline KMJob* JobItem::job() const
-{ return m_job; }
-
-inline QString JobItem::jobUri() const
-{ return m_uri; }
-
-#endif
+#include "pluginaction.moc"

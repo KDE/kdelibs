@@ -74,24 +74,27 @@ extern "C"
 };
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
-: QWidget(parent, name)
+: KMainWindow(parent, name, 0)
 {
 	m_current = 0;
 
+	QWidget *dummy = new QWidget(this);
+
 	// create widgets
-	m_splitter = new QSplitter(Qt::Vertical,this, "Splitter");
+	m_splitter = new QSplitter(Qt::Vertical,dummy, "Splitter");
 	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
 	m_printerpages = new KMPages(m_splitter,"PrinterPages");
 	m_pop = new QPopupMenu(this);
-	m_toolbar = new KToolBar(this, "ToolBar");
+	//m_toolbar = new KToolBar(this, "ToolBar");
+	m_toolbar = new KToolBar(this, Qt::DockTop, true, "ToolBar", false, true);
 	m_toolbar->setMovingEnabled(false);
-	m_plugin = new PluginComboBox(this, "Plugin");
-	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
+	m_plugin = new PluginComboBox(dummy, "Plugin");
+	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), dummy);
 	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
 	// layout
-	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
-	m_layout->addWidget(m_toolbar, 0);
+	QVBoxLayout	*m_layout = new QVBoxLayout(dummy, 0, 0);
+	//m_layout->addWidget(m_toolbar, 0);
 	m_layout->addWidget(m_splitter, 1);
 	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
 	m_layout->addSpacing(5);
@@ -110,14 +113,18 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
     if (coll)
 		m_actions = coll;
 	else
-		m_actions = new KActionCollection(this);
+		//m_actions = new KActionCollection(this);
+		m_actions = actionCollection();
 	initActions();
 
 	// first update
 	restoreSettings();
 	loadParameters();
 
-	slotRefresh();
+	setCentralWidget(dummy);
+
+	//slotRefresh();
+	KMTimer::self()->release(true);
 }
 
 KMMainView::~KMMainView()

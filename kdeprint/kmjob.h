@@ -23,6 +23,7 @@
 #define KMJOB_H
 
 #include <qstring.h>
+#include <qvaluevector.h>
 #include "kmobject.h"
 
 class KMJob : public KMObject
@@ -87,6 +88,11 @@ public:
 	bool isRemote() const		{ return m_remote; }
 	void setRemote(bool on)		{ m_remote = on; }
 
+	QString attribute(int i) const	{ return m_attributes[i]; }
+	void setAttribute(int i, const QString& att)	{ m_attributes[i] = att; }
+	int attributeCount() const	{ return m_attributes.size(); }
+	void setAttributeCount(int c)	{ m_attributes.resize(c); }
+
 protected:
 	void init();
 
@@ -106,6 +112,7 @@ protected:
 
 	// internal members
 	QString	m_uri;
+	QValueVector<QString>	m_attributes;
 };
 
 #endif

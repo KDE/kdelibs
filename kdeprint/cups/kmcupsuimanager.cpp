@@ -54,6 +54,7 @@
 #include "ipprequest.h"
 #include "cupsinfos.h"
 
+#include <qlistview.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>
@@ -163,4 +164,10 @@ int KMCupsUiManager::pluginPageCap()
 void KMCupsUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>* pages)
 {
 	pages->append(new KPSchedulePage());
+}
+
+void KMCupsUiManager::setupJobViewer(QListView *lv)
+{
+	lv->addColumn(i18n("Priority"));
+	lv->setColumnAlignment(lv->columns()-1, Qt::AlignRight|Qt::AlignVCenter);
 }

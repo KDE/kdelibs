@@ -178,3 +178,7 @@ int KMUiManager::pluginPageCap()
 void KMUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>*)
 {
 }
+
+void KMUiManager::setupJobViewer(QListView*)
+{
+}

@@ -23,12 +23,14 @@
 #include "kmjob.h"
 #include "kmthreadjob.h"
 
+#include <kaction.h>
+
 KMJobManager::KMJobManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
 	m_jobs.setAutoDelete(true);
 	m_threadjob = new KMThreadJob(this, "ThreadJob");
-	m_jobtype = KMJobManager::ActiveJobs;
+	m_filter.setAutoDelete(true);
 }
 
 KMJobManager::~KMJobManager()
@@ -73,7 +75,7 @@ KMJob* KMJobManager::findJob(const QString& uri)
 void KMJobManager::addJob(KMJob *job)
 {
 	// only keep it if "printer" is not empty, and in printer filter
-	if (!job->uri().isEmpty() && !job->printer().isEmpty() && m_printers.contains(job->printer()) > 0)
+	if (!job->uri().isEmpty() && !job->printer().isEmpty())
 	{
 		KMJob	*aJob = findJob(job->uri());
 		if (aJob)
@@ -153,9 +155,8 @@ bool KMJobManager::sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action,
 	return result;
 }
 
-bool KMJobManager::listJobs()
+bool KMJobManager::listJobs(const QString&, KMJobManager::JobType)
 {
-	m_threadjob->updateManager(this);
 	return true;
 }
 
@@ -164,7 +165,15 @@ const QPtrList<KMJob>& KMJobManager::jobList(bool reload)
 	if (reload || m_jobs.count() == 0)
 	{
 		discardAllJobs();
-		listJobs();
+		QDictIterator<JobFilter>	it(m_filter);
+		for (; it.current(); ++it)
+		{
+			if (it.current()->m_type[ActiveJobs] > 0)
+				listJobs(it.currentKey(), ActiveJobs);
+			if (it.current()->m_type[CompletedJobs] > 0)
+				listJobs(it.currentKey(), CompletedJobs);
+		}
+		m_threadjob->updateManager(this);
 		removeDiscardedJobs();
 	}
 	return m_jobs;
@@ -175,12 +184,40 @@ int KMJobManager::actions()
 	return 0;
 }
 
-void KMJobManager::createPluginActions(KActionCollection*)
+QValueList<KAction*> KMJobManager::createPluginActions(KActionCollection*)
 {
+	return QValueList<KAction*>();
 }
 
 void KMJobManager::validatePluginActions(KActionCollection*, const QPtrList<KMJob>&)
 {
+}
+
+void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type)
+{
+	struct JobFilter	*jf = m_filter.find(pr);
+	if (!jf)
+	{
+		jf = new JobFilter;
+		m_filter.insert(pr, jf);
+	}
+	jf->m_type[type]++;
+}
+
+void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)
+{
+	struct JobFilter	*jf = m_filter.find(pr);
+	if (jf)
+	{
+		jf->m_type[type] = QMAX(0, jf->m_type[type]-1);
+		if (!jf->m_type[0] && !jf->m_type[1])
+			m_filter.remove(pr);
+	}
+}
+
+bool KMJobManager::doPluginAction(int, const QPtrList<KMJob>&)
+{
+	return true;
 }
 
 #include "kmjobmanager.moc"

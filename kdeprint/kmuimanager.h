@@ -33,6 +33,7 @@ class KPrintDialogPage;
 class KPrintDialog;
 class KPrinterPropertyDialog;
 class KMConfigDialog;
+class QListView;
 
 class KMUiManager : public QObject
 {
@@ -83,6 +84,9 @@ public:
 	int systemPageCap();
 	virtual int pluginPageCap();
 	int pageCap();
+
+	// job management
+	virtual void setupJobViewer(QListView*);
 
 protected:
 	int			m_printdialogflags;

@@ -44,6 +44,7 @@ void KMJob::init()
 	m_type = KMJob::System;
 	m_pages = m_processedpages = 0;
 	m_remote = false;
+	m_attributes.resize(1, 0);
 }
 
 void KMJob::copy(const KMJob& j)
@@ -60,6 +61,7 @@ void KMJob::copy(const KMJob& j)
 	m_processedsize = j.m_processedsize;
 	m_processedpages = j.m_processedpages;
 	m_remote = j.m_remote;
+	m_attributes = j.m_attributes;
 
 	setDiscarded(false);
 }

@@ -24,8 +24,8 @@
 #include "kmjob.h"
 #include "cupsinfos.h"
 #include "ipprequest.h"
+#include "pluginaction.h"
 
-#include <kaction.h>
 #include <klocale.h>
 
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
@@ -87,7 +87,7 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 	return value;
 }
 
-bool KMCupsJobManager::listJobs()
+bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType type)
 {
 	IppRequest	req;
 	QString		uri("ipp://%1:%2/%3/%4");
@@ -105,43 +105,36 @@ bool KMCupsJobManager::listJobs()
 	keys.append("job-k-octets-completed");
 	keys.append("job-media-sheets");
 	keys.append("job-media-sheets-completed");
+	keys.append("job-priority");
 
-	// for each printer:
-	//	- get object from manager (for URI)
-	//	- fill IPP_GET_JOBS request for that printer
-	//	- send request to printer's host (use remote host if needed)
-	for (QStringList::ConstIterator it=filter().begin(); it!=filter().end(); ++it)
+	req.setOperation(IPP_GET_JOBS);
+
+	// add printer-uri
+	KMPrinter *mp = KMManager::self()->findPrinter(prname);
+	if (!mp)
+		return false;
+
+	if (!mp->uri().isEmpty())
 	{
-		// initialize request
-		req.init();
-		req.setOperation(IPP_GET_JOBS);
-
-		// add printer-uri
-		KMPrinter *mp = KMManager::self()->findPrinter(*it);
-		if (!mp)
-			continue;
-		if (!mp->uri().isEmpty())
-		{
-			req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyURL());
-			req.setHost(mp->uri().host());
-			req.setPort(mp->uri().port());
-		}
-		else
-			req.addURI(IPP_TAG_OPERATION, "printer-uri", uri.arg(infos->host()).arg(infos->port()).arg(((mp&&mp->isClass())?"classes":"printers")).arg(*it));
-
-		// other attributes
-		req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
-		if (jobType() == KMJobManager::CompletedJobs)
-			req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
-
-		// send request
-		if (req.doRequest("/"))
-			parseListAnswer(req, mp);
-		else
-			return false;
+		req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyURL());
+		req.setHost(mp->uri().host());
+		req.setPort(mp->uri().port());
 	}
+	else
+		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri.arg(infos->host()).arg(infos->port()).arg(((mp&&mp->isClass())?"classes":"printers")).arg(prname));
 
-	return KMJobManager::listJobs();
+	// other attributes
+	req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
+	if (type == KMJobManager::CompletedJobs)
+		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
+
+	// send request
+	if (req.doRequest("/"))
+		parseListAnswer(req, mp);
+	else
+		return false;
+
+	return true;
 }
 
 void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
@@ -197,6 +190,10 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 			if (p != -1)
 				job->setPrinter(str.mid(p+1));
 		}
+		else if (name == "job-priority")
+		{
+			job->setAttribute(0, QString::fromLatin1("%1").arg(attr->values[0].integer, 3));
+		}
 
 		if (name.isEmpty() || attr == req.last())
 		{
@@ -211,34 +208,71 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 	}
 }
 
-void KMCupsJobManager::slotJobIppReport()
+bool KMCupsJobManager::doPluginAction(int ID, const QPtrList<KMJob>& jobs)
 {
-	if (m_currenturis.count() == 1)
+	switch (ID)
 	{
-		IppRequest	req;
+		case 0:
+			if (jobs.count() == 1)
+				jobIppReport(jobs.getFirst());
+			return true;
+		case 1:
+			return increasePriority(jobs);
+		case 2:
+			return decreasePriority(jobs);
+	}
+	return false;
+}
 
-		req.setOperation(IPP_GET_JOB_ATTRIBUTES);
-		req.addURI(IPP_TAG_OPERATION, "job-uri", m_currenturis[0]);
-		if (req.doRequest("/"))
-		{
-			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
-		}
+void KMCupsJobManager::jobIppReport(KMJob *j)
+{
+	IppRequest	req;
+
+	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
+	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
+	if (req.doRequest("/"))
+	{
+		static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
 	}
 }
 
-void KMCupsJobManager::createPluginActions(KActionCollection *coll)
+QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("Job IPP Report..."), "editpaste", 0, this, SLOT(slotJobIppReport()), coll, "plugin_job_ipp_report");
+	QValueList<KAction*>	list;
+	KAction	*act(0);
+
+	list <<  (act = new PluginAction(0, i18n("Job IPP Report..."), "editpaste", 0, coll, "plugin_ipp"));
 	act->setGroup("plugin");
+	list << (act = new PluginAction(1, i18n("Increase Priority"), "up", 0, coll, "plugin_prioup"));
+	act->setGroup("plugin");
+	list << (act = new PluginAction(2, i18n("Decrease Priority"), "down", 0, coll, "plugin_priodown"));
+	act->setGroup("plugin");
+
+	return list;
 }
 
 void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtrList<KMJob>& joblist)
 {
-	m_currenturis.clear();
 	QPtrListIterator<KMJob>	it(joblist);
+	bool	syst(true);
 	for (; it.current(); ++it)
-		m_currenturis.append(it.current()->uri());
-	coll->action("plugin_job_ipp_report")->setEnabled(m_currenturis.count() == 1);
+	{
+		syst = (syst && it.current()->type() == KMJob::System);
+	}
+	syst = (syst && joblist.count() > 0);
+	coll->action("plugin_ipp")->setEnabled(joblist.count() == 1);
+	coll->action("plugin_prioup")->setEnabled(syst);
+	coll->action("plugin_priodown")->setEnabled(syst);
+}
+
+bool KMCupsJobManager::increasePriority(const QPtrList<KMJob>&)
+{
+	return false;
+}
+
+bool KMCupsJobManager::decreasePriority(const QPtrList<KMJob>&)
+{
+	return false;
 }
 
 #include "kmcupsjobmanager.moc"

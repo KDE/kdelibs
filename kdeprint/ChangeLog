@@ -198,3 +198,18 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     the paradigm "1 window == 1 queue". There's still the possibility to
     view jobs for all printers within a single window. This should enhance
     the usability of job management tools (I hope).
+
+26/11/2001 Michael Goffioul <goffioul@imec.be>
+  * job management: job type (active/completed) is now handled on a 
+    printer basis instead of a global property of the manager. This allows
+    different windows to show different job type, and also ease the 
+    management of "All Printers" windows.
+  * job management: sorting jobs on numerical values is fixed (ID,
+    size, ...)
+  * job management: added the possibility to customize (from the plugin)
+    what's shown as job attributes. New attributes can be added. This
+    will be used for priority support in CUPS plugin.
+  * job management: re-engineered how dynamic plugin actions are handled
+    internally to fix problems when dealing with several windows opened.
+    This new mechanism should also be applied to print management dynamic
+    actions (more consistent).

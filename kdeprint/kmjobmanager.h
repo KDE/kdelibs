@@ -24,11 +24,13 @@
 
 #include <qobject.h>
 #include <qptrlist.h>
-#include <qstringlist.h>
+#include <qdict.h>
+#include <qvaluelist.h>
 
 class KMJob;
 class KMThreadJob;
 class KActionCollection;
+class KAction;
 
 class KMJobManager : public QObject
 {
@@ -36,16 +38,19 @@ class KMJobManager : public QObject
 
 public:
 	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
+	struct JobFilter
+	{
+		JobFilter() { m_type[0] = m_type[1] = 0; }
+		int	m_type[2];
+	};
 
 	KMJobManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMJobManager();
 
-	void addPrinter(const QString& pr);
-	void removePrinter(const QString& pr);
-	const QStringList& filter() const;
+	void addPrinter(const QString& pr, JobType type = ActiveJobs);
+	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();
-	JobType jobType() const;
-	void setJobType(JobType);
+	QDict<JobFilter>* filter();
 
 	//KMJob* findJob(int ID);
 	KMJob* findJob(const QString& uri);
@@ -57,44 +62,32 @@ public:
 	KMThreadJob* threadJob();
 
 	virtual int actions();
-	virtual void createPluginActions(KActionCollection*);
+	virtual QValueList<KAction*> createPluginActions(KActionCollection*);
 	virtual void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
+	virtual bool doPluginAction(int, const QPtrList<KMJob>&);
 
 protected:
 	void discardAllJobs();
 	void removeDiscardedJobs();
 
 protected:
-	virtual bool listJobs();
+	virtual bool listJobs(const QString& prname, JobType type);
 	virtual bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	bool sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 
 protected:
 	QPtrList<KMJob>	m_jobs;
-	QStringList	m_printers;
+	QDict<JobFilter>	m_filter;
 	KMThreadJob	*m_threadjob;
-	JobType		m_jobtype;
 };
 
-inline void KMJobManager::addPrinter(const QString& pr)
-{ if (m_printers.contains(pr) == 0) m_printers.append(pr); }
-
-inline void KMJobManager::removePrinter(const QString& pr)
-{ m_printers.remove(pr); }
-
-inline const QStringList& KMJobManager::filter() const
-{ return m_printers; }
+inline QDict<KMJobManager::JobFilter>* KMJobManager::filter()
+{ return &m_filter; }
 
 inline void KMJobManager::clearFilter()
-{ m_printers.clear(); }
+{ m_filter.clear(); }
 
 inline KMThreadJob* KMJobManager::threadJob()
 { return m_threadjob; }
-
-inline KMJobManager::JobType KMJobManager::jobType() const
-{ return m_jobtype; }
-
-inline void KMJobManager::setJobType(JobType t)
-{ m_jobtype = t; }
 
 #endif

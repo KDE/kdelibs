@@ -36,6 +36,7 @@ public:
 	void setupConfigDialog(KMConfigDialog*);
 	int pluginPageCap();
 	void setupPrintDialogPages(QPtrList<KPrintDialogPage>*);
+	void setupJobViewer(QListView*);
 };
 
 #endif

@@ -37,7 +37,7 @@ void JobItem::init(KMJob *job)
 	{
 		setPixmap(0,SmallIcon(m_job->pixmap()));
 		setText(0,QString::number(m_job->id()));
-		setText(6,m_job->printer());
+		//setText(6,m_job->printer());
 		setText(2,m_job->name());
 		setText(1,m_job->owner());
 		setText(3,m_job->stateString());
@@ -45,6 +45,27 @@ void JobItem::init(KMJob *job)
 		setText(5,QString::number(m_job->processedPages()));
 		m_ID = m_job->id();
 		m_uri = m_job->uri();
+
+		// additional attributes
+		for (int i=0; i<m_job->attributeCount(); i++)
+			setText(6+i, m_job->attribute(i));
 	}
 	widthChanged();
+}
+
+int JobItem::compare(QListViewItem *item, int col, bool asc) const
+{
+	switch (col)
+	{
+		case 0:
+		case 4:
+		case 5:
+			{
+				int	i1(this->text(col).toInt()), i2(item->text(col).toInt());
+				return (i1 < i2 ? -1 : (i1 > i2 ? 1 : 0));
+				break;
+			}
+		default:
+			return QListViewItem::compare(item, col, asc);
+	}
 }

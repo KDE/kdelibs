@@ -24,6 +24,7 @@
 
 #include <qwidget.h>
 #include <kdeprint/kpreloadobject.h>
+#include <kmainwindow.h>
 
 class KMManager;
 class KMPrinterView;
@@ -37,7 +38,7 @@ class KToolBar;
 class KAction;
 class PluginComboBox;
 
-class KMMainView : public QWidget, public KPReloadObject
+class KMMainView : public KMainWindow, public KPReloadObject
 {
 	Q_OBJECT
 public:

@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,37 +17,26 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMCUPSJOBMANAGER_H
-#define KMCUPSJOBMANAGER_H
+#ifndef PLUGINACTION_H
+#define PLUGINACTION_H
 
-#include "kmjobmanager.h"
-#include "ipprequest.h"
-#include <qstringlist.h>
+#include <kaction.h>
 
-class KMPrinter;
-
-class KMCupsJobManager : public KMJobManager
+class PluginAction : public KAction
 {
 	Q_OBJECT
 
 public:
-	KMCupsJobManager(QObject *parent = 0, const char *name = 0);
-	virtual ~KMCupsJobManager();
+	PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent = 0, const char *name = 0);
 
-	int actions();
-	QValueList<KAction*> createPluginActions(KActionCollection*);
-	void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
-	bool doPluginAction(int, const QPtrList<KMJob>&);
+signals:
+	void activated(int);
 
-protected:
-	void jobIppReport(KMJob*);
-	bool increasePriority(const QPtrList<KMJob>&);
-	bool decreasePriority(const QPtrList<KMJob>&);
+protected slots:
+	void slotActivated();
 
-protected:
-	bool listJobs(const QString&, JobType);
-	bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	void parseListAnswer(IppRequest& req, KMPrinter *pr);
+private:
+	int	m_id;
 };
 
 #endif

@@ -51,6 +51,10 @@ signals:
 	void jobsShown(KMJobViewer*, bool hasJobs);
 	void refreshClicked();
 	void printerChanged(KMJobViewer*, const QString& prname);
+	void viewerDestroyed(KMJobViewer*);
+
+public slots:
+	void pluginActionActivated(int);
 
 protected slots:
 	void slotSelectionChanged();
@@ -63,6 +67,7 @@ protected slots:
 	void slotPrinterSelected(int);
 	void slotShowCompleted(bool);
 	void slotRefresh();
+	void slotClose();
 
 protected:
 	void init();
@@ -89,7 +94,7 @@ private:
 	QPopupMenu		*m_pop;
 	QPtrList<KMPrinter>	m_printers;
 	QString	m_prname;
-	static QStringList	m_filter;
+	int	m_type;
 };
 
 inline QString KMJobViewer::printer() const
