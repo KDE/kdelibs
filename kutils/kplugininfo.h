@@ -32,7 +32,7 @@ class KConfigGroup;
  * Information about a plugin.
  *
  * This holds all the information about a plugin there is. It's used for the
- * user to decide whether he want's to use this plugin or not.
+ * user to decide whether he wants to use this plugin or not.
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
@@ -101,7 +101,7 @@ class KUTILS_EXPORT KPluginInfo
            Name=User Visible Name
            Comment=Description of what the plugin does
            \endverbatim
-         * In the first three entries the Icon entry is optional. 
+         * In the first three entries the Icon entry is optional.
          */
         KPluginInfo( const KService::Ptr service );
 
