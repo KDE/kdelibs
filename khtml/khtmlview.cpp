@@ -1845,10 +1845,14 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         emit zoomView( e->delta() );
         e->accept();
     }
-    else if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible()
+    else if ( ( (d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
+    			|| e->delta() > 0 && contentsY() <= 0
+                        || e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight())
                 && m_part->parentPart() ) {
+       kdDebug(6000) << this << " cz " << contentsY() << " ch " << contentsHeight() << " vh " << visibleHeight() << endl;
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
+        kdDebug(6000) << "sent" << endl;
         e->ignore();
     }
     else if ( d->vmode == QScrollView::AlwaysOff ) {
