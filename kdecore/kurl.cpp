@@ -1208,8 +1208,6 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 }
 
 
-// implemented by David, faure@kde.org
-// Modified by Torben, weis@kde.org
 bool KURL::cd( const QString& _dir )
 {
   if ( _dir.isEmpty() || m_bIsMalformed )
@@ -1230,6 +1228,7 @@ bool KURL::cd( const QString& _dir )
     m_strPath_encoded = QString::null;
     m_strPath = _dir;
     setHTMLRef( QString::null );
+    m_strQuery_encoded = QString::null;
     return true;
   }
 
@@ -1241,6 +1240,7 @@ bool KURL::cd( const QString& _dir )
     m_strPath += "/";
     m_strPath += _dir.right(m_strPath.length() - 1);
     setHTMLRef( QString::null );
+    m_strQuery_encoded = QString::null;
     return true;
   }
 
@@ -1255,6 +1255,7 @@ bool KURL::cd( const QString& _dir )
   setPath( p );
 
   setHTMLRef( QString::null );
+  m_strQuery_encoded = QString::null;
 
   return true;
 }
