@@ -13,11 +13,6 @@
 #include <qstringlist.h>
 
 /**
-* Registers all available image format encoders and decoders.
-*/
-void kimgioRegister();
-
-/**
 * Interface to the KDE Image IO plugin architecture.
 *
 * Just call KImageIO::registerFormats() to register all extra
