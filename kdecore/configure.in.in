@@ -149,7 +149,7 @@ AC_CHECK_FUNC(getaddrinfo,
   ]
 )
 case "$target" in
-  *-*-openbsd*)
+  *-*-openbsd2.*|*-*-openbsd3.[0-2])
     dnl OpenBSD's getaddrinfo is not thread-safe up to 3.2
     AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken and should be replaced])
     ;;
