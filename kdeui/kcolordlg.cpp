@@ -41,6 +41,7 @@
 #include <qvalidator.h>
 #include <qpainter.h>
 #include <qpushbutton.h>
+#include <qtimer.h>
 
 #include <dither.h>
 #include <kapp.h>
@@ -493,6 +494,23 @@ KPaletteTable::palette()
 }
 
 
+static const char **namedColorFilePath( void )
+{
+  //
+  // 2000-02-05 Espen Sand.
+  // Add missing filepaths here. Make sure the last entry is 0!
+  //
+  static const char *path[] = 
+  {
+    "/usr/X11R6/lib/X11/rgb.txt",
+    0
+  };
+  return( path );
+}
+
+
+
+
 void
 KPaletteTable::readNamedColor( void )
 {
@@ -502,18 +520,10 @@ KPaletteTable::readNamedColor( void )
   }
 
   //
-  // 2000-02-05 Espen Sand.
-  // Add missing filepaths here. Make sure the last entry is 0!
+  // Code somewhat inspired by KPalette.
   //
-  const char *path[] = 
-  {
-    "/usr/X11R6/lib/X11/rgb.txt",
-    0
-  };
 
-  //
-  // Code inspired by KPalette.
-  //
+  const char **path = namedColorFilePath();
   for( int i=0; path[i] != 0; i++ )
   {
     QFile paletteFile( path[i] );
@@ -547,16 +557,33 @@ KPaletteTable::readNamedColor( void )
 
     list.sort();
     mNamedColorList->insertStringList( list );
-    //mNamedColorList->setCurrentItem(0);
-
     break;
   }
 
   if( mNamedColorList->count() == 0 )
   {
+    //
+    // Give the error dialog box a chance to center above the 
+    // widget (or dialog). If we had displayed it now we could get a
+    // situation where the (modal) error dialog box pops up first
+    // preventing the real dialog to become visible until the 
+    // error dialog box is removed (== bad UI).
+    //
+    QTimer::singleShot( 10, this, SLOT(slotShowNamedColorReadError()) );
+  }
+}
+
+
+void 
+KPaletteTable::slotShowNamedColorReadError( void )
+{
+  if( mNamedColorList->count() == 0 )
+  {
     QString msg = i18n(""
       "Unable to read X11 rgb color strings. The following\n"
       "file location(s) were examined:\n\n");
+
+    const char **path = namedColorFilePath();
     for( int i=0; path[i] != 0; i++ )
     {
       msg += path[i];
@@ -565,6 +592,7 @@ KPaletteTable::readNamedColor( void )
     KMessageBox::sorry( this, msg );
   }
 }
+
 
 //
 // 2000-02-12 Espen Sand

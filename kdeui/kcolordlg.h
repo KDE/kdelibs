@@ -136,6 +136,7 @@ protected slots:
   void slotColorCellSelected( int );
   void slotColorTextSelected( const QString &colorText );
   void slotSetPalette( const QString &_paletteName );
+  void slotShowNamedColorReadError( void );
 
 protected:
   void readNamedColor( void );
