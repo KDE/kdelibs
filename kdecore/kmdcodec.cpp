@@ -394,9 +394,59 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     }
 }
 
+/**** Functions provided for backwards compatibility ****/
+QString KCodecs::base64Encode( const QString& str )
+{
+    QByteArray in, out;
+    int len = str.length();
+    in.resize( len );
+    memcpy( in.data(), str.latin1(), len );
+    base64Encode( in, out );
+    return QString( out );
+}
+
+QString KCodecs::base64Decode( const QString& str )
+{
+    QByteArray in, out;
+    int len = str.length();
+    in.resize( str.length() );
+    memcpy( in.data(), str.latin1(), len );
+    base64Decode( in, out );
+    return QString( out );
+}
+
+QString KCodecs::uuencode( const QString& str )
+{
+    QByteArray in, out;
+    int len = str.length();
+    in.resize( len );
+    memcpy( in.data(), str.latin1(), len );
+    uuencode( in, out );
+    return QString( out );
+}
+
+QString KCodecs::uudecode( const QString& str )
+{
+    QByteArray in, out;
+    int len = str.length();
+    in.resize( len );
+    memcpy( in.data(), str.latin1(), len );
+    uudecode( in, out );
+    return QString( out );
+}
+
+QString KCodecs::encodeString( const QString& data )
+{
+    return base64Encode(data);
+}
+
+QString KCodecs::decodeString( const QString& data )
+{
+    return base64Decode(data);
+}
+
+
 /******************************** KMD5 ********************************/
-
-
 KMD5::KMD5()
 {
     init();
@@ -831,24 +881,3 @@ void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
                     (static_cast<Q_UINT32>(in[j+2]) << 16) |
                     (static_cast<Q_UINT32>(in[j+3]) << 24);
 }
-
-/**** Functions provided for backwards compatibility ****/
-
-QString KCodecs::base64Encode( const QString& str ){
-    return base64Encode(QCString(str.latin1())); }
-
-QString KCodecs::base64Decode( const QString& str ) {
-    return base64Decode(QCString(str.latin1())); }
-
-QString KCodecs::uuencode( const QString& str )  {
-    return uuencode(QCString(str.latin1())); }
-
-QString KCodecs::uudecode( const QString& str )  {
-    return uudecode(QCString(str.latin1())); }
-
-QString KCodecs::encodeString( const QString& data ) {
-    return base64Encode(data); }
-
-QString KCodecs::decodeString( const QString& data ) {
-    return base64Decode(data); }
-
