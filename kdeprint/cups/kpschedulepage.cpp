@@ -48,12 +48,12 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time = new QComboBox(this);
 	m_time->insertItem(i18n("Immediately"));
 	m_time->insertItem(i18n("Never (hold indefinitely)"));
-	m_time->insertItem(i18n("Daytime"));
-	m_time->insertItem(i18n("Evening"));
-	m_time->insertItem(i18n("Night"));
+	m_time->insertItem(i18n("Day Time (6 am - 6 pm)"));
+	m_time->insertItem(i18n("Evening (6 pm - 6 am)"));
+	m_time->insertItem(i18n("Night (6 pm - 6 am)"));
 	m_time->insertItem(i18n("Weekend"));
-	m_time->insertItem(i18n("Second Shift (after close of business)"));
-	m_time->insertItem(i18n("Third Shift (after midnight)"));
+	m_time->insertItem(i18n("Second Shift (4 pm - 12 am)"));
+	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
 	m_time->insertItem(i18n("Specified Time"));
 	m_tedit = new QTimeEdit(this);
 	m_tedit->setAutoAdvance(true);
