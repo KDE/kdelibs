@@ -508,8 +508,15 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 	  
 	  if (dropVisualizer())
 		{
-		  QPainter painter(viewport());
-		  drawDropVisualizer(&painter,parent, afterme);
+		  QRect tmpRect = drawDropVisualizer (0, parent, afterme);
+
+		  if (tmpRect != mOldDropVisualizer)
+			{
+			  cleanDropVisualizer();
+
+			  QPainter painter(viewport());
+			  mOldDropVisualizer = drawDropVisualizer(&painter,parent, afterme);
+			}
 		}
 	}
   else
@@ -679,7 +686,7 @@ void KListView::setDropVisualizerWidth (int w)
   mDropVisualizerWidth = w > 0 ? w : 1;
 }
 
-void KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
+QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
 								   QListViewItem *after)
 {
   QRect insertmarker;
@@ -698,33 +705,20 @@ void KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
 	  insertmarker = QRect (0, 0, viewport()->width(), mDropVisualizerWidth/2);
 	}
 
-  if (insertmarker != mOldDropVisualizer)
-	cleanDropVisualizer();
-
   if (p)
 	p->fillRect(insertmarker, Dense4Pattern);
   
-  mOldDropVisualizer = insertmarker;
+  return insertmarker;
 }
 
-void KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
+QRect KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
 {
-  //	return QRect(0,0,0,0);
+  return QRect(0,0,0,0);
 }
 
 void KListView::cleanItemHighlighter ()
 {
   // FIXME
-}
-
-void KListView::setOldItemHighlighter (const QRect&)
-{
-  //FIXME
-}
-
-const QRect& KListView::oldItemHighlighter () const
-{
-  return QRect(); // FIXME
 }
 
 void KListView::rename(QListViewItem *item, int c)

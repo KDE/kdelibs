@@ -190,10 +190,10 @@ protected slots:
 
 protected:
   /**
-   * Determine whether a drop on this position (@param p) would count as
-   * being above or below the QRect (@param rect).
+   * Determine whether a drop on this position (@p p) would count as
+   * being above or below the QRect (@p rect).
    *
-   * Note: @param p is assumed to be in viewport coordinates.
+   * Note: @p p is assumed to be in viewport coordinates.
    */
   inline bool below (const QRect& rect, const QPoint& p)
   {
@@ -204,7 +204,7 @@ protected:
    * An overloaded version of below(const QRect&, const QPoint&).
    *
    * It differs from the above only in what arguments it takes.
-   * Note that @param p is assumed to be in contents coordinates!
+   * Note that @p p is assumed to be in contents coordinates!
    */
   inline bool below (QListViewItem* i, const QPoint& p)
   {
@@ -239,12 +239,9 @@ protected:
    *
    * If after == 0 then the marker should be drawn at the top.
    *
-   * Use @ref setOldDropVisualizer to set the rectangle that you
-   * painted to.
-   *
-   * You also have to call @ref cleanDropVisualizer if necessary!
+   * @return the rectangle that you painted to.
    */
-  virtual void drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);	
+  virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);	
 
   /**
    * For future expansion. 
@@ -255,15 +252,10 @@ protected:
    * return the rect drawn to
    * @deprecated
    */
-  virtual void drawItemHighlighter(QPainter *painter, QListViewItem *item);
-  const QRect& oldItemHighlighter () const;
-  void setOldItemHighlighter (const QRect&);
+  virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
   void cleanItemHighlighter ();
 
   virtual void startDrag();
-
-  inline const QRect& oldDropVisualizer () const { return mOldDropVisualizer; }
-  inline void setOldDropVisualizer (const QRect& r) { mOldDropVisualizer = r; }
 
   inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
   void setDropVisualizerWidth (int w);
@@ -272,10 +264,7 @@ private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
 
-
-
 private:
-
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
    **/
