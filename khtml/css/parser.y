@@ -38,7 +38,7 @@
 
 #include <assert.h>
 #include <kdebug.h>
-// #define CSS_DEBUG
+//#define CSS_DEBUG
 
 using namespace DOM;
 
@@ -941,6 +941,15 @@ function:
       $$.unit = Value::Function;
       $$.function = f;
   }
+  | FUNCTION maybe_space error {
+      Function *f = new Function;
+      f->name = $1;
+      f->args = 0;
+      $$.id = 0;
+      $$.unit = Value::Function;
+      $$.function = f;
+  }
+
   ;
 /*
  * There is a constraint on the color that it must

@@ -1,3 +1,7 @@
+2004-01-13  Dirk Mueller  <mueller@kde.org>
+
+	* css/parser.y: fix rect() parsing problem (#72458).
+
 2004-01-12  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_block.cpp (left/rightRelOffset): recursion protection
