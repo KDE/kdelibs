@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998, 1999, 2001, 2002 Daniel M. Duley <mosfet@kde.org>
     (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
-    (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+    (C) 1998, 1999 Dirk Mueller <mueller@kde.org>
     (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
     (C) 2000 Josef Weidendorfer <weidendo@in.tum.de>
     (C) 2004 Zack Rusin <zack@kde.org>
@@ -4785,13 +4785,7 @@ static void bumpmap_row( uint           *src,
     int ndotl;
     int nx, ny;
     int x;
-    int pbpp;
     int tmp;
-
-    if (has_alpha)
-        pbpp = bpp - 1;
-    else
-        pbpp = bpp;
 
     tmp = bm_xofs;
     xofs2 = MOD(tmp, bm_width);

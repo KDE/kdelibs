@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
               (C) 1998, 1999 Daniel M. Duley <mosfet@kde.org>
-              (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+              (C) 1998, 1999 Dirk Mueller <mueller@kde.org>
 
 */
 
