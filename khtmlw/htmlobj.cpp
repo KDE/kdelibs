@@ -725,7 +725,15 @@ void HTMLImage::setOverlay( const char *_ol )
 void HTMLImage::fileLoaded( const char *_filename )
 {
 #ifdef USE_QMOVIE
-    if ( strstr( imageURL.data(), ".gif" ) != 0 )
+    FILE *f = fopen( _filename, "rb" );
+    char buffer[ 4 ];
+    int n = fread( buffer, 1, 3, f );
+    if ( n >= 0 )
+      buffer[ n ] = 0;
+    else
+      buffer[0] = 0;
+    fclose( f );
+    if ( strcmp( buffer, "GIF" ) == 0 )
     {
 	movie = new QMovie( _filename, 8192 );
 	movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
