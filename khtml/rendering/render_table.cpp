@@ -1088,11 +1088,11 @@ void RenderTable::calcColWidth(void)
     /*
      * distribute the free width among the columns so that
      * they reach their max width.
-     * Order: fixed->percent->relative->variable
+     * Order: percent->fixed->relative->variable
      */
 
-    toAdd = distributeWidth(toAdd,Fixed,numFixed);
     toAdd = distributeWidth(toAdd,Percent,numPercent);
+    toAdd = distributeWidth(toAdd,Fixed,numFixed);
     toAdd = distributeWidth(toAdd,Relative,numRel);
     toAdd = distributeWidth(toAdd,Variable,numVar);
 
