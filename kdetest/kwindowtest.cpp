@@ -8,7 +8,6 @@
 
 #include <kstatusbar.h>
 #include <kapp.h>
-#include <kdocktoolbar.h>
 #include <ktopwidget.h>
 #include <kmenubar.h>
 #include <kiconloader.h>
@@ -71,7 +70,7 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
 
 	menuBar->insertSeparator();
-	helpMenu = kapp->getHelpMenu();
+	helpMenu = kapp->getHelpMenu( true, "KWindowTest was programmed by Sven Radej");
 	menuBar->insertItem( "&Help", helpMenu );
 
     /**************************************************/
