@@ -30,9 +30,8 @@
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 
-class QMessageBox;
-class KAboutDialog;
 class KConfig;
+class KHelpMenu;
 class KMenuBar;
 class KTMLayout;
 
@@ -318,7 +317,7 @@ public:
      *        appication specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string.
      *
-     * @return a standard help menu
+     * @return A standard help menu.
      */
     QPopupMenu* helpMenu( const QString &aboutAppText=QString::null );
 
@@ -449,8 +448,6 @@ public slots:
      */
     virtual void setPlainCaption( const QString &caption );
 
-    void aboutKDE( void );
-    void aboutApp( void );
 
 protected slots:
 
@@ -460,8 +457,6 @@ protected slots:
     * This is handled by Qt layout management.
     */
    virtual void updateRects();
-
-   void appHelpActivated(); 
 
 private slots:
    /**
@@ -522,9 +517,7 @@ private:
 
    KTMLayout* layoutMgr;
 
-   KAboutDialog *mAboutKDE;
-   QMessageBox  *mAboutApp;
-   QString      mAppAboutText; // The text for the about box
+   KHelpMenu    *mHelpMenu;
 
 protected:
 
