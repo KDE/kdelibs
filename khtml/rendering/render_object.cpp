@@ -1049,12 +1049,12 @@ void RenderObject::recalcMinMaxWidths()
     m_recalcMinMax = false;
 }
 
-void RenderObject::scheduleRelayout()
+void RenderObject::scheduleRelayout(bool repaint)
 {
     if (!isRoot()) return;
     KHTMLView *view = static_cast<RenderRoot *>(this)->view();
     if ( view )
-	view->scheduleRelayout();
+	view->scheduleRelayout(repaint);
 }
 
 

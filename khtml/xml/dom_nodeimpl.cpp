@@ -338,7 +338,7 @@ void NodeImpl::setChanged(bool b)
 	    p->setHasChangedChild( true );
 	    p = p->parentNode();
 	}
-        getDocument()->setDocumentChanged(true);
+        getDocument()->setDocumentChanged();
     }
 }
 

@@ -146,6 +146,7 @@ public:
         firstRelayout = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
+        repaintLayout = false;
         updateRect = QRect();
         m_dialogsAllowed = true;
     }
@@ -221,6 +222,7 @@ public:
     bool layoutSchedulingEnabled;
     bool possibleTripleClick;
     bool dirtyLayout;
+    bool repaintLayout;
     bool m_dialogsAllowed;
     QRect updateRect;
     KHTMLToolTip *tooltip;
@@ -457,6 +459,8 @@ void KHTMLView::layout()
         root->setMinMaxKnown(false);
         root->setLayouted(false);
         root->layout();
+        if( d->repaintLayout )
+          root->repaint();
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     }
     else
@@ -465,6 +469,7 @@ void KHTMLView::layout()
     killTimer(d->layoutTimerId);
     d->layoutTimerId = 0;
     d->layoutSchedulingEnabled=true;
+    d->repaintLayout = false;
 }
 
 void KHTMLView::closeChildDialogs()
@@ -1646,7 +1651,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         d->firstRelayout = false;
         d->dirtyLayout = true;
         layout();
-	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
 
     if( m_part->xmlDocImpl() ) {
@@ -1656,7 +1660,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	if ( !root->layouted() ) {
 	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
-	    scheduleRelayout();
+	    scheduleRelayout(false);
 	    return;
 	}
     }
@@ -1666,7 +1670,9 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
+
     updateContents( d->updateRect );
+    d->updateRect = QRect();
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
@@ -1688,19 +1694,18 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 }
 
-void KHTMLView::scheduleRelayout()
+void KHTMLView::scheduleRelayout(bool dorepaint)
 {
     if (!d->layoutSchedulingEnabled || d->layoutTimerId)
         return;
 
     d->layoutTimerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
                              ? 1000 : 0 );
+    d->repaintLayout = dorepaint;
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 {
-    //kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
-
     bool parsing = !m_part->xmlDocImpl() || m_part->xmlDocImpl()->parsing();
 
 //     kdDebug() << "parsing " << parsing << endl;

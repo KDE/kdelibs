@@ -180,7 +180,7 @@ public:
 		root = o;
 		o = o->m_parent;
 	    }
-	    root->scheduleRelayout();
+	    root->scheduleRelayout(true);
 	}
     }
     void setLayoutedLocal(bool b) {
@@ -212,7 +212,7 @@ public:
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
-    void scheduleRelayout();
+    void scheduleRelayout(bool repaint);
 
     // for discussion of lineHeight see CSS2 spec
     virtual short lineHeight( bool firstLine ) const;

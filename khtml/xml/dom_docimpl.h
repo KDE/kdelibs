@@ -298,7 +298,7 @@ public:
     void setFocusNode(NodeImpl *newFocusNode);
 
     bool isDocumentChanged()	{ return m_docChanged; }
-    virtual void setDocumentChanged(bool);
+    virtual void setDocumentChanged(bool = true);
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);

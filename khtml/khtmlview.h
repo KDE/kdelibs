@@ -189,8 +189,7 @@ private slots:
     void tripleClickTimeout();
 
 private:
-    void scheduleRelayout();
-
+    void scheduleRelayout(bool repaint);
     void scheduleRepaint(int x, int y, int w, int h);
     void closeChildDialogs();
     bool dialogsAllowed();
