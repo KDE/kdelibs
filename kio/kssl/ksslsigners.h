@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,51 +28,142 @@ class DCOPClient;
 
 
 // ### KDE4 - Fix constness
+/**
+ * KDE SSL Signer Database
+ *
+ * This class is used to manipulate the KDE SSL signer database.  It
+ * communicates to the KDE SSL daemon via dcop for backend integration.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL, KSSLCertificate
+ * @short KDE SSL Signer Database
+ */
 class KSSLSigners {
 public:
+	/**
+	 *  Construct a KSSLSigner object.
+	 */
+	KSSLSigners();
 
-  KSSLSigners();
-  ~KSSLSigners();
+	/**
+	 *  Destroy this KSSLSigner object.
+	 */
+	~KSSLSigners();
 
-  bool addCA(KSSLCertificate& cert,
-             bool ssl,
-             bool email,
-             bool code);
+	/**
+	 *  Add a signer to the database.
+	 *
+	 *  @param cert the signer's certificate
+	 *  @param ssl allow it to sign for SSL
+	 *  @param email allow it to sign for S/MIME
+	 *  @param code allow it to sign for code signing
+	 *  @return true on success
+	 */
+	bool addCA(KSSLCertificate& cert, bool ssl, bool email, bool code);
 
-  bool addCA(QString cert,
-             bool ssl,
-             bool email,
-             bool code);
+	/**
+	 *  Add a signer to the database.
+	 *
+	 *  @param cert the signer's certificate in base64 form
+	 *  @param ssl allow it to sign for SSL
+	 *  @param email allow it to sign for S/MIME
+	 *  @param code allow it to sign for code signing
+	 *  @return true on success
+	 */
+	bool addCA(QString cert, bool ssl, bool email, bool code); 
 
-  bool regenerate();
+	/**
+	 *  Regenerate the signer-root file from the user's settings.
+	 *  @return true on success
+	 */
+	bool regenerate();
 
-  bool useForSSL(KSSLCertificate& cert);
+	/**
+	 *  Determine if a certificate can be used for SSL certificate signing
+	 *  @param cert the certificate
+	 *  @return true if it can be used for SSL
+	 */
+	bool useForSSL(KSSLCertificate& cert);
 
-  bool useForSSL(QString subject);
+	/**
+	 *  Determine if a certificate can be used for SSL certificate signing
+	 *  @param subject the certificate subject
+	 *  @return true if it can be used for SSL
+	 */
+	bool useForSSL(QString subject);
 
-  bool useForEmail(KSSLCertificate& cert);
+	/**
+	 *  Determine if a certificate can be used for S/MIME certificate signing
+	 *  @param cert the certificate
+	 *  @return true if it can be used for S/MIME
+	 */
+	bool useForEmail(KSSLCertificate& cert);
 
-  bool useForEmail(QString subject);
+	/**
+	 *  Determine if a certificate can be used for S/MIME certificate signing
+	 *  @param subject the certificate subject
+	 *  @return true if it can be used for S/MIME
+	 */
+	bool useForEmail(QString subject);
 
-  bool useForCode(KSSLCertificate& cert);
+	/**
+	 *  Determine if a certificate can be used for code certificate signing
+	 *  @param cert the certificate
+	 *  @return true if it can be used for code
+	 */
+	bool useForCode(KSSLCertificate& cert);
 
-  bool useForCode(QString subject);
+	/**
+	 *  Determine if a certificate can be used for code certificate signing
+	 *  @param subject the certificate subject
+	 *  @return true if it can be used for code
+	 */
+	bool useForCode(QString subject);
 
-  bool remove(KSSLCertificate& cert);
+	/**
+	 *  Remove a certificate signer from the database
+	 *  @param cert the certificate to remove
+	 *  @return true on success
+	 */
+	bool remove(KSSLCertificate& cert);
 
-  bool remove(QString subject);
+	/**
+	 *  Remove a certificate signer from the database
+	 *  @param subject the subject of the certificate to remove
+	 *  @return true on success
+	 */
+	bool remove(QString subject);
 
-  QStringList list();
+	/**
+	 *  List the signers in the database.
+	 *  @return the list of subjects in the database
+	 *  @see #getCert
+	 */
+	QStringList list();
 
-  QString getCert(QString subject);
+	/**
+	 *  Get a signer certificate from the database.
+	 *
+	 *  @param subject the subject of the certificate desired
+	 *  @return the base64 encoded certificate
+	 */
+	QString getCert(QString subject);
 
-  bool setUse(QString subject, bool ssl, bool email, bool code);
+	/**
+	 *  Set the use of a particular entry in the certificate signer database.
+	 *  @param subject the subject of the certificate in question
+	 *  @param ssl allow this for SSL certificate signing
+	 *  @param email allow this for S/MIME certificate signing
+	 *  @param code allow this for code certificate signing
+	 *  @return true on success
+	 */
+	bool setUse(QString subject, bool ssl, bool email, bool code);
 
 private:
-  class KSSLSignersPrivate;
-  KSSLSignersPrivate *d;
+	class KSSLSignersPrivate;
+	KSSLSignersPrivate *d;
 
-  DCOPClient *dcc;
+	DCOPClient *dcc;
 };
 
 
