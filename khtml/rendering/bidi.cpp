@@ -882,9 +882,17 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	}
 	if( o->isSpecial() ) {
 	    // add to special objects...
-	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
-	    specialHandler(o);
-	    width = lineWidth(m_height);
+            specialHandler(o);
+            
+	    // check if it fits in the current line. 
+            // If it does, position it now, otherwise, position
+            // it after moving to next line (in newLine() func)            
+            if (o->width()+o->marginLeft()+o->marginRight()+w <= width) 
+            {
+                positionNewFloats();
+                width = lineWidth(m_height);
+            } 
+            
 #ifdef DEBUG_LINEBREAKS
 	    kdDebug(6041) << "inserted special object, line width now " << width << endl;
 #endif
@@ -955,10 +963,18 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	} 
 	if( o->isSpecial() ) {
 	    // add to special objects...
-	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
-	    specialHandler(o);
-	    width = lineWidth(m_height);
-	} else if ( o->isReplaced() ) {
+            specialHandler(o);
+            
+	    // check if it fits in the current line. 
+            // If it does, position it now, otherwise, position
+            // it after moving to next line (in newLine() func)            
+            if (o->width()+o->marginLeft()+o->marginRight()+w <= width) 
+            {
+                positionNewFloats();
+                width = lineWidth(m_height);
+            } 	
+            
+        } else if ( o->isReplaced() ) {
 	    tmpW += o->width();
 	} else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);

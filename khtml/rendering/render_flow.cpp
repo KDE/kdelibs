@@ -463,7 +463,6 @@ RenderFlow::insertFloat(RenderObject *o)
             f->width = o->width() + o->marginLeft() + o->marginRight();
             f->startY = -1;
             f->endY = -1;
-            positionNewFloats();
             return;
         }
         ++it;
@@ -487,39 +486,6 @@ RenderFlow::insertFloat(RenderObject *o)
     specialObjects->append(f);
 //    kdDebug( 6040 ) << "inserting node " << o << " number of specialobject = " << //     specialObjects->count() << endl;
 
-    positionNewFloats();
-
-    // html blocks flow around floats, to do this add floats to parent too
-    if(style()->htmlHacks() && childrenInline() )
-    {
-        RenderObject* obj = parent();
-        while ( obj && obj->childrenInline() ) obj=obj->parent();
-        if (obj && obj->isFlow() )
-        {
-            RenderFlow* par = static_cast<RenderFlow*>(obj);
-
-            if (par->isFloating())
-                return;
-
-            if(!par->specialObjects) {
-                par->specialObjects = new QSortedList<SpecialObject>;
-                par->specialObjects->setAutoDelete(true);
-            }
-
-            QListIterator<SpecialObject> it(*par->specialObjects);
-            SpecialObject* tt;
-            while ( (tt = it.current()) ) {
-                if (tt->node == o) return;
-                ++it;
-            }
-
-            SpecialObject* so = new SpecialObject(*f);
-            so->count = specialObjects->count();
-            so->startY = so->startY + m_y;
-            so->endY = so->endY + m_y;
-            par->specialObjects->append(so);
-        }
-    }
 }
 
 void RenderFlow::positionNewFloats()
@@ -593,6 +559,41 @@ void RenderFlow::positionNewFloats()
 
 
 
+        // html blocks flow around floats, to do this add floats to parent too
+        if(style()->htmlHacks() && childrenInline() )
+        {
+            RenderObject* obj = parent();
+            while ( obj && obj->childrenInline() ) obj=obj->parent();
+            if (obj && obj->isFlow() )
+            {
+                RenderFlow* par = static_cast<RenderFlow*>(obj);
+
+                if (!par->isFloating())
+                {
+
+                    if(!par->specialObjects) {
+                        par->specialObjects = new QSortedList<SpecialObject>;
+                        par->specialObjects->setAutoDelete(true);
+                    }
+
+                    QListIterator<SpecialObject> it(*par->specialObjects);
+                    SpecialObject* tt;
+                    while ( (tt = it.current()) ) {
+                        if (tt->node == o) break;
+                        ++it;
+                    }
+                    if (!tt || tt->node==o)
+                    {
+                        SpecialObject* so = new SpecialObject(*f);
+                        so->count = specialObjects->count();
+                        so->startY = so->startY + m_y;
+                        so->endY = so->endY + m_y;
+                        par->specialObjects->append(so);
+                    }
+                }
+            }
+        }        
+        
 //      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
         f = specialObjects->next();
