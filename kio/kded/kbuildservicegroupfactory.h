@@ -50,7 +50,7 @@ public:
   /**
    * Add a new entry
    */
-  virtual void addEntry( KSycocaEntry *newEntry );
+  virtual void addEntry( KSycocaEntry *newEntry, const char *resource );
 
   	
 protected:

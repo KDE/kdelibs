@@ -9,6 +9,23 @@
 
 #include <kapp.h>
 
+#include <stdio.h>
+
+void debug(QString txt)
+{
+ fprintf(stderr, "%s\n", txt.ascii());
+}
+
+void debug(const char *txt)
+{
+ fprintf(stderr, "%s\n", txt);
+}
+void debug(const char *format, const char *txt)
+{
+ fprintf(stderr, format, txt);
+ fprintf(stderr, "\n");
+}
+
 int main(int argc, char *argv[])
 {
    KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
@@ -87,7 +104,7 @@ int main(int argc, char *argv[])
    
    debug("Querying userprofile for services associated with text/plain");
    KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
-   debug("got %d offers", offers.count());
+   debug(QString("got %1 offers").arg(offers.count()));
    KServiceTypeProfile::OfferList::Iterator it = offers.begin();
    for ( ; it != offers.end() ; it++ )
    {
@@ -96,7 +113,7 @@ int main(int argc, char *argv[])
 
    debug("Querying userprofile for services associated with KOfficeFilter");
    offers = KServiceTypeProfile::offers("KOfficeFilter");
-   debug("got %d offers", offers.count());
+   debug(QString("got %1 offers").arg(offers.count()));
    it = offers.begin();
    for ( ; it != offers.end() ; it++ )
    {
@@ -105,7 +122,7 @@ int main(int argc, char *argv[])
 
    debug("Querying trader for Konqueror/Plugin");
    KTrader::OfferList traderoffers = KTrader::self()->query("Konqueror/Plugin");
-   debug("got %d offers", traderoffers.count());
+   debug(QString("got %1 offers").arg(traderoffers.count()));
    KTrader::OfferList::Iterator trit = traderoffers.begin();
    for ( ; trit != traderoffers.end() ; trit++ )
    {
@@ -159,7 +176,7 @@ int main(int argc, char *argv[])
 
    KServiceGroup::Ptr first;
 
-   debug("Found %d entries", list.count());
+   debug(QString("Found %1 entries").arg(list.count()));
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
@@ -167,12 +184,12 @@ int main(int argc, char *argv[])
       if (p->isType(KST_KService)) 
       {
          KService *service = static_cast<KService *>(p);
-         debug("             %s", service->name().ascii());
+         debug(service->name());
       }
       else if (p->isType(KST_KServiceGroup))
       {
          KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
-         debug("             %s -->", serviceGroup->caption().ascii());
+         debug(QString("             %1 -->").arg(serviceGroup->caption()));
          if (!first) first = serviceGroup;
       }
       else
@@ -184,7 +201,7 @@ int main(int argc, char *argv[])
    if (first)
    {
    list = first->entries();
-   debug("Found %d entries", list.count());
+   debug(QString("Found %1 entries").arg(list.count()));
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
@@ -192,12 +209,12 @@ int main(int argc, char *argv[])
       if (p->isType(KST_KService)) 
       {
          KService *service = static_cast<KService *>(p);
-         debug("             %s", service->name().ascii());
+         debug(QString("             %1").arg(service->name()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
          KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
-         debug("             %s -->", serviceGroup->caption().ascii());
+         debug(QString("             %1 -->").arg(serviceGroup->caption()));
       }
       else
       {
@@ -205,7 +222,7 @@ int main(int argc, char *argv[])
       }
    }
    }
-
+#if 0
    KImageIO::registerFormats();
 
    QStringList types;
@@ -213,13 +230,13 @@ int main(int argc, char *argv[])
    debug("Can read:");
    for(QStringList::ConstIterator it = types.begin();
        it != types.end(); ++it)
-      debug("    %s", (*it).ascii());
+      debug(QString("    %1").arg((*it)));
 
    types = KImageIO::types(KImageIO::Writing);
    debug("Can write:");
    for(QStringList::ConstIterator it = types.begin();
        it != types.end(); ++it)
-      debug("    %s", (*it).ascii());
+      debug(QString("    %1").arg((*it)));
 
    
    QString rPattern = KImageIO::pattern( KImageIO::Reading );
@@ -244,5 +261,6 @@ int main(int argc, char *argv[])
       debug("    %s", (*it).ascii());
 
    debug("done");
+#endif
    return 0;
 }

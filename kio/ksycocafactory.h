@@ -70,7 +70,7 @@ public:
    /**
     * Add an entry
     */
-   virtual void addEntry(KSycocaEntry *newEntry);
+   virtual void addEntry(KSycocaEntry *newEntry, const char *resource);
 
    /**
     * Read an entry from the database

@@ -139,7 +139,7 @@ KSycocaFactory::save(QDataStream &str)
 }
 
 void 
-KSycocaFactory::addEntry(KSycocaEntry *newEntry)
+KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database

@@ -48,7 +48,7 @@ public:
   /**
    * Add a new entry.
    */
-  void addEntry(KSycocaEntry *newEntry);
+  void addEntry(KSycocaEntry *newEntry, const char *resource);
 
   /**
    * Write out service type specific index files.

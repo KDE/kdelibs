@@ -183,7 +183,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                    entry = factory->createEntry( *it3, resource );
                }
                if ( entry && entry->isValid() )
-                  factory->addEntry( entry );
+                  factory->addEntry( entry, resource );
            }
         }
      }

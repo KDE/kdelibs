@@ -68,7 +68,7 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
 
      entry = new KServiceGroup(fullPath, name);
      m_entryDict.insert(name, entry);
-     addEntry( entry );
+     addEntry( entry, resource );
 
      if (name != "/")
      {
@@ -97,8 +97,8 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
 }
 
 void
-KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry )
+KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry, const char *resource)
 {
-   KSycocaFactory::addEntry(newEntry);
+   KSycocaFactory::addEntry(newEntry, resource);
 }
 

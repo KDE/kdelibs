@@ -76,8 +76,6 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 
   if ( serv->isValid() ) 
   {
-     if (!serv->isDeleted())
-        m_serviceGroupFactory->addNewEntry(file, resource, serv);
      return serv;
   } else {
      kdWarning(7012) << "Invalid Service : " << file << endl;
@@ -149,11 +147,13 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
 }
 
 void
-KBuildServiceFactory::addEntry(KSycocaEntry *newEntry)
+KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 {
-   KSycocaFactory::addEntry(newEntry);
+   KSycocaFactory::addEntry(newEntry, resource);
 
    KService * service = (KService *) newEntry;
+   if (!service->isDeleted())
+      m_serviceGroupFactory->addNewEntry(service->entryPath(), resource, service);
 
    QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );
