@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=image/x-portable-bitmap
+Icon=image
+Patterns=*.pbm
+Comment=Portable Bitmap File Format
