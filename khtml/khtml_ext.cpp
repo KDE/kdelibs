@@ -528,9 +528,9 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
       {
         QFileInfo info( destURL.path() );
         if( info.exists() )
-          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
+          query = KMessageBox::warningYesNo( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ), KStdGuiItem::cancel() );
        }
-   } while ( query == KMessageBox::Cancel );
+   } while ( query == KMessageBox::No );
 
   if ( destURL.isValid() )
     saveURL(url, destURL, metadata, cacheId);
