@@ -41,7 +41,7 @@ struct KAudioRecordStream::Data
 	bool attached;
 	bool blocking;
 	bool polling;
-	int pos;
+	unsigned int pos;
 	QPtrQueue<QByteArray> inqueue;
 };
 
@@ -73,6 +73,7 @@ KAudioRecordStream::~KAudioRecordStream()
 
 int KAudioRecordStream::read( char * buffer, int size )
 {
+	kdDebug( 400 ) << k_funcinfo << endl;
 	unsigned int remaining = size;
 	while( remaining )
 	{
@@ -125,6 +126,7 @@ bool KAudioRecordStream::polling() const
 
 void KAudioRecordStream::stop()
 {
+	kdDebug( 400 ) << k_funcinfo << endl;
 	if( d->attached )
 	{
 		d->kserver->server().detachRecorder( d->receiver );
@@ -135,6 +137,7 @@ void KAudioRecordStream::stop()
 
 void KAudioRecordStream::start()
 {
+	kdDebug( 400 ) << k_funcinfo << endl;
 	if( ! d->attached )
 	{
 		assert( d->kserver );
@@ -148,6 +151,7 @@ void KAudioRecordStream::start()
 
 void KAudioRecordStream::flush()
 {
+	kdDebug( 400 ) << k_funcinfo << endl;
 	d->inqueue.clear();
 }
 
@@ -155,15 +159,21 @@ void KAudioRecordStream::slotRestartedServer() { }
 
 void KAudioRecordStream::slotData( const char * contents, unsigned int size )
 {
+	kdDebug( 400 ) << k_funcinfo << endl;
 	QByteArray * bytearray = new QByteArray( size );
 	// copy the contents to the bytearray
 	// this has to be deleted later
 	bytearray->duplicate( contents, size );
 	if( d->polling )
+	{
+		kdDebug( 400 ) << "enqueue the data\n";
 		d->inqueue.enqueue( bytearray );
+	}
 	else
 	{
-		emit data( bytearray );
+		kdDebug( 400 ) << "emit the data\n";
+		emit data( *bytearray );
+		kdDebug( 400 ) << "delete the data\n";
 		delete bytearray;
 	}
 }
@@ -186,6 +196,7 @@ KByteSoundReceiver::~KByteSoundReceiver()
 
 void KByteSoundReceiver::process_indata( Arts::DataPacket<Arts::mcopbyte> * inpacket )
 {
+	kdDebug( 400 ) << k_funcinfo << " size of the packet: " << inpacket->size << endl;
 	emit data( (char *)inpacket->contents, inpacket->size );
 	inpacket->processed();
 }
