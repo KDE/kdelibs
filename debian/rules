@@ -153,10 +153,6 @@ binary-arch:  build install
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
 	# ssl cleanup
 	-rm -rf debian/kdelibs3/usr/share/apps/kssl
-	mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
-	mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
-	mv debian/kdelibs3/usr/lib/libkssl.so.2.0.2 debian/kdelibs3/usr/lib/libkssl-nossl.so.2.0.2
-	mv debian/kdelibs3/usr/lib/libkssl.la debian/kdelibs3/usr/lib/libkssl-nossl.la
 	dh_installchangelogs -a 
 	dh_strip -a
 	for i in `find debian/ -type l -name "common"`; do \

@@ -4,6 +4,7 @@ ikdelibs (4:2.2.0-0beta1-3) unstable; urgency=low
   * Sync with upstream
   * Update build-depends
   * don't compress .bz2 files (Closes: #103262)
+  * Use dpkg-divert instead of alternatives
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 02 Jul 2001 13:18:00 -0700
 

@@ -7,12 +7,6 @@ set -e
 
 case "$1" in
     remove|failed-upgrade|upgrade|deconfigure)
-        if [ -x /usr/sbin/update-alternatives ]; then
-          /usr/sbin/update-alternatives --remove kio_https.la /usr/lib/kde2/kio_https-nossl.la
-          /usr/sbin/update-alternatives --remove kio_https.so /usr/lib/kde2/kio_https-nossl.so
-          /usr/sbin/update-alternatives --remove libkssl.so.2.0.2 /usr/lib/libkssl-nossl.so.2.0.2
-          /usr/sbin/update-alternatives --remove libkssl.la /usr/lib/libkssl-nossl.la
-        fi
 	rm -f /usr/share/doc/kde/HTML/default
         ;;
     *)
