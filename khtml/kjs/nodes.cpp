@@ -612,6 +612,8 @@ KJSO *VarDeclListNode::evaluate()
     list->evaluate();
 
   var->evaluate();
+
+  return new KJSUndefined();
 }
 
 // ECMA 12.2
@@ -626,9 +628,10 @@ KJSO *EmptyStatementNode::evaluate()
   return new KJSCompletion(Normal);
 }
 
+// ECMA 12.6.2
 KJSO *ForNode::evaluate()
 {
-  /* TODO: implement the 3 other for() variants */
+  /* TODO: implement the 2 other for() variants */
   Ptr e, v, b, cval;
   if (expr1) {
     e = expr1->evaluate();
@@ -684,7 +687,7 @@ KJSO *IfNode::evaluate()
   return statement2->evaluate();
 }
 
-// ECMA 12.6
+// ECMA 12.6.1
 KJSO *WhileNode::evaluate()
 {
   Ptr b, be, bv, e;

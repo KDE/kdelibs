@@ -421,7 +421,6 @@ class ForNode : public StatementNode {
 public:
   ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
     expr1(e1), expr2(e2), expr3(e3), stat(s) {}
-  ForNode(VarDeclListNode *, Node *, Node *, StatementNode *) {}
   ForNode(Node *, Node *, StatementNode *) {}
   ForNode(const CString &, AssignExprNode*, Node *, StatementNode *) {}
   KJSO *evaluate();
