@@ -224,9 +224,10 @@
     </connection>
 </connections>
 <includes>
-    <include location="global" impldecl="in declaration">qlistview.h</include>
-    <include location="global" impldecl="in declaration">kactivelabel.h</include>
+    <include location="global" impldecl="in declaration">kpushbutton.h</include>
     <include location="global" impldecl="in declaration">qlabel.h</include>
+    <include location="global" impldecl="in declaration">kactivelabel.h</include>
+    <include location="global" impldecl="in declaration">qlistview.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
