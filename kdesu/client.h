@@ -131,16 +131,14 @@ public:
     /**
      * Delete all persistent variables with the given key.
      *
-     * A specicalized variant of @ref delVar(QCString) that
-     * removes all subsets of the cached varaibles given by
-     * @p key. In order for cached keys to be deleted by this
-     * function, the value given to the @p group argument of
-     * the @ref setVar function must be a subset of the @p key
-     * argument used for the same function and the key given
-     * to here must be a superset and a subset the same group
-     * and key variables mentioned above respectively.  NOTE:
-     * simply giving the value of the group key will not work.
-     * You have to use @ref delGroup under that circumstance.
+     * A specicalized variant of @ref delVar(QCString) that removes all
+     * subsets of the cached varaibles given by @p key. In order for all
+     * cached variables related to this key to be deleted properly, the
+     * value given to the @p group argument when the @ref setVar function
+     * was called, must be a subset of the argument given here and the key
+     *
+     * <u>NOTE:</u> Simply supplying the group key here WILL not necessarily
+     * work. If you only have a group key, then use @ref delGroup instead.
      *
      * @param special_key the name of the variable.
      * @return zero on success, -1 on failure.
@@ -149,7 +147,9 @@ public:
 
     /**
      * Delete all persistent variables in a group.
-     * @param group The group name. See @ref #setVar.
+     *
+     * @param group the group name. See @ref #setVar.
+     * @return
      */
     int delGroup(QCString group);
 
