@@ -844,7 +844,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     //
     QString charset = d->m_job->queryMetaData("charset");
     if ( !charset.isEmpty() )
-        setCharset( charset );
+        setCharset( charset, true );
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -1716,8 +1716,8 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_desc,
                d->m_ssl_cipher_version,
                d->m_ssl_cipher_used_bits.toInt(),
-               d->m_ssl_cipher_bits.toInt(), 
-               (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(), 
+               d->m_ssl_cipher_bits.toInt(),
+               (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
                d->m_ssl_good_from, d->m_ssl_good_until);
   }
   kid->show();
