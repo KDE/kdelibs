@@ -947,10 +947,13 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
         return false;
 
     // ### check xml element allowedness according to DTD
-    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
-        return checkChild(id(), newChild->id());
+
+    // If either this node or the other node is an XML element node, allow regardless (we don't do DTD checks for XML
+    // yet)
+    if (isXMLElementNode() || newChild->isXMLElementNode())
+	return true;
     else
-        return true;
+	return checkChild(id(), newChild->id());
 }
 
 bool ElementImpl::childTypeAllowed( unsigned short type )
