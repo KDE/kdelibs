@@ -179,7 +179,7 @@ void KHelpMenu::aboutApplication()
     if( mAboutApp == 0 )
     {
       mAboutApp = new KAboutApplication( mParent, "about", false ); 
-      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogHidden()) );
+      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     mAboutApp->show();
   }
@@ -195,7 +195,7 @@ void KHelpMenu::aboutApplication()
 				   KDialogBase::Yes, KDialogBase::Yes,
 				   KDialogBase::Yes, mParent, "about",
 				   false, true, i18n("&OK") );
-      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogHidden()) );
+      connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
       
       QHBox *hbox = new QHBox( mAboutApp );
       mAboutApp->setMainWidget( hbox );
@@ -221,7 +221,7 @@ void KHelpMenu::aboutKDE()
   if( mAboutKDE == 0 )
   {
     mAboutKDE = new KAboutKDE( mParent, "aboutkde", false );
-    connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogHidden()) );
+    connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }    
   mAboutKDE->show();
 }
@@ -232,7 +232,7 @@ void KHelpMenu::reportBug()
   if( mBugReport == 0 )
   {
     mBugReport = new KBugReport( mParent, false );
-    connect( mBugReport, SIGNAL(finished()),this,SLOT( dialogHidden()) );
+    connect( mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
   }
   mBugReport->show();
 }
