@@ -229,6 +229,7 @@ ShadeStyle=Motif
 ScrollBarExtent=20
 Name=RISC OS
 Name[af]=risc os
+Name[be]=RISC АС
 Name[cs]=Risc OS
 Name[da]=Risc OS
 Name[de]=RISC-OS
