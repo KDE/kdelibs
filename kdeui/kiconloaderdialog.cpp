@@ -366,7 +366,10 @@ void KIconLoaderButton::slotChangeIcon()
 void KIconLoaderButton::setIcon(const QString& _icon)
 {
   iconStr = _icon;
-  setPixmap( locate(resType, iconStr) );
+  if (resType == "icon")
+    setPixmap( KGlobal::iconLoader()->loadApplicationIcon(iconStr) );
+  else
+    setPixmap( locate(resType, iconStr) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()
