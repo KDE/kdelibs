@@ -38,7 +38,7 @@ using namespace KABC;
 StdAddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
-static KStaticDeleter<AddressBook> addressBookDeleter;
+static KStaticDeleter<StdAddressBook> addressBookDeleter;
 
 QString StdAddressBook::fileName()
 {
