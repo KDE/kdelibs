@@ -229,41 +229,29 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atF
 
     if (b)
     {
-        a = findPluggedAction(actions, tb, b->id());
-        kdDebug(7043) << a << endl;
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
-
         if (index == 0)
-        {
             atFirst = true;
-            goto okay_exit;
+        else if (pos.x() < ((r.left() + r.right())/2))
+        {
+            // if in first half of button then 
+            // we jump to previous index
+            index--;
+            b = tb->getButton(tb->idAt(index));
         }
-
-        // if in 0th position or in second half of button then we are done
-        if (pos.x() > ((r.left() + r.right())/2))
-            goto okay_exit;
-     
-        // else we jump to the previous index
-        index--;
     }
     else // (!b)
     {
         index = actions.count() - 1;
         b = tb->getButton(tb->idAt(index));
         // if !b and not past last button, we didn't find button
-        if (pos.x() <= b->geometry().topLeft().x())
+        if (pos.x() <= b->geometry().left())
             goto failure_exit;
     }
 
-    // search for the button at the given index
-    b = tb->getButton(tb->idAt(index));
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
-
-    index = tb->itemIndex(b->id());
-
-okay_exit:
     sepIndex = index + (atFirst ? 0 : 1);
 
 failure_exit:
