@@ -536,8 +536,9 @@ protected:
     int m_cols;
     WrapMethod m_wrap;
     QString m_value;
-    bool m_dirtyvalue;
-    bool m_unsubmittedFormChange;
+    bool m_dirtyvalue: 1;
+    bool m_unsubmittedFormChange: 1;
+    bool m_initialized: 1;
 };
 
 // -------------------------------------------------------------------------

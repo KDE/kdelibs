@@ -2203,6 +2203,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
+    m_initialized = false;
     m_unsubmittedFormChange = false;
 }
 
@@ -2312,10 +2313,12 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
-        if ( m_render )
+        if ( m_render && m_initialized )
             m_value = static_cast<RenderTextArea*>( m_render )->text();
-        else
+        else {
             m_value = defaultValue().string();
+            m_initialized = true;
+        }
 
         m_dirtyvalue = false;
     }
@@ -2331,6 +2334,7 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     QString str = _value.string().replace( "\r\n", "\n" );
     m_value = str.replace( '\r', '\n' );
     m_dirtyvalue = false;
+    m_initialized = true;
     setChanged(true);
 }
 
