@@ -58,23 +58,21 @@ void Resource::writeConfig( KConfig* config )
 bool Resource::open()
 {
   bool result = true;
-  mMutex.lock();
+  QMutexLocker guard( &mMutex );
   if ( ! mOpenCount ) {
     kdDebug() << "Opening resource " << resourceName() << endl;
     result = doOpen();
   }
   mOpenCount++;
-  mMutex.unlock();
   return result;
 }
 
 void Resource::close()
 {
-  mMutex.lock();
+  QMutexLocker guard( &mMutex );
   if ( ! mOpenCount )
   {
     kdDebug() << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
-    mMutex.unlock();
     return;
   }
   mOpenCount--;
@@ -84,7 +82,6 @@ void Resource::close()
   } else {
     kdDebug() << "Not yet closing resource " << resourceName() << ", open count = " << mOpenCount << endl;
   }
-  mMutex.unlock();
 }
 
 QString Resource::identifier() const
