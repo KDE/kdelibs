@@ -52,9 +52,16 @@ public:
 
     // we use this one for the streaming operators
     Data() {
-        if ( this == null )
+        if ( this == null ) {
             delete const_cast<KFileMimeTypeInfo::ItemInfo*>( mimeTypeInfo );
-    };
+        }
+        mimeTypeInfo = 0L;
+    }
+
+    ~Data() {
+        delete mimeTypeInfo;
+        mimeTypeInfo = 0L;
+    }
 
     const KFileMimeTypeInfo::ItemInfo*  mimeTypeInfo;
     // mimeTypeInfo has the key, too, but only for non-variable ones
