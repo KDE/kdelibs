@@ -636,6 +636,12 @@ public:
      */
     KPixmapProvider * pixmapProvider() const { return myPixProvider; }
 
+    /**
+     * Resets the current position of the up/down history. Call this
+     * when you manually call @ref setCurrentItem() or @ref clearEdit().
+     */
+    void reset() { slotReset(); }
+
 public slots:
     /**
      * Adds an item to the end of the history list and to the completion list.
@@ -689,7 +695,7 @@ private slots:
      * resets the iterate index to -1
      */
     void slotReset();
-
+    
 private:
     void init( bool useCompletion );
 
