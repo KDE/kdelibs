@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -184,26 +184,32 @@ QString KCompletion::makeCompletion( const QString& string )
 
 	if ( l.isEmpty() )
 	    doBeep( NoMatch );
-	    
+	
 	return QString::null;
     }
 
-    QString completion = findCompletion( string );
+    QString completion;
+    // in case-insensitive popup mode, we search all completions at once
+    if ( myCompletionMode == KGlobalSettings::CompletionPopup ) {
+        myMatches = findAllCompletions( string );
+        if ( !myMatches.isEmpty() )
+            completion = myMatches.first();
+    }
+    else
+        completion = findCompletion( string );
+
     if ( myHasMultipleMatches )
         emit multipleMatches();
 
     myLastString = string;
     myCurrentMatch = completion;
 
+    postProcessMatch( &completion );
+
     if ( !string.isEmpty() ) { // only emit match when string != ""
 	//kdDebug(0) << "KCompletion: Match: " << completion << endl;
-
-	postProcessMatch( &completion );
         emit match( completion );
     }
-    else
-        postProcessMatch( &completion );
-
 
     if ( completion.isNull() )
         doBeep( NoMatch );
@@ -220,22 +226,22 @@ void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 
 QStringList KCompletion::allMatches()
 {
-	// Don't use myMatches since calling postProcessMatches()
-	// on myMatches here would interfere with call to
-	// postProcessMatch() during rotation
-	QStringList l = findAllCompletions( myLastString );
-	postProcessMatches( &l );
-	return l;
+    // Don't use myMatches since calling postProcessMatches()
+    // on myMatches here would interfere with call to
+    // postProcessMatch() during rotation
+    QStringList l = findAllCompletions( myLastString );
+    postProcessMatches( &l );
+    return l;
 }
 
 QStringList KCompletion::allMatches( const QString &text )
 {
-	// Don't use myMatches since calling postProcessMatches()
-	// on myMatches here would interfere with call to
-	// postProcessMatch() during rotation
-	QStringList l = findAllCompletions( text );
-	postProcessMatches( &l );
-	return l;
+    // Don't use myMatches since calling postProcessMatches()
+    // on myMatches here would interfere with call to
+    // postProcessMatch() during rotation
+    QStringList l = findAllCompletions( text );
+    postProcessMatches( &l );
+    return l;
 }
 
 /////////////////////////////////////////////////////
@@ -315,7 +321,7 @@ QString KCompletion::findCompletion( const QString& string )
     // start at the tree-root and try to find the search-string
     for( uint i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
-	node = node->find( ch, myIgnoreCase );
+	node = node->find( ch );
 
 	if ( node )
 	    completion += ch;
@@ -391,6 +397,12 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
     if ( string.isEmpty() )
         return myMatches;
 
+    if ( myIgnoreCase ) { // case insensitive completion
+        extractStringsFromNodeCI(myTreeRoot, QString::null, string,&myMatches);
+        myHasMultipleMatches = (myMatches.count() > 1);
+        return myMatches;
+    }
+
     QChar ch;
     QString completion;
     const KCompTreeNode *node = myTreeRoot;
@@ -398,7 +410,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
     // start at the tree-root and try to find the search-string
     for( uint i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
-	node = node->find( ch, myIgnoreCase );
+	node = node->find( ch );
 
 	if ( node )
 	    completion += ch;
@@ -477,6 +489,40 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     }
 }
 
+void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
+                                                   const QString& beginning,
+                                                   const QString& restString,
+                                                   QStringList *matches )
+{
+    if ( restString.isEmpty() ) {
+        extractStringsFromNode( node, beginning, matches, false /*noweight*/ );
+        return;
+    }
+
+    QChar ch1 = restString.at(0);
+    QString newRest = restString.mid(1);
+    KCompTreeNode *child1, *child2;
+
+    child1 = node->find( ch1 ); // the correct match
+    if ( child1 )
+        extractStringsFromNodeCI( child1, beginning + *child1, newRest,
+                                  matches );
+
+    // append the case insensitive matches, if available
+    if ( ch1.isLetter() ) {
+        // find out if we have to lower or upper it. Is there a better way?
+        QChar ch2 = ch1.lower();
+        if ( ch1 == ch2 )
+            ch2 = ch1.upper();
+        if ( ch1 != ch2 ) {
+            child2 = node->find( ch2 );
+            if ( child2 )
+                extractStringsFromNodeCI( child2, beginning + *child2, newRest,
+                                          matches );
+        }
+    }
+}
+
 
 void KCompletion::doBeep( BeepMode mode )
 {
@@ -532,7 +578,7 @@ KCompTreeNode::~KCompTreeNode()
 // it will not be created. Returns the new/existing node.
 KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 {
-    KCompTreeNode *child = find( ch, false );
+    KCompTreeNode *child = find( ch );
     if ( !child ) {
         child = new KCompTreeNode( ch );
 
@@ -566,13 +612,13 @@ void KCompTreeNode::remove( const QString& string )
     KCompTreeNode *child = 0L;
 
     if ( string.isEmpty() ) {
-        child = find( 0x0, false );
+        child = find( 0x0 );
 	myChildren.remove( child );
 	return;
     }
 
     QChar ch = string.at(0);
-    child = find( ch, false );
+    child = find( ch );
     if ( child ) {
         child->remove( string.right( string.length() -1 ) );
 	if ( child->myChildren.count() == 0 ) {

@@ -121,10 +121,14 @@ class QPopupMenu;
  *
  * @short A generic class for completing QStrings
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
- * @version $Id$ 
+ * @version $Id$
  */
 class KCompletion : public QObject
 {
+    Q_ENUMS( CompOrder )
+    Q_PROPERTY( CompOrder order READ order WRITE setOrder )
+    Q_PROPERTY( bool ignoreCase READ ignoreCase WRITE setIgnoreCase )
+    Q_PROPERTY( QStringList items READ items WRITE setItems )
     Q_OBJECT
 
 public:
@@ -271,14 +275,14 @@ public:
      * Default is false (case sensitive).
      * @see #ignoreCase
      */
-    //  void setIgnoreCase( bool ignoreCase ) { myIgnoreCase = ignoreCase; }
+    void setIgnoreCase( bool ignoreCase ) { myIgnoreCase = ignoreCase; }
 
     /**
      * @returns whether KCompletion acts case insensitively or not.
      * Default is false (case sensitive).
      * @see #setIgnoreCase
      */
-    //  bool ignoreCase() const { return myIgnoreCase; }
+    bool ignoreCase() const { return myIgnoreCase; }
 
     /**
      * @returns a list of all items matching the last completed string.
@@ -292,7 +296,7 @@ public:
     QStringList allMatches( const QString& string );
 
     /**
-     * Enables playing a sound when
+     * Enables/disables playing a sound when
      * @li @ref makeCompletion() can't find a match
      * @li there is a partial completion (= multiple matches in
      *     Shell-completion mode)
@@ -301,18 +305,9 @@ public:
      *
      * For playing the sounds, @ref KNotifyClient() is used.
      *
-     * @see #disableSounds
      * @see #isSoundsEnabled
      */
-    void enableSounds() { myBeep = true; }
-
-    /**
-     * Disables playing sounds.
-     * Default is enabled
-     * @see #enableSounds
-     * @see #isSoundsEnabled
-     */
-    void disableSounds() { myBeep = false; }
+    void setEnableSounds( bool enable ) { myBeep = enable; }
 
     /**
      * Tells you whether KCompletion will play sounds on certain occasions.
@@ -327,6 +322,20 @@ public:
      * @see #multipleMatches
      */
     bool hasMultipleMatches() const { return myHasMultipleMatches; }
+
+#ifndef KDE_NO_COMPAT
+    /**
+     * @deprecated
+     * @see #setEnableSounds
+     */
+    void enableSounds() { myBeep = true; }
+
+    /**
+     * @deprecated
+     * @see #setEnableSounds
+     */
+    void disableSounds() { myBeep = false; }
+#endif
 
 public slots:
     /**
@@ -462,6 +471,10 @@ private:
     void 		addWeightedItem( const QString& );
     QString 		findCompletion( const QString& string );
     const QStringList& 	findAllCompletions( const QString& );
+    void                extractStringsFromNodeCI( const KCompTreeNode *,
+                                                  const QString& beginning,
+                                                  const QString& restString,
+                                                  QStringList *matches );
     void 		extractStringsFromNode( const KCompTreeNode *,
 						const QString& beginning,
 						QStringList *matches,
@@ -583,7 +596,7 @@ public:
     *
     * This method is also called when a completion-object is created
     * automatically, when completionObject() is called the first time.
-    * 
+    *
     * @param compObj a @ref KCompletion() or a derived child object.
     * @param hsig if true, handles signals internally.
     */
