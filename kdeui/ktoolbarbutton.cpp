@@ -62,7 +62,6 @@ public:
     m_highlight   = false;
     m_isRaised    = false;
 
-    m_text        = QString::null;
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
     m_iconSize    = 0;
@@ -79,16 +78,6 @@ public:
     delete m_delayTimer; m_delayTimer = 0;
   }
 
-  void setText(QString _txt)
-  {
-    if (_txt.isNull())
-      return;
-
-    m_text = _txt;
-    if (m_text.right(3) == QString::fromLatin1("..."))
-      m_text.truncate(m_text.length() - 3);
-  }
-
   bool    m_noStyle;
   int     m_id;
   bool    m_isSeparator;
@@ -98,7 +87,6 @@ public:
   bool    m_highlight;
   bool    m_isRaised;
 
-  QString m_text;
   QString m_iconName;
   QString m_disabledIconName;
   QString m_defaultIconName;
@@ -115,7 +103,7 @@ public:
 
 // This will construct a separator
 KToolBarButton::KToolBarButton( QWidget *_parent, const char *_name )
-  : QButton( _parent , _name)
+  : QToolButton( _parent , _name)
 {
   d = new KToolBarButtonPrivate;
 
@@ -127,14 +115,13 @@ KToolBarButton::KToolBarButton( QWidget *_parent, const char *_name )
 KToolBarButton::KToolBarButton( const QString& _icon, int _id,
                                 QWidget *_parent, const char *_name,
                                 const QString &_txt, KInstance *_instance )
-    : QButton( _parent, _name ), d( 0 )
+    : QToolButton( _parent, _name ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
   d->m_id     = _id;
   d->m_parent = (KToolBar*)_parent;
-  d->setText(_txt);
-  QButton::setText( _txt );
+  setTextLabel(_txt);
   d->m_instance = _instance;
 
   setFocusPolicy( NoFocus );
@@ -161,14 +148,13 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
                                 const QString& txt)
-    : QButton( _parent, name ), d( 0 )
+    : QToolButton( _parent, name ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
   d->m_id       = _id;
   d->m_parent   = (KToolBar *) _parent;
-  d->setText(txt);
-  QButton::setText( txt );
+  setTextLabel(txt);
 
   setFocusPolicy( NoFocus );
 
@@ -220,7 +206,7 @@ void KToolBarButton::modeChange()
   if (d->m_iconText == KToolBar::IconOnly)
   {
     QToolTip::remove(this);
-    QToolTip::add(this, d->m_text);
+    QToolTip::add(this, textLabel());
     mysize = QSize(pix_width, pix_height);
     setMinimumSize( mysize );
     updateGeometry();
@@ -236,7 +222,7 @@ void KToolBarButton::modeChange()
   QFontMetrics fm(tmp_font);
 
   int text_height = fm.lineSpacing();
-  int text_width  = fm.width(d->m_text);
+  int text_width  = fm.width(textLabel());
 
   // none of the other modes want tooltips
   QToolTip::remove(this);
@@ -272,12 +258,21 @@ void KToolBarButton::setEnabled( bool enabled )
   QButton::setEnabled( enabled );
 }
 
+void KToolBarButton::setTextLabel( const QString& text)
+{
+  if (text.isNull())
+    return;
+
+  QString txt(text);
+  if (txt.right(3) == QString::fromLatin1("..."))
+    txt.truncate(txt.length() - 3);
+
+  QToolButton::setTextLabel(txt);
+}
+
 void KToolBarButton::setText( const QString& text)
 {
-  d->setText(text);
-  QButton::setText( text );
-  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
-  repaint (false);
+  setTextLabel(text);
 }
 
 void KToolBarButton::setIcon( const QString &icon )
@@ -510,7 +505,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     QFont ref_font(KGlobalSettings::toolBarFont());
     kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
       isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
-      d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, d->m_text,
+      d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, textLabel(),
       pixmap(), &ref_font, this);
     return;
   }
@@ -564,7 +559,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
-    if (!d->m_text.isNull())
+    if (!textLabel().isNull())
     {
       int tf = AlignVCenter|AlignLeft;
       if (pixmap())
@@ -581,17 +576,17 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, width()-dx, height(), tf, d->m_text);
+      _painter->drawText(dx, dy, width()-dx, height(), tf, textLabel());
     }
   }
   else if (d->m_iconText == KToolBar::TextOnly)
   {
-    if (!d->m_text.isNull())
+    if (!textLabel())
     {
       int tf = AlignTop|AlignLeft;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
-      dx = (width() - fm.width(d->m_text)) / 2;
+      dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
@@ -602,7 +597,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);
+      _painter->drawText(dx, dy, fm.width(textLabel()), fm.lineSpacing(), tf, textLabel());
     }
   }
   else if (d->m_iconText == KToolBar::IconTextBottom)
@@ -619,10 +614,10 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
-    if (!d->m_text.isNull())
+    if (!textLabel())
     {
       int tf = AlignBottom|AlignHCenter;
-      dx = (width() - fm.width(d->m_text)) / 2;
+      dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
       if ( isDown() && style().guiStyle() == WindowsStyle )
@@ -634,7 +629,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);
+      _painter->drawText(dx, dy, fm.width(textLabel()), fm.lineSpacing(), tf, textLabel());
     }
   }
 

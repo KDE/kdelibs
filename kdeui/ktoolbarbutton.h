@@ -25,7 +25,7 @@
 #define _KTOOLBARBUTTON_H
 
 #include <qpixmap.h>
-#include <qbutton.h>
+#include <qtoolbutton.h>
 #include <qintdict.h>
 #include <qstring.h>
 #include <qfont.h>
@@ -43,7 +43,7 @@ class QPainter;
  * KToolBar methods instead.
  * @internal
  */
-class KToolBarButton : public QButton
+class KToolBarButton : public QToolButton
 {
   Q_OBJECT
 
@@ -263,7 +263,8 @@ public slots:
    * potentially changed.  This includes such events as text changing,
    * orientation changing, etc.
    */
-  void modeChange();
+   void modeChange();
+   virtual void setTextLabel(const QString&);
 
 protected:
   void paletteChange(const QPalette &);
