@@ -113,9 +113,6 @@ public:
     // Info Signals to send to the job (most are OLD)
     ///////////
 
-    // listDir:
-    void totalEntries( unsigned long count );
-
     // get (put?)
     void totalSize( unsigned long _bytes );
     void processedSize( unsigned long _bytes );

@@ -717,7 +717,7 @@ void FileProtocol::listDir( const QString& path )
 	entryNames.append( ep->d_name );
 
     closedir( dp );
-    totalEntries( entryNames.count() );
+    totalSize( entryNames.count() );
 
     // set the current dir
     char path_buffer[PATH_MAX];

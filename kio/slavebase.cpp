@@ -192,12 +192,6 @@ void SlaveBase::canResume( bool _resume )
     m_pConnection->send( MSG_RESUME, data );
 }
 
-void SlaveBase::totalEntries( unsigned long count )
-{
-    KIO_DATA << count;
-    m_pConnection->send( INF_TOTAL_ENTRIES, data );
-}
-
 void SlaveBase::totalSize( unsigned long _bytes )
 {
     KIO_DATA << _bytes;

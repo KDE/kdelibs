@@ -119,10 +119,6 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	emit connected();
 	break;
 
-    case INF_TOTAL_ENTRIES:
-	stream >> ul;
-	emit totalEntries( ul );
-	break;
     case INF_TOTAL_SIZE:
 	stream >> ul;
 	emit totalSize( ul );

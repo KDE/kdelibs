@@ -64,7 +64,6 @@ class Connection;
   * Identifiers for KIO informational messages.
   */
  enum Info {
-   INF_TOTAL_ENTRIES = 9,
    INF_TOTAL_SIZE = 10,
    INF_PROCESSED_SIZE = 11,
    INF_SPEED,
@@ -136,10 +135,6 @@ public:
     // Info sent by the slave
     //////////
 
-    // listDir
-    void totalEntries( unsigned long ) ;
-
-    // get (put?)
     void totalSize( unsigned long ) ;
     void processedSize( unsigned long ) ;
     void redirection( const KURL& ) ;
