@@ -35,7 +35,6 @@ class QPushButton;
 class QLineEdit;
 class QVBox;
 class PluginComboBox;
-class KFileList;
 class KURLRequester;
 
 class KPrintDialog : public KDialog, public KPReloadObject
@@ -77,7 +76,6 @@ protected:
 	QComboBox	*m_printers;
 	QVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
-	KFileList	*m_fileselect;
 	KURLRequester	*m_file;
 	bool	m_reduced;
 
