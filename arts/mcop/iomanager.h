@@ -110,7 +110,7 @@ class TimeWatcher {
 
 	bool earlier(const timeval& reference);
 public:
-	TimeWatcher(int milliseconds, TimeNotify *notify);
+	TimeWatcher(int _milliseconds, TimeNotify *notify);
 
 	inline TimeNotify *notify() { return _notify; };
 	timeval advance(const timeval& currentTime);

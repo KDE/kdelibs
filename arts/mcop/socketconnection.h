@@ -50,10 +50,10 @@ protected:
 	SocketConnection();
 
 public:
-	SocketConnection(int fd);
+	SocketConnection(int _fd);
 
 	void qSendBuffer(Buffer *buffer);
-	void notifyIO(int fd, int types);
+	void notifyIO(int _fd, int types);
 
 	void drop();
 	bool broken();

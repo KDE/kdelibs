@@ -58,12 +58,10 @@ SocketConnection::SocketConnection()
 {
 }
 
-SocketConnection::SocketConnection(int fd)
+SocketConnection::SocketConnection(int _fd)
+  : _broken(false), fd(_fd)
 {
-	_broken = false;
-
 	arts_debug("socketconnection created, fd = %d",fd);
-	this->fd = fd;
 	Dispatcher::the()->ioManager()->watchFD(fd,
 									IOType::read|IOType::except|IOType::reentrant,this);
 	initReceive();
@@ -121,9 +119,9 @@ static void connection_hex_dump(unsigned char *buffer, long len)
 	}
 }
 
-void SocketConnection::notifyIO(int fd, int types)
+void SocketConnection::notifyIO(int _fd, int types)
 {
-	assert(fd == this->fd);
+	assert(_fd == fd);
 
 	if(types & IOType::read)
 	{

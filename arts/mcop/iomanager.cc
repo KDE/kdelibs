@@ -344,8 +344,8 @@ void StdIOManager::removeTimer(TimeNotify *notify)
 	}
 }
 
-TimeWatcher::TimeWatcher(int milliseconds, TimeNotify *notify)
-	: milliseconds(milliseconds),_notify(notify),active(false),destroyed(false)
+TimeWatcher::TimeWatcher(int _milliseconds, TimeNotify *notify)
+	: milliseconds(_milliseconds),_notify(notify),active(false),destroyed(false)
 {
 	gettimeofday(&nextNotify,0);
 
