@@ -55,7 +55,7 @@ KMPropQuota::KMPropQuota(QWidget *parent, const char *name)
 	main_->addWidget(m_pagelimit,2,1);
 
 	m_title = i18n("Quotas");
-	m_header = i18n("Quotas settings");
+	m_header = i18n("Quotas Settings");
 	m_pixmap = "lock";
 }
 

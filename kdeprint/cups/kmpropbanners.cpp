@@ -48,7 +48,7 @@ KMPropBanners::KMPropBanners(QWidget *parent, const char *name)
 	main_->addWidget(m_stopbanner,1,1);
 
 	m_title = i18n("Banners");
-	m_header = i18n("Banner settings");
+	m_header = i18n("Banner Settings");
 	m_pixmap = "editcopy";
 }
 

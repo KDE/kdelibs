@@ -36,7 +36,7 @@ KMPropUsers::KMPropUsers(QWidget *parent, const char *name)
 	l0->addWidget(m_text, 1);
 
 	m_title = i18n("Users");
-	m_header = i18n("Users access settings");
+	m_header = i18n("Users Access Settings");
 	m_pixmap = "kdeprint_printer_users";
 }
 

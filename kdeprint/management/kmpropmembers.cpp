@@ -39,7 +39,7 @@ KMPropMembers::KMPropMembers(QWidget *parent, const char *name)
 
 	m_pixmap = "kdeprint_printer_class";
 	m_title = i18n("Members");
-	m_header = i18n("Class members");
+	m_header = i18n("Class Members");
 }
 
 KMPropMembers::~KMPropMembers()

@@ -48,7 +48,7 @@ KMPropBackend::KMPropBackend(QWidget *parent, const char *name)
 
 	m_pixmap = "connect_established";
 	m_title = i18n("Interface");
-	m_header = i18n("Interface settings");
+	m_header = i18n("Interface Settings");
 }
 
 KMPropBackend::~KMPropBackend()

@@ -46,7 +46,7 @@ KMPropRlpr::KMPropRlpr(QWidget *parent, const char *name)
 
 	m_pixmap = "connect_established";
 	m_title = i18n("Queue");
-	m_header = i18n("Remote LPD queue settings");
+	m_header = i18n("Remote LPD Queue Settings");
 }
 
 KMPropRlpr::~KMPropRlpr()

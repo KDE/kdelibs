@@ -54,7 +54,7 @@ KMPropGeneral::KMPropGeneral(QWidget *parent, const char *name)
 
 	m_pixmap = "contents";
 	m_title = i18n("General");
-	m_header = i18n("General settings");
+	m_header = i18n("General Settings");
 }
 
 KMPropGeneral::~KMPropGeneral()

@@ -53,7 +53,7 @@ KMPropDriver::KMPropDriver(QWidget *parent, const char *name)
 
 	m_pixmap = "gear";
 	m_title = i18n("Driver");
-	m_header = i18n("Driver settings");
+	m_header = i18n("Driver Settings");
 }
 
 KMPropDriver::~KMPropDriver()
