@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-   Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -88,7 +88,7 @@ QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName)
 {
   kdDebug(5400) << "Gregorian getMonthName" << endl;
   Q_UNUSED(year);
-  
+
   if ( shortName )
     switch ( month )
       {
@@ -329,4 +329,20 @@ QString KCalendarSystemGregorian::yearLiteral (int year) const
 QString KCalendarSystemGregorian::yearLiteral (const QDate & date) const
 {
    return QString::number(date.year());
+}
+
+
+int KCalendarSystemGregorian::yearStringToInteger(const QString & sNum, int & iLength) const
+{
+  int iYear;
+  iYear = KCalendarSystem::yearStringToInteger(sNum, iLength);
+  
+  // Qt treats a year in the range 0-100 as 1900-1999.
+  // It is nicer for the user if we treat 0-68 as 2000-2068
+  if (iYear < 69)
+    iYear += 2000;
+  else if (iYear < 100)
+    iYear += 1900;
+
+  return iYear;
 }

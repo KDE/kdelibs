@@ -74,6 +74,11 @@ public:
   virtual QString weekDayName (int weekDay, bool shortName = false) const;
   virtual QString weekDayName (const QDate & date, bool shortName = false) const;
 
+  virtual QString dayString(const QDate & pDate, bool bShort) const;
+  virtual QString yearString(const QDate & pDate, bool bShort) const;
+  virtual int dayStringToInteger(const QString & sNum, int & iLength) const;
+  virtual int yearStringToInteger(const QString & sNum, int & iLength) const;
+
   virtual int minValidYear () const;
   virtual int maxValidYear () const;
   virtual int weekDayOfPray () const;

@@ -50,3 +50,67 @@ const KLocale * KCalendarSystem::locale() const
 
   return KGlobal::locale();
 }
+
+QString KCalendarSystem::dayString(const QDate & pDate, bool bShort) const
+{
+  QString sResult;
+
+  sResult.setNum(day(pDate));
+  if (!bShort && sResult.length() == 1 )
+    sResult.prepend('0');
+
+  return sResult;
+}
+
+QString KCalendarSystem::monthString(const QDate & pDate, bool bShort) const
+{
+  QString sResult;
+
+  sResult.setNum(month(pDate));
+  if (!bShort && sResult.length() == 1 )
+    sResult.prepend('0');
+
+  return sResult;
+}
+
+QString KCalendarSystem::yearString(const QDate & pDate, bool bShort) const
+{
+  QString sResult;
+
+  sResult.setNum(year(pDate));
+  if (!bShort && sResult.length() == 1 )
+    sResult.prepend('0');
+
+  return sResult;
+}
+
+static int stringToInteger(const QString & sNum, int & iLength)
+{
+  int iPos = 0;
+
+  int result = 0;
+  for (; sNum.length() > iPos && sNum.at(iPos).isDigit(); iPos++)
+    {
+      result *= 10;
+      result += sNum.at(iPos).digitValue();
+    }
+
+  iLength = iPos;
+  return result;
+}
+
+
+int KCalendarSystem::dayStringToInteger(const QString & sNum, int & iLength) const
+{
+  return stringToInteger(sNum, iLength);
+}
+
+int KCalendarSystem::monthStringToInteger(const QString & sNum, int & iLength) const
+{
+  return stringToInteger(sNum, iLength);
+}
+
+int KCalendarSystem::yearStringToInteger(const QString & sNum, int & iLength) const
+{
+  return stringToInteger(sNum, iLength);
+}

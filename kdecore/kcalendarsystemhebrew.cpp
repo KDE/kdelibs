@@ -27,6 +27,7 @@
 static int jflg = 0; // ### HPB Remove this!?!?
 
 static int hebrewDaysInYear(int y);
+static QString num2heb(int num, bool includeMillenium);
 
 class h_date
 {
@@ -139,6 +140,45 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
   return(&h);
 }
 
+static QString num2heb(int num, bool includeMillenium)
+{
+  const QChar decade[] = {0x05D8, 0x05D9, 0x05DB, 0x05DC, 0x05DE,
+                          0x05E0, 0x05E1, 0x05E2, 0x05E4, 0x05E6};
+  QString result;
+
+  if (num < 1 || num > 9999)
+    return QString::number(num);
+
+  if (num >= 1000) {
+    if (includeMillenium || num % 1000 == 0)
+      result += QChar(0x05D0 - 1 + num / 1000);
+    num %= 1000;
+  }
+  if (num >= 100) {
+    while (num >= 500) {
+      result += QChar(0x05EA);
+      num -= 400;
+    }
+    result += QChar(0x05E7 - 1 + num / 100);
+    num %= 100;
+  }
+  if (num >= 10) {
+    if (num == 15 || num == 16)
+      num -= 9;
+    result += decade[num / 10];
+    num %= 10;
+  }
+  if (num > 0)
+    result += QChar(0x05D0 - 1 + num);
+
+  if (result.length() == 1)
+    result += "'";
+  else
+    result.insert(result.length() - 1, '\"');
+
+  return result;
+}
+
 /* constants, in 1/18th of minute */
 static const int HOUR = 1080;
 static const int DAY = 24*HOUR;
@@ -246,7 +286,7 @@ int KCalendarSystemHebrew::weeksInYear(int year) const
     temp = temp.addDays(-7);
     nWeekNumber = weekNumber(temp);
   }
-	
+
   return nWeekNumber;
 }
 
@@ -315,13 +355,23 @@ QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
 // ### Fixme
 QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/) const
 {
+  if ( month < 1 )
+    return QString::null;
+  if ( is_leap_year(year) )
+  {
+    if ( month > 13 )
+      return QString::null;
+  }
+  else if ( month > 12 )
+      return QString::null;
+
   // We must map conversion algorithm month index to real index
   if( month == 6 && is_leap_year(year) )
     month = 13; /*Adar I*/
   else if ( month == 7 && is_leap_year(year) )
     month = 14; /*Adar II*/
   else if ( month > 7 && is_leap_year(year) )
-    month--; //Becouse of Adar II
+    month--; //Because of Adar II
 
   switch(month)
   {
@@ -473,10 +523,15 @@ int KCalendarSystemHebrew::month(const QDate& date) const
   class h_date *sd = toHebrew(date);
 
   int month = sd->hd_mon;
-  if( month == 13 /*AdarI*/ )
-     month = 6;
-  else if( month == 14 /*AdarII*/ )
-     month = 7;
+  if ( is_leap_year( sd->hd_year ) )
+  {
+    if( month == 13 /*AdarI*/ )
+       month = 6;
+    else if( month == 14 /*AdarII*/ )
+       month = 7;
+    else if ( month > 6 && month < 13 )
+      ++month;
+  }
 
   return month;
 }
@@ -516,7 +571,7 @@ QDate KCalendarSystemHebrew::addMonths( const QDate & date, int nmonths ) const
 
   while ( nmonths < 0 )
   {
-    // get the number of days in the previous month to be consistent with 
+    // get the number of days in the previous month to be consistent with
     // addMonths where nmonths > 0
     int nDaysInMonth = daysInMonth(addDays(result, -day(result)));
     result = addDays(result, -nDaysInMonth);
@@ -568,4 +623,40 @@ QString KCalendarSystemHebrew::yearLiteral (int year) const
 QString KCalendarSystemHebrew::yearLiteral (const QDate & date) const
 {
    return yearLiteral(year(date));
+}
+
+QString KCalendarSystemHebrew::dayString(const QDate & pDate, bool bShort) const
+{
+  QString sResult;
+
+  // Only use hebrew numbers if the hebrew setting is selected
+  if (locale()->language() == QString::fromLatin1("he"))
+    sResult = num2heb(day(pDate), false);
+  else
+    sResult = KCalendarSystem::dayString(pDate, bShort);
+
+  return sResult;
+}
+
+QString KCalendarSystemHebrew::yearString(const QDate & pDate, bool bShort) const
+{
+  QString sResult;
+
+  // Only use hebrew numbers if the hebrew setting is selected
+  if (locale()->language() == QString::fromLatin1("he"))
+    sResult = num2heb(year(pDate), !bShort);
+  else
+    sResult = KCalendarSystem::yearString(pDate, bShort);
+
+  return sResult;
+}
+
+int KCalendarSystemHebrew::dayStringToInteger(const QString & sNum, int & iLength) const
+{
+  kdDebug() << "KCalendarSystemHebrew::dayStringToInteger: Not implemnted" << endl;
+}
+
+int KCalendarSystemHebrew::yearStringToInteger(const QString & sNum, int & iLength) const
+{
+  kdDebug() << "KCalendarSystemHebrew::yearStringToInteger: Not implemnted" << endl;
 }

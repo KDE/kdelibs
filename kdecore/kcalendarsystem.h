@@ -63,6 +63,24 @@ public:
   virtual int year (const QDate & date) const = 0;
 
   /**
+   * Converts a date into a year literal
+   *
+   * @param pDate The date to convert
+   * @param bShort If the short version of should be used
+   * @return The year literal of the date
+   */
+  virtual QString yearString(const QDate & pDate, bool bShort) const;
+
+  /**
+   * Converts a year literal of a part of a string into a integer starting at the begining of the string
+   *
+   * @param sNum The string to parse
+   * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
+   * @return An integer coresponding to the year
+   */
+  virtual int yearStringToInteger(const QString & sNum, int & iLength) const;
+
+  /**
    * Gets specific calendar type month for a given gregorian date
    *
    * @param date gregorian date
@@ -71,12 +89,48 @@ public:
   virtual int month (const QDate & date) const = 0;
 
   /**
+   * Converts a date into a month literal
+   *
+   * @param pDate The date to convert
+   * @param bShort If the short version of should be used
+   * @return The month literal of the date
+   */
+  virtual QString monthString(const QDate & pDate, bool bShort) const;
+
+  /**
+   * Converts a month literal of a part of a string into a integer starting at the begining of the string
+   *
+   * @param sNum The string to parse
+   * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
+   * @return An integer coresponding to the month
+   */
+  virtual int monthStringToInteger(const QString & sNum, int & iLength) const;
+
+  /**
    * Gets specific calendar type day number of month for a given date
    *
    * @param date gregorian date equivalent to the specific one
    * @return day of the month
    */
   virtual int day (const QDate & date) const = 0;
+
+  /**
+   * Converts a date into a day literal
+   *
+   * @param pDate The date to convert
+   * @param bShort If the short version of should be used
+   * @return The day literal of the date
+   */
+  virtual QString dayString(const QDate & pDate, bool bShort) const;
+
+  /**
+   * Converts a day literal of a part of a string into a integer starting at the begining of the string
+   *
+   * @param sNum The string to parse
+   * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
+   * @return An integer coresponding to the day
+   */
+  virtual int dayStringToInteger(const QString & sNum, int & iLength) const;
 
   /**
    * Gets specific calendar type number of day of week number for a given
