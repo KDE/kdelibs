@@ -272,7 +272,7 @@ public:
      * The popup direction changed tp @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
      **/
-    virtual void popupDirectionChange( Direction direction ) {}
+  virtual void popupDirectionChange( Direction /*direction*/ ) {}
     
 
  private:

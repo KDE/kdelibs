@@ -57,7 +57,7 @@ void KPanelApplet::slotSetOrientation(Orientation o)
 void KPanelApplet::slotSetPopupDirection(Direction d)
 {
   _dir = d;
-  emit popupDirectionChanged();
+  popupDirectionChange( d );
 }
 
 
