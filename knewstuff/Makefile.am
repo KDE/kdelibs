@@ -12,7 +12,7 @@ libknewstuff_la_SOURCES = engine.cpp entry.cpp downloaddialog.cpp \
 
 bin_PROGRAMS = ghns khotnewstuff
 
-ghns_LDFLAGS = $(all_libraries)
+ghns_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 ghns_LDADD   = libknewstuff.la
 ghns_SOURCES = ghns.cpp
 
