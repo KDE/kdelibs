@@ -1492,7 +1492,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ScrollBarExtent:
 			return loader.pixmap( "scrollbar-vbar-groove1" ).width();
 		case PM_ScrollBarSliderMin:
-			return loader.pixmap( "scrollbar-vbar-slider-small" ).height();
+			return loader.pixmap( "scrollbar-vbar-small-slider1" ).height();
 
 		case PM_DefaultFrameWidth:
 			return 1;
