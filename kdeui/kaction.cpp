@@ -1561,6 +1561,7 @@ KListAction::~KListAction()
 
 void KListAction::setCurrentItem( int index )
 {
+  KSelectAction::setCurrentItem( index );
   d->m_current = index;
 
   //  emit KAction::activated();
