@@ -3063,10 +3063,12 @@ void CopyJob::slotResult( Job *job )
             }
             if ( err )
             {
+                bool renaming = ( m_currentSrcURL.directory() == m_dest.directory() );
                 m_currentSrcURL=*m_currentStatSrc;
                 m_currentDestURL=m_dest;
 
-                if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+                if ( ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST ) && 
+		     renaming )
                 {
                     if (m_reportTimer)
                         m_reportTimer->stop();
