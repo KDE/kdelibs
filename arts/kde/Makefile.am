@@ -16,6 +16,6 @@ artskde.cc: artskde.h
 artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
 artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
-	    $(MCOPIDL) -I$(top_srcdir)/arts/soundserver -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
+	    $(MCOPIDL) -I$(top_srcdir)/arts/soundserver -I$(top_srcdir)/arts/flow -t $(top_srcdir)/arts/kde/artskde.idl
 
 DISTCLEANFILES = artskde.cc artskde.h artskde.mcoptype artskde.mcopclass
