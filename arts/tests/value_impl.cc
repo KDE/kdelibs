@@ -1,5 +1,7 @@
 #include "value.h"
 
+using namespace std;
+
 class FloatValue_impl : virtual public FloatValue_skel {
 private:
 	float _value;
