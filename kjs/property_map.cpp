@@ -22,7 +22,7 @@
 #include "property_map.h"
 
 #include "object.h"
-// ### #include "reference_list.h"
+#include "reference_list.h"
 
 #include <assert.h>
 
@@ -390,13 +390,13 @@ void PropertyMap::mark() const
     }
 }
 
-void PropertyMap::addEnumerablesToReferenceList(List &list, const Object &base) const
+void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, const Object &base) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
         if (key && !(_singleEntry.attributes & DontEnum))
-            list.append(Reference(base, Identifier(key).ustring()));
+            list.append(Reference(base, Identifier(key)));
 #endif
         return;
     }
@@ -404,11 +404,11 @@ void PropertyMap::addEnumerablesToReferenceList(List &list, const Object &base) 
     for (int i = 0; i != _table->size; ++i) {
         UString::Rep *key = _table->entries[i].key;
         if (key && !(_table->entries[i].attributes & DontEnum))
-            list.append(Reference(base, Identifier(key).ustring()));
+            list.append(Reference(base, Identifier(key)));
     }
 }
 
-void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Object &base) const
+void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, const Object &base) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -418,7 +418,7 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Obje
             bool fitsInULong;
             unsigned long i = k.toULong(&fitsInULong);
             if (fitsInULong && i <= 0xFFFFFFFFU)
-                list.append(Reference(base, Identifier(key).ustring()));
+                list.append(Reference(base, Identifier(key)));
         }
 #endif
         return;
@@ -431,7 +431,7 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Obje
             bool fitsInULong;
             unsigned long i = k.toULong(&fitsInULong);
             if (fitsInULong && i <= 0xFFFFFFFFU)
-                list.append(Reference(base, Identifier(key).ustring()));
+                list.append(Reference(base, Identifier(key)));
         }
     }
 }

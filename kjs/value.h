@@ -50,7 +50,6 @@ namespace KJS {
   class Object;
   class ObjectImp;
   class Reference;
-  class ReferenceImp;
   class List;
   class ListImp;
   class Completion;

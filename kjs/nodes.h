@@ -82,7 +82,7 @@ namespace KJS {
     /**
      * Evaluate this node and return the result, possibly a reference.
      */
-    virtual Reference2 evaluateReference(ExecState *exec) const;
+    virtual Reference evaluateReference(ExecState *exec) const;
     /**
      * Returns the value represented by this node. Always dereferenced.
      */
@@ -141,7 +141,7 @@ namespace KJS {
   protected:
     LabelStack ls;
   private:
-    Reference2 evaluateReference(ExecState* /*exec*/) const { return Reference2(); }
+    Reference evaluateReference(ExecState* /*exec*/) const { return Reference(0,Identifier::null); }
     int l0, l1;
     SourceCode *sourceCode;
     bool breakPoint;
@@ -217,7 +217,7 @@ namespace KJS {
   class ResolveNode : public Node {
   public:
     ResolveNode(const Identifier &s) : ident(s) { }
-    Reference2 evaluateReference(ExecState *exec) const;
+    Reference evaluateReference(ExecState *exec) const;
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -229,7 +229,7 @@ namespace KJS {
     GroupNode(Node *g) : group(g) { }
     virtual void ref();
     virtual bool deref();
-    Reference2 evaluateReference(ExecState *exec) const;
+    Reference evaluateReference(ExecState *exec) const;
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -316,7 +316,7 @@ namespace KJS {
     AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
     virtual void ref();
     virtual bool deref();
-    Reference2 evaluateReference(ExecState *exec) const;
+    Reference evaluateReference(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1;
@@ -328,7 +328,7 @@ namespace KJS {
     AccessorNode2(Node *e, const Identifier &s) : expr(e), ident(s) { }
     virtual void ref();
     virtual bool deref();
-    Reference2 evaluateReference(ExecState *exec) const;
+    Reference evaluateReference(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;

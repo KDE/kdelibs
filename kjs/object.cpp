@@ -96,12 +96,6 @@ void Object::setScope(const List &s)
     static_cast<ObjectImp*>(rep)->setScope(s);
 }
 
-// delme
-List Object::propList(ExecState *exec, bool recursive)
-{
-  return static_cast<ObjectImp*>(rep)->propList(exec,recursive);
-}
-
 // ------------------------------ ObjectImp ------------------------------------
 
 ObjectImp::ObjectImp(const Object &proto)
@@ -441,13 +435,12 @@ void ObjectImp::setScope(const List &s)
   _scope = static_cast<ListImp*>(s.imp());
 }
 
-List ObjectImp::propList(ExecState *exec, bool recursive)
+ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
 {
   // TODO: stop using old Reference class
-  List list;
+  ReferenceList list;
   if (_proto && _proto->type() == ObjectType && recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
-
 
   _prop.addEnumerablesToReferenceList(list, Object(this));
 
@@ -459,7 +452,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
       const HashEntry *e = info->propHashTable->entries;
       for (int i = 0; i < size; ++i, ++e) {
         if ( e->s && !(e->attr & DontEnum) )
-          list.append(Reference(Object(this), e->s)); /// ######### check for duplicates with the propertymap
+          list.append(Reference(this, e->s)); /// ######### check for duplicates with the propertymap
       }
     }
     info = info->parentClass;

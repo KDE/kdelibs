@@ -28,8 +28,7 @@
 namespace KJS {
 
     class Object;
-// ###     class ReferenceList;
-    class List;
+    class ReferenceList;
     class ValueImp;
     
     class SavedProperty;
@@ -71,8 +70,8 @@ namespace KJS {
         ValueImp *get(const Identifier &name, int &attributes) const;
 
         void mark() const;
-        void addEnumerablesToReferenceList(List &, const Object &) const;
-	void addSparseArrayPropertiesToReferenceList(List &, const Object &) const;
+        void addEnumerablesToReferenceList(ReferenceList &, const Object &) const;
+	void addSparseArrayPropertiesToReferenceList(ReferenceList &, const Object &) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);

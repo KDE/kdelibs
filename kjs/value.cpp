@@ -136,7 +136,9 @@ Identifier ValueImp::getPropertyName(ExecState * /*exec*/) const
     // string we should be on the safe side.
     return Identifier();
 
-  return Identifier((static_cast<const ReferenceImp*>(this))->getPropertyName());
+// fixme: remove this method
+  return Identifier();
+//   return Identifier((static_cast<const ReferenceImp*>(this))->getPropertyName());
 }
 
 // TODO: remove

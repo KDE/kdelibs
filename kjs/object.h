@@ -30,6 +30,7 @@
 
 #include "value.h"
 #include "types.h"
+#include "reference_list.h"
 #include "identifier.h"
 #include "property_map.h"
 
@@ -332,7 +333,7 @@ namespace KJS {
      * included in the list.
      * @return A List of References to properties of the object.
      **/
-    List propList(ExecState *exec, bool recursive = true);
+    ReferenceList propList(ExecState *exec, bool recursive = true);
 
     /**
      * Returns the internal value of the object. This is used for objects such
@@ -561,7 +562,7 @@ namespace KJS {
     const List scope() const;
     void setScope(const List &s);
 
-    List propList(ExecState *exec, bool recursive = true);
+    ReferenceList propList(ExecState *exec, bool recursive = true);
 
     Value internalValue() const;
     void setInternalValue(const Value &v);
@@ -705,8 +706,8 @@ namespace KJS {
 /*   inline void Object::setScope(const ScopeChain &s) */
 /*     { imp()->setScope(s); } */
 
-/*   inline ReferenceList Object::propList(ExecState *exec, bool recursive) */
-/*     { return imp()->propList(exec,recursive); } */
+  inline ReferenceList Object::propList(ExecState *exec, bool recursive)
+    { return imp()->propList(exec,recursive); }
 
   inline Value Object::internalValue() const
     { return imp()->internalValue(); }

@@ -149,30 +149,6 @@ namespace KJS {
   //                            Internal type impls
   // ---------------------------------------------------------------------------
 
-  // TODO: remove. replaced by light-weight new Reference2 class
-  class ReferenceImp : public ValueImp {
-  public:
-
-    ReferenceImp(const Value& v, const UString& p);
-    virtual ~ReferenceImp() { }
-    virtual void mark();
-
-    Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    Object toObject(ExecState *exec) const;
-
-    Value getBase() const { return Value(base); }
-    UString getPropertyName() const { return prop; }
-
-    Type type() const { return ReferenceType; }
-
-  private:
-    ValueImp *base;
-    UString prop;
-  };
-
   class CompletionImp : public ValueImp {
   public:
     Type type() const { return CompletionType; }
@@ -195,42 +171,6 @@ namespace KJS {
     ComplType comp;
     ValueImp * val;
     Identifier tar;
-  };
-
-  /**
-   * @internal
-   */
-  /* TODO: KDE 4.0: delete Reference in types.h and rename this one. */
-  class Reference2 {
-  public:
-    /**
-     * Constructs an invalid reference
-     */
-    Reference2() { }
-    /**
-     * Constructs an invalid reference containing a value instead.
-     */
-    Reference2(const Value& v) : bs(v) { }
-    /**
-     * Constructs an reference with the specified base and property.
-     */
-    Reference2(const Value& v, const Identifier& p) : bs(v), prop(p) { }
-
-    bool isValid() const { return bs.isValid() && !prop.isNull(); }
-
-
-    // ECMA 8.7.1
-    Value base() const { return Value(bs); }
-    // ECMA 8.7.2
-    Identifier propertyName() const { return prop; }
-
-    // ECMA 8.7.1
-    Value getValue(ExecState *exec) const;
-    void putValue(ExecState *exec, const Value& w);
-
-  private:
-    Value bs;
-    Identifier prop;
   };
 
   /**

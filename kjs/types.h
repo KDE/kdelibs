@@ -31,23 +31,6 @@
 
 namespace KJS {
 
-  /**
-   * @deprecated
-   */
-  /* TODO: KDE 4.0: remove this one rename Reference2 in internal.h. */
-  class Reference : public Value {
-  public:
-    Reference(const Object& b, const UString& p);
-    Reference(const Null& b, const UString& p);
-    Reference(ReferenceImp *v);
-    Reference(const Reference &v);
-    Reference(const Value& v);
-    virtual ~Reference();
-
-    Reference& operator=(const Reference &v);
-    static Reference dynamicCast(const Value &v);
-  };
-
   class List;
   class ListIterator;
   class ListNode;
