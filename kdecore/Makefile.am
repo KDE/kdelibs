@@ -58,8 +58,12 @@ kconfigbase.cpp: kconfigbase.moc
 kconfig.cpp: kconfig.moc
 ksimpleconfig.cpp: ksimpleconfig.moc
 
-con_DATA = charsets.config
-condir = $(kde_confdir)
+install-data-local: charsets.config
+	$(mkinstalldirs) $(kde_confdir)
+	$(INSTALL_DATA) charsets.config $(kde_confdir)/charsets
+
+uninstall-local:
+	-rm -f $(kde_confdir)/charsets
 
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
