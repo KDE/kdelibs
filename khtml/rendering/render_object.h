@@ -157,7 +157,7 @@ public:
     void setMinMaxKnown(bool b=true) {
 	m_minMaxKnown = b;
 	if ( !b ) {
-	    RenderObject *o = m_parent;
+	    RenderObject *o = this;
 	    while( o ) { // ### && !o->m_recalcMinMax ) {
 		o->m_recalcMinMax = true;
 		o = o->m_parent;
