@@ -55,31 +55,29 @@
 <!-- end of kde.remove.unused.elements -->]]>
 
 <!-- KDE Languages
-     To keep the language tags conform to RFC 1766 
-     (http://www.rfc-editor.org/rfc/rfc1766.txt)
+     To keep the language tags conform to RFC 3066 (successor to 1766)
+     (http://www.rfc-editor.org/rfc/rfc3066.txt)
      Syntax (RE): [a-zA-Z]{1,8}(-[a-zA-Z]{1,8})*
-     The compulsory part is either a language tag from ISO 639, "i"
-     (for IANA) or "x" (for private use, e.g. languages that are not
-     in ISO 639, like x-wa for Walloon).  The optional part may
-     consist of any value.  However, if the first repetition consists
-     of two letters, it must be an ISO 3166a2 country tag (so Nynorsk
-     cannot be indicated by no-NY or no-ny).
-     Official site for ISO 639-2: http://lcweb.loc.gov/standards/iso639-2/
 
-     Just one note in case you wondered why I don't follow: zh_CN.GB2312
-     and the like.  Simple: it's not a standard (see e.g.
-     http://language.perl.com/newdocs/pod/perllocale.html), and there are
-     PILES of variations on the theme.  Not what I want.  And anyway, 
-     personally, I speak a language, not a locale.
+     The compulsory part is either a language tag from ISO 639 (ISO
+     639-1 (2 character tag) if there is a tag, ISO 639-2/T (three
+     character tag) otherwise, "i" (for IANA) or "x" (for private use,
+     e.g. languages that are not in ISO 639, like x-wa for Walloon).
+     The optional part may consist of any value.  However, if the
+     first repetition consists of two letters, it must be an ISO
+     3166a2 country tag (so Nynorsk cannot be indicated by no-NY or
+     no-ny).
+     Official site for ISO 639-2: http://lcweb.loc.gov/standards/iso639-2/
+     For ISO 639-1, only the latest version (Feb 2000) counts!
  -->
 <!ENTITY % lang.attrib
         "lang           (af|az|bg|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
-                        |es|et|eu|fi|fr|ga|gl|he|hr|hu|id|is|it|ja|ko|lt|lv
-                        |mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT|ro|ru|si
-                        |sk|sl|sr|st|sv|ta|tg|th|tr|uk|vi|x-wa|xh|zh|zh-CN|zh-TW|zu)
+                        |es|et|eu|fa|fi|fo|fr|ga|gl|he|hr|hu|id|is|it|ja|ko
+                        |lt|lv|mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT
+                        |ro|ru|si|sk|sl|sr|st|sv|ta|te|tg|th|tr|uk|vi|x-wa
+                        |xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
 <!-- List of languages
-     An new version of ISO 639 is due quite soon; also RFC1766 may be replaced
      (Languages that only have a three-character code from 639-2, must use 
      that one)
 af      Afrikaans
@@ -98,7 +96,9 @@ eo      Esperanto
 es      Spanish
 et      Estonian
 eu      Basque
+fa      Farsi (? ok if = Persian)
 fi      Finnish
+fo      Faroese
 fr      French
 ga      Irish
 gl	Gallegan
@@ -132,6 +132,7 @@ sr      Serbian
 st	Sesotho (souther Sotho)
 sv      Swedish
 ta      Tamil
+te      Telugu
 tg	Tajik
 th      Thai
 tr      Turkish
