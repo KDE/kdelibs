@@ -72,6 +72,8 @@ ResourceSelectDialog::ResourceSelectDialog( QPtrList<Resource> list, QWidget *pa
   }
 
   mResourceId->setCurrentItem( 0 );
+  connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)), 
+           SLOT(accept()) );
 }
 /*
 ResourceSelectDialog::~ResourceSelectDialog()
