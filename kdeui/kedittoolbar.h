@@ -63,16 +63,14 @@ class KEditToolbarWidgetPrivate;
  *   saveMainWindowSettings( KGlobal::config(), "MainWindow" );
  *   KEditToolbar dlg(actionCollection());
  *   connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
- *   if (dlg.exec())
- *   {
- *      createGUI();
- *   }
+ *   dlg.exec();
  * }
  *
  * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
  *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
+ *    createGUI();
  * }
  * </pre>
  *
@@ -90,9 +88,14 @@ class KEditToolbarWidgetPrivate;
  * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
  * KEditToolbar dlg(factory());
  * connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
- * dlg.exec(); // Note that you shouldn't call createGUI(), so if() might not be even needed anymore
+ * dlg.exec();
  *
- * ... // See above for slotNewToolbarConfig
+ * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
+ * {
+ *    ...if you use any action list, use plugActionList on each here...
+ *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
+ *    // Do NOT call createGUI()!
+ * }
  * </pre>
  *
  * @short A dialog used to customize or configure toolbars.
