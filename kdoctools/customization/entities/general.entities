@@ -259,9 +259,9 @@
 <!ENTITY kpoker	"<application>KPoker</application>">
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
-<!ENTITY krayon	"<application>Krayon</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
+<!ENTITY krita	"<application>Krita</application>">
 <!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
 <!ENTITY kscd	"<application>Kscd</application>">
@@ -366,6 +366,7 @@
 <!ENTITY killustrator "<application>Kontour</application>">
 <!ENTITY kjezz  "<application>KBounce</application>">
 <!ENTITY kjezzball "<application>KBounce</application>">
+<!ENTITY krayon	"<application>Krayon</application>">
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY kvt	"<application>KVT</application>">
 <!ENTITY kwm	"<application>kwm</application>">
