@@ -4,11 +4,15 @@
 #include <qsplitter.h>
 
 #include <kapp.h>
+#include <kaction.h>
+#include <klocale.h>
 
 Shell::Shell( KPart *part1, KPart *part2 )
 {
   m_part1 = part1;
   m_part2 = part2;
+
+  (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "shell_quit" );
 
   m_manager = new KEmbedManager( this );
 
