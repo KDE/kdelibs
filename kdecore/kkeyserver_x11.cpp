@@ -791,6 +791,19 @@ static QString modToString( uint mod, bool bUserSpace )
 QString modToStringInternal( uint mod ) { return modToString( mod, false ); }
 QString modToStringUser( uint mod )     { return modToString( mod, true ); }
 
+uint stringUserToMod( const QString& mod )
+{
+	if( !g_bInitializedKKeyLabels )
+		intializeKKeyLabels();
+
+	QString s;
+	for( int i = KKey::MOD_FLAG_COUNT-1; i >= 0; i-- ) {
+		if( mod.lower() == g_rgModInfo[i].sLabel.lower())
+			return g_rgModInfo[i].mod;
+	}
+	return 0;
+}
+
 /*void keySymModToKeyX( uint sym, uint mod, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX )
 {
 ...

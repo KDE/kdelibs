@@ -123,7 +123,11 @@ bool KKey::init( const QString& sSpec )
 		else if( s == "alt" )  m_mod |= KKey::ALT;
 		else if( s == "win" )  m_mod |= KKey::WIN;
 		else if( s == "meta" ) m_mod |= KKey::WIN;
-		else break;
+		else {
+			uint m = KKeyServer::stringUserToMod( s );
+			if( m != 0 ) m_mod |= m;
+			else break;
+		}
 	}
 	// If there is one non-blank key left:
 	if( (i == rgs.size() - 1 && !rgs[i].isEmpty()) ) {

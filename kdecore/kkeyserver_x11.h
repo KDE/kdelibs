@@ -446,6 +446,14 @@ namespace KKeyServer
 	KDECORE_EXPORT QString modToStringUser( uint mod );
 
 	/**
+	 * Converts the modifier given as user-readable string
+         * to KKey::ModFlag modifier, or 0.
+         * @internal
+         * @since 3.5
+	 */
+	KDECORE_EXPORT uint stringUserToMod( const QString& mod );
+
+	/**
 	 * @internal
 	 * Unimplemented?
 	 */
