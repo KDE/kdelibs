@@ -292,6 +292,28 @@ namespace KParts
 
         }
 
+        /**
+         * This method creates and returns a plugin, from the trader query for a given serviceType.
+         *
+         * Example:
+         * \code
+         * KMyAppPlugin* plugin = KParts::ComponentFactory::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString::null, parentObject );
+         * if ( plugin ) {
+         *     ....
+         * }
+         * \endcode
+         *
+         * @param serviceType the type of service for which to find a plugin
+         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
+         * @param parent the parent object for the part itself
+         * @param name the name that will be given to the part
+         * @param args A list of string arguments, passed to the factory and possibly
+         *             to the component (see KLibFactory)
+         * @param error The int passed here will receive an error code in case of errors.
+         *              (See enum ComponentLoadingError)
+         * @return A pointer to the newly created object or a null pointer if the
+         *         factory was unable to create an object of the given type.
+         */
         template <class T>
         static T *createInstanceFromQuery( const QString &serviceType,
                                            const QString &constraint = QString::null,
@@ -319,13 +341,13 @@ namespace KParts
          * You can use this method to create a generic viewer - that can display any
          * kind of file, provided that there is a ReadOnlyPart installed for it - in 5 lines:
          * \code
-         *     // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
-         *     QString mimetype = KMimeType::findByURL( url )->name();
-         *     KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString::null, parentWidget, 0, parentObject, 0 );
-         *     if ( part ) {
-         *         part->openURL( url );
-         *         part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
-         *     }
+         * // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
+         * QString mimetype = KMimeType::findByURL( url )->name();
+         * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString::null, parentWidget, 0, parentObject, 0 );
+         * if ( part ) {
+         *     part->openURL( url );
+         *     part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
+         * }
          * \endcode
          *
          * @param serviceType the type of service for which to find a part, e.g. a mimetype
