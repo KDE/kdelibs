@@ -671,7 +671,6 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     	distmax=0;	
 
     bool hasUsableCols=false;
-    bool hasRelPer=false;
     int tmax=distmax;
     int tmin=distmin;
     int c;
@@ -680,15 +679,13 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     {
     	if (colType[c]<=type)
 	    hasUsableCols=true;
-	if (colType[c]==Relative || colType[c]==Percent)
-	    hasRelPer=true;
     }
 
     if (hasUsableCols)
     {
     	// spread span maxWidth evenly
 	c=col;
-	while(tmax && !hasRelPer)
+	while(tmax)
 	{
 	    if (colType[c]<=type)
 	    {
@@ -705,7 +702,6 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 		c=col;
 	}
 	
-
     	// spread span minWidth 
 
     	LengthType tt = Variable;
@@ -741,7 +737,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 		c=col;
 	    }
 	}
-
+	
 	for (int c=col; c < col+span ; ++c)
 	    colMaxWidth[c]=MAX(colMinWidth[c],colMaxWidth[c]);	    	
 		
@@ -782,15 +778,15 @@ void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
     else
     {	
 	int spreadmin = smin-oldmin-(span-1)*spacing;
-	int spreadmax = smax-oldmax-(span-1)*spacing;
+//	int spreadmax = smax-oldmax-(span-1)*spacing;
 	//printf("spreading span %d,%d\n",spreadmin, spreadmax);
 	spreadSpanMinMax
-	    (c, span, spreadmin, spreadmax, col->type);
+	    (c, span, spreadmin, 0 , col->type);
     }
 
 }
 
-void HTMLTableElementImpl::calcPercentRelativeMax(int c, ColInfo* col)
+void HTMLTableElementImpl::calcFinalColMax(int c, ColInfo* col)
 {
 #ifdef TABLE_DEBUG
     printf("HTMLTableElementImpl::calcPercentRelativeMax()\n");
@@ -805,8 +801,14 @@ void HTMLTableElementImpl::calcPercentRelativeMax(int c, ColInfo* col)
 	oldmin+=colMinWidth[o];
     }
 
-    int smax=0;
-    if (col->type == Percent)
+    int smin = col->min;
+    int	smax = col->max;
+    
+    if (col->type==Fixed)
+    {
+    	smax = MAX(smin,col->value);    
+    }
+    else if (col->type == Percent)
     {
     	smax = width * col->value / MAX(100,totalPercent);
     }
@@ -996,11 +998,13 @@ void HTMLTableElementImpl::calcColMinMax()
     	    ColInfo* col;
     	    col = spanCols->at(c);
 
-	    if (!col || col->span==0 ||
-	    	col->type==Fixed || col->type==Variable)
+	    if (!col || col->span==0)
 		continue;
+	    if ((col->type==Fixed || col->type==Variable)
+	    	&& col->span<2)
+	    continue;
 
-	    calcPercentRelativeMax(c, col);
+	    calcFinalColMax(c, col);
 
 	}
 	
