@@ -37,7 +37,7 @@
 
 #include <kurl.h>
 
-#include <saslmodule.h>
+#include <kio/ksasl/saslmodule.h>
 
 /**
   * Provides a generic client side authentication API suitable for use 

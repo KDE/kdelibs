@@ -9,7 +9,7 @@ libksasl_la_LDFLAGS = -module $(KDE_PLUGIN)
 libksasl_la_LIBADD = $(LIB_KSYCOCA)
 libksasl_la_SOURCES = saslcontext.cpp
 
-ksaslincludedir = $(includedir)/kio/sasl
+ksaslincludedir = $(includedir)/kio/ksasl
 ksaslinclude_HEADERS = saslcontext.h saslmodule.h
 
 kde_servicetypes_DATA = ksasl.desktop
