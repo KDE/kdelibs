@@ -702,14 +702,10 @@ void KSpell::checkList3a (KProcIO *)
 		if (e==REPLACE)
 		  {
 		    QString old = *(--wlIt); wlIt++;
-
-		    // replace word
-		    checkList3();
-
-		    // inform application
 		    dlgreplacement=word;   
+		    checkList3();
+		    // inform application  
 		    emit corrected (old, *(--wlIt), lastpos); wlIt++;
-
 		  }
 		else
 		  {
@@ -758,16 +754,11 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      
-      old = *(--wlIt); wlIt++;
-
       kdDebug(750) << "KS: cklist4: lastpos: " << lastpos << endl;
-
+      old = *(--wlIt); wlIt++;
       // replace word
       checkList3();
-
       emit corrected (old, *(--wlIt), lastpos); wlIt++;
-
       break;
     case KS_CANCEL:
       ksdlg->hide();
