@@ -1,3 +1,8 @@
+1998-05-15  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfocontents.cpp: some more changes and speed ups 
+	(caching and some other little things)
+
 1998-05-14  Stephan Kulow  <coolo@kde.org>
 
 	* kfileinfocontents.cpp: added addItemList 

@@ -68,9 +68,9 @@ KFileInfo::KFileInfo(const QFileInfo &e)
 
 KFileInfo::KFileInfo(const char *dir, const char *name)
 {
-    struct stat buf;
     myName = name;
     myBaseURL = dir;
+    struct stat buf;
 
     if (lstat(dir + myName, &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
@@ -111,6 +111,7 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
 	myPermissions = 0;
 	parsePermissions(myPermissions);
     }
+
 }
 
 KFileInfo::~KFileInfo()

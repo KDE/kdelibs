@@ -31,12 +31,16 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     : QTableView(parent, name), KFileInfoContents(s,sorting), cellWidths(0)
 {
     QWidget::setFocusPolicy(QWidget::StrongFocus);
+    width_max = 100;
+    width_length = 0;
+    width_array = new uint[width_max];
     setLineWidth( 2 );
     setFrameStyle( Panel | Sunken );
     setNumCols(1);
     setNumRows(1);
     rowsVisible = 1;
     curCol = curRow = 0;
+    
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
     setTableFlags(Tbl_autoHScrollBar |
@@ -48,10 +52,12 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
 KFileSimpleView::~KFileSimpleView()
 {
     delete [] cellWidths;
+    delete [] width_array;
 }
 
 void KFileSimpleView::setNumCols(int count)
 {
+    // debug("setNumCols %d", count);
     delete [] cellWidths;
     cellWidths = new int[count];
     for (int i = 0; i < count; i++)
@@ -115,6 +121,7 @@ void KFileSimpleView::clearView()
     setNumCols(1);
     pixmaps.clear();
     curCol = curRow = hasFocus() ? 0 : -1;
+    width_length = 0;
 }
 
 void KFileSimpleView::paintCell( QPainter *p, int row, int col)
@@ -213,7 +220,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 
 bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 {
-    if (numCols() * rowsVisible < count())
+  if (numCols() * rowsVisible < count())
 	setNumCols(numCols() + 1);
     
     if (i->isDir()) {
@@ -232,18 +239,22 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 
     for (int j = curCol; j < numCols(); j++)
       cellWidths[ j ] = -1; // reset values
+
+    uint size = fontMetrics().width( i->fileName() );
+    insertArray(size, index);
     
     return colIsVisible(curCol) || curCol < leftCell() ;
 }
 
 int KFileSimpleView::cellWidth ( int col )
 {
+  // debug("cellWidth %d", col);
     if (cellWidths[col] == -1) {
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
 	for (uint j = 0; j < rowsVisible; j++) {
-	    int w = fontMetrics().width( text(offset + j) );
+	    int w = width_array[offset + j];
 	    if (width < w)
 		width = w;
 	}
@@ -330,6 +341,38 @@ void KFileSimpleView::focusInEvent ( QFocusEvent * )
 void KFileSimpleView::focusOutEvent ( QFocusEvent * ) 
 {
     updateCell( curRow, curCol );  
+}
+
+void KFileSimpleView::insertArray(uint item, uint pos)
+{
+   //  debug("insert %s %d", item->fileName(), pos);
+    if (width_length == width_max) {
+	width_max *= 2;
+	uint *newArray = new uint[width_max];
+	int found = 0;
+	for (uint j = 0; j < width_length; j++) {
+	    if (j == pos) {
+		found = 1;
+		newArray[j] = item;
+	    }
+	    newArray[j+found] = width_array[j];
+	}
+	if (!found)
+	    newArray[pos] = item;
+	
+	delete [] width_array;
+	width_array = newArray;
+	width_length++;
+	return;
+    }
+    
+    // faster repositioning (very fast :)
+    memmove(width_array + pos+1,
+	    width_array + pos,
+	    (width_max - 1 - pos) * sizeof(uint));
+    
+    width_array[pos] = item;
+    width_length++;
 }
 
 #include "kfilesimpleview.moc"

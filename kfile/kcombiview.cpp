@@ -92,9 +92,9 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
     int pan = kapp->getConfig()->readNumEntry("PannerPosition", 30);
     setSeparatorPos(pan);
 
-    dirList->connectDirSelected(this, SLOT(dirActivated()));
-    fileList->connectFileSelected(this, SLOT(fileActivated()));
-    fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
+    dirList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
+    fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo*)));
+    fileList->connectFileHighlighted(this, SLOT(fileHighlighted(KFileInfo*)));
 }
 
 KCombiView::~KCombiView() 

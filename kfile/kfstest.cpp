@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
 	break;
     case Normal:
-	name1 = KFileDialog::getOpenFileURL(QDir::homeDirPath() + "/full", "*");
+	name1 = KFileDialog::getOpenFileURL(QDir::homeDirPath() + "/", "*");
         break;
     case Preview:
         // this is how you activate the new preview module

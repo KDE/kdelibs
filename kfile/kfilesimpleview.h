@@ -64,7 +64,10 @@ protected:
     QList<QPixmap> pixmaps;
     // this flag is used for speed up, when autoUpdate is false
     bool touched;
-
+    uint *width_array;
+    uint width_length;
+    uint width_max;
+    void insertArray(uint item, uint pos);
 };
 
 #endif // KFILESIMPLEVIEW_H

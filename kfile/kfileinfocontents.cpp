@@ -101,7 +101,7 @@ void KFileInfoContents::addItemList(const KFileInfoList *list)
     
     bool repaint_needed = false;
     KFileInfoListIterator it(*list);
-    for (; it.current(); it++) {
+    for (; it.current(); ++it) {
 	debugC("insert %s", it.current()->fileName());
 	repaint_needed |= addItem(it.current());
     }
@@ -276,7 +276,7 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 
 int KFileInfoContents::findPosition(const KFileInfo *i, int left)
 {
-    int pos = -1;
+    int pos = left;
     int right = sorted_length - 1;
 
     while (left < right-1) {
@@ -297,23 +297,25 @@ int KFileInfoContents::findPosition(const KFileInfo *i, int left)
     if (pos == -1)
 	pos = sorted_length;
 
+    debugC("findPosition %s %d", i->fileName(), pos);
     return pos;
 }
 
 bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 {
     int pos = -1;
-    
+
     if ( sorted_length > 1 && mySorting != QDir::Unsorted) {
 	// insertation using log(n)
 	pos = findPosition(i, 0);
     } else {
-	if (sorted_length == 1 && compareItems(i, sortedArray[0]) > 0)
-	    pos = 1;
+	if (sorted_length == 1 && compareItems(i, sortedArray[0]) < 0)
+	    pos = 0;
 	else
 	    pos = sorted_length;
     }
-    
+    debugC("insertItem %s %d %d", i->fileName(), pos, sorted_length);
+
     insertSortedItem(i, pos); 
     return insertItem(i, pos);
 } 

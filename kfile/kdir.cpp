@@ -35,7 +35,7 @@
 **
 */
 
-uint KDir::maxReturns = 10;
+uint KDir::maxReturns = 100;
 
 KDir::KDir()
     : QObject(0, "KDir")
@@ -328,7 +328,7 @@ bool KDir::match(const char *filter, const char *name)
 
 bool KDir::filterEntry(KFileInfo *i)
 {
-    if (i->fileName() == "..")
+    if (!strcmp(i->fileName(), ".."))
 	return !root; 
 
     if (!(myFilterSpec & QDir::Hidden) && i->fileName()[0] == '.')

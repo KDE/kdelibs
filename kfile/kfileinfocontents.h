@@ -89,7 +89,7 @@ public:
       * @return true, if a repaint is necessary
       * @param item the file to be inserted
       **/
-    bool addItem(const KFileInfo *item);
+    virtual bool addItem(const KFileInfo *item);
 
     /**
      * inserts a list of items. This is an speed optimized version of 

@@ -124,7 +124,7 @@ public:
 protected:
     void parsePermissions(const char *perms);
     void parsePermissions(uint perm);
-
+    
 private:
     QString myName;
     QString myBaseURL;
