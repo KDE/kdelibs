@@ -509,23 +509,27 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  // First, let's check for well-known extensions (if the protocol setting
-  // "mimetypefastmode" allows it. This is not always true, for instance with
-  // HTTP where <a href="http://foo.org/some_script.pl"> doesn't mean application/x-perl !
-  if ( KProtocolManager::self().mimetypeFastMode( m_strURL.protocol() ) )
+  // First, let's check for well-known extensions 
+  // Not when there is a query in the URL, in any case.
+  if ( m_strURL.query().isEmpty() )
   {
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
     assert( mime );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
-      kdDebug(7010) << "Scanfile: MIME TYPE is " << debugString(mime->name()) << endl;
-      foundMimeType( mime->name() );
-      return;
+      // Found something - can we trust it ? (see mimetypeFastMode)
+      if ( KProtocolManager::self().mimetypeFastMode( m_strURL.protocol(), mime->name() ) )
+      {
+        kdDebug(7010) << "Scanfile: MIME TYPE is " << debugString(mime->name()) << endl;
+        foundMimeType( mime->name() );
+        return;
+      }
     }
   }
 
   // No mimetype found, and the URL is not local  (or fast mode not allowed).
-  // We need to get some data out of the file, to know what mimetype it is.
+  // We need to apply the 'KIO' method, i.e. either asking the server ot
+  // getting some data out of the file, to know what mimetype it is.
 
   if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
   {

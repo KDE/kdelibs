@@ -4,5 +4,6 @@ protocol=https
 input=none
 output=filesystem
 reading=true
-mimetypefastmode=false
+mimetypesExcludedFromFastMode=application/x-executable,application/x-perl,applicat
+ion/x-python,application/x-python-bytecode,application/x-shellscript
 
