@@ -7,7 +7,7 @@
 <xsl:include href="kde-ttlpg.xsl"/>
 <xsl:include href="kde-style.xsl"/>
 
-<xsl:variable name="KDE_VERSION">1.10</xsl:variable> 
+<xsl:variable name="KDE_VERSION">1.11</xsl:variable> 
 
 <xsl:template name="make-relative-filename">
   <xsl:param name="base.dir" select="'./'"/>
@@ -36,9 +36,11 @@
 </xsl:template>
 
 <xsl:param name="use.id.as.filename">1</xsl:param>
-<xsl:param name="generate.section.toc">1</xsl:param>
+<xsl:param name="generate.section.toc">0</xsl:param>
 <xsl:param name="use.extensions">0</xsl:param>
+<xsl:param name="admon.graphics">1</xsl:param>
 <xsl:param name="html.stylesheet">common/kde-default.css</xsl:param>
+<xsl:param name="admon.graphics.path">common/</xsl:param>
 
 <xsl:template name="dbhtml-filename">
 <xsl:choose>

@@ -74,7 +74,7 @@ style="position : absolute;
      <tr>
        <td align="left" class="left">
           <xsl:if test="count($prev)>0">
-              <a>
+              <a accesskey="p">
                 <xsl:attribute name="href">
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$prev"/>
@@ -95,7 +95,7 @@ style="position : absolute;
        </td>
        <td align="right" class="right">
 	   <xsl:if test="count($next)>0">
-              <a>
+              <a accesskey="n">
                 <xsl:attribute name="href">
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$next"/>
