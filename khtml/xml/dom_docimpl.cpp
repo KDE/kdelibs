@@ -1560,6 +1560,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
     else if (strcasecmp(equiv, "default-style") == 0) {
         // HTML 4.0 14.3.2
+        // http://www.hixie.ch/tests/evil/css/import/main/preferred.html
         m_preferredStylesheetSet = content;
         updateStyleSelector();
     }
@@ -1746,7 +1747,9 @@ void DocumentImpl::recalcStyleSelector()
                         if (sheet || l->isLoading() || l->isAlternate() )
                             title = l->getAttribute(ATTR_TITLE).string();
 
-                        if (!l->isAlternate() && !title.isEmpty() && sheetUsed.isEmpty())
+                        if (!title.isEmpty() &&
+                            ( (!l->isAlternate() && sheetUsed.isEmpty()) ||
+                              m_preferredStylesheetSet == title))
                             sheetUsed = view()->part()->d->m_sheetUsed = title;
                     }
                 }
