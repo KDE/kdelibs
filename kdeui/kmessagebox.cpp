@@ -318,7 +318,7 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
 {
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return true;
-    KConfig *config = KGlobal::config();
+    KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     QString dontAsk = config->readEntry(dontShowAgainName).lower();
     if (dontAsk == "yes") {
@@ -337,7 +337,7 @@ KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
 {
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return true;
-    KConfig *config = KGlobal::config();
+    KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     return config->readBoolEntry(dontShowAgainName,  true);
 }
@@ -348,7 +348,7 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
 {
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return;
-    KConfig *config = KGlobal::config();
+    KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no");
     config->sync();
@@ -359,12 +359,18 @@ KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
 {
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return;
-    KConfig *config = KGlobal::config();
+    KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, false);
     config->sync();
 }
 
+KConfig* KMessageBox::againConfig = NULL;
+void
+KMessageBox::setDontShowAskAgainConfig(KConfig* cfg)
+{
+  againConfig = cfg;
+}
 
 int
 KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
@@ -893,35 +899,45 @@ KMessageBox::about(QWidget *parent, const QString &text,
 
 int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text,
                              const QString &caption, const KGuiItem &buttonYes,
+                             const KGuiItem &buttonNo, const QString &dontShowAskAgainName,
+                             int options )
+{
+    return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
+        buttonYes, buttonNo, dontShowAskAgainName, options );
+}
+
+int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text,
+                             const QString &caption, const KGuiItem &buttonYes,
                              const KGuiItem &buttonNo, int options )
 {
     return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
-        buttonYes, buttonNo, options );
+        buttonYes, buttonNo, QString::null, options );
 }
 
 int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &text,
                              const QString &caption, const KGuiItem &buttonYes,
-                             const KGuiItem &buttonNo, int options )
+                             const KGuiItem &buttonNo, const QString &dontShow,
+                             int options )
 {
     switch (type) {
         case QuestionYesNo:
             return KMessageBox::questionYesNoWId( parent_id,
-                                               text, caption, buttonYes, buttonNo, QString::null, options );
+                                               text, caption, buttonYes, buttonNo, dontShow, options );
         case QuestionYesNoCancel:
             return KMessageBox::questionYesNoCancelWId( parent_id,
-                                               text, caption, buttonYes, buttonNo, QString::null, options );
+                                               text, caption, buttonYes, buttonNo, dontShow, options );
         case WarningYesNo:
             return KMessageBox::warningYesNoWId( parent_id,
-                                              text, caption, buttonYes, buttonNo, QString::null, options );
+                                              text, caption, buttonYes, buttonNo, dontShow, options );
         case WarningContinueCancel:
             return KMessageBox::warningContinueCancelWId( parent_id,
-                                              text, caption, buttonYes.text(), QString::null, options );
+                                              text, caption, buttonYes.text(), dontShow, options );
         case WarningYesNoCancel:
             return KMessageBox::warningYesNoCancelWId( parent_id,
-                                              text, caption, buttonYes, buttonNo, QString::null, options );
+                                              text, caption, buttonYes, buttonNo, dontShow, options );
         case Information:
             KMessageBox::informationWId( parent_id,
-                                      text, caption, QString::null, options );
+                                      text, caption, dontShow, options );
             return KMessageBox::Ok;
 
         case Error:
@@ -944,7 +960,7 @@ void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QSt
 {
    KMessageBox_queue = true;
    (void) messageBoxWId(parent_id, type, text, caption, KStdGuiItem::yes(),
-                     KStdGuiItem::no(), options);
+                     KStdGuiItem::no(), QString::null, options);
    KMessageBox_queue = false;
 }
 

@@ -26,6 +26,7 @@
 
 class QWidget;
 class QStringList;
+class KConfig;
 
  /**
   * Easy message dialog box.
@@ -865,11 +866,43 @@ public:
      *                  The default is i18n("&Yes").
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
+     * @param dontShowAskAgainName If provided, a checkbox is added with which
+     *                further questions/informations can be turned off. If turned off
+     *                all questions will be automatically answered with the
+     *                last answer (either Yes or No), if the message box needs an answer.
+     *                The string is used to lookup and store the setting
+     *                in the applications config file.
      * @param options  see OptionsType
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox.
      */
+    static int messageBox( QWidget *parent, DialogType type, const QString &text,
+                    const QString &caption,
+                    const KGuiItem &buttonYes,
+                    const KGuiItem &buttonNo,
+                    const QString &dontShowAskAgainName,
+                    int options = Notify);
+
+    /**
+     * Alternate method to show a messagebox:
+     *
+     * @param parent  If @p parent is 0, then the message box becomes an
+     *                application-global modal dialog box. If @p parent is a
+     *                widget, the message box becomes modal relative to parent.
+     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     * @param text Message string.
+     * @param caption Message box title.
+     * @param buttonYes The text for the first button.
+     *                  The default is i18n("&Yes").
+     * @param buttonNo  The text for the second button.
+     *                  The default is i18n("&No").
+     * @param options  see OptionsType
+     * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
+     *       and for Information, none is used.
+     * @return a button code, as defined in KMessageBox.
+     */
+    // KDE4 - merge with above?
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString::null,
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
@@ -885,6 +918,7 @@ public:
                     const QString &caption = QString::null,
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
+                    const QString &dontShowAskAgainName = QString::null,
                     int options = Notify);
 
     /**
@@ -968,6 +1002,13 @@ public:
      * empty, this method does nothing.
      */
     static void saveDontShowAgainContinue(const QString &dontShowAgainName);
+
+    /**
+     * @internal used by kdialog utility
+     */    
+    static void setDontShowAskAgainConfig(KConfig* cfg);
+private:
+    static KConfig* againConfig;
 };
 
 #endif
