@@ -1,5 +1,8 @@
 2003-11-07  Dirk Mueller  <mueller@kde.org>
 
+	* css/css_valueimpl.cpp (cssText): wrap uri's into url(). 
+	Stephan Kulow noted that other browsers do that.
+
 	* rendering/render_list.h (class RenderListItem): another 
 	SunCC incompatibility fixed. Only applies to HEAD (*phew*).
 
