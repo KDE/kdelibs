@@ -65,3 +65,43 @@ QStringList KMFilterManager::filterList()
 	}
 	return m_flist;
 }
+
+int KMFilterManager::insertFilter(QStringList& list, const QString& filtername, bool defaultToStart)
+{
+	int	pos(0);
+	KPrintFilter	*f1(filter(filtername)), *f2(0);
+	if (f1 && f1->inputMimeTypes().count() > 0)
+	{
+		QString	mimetype = f1->inputMimeTypes()[0];
+		for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it, pos++)
+		{
+			f2 = filter(*it);
+			if (f2->acceptMimeType(f1->mimeType()) && f1->acceptMimeType(mimetype))
+			{
+				list.insert(it, filtername);
+				break;
+			}
+			else
+			{
+				mimetype = f2->mimeType();
+				delete f2;
+				f2 = 0;
+			}
+		}
+		if (pos == list.count())
+		{
+			if (list.count() == 0 || f1->acceptMimeType(mimetype))
+				list.append(filtername);
+			else if (defaultToStart)
+			{
+				pos = 0;
+				list.prepend(filtername);
+			}
+			else
+				pos = -1;
+		}
+	}
+	delete f1;
+	delete f2;
+	return pos;
+}

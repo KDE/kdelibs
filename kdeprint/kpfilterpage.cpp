@@ -119,10 +119,19 @@ void KPFilterPage::slotAddClicked()
 	QString	choice = QInputDialog::getItem(i18n("Add filter"),i18n("Select the filter to add"),l,0,false,&ok,this);
 	if (ok)
 	{
-		int	index = m_filters.findIndex(choice)-1;
+		int		index = m_filters.findIndex(choice)-1;
 		KPrintFilter	*filter = KMFactory::self()->filterManager()->filter(m_filters[index]);
+		QStringList	filters = activeList();
+		int		pos = KMFactory::self()->filterManager()->insertFilter(filters, filter->idName());
+		QListViewItem	*prev(0);
+		if (pos > 0)
+		{
+			prev = m_view->firstChild();
+			for (int i=1;prev && i<pos;i++)
+				prev = prev->nextSibling();
+		}
 		m_activefilters.insert(filter->idName(),filter);
-		QListViewItem	*item = new QListViewItem(m_view,choice,filter->idName());
+		QListViewItem	*item = new QListViewItem(m_view, prev, choice, filter->idName());
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
@@ -219,26 +228,29 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 
 void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	QString	val;
-	if (m_view->childCount() > 0)
+	QStringList	filters = activeList();
+	for (QStringList::ConstIterator it=filters.begin(); it!=filters.end(); ++it)
 	{
-		QListViewItem	*item = m_view->firstChild();
-		while (item)
-		{
-			KPrintFilter	*filter = m_activefilters.find(item->text(1));
-			if (filter)
-			{
-				val.append(item->text(1)).append(",");
-				filter->getOptions(opts,incldef);
-			}
-			item = item->nextSibling();
-		}
+		KPrintFilter	*f = m_activefilters.find(*it);
+		if (f)
+			f->getOptions(opts, incldef);
 	}
-	if (!val.isEmpty() || incldef)
+	if (filters.count() > 0 || incldef)
 	{
-		val.truncate(val.length()-1);
-		opts["_kde-filters"] = val;
+		opts["_kde-filters"] = filters.join(",");
 	}
+}
+
+QStringList KPFilterPage::activeList()
+{
+	QStringList	list;
+	QListViewItem	*item = m_view->firstChild();
+	while (item)
+	{
+		list.append(item->text(1));
+		item = item->nextSibling();
+	}
+	return list;
 }
 
 KPrintFilter* KPFilterPage::currentFilter()

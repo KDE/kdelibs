@@ -33,6 +33,7 @@ public:
 
 	KPrintFilter* filter(const QString& idname);
 	QStringList filterList();
+	int insertFilter(QStringList& list, const QString& filter, bool defaultToStart = true);
 
 private:
 	QStringList	m_flist;

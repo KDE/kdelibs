@@ -237,7 +237,11 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool)
 	{
 		int	nup(ID == NUP_2 ? 2 : 4);
 		if (s.find("psnup") == -1)
-			s.prepend("psnup,");
+		{
+			QStringList	fl = QStringList::split(',', s, false);
+			KMFactory::self()->filterManager()->insertFilter(fl, "psnup");
+			s = fl.join(",");
+		}
 		opts["_kde-psnup-nup"] = QString::number(nup);
 	}
 	opts["_kde-filters"] = s;

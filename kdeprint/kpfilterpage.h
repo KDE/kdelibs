@@ -53,6 +53,7 @@ protected:
 	KPrintFilter* currentFilter();
 	void checkFilterChain();
 	void updateInfo();
+	QStringList activeList();
 
 private:
 	KListView		*m_view;
