@@ -29,7 +29,6 @@
 
 #include <kurl.h>
 #include <kfileitem.h>
-#include <kfilepreview.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
 #include <kfile.h>
