@@ -710,33 +710,39 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			}
 		}
 	}
-
-	// Search for shortcut conflicts with other actions in the
-	//  lists we're configuring.
-	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
-		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
-		if( pItem2 && pItem2 != pItem ) {
-			int iSeq = keyConflict( cut, pItem2->shortcut() );
-			if( iSeq > -1 ) {
-				if( bWarnUser )
-					_warning( cut.seq(iSeq), pItem2->text(0), i18n("Key Conflict") );
-				return true;
-			}
-		}
-	}
+        
+        if( isKeyPresentLocally( cut, pItem, bWarnUser ? i18n("Key Conflict") : QString::null ))
+            return true;
 
         // check also other Global KKeyChooser's
         if( m_type == Global && globalChoosers != NULL ) {
             for( QValueList< KKeyChooser* >::ConstIterator it = globalChoosers->begin();
                  it != globalChoosers->end();
                  ++it ) {
-                // this will also again check standard accels etc. and display wrong dialog title, but who cares 
-                if( (*it)->isKeyPresent( cut, bWarnUser )) {
+                if( (*it) != this && (*it)->isKeyPresentLocally( cut, NULL,
+                    bWarnUser ? i18n("Key Conflict") : QString::null))
                     return true;
-                }
             }
         }
 	return false;
+}
+
+bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
+{
+	// Search for shortcut conflicts with other actions in the
+	//  lists we're configuring.
+	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
+		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
+		if( pItem2 && pItem2 != ignoreItem ) {
+			int iSeq = keyConflict( cut, pItem2->shortcut() );
+			if( iSeq > -1 ) {
+				if( !warnText.isNull() )
+					_warning( cut.seq(iSeq), pItem2->text(0), warnText );
+				return true;
+			}
+		}
+	}
+        return false;            
 }
 
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )

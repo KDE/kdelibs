@@ -39,6 +39,7 @@ class KGlobalAccel;
 class KKeySequence;
 class KShortcut;
 class KShortcutList;
+class KKeyChooserItem;
 
 /**
  * Configure dictionaries of key/action associations for KAccel and
@@ -122,6 +123,7 @@ class KKeyChooser : public QWidget
 	 */
 	void setPreferFourModifierKeys( bool preferFourModifierKeys );
 
+ // KDE4 a lot of stuff in this class should be probably private:
  protected:
 	enum { NoKey = 1, DefaultKey, CustomKey };
 
@@ -138,6 +140,7 @@ class KKeyChooser : public QWidget
 	void fontChange( const QFont& _font );
 	void setShortcut( const KShortcut& cut );
 	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
+        bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText );
 	void _warning( const KKeySequence& seq, QString sAction, QString sTitle );
 
  protected slots:
