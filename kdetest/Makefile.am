@@ -30,7 +30,8 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
-		kcharsetstest kledtest kcontainertest klocaletest krulertest
+		kcharsetstest kledtest kcontainertest klocaletest krulertest \
+		knotebooktest kwizardtest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -88,6 +89,8 @@ kledtest_SOURCES = kledtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 kcontainertest_SOURCES = kcontainertest.cpp
 krulertest_SOURCES = krulertest.cpp
+knotebooktest_SOURCES = knotebooktest.cpp
+kwizardtest_SOURCES = kwizardtest.cpp
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
