@@ -7,6 +7,8 @@
 package org.kde.kjas.server;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.awt.Toolkit;
+import java.awt.Image;
 
 /**
  *
@@ -22,7 +24,15 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
         java.io.PrintStream st = new java.io.PrintStream( new KJASConsoleStream(this) );
         System.setOut(st);
         System.setErr(st);
-        
+        try {
+            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/beanicon.png");
+            if (iconUrl != null) {
+                Toolkit tk = Toolkit.getDefaultToolkit();
+                Image icon = tk.createImage(iconUrl);
+                setIconImage(icon);
+            }
+        } catch (Throwable e) {
+        }
         System.out.println( "Java VM version: " +
                             System.getProperty("java.version") );
         System.out.println( "Java VM vendor:  " +
