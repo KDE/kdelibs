@@ -66,7 +66,7 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
      d->docState  = args.d->docState;
   }
   return *this;
-}  
+}
 
 
 URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
@@ -195,4 +195,49 @@ QMap<QCString,QCString> BrowserExtension::actionSlotMap()
   //res.insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
 
   return res;
+}
+
+namespace KParts
+{
+
+class BrowserHostExtension::BrowserHostExtensionPrivate
+{
+public:
+  BrowserHostExtensionPrivate()
+  {
+  }
+  ~BrowserHostExtensionPrivate()
+  {
+  }
+
+  KParts::ReadOnlyPart *m_part;
+};
+
+};
+
+BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent, const char *name )
+ : QObject( parent, name )
+{
+  d = new BrowserHostExtensionPrivate; 
+  d->m_part = parent;
+}
+
+BrowserHostExtension::~BrowserHostExtension()
+{
+  delete d; 
+}
+
+QStringList BrowserHostExtension::frameNames() const
+{
+  return QStringList(); 
+}
+
+const QList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
+{
+  return QList<KParts::ReadOnlyPart>(); 
+} 
+
+bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs & )
+{
+  return false; 
 }

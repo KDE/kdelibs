@@ -172,7 +172,7 @@ public:
    * extension's slots.
    * Basically you iterate over the map, check if the extension implements
    * the slot and connect to the slot using the data value of your map
-   * iterator. 
+   * iterator.
    * Checking if the extension implements a certain slot can be done like this:
    *
    *  extension->metaObject()->slotNames().contains( actionName + "()" )
@@ -288,6 +288,44 @@ private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
   BrowserExtensionPrivate *d;
+};
+
+/**
+ * An extension class for container parts.
+ *
+ */
+class BrowserHostExtension : public QObject
+{
+  Q_OBJECT
+public:
+  BrowserHostExtension( KParts::ReadOnlyPart *parent,
+			const char *name = 0L );
+
+  virtual ~BrowserHostExtension();
+
+  /**
+   * Returns a list of the names of all hosted child objects.
+   *
+   * Note that this method does not query the child objects recursively.
+   */
+  virtual QStringList frameNames() const;
+
+  /**
+   * Returns a list of pointers to all hosted child objects.
+   *
+   * Note that this method does not query the child objects recursively.
+   */
+  virtual const QList<KParts::ReadOnlyPart> frames() const;
+
+  /**
+   * Opens the given url in a hosted child frame. The frame name is specified in the
+   * frameName variable in the urlArgs argument structure (see @ref KParts::URLArgs ) .
+   */
+  virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+
+private:
+  class BrowserHostExtensionPrivate;
+  BrowserHostExtensionPrivate *d;
 };
 
 };
