@@ -1458,6 +1458,14 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->setBaseURL( baseurl.url() );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
 
+  // Inherit domain from parent
+  KHTMLPart* parent = parentPart();
+  if (d->m_doc->isHTMLDocument() && parent && parent->d->m_doc && parent->d->m_doc->isHTMLDocument()) {
+    DOMString domain = static_cast<HTMLDocumentImpl*>(parent->d->m_doc)->domain();
+    kdDebug() << "KHTMLPart::begin setting frame domain to " << domain.string() << endl;
+    static_cast<HTMLDocumentImpl*>(d->m_doc)->setDomain( domain, true );
+  }
+
   setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
   QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
   if ( !userStyleSheet.isEmpty() )
