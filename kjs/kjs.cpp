@@ -59,6 +59,11 @@ KJScript *KJScript::current()
   return KJScriptImp::current() ? KJScriptImp::current()->scr : 0L;
 }
 
+int KJScript::recursion() const
+{
+  return rep->recursion;
+}
+
 bool KJScript::evaluate(const char *code)
 {
   return rep->evaluate(UString(code).data(), strlen(code));

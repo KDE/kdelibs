@@ -437,6 +437,27 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
   put("arguments", new ArgumentsObject(f, args), DontDelete);
 }
 
+ExecutionStack::ExecutionStack()
+  : progNode(0L), firstNode(0L), prev(0)
+{
+}
+
+ExecutionStack* ExecutionStack::push()
+{
+  ExecutionStack *s = new ExecutionStack();
+  s->prev = this;
+  
+  return s;
+}
+
+ExecutionStack* ExecutionStack::pop()
+{
+  ExecutionStack *s = prev;
+  delete this;
+  
+  return s;
+}
+
 KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
 int          KJScriptImp::instances = 0;
@@ -456,6 +477,7 @@ KJScriptImp::KJScriptImp(KJScript *s)
   // are we the first interpreter instance ? Initialize some stuff
   if (instances == 1)
     globalInit();
+  stack = new ExecutionStack();
   clearException();
   lex = new Lexer();
 }
@@ -473,6 +495,9 @@ KJScriptImp::~KJScriptImp()
   delete lex;
   lex = 0L;
 
+  delete stack;
+  stack = 0L;
+  
   KJScriptImp::curr = 0L;
   // are we the last of our kind ? Free global stuff.
   if (instances == 1)
@@ -589,9 +614,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 #endif
   if (recursion > 0) {
 #ifndef NDEBUG
-    fprintf(stderr, "Blocking recursive JS call.\n");
+    fprintf(stderr, "KJS: entering recursion level %d\n", recursion);
 #endif
-    return false;
+    stack = stack->push();
   }
 
   assert(Lexer::curr());
@@ -663,6 +688,11 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   if (progNode())
     progNode()->deleteGlobalStatements();
 
+  if (recursion > 0) {
+    stack = stack->pop();
+    assert(stack);
+  }
+  
   return !errType;
 }
 

@@ -269,6 +269,18 @@ namespace KJS {
     FunctionImp *func;
   };
 
+  class ExecutionStack {
+  public:
+    ExecutionStack();
+    ExecutionStack *push();
+    ExecutionStack *pop();
+    
+    ProgramNode *progNode;
+    Node *firstNode;
+  private:
+    ExecutionStack *prev;
+  };
+
   class KJScriptImp {
     friend class ::KJScript;
     friend class Lexer;
@@ -319,12 +331,13 @@ namespace KJS {
 		  bool onlyCheckSyntax = false);
     bool call(Imp *scope, const UString &func, const List &args);
   public:
-    ProgramNode *progNode() const { return progN; }
-    void setProgNode(ProgramNode *p) { progN = p; }
-    Node *firstNode() const { return firstN; }
-    void setFirstNode(Node *n) { firstN = n; }
+    ProgramNode *progNode() const { return stack->progNode; }
+    void setProgNode(ProgramNode *p) { stack->progNode = p; }
+    Node *firstNode() const { return stack->firstNode; }
+    void setFirstNode(Node *n) { stack->firstNode = n; }
     KJScriptImp *next, *prev;
     KJScript *scr;
+    ExecutionStack *stack;
 
   private:
     ProgramNode *progN;

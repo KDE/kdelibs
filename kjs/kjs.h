@@ -78,6 +78,10 @@ public:
    */
   static KJScript *current();
   /**
+   * Current level of recursive calls to this interpreter. 0 initially.
+   */
+  int recursion() const;
+  /**
    * Asks the interpreter to evaluate a piece of code. If called more than
    * once the state (global variables, functions etc.) will be preserved
    * between each call.
