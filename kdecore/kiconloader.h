@@ -177,10 +177,42 @@ private:
 
 /**
  * Helper function to load toolbar icons with. It simply returns
- * library->iconLoader()->loadIcon(pixmap)
+ * library->iconLoader()->loadIcon("toolbar/" + pixmap)
  * so @see loadIcon
  */
 QPixmap BarIcon(const QString& pixmap, 
+		const KInstance* library = KGlobal::instance());
+
+/**
+ * Helper function to load application icons with. It simply returns
+ * library->iconLoader()->loadIcon("apps/" + pixmap)
+ * so @see loadIcon
+ */
+QPixmap AppIcon(const QString& pixmap,
+		const KInstance* library = KGlobal::instance());
+
+/**
+ * Helper function to load mimetype icons with. It simply returns
+ * library->iconLoader()->loadIcon("mimetypes/" + pixmap)
+ * so @see loadIcon
+ */
+QPixmap MimeIcon(const QString& pixmap,
+		const KInstance* library = KGlobal::instance());
+
+/**
+ * Helper function to load device icons with. It simply returns
+ * library->iconLoader()->loadIcon("devices/" + pixmap)
+ * so @see loadIcon
+ */
+QPixmap DevIcon(const QString& pixmap,
+		const KInstance* library = KGlobal::instance());
+
+/**
+ * Helper function to load filesystem icons with. It simply returns
+ * library->iconLoader()->loadIcon("filesystems/" + pixmap)
+ * so @see loadIcon
+ */
+QPixmap FileIcon(const QString& pixmap,
 		const KInstance* library = KGlobal::instance());
 
 #endif // KICONLOADER_H

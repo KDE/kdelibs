@@ -228,3 +228,35 @@ QPixmap BarIcon(const QString& pixmap , const KInstance* library )
         return library->iconLoader()->loadIcon("toolbar/" + pixmap,
                                                KIconLoader::Medium);
 }
+
+QPixmap AppIcon(const QString& pixmap , const KInstance* library )
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("apps/" + pixmap);
+}
+
+QPixmap MimeIcon(const QString& pixmap , const KInstance* library )
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("mimetypes/" + pixmap);
+}
+
+QPixmap DevIcon(const QString& pixmap , const KInstance* library )
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("devices/" + pixmap);
+}
+
+QPixmap FileIcon(const QString& pixmap , const KInstance* library )
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("filesystems/" + pixmap);
+}
