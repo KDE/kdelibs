@@ -23,16 +23,16 @@
 
 #include <qhbox.h>
 
+#include <kpushbutton.h>
 #include <kurl.h>
 
 class KComboBox;
 class KFileDialog;
 class KLineEdit;
 class KURLCompletion;
+
 class QString;
 class QTimer;
-class QPushButton;
-
 
 /**
  * This class is a widget showing a lineedit and a button, which invokes a
@@ -165,13 +165,13 @@ protected:
     void		init();
 
     KLineEdit *		myEdit; // FIXME: obsolete, remove me
-    QPushButton *	myButton;
+    QPushButton *	myButton; // FIXME: make it private KURLDragPushButton
     KURLCompletion *    myCompletion;
     bool 		myModal;
 
 
 private:
-    KURL 		myURL;
+    KURL 		myURL;  // FIXME: obsolete, remove me
     bool 		myShowLocalProt;
     mutable KFileDialog * myFileDialog;
 
@@ -182,6 +182,9 @@ protected slots:
      * Also called when @ref KStdAccel::Open (default is Ctrl-O) is pressed.
      */
     void slotOpenDialog();
+
+private slots:
+    void slotDragRequested( KPushButton * );
 
 private:
     class KURLRequesterPrivate;

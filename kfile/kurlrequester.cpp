@@ -22,7 +22,6 @@
 #include <unistd.h>
 
 #include <qstring.h>
-#include <qpushbutton.h>
 #include <qtooltip.h>
 
 #include <kaccel.h>
@@ -34,9 +33,48 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kurlcompletion.h>
+#include <kurldrag.h>
 
 #include "kurlrequester.h"
 
+
+class KURLDragPushButton : public KPushButton
+{
+public:
+    KURLDragPushButton( QWidget *parent, const char *name=0 )
+	: KPushButton( parent, name ) {}
+    ~KURLDragPushButton() {}
+    
+    void setURL( const KURL& url ) {
+	m_urls.clear();
+	m_urls.append( url );
+    }
+
+    /* not needed so far
+    void setURLs( const KURL::List& urls ) {
+	m_urls = urls;	
+    }
+    const KURL::List& urls() const { return m_urls; }
+    */
+
+protected:
+    virtual QDragObject *dragObject() {
+	if ( m_urls.isEmpty() )
+	    return 0L;
+
+	QDragObject *drag = KURLDrag::newDrag( m_urls, this, "url drag" );
+	return drag;
+    }
+
+private:
+    KURL::List m_urls;
+
+};
+
+
+/*
+*************************************************************************
+*/
 
 class KURLRequester::KURLRequesterPrivate
 {
@@ -45,14 +83,14 @@ public:
 	edit = 0L;
 	combo = 0L;
     }
-    
+
     void setText( const QString& text ) {
 	if ( combo )
 	    combo->setEditText( text );
 	else
 	    edit->setText( text );
     }
-    
+
     void connectSignals( QObject *receiver ) {
 	QObject *sender;
 	if ( combo )
@@ -78,15 +116,15 @@ public:
     QString text() {
 	return combo ? combo->currentText() : edit->text();
     }
-    
-    
+
+
     KLineEdit *edit;
     KComboBox *combo;
 };
 
 
 
-KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent, 
+KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
 			      const char *name, bool modal )
   : QHBox( parent, name )
 {
@@ -137,11 +175,15 @@ void KURLRequester::init()
 
     if ( !d->combo && !d->edit )
 	d->edit = new KLineEdit( this, "line edit" );
-    
-    myButton = new QPushButton( this, "kfile button" );
+
+    KURLDragPushButton *button = new KURLDragPushButton( this, "kfile button");
+    myButton = button; // small hack for bin compat (myButton is a QPushButton)
     myButton->setPixmap(SmallIcon(QString::fromLatin1("folder")));
     QToolTip::add(myButton, i18n("Open filedialog"));
 
+    connect( button, SIGNAL( dragRequested( KPushButton * )),
+	     SLOT( slotDragRequested( KPushButton * )));
+    
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
     			    myButton->sizeHint().width() );
@@ -228,4 +270,12 @@ KComboBox * KURLRequester::comboBox() const
     return d->combo;
 }
 
+void KURLRequester::slotDragRequested( KPushButton * )
+{
+    // bin compat, myButton is declared as QPushButton
+    KURL u( QDir::homeDirPath(), url() );
+    (static_cast<KURLDragPushButton *>( myButton))->setURL( url() );
+}
+
 #include "kurlrequester.moc"
+
