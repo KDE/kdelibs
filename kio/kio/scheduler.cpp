@@ -147,7 +147,7 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 {
-    qWarning("Destructing KIO::Scheduler...");
+    kdWarning( 7006 ) << "Destructing KIO::Scheduler..." << endl;
 
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
