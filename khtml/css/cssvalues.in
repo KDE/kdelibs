@@ -208,20 +208,22 @@ decimal-leading-zero
 -khtml-urdu
 lower-roman
 upper-roman
+hebrew
+armenian
+georgian
+cjk-ideographic
 lower-greek
 -khtml-upper-greek
 lower-alpha
 lower-latin
 upper-alpha
 upper-latin
-hebrew
-armenian
-georgian
-cjk-ideographic
 hiragana
 katakana
 hiragana-iroha
 katakana-iroha
+-khtml-open-quote
+-khtml-close-quote
 #none
 #
 # CSS_PROP_DISPLAY:
@@ -282,6 +284,13 @@ visible
 #hidden
 collapse
 #
+# CSS_PROP_CONTENT:
+#
+close-quote
+no-close-quote
+no-open-quote
+open-quote
+#
 # CSS_PROP_WHITE_SPACE:
 #
 #normal
@@ -301,7 +310,6 @@ below
 bidi-override
 blink
 both
-close-quote
 crop
 cross
 embed
@@ -317,9 +325,6 @@ loud
 lower
 marquee
 mix
-no-close-quote
-no-open-quote
-open-quote
 overline
 portrait
 relative

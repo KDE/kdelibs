@@ -3540,6 +3540,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if (primitiveValue->getIdent() == CSS_VAL_BORDER_BOX)
             style->setBoxSizing(BORDER_BOX);
         break;
+    case CSS_PROP_OUTLINE_OFFSET: {
+        HANDLE_INHERIT_AND_INITIAL(outlineOffset, OutlineOffset)
+
+        int offset = primitiveValue->computeLength(style, paintDeviceMetrics);
+        if (offset < 0) return;
+
+        style->setOutlineOffset(offset);
+        break;
+    }
     case CSS_PROP_TEXT_SHADOW: {
         if (isInherit) {
             style->setTextShadow(parentStyle->textShadow() ? new ShadowData(*parentStyle->textShadow()) : 0);
@@ -3578,6 +3587,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         return;
     }
+    case CSS_PROP_OPACITY:
+        HANDLE_INHERIT_AND_INITIAL(opacity, Opacity)
+        if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+            return; // Error case.
+
+        // Clamp opacity to the range 0-1
+        style->setOpacity(kMin(1.0f, kMax(0.0f, (float)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER))));
+        break;
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
         style->setMarqueeDirection(parentStyle->marqueeDirection());

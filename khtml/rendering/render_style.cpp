@@ -87,7 +87,6 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 
 StyleVisualData::StyleVisualData()
      : textDecoration(RenderStyle::initialTextDecoration()),
-       counter_increment( 0 ), counter_reset( 0 ),
       palette( QApplication::palette() )
 {
 }
@@ -98,7 +97,6 @@ StyleVisualData::~StyleVisualData() {
 StyleVisualData::StyleVisualData(const StyleVisualData& o )
     : Shared<StyleVisualData>(),
       clip( o.clip ), textDecoration(o.textDecoration),
-      counter_increment( o.counter_increment ), counter_reset( o.counter_reset ),
       palette( o.palette )
 {
 }
@@ -150,16 +148,15 @@ bool StyleMarqueeData::operator==(const StyleMarqueeData& o) const
 
 StyleCSS3NonInheritedData::StyleCSS3NonInheritedData()
 :Shared<StyleCSS3NonInheritedData>()
-#ifdef APPLE_CHANGES
 , opacity(RenderStyle::initialOpacity())
-#endif
 {
 }
 
 StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInheritedData& o)
 :Shared<StyleCSS3NonInheritedData>(),
+ opacity(o.opacity), 
 #ifdef APPLE_CHANGES
- opacity(o.opacity), flexibleBox(o.flexibleBox),
+ flexibleBox(o.flexibleBox),
 #endif
  marquee(o.marquee)
 {
@@ -168,8 +165,9 @@ StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInherited
 bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) const
 {
     return
+     opacity == o.opacity && 
 #ifdef APPLE_CHANGES
-     opacity == o.opacity && flexibleBox == o.flexibleBox &&
+     flexibleBox == o.flexibleBox &&
 #endif
      marquee == o.marquee;
 }
@@ -528,6 +526,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         !(noninherited_flags.f._hasClip == other->noninherited_flags.f._hasClip) ||
         visual->textDecoration != other->visual->textDecoration ||
         *background.get() != *other->background.get() ||
+        css3NonInheritedData->opacity != other->css3NonInheritedData->opacity ||
         !css3InheritedData->shadowDataEquivalent(*other->css3InheritedData.get())
        )
         return Visible;

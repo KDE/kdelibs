@@ -1092,11 +1092,17 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         if ( id == CSS_VAL_BORDER_BOX || id == CSS_VAL_CONTENT_BOX )
             valid_primitive = true;
         break;
+    case CSS_PROP_OUTLINE_OFFSET:
+        valid_primitive = validUnit(value, FLength, strict);
+        break;
     case CSS_PROP_TEXT_SHADOW:  // CSS2 property, dropped in CSS2.1, back in CSS3, so treat as CSS3
         if (id == CSS_VAL_NONE)
             valid_primitive = true;
         else
             return parseShadow(propId, important);
+        break;
+    case CSS_PROP_OPACITY:
+        valid_primitive = validUnit(value, FNumber, strict);
         break;
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )

@@ -76,7 +76,9 @@ max-width
 min-height
 min-width
 orphans
+opacity
 outline-color
+outline-offset
 outline-style
 outline-width
 overflow

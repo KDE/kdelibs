@@ -1,3 +1,8 @@
+2005-01-19  Allan Sandfeld Jensen <kde@carewolf.com>
+        
+        * css/*: Parse opacity and outline-offset
+        * rendering/*: Implement outline-offset
+
 2005-01-12  Allan Sandfeld Jensen <kde@carewolf.com>
         
         * css/cssstyleselector.cpp: Match :contains() against innerText on HTMLElements

@@ -234,13 +234,13 @@ void RenderFlow::repaint(bool immediate)
                 left = curr->xPos();
 
         // Now invalidate a rectangle.
-        int ow = style() ? style()->outlineWidth() : 0;
+        int ow = style() ? style()->outlineSize() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2, height()+ow*2, immediate);
     }
     else {
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {
-            int ow = style() ? style()->outlineWidth() : 0;
+            int ow = style() ? style()->outlineSize() : 0;
             repaintRectangle(-ow, -ow+firstLineBox()->topOverflow(),
                              effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
         }

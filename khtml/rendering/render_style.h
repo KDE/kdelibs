@@ -223,6 +223,19 @@ public:
 
 };
 
+class OutlineValue : public BorderValue
+{
+    public:
+        OutlineValue()
+        {
+            _offset = 0;
+            _auto = false;
+        }
+
+        int _offset;
+        bool _auto;
+};
+
 enum EBorderPrecedence { BOFF, BTABLE, BCOLGROUP, BCOL, BROWGROUP, BROW, BCELL };
 
 struct CollapsedBorderValue
@@ -361,8 +374,6 @@ public:
 
     bool operator==( const StyleVisualData &o ) const {
 	return ( clip == o.clip &&
-		 counter_increment == o.counter_increment &&
-		 counter_reset == o.counter_reset &&
 		 palette == o.palette );
     }
     bool operator!=( const StyleVisualData &o ) const {
@@ -372,9 +383,6 @@ public:
     LengthBox clip;
     unsigned textDecoration : 4; // Text decorations defined *only* by this element.
 
-    short counter_increment; //ok, so these are not visual mode spesific
-    short counter_reset;     //can't go to inherited, since these are not inherited
-
     QPalette palette;      //widget styling with IE attributes
 
 };
@@ -383,8 +391,6 @@ public:
 enum EBackgroundRepeat {
     REPEAT, REPEAT_X, REPEAT_Y, NO_REPEAT
 };
-
-
 
 class StyleBackgroundData : public Shared<StyleBackgroundData>
 {
@@ -403,7 +409,7 @@ public:
 
     Length x_position;
     Length y_position;
-    BorderValue outline;
+    OutlineValue outline;
 };
 
 //------------------------------------------------
@@ -467,8 +473,8 @@ public:
         return !(*this == o);
     }
 
-#ifdef APPLE_CHANGES	// ### we don't have those (yet)
     float opacity;         // Whether or not we're transparent.
+#ifdef APPLE_CHANGES	// ### we don't have those (yet)
     DataRef<StyleFlexibleBoxData> flexibleBox; // Flexible box properties
 #endif
     DataRef<StyleMarqueeData> marquee; // Marquee properties
@@ -571,8 +577,7 @@ enum EEmptyCell {
     SHOW, HIDE
 };
 
-enum ECaptionSide
-{
+enum ECaptionSide {
     CAPTOP, CAPBOTTOM, CAPLEFT, CAPRIGHT
 };
 
@@ -580,10 +585,10 @@ enum ECaptionSide
 enum EListStyleType {
      LDISC, LCIRCLE, LSQUARE, LBOX, LDIAMOND,
      LDECIMAL, DECIMAL_LEADING_ZERO, ARABIC_INDIC, PERSIAN, URDU,
-     LOWER_ROMAN, UPPER_ROMAN, LOWER_GREEK, UPPER_GREEK,
-     LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
-     HEBREW, ARMENIAN, GEORGIAN, CJK_IDEOGRAPHIC,
-     HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA, LNONE
+     LOWER_ROMAN, UPPER_ROMAN, HEBREW, ARMENIAN, GEORGIAN, CJK_IDEOGRAPHIC,
+     LOWER_GREEK, UPPER_GREEK, LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
+     HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA, 
+     OPEN_QUOTE, CLOSE_QUOTE, LNONE
 };
 
 enum EListStylePosition { OUTSIDE, INSIDE };
@@ -865,10 +870,12 @@ public:
     const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
     bool borderBottomIsTransparent() const { return surround->border.bottom.isTransparent(); }
 
+    unsigned short  outlineSize() const { return outlineWidth() + outlineOffset(); }
     unsigned short  outlineWidth() const
-    { if(background->outline.style == BNONE) return 0; return background->outline.width; }
+    { if(background->outline.style == BNONE || background->outline.style == BHIDDEN) return 0;
+      else return background->outline.width; }
     EBorderStyle    outlineStyle() const {  return background->outline.style; }
-    const QColor &  	    outlineColor() const {  return background->outline.color; }
+    const QColor &  outlineColor() const {  return background->outline.color; }
 
     EOverflow overflow() const { return  noninherited_flags.f._overflow; }
     bool hidesOverflow() const { return overflow() != OVISIBLE; }
@@ -941,9 +948,6 @@ public:
     EEmptyCell emptyCells() const { return inherited_flags.f._empty_cells; }
     ECaptionSide captionSide() const { return inherited_flags.f._caption_side; }
 
-    short counterIncrement() const { return visual->counter_increment; }
-    short counterReset() const { return visual->counter_reset; }
-
     EListStyleType listStyleType() const { return inherited_flags.f._list_style_type; }
     CachedImage *listStyleImage() const { return inherited->style_image; }
     EListStylePosition listStylePosition() const { return inherited_flags.f._list_style_position; }
@@ -968,7 +972,12 @@ public:
 
     // CSS3 Getter Methods
     EBoxSizing boxSizing() const { return box->box_sizing; }
+    int outlineOffset() const {
+        if (background->outline.style == BNONE || background->outline.style == BHIDDEN) return 0;
+        return background->outline._offset;
+    }
     ShadowData* textShadow() const { return css3InheritedData->textShadow; }
+    float opacity() { return css3NonInheritedData->opacity; }
     EUserInput userInput() const { return inherited_flags.f._user_input; }
 
     Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
@@ -1002,7 +1011,7 @@ public:
     void resetBorderRight() { SET_VAR(surround, border.right, BorderValue()) }
     void resetBorderBottom() { SET_VAR(surround, border.bottom, BorderValue()) }
     void resetBorderLeft() { SET_VAR(surround, border.left, BorderValue()) }
-    void resetOutline() { SET_VAR(background, outline, BorderValue()) }
+    void resetOutline() { SET_VAR(background, outline, OutlineValue()) }
 
     void setBorderLeftWidth(unsigned short v)   {  SET_VAR(surround,border.left.width,v) }
     void setBorderLeftStyle(EBorderStyle v)     {  SET_VAR(surround,border.left.style,v) }
@@ -1075,10 +1084,6 @@ public:
     void setEmptyCells(EEmptyCell v) { inherited_flags.f._empty_cells = v; }
     void setCaptionSide(ECaptionSide v) { inherited_flags.f._caption_side = v; }
 
-
-    void setCounterIncrement(short v) {  SET_VAR(visual,counter_increment,v) }
-    void setCounterReset(short v) {  SET_VAR(visual,counter_reset,v) }
-
     void setListStyleType(EListStyleType v) { inherited_flags.f._list_style_type = v; }
     void setListStyleImage(CachedImage *v) {  SET_VAR(inherited,style_image,v)}
     void setListStylePosition(EListStylePosition v) { inherited_flags.f._list_style_position = v; }
@@ -1116,7 +1121,9 @@ public:
 
     // CSS3 Setters
     void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
+    void setOutlineOffset(unsigned short v) {  SET_VAR(background,outline._offset,v) }
     void setTextShadow(ShadowData* val, bool add=false);
+    void setOpacity(float f) { SET_VAR(css3NonInheritedData, opacity, f); }
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     void setMarqueeIncrement(const Length& f) { SET_VAR(css3NonInheritedData.access()->marquee, increment, f); }
