@@ -746,7 +746,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     directory += ')';
   }
 
-  if ( (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
+  if ( !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
     iconButton->setFixedSize(70, 70);
@@ -937,7 +937,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
   }
-
   vbl->addStretch(1);
 }
 
@@ -1280,7 +1279,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString path = properties->kurl().path(-1);
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
-
+  bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();
@@ -1566,7 +1565,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gl->setColStretch(2, 10);
 
   // "Apply recursive" checkbox
-  if ( hasDir && !isLink )
+  if ( hasDir && !isLink && !isIntoTrash )
   {
       d->cbRecursive = new QCheckBox( i18n("Apply changes to all subdirectories and their contents"), d->m_frame );
       connect( d->cbRecursive, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
@@ -1575,7 +1574,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
 
-  if ( isLocal && path.startsWith(KGlobalSettings::trashPath()))
+  if ( isIntoTrash )
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
