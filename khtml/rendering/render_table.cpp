@@ -1241,8 +1241,14 @@ void RenderTable::layoutRow(int r)
 	cell->setCellTopExtra( te );
 	cell->setCellBottomExtra( rHeight - cell->height() - te);
 
-	cell->setPos( columnPos[indx] ,      //+ padding,
-		      rowHeights[rindx] );
+    	if (style()->direction()==RTL)
+    	{
+	    cell->setPos( columnPos[totalCols]-columnPos[indx+cell->colSpan()],
+	    	rowHeights[rindx] );
+	}
+	else
+	    cell->setPos( columnPos[indx] , rowHeights[rindx] );
+	    
 	cell->setRowHeight(rHeight);
 	// ###
 	// cell->setHeight(cellHeight);
