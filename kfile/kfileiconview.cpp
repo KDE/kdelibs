@@ -203,8 +203,7 @@ void KFileIconView::showToolTip( QIconViewItem *item )
     if ( fontMetrics().width( item->text() ) >= w ) {
 	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
 			      "myToolTip",
-			      WStyle_Customize | WStyle_NoBorder |
-			      WStyle_Tool );
+			      WStyle_StaysOnTop | WStyle_Customize | WStyle_NoBorder | WStyle_Tool | WX11BypassWM );
 	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
 	toolTip->setLineWidth( 1 );
 	toolTip->setAlignment( AlignLeft | AlignTop );
