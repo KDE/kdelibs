@@ -27,8 +27,9 @@ template<class T, class Key = int> class KSortableItem : public QPair<Key,T>
 {
 public:
     KSortableItem( Key i, const T& t ) : QPair<Key, T>( i, t ) {}
-    KSortableItem( const KSortableItem<T, Key> &rhs )
-    { (*this) = rhs; }
+    KSortableItem( const KSortableItem<T, Key> &rhs ) 
+        : QPair<Key,T>( rhs.first, rhs.second ) {}
+
     KSortableItem() : QPair<Key, T>( 0, Key() ) {}
 
     KSortableItem<T, Key> &operator=( const KSortableItem<T, Key>& i ) {
