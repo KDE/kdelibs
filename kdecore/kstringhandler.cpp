@@ -309,7 +309,37 @@ QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& font
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::lPixelSqueeze(const QString& s, const QFontMetrics& fm, uint width)
+QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
+{
+  uint nameWidth = fontMetrics.width(name);
+
+  if (maxPixels < nameWidth)
+  {
+    QString tmp = name;
+    const uint em = fontMetrics.maxWidth();
+    maxPixels -= fontMetrics.width("...");
+
+    while (maxPixels < nameWidth && !tmp.isEmpty())
+    {
+      int delta = (nameWidth - maxPixels) / em;
+      delta = kClamp(delta, 1, delta); // no max
+
+      tmp.remove(0, delta);
+      nameWidth = fontMetrics.width(tmp);
+    }
+
+    return ("..." + tmp);
+  }
+
+  return name;
+}
+
+QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
+{
+  return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
+}
+
+QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, uint width)
 {
   if ( s.isEmpty() || uint( fm.width( s ) ) <= width ) {
     return s;
@@ -349,37 +379,6 @@ QString KStringHandler::lPixelSqueeze(const QString& s, const QFontMetrics& fm, 
   }
 
   return s.left( leftIdx ) + "..." + s.right( rightIdx );
-}
-
-QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
-{
-  return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
-}
-
-QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
-{
-  uint nameWidth = fontMetrics.width(name);
-
-  if (maxPixels < nameWidth)
-  {
-    QString tmp = name;
-    const uint em = fontMetrics.maxWidth();
-    maxPixels -= fontMetrics.width("...");
-
-    while (maxPixels < nameWidth && !tmp.isEmpty())
-    {
-      int length = tmp.length();
-      int delta = (nameWidth - maxPixels) / em;
-      delta = kClamp(delta, 1, length) ;
-
-      tmp.remove((length / 2) - (delta / 2), delta);
-      nameWidth = fontMetrics.width(tmp);
-    }
-
-    return tmp.insert((tmp.length() + 1) / 2, "...");
-  }
-
-  return name;
 }
 
 QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
