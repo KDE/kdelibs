@@ -139,7 +139,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 {
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
-#endif    
+#endif
 
 
     // 1. print background, borders etc
@@ -205,14 +205,14 @@ void RenderFlow::setXPos( int xPos )
 void RenderFlow::layout( bool deep )
 {
 //    printf("%s %x::layout() start\n", renderName(),this);
-    
+
     assert(!isInline());
 
     int oldWidth = m_width;
     calcWidth();
     // ### does not give correct results for fixed width paragraphs with
     // floats for some reason
-    
+
     if (specialObjects==0)
     	if (oldWidth == m_width && layouted()) return;
     else
@@ -902,7 +902,7 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    //printf("renderFlow::close()\n");    
+    //printf("renderFlow::close()\n");
     if(haveAnonymousBox())
     {
 	m_last->close();
@@ -923,7 +923,7 @@ void RenderFlow::close()
     	containingBlock()->updateHeight();
 
     setParsing(false);
-    
+
 #ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::close() total height =%d\n", renderName(), m_height);
 #endif
@@ -937,7 +937,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 #endif
 
     //to prevents non-layouted elements from getting printed
-    if (!newChild->isFloating()) 
+    if (!newChild->isFloating())
     {
     	newChild->setYPos(-100000);
     }
@@ -967,7 +967,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    newBox->setParent(this);
 	    m_first = m_last = newBox;
 	    newBox->close();
-	    newBox->setYPos(-100000);	    
+	    newBox->setYPos(-100000);	
 	    newBox->layout();
 	}
 	m_childrenInline = false;
@@ -986,7 +986,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 		newBox->setIsAnonymousBox(true);
 		RenderObject::addChild(newBox);
 		newBox->addChild(newChild);
-		newBox->setYPos(-100000);	    
+		newBox->setYPos(-100000);	
 		setHaveAnonymousBox();
 		return;
 	    }

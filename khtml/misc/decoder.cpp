@@ -72,16 +72,26 @@ QString Decoder::decode(const char *data, int len)
     // through the html head several times...
 
     if(enc.isEmpty() && !body) {
-	buffer += data;
 
 	// check for UTF-16
-	uchar * uchars = (uchar *) buffer.data();
+	uchar * uchars = (uchar *) data;
 	if( uchars[0] == 0xfe && uchars[1] == 0xff ||
 	    uchars[0] == 0xff && uchars[1] == 0xfe ) {
 	    enc = "utf16";
 	    m_codec = QTextCodec::codecForName(enc);
 	} else {
 
+	    // ### hack for a bug in QTextCodec. It cut's the input stream 
+	    // in case there are \0 in it. ZDNET has them inside... :-(
+	    char *d = const_cast<char *>(data);
+	    int i = len - 1;
+	    while(i >= 0) {
+		if(*(d+i) == 0) *(d+i) = ' ';
+		i--;
+	    }
+	    buffer += data;
+	    
+	    
 	    // we still don't have an encoding, and are in the head
 	    // the following tags are allowed in <head>:
 	    // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
@@ -179,26 +189,17 @@ QString Decoder::decode(const char *data, int len)
     if(!buffer.isEmpty() && enc != "utf16") {
 	out = m_codec->toUnicode(buffer);
 	buffer = "";
-    }
-    else
+    } else {
+	// ### hack for a bug in QTextCodec. It cut's the input stream 
+	// in case there are \0 in it. ZDNET has them inside... :-(
+	char *d = const_cast<char *>(data);
+	int i = len - 1;
+	while(i >= 0) {
+	    if(*(d+i) == 0) *(d+i) = ' ';
+	    i--;
+	}
 	out = m_codec->toUnicode(data, len);
-
-#if 0
-    // ### this is still broken
-    if(visualRTL)
-    {
-	QString beginTag = QChar(0x202c);
-	beginTag += QChar('<');  // PDF + '<'
-	QString endTag = QChar('>');
-	endTag += QChar(0x202d);  // '>' + LRO
-	out.replace(QRegExp("<"), beginTag);
-	out.replace(QRegExp(">"), endTag);
-	QString middle = QChar(0x202d);
-	middle += " *";
-	middle += QChar(0x202c);
-	out.replace(QRegExp(middle), " ");
     }
-#endif
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
