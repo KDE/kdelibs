@@ -457,8 +457,6 @@ void KToolBarButton::mousePressEvent( QMouseEvent * e )
 
 void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
 {
-  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
-  emit buttonClicked( d->m_id, state );
   if ( e->button() == MidButton )
   {
     QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), LeftButton, e->state() );
@@ -466,6 +464,8 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
     return;
   }
   QToolButton::mouseReleaseEvent(e);
+  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
+  emit buttonClicked( d->m_id, state );
 }
 
 void KToolBarButton::drawButton( QPainter *_painter )
