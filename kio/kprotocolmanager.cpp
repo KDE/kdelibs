@@ -455,6 +455,13 @@ void KProtocolManager::setUserAgentList( const QStringList& agentList )
   cfg->sync();
 }
 
+QString KProtocolManager::cacheDir()
+{
+    KConfig *cfg = config();
+    cfg->setGroup("Cache Settings");
+    return cfg->readEntry("Cache Dir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
+}
+
 void KProtocolManager::setDefaultUserAgentModifiers( const UAMODIFIERS& mods )
 {
   KConfig *cfg = config();

@@ -391,6 +391,11 @@ public:
   static QStringList userAgentList();
 
   /**
+   * the directory which contains the cache files
+   */
+  static QString cacheDir();
+
+  /**
    * Sets flags that determine which extra infromation, if any,
    * will be appended to the default user-agent value.
    *
