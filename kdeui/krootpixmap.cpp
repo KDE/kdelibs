@@ -62,7 +62,8 @@ void KRootPixmap::init()
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
 
     d->kwin = new KWinModule( this );
-    connect( d->kwin, SIGNAL(windowChanged(WId, unsigned int)), SLOT(desktopChanged(WId, unsigned int)));
+    connect(d->kwin, SIGNAL(windowChanged(WId, unsigned int)), SLOT(desktopChanged(WId, unsigned int)));
+    connect(d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged()));
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
@@ -158,18 +159,17 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     return false; // always continue processing
 }
 
+void KRootPixmap::desktopChanged()
+{
+    if (KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop() == NET::OnAllDesktops)
+	repaint(true);
+}
+
 void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 {
     if( (properties & NET::WMDesktop) == 0 ||
 	(window != m_pWidget->topLevelWidget()->winId()))
 	return;
-
-    if( !m_pWidget->isVisible())
-        return; // not visible, no need to update
-    QWidget* widget = m_pWidget->topLevelWidget();
-    if( !widget->testWFlags( WX11BypassWM )
-        && !KWin::windowInfo( widget->winId(), NET::WMDesktop ).isOnCurrentDesktop())
-        return; // not on current desktop -> not visible, no need to update
 
     repaint(true);
 }
@@ -200,7 +200,9 @@ void KRootPixmap::repaint(bool force)
 	return;
     }
     m_Rect = QRect(p1, p2);
-    m_Desk = currentDesktop();
+    m_Desk = KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop();
+    if (m_Desk == NET::OnAllDesktops)
+	m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     m_pPixmap->loadFromShared(pixmapName(m_Desk), m_Rect);
