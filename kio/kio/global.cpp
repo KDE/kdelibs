@@ -1386,6 +1386,8 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       // succes, use result from realpath
       realname = realpath_buffer;
 
+    //kdDebug(7007) << "findDeviceMountPoint realname=" << realname << endl;
+
 #ifdef HAVE_GETMNTINFO
 
     struct statfs *mounted;
@@ -1482,8 +1484,6 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     STRUCT_SETMNTENT mtab;
 
-    //kdDebug( 7007 ) << "realname " << realname << endl;
-
     /* Get the list of mounted file systems */
 
     if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
@@ -1508,7 +1508,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       // There may be symbolic links into the /etc/mnttab
       // So we have to find the real device name here as well!
       QCString device_name = FSNAME(me);
-      if (device_name.isEmpty() || (device_name[0] != '/'))
+      if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
       //kdDebug( 7007 ) << "device_name=" << device_name << endl;
