@@ -27,7 +27,7 @@ using namespace Arts;
 
 namespace Arts {
 
-class Synth_ADD_impl :public Synth_ADD_skel, StdSynthModule
+class Synth_ADD_impl :public Synth_ADD_skel, public StdSynthModule
 {
 public:
 	void calculateBlock(unsigned long samples)
