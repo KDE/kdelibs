@@ -2573,6 +2573,7 @@ void HTTPProtocol::forwardHttpResponseHeader()
  */
 bool HTTPProtocol::readHeader()
 {
+try_again:
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader" << endl;
 
   // Check
@@ -3427,7 +3428,7 @@ bool HTTPProtocol::readHeader()
       if (m_request.fcache)
       {
           m_request.bCachedRead = true;
-          return readHeader(); // Read header again, but now from cache.
+          goto try_again; // Read header again, but now from cache.
        }
        else
        {
@@ -3445,7 +3446,7 @@ bool HTTPProtocol::readHeader()
   // We need to reread the header if we got a '100 Continue' or '102 Processing'
   if ( cont )
   {
-    return readHeader();
+    goto try_again;
   }
   if ( m_responseCode == 204 )
   {
@@ -4211,7 +4212,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
          .arg( m_request.hostname ) );
     }
     else
+    {    
        totalSize ( 0 );
+    }
   }
   else
     infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
