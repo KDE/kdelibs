@@ -54,6 +54,7 @@ dcopkonqtest_SOURCES = dcopkonqtest.cpp
 kmemtest_SOURCES = kmemtest.cpp
 kidlservertest_SOURCES = KIDLTest.cpp KIDLTest.skel
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
+$(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
 kipctest_SOURCES = kipctest.cpp
 cplusplustest_SOURCES = cplusplustest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp
