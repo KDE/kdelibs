@@ -126,6 +126,8 @@ bool KKey::init( const KKey& spec )
 
 bool KKey::init( const QString& sSpec )
 {
+	clear();
+
 	QString sKey = sSpec.lower().stripWhiteSpace();
 	if( sKey.startsWith( "default(" ) && sKey.endsWith( ")" ) )
 		sKey = sKey.mid( 8, sKey.length() - 9 );
@@ -136,7 +138,6 @@ bool KKey::init( const QString& sSpec )
 
 	uint i;
 	// Check for modifier keys first.
-	m_mod = 0;
 	for( i = 0; i < rgs.size(); i++ ) {
 		if( rgs[i] == "shift" )     m_mod |= KKey::SHIFT;
 		else if( rgs[i] == "ctrl" ) m_mod |= KKey::CTRL;
@@ -158,9 +159,9 @@ bool KKey::init( const QString& sSpec )
 		m_flags = 0;
 	}
 
-	//kdDebug(125) << "KKey::init( \"" << sSpec << "\" ): this = " << this
-	//	<< " m_key = " << QString::number(m_key, 16)
-	//	<< ", m_mod = " << QString::number(m_mod, 16) << endl;
+	kdDebug(125) << "KKey::init( \"" << sSpec << "\" ): this = " << this
+		<< " m_key = " << QString::number(m_key, 16)
+		<< ", m_mod = " << QString::number(m_mod, 16) << endl;
 
 	return m_key != 0;
 }
@@ -531,12 +532,12 @@ bool KShortcut::init( const KShortcut& cut )
 
 bool KShortcut::init( const QString& s )
 {
-	//kdDebug(125) << "KShortcut::init( " << s << " )" << endl;
+	bool bRet = true;
 	QStringList rgs = QStringList::split( ';', s );
-	if( rgs.size() == 0 ) {
+
+	if( rgs.size() == 0 )
 		clear();
-		return true;
-	} else if( rgs.size() <= MAX_SEQUENCES ) {
+	else if( rgs.size() <= MAX_SEQUENCES ) {
 		m_nSeqs = rgs.size();
 		for( uint i = 0; i < m_nSeqs; i++ ) {
 			QString& sSeq = rgs[i];
@@ -545,11 +546,14 @@ bool KShortcut::init( const QString& s )
 			m_rgseq[i].init( sSeq );
 			//kdDebug(125) << "\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
 		}
-		return true;
 	} else {
 		clear();
-		return false;
+		bRet = false;
 	}
+
+	kdDebug(125) << "KShortcut::init( " << s << " ) => "
+		<< " keyCodeQt = " << keyCodeQt() << endl;
+	return bRet;
 }
 
 uint KShortcut::count() const
