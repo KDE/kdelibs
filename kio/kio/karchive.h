@@ -96,7 +96,7 @@ public:
      * the directory "mydir" is automatically appended first if that did not
      * happen yet.
      */
-    bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
 
     /**
      * Here's another way of writing a file into an archive:
