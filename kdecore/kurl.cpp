@@ -340,7 +340,7 @@ void KURL::parse( const QString& _url )
   return;
 
  NodeErr:
-  debug("Error in parsing\n");
+  debug("Error in parsing \"%s\"",_url.ascii());
   delete []orig;
   m_bIsMalformed = true;
 }
