@@ -108,7 +108,7 @@ kioinclude_HEADERS = connection.h \
 	renamedlg.h skipdlg.h \
 	observer.h chmodjob.h \
         kpac.h kmdbase.h authinfo.h \
-	ioslave_defaults.h http_slave_defaults.h previewjob.h
+	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h
 
 # Internal
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
