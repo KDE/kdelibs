@@ -112,7 +112,14 @@ void KTipDatabase::addTips(const QString& tipFile )
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
-	const QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6).stripWhiteSpace();
+       // to make translations work, tip extraction here must exactly 
+       // match what is done by the preparetips script 
+       QString tip = content 
+           .mid(pos, content.find("</html>", pos, false) - pos) 
+           .stripWhiteSpace() 
+           .mid(6) + "\n"; 
+       if (tip.startsWith("\n")) 
+            tip = tip.mid(1); 
         if (tip.isEmpty())
         {
             kdDebug() << "Empty tip found! Skipping! " << pos << endl;

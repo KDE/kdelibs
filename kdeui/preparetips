@@ -4,6 +4,9 @@
 #
 # 2000 by Matthias Kiefer <matthias.kiefer@gmx.de>
 
+# IMPORTANT NOTE: Do not change the output without checking if
+# translations still work!
+
 sub printText
 {
 	my $text = $_[0];
