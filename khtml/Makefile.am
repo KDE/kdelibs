@@ -61,8 +61,9 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 
 # init_libkhtml is in libkhtml.so; init_libkhtmlpart needs to be in the part
 dummy.cpp: $(srcdir)/Makefile.am
-	echo 'extern "C" void* init_libkhtml();' > $@
-	echo 'extern "C" void* init_libkhtmlpart() { return init_libkhtml(); } ' >> $@
+	echo '#include <kdelibs_export.h>' > $@
+	echo 'extern "C" KDE_EXPORT void* init_libkhtml();' >> $@
+	echo 'extern "C" KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); } ' >> $@
 
 libkhtmlpart_la_SOURCES = dummy.cpp
 libkhtmlpart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
