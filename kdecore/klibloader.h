@@ -258,6 +258,14 @@ public:
      */
     static void cleanUp();
 
+    /**
+     * Helper method which looks for a library in the standard paths
+     * ("module" and "lib" resources)
+     * Made public for code that doesn't use KLibLoader itself, but still
+     * wants to open modules.
+     */
+    static QString findLibrary( const char * name );
+
 protected:
     KLibLoader( QObject* parent = 0, const char* name = 0 );
 

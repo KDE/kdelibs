@@ -168,7 +168,7 @@ void KLibrary::slotObjectCreated( QObject *obj )
 
   if ( m_timer && m_timer->isActive() )
     m_timer->stop();
-  
+
   if ( m_objs.containsRef( obj ) )
       return; // we know this object already
 
@@ -300,6 +300,44 @@ KLibLoader::~KLibLoader()
     delete d;
 }
 
+//static
+QString KLibLoader::findLibrary( const char * name )
+{
+    QCString libname( name );
+ 
+    // only append ".la" if there is no extension
+    // this allows to load non-libtool libraries as well
+    // (mhk, 20000228)
+    int pos = libname.findRev('/');
+    if (pos < 0)
+      pos = 0;
+    if (libname.find('.', pos) < 0)
+      libname += ".la";
+
+    // only look up the file if it is not an absolute filename
+    // (mhk, 20000228)
+    QString libfile;
+    if (libname[0] == '/')
+      libfile = libname;
+    else
+    {
+      libfile = KGlobal::dirs()->findResource( "module", libname );
+      if ( libfile.isEmpty() )
+      {
+        libfile = KGlobal::dirs()->findResource( "lib", libname );
+#ifndef NDEBUG
+        if ( !libfile.isEmpty() )
+          kdDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
+#endif
+      }
+      if ( libfile.isEmpty() )
+      {
+        kdWarning(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
+      }
+    } 
+    return libfile;
+}
+
 KLibrary* KLibLoader::library( const char *name )
 {
     if (!name)
@@ -328,36 +366,14 @@ KLibrary* KLibLoader::library( const char *name )
       }
       wrap->ref_count++;
     } else {
-      QCString libname( name );
-
-      // only append ".la" if there is no extension
-      // this allows to load non-libtool libraries as well
-      // (mhk, 20000228)
-      int pos = libname.findRev('/');
-      if (pos < 0)
-        pos = 0;
-      if (libname.find('.', pos) < 0)
-        libname += ".la";
-
-      // only look up the file if it is not an absolute filename
-      // (mhk, 20000228)
-      QString libfile;
-      if (libname[0] == '/')
-        libfile = libname;
-      else
-        {
-          libfile = KGlobal::dirs()->findResource( "lib", libname );
-          if ( libfile.isEmpty() )
-            {
-              kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
-              return 0;
-            }
-        }
+      QString libfile = findLibrary( name );
+      if ( libfile.isEmpty() )
+        return 0;
 
       lt_dlhandle handle = lt_dlopen( libfile.latin1() );
       if ( !handle )
       {
-        kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
+        kdWarning(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
         return 0;
       }
 
