@@ -134,6 +134,7 @@
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
+<!ENTITY flashkard "<application>FlashKard</application>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
 <!ENTITY gcc	"<command>gcc</command>">
 <!ENTITY GIF	"<acronym>GIF</acronym>">
@@ -155,6 +156,7 @@
 <!ENTITY kaddressbook	"<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
 <!ENTITY kalarmd	"<application>KAlarmd</application>">
+<!ENTITY kalzium	"<application>Kalzium</application>">
 <!ENTITY kamera	"<application>Kamera</application>">
 <!ENTITY kandy	"<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
@@ -224,17 +226,18 @@
 <!ENTITY klprfax	"<application>Klprfax</application>">
 <!ENTITY kmahjongg	"<application>KMahjongg</application>">
 <!ENTITY kmail	"<application>KMail</application>">
+<!ENTITY kmathtool "<application>KMathTool</application>">
 <!ENTITY kmenuedit	"<application>kmenuedit</application>">
 <!ENTITY kmessedwords	"<application>KMessedWords</application>">
 <!ENTITY kmid	"<application>KMid</application>">
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
-<!ENTITY moonphase	"<application>Moon Phase</application>">
 <!ENTITY kmplot	"<application>KMPlot</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
+<!ENTITY knorskverbs	"<application>KNorskVerbs</application>">
 <!ENTITY kodometer	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
 <!ENTITY kolf	"<application>Kolf</application>">
@@ -324,6 +327,7 @@
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
 <!ENTITY MIDI	"<acronym>MIDI</acronym>">
 <!ENTITY MIME	"<acronym>MIME</acronym>">
+<!ENTITY moonphase	"<application>Moon Phase</application>">
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
 <!ENTITY MRU	"<acronym>MRU</acronym>">
 <!ENTITY MTU	"<acronym>MTU</acronym>">
