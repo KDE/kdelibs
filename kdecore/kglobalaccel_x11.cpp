@@ -23,9 +23,6 @@ const int XKeyRelease = KeyRelease;
 #undef KeyPress
 #endif
 
-// this is the flag in a keypress event's state variable which indicates mode_switch (AltGr).
-#define MODE_SWITCH 0x2000
-
 static bool g_bGrabFailed;
 
 extern "C" {
@@ -107,9 +104,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		calculateGrabMasks();
 
 	uchar keyCodeX = key.code();
-	uint keyModX = key.mod();
-
-	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
+	uint keyModX = key.mod() & g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
 
 #ifndef __osf__
 // this crashes under Tru64 so .....
@@ -130,11 +125,15 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator? -- ellis
+#ifndef NDEBUG
 	QString sDebug = QString("\tcode: 0x%1 state: 0x%2 | ").arg(keyCodeX,0,16).arg(keyModX,0,16);
+#endif
 	uint keyModMaskX = ~g_keyModMaskXOnOrOff;
 	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
 		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
+#ifndef NDEBUG
 			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
+#endif
 			if( bGrab ) {
 				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
 					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
@@ -152,7 +151,9 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
 		}
 	}
+#ifndef NDEBUG
 	kdDebug(125) << sDebug << endl;
+#endif
 
 	XSync( qt_xdisplay(), 0 );
 	XSetErrorHandler( savedErrorHandler );
@@ -160,7 +161,10 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	if( !g_bGrabFailed ) {
 		CodeMod codemod;
 		codemod.code = keyCodeX;
-		codemod.mod = key.mod() & (g_keyModMaskXAccel | MODE_SWITCH);
+		codemod.mod = keyModX;
+		if( key.mod() & KKeyServer::MODE_SWITCH )
+			codemod.mod |= KKeyServer::MODE_SWITCH;
+		
 		if( bGrab )
 			m_rgCodeModToAction.insert( codemod, pAction );
 		else
@@ -207,7 +211,20 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 
 	CodeMod codemod;
 	codemod.code = pEvent->xkey.keycode;
-	codemod.mod = pEvent->xkey.state & (g_keyModMaskXAccel | MODE_SWITCH);
+	codemod.mod = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
+	
+	// If numlock is active and a keypad key is pressed, XOR the SHIFT state.
+	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
+	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
+		// TODO: what's the xor operator in c++?
+		uint sym = XKeycodeToKeysym( qt_xdisplay(), codemod.code, 0 );
+		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
+			if( codemod.mod & KKeyServer::modXShift() )
+				codemod.mod &= ~KKeyServer::modXShift();
+			else
+				codemod.mod |= KKeyServer::modXShift();
+		}
+	}
 
 	KKeyNative keyNative( pEvent );
 	KKey key = keyNative;
@@ -222,8 +239,8 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 		for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
 			KAccelAction* pAction = *it;
 			kdDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
-			<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString::null)
-			<< endl;
+				<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString::null)
+				<< endl;
 		}
 #endif
 		return false;
