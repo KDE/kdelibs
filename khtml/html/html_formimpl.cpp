@@ -503,14 +503,14 @@ void HTMLGenericFormElementImpl::blur()
 {
     if(m_render)
         static_cast<RenderFormElement*>(m_render)->blur();
-//    onBlur(); // ### enable this - but kjs needs to support re-entry
+    onBlur(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLGenericFormElementImpl::focus()
 {
     if(m_render)
         static_cast<RenderFormElement*>(m_render)->focus();
-//    onFocus(); // ### enable this - but kjs needs to support re-entry
+    onFocus(); // ### enable this - but kjs needs to support re-entry
 }
 
 // -------------------------------------------------------------------------

@@ -476,8 +476,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         setContentsPos( 0, contentsHeight() - height() );
         break;
     default:
-        QScrollView::keyPressEvent( _ke );
+	//	d->currentNode->keyPressEvent( _ke );
+	return;
+	break;
     }
+    _ke->accept();
 }
 
 void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
@@ -854,13 +857,13 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
   {
       if (d->currentNode)
 	  d->currentNode->blur();
+      d->currentNode = n;
       if (n)
       {
 	  kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
 	  n->setKeyboardFocus(DOM::ActivationPassive);
 	  n->focus();
       }
-      d->currentNode = n;
   }
   d->linkPressed=false;
 }

@@ -87,14 +87,14 @@ void RenderFormElement::calcMinMaxWidth()
 void RenderFormElement::blur()
 {
     disconnect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
-    m_widget->clearFocus();
+    RenderWidget::blur(); // calls m_widget->clearFocus();
     connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
 }
 
 void RenderFormElement::focus()
 {
     disconnect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
-    m_widget->setFocus();
+    RenderWidget::focus(); // calls m_widget->setFocus();
     connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
 }
 
