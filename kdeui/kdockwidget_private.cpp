@@ -400,6 +400,7 @@ KDockButton_Private::KDockButton_Private( QWidget *parent, const char * name )
 :QPushButton( parent, name )
 {
   moveMouse = false;
+  setFocusPolicy( NoFocus );
 }
 
 KDockButton_Private::~KDockButton_Private()
