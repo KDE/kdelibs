@@ -51,6 +51,11 @@ kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h k
 		   driver.h kmjobmanager.h kmjob.h
 kdeprintdir = $(includedir)/kdeprint
 
+bin_PROGRAMS = kdeprint_mail
+kdeprint_mail_SOURCES = kdeprint_mail.cpp
+kdeprint_mail_LDADD = $(LIB_KDECORE)
+kdeprint_mail_LDFLAGS = $(all_libraries)
+
 EXTRA_DIST = fooparser.y fooscanner.l kprintpreviewui.rc
 
 KDE_OPTIONS = nofinal

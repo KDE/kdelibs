@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -322,6 +322,10 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 	if (info.mimeTypes.isEmpty())
 		info.mimeTypes << "application/postscript";
 	info.primaryMimeType = conf.readEntry("PrimaryMimeType", info.mimeTypes[0]);
+	/* append application/x-zerosize by default to all plugins (empty files),
+	 * this avoid to popup garbage dialogs if the application sent an empty
+	 * file to the print system ( no conversion needed )*/
+	info.mimeTypes << "application/x-zerosize";
 
 	return info;
 }
