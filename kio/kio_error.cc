@@ -48,7 +48,7 @@ QString kioErrorString( int _errid, const char *_errortext )
       result = i18n( "The file or directory\n%1\ndoes already exist" ).arg( _errortext );
       break;
     case  ERR_ACCESS_DENIED:
-      result = i18n( "%1\nAccess denied" ).arg( _errortext );
+      result = i18n( "Access denied to\n%1" ).arg( _errortext );
       break;
     case  ERR_CANNOT_ENTER_DIRECTORY:
       result = i18n( "Could not enter directory\n%1" ).arg( _errortext );
