@@ -519,13 +519,17 @@ void KApplication::commitData( QSessionManager& sm )
 
 void KApplication::saveState( QSessionManager& sm )
 {
-    static bool firstTime = false;
+    static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
     if ( !bSessionManagement ) {
 	sm.setRestartHint( QSessionManager::RestartNever );
 	return;
     }
+
+    static int called=0;
+    qDebug("KApplication::saveState called %d times", called);
+    called++;
 
     if ( firstTime ) {
 	firstTime = false;
