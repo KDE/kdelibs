@@ -143,6 +143,13 @@ static bool process_flags(int flags, addrinfo &hint)
       return false;
     }
 
+  if ((flags & KExtendedSocket::unixSocket) == KExtendedSocket::unixSocket)
+     hint.ai_family = PF_LOCAL;
+  else if ((flags & KExtendedSocket::ipv4Socket) == KExtendedSocket::ipv4Socket)
+     hint.ai_family = PF_INET;
+  else if ((flags & KExtendedSocket::ipv6Socket) == KExtendedSocket::ipv6Socket)
+     hint.ai_family = PF_INET6;
+
   /* check other flags */
   hint.ai_flags |= (flags & KExtendedSocket::passiveSocket ? AI_PASSIVE : 0) |
     (flags & KExtendedSocket::canonName ? AI_CANONNAME : 0) |
