@@ -24,6 +24,7 @@
 #include <qptrvector.h>
 #include <qstring.h>
 #include <qvaluevector.h>
+#include <qvaluelist.h>
 
 #include "kaccelaction.h"
 #include "kkeyserver_x11.h"
@@ -181,42 +182,42 @@ class KAccelBase
 
 	QPopupMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
 
- protected:
-	struct ActionInfo
-	{
-		KAccelAction* pAction;
-		uint iSeq, iVariation;
-		ActionInfo* pInfoNext; // nil if only one action uses this key.
-
-		ActionInfo() { pAction = 0; iSeq = 0xffff; iVariation = 0xffff; pInfoNext = 0; }
-		ActionInfo( KAccelAction* _pAction, uint _iSeq, uint _iVariation )
-			{ pAction = _pAction; iSeq = _iSeq; iVariation = _iVariation; pInfoNext = 0; }
-		~ActionInfo();
-	};
-	typedef QMap<KKeyServer::Key, ActionInfo> KKeyToActionMap;
-
-	KAccelActions m_rgActions;
-	KKeyToActionMap m_mapKeyToAction;
-	bool m_bNativeKeys; // Use native key codes instead of Qt codes
-	bool m_bEnabled;
-	bool m_bConfigIsGlobal;
-	QString m_sConfigGroup;
-	bool m_bAutoUpdate;
-	KAccelAction* mtemp_pActionRemoving;
-
  // Protected methods
  protected:
 	void slotRemoveAction( KAccelAction* );
 
 	void createKeyList( QValueVector<struct X>& rgKeys );
-	bool insertConnection( KAccelAction& );
-	bool removeConnection( KAccelAction& );
+	bool insertConnection( KAccelAction* );
+	bool removeConnection( KAccelAction* );
 
 	virtual bool emitSignal( Signal ) = 0;
 	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
 	virtual bool connectKey( const KKeyServer::Key& ) = 0;
 	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
 	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
+
+ protected:
+	struct ActionInfo
+	{
+		KAccelAction* pAction;
+		uint iSeq, iVariation;
+		//ActionInfo* pInfoNext; // nil if only one action uses this key.
+
+		ActionInfo() { pAction = 0; iSeq = 0xffff; iVariation = 0xffff; }
+		ActionInfo( KAccelAction* _pAction, uint _iSeq, uint _iVariation )
+			{ pAction = _pAction; iSeq = _iSeq; iVariation = _iVariation; }
+	};
+	typedef QMap<KKeyServer::Key, ActionInfo> KKeyToActionMap;
+
+	KAccelActions m_rgActions;
+	KKeyToActionMap m_mapKeyToAction;
+	QValueList<KAccelAction*> m_rgActionsNonUnique;
+	bool m_bNativeKeys; // Use native key codes instead of Qt codes
+	bool m_bEnabled;
+	bool m_bConfigIsGlobal;
+	QString m_sConfigGroup;
+	bool m_bAutoUpdate;
+	KAccelAction* mtemp_pActionRemoving;
 
  private:
 	KAccelBase& operator =( const KAccelBase& );
