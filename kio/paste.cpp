@@ -24,6 +24,7 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qdragobject.h>
+#include <qtextstream.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -71,7 +72,16 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
     return res;
   }
 
-  QByteArray ba = data->encodedData( data->format() );
+  QByteArray ba;
+
+  QString text;
+  if ( QTextDrag::canDecode( data ) && QTextDrag::decode( data, text ) )
+  {
+      QTextStream txtStream( ba, IO_WriteOnly );
+      txtStream << text;
+  }
+  else
+      ba = data->encodedData( data->format() );
 
   if ( ba.size() == 0 )
   {
