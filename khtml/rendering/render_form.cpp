@@ -1109,7 +1109,7 @@ void RenderSelect::slotSelected(int index)
                 static_cast<ComboBoxWidget*>( m_widget )->setCurrentItem( index );
 
             for ( unsigned int i = 0; i < listItems.size(); ++i )
-                if ( listItems[i]->id() == ID_OPTION && i != index )
+                if ( listItems[i]->id() == ID_OPTION && i != (unsigned int) index )
                     static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = false;
 
             static_cast<HTMLOptionElementImpl*>(listItems[index])->m_selected = true;
