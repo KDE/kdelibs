@@ -1,11 +1,14 @@
+#ifndef DUMMYMETA_H
+#define DUMMYMETA_H
+
 #include <kfilemetainfo.h>
 
 class KFileMetaInfo;
 
 class DummyMeta : public KFilePlugin
 {
-//    Q_OBJECT
-
+    Q_OBJECT
+    
 public:
     DummyMeta( QObject *parent, const char *name, const QStringList &args );
     ~DummyMeta() {}
@@ -13,3 +16,5 @@ public:
     virtual KFileMetaInfo * createInfo( const QString& path );
 
 };
+
+#endif

@@ -2,9 +2,9 @@
 
 #include "dummymeta.h"
 
-K_EXPORT_COMPONENT_FACTORY( dummymeta, KGenericFactory<DummyMeta> );
+K_EXPORT_COMPONENT_FACTORY( dummymeta, KGenericFactory<DummyMeta> )
 
-DummyMeta::DummyMeta( QObject *parent, const char *name, 
+DummyMeta::DummyMeta( QObject *parent, const char *name,
                       const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
