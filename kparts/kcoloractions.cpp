@@ -4,6 +4,7 @@
 #include <qpopupmenu.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
+#include <qdrawutil.h>
 
 KColorAction::KColorAction( const QString& text, int accel,
 			    QObject* parent, const char* name )
@@ -188,4 +189,84 @@ void KColorAction::createPixmap()
 
     QPixmap pixmap( pix );
     setIconSet( QIconSet( pixmap ) );
+}
+
+KColorBar::KColorBar( const QValueList<QColor> &cols, 
+		      QWidget *parent, const char *name )
+    : QWidget( parent, name ), colors( cols )
+{
+    setMinimumSize( colors.count() * 16 + 10, 20 );
+    resize( minimumSize() );
+    show();
+}
+
+void KColorBar::mousePressEvent( QMouseEvent *e )
+{
+    int index = -1;
+    int y = ( height() - 12 ) / 2;
+    int x = 5;
+    QValueList<QColor>::Iterator it = colors.begin();
+    for ( int i = 0; it != colors.end(); ++it, ++i ) {
+	if ( QRect( x, y, 12, 12 ).contains( e->pos() ) )
+	    index = i;
+	x+= 16;
+    }
+    
+    if ( index != -1 && index < (int)colors.count() ) {
+	if ( e->button() == LeftButton )
+	    emit leftClicked( colors[ index ] );
+	else if ( e->button() == RightButton )
+	    emit rightClicked( colors[ index ] );
+    }
+}
+
+void KColorBar::paintEvent( QPaintEvent * )
+{
+    QPainter p;
+    p.begin( this );
+    int y = ( height() - 12 ) / 2;
+    int x = 5;
+    QValueList<QColor>::Iterator it = colors.begin();
+    for ( ; it != colors.end(); ++it ) {
+	qDrawShadePanel( &p, x, y, 12, 12, colorGroup(), TRUE );
+	p.fillRect( x + 1, y + 1, 10, 10, *it );
+	x+= 16;
+    }
+    p.end();
+}
+
+KColorBarAction::KColorBarAction( const QString &text, int accel, 
+				  QObject *r, const char *leftClickSlot_, const char *rightClickSlot_,
+				  const QValueList<QColor> &cols, QObject *parent, const char *name )
+    : QAction( text, accel, parent, name ), colors( cols )
+{
+    receiver = r;
+    leftClickSlot = qstrdup( leftClickSlot_ );
+    rightClickSlot = qstrdup( rightClickSlot_ );
+}
+
+int KColorBarAction::plug( QWidget *widget )
+{
+    if ( widget && widget->inherits( "QToolBar" ) ) {
+	QToolBar* bar = (QToolBar*)widget;
+	KColorBar *b;
+	b = new KColorBar( colors, widget, "" );
+	b->resize( 100, 25 );
+	b->show();
+	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+		 this, SIGNAL( leftClicked( const QColor & ) ) );
+	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+		 this, SIGNAL( rightClicked( const QColor & ) ) );
+	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+		 receiver, leftClickSlot );
+	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+		 receiver, rightClickSlot );
+
+	addContainer( bar, b );
+	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+	
+	return containerCount() - 1;
+    }
+    
+    return -1;
 }
