@@ -71,15 +71,10 @@ void Shell::slotFileOpenRemote()
 
 void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
 {
-  if ( newPart && oldPart )
-    qDebug( "%s -> %s", newPart->name(), oldPart->name() );
+  qDebug( "%s -> %s", oldPart ? oldPart->name() : "0L",
+                      newPart ? newPart->name() : "0L");
 
-  setUpdatesEnabled( false );
-
-  m_builder->clearGUI();
   m_builder->createGUI( newPart );
-
-  setUpdatesEnabled( true );
 }
 
 void Shell::resizeEvent( QResizeEvent * )
