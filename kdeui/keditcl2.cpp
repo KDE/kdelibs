@@ -138,7 +138,7 @@ void KEdit::searchdone_slot(){
     return;
 
   srchdialog->hide();
-  this->setFocus();
+  setFocus();
   last_search = NONE;
 
 }
@@ -232,7 +232,7 @@ bool KEdit::repeatSearch() {
 
   search_slot();
 
-  this->setFocus();
+  setFocus();
   return true;
 
 }
@@ -492,7 +492,7 @@ void KEdit::replacedone_slot(){
   replace_dialog->hide();
   //  replace_dialog->clearFocus();
 
-  this->setFocus();
+  setFocus();
 
   last_replace = NONE;
   can_replace  = FALSE;
@@ -981,6 +981,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   topLayout->addWidget( lineNum );
 
   topLayout->addStretch(10);
+  lineNum->setFocus();
 }
 
 
