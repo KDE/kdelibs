@@ -644,6 +644,7 @@ void UIServer::cancelCurrent() {
 
 int main(int argc, char **argv)
 {
+    KLocale::setMainCatalogue("kdelibs");
     KAboutData aboutdata("kio_uiserver", I18N_NOOP("UIServer"),
                          "0.8", I18N_NOOP("KDE Progress Information UI Server"),
                          KAboutData::License_GPL, "(C) 2000, David Faure & Matt Koss");
