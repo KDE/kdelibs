@@ -88,8 +88,8 @@ class KIO::Scheduler::ProtocolInfo
 {
 public:
     ProtocolInfo() : maxSlaves(1), skipCount(0)
-    { 
-       joblist.setAutoDelete(false); 
+    {
+       joblist.setAutoDelete(false);
     }
 
     QPtrList<SimpleJob> joblist;
@@ -226,7 +226,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
 //    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
-    
+
     slaveTimer.start(0, true);
 }
 
@@ -294,8 +294,8 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &pr
     {
         MetaData configData = slaveConfig->configData(protocol, host);
         sessionData->configDataFor( configData, protocol, host );
-       
-        configData["UseProxy"] = proxy; 
+
+        configData["UseProxy"] = proxy;
 
         QString autoLogin = configData["EnableAutoLogin"].lower();
         if ( autoLogin == "true" )
@@ -398,7 +398,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     protInfo->joblist.removeRef(job);
 //       kdDebug(7006) << "scheduler: job started " << job << endl;
 
-    
+
     JobData *jobData = extraJobData->find(job);
     setupSlave(slave, job->url(), jobData->protocol, jobData->proxy, newSlave);
     job->start(slave);
@@ -561,7 +561,7 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
    return slave;
 }
 
-void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool) 
+void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool)
 {
 }
 
@@ -848,7 +848,7 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
     return true;
 }
 
-void 
+void
 Scheduler::_checkSlaveOnHold(bool b)
 {
     checkOnHold = b;
