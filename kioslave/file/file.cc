@@ -445,7 +445,11 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     if ( _mode != -1 && !_resume )
     {
         if (::chmod(_dest_orig.data(), _mode) != 0)
-            warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
+        {
+            // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
+            if ( KIO::testFileSystemFlag( _dest_orig, KIO::SupportsChmod ) )
+                 warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
+        }
     }
 
     // We have done our job => finish
@@ -537,7 +541,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
                 use_sendfile = false;
             }
        }
-       if (!use_sendfile) 
+       if (!use_sendfile)
 #endif
         n = ::read( src_fd, buffer, MAX_IPC_SIZE );
 
@@ -546,14 +550,14 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
           if (errno == EINTR)
               continue;
 #ifdef USE_SENDFILE
-          if ( use_sendfile ) {        
+          if ( use_sendfile ) {
             kdDebug(7101) << "sendfile() error:" << strerror(errno) << endl;
             if ( errno == ENOSPC ) // disk full
             {
                 error( KIO::ERR_DISK_FULL, dest.path());
                 remove( _dest.data() );
             }
-          } else  
+          } else
 #endif
           error( KIO::ERR_COULD_NOT_READ, src.path());
           close(src_fd);
@@ -603,7 +607,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     {
        if (::chmod(_dest.data(), _mode) != 0)
        {
-           warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
+        // Eat the error if the filesystem apparently doesn't support chmod.
+        if ( KIO::testFileSystemFlag( _dest, KIO::SupportsChmod ) )
+            warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
        }
     }
 
@@ -612,7 +618,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     ut.actime = buff_src.st_atime;
     ut.modtime = buff_src.st_mtime;
     if ( ::utime( _dest.data(), &ut ) != 0 )
+    {
         kdWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
+    }
 
     processedSize( buff_src.st_size );
     finished();
