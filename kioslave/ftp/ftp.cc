@@ -335,6 +335,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
       error( ERR_OUT_OF_MEMORY, QString::null );
       return false;
     }
+  ksControl->setTimeout(60);	// a minute should be enough
   if (ksControl->connect() < 0)
     {
       if (ksControl->status() == IO_LookupError)
