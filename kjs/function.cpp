@@ -436,8 +436,9 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     int radix = args[1].toInt32(exec);
 
     char* endptr;
+    errno = 0;
     long value = strtol(cstr.c_str(), &endptr, radix);
-    if (errno == EINVAL || endptr == cstr.c_str())
+    if (errno != 0 || endptr == cstr.c_str())
       res = Number(NaN);
     else
       res = Number(value);
