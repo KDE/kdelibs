@@ -151,18 +151,31 @@ namespace KNotify
             return m_listview;
         }
 
-        ApplicationList& apps() { return m_apps; }
+        void addVisibleApp( Application *app );
+        ApplicationList& visibleApps() { return m_visibleApps; }
+        ApplicationList& allApps() { return m_allApps; }
+
         /**
          * Returns 0L if no application events could be found
+         * The returned pointer must be freed by the caller (easiest done
+         * by putting it into an ApplicationList with setAutoDelete( true )).
          */
         Application * addApplicationEvents( const QString& path );
 
         void resetDefaults( bool ask );
         void sort( bool ascending = true );
-        void setCurrentApplication( Application *app );
 
     public slots:
+        /**
+         * Clears the view and all the Application events.
+         */
         virtual void clear();
+        /**
+         * Clears only the view and the visible Application events.
+         * E.g. useful if you want to set new visible events with
+         * @ref #addVisibleApp()
+         */
+        virtual void clearVisible();
         virtual void save();
         virtual void showAdvanced( bool show );
         void toggleAdvanced();
@@ -206,13 +219,14 @@ namespace KNotify
         void updateWidgets( ListViewItem *item );
         void updatePixmaps( ListViewItem *item );
 
-        QString makeRelative( const QString& );
+        static QString makeRelative( const QString& );
         void addToView( const EventList& events );
         void widgetChanged( QListViewItem *item,
                             int what, bool on, QWidget *buddy = 0L );
         void selectItem( QListViewItem *item );
 
-        ApplicationList m_apps;
+        ApplicationList m_visibleApps;
+        ApplicationList m_allApps;
 
         class Private;
         Private *d;
