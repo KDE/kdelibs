@@ -27,6 +27,8 @@
 
 #include "pixmaploader.h"
 
+static QDict< QImage > imageDict;
+
 #include "pixmaps.embed"
 
 using namespace Keramik;
@@ -219,8 +221,9 @@ RectTilePainter::RectTilePainter( const QCString& name,
 
 QCString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 {
-	static QCString c = "lcr", r = "tcb";
-	return QCString( r.mid( row, 1 ) + c.mid( column, 1 ) );
+	static const char * const c[] = { "l", "c", "r" };
+	static const char * const r[] = { "t", "c", "b" };
+	return QCString( r[ row ] ) + c[ column ];
 }
 
 TilePainter::TileMode RectTilePainter::columnMode( unsigned int column ) const

@@ -20,4 +20,6 @@ PICS := $(shell ls $(srcdir)/pics/*.png 2>/dev/null)
 .PHONY: make-embed
 
 make-embed: $(PICS)
-	$(QEMBED) --images $^ > $(srcdir)/pixmaps.embed
+	$(QEMBED) --images $^ | \
+	sed -e 's,static QDict<QImage> dict;,,' | \
+	sed -e 's,dict\.find,imageDict.find,' > $(srcdir)/pixmaps.embed
