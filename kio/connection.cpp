@@ -130,6 +130,23 @@ void Connection::init(KSocket *sock)
     dequeue();
 }
 
+void Connection::init(int _fd_in, int fd_out)
+{
+    delete notifier;
+    notifier = 0;
+    fd_in = _fd_in;
+    f_out = fdopen( fd_out, "wb" );
+    if (receiver && ( fd_in != -1 )) {
+	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+	if ( m_suspended ) {
+            suspend();
+	}
+	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+    }
+    dequeue();
+}
+
+
 void Connection::connect(QObject *_receiver, const char *_member)
 {
     receiver = _receiver;

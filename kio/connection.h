@@ -51,12 +51,13 @@ namespace KIO {
 	virtual ~Connection();
 	
 	void init(KSocket *sock);
+	void init(int fd_in, int fd_out); // Used by KDENOX
 	void connect(QObject *receiver = 0, const char *member = 0);
 	void close();
 	
 	int fd_from() const { return fd_in; }
         int fd_to() const { return fileno( f_out ); }
-	
+
 	bool inited() const { return (fd_in != -1) && (f_out != 0); }
 	
 	// send (queues the command to be sent)
