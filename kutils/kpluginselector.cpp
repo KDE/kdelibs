@@ -266,6 +266,11 @@ void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool ch
     QApplication::restoreOverrideCursor();
 }
 
+inline void KPluginSelectionWidget::updateConfigPage()
+{
+    updateConfigPage( d->currentplugininfo, d->currentchecked );
+}
+
 void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
         bool checked )
 {
@@ -369,7 +374,7 @@ void KPluginSelectionWidget::load()
         info->load( d->config );
         it.key()->setOn( info->isPluginEnabled() );
     }
-    updateConfigPage( d->currentplugininfo, d->currentchecked );
+    updateConfigPage();
     // TODO: update changed state
 }
 
@@ -400,25 +405,11 @@ void KPluginSelectionWidget::save()
     for( QStringList::ConstIterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
         emit configCommitted( ( *it ).latin1() );
 
-    updateConfigPage( d->currentplugininfo, d->currentchecked );
+    updateConfigPage();
     kdDebug( 702 ) << "syncing config file" << endl;
     d->config->sync();
     d->changed = 0;
     emit changed( false );
-}
-
-void KPluginSelectionWidget::defaults()
-{
-    kdDebug( 702 ) << k_funcinfo << endl;
-
-    for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
-            d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-    {
-        it.data()->defaults();
-        it.key()->setOn( it.data()->isPluginEnabled() );
-    }
-    updateConfigPage( d->currentplugininfo, d->currentchecked );
-    // TODO: update changed state
 }
 
 void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
@@ -612,11 +603,36 @@ void KPluginSelector::save()
 
 void KPluginSelector::defaults()
 {
-    for( QValueList<KPluginSelectionWidget *>::Iterator it =
-            d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
+    kdDebug( 702 ) << k_funcinfo << endl;
+
+    // what should defaults do? here's what I think:
+    // Pressing a button in the dialog should not change any widgets that are
+    // not visible for the user. Therefor we may only change the currently
+    // visible plugin's KCM. Restoring the default plugin selections is therefor
+    // not possible. (if the plugin has multiple KCMs they will be shown in a
+    // tabwidget - defaults() will be called for all of them)
+
+    QWidget * pluginconfig = d->widgetstack->visibleWidget();
+    KCModule * kcm = ( KCModule* )pluginconfig->qt_cast( "KCModule" );
+    if( kcm )
     {
-        ( *it )->defaults();
+        kdDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
+            << endl;
+        kcm->defaults();
+        return;
     }
+
+    // doesn't work for plugins with more than one KCM
+    QObjectList * kcms = pluginconfig->queryList( "KCModule", 0, false, false );
+    QObjectListIt it( *kcms );
+    QObject * obj;
+    while( ( obj = it.current() ) != 0 )
+    {
+        ++it;
+        ( ( KCModule* )obj )->defaults();
+    }
+    delete kcms;
+    // FIXME: update changed state
 }
 
 // vim: sw=4 sts=4 et
