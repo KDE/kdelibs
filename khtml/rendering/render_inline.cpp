@@ -81,12 +81,8 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
         // inline into continuations.  This involves creating an anonymous block box to hold
         // |newChild|.  We then make that block box a continuation of this inline.  We take all of
         // the children after |beforeChild| and put them in a clone of this object.
-        RenderStyle *newStyle = new RenderStyle();
-        newStyle->inheritFrom(style());
-        newStyle->setDisplay(BLOCK);
 
-        RenderBlock *newBox = new (renderArena()) RenderBlock(element()->getDocument() /* anonymous box */);
-        newBox->setStyle(newStyle);
+        RenderBlock *newBox = createAnonymousBlock();
         RenderFlow* oldContinuation = continuation();
         setContinuation(newBox);
 
@@ -189,7 +185,7 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     RenderBlock* pre = 0;
     RenderBlock* block = containingBlock();
     bool madeNewBeforeBlock = false;
-    if (block->isAnonymous() && block->style()->display() == BLOCK) {
+    if (block->isAnonymousBlock()) {
         // We can reuse this block and make it the preBlock of the next continuation.
         pre = block;
         block = block->containingBlock();

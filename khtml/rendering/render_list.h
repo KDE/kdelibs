@@ -98,7 +98,7 @@ protected:
 class RenderListMarker : public RenderBox
 {
 public:
-    RenderListMarker(DOM::DocumentImpl* document);
+    RenderListMarker(DOM::NodeImpl* node);
     ~RenderListMarker();
 
     virtual void setStyle(RenderStyle *style);

@@ -1075,25 +1075,26 @@ QString RenderObject::information() const
     if (mouseInside()) ts << "mi ";
     if (style() && style()->zIndex()) ts << "zI: " << style()->zIndex();
     if (style() && style()->hasAutoZIndex()) ts << "zI: auto ";
-    if (element() && element()->active()) ts << "act ";
-    if (element() && element()->hasAnchor()) ts << "anchor ";
-    if (element() && element()->focused()) ts << "focus ";
     if (element()) {
-        ts << " <" <<  getTagName(element()->id());
-        if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
-            QString pseudo;
-            switch (style()->styleType()) {
-              case RenderStyle::FIRST_LETTER:
-                pseudo = ":first-letter"; break;
-              case RenderStyle::BEFORE:
-                pseudo = ":before"; break;
-              case RenderStyle::AFTER:
-                pseudo = ":after"; break;
-              default:
-                pseudo = ":pseudo-element";
-            }
-            ts << pseudo;
+        if (element()->active()) ts << "act ";
+        if (element()->hasAnchor()) ts << "anchor ";
+        if (element()->focused()) ts << "focus ";
+        ts << " <" <<  getTagName(element()->id()) << ">";
+        
+    } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+        ts << " <" <<  getTagName(node()->id());
+        QString pseudo;
+        switch (style()->styleType()) {
+          case RenderStyle::FIRST_LETTER:
+            pseudo = ":first-letter"; break;
+          case RenderStyle::BEFORE:
+            pseudo = ":before"; break;
+          case RenderStyle::AFTER:
+            pseudo = ":after"; break;
+          default:
+            pseudo = ":pseudo-element";
         }
+        ts << pseudo;
         ts << ">";
     }
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
@@ -1154,23 +1155,22 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (element()) {
         QString tagName(getTagName(element()->id()));
         if (!tagName.isEmpty()) {
-            ts << " {" << tagName;
-            if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
-                QString pseudo;
-                switch (style()->styleType()) {
-                  case RenderStyle::FIRST_LETTER:
-                    pseudo = ":first-letter"; break;
-                  case RenderStyle::BEFORE:
-                    pseudo = ":before"; break;
-                  case RenderStyle::AFTER:
-                    pseudo = ":after"; break;
-                  default:
-                    pseudo = ":pseudo-element";
-                }
-                ts << pseudo;
-            }
-            ts << "}";
+            ts << " {" << tagName << "}";
         }
+    } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+        QString pseudo;
+        QString tagName(getTagName(node()->id()));
+        switch (style()->styleType()) {
+          case RenderStyle::FIRST_LETTER:
+            pseudo = ":first-letter"; break;
+          case RenderStyle::BEFORE:
+            pseudo = ":before"; break;
+          case RenderStyle::AFTER:
+            pseudo = ":after"; break;
+          default:
+            pseudo = ":pseudo-element";
+        }
+        ts << " {" << tagName << pseudo << "}";
     }
 
     QRect r(xPos(), yPos(), width(), height());

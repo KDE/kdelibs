@@ -66,7 +66,8 @@ void RenderListItem::setStyle(RenderStyle *_style)
     newStyle->inheritFrom(style());
 
     if(!m_marker && style()->listStyleType() != LNONE) {
-        m_marker = new (renderArena()) RenderListMarker(element()->getDocument());
+        m_marker = new (renderArena()) RenderListMarker(element());
+        m_marker->setIsAnonymous( true );
         m_marker->setStyle(newStyle);
         m_marker->setListItem( this );
         m_deleteMarker = true;
@@ -132,7 +133,7 @@ void RenderListItem::updateMarkerLocation()
             // then we are the only item in that anonymous box (since no line box
             // parent was found).  It's ok to just leave the marker where it is
             // in this case.
-            if (markerPar && markerPar->isAnonymous())
+            if (markerPar && markerPar->isAnonymousBlock())
                 lineBoxParent = markerPar;
             else
                 lineBoxParent = this;
@@ -246,7 +247,7 @@ void RenderListItem::calcListTotal()
 
 // -----------------------------------------------------------
 
-RenderListMarker::RenderListMarker(DOM::DocumentImpl* node)
+RenderListMarker::RenderListMarker(DOM::NodeImpl* node)
     : RenderBox(node), m_listImage(0), m_value(-1), m_total(-1), m_markerWidth(0)
 {
     // init RenderObject attributes

@@ -289,18 +289,22 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     // we encounter.
     for (ContentData* contentData = pseudo->contentData();
          contentData; contentData = contentData->_nextContent) {
-        if (!pseudoContainer)
-            pseudoContainer = RenderFlow::createFlow(document(), pseudo, renderArena()); /* anonymous box */
+        if (!pseudoContainer) {
+            pseudoContainer = RenderFlow::createFlow(element(), pseudo, renderArena());
+            pseudoContainer->setIsAnonymous( true );
+        }
 
         if (contentData->_contentType == CONTENT_TEXT)
         {
-            RenderText* t = new (renderArena()) RenderText( document() /*anonymous object */, contentData->contentText());
+            RenderText* t = new (renderArena()) RenderText( element(), contentData->contentText());
+            t->setIsAnonymous( true );
             t->setStyle(pseudo);
             pseudoContainer->addChild(t);
         }
         else if (contentData->_contentType == CONTENT_OBJECT)
         {
-            RenderImage* img = new (renderArena()) RenderImage(document()); /* Anonymous object */
+            RenderImage* img = new (renderArena()) RenderImage(element());
+            img->setIsAnonymous( true );
             RenderStyle* style = new RenderStyle();
             style->inheritFrom(pseudo);
             img->setStyle(style);
@@ -354,7 +358,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     }
 
     KHTMLAssert(!child->parent());
-    while ( beforeChild->parent() != this && beforeChild->parent()->isAnonymous() )
+    while ( beforeChild->parent() != this && beforeChild->parent()->isAnonymousBlock() )
 	beforeChild = beforeChild->parent();
     KHTMLAssert(beforeChild->parent() == this);
 
@@ -399,7 +403,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     while( child ) {
 	RenderObject *next = child->nextSibling();
 
-	if ( child->isRenderBlock() && child->isAnonymous() && !child->continuation() &&
+	if ( child->isRenderBlock() && child->isAnonymousBlock() && !child->continuation() &&
              !child->childrenInline() && !child->isTableCell() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();

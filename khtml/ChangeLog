@@ -1,7 +1,34 @@
+2005-02-01  Germain Garand  <germain@ebooksfrance.org>
+
+        clearly separate full blown anonymous blocks (isAnonymousBlock) from
+        pseudo-elements (isPseudoAnonymous). #74595, #92910.
+
+        * rendering/render_block.cpp
+        (setStyle,updateFirstLetter,addChildToFlow,removeChild,close,renderName):
+        Only real anonymous blocks can be manipulated interchangeably => adjust logic.
+        PseudoAnonymous blocks have a null element(), but they keep a relationship to
+        the element they were generated from, that can be gathered from node()
+
+        * rendering/render_container.cpp (updatePseudoChild,insertChildNode,removeLeftoverAnonymousBoxes):
+        ditto.
+
+        * rendering/render_inline.cpp (addChildToFlow,splitFlow): ditto.
+
+        * rendering/render_list.cpp (setStyle,updateMarkerLocation,RenderListMarker):
+        ditto.
+
+        * rendering/render_object.cpp
+        (RenderObject::information): highlight the pseudo-element to originating element relationship in output.
+        (RenderObject::dump): ditto.
+
+        * rendering/render_object.h (requiresLayer): add missing hasOverflowClip condition
+        (isAnonymousBlock): ditto.
+        (isPseudoAnonymous): ditto.
+
 2005-01-25  Germain Garand  <germain@ebooksfrance.org>
 
-        * khtmlview.cpp (clear/timerEvent): disable scrollbars before first relayout (avoids blanking the view)
-        (viewportWheelEvent): same for wheel events. Also support Horizontal wheel events (needs qt-copy/patch #61).
+        * khtmlview.cpp (viewportWheelEvent): discard wheel events occuring before the first relayout (avoids blanking the view). 
+         Also support Horizontal wheel events (needs qt-copy/patch #61).
 
 2005-01-25  Germain Garand  <germain@ebooksfrance.org>
         

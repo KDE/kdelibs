@@ -136,7 +136,7 @@ public:
                                bool checkParent=true);
     virtual void positionChildLayers() { }
     virtual bool requiresLayer() const {
-        return isRoot() || (!isTableCell() && (isPositioned() || isRelPositioned()));
+        return isRoot() || (!isTableCell() && (isPositioned() || isRelPositioned() || hasOverflowClip()));
     }
 
     // ### rename to overflowClipRect and clipRect
@@ -234,6 +234,8 @@ public:
 
     bool isAnonymous() const { return m_isAnonymous; }
     void setIsAnonymous(bool b) { m_isAnonymous = b; }
+    bool isAnonymousBlock() const { return isAnonymous() && style()->display() == BLOCK && node()->isDocumentNode(); }
+    bool isPseudoAnonymous() const { return isAnonymous() && !node()->isDocumentNode(); }
 
     bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; }
@@ -396,6 +398,7 @@ public:
         friend class RenderFlow;
         friend class RenderInline;
         friend class RenderText;
+        friend class RenderWidget;
         friend class RenderObject;
         friend class RenderFrameSet;
 	friend class RenderLayer;
