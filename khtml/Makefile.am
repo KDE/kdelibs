@@ -41,7 +41,7 @@ noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_ext.h
 		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h
 
 if include_VERSION_SCRIPT
-VSCRIPT='-Wl,--version-script=$(srcdir)/libkhtml.map'
+VSCRIPT = -Wl,--version-script=$(srcdir)/libkhtml.map
 endif
 
 libkhtml_la_LDFLAGS = -version-info 6:0:2 -module -no-undefined $(VSCRIPT) $(all_libraries)
