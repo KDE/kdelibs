@@ -32,6 +32,8 @@
 #define KDE_DEFAULT_WHEEL_ZOOM false
 #define KDE_DEFAULT_ICON_ON_PUSHBUTTON false
 
+class KURL;
+
 /**
  * Access the KDE global configuration.
  *
@@ -454,6 +456,16 @@ class KGlobalSettings
      * @since 3.2
      */
     static bool showIconsOnPushButtons();
+
+    /**
+     * This function determines if the user wishes to see previews
+     * for the selected url
+     *
+     * @return Returns true if user wants to show previews.
+     *
+     * @since 3.2
+     */
+    static bool showFilePreview(const KURL &);
 
 private:
     /**

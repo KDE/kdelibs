@@ -36,6 +36,7 @@
 #include <klocale.h>
 #include <qfontinfo.h>
 #include <stdlib.h>
+#include <kprotocolinfo.h>
 
 #ifdef Q_WS_X11
 //#include <X11/X.h>
@@ -669,3 +670,10 @@ bool KGlobalSettings::showIconsOnPushButtons()
         KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
+bool KGlobalSettings::showFilePreview(const KURL &url)
+{
+    KConfigGroup g(KGlobal::config(), "PreviewSettings");
+    QString protocol = url.protocol();
+    QString protocolClass = KProtocolInfo::protocolClass(protocol);
+    return g.readBoolEntry(protocol, (protocolClass == ":local") );
+}
