@@ -954,6 +954,23 @@ public:
    */
   bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
 
+  /**
+   * Returns whether access to a certain control module is authorized.
+   *
+   * @param menuId identifying the control module, e.g. kde-mouse.desktop
+   * @return true if access to the module is authorized, false otherwise.
+   */
+  bool authorizeControlModule(const QString &menuId);
+  
+  /**
+   * Returns whether access to a certain control modules is authorized.
+   *
+   * @param menuIds list of menu-ids of control module, 
+   * an example of a menu-id is kde-mouse.desktop.
+   * @return Those control modules for which access has been authorized.
+   */
+  QStringList authorizeControlModules(const QStringList &menuIds);
+
 
   // Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,

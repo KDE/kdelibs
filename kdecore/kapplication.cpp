@@ -2625,6 +2625,16 @@ bool KApplication::authorizeKAction(const char *action)
    return authorize(action_prefix + action);
 }
 
+bool KApplication::authorizeControlModule(const QString &/*menuId*/)
+{
+   return true;
+}
+
+QStringList KApplication::authorizeControlModules(const QStringList &menuIds)
+{
+   return menuIds;
+}
+
 void KApplication::initUrlActionRestrictions()
 {
   d->urlActionRestrictions.setAutoDelete(true);
