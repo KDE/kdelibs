@@ -797,6 +797,7 @@ static QStringList getManDirectories()
 				
 		if ( f.open(IO_ReadOnly) ) {
 			QTextStream t( &f );
+			t.setEncoding( QTextStream::Latin1 );
 			QString s;
 
 			while ( !t.eof() ) {
