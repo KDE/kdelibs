@@ -784,7 +784,7 @@ void RenderTable::calcColMinMax()
     int margin=0;
 
     int realMaxWidth=spacing;
-    
+
     LengthType widthType = style()->width().type;
 
     Length ml = style()->marginLeft();
@@ -801,13 +801,13 @@ void RenderTable::calcColMinMax()
     if (margin<0) margin=0;
 
     availableWidth -= margin;
-    // PHASE 2, calculate simple minimums and maximums   
-    
+    // PHASE 2, calculate simple minimums and maximums
+
 
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
     {
         ColInfoLine* spanCols = colInfos[s];
-        
+
         int spanMax=0;
 
         for ( unsigned int c=0; c<totalCols-s; ++c)
@@ -835,7 +835,7 @@ void RenderTable::calcColMinMax()
             }
 
         }
-        
+
         // this should be some sort of generic path algorithm
         // but we'll just hack it for now
         if (spanMax>realMaxWidth)
@@ -919,8 +919,7 @@ void RenderTable::calcColMinMax()
     {
         //kdDebug( 6040 ) << "2 percentWidest=" << percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
         int tot = KMIN(99,int( totalPercent ));
-        int w = KMAX(availableWidth, (minVar + minRel)*100/(100-tot) );
-        m_width = KMIN(w, availableWidth);
+        m_width = KMIN(availableWidth, (minVar + minRel)*100/(100-tot) );
     }
     else if (hasPercent && hasFixed)
     {
@@ -975,11 +974,11 @@ void RenderTable::calcColMinMax()
         int mx;
         if (hasFixed)
             mx = (maxFixed + minVar + minRel) * 100 /(100 - tot);
-        else 
+        else
             mx = (minVar + minRel)*100/(100-tot);
 
         if (mx>0) m_maxWidth=mx;
-        
+
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
     }
@@ -997,7 +996,7 @@ void RenderTable::calcColMinMax()
 
     /*kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " m_minWidth=" << m_minWidth <<
-                " m_maxWidth=" << m_maxWidth << 
+                " m_maxWidth=" << m_maxWidth <<
                 " realMaxWidth=" << realMaxWidth << endl;*/
 
 
