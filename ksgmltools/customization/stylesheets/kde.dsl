@@ -30,6 +30,7 @@
   <!ENTITY kde-localisation SYSTEM "kde-l10n.dsl" -- in namespace of language entities -->
   <!ENTITY kde-html-faq.dsl SYSTEM "kde-faq.dsl">
   <!ENTITY kde-html-navig.dsl SYSTEM "kde-navig.dsl">
+  <!ENTITY kde-html-ttlpg.dsl SYSTEM "kde-ttlpg.dsl">
   <!ENTITY kde-html-anchor.dsl SYSTEM "kde-anchor.dsl">
   <!ENTITY kde-html-search.dsl SYSTEM "kde-search.dsl">
 ]>
@@ -452,6 +453,7 @@
 (define %gentext-nav-tblwidth% "50%") ; only effective if %gentext-nav-use-tables% is #t
 
 &kde-html-navig.dsl;
+&kde-html-ttlpg.dsl;
 
 ;; Creates file with list of anchors
 &kde-html-anchor.dsl;

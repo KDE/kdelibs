@@ -10,3 +10,5 @@
  -->
 <!ENTITY Default "Standaard">
 <!ENTITY Dutch   "Nederlands">
+<!ENTITY Version "Versie">
+<!ENTITY LastUpdated "Laatste aanpassing">

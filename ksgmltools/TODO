@@ -32,11 +32,10 @@
 + Is qandaset isolation a bug?
 
 * Other
-- make clear: &kapp; and indexterm use (so that index can be activated)
+- make clear: indexterm use (so that index can be activated)
 - anchors can be requested by programmers (change as little as possible)
 - guidelines/checker
 - different types of links and targets
-- HTML result OK?  ()
 - make clear other functionality can be requested by documentation writers (eg
   line numbering, etc.)
 - Provide info for Postscript (and source code) (with link?)

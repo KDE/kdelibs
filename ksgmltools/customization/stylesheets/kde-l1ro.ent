@@ -10,3 +10,5 @@
  -->
 <!ENTITY Default "Implicit">
 <!ENTITY Romanian "Românesc">
+<!ENTITY Version "Version">
+<!ENTITY LastUpdated "Last updated">
