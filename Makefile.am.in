@@ -21,9 +21,10 @@
 COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kio
 COMPILE_BEFORE_doc = kdoctools
 COMPILE_AFTER_kparts = kdeprint kinit kate interfaces kcert khtml
-COMPILE_BEFORE_khtml = kdeprint kspell kjs
+COMPILE_AFTER_kdeprint = kate khtml
+COMPILE_BEFORE_khtml = kspell
 COMPILE_BEFORE_kabc = kab
-COMPILE_BEFORE_kate = interfaces kdeprint
+COMPILE_BEFORE_kate = interfaces
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl/ltdl.m4 > acinclude.m4
