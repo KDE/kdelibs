@@ -1,6 +1,6 @@
 [Desktop Entry]
 Comment=PERL program
-Icon=terminal
+Icon=mimetypes/unknown
 Type=MimeType
 MimeType=application/x-perl
 Patterns=*.pl;*.perl;

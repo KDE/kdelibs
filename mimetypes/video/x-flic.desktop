@@ -1,12 +1,13 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=video/x-flic
-Icon=aktion
+Icon=mimetypes/video
 Patterns=*.fli;*.flc;*.FLI;*.FLC;
 Comment=Autodesk's FLIC files
 Comment[ca]=Fitxers Autodesk FLIC
 Comment[cs]=FLIC soubory programu Autodesk
 Comment[da]=Autodesks FLIC filer
+Comment[de]=FLIC-Dateien (Autodesk)
 Comment[eo]=Autodesk-FLIC-dosiero
 Comment[es]=Animación FLIC de Autodesk
 Comment[fi]=Autodeskin FLIC tiedosto
