@@ -32,6 +32,8 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
+class QPopupMenu;
+
 class KCompletionBox;
 class KURL;
 
@@ -83,7 +85,7 @@ class KURL;
  * list. Hence, if the @p EchoMode is not @ref QLineEdit::Normal, the completion
  * mode is automatically disabled.
  *
- * @sect Examples
+ * @sect Useage
  *
  * To enable the basic completion feature :
  *
@@ -132,34 +134,34 @@ class KURL;
 
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
-	Q_OBJECT
-	Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
-	Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+  Q_OBJECT
+  Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
+  Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
 
 public:
 
     /**
-    * Construct a @ref KLineEdit object with a default text, a parent,
-    * and a name.
-    *
-    * @param string Text to be shown in the edit widget.
-    * @param parent The parent object of this widget.
-    * @param name the name of this widget
-    */
+     * Construct a @ref KLineEdit object with a default text, a parent,
+     * and a name.
+     *
+     * @param string Text to be shown in the edit widget.
+     * @param parent The parent object of this widget.
+     * @param name the name of this widget
+     */
     KLineEdit( const QString &string, QWidget *parent, const char *name = 0 );
 
     /**
-    * Construct a @ref KLineEdit object with a parent and a name.
-    *
-    * @param string Text to be shown in the edit widget.
-    * @param parent The parent object of this widget.
-    * @param name The name of this widget.
-    */
+     * Construct a @ref KLineEdit object with a parent and a name.
+     *
+     * @param string Text to be shown in the edit widget.
+     * @param parent The parent object of this widget.
+     * @param name The name of this widget.
+     */
     KLineEdit ( QWidget *parent=0, const char *name=0 );
 
     /**
-    *  Destructor.
-    */
+     *  Destructor.
+     */
     virtual ~KLineEdit ();
 
     /**
@@ -169,24 +171,24 @@ public:
     void setURL( const KURL& url );
 
     /**
-    * Put cursor at the end of the string.
-    *
-    * This method is deprecated.  Use @ref QLineEdit::end()
-    * instead.
-    *
-    * @deprecated
-    * @ref QLineEdit::end()
-    */
+     * Put cursor at the end of the string.
+     *
+     * This method is deprecated.  Use @ref QLineEdit::end()
+     * instead.
+     *
+     * @deprecated
+     * @ref QLineEdit::end()
+     */
     void cursorAtEnd() { end( false ); }
 
     /**
-    * Re-implemented from @ref KCompletionBase for internal reasons.
-    *
-    * This function is re-implemented in order to make sure that
-    * the EchoMode is acceptable before we set the completion mode.
-    *
-    * See @ref KCompletionBase::setCompletionMode
-    */
+     * Re-implemented from @ref KCompletionBase for internal reasons.
+     *
+     * This function is re-implemented in order to make sure that
+     * the EchoMode is acceptable before we set the completion mode.
+     *
+     * See @ref KCompletionBase::setCompletionMode
+     */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
    /**
@@ -206,10 +208,10 @@ public:
     virtual void setContextMenuEnabled( bool showMenu ) {  m_bEnableMenu = showMenu; }
 
     /**
-    * Returns @p true when the context menu is enabled.
-    *
-    * @return @p true If context menu is enabled.
-    */
+     * Returns @p true when the context menu is enabled.
+     *
+     * @return @p true If context menu is enabled.
+     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
@@ -251,10 +253,10 @@ public:
     bool trapReturnKey() const;
 
     /**
-    * Re-implemented for internal reasons.  API not affected.
-    *
-    * @reimplemented
-    */
+     * Re-implemented for internal reasons.  API not affected.
+     *
+     * @reimplemented
+     */
     virtual bool eventFilter( QObject *, QEvent * );
 
     /**
@@ -269,39 +271,51 @@ public:
      * Reimplemented for internal reasons, the API is not affected.
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
-    
+
+    /**
+     * Returns a pointer to the popup widget used for the
+     * context menu.
+     *
+     * This method allows to extend the popup menu by inserting
+     * your own context menu items.
+     *
+     * <u>NOTE:</u> The popupmenu widget returned by this method
+     * is automatically deleted whenever this widget's destructor
+     * is called!
+     */
+    QPopupMenu* contextMenu();
+
 signals:
 
     /**
-    * Emitted when the user presses the return
-    * key.
-    *
-    *  The argument is the current text.  Note that this
-    * signal is @em not emitted if the widget's @p EchoMode is set to
-    * @ref QLineEdit::Password.
-    */
+     * Emitted when the user presses the return key.
+     *
+     *  The argument is the current text.  Note that this
+     * signal is @em not emitted if the widget's @p EchoMode is set to
+     * @ref QLineEdit::Password.
+     */
     void returnPressed( const QString& );
 
     /**
-    * Emitted when the completion key is pressed.
-    *
-    * Please note that this signal is @em not emitted if the
-    * completion mode is set to @p CompletionNone or @p EchoMode is
-    * @em normal.
-    */
+     * Emitted when the completion key is pressed.
+     *
+     * Please note that this signal is @em not emitted if the
+     * completion mode is set to @p CompletionNone or @p EchoMode is
+     * @em normal.
+     */
     void completion( const QString& );
 
     /**
-    * Emitted when the text rotation key-bindings are pressed.
-    *
-    * The argument indicates which key-binding was pressed.
-    * In @ref KLineEdit's case this can be either one of two values:
-    * @ref PrevCompletionMatch or @ref NextCompletionMatch. See
-    * @ref KCompletionBase::setKeyBinding for details.
-    *
-    * Note that this signal is @em not emitted if the completion
-    * mode is set to @p CompletionNone or @p EchoMode is @em not  normal.
-    */
+     * Emitted when the text rotation key-bindings are pressed.
+     *
+     * The argument indicates which key-binding was pressed.
+     * In @ref KLineEdit's case this can be either one of two values:
+     * @ref PrevCompletionMatch or @ref NextCompletionMatch. See
+     * @ref KCompletionBase::setKeyBinding for details.
+     *
+     * Note that this signal is @em not emitted if the completion
+     * mode is set to @p CompletionNone or @p EchoMode is @em not  normal.
+     */
     void textRotation( KCompletionBase::KeyBindingType );
 
     /**
@@ -313,20 +327,20 @@ signals:
 public slots:
 
     /**
-    * Iterate through all possible matches of the completed text or
-    * the history list.
-    *
-    * This function simply iterates over all possible matches in case
-    * multimple matches are found as a result of a text completion request.
-    * It will have no effect if only a single match is found.
-    *
-    * @param type The key-binding invoked.
-    */
+     * Iterate through all possible matches of the completed text or
+     * the history list.
+     *
+     * This function simply iterates over all possible matches in case
+     * multimple matches are found as a result of a text completion request.
+     * It will have no effect if only a single match is found.
+     *
+     * @param type The key-binding invoked.
+     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
-    /*
-    * See @ref KCompletionBase::setCompletionText.
-    */
+    /**
+     * See @ref KCompletionBase::setCompletionText.
+     */
     virtual void setCompletedText( const QString& );
 
     /**
@@ -378,7 +392,6 @@ protected:
     */
     virtual void dropEvent( QDropEvent * );
 
-
     /*
     * This function simply sets the lineedit text and
     * highlights the text appropriately if the boolean
@@ -390,11 +403,9 @@ protected:
     virtual void setCompletedText( const QString& /*text*/, bool /*marked*/ );
 
 private:
-    void makeCompletionBox(); // creates the completion box
-
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
-    // in the future though this is working lovely.
+    // in the future though it's working lovely.
     enum MenuID {
         Default=0,
         Cut,
@@ -410,15 +421,14 @@ private:
         SemiAutoCompletion
     };
 
-    /**
-    * Initializes variables.  Called from the constructors.
-    */
+    /** Initializes variables.  Called from the constructors. */
     void init();
+    /** Creates the completion box */
+    void makeCompletionBox();
+    /** Returns the context menu, creates a new one if did not exist. */
+    QPopupMenu* contextMenuInternal();
 
-    // Indicates whether the context
-    // menu is enabled or disabled
     bool m_bEnableMenu;
-
     class KLineEditPrivate;
     KLineEditPrivate *d;
 };

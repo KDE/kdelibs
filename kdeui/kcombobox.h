@@ -28,7 +28,9 @@
 #include <kcompletion.h>
 
 class QListBoxItem;
+class QPopupMenu;
 class QLineEdit;
+
 class KCompletionBox;
 class KURL;
 
@@ -79,7 +81,7 @@ class KURL;
  * automatically select an item from the list by trying to match the pressed
  * keycode with the first letter of the enteries in the combo box.
  *
- * @sect Example
+ * @sect Useage
  *
  * To enable the basic completion feature:
  *
@@ -329,6 +331,15 @@ public:
     KCompletionBox * completionBox();
 
     /**
+     * Returns a pointer to the popup used as the a context menu.
+     *
+     * <u>NOTE:</u> The popupmenu is automatically deleted whenever
+     * this widget is destroyed!  Do not use after you destroy this
+     * combobox, unless you want to crash and burn!
+     */
+    QPopupMenu* contextMenu();
+
+    /**
      * Reimplemented for internal reasons, the API is not affected.
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
@@ -473,8 +484,6 @@ protected:
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
 private:
-    void makeCompletionBox(); // creates the completion box
-
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
     // in the future though this is working lovely.
@@ -493,13 +502,13 @@ private:
         SemiAutoCompletion
     };
 
-    /**
-    * Initializes the variables upon construction.
-    */
+    /** Initializes the variables upon construction. */
     void init();
+    /** Creates the completion box */
+    void makeCompletionBox();
+    /** Returns the context menu, creates a new one if did not exist. */
+    QPopupMenu* contextMenuInternal();
 
-    // Flag that indicates whether we enable/disable
-    // the context (popup) menu.
     bool m_bEnableMenu;
 
     // Pointer to the line editor.

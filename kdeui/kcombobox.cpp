@@ -22,12 +22,12 @@
 
 #include <qclipboard.h>
 #include <qlistbox.h>
+#include <qpopupmenu.h>
 
 #include <kcursor.h>
 #include <klocale.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
-#include <kpopupmenu.h>
 #include <kicontheme.h>
 #include <kdebug.h>
 #include <kcompletionbox.h>
@@ -43,9 +43,12 @@
 class KComboBox::KComboBoxPrivate
 {
 public:
-    KCompletionBox *completionBox;
     QString origText;
     bool handleURLDrops;
+    bool hasReference;
+    KCompletionBox *completionBox;
+    QPopupMenu* popupMenu;
+    QPopupMenu* subMenu;
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
@@ -53,7 +56,6 @@ KComboBox::KComboBox( QWidget *parent, const char *name )
 {
     m_trapReturnKey = false;
     m_pEdit = lineEdit();
-
     init();
 }
 
@@ -67,12 +69,13 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
         KCursor::setAutoHideCursor( lineEdit(), true, true );
         m_pEdit->installEventFilter( this );
     }
-
     init();
 }
 
 KComboBox::~KComboBox()
 {
+    if ( d->popupMenu )
+      delete d->popupMenu;
     delete d->completionBox;
     delete d;
 }
@@ -81,7 +84,7 @@ void KComboBox::init()
 {
     d = new KComboBoxPrivate;
     d->completionBox = 0L;
-    d->handleURLDrops=true;
+    d->handleURLDrops = true;
 
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
@@ -146,11 +149,13 @@ bool KComboBox::isURLDropsEnabled() const
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
     if ( marked )
-	m_pEdit->validateAndSet( text, currentText().length(),
-				 currentText().length(), text.length() );
+        m_pEdit->validateAndSet( text, currentText().length(),
+                                 currentText().length(), text.length() );
     else
-	if ( text != currentText() ) // no need to flicker
-	    setEditText( text );
+    {
+        if ( text != currentText() ) // no need to flicker
+            setEditText( text );
+    }
 }
 
 void KComboBox::setCompletedText( const QString& text )
@@ -176,24 +181,26 @@ void KComboBox::makeCompletion( const QString& text )
             makeCompletionBox();
 
         QString match = comp->makeCompletion( text );
-	if ( compPopup ) {
-	    if ( match.isNull() ) {
-		d->completionBox->hide();
-		d->completionBox->clear();
-	    }
-	    else
-		setCompletedItems( comp->allMatches() );
-	}
+        if ( compPopup )
+        {
+            if ( match.isNull() )
+            {
+                d->completionBox->hide();
+                d->completionBox->clear();
+            }
+            else
+                setCompletedItems( comp->allMatches() );
+        }
+        else
+        {
+            // all other completion modes
+            // If no match or the same text, simply return without completing.
+            if( match.isNull() || match == text )
+                return;
+            bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+                            mode == KGlobalSettings::CompletionMan );
 
-	else { // all other completion modes
-	    // If no match or the same text, simply return without completing.
-	    if( match.isNull() || match == text )
-		return;
-
-	    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-			    mode == KGlobalSettings::CompletionMan );
-
-	    setCompletedText( match, marked );
+            setCompletedText( match, marked );
         }
     }
 
@@ -241,10 +248,10 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
     if ( m_pEdit && m_pEdit->hasFocus() )
     {
         KGlobalSettings::Completion mode = completionMode();
-	KeyBindingMap keys = getKeyBindings();
+        KeyBindingMap keys = getKeyBindings();
 
         if ( mode == KGlobalSettings::CompletionAuto ||
-	     mode == KGlobalSettings::CompletionMan )
+             mode == KGlobalSettings::CompletionMan )
         {
             QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -292,17 +299,15 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     if ( handleSignals() )
                         makeCompletion( txt );  // handle when requested...
                     return;
-                }
+               }
             }
-	    
-	    else if ( d->completionBox )
-		d->completionBox->hide();
-	}
-	
-	
-	// handle rotation
-	if ( mode != KGlobalSettings::CompletionNone ) {
-	
+            else if ( d->completionBox )
+                d->completionBox->hide();
+        }
+
+        // handle rotation
+        if ( mode != KGlobalSettings::CompletionNone )
+        {
             // Handles previousMatch.
             int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
             if ( KStdAccel::isEqual( e, key ) )
@@ -372,51 +377,45 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 if( !m_bEnableMenu )
                     return true;
 
-                KPopupMenu *popup = new KPopupMenu( this );
-                popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
-                popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
-                popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
-                popup->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
-                // Create and insert the completion sub-menu iff
-                // a completion object is present.
-                if ( compObj() )
+                if ( !d->popupMenu )
                 {
-                    KPopupMenu* subMenu = new KPopupMenu( popup );
+                    d->hasReference = false;
+                    d->popupMenu = contextMenuInternal();
+                }
+
+                if( compObj() )
+                {
+                    d->subMenu->clear();
                     KGlobalSettings::Completion mode = completionMode();
-                    subMenu->insertItem( i18n("None"), NoCompletion );
-                    subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
-                    subMenu->insertItem( i18n("Manual"), ShellCompletion );
-                    subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
-                    subMenu->insertItem( i18n("Popup"), PopupCompletion );
-                    subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
-                    subMenu->insertItem( i18n("Automatic"), AutoCompletion );
-                    subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
-                    subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
-                    subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
+                    d->subMenu->insertItem( i18n("None"), NoCompletion );
+                    d->subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
+                    d->subMenu->insertItem( i18n("Manual"), ShellCompletion );
+                    d->subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
+                    d->subMenu->insertItem( i18n("Popup"), PopupCompletion );
+                    d->subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
+                    d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
+                    d->subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
+                    d->subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
+                    d->subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
                     if ( mode != KGlobalSettings::completionMode() )
                     {
-                        subMenu->insertSeparator();
-                        subMenu->insertItem( i18n("Default"), Default );
+                        d->subMenu->insertSeparator();
+                        d->subMenu->insertItem( i18n("Default"), Default );
                     }
-                    popup->insertSeparator();
-                    popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
                 }
-                popup->insertSeparator();
-                popup->insertItem( i18n( "Unselect" ), Unselect );
-                popup->insertItem( i18n( "Select All" ), SelectAll );
 
                 bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
                 bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
-                popup->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
-                popup->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
-                popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
-                popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
-                popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
-                popup->setItemEnabled( SelectAll, flag && !allMarked );
-
+                d->popupMenu->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
+                d->popupMenu->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
+                d->popupMenu->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
+                d->popupMenu->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
+                d->popupMenu->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
+                d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
                 KGlobalSettings::Completion oldMode = completionMode();
-                int result = popup->exec( e->globalPos() );
-                delete popup;
+                int result = d->popupMenu->exec( e->globalPos() );
+                if ( !d->hasReference )
+                  delete d->popupMenu;
 
                 if ( result == Cut )
                     m_pEdit->cut();
@@ -552,7 +551,7 @@ void KComboBox::slotCancelled()
 void KComboBox::setCompletedItems( const QStringList& items )
 {
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
-	 completionMode() == KGlobalSettings::CompletionShell )
+         completionMode() == KGlobalSettings::CompletionShell )
     {
         if ( !d->completionBox )
             makeCompletionBox();
@@ -584,15 +583,45 @@ KCompletionBox * KComboBox::completionBox()
 void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 {
     KCompletion *oldComp = completionObject( false, false ); // don't create!
+
     if ( oldComp && handleSignals() )
-	disconnect( oldComp, SIGNAL( matches( const QStringList& )),
-		    this, SLOT( setCompletedItems( const QStringList& )));
-    
+      disconnect( oldComp, SIGNAL( matches( const QStringList& )),
+                  this, SLOT( setCompletedItems( const QStringList& )));
+
     if ( comp && hsig )
-	connect( comp, SIGNAL( matches( const QStringList& )),
-		 this, SLOT( setCompletedItems( const QStringList& )));
-	
+      connect( comp, SIGNAL( matches( const QStringList& )),
+               this, SLOT( setCompletedItems( const QStringList& )));
+
     KCompletionBase::setCompletionObject( comp, hsig );
+}
+
+QPopupMenu* KComboBox::contextMenu()
+{
+    d->hasReference = true;
+    return contextMenuInternal();
+}
+
+QPopupMenu* KComboBox::contextMenuInternal()
+{
+    if( !d->popupMenu )
+    {
+        d->popupMenu = new QPopupMenu( this );
+        d->popupMenu->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
+        d->popupMenu->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
+        d->popupMenu->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
+        d->popupMenu->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
+        // Create and insert the completion sub-menu iff a completion object is present.
+        if ( compObj() )
+        {
+            d->subMenu = new QPopupMenu( d->popupMenu );
+            d->popupMenu->insertSeparator();
+            d->popupMenu->insertItem( SmallIconSet("completion"), i18n("Completion"), d->subMenu );
+        }
+        d->popupMenu->insertSeparator();
+        d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
+        d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
+    }
+    return d->popupMenu;
 }
 
 // *********************************************************************
@@ -600,15 +629,14 @@ void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
-    : KComboBox( true, parent, name )
+              :KComboBox( true, parent, name )
 {
     init( true ); // using completion
 }
 
 // we are always read-write
-KHistoryCombo::KHistoryCombo( bool useCompletion,
-			      QWidget *parent, const char *name )
-    : KComboBox( true, parent, name )
+KHistoryCombo::KHistoryCombo( bool useCompletion, QWidget *parent, const char *name )
+              :KComboBox( true, parent, name )
 {
     init( useCompletion );
 }
