@@ -150,15 +150,11 @@ int RenderBox::height() const
 void RenderBox::setWidth( int width )
 {
     m_width = width;
-    if (m_layer)
-	m_layer->setWidth(width);
 }
 
 void RenderBox::setHeight( int height )
 {
     m_height = height;
-    if (m_layer)
-	m_layer->setHeight(height);
 }
 // --------------------- painting stuff -------------------------------
 
@@ -196,14 +192,18 @@ void RenderBox::paintBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
+    if (layer())
+	layer()->scrollOffset(_tx, _ty);
+
     int my = QMAX(_ty,_y);
     int end = QMIN( _y + _h,  _ty + h );
     int mh = end - my;
 
     paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
-    if(style()->hasBorder())
+    if(style()->hasBorder()) {
         paintBorder(p, _tx, _ty, w, h, style());
+    }
 }
 
 void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
@@ -263,6 +263,8 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             }
 
             cy += borderTop();
+	    if (layer())
+		layer()->scrollOffset(sx, sy);
         }
         else
         {

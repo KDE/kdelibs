@@ -577,7 +577,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
         d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey, ew, eh);
+        m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey, ew, eh, 0, 0);
         d->tp->end();
         p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
     }
@@ -591,7 +591,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->tp->begin(d->paintBuffer);
             d->tp->translate(-ex, -ey-py);
             d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
-            m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey+py, ew, ph);
+            m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey+py, ew, ph, 0, 0);
 #ifdef BOX_DEBUG
             if (m_part->xmlDocImpl()->focusNode())
             {
@@ -1528,7 +1528,7 @@ void KHTMLView::print(bool quick)
 
             root->setTruncatedAt(top+pageHeight);
 
-            root->layer()->paint(p, 0, top, pageWidth, pageHeight);
+            root->layer()->paint(p, 0, top, pageWidth, pageHeight, 0, 0);
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
 
@@ -1585,7 +1585,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     p->scale(scale, scale);
 #endif
 
-    root->layer()->paint(p, 0, yOff, root->docWidth(), height);
+    root->layer()->paint(p, 0, yOff, root->docWidth(), height, 0, 0);
     if (more)
         *more = yOff + height < root->docHeight();
     p->restore();

@@ -49,8 +49,10 @@
 #include <assert.h>
 
 #include "render_object.h"
-#include <qptrvector.h>
+#include "render_style.h"
+
 class QScrollBar;
+template <class T> class QValueVector;
 
 namespace khtml {
     class RenderStyle;
@@ -104,17 +106,11 @@ public:
 
     int xPos() const { return m_x; }
     int yPos() const { return m_y; }
-    short width() const { return m_width; }
-    int height() const { return m_height; }
+    short width() const;
+    int height() const;
     short scrollWidth() const { return m_scrollWidth; }
     int scrollHeight() const { return m_scrollHeight; }
 
-    void setWidth( int width ) {
-        m_width = width;
-    }
-    void setHeight( int height ) {
-        m_height = height;
-    }
     void setPos( int xPos, int yPos ) {
         m_x = xPos;
         m_y = yPos;
@@ -135,12 +131,15 @@ public:
     int verticalScrollbarWidth();
     int horizontalScrollbarHeight();
     void moveScrollbarsAside();
-    void positionScrollbars(const QRect& absBounds);
+    void positionScrollbars(int tx, int ty);
+#ifdef APPLE_CHANGES
     void paintScrollbars(QPainter* p, int x, int y, int w, int h);
+#endif
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
     void updateScrollPositionFromScrollbars();
 
+    void layout();
     void updateLayerPosition();
 
     // Gets the nearest enclosing positioned ancestor layer (also includes
@@ -156,8 +155,8 @@ public:
     // paints the layers that intersect the damage rect from back to
     // front.  The nodeAtPoint method looks for mouse events by walking
     // layers that intersect the point from front to back.
-    void paint(QPainter *p, int x, int y, int w, int h, bool selectionOnly=false);
-    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y);
+    void paint(QPainter *p, int x, int y, int w, int h, int tx, int ty, bool selectionOnly=false);
+    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty);
 
     void clearOtherLayersHoverActiveState();
     void clearHoverAndActiveState(RenderObject* obj);
@@ -171,174 +170,11 @@ public:
     // Overridden to prevent the normal delete from being called.
     void operator delete(void* ptr, size_t sz);
 
+    void updateLayerInformation();
+
 private:
     // The normal operator new is disallowed on all render objects.
     void* operator new(size_t sz) throw();
-
-public:
-    // Z-Index Implementation Notes
-    //
-    // In order to properly handle mouse events as well as painting,
-    // we must compute a correct list of layers that should be painted
-    // from back to front (and for mouse events walked from front to
-    // back).
-    //
-    // Positioned elements in the render tree (e.g., relative positioned
-    // divs and absolute positioned divs) have a corresponding layer
-    // that holds them and all children that reside in the same layer.
-    //
-    // When painting is performed on a layer, all render objects in that
-    // layer are painted.  If the render object has descendants in another
-    // layer, those will be dealt with separately.
-    //
-    // A RenderLayerElement represents a single entry in our list of
-    // layers that should be painted.  We perform computations as we
-    // build up this list so that we have the correct translation factor
-    // for painting.  We also use a temporary z-index variable for storage
-    // (more on this below).
-    //
-    struct RenderLayerElement {
-
-      RenderLayer* layer;
-      QRect absBounds; // Our bounds in absolute coordinates relative to the root.
-      QRect backgroundClipRect; // Clip rect used for our background/borders.
-      QRect clipRect; // Clip rect used for our children.
-      int zindex; // Temporary z-index used for processing and sorting.
-      bool zauto : 1; // Whether or not we are using auto z-indexing.
-      bool clipOriginator : 1; // Whether or not we established a clip.
-      int x; // The coords relative to the layer that will be using this list
-             // to paint.
-      int y;
-
-      RenderLayerElement(RenderLayer* l, const QRect& rect, const QRect& bgclip,
-                         const QRect& clip, bool clipOrig, int xpos, int ypos)
-          :layer(l), absBounds(rect), backgroundClipRect(bgclip), clipRect(clip),
-           zindex(l->zIndex()), zauto(l->hasAutoZIndex()), clipOriginator(clipOrig),
-           x(xpos), y(ypos) {}
-
-      void detach(RenderArena* renderArena);
-
-      // Overloaded new operator.  Derived classes must override operator new
-      // in order to allocate out of the RenderArena.
-      void* operator new(size_t sz, RenderArena* renderArena) throw();
-
-      // Overridden to prevent the normal delete from being called.
-      void operator delete(void* ptr, size_t sz);
-
-      // The normal operator new is disallowed.
-      void* operator new(size_t sz) throw();
-    };
-
-    // The list of layer elements is built through a recursive examination
-    // of a tree of z nodes. This tree structure mimics the layer
-    // hierarchy itself, but only leaf nodes represent items that will
-    // end up in the layer list for painting.
-    //
-    // Every leaf layer in the layer hierarchy will have a corresponding
-    // leaf node in the z-tree.  Layers with children have an
-    // interior z-tree node that contains the tree nodes for the child
-    // layers as well as a leaf node that represents the containing layer.
-    //
-    // Sibling z-tree nodes match the same order as the layers in the
-    // layer hierarchy, which will have been arranged in document order
-    // when the render tree was constructed (since the render tree
-    // constructed the layers).  An exception is if a negative z-index
-    // is specified on a child (see below).
-
-    struct RenderZTreeNode {
-      RenderLayer* layer;
-      RenderZTreeNode* next;
-
-      // Only one of these will ever be defined.
-      RenderZTreeNode* child; // Defined for interior nodes.
-      RenderLayerElement* layerElement; // Defined for leaf nodes.
-
-      RenderZTreeNode(RenderLayer* l)
-          :layer(l), next(0), child(0), layerElement(0) {}
-
-      RenderZTreeNode(RenderLayerElement* layerElt)
-          :layer(layerElt->layer), next(0), child(0), layerElement(layerElt) {}
-
-      ~RenderZTreeNode() {}
-
-      void constructLayerList(QPtrVector<RenderLayerElement>* mergeTmpBuffer,
-                              QPtrVector<RenderLayerElement>* finalBuffer);
-
-      void detach(RenderArena* renderArena);
-
-      // Overloaded new operator.  Derived classes must override operator new
-      // in order to allocate out of the RenderArena.
-      void* operator new(size_t sz, RenderArena* renderArena) throw();
-
-      // Overridden to prevent the normal delete from being called.
-      void operator delete(void* ptr, size_t sz);
-
-      // The normal operator new is disallowed.
-      void* operator new(size_t sz) throw();
-    };
-
-    // For debugging.
-    QPtrVector<RenderLayerElement> elementList(RenderZTreeNode *&node);
-
-private:
-    // The constructZTree function creates a z-tree for a given layer hierarchy
-    // rooted on this layer.  It will ensure that immediate child
-    // elements of a given z-tree node are at least initially sorted
-    // into <negative z-index children>, <this layer>, <non-negative z-index
-    // children>.
-    //
-    // Here is a concrete example (lifted from Gecko's view system,
-    // which is analogous to our layer system and works the same way):
-    // z-index values as specified by CSS are shown in parentheses.
-    //
-    // L0(auto) --> L1(0) --> L2(auto) --> L3(0)
-    // |        |    +------> L4(2)
-    // |        +-----------> L5(1)
-    // +--------------------> L6(1)
-    //
-    // The corresponding z-tree for this layer hierarchy will be
-    // the following, where |I| represents an interior node, and |L|
-    // represents a leaf RenderLayerElement.
-    //
-    // I(L0) --> L(L0)
-    // +-------> I(L1) --------> L(L1)
-    // |           |   +-------> I(L2) ------> L(L2)
-    // |           |               +---------> L(L3)
-    // |           +-----------> L(L4)
-    // +-------> L(L5)
-    // +-------> L(L6)
-    //
-    RenderZTreeNode* constructZTree(QRect overflowClipRect,
-                                    QRect clipRect,
-                                    RenderLayer* rootLayer,
-                                    bool eventProcessing = false, int x=0, int y=0);
-
-    // Once the z-tree has been constructed, we call constructLayerList
-    // to produce a flattened layer list for rendering/event handling.
-    // This function recursively computes a layer list for each z-tree
-    // node by computing lists for each child node.  It then concatenates
-    // them and sorts them by z-index.
-    //
-    // Z-indices are updated during this computation.  After a list is
-    // computed for one z-tree node, the elements of the layer list are
-    // all changed so that their z-indices match the specified z-index
-    // of the tree node's layer (unless that layer doesn't establish
-    // a z-index, e.g., it just has z-index: auto).
-    //
-    // Continuing the above example, the computation of the list for
-    // L0 would be as follows:
-    //
-    // I(L2) has a list [ L(L2)(0), L(L3)(0), L(L4)(2) ]
-    // I(L2) is auto so the z-indices of the child layer elements remain
-    // unaltered.
-    // I(L1) has a list [ L(L1)(0), L(L2)(0), L(L3)(0), L(L4)(2), L(L5)(1) ]
-    // The nodes are sorted and then reassigned a z-index of 0, so this
-    // list becomes:
-    // [ L(L1)(0), L(L2)(0), L(L3)(0), L(L5)(0), L(L4)(0) ]
-    // Finally we end up with the list for L0, which sorted becomes:
-    // [ L(L0)(0), L(L1)(0), L(L2)(0), L(L3)(0), L(L5)(0), L(L4)(0), L(L6)(1) ]
-    void constructLayerList(RenderZTreeNode* ztree,
-                            QPtrVector<RenderLayerElement>* result);
 
 private:
     void setNextSibling(RenderLayer* next) { m_next = next; }
@@ -358,10 +194,8 @@ protected:
     RenderLayer *m_last;
 
     // Our (x,y) coordinates are in our parent layer's coordinate space.
-    int m_height;
     int m_y;
     short m_x;
-    short m_width;
 
     // Our scroll offsets if the view is scrolled.
     short m_scrollX;
@@ -375,6 +209,21 @@ protected:
     QScrollBar* m_hBar;
     QScrollBar* m_vBar;
     RenderScrollMediator* m_scrollMediator;
+    struct PositionedLayer {
+	RenderLayer *layer;
+	// these are relative to the layer holding the stacking context
+	int idx; // used by sorting to preserve doc order
+	bool operator == (const PositionedLayer &o) const { return layer == o.layer; }
+	bool operator < (const PositionedLayer &o) const {
+	    if (layer == o.layer)
+		return false;
+	    if (layer->renderer()->style()->zIndex() != o.layer->renderer()->style()->zIndex())
+		return layer->renderer()->style()->zIndex() < o.layer->renderer()->style()->zIndex();
+	    return idx < o.idx;
+	}
+    };
+    QValueVector<PositionedLayer> *zOrderList;
+    void collectLayers(QValueVector<PositionedLayer> *, int tx, int ty, int &idx);
 };
 
 }; // namespace

@@ -354,7 +354,7 @@ void MouseEventImpl::computeLayerPos()
     DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
-        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY, 0, 0);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
         while (node && !node->renderer())
@@ -598,7 +598,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, AbstractViewImpl *view)
 
   // key->state returns enum ButtonState, which is ShiftButton, ControlButton and AltButton or'ed together.
   m_modifier = key->state();
-  
+
   // key->text() returns the unicode sequence as a QString
   m_outputString = DOMString(key->text());
 }

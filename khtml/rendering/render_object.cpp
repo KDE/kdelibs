@@ -411,11 +411,8 @@ void RenderObject::setLayouted(bool b)
     m_layouted = b;
     if (b) {
         RenderLayer* l = layer();
-        if (l) {
-            l->setWidth(width());
-            l->setHeight(height());
-            l->updateLayerPosition();
-        }
+        if (l)
+            l->layout();
     }
     else {
         RenderObject *o = m_parent;

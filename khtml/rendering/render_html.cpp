@@ -125,9 +125,6 @@ void RenderHtml::layout()
     if( m_height + margins < lp )
 	m_height = lp - margins;
 
-    layer()->setHeight(m_height);
-    layer()->setWidth(m_width);
-
     //kdDebug(0) << "docHeight = " << m_height << endl;
 }
 

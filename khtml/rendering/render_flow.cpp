@@ -133,7 +133,7 @@ void RenderFlow::setStyle(RenderStyle *_style)
         setInline(false);
 
     if (!isTableCell() &&
-	(isPositioned() || isRelPositioned() || style()->overflow()==OHIDDEN) &&
+	(isPositioned() || isRelPositioned() || style()->hidesOverflow()) &&
 	!m_layer)
         m_layer = new (renderArena()) RenderLayer(this);
 

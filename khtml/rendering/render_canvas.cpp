@@ -154,9 +154,6 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 
-    layer()->setHeight(m_height);
-    layer()->setWidth(m_width);
-
     setLayouted();
 }
 
