@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 
-#include "kio/slavebase.h"
+#include <kio/slavebase.h>
 
 
 namespace KIO {
