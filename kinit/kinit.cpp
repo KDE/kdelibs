@@ -77,6 +77,7 @@ struct {
   int exit_status;
   pid_t fork;
   pid_t launcher_pid;
+  pid_t my_pid;
   int n;
   lt_dlhandle handle;
   lt_ptr_t sym;
@@ -435,11 +436,13 @@ static void init_kdeinit_socket()
 
      if(connect(s, (struct sockaddr *)&server, socklen) == 0)
      {
-        fprintf(stderr, "kdeinit: Already running.\n");
-        close(s);
-        exit(255);
+        fprintf(stderr, "kdeinit: Shutting down running client.\n");
+        klauncher_header request_header;
+        request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;
+        request_header.arg_length = 0;
+        write(s, &request_header, sizeof(request_header));
+        sleep(1); // Give it some time
      }
-//     perror("connect() failed: ");
      close(s);
   }
 
@@ -661,8 +664,20 @@ static void handle_launcher_request(int sock = -1)
    }
    else if (request_header.cmd == LAUNCHER_TERMINATE_KDE)
    {
-       fprintf(stderr,"kdeinit::LAUNCHER_TERMINATE_KDE -> terminateKDE\n");
+#ifndef NDEBUG
+       fprintf(stderr,"kdeinit: terminate KDE.\n");
+#endif
        kdeinit_xio_errhandler( 0L );
+   }
+   else if (request_header.cmd == LAUNCHER_TERMINATE_KDEINIT)
+   {
+#ifndef NDEBUG
+       fprintf(stderr,"kdeinit: Killing kdeinit/klauncher.\n");
+#endif
+       if (d.launcher_pid)
+          kill(d.launcher_pid, SIGTERM);
+       if (d.my_pid)
+          kill(d.my_pid, SIGTERM);
    }
    if (request_data)
        free(request_data);
@@ -962,7 +977,7 @@ int main(int argc, char **argv, char **envp)
    {
       pid = launch( 1, "klauncher", 0 );
 #ifndef NDEBUG
-      fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+      fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld [%ld] result = %d\n", (long) pid, d.result);
 #endif
       WaitPid(pid);
    }
@@ -1035,6 +1050,7 @@ int main(int argc, char **argv, char **envp)
    if (fork() > 0) // Go into background
        return 0;
 
+   d.my_pid = getpid();
 
    handle_requests(0);
 
