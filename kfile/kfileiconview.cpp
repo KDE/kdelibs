@@ -153,7 +153,9 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
     if ( item ) {
-	slotUpdate();
+#if QT_VERSION <= 211
+	slotUpdate(); // QIconView buglet
+#endif
 	KIconView::setSelected( item, enable );
         KIconView::setCurrentItem( item );
 	KIconView::ensureItemVisible( item );
