@@ -81,7 +81,7 @@ QCString HTMLFormElementImpl::encodeByteArray(const QByteArray& e)
 
     while ( pos < e.size() )
     {
-        char c = e[pos];
+        unsigned char c = e[pos];
 
         if ( (( c >= 'A') && ( c <= 'Z')) ||
              (( c >= 'a') && ( c <= 'z')) ||
