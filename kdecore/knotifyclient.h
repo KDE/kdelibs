@@ -26,7 +26,7 @@
 /**
  * This namespace provides a method for issuing events to a KNotifyServer
  * call KNotifyClient::event("eventname"); to issue it.
- * On installation, there should be a file called 
+ * On installation, there should be a file called
  * $KDEDIR/share/apps/appname/eventsrc which contains the events.
  *
  * The file looks like this:
@@ -84,7 +84,18 @@ namespace KNotifyClient
 		Error=4,
 		Catastrophe=8
 	};
-	
+
+	/**
+	 * default events you can use
+	 */
+	enum StandardEvent {
+		cannotOpenFile,
+		notification,
+		warning,
+		fatalError,
+		catastrophe
+	};
+
 	/**
 	 * This starts the KNotify Daemon, if it's not already started.
 	 * This will be useful for games that use sound effects. Run this
@@ -104,6 +115,12 @@ namespace KNotifyClient
 	 *             the user connected the event to sound, only.
 	 */
 	bool event(const QString &message, const QString &text=QString::null);
+
+	/**
+	 * Allows to easily emit standard events.
+	 * @param event The event you want to raise.
+	 */
+	bool event( StandardEvent event );
 
 	/**
 	 * Will fire an event that's not registered.

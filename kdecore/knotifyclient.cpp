@@ -26,8 +26,8 @@
 
 static const char *daemonName="knotify";
 
-static bool sendNotifyEvent(const QString &message, const QString &text, 
-                 int present, int level, const QString &sound, 
+static bool sendNotifyEvent(const QString &message, const QString &text,
+                 int present, int level, const QString &sound,
                  const QString &file)
 {
   DCOPClient *client=kapp->dcopClient();
@@ -43,7 +43,36 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   QString appname = kapp->name();
   ds << message << appname << text << sound << file << present << level;
 
+  if ( !KNotifyClient::startDaemon() )
+      return false;
+
   return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+}
+
+bool KNotifyClient::event( StandardEvent type )
+{
+    QString message;
+    switch ( type ) {
+    case cannotOpenFile:
+	message = QString::fromLatin1("cannotopenfile");
+	break;
+    case warning:
+	message = QString::fromLatin1("warning");
+	break;
+    case fatalError:
+	message = QString::fromLatin1("fatalerror");
+	break;
+    case catastrophe:
+	message = QString::fromLatin1("catastrophe");
+	break;
+    case notification: // fall through
+    default:
+	message = QString::fromLatin1("notifcation");
+	break;
+    }
+    
+    return sendNotifyEvent( message, QString::null, Default, Default, 
+			    QString::null, QString::null);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
