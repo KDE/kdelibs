@@ -30,8 +30,14 @@ unsigned char targaMagic[12] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
  */
 unsigned char compMagic[12] = { 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+/*
+ * the origin of the image (default is TOP_LEFT)
+ */
 enum { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
 
+/*
+ * Read one pixel and return its color 
+ */
 int getData( QDataStream* s, int bpp )
 {
     unsigned char* data = new unsigned char[bpp];
@@ -49,55 +55,89 @@ int getData( QDataStream* s, int bpp )
     return color;
 }
 
-void kimgio_tga_read( QImageIO *io )
+/*
+ * checks wether y is inside of the image
+ * when origin is of mode m
+ */
+bool checky( int y, int h, int m ) 
 {
-    unsigned char header[6];
-    bool compressed = false;
+    if( m == TOP_LEFT ) 
+	return (y < h);
+    else if( m == BOTTOM_LEFT || m == BOTTOM_RIGHT )
+	return ( y >= 0 );
 
-    QDataStream s( io->ioDevice() );
-    s.setByteOrder( QDataStream::LittleEndian );
+    return false;
+}
 
-    /*
-     * check whether it is a targa file or not
-     */
-    for( int i = 0; i < 12; i++ ) {
-        unsigned char a;
-        s >> a;
-        if( a != targaMagic[i] && a!= compMagic[i]) {
-            io->setImage( 0 );
-            io->setStatus( -1 );            
-            return;
-        }
+  /*
+   * checks wether x is inside of the image
+   * when origin is of mode m
+   */
+  bool checkx( int x, int w, int m ) 
+  {
+      if( m == TOP_LEFT || m == BOTTOM_LEFT ) 
+	  return (x < w);
+      else if( m == BOTTOM_RIGHT )
+	  return ( x >= 0 );
 
-        // check if it is a compressed targa file
-        if( i == 2 && a == compMagic[i] )
-            compressed = true;
-    }
+      return false;
+  }
 
-    for( int i = 0; i < 6; i++ )
-        s >> header[i];
+  void kimgio_tga_read( QImageIO *io )
+  {
+      unsigned char header[6];
+      bool compressed = false;
 
-    int width  = header[1] * 256 + header[0];
-    int height = header[3] * 256 + header[2];
-    int bpp = header[4];
-    int bit = header[5];
-    int bytesPerPixel = bpp / 8;
+      QDataStream s( io->ioDevice() );
+      s.setByteOrder( QDataStream::LittleEndian );
+
+      /*
+       * check whether it is a targa file or not
+       */
+      for( int i = 0; i < 12; i++ ) {
+	  unsigned char a;
+	  s >> a;
+	  if( a != targaMagic[i] && a!= compMagic[i]) {
+	      io->setImage( 0 );
+	      io->setStatus( -1 );            
+	      return;
+	  }
+
+	  // check if it is a compressed targa file
+	  if( i == 2 && a == compMagic[i] )
+	      compressed = true;
+      }
+
+      for( int i = 0; i < 6; i++ )
+	  s >> header[i];
+
+      int width  = header[1] * 256 + header[0];
+      int height = header[3] * 256 + header[2];
+      int bpp = header[4];
+      int bit = header[5];
+      int bytesPerPixel = bpp / 8;
 
     /* Bit values:
      * bit 0-3: number of alpha bits per fixel 
      * bit 4-5: origin of image:
      *  - 0 0 bottom left
-     *  - 0 1 bottom right
-     *  - 1 1 top left // that's what we write
-     *  - 1 0 top right
+     *  - 1 0 bottom right
+     *  - 0 1 top left // that's what we write
+     *  - 1 1 top right
      */
 
     int mode;
-    if( bit == 0 )
+    if( (bit | 0)  == 0 )
+	mode = BOTTOM_LEFT;
+    else if( (bit & 8) == 8 )
+	/*
+	 * should be BOTTOM_RIGHT,
+	 * but GIMP writes them this way.
+	 */
 	mode = BOTTOM_LEFT;
     else if( (bit & 32) == 32 )
 	mode = TOP_LEFT;
-     else
+    else
 	mode = TOP_LEFT;
 
     if( bytesPerPixel != 3 &&  bytesPerPixel != 4 ) {	
@@ -113,24 +153,40 @@ void kimgio_tga_read( QImageIO *io )
         return;
     }
 
+    /*
+     * Enable alpha buffer for transparent images
+     */
+    if( img.depth() == 32 ) 
+	img.setAlphaBuffer( true );
+
+
+    int x = 0;
+    int y = 0;
+    int addy = 1;
+    int addx = 1;
+    if( mode == BOTTOM_LEFT || mode == BOTTOM_RIGHT ) {
+	y = height - 1;
+	addy = -1;
+    }
+
+    if( mode == BOTTOM_RIGHT || mode == TOP_RIGHT ) {
+	x = width - 1;
+	addx = -1;
+    }
+
+    /*
+     * we have to restore the value of x after each loop
+     */
+    int oldx = x;
     if( !compressed ) {
-	if( mode == BOTTOM_LEFT ) {
-	    for( int y = height - 1; y >= 0; y-- )
-		for( int x = 0; x < width; x++ ) {
-		    img.setPixel( x, y, getData( &s, bytesPerPixel ) );
-		}
-	} else {
-	    for( int y = 0; y < height; y++ )
-		for( int x = 0; x < width; x++ ) {
-		    img.setPixel( x, y, getData( &s, bytesPerPixel ) );
-		}
-	}
+	for( ; checky( y, height, mode ); y += addy )
+	    for( x = oldx; checkx( x, width, mode ); x += addx  ) {
+		img.setPixel( x, y, getData( &s, bytesPerPixel ) );
+	    }
     } else {
-        int x = 0;
-        int y = 0;
         unsigned char cur;
-        while( y < height ) {
-            while( x < width ) {
+        while( checky( y, height, mode ) ) {
+            while( checkx( x, width, mode ) ) {
                 s >> cur;
                 if( (cur & 128) == 128 ) {
                     // found a RLE chunk
@@ -138,18 +194,18 @@ void kimgio_tga_read( QImageIO *io )
                     int color = getData( &s, bytesPerPixel );
                     for( int i = 0; i < length; i++ ) {
                         img.setPixel( x, y, color );
-                        x++;
+                        x += addx;
                     }
                 } else {
                     int length = (cur & 127) + 1;
                     for( int i = 0; i < length; i++ ) {
                         img.setPixel( x, y, getData( &s, bytesPerPixel ) );
-                        x++;
+                        x += addx;
                    }
                 }
             }
-            y++;
-            x = 0;
+            y += addy;
+            x = oldx;
         }
     }
 
