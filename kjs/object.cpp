@@ -346,12 +346,9 @@ bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
   if (e)
     return !(e->attr & ReadOnly);
 
-  // Look in the prototype
-  Object proto = Object::dynamicCast(prototype());
-  if (proto.isNull())
-    return true;
-
-  return proto.canPut(exec,propertyName);
+  // Don't look in the prototype here. We can always put an override
+  // in the object, even if the prototype has a ReadOnly property.
+  return true;
 }
 
 // ECMA 8.6.2.4
