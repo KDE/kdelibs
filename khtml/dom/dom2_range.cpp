@@ -34,19 +34,6 @@
 #include <qstring.h>
 #include <stdio.h>               // for printf
 
-/* Functions not yet implemented:
-   deleteContents
-   extractContents
-   cloneContents
-   insertNode
-   surroundContents
-   toHTML
-
-   Functions not working correctly:
-   toString
- */
-
-//using namespace CSS;       // leff
 using namespace DOM;
 
 
@@ -210,7 +197,7 @@ void Range::insertNode( const Node &newNode )
 
 void Range::surroundContents( const Node &newParent )
 {
-    if (impl) impl->surroundContents(newParent);
+    if (impl) impl->surroundContents( newParent );
 }
 
 Range Range::cloneRange(  )
