@@ -172,6 +172,13 @@ signals:
   /**
    * Tell the hosting browser that the part opened a new URL (which can be queried via KParts::Part::url() .
    * This helps the browser to update/create an entry in the history.
+   * The part may *not* emit this signal together with @ref openURLRequest . Emit openURLRequest if you want the
+   * browser to handle an URL the user asked to open (from within your part/document) . This signal however is useful
+   * if you want to handle URLs all yourself internally, while still telling the hosting browser about new opened URLs,
+   * in order to provide a proper history functionality to the user.
+   * An example of useage is a html rendering component which wants to emit this signal when a child frame document
+   * changed its URL.
+   * (so most browsing components will want to use openURLRequest instead to open up a new URL)
    */
   void openURLNotify();
 
