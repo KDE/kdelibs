@@ -34,6 +34,9 @@ class QComboBox;
 class QButton;
 class KSSLPKCS12;
 class KSSLCertificate;
+class QTabWidget;
+class QMultiLineEdit;
+
 
 
 class KCertPart : public KParts::ReadWritePart {
@@ -61,11 +64,13 @@ protected:
 
   QFrame *_frame;
   QLabel *_filenameLabel, *_validFrom, *_validUntil, *_serialNum, *_certState;
+  QMultiLineEdit *_pubkey;
   KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
   QComboBox *_chain;
   QButton *_import, *_save, *_done, *_launch;
   KSSLPKCS12 *_p12;
+  QTabWidget *_tabs;
 
 private:
   KCertPartPrivate *d;
