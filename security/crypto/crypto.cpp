@@ -477,19 +477,30 @@ QString whatstr;
   grid->addMultiCellWidget(new QLabel(i18n("Host Authentication"), tabAuth), 5, 5, 0, 1);
   hostAuthList = new QListView(tabAuth);
   grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
+  hostAuthList->addColumn(i18n("Host"));
+  hostAuthList->addColumn(i18n("Certificate"));
+  hostAuthList->addColumn(i18n("Policy"));
+
   grid->addWidget(new QLabel(i18n("Host:"), tabAuth), 14, 0);
-  grid->addWidget(new QLabel(i18n("Policy:"), tabAuth), 15, 0);
-  grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 16, 0);
+  grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 15, 0);
+
+  authHost = new QLineEdit(tabAuth);
+  grid->addMultiCellWidget(authHost, 14, 14, 1, 3);
+  hostCertBox = new QComboBox(false, tabAuth);
+  grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 3);
+
+  hostCertBG = new QHButtonGroup(i18n("Action..."), tabAuth);
+  hostSend = new QRadioButton(i18n("Send"), hostCertBG);
+  hostPrompt = new QRadioButton(i18n("Prompt"), hostCertBG);
+  hostDont = new QRadioButton(i18n("Don't Send"), hostCertBG);
+  grid->addMultiCellWidget(hostCertBG, 16, 16, 0, 5);
 
   authAdd = new QPushButton(i18n("Ne&w"), tabAuth);
   authRemove = new QPushButton(i18n("Remo&ve"), tabAuth);
   grid->addWidget(authAdd, 17, 4);
-  grid->addWidget(authRemove, 16, 5);
+  grid->addWidget(authRemove, 17, 5);
 
   QString strNone = i18n("None");
-  strNone = i18n("Host");
-  strNone = i18n("Certificate");
-  strNone = i18n("Policy");
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"

@@ -231,10 +231,13 @@ private:
   /* Personal Cert Policies tab */
   QComboBox *defCertBox;
   QComboBox *hostCertBox;
-  QVButtonGroup *defCertBG, *hostCertBG;
+  QVButtonGroup *defCertBG;
+  QHButtonGroup *hostCertBG;
   QRadioButton *defSend, *defPrompt, *defDont;
+  QRadioButton *hostSend, *hostPrompt, *hostDont;
   QListView *hostAuthList;
   QPushButton *authAdd, *authRemove;
+  QLineEdit *authHost;
 
 
   KConfig *config;
