@@ -45,41 +45,62 @@
 #include <ktabwidget.h>
 #include <kmdi/global.h>
 
-class KPopupMenu;
+namespace KMDIPrivate
+{
+  class TabWidgetPrivate;
+}
 
 namespace KMDI
 {
 
-//KDE4: Add a d pointer
-class TabWidget :
- public KTabWidget
+class TabWidget : public KTabWidget
 {
-	Q_OBJECT
-public:
-	TabWidget(QWidget* parent, const char* name=0);
-	~TabWidget();
+  Q_OBJECT
 
-	virtual void addTab ( QWidget * child, const QString & label );
-	virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
-	virtual void addTab ( QWidget * child, QTab * tab );
-	virtual void insertTab ( QWidget * child, const QString & label, int index = -1 );
-	virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
-	virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
-	virtual void removePage ( QWidget * w );
+  public:
+    TabWidget(QWidget* parent, const char* name=0);
+    virtual ~TabWidget();
 
-	KMDI::TabWidgetVisibility tabWidgetVisibility();
-	void setTabWidgetVisibility( KMDI::TabWidgetVisibility );
+    virtual void addTab ( QWidget * child, const QString & label );
 
-private slots:
-	void closeTab(QWidget* w);
-public slots:
-	void updateIconInView(QWidget*,QPixmap);
-	void updateCaptionInView(QWidget*,const QString&);
-private:
-	void maybeShow();
-	KMDI::TabWidgetVisibility m_visibility;
+    virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
+
+    virtual void addTab ( QWidget * child, QTab * tab );
+
+    virtual void insertTab ( QWidget * child, const QString & label, int index = -1 );
+
+    virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
+
+    virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
+
+    virtual void removePage ( QWidget * w );
+
+    KMDI::TabWidgetVisibility tabWidgetVisibility() const;
+
+    void setTabWidgetVisibility( KMDI::TabWidgetVisibility );
+
+  private slots:
+    void closeTab(QWidget* w);
+
+  public slots:
+    void updateIconInView(QWidget*,QPixmap);
+    void updateCaptionInView(QWidget*,const QString&);
+
+  private:
+    void maybeShow();
+
+  private:
+    KMDI::TabWidgetVisibility m_visibility;
+
+  private:
+    /**
+     * private d-pointer for BC
+     */
+    KMDIPrivate::TabWidgetPrivate *d;
 };
 
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

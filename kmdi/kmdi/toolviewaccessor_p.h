@@ -20,28 +20,41 @@
 #ifndef KMDI_TOOLVIEW_ACCESSOR_PRIVATE_H_
 #define KMDI_TOOLVIEW_ACCESSOR_PRIVATE_H_
 
-#include <qwidget.h>
 #include <kdockwidget.h>
 #include <qguardedptr.h>
 #include <kaction.h>
 
-class KMdiToolViewAccessorPrivate {
-public:
-	KMdiToolViewAccessorPrivate() {
-		widgetContainer=0;
-		widget=0;
-	}
-	~KMdiToolViewAccessorPrivate() {
-		delete action;
-		if (!widgetContainer.isNull()) widgetContainer->undock();
-		delete (KDockWidget*)widgetContainer;
-	}
-	QGuardedPtr<KDockWidget> widgetContainer;
-	QWidget* widget;
-	QGuardedPtr<KAction> action;
+namespace KMDIPrivate
+{
+
+class ToolViewAccessorPrivate
+{
+  public:
+    ToolViewAccessorPrivate()
+     : widgetContainer (0)
+     , widget (0)
+    {
+    }
+
+    ~ToolViewAccessorPrivate()
+    {
+      delete action;
+
+      if (!widgetContainer.isNull())
+        widgetContainer->undock();
+
+      delete (KDockWidget*)widgetContainer;
+    }
+
+    QGuardedPtr<KDockWidget> widgetContainer;
+    QWidget *widget;
+    QGuardedPtr<KAction> action;
 };
 
+}
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
 
 

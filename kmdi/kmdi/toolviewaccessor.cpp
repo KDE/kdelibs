@@ -35,7 +35,7 @@ ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToW
 : QObject(parent)
 {
 	mdiMainFrm=parent;
-	d=new KMdiToolViewAccessorPrivate();
+	d=new KMDIPrivate::ToolViewAccessorPrivate();
 	if (widgetToWrap->inherits("KDockWidget")) {
 		d->widgetContainer=dynamic_cast<KDockWidget*>(widgetToWrap);
 		d->widget=d->widgetContainer->getWidget();
@@ -69,7 +69,7 @@ ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToW
 
 ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent) : QObject(parent) {
 	mdiMainFrm=parent;
-	d=new KMdiToolViewAccessorPrivate();
+	d=new KMDIPrivate::ToolViewAccessorPrivate();
 }
 
 ToolViewAccessor::~ToolViewAccessor() {
@@ -219,3 +219,5 @@ void ToolViewAccessor::show() {
 }
 
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

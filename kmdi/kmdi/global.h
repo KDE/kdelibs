@@ -42,30 +42,28 @@
 #ifndef _KMDI_GLOBAL_H_
 #define _KMDI_GLOBAL_H_
 
-#include <qglobal.h>
-
 /**
-* @short A namespace for the KMDI library
-*/
+ * @short A namespace for the KMDI library
+ */
 namespace KMDI
 {
-   enum TabWidgetVisibility {
-      AlwaysShowTabs         = 0,
-      ShowWhenMoreThanOneTab = 1,
-      NeverShowTabs          = 2
-   };
+  enum TabWidgetVisibility {
+    AlwaysShowTabs         = 0,
+    ShowWhenMoreThanOneTab = 1,
+    NeverShowTabs          = 2
+  };
 
-  /** The style of the toolview tabs
-        @since 3.3
-  */
-   enum ToolviewStyle {
+  /**
+   * The style of the toolview tabs
+   */
+  enum ToolviewStyle {
    /** Show only icons on the toolview tabs. The visible toolviews contain both the icon and text. */
-      IconOnly	= 0,
+    IconOnly	= 0,
    /** Show only the text description on the toolview tabs. */
-      TextOnly	= 1,
+    TextOnly	= 1,
    /** Show both the icon and description on the toolview tabs. */
-      TextAndIcon = 3
-   };
+    TextAndIcon = 3
+  };
 }
 
 #endif

@@ -30,9 +30,8 @@
 
 namespace KMDIPrivate {
    class GUIClient;
+   class ToolViewAccessorPrivate;
 }
-
-class KMdiToolViewAccessorPrivate;
 
 namespace KMDI {
 
@@ -62,26 +61,28 @@ private:
    bool m_bFocusInEventIsPending;
 
 private:
-	ToolViewAccessor( KMDI::MainWindow *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
-	ToolViewAccessor( KMDI::MainWindow *parent);
+  ToolViewAccessor( KMDI::MainWindow *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+  ToolViewAccessor( KMDI::MainWindow *parent);
 public:
-	~ToolViewAccessor();
-	QWidget *wrapperWidget();
-	QWidget *wrappedWidget();
-	void place(KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L,int percent = 50);
-	void placeAndShow(KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L,int percent = 50);
-	void show();
+  ~ToolViewAccessor();
+  QWidget *wrapperWidget();
+  QWidget *wrappedWidget();
+  void place(KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L,int percent = 50);
+  void placeAndShow(KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L,int percent = 50);
+  void show();
 public slots:
-	void setWidgetToWrap(QWidget* widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
-	void hide();
+  void setWidgetToWrap(QWidget* widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+  void hide();
 private:
-   KMdiToolViewAccessorPrivate *d;
+   KMDIPrivate::ToolViewAccessorPrivate *d;
    KMDI::MainWindow *mdiMainFrm;
 
 protected:
-	bool eventFilter(QObject *o, QEvent *e);
+  bool eventFilter(QObject *o, QEvent *e);
 };
 
 }
 
 #endif //_KMDITOOLVIEWACCESSOR_H_
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

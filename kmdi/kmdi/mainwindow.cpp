@@ -450,6 +450,4 @@ void MainWindow::nextToolViewInDock() {
 
 }
 
-
-// vim: ts=2 sw=2 et
 // kate: space-indent on; indent-width 2; replace-tabs on;

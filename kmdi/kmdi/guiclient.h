@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef KMDIGUICLIENT_H
-#define KMDIGUICLIENT_H
+#ifndef _KMDI_GUICLIENT_H_
+#define _KMDI_GUICLIENT_H_
 
 #include <qobject.h>
 #include <qguardedptr.h>
@@ -34,33 +34,36 @@ class KToolBar;
 namespace KMDI {
   class MainWindow;
   class ToolViewAccessor;
-    }
+}
+
 class KDockWidget;
 
 namespace KMDIPrivate {
 
-class GUIClient : public QObject,
-                       public KXMLGUIClient
+class GUIClientPrivate;
+
+class GUIClient : public QObject, public KXMLGUIClient
 {
-    Q_OBJECT
-public:
+  Q_OBJECT
+
+  public:
     GUIClient( KMDI::MainWindow *mdiMainFrm, const char *name = 0 );
     virtual ~GUIClient();
 
     void addToolView(KMDI::ToolViewAccessor*);
 
-private slots:
+  private slots:
     void clientAdded( KXMLGUIClient *client );
     void setupActions();
     void actionDeleted(QObject*);
-signals:
+
+  signals:
     void toggleTop();
     void toggleLeft();
     void toggleRight();
     void toggleBottom();
 
-private:
-    class GUIClientPrivate;
+  private:
     GUIClientPrivate *d;
 
     QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
@@ -69,29 +72,32 @@ private:
 
     KActionMenu *m_docMenu;
     KActionMenu *m_toolMenu;
-    KSelectAction *m_mdiModeAction;
 
     KActionMenu *m_gotoToolDockMenu;
 };
 
 class ToggleToolViewAction:public KToggleAction
 {
-Q_OBJECT
-public:
-        ToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0,KMDI::MainWindow *mdiMainFrm=0,
-		QObject* parent = 0, const char* name = 0 );
+  Q_OBJECT
 
-        virtual ~ToggleToolViewAction();
+  public:
+    ToggleToolViewAction ( const QString& text, const KShortcut& cut = KShortcut(),
+                           KDockWidget *dw=0,KMDI::MainWindow *mdiMainFrm=0, QObject* parent = 0, const char* name = 0 );
 
-private:
-        KDockWidget *m_dw;
-        KMDI::MainWindow *m_mdiMainFrm;
-protected slots:
-        void slotToggled(bool);
-        void anDWChanged();
-        void slotWidgetDestroyed();
+    virtual ~ToggleToolViewAction();
+
+  protected slots:
+    void slotToggled(bool);
+    void anDWChanged();
+    void slotWidgetDestroyed();
+
+  private:
+    KDockWidget *m_dw;
+    KMDI::MainWindow *m_mdiMainFrm;
 };
 
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

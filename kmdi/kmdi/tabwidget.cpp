@@ -45,121 +45,147 @@
 #include "tabwidget.h"
 #include "tabwidget.moc"
 
+namespace KMDIPrivate
+{
+  class TabWidgetPrivate
+  {
+
+  };
+}
+
 namespace KMDI
 {
 
-TabWidget::TabWidget(QWidget* parent, const char* name):KTabWidget(parent,name)
+TabWidget::TabWidget(QWidget* parent, const char* name)
+ : KTabWidget(parent,name)
+ , m_visibility (KMDI::ShowWhenMoreThanOneTab)
+ , d (new KMDIPrivate::TabWidgetPrivate())
 {
-	m_visibility = KMDI::ShowWhenMoreThanOneTab;
-	tabBar()->hide();
-	setHoverCloseButton(true);
-        connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
+  tabBar()->hide();
+
+  setHoverCloseButton(true);
+
+  connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
 }
 
-TabWidget::~TabWidget() {
+TabWidget::~TabWidget()
+{
+  delete d;
+  d = 0;
 }
 
-void TabWidget::closeTab(QWidget* w) {
-	w->close();
-}
-void TabWidget::addTab ( QWidget * child, const QString & label ) {
-	KTabWidget::addTab(child,label);
-    showPage(child);
-	maybeShow();
+void TabWidget::closeTab(QWidget* w)
+{
+  w->close();
 }
 
-void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label ) {
-	KTabWidget::addTab(child,iconset,label);
-    showPage(child);
-	maybeShow();
+void TabWidget::addTab ( QWidget * child, const QString & label )
+{
+  KTabWidget::addTab(child,label);
+  showPage(child);
+  maybeShow();
 }
 
-void TabWidget::addTab ( QWidget * child, QTab * tab ) {
-	KTabWidget::addTab(child,tab);
-    showPage(child);
-	maybeShow();
+void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+{
+  KTabWidget::addTab(child,iconset,label);
+  showPage(child);
+  maybeShow();
 }
 
-void TabWidget::insertTab ( QWidget * child, const QString & label, int index) {
-	KTabWidget::insertTab(child,label,index);
-    showPage(child);
-	maybeShow();
-	tabBar()->repaint();
+void TabWidget::addTab ( QWidget * child, QTab * tab )
+{
+  KTabWidget::addTab(child,tab);
+  showPage(child);
+  maybeShow();
 }
 
-void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index ) {
-	KTabWidget::insertTab(child,iconset,label,index);
-    showPage(child);
-	maybeShow();
-	tabBar()->repaint();
+void TabWidget::insertTab ( QWidget * child, const QString & label, int index)
+{
+  KTabWidget::insertTab(child,label,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
 }
 
-void TabWidget::insertTab ( QWidget * child, QTab * tab, int index) {
-	KTabWidget::insertTab(child,tab,index);
-    showPage(child);
-	maybeShow();
-	tabBar()->repaint();
+void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+{
+  KTabWidget::insertTab(child,iconset,label,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
 }
 
-void TabWidget::removePage ( QWidget * w ) {
-	KTabWidget::removePage(w);
-	maybeShow();
+void TabWidget::insertTab ( QWidget * child, QTab * tab, int index)
+{
+  KTabWidget::insertTab(child,tab,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
+}
+
+void TabWidget::removePage ( QWidget * w )
+{
+  KTabWidget::removePage(w);
+  maybeShow();
 }
 
 void TabWidget::updateIconInView( QWidget *w, QPixmap icon )
 {
-    changeTab(w,icon,tabLabel(w));
+  changeTab(w,icon,tabLabel(w));
 }
 
 void TabWidget::updateCaptionInView( QWidget *w, const QString &caption )
 {
-    changeTab(w, caption);
+  changeTab(w, caption);
 }
 
 void TabWidget::maybeShow()
 {
-	if ( m_visibility == KMDI::AlwaysShowTabs )
-	{
-		tabBar()->show();
-                if (cornerWidget())
-                {
-                    if (count() == 0)
-                        cornerWidget()->hide();
-                    else
-                        cornerWidget()->show();
-                }
-	}
+  switch (m_visibility)
+  {
+    case KMDI::AlwaysShowTabs:
+      tabBar()->show();
 
-	if ( m_visibility == KMDI::ShowWhenMoreThanOneTab )
-	{
-		if (count()<2) tabBar()->hide();
-		if (count()>1) tabBar()->show();
-                if (cornerWidget())
-                {
-                    if (count() < 2)
-                        cornerWidget()->hide();
-                    else
-                        cornerWidget()->show();
-                }
-	}
+      if (cornerWidget())
+      {
+        if (count() == 0)
+          cornerWidget()->hide();
+        else
+          cornerWidget()->show();
+      }
+      break;
 
-	if ( m_visibility == KMDI::NeverShowTabs )
-	{
-		tabBar()->hide();
-	}
+    case KMDI::ShowWhenMoreThanOneTab:
+      if (count()<2) tabBar()->hide();
+      else tabBar()->show();
+
+      if (cornerWidget())
+      {
+        if (count() < 2)
+          cornerWidget()->hide();
+        else
+          cornerWidget()->show();
+      }
+      break;
+
+    case KMDI::NeverShowTabs:
+      tabBar()->hide();
+      break;
+  }
 }
 
 void TabWidget::setTabWidgetVisibility( KMDI::TabWidgetVisibility visibility )
 {
-	m_visibility = visibility;
-	maybeShow();
+  m_visibility = visibility;
+  maybeShow();
 }
 
-KMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( )
+KMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( ) const
 {
-	return m_visibility;
+  return m_visibility;
 }
 
 }
 
-
+// kate: space-indent on; indent-width 2; replace-tabs on;
