@@ -28,7 +28,7 @@
 
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
-#include "khtmltoken.h"
+#include "htmltoken.h"
 #include "dtd.h"
 
 namespace DOM {

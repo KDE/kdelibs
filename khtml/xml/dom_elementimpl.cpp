@@ -23,7 +23,7 @@
  */
 
 #include "dom_string.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 #include "dom_elementimpl.h"
 #include "dom_nodeimpl.h"
