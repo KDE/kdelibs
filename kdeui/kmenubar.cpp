@@ -38,6 +38,9 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.26  1998/05/19 14:10:23  radej
+// Bugfixes: Unhighlighting a handle and catching the fast click
 
 // Moving with KToolBoxManager
 _menuBar::_menuBar (QWidget *parent, const char *name)
@@ -127,7 +130,9 @@ int KMenuBar::heightForWidth ( int max_width ) const
     resize(width(), heightForWidth(width()));
 void KMenuBar::ContextCallback( int index )
   }
-  switch ( index )
+  int i = index; // to shut the -Wall up
+
+void KMenuBar::ContextCallback( int )
 {
   int i;
   i = context->exec();
@@ -146,6 +151,8 @@ void KMenuBar::ContextCallback( int index )
       else {
         setMenuBarPos( Floating );
       break;
+  
+        setFlat (position != Flat);
 	break;
    }
 
@@ -154,8 +161,8 @@ void KMenuBar::ContextCallback( int index )
   context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
   context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
-  connect( context, SIGNAL( activated( int ) ), this,
-	   SLOT( ContextCallback( int ) ) );
+//   connect( context, SIGNAL( activated( int ) ), this,
+// 	   SLOT( ContextCallback( int ) ) );
   
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
@@ -287,7 +294,10 @@ void KMenuBar::leaveEvent (QEvent *e){
 
       //pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
       if ( moving && ((QMouseEvent*)ev)->button() != LeftButton)
-        context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
+        return false; //or true? Bah...
+      buttonDownOnHandle = TRUE;
+      if ( moving && ((QMouseEvent*)ev)->button() == RightButton)
+	{
       else
       {
         //Move now
@@ -328,6 +338,13 @@ void KMenuBar::leaveEvent (QEvent *e){
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");
+    
+    if (ev->type() == Event_MouseButtonRelease)
+	return TRUE;
+	if (mgr)
+	  mgr->stop();
+	return TRUE;
+	      mgr->stop();
     
     if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
       }

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.66  1998/05/13 09:56:31  radej
+// Changelog order
+//
 // Revision 1.65  1998/05/12 10:47:31  radej
 // Fixed sizehint - returns more real width
 //
@@ -409,29 +412,35 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
 {
 void KToolBar::ContextCallback( int index )
 {
-  switch ( index ) {
-   case CONTEXT_LEFT:
-     setBarPos( Left );
-     break;
-   case CONTEXT_RIGHT:
-     setBarPos( Right );
-     break;
-   case CONTEXT_TOP:
-     setBarPos( Top );
-     break;
-   case CONTEXT_BOTTOM:
-     setBarPos( Bottom );
-     break;
-   case CONTEXT_FLOAT:
-     if (position == Floating)
-       setBarPos (lastPosition);
-     else{
-       setBarPos( Floating );
-       move(QCursor::pos());
-       show();
-     }
-    break;
-  }
+  int i = context->exec();
+  switch ( i )
+    {
+    case CONTEXT_LEFT:
+      setBarPos( Left );
+      break;
+    case CONTEXT_RIGHT:
+      setBarPos( Right );
+      break;
+    case CONTEXT_TOP:
+      setBarPos( Top );
+      break;
+    case CONTEXT_BOTTOM:
+      setBarPos( Bottom );
+      break;
+    case CONTEXT_FLOAT:
+      if (position == Floating)
+	setBarPos (lastPosition);
+      else
+	{
+	  setBarPos( Floating );
+	  move(QCursor::pos());
+	  show();
+	}
+      break;
+    }
+  
+  mouseEntered=false;
+  repaint(false);
 }
 {
 void KToolBar::init()
@@ -442,8 +451,8 @@ void KToolBar::init()
   context->insertItem( klocale->translate("Right"), CONTEXT_RIGHT );
   context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
-  connect( context, SIGNAL( activated( int ) ), this,
-	   SLOT( ContextCallback( int ) ) );
+//   connect( context, SIGNAL( activated( int ) ), this,
+// 	   SLOT( ContextCallback( int ) ) );
   
   //MD (17-9-97) Toolbar full width by default
   fullWidth=true;
@@ -762,7 +771,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
     pointerOffset = m->pos();
     if (moving)
       if (m->button() != LeftButton)
-        context->popup( mapToGlobal( m->pos() ), 0 );
+	{
+	  context->popup( mapToGlobal( m->pos() ), 0 );
+	  ContextCallback(0);
+	}
       else
       {
         //QRect rr(KWM::geometry(Parent->winId(), false));
@@ -1677,8 +1689,15 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
     }
 }
 
-void KToolBar::mouseReleaseEvent ( QMouseEvent * ){
-  debug ("KToolBar: mouseRelease event");
+void KToolBar::mouseReleaseEvent ( QMouseEvent * )
+{
+  if (mgr)
+    {
+      debug ("KToolBar: mouseRelease event (stoping mgr)");
+      mgr->stop();
+    }
+  else
+    debug ("KToolBar: mouseRelease event (no mgr)");
 }
 
 // sven
