@@ -2580,6 +2580,25 @@ unsigned int CSSSelector::specificity()
     return s & 0xffffff;
 }
 
+bool CSSSelector::operator == ( const CSSSelector &other )
+{
+    const CSSSelector *sel1 = this;
+    const CSSSelector *sel2 = &other;
+    
+    while ( sel1 && sel2 ) {
+	if ( sel1->tag != sel2->tag || sel1->attr != sel2->attr ||
+	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
+	     sel1->nonCSSHint != sel2->nonCSSHint ||
+	     sel1->value != sel2->value )
+	    return false;
+	sel1 = sel1->tagHistory;
+	sel2 = sel2->tagHistory;
+    }
+    if ( sel1 || sel2 )
+	return false;
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 
 CSSProperty::~CSSProperty()

@@ -649,41 +649,22 @@ void CSSStyleSelectorList::collect( QList<CSSSelector> *selectorList, CSSOrdered
 {
     CSSOrderedRule *r = first();
     while( r ) {
-	int selectorNum = selectorList->count();
-	selectorList->append( r->selector );
+	CSSSelector *sel = selectorList->first();
+	int selectorNum = 0;
+	while( sel ) {
+	    if ( *sel == *(r->selector) )
+		break;
+	    sel = selectorList->next();
+	    selectorNum++;
+	}
+	if ( !sel )
+	    selectorList->append( r->selector );
+//	else
+//	    qDebug("merged one selector");
 	propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
 	r = next();
     }
 }
-
-#if 0
-void CSSStyleSelectorList::append(CSSStyleRuleImpl *rule)
-{
-    QList<CSSSelector> *s = rule->selector();
-    for(int j = 0; j < (int)s->count(); j++)
-    {
-        CSSOrderedRule *r = new CSSOrderedRule(rule, s->at(j), count());
-        inSort(r);
-    }
-}
-
-void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::ElementImpl *e,
-                                   int offset, int important )
-{
-    int i;
-    int num = count();
-    int id = e->id();
-    for(i = 0; i< num; i++) {
-	register CSSOrderedRule *r = at(i);
-	if(id == r->selector->tag || r->selector->tag == -1) {
-	    if(r->checkSelector(e)) {
-		//kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
-		propsToApply->append(r->rule->declaration(), offset + i, important);
-	    }
-	}
-    }
-}
-#endif
 
 // -------------------------------------------------------------------------
 
@@ -691,8 +672,8 @@ int CSSOrderedPropertyList::compareItems(QCollection::Item i1, QCollection::Item
 {
     int diff =  static_cast<CSSOrderedProperty *>(i1)->priority
         - static_cast<CSSOrderedProperty *>(i2)->priority;
-    return diff ? diff : static_cast<CSSOrderedProperty *>(i2)->position
-        - static_cast<CSSOrderedProperty *>(i1)->position;
+    return diff ? diff : static_cast<CSSOrderedProperty *>(i1)->position
+        - static_cast<CSSOrderedProperty *>(i2)->position;
 }
 
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity, 

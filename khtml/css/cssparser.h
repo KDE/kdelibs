@@ -52,6 +52,10 @@ public:
     CSSSelector(void);
     ~CSSSelector(void);
     void print(void);
+
+    // checks if the 2 selectors (including sub selectors) agree.
+    bool operator == ( const CSSSelector &other );
+    
     // tag == -1 means apply to all elements (Selector = *)
 
     /* how the attribute value has to match.... Default is Exact */
