@@ -23,8 +23,10 @@ libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
 libsoundserver_idl_la_LDFLAGS = -no-undefined -version-info 1:0
 libsoundserver_idl_la_SOURCES = soundserver.cc
+libsoundserver_idl_la_COMPILE_FIRST = soundserver.h
 
 libkmedia2_idl_la_SOURCES = kmedia2.cc
+libkmedia2_idl_la_COMPILE_FIRST = kmedia2.h
 libkmedia2_idl_la_LIBADD  = $(top_builddir)/arts/flow/libartsflow.la
 libkmedia2_idl_la_LDFLAGS = -no-undefined -version-info 1:0
 
@@ -66,16 +68,11 @@ DISTCLEANFILES = soundserver.cc soundserver.h soundserver.mcopclass \
   soundserver.mcoptype kmedia2.h kmedia2.cc kmedia2.mcopclass kmedia2.mcoptype
 
 ####### Build rules
-
-samplestorage_impl.cc: soundserver.h
-soundserver.cc: soundserver.h
 soundserver.mcoptype: soundserver.h
 soundserver.mcopclass: soundserver.h
 soundserver.h: $(top_srcdir)/arts/soundserver/soundserver.idl kmedia2.h $(MCOPIDL)
 	$(MCOPIDL) -t $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
 
-
-kmedia2.cc: kmedia2.h soundserver.h
 kmedia2.mcoptype: kmedia2.h
 kmedia2.mcopclass: kmedia2.h
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
