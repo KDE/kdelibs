@@ -257,7 +257,7 @@ Completion StringProtoFunc::execute(const List &args)
       result = String(mstr);
     } else
     {
-      printf("Match/Search. Argument is not a RegExp - returning Undefined\n");
+      printf("KJS: Match/Search. Argument is not a RegExp - returning Undefined\n");
       result = Undefined(); // No idea what to do here
     }
     break;

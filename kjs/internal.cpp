@@ -640,7 +640,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
     errLine = Lexer::curr()->lineNo();
     errMsg = "Parse error at line " + UString::from(errLine);
 #ifndef NDEBUG
-    fprintf(stderr, "JavaScript parse error at line %d.\n", errLine);
+    fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", errLine);
 #endif
     /* TODO: either clear everything or keep previously
        parsed function definitions */
@@ -724,7 +724,7 @@ bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
     callScope = Global::current().imp();
   if (!callScope.hasProperty(func)) {
 #ifndef NDEBUG
-      fprintf(stderr, "couldn't resolve function name %s. call() failed\n",
+      fprintf(stderr, "KJS: couldn't resolve function name %s. call() failed\n",
 	      func.ascii());
 #endif
       return false;
@@ -732,7 +732,7 @@ bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
   KJSO v = callScope.get(func);
   if (!v.isA(ConstructorType)) {
 #ifndef NDEBUG
-      fprintf(stderr, "%s is not a function. call() failed.\n", func.ascii());
+      fprintf(stderr, "KJS: %s is not a function. call() failed.\n", func.ascii());
 #endif
       return false;
   }
@@ -893,18 +893,18 @@ KJSO KJS::hasInstance(const KJSO &F, const KJSO &V)
 void KJS::printInfo( const char *s, const KJSO &o )
 {
     if (o.isNull())
-      fprintf(stderr, "%s: (null)\n", s);
+      fprintf(stderr, "KJS: %s: (null)\n", s);
     else {
       KJSO v = o;
       if (o.isA(ReferenceType))
 	  v = o.getValue();
-      fprintf(stderr, "JS: %s: %s : %s (%p)\n",
+      fprintf(stderr, "KJS: %s: %s : %s (%p)\n",
 	      s,
 	      v.toString().value().ascii(),
 	      v.imp()->typeInfo()->name,
 	      (void*)v.imp());
       if (o.isA(ReferenceType)) {
-	  fprintf(stderr, "JS: Was property '%s'\n", o.getPropertyName().ascii());
+	  fprintf(stderr, "KJS: Was property '%s'\n", o.getPropertyName().ascii());
 	  printInfo("of", o.getBase());
       }
     }

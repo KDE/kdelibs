@@ -140,7 +140,7 @@ Type KJSO::type() const
 {
 #ifdef KJS_VERBOSE
   if (!rep)
-    fprintf(stderr, "requesting type of null object\n");
+    fprintf(stderr, "KJS: requesting type of null object\n");
 #endif
 
   return rep ? rep->typeInfo()->type : UndefinedType;
@@ -1048,9 +1048,9 @@ Object Error::createObject(ErrorType e, const char *m, int l)
 #ifndef NDEBUG
   const char *msg = err.get("message").toString().value().ascii();
   if (l >= 0)
-      fprintf(stderr, "JS: %s at line %d. %s\n", estr, l, msg);
+      fprintf(stderr, "KJS: %s at line %d. %s\n", estr, l, msg);
   else
-      fprintf(stderr, "JS: %s. %s\n", estr, msg);
+      fprintf(stderr, "KJS: %s. %s\n", estr, msg);
 #endif
 
   return err;

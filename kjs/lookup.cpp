@@ -33,7 +33,7 @@ int Lookup::find(const struct HashTable *table,
 {
   // we only know about version 1 so far
   if (table->type != 1) {
-    fprintf(stderr, "Unknown hash table version.\n");
+    fprintf(stderr, "KJS: Unknown hash table version.\n");
     return -1;
   }
 
@@ -78,7 +78,7 @@ int Lookup::find(const struct HashTable2 *table,
 		 const UChar *c, unsigned int len)
 {
   if (table->type != 2) {
-    fprintf(stderr, "Unknown hash table version.\n");
+    fprintf(stderr, "KJS: Unknown hash table version.\n");
     return -1;
   }
 
