@@ -20,38 +20,9 @@
 
 //$Id$
 //$Log$
-//Revision 1.16  1999/03/01 23:34:52  kulow
-//CVS_SILENT ported to Qt 2.0
-//
-//Revision 1.15.2.1  1999/02/21 20:55:48  kulow
-//more porting to Qt 2.0. It compiles and links. Jucheisassa :)
-//
-//Revision 1.15  1998/12/16 01:27:14  ettrich
-//fixed slightly broken macstyle removal
-//
-//Revision 1.14  1998/11/25 13:24:53  radej
-//sven: Someone changed protected things to private (was it me?).
-//
-//Revision 1.13  1998/11/23 15:34:05  radej
-//sven: Nicer sysmenu button
-//
-//Revision 1.12  1998/11/22 13:35:47  radej
-//sven: IMPROVED Mac menubar: Accelerators, SystemMenu, look...
-//
-//Revision 1.11  1998/11/15 09:22:59  garbanzo
-//Clean up kmenubar.h
-//
-//Revision 1.10  1998/11/11 14:32:12  radej
-//sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
-//
-//Revision 1.9  1998/08/31 00:52:12  torben
-//Torben: One new function and made others virtual
-//=> binary incompatible. Sorry. Please use virtual whenever it is
-//not a performance problem.
-//
-//Revision 1.8  1998/05/07 23:13:23  radej
-//Moving with KToolBoxManager
-//
+//Revision 1.18  1999/05/08 11:42:31  ssk
+//Nested real menubar class, to clean up kdeui namespace.
+//Minor doc update.
 //
 //Revision 1.17  1999/03/06 18:03:34  ettrich
 //the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
@@ -60,17 +31,8 @@
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
 
-class _menuBar : public QMenuBar
- {
-   Q_OBJECT
-
- public:
-   _menuBar(QWidget *parent=0, const char *name=0);
-   ~_menuBar();
- };
-
 #include <qmenubar.h>
- * This is floatable toolbar. It can be set to float, Top, or Bottom
+
 class KToolBoxManager;
 
 /**
@@ -81,7 +43,7 @@ class KToolBoxManager;
  *
  * Interface is the same as QMenuBar, except that you can't
  * add pixmaps.
- * @short KDE floatable menubar
+ *
  * If you want to add other methods for 100% compatibility with QMenuBar
  * just add those methods, and pass all arguments ot menu bar.
  * see kmenubar.cpp for details. It is extremly simple.
@@ -169,6 +131,19 @@ class KMenuBar : public QFrame
    void ContextCallback(int index);
    void slotActivated (int id);
    void slotHighlighted (int id);
+
+   class KChildMenu : public QMenuBar
+   {
+	   Q_OBJECT
+
+	   public:
+		   KChildMenu(QWidget *parent=0, const char *name=0)
+			   : QMenuBar( parent, name ) 
+			   { setLineWidth( 1 ); }
+		   virtual ~KChildMenu() {}
+   };
+
+   void slotReadConfig ();
    void slotHotSpot (int i);
 
  protected:

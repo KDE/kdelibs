@@ -43,6 +43,13 @@
 
 // $Id$
 // $Log$
+// Revision 1.71  1999/05/08 11:42:32  ssk
+// Nested real menubar class, to clean up kdeui namespace.
+// Minor doc update.
+//
+// Revision 1.70  1999/05/07 15:42:54  kulow
+// making some changes to the code and partly to the API to make it
+// -DQT_NO_ASCII_CAST compatible.
 // The job is quite boring, but triggers some abuses of QString. BTW:
 // I added some TODOs to the code where I was too lazy to continue.
 // Someone should start a grep for TODO in the code on a regular base ;)
@@ -207,20 +214,6 @@
 // Moving with KToolBoxManager
 //
 
-_menuBar::_menuBar (QWidget *parent, const char *name)
-  : QMenuBar (parent, name)
-{
-   // Menubar is raised in motif style
-   //setFrameStyle(NoFrame);
-	
-   //MD (17-9-97)
-  setLineWidth(1);
- }
-
-_menuBar::~_menuBar ()
- {
- }
-
 static bool standalone_menubar = FALSE;
 
 static QPixmap* miniGo = 0;
@@ -232,7 +225,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
 {
   Parent = parent;        // our father
   oldWFlags = getWFlags();
-  menu = new _menuBar (frame);
+  menu = new KChildMenu (frame);
   frame = new QFrame (this);
   frame->setFrameStyle(NoFrame);
   menu = new QMenuBar (frame);
