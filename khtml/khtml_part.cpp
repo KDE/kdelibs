@@ -2930,7 +2930,8 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
 	myurl.setPath(res.asString());
       return processObjectRequest(&(*it), myurl, QString("text/html") );
   }
-  return requestObject( &(*it), completeURL( url ));
+  KURL u = url.isEmpty() ? KURL() : completeURL( url );
+  return requestObject( &(*it), u );
 }
 
 QString KHTMLPart::requestFrameName()
@@ -2941,8 +2942,6 @@ QString KHTMLPart::requestFrameName()
 bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                                const QStringList &params )
 {
-  if (url.isEmpty())
-    return false;
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
