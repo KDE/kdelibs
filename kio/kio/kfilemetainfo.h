@@ -74,6 +74,8 @@ public:
      * @li @p Length      The length of the file, also for media files
      * @li @p Hidden      The item is usually not shown to the user
      * @li @p Thumbnail   The item is a thumbnail of the file
+     * @li @p MultiLine   Tells that a textual string will be edited in a
+     *                    multi-line edit, rather than a simple lineedit.
      **/
     enum Hint {
         NoHint      = 0,
@@ -86,7 +88,8 @@ public:
         Bitrate     = 7,
         Length      = 8,
         Hidden      = 9,
-        Thumbnail   = 10
+        Thumbnail   = 10,
+        MultiLine   = 11
     };
 
     /**
@@ -234,7 +237,7 @@ public:
         ItemInfo() {}
 
         /**
-         * 
+         *
          * This method returns a translated prefix to be displayed before the
          * value. Think e.g. of the $ in $30
          *
@@ -258,7 +261,7 @@ public:
 
         /**
          * The items for a file are stored as a @ref QVariant and this method
-         * can be used to get the data type of this item. 
+         * can be used to get the data type of this item.
          *
          * @return the @ref QVariant type
          */
@@ -505,7 +508,7 @@ public:
      * @return the unit for this item. See @ref Unit
      **/
     uint unit() const;
-    
+
     uint attributes() const;
 
     /**
@@ -520,10 +523,10 @@ public:
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
     friend class KFileMetaInfoGroup;
-    
+
 protected:
     void setAdded();
-    
+
     void ref();
     void deref();
 
@@ -623,13 +626,13 @@ public:
      * If you re-add it, its value will be cleared
      */
     bool removeItem(const QString& key);
-    
+
     QStringList removedItems();
 
     QString name() const;
 
     uint attributes() const;
-    
+
 
 
 protected:
@@ -804,7 +807,7 @@ public:
     * before removing it!
     */
     bool removeGroup( const QString& name );
-    
+
     QStringList removedGroups();
 
    /**
