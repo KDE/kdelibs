@@ -83,7 +83,8 @@ QWidget *KPartsMainWindow::createContainer( QObject *parent, const QDomElement &
 
   if ( element.tagName() == "ToolBar" )
   {
-    KToolBar *bar = new KToolBar( this, element.attribute( "name" ) );
+    bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
+    KToolBar *bar = new KToolBar(this, element.attribute( "name" ), -1, honor);
 
     // (David) Hmm, this list exists in KTMainWindow as well - but it's private...
     // I've asked for an iterator on the toolbars, on kde-core-devel
