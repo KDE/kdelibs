@@ -1357,7 +1357,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if (e->timerId()==d->timerId)
     {
 
-//        kdDebug() << "scheduled layout " << d->timerId  << endl;        
+        //kdDebug() << "scheduled layout " << d->timerId  << endl;        
 
         d->firstRelayout = false;        
         killTimer(d->timerId);        
@@ -1371,12 +1371,15 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         //scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
 	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
-       
+
     if( m_part->xmlDocImpl() ) {
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 	resizeContents(root->docWidth(), root->docHeight());
 	if ( !root->layouted() ) {
+	    killTimer(d->repaintTimerId);       
+	    d->repaintTimerId = 0;
+	    //qDebug("not layouted, delaying repaint");
 	    scheduleRelayout();
 	    return;
 	}
@@ -1407,7 +1410,7 @@ void KHTMLView::scheduleRelayout()
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 {
     
-//     kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
+    //kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
 
     
     bool parsing = false;
