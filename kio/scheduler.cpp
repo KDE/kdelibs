@@ -771,8 +771,8 @@ Scheduler::slotScheduleCoSlave()
     {
         nextSlave = coIdleSlaves->next();
         JobList *list = coSlaves.find(slave);
-        assert(list);
-        if (!list->isEmpty())
+        //assert(list);
+        if (list && !list->isEmpty())
         {
            SimpleJob *job = list->take(0);
            coIdleSlaves->removeRef(slave);
@@ -852,7 +852,7 @@ bool
 Scheduler::_disconnectSlave(KIO::Slave *slave)
 {
     JobList *list = coSlaves.take(slave);
-    assert(list);
+    //assert(list);
     if (!list)
        return false;
     // Kill jobs still in queue.
