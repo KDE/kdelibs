@@ -61,8 +61,9 @@ class KImageTrackLabel : public QLabel
     virtual void mouseMoveEvent ( QMouseEvent *e );
 };
 
-
-
+/**
+ *  @internal
+ */
 class KAboutContainer : public QFrame
 {
   Q_OBJECT
@@ -98,8 +99,9 @@ class KAboutContainer : public QFrame
     int mAlignment;
 };
 
-
-
+/**
+ *  @internal
+ */
 class KAboutContainerBase : public QWidget
 {
   Q_OBJECT
@@ -166,9 +168,9 @@ class KAboutContainerBase : public QWidget
     QFrame  *mPlainSpace;
 };
 
-
-
-
+/**
+ *  @internal
+ */
 class KAboutContributor : public QFrame
 {
   Q_OBJECT
@@ -217,10 +219,6 @@ class KAboutContributor : public QFrame
     bool mShowHeader;
     bool mShowBold;
 };
-
-
-
-
 
 /**
  * KAboutWidget is the main widget for KAboutDialog.
@@ -608,8 +606,3 @@ protected slots:
 };
 
 #endif // defined KABOUTDIALOG_H
-
-
-
-
-

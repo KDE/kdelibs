@@ -94,8 +94,8 @@ class KDialogBaseTile : public QObject
  * It offers the standard action buttons you'd expect to find in a dialog
  * as well as the ability to define at most three configurable buttons. You 
  * can define a main widget which contains your specific dialog layout or use 
- * a predefined layout. Currently, TreeList/Paged, Tabbed, Plain 
- * and Swallow mode layouts (faces) are available.
+ * a predefined layout. Currently, TreeList/Paged, Tabbed, Plain, Swallow
+ * and IconList mode layouts (faces) are available.
  *
  * The class takes care of the geometry management. You only need to define
  * a minimum size for the widget you want to use as the main widget.
@@ -129,7 +129,7 @@ class KDialogBaseTile : public QObject
  *
  * You can either use one of the prebuilt, easy to use, faces or define 
  * your own main widget. The dialog provides ready to use TreeList,  
- * Tabbed, Plain and Swallow faces. For the first two you then add pages 
+ * Tabbed, Plain, Swallow and IconList faces. For the first two you then add pages 
  * with @ref addPage(). If you want complete control of how the dialog 
  * contents should look, then you can define a main widget by using 
  * @ref setMainWidget(). You only need to set the minimum size of that 
@@ -350,7 +350,7 @@ class KDialogBase : public KDialog
      * Constructor for the predefined layout mode where you specify the kind of
      * layout (face).
      * 
-     * @param dialogFace You can use TreeList, Tabbed, Plain or Swallow.
+     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or IconList.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
      * @param buttonMask Specifies what buttons will be visible.
