@@ -563,7 +563,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    handled = true;
 	    break;
 	case ID_BODY:
-	    
+	
 	    break;
 	case ID_TABLE:
 	    switch(id)

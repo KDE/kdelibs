@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     //doc->setFollowsLinks(false);
 
     //a.setTopWidget(doc);
-    //doc->view()->setURLCursor(QCursor(PointingHandCursor));
+    doc->setURLCursor(QCursor(PointingHandCursor));
     //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
     //			      QColor(Qt::green));
     a.setTopWidget(doc->widget());

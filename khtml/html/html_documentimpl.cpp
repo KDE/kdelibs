@@ -300,9 +300,14 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
 				  int, int, DOMString &url,
                                    NodeImpl *&innerNode, long &offset)
 {
-    if(firstChild())
-	return firstChild()->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
-    return false;
+    bool inside = false;
+    NodeImpl *n = firstChild();
+    while ( n && n->id() != ID_HTML )
+	n = n->nextSibling();
+    if ( n ) 
+	inside = n->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
+    //kdDebug(0) << "documentImpl::mouseEvent " << n->id() << " " << inside << endl;
+    return inside;
 }
 
 void HTMLDocumentImpl::attach(KHTMLView *w)
