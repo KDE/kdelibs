@@ -1106,7 +1106,7 @@ void RenderTableSection::setCellWidths()
 #endif
     QMemArray<int> &columnPos = table()->columnPos;
 
-    int rows = grid.size();
+	int rows = grid.size();
     for ( int i = 0; i < rows; i++ ) {
 	Row &row = *grid[i].row;
 	int cols = row.size();
@@ -1132,6 +1132,11 @@ void RenderTableSection::setCellWidths()
 	    }
 	}
     }
+}
+
+short RenderTableSection::width() const
+{
+  return table()->width();
 }
 
 
@@ -1752,6 +1757,7 @@ void RenderTableRow::layout()
     KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
+	
     while( child ) {
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
