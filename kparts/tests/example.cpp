@@ -19,7 +19,7 @@ Shell::Shell()
 {
   m_builder = new KTMainWindowGUIBuilder( this );
 
-  m_builder->setXML( KXMLGUIFactory::readConfigFile( "example_shell.rc" ) );
+  m_builder->setXMLFile( "example_shell.rc" );
 
   m_part1 = new Part1();
   m_part2 = new Part2();
@@ -130,6 +130,7 @@ bool Part1::openFile()
 
 QString Part1::configFile() const
 {
+  // Hmm...
   return KXMLGUIFactory::readConfigFile( "part1.rc" );
 }
 
