@@ -165,7 +165,7 @@ static void createStandardPalette()
     if ( standardPalette )
 	return;
 
-    standardPalette = spd.setObject(new QColor [STANDARD_PAL_SIZE], true);
+    spd.setObject(standardPalette, new QColor [STANDARD_PAL_SIZE], true/*array*/);
 
     int i = 0;
 
