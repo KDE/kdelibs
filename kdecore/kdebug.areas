@@ -35,6 +35,7 @@
 295        kdeui (KMenuBar)
 296        kdeui (KPopupMenu)
 297        kdeui (KPreferences)
+298        kdeui (KDatePicker)
 400        artskde
 500        kdeprint
 750        kspell (kdelibs)
