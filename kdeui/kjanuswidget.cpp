@@ -38,7 +38,7 @@
 #include <kseparator.h>
 #include <kdebug.h>
 #include "kjanuswidget.h"
-
+#include <klistview.h>
 
 class IconListItem : public QListBoxItem
 {
@@ -404,8 +404,8 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     mTabControl->addTab (page, items.last());
     mPageList->append (page);
 //     //
-//     // 2000-06-10 Espen Sand: The tab widget does not have a margin so we 
-//     // need to add one. I make a new widget width layout manager and reparent 
+//     // 2000-06-10 Espen Sand: The tab widget does not have a margin so we
+//     // need to add one. I make a new widget width layout manager and reparent
 //     // the page widget to be a child of the new widget.
 //     //
 //     QString itemName = items.last();
@@ -923,7 +923,7 @@ void KJanusWidget::IconListBox::updateWidth()
     setFixedWidth( maxWidth + frameWidth()*2 );
     mWidthValid = true;
   }
-}  
+}
 
 
 void KJanusWidget::IconListBox::invalidateHeight()
