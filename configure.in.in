@@ -146,9 +146,6 @@ if test -n "$qt_includes"; then
 fi
 AC_SUBST(QNAMESPACE_H)
 
-dnl Perform program name transformation
-AC_ARG_PROGRAM
-
 dnl output files
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
@@ -240,7 +237,7 @@ AC_DEFINE_UNQUOTED(X11_RGBFILE, "$rgb_file", [where rgb.txt is in])
 
 AC_MSG_CHECKING([for Compiler version])
 for flag in '-v' '-V' '--version' '-version'; do
-   compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using builtin specs" | head -1`
+   compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using builtin specs|Configured with|Thread model" | head -1`
    clean_compiler_version=`echo $compiler_version | egrep -vi 'Usage|ERROR|unknown option|WARNING|missing|###'`
    if test -n "$compiler_version" && test -n "$clean_compiler_version"; then
       AC_DEFINE_UNQUOTED(KDE_COMPILER_VERSION, "$compiler_version", [what C++ computer were used for compilation])
