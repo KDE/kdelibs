@@ -175,6 +175,17 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
+    if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
+       deleteWordBack();  // to be replaced with QT3 function
+       e->accept();
+       return;
+    }
+    else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
+       deleteWordForward(); // to be replaced with QT3 function
+       e->accept();
+       return;
+    }
+
     // Filter key-events if EchoMode is normal &
     // completion mode is not set to CompletionNone
     if ( echoMode() == QLineEdit::Normal &&
@@ -274,6 +285,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
     }
+
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
 }
@@ -560,4 +572,19 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
     QLineEdit::create( id, initializeWindow, destroyOldWindow );
     KCursor::setAutoHideCursor( this, true, true );
+}
+
+// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
+void KLineEdit::deleteWordForward()
+{
+    cursorWordForward(TRUE);
+    if ( hasMarkedText() )
+        del();
+}
+
+void KLineEdit::deleteWordBack()
+{
+    cursorWordBackward(TRUE);
+    if ( hasMarkedText() )
+        del();
 }

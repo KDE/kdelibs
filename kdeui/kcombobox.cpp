@@ -371,6 +371,19 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         if ( type == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+
+            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
+                deleteWordBack();  // to be replaced with QT3 function
+                e->accept();
+                return true;
+            }
+            else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward())) {
+                deleteWordForward(); // to be replaced with QT3 function
+                e->accept();
+                return true;
+            }
+
+            
             if ( e->key() == Key_Return || e->key() == Key_Enter)
             {
                 // On Return pressed event, emit both
@@ -665,6 +678,21 @@ void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
     KCursor::setAutoHideCursor( lineEdit(), true, true );
 }
 
+
+// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
+void KComboBox::deleteWordForward()
+{
+    lineEdit()->cursorWordForward(TRUE);
+    if ( lineEdit()->hasMarkedText() )
+        lineEdit()->del();
+}
+
+void KComboBox::deleteWordBack()
+{
+    lineEdit()->cursorWordBackward(TRUE);
+    if ( lineEdit()->hasMarkedText() )
+        lineEdit()->del();
+}
 
 // *********************************************************************
 // *********************************************************************

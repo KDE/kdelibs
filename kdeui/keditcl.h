@@ -282,6 +282,7 @@ public:
      */
     void setOverwriteEnabled(bool b);
 
+
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
       * @ref QMultiLineEdit widget.
@@ -376,7 +377,7 @@ protected:
     virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
-    
+
 protected:
 
     bool 	eventFilter	 ( QObject *, QEvent * );
@@ -392,6 +393,13 @@ protected:
     void        dropEvent(QDropEvent* e);
 
 private:
+    /** 
+     * Temporary functions to delete words back and foward until
+     * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
+     */
+    void deleteWordBack();
+    void deleteWordForward();
+
     QTimer* repaintTimer;
 
     QString	killbufferstring;

@@ -31,6 +31,7 @@
 #include <kfontdialog.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kstdaccel.h>
 
 #include "keditcl.h"
 #include "keditcl.moc"
@@ -380,17 +381,17 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
   if ((e->state() & ShiftButton ) && (e->key() == Key_Insert) ){
     paste();
-	setModified();
-	emit CursorPositionChanged();
-	return;
-    }
+    setModified();
+    emit CursorPositionChanged();
+    return;
+  }
 
   if ((e->state() & ShiftButton ) && (e->key() == Key_Delete) ){
     cut();
-	setModified();
-	emit CursorPositionChanged();
-	return;
-    }
+    setModified();
+    emit CursorPositionChanged();
+    return;
+  }
 
   if (d->overwriteEnabled)
   {
@@ -401,9 +402,23 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
     }
   }
 
+  if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
+      deleteWordBack();  // to be replaced with QT3 function
+      e->accept();
+      setModified();
+      emit CursorPositionChanged();
+      return;
+  }
+  else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
+    deleteWordForward(); // to be replaced with QT3 function
+    e->accept();
+    setModified();
+    emit CursorPositionChanged();
+    return;
+  }
+
   QMultiLineEdit::keyPressEvent(e);
   emit CursorPositionChanged();
-
 }
 
 
@@ -530,3 +545,19 @@ void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
   QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
   KCursor::setAutoHideCursor( this, true, true );
 }
+
+// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
+void KEdit::deleteWordForward()
+{
+  cursorWordForward(TRUE);
+  if ( hasMarkedText() )
+    del();
+}
+
+void KEdit::deleteWordBack()
+{
+  cursorWordBackward(TRUE);
+  if ( hasMarkedText() )
+    del();
+}
+

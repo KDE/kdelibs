@@ -520,6 +520,13 @@ private:
     /** initializes the context menu */
     void initPopup();
 
+    /** 
+     * Temporary functions to delete words back and foward until
+     * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
+     */
+    void deleteWordBack();
+    void deleteWordForward();
+
     bool m_bEnableMenu;
 
     // Pointer to the line editor.
