@@ -2693,7 +2693,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 //      kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
-    assert( child->m_part );
+    assert( ((void*) child->m_part) != 0);
 
     if ( child->m_type != khtml::ChildFrame::Object )
     {
