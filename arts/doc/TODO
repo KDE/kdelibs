@@ -25,6 +25,17 @@
 - fix fallback into higher namespaces, the following idl file should be accepted
   module A { interface Z; module B { interface Y : Z { }; }; };
 
+- debugging: if two alternating messages are emitted, the message compression
+  doesn't work, and the user will be flooded with debugging message, the X
+  server will crash, and so on - a possible strategy would be:
+   * make an always present MCOP object which can receive confirmations from
+     artsmessage
+   * start artsmessage as usual, but tell it about the MCOP object, so that
+     artsmessage can
+	   - tell the MCOP object if it is done
+	   - query the MCOP object for the repetition count of the message
+   * queue repeated messages as long as they are still visible on screen
+
 ## aRts SoundServer
 
 - export configuration interfaces from the soundserver (so that
