@@ -40,28 +40,28 @@ KJSO Math::get(const UString &p) const
   double d;
   switch (token) {
   case Math::Euler:
-    d = exp(1);
+    d = exp(1.0);
     break;
   case Math::Ln2:
-    d = log(2);
+    d = log(2.0);
     break;
   case Math::Ln10:
-    d = log(10);
+    d = log(10.0);
     break;
   case Math::Log2E:
-    d = 1.0/log(2);
+    d = 1.0/log(2.0);
     break;
   case Math::Log10E:
-    d = 1.0/log(10);
+    d = 1.0/log(10.0);
     break;
   case Math::Pi:
-    d = 2.0 * asin(1);
+    d = 2.0 * asin(1.0);
     break;
   case Math::Sqrt1_2:
     d = sqrt(0.5);
     break;
   case Math::Sqrt2:
-    d = sqrt(2);
+    d = sqrt(2.0);
     break;
   default:
     return Function(new MathFunc(token));
