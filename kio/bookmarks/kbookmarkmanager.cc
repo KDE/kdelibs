@@ -75,7 +75,7 @@ private:
 
 static KBookmarkMap *s_bk_map = 0;
 
-KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) { 
+KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
     m_manager = manager;
 }
 
@@ -241,8 +241,9 @@ void KBookmarkManager::parse() const
     }
 
     file.close();
-    if ( s_bk_map )
-        s_bk_map->update();
+    if ( !s_bk_map )
+        s_bk_map = new KBookmarkMap( const_cast<KBookmarkManager*>( this ) );
+    s_bk_map->update();
 }
 
 void KBookmarkManager::convertToXBEL( QDomElement & group )
@@ -626,7 +627,7 @@ void KBookmarkManager::slotEditBookmarks()
 void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 {
     KProcess proc;
-    proc << QString::fromLatin1("keditbookmarks") 
+    proc << QString::fromLatin1("keditbookmarks")
          << QString::fromLatin1("--address") << address
          << m_bookmarksFile;
     proc.start(KProcess::DontCare);
@@ -644,17 +645,19 @@ void KBookmarkOwner::virtual_hook( int, void* )
 
 bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
-    if (!s_bk_map) 
+    if (!s_bk_map) {
         s_bk_map = new KBookmarkMap(this);
-    
+        s_bk_map->update();
+    }
+
     QValueList<KBookmark> list = s_bk_map->find(url);
     if ( list.count() == 0 )
         return false;
 
-    for ( QValueList<KBookmark>::iterator it = list.begin(); 
+    for ( QValueList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
         (*it).updateAccessMetadata();
-   
+
     if (emitSignal)
         emit notifier().updatedAccessMetadata( path(), url );
 
@@ -665,18 +668,20 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 {
     Q_UNUSED(faviconurl);
 
-    if (!s_bk_map) 
+    if (!s_bk_map) {
         s_bk_map = new KBookmarkMap(this);
+        s_bk_map->update();
+    }
 
     QValueList<KBookmark> list = s_bk_map->find(url);
-    for ( QValueList<KBookmark>::iterator it = list.begin(); 
+    for ( QValueList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
     {
         // TODO - update favicon data based on faviconurl
         //        but only when the previously used icon
         //        isn't a manually set one.
     }
-   
+
     if (emitSignal)
     {
         // TODO
