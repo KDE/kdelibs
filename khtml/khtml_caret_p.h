@@ -700,7 +700,7 @@ protected:
   /** determines the topologically next render object.
    * @param oldCell table cell the original object was under.
    * @param newObject object to determine whether and which transition
-   *	between cells is to be handled. It needs not be an object in the correct
+   *	between cells is to be handled. It does not have to be an object in the correct
    *	topological cell, a simple delivery from an editable line iterator suffices.
    * @param toBegin if @p true, iterate towards the beginning
    */
