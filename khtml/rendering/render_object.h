@@ -49,6 +49,7 @@ namespace khtml {
     class RenderStyle;
     class RenderTable;
     class CachedObject;
+    class RenderRoot;
 
 /**
  * Abstract Base Class for the XML renderer.
@@ -64,7 +65,7 @@ namespace khtml {
  * a RenderStyle is provided to the child via setStyle(RenderStyle *)
  * after that, they are attached to the
  * view. (##: where is this done?)
- * 
+ *
  */
 class RenderObject : public CachedObjectClient
 {
@@ -157,7 +158,7 @@ public:
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
 
-    RenderObject *root() const;
+    RenderRoot *root() const { return m_root; }
 
     /**
      * returns the object containing this one. can be different from parent for
@@ -246,7 +247,7 @@ public:
 
     /**
      * This function gets called as soon as the parser leaves the element
-     * 
+     *
      */
     virtual void close() { setParsing(false); }
 
@@ -318,7 +319,7 @@ public:
      * A helper value for calculating the layout
      * extent of a replaced element. for images, it is the physical
      * width of the image.
-     * Note that this value can differ from the layouted size as 
+     * Note that this value can differ from the layouted size as
      * retrieved by @ref contentWidth(), i.e. if the image is scaled.
      *
      * for inlined elements, the value is undefined, and 0 is returned.
@@ -329,7 +330,7 @@ public:
      * A helper value for calculating the layout
      * extent of a replaced element. for images, it is the physical
      * height of the image.
-     * Note that this value can differ from the layouted size as 
+     * Note that this value can differ from the layouted size as
      * retrieved by @ref contentHeight(), i.e. if the image is scaled.
      *
      * for inlined elements, the value is undefined, and 0 is returned.
@@ -363,7 +364,7 @@ public:
      * Get the Y-Position of this object relative to its parent
      */
     virtual int yPos() const { return 0; }
-   
+
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 
     // width and height are without margins but include paddings and borders
@@ -460,8 +461,8 @@ protected:
      * helper function for RenderObject::print().
      * Draws the box decorations:
      * - DOC: (what box decorations are there?)
-     * - 
-     * - 
+     * -
+     * -
      * the coordinates are meant relative to the contents area.
      */
     virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
@@ -476,9 +477,9 @@ private:
     RenderObject *m_next;
     RenderObject *m_first;
     RenderObject *m_last;
-    
+
     friend class RenderRoot;
-    RenderObject *m_root;
+    RenderRoot *m_root;
 
     CachedImage *m_bgImage;
 

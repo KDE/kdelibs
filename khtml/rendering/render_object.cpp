@@ -32,6 +32,7 @@
 #include "render_table.h"
 #include "render_list.h"
 #include "render_style.h"
+#include "render_root.h"
 
 #include <kdebug.h>
 #include <qnamespace.h>
@@ -121,7 +122,7 @@ RenderObject::RenderObject()
     m_visible = true;
     m_containsOverhangingFloats = false;
 
-    m_bgImage = 0;    
+    m_bgImage = 0;
 }
 
 RenderObject::~RenderObject()
@@ -153,7 +154,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    
+
     newChild->m_root = m_root;
 
     if(parsing())
@@ -762,7 +763,4 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-RenderObject *RenderObject::root() const
-{
-    return m_root;
-}
+

@@ -45,7 +45,7 @@ StyleSurroundData::StyleSurroundData(const StyleSurroundData& o )
     offset = o.offset;
     margin = o.margin;
     padding = o.padding;
-    border = o.border;	
+    border = o.border;
 }
 
 bool StyleSurroundData::operator==(const StyleSurroundData& o) const
@@ -66,7 +66,7 @@ StyleBoxData::StyleBoxData(const StyleBoxData& o )
     min_width = o.min_width;
     max_width = o.max_width;
     min_height = o.min_height;
-    max_height = o.max_height;	
+    max_height = o.max_height;
     z_index = o.z_index;
 }
 
@@ -110,7 +110,7 @@ RenderStyle::setBitDefaults()
     _visuallyOrdered = false;
     _direction = LTR;
     _cursor = CURSOR_AUTO;
-    
+
     _htmlHacks=false;
     _flowAroundFloats=false;
 }
@@ -123,7 +123,7 @@ RenderStyle::RenderStyle()
     if (!_default)
 	_default = new RenderStyle(true);
 
-    box = _default->box;    	
+    box = _default->box;
     visual = _default->visual;
     background = _default->background;
     surround = _default->surround;
@@ -134,9 +134,9 @@ RenderStyle::RenderStyle()
 
     _styleType=NOPSEUDO;
     pseudoStyle = 0;
-                
+
     _display = INLINE;
-        
+
 }
 
 RenderStyle::RenderStyle(bool)
@@ -144,20 +144,21 @@ RenderStyle::RenderStyle(bool)
     setBitDefaults();
 
     box.init();
-    box.access()->setDefaultValues();    	
+    box.access()->setDefaultValues();
     visual.init();
     background.init();
-    surround.init();		
+    surround.init();
 
     inherited.init();
-    inherited.access()->setDefaultValues();		
-    
+    inherited.access()->setDefaultValues();
+
     _styleType=NOPSEUDO;
     pseudoStyle = 0;
-        
+
 }
 
-RenderStyle::RenderStyle(const RenderStyle& other) 
+RenderStyle::RenderStyle(const RenderStyle& other)
+    : DomShared() // shut up, compiler
 {
 
     _display = other._display;
@@ -206,7 +207,7 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
 {
     _styleType=NOPSEUDO;
     pseudoStyle = 0;
-            
+
 //    counter++;
     box = _default->box;
     visual = _default->visual;
@@ -229,12 +230,12 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
     _cursor = inheritParent->_cursor;
-    
+
     _htmlHacks = inheritParent->_htmlHacks;
 
     _display = INLINE;
-    
-//    kdDebug( 6040 ) << "style=" << counter << " data=" 
+
+//    kdDebug( 6040 ) << "style=" << counter << " data="
 //        << SharedData::counter << endl;
 }
 
@@ -242,8 +243,8 @@ RenderStyle::~RenderStyle()
 {
     RenderStyle *ps = pseudoStyle;
     RenderStyle *prev = 0;
-    
-    while (ps) {        
+
+    while (ps) {
         prev = ps;
         ps = ps->pseudoStyle;
         prev->deref();
@@ -257,21 +258,21 @@ bool RenderStyle::operator==(const RenderStyle& other) const
         *visual.get() == *other.visual.get() &&
     	*background.get() == *other.background.get() &&
         *surround.get() == *other.surround.get() &&
-	
+
     	*inherited.get() == *other.inherited.get() &&
         _display == other._display;
 }
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
-{    
+{
     RenderStyle *ps = pseudoStyle;
-    
-    while (ps) {        
+
+    while (ps) {
         if (ps->_styleType==pid) return ps;
         ps = ps->pseudoStyle;
     }
-    
-    return 0;       
+
+    return 0;
 }
 
 RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
@@ -279,7 +280,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
     RenderStyle *ps = getPseudoStyle(pid);
 
     if (!ps)
-    {            
+    {
         ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
         ps->ref();
         ps->_styleType = pid;
@@ -287,7 +288,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 
         pseudoStyle = ps;
     }
-    
+
     return ps;
 }
 
@@ -295,15 +296,15 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
 {
     RenderStyle *ps = pseudoStyle;
     RenderStyle *prev = this;
-    
-    while (ps) {        
+
+    while (ps) {
         if (ps->_styleType==pid) {
             prev->pseudoStyle = ps->pseudoStyle;
             ps->deref();
             return;
         }
         prev = ps;
-        ps = ps->pseudoStyle;        
+        ps = ps->pseudoStyle;
     }
 }
 
