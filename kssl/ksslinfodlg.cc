@@ -125,6 +125,12 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
       cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
       csl->setPalette(cspl);
     break;
+    case KSSLCertificate::NoCARoot:
+      layout->addWidget(csl = new QLabel(i18n("Certificate signing authority root files could not be found so the certificate is not verified."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
     case KSSLCertificate::InvalidCA:
       layout->addWidget(csl = new QLabel(i18n("Certificate signing authority is unknown or invalid."), this), 2, 1);
       cspl = csl->palette();
