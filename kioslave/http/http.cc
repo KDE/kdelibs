@@ -1506,10 +1506,14 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   
   if (nbytes == 1)
   {
-    m_lineCount = read(m_lineBuf, 1024); // Read into buffer
+    ret = read(m_lineBuf, 1024); // Read into buffer
     m_linePtr = m_lineBuf;
-    if (m_lineCount <= 0)
+    if (ret <= 0)
+    {
+      m_lineCount = 0;
       return ret;
+    }
+    m_lineCount = ret;
     return read(b, 1); // Read from buffer
   }
 
