@@ -11,7 +11,7 @@ keramik_la_LIBADD = ../../kdefx/libkdefx.la
 keramik_la_SOURCES = keramik.cpp pixmaploader.cpp
 keramik_la_METASOURCES = AUTO
 
-pixmaploader.cpp: pixmaps.embed
+$(srcdir)/pixmaploader.cpp: pixmaps.embed
 
 QEMBED = $(QTDIR)/tools/qembed/qembed
 
