@@ -242,7 +242,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
         continue;
 
     // now treat 'ordinary' widgets
-    if (w->isFocusEnabled() || w->inherits("QLabel") || w->inherits("QGroupBox"))
+    if (w->isFocusEnabled() || (w->inherits("QLabel") && static_cast<QLabel*>(w)->buddy()) || w->inherits("QGroupBox"))
     {
       QString content;
       QVariant variant = w->property("text");
