@@ -162,7 +162,7 @@ class KDirOperator : public QWidget
      */
     void setMimeFilter( const QStringList& mimetypes );
 
-    QStringList mimeFilter() const { return dir->mimeFilter(); }
+    QStringList mimeFilter() const { return dir->mimeFilters(); }
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
