@@ -1,0 +1,43 @@
+# KDE namespace check file
+
+# Qt classes
+Q*::*
+qt_*
+
+# these should preferably go in some namespace in Qt4
+qDebug
+qFatal
+qWarning
+qApp
+qAppName
+qVersion
+qSysInfo
+qObsolete
+bitBlt
+static_QUType_*
+TID_QUType_*
+operator>>
+operator<<
+operator==
+operator!=
+operator<=
+operator>=
+operator<
+operator>
+operator=
+operator++
+operator*
+operator!
+operator^
+operator&
+operator/
+ws
+bin
+dec
+oct
+hex
+endl
+
+# Xinerama
+Xinerama*
+XPanoramiX*
