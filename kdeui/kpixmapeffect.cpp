@@ -5,8 +5,7 @@
 #include <qcolor.h>
 
 #include <math.h>
-
-
+    
 void KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                                      const QColor &cb, GradientType eff,
                                      int ncols)
@@ -590,6 +589,11 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
     }
 }
     
+//======================================================================
+//
+// Intensity effects
+//
+//======================================================================
 
 /* This builds a 256 byte unsigned char lookup table with all
  * the possible percent values prior to applying the effect, then uses
@@ -729,6 +733,11 @@ void KPixmapEffect::channelIntensity(QImage &image, float percent,
 }
 
 
+//======================================================================
+//
+// Blend effects
+//
+//======================================================================
 void KPixmapEffect::blend(QImage &image, float initial_intensity, 
 			  const QColor &bgnd, GradientType eff,
 			  bool anti_dir)
@@ -925,4 +934,32 @@ void KPixmapEffect::blend(QImage &image, float initial_intensity,
       
     else debug("not implemented");
 }
+
     
+void KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
+			  const QColor &bgnd, GradientType eff, 
+			  bool anti_dir, int ncols)
+{
+  QImage image = pixmap.convertToImage();
+  blend(image, initial_intensity, bgnd, eff, anti_dir);
+  //CT 21Aug1999 - I think we should check for a dithering here, isn't it?
+  //               In that case making this inline will be forbidden. Mosfet?
+  unsigned int tmp;
+
+  if(pixmap.depth() < 15 ) {
+    if ( ncols < 2 || ncols > 256 )
+      ncols = 3;
+    QColor *dPal = new QColor[ncols];
+    for (int i=0; i<ncols; i++) {
+      tmp = 0 + 255 * i / ( ncols - 1 );
+      dPal[i].setRgb ( tmp, tmp, tmp );
+    }
+    kFSDither dither(dPal, ncols);
+    image = dither.dither(image);
+    pixmap.convertFromImage(image);
+    delete [] dPal;
+  }
+  else
+    pixmap.convertFromImage(image);
+}
+
