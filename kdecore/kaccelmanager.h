@@ -34,7 +34,6 @@ class QString;
  * accelerators for any widget.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
- * @version $Id$
  * @since 3.1
 */
 
