@@ -161,6 +161,7 @@
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
 <!ENTITY khexedit	"<application>KHexedit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
+<!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kjots	"<application>KJots</application>">
@@ -191,6 +192,7 @@
 <!ENTITY kpm	"<application>Kpm</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
 <!ENTITY kppp	"<application>kppp</application>">
+<!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY ksame	"<application>KSame</application>">
 <!ENTITY kscd	"<application>KSCD</application>">
@@ -204,6 +206,7 @@
 <!ENTITY ksnapshot	"<application>KSnapshot</application>">
 <!ENTITY ksokoban	"<application>KSokoban</application>">
 <!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
+<!ENTITY kspread "<application>KSpread</application>">
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
 <!ENTITY ksysguard	"<application>KSysguard</application>">
@@ -217,6 +220,7 @@
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>kview</application>">
 <!ENTITY kvt	"<application>kvt</application>">
+<!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
