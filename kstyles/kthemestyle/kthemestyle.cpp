@@ -46,6 +46,7 @@ Port version 0.9.7
 
 #include <qbitmap.h>
 #include <qcheckbox.h>
+#include <qlabel.h>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
 #include <qpopupmenu.h>
@@ -63,6 +64,8 @@ Port version 0.9.7
 #include <qslider.h>
 #include <qtooltip.h>
 #include <qobjectlist.h>
+#include <qradiobutton.h>
+#include <qstatusbar.h>
 #include "kstyledirs.h"
 
 #include <qimage.h>
@@ -112,12 +115,12 @@ public:
     {
 #ifdef __GLIBC__
         dlopen("kthemestyle.so",RTLD_LAZY);
-	//####### Keep reference count up so kdecore w. fast-malloc doesn't get unloaded
-	//####### (Fixes exit crashes with qt-only apps that occur on Linux)
-	//####### This should be rethought after 3.0,
-	//####### as it relies on the implementation-specific behavior
-	//####### of the glibc libdl (finding already loaded libraries based on the
-	//####### soname)
+        //####### Keep reference count up so kdecore w. fast-malloc doesn't get unloaded
+        //####### (Fixes exit crashes with qt-only apps that occur on Linux)
+        //####### This should be rethought after 3.0,
+        //####### as it relies on the implementation-specific behavior
+        //####### of the glibc libdl (finding already loaded libraries based on the
+        //####### soname)
 #endif
     }
 
@@ -135,7 +138,7 @@ public:
         keys = cfg.readListEntry( "/kthemestyle/themes", &ok);
         if ( !ok )
             qWarning( "KThemeStyle cache seems corrupt!\n" ); //Too bad one can't i18n this :-(
-	    
+
         return keys;
     }
 
@@ -498,18 +501,18 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
-    if (w->inherits("QStatusBar"))
+    if (::qt_cast<QStatusBar*>(w))
          w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
-    if (w->inherits("QLabel") && !qstrcmp(w->name(), "kde toolbar widget"))
+         
+    if (::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
          w->installEventFilter(this);
-
 
     if (w->backgroundPixmap() && !w->isTopLevel() && 
         (!kickerMode || 
         (!w->inherits("TaskBar") && !w->inherits("TaskBarContainer") && !w->inherits("TaskbarApplet") && !w->inherits("ContainerArea") && !w->inherits("AppletHandle"))))
     {
         //The brushHandle check verifies that the bg pixmap is actually the brush..
-        if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
+        if (!brushHandleSet || brushHandle == w->backgroundPixmap()->handle())
         {
             w->setBackgroundOrigin( QWidget::WindowOrigin );
         }
@@ -540,7 +543,7 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) )
+    if ( ::qt_cast<QMenuBar*>(w) )
     {
         w->setBackgroundMode( QWidget::NoBackground );
     }
@@ -548,7 +551,7 @@ void KThemeStyle::polish( QWidget *w )
     {
         w->setBackgroundMode( QWidget::PaletteBackground );
     }
-    else if ( w->inherits( "QMenuItem" ) || w->inherits( "QPopupMenu" ) )
+    else if ( ::qt_cast<QPopupMenu*>(w) )
     {
         popupPalette = w->palette();
         if ( isColor( MenuItem ) || isColor( MenuItemDown ) )
@@ -566,10 +569,9 @@ void KThemeStyle::polish( QWidget *w )
             w->setPalette( newPal );
         }
 
-        if ( w->inherits( "QPopupMenu" ) )
-            w->setBackgroundMode( QWidget::NoBackground );
+        w->setBackgroundMode( QWidget::NoBackground );
     }
-    else if ( w->inherits( "QCheckBox" ) )
+    else if ( ::qt_cast<QCheckBox*>(w) )
     {
         if ( isColor( IndicatorOff ) || isColor( IndicatorOn ) )
         {
@@ -584,7 +586,7 @@ void KThemeStyle::polish( QWidget *w )
             w->setPalette( newPal );
         }
     }
-    else if ( w->inherits( "QRadioButton" ) )
+    else if ( ::qt_cast<QRadioButton*>(w) )
     {
         if ( isColor( ExIndicatorOff ) || isColor( ExIndicatorOn ) )
         {
@@ -614,15 +616,25 @@ void KThemeStyle::unPolish( QWidget* w )
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
         }
     }
-    if ( w->inherits( "QMenuBar" ) || w->inherits( "QPopupMenu" ) || w->inherits( "QMenuItem" ) ||
-            w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" )  || w->inherits ("QToolButton") )
-        w->setBackgroundMode( QWidget::PaletteBackground );
-    if ( w->inherits( "QPopupMenu" )  || w->inherits( "QMenuItem" ) )
+
+    //Toolbar labels should nornally be PaletteButton
+    if ( ::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
+        w->setBackgroundMode( QWidget::PaletteButton );
+        
+    //The same for menu bars, popup menus
+    else if ( ::qt_cast<QMenuBar*>(w) || ::qt_cast<QPopupMenu*>(w) )
+        w->setBackgroundMode( QWidget::PaletteButton );
+        
+    //For toolbar internal separators, return to button, too (can't use qt_cast here since don't have access to the class)
+    else if ( w->inherits( "KToolBarSeparator" ) || w->inherits( "QToolBarSeparator" ) )
+        w->setBackgroundMode( QWidget::PaletteButton );
+
+    //For scrollbars, we don't do much, since the widget queries the style on the switch
+
+    //Drop some custom palettes. ### this really should check the serial number to be 100% correct.
+    if ( ::qt_cast<QPopupMenu*>(w) || ::qt_cast<QCheckBox*>(w) || ::qt_cast<QRadioButton*>(w) || ::qt_cast<QStatusBar*>(w) )
         w->unsetPalette();
-    else if ( w->inherits( "QCheckBox" ) )
-        w->unsetPalette();
-    else if ( w->inherits( "QRadioButton" ) )
-        w->unsetPalette();
+
     KStyle::unPolish( w );
 }
 
@@ -2192,6 +2204,9 @@ int KThemeStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOption &
 
         case SH_GUIStyle:
             return WindowsStyle;
+
+	case SH_ScrollBar_BackgroundMode:
+	    return NoBackground;
 
         default:
             return KThemeBase::styleHint( sh, w, opt, shr );
