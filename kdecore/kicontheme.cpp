@@ -39,8 +39,8 @@
 class KIconThemePrivate
 {
 public:
-    QString example;
-    QString screenshot;
+    QString example, screenshot;
+    QString linkOverlay, lockOverlay, zipOverlay;
 };
 
 /**
@@ -75,14 +75,36 @@ private:
 KIconTheme::KIconTheme(const QString& name, const QString& appName)
 {
     d = new KIconThemePrivate;
-    bool isApp = !appName.isEmpty();
-    if (isApp && (name != "hicolor") && (name != "locolor"))
-    {
-	kdDebug(264) << "Only hicolor and locolor themes can be local.\n";
-	return;
-    }
-    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
+
+    QStringList icnlibs;
     QStringList::ConstIterator it;
+
+    // Applications can have local additions to the global "locolor" and
+    // "hicolor" icon themes. For these, the _global_ theme description 
+    // files are used..
+
+    bool isApp = !appName.isEmpty();
+    if (isApp)
+    {
+	if ((name != "hicolor") && (name != "locolor"))
+	{
+	    kdDebug(264) << "Only hicolor and locolor themes can be local.\n";
+	    return;
+	}
+
+	icnlibs = KGlobal::dirs()->resourceDirs("data");
+	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+	{
+	    if (QFile::exists(*it + appName + "/icons/" + name))
+		break;
+	}
+	if (it == icnlibs.end())
+	    return;
+    }
+
+    // Find the theme description file. These are always global.
+
+    icnlibs = KGlobal::dirs()->resourceDirs("icon");
     for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
     {
 	if (KStandardDirs::exists(*it + name + "/index.desktop"))
@@ -93,6 +115,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	kdDebug(264) << "Icon theme " << name << " not found.\n";
 	return;
     }
+
     mDir = *it + name + "/";
     KSimpleConfig cfg(mDir + "index.desktop");
     cfg.setGroup("KDE Icon Theme");
@@ -102,19 +125,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     mInherits = cfg.readListEntry("Inherits");
     d->example = cfg.readEntry("Example");
     d->screenshot = cfg.readEntry("ScreenShot");
+    d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
+    d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
+    d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
 
     if (isApp)
     {
-	// We just read the global theme description file. This is intended
-	// for app specific themes too.
-	icnlibs = KGlobal::dirs()->resourceDirs("data");
-	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
-	{
-	    if (QFile::exists(*it + appName + "/icons/" + name))
-		break;
-	}
-	if (it == icnlibs.end())
-	    return;
 	mDir = *it + appName + "/icons/" + name + "/";
 	mName += "-";
 	mName += appName;
@@ -176,8 +192,10 @@ bool KIconTheme::isValid() const
 }
 
 QString KIconTheme::example() const { return d->example; }
-
 QString KIconTheme::screenshot() const { return d->screenshot; }
+QString KIconTheme::linkOverlay() const { return d->linkOverlay; }
+QString KIconTheme::lockOverlay() const { return d->lockOverlay; }
+QString KIconTheme::zipOverlay() const { return d->zipOverlay; }
 
 int KIconTheme::defaultSize(int group) const
 {
@@ -279,7 +297,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 
 	// if we got in MatchExact that far, we find no better
 	if (match == KIcon::MatchExact)
-	  return icon;
+	    return icon;
     }
     return icon;
 }
@@ -287,23 +305,34 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 // static
 QString KIconTheme::current()
 {
+    // Static pointer because of unloading problems wrt DSO's.
+    static QString *_theme = 0L;
+    if (_theme != 0L)
+	return *_theme;
+
+    _theme = new QString();
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver(config, "Icons");
-    QString theme = config->readEntry("Theme");
-    if (theme.isEmpty())
+    *_theme = config->readEntry("Theme");
+    if (_theme->isEmpty())
     {
 	if (QPixmap::defaultDepth() > 8)
-	    theme = QString::fromLatin1("hicolor");
+	    *_theme = QString::fromLatin1("hicolor");
 	else
-	    theme = QString::fromLatin1("locolor");
+	    *_theme = QString::fromLatin1("locolor");
     }
-    return theme;
+    return *_theme;
 }
 
 // static
 QStringList KIconTheme::list()
 {
-    QStringList result;
+    // Static pointer because of unloading problems wrt DSO's.
+    static QStringList *_theme_list = 0L;
+    if (_theme_list != 0L)
+	return *_theme_list;
+
+    _theme_list = new QStringList();
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
     for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
@@ -319,11 +348,11 @@ QStringList KIconTheme::list()
                 continue;
 	    if (!KStandardDirs::exists(*it + *it2 + "/index.desktop"))
 		continue;
-            if (!result.contains(*it2))
-		result += *it2;
+            if (!_theme_list->contains(*it2))
+		_theme_list->append(*it2);
         }
     }
-    return result;
+    return *_theme_list;
 }
 
 
@@ -378,7 +407,6 @@ QString KIconThemeDir::iconPath(const QString& name) const
     if (access(QFile::encodeName(file), R_OK) == 0)
         return file;
 
-    kdDebug(264) << "failed on " << file << endl;
     return QString::null;
 }
 

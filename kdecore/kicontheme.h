@@ -26,7 +26,8 @@ class KIconThemePrivate;
 class KIconPrivate;
 
 /**
- * One icon as found by KIconTheme.
+ * One icon as found by KIconTheme. Also serves as a namespace containing
+ * icon related constants.
  */
 class KIcon
 {
@@ -41,9 +42,12 @@ public:
     enum MatchType { MatchExact, MatchBest };
     // if you add a group here, make sure to change the config reading in
     // KIconLoader too
-    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small, LastGroup, User };
+    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small, 
+	         LastGroup, User };
     enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
+    enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
+	    OverlayMask = ~0xff };
 
     /** The size in pixels of the icon. */
     int size;
@@ -84,6 +88,15 @@ public:
 
     /** Return the name of the screenshot. */
     QString screenshot() const;
+
+    /** Returns the name of this theme's link overlay. */
+    QString linkOverlay() const;
+
+    /** Returns the name of this theme's zip overlay. */
+    QString zipOverlay() const;
+
+    /** Returns the name of this theme's lock overlay. */
+    QString lockOverlay() const;
 
     /** Returns the toplevel theme directory. */
     QString dir() const { return mDir; }
