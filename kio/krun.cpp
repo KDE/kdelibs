@@ -735,12 +735,7 @@ void KRun::clientStarted(
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
   stream << name << iconName << (int)pid << binaryName << compliant;
-  kapp->dcopClient()->send(
-    "kicker",
-    "TaskbarApplet",
-    "clientStarted(QString,QString,pid_t,QString,bool)",
-    params
-  );
+  kapp->dcopClient()->emitDCOPSignal("clientStarted(QString,QString,pid_t,QString,bool)", params );
 }
 
 /****************/
