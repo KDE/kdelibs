@@ -112,8 +112,8 @@ class KPopupMenu;
  * QPopupMenu *file = new QPopupMenu;
  * newAct->plug(file);
  * </PRE>
- * That just inserted the action into the File menu.  You can totally
- * forget about that!  In the future, all manipulation of the item is
+ * That just inserted the action into the File menu.  The point is, it's not
+ * important in which menu it is: all manipulation of the item is
  * done through the newAct object.
  *
  * <PRE>
