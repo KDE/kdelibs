@@ -159,7 +159,7 @@ QString Job::errorString()
       result = i18n( "Found a cyclic link in\n%1" ).arg( m_errorText );
       break;
     case  KIO::ERR_USER_CANCELED:
-      result = i18n( "Action has been\ncanceled by the user\n%1" ).arg( m_errorText );
+      // Do nothing in this case. The user doesn't need to be told what he just did.
       break;
     case  KIO::ERR_CYCLIC_COPY:
       result = i18n( "Found a cyclic link while copying\n%1" ).arg( m_errorText );
