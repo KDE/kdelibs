@@ -55,4 +55,5 @@ Area codes for KDebug system
 31001-32000 kword
 32001-33000 kpresenter
 33001-34000 klyx
+34001-35000 kchart
 

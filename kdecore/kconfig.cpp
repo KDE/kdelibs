@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.12  1998/05/04 20:08:12  ettrich
+// Matthias: \n, \t, \r are stored as \\n, \\t and \\r now.
+//
 // Revision 1.11  1998/01/18 14:38:44  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -62,6 +65,15 @@
 #include "kconfig.moc"
 #include <qfileinf.h>
 #include <stdlib.h>
+
+#include "config.h"
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 static char* aConfigFileName[] = 
 { 
@@ -252,6 +264,24 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   // truncate file
   delete pStream;
   rConfigFile.close();
+
+  // Fix security hole: Don't write to the config file if the program
+  // is running suid and the filename is a symlink to a file we don't
+  // have write permission to as a normal user.
+  struct stat statbuf;
+  lstat( rConfigFile.name(), &statbuf ); // no need to check for
+                                         // return value, if there are 
+                                         // no access rights to this
+                                         // directory, the following
+                                         // cannot do any harm anyway
+  if( ( getuid() != geteuid() ) && // program runs SUID
+	  S_ISLNK( statbuf.st_mode ) && // config file is a symlink
+	  !access( rConfigFile.name(), W_OK ) ) // we would not be allowed 
+	                                        // to write if the program
+	                                        // ran non-SUID 
+	return false; // don't do anything: who does such dirty hack deserves to 
+            // lose his configuration data
+
   rConfigFile.open( IO_Truncate | IO_WriteOnly );
   pStream = new QTextStream( &rConfigFile );
   

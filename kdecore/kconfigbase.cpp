@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.30  1998/05/04 20:08:13  ettrich
+// Matthias: \n, \t, \r are stored as \\n, \\t and \\r now.
+//
 // Revision 1.29  1998/04/12 08:52:40  jacek
 //
 // * Updtated KCharset class documentation.
@@ -400,6 +403,8 @@ int KConfigBase::readListEntry( const char* pKey, QStrList &list,
       list.append( value );
       value.truncate(0);
     }
+  if ( str_list[len-1] != sep )
+    list.append( value );
   return list.count();
 }
 
