@@ -262,9 +262,11 @@ static bool isTransitional(const QString &spec, int start)
 
 void HTMLDocumentImpl::close()
 {
+    bool doload = !parsing() && m_tokenizer;
+
     DocumentImpl::close();
 
-    if (body()) {
+    if (body() && doload) {
         body()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
         updateRendering();
     }
