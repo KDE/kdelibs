@@ -601,6 +601,11 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
   QListIterator<KXMLGUIContainerClient> clientIt( node->clients );
 
   if ( node->container )
+  {
+    if ( node->clients.count() == 1 && clientIt.current()->m_client == node->client && node->client == m_client )
+      node->container->hide(); // this container is going to die, that's for sure. in this case let's just hide it, which makes the
+                               // destruction faster
+    
     while ( clientIt.current() )
       //only unplug the actions of the client we want to remove, as the container might be owned
       //by a different servant
@@ -657,6 +662,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
       }
       else
         ++clientIt;
+  }
 
   if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
        node->client == m_client )
