@@ -343,7 +343,7 @@ void DownloadDialog::addEntry(Entry *entry)
   KListViewItem *tmp_d = new KListViewItem(lv_d,
     entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
   KListViewItem *tmp_l = new KListViewItem(lv_l,
-    entry->name(), entry->version(), entry->releaseDate().toString());
+    entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
 
   tmp_r->setPixmap(0, pix);
   tmp_d->setPixmap(0, pix);
@@ -385,7 +385,7 @@ void DownloadDialog::slotDetails()
     ).arg(e->release()
     ).arg(e->rating()
     ).arg(e->downloads()
-    ).arg(e->releaseDate().toString()
+    ).arg(KGlobal::locale()->formatDate(e->releaseDate())
     ).arg(e->summary(lang)
   );
 
@@ -490,13 +490,13 @@ void DownloadDialog::slotSelected()
     if(!e->preview(lang).isValid())
     {
       m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
-        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(e->summary(lang)).arg(e->license()));
+        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(e->summary(lang)).arg(e->license()));
     }
     else
     {
       KIO::NetAccess::download(e->preview(lang), tmp, this);
       m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
-        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(tmp).arg(e->summary(lang)).arg(e->license()));
+        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(tmp).arg(e->summary(lang)).arg(e->license()));
     }
 
     if(installStatus(e) == 1) enabled = false;
