@@ -18,14 +18,10 @@
  **/
 
 #include "gschecker.h"
+#include "kpipeprocess.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 
 GsChecker::GsChecker(QObject *parent, const char *name)
 : QObject(parent,name)
@@ -41,31 +37,25 @@ bool GsChecker::checkGsDriver(const QString& name)
 
 void GsChecker::loadDriverList()
 {
-	FILE	*proc = popen("gs -h","r");
-	if (proc)
+	KPipeProcess	proc;
+	if (proc.open("gs -h",IO_ReadOnly))
 	{
-		QFile	f;
-		if (f.open(IO_ReadOnly,proc))
+		QTextStream	t(&proc);
+		QString	buffer, line;
+		bool	ok(false);
+		while (!t.eof())
 		{
-			QTextStream	t(&f);
-			QString	buffer, line;
-			bool	ok(false);
-			while (!t.eof())
+			line = t.readLine().stripWhiteSpace();
+			if (ok)
 			{
-				line = t.readLine().stripWhiteSpace();
-				if (ok)
-				{
-					if (line.find(':') != -1)
-						break;
-					else
-						buffer.append(line).append(" ");
-				}
-				else if (line.startsWith(QString::fromLatin1("Available devices:")))
-					ok = true;
+				if (line.find(':') != -1)
+					break;
+				else
+					buffer.append(line).append(" ");
 			}
-			f.close();
-			m_driverlist = QStringList::split(' ',buffer,false);
+			else if (line.startsWith(QString::fromLatin1("Available devices:")))
+				ok = true;
 		}
-		pclose(proc);
+		m_driverlist = QStringList::split(' ',buffer,false);
 	}
 }

@@ -39,6 +39,8 @@ public:
 	bool completePrinter(KMPrinter*);
 	bool createPrinter(KMPrinter*);
 	bool removePrinter(KMPrinter*);
+	bool enablePrinter(KMPrinter*);
+	bool disablePrinter(KMPrinter*);
 
 	// Driver DB functions
 	QString driverDbCreationProgram();
@@ -63,6 +65,9 @@ protected:
 	bool createPrinttoolEntry(KMPrinter*, PrintcapEntry*);
 	PrintcapEntry* findPrintcapEntry(const QString& name);
 	PrinttoolEntry* findPrinttoolEntry(const QString& name);
+	QString programName(int);
+	void checkStatus();
+	bool enablePrinter(KMPrinter*, bool);
 
 private:
 	QDict<PrintcapEntry>	m_entries;

@@ -347,7 +347,7 @@ void KMMainView::slotConfigure()
 			delete driver;
 		}
 		else
-			showErrorMsg(i18n("Unable to load a valud driver for printer <b>%1</b>.").arg(m_current->printerName()));
+			showErrorMsg(i18n("Unable to load a valid driver for printer <b>%1</b>.").arg(m_current->printerName()));
 		KMTimer::releaseTimer(false);
 	}
 }
