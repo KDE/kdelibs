@@ -74,6 +74,7 @@ public:
   KSpell* suggestSpell;
   bool checking;
   QValueList<BufferedWord> unchecked;
+  QTimer *checkNextTimer;
 };
 
 //TODO
@@ -433,7 +434,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   QString qs = buffer.simplifyWhiteSpace();
 
   if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
-    QTimer::singleShot( 0, this, SLOT(checkNext()) );
+    d->checkNextTimer->start( 0, true );
     return false;
   }
   ///set the dialog signal handler
@@ -447,6 +448,9 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   }
   else
     ksdlg->hide();
+
+  QString blank_line;
+  while (proc->readln( blank_line, true ) != -1); // eat spurious blanks
 
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
@@ -472,7 +476,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   QString qs = buffer.simplifyWhiteSpace();
 
   if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
-    QTimer::singleShot( 0, this, SLOT(checkNext()) );
+    d->checkNextTimer->start( 0, true );
     return false;
   }
 
@@ -488,6 +492,10 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
     else
       ksdlg->hide();
   }
+  
+  QString blank_line;
+  while (proc->readln( blank_line, true ) != -1); // eat spurious blanks
+
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
@@ -515,13 +523,13 @@ void KSpell::checkWord2( KProcIO* )
   QString blank_line;
   while (proc->readln( blank_line, true ) != -1); // eat the blank line
   NOOUTPUT(checkWord2);
-
+  
   bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
   if ( mistake && usedialog )
   {
     cwword = word;
     dialog( word, sugg, SLOT(checkWord3()) );
-    QTimer::singleShot( 0, this, SLOT(checkNext()) );
+    d->checkNextTimer->start( 0, true );
     return;
   }
   else if( mistake )
@@ -532,7 +540,7 @@ void KSpell::checkWord2( KProcIO* )
   //emits a "corrected" signal _even_ if no change was made
   //so that the calling program knows when the check is complete
   emit corrected( word, word, 0L );
-  QTimer::singleShot( 0, this, SLOT(checkNext()) );
+  d->checkNextTimer->start( 0, true );
 }
 
 void KSpell::checkNext()
@@ -542,6 +550,7 @@ void KSpell::checkNext()
   if (!d->unchecked.empty()) {
     BufferedWord buf = d->unchecked.front();
     d->unchecked.pop_front();
+    
     if (buf.method == Method1)
       checkWord( buf.word, buf.useDialog );
     else
@@ -1224,6 +1233,7 @@ KSpell::~KSpell()
   delete proc;
   delete ksconfig;
   delete ksdlg;
+  delete d->checkNextTimer;
   delete d;
 }
 
@@ -1397,6 +1407,9 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   d->m_bNoMisspellingsEncountered = true;
   d->type = type;
   d->checking = false;
+  d->checkNextTimer = new QTimer( this );
+  connect( d->checkNextTimer, SIGNAL( timeout() ),
+	   this, SLOT( checkNext() ));
   autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;
