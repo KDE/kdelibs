@@ -9,10 +9,8 @@
 #ifndef KMIMEMAGIC_H
 #define KMIMEMAGIC_H
 
-#include <string>
 #include <qstring.h>
 
-class KMimeMagicResult;
 class KMimeMagic;
 
 class KMimeMagicResult
@@ -21,10 +19,10 @@ public:
   KMimeMagicResult() { m_iAccuracy = 100; }
   ~KMimeMagicResult() { }
 
-  const char* mimeType() { if ( m_strMimeType.empty() ) return 0L; return m_strMimeType.c_str(); }
-  const char* encoding() { if ( m_strEncoding.empty() ) return 0L; return m_strEncoding.c_str() ;}
+  const QString mimeType() { return m_strMimeType; }
+  const QString encoding() { return m_strEncoding; }
   int accuracy() { return m_iAccuracy; }
-  bool isValid() { return !m_strMimeType.empty(); }
+  bool isValid() { return !m_strMimeType.isEmpty(); }
   
   /////////////////
   // Internal functions only
@@ -35,8 +33,8 @@ public:
   void setInvalid() { m_strMimeType = ""; }
   
 protected:
-  string m_strEncoding;
-  string m_strMimeType;
+  QString m_strEncoding;
+  QString m_strMimeType;
   int m_iAccuracy;
 };
 
