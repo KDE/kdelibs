@@ -219,12 +219,12 @@ signals:
    */
   void quickHelpChanged();
 
-public slots:
+protected slots:
 
   /**
    * Emitting to this slot is equivalent to emitting changed(true)
    */
-  void changed() { emit changed(true); }
+  void changed();
 
 protected:
 

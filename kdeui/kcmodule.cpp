@@ -90,6 +90,11 @@ bool KCModule::useRootOnlyMsg() const
 	return d->_useRootOnlyMsg;
 }
 
+void KCModule::changed()
+{
+        emit changed(true);
+}
+
 KInstance *KCModule::instance() const
 {
     return d->_instance;
