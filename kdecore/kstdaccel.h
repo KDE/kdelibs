@@ -41,9 +41,10 @@ public:
   enum StdAccel {
     Open=0, New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
     Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
-    ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion, NextCompletion,
-    RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, SelectAll, Up, Back,
-    Forward, ShowMenubar, GotoLine, DeleteWordBack, DeleteWordForward, NB_STD_ACCELS
+    ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion,
+    NextCompletion, RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload,
+    SelectAll, Up, Back, Forward, ShowMenubar, GotoLine, DeleteWordBack,
+    DeleteWordForward, SubstringCompletion, NB_STD_ACCELS
   };
 
   /** Open file. Default: Ctrl-o */
@@ -137,6 +138,10 @@ public:
   /** Iterate through a list when completion returns
       mutiple items. Default: Ctrl+Down **/
   static uint nextCompletion();
+
+  /** Find a string within another string or list of strings. 
+      Default: Ctrl-T */
+  static uint substringCompletion();
 
   /** Help users iterate through a list of enteries. Default: Up **/
   static uint rotateUp();
