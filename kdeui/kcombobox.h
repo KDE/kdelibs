@@ -516,6 +516,8 @@ private:
     /** Creates the completion box */
     void makeCompletionBox();
     /** Returns the context menu, creates a new one if did not exist. */
+    // BCI: make virtual in KDE 3.0, so that KonqHistoryCombo can add its item
+    // Currently it has to create the menu in the constructor, losing the "on demand" benefits
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
