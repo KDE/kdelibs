@@ -461,7 +461,7 @@ int main(int argc, char *argv[])
     QCStringList tests = args->getOptionList("test");
     if (tests.count() > 0)
         for (QValueListConstIterator<QCString> it = tests.begin(); it != tests.end(); ++it) {
-	    result = regressionTest->runTests(args->getOption("test"),true);
+	    result = regressionTest->runTests(*it,true);
             if (!result) break;
         }
     else
