@@ -22,6 +22,7 @@
 
 #include <config.h>
 #include "dispatcher.h"
+#include "delayedreturn.h"
 #include "startupmanager.h"
 #include "unixconnection.h"
 #include "tcpconnection.h"
@@ -60,6 +61,7 @@ public:
 	InterfaceRepo interfaceRepo;
 	AuthAccept *accept;
 	LoopbackConnection *loopbackConnection;
+	DelayedReturn *delayedReturn;
 	bool allowNoAuthentication;
 };
 
@@ -120,6 +122,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	d->accept = 0;
 	d->loopbackConnection = new LoopbackConnection(serverID);
 	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
+	d->delayedReturn = 0;
 
 	_flowSystem = 0;
 	referenceClean = new ReferenceClean(objectPool);
@@ -414,9 +417,24 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 				assert(!buffer->readError() && !buffer->remaining());
 				delete buffer;
 
-				result->patchLength();
-				conn->qSendBuffer(result);
+				if(d->delayedReturn)
+				{
+					delete result;
 
+					result = new Buffer;
+					result->writeLong(MCOP_MAGIC);
+					result->writeLong(0);	// to be patched later
+					result->writeLong(mcopReturn);
+					result->writeLong(requestID);
+
+					d->delayedReturn->initialize(conn,result);
+					d->delayedReturn = 0;
+				}
+				else	/* return normally */
+				{
+					result->patchLength();
+					conn->qSendBuffer(result);
+				}
 				return;		/* everything ok - leave here */
 			}
 
@@ -844,4 +862,11 @@ Connection *Dispatcher::activeConnection()
 Connection *Dispatcher::loopbackConnection()
 {
 	return d->loopbackConnection;
+}
+
+DelayedReturn *Dispatcher::delayReturn()
+{
+	assert(!d->delayedReturn);
+
+	return d->delayedReturn = new DelayedReturn();
 }
