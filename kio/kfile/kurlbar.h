@@ -53,6 +53,7 @@ public:
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
      * dynamic item, that is not saved with KURLBar::writeConfig().
+     * @since 3.2
      */
     KURLBarItem( KURLBar *parent, const KURL& url, bool persistent,
                  const QString& description = QString::null,
@@ -168,6 +169,7 @@ public:
     /**
      * returns whether this item is persistent (via KURLBar::writeConfig()
      * and KURLBar::readConfig()) or not.
+     * @since 3.2
      */
     bool isPersistent() const;
 
@@ -264,6 +266,7 @@ public:
      * @p description the description of the item (shown in the view)
      * @p icon an icon -- if empty, the default icon for the url will be used
      * @p group the icon-group for using icon-effects
+     * @since 3.2
      */
     virtual KURLBarItem * insertDynamicItem( const KURL& url,
                                              const QString& description,
