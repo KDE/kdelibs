@@ -46,6 +46,7 @@ HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _percent,
 	int rs, int cs, int pad )
 	 : HTMLClueV( _x, _y, _max_width, _percent )
 {
+	refcount = 0;
 	rspan = rs;
 	cspan = cs;
 	padding = pad;
@@ -259,7 +260,11 @@ void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
     {
 	for ( unsigned int tc = c; tc < endCol; tc++ )
 	{
+	    // WABA: We do semi-automatic reference counting :]
+	    if (cells[r][tc])
+		cells[r][tc]->unlink();
 	    cells[r][tc] = cell;
+	    cell->link();
 	}
     }
 }
@@ -1822,11 +1827,7 @@ HTMLTable::~HTMLTable()
 	{
 	    if ( ( cell = cells[r][c] ) == 0 )
 		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-	    delete cell;
+	    cell->unlink();
 	}
 
 	delete [] cells[r];
