@@ -382,7 +382,7 @@ bool Ftp::ftpLogin( const QString & user )
         if( messageBox(QuestionYesNo, msg, i18n("Authorization")) != 3 )
         {
           kdDebug(7102) << "Login aborted by user!" << endl;
-          error( ERR_COULD_NOT_LOGIN, i18n("Could not login to <b>%1<b>").arg(m_host));
+          error( ERR_USER_CANCELED, QString::null);
           return false;
         }
       }
