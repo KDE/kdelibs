@@ -174,7 +174,7 @@ static const char * const languages[] = {
 	I18N_NOOP( "Tamil" ),
 	I18N_NOOP( "Unicode" )
 };
-	
+
 
 class KCharsetsPrivate
 {
@@ -185,11 +185,13 @@ public:
         db = 0;
         availableCharsets = 0;
         kc = _kc;
+        conf = new KConfig( "charsets", true, false );
     }
     ~KCharsetsPrivate()
     {
         delete db;
         delete availableCharsets;
+        delete conf;
     }
     QFontDatabase *db;
     QMap<QFont::CharSet, QValueList<QCString> > *availableCharsets;
@@ -197,6 +199,7 @@ public:
     QMap<QString, QFont::CharSet> nameToIDMap;
     QAsciiDict<QTextCodec> codecForNameDict;
     KCharsets* kc;
+    KConfig* conf;
 
     void getAvailableCharsets();
 };
@@ -212,7 +215,7 @@ void KCharsetsPrivate::getAvailableCharsets()
     availableCharsets = new QMap<QFont::CharSet, QValueList<QCString> >;
 
     QStringList f = db->families( false );
-    
+
     for ( QStringList::Iterator it = f.begin(); it != f.end(); ++it ) {
 	QStringList chSets = db->charSets(*it, false);
 	QCString family = (*it).latin1(); // can only be latin1
@@ -354,16 +357,15 @@ QStringList KCharsets::availableEncodingNames()
 {
     QStringList available;
 
-    KConfig conf( "charsets", true );
-    QMap<QString, QString> map = conf.entryMap("charsetsForEncoding");
-    conf.setGroup("charsetsForEncoding");
+    QMap<QString, QString> map = d->conf->entryMap("charsetsForEncoding");
+    d->conf->setGroup("charsetsForEncoding");
 
     QMap<QString, QString>::Iterator it;
     for( it = map.begin(); it != map.end(); ++it ) {
         //kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
 
-        //kdDebug(0) << "list is: " << conf.readEntry(it.key()) << endl;
-        QStringList charsets = conf.readListEntry(it.key());
+        //kdDebug(0) << "list is: " << d->conf->readEntry(it.key()) << endl;
+        QStringList charsets = d->conf->readListEntry(it.key());
 
         // iterate thorugh the list and find the first charset that is available
         for ( QStringList::Iterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
@@ -380,10 +382,9 @@ QStringList KCharsets::availableEncodingNames()
 
 QString KCharsets::languageForEncoding( const QString &encoding )
 {
-    KConfig conf( "charsets", true );
-    conf.setGroup("LanguageForEncoding");
-    
-    int lang = conf.readNumEntry(encoding, 0 );
+    d->conf->setGroup("LanguageForEncoding");
+
+    int lang = d->conf->readNumEntry(encoding, 0 );
     return i18n( languages[lang] );
 }
 
@@ -720,13 +721,11 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    KConfig conf( "charsets", true );
-
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognise it.
-    conf.setGroup("builtin");
+    d->conf->setGroup("builtin");
 
-    QString cname = conf.readEntry(name.data());
+    QString cname = d->conf->readEntry(name.data());
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
 
@@ -736,15 +735,15 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    conf.setGroup("general");
-    QString dir = conf.readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
+    d->conf->setGroup("general");
+    QString dir = d->conf->readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
     dir += "/";
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap
     // is available in the charmap directory.
-    conf.setGroup("aliases");
+    d->conf->setGroup("aliases");
 
-    cname = conf.readEntry(name.data());
+    cname = d->conf->readEntry(name.data());
     if(cname.isNull() || cname.isEmpty())
         cname = name;
     cname = cname.upper();
@@ -758,9 +757,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // this also failed, the last resort is now to take some compatibility charmap
 
-    conf.setGroup("conversionHints");
+    d->conf->setGroup("conversionHints");
     cname = cname.lower();
-    cname = conf.readEntry(cname);
+    cname = d->conf->readEntry(cname);
 
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
@@ -787,22 +786,21 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e, bool noUnicode) c
     if(!noUnicode && d->charsetForEncodingMap.contains(encoding))
         return d->charsetForEncodingMap[encoding]; // cache hit
 
-    KConfig conf( "charsets", true );
-    conf.setGroup("charsetsForEncoding");
+    d->conf->setGroup("charsetsForEncoding");
 
-    //kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
+    //kdDebug(0) << "list for " << encoding << " is: " << d->conf->readEntry(encoding) << endl;
 
-    QString enc = conf.readEntry(encoding.data());
+    QString enc = d->conf->readEntry(encoding.data());
     if(enc.isEmpty()) {
-	conf.setGroup("builtin");
-	enc = conf.readEntry(encoding.data());
+	d->conf->setGroup("builtin");
+	enc = d->conf->readEntry(encoding.data());
 	encoding = enc.lower().latin1();
-	conf.setGroup("charsetsForEncoding");
-	//kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl <<endl;
+	d->conf->setGroup("charsetsForEncoding");
+	//kdDebug(0) << "list for " << encoding << " is: " << d->conf->readEntry(encoding) << endl <<endl;
     }
 
     QStringList charsets;
-    charsets = conf.readListEntry(encoding.data());
+    charsets = d->conf->readListEntry(encoding.data());
 
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
@@ -833,7 +831,7 @@ bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
 	case QFont::ISO_8859_1:
 	    ch = 0xc0; break; //Latin A circumflex
 	case QFont::ISO_8859_2:
-	    ch = 0x013d; break; 
+	    ch = 0x013d; break;
 	case QFont::ISO_8859_3:
 	    ch = 0x0126; break;
 	case QFont::ISO_8859_10:
@@ -884,9 +882,8 @@ bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
 	default:
 	    ch = 0x0; break;
     }
-    QFontMetrics fm( f );
-    if ( charset == fcs || ch == QChar(0x0) )
+    if ( charset == fcs || ch == QChar::null )
 	return true;
 
-    return fm.inFont( ch );
+    return QFontMetrics(f).inFont( ch );
 }
