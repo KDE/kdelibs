@@ -166,3 +166,5 @@ void KIMProxy::contactStatusChanged( QString uid )
 {
 	emit sigContactStatusChanged( uid );
 }
+
+#include "kimproxy.moc"
