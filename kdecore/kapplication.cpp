@@ -1788,20 +1788,30 @@ void KApplication::installKDEPropertyMap()
 #ifndef QT_NO_SQL
     // QSqlPropertyMap takes ownership of the new default map.
     QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
+    kdeMap->insert( "KColorButton", "color" );
     kdeMap->insert( "KComboBox", "currentItem" );
-    kdeMap->insert( "KDatePicker", "getDate" );
+    kdeMap->insert( "KDatePicker", "date" );
     kdeMap->insert( "KEditListBox", "currentItem" );
-    kdeMap->insert( "KFontCombo", "currentFont" );
+    kdeMap->insert( "KFontCombo", "family" );
+    kdeMap->insert( "KFontRequester", "font" );
     kdeMap->insert( "KHistoryCombo", "currentItem" );
     kdeMap->insert( "KListBox", "currentItem" );
     kdeMap->insert( "KLineEdit", "text" );
-    kdeMap->insert( "KPasswordEdit", "text" );
     kdeMap->insert( "KRestrictedLine", "text" );
     kdeMap->insert( "KSqueezedTextLabel", "text" );
     kdeMap->insert( "KTextBrowser", "source" );
+    kdeMap->insert( "KTextEdit", "text" );
     kdeMap->insert( "KURLRequester", "url" );
+    kdeMap->insert( "KPasswordEdit", "password" );
+    kdeMap->insert( "KIntNumInput", "value" );
+    kdeMap->insert( "KDoubleNumInput", "value" );
+    //#if QT_VERSION < 0x030300
+      // Temp til fixed in QT then enable ifdef with the correct version num
+      kdeMap->insert( "QRadioButton", "checked" );
+    //#endif
     QSqlPropertyMap::installDefaultMap( kdeMap );
 #endif
+
 }
 
 void KApplication::invokeHelp( const QString& anchor,
