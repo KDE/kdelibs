@@ -873,7 +873,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    // treated as inline. </P> implies line break,
 	    // so it must also be rendered. This is a trick
 	    // to do it.
- 	    if (current->id() == ID_P &&
+ 	    if (current->id() == ID_P && current != _first &&
  	    	(!current->nextSibling() || current->nextSibling()->id()!=ID_P))
     	    	renderedNodes.append(&pElemClose);
 	    current = current->nextSibling();
@@ -922,10 +922,10 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
     int endPos = 0;
 
     HAlign elemPAlign=HNone;
-    
+
     QFontMetrics fm(*getFont());
     int defTextHeight=fm.ascent()+fm.descent();
-    
+
     TextSlave *slave = 0;
 
     while(endNode.current())
@@ -998,7 +998,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		int len = text->l;
 		while(testPos<len)
 		{
-		    w += fm.width((*text)[testPos]);		    
+		    w += fm.width((*text)[testPos]);		
 		    if(w > dw)
 		    {
 			if(!breakPosFound)
@@ -1012,7 +1012,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 				// are we advancing at all?
 				if (startPos==testPos && startNode==testNode)
 				    endPos = ++testPos;
-				else 
+				else
 			    	    endPos = testPos;
 			    }
 			    else
@@ -1123,7 +1123,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
  			if (endNode.current()->isTextNode())
  			{
 			    endPos=-1; // -1=break after this text element
- 			} 
+ 			}
 			lineFull = true;
 			break;
 		    }
@@ -1147,13 +1147,13 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 
 	
 	    if(lineFull) {
-	    	// correct the line length for text lines 
-	    	if ( (align==Right || align==HCenter) 
+	    	// correct the line length for text lines
+	    	if ( (align==Right || align==HCenter)
 		    && current->isTextNode() && testPos>endPos)
 		{
 		    TextImpl *t = static_cast<TextImpl *>(current);
 		    text = t->string();
-		    
+		
 		    QFontMetrics fm(*t->getFont());
 		    QConstString str(text->s+endPos, testPos-endPos+1);
 
@@ -1162,7 +1162,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		}
 		// got one line
 	    	break;
-	    } 
+	    }
 	
 	    startOfLine = false;
 	    ++testNode;	
@@ -1297,16 +1297,16 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    endOfLine = true;
 		    nextNode = true;
 		    break;
- 		case ID_P + ID_CLOSE_TAG:				    
+ 		case ID_P + ID_CLOSE_TAG:				
 		    lineDescent += 8;
 		    if (lineAscent==0)
 		    	lineAscent=defTextHeight;
 		    endOfLine = true;
 		    nextNode = true;
-		    break;		    
+		    break;		
 		case ID_BR:
 		    {
-		    HTMLBRElementImpl *br = 
+		    HTMLBRElementImpl *br =
 		    	static_cast<HTMLBRElementImpl*>(current);
 			
 		    if (lineAscent==0)
@@ -1315,7 +1315,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    switch(br->clear())
 		    {
 		    	case BRNone:
-			    break;			    
+			    break;			
 			case BRLeft:
 			    descent = MAX(descent,getLeftBottom());
 			    break;
@@ -1386,7 +1386,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
     printf("calcParagraph end\n");
 #endif
-//    descent += 4;    
+//    descent += 4;
     return retval;
 }
 
@@ -1474,14 +1474,14 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 	    // we have to take care about nbsp's, and places were
 	    // we can't break between two inline objects...
 	    // But for the moment, this will do...
-	    
+	
 	    // Nghhhh... hunted this one long time
 	    // really important to get this right for table layouting -antti
-	    	  
+	    	
 	    int w = child->getMinWidth();
 	    if(minWidth < w) minWidth = w;
 	    w = child->getMaxWidth();
-	    inlineMax += w;	    
+	    inlineMax += w;	
 
 	}
 	else

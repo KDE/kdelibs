@@ -182,8 +182,8 @@ void HTMLHRElementImpl::layout(bool)
      printf("%s(HR)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
    // almost nothing to do here...
-    ascent=size+4;    
-    width = availableWidth;    
+    ascent=size+4;
+    width = availableWidth;
 }
 
 void HTMLHRElementImpl::print( QPainter *p, int _x, int _y, int _w, int _h,
@@ -209,7 +209,7 @@ void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
     int l = length.width(width);
     int xp = _tx;
     int yp = _ty+ascent;
-    
+
     if(halign == HCenter)
     {
 	xp += (width - l)/2;
@@ -257,7 +257,7 @@ void HTMLHeadingElementImpl::layout(bool deep)
     HTMLBlockElementImpl::layout(deep);
     //QFontMetrics fm(*getFont());      //put some space after
     //descent+=fm.ascent();
-    descent+=13;
+    //descent+=13; that was way too much space (Lars)
 }
 
 ushort HTMLHeadingElementImpl::id() const

@@ -269,9 +269,12 @@ void KHTMLParser::parseToken(Token *t)
     if(t->id == ID_TEXT && !_inline)
     {
 	if(t->text.length() == 1 && t->text[0] == QChar(' '))
-	return;
+	{
+	    printf("discarding space!\n");
+	    return;
+	}
     }
-
+    
 
     NodeImpl *n = getElement(t);
 
@@ -935,8 +938,8 @@ void KHTMLParser::popOneBlock()
 	currentStyle = Elem->style;
     }
     blockStack = Elem->next;
-    if(!current->isInline()) _inline = false;
     current = Elem->node;
+    if(!current->isInline()) _inline = false;
 
     delete Elem;
 }
