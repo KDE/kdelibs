@@ -37,6 +37,13 @@ public:
    Kded( bool needUpdate );
    virtual ~Kded();
 
+   /**
+    * process DCOP message.  Only calls to "recreate" are supported at
+    * this time.
+    */
+   bool process(const QCString &fun, const QByteArray &data, 
+		QCString &replyType, QByteArray &replyData);
+
 public slots:
 
    /**

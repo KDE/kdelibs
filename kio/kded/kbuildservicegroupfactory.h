@@ -46,6 +46,12 @@ public:
    * necassery. If newEntry is 0, only the group is created.
    */
   KServiceGroup *addNewEntry( const QString& file, const char *resource, KSycocaEntry *newEntry);
+
+  /**
+   * Add a new entry
+   */
+  virtual void addEntry( KSycocaEntry *newEntry );
+
   	
 protected:
   QDict<KServiceGroup> m_entryDict;

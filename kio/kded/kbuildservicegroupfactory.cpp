@@ -92,7 +92,12 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
   }
   if (newEntry)
      entry->addEntry( newEntry );
-  return entry;
+  return 0;
 }
 
+void
+KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry )
+{
+   KSycocaFactory::addEntry(newEntry);
+}
 

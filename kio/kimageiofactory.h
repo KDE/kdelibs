@@ -88,14 +88,10 @@ class KImageIOFactory : public KSycocaFactory
 public:
   static KImageIOFactory *self() 
   { if (!_self) new KImageIOFactory(); return _self; }
-
-protected: // Internal stuff
-  /**
-   * @internal create factory
-   */
   KImageIOFactory();
   virtual ~KImageIOFactory();
 
+protected: // Internal stuff
   /**
    * @internal
    *

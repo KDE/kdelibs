@@ -55,8 +55,26 @@ KBuildImageIOFactory::addEntry(KSycocaEntry *newEntry)
    KSycocaFactory::addEntry(newEntry);
 
    KImageIOFormat *format = (KImageIOFormat *) newEntry;
-   formatList->append( format );
    rPath += format->rPaths;
+
+   // Since Qt doesn't allow us to unregister image formats
+   // we have to make sure not to add them a second time.
+   // This typically happens when the sycoca database is updated 
+   // incremenatally
+   for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+           it != formatList->end();
+           ++it )
+   {
+      KImageIOFormat *_format = (*it);
+      if (format->mType == _format->mType)
+      {
+         // Already in list
+         format = 0;
+         break;
+      }
+   }
+   if (format)
+      formatList->append( format );
 }
 
 

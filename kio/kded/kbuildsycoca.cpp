@@ -60,7 +60,6 @@ void KBuildSycoca::build()
 {
   QStringList allResources;
   // For each factory
-  QListIterator<KSycocaFactory> factit ( *m_lstFactories );
   for (KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next() )
@@ -96,7 +95,6 @@ void KBuildSycoca::build()
 
      // Now find all factories that use this resource....
      // For each factory
-     QListIterator<KSycocaFactory> factit ( *m_lstFactories );
      for (KSycocaFactory *factory = m_lstFactories->first();
           factory;
           factory = m_lstFactories->next() )
@@ -130,7 +128,7 @@ void KBuildSycoca::build()
   }
 }
 
-void KBuildSycoca::recreate()
+void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
 {
   QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
 
@@ -154,11 +152,31 @@ void KBuildSycoca::recreate()
   (void) new KBuildServiceFactory(stf, bsgf);
   (void) new KBuildImageIOFactory();
 
-   time_t Time1 = time(0);
-  build(); // Parse dirs
-   time_t Time2 = time(0);
+  time_t Time1 = time(0);
+  if (allEntries)
+  {
+     int i = 0;
+     // For each factory
+     for (KSycocaFactory *factory = m_lstFactories->first();
+          factory;
+          factory = m_lstFactories->next() )
+     {
+         KSycocaEntry::List list = (*allEntries)[i++];
+         for( KSycocaEntry::List::Iterator it = list.begin();
+            it != list.end();
+            ++it)
+         {
+            factory->addEntry(static_cast<KSycocaEntry *>(*it));
+         }
+     }
+  }
+  else
+  {
+     build(); // Parse dirs
+  }
+  time_t Time2 = time(0);
   save(); // Save database
-   time_t Time3 = time(0);
+  time_t Time3 = time(0);
 
   m_str = 0L;
   if (!database.close())
@@ -229,21 +247,9 @@ void KBuildSycoca::save()
    m_str->device()->at(endOfData);
 }
 
-bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,
-			   QCString &replyType, QByteArray &/*replyData*/)
-{
-  if (fun == "recreate()") {
-    qDebug("got a recreate signal!");
-    recreate();
-    replyType = "void";
-    return true;
-  } else
-    return false;
-    // don't call KSycoca::process - this is for other apps, not k
-}
-
 static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
+   { "incremental", I18N_NOOP("Incremental update (do not use!)."), 0 },
    { 0, 0, 0 }
 };
 
@@ -278,9 +284,46 @@ int main(int argc, char **argv)
      exit(0);
    }
 
+   bool incremental = args->isSet("incremental");
+   if (incremental)
+   {
+     QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
+     QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
+     if (current_kfsstnd != ksycoca_kfsstnd)
+     {
+        incremental = false;
+        delete KSycoca::self();
+     }
+   }
+    
+   KBuildSycoca::KSycocaEntryListList *allEntries = 0;
+   if (incremental)
+   {
+      KSycoca *oldSycoca = KSycoca::self();
+      KSycocaFactoryList *factories = new KSycocaFactoryList;
+      allEntries = new KBuildSycoca::KSycocaEntryListList;
+      
+      // Must be in same order as in KBuildSycoca::recreate()!
+      factories->append( new KServiceTypeFactory );
+      factories->append( new KServiceGroupFactory );
+      factories->append( new KServiceFactory );
+      factories->append( new KImageIOFactory );
+
+      // For each factory
+      for (KSycocaFactory *factory = factories->first();
+           factory;
+           factory = factories->next() )
+      {
+          KSycocaEntry::List list;
+          list = factory->allEntries();
+          allEntries->append( list );
+      }
+      delete factories; factories = 0;
+      delete oldSycoca; 
+   }
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-   sycoca->recreate();
+   sycoca->recreate(allEntries);
 
    if (args->isSet("signal"))
    {

@@ -142,6 +142,20 @@ void Kded::update(const QString& path)
   m_pTimer->start( 1200, true /* single shot */ );
 }
 
+bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
+			   QCString &replyType, QByteArray &/*replyData*/)
+{
+  if (fun == "recreate()") {
+    qDebug("got a recreate signal!");
+    recreate();
+    replyType = "void";
+    return true;
+  } else
+    return false;
+    // don't call KSycoca::process - this is for other apps, not k
+}
+
+
 void Kded::readDirectory( const QString& _path )
 {
   // kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));

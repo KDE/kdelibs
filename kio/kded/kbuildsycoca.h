@@ -22,30 +22,25 @@
 #include <qstring.h>
 #include <ksycoca.h>
 #include <ksycocatype.h>
+#include <ksycocaentry.h>
 #include <sys/stat.h>
 
 class QDataStream;
-class KSycocaEntry;
 
 // No need for this in libkio - apps only get readonly access
 class KBuildSycoca : public KSycoca
 {
-  Q_OBJECT
+   Q_OBJECT
+public:
+   typedef QValueList<KSycocaEntry::List> KSycocaEntryListList;
 public:
    KBuildSycoca();
    virtual ~KBuildSycoca();
 
    /**
-    * process DCOP message.  Only calls to "recreate" are supported at
-    * this time.
-    */
-   bool process(const QCString &fun, const QByteArray &data, 
-		QCString &replyType, QByteArray &replyData);
-
-   /**
     * Recreate the database file
     */
-   void recreate();
+   void recreate(KSycocaEntryListList *);
 
 protected:
 

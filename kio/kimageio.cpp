@@ -68,7 +68,7 @@ KImageIOFormat::load( QDataStream& _str)
 {
    Q_INT8 iRead, iWrite;
    _str >> mType >> mHeader >> mFlags >> iRead >> iWrite
-        >> mSuffices >> mMimetype >> mLib;
+        >> mSuffices >> mMimetype >> mLib >> mPattern >> rPaths;
    bRead = (iRead != 0);
    bWrite = (iWrite != 0);
 }
@@ -81,7 +81,7 @@ KImageIOFormat::save( QDataStream& _str)
    Q_INT8 iWrite = bWrite ? 1 : 0;
 
    _str << mType << mHeader << mFlags << iRead << iWrite
-        << mSuffices << mMimetype << mLib;
+        << mSuffices << mMimetype << mLib << mPattern << rPaths;
 }
 
 void 
