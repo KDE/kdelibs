@@ -404,6 +404,8 @@ void KLocale::initFormat(KConfig *config)
   m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
   m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
 
+  if (lang != "C") {
+
   QString pf = translate_priv( I18N_NOOP("_: Definition of PluralForm\nLook at klocale.cpp for now"), 0);
   if ( pf.isEmpty() )
       kdWarning() << "found no definition of PluralForm" << endl;
@@ -426,6 +428,7 @@ void KLocale::initFormat(KConfig *config)
   else {
       kdWarning() << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian: " << pf << endl;
       exit(1);
+  }
   }
 
   KGlobal::_locale = lsave;
