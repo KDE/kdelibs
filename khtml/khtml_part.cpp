@@ -230,6 +230,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
            this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
   connect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
            this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
+	   
+  connect ( &d->m_progressUpdateTimer, SIGNAL( timeout() ), this, SLOT( slotProgressUpdate() ) );
 
   findTextBegin(); //reset find variables
 
@@ -460,6 +462,9 @@ bool KHTMLPart::openURL( const KURL &url )
 
   connect( d->m_job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobPercent( KIO::Job*, unsigned long ) ) );
+	   
+  connect( d->m_job, SIGNAL( result( KIO::Job* ) ),
+           this, SLOT( slotJobDone( KIO::Job* ) ) );
 
   d->m_jobspeed = 0;
   emit started( 0L );
@@ -1449,8 +1454,9 @@ void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObj
       KHTMLPart* op = p;
       p->d->m_totalObjectCount++;
       p = p->parentPart();
-      if ( !p && d->m_loadedObjects <= d->m_totalObjectCount )
-        QTimer::singleShot( 200, op, SLOT( slotProgressUpdate() ) );
+      if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount
+        && !op->d->m_progressUpdateTimer.isActive())
+	op->d->m_progressUpdateTimer.start( 200, true );
     }
   }
 }
@@ -1463,8 +1469,9 @@ void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject
       KHTMLPart* op = p;
       p->d->m_loadedObjects++;
       p = p->parentPart();
-      if ( !p && d->m_loadedObjects <= d->m_totalObjectCount && d->m_jobPercent >= 100 )
-        QTimer::singleShot( 200, op, SLOT( slotProgressUpdate() ) );
+      if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount && op->d->m_jobPercent <= 100
+        && !op->d->m_progressUpdateTimer.isActive())
+	op->d->m_progressUpdateTimer.start( 200, true );
     }
   }
 
@@ -1478,8 +1485,15 @@ void KHTMLPart::slotProgressUpdate()
     percent = d->m_jobPercent / 4 + ( d->m_loadedObjects*300 ) / ( 4*d->m_totalObjectCount );
   else
     percent = d->m_jobPercent;
-
-  if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
+    
+  if( percent == 100 ) // never set 100% here
+    percent = 99;
+  if( d->m_bComplete ) // only if it's really complete
+    percent = 100;
+        
+  if( d->m_bComplete )
+    emit d->m_extension->infoMessage( i18n( "Page loaded." ));
+  else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
     emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded.", "%1 of %n Images loaded...", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
 
   emit d->m_extension->loadingProgress( percent );
@@ -1497,7 +1511,15 @@ void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
   d->m_jobPercent = percent;
 
   if ( !parentPart() )
-    QTimer::singleShot( 0, this, SLOT( slotProgressUpdate() ) );
+    d->m_progressUpdateTimer.start( 0, true );
+}
+
+void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
+{
+  d->m_jobPercent = 100;
+
+  if ( !parentPart() )
+    d->m_progressUpdateTimer.start( 0, true );
 }
 
 void KHTMLPart::checkCompleted()
@@ -1537,6 +1559,14 @@ void KHTMLPart::checkCompleted()
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
+
+  KHTMLPart* p = this;
+  while ( p ) {
+    KHTMLPart* op = p;
+    p = p->parentPart();
+    if ( !p && !op->d->m_progressUpdateTimer.isActive())
+      op->d->m_progressUpdateTimer.start( 0, true );
+  }
 
   checkEmitLoadEvent(); // if we didn't do it before
 
