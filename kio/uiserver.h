@@ -55,9 +55,6 @@ public:
 
   void showDefaultProgress();
 
-  void remove() { //m_pJob->kill();
-  }
-
   void setTotalSize( unsigned long bytes );
   void setTotalFiles( unsigned long files );
   void setTotalDirs( unsigned long dirs );
