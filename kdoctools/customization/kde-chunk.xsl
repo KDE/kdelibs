@@ -51,6 +51,8 @@
 
 <!-- libxslt has problems with customizing this one, so 
     I changed the docbook xsl itself for now
+    (FF) body attrs are set to kde ones: attributes cannot be "unset"
+         set a new attributes-set must be defined
 
 <xsl:template name="chunk-element-content">
   <xsl:param name="prev"></xsl:param>
@@ -62,7 +64,7 @@
       <xsl:with-param name="next" select="$next"/>
     </xsl:call-template>
  
-    <body xsl:use-attribute-sets="body.attrs">
+    <body xsl:use-attribute-sets="kde.body.attrs">
       <xsl:call-template name="header.navigation">
         <xsl:with-param name="prev" select="$prev"/>
         <xsl:with-param name="next" select="$next"/>

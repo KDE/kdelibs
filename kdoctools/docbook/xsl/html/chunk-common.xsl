@@ -714,7 +714,7 @@ is system dependent.)</para>
       <xsl:with-param name="next" select="$next"/>
     </xsl:call-template>
 
-    <body xsl:use-attribute-sets="body.attrs">
+    <body xsl:use-attribute-sets="kde.body.attrs">
       <xsl:call-template name="user.header.navigation"/>
 
       <xsl:call-template name="header.navigation">

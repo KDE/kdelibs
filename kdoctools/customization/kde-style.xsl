@@ -16,4 +16,6 @@
    </span>
 </xsl:template>
 
+<xsl:attribute-set name="kde.body.attrs">
+</xsl:attribute-set>
 </xsl:stylesheet>
