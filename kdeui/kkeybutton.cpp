@@ -108,7 +108,7 @@ void KKeyButton::captureShortcut()
 
 	KShortcutDialog dlg( m_cut, d->bQtShortcut, this );
 	if( dlg.exec() == KDialog::Accepted )
-		emit capturedShortcut( dlg.cut() );
+		emit capturedShortcut( dlg.shortcut() );
 
 	m_bEditing = false;
 	repaint();

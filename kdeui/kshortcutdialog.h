@@ -1,71 +1,77 @@
-#ifndef _KSHORTCUTDIALOG_H
-#define _KSHORTCUTDIALOG_H
+/* This file is part of the KDE libraries
+    Copyright (C) 2002,2003 Ellis Whitehead <ellis@kde.org>
 
-#include <qlabel.h>
-#include <kdialog.h>
-#include <kshortcut.h>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-class QCheckBox;
-class QRadioButton;
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
 
-class KShortcutBox : public QLabel
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
+#ifndef _KSHORTCUTDIALOG_H_
+#define _KSHORTCUTDIALOG_H_
+
+#include "kishortcutdialog.h"
+
+class KShortcut;
+
+class KShortcutDialog : public KIShortcutDialog
 {
 	Q_OBJECT
- public:
-	KShortcutBox( const KKeySequence& seq, QWidget* parent = 0, const char* name = 0 );
 
-	const KKeySequence& seq() const { return m_seq; }
-	void setSeq( const KKeySequence& );
-
- protected:
-	KKeySequence m_seq;
-};
-
-class KShortcutDialog : public KDialog
-{
-	Q_OBJECT
- public:
-	KShortcutDialog( const KShortcut& cut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
+public:
+	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
 	~KShortcutDialog();
 
-	const KShortcut& cut() const { return m_cut; }
+	const KShortcut& shortcut() const { return m_shortcut; }
 
- protected:
-	bool          m_bQtShortcut;      // true if qt shortcut, false if native shortcut
-	bool          m_bGrabKeyboardOnFocusIn;
-	bool          m_bKeyboardGrabbed;
-	KShortcut     m_cut;
-	QRadioButton* m_prbSeq[2];
-	KShortcutBox* m_peditSeq[2];
-	QCheckBox*    m_pcbMultiKey[2];
-	QPushButton*  m_pcmdOK;
-	QPushButton*  m_pcmdCancel;
-	QCheckBox*    m_pcbAutoClose;
-	uint          m_iSeq;             // index of sequence being edited.
-	uint          m_iKey;             // index of key being edited.
+private:
+	// true if qt shortcut, false if native shortcut
+	bool m_bQtShortcut;
 
-	void selectSeq( uint );
-	void clearSeq( uint );
+	KShortcut m_shortcut;
+	bool m_bGrab;
+	KPushButton* m_ptxtCurrent;
+	uint m_iSeq;
+	uint m_iKey;
+	bool m_bRecording;
+	uint m_mod;
 
- protected slots:
-	void slotSeq0Selected();
-	void slotSeq1Selected();
-	void slotClearSeq0();
-	void slotClearSeq1();
+	virtual void showEvent( QShowEvent * pEvent );
+	virtual void hideEvent( QHideEvent * pEvent );
+	virtual void paintEvent( QPaintEvent * pEvent );
+	//virtual bool event( QEvent * pEvent );
 
-	virtual void accept();	// override parent's accept()
+	void setShortcut( const KShortcut & shortcut );
+	void updateShortcutDisplay();
+	//void displayMods();
+	void keyEvent( QKeyEvent * pEvent );
+	void keyPressed( KKey key );
 
- private:
-	void initGUI();
-#ifdef Q_WS_X11
+	#ifdef Q_WS_X11
 	virtual bool x11Event( XEvent *pEvent );
-	void x11EventKeyPress( XEvent *pEvent );
-#endif
+	//void x11EventKeyPress( XEvent *pEvent );
+	void x11KeyPressEvent( XEvent* pEvent );
+	void x11KeyReleaseEvent( XEvent* pEvent );
+	#endif
 
- protected:
-	virtual void virtual_hook( int id, void* data );
- private:
-	class KShortcutDialogPrivate* d;
+private slots:
+	void slotShowMore();
+	void slotShowLess();
+	void slotSelectPrimary();
+	void slotSelectAlternate();
+	void slotClearPrimary();
+	void slotClearAlternate();
+	void slotMultiKeyMode( bool bOn );
 };
 
-#endif // !_KSHORTCUTDIALOG_H
+#endif // _KSHORTCUTDIALOG_H_
