@@ -26,6 +26,7 @@
 
 #include <kparts/part.h>
 
+class KSSLCertBox;
 class QFrame;
 class QLabel;
 class KCertPartPrivate;
@@ -49,7 +50,8 @@ protected:
   virtual bool saveFile();
 
   QFrame *_frame;
-  QLabel *_label;
+  QLabel *_filenameLabel, *_validPeriod, *_serialNum, *_certState;
+  KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
 
 private:
