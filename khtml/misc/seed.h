@@ -41,6 +41,6 @@ int nextSeed(int curSize) {
     return curSize;
 }
 
-}; // namespace
+} // namespace
 
 #endif
