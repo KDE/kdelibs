@@ -527,10 +527,6 @@ void KApplication::saveState( QSessionManager& sm )
 	return;
     }
 
-    static int called=0;
-    qDebug("KApplication::saveState called %d times", called);
-    called++;
-
     if ( firstTime ) {
 	firstTime = false;
 	return; // no need to save the state.
