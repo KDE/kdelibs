@@ -1,7 +1,7 @@
 /**
  * crypto.cpp
  *
- * Copyright (c) 2000 George Staikos <staikos@kde.org>
+ * Copyright (c) 2000-2001 George Staikos <staikos@kde.org>
  *               2000 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,7 @@ QString whatstr;
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
-  grid = new QGridLayout(tabSSL, 5, 2, KDialog::marginHint(),
+  grid = new QGridLayout(tabSSL, 6, 2, KDialog::marginHint(),
                                         KDialog::spacingHint() );
   mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
@@ -163,18 +163,44 @@ QString whatstr;
 	   SSLv3Box, SLOT( setEnabled( bool )));
 
   loadCiphers();
+
+  mUseEGD = new QCheckBox(i18n("Use EGD"), tabSSL);
+  connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
+  grid->addWidget(mUseEGD, 3, 0);
+  QFrame *egdframe = new QFrame(tabSSL);
+  QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
+                                                      KDialog::spacingHint() );
+  mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
+  grid2->addWidget(mEGDLabel, 0, 0);
+  mEGDPath = new QLineEdit(egdframe);
+  connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
+  grid2->addWidget(mEGDPath, 1, 0);
+  mChooseEGD = new QPushButton("...", egdframe);
+  connect(mChooseEGD, SIGNAL(clicked()), SLOT(slotChooseEGD()));
+  grid2->addWidget(mChooseEGD, 1, 1);
+  grid->addWidget(egdframe, 3, 1);
+  whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
+          " daemon (EGD) for initializing the pseudo-random number generator.");
+  QWhatsThis::add(mUseEGD, whatstr);
+  whatstr = i18n("Enter the path to the socket created by the entropy gathering"
+                " daemon here.");
+  QWhatsThis::add(mChooseEGD, whatstr);
+  QWhatsThis::add(mEGDPath, whatstr);
+  whatstr = i18n("Click here to browse for the EGD socket file.");
+  QWhatsThis::add(mEGDPath, whatstr);
+  
 #endif
 
   mWarnOnEnter = new QCheckBox(i18n("Warn on &entering SSL mode"), tabSSL);
   connect(mWarnOnEnter, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnEnter, 3, 0);
+  grid->addWidget(mWarnOnEnter, 4, 0);
   whatstr = i18n("If selected, you will be notified when entering an SSL"
                 " enabled site");
   QWhatsThis::add(mWarnOnEnter, whatstr);
 
   mWarnOnLeave = new QCheckBox(i18n("Warn on &leaving SSL mode"), tabSSL);
   connect(mWarnOnLeave, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnLeave, 3, 1);
+  grid->addWidget(mWarnOnLeave, 4, 1);
   whatstr = i18n("If selected, you will be notified when leaving an SSL"
                 " based site.");
   QWhatsThis::add(mWarnOnLeave, whatstr);
@@ -182,17 +208,20 @@ QString whatstr;
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
   connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnUnencrypted, 4, 0);
+  grid->addWidget(mWarnOnUnencrypted, 5, 0);
   whatstr = i18n("If selected, you will be notified before sending"
                 " unencrypted data via a web browser.");
   QWhatsThis::add(mWarnOnUnencrypted, whatstr);
 
   mWarnOnMixed = new QCheckBox(i18n("Warn on &mixed SSL/non-SSL pages"), tabSSL);
   connect(mWarnOnMixed, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnMixed, 4, 1);
+  grid->addWidget(mWarnOnMixed, 5, 1);
   whatstr = i18n("If selected, you will be notified if you view a page"
                 " that has both encrypted and non-encrypted parts.");
   QWhatsThis::add(mWarnOnMixed, whatstr);
+#endif
+
+#if 0
 
   ///////////////////////////////////////////////////////////////////////////
   // SECOND TAB
@@ -234,6 +263,10 @@ QString whatstr;
   //connect(yourSSLVerify, SIGNAL(), SLOT());
   grid->addWidget(yourSSLVerify, 5, 1);
 
+  yourSSLGen = new QPushButton(i18n("&Generate..."), tabYourSSLCert);
+  connect(yourSSLGen, SIGNAL(pressed()), SLOT(slotGeneratePersonal()));
+  grid->addWidget(yourSSLGen, 6, 1);
+
   QHButtonGroup *ocbg = new QHButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
   yourSSLUseDefault = new QRadioButton(i18n("&Use default certificate"), ocbg);
   yourSSLList = new QRadioButton(i18n("&List upon connection"), ocbg);
@@ -246,7 +279,9 @@ QString whatstr;
   grid->addMultiCellWidget(nossllabel, 3, 3, 0, 1);
 #endif
 
+#endif
 
+#if 0   // NOT YET IMPLEMENTED
   ///////////////////////////////////////////////////////////////////////////
   // THIRD TAB
   ///////////////////////////////////////////////////////////////////////////
@@ -416,6 +451,12 @@ void KCryptoConfig::load()
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
+  mUseEGD->setChecked(config->readBoolEntry("UseEGD", false));
+  mEGDLabel->setEnabled(mUseEGD->isChecked());
+  mChooseEGD->setEnabled(mUseEGD->isChecked());
+  mEGDPath->setEnabled(mUseEGD->isChecked());
+  mEGDPath->setText(config->readEntry("EGDPath"));
+
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
@@ -473,6 +514,10 @@ void KCryptoConfig::save()
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
+
+  config->writeEntry("UseEGD", mUseEGD->isChecked());
+  config->writeEntry("EGDPath", mEGDPath->text());
+
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
@@ -559,6 +604,11 @@ void KCryptoConfig::defaults()
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
     item->setOn( item->bits() >= 40 );
   }
+  mUseEGD->setChecked(false);
+  mEGDLabel->setEnabled(false);
+  mChooseEGD->setEnabled(false);
+  mEGDPath->setEnabled(false);
+  mEGDPath->setText("");
 #endif
 
   emit changed(true);
@@ -570,6 +620,42 @@ QString KCryptoConfig::quickHelp() const
      " use with most KDE applications, as well as manage your personal"
      " certificates and the known certificate authorities.");
 }
+
+
+void KCryptoConfig::slotChooseEGD() {
+  QString newFile = KFileDialog::getOpenFileName();
+  if (newFile.length() > 0)
+    mEGDPath->setText(newFile);
+}
+
+
+void KCryptoConfig::slotUseEGD() {
+  mEGDPath->setEnabled(mUseEGD->isChecked());
+  mChooseEGD->setEnabled(mUseEGD->isChecked());
+  mEGDLabel->setEnabled(mUseEGD->isChecked());
+  configChanged();
+}
+
+
+void KCryptoConfig::slotGeneratePersonal() {
+#if 0
+  QStringList qslCertTypes;
+
+  qslCertTypes << i18n("Personal SSL")
+               << i18n("Server SSL")
+               << i18n("S/MIME")
+               << i18n("PGP")
+               << i18n("GPG")
+               << i18n("SSL Personal Request")
+               << i18n("SSL Server Request")
+               << i18n("Netscape SSL")
+               << i18n("Server CA")
+               << i18n("Personal CA")
+               << i18n("S/MIME CA");
+#endif
+   
+}
+
 
 #ifdef HAVE_SSL
 // This gets all the available ciphers from OpenSSL

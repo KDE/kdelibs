@@ -80,16 +80,25 @@ public:
 public slots:
   void configChanged();
 
+  void slotGeneratePersonal();
+  void slotUseEGD();
+  void slotChooseEGD();
+
 private:
   QTabWidget *tabs;
   QWidget *tabSSL;
-#if 0
+
   QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
-#endif
+
   QListView *SSLv2Box, *SSLv3Box;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave;
-#if 0
+
+  QPushButton *mChooseEGD;
+  QLabel    *mEGDLabel;
+  QLineEdit *mEGDPath;
+  QCheckBox *mUseEGD;
+
   QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
   QListBox *yourSSLBox, *otherSSLBox, *caSSLBox;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
@@ -101,7 +110,7 @@ private:
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
-#endif
+
   KConfig *config;
 };
 
