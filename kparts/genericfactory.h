@@ -3,50 +3,10 @@
 
 #include <kparts/factory.h>
 #include <kparts/part.h>
-#include <ktypelist.h>
-#include <qmetaobject.h>
+#include <kgenericfactory.h>
 
 namespace KParts
 {
-
-    // see kdecore/kgenericfactory.h for a discussion about these global function templates.
-    // they are not part of the public API and therefore might change in a source incompatible
-    // manner without notice! (Simon)
-    
-    /** @internal */
-    inline KParts::Part *GenericFactoryFunction( QWidget *, const char *,
-                                                 QObject *, const char *, const char *, KDE::NullType * )
-    { return 0; }
-
-    /** @internal */
-    template <class T>
-    inline KParts::Part *GenericFactoryFunction( QWidget *parentWidget, const char *widgetName,
-                                                 QObject *parent, const char *name, const char *className,
-                                                 T *)
-    {
-        QMetaObject *metaObject = T::staticMetaObject();
-        while ( metaObject )
-        {
-            if ( !qstrcmp( className, metaObject->className() ) )
-                return new T( parentWidget, widgetName, parent, name );
-            metaObject = metaObject->superClass();
-        }
-        return 0;
-    }
-
-    /** @internal */
-    template <class T1, class T2>
-    inline KParts::Part *GenericFactoryFunction( QWidget *parentWidget, const char *widgetName,
-                                                 QObject *parent, const char *name, 
-                                                 const char *className, KTypeList<T1, T2> * )
-    {
-        KParts::Part *result = GenericFactoryFunction( parentWidget, widgetName, parent, name, 
-                                                       className, static_cast<T1 *>( 0 ) );
-        if ( !result )
-            result = GenericFactoryFunction( parentWidget, widgetName, parent, name, className, 
-                                             static_cast<T2 *>( 0 ) );
-        return result;
-    }
 
     /**
      * @internal
@@ -119,11 +79,14 @@ namespace KParts
         virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
                                                 QObject *parent, const char *name,
                                                 const char *className,
-                                                const QStringList & )
+                                                const QStringList &args )
         {
-            KParts::Part *part = GenericFactoryFunction( parentWidget, widgetName,
-                                                         parent, name, className,
-                                                         static_cast<T *>( 0 ) );
+            T *part = KDEPrivate::ConcreteFactory<T>::create( parentWidget, 
+                                                              widgetName,
+                                                              parent, 
+                                                              name, 
+                                                              className,
+                                                              args );
 
             if ( part && !qstrcmp( className, "KParts::ReadOnlyPart" ) )
             {
@@ -144,11 +107,16 @@ namespace KParts
         virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
                                                 QObject *parent, const char *name,
                                                 const char *className,
-                                                const QStringList & )
+                                                const QStringList &args )
         {
-            KParts::Part *part = GenericFactoryFunction( parentWidget, widgetName,
-                                                         parent, name, className,
-                                                         static_cast<KTypeList<T1, T2> *>( 0 ) );
+            QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >( parentWidget, 
+                                                                             widgetName,
+                                                                             parent, name, 
+                                                                             className,
+                                                                             args );
+
+            // (this cast is guarateed to work...)
+            KParts::Part *part = dynamic_cast<KParts::Part *>( object );
 
             if ( part && !qstrcmp( className, "KParts::ReadOnlyPart" ) )
             {
