@@ -376,8 +376,8 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 if (m_cachedSheet) m_cachedSheet->deref(this);
                 m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
                 if (m_cachedSheet) {
+                    getDocument()->addPendingSheet(); //before ref, because during the ref it might load!
                     m_cachedSheet->ref( this );
-                    getDocument()->addPendingSheet();
                 }
             }
 
