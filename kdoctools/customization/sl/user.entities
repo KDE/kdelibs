@@ -12,3 +12,4 @@
 <!ENTITY itd "<abbrev>itd.</abbrev>">
 <!ENTITY slShift "<keycap>slovenianShiftKey</keycap>"> <!-- please adapt both name and contents to Slovenian language!!! -->
 <!ENTITY slCtrl "<keycap>slovenianCtrlKey</keycap>">
+<!ENTITY slAlt "<keycap>slovenianAltKey</keycap>">
