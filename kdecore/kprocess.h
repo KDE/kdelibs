@@ -340,7 +340,13 @@ public:
   */
   bool closeStderr();
 
-  signals: 
+  /**
+   * Lets you see what your arguments are for debugging.
+  */
+
+  const QStrList * args() { return &arguments; }
+
+signals: 
 
   /**
    * Emitted after the process has terminated when
