@@ -128,19 +128,21 @@ public:
    * Sets point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
-   * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+   * Html-Font-Sizes range from 0 (smallest) to 6 (biggest), but you can specify up to 15 font sizes,
+   * the bigger ones will get used, if <font size=+1> extends over 7, or if a 'font-size: larger' style
+   * declaration gets into this region.
    *
-   * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
+   * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.
    */
-  void setFontSizes(const int *newFontSizes);
+  void setFontSizes(const int *newFontSizes, int numFontSizes = 7);
 
   /**
    * Gets point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
-   * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+   * Html-Font-Sizes range from 0 (smallest) to 6 (biggest).
    *
-   * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
+   * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.
    */
   const int *fontSizes() const;
 

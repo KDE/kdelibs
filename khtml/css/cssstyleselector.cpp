@@ -1414,7 +1414,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
 	    DOMStringImpl *str = val->getStringValue();
 	    QString face(str->s, str->l);
-	    // ### don't hardcode the font names
+	    // ### use the fonts in settings!!!!
 	    if(face == "serif")
 		face = "times";
 	    else if(face == "sans-serif")

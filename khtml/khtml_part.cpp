@@ -644,9 +644,9 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   return true;
 }
 
-void KHTMLPart::setFontSizes( const int *newFontSizes )
+void KHTMLPart::setFontSizes( const int *newFontSizes, int numFontSizes )
 {
-  d->m_settings->setFontSizes( newFontSizes );
+  d->m_settings->setFontSizes( newFontSizes, numFontSizes );
 }
 
 const int *KHTMLPart::fontSizes() const
@@ -661,12 +661,12 @@ void KHTMLPart::resetFontSizes()
 
 void KHTMLPart::setStandardFont( const QString &name )
 {
-  d->m_settings->fontBaseFace = name;
+    d->m_settings->setDefaultFamily(name);
 }
 
 void KHTMLPart::setFixedFont( const QString &name )
 {
-  d->m_settings->fixedFontFace = name;
+    d->m_settings->setMonoSpaceFamily(name);
 }
 
 void KHTMLPart::setURLCursor( const QCursor &c )

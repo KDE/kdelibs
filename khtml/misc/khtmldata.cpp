@@ -30,27 +30,30 @@ using namespace khtml;
 
 #include <kglobal.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
-const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24 };
+const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
 
 Settings::Settings()
 {
     memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
-    fontBaseFace  = KGlobal::generalFont().family();
-    fixedFontFace = KGlobal::fixedFont().family();
+    standardFamilies = new QString[6];
 
     charset	  = QFont::Latin1;
+
+    resetStandardFamilies();
 }
 
-void Settings::setFontSizes(const int *newFontSizes)
+Settings::~Settings()
 {
-    memcpy( m_fontSizes, newFontSizes, sizeof(m_fontSizes) );
+    delete [] standardFamilies;
+}
+
+void Settings::setFontSizes(const int *newFontSizes, int numFontSizes)
+{
+    if(numFontSizes > MAXFONTSIZES) numFontSizes = MAXFONTSIZES;
+    memcpy( m_fontSizes, newFontSizes, sizeof(int)*numFontSizes );
 }
 
 const int *Settings::fontSizes() const
@@ -66,9 +69,10 @@ void Settings::resetFontSizes(void)
 Settings::Settings( const Settings &s )
 {
     memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
+    standardFamilies = new QString[5];
 
-    fontBaseFace  = s.fontBaseFace;
-    fixedFontFace = s.fixedFontFace;
+    for(int i = 0; i < 5; i++)
+	standardFamilies[i] = s.standardFamilies[i];
 
     charset       = s.charset;
 }
@@ -77,10 +81,30 @@ const Settings &Settings::operator=( const Settings &s )
 {
     memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
 
-    fontBaseFace  = s.fontBaseFace;
-    fixedFontFace = s.fixedFontFace;
+    for(int i = 0; i < 5; i++)
+	standardFamilies[i] = s.standardFamilies[i];
 
     charset       = s.charset;
 
     return *this;
+}
+
+void Settings::resetStandardFamilies()
+{
+    standardFamilies[0] = "helvetica";
+    standardFamilies[1] = "times";
+    standardFamilies[2] = "helvetica";
+    standardFamilies[3] = "times";
+    standardFamilies[4] = "comic";
+    standardFamilies[5] = "fixed";
+}
+
+void Settings::setDefaultFamily(const QString& family)
+{
+    standardFamilies[0] = family;
+}
+
+void Settings::setMonoSpaceFamily(const QString& family)
+{
+    standardFamilies[5] = family;
 }

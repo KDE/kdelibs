@@ -282,9 +282,10 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
             int num = s.toInt();
             if ( *s.unicode() == '+')
 	    {
+		// ### Won't work like that!!!! larger will only get applied once
 	    	for (;num>0;num--)		
 		    addCSSProperty(CSS_PROP_FONT_SIZE, "larger", false);
-	    } 
+	    }
 	    else if ( *s.unicode() == '-')
 	    {
 	    	for (;num<0;num++)		
@@ -294,25 +295,25 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
 	    {
         	switch (num)
 		{
-		    case 0:
+		    case 1:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-small", false);
 			break;
-		    case 1:
+		    case 2:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
 		    	break;
-		    case 2:
+		    case 3:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
 		    	break;
-		    case 3:
+		    case 4:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
 		    	break;
-		    case 4:
+		    case 5:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
 		    	break;
-		    case 5:
+		    case 6:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
 		    	break;
-		    case 6:
+		    case 7:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
 		    	break;
 		    default:		    	
@@ -325,7 +326,7 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
 	
 	break;
     	}
-    case ATTR_COLOR:    
+    case ATTR_COLOR:
 	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
 	break;
     case ATTR_FACE:

@@ -27,15 +27,10 @@
 #ifndef __HTMLDATA_H__
 #define __HTMLDATA_H__
 
-#include <qcolor.h>
-#include <qcursor.h>
-#include <qstring.h>
 #include <qfont.h>
+class QString;
 
-// Also defined in khtmlfont.h
-#ifndef MAXFONTSIZES
-#define MAXFONTSIZES 7
-#endif
+#define MAXFONTSIZES 15
 
 namespace khtml
 {
@@ -48,19 +43,24 @@ class Settings
 public:
     Settings();
     Settings( const Settings & );
+    ~Settings();
 
     const Settings &operator=( const Settings & );
 
-    void setFontSizes(const int *newFontSizes);
+    void setFontSizes(const int *newFontSizes, int numFontSizes = 7);
     const int *fontSizes() const;
-    void resetFontSizes(void);
+    void resetFontSizes();
 
-    int     m_fontSizes[MAXFONTSIZES];
-
-    QString fontBaseFace;
-    QString fixedFontFace;
+    void resetStandardFamilies();
+    void setDefaultFamily(const QString& family);
+    void setMonoSpaceFamily(const QString& family);
 
     QFont::CharSet charset;
+
+private:
+    int     m_fontSizes[MAXFONTSIZES];
+    QString *standardFamilies;
+
 };
 
 };
