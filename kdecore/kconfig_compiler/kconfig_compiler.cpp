@@ -945,7 +945,7 @@ int main( int argc, char **argv )
         h << "    class " << enumName(e->name()) << endl;
         h << "    {" << endl;
         h << "      public:" << endl;
-        h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "    };" << endl;
       }
     }
