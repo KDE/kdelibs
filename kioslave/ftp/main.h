@@ -63,8 +63,6 @@ protected:
   long listRecursive2( const char *_abs_path, const char *_rel_path,
 		       list<Copy>& _files, list<CopyDir>& _dirs );
 
-  //  Ftp* getFtp();
-  
   bool m_bAutoSkip;
   int m_cmd;
   bool m_bIgnoreJobErrors;

@@ -35,12 +35,12 @@ int main( int argc, char **argv )
   HTTPProtocol http( &parent );
   http.dispatchLoop();
 
-  cerr << "Done" << endl;
+  debug( "kio_http : Done" );
 }
 
 void sig_handler2( int )
 {
-  cerr << "###############SEG FILE#############" << endl;
+  debug( "kio_http : ###############SEG FILE#############" );
   exit(1);
 }
 
@@ -302,7 +302,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
     char buffer[ 100 ];
     sprintf( buffer, "Range: bytes=%li-\r\n", _offset );
     command += buffer;
-    cerr << "Range = " << buffer;
+    debug( "kio_http : Range = %s", buffer );
   }
 
   if ( _reload ) /* No caching for reload */
@@ -394,7 +394,7 @@ repeat2:
     if ( strncmp( buffer, "Accept-Ranges: none", 19 ) == 0 )
       m_bCanResume = false;
 
-    // cerr << "Header:" << buffer << endl;
+    // debug( "kio_http : Header: %s", buffer );
     else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
       m_iSize = atol( buffer + 16 );
     else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 )
@@ -778,7 +778,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       {
 	int currentError = job.errorId();
 
-	cerr << "################# COULD NOT PUT " << currentError << endl;
+	debug( "kio_http : ################# COULD NOT PUT %d",currentError);
 	if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED )
 	{
 	  // Should we skip automatically ?
@@ -931,7 +931,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     if ( offset > 0 ) {
       // set offset
       processed_size += offset;
-      cerr << "Offset = " << offset << endl;
+      debug( "kio_http : Offset = %ld", offset );
     }
 
     /**
@@ -987,7 +987,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     processedFiles( ++processed_files );
   }
   
-  cerr << "Copied files " << dest << endl;
+  debug( "kio_http : Copied files %s", dest.c_str() );
 
   finished();
 

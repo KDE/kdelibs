@@ -535,7 +535,7 @@ int Ftp::ftpAcceptConnect(void)
 }
 
 
-bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode )
+bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, unsigned long _offset )
 {
   string buf;
 
@@ -581,6 +581,19 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode )
 	m_errorText = _path;
       }
       return false;
+    }
+  } else if ( _offset > 0 ) {
+
+    // send rest command if offset > 0, this applies to retr and stor commands
+    char buf[100];
+    sprintf(buf, "rest %ld", _offset);
+    if ( !ftpSendCmd( buf, '3' ) ) {
+      if ( ! m_error )
+	{
+	  m_error = ERR_CANNOT_RESUME;
+	  m_errorText = _path;
+	  return false;
+	}
     }
   }
   
@@ -983,10 +996,10 @@ bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
   if( mode & READ ) {
     ftpSize( _url.path(),'I'); // try to find the size of the file
 
-    if ( !ftpOpenCommand( "retr", _url.path(), 'I' ) ) {
+    if ( !ftpOpenCommand( "retr", _url.path(), 'I', offset ) ) {
       if ( ! m_error )
 	{
-	  m_error = ERR_DOES_NOT_EXIST;
+	  m_error = ERR_CANNOT_OPEN_FOR_READING;
 	  m_errorText = _url.url();
 	}
       return false;
@@ -1005,13 +1018,14 @@ bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
       }
       p = oldp;
       // end patch
-
-      m_bytesLeft = m_size;
-      return true;
     }
+
+    m_bytesLeft = m_size - offset;
+    return true;
   }
   else if( mode & WRITE ) {
-    if( !ftpOpenCommand( "stor", _url.path(), 'I' ) ) {
+
+    if( !ftpOpenCommand( "stor", _url.path(), 'I', offset ) ) {
       if ( !m_error )
 	{
 	  m_error = ERR_COULD_NOT_WRITE;

@@ -120,9 +120,7 @@ private:
 
   bool ftpSendCmd( const char *cmd, char expresp );
 
-  bool ftpMkdir( const char *path );
   bool ftpChdir( const char *path );
-  bool ftpRmdir( const char *path );
   bool ftpSize( const char *path, char mode );
 //   FtpEntry* ftpStat( const char *_path );
   
@@ -136,7 +134,7 @@ private:
    *
    * @return true if the command was accepted by the server.
    */
-  bool ftpOpenCommand( const char *command, const char *path, char mode );
+  bool ftpOpenCommand( const char *command, const char *path, char mode, unsigned long offset = 0 );
 
   /**
    * Used by @ref #ftpOpenCommand
@@ -159,7 +157,7 @@ protected:
   virtual void redirection( const char* /* _url */ ) { }
   
 public:
-  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4, RESUME = 8 }; 
+  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4 }; 
 
   Ftp();
   virtual ~Ftp();
@@ -179,6 +177,8 @@ public:
   bool ftpOpen( K2URL& _url, Mode mode, unsigned long offset = 0 );
   bool ftpClose();
 
+  bool ftpRmdir( const char *path );
+  bool ftpMkdir( const char *path );
   bool ftpDelete( const char *fnm );
   bool ftpRename( const char *src, const char *dst );
 
