@@ -30,6 +30,7 @@ Shell::Shell()
   menuBar()->insertItem( i18n("File"), pFile );
   QObject * coll = this;
   KAction * paLocal = new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  // No XML : we need to plug our actions ourselves
   paLocal->plug( pFile );
 
   KAction * paRemote = new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
@@ -47,6 +48,7 @@ Shell::Shell()
   paQuit->plug( pFile );
 
   setView( m_splitter );
+  m_splitter->setMinimumSize( 400, 300 );
 
   m_splitter->show();
 
@@ -75,7 +77,7 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( this, m_splitter );
+  m_editorpart = new NotepadPart( m_splitter, "NotepadPart" );
   m_editorpart->setReadWrite(); // read-write mode
   ////// m_manager->addPart( m_editorpart );
   m_editorpart->widget()->show(); //// we need to do this in a normal KTM....

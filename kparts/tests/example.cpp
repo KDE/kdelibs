@@ -47,6 +47,7 @@ Shell::Shell()
   (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
 
   setView( m_splitter );
+  m_splitter->setMinimumSize( 400, 300 );
 
   m_splitter->show();
 
@@ -81,7 +82,7 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( this, m_splitter );
+  m_editorpart = new NotepadPart( /*this, */m_splitter, "NotepadPart" );
   m_editorpart->setReadWrite(); // read-write mode
   m_manager->addPart( m_editorpart );
   m_paEditFile->setEnabled(false);

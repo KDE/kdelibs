@@ -1,0 +1,5 @@
+In order to test embedding the notepad part in konqueror, you need
+to "make install", to install the libs, and to copy notepad.desktop
+into $KDEDIR/share/services/, and remove kwrite.desktop from
+$KDEDIR/share/applnk/... (at least the ServiceTypes line of it)
+

@@ -8,10 +8,15 @@ check_PROGRAMS = kpartstest normalktmtest
 kpartstest_SOURCES = example.cpp notepad.cpp parts.cpp
 normalktmtest_SOURCES = normalktm.cpp notepad.cpp parts.cpp
 
-lib_LTLIBRARIES = libspellcheck.la
-libspellcheck_la_LDFLAGS = -avoid-version -module
-libspellcheck_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+lib_LTLIBRARIES = libspellcheck.la libnotepad.la
+
 libspellcheck_la_SOURCES = plugin_spellcheck.cpp
+libspellcheck_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+libspellcheck_la_LDFLAGS = -avoid-version -module
+
+libnotepad_la_SOURCES = notepad.cpp notepad_factory.cpp
+libnotepad_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+libnotepad_la_LDFLAGS = -avoid-version -module
 
 rcdir = $(kde_datadir)/kpartstest
 rc_DATA = kpartstest_shell.rc

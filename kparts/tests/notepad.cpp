@@ -14,25 +14,35 @@
 #include <kstatusbar.h>
 #include <kstddirs.h>
 
-NotepadPart::NotepadPart( QObject *parent, QWidget * parentWidget )
- : KParts::ReadWritePart( parent, "NotepadPart" )
+NotepadPart::NotepadPart( QWidget * parent, const char * name )
+ : KParts::ReadWritePart( parent, name )
 {
   KInstance * instance = new KInstance( "notepadpart" );
   setInstance( instance );
 
-  m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
+  m_edit = new QMultiLineEdit( parent, "NotepadPart's multiline edit" );
   m_edit->setFocus();
   setWidget( m_edit );
-  connect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
 
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   setXMLFile( "notepadpart.rc" );
 
+  setReadWrite( false ); // as required by the framework
 }
 
 NotepadPart::~NotepadPart()
 {
-debug("NotepadPart::~NotepadPart()");
+}
+
+void NotepadPart::setReadWrite( bool rw )
+{
+    m_edit->setReadOnly( !rw );
+    if (rw)
+        connect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
+    else
+        disconnect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
+
+    ReadWritePart::setReadWrite( rw );
 }
 
 bool NotepadPart::openFile()

@@ -14,13 +14,14 @@ class NotepadPart : public KParts::ReadWritePart
 {
   Q_OBJECT
 public:
-  NotepadPart( QObject *parent, QWidget * parentWidget );
+  NotepadPart( QWidget * parent, const char * name = 0L );
   virtual ~NotepadPart();
 
-  virtual bool saveFile();
+  virtual void setReadWrite( bool rw );
 
 protected:
   virtual bool openFile();
+  virtual bool saveFile();
 
 protected slots:
   void slotSearchReplace();
