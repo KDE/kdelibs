@@ -1670,4 +1670,3 @@ void HTMLTokenizer::setOnHold(bool _onHold)
         setSrc(QString(src.current(), src.length())); // ### deep copy
 }
 
-#include "htmltokenizer.moc"
