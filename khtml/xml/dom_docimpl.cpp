@@ -692,6 +692,7 @@ void DocumentImpl::attach(KHTMLView *w)
 
 void DocumentImpl::detach()
 {
+    clearSelection();
     RenderObject* render = m_render;
 
     // start destruction mode
