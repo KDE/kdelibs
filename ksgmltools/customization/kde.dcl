@@ -86,7 +86,7 @@ FEATURES
                   DATATAG  NO
                   OMITTAG  NO
                   RANK     NO
-                  SHORTTAG NO -- changed --
+                  SHORTTAG YES
 
          LINK
                   SIMPLE   NO
