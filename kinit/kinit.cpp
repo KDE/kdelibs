@@ -716,7 +716,7 @@ static void handle_launcher_request(int sock = -1)
          cwd = arg_n; arg_n += strlen(cwd) + 1;
          envc = *((long *) arg_n); arg_n += sizeof(long);
          envs = arg_n;
-         for(int i = 1; i < envc; i++)
+         for(int i = 0; i < envc; i++)
          {
            arg_n = arg_n + strlen(arg_n) + 1;
          }
