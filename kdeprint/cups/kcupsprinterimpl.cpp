@@ -132,5 +132,5 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 		}
 	}
 	if (!optstr.isEmpty())
-		cmd.append(" -o ").append( KShellProcess::quote( optstr ) );
+		cmd.append(" -o ").append( KProcess::quote( optstr ) );
 }

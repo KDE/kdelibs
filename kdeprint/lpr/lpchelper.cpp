@@ -273,7 +273,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 		msg = i18n("The executable %1 couldn't be find in your PATH.").arg("lprm");
 		return false;
 	}
-	QString	result = execute(m_lprmpath + " -P " + KShellProcess::quote(job->printer()) + " " + QString::number(job->id()));
+	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
 	if (result.find("dequeued") != -1)
 		return true;
 	else if (result.find("Permission denied") != -1 || result.find("no permissions") != -1)

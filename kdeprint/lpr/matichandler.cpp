@@ -269,7 +269,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 	// changing printer name), the template would be also removed
 	QString	origfilename = maticFile(entry);
 	QString	filename = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
-	::system(QFile::encodeName("cp " + KShellProcess::quote(origfilename) + " " + KShellProcess::quote(filename)));
+	::system(QFile::encodeName("cp " + KProcess::quote(origfilename) + " " + KProcess::quote(filename)));
 	DrMain	*driver = loadMaticDriver(filename);
 	if (driver)
 	{
@@ -368,7 +368,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + KShellProcess::quote(tmpFile.name()) + " " + KShellProcess::quote(outFile);
+		QString	cmd = "mv " + KProcess::quote(tmpFile.name()) + " " + KProcess::quote(outFile);
 		int	status = ::system(QFile::encodeName(cmd).data());
 		QFile::remove(tmpFile.name());
 		result = (status != -1 && WEXITSTATUS(status) == 0);

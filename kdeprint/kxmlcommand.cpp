@@ -376,7 +376,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 				}
 				else
 				{
-					format.replace( re, KShellProcess::quote( dopt->valueText() ) );
+					format.replace( re, KProcess::quote( dopt->valueText() ) );
 				}
 				str.append(format).append(" ");
 			}

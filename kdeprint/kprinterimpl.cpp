@@ -489,7 +489,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 }
 
 QString KPrinterImpl::quote(const QString& s)
-{ return KShellProcess::quote(s); }
+{ return KProcess::quote(s); }
 
 void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
 {

@@ -405,7 +405,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 			{
 				// printcap file saved, entry can be deleted now
 				delete entry;
-				status =  (::system(QFile::encodeName("rm -rf " + KShellProcess::quote(sd))) == 0);
+				status =  (::system(QFile::encodeName("rm -rf " + KProcess::quote(sd))) == 0);
 				if (!status)
 					setErrorMsg(i18n("Unable to remove spool directory %1. "
 					                 "Check that you have write permissions "

@@ -191,7 +191,7 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 				i18n("Provide root's password"),
 				"provideRootsPassword") == KMessageBox::Continue)
 			{
-				cmd = ("kdesu -c " + KShellProcess::quote(cmd));
+				cmd = ("kdesu -c " + KProcess::quote(cmd));
 				break;
 			}
 			else

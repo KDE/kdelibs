@@ -83,7 +83,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit)
 {
 	KPipeProcess	proc;
-	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShellProcess::quote(prname)))
+	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KProcess::quote(prname)))
 	{
 		QTextStream	t(&proc);
 		QString		line;
