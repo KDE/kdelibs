@@ -74,8 +74,7 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
   {
     QString authorPageTitle = authorCount == 1 ? 
       i18n("A&uthor") : i18n("A&uthors");
-
-    KAboutContainer *authorPage = addContainerPage( authorPageTitle );
+    KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
     QValueList<KAboutPerson>::ConstIterator it;
     for (it = aboutData->authors().begin(); 
 	 it != aboutData->authors().end(); ++it)
@@ -88,7 +87,8 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
   int creditsCount = aboutData->credits().count();
   if (creditsCount)
   {
-    KAboutContainer *creditsPage = addContainerPage( i18n("&Thanks to") );
+    KAboutContainer *creditsPage = 
+      addScrolledContainerPage( i18n("&Thanks to") );
     QValueList<KAboutPerson>::ConstIterator it;
     for (it = aboutData->credits().begin();
 	 it != aboutData->credits().end(); ++it)
@@ -102,6 +102,11 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
   {
     addTextPage( i18n("&License agreement"), aboutData->license() );
   }
+
+  //
+  // Make sure the dialog has a reasonable width 
+  //
+  setInitialSize( QSize(400,1) );
 }
 
 
