@@ -130,10 +130,10 @@ static int rikFindChar(register const char * _s, const char c)
 
   while (true)
   {
-    if ((0 == *s) || (c == *s)) break; ++s;
-    if ((0 == *s) || (c == *s)) break; ++s;
-    if ((0 == *s) || (c == *s)) break; ++s;
-    if ((0 == *s) || (c == *s)) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
   }
 
   return s - _s;
@@ -154,7 +154,7 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
   // the underlying allocation routines are quite efficient,
   // but it's nice to have 0 allocations in many cases.
 
-  QCString output( (length*12)/10 );
+  QCString output(length * 1.2);
 
   const unsigned int end = length - 1;
   unsigned int lineLength = 0;
@@ -288,23 +288,32 @@ QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
   return output;
 }
 
-QCString KCodecs::base64Encode( const QCString& str, bool useCRLF )
+QCString KCodecs::base64Encode( const QCString& str, bool insertLFs )
 {
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
-    return base64Encode( in, useCRLF );
+    return base64Encode( in, insertLFs );
 }
 
-QCString KCodecs::base64Encode( const QByteArray& in, bool useCRLF )
+QCString KCodecs::base64Encode( const QCString& str ) {
+    return base64Encode(str,false);
+}
+
+QCString KCodecs::base64Encode( const QByteArray& in, bool insertLFs )
 {
     QByteArray out;
-    base64Encode( in, out, useCRLF );
+    base64Encode( in, out, insertLFs );
     return QCString( out.data(), out.size()+1 );
 }
 
+QCString KCodecs::base64Encode( const QByteArray& in )
+{
+   return base64Encode(in,false);
+}
+
 void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
-                            bool useCRLF )
+                            bool insertLFs )
 {
     // clear out the output buffer
     out.resize( 0 );
@@ -315,13 +324,14 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     const char* buf = in.data();
     const unsigned int len = in.size();
 
+    unsigned int out_len = ((len+2)/3)*4;
+
     // Deal with the 76 characters or less per
     // line limit specified in RFC 2045 on a
     // pre request basis.
-    unsigned int out_len = ((len+2)/3)*4;
-    useCRLF = (useCRLF && out_len > 64);
-    if ( useCRLF )
-      out_len += (out_len/64);
+    insertLFs = (insertLFs && out_len > 76);
+    if ( insertLFs )
+      out_len += (out_len/76);
 
     int count = 0;
     out.resize( out_len );
@@ -329,9 +339,9 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
     while (sidx < len-2)
     {
-        if ( useCRLF )
+        if ( insertLFs )
         {
-            if ( count && (count%64) == 0 )
+            if ( count && (count%76) == 0 )
                 out[didx++] = '\n';
             count += 4;
         }
@@ -361,15 +371,14 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
 
     // Add padding
     while (didx < out.size()) {
-        if ( useCRLF )
-        {
-            if ( count && (count%64) == 0 )
-                out[didx++] = '\n';
-            count++;
-        }
         out[didx] = '=';
         didx++;
     }
+}
+
+void KBase64::base64Encode( const QByteArray& in, QByteArray& out )
+{
+    base64Encode(in, out, false);
 }
 
 QCString KBase64::base64Decode( const QCString& str )
@@ -386,67 +395,6 @@ QCString KBase64::base64Decode( const QByteArray& in )
     base64Decode( in, out );
     return QCString( out.data(), out.size()+1 );
 }
-/*
-void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
-{
-    if ( in.isEmpty() )
-    {
-        out.resize( 0 );
-        return;
-    }
-
-    const unsigned int len = in.size();
-    unsigned int tail = len;
-
-    while ( in[tail-1] == '=' )
-    {
-        tail--;
-    }
-
-    out.resize( 0 );
-    out.resize( tail-(len/4) );
-    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
-
-    // ACSII printable to 0-63 conversion
-    // This *looks* more tedious, but in fact, this is faster
-    // especially for superscalar CPUs.
-    Q_UINT8 *pbuf = buf;
-    int count = len;
-    while (count >= 4) {
-        pbuf[0] = Base64DecMap[pbuf[0]];
-        pbuf[1] = Base64DecMap[pbuf[1]];
-        pbuf[2] = Base64DecMap[pbuf[2]];
-        pbuf[3] = Base64DecMap[pbuf[3]];
-        count-=4;
-        pbuf+=4;
-    }
-
-    if (count > 0) {
-        pbuf[0] = Base64DecMap[pbuf[0]];
-        if (count > 1) {
-            pbuf[1] = Base64DecMap[pbuf[1]];
-            if (count > 2) {
-                pbuf[2] = Base64DecMap[pbuf[2]];
-            }
-        }
-    }
-
-    // 4-byte to 3-byte conversion
-    unsigned int sidx = 0, didx = 0;
-    while (didx < out.size()-2)
-    {
-        out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
-        out[didx+1] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
-        out[didx+2] = (((buf[sidx+2] << 6) & 255) | (buf[sidx+3] & 077) );
-        sidx += 4; didx += 3;
-    }
-    if (didx < out.size())
-        out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
-
-    if (++didx < out.size() )
-        out[didx] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
-}
-*/
 
 void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 {
@@ -454,40 +402,36 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     if ( in.isEmpty() )
         return;
 
-    unsigned int len = in.size();
-    unsigned int tail = len;
     unsigned int count = 0;
+    unsigned int len = in.size(), tail = len;
     const char* in_buf = in.data();
 
     // Deal with possible *nix "BEGIN" marker!!
     while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r' ||
             in_buf[count] == '\t' || in_buf[count] == ' ') )
-        count ++;
+        count++;
 
-    bool hasCRLF = false;
     if ( strncasecmp(in_buf, "begin", 5) == 0 )
     {
         count += 5;
         while ( count < len && in_buf[count] != '\n' && in_buf[count] != '\r' )
-            count ++;
-        in_buf += ++count;
+            count++;
+        in_buf += (++count);
         tail = (len -= count);
-        hasCRLF = true;
     }
 
-    // Deals with *nix uuencoder's end point marker "====" as well!!
+    // Find the tail end of the actual encoded data even if
+    // there is/are trailing CR and/or LF.
     while ( in_buf[tail-1] == '=' || in_buf[tail-1] == '\n' ||
             in_buf[tail-1] == '\r' )
     {
-        // Ignore a the terminating "===="
-        if ( hasCRLF && (in_buf[tail-1] == '\n' || in_buf[tail-1] == '\r') )
-            len = tail;
         tail--;
+        if ( in_buf[tail-1] != '=' ) len = tail;
     }
 
-    count = len;
-    out.resize( count );
-    for (int idx = 0; idx < count; idx++)
+    unsigned int outIdx = 0;
+    out.resize( (count=len) );
+    for (unsigned int idx = 0; idx < count; idx++)
     {
         // Adhere to RFC 2045 and ignore characters
         // that are not part of the encoding table.
@@ -495,7 +439,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
         if ((ch > 47 && ch < 58) || (ch > 64 && ch < 91) ||
             (ch > 96 && ch < 123) || ch == '+' || ch == '/' || ch == '=')
         {
-            out[idx] = Base64DecMap[ch];
+            out[outIdx++] = Base64DecMap[ch];
         }
         else
         {
@@ -503,34 +447,19 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
             tail--;
         }
     }
-/*
-    kdDebug() << "Input Size = " << len << endl;
-    kdDebug() << "Tail size = " << tail << endl;
-*/
+
     // 4-byte to 3-byte conversion
     len = tail-(len/4);
     unsigned int sidx = 0, didx = 0;
     while (didx < len-2)
     {
-/*
-        kdDebug() << "Didx= " << didx << " Len-2= " << len-2 << endl;
-        kdDebug() << "4-bytes: " << out[didx] << "**" << out[didx+1] << "**"
-                  << out[didx+2] << endl;
-*/
         out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
         out[didx+1] = (((out[sidx+1] << 4) & 255) | ((out[sidx+2] >> 2) & 017));
         out[didx+2] = (((out[sidx+2] << 6) & 255) | (out[sidx+3] & 077));
-/*
-        kdDebug() << "3-bytes: " << out[didx] << "**" << out[didx+1]
-                  << "**" << out[didx+2] << endl;
-*/
         sidx += 4;
         didx += 3;
     }
-/*
-    kdDebug() << "Output size = " << len << endl;
-    kdDebug() << "Output = " << out.data() << endl;
-*/
+
     if (didx < len)
         out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
 
@@ -539,7 +468,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 
     // Resize the output buffer to the actual size as needed!
     if ( len < out.size() )
-      out.resize(len);
+      out.truncate(len);
 }
 
 QCString KCodecs::uuencode( const QCString& str )
@@ -664,12 +593,12 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     const char* in_buf = in.data();
 
     // Deal with *nix "BEGIN"/"END" separators!!
-    int count = 0;
+    unsigned int count = 0;
     while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r' ||
             in_buf[count] == '\t' || in_buf[count] == ' ') )
         count ++;
 
-    bool hasUnixSep = false;
+    bool hasLF = false;
     if ( strncasecmp( in_buf, "begin", 5) == 0 )
     {
        count += 5;
@@ -678,7 +607,7 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 
         in_buf += (++count);
         len -= count;
-        hasUnixSep = true;
+        hasLF = true;
     }
 
     out.resize( len/4*3 );
@@ -724,7 +653,7 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
             sidx++;
 
         // skip the "END" separator when present.
-        while ( hasUnixSep && strncasecmp( in_buf+sidx, "end", 3) == 0 )
+        while ( hasLF && strncasecmp( in_buf+sidx, "end", 3) == 0 )
             sidx+=3;
     }
 

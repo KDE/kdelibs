@@ -178,26 +178,24 @@ public:
    *
    * The boolean argument determines if the encoded data is
    * going to be restricted to 76 characters or less per line
-   * as specified by RFC 2045.  If @p useCRLF is true, then
-   * there will be 64 characters or less per line.
+   * as specified by RFC 2045.  If @p insertLFs is true, then
+   * there will be 76 characters or less per line.
    *
-   * @param in       the data to be encoded.
-   * @param useCRLF  limit the number of characters per line.
-   * @return         a base64 encoded data.
+   * @param in         the data to be encoded.
+   * @param insertLFs  limit the number of characters per line.
+   * @return           a base64 encoded data.
    */
-  static QCString base64Encode( const QByteArray& in, bool useCRLF );
+  static QCString base64Encode( const QByteArray& in, bool insertLFs );
 
   /**
    * @deprecated.
    *
-   * Use @ref base64Encode(const QByteArray&, int)
-   * with the integer argument set to 0.
+   * Use @ref base64Encode(const QByteArray&, bool)
+   * with the boolean argument set to false.
    */
    // BC: Merge in KDE 3.x with the above function by
    // defaulting boolean argument to false.
-  static QCString base64Encode( const QByteArray& in ) {
-      return base64Encode(in,false);
-  }
+  static QCString base64Encode( const QByteArray& in );
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -206,57 +204,53 @@ public:
    * large data or a stream of data.  The boolean argument
    * determines if the encoded data is going to be restricted
    * to 76 characters or less per line as specified by RFC 2045.
-   * If @p useCRLF is true, then there will be 64 characters or
+   * If @p insertLFs is true, then there will be 76 characters or
    * less per line.
    *
    * <u>NOTE:</u> the output array is always first reset for
    * sanity and then resized appropriatly.  Hence, any data
    * that is present in the output array will be lost.
    *
-   * @param in      the data to be encoded using base64.
-   * @param useCRLF limit the number of characters per line.
-   * @param out     the container for the encoded data.
+   * @param in        the data to be encoded using base64.
+   * @param insertLFs limit the number of characters per line.
+   * @param out       the container for the encoded data.
    */
   static void base64Encode( const QByteArray& in, QByteArray& out,
-                            bool useCRLF );
+                            bool insertLFs );
 
   /**
    * @deprecated.
    *
-   * Use @ref base64Encode(const QByteArray&, QByteArray&, int)
-   * with the integer argument set to 0.
+   * Use @ref base64Encode(const QByteArray&, QByteArray&, bool)
+   * with the boolean argument set to false.
    */
    // BC: Merge in KDE 3.x with the above function by
    // defaulting boolean argument to false.
-  static void base64Encode( const QByteArray& in, QByteArray& out ) {
-      base64Encode(in, out, false);
-  }
+  static void base64Encode( const QByteArray& in, QByteArray& out );
 
   /**
    * Encodes the given string using the base64 algorithm.
    *
    * The boolean argument determines if the encoded data is
    * going to be restricted to 76 characters or less per line
-   * as specified by RFC 2045.  If @p useCRLF is true, then
-   * there will be 64 characters or less per line.
+   * as specified by RFC 2045.  If @p insertLFs is true, then
+   * there will be 76 characters or less per line.
    *
-   * @param str     the string to be encoded.
-   * @param useCRLF limit the number of characters per line.
-   * @return        the decoded string.
+   * @param str       the string to be encoded.
+   * @param insertLFs limit the number of characters per line.
+   * @return          the decoded string.
    */
-  static QCString base64Encode( const QCString& str, bool useCRLF );
+  static QCString base64Encode( const QCString& str, bool insertLFs );
 
   /**
    * @deprecated.
    *
-   * Use @ref base64Encode(const QCString&, int)
-   * with the integer argument set to 0.
+   * Use @ref base64Encode(const QCString&, bool)
+   * with the boolean argument set to false.
    */
    // BC: Merge in KDE 3.x with the above function by
    // defaulting boolean argument to false.
-  static QCString base64Encode( const QCString& str ) {
-      return base64Encode(str,false);
-  }
+  static QCString base64Encode( const QCString& str );
 
   /**
    * Decodes the given data that was encoded using the
@@ -345,12 +339,12 @@ public:
   static QString uudecode( const QString& str );
 
   /**
-   * @deprecated. See @ref base64Encode(const QString&) instead.
+   * @deprecated. Use @ref base64Encode(const QString&) instead.
    */
   static QString encodeString( const QString& data );
 
   /**
-   * @deprecated. See @ref base64Decode(const QString&) instead.
+   * @deprecated. Use @ref base64Decode(const QString&) instead.
    */
   static QString decodeString( const QString& data );
 
