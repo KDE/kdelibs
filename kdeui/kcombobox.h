@@ -440,6 +440,14 @@ public slots:
      */
     void setCompletedItems( const QStringList& items );
 
+    /**
+     * Selects the first item that matches @p item. If there is no such item,
+     * it is inserted at position @p index if @p insert is true. Otherwise,
+     * no item is selected.
+     */
+    void setCurrentItem( const QString& item, bool insert = false, int index = -1 );
+    void setCurrentItem(int index) { QComboBox::setCurrentItem(index); }
+
 protected slots:
 
     /**

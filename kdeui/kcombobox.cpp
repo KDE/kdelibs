@@ -302,6 +302,26 @@ void KComboBox::deleteWordBack()
         lineEdit()->del();
 }
 
+void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
+{
+    int sel = -1;
+    for (int i = 0; i < count(); ++i)
+        if (text(i) == item)
+        {
+            sel = i;
+            return;
+        }
+    if (sel == -1 && insert)
+    {
+        insertItem(item, index);
+        if (index >= 0)
+            sel = index;
+        else
+            sel = count() - 1;
+    }
+    setCurrentItem(sel);
+}
+
 // *********************************************************************
 // *********************************************************************
 
