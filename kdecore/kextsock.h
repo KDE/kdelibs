@@ -62,7 +62,7 @@ class KAddressInfo;		/* our abstraction of it */
  * also disable @ref readBlock() and @ref writeBlock().
  *
  * To create a Unix socket, one would pass flag unixSocket to the constructor
- * or @ref setSocketFlags(). The hostname and service/port can be set to whatever is 
+ * or @ref setSocketFlags(). The hostname and service/port can be set to whatever is
  * necessary. If no hostname is given, but a service/port is, the socket created
  * will be implementation dependant (usually in /tmp). In any other case, the
  * fields will be concatenated.
@@ -70,7 +70,7 @@ class KAddressInfo;		/* our abstraction of it */
  * To create an Internet socket, inetSocket flag can be used. If, on the other
  * hand a specific IP protocol is desired, ipv4Socket and/or ipv6Socket can be
  * used.
- * 
+ *
  * Note that the socket type selection flags are cumulative. One could select
  * Unix and Internet sockets by using unixSocket | inetSocket. Or, for instance,
  * to make sure only IPv4 and IPv6 sockets are selected, even if future implementations
@@ -141,7 +141,7 @@ public:
     accepting = 21,		// socket is accepting (passiveSocket)
 
     closing = 35,		// socket is closing (delayed close)
-    
+
     done = 40			// socket has been closed
   };
 
@@ -444,8 +444,8 @@ public:
 
   /**
    * Starts an asynchronous connect. This works exactly the same as @ref connect,
-   * except that the connection result won't be returned. This function will 
-   * return either 0 on successful queueing of the connect or -1 on error. If 
+   * except that the connection result won't be returned. This function will
+   * return either 0 on successful queueing of the connect or -1 on error. If
    * this function returns 0, then the connectionSuccess or the connectionFailed
    * signals will be emitted.
    * Note that those signals might be emitted before this function returns, so your
@@ -485,8 +485,8 @@ public:
   virtual void closeNow();
 
   /**
-   * Releases the socket and anything we have holding on it. The class cannot 
-   * be used anymore. In other words, this is just like closeNow(), but it does 
+   * Releases the socket and anything we have holding on it. The class cannot
+   * be used anymore. In other words, this is just like closeNow(), but it does
    * not actually close the socket.
    * This is useful if you just want to connect and don't need the rest of the
    * class.
@@ -501,7 +501,7 @@ public:
    */
 
   /**
-   * Flushes the socket buffer. You need not call this method during normal 
+   * Flushes the socket buffer. You need not call this method during normal
    * operation as we will try and send everything as soon as possible.
    * However, if you want to make sure that data in the buffer is being sent
    * at this moment, you can call this function. It will try to send as much
@@ -609,7 +609,7 @@ public:
   virtual int peekBlock(char *data, uint maxlen);
 
   /**
-   * reimplementation of unreadBlock method. This is so because unreading in 
+   * reimplementation of unreadBlock method. This is so because unreading in
    * sockets doesn't make sense, so this function will always return -1 (error)
    * and set the system error to ENOSYS.
    */
@@ -730,6 +730,8 @@ public:
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()
+   *
+   * @return 0 on success
    */
   static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0);
   static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
@@ -742,7 +744,7 @@ public:
    *
    * IMPORTANT: the result values of the QPtrList must be deleted after use. So,
    * if you don't copy the KAddressInfo objects, the best way to assure that
-   * is to call setAutoDelete(true) on the list right after this function 
+   * is to call setAutoDelete(true) on the list right after this function
    * returns. If you do copy the results out, you must assure that the objects
    * get deleted when they are not needed any more.
    *
