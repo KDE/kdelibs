@@ -245,7 +245,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasGroup( "General" ) )
   {
     config->setGroup( "General" ); // group will be restored by cgs anyway
-    if ( reset || config->hasKey( "TextColor" ) )
+    if ( reset || config->hasKey( "foreground" ) )
       d->m_textColor = config->readColorEntry( "foreground", &HTML_DEFAULT_TXT_COLOR );
 
     if ( reset || config->hasKey( "linkColor" ) )
@@ -416,7 +416,7 @@ bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
   return d->m_bEnableJavaScriptDebug;
 }
 
-bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
+bool KHTMLSettings::isPluginsEnabled( const QString& /* hostname */ )
 {
   // FIXME: hostname is ignored (dnaber, 2001-01-03)
   return d->m_bEnablePlugins;
