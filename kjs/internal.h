@@ -231,12 +231,14 @@ namespace KJS {
 
   class DeclaredFunctionImp : public ConstructorImp {
   public:
-    DeclaredFunctionImp(const UString &n, StatementNode *b);
+    DeclaredFunctionImp(const UString &n, StatementNode *b, List *sc);
     Completion execute(const List &);
     Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }
+    List *scopeChain() const { return scopes; }
   private:
     StatementNode *block;
+    List *scopes;
   };
 
   class AnonymousFunction : public Function {

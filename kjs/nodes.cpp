@@ -1321,7 +1321,9 @@ Completion FinallyNode::execute()
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
-  FunctionImp *fimp = new DeclaredFunctionImp(ident, block);
+  const List *sc = Context::current()->pScopeChain();
+  FunctionImp *fimp = new DeclaredFunctionImp(ident, block, sc->copy());
+					      
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
     fimp->addParameter(p->ident());
@@ -1335,7 +1337,8 @@ void FuncDeclNode::processFuncDecl()
 // ECMA 13
 KJSO FuncExprNode::evaluate()
 {
-  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, block);
+  const List *sc = Context::current()->pScopeChain();    
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, block, sc->copy());
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
     fimp->addParameter(p->ident());

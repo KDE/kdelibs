@@ -262,9 +262,14 @@ Context::Context(CodeType type, Context *callingContext,
       break;
     case FunctionCode:
     case AnonymousCode:
-      scopeChain = new List();
-      scopeChain->append(activation);
-      scopeChain->append(glob);
+      if (type == FunctionCode) {
+	scopeChain = ((DeclaredFunctionImp*)func)->scopeChain()->copy();
+	scopeChain->prepend(activation);
+      } else {
+	scopeChain = new List();
+	scopeChain->append(activation);
+	scopeChain->append(glob);
+      }
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
       if (thisV->type() >= ObjectType) {
 	thisVal = thisV;
@@ -343,8 +348,9 @@ AnonymousFunction::AnonymousFunction()
   /* TODO */
 }
 
-DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b)
-  : ConstructorImp(n), block(b)
+DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b,
+					 List *sc)
+  : ConstructorImp(n), block(b), scopes(sc)
 {
 }
 
