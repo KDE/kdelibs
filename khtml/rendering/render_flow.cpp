@@ -29,6 +29,7 @@
 #include <assert.h>
 #include <qpainter.h>
 #include <kglobal.h>
+#include <limits.h>
 
 #include "rendering/render_flow.h"
 #include "rendering/render_text.h"
@@ -41,6 +42,7 @@ using namespace khtml;
 
 #define TABLECELLMARGIN -0x4000
 
+
 static inline int collapseMargins(int a, int b)
 {
     if ( a == TABLECELLMARGIN || b == TABLECELLMARGIN ) return TABLECELLMARGIN;
@@ -48,6 +50,21 @@ static inline int collapseMargins(int a, int b)
     if(a > 0 && b < 0) return a + b;
     if(a < 0 && b > 0) return b + a;
     return ( a > b ? b : a);
+}
+
+
+bool RenderFlow::SpecialObject::operator < ( const RenderFlow::SpecialObject &o ) const
+{
+    int zIndex1 = node->style()->zIndex();
+    int zIndex2 = o.node->style()->zIndex();
+    // we need to make sure floating items come first, as positioned ones are always on top of them.
+    if ( !node->isPositioned() )
+	zIndex1 = -INT_MAX;
+    if ( !o.node->isPositioned() )
+	zIndex2 = -INT_MAX;
+    if(zIndex1 == zIndex2)
+	return count < o.count;
+    return zIndex1 < zIndex2;
 }
 
 

@@ -161,12 +161,7 @@ protected:
         {
             return false;
         }
-        bool operator<(const SpecialObject& o) const
-        {
-            if(node->style()->zIndex() == o.node->style()->zIndex())
-                return count < o.count;
-            return node->style()->zIndex() < o.node->style()->zIndex();
-        }
+        bool operator<(const SpecialObject& o) const;
     };
 
     QSortedList<SpecialObject>* specialObjects;
