@@ -223,7 +223,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
     return;
 }
     QString protocol = jobData->protocol;
-//    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
+    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
     
@@ -388,6 +388,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     {
 //          kdDebug(7006) << "No slaves available" << endl;
 //          kdDebug(7006) << " -- active: " << protInfo->activeSlaves.count() << endl;
+       slaveTimer.start(0, true);
        return false;
     }
 
