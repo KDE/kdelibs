@@ -1,4 +1,2 @@
-I put colors.cpp here, so that I can have a Makefile.am and ergo
-an own pot file for that subdir. But it's not supposed to be compiled
-at all
+The rgb.txt comes from x.org (xc/programs/rgb/rgb.txt)
 
