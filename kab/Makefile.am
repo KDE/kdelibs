@@ -24,7 +24,6 @@ libkab_la_SOURCES	= \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
 	SearchDialog.cpp \
-#	SearchDialogData.cpp \
 	StringListDialog.cpp \
 	StringListDialogData.cpp \
 	addressbook.cc \
@@ -38,14 +37,15 @@ libkab_la_SOURCES	= \
 	keyvaluemap.cc \
 	functions.cc \
 	StringListSelectOneDialog.cpp \
-#	StringListSelectOneDialogData.cpp \
 	StringListSelectSetDialog.cpp \
-#	StringListSelectSetDialogData.cpp \
 	StringListSelectAndReorderSet.cpp \
 	StringListSelectAndReorderSetData.cpp \
 	widgets.cc \
 	SearchDialogMainWidget.cpp \
 	SearchDialogMainWidgetData.cpp 
+
+#	StringListSelectOneDialogData.cpp
+#	StringListSelectSetDialogData.cpp
 
 include_HEADERS = \
 	stl_headers.h \
@@ -55,6 +55,7 @@ include_HEADERS = \
 	configDB.h \
 	keyvaluemap.h \
 	sections.h
+
 #	PrintDialog.h \
 #	PrintDialogData.h \
 #	SearchDialog.h \
@@ -84,14 +85,15 @@ BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 		editentry.moc datepickerdialog.moc businesscard.moc \
 		StringListDialog.moc StringListDialogData.moc \
 		StringListSelectOneDialog.moc \
-#		StringListSelectOneDialogData.moc \
 		StringListSelectSetDialog.moc \
-#		StringListSelectSetDialogData.moc \
 		StringListSelectAndReorderSet.moc \
 		StringListSelectAndReorderSetData.moc \
 		SearchDialogMainWidget.moc \
 		SearchDialogMainWidgetData.moc
 
+
+#		StringListSelectOneDialogData.moc
+#		StringListSelectSetDialogData.moc
 
 # if you "make distclean", this files get removed. If you want to remove
 # them while "make clean", use CLEANFILES
