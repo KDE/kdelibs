@@ -343,7 +343,7 @@ KSgiStyle::drawPushButton(QPushButton *btn, QPainter *p)
 QRect 
 KSgiStyle::buttonRect(int x, int y, int w, int h)
 {
-    return(QRect(x+4, y+4, w-8, h-8));
+    return(QRect(x+3, y+3, w-6, h-6));
 }
 
 //--------------------------------------------------------------------
@@ -419,7 +419,7 @@ KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
   //
 	
   if (state)
-    drawCheckMark(p, 0, 2, 16, 16, g);
+    drawCheckMark(p, x, y+2, 16, 16, g);
 }
 
 //--------------------------------------------------------------------
@@ -429,7 +429,7 @@ KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 
 void
 KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, 
-																int state)
+                              int )
 {
 //  static QBitmap checkMask(16, 16, check_mask, true);
 	
@@ -1173,11 +1173,11 @@ KSgiStyle::drawPanel(QPainter *p, int x, int y, int w, int h,
 //
 
 void KSgiStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup &g, KToolBarPos pos,
+                          const QColorGroup &g, KToolBarPos,
                           QBrush *fill)
 {
-   qDrawShadePanel(p, x, y, w, h, g, false, 1,
-                    &g.brush(QColorGroup::Background));
+   qDrawShadePanel(p, x, y, w, h, g, false, 1, fill);
+//                    &g.brush(QColorGroup::Background));
 }
 
 void KSgiStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
@@ -1185,8 +1185,8 @@ void KSgiStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
 {
 //  qDrawShadePanel(p, x, y, w, h, g, false, 1,
 //                        &g.brush(QColorGroup::Background));
-  drawFullShadeButton (p, x, y, w, h, g, false, 
-                   &g.brush(QColorGroup::Background));
+  drawFullShadeButton (p, x, y, w, h, g, false, fill);
+//                   &g.brush(QColorGroup::Background));
 }
 
 
@@ -1335,100 +1335,139 @@ static const int motifItemHMargin       = 3;
 static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
-    maxpmw = QMAX( maxpmw, 20 );
 
-    if ( p->font() == KGlobalSettings::generalFont() )
+  bool        dis = !enabled;
+  QColorGroup itemg = dis ? pal.disabled() : pal.active();
+
+  maxpmw = QMAX( maxpmw, 20 );
+  int checkcol = maxpmw;
+
+
+  if ( p->font() == KGlobalSettings::generalFont() )
       p->setFont( KGlobalSettings::menuFont() );
 
-    if(act){
-        bool dis = !enabled;
-        QColorGroup itemg = dis ? pal.disabled() : pal.active();
+  if (!mi) {
+    return;
+  }
+  
+  if (mi->isSeparator()) {
+    p->setPen (itemg.dark());
+    p->drawLine (x, y, x+w, y);
+    p->setPen (itemg.light() );
+    p->drawLine (x, y+1, x+w, y+1);
+    return;
+  }
 
-        int checkcol = maxpmw;
-
-        int x2 = x+w-1;
-        int y2 = y+h-1;
+  if (act && enabled) {
+ 
+    int x2 = x+w-1;
+    int y2 = y+h-1;
         
-        //
-        // draw highlight around current menu item
-        //
-        //if (enabled) {
-          QPen oldPen = p->pen();
+    //
+    // draw highlight around current menu item
+    //
+    
+    QPen oldPen = p->pen();
         
-          p->setPen(itemg.dark());
-          p->drawLine(x2, y, x2, y2-1);
-          p->drawLine(x, y2, x2, y2);
-          p->fillRect(x, y, w-1, h-1, itemg.light());
+    p->setPen(itemg.dark());
+    p->drawLine(x2, y, x2, y2-1);
+    p->drawLine(x, y2, x2, y2);
+    p->fillRect(x, y, w-1, h-1, itemg.light());
         
-          p->setPen(oldPen);
-        //}
-        //
-        // draw associated icon
-        //
+    p->setPen(oldPen);
+  } else {
+    p->fillRect (x, y, w, h, itemg.background());
+  }
+  
+  //
+  // draw check mark
+  //
+  
+  if (checkable && !mi->iconSet() && mi->isChecked()) {
+  
+    drawIndicator (p, x+2, y+1, checkcol-4, h-2, itemg, TRUE, FALSE, enabled);
+  } 
+  
+  //
+  //
+  // draw associated icon
+  //
         
-        if ( mi->iconSet() ) {
-            QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
-            if (!dis)
-                mode = QIconSet::Active;
-            QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
-            int pixw = pixmap.width();
-            int pixh = pixmap.height();
-            QRect cr(x, y, checkcol, h);
-            QRect pmr(0, 0, pixw, pixh);
-            pmr.moveCenter( cr.center() );
-            p->setPen(itemg.highlightedText());
-            p->drawPixmap(pmr.topLeft(), pixmap );
-
-        }
-        else if(checkable) {
-            int mw = checkcol + motifItemFrame;
-            int mh = h - 2*motifItemFrame;
-            if (mi->isChecked()){
-                drawCheckMark( p, x + motifItemFrame,
-                               y+motifItemFrame, mw, mh, itemg, act, dis );
-            }
-        }
-        p->setPen(itemg.buttonText());
-        QColor discol;
-        if (dis) {
-            discol = itemg.buttonText();
-            p->setPen(discol);
-        }
-        int xm = motifItemFrame + checkcol + motifItemHMargin;
-        QString s = mi->text();
-        if (!s.isNull()) {
-            int t = s.find( '\t' );
-            int m = motifItemVMargin;
-            const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
-            if (t >= 0) {
-                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
-                            y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
-            }
-            p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
-        } else if (mi->pixmap()) {
-            QPixmap *pixmap = mi->pixmap();
-            if (pixmap->depth() == 1)
-                p->setBackgroundMode(OpaqueMode);
-            p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
-            if (pixmap->depth() == 1)
-                p->setBackgroundMode(TransparentMode);
-        }
-        if (mi->popup()) {
-            int dim = (h-2*motifItemFrame) / 2;
-            if (!dis)
-                discol = itemg.buttonText();
-            QColorGroup g2(discol, itemg.highlight(),
+  else if (mi->iconSet()) {
+    QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
+    if (!dis)
+      mode = QIconSet::Active;
+    QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+    int pixw = pixmap.width();
+    int pixh = pixmap.height();
+ 
+    QRect cr(x, y, checkcol, h);
+    QRect pmr(0, 0, pixw, pixh);
+    pmr.moveCenter( cr.center() );
+    p->setPen(itemg.highlightedText());
+    p->drawPixmap(pmr.topLeft(), pixmap );
+  }
+      
+  p->setPen(itemg.buttonText());
+  QColor discol;
+  if (dis) {
+    discol = itemg.text();
+    p->setPen(discol);
+  }
+      
+  int xm = motifItemFrame + checkcol + motifItemHMargin;
+  
+  QString s = mi->text();
+  if (!s.isNull()) {
+    int t = s.find( '\t' );
+    int m = motifItemVMargin;
+    const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
+    if (t >= 0) {
+      if (dis) {
+        p->setPen (itemg.light() );
+	p->drawText (x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
+		     y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
+	p->setPen( discol );
+      }
+      p->drawText (x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
+                   y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
+    }
+    
+    if (dis) {
+      p->setPen (itemg.light());
+      p->drawText( x+xm+1, y+m+1, w-xm+1, h-2*m, text_flags, s, t );
+      p->setPen( discol );
+    }
+    p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
+  } else if (mi->pixmap()) {
+    QPixmap *pixmap = mi->pixmap();
+    if (pixmap->depth() == 1)
+      p->setBackgroundMode(OpaqueMode);
+    p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
+    if (pixmap->depth() == 1)
+      p->setBackgroundMode(TransparentMode);
+  }
+  
+  if (mi->popup()) {
+    int dim = (h-2*motifItemFrame) / 2;
+    if (act) {
+      if (!dis)
+        discol = itemg.buttonText();
+    
+      QColorGroup itemg2 (discol, itemg.highlight(),
                            white, white,
                            dis ? discol : white,
                            discol, white);
-            drawArrow(p, RightArrow, true,
-                      x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
-                      dim, dim, itemg, TRUE);
-        }
+      drawArrow (p, RightArrow, FALSE,
+              x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+              dim, dim, itemg2, TRUE);
+    } else {
+      drawArrow (p, RightArrow, FALSE,
+              x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+	      dim, dim, itemg, mi->isEnabled() );
+      
     }
-    else
-        KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
-                                  enabled, x, y, w, h);
+  }
 }
 
 int 
