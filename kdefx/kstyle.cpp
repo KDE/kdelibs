@@ -1359,8 +1359,7 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 		case SH_MenuBar_MouseTracking:
 		case SH_PopupMenu_MouseTracking:
 		case SH_ComboBox_ListMouseTracking:
-// Uncomment when this behaviour is fixed in a future release of Qt.
-//		case SH_ScrollBar_MiddleClickAbsolutePosition:
+		case SH_ScrollBar_MiddleClickAbsolutePosition:
 			return 1;
 
 		default:
