@@ -25,19 +25,19 @@
 #include <klibloader.h>
 
 // Can be removed once KDE-2.2 is released
-#define KSCANDIALOG_HAS_ISVALID
+#define KSCANDIALOG_HAS_SETUP 1
 
 class QImage;
 
 /**
  * This is a base class for scanning dialogs. You can derive from this class
- * and implement your own dialog. An implementation is available in 
+ * and implement your own dialog. An implementation is available in
  * kdegraphics/libkscan.
  *
  * Application developers that wish to add scanning support to their program
  * can use the static method @p KScanDialog::getScanDialog() to get an instance
  * of the user's preferred scanning dialog.
- * 
+ *
  * Typical usage looks like this (e.g. in a slotShowScanDialog() method):
  *
  * <pre>
@@ -49,15 +49,15 @@ class QImage;
  *     connect( m_scanDialog, SIGNAL( finalImage( const QImage&, int )),
  *              SLOT( slotScanned( const QImage&, int ) ));
  * }
- *  
- * if ( m_scanDialog->isValid() ) // only if scanner configured/available
+ *
+ * if ( m_scanDialog->setup() ) // only if scanner configured/available
  *     m_scanDialog->show();
  * </pre>
- * 
+ *
  * This will create and show a non-modal scanning dialog. Connect to more
  * signals if you like.
  *
- * If you implement an own scan-dialog, you also have to implement a 
+ * If you implement an own scan-dialog, you also have to implement a
  * KScanDialogFactory.
  *
  * @short A baseclass and accessor for Scanning Dialogs
@@ -78,14 +78,18 @@ public:
     ~KScanDialog();
 
     /**
-     * @returns true if there is a configured scanner and the initialization
-     * wasn't aborted.
+     * Reimplement this if you need to set up some things, before showing the
+     * dialog, e.g. to ask the user for the scanner device to use. If you 
+     * return false (e.g. there is no device available or the user aborted
+     * device selection), the dialog will not be shown.
+     *
+     * Returns true by default.
      */
-    bool isValid() const { return m_valid; }
-    
+    virtual bool setup();
+
 protected:
     /**
-     * Constructs the scan dialog. If you implement an own dialog, you can 
+     * Constructs the scan dialog. If you implement an own dialog, you can
      * customize it with the usual @ref KDialogBase flags.
      *
      * @see KDialogBase
@@ -93,14 +97,6 @@ protected:
     KScanDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
 		 QWidget *parent=0L, const char *name=0, bool modal=false );
 
-    /**
-     * Sets the status of this scandialog to valid or invalid. If the user
-     * didn't configure a device to scan with, the ScanDialog should set this
-     * to invalid right in the constructor, so that the dialog will not be
-     * shown to the user.
-     */
-    void setValid( bool valid );
-    
     /**
      * @returns the current id for an image. You can use that in your subclass
      * for the signals. The id is used in the signals to let people know
@@ -112,7 +108,7 @@ protected:
      * @see #textRecognized
      */
     int id() const { return m_currentId; }
-    
+
     /**
      * @returns the id for the next image. You can use that in your subclass
      * for the signals.
@@ -121,7 +117,7 @@ protected:
      * @see #finalImage
      * @see #preview
      * @see #textRecognized
-     * 
+     *
      */
     int nextId() { return ++m_currentId; }
 
@@ -130,7 +126,7 @@ signals:
      * Informs you that an image has been previewed.
      */
     void preview( const QImage&, int id );
-    
+
     /**
      * Informs you that an image has scanned. @p id is the same as in the
      * @p preview() signal, if this image had been previewed before.
@@ -139,7 +135,7 @@ signals:
      * libkscan.
      */
     void finalImage( const QImage&, int id );
-    
+
     /**
      * Informs you that the image with the id @p id has been run through
      * text-recognition. The text is in the QString parameter. In the future,
@@ -149,7 +145,6 @@ signals:
 
 private:
     int m_currentId;
-    bool m_valid;
 
     class KScanDialogPrivate;
     KScanDialogPrivate *d;
@@ -157,7 +152,7 @@ private:
 
 
 /**
- * A factory for creating a KScanDialog. You need to reimplement 
+ * A factory for creating a KScanDialog. You need to reimplement
  * @p createDialog().
  *
  */
