@@ -83,14 +83,18 @@ public slots:
      */
     virtual void popup();
 
-signals:
     /**
-     * Emitted when an item was selected, contains the text of the selected
-     * item.
+     * Sets the text to be emitted if the user chooses not to
+     * pick from the available matches.
+     *
+     * If the cancelled text is not set through this function, the
+     * @ref userCancelled signal will not be emitted.
+     *
+     * @see userCancelled( const QString& )
+     * @param txt  the text to be emitted if the user cancels this box
      */
-    void activated( const QString& );
+    void setCancelledText( const QString& );
 
-public slots:
     /**
      * Move the selection one line down or select the first item if nothing is selected yet.
      */
@@ -121,6 +125,29 @@ public slots:
      */
     void end();
 
+    /**
+     * Re-implemented for internal reasons.  API is unaffected.
+     */
+    virtual void show();
+
+    /**
+     * Re-implemented for internal reasons.  API is unaffected.
+     */
+    virtual void hide();
+
+signals:
+    /**
+     * Emitted when an item was selected, contains the text of
+     * the selected item.
+     */
+    void activated( const QString& );
+
+    /**
+     * Emitted whenever the user chooses to ignore the available
+     * selections and close the this box.
+     */
+    void userCancelled( const QString& );
+
 protected:
     /**
      * Reimplemented from KListBox to get events from the viewport (to hide
@@ -137,9 +164,11 @@ protected slots:
 
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
+    void cancelled();
 
 private:
-    QWidget *m_parent; // necessary to set the focus back
+    class KCompletionBoxPrivate;
+    KCompletionBoxPrivate* d;
 };
 
 

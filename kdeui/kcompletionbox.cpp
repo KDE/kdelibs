@@ -26,11 +26,18 @@
 
 #include <knotifyclient.h>
 
+class KCompletionBox::KCompletionBoxPrivate
+{
+public:
+    QWidget *m_parent; // necessary to set the focus back
+    QString cancelText;
+};
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
-    m_parent = parent;
+    d = new KCompletionBoxPrivate;
+    d->m_parent = parent;
 
     setFocusPolicy( NoFocus );
     setColumnMode( 1 );
@@ -46,9 +53,10 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     installEventFilter( this );
 }
 
-
 KCompletionBox::~KCompletionBox()
 {
+    d->m_parent = 0L;
+    delete d;
 }
 
 QStringList KCompletionBox::items() const
@@ -72,100 +80,111 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
-
-    if ( o == m_parent ) {
+    if ( o == d->m_parent ) {
         if ( isVisible() ) {
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                case Key_Tab:
-                    if ( ev->state() & ShiftButton )
+/*
+                    case Key_Tab:
+                        if ( ev->state() & ShiftButton )
+                            up();
+                        else if ( !ev->state() )
+                            down(); // Only on TAB!!
+                        ev->accept();
+                        return true;
+*/
+                    case Key_Down:
+                        down();
+                        ev->accept();
+                        return true;
+                    case Key_Up:
                         up();
-                    else if ( !ev->state() )
-                        down(); // Only on TAB!!
-                    ev->accept();
-                    return true;
-                case Key_Down:
-                    down();
-                    ev->accept();
-                    return true;
-                case Key_Up:
-                    up();
-                    ev->accept();
-                    return true;
-                case Key_Prior:
-                    pageUp();
-                    ev->accept();
-                    return true;
-                case Key_Next:
-                    pageDown();
-                    ev->accept();
-                    return true;
-                case Key_Home: {
-		    // shift/ctrl involved -> let our parent handle that!
-		    bool ours = (ev->state() == 0 && currentItem() != -1);
-		    if ( ours ) {
-			home();
-			ev->accept();
-		    }
-		    return ours;
-		}
-                case Key_End: {
-		    bool ours = (ev->state() == 0 && currentItem() != -1);
-		    if ( ours ) {
-			end();
-			ev->accept();
-		    }
-                    return ours;
-		}
-                case  Key_Escape:
-                    hide();
-                    ev->accept();
-                    return true;
-                default:
-                    break;
+                        ev->accept();
+                        return true;
+                    case Key_Prior:
+                        pageUp();
+                        ev->accept();
+                        return true;
+                    case Key_Next:
+                        pageDown();
+                        ev->accept();
+                        return true;
+/*
+                    case Key_Home: {
+                        // shift/ctrl involved -> let our parent handle that!
+                        bool ours = (ev->state() == 0 && currentItem() != -1);
+                        if ( ours ) {
+                            home();
+                            ev->accept();
+                        }
+                        return ours;
+                    }
+                    case Key_End: {
+                        bool ours = (ev->state() == 0 && currentItem() != -1);
+                        if ( ours ) {
+                            end();
+                            ev->accept();
+                        }
+                        return ours;
+                    }
+*/
+                    case Key_Escape:
+                        cancelled();
+                        ev->accept();
+                        return true;
+                    case Key_Enter:
+                    case Key_Return:
+                        if ( ev->state() & ShiftButton )
+                        {
+                            hide();
+                            ev->accept();  // Consume the Enter event
+                            return true;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
-	
-	    // parent loses focus -> we hide
-	    else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
-		      type == QEvent::Close || type == QEvent::Hide ||
+            // parent loses focus -> we hide
+            else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
+                      type == QEvent::Close || type == QEvent::Hide ||
                       type == QEvent::Move ) {
-		hide();
-		return false;
-	    }
-
-            else if ( type == QEvent::Move && m_parent )
-                move( m_parent->mapToGlobal(QPoint(0, m_parent->height())));
-
+                hide();
+                return false;
+            }
+            else if ( type == QEvent::Move && d->m_parent )
+                move( d->m_parent->mapToGlobal(QPoint(0, d->m_parent->height())));
             else if ( type == QEvent::Resize )
                 resize( sizeHint() );
         }
     }
-
+/*
     else if ( o == this ) {
         switch( type ) {
-        case QEvent::Show:
-            if ( m_parent ) {
-                move( m_parent->mapToGlobal( QPoint(0, m_parent->height())));
-		qApp->installEventFilter( this );
-            }
-            resize( sizeHint() );
-            break;
-        case QEvent::Hide:
-            if ( m_parent )
-		qApp->removeEventFilter( this );
-            break;
-        default:
-            break;
-	}
+            case QEvent::Show:
+                if ( d->m_parent ) {
+                    move( d->m_parent->mapToGlobal( QPoint(0,
+                                                        d->m_parent->height())));
+                    qApp->installEventFilter( this );
+                }
+                resize( sizeHint() );
+                break;
+            case QEvent::Hide:
+                if ( d->m_parent )
+                    qApp->removeEventFilter( this );
+                break;
+            default:
+                break;
+        }
     }
-
+*/
     else { // any other object received an event while we're visible
         if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
-             (type == QEvent::Move && m_parent &&
-              o == m_parent->topLevelWidget() ))
-            hide();                    // allow presses on the scrollbar
+             (type == QEvent::Move && d->m_parent &&
+              o == d->m_parent->topLevelWidget() ))
+            // hide();                    // allow presses on the scrollbar
+            cancelled();
     }
 
     return KListBox::eventFilter( o, e );
@@ -185,13 +204,31 @@ void KCompletionBox::popup()
     }
 }
 
+void KCompletionBox::show()
+{
+    if ( d->m_parent ) {
+        move( d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) ));
+        qApp->installEventFilter( this );
+    }
+    resize( sizeHint() );
+    QWidget::show();
+}
+
+void KCompletionBox::hide()
+{
+    if ( d->m_parent )
+        qApp->removeEventFilter( this );
+    d->cancelText = QString::null;
+    QWidget::hide();
+}
+
 QSize KCompletionBox::sizeHint() const
 {
     int ih = itemHeight();
     int h = QMIN( 15 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
 
-    int w = (m_parent) ? m_parent->width() : KListBox::minimumSizeHint().width();
+    int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::minimumSizeHint().width(), w );
     return QSize( w, h );
 }
@@ -230,6 +267,19 @@ void KCompletionBox::home()
 void KCompletionBox::end()
 {
     setCurrentItem( count() -1 );
+}
+
+void KCompletionBox::setCancelledText( const QString& text )
+{
+    d->cancelText = text;
+}
+
+void KCompletionBox::cancelled()
+{
+    if ( !d->cancelText.isNull() )
+        emit userCancelled( d->cancelText );
+    if ( isVisible() )
+        hide();
 }
 
 #include "kcompletionbox.moc"
