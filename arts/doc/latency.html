@@ -202,8 +202,22 @@ its sound output via aRts), it needs to be converted.
 The same applies if you want to replay the sounds on your soundcard. The
 soundcard wants integers, so you need to convert.
 <p>
-TODO: if anybody has numbers how much conversion usually takes, insert here.
+Here are numbers for a Celeron, approx. ticks per sample, with -O2 +egcs
+2.91.66 (taken by Eugene Smith &lt;hamster@null.ru&gt;). This is of course
+highly processor dependant:
+<p> 
+<table>
+<tr><td>convert_mono_8_float<td>14</tr>
+<tr><td>convert_stereo_i8_2float<td>28</tr>
+<tr><td>convert_mono_16le_float<td>40</tr>
+<tr><td>interpolate_mono_16le_float<td>200</tr>
+<tr><td>convert_stereo_i16le_2float<td>80</tr>
+<tr><td>convert_mono_float_16le<td>80</tr>
+</table> 
 <p>
+So that means 1% CPU usage for conversion and 5% for interpolation
+on this 350 MHz processor.
+<p> 
 <h4>4. MCOP protocol overhead</h4>
 <p>
 MCOP does, as a rule of thumb, 9000 invocations per second. Much of this
