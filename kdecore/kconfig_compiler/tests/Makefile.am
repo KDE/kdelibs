@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes) -DQT_NO_CAST_ASCII
+AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes)
 
 check_PROGRAMS = test1 test2 test3 test4
 
