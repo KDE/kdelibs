@@ -33,7 +33,6 @@
 #include <kdebug.h>
 #include "css_valueimpl.h"
 #include "css_stylesheetimpl.h"
-#include <assert.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -264,7 +263,6 @@ ElementImpl::~ElementImpl()
     }
 
     if (m_styleDecls) {
-        assert(m_styleDecls->refCount() == 1 && m_styleDecls->parent() == document->elementSheet());
 	m_styleDecls->setNode(0);
         m_styleDecls->setParent(0);
 	m_styleDecls->deref();
@@ -795,7 +793,6 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
 
 void ElementImpl::createDecl( )
 {
-    assert(!m_styleDecls);
     m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->ref();
     m_styleDecls->setParent(document->elementSheet());
