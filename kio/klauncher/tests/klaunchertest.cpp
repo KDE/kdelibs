@@ -25,6 +25,7 @@
 #include <qvaluelist.h>
 #include <kservice.h>
 
+/*
 static void
 exec_blind( QCString name, const QValueList<QCString> &args)
 {
@@ -35,6 +36,7 @@ exec_blind( QCString name, const QValueList<QCString> &args)
 	"exec_blind(QCString, QValueList<QCString>)", params))
 	printf("There was some error using DCOP!\n");
 }
+*/
 
 int main(int argc, char *argv[])
 {
@@ -49,15 +51,17 @@ int main(int argc, char *argv[])
 
    QString error;
    QCString dcopService;
+   int pid;
    int result = KApplication::startServiceByDesktopName(
-		"konsole", QString::null, dcopService, error);
+		QString::fromLatin1("konsole"), QString::null, &error, &dcopService, &pid );
 
-   printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
-      result, error.ascii(), dcopService.data());
+   printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
+      result, error.ascii(), dcopService.data(), pid);
 
    result = KApplication::startServiceByDesktopName(
-		"konqueror", QString::null, dcopService, error);
+		QString::fromLatin1("konqueror"), QString::null,  &error, &dcopService, &pid );
 
-   printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
-      result, error.ascii(), dcopService.data());
+   printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
+      result, error.ascii(), dcopService.data(), pid);
 }
+
