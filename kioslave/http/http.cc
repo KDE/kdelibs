@@ -4465,18 +4465,20 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   {
     f = AUTH_Basic;
     p += 5;
+    strAuth = "Basic"; // Correct for upper-case variations.
   }
   else if (strncasecmp (p, "Digest", 6) ==0 )
   {
     f = AUTH_Digest;
+    memcpy(p, "Digest", 6); // Correct for upper-case variations.
     p += 6;
-    strAuth = p;
   }
   else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)
   {
     // Found on http://www.webscription.net/baen/default.asp
     f = AUTH_Basic;
     p += 14;
+    strAuth = "Basic";
   }
   else
   {
@@ -4922,6 +4924,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     info.password = m_state.passwd.latin1();
     p = m_strAuthorization.latin1();
   }
+  p += 6; // Skip "Digest"
 
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
     return QString::null;
