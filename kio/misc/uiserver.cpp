@@ -364,7 +364,7 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
 
   m_lpcc[TB_OPERATION].title=i18n("Operation");
   m_lpcc[TB_LOCAL_FILENAME].title=i18n("Local Filename");
-  m_lpcc[TB_RESUME].title=i18n("Res.");
+  m_lpcc[TB_RESUME].title=i18n("Resume", "Res.");
   m_lpcc[TB_COUNT].title=i18n("Count");
   m_lpcc[TB_PROGRESS].title=i18n("%");
   m_lpcc[TB_TOTAL].title=i18n("Size");
