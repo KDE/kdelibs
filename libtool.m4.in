@@ -49,11 +49,11 @@ dnl Allow the --disable-static flag to stop us from building static libs.
 AC_ARG_ENABLE(static,
 [  --enable-static         build static libraries [default=no]],
 [if test "$enableval" = no; then
-  enable_static=no
+  libtool_enable_static=no
 else
-  enable_static=yes
-fi],
-enable_static=no)
+  libtool_enable_static=yes
+fi])
+test -n "$libtool_enable_static" && enable_static="$libtool_enable_static"
 libtool_static=
 test "$enable_static" = no && libtool_static=" --disable-static"
 
