@@ -79,7 +79,7 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
-#ifndef QT_NO_DRAGANDDROP
+#if !defined(QT_NO_DRAGANDDROP) && KDE_VERSION >= 290
 #include <kmultipledrag.h>
 #endif
 
@@ -2494,7 +2494,7 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_bits.toInt(),
                (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
                d->m_ssl_good_from, d->m_ssl_good_until
-#if KDE_VERSION > 221
+#if KDE_VERSION >= 290
                , d->m_ssl_serial_num
 #endif
                );
@@ -3815,7 +3815,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
           KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-#if KDE_VERSION > 221
+#if KDE_VERSION >= 290
           drag = KURLDrag::newDrag( u, d->m_view->viewport() );
 #else
 	  KURL::List uris;
@@ -3826,7 +3826,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
-#if KDE_VERSION > 221
+#if KDE_VERSION >= 290
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
             KURL u( d->m_doc->completeURL( splitUrlTarget( i->imageURL().string() ) ) );
