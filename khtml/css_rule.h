@@ -30,7 +30,7 @@
 namespace DOM {
 
 class CSSRuleImpl;
-    
+
 /**
  * The <code> CSSRule </code> interface is the abstract base interface
  * for any type of CSS <a
@@ -89,8 +89,6 @@ public:
     /**
      * see @ref cssText
      * @exception DOMException
-     * SYNTAX_ERR: Raised if the specified CSS string value has a
-     * syntax error and is unparsable.
      *
      *  HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted
      * at this point in the style sheet.
@@ -98,6 +96,12 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this style sheet is
      * readonly.
      *
+     * @exception CSSException
+     * SYNTAX_ERR: Raised if the specified CSS string value has a
+     * syntax error and is unparsable.
+     *
+     * INVALID_MODIFICATION_ERR: Raised if the specified CSS string value
+     * represents a different type of rule than the current one.
      */
     void setCssText( const DOM::DOMString & );
 
@@ -149,10 +153,11 @@ public:
 
     /**
      * see @ref encoding
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified encoding value has a syntax
      * error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this encoding rule is
      * readonly.
      *
@@ -293,11 +298,12 @@ public:
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid
      * insertion point.
      *
-     *  SYNTAX_ERR: Raised if the specified rule has a syntax error
-     * and is unparsable.
-     *
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this media rule is
      * readonly.
+     *
+     * @exception CSSException
+     *  SYNTAX_ERR: Raised if the specified rule has a syntax error
+     * and is unparsable.
      *
      */
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
@@ -322,7 +328,7 @@ public:
 };
 
 
-class CSSPageRuleImpl;    
+class CSSPageRuleImpl;
 /**
  * The <code> CSSPageRule </code> interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/page.html#page-box"> @page rule
@@ -352,10 +358,11 @@ public:
 
     /**
      * see @ref selectorText
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this style sheet is
      * readonly.
      *
@@ -400,10 +407,11 @@ public:
 
     /**
      * see @ref selectorText
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this style sheet is
      * readonly.
      *

@@ -78,8 +78,15 @@ public:
     virtual bool isValue() { return true; }
 };
 
+class CSSInheritedValueImpl : public CSSValueImpl
+{
+public:
+    CSSInheritedValueImpl() : CSSValueImpl() {}
+    virtual ~CSSInheritedValueImpl() {}
 
-class CSSValue;
+    virtual unsigned short valueType() const { return CSSValue::CSS_INHERIT; }
+};
+
 
 class CSSValueListImpl : public CSSValueImpl
 {
@@ -124,7 +131,7 @@ public:
     int getIdent() { return m_ident; }
 
     virtual bool parseString( const DOMString &string );
-    
+
 protected:
     int m_ident;
     int m_type;

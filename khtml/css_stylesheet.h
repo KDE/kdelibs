@@ -151,6 +151,33 @@ protected:
 };
 
 
+/**
+ * This exception is raised when a specific CSS operation is impossible
+ * to perform.
+ */
+class CSSException
+{
+public:
+    CSSException(unsigned short _code) { code = _code; }
+    CSSException(const CSSException &other) { code = other.code; }
+
+    CSSException & operator = (const CSSException &other)
+	{ code = other.code; return *this; }
+
+    virtual ~CSSException() {}
+    /**
+     * An integer indicating the type of error generated.
+     *
+     */
+    unsigned short   code;
+
+    enum ExceptionCode
+    {
+	SYNTAX_ERR                     = 0,
+	INVALID_MODIFICATION_ERR       = 1
+    };	
+};
+
 class CSSStyleSheetImpl;
 class CSSRule;
 class CSSRuleList;
@@ -224,11 +251,12 @@ public:
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid
      * insertion point.
      *
-     *  SYNTAX_ERR: Raised if the specified rule has a syntax error
-     * and is unparsable.
-     *
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this style sheet is
      * readonly.
+     *
+     * @exception CSSException
+     *  SYNTAX_ERR: Raised if the specified rule has a syntax error
+     * and is unparsable.
      *
      */
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
@@ -330,10 +358,11 @@ public:
 
     /**
      * see @ref cssText
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this media list is
      * readonly.
      *

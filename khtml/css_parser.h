@@ -38,7 +38,7 @@ namespace DOM {
     class CSSStyleDeclarationImpl;
     class CSSRuleImpl;
     class CSSStyleRuleImpl;
-    
+
     // these two classes are used internally as container classes
 
     // a style class which has a parent (almost all have)
@@ -89,7 +89,7 @@ namespace DOM {
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
 
-	virtual bool parseString(const DOMString &cssString) = 0;
+	virtual bool parseString(const DOMString &cssString) {}
 
     protected:
 	StyleBaseImpl *m_parent;
@@ -108,7 +108,7 @@ namespace DOM {
 	QList<StyleBaseImpl> *m_lstChildren;
     };
 
-    
+
 // this class represents a selector for a StyleRule
 class CSSSelector
 {
@@ -164,7 +164,7 @@ public:
 };
 
 }; // namespace
-    
+
 #endif
 
 

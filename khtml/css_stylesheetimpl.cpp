@@ -149,7 +149,7 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     const QChar *endP = rule.unicode()+rule.length();
     CSSRuleImpl *r = parseRule(curP, endP);
 
-    if(!r) throw DOMException(DOMException::SYNTAX_ERR);
+    if(!r) throw CSSException(CSSException::SYNTAX_ERR);
 
     // ###
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an

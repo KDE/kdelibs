@@ -202,143 +202,6 @@ CSSValue CSSValueList::item( unsigned long index )
 }
 
 
-
-Counter::Counter()
-{
-}
-
-Counter::Counter(const Counter &other)
-{
-}
-
-Counter &Counter::operator = (const Counter &other)
-{
-    //::operator = (other);
-    //return *this;
-}
-
-Counter::~Counter()
-{
-}
-
-DOMString Counter::identifier() const
-{
-}
-
-void Counter::setIdentifier( const DOMString &value )
-{
-}
-
-DOMString Counter::listStyle() const
-{
-}
-
-void Counter::setListStyle( const DOMString &value )
-{
-}
-
-DOMString Counter::separator() const
-{
-}
-
-void Counter::setSeparator( const DOMString &value )
-{
-}
-
-
-
-RGBColor::RGBColor()
-{
-}
-
-RGBColor::RGBColor(const RGBColor &other)
-{
-}
-
-RGBColor &RGBColor::operator = (const RGBColor &other)
-{
-}
-
-RGBColor::~RGBColor()
-{
-}
-
-CSSValue RGBColor::red() const
-{
-}
-
-void RGBColor::setRed( const CSSValue &_red )
-{
-}
-
-CSSValue RGBColor::green() const
-{
-}
-
-void RGBColor::setGreen( const CSSValue &_green )
-{
-}
-
-CSSValue RGBColor::blue() const
-{
-}
-
-void RGBColor::setBlue( const CSSValue &_blue )
-{
-}
-
-
-
-Rect::Rect()
-{
-}
-
-Rect::Rect(const Rect &other)
-{
-}
-
-Rect &Rect::operator = (const Rect &other)
-{
-}
-
-Rect::~Rect()
-{
-}
-
-CSSValue Rect::top() const
-{
-}
-
-void Rect::setTop( const CSSValue &_top )
-{
-}
-
-CSSValue Rect::right() const
-{
-}
-
-void Rect::setRight( const CSSValue &_right )
-{
-}
-
-CSSValue Rect::bottom() const
-{
-}
-
-void Rect::setBottom( const CSSValue &_bottom )
-{
-}
-
-CSSValue Rect::left() const
-{
-}
-
-void Rect::setLeft( const CSSValue &_left )
-{
-}
-
-
-
 CSSPrimitiveValue::CSSPrimitiveValue() : CSSValue()
 {
 }
@@ -408,6 +271,109 @@ RGBColor CSSPrimitiveValue::getRGBColorValue(  )
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getRGBColorValue(  );
 }
+
+// -------------------------------------------------------------------
+
+Counter::Counter()
+{
+}
+
+Counter::Counter(const Counter &other)
+{
+}
+
+Counter &Counter::operator = (const Counter &other)
+{
+    //::operator = (other);
+    //return *this;
+}
+
+Counter::~Counter()
+{
+}
+
+DOMString Counter::identifier() const
+{
+}
+
+DOMString Counter::listStyle() const
+{
+}
+
+DOMString Counter::separator() const
+{
+}
+
+// --------------------------------------------------------------------
+
+RGBColor::RGBColor()
+{
+}
+
+RGBColor::RGBColor(const RGBColor &other)
+{
+}
+
+RGBColor &RGBColor::operator = (const RGBColor &other)
+{
+}
+
+RGBColor::~RGBColor()
+{
+}
+
+CSSPrimitiveValue RGBColor::red() const
+{
+}
+
+CSSPrimitiveValue RGBColor::green() const
+{
+}
+
+CSSPrimitiveValue RGBColor::blue() const
+{
+}
+
+
+// ---------------------------------------------------------------------
+
+Rect::Rect()
+{
+}
+
+Rect::Rect(const Rect &other)
+{
+}
+
+Rect &Rect::operator = (const Rect &other)
+{
+}
+
+Rect::~Rect()
+{
+}
+
+CSSPrimitiveValue Rect::top() const
+{
+}
+
+CSSPrimitiveValue Rect::right() const
+{
+}
+
+CSSPrimitiveValue Rect::bottom() const
+{
+}
+
+CSSPrimitiveValue Rect::left() const
+{
+}
+
+
+
+
+
+
 
 
 

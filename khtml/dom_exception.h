@@ -70,8 +70,7 @@ public:
         NO_MODIFICATION_ALLOWED_ERR = 7,
         NOT_FOUND_ERR = 8,
         NOT_SUPPORTED_ERR = 9,
-        INUSE_ATTRIBUTE_ERR = 10,
-        SYNTAX_ERR = 11
+        INUSE_ATTRIBUTE_ERR = 10
     };
     unsigned short code;
 };

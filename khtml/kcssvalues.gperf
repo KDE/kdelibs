@@ -64,7 +64,6 @@ higher, CSS_VAL_HIGHER
 hiragana, CSS_VAL_HIRAGANA
 hiragana-iroha, CSS_VAL_HIRAGANA_IROHA
 icon, CSS_VAL_ICON
-inherit, CSS_VAL_INHERIT
 inline, CSS_VAL_INLINE
 inline-table, CSS_VAL_INLINE_TABLE
 inside, CSS_VAL_INSIDE

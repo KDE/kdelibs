@@ -72,10 +72,11 @@ public:
 
     /**
      * see @ref cssText
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is
      * readonly.
      *
@@ -182,10 +183,11 @@ public:
      *
      * @return
      *
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified value has a syntax error
      * and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is
      * readonly.
      *
@@ -238,20 +240,10 @@ public:
      *
      */
     enum UnitTypes {
-        CSS_PRIMITIVE_VALUE = 0,
-        CSS_VALUE_LIST = 1,
-        CSS_CUSTOM = 2,
-        CSS2_AZIMUTH = 2,
-        CSS2_BACKGROUND_POSITION = 3,
-        CSS2_BORDER_SPACING = 4,
-        CSS2_COUNTER_INCREMENT = 5,
-        CSS2_COUNTER_RESET = 6,
-        CSS2_CURSOR = 7,
-        CSS2_PLAY_DURING = 8,
-        CSS2_TEXT_SHADOW = 9,
-        CSS2_FONT_FACE_SRC = 10,
-        CSS2_FONT_FACE_WIDTHS = 11,
-        CSS2_PAGE_SIZE = 12
+	CSS_INHERIT = 0,
+        CSS_PRIMITIVE_VALUE = 1,
+        CSS_VALUE_LIST = 2,
+        CSS_CUSTOM = 3
     };
 
     /**
@@ -262,10 +254,11 @@ public:
 
     /**
      * see @ref cssText
-     * @exception DOMException
+     * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
      *
+     * @exception DOMException
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is
      * readonly.
      *
@@ -327,177 +320,6 @@ public:
 
 protected:
     CSSValueListImpl *impl;
-};
-
-
-/**
- * The <code> Counter </code> interface is used to represent any <a
- * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-counter">
- * counter or counters function </a> value. This interface reflects
- * the values in the underlying style property. Hence, modifications
- * made through this interface modify the style property.
- *
- */
-class Counter
-{
-public:
-    Counter();
-    Counter(const Counter &other);
-public:
-
-    Counter & operator = (const Counter &other);
-
-    ~Counter();
-
-    /**
-     * This attribute is used for the identifier of the counter.
-     *
-     */
-    DOM::DOMString identifier() const;
-
-    /**
-     * see @ref identifier
-     */
-    void setIdentifier( const DOM::DOMString & );
-
-    /**
-     * This attribute is used for the style of the list.
-     *
-     */
-    DOM::DOMString listStyle() const;
-
-    /**
-     * see @ref listStyle
-     */
-    void setListStyle( const DOM::DOMString & );
-
-    /**
-     * This attribute is used for the separator of nested counters.
-     *
-     */
-    DOM::DOMString separator() const;
-
-    /**
-     * see @ref separator
-     */
-    void setSeparator( const DOM::DOMString & );
-};
-
-
-/**
- * The <code> RGBColor </code> interface is used to represent any <a
- * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-color">
- * RGB color </a> value. This interface reflects the values in the
- * underlying style property. Hence, modifications made through this
- * interface modify the style property.
- *
- */
-class RGBColor
-{
-public:
-    RGBColor();
-    RGBColor(const RGBColor &other);
-
-    RGBColor & operator = (const RGBColor &other);
-
-    ~RGBColor();
-
-    /**
-     * This attribute is used for the red value of the RGB color.
-     *
-     */
-    CSSValue red() const;
-
-    /**
-     * see @ref red
-     */
-    void setRed( const CSSValue & );
-
-    /**
-     * This attribute is used for the green value of the RGB color.
-     *
-     */
-    CSSValue green() const;
-
-    /**
-     * see @ref green
-     */
-    void setGreen( const CSSValue & );
-
-    /**
-     * This attribute is used for the blue value of the RGB color.
-     *
-     */
-    CSSValue blue() const;
-
-    /**
-     * see @ref blue
-     */
-    void setBlue( const CSSValue & );
-};
-
-
-/**
- * The <code> Rect </code> interface is used to represent any <a
- * href="http://www.w3.org/TR/REC-CSS2/visufx.html#value-def-shape">
- * rect </a> value. This interface reflects the values in the
- * underlying style property. Hence, modifications made through this
- * interface modify the style property.
- *
- */
-class Rect
-{
-public:
-    Rect();
-    Rect(const Rect &other);
-
-    Rect & operator = (const Rect &other);
-
-    ~Rect();
-
-    /**
-     * This attribute is used for the top of the rect.
-     *
-     */
-    CSSValue top() const;
-
-    /**
-     * see @ref top
-     */
-    void setTop( const CSSValue & );
-
-    /**
-     * This attribute is used for the right of the rect.
-     *
-     */
-    CSSValue right() const;
-
-    /**
-     * see @ref right
-     */
-    void setRight( const CSSValue & );
-
-    /**
-     * This attribute is used for the bottom of the rect.
-     *
-     */
-    CSSValue bottom() const;
-
-    /**
-     * see @ref bottom
-     */
-    void setBottom( const CSSValue & );
-
-    /**
-     * This attribute is used for the left of the rect.
-     *
-     */
-    CSSValue left() const;
-
-    /**
-     * see @ref left
-     */
-    void setLeft( const CSSValue & );
 };
 
 
@@ -715,6 +537,129 @@ public:
      *
      */
     RGBColor getRGBColorValue (  );
+};
+
+
+
+/**
+ * The <code> RGBColor </code> interface is used to represent any <a
+ * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-color">
+ * RGB color </a> value. This interface reflects the values in the
+ * underlying style property. Hence, modifications made through this
+ * interface modify the style property.
+ *
+ */
+class RGBColor
+{
+public:
+    RGBColor();
+    RGBColor(const RGBColor &other);
+
+    RGBColor & operator = (const RGBColor &other);
+
+    ~RGBColor();
+
+    /**
+     * This attribute is used for the red value of the RGB color.
+     *
+     */
+    CSSPrimitiveValue red() const;
+
+    /**
+     * This attribute is used for the green value of the RGB color.
+     *
+     */
+    CSSPrimitiveValue green() const;
+
+    /**
+     * This attribute is used for the blue value of the RGB color.
+     *
+     */
+    CSSPrimitiveValue blue() const;
+
+};
+
+/**
+ * The <code> Rect </code> interface is used to represent any <a
+ * href="http://www.w3.org/TR/REC-CSS2/visufx.html#value-def-shape">
+ * rect </a> value. This interface reflects the values in the
+ * underlying style property. Hence, modifications made through this
+ * interface modify the style property.
+ *
+ */
+class Rect
+{
+public:
+    Rect();
+    Rect(const Rect &other);
+
+    Rect & operator = (const Rect &other);
+
+    ~Rect();
+
+    /**
+     * This attribute is used for the top of the rect.
+     *
+     */
+    CSSPrimitiveValue top() const;
+
+    /**
+     * This attribute is used for the right of the rect.
+     *
+     */
+    CSSPrimitiveValue right() const;
+
+    /**
+     * This attribute is used for the bottom of the rect.
+     *
+     */
+    CSSPrimitiveValue bottom() const;
+
+    /**
+     * This attribute is used for the left of the rect.
+     *
+     */
+    CSSPrimitiveValue left() const;
+};
+
+
+/**
+ * The <code> Counter </code> interface is used to represent any <a
+ * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-counter">
+ * counter or counters function </a> value. This interface reflects
+ * the values in the underlying style property. Hence, modifications
+ * made through this interface modify the style property.
+ *
+ */
+class Counter
+{
+public:
+    Counter();
+    Counter(const Counter &other);
+public:
+
+    Counter & operator = (const Counter &other);
+
+    ~Counter();
+
+    /**
+     * This attribute is used for the identifier of the counter.
+     *
+     */
+    DOM::DOMString identifier() const;
+
+    /**
+     * This attribute is used for the style of the list.
+     *
+     */
+    DOM::DOMString listStyle() const;
+
+    /**
+     * This attribute is used for the separator of nested counters.
+     *
+     */
+    DOM::DOMString separator() const;
+
 };
 
 

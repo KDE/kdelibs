@@ -42,10 +42,10 @@ namespace khtml
     /*
      * %multiLength and %Length
      */
-    enum LengthType { Undefined = 0, Variable = 0, Relative, Percent, Fixed };
+    enum LengthType { Undefined = 0, Variable = 1, Relative, Percent, Fixed };
     struct Length
     {
-	Length() { value = 0; type = Undefined; };
+	Length() { value = 0; type = Variable; };
 	Length(int v, LengthType t)
 	    {
 		value = v;
@@ -68,6 +68,7 @@ namespace khtml
 		case Percent:
 		    return maxWidth*value/100;
 		case Undefined:
+		case Variable:
 		    return maxWidth;
 		default:
 		    return -1;
@@ -85,6 +86,7 @@ namespace khtml
 		case Percent:
 		    return maxWidth*value/100;
 		case Undefined:
+		case Variable:
 		default:
 		    return 0;
 		}

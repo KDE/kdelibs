@@ -100,6 +100,12 @@ static Length parseLength(QChar *s, unsigned int l)
     int v = QConstString(s, l).string().toInt(&ok);
     if(ok)
 	return Length(v, Fixed);
+    if(l == 4)
+    {
+	QString str(s, l);
+	if(str.lower() == "auto")
+	    return Length(0, Variable);
+    }
     return Length(0, Undefined);
 }
 

@@ -475,70 +475,82 @@ StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
 CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId)
 {
     printf("parseValue!\n");
+    QString value(curP, endP - curP);
+    value = value.lower();
+    const char *val = value.ascii();
+   
+    if(!strcmp(val, "inherit"))
+    {
+	// inherited value
+	return new CSSInheritedValueImpl();
+    }
     
     switch(propId)
     {
     case CSS_PROP_AZIMUTH:
-	// CSS2Azimuth
+    case CSS_PROP_BACKGROUND_ATTACHMENT:
+    case CSS_PROP_BACKGROUND_COLOR:
+    case CSS_PROP_BACKGROUND_IMAGE:
     case CSS_PROP_BACKGROUND_POSITION:
-	// CSS2BackgroundPosition
-    case CSS_PROP_BORDER_SPACING:
-	// CSS2BorderSpacing
+    case CSS_PROP_BACKGROUND_REPEAT:
+    case CSS_PROP_BORDER_COLLAPSE:
+    case CSS_PROP_CAPTION_SIDE:
+    case CSS_PROP_CLEAR:
+    case CSS_PROP_CLIP:
+    case CSS_PROP_CONTENT:
     case CSS_PROP_COUNTER_INCREMENT:
-	// list of CSS2CounterIncrement
     case CSS_PROP_COUNTER_RESET:
-	// list of CSS2CounterReset
+    case CSS_PROP_CUE_AFTER:
+    case CSS_PROP_CUE_BEFORE:
     case CSS_PROP_CURSOR:
-	// CSS2Cursor
-    case CSS_PROP_FONT_FAMILY:
-	// list of strings and ids
-    case CSS_PROP_ORPHANS:
-	// number
-    case CSS_PROP_PADDING_TOP:
-    case CSS_PROP_PADDING_RIGHT:
-    case CSS_PROP_PADDING_BOTTOM:
-    case CSS_PROP_PADDING_LEFT:
-	// l,p
-    case CSS_PROP_PITCH_RANGE:
-	// number
+    case CSS_PROP_DIRECTION:
+    case CSS_PROP_DISPLAY:
+    case CSS_PROP_ELEVATION:
+    case CSS_PROP_EMPTY_CELLS:
+    case CSS_PROP_FLOAT:
+    case CSS_PROP_FONT_SIZE_ADJUST:
+    case CSS_PROP_FONT_STRETCH:
+    case CSS_PROP_FONT_STYLE:
+    case CSS_PROP_FONT_VARIANT:
+    case CSS_PROP_FONT_WEIGHT:
+    case CSS_PROP_LETTER_SPACING:
+    case CSS_PROP_LINE_HEIGHT:
+    case CSS_PROP_LIST_STYLE_IMAGE:
+    case CSS_PROP_LIST_STYLE_POSITION:
+    case CSS_PROP_LIST_STYLE_TYPE:
+    case CSS_PROP_MAX_HEIGHT:
+    case CSS_PROP_MAX_WIDTH:
+    case CSS_PROP_OUTLINE_COLOR:
+    case CSS_PROP_OUTLINE_STYLE:
+    case CSS_PROP_OUTLINE_WIDTH:
+    case CSS_PROP_OVERFLOW:
+    case CSS_PROP_PAGE:
+    case CSS_PROP_PAGE_BREAK_AFTER:
+    case CSS_PROP_PAGE_BREAK_BEFORE:
+    case CSS_PROP_PAGE_BREAK_INSIDE:
+    case CSS_PROP_PITCH:
     case CSS_PROP_PLAY_DURING:
-	// CSS2PlayDuring
+    case CSS_PROP_POSITION:
     case CSS_PROP_QUOTES:
-	// list of strings or i
-    case CSS_PROP_RICHNESS:
-	// number
-    case CSS_PROP_STRESS:
-	// number
+    case CSS_PROP_SIZE:
+    case CSS_PROP_SPEAK:
+    case CSS_PROP_SPEAK_HEADER:
+    case CSS_PROP_SPEAK_NUMERAL:
+    case CSS_PROP_SPEAK_PUNCTUATION:
+    case CSS_PROP_SPEECH_RATE:
+    case CSS_PROP_TABLE_LAYOUT:
+    case CSS_PROP_TEXT_ALIGN:
     case CSS_PROP_TEXT_DECORATION:
-	// list of ident
-    case CSS_PROP_TEXT_INDENT:
-	// l,p
-    case CSS_PROP_TEXT_SHADOW:
-	// list of CSS2TextShadow
-    case CSS_PROP_WIDOWS:
-	// number
-	break;
-	// shorthand properties follow here:
-    case CSS_PROP_BACKGROUND:
-    case CSS_PROP_BORDER:
-    case CSS_PROP_BORDER_COLOR:
-    case CSS_PROP_BORDER_STYLE:
-    case CSS_PROP_BORDER_TOP:
-    case CSS_PROP_BORDER_RIGHT:
-    case CSS_PROP_BORDER_BOTTOM:
-    case CSS_PROP_BORDER_LEFT:
-    case CSS_PROP_BORDER_WIDTH:
-    case CSS_PROP_CUE:
-    case CSS_PROP_FONT:
-    case CSS_PROP_LIST_STYLE:
-    case CSS_PROP_MARGIN:
-    case CSS_PROP_OUTLINE:
-    case CSS_PROP_PADDING:
-    case CSS_PROP_PAUSE:
-	break;
-    default:
+    case CSS_PROP_TEXT_TRANSFORM:
+    case CSS_PROP_UNICODE_BIDI:
+    case CSS_PROP_VERTICAL_ALIGN:
+    case CSS_PROP_VISIBILITY:
+    case CSS_PROP_VOICE_FAMILY:
+    case CSS_PROP_VOLUME:
+    case CSS_PROP_WHITE_SPACE:
+    case CSS_PROP_WORD_SPACING:
+    case CSS_PROP_Z_INDEX:
     {
-	QString value(curP, endP - curP);
 	printf("parseValue: value = %s\n", value.ascii());
 	const struct css_value *val = findValue(value.lower().ascii(), value.length());
 	if (val)
@@ -548,11 +560,13 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	    return v;
 	    // ### FIXME: should check if the identifier makes sense with the property
 	}
-    }	    
-    }    
+    }	
+    default:
+	break;
+    }
 
     // we don't have an identifier.
-    
+
     switch(propId)
     {
 // ident only properties
@@ -632,7 +646,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_LIST_STYLE_IMAGE:
 	break;
 	
-// length    
+// length
     case CSS_PROP_BORDER_TOP_WIDTH:
     case CSS_PROP_BORDER_RIGHT_WIDTH:
     case CSS_PROP_BORDER_BOTTOM_WIDTH:
@@ -643,7 +657,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_WORD_SPACING:
 	break;
 
-// length, percent    
+// length, percent
     case CSS_PROP_PADDING_TOP:
     case CSS_PROP_PADDING_RIGHT:
     case CSS_PROP_PADDING_BOTTOM:
@@ -667,12 +681,12 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_WIDTH:
 	break;
 
-// rect    
+// rect
     case CSS_PROP_CLIP:
 	// rect, ident
 	break;
 	
-// lists    
+// lists
     case CSS_PROP_CONTENT:
 	// list of string, uri, counter, attr, i
     case CSS_PROP_COUNTER_INCREMENT:
@@ -683,6 +697,8 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	// list of strings and ids
     case CSS_PROP_QUOTES:
 	// list of strings or i
+    case CSS_PROP_SIZE:
+	// ### look up
     case CSS_PROP_TEXT_DECORATION:
 	// list of ident
     case CSS_PROP_VOICE_FAMILY:
@@ -705,7 +721,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_Z_INDEX:
 	break;
 
-// length, percent, number    
+// length, percent, number
     case CSS_PROP_LINE_HEIGHT:
 	break;
 
