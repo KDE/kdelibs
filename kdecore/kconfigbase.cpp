@@ -1100,6 +1100,16 @@ static QString translatePath( QString path )
 	}
    }
 
+   // The HOME environment variable might be different than QDir::homeDirPath() 
+   homeDir = QFile::decodeName(getenv("HOME"));
+   if (path.startsWith(homeDir)) {
+	unsigned int len = homeDir.length();
+        // replace by $HOME if possible
+        if (path.length() == len || path[len] == '/') {
+             path = path.replace(0, len, QString::fromLatin1("$HOME"));
+	}
+   }
+
    if (startsWithFile)
       path.prepend( "file:" );
 
