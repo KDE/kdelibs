@@ -33,7 +33,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h \
-		knewpanner.h kcontrol.h keditcl.h
+		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
@@ -44,7 +44,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
-		keditcl1.cpp keditcl2.cpp
+		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -54,7 +54,8 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
 		kspinbox.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
-		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc 
+		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
+	  	ktoolboxmgr.moc
 
 kledlamp.cpp:kledlamp.moc
 kledlamp.moc: kledlamp.h
@@ -184,6 +185,10 @@ keditcl.moc: keditcl.h
 knewpanner.cpp:knewpanner.moc
 knewpanner.moc: knewpanner.h
 	$(MOC) knewpanner.h -o knewpanner.moc
+
+ktoolboxmgr.cpp: ktoolboxmgr.moc
+ktoolboxmgr.moc: ktoolboxmgr.h
+	$(MOC) ktoolboxmgr.h -o ktoolboxmgr.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm
 datadir = $(kde_datadir)/kde/pics
