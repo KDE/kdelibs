@@ -76,6 +76,9 @@ class KPrinterPrivate;
  * of the print dialog to integrate application specific print options. This is done by subclassing
  * @ref KPrintDialogPage and adding the page using @ref addDialogPage().
  *
+ * When compiling an application that uses KPrinter, you must link to -lkdeprint, which when
+ * using the standard KDE build framework can be done by adding $(LIB_KDEPRINT) to _LDADD.
+ * 
  * @short The central interface class to access the KDE print system.
  * @author Michael Goffioul
  * @see QPrinter, KPrintDialogPage
