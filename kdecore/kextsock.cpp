@@ -284,8 +284,10 @@ static void local_freeaddrinfo(kde_addrinfo *&p)
  */
 kde_addrinfo* KExtendedSocketLookup::results()
 {
-  QValueList<QHostAddress> v4 = dnsIpv4.addresses(),
-    v6 = dnsIpv6.addresses();
+  QValueList<QHostAddress> v4 = dnsIpv4.addresses();
+#ifdef AF_INET6
+  QValueList<QHostAddress> v6 = dnsIpv6.addresses();
+#endif    
   addrinfo *p = NULL;
   kde_addrinfo *res = new kde_addrinfo;
   res->origin = KAI_QDNS;
@@ -293,9 +295,10 @@ kde_addrinfo* KExtendedSocketLookup::results()
   unsigned short port;
 
   QString canon = dnsIpv4.canonicalName();
+#ifdef AF_INET6
   if (canon.isNull())
     canon = dnsIpv6.canonicalName();
-
+#endif
   char* canonname;
   if (!canon.isNull())
     canonname = strdup(canon.latin1());
@@ -1514,7 +1517,7 @@ void KExtendedSocket::closeNow()
   delete d->qsnOut;
   d->qsnIn = d->qsnOut = NULL;
 
-  if (d->status > connecting && sockfd == -1)
+  if (d->status > connecting && sockfd != -1)
     {
       ::close(sockfd);
       sockfd = -1;
@@ -2183,7 +2186,17 @@ void KExtendedSocket::dnsResultsReady()
 	n++;
     }
 
-  d->status = lookupDone;
+  if (n)
+    {
+      d->status = lookupDone;
+      cleanError();
+    }
+  else
+    {
+      d->status = nothing;
+      setError(IO_LookupError, EAI_NODATA);
+    }
+
   emit lookupFinished(n);
 
   return;
@@ -2191,7 +2204,10 @@ void KExtendedSocket::dnsResultsReady()
 
 void KExtendedSocket::startAsyncConnectSlot()
 {
-  startAsyncConnect();
+  QObject::disconnect(this, SIGNAL(lookupFinished(int)), this, SLOT(startAsyncConnectSlot()));
+
+  if (d->status == lookupDone)
+    startAsyncConnect();
 }
 
 int KExtendedSocket::resolve(sockaddr *sock, ksocklen_t len, QString &host,
