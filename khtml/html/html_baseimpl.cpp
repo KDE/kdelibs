@@ -447,11 +447,11 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
-        setHTMLEventListener(EventImpl::LOAD_EVENT,
+        getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONUNLOAD:
-        setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+        getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:

@@ -286,8 +286,12 @@ void HTMLDocumentImpl::close()
 
     DocumentImpl::close();
 
-    if (body() && doload) {
-        body()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+    HTMLElementImpl* b = body();
+    if (b && doload) {
+        b->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        if (b->id() == ID_FRAMESET)
+            getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+
         updateRendering();
     }
 }
