@@ -1502,7 +1502,15 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
       >> mimeType;
 
     group.d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mimeType);
-
+    
+    // we need to set the item info for the items here
+    QMapIterator<QString, KFileMetaInfoItem> it = group.d->items.begin();
+    for ( ; it != group.d->items.end(); ++it)
+    {
+        (*it).d->mimeTypeInfo = group.d->mimeTypeInfo->groupInfo(group.d->name)
+                                  ->itemInfo((*it).key());
+    }
+    
     return s;
 }
 
