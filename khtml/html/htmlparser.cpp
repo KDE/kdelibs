@@ -764,8 +764,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             handled = true;
             break;
             case ID_DL:
-                e = new HTMLGenericElementImpl(document, ID_DD);
-                insertNode(e);
+                popBlock(ID_DL);
                 handled = true;
                 break;
             case ID_DT:
