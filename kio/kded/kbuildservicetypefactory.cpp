@@ -120,11 +120,13 @@ KBuildServiceTypeFactory::saveHeader(QDataStream &str)
    str << (Q_INT32) m_fastPatternOffset;
    str << (Q_INT32) m_otherPatternOffset;
    str << (Q_INT32) m_propertyTypeDict.count();
-   QDictIterator<int> it( m_propertyTypeDict );
-   for(;it.current(); ++it)
+
+   QMapIterator<QString, int> it;
+   for (it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
    {
-      str << it.currentKey() << (Q_INT32) it.current();
+     str << it.key() << (Q_INT32)it.data();
    }
+     
 }
 
 void
@@ -242,10 +244,10 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
    for( ; pit != pd.end(); ++pit )
    {
-      if (!m_propertyTypeDict.find(pit.key()))
-         m_propertyTypeDict.insert(pit.key(), (int *) (((int) pit.data())+1));
-      else
-         qWarning("Property '%s' is defined multiple times (%s)", pit.key().latin1(), serviceType->name().latin1());
+     if (!m_propertyTypeDict.contains(pit.key()))
+       m_propertyTypeDict.insert(pit.key(), pit.data());
+     else
+       qWarning("Property '%s' is defined multiple times (%s)", pit.key().latin1(), serviceType->name().latin1());
    }   
 }
 
