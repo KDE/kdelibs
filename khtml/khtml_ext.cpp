@@ -425,9 +425,9 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
   KURL::List lst;
   lst.append( d->m_url.url() );
   QApplication::clipboard()->setSelectionMode(true);
-  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
-  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
   QApplication::clipboard()->setText( d->m_url.url() ); //FIXME(E): Handle multiple entries
 #endif
@@ -445,9 +445,9 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
   KURL::List lst;
   lst.append( d->m_imageURL.url() );
   QApplication::clipboard()->setSelectionMode(true);
-  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
-  QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
+  QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
   QApplication::clipboard()->setText(d->m_imageURL.url()); //FIXME(E): Handle multiple entries
 #endif

@@ -880,6 +880,9 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
   return executeScript(script);
 }
 
+//Enable this to see all JS scripts being executed
+#define KJS_VERBOSE
+
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
 {
 #ifdef KJS_VERBOSE
@@ -897,9 +900,6 @@ QVariant KHTMLPart::executeScript( const QString &script )
 {
     return executeScript( DOM::Node(), script );
 }
-
-//Enable this to see all JS scripts being executed
-//#define KJS_VERBOSE
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
@@ -1913,12 +1913,14 @@ KURL KHTMLPart::completeURL( const QString &url )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-  //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+  kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+  kdDebug(6050) << "current redirectURL=" << d->m_redirectURL << " with delay " << d->m_delayRedirect <<  endl;
   if( delay < 24*60*60 &&
       ( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) ) {
     d->m_delayRedirect = delay;
     d->m_redirectURL = url;
     d->m_redirectLockHistory = doLockHistory;
+    kdDebug(6050) << " d->m_bComplete=" << d->m_bComplete << endl;
     if ( d->m_bComplete ) {
       d->m_redirectionTimer.stop();
       d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
@@ -1928,6 +1930,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
 
 void KHTMLPart::slotRedirect()
 {
+  kdDebug() << k_funcinfo << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -1936,7 +1939,7 @@ void KHTMLPart::slotRedirect()
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
-    //kdDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
+    kdDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
     QVariant res = executeScript( script );
     if ( res.type() == QVariant::String ) {
       begin( url() );
@@ -2835,8 +2838,8 @@ void KHTMLPart::slotClearSelection()
 {
     bool hadSelection = hasSelection();
 #ifndef KHTML_NO_CARET
-    kdDebug(6000) << "d->m_selectionStart " << d->m_selectionStart.handle()
-    		<< " d->m_selectionEnd " << d->m_selectionEnd.handle() << endl;
+    //kdDebug(6000) << "d->m_selectionStart " << d->m_selectionStart.handle()
+    //		<< " d->m_selectionEnd " << d->m_selectionEnd.handle() << endl;
     // nothing, leave selection parameters as is
 #else
     d->m_selectionStart = 0;
@@ -3018,6 +3021,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 //
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
+  kdDebug() << k_funcinfo << url << endl;
   bool hasTarget = false;
 
   QString target = _target;
@@ -5118,7 +5122,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
 
-    KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
+    KURLDrag* urlDrag = new KURLDrag( u, d->m_view->viewport() );
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
 
