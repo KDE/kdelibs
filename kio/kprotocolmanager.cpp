@@ -309,7 +309,7 @@ QStringList KProtocolManager::userAgentList()
   for( int i = 0; i < entries; i++ )
   {
     QString entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
-    if (entry.left(37) == "*:Mozilla/4.0 (compatible; Konqueror/") // update version number
+    if (entry.left(37) == "*:Mozilla/5.0 (compatible; Konqueror/") // update version number
       settingsList.append( "*:" + DEFAULT_USERAGENT_STRING );
     else
       settingsList.append( entry );
