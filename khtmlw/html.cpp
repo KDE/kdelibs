@@ -179,7 +179,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     
     QString f = kapp->kdedir();
     f.detach();
-    f += "/lib/pics/khtmlw_dnd.xpm";
+    f += "/share/icons/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
     registerFormats();
