@@ -356,6 +356,7 @@ kimgio_jp2_write( QImageIO* io )
 	// optstr is a char*, not a const char*
 	char* options = qstrdup( rate.ascii() );
 	int i = jp2_encode( ji, stream, options );
+	delete[] options;
 
 	jas_image_destroy( ji );
 	jas_stream_close( stream );
