@@ -145,9 +145,8 @@ public:
     // First let's define the item types
     UDS_STRING = 1,
     UDS_LONG = 2,
-
-    // Time of the file
     UDS_TIME = 4 | UDS_LONG,
+
     // Size of the file
     UDS_SIZE = 8 | UDS_LONG,
     // User ID of the file owner
