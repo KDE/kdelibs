@@ -2706,6 +2706,8 @@ void KToolBar::ContextCallback( int )
   int i = context->exec();
   switch ( i )
     {
+    case -1:
+      return; // popup cancelled
     case CONTEXT_LEFT:
       setBarPos( Left );
       break;
