@@ -281,30 +281,30 @@ unsigned short int TCPSlaveBase::port(unsigned short int _p)
 // is a port specified in /etc/services, and if so use that
 // otherwise as a last resort use the supplied default port.
 bool TCPSlaveBase::connectToHost( const QString &host,
-                                unsigned int _port,
+                                  unsigned int _port,
                                   bool sendError )
 {
     unsigned short int p;
     KExtendedSocket ks;
 
-   //  - leaving SSL - warn before we even connect
-   if (metaData("ssl_activate_warnings") == "TRUE" &&
-              metaData("ssl_was_in_use") == "TRUE" &&
-       !m_bIsSSL) {
-      KSSLSettings kss;
-      if (kss.warnOnLeave()) {
-      int result = messageBox( WarningContinueCancel,
-                                     i18n("You are about to leave secure "
-                                          "mode. Transmissions will no "
-                                          "longer be encrypted.\nThis "
-                                          "means that a third party could "
-                                          "observe your data in transit."),
-                                     i18n("Security information"),
-                                     i18n("Continue Loading") );
-      if ( result == KMessageBox::Cancel )
-         return -1;
-      }
-   }
+    //  - leaving SSL - warn before we even connect
+    if (metaData("ssl_activate_warnings") == "TRUE" &&
+               metaData("ssl_was_in_use") == "TRUE" &&
+        !m_bIsSSL) {
+       KSSLSettings kss;
+       if (kss.warnOnLeave()) {
+          int result = messageBox( WarningContinueCancel,
+                                   i18n("You are about to leave secure "
+                                        "mode. Transmissions will no "
+                                        "longer be encrypted.\nThis "
+                                        "means that a third party could "
+                                        "observe your data in transit."),
+                                   i18n("Security information"),
+                                   i18n("Continue Loading") );
+          if ( result == KMessageBox::Cancel )
+             return false;
+       }
+    }
 
     d->status = -1;
     d->host = host;
