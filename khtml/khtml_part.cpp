@@ -2203,7 +2203,9 @@ void KHTMLPart::updateFontSize( int add )
 
   setFontSizes( sizes );
 
+  QApplication::setOverrideCursor( waitCursor );
   if(d->m_doc) d->m_doc->applyChanges();
+  QApplication::restoreOverrideCursor();
 }
 
 void KHTMLPart::slotLoadImages()
