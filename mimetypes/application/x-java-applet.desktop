@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=Java Applet
+Comment[bs]=Java applet
 Comment[ca]=Aplet Java
 Comment[cs]=Java applet
 Comment[da]=Java-applet
@@ -24,6 +25,7 @@ Comment[nn]=Java-applet
 Comment[pl]=Aplet Javy
 Comment[pt]='Applet' Java
 Comment[pt_BR]='Applet' Java
+Comment[ro]=Miniaplicaţie Java
 Comment[ru]=Аплет Java
 Comment[se]=Java-prográmmaš
 Comment[sl]=Vstavek v javi
