@@ -34,7 +34,7 @@
 namespace KJS {
 
   class ObjectImpPrivate;
-  class Property;
+  class PropertyMap;
   class HashTable;
   class ListImp;
 
@@ -447,7 +447,8 @@ namespace KJS {
      *
      * The default implementation uses classInfo().
      * You should either implement @ref classInfo(), or
-     * if you simply need a classname, you can reimplement @ref getClass() instead.
+     * if you simply need a classname, you can reimplement @ref getClass()
+     * instead.
      *
      * @see Object::getClass()
      */
@@ -556,7 +557,7 @@ namespace KJS {
 
   private:
     ObjectImpPrivate *_od;
-    Property *_prop;
+    PropertyMap *_prop;
     ValueImp *_proto;
     ValueImp *_internalValue;
     ListImp *_scope;

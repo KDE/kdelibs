@@ -179,11 +179,13 @@ void Object::setInternalValue(const Value &v)
 // ------------------------------ ObjectImp ------------------------------------
 
 namespace KJS {
-  struct Property {
+  // ### temp - will be replaced by PropertyMap2
+  class PropertyMap {
+  public:
     UString name;
     ValueImp *val;
     int attribute;
-    Property *next;
+    PropertyMap *next;
   };
 }
 
@@ -222,7 +224,7 @@ void ObjectImp::mark()
   if (_proto && !_proto->marked())
     _proto->mark();
 
-  struct Property *p = _prop;
+  struct PropertyMap *p = _prop;
   while (p) {
     if (p->val && !p->val->marked())
       p->val->mark();
@@ -290,7 +292,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
       return proto;
   }
 
-  Property *pr = _prop;
+  PropertyMap *pr = _prop;
   while (pr) {
     if (pr->name == propertyName) {
       return pr->val;
@@ -326,8 +328,8 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
     return;
   }
 
-  Property *pr;
-  Property *last = 0;
+  PropertyMap *pr;
+  PropertyMap *last = 0;
 
   if (_prop) {
     pr = _prop;
@@ -344,7 +346,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   }
 
   // add new property
-  pr = new Property;
+  pr = new PropertyMap;
   pr->name = propertyName;
   pr->val = value.imp();
   pr->attribute = attr;
@@ -359,7 +361,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
 bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
 {
   if (_prop) {
-    const Property *pr = _prop;
+    const PropertyMap *pr = _prop;
     while (pr) {
       if (pr->name == propertyName)
 	return !(pr->attribute & ReadOnly);
@@ -377,7 +379,7 @@ bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
 // ECMA 8.6.2.4
 bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
-  const Property *pr = _prop;
+  const PropertyMap *pr = _prop;
   while (pr) {
     if (pr->name == propertyName)
       return true;
@@ -394,8 +396,8 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool r
 // ECMA 8.6.2.5
 bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
 {
-  Property *pr = _prop;
-  Property **prev = &_prop;
+  PropertyMap *pr = _prop;
+  PropertyMap **prev = &_prop;
   while (pr) {
     if (pr->name == propertyName) {
       if ((pr->attribute & DontDelete))
@@ -510,7 +512,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
   if (_proto && _proto->type() == ObjectType && recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
 
-  Property *pr = _prop;
+  PropertyMap *pr = _prop;
   while(pr) {
     if (!(pr->attribute & DontEnum))
       list.append(Reference(this,pr->name));

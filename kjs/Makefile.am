@@ -28,7 +28,7 @@ libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \
 		     regexp_object.cpp error_object.cpp function.cpp \
 		     debugger.cpp value.cpp types.cpp object.cpp \
-		     interpreter.cpp
+		     interpreter.cpp property_map.cpp
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = value.h types.h object.h interpreter.h operations.h \
@@ -38,7 +38,7 @@ noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h lookup.h \
 		 grammar.h regexp.cpp function_object.h string_object.h \
 		 bool_object.h number_object.h date_object.h array_object.h \
 		 math_object.h object_object.h regexp_object.h error_object.h \
-		 function.h debugger.h
+		 function.h debugger.h property_map.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 libkjs_la_LIBADD = -lm $(LIBPCRE)
