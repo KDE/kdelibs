@@ -2459,24 +2459,26 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             skip( (*it).uSource );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         case R_OVERWRITE:
             m_overwriteList.append( existingDest );
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         default:
             assert( 0 );
     }
     state = STATE_CREATING_DIRS;
-    m_processedDirs++;
     //emit processedDirs( this, m_processedDirs );
     createNextDir();
 }
@@ -2710,6 +2712,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             // Move on to next file
             skip( (*it).uSource );
             files.remove( it );
+            m_processedFiles++;
             break;
        case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
@@ -2722,7 +2725,6 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             assert( 0 );
     }
     state = STATE_COPYING_FILES;
-    m_processedFiles++;
     //emit processedFiles( this, m_processedFiles );
     copyNextFile();
 }
