@@ -19,6 +19,7 @@
 
 	*/
 
+#include "config.h"
 #include "artskde.h"
 #include "connect.h"
 #include "flowsystem.h"
