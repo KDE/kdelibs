@@ -372,9 +372,9 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 {
     bool accel = true;
 
-    orig_accel = m_pureText.find("!&");
+    orig_accel = m_pureText.find("(!)&");
     if (orig_accel != -1) {
-        m_pureText.replace(orig_accel, 2, "&");
+        m_pureText.replace(orig_accel, 4, "&");
         orig_accel = -1;
         accel = false;
     }
@@ -403,7 +403,7 @@ QString KAccelString::accelerated() const
 
       if (m_accel >= 0) {
           if (m_accel != orig_accel) {
-              result.insert(m_accel, "!&");
+              result.insert(m_accel, "(!)&");
               if (m_accel < orig_accel)
                   oa += 3;
           } else {
