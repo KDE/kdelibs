@@ -106,7 +106,7 @@ address book of the user automatically. You can use it the following way:
  7:  }
 
 The above example prints out the names of all contacts in the users address 
-book. In line 1 you retrive a pointer to the users standard address book
+book. In line 1 you retrieve a pointer to the users standard address book
 (provided by KABC::StdAddressBook via a singleton design pattern).
 In line 2 an iterator is defined, which is used in line 3 to iterate over the
 whole address book. The assignment in line 4 is just for the better 
@@ -293,7 +293,7 @@ which takes a pointer to the resource which shall be saved as argument and
 returns a so called 'Save Ticket' if locking succeeded or a null pointer
 if the resource is already locked by another application.
 
-So when we retrived a valid ticket in line 74, we try to save our changes in
+So when we retrieved a valid ticket in line 74, we try to save our changes in
 line 78.
 The KABC::AddressBook::save() function takes the save ticket as argument and 
 returns whether saving succeeded.
@@ -305,3 +305,64 @@ otherwise possible locks, created by the resources, won't be removed.
 You see using the KABC::AddressBook class and the ResourceFile manually isn't
 that hard as well. For more information about the API of KABC::Addressee please
 take a look at the official API documentation or the header files.
+
+
+Distribution Lists
+-------------------
+libkabc provides so called distribution lists to group contacts. These lists 
+just store the uid of contacts, so they can be used for every kind of contact 
+grouping. There are 2 classes which handle the whole distribution list tasks,
+KABC::DistributionListManager and KABC::DistributionList. The first one keeps
+track of all available distribution lists and the latter one is the 
+representation of one list.
+
+
+     #include <kabc/distributionlist.h>
+     #include <kabc/stdaddressbook.h>
+
+ 1:  KABC::DistributionListManager manager( KABC::StdAddressBook::self() );
+ 2:
+ 3:  // load the lists
+ 4:  manager.load();
+ 5:
+ 6:  QStringList listNames = manager.listNames();
+ 7:  QStringList::Iterator it;
+ 8:  for ( it = listNames.begin(); it != listNames.end(); ++it ) {
+ 9:    KABC::DistributionList *list = manager.list( *it );
+10:    kdDebug() << list->name() << endl;
+11:
+12:    QStringList emails = list->emails();
+13:    QStringList::Iterator eit;
+14:    for ( eit = emails.begin(); eit != emails.end(); ++eit )
+15:      kdDebug() << QString( "\t%1" ).arg( (*eit).latin1() ) << endl;
+16:  }
+
+In the first line a KABC::DistributionListManager is created. The manager takes 
+a pointer to a KABC::AddressBook, because he has to resolve the stored uids to
+currently available email addresses.
+In line 4 the manager loads all distribution lists from the central config file
+$HOME/.kde/share/apps/kabc/distlists.
+The next line queries the names of all available distribution lists, which are 
+used in line 9 to retrieve a pointer to the specific list.
+Now that you have a KABC::DistributionList object, you can performe the 
+following actions on it:
+ - set / get the name
+ - insert an entry
+ - remove an entry
+ - get a list of all email addresses
+ - get a list of all entries (which includes the uids)
+
+In line 12 we query all email addresses of every resource and print them out.
+
+<kabc/distributionlist.h> contains also the declaration for the class 
+KABC::DistributionListWatcher. This class exists only once per application and 
+its only job is to emit a signal as soon as the distribution list file has 
+changed. So to make your application aware of changes use the following code:
+
+
+     #include <kabc/distributionlist.h>
+
+ 1:  connect( KABC::DistributionListWatcher::self(), SIGNAL( changed() ),
+ 2:           this, SLOT( slotDistributionListChanged() ) );
+
+You see easy as usual ;)
