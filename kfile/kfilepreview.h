@@ -77,6 +77,9 @@ public:
     virtual void insertItem(KFileViewItem *);
     virtual void clear();
 
+    virtual void setCurrentItem( const KFileViewItem * );
+    virtual KFileViewItem * currentFileItem() const;
+
     virtual void setSorting( QDir::SortSpec sort );
     virtual void sortReversed();
 

@@ -108,20 +108,22 @@ public:
     QWidget *widget() const { return const_cast<KFileView*>(this)->widget(); }
 
     /**
-      * set the current item in the view.
-      *
-      * the normal use of this function is to use the parameter filename to
-      * set the highlight on this file.
-      *
-      * the extend use of this function is to set filename to 0. In this
-      * case the @ref KFileViewItem is used to find out the position of the
-      * file. Since this is faster, this way is used in case a view has
-      * other child views.
-      **/
-    virtual void setCurrentItem(const QString &filename,
-				const KFileViewItem * entry = 0);
+     * Sets @p filename the current item in the view, if available.
+     */
+    void setCurrentItem( const QString &filename );
 
-    // virtual KFileViewItem *currentFileItem() const; // ### add after 3.0
+    /**
+     * Reimplement this to set @p item the current item in the view, e.g.
+     * the item having focus.
+     */
+    virtual void setCurrentItem( const KFileViewItem *item ) = 0;
+    
+    /**
+     * @returns the "current" KFileViewItem, e.g. where the cursor is.
+     * Returns 0L when there is no current item (e.g. in an empty view).
+     * Subclasses have to implement this.
+     */
+    virtual KFileViewItem *currentFileItem() const = 0;
 
     /**
      * clears the view and all item lists
@@ -397,7 +399,7 @@ protected:
     void resort() {
 	if ( count() > 1 ) {
             const KFileViewItemList *selected = KFileView::selectedItems();
-            
+
 	    KFileViewItem *item = myFirstItem;
 	    myFirstItem = 0L;
 	    insertSorted( item, count() );

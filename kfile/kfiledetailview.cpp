@@ -121,6 +121,24 @@ void KFileDetailView::setSelected( const KFileViewItem *info, bool enable )
     }
 }
 
+void KFileDetailView::setCurrentItem( const KFileViewItem *item )
+{
+    if ( !item )
+        return;
+    KFileListViewItem *it = (KFileListViewItem*) item->viewItem( this );
+    if ( it )
+        KListView::setCurrentItem( it );
+}
+
+KFileViewItem * KFileDetailView::currentFileItem() const
+{
+    KFileListViewItem *current = static_cast<KFileListViewItem*>( currentItem() );
+    if ( current )
+        return current->fileInfo();
+
+    return 0L;
+}
+
 void KFileDetailView::clearSelection()
 {
     KListView::clearSelection();
@@ -163,9 +181,9 @@ void KFileDetailView::slotDoubleClicked( QListViewItem *item )
     if ( !item )
 	return;
 
-    const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	select( const_cast<KFileViewItem*>( fi ) );
+	select( fi );
 }
 
 void KFileDetailView::selected( QListViewItem *item )
@@ -174,9 +192,9 @@ void KFileDetailView::selected( QListViewItem *item )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
-	const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+	KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
-	    select( const_cast<KFileViewItem*>( fi ) );
+	    select( fi );
     }
 }
 
@@ -185,9 +203,9 @@ void KFileDetailView::highlighted( QListViewItem *item )
     if ( !item )
 	return;
 
-    const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	highlight( const_cast<KFileViewItem*>( fi ) );
+	highlight( fi );
 }
 
 
@@ -240,7 +258,7 @@ void KFileDetailView::updateView( bool b )
     QListViewItemIterator it( (QListView*)this );
     for ( ; it.current(); ++it ) {
 	KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
-	item->setPixmap( 0, const_cast<KFileViewItem*>( item->fileInfo() )->pixmap() );
+	item->setPixmap( 0, item->fileInfo()->pixmap() );
     }
 }
 

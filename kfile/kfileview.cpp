@@ -447,24 +447,19 @@ void KFileView::updateView(const KFileViewItem *)
 {
 }
 
-void KFileView::setCurrentItem(const QString &item,
-			       const KFileViewItem *entry)
+void KFileView::setCurrentItem(const QString &item )
 {
     if (!item.isNull()) {
 	KFileViewItem *it = myFirstItem;
 	while (it) {
 	    if (it->name() == item) {
-		setSelected(it, true);
-		highlight(it);
+                setCurrentItem( it );
+		highlight( it ); // ### check if this is needed (emits signal)
 		return;
 	    }
 	    it = it->next();
 	}
-    } else {
-	setSelected(entry, true);
-	return;
     }
-
     kdDebug(kfile_area) << "setCurrentItem: no match found." << endl;
 }
 

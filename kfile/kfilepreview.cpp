@@ -193,6 +193,16 @@ void KFilePreview::setSelected(const KFileViewItem *item, bool enable) {
     left->setSelected( item, enable );
 }
 
+void KFilePreview::setCurrentItem( const KFileViewItem *item )
+{
+    left->setCurrentItem( item );
+}
+
+KFileViewItem * KFilePreview::currentFileItem() const
+{
+    return left->currentFileItem();
+}
+
 void KFilePreview::selectDir(const KFileViewItem* item) {
     sig->activateDir(item);
 }

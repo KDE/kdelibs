@@ -203,6 +203,25 @@ void KCombiView::setSelected( const KFileViewItem *item, bool enable )
         right->setSelected( item, enable );
 }
 
+void KCombiView::setCurrentItem( const KFileViewItem *item )
+{
+    left->setCurrentItem( item );
+    if ( right )
+        right->setCurrentItem( item );
+}
+
+KFileViewItem * KCombiView::currentFileItem() const
+{
+    // we can actually have two current items, one in each view. So we simply
+    // prefer the fileview's item over the directory's.
+    KFileViewItem *item = 0L;
+    if ( right )
+        item = right->currentFileItem();
+    if ( !item )
+        item = left->currentFileItem();
+    return item;
+}
+
 void KCombiView::selectDir(const KFileViewItem* item)
 {
     sig->activateDir(item);

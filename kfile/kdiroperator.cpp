@@ -988,7 +988,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 	// highlight the dir we come from, if possible
 	if ( d->dirHighlighting && item->isDir() &&
 	     item->url().url(-1) == d->lastURL ) {
-	    fileView->setCurrentItem( QString::null, (KFileViewItem*) item );
+	    fileView->setCurrentItem( (KFileViewItem*) item );
 	    fileView->ensureItemVisible( (KFileViewItem*) item );
 	}
 	
@@ -1043,7 +1043,7 @@ void KDirOperator::setCurrentItem( const QString& filename )
 
     fileView->clearSelection();
     if ( item ) {
-        fileView->setCurrentItem( QString::null, item );
+        fileView->setCurrentItem( item );
 	fileView->ensureItemVisible( item );
     }
 }

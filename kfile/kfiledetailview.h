@@ -35,12 +35,12 @@ class KFileListViewItem : public KListViewItem
 {
 public:
     KFileListViewItem( QListView *parent, const QString &text,
-		       const QPixmap &icon, const KFileViewItem *fi )
+		       const QPixmap &icon, KFileViewItem *fi )
 	: KListViewItem( parent, text ), inf( fi ) {
 	    setPixmap( 0, icon );
     }
     KFileListViewItem( QListView *parent, const QString &text,
-		       const QPixmap &icon, const KFileViewItem *fi,
+		       const QPixmap &icon, KFileViewItem *fi,
 		       QListViewItem *after)
 	: KListViewItem( parent, after ), inf( fi ) {
 	    setPixmap( 0, icon );
@@ -50,12 +50,12 @@ public:
     /**
      * @returns the corresponding KFileViewItem
      */
-    const KFileViewItem *fileInfo() const {
+    KFileViewItem *fileInfo() const {
 	return inf;
     }
 
 private:
-    const KFileViewItem *inf;
+    KFileViewItem *inf;
 
 private:
     class KFileListViewItemPrivate;
@@ -92,6 +92,9 @@ public:
     virtual void setSelected(const KFileViewItem *, bool);
     virtual bool isSelected(const KFileViewItem *i) const;
     virtual void clearSelection();
+
+    virtual void setCurrentItem( const KFileViewItem * );
+    virtual KFileViewItem * currentFileItem() const;
 
     virtual void insertItem( KFileViewItem *i );
 

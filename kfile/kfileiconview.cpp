@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <qtimer.h>
 #include <qtooltip.h>
 
 #include <kaction.h>
@@ -31,6 +32,7 @@
 #include <klocale.h>
 #include <kfileviewitem.h>
 #include <kglobalsettings.h>
+#include <kio/previewjob.h>
 
 #include "kfileiconview.h"
 #include "config-kfile.h"
@@ -38,7 +40,7 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    const_cast<KFileViewItem*>(fileInfo())->
+    fileInfo()->
 	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
 }
 
@@ -46,30 +48,52 @@ class KFileIconView::KFileIconViewPrivate
 {
 public:
     KFileIconViewPrivate( KFileIconView *parent ) {
+        previewIconSize = 60;
+        job = 0L;
+
 	smallColumns = new KRadioAction( i18n("Small Columns"), 0, parent,
-					 SLOT( slotSmallColumns() ), 
+					 SLOT( slotSmallColumns() ),
 					 parent->actionCollection(),
 					 "small columns" );
 
 	largeRows = new KRadioAction( i18n("Large Rows"), 0, parent,
-				      SLOT( slotLargeRows() ), 
+				      SLOT( slotLargeRows() ),
 				      parent->actionCollection(),
 				      "large rows" );
 	
 	smallColumns->setExclusiveGroup(QString::fromLatin1("IconView mode"));
 	largeRows->setExclusiveGroup(QString::fromLatin1("IconView mode"));
+
+        previews = new KToggleAction( i18n("Thumbnail Previews"), 0,
+                                      parent->actionCollection(),
+                                      "show previews" );
+        connect( previews, SIGNAL( toggled( bool )),
+                 parent, SLOT( slotPreviewsToggled( bool )));
+
+        previewTimer = new QTimer;
+        connect( previewTimer, SIGNAL( timeout() ),
+                 parent, SLOT( showPreviews() ));
     }
-    
-    ~KFileIconViewPrivate() {}
-    
+
+    ~KFileIconViewPrivate() {
+        delete previewTimer;
+        if ( job )
+            job->kill();
+    }
+
     KRadioAction *smallColumns, *largeRows;
+    KToggleAction *previews;
+    KIO::PreviewJob *job;
+    QTimer *previewTimer;
+    QStringList previewMimeTypes;
+    int previewIconSize;
 };
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
     d = new KFileIconViewPrivate( this );
-    
+
     setViewName( i18n("Icon View") );
 
     toolTip = 0;
@@ -138,6 +162,7 @@ void KFileIconView::readConfig()
     KConfig *kc = KGlobal::config();
     KConfigGroupSaver cs( kc, "KFileIconView" );
     QString small = QString::fromLatin1("SmallColumns");
+    d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
 
     if ( kc->readEntry("ViewMode", small ) == small ) {
 	d->smallColumns->setChecked( true );
@@ -153,9 +178,10 @@ void KFileIconView::writeConfig()
 {
     KConfig *kc = KGlobal::config();
     KConfigGroupSaver cs( kc, "KFileIconView" );
-    kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ? 
+    kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
 		    QString::fromLatin1("SmallColumns") :
 		    QString::fromLatin1("LargeRows") );
+    // kc->writeEntry( "Preview Size", d->previewIconSize );
 }
 
 void KFileIconView::removeToolTip()
@@ -240,15 +266,26 @@ void KFileIconView::clearView()
 	first->setViewItem(this, (const void*)0);
 
     QIconView::clear();
+    if ( d->job ) {
+        d->job->kill();
+        d->job = 0L;
+    }
 }
 
 void KFileIconView::insertItem( KFileViewItem *i )
 {
-    KFileIconViewItem *item =
-	new KFileIconViewItem( (QIconView*)this, i->name(),
-			       i->pixmap( myIconSize ), i);
+    int size = myIconSize;
+    if ( d->previews->isChecked() && canPreview( i ) )
+        size = myIconSize;
+
+    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this,
+                                                     i->name(),
+                                                     i->pixmap( size ), i);
 
     i->setViewItem( this, item );
+
+    if ( d->previews->isChecked() )
+        d->previewTimer->start( 10, true );
 }
 
 void KFileIconView::slotDoubleClicked( QIconViewItem *item )
@@ -270,6 +307,24 @@ void KFileIconView::selected( QIconViewItem *item )
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
 	    select( fi );
     }
+}
+
+void KFileIconView::setCurrentItem( const KFileViewItem *item )
+{
+    if ( !item )
+        return;
+    KFileIconViewItem *it = (KFileIconViewItem*) item->viewItem( this );
+    if ( it )
+        KIconView::setCurrentItem( it );
+}
+
+KFileViewItem * KFileIconView::currentFileItem() const
+{
+    KFileIconViewItem *current = static_cast<KFileIconViewItem*>( currentItem() );
+    if ( current )
+        return current->fileInfo();
+
+    return 0L;
 }
 
 void KFileIconView::highlighted( QIconViewItem *item )
@@ -324,10 +379,21 @@ void KFileIconView::updateView( bool b )
     if ( b ) {
 	KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
 	if ( item ) {
-	    do {
-		item ->setPixmap( (item->fileInfo())->pixmap( myIconSize ) );
-		item = static_cast<KFileIconViewItem *>(item->nextItem());
-	    } while ( item != 0L );
+            if ( d->previews->isChecked() ) {
+                do {
+                    int size = canPreview( item->fileInfo() ) ?
+                               d->previewIconSize : myIconSize;
+                    item ->setPixmap( (item->fileInfo())->pixmap( size ) );
+                    item = static_cast<KFileIconViewItem *>(item->nextItem());
+                } while ( item != 0L );
+            }
+
+            else {
+                do {
+                    item ->setPixmap( (item->fileInfo())->pixmap( myIconSize));
+                    item = static_cast<KFileIconViewItem *>(item->nextItem());
+                } while ( item != 0L );
+            }
 	}
     }
 }
@@ -337,8 +403,13 @@ void KFileIconView::updateView( const KFileViewItem *i )
     if ( !i )
 	return;
     KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
-    if ( item )
-      item->setPixmap( i->pixmap( myIconSize ) );
+    if ( item ) {
+        int size = myIconSize;
+        if ( d->previews->isChecked() && canPreview( i ) )
+            size = myIconSize;
+
+        item->setPixmap( i->pixmap( size ) );
+    }
 }
 
 void KFileIconView::removeItem( const KFileViewItem *i )
@@ -352,10 +423,21 @@ void KFileIconView::removeItem( const KFileViewItem *i )
 void KFileIconView::setIconSize( int size )
 {
     myIconSize = size;
+    updateIcons();
+}
+
+void KFileIconView::setPreviewSize( int size )
+{
+    d->previewIconSize = size;
+    if ( d->previews->isChecked() )
+        updateIcons();
+}
+
+void KFileIconView::updateIcons()
+{
     updateView( true );
     arrangeItemsInGrid();
 }
-
 
 void KFileIconView::ensureItemVisible( const KFileViewItem *i )
 {
@@ -376,6 +458,11 @@ void KFileIconView::slotSmallColumns()
     setItemTextPos( Right );
     setArrangement( TopToBottom );
     setIconSize( KIcon::SizeSmall );
+
+    if ( d->job ) {
+        d->job->kill();
+        d->job = 0L;
+    }
 }
 
 void KFileIconView::slotLargeRows()
@@ -383,6 +470,90 @@ void KFileIconView::slotLargeRows()
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setIconSize( KIcon::SizeMedium );
+}
+
+void KFileIconView::slotPreviewsToggled( bool on )
+{
+    if ( on )
+        showPreviews();
+    else {
+        if ( d->job ) {
+            d->job->kill();
+            d->job = 0L;
+        }
+        slotLargeRows();
+    }
+}
+
+void KFileIconView::showPreviews()
+{
+    if ( d->previewMimeTypes.isEmpty() )
+        d->previewMimeTypes = KIO::PreviewJob::supportedMimeTypes();
+
+    d->previews->setChecked( true );
+
+    if ( !d->largeRows->isChecked() ) {
+        d->largeRows->setChecked( true );
+        slotLargeRows(); // also sets the icon size and updates the grid
+    }
+    else
+        updateIcons();
+
+    KFileItemList items;
+    KFileViewItem *item = KFileView::firstItem();
+    while( item ) {
+        items.append( item );
+        item = item->next();
+    }
+
+    if ( d->job )
+        d->job->kill();
+
+    d->job = KIO::filePreview( items, d->previewIconSize, d->previewIconSize );
+
+    connect( d->job, SIGNAL( result( KIO::Job * )),
+             this, SLOT( slotPreviewResult( KIO::Job * )));
+    connect( d->job, SIGNAL( gotPreview( const KFileItem*, const QPixmap& )),
+             SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
+//     connect( d->job, SIGNAL( failed( const KFileItem* )),
+//              this, SLOT( slotFailed( const KFileItem* ) ));
+}
+
+void KFileIconView::slotPreviewResult( KIO::Job *job )
+{
+    if ( job == d->job )
+        d->job = 0L;
+}
+
+void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
+{
+    // we can only hope that this cast works
+    KFileIconViewItem *it = (KFileIconViewItem*) (static_cast<const KFileViewItem*>( item ))->viewItem( this );
+    if ( it ) {
+        it->setPixmap( pix );
+    }
+}
+
+bool KFileIconView::canPreview( const KFileViewItem *item ) const
+{
+    QStringList::Iterator it = d->previewMimeTypes.begin();
+    QRegExp r;
+    r.setWildcard( true );
+
+    for ( ; it != d->previewMimeTypes.end(); ++it ) {
+        QString type = *it;
+        // the "mimetype" can be "image/*"
+        if ( type.at( type.length() - 1 ) == '*' ) {
+            r.setPattern( type );
+            if ( r.match( item->mimetype() ) != -1 )
+                return true;
+        }
+        else
+            if ( item->mimetype() == type )
+                return true;
+    }
+
+    return false;
 }
 
 #include "kfileiconview.moc"

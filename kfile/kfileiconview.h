@@ -40,7 +40,7 @@ class KFileIconViewItem : public QIconViewItem
 public:
     KFileIconViewItem( QIconView *parent, const QString &text,
 		       const QPixmap &pixmap,
-		       const KFileViewItem *fi )
+		       KFileViewItem *fi )
 	: QIconViewItem( parent, text, pixmap ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
@@ -48,18 +48,22 @@ public:
     /**
      * @returns the corresponding KFileViewItem
      */
-    const KFileViewItem *fileInfo() const {
+    KFileViewItem *fileInfo() const {
 	return inf;
     }
 
 private:
-    const KFileViewItem *inf;
+    KFileViewItem *inf;
 
 private:
     class KFileIconViewItemPrivate;
     KFileIconViewItemPrivate *d;
 
 };
+
+namespace KIO {
+    class Job;
+}
 
 /**
  * An icon-view capable of showing @ref KFileViewItems. Used in the filedialog
@@ -92,10 +96,18 @@ public:
     virtual bool isSelected(const KFileViewItem *i) const;
     virtual void clearSelection();
 
+    virtual void setCurrentItem( const KFileViewItem * );
+    virtual KFileViewItem * currentFileItem() const;
+    
     /**
      * Sets the size of the icons to show. Defaults to @ref KIcon::SizeSmall.
      */
     void setIconSize( int size );
+
+    /**
+     * Sets the size of the previews. Defaults to @ref KIcon::SizeLarge.
+     */
+    void setPreviewSize( int size );
 
     /**
      * @returns the current size used for icons.
@@ -103,6 +115,13 @@ public:
     int iconSize() const { return myIconSize; }
 
     void ensureItemVisible( const KFileViewItem * );
+
+public slots:
+    /**
+     * Starts loading previews for all files shown and shows them. Switches
+     * into 'large rows' mode, if that isn't the current mode yet.
+     */
+    void showPreviews();
 
 protected:
     /**
@@ -126,6 +145,10 @@ private slots:
 
     void slotSmallColumns();
     void slotLargeRows();
+    void slotPreviewsToggled( bool );
+
+    void slotPreviewResult( KIO::Job * );
+    void gotPreview( const KFileItem *item, const QPixmap& pix );
 
 private:
     QLabel *toolTip;
@@ -135,8 +158,12 @@ private:
     virtual void setSelectionMode(QIconView::SelectionMode m) { KIconView::setSelectionMode(m); }
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
+    bool canPreview( const KFileViewItem * ) const;
+
     void readConfig();
     void writeConfig();
+
+    void updateIcons();
 
 private:
     class KFileIconViewPrivate;

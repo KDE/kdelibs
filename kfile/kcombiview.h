@@ -78,6 +78,9 @@ public:
     virtual bool isSelected( const KFileViewItem * ) const;
     virtual void clearSelection();
 
+    virtual void setCurrentItem( const KFileViewItem * );
+    KFileViewItem * currentFileItem() const;
+
     virtual void insertSorted(KFileViewItem *tfirst, uint counter);
     virtual void insertItem( KFileViewItem *i );
     virtual void clear();
