@@ -27,7 +27,9 @@
 #include <iostream.h>
 #include <math.h>
 #include <stdio.h>
+#ifdef KJS_DEBUG_MEM
 #include <typeinfo>
+#endif
 
 #include "collector.h"
 #include "debugger.h"

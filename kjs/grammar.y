@@ -605,7 +605,9 @@ FunctionBody:
 ;
 
 Program:
-    SourceElements                 { $$ = new ProgramNode($1);
+    /* nothing, empty script */      { $$ = new ProgramNode(0L);
+                                     Parser::progNode = $$; }
+    | SourceElements                 { $$ = new ProgramNode($1);
                                      Parser::progNode = $$; }
 ;
 

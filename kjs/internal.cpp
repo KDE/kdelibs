@@ -23,9 +23,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#ifndef __osf__
-#include <typeinfo>
-#endif
 #include <assert.h>
 
 #include "array_object.h"

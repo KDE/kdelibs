@@ -236,8 +236,8 @@ static const short yyprhs[] = {     0,
    481,   484,   488,   492,   495,   498,   502,   506,   509,   512,
    516,   520,   526,   532,   536,   542,   543,   545,   547,   550,
    554,   559,   562,   566,   570,   574,   578,   582,   587,   593,
-   596,   602,   609,   614,   620,   622,   626,   629,   633,   635,
-   637,   640,   642
+   596,   602,   609,   614,   620,   622,   626,   629,   633,   634,
+   636,   638,   641,   643
 };
 
 static const short yyrhs[] = {     3,
@@ -304,8 +304,8 @@ static const short yyrhs[] = {     3,
      0,    15,    58,    62,   144,    63,   145,     0,    15,    62,
     63,   145,     0,    15,    62,   144,    63,   145,     0,    58,
      0,   144,    68,    58,     0,    64,    65,     0,    64,   147,
-    65,     0,   147,     0,   148,     0,   147,   148,     0,   115,
-     0,   142,     0
+    65,     0,     0,   147,     0,   148,     0,   147,   148,     0,
+   115,     0,   142,     0
 };
 
 #endif
@@ -330,8 +330,8 @@ static const short yyrline[] = { 0,
    478,   482,   484,   491,   493,   497,   499,   507,   509,   513,
    514,   520,   525,   530,   532,   536,   538,   541,   543,   546,
    548,   551,   553,   556,   562,   566,   568,   569,   572,   576,
-   580,   583,   587,   589,   594,   596,   600,   603,   607,   612,
-   614,   617,   619
+   580,   583,   587,   589,   594,   596,   600,   603,   607,   610,
+   614,   616,   619,   621
 };
 #endif
 
@@ -382,8 +382,8 @@ static const short yyr1[] = {     0,
    127,   127,   127,   128,   128,   128,   128,   129,   129,   129,
    129,   130,   131,   132,   132,   133,   133,   134,   134,   135,
    135,   136,   136,   137,   138,   139,   139,   139,   140,   141,
-   142,   142,   143,   143,   144,   144,   145,   145,   146,   147,
-   147,   148,   148
+   142,   142,   143,   143,   144,   144,   145,   145,   146,   146,
+   147,   147,   148,   148
 };
 
 static const short yyr2[] = {     0,
@@ -405,19 +405,19 @@ static const short yyr2[] = {     0,
      2,     3,     3,     2,     2,     3,     3,     2,     2,     3,
      3,     5,     5,     3,     5,     0,     1,     1,     2,     3,
      4,     2,     3,     3,     3,     3,     3,     4,     5,     2,
-     5,     6,     4,     5,     1,     3,     2,     3,     1,     1,
-     2,     1,     1
+     5,     6,     4,     5,     1,     3,     2,     3,     0,     1,
+     1,     2,     1,     1
 };
 
-static const short yydefact[] = {     0,
+static const short yydefact[] = {   189,
      1,     2,     3,     5,     4,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     7,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     8,     0,     0,     6,     0,
      0,    19,     0,     0,     0,     0,   136,     9,    28,    10,
     33,    43,    44,    45,    48,    60,    64,    67,    71,    78,
-    83,    85,    87,    89,    91,    93,    95,   109,     0,   192,
+    83,    85,    87,    89,    91,    93,    95,   109,     0,   193,
    111,   112,   113,   114,   115,   116,   117,   118,   119,   120,
-   121,   122,   123,   124,   193,    29,   189,   190,   155,     0,
+   121,   122,   123,   124,   194,    29,   190,   191,   155,     0,
    154,   148,     0,     8,     0,    33,    34,   133,     0,   131,
    151,     0,   150,     0,     0,   159,   158,     0,    45,    50,
     49,     0,     0,     0,    51,     0,     0,     0,     0,     0,
@@ -428,7 +428,7 @@ static const short yydefact[] = {     0,
    106,   107,    97,     0,     0,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     0,     0,     0,   138,     0,
-   137,   191,   157,   156,     0,    45,   149,     0,    26,    27,
+   137,   192,   157,   156,     0,    45,   149,     0,    26,    27,
     25,    12,    32,     0,   134,   130,     0,   129,   153,   152,
      0,   185,     0,     0,   161,   160,     0,     0,     0,     0,
      0,   175,   125,     0,     0,   176,   177,   174,    11,    13,
@@ -1955,23 +1955,28 @@ case 188:
     break;}
 case 189:
 #line 608 "grammar.y"
-{ yyval.prog = new ProgramNode(yyvsp[0].srcs);
+{ yyval.prog = new ProgramNode(0L);
                                      Parser::progNode = yyval.prog; ;
     break;}
 case 190:
-#line 613 "grammar.y"
-{ yyval.srcs = new SourceElementsNode(yyvsp[0].src); ;
+#line 610 "grammar.y"
+{ yyval.prog = new ProgramNode(yyvsp[0].srcs);
+                                     Parser::progNode = yyval.prog; ;
     break;}
 case 191:
-#line 614 "grammar.y"
-{ yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].src); ;
+#line 615 "grammar.y"
+{ yyval.srcs = new SourceElementsNode(yyvsp[0].src); ;
     break;}
 case 192:
-#line 618 "grammar.y"
-{ yyval.src = new SourceElementNode(yyvsp[0].stat); ;
+#line 616 "grammar.y"
+{ yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].src); ;
     break;}
 case 193:
-#line 619 "grammar.y"
+#line 620 "grammar.y"
+{ yyval.src = new SourceElementNode(yyvsp[0].stat); ;
+    break;}
+case 194:
+#line 621 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].func); ;
     break;}
 }
@@ -2196,7 +2201,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 622 "grammar.y"
+#line 624 "grammar.y"
 
 
 int yyerror (const char *)  /* Called by yyparse on error */
