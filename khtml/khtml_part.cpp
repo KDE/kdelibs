@@ -240,6 +240,18 @@ namespace khtml {
     };
 };
 
+static QString splitUrlTarget(const QString &url, QString *target=0)
+{
+   QString result = url;
+   KURL u(url);
+   if(u.protocol() == "target")
+   {
+      result = u.ref();
+      if (target)
+         *target = u.host();
+   }	
+   return result;
+}
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
@@ -1165,7 +1177,7 @@ DOM::Range KHTMLPart::selection() const
 }
 
 
-void KHTMLPart::overURL( const QString &url )
+void KHTMLPart::overURL( const QString &url, const QString &target )
 {
   emit onURL( url );
 
@@ -1175,7 +1187,7 @@ void KHTMLPart::overURL( const QString &url )
     return;
   }
 
-  KURL u( m_url, url );
+  KURL u = completeURL( url );
   QString com;
 
   KMimeType::Ptr typ = KMimeType::findByURL( u );
@@ -1252,7 +1264,22 @@ void KHTMLPart::overURL( const QString &url )
     emit setStatusBarText( text );
   }
   else
-    emit setStatusBarText( u.prettyURL() );
+  {
+    QString extra;
+    if (target == QString::fromLatin1("_blank"))
+    {
+       extra = i18n(" (In new window)");
+    }
+    else if (!target.isEmpty() &&
+             (target != QString::fromLatin1("_top")) &&
+             (target != QString::fromLatin1("_self")) &&
+             (target != QString::fromLatin1("_parent")))
+    {
+       extra = i18n(" (In other window)");
+    }
+    
+    emit setStatusBarText( u.prettyURL()+extra );
+  }
 
 }
 
@@ -2210,7 +2237,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     popupMenu( d->m_strSelectedURL );
   else if ( _mouse->button() == MidButton && !d->m_strSelectedURL.isEmpty() )
   {
-    KURL u( m_url, d->m_strSelectedURL );
+    QString url = splitUrlTarget(d->m_strSelectedURL);
+    KURL u = completeURL( url );
     if ( !u.isMalformed() )
       emit d->m_extension->createNewWindow( u );
 
@@ -2233,7 +2261,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
        d->m_bDnd )
   {
     QStringList uris;
-    KURL u( completeURL( d->m_strSelectedURL) );
+    KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
     uris.append( u.url() );
     QUriDrag *drag = new QUriDrag( d->m_view->viewport() );
     drag->setUnicodeUris( uris );
@@ -2255,24 +2283,25 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
   if ( !d->m_bMousePressed && url.length() )
   {
-    QString surl = url.string();
+    QString target;
+    QString surl = splitUrlTarget(url.string(), &target);
     if ( d->m_overURL.isEmpty() )
     {
       d->m_view->setCursor( d->m_linkCursor );
       d->m_overURL = surl;
-      overURL( d->m_overURL );
+      overURL( d->m_overURL, target );
     }
     else if ( d->m_overURL != surl )
     {
       d->m_overURL = surl;
-      overURL( d->m_overURL );
+      overURL( d->m_overURL, target );
     }
     return;
   }
   else if( d->m_overURL.length() && !url.length() )
   {
     d->m_view->setCursor( arrowCursor );
-    overURL( QString::null );
+    overURL( QString::null, QString::null );
     d->m_overURL = "";
   }
 
@@ -2319,6 +2348,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     }
 }
 
+
 void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
@@ -2338,16 +2368,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
   if ( !d->m_strSelectedURL.isEmpty() && _mouse->button() != RightButton )
   {
-    KURL u(d->m_strSelectedURL);
-    QString pressedTarget;
-     if(u.protocol() == "target")
-     {
-       d->m_strSelectedURL = u.ref();
-       pressedTarget = u.host();
-     }	
-     kdDebug( 6000 ) << "m_strSelectedURL='" << d->m_strSelectedURL << "' target=" << pressedTarget << endl;
+     QString target;
+     QString url = splitUrlTarget(d->m_strSelectedURL, &target);
+     kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
 
-     urlSelected( d->m_strSelectedURL, _mouse->button(), _mouse->state(), pressedTarget );
+     urlSelected( url, _mouse->button(), _mouse->state(), target );
    }
 
   if(!innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE) {

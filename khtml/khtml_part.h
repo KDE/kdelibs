@@ -504,7 +504,7 @@ protected:
   /**
    * @internal
    */
-  virtual void overURL( const QString &url );
+  virtual void overURL( const QString &url, const QString &target );
   /**
    * @internal
    */
