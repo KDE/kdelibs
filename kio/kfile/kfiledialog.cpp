@@ -528,7 +528,7 @@ void KFileDialog::slotOk()
         kdDebug(kfile_area) << "Files\n";
         KURL::List list = parseSelectedURLs();
         for ( KURL::List::ConstIterator it = list.begin();
-              it != list.end(); ++it ) 
+              it != list.end(); ++it )
         {
             if (!kapp->authorizeURLAction("open", KURL(), *it))
             {
@@ -538,7 +538,7 @@ void KFileDialog::slotOk()
             }
         }
         for ( KURL::List::ConstIterator it = list.begin();
-              it != list.end(); ++it ) 
+              it != list.end(); ++it )
         {
             job = KIO::stat( *it, !(*it).isLocalFile() );
             KIO::Scheduler::scheduleJob( job );
@@ -2268,4 +2268,3 @@ void KFileDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }
 
 #include "kfiledialog.moc"
-#include "kpreviewwidgetbase.moc"

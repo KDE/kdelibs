@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
  * Copyright (C) 2001 Frerich Raabe <raabe@kde.org>
+ *               20003 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,7 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
-
+#include <qptrdict.h>
 #include <qwidget.h>
 
 class KURL;
@@ -50,8 +51,8 @@ public:
      *
      * @param parent The KFileDialog this preview widget is going to be used in
      */
-    KPreviewWidgetBase(QWidget *parent, const char *name=0)
-        : QWidget(parent,name) {}
+    KPreviewWidgetBase(QWidget *parent, const char *name=0);
+    ~KPreviewWidgetBase();
 
 public slots:
     /**
@@ -69,8 +70,20 @@ public slots:
      */
     virtual void clearPreview() = 0;
 
+    QStringList supportedMimeTypes() const;
+
+protected:
+    void setSupportedMimeTypes( const QStringList& mimeTypes );
+
 protected:
     virtual void virtual_hook( int, void* ) {};
+
+private:
+    class KPreviewWidgetBasePrivate;
+    KPreviewWidgetBasePrivate * d() const {
+        return s_private->find( const_cast<KPreviewWidgetBase*>( this ) );
+    }
+    static QPtrDict<KPreviewWidgetBasePrivate> * s_private;
 };
 
 #endif

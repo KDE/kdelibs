@@ -53,7 +53,8 @@ libkfile_la_SOURCES = \
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
-	knotifydialog.cpp kfilespeedbar.cpp
+	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
+	kfilemetapreview.cpp
 libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
 
 EXTRA_DIST = NOTES

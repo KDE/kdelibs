@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999,2000 Stephan Kulow <coolo@kde.org>
-                  1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+                  1999,2000,2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -59,7 +59,7 @@
 #include "kfilepreview.h"
 #include "kfileview.h"
 #include "kfileitem.h"
-#include "kimagefilepreview.h"
+#include "kfilemetapreview.h"
 
 
 template class QPtrStack<KURL>;
@@ -184,7 +184,7 @@ void KDirOperator::insertViewDependentActions()
 
    if( !m_fileView )
       return;
-       
+
    if ( (viewActionMenu->popupMenu()->count() == 0) || 			// Not yet initialized or...
         (viewActionCollection != m_fileView->actionCollection()) )	// ...changed since.
    {
@@ -195,7 +195,7 @@ void KDirOperator::insertViewDependentActions()
          disconnect( viewActionCollection, SIGNAL( removed( KAction * )),
                this, SLOT( slotViewActionRemoved( KAction * )));
       }
-    
+
       viewActionMenu->popupMenu()->clear();
 //      viewActionMenu->insert( shortAction );
 //      viewActionMenu->insert( detailedAction );
@@ -213,7 +213,7 @@ void KDirOperator::insertViewDependentActions()
       if (!viewActionCollection)
          return;
 
-      if ( !viewActionCollection->isEmpty() ) 
+      if ( !viewActionCollection->isEmpty() )
       {
          viewActionMenu->insert( d->viewActionSeparator );
 
@@ -227,7 +227,7 @@ void KDirOperator::insertViewDependentActions()
          {
             if ( git != groups.begin() )
                viewActionMenu->insert( sep );
-                
+
             list = viewActionCollection->actions( *git );
             KActionPtrList::ConstIterator it = list.begin();
             for ( ; it != list.end(); ++it )
@@ -321,7 +321,7 @@ void KDirOperator::slotDefaultPreview()
 {
     m_viewKind = m_viewKind | KFile::PreviewContents;
     if ( !myPreview ) {
-        myPreview = new KImageFilePreview( this );
+        myPreview = new KFileMetaPreview( this );
         (static_cast<KToggleAction*>( myActionCollection->action("preview") ))->setChecked(true);
     }
 
@@ -382,9 +382,8 @@ void KDirOperator::mkdir()
 {
     bool ok;
     QString dir = KInputDialog::getText( i18n( "New Directory" ),
-        i18n( "Create new directory in:" ) +
-                     QString::fromLatin1( "\n" ) + /* don't break i18n now*/
-                     url().prettyURL(), i18n("New Directory"), &ok, this);
+                                         i18n( "Create new directory in:\n%1" ).arg( url().prettyURL() ),
+                                         i18n("New Directory"), &ok, this);
     if (ok)
       mkdir( dir, true );
 }
@@ -860,7 +859,7 @@ void KDirOperator::setView( KFile::FileView view )
                     KFile::isPreviewContents( static_cast<KFile::FileView>(defaultView) ) )
                   && myActionCollection->action("preview")->isEnabled();
 
-        if ( preview ) { // instantiates KImageFilePreview and calls setView()
+        if ( preview ) { // instantiates KFileMetaPreview and calls setView()
             m_viewKind = view;
             slotDefaultPreview();
             return;
@@ -1019,7 +1018,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
     dir = lister;
 
     dir->setAutoUpdate( true );
-    
+
     QWidget* mainWidget = kapp->mainWidget();
     dir->setMainWindow (mainWidget);
     kdDebug (kfile_area) << "Has main widget ? " << (mainWidget == 0) << endl;
@@ -1411,7 +1410,7 @@ void KDirOperator::writeConfig( KConfig *kc, const QString& group )
     bool appSpecificPreview = false;
     if ( myPreview ) {
         QWidget *preview = const_cast<QWidget*>( myPreview ); // grmbl
-        KImageFilePreview *tmp = dynamic_cast<KImageFilePreview*>( preview );
+        KFileMetaPreview *tmp = dynamic_cast<KFileMetaPreview*>( preview );
         appSpecificPreview = (tmp == 0L);
     }
 
@@ -1480,7 +1479,7 @@ void KDirOperator::slotShowProgress()
 void KDirOperator::slotProgress( int percent )
 {
     progress->setProgress( percent );
-    // we have to redraw this in as fast as possible
+    // we have to redraw this as fast as possible
     if ( progress->isVisible() )
 	QApplication::flushX();
 }
