@@ -146,18 +146,25 @@ KGuiItem KStdGuiItem::defaults()
                    i18n( "Reset all items to their default values" ) );
 }
 
-KGuiItem KStdGuiItem::back( bool useBidi )
+KGuiItem KStdGuiItem::back( BidiMode useBidi )
 {
-  QString icon = useBidi && kapp->reverseLayout() ? "forward" : "back";
+  QString icon = useBidi == UseRTL && kapp->reverseLayout()
+                 ? "forward" : "back";
   return KGuiItem( i18n( "&Back" ), icon,
                    i18n( "Go back one step" ) );
 }
 
-KGuiItem KStdGuiItem::forward( bool useBidi )
+KGuiItem KStdGuiItem::forward( BidiMode useBidi )
 {
-  QString icon = useBidi && kapp->reverseLayout() ? "back" : "forward";
+  QString icon = useBidi == UseRTL && kapp->reverseLayout()
+                 ? "back" : "forward";
   return KGuiItem( i18n( "&Forward" ), icon,
                    i18n( "Go forward one step" ) );
+}
+
+QPair<KGuiItem, KGuiItem> KStdGuiItem::backAndForward()
+{
+    return qMakePair( back( UseRTL ), forward( UseRTL ) );
 }
 
 // vim: set ts=2 sts=2 sw=2 et:
