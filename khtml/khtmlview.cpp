@@ -955,9 +955,7 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 
 
 void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
-{
-    printf("viewportPaintEvent\n");
-    
+{    
     QRect r = pe->rect();
 
     NodeImpl *body = 0;
@@ -982,7 +980,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
-    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+//    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
 
     if ( paintBuffer->width() < width() )
     {

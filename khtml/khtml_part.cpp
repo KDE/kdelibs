@@ -405,7 +405,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_workingURL = KURL();
   }
 
-  printf("SLOTDATA %d\n",data.size());
+//  printf("SLOTDATA %d\n",data.size());
 
   write( data.data(), data.size() );
 }
