@@ -185,8 +185,8 @@ void HTMLMetaElementImpl::attach(KHTMLWidget *v)
 	int delay = str.left(pos).toInt();
 	printf("delay = %d, separator at %d\n", delay, pos);
 	pos++;
-	while(pos < str.length() && str[pos].isSpace()) pos++;
-	if(pos < str.length()) str = str.mid(pos);
+	while(pos < (int)str.length() && str[pos].isSpace()) pos++;
+	if(pos < (int)str.length()) str = str.mid(pos);
 	if(strncasecmp(str, "url=", 4) == 0)
 	{
 	    str = str.mid(4);

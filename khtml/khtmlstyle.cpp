@@ -772,17 +772,22 @@ struct HTMLColors {
 
 void setNamedColor(QColor &color, const QString name)
 {
-    bool ok;
     // also recognize "color=ffffff"
-    if (name[0] != QChar('#') && name.length() == 6 &&
-        name.toInt(&ok, 16) )
+    if (name[0] != QChar('#') && name.length() == 6)
     {
-        QString col("#");
-        col += name;
-        color.setNamedColor(col);
+	bool ok;
+        name.toInt(&ok, 16);
+	if(ok)
+	{
+	    QString col("#");
+	    col += name;
+	    color.setNamedColor(col);
+	    return;
+	}
     }
-    else if ( name.length() > 4 && name[0] == 'r' 
-	      && name[1] == 'g' && name[2] == 'b' 
+    
+    if ( name.length() > 4 && name[0] == 'r'
+	      && name[1] == 'g' && name[2] == 'b'
 	      && name[3] == '(' && name[name.length()-1] == ')')
     {
 	// CSS like rgb(r, g, b) style

@@ -67,6 +67,8 @@ protected:
     KHTMLWidget *view;
     DOMString bgURL;
     QPixmap* bgPixmap;
+    int marginWidth;
+    int marginHeight;
 };
 
 // -------------------------------------------------------------------------

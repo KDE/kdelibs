@@ -47,6 +47,8 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
     ascent = descent = 0;
     view = v;
     bgPixmap = 0;
+    marginWidth = -1; // undefined
+    marginHeight = -1;
 }
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
@@ -70,6 +72,12 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 
     case ATTR_BACKGROUND:
         bgURL = attr->value();
+	break;
+    case ATTR_MARGINWIDTH:
+	marginWidth = attr->val()->toInt();
+	break;
+    case ATTR_MARGINHEIGHT:
+	marginHeight = attr->val()->toInt();
 	break;
     case ATTR_BGCOLOR: 	
     case ATTR_TEXT:
@@ -112,13 +120,15 @@ void HTMLBodyElementImpl::setStyle(CSSStyle *currentStyle)
 }
 
 
-void HTMLBodyElementImpl::attach(KHTMLWidget *)
+void HTMLBodyElementImpl::attach(KHTMLWidget *w)
 {
     if(bgURL.length())
     {
 	printf("Body: Requesting URL=%s\n", bgURL.string().ascii() );
 	bgURL = document->requestImage(this, bgURL);
     }	
+    if(marginWidth != -1) w->setMarginWidth(marginWidth);
+    if(marginHeight != -1) w->setMarginHeight(marginHeight);
 }
 
 void HTMLBodyElementImpl::detach()
