@@ -23,8 +23,8 @@
 
 #define BIGTICKSIZE 10
 #define SMALLTICKSIZE 4
-#define XPADDING 40
-#define YPADDING 40
+#define XPADDING 20
+#define YPADDING 20
 
 class QColor;
 class QPixmap;
@@ -133,10 +133,76 @@ public:
 		*/
 	virtual void setGridColor( const QColor &gc ) { cGrid = gc; }
 
+	/**@short toggle whether plot axes are drawn.
+		*@param show if true, axes will be drawn.
+		*The axes are just a box outline around the plot.
+		*/
 	virtual void setShowAxes( bool show ) { ShowAxes = show; }
+	/**@short toggle whether tick marks are drawn along the axes.
+		*@param show if true, tick marks will be drawn.
+		*/
 	virtual void setShowTickMarks( bool show ) { ShowTickMarks = show; }
+	/**@short toggle whether tick labels are drawn at major tickmarks.
+		*@param show if true, tick labels will be drawn.
+		*/
 	virtual void setShowTickLabels( bool show ) { ShowTickLabels = show; }
+	/**@short toggle whether grid lines are drawn at major tickmarks.
+		*@param show if true, grid lines will be drawn.
+		*/
 	virtual void setShowGrid( bool show ) { ShowGrid = show; }
+
+	/**@short set the X-axis label
+		*@param xlabel a short string describing the data plotted on the x-axis.
+		*Set the label to an empty string to omit the axis label.
+		*/
+	virtual void setXAxisLabel( QString xlabel ) { XAxisLabel = xlabel; }
+	/**@short set the Y-axis label
+		*@param ylabel a short string describing the data plotted on the y-axis.
+		*Set the label to an empty string to omit the axis label.
+		*/
+	virtual void setYAxisLabel( QString ylabel ) { YAxisLabel = ylabel; }
+
+	/**@returns the number of pixels to the left of the plot area.  Padding values
+		*are set to -1 by default; if unchanged, this function will try to guess
+		*a good value, based on whether ticklabels and/or axis labels are to be drawn.
+		*/
+	virtual int leftPadding()   const;
+	/**@returns the number of pixels to the right of the plot area.
+		*Padding values are set to -1 by default; if unchanged, this function will try to guess
+		*a good value, based on whether ticklabels and/or axis labels are to be drawn.
+		*/
+	virtual int rightPadding()  const;
+	/**@returns the number of pixels above the plot area.
+		*Padding values are set to -1 by default; if unchanged, this function will try to guess
+		*a good value, based on whether ticklabels and/or axis labels are to be drawn.
+		*/
+	virtual int topPadding()    const;
+	/**@returns the number of pixels below the plot area.
+		*Padding values are set to -1 by default; if unchanged, this function will try to guess
+		*a good value, based on whether ticklabels and/or axis labels are to be drawn.
+		*/
+	virtual int bottomPadding() const;
+
+	/**@short set the number of pixels to the left of the plot area.
+		*Set this to -1 to revert to automatic determination of padding values.
+		*/
+	virtual void setLeftPadding( int pad )   { LeftPadding = pad; }
+	/**@short set the number of pixels to the right of the plot area.
+		*Set this to -1 to revert to automatic determination of padding values.
+		*/
+	virtual void setRightPadding( int pad )  { RightPadding = pad; }
+	/**@short set the number of pixels above the plot area.
+		*Set this to -1 to revert to automatic determination of padding values.
+		*/
+	virtual void setTopPadding( int pad )    { TopPadding = pad; }
+	/**@short set the number of pixels below the plot area.
+		*Set this to -1 to revert to automatic determination of padding values.
+		*/
+	virtual void setBottomPadding( int pad ) { BottomPadding = pad; }
+
+	/**@short revert all four padding values to be automatically determined.
+		*/
+	virtual void setDefaultPadding() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
 protected:
 	/**@short the paint event handler, executed when update() or repaint() is called.
@@ -174,13 +240,19 @@ protected:
 	QRect PixRect;
 	//Limits of the plot area in data units
 	DRect DataRect;
-	//List of KPlotObjects 
+	//List of KPlotObjects
 	QPtrList<KPlotObject> ObjectList;
 
 	//Colors
 	QColor cBackground, cForeground, cGrid;
 	//draw options
 	bool ShowAxes, ShowTickMarks, ShowTickLabels, ShowGrid;
+
+	//padding
+	int LeftPadding, RightPadding, TopPadding, BottomPadding;
+
+	//Axis Labels
+	QString XAxisLabel, YAxisLabel;
 
 	QPixmap *buffer;
 };

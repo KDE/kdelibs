@@ -26,15 +26,17 @@
 
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent, const char* name )
  : QWidget( parent, name ),
-   dXtick(0.0), dYtick(0.0),
+   dXtick(0.0), dYtick(0.0), XAxisLabel(), YAxisLabel(),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowAxes( true ), ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false ) {
 
 	//set DataRect
 	setLimits( x1, x2, y1, y2 );
+	setDefaultPadding();
 
-	//Set PixRect (starts at (0,0) because we will translate by XPADDING,YPADDING)
-	PixRect = QRect( 0, 0, width() - XPADDING, height() - YPADDING );
+	//Set PixRect (starts at (0,0) because we will translate by leftPadding(), topPadding() )
+	PixRect = QRect( 0, 0, width() - leftPadding() - rightPadding(),
+	                       height() - topPadding() - bottomPadding() );
 
 	buffer = new QPixmap();
 
@@ -124,8 +126,8 @@ void KPlotWidget::updateTickmarks() {
 }
 
 void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
-	int newWidth = width() - 2*XPADDING;
-	int newHeight = height() - 2*YPADDING;
+	int newWidth = width() - leftPadding() - rightPadding();
+	int newHeight = height() - topPadding() - bottomPadding();
 	PixRect = QRect( 0, 0, newWidth, newHeight );
 
 	buffer->resize( width(), height() );
@@ -136,8 +138,7 @@ void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
 
 	p.begin( buffer );
 	p.fillRect( 0, 0, width(), height(), bgColor() );
-
-	p.translate( XPADDING, YPADDING );
+	p.translate( leftPadding(), topPadding() );
 
 	drawObjects( &p );
 	drawBox( &p );
@@ -148,8 +149,8 @@ void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
 
 void KPlotWidget::drawObjects( QPainter *p ) {
 	for ( KPlotObject *po = ObjectList.first(); po; po = ObjectList.next() ) {
-		
-		if ( po->points()->count() ) { 
+
+		if ( po->points()->count() ) {
 			//draw the plot object
 			p->setPen( QColor( po->color() ) );
 
@@ -219,14 +220,18 @@ void KPlotWidget::drawBox( QPainter *p ) {
 	//First, fill in padding region with bgColor() to mask out-of-bounds plot data
 	p->setPen( bgColor() );
 	p->setBrush( bgColor() );
+
 	//left padding ( don't forget: we have translated by XPADDING, YPADDING )
-	p->drawRect( -XPADDING, -YPADDING, XPADDING, height() );
+	p->drawRect( -leftPadding(), -topPadding(), leftPadding(), height() );
+
 	//right padding
-	p->drawRect( PixRect.width(), -YPADDING, XPADDING, height() );
+	p->drawRect( PixRect.width(), -topPadding(), rightPadding(), height() );
+
 	//top padding
-	p->drawRect( 0, -YPADDING, PixRect.width(), YPADDING );
+	p->drawRect( 0, -topPadding(), PixRect.width(), topPadding() );
+
 	//bottom padding
-	p->drawRect( 0, PixRect.height(), PixRect.width(), YPADDING );
+	p->drawRect( 0, PixRect.height(), PixRect.width(), bottomPadding() );
 
 	if ( ShowGrid ) {
 		//Grid lines are placed at locations of primary axes' major tickmarks
@@ -257,6 +262,12 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		double dminX = dXtick/nminX;
 		double dminY = dYtick/nminY;
 
+		//set small font for tick labels
+		QFont f = p->font();
+		int s = f.pointSize();
+		f.setPointSize( s - 2 );
+		p->setFont( f );
+
 		//--- Draw X tickmarks---//
 		double x0 = x() - dmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
 		if ( x() < 0.0 ) x0 -= dXtick;
@@ -276,8 +287,10 @@ void KPlotWidget::drawBox( QPainter *p ) {
 				if ( fabs(lab)/dXtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 
 				QString str = QString( "%1" ).arg( lab, 0, 'g', 2 );
-				if ( px > 0 && px < PixRect.width() )
-					p->drawText( px - BIGTICKSIZE, PixRect.height() + 2*BIGTICKSIZE, str );
+				if ( px > 0 && px < PixRect.width() ) {
+					QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
+					p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+				}
 			}
 
 			//draw minor ticks
@@ -310,8 +323,10 @@ void KPlotWidget::drawBox( QPainter *p ) {
 				if ( fabs(lab)/dYtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 
 				QString str = QString( "%1" ).arg( lab, 0, 'g', 2 );
-				if ( py > 0 && py < PixRect.height() )
-					p->drawText( -2*BIGTICKSIZE, py + SMALLTICKSIZE, str );
+				if ( py > 0 && py < PixRect.height() ) {
+					QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
+					p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+				}
 			}
 
 			//minor ticks
@@ -325,6 +340,51 @@ void KPlotWidget::drawBox( QPainter *p ) {
 			}
 		} //end draw Y tickmarks
 	} //end if ( ShowTickMarks )
+
+	//Draw X Axis Label
+	if ( ! XAxisLabel.isEmpty() ) {
+		QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
+		p->drawText( r, Qt::AlignCenter, XAxisLabel );
+	}
+
+	//Draw Y Axis Label.  We need to draw the text sideways.
+	if ( ! YAxisLabel.isEmpty() ) {
+		//store current painter translation/rotation state
+		p->save();
+
+		//translate coord sys to left corner of axis label rectangle, then rotate 90 degrees.
+		p->translate( -3*XPADDING, PixRect.height() );
+		p->rotate( -90.0 );
+
+		QRect r( 0, 0, PixRect.height(), XPADDING );
+		p->drawText( r, Qt::AlignCenter, YAxisLabel ); //draw the label, now that we are sideways
+
+		p->restore();  //restore translation/rotation state
+	}
+}
+
+int KPlotWidget::leftPadding() const {
+	if ( LeftPadding >= 0 ) return LeftPadding;
+	if ( ! YAxisLabel.isEmpty() && ShowTickLabels ) return 3*XPADDING;
+	if ( ! YAxisLabel.isEmpty() || ShowTickLabels ) return 2*XPADDING;
+	return XPADDING;
+}
+
+int KPlotWidget::rightPadding() const {
+	if ( RightPadding >= 0 ) return RightPadding;
+	return XPADDING;
+}
+
+int KPlotWidget::topPadding() const {
+	if ( TopPadding >= 0 ) return TopPadding;
+	return YPADDING;
+}
+
+int KPlotWidget::bottomPadding() const {
+	if ( BottomPadding >= 0 ) return BottomPadding;
+	if ( ! XAxisLabel.isEmpty() && ShowTickLabels ) return 3*YPADDING;
+	if ( ! XAxisLabel.isEmpty() || ShowTickLabels ) return 2*YPADDING;
+	return YPADDING;
 }
 
 #include "kplotwidget.moc"
