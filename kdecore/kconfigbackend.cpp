@@ -178,7 +178,7 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
 			       const char * _resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config)
+  : pConfig(_config), mConfigState(KConfigBase::NoAccess)
 {
    changeFileName(_fileName, _resType, _useKDEGlobals);
 }
@@ -186,6 +186,10 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
+  if (checkAccess(mLocalFileName, W_OK)) 
+     mConfigState = KConfigBase::ReadWrite;
+  else
+     mConfigState = KConfigBase::ReadOnly;
 
   // Parse the general config files
   if (useKDEGlobals) {
@@ -221,31 +225,15 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
       QFile aConfigFile( *it );
       // we can already be sure that this file exists
-      aConfigFile.open( IO_ReadOnly );
-      parseSingleConfigFile( aConfigFile, 0L, false, (*it != mLocalFileName) );
-      aConfigFile.close();
+      bool bIsLocal = (*it == mLocalFileName);
+      if (aConfigFile.open( IO_ReadOnly )) {
+         parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
+         aConfigFile.close();
+      }
     }
   }
 
   return true;
-}
-
-KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
-{
-    if (fileName.isEmpty())
-	return KConfigBase::NoAccess;
-
-    // Can we allow the write? We can, if the program
-    // doesn't run SUID. But if it runs SUID, we must
-    // check if the user would be allowed to write if
-    // it wasn't SUID.
-    if (checkAccess(mLocalFileName, W_OK|R_OK))
-	return KConfigBase::ReadWrite;
-    else
-	if (checkAccess(mLocalFileName, R_OK))
-	    return KConfigBase::ReadOnly;
-
-    return KConfigBase::NoAccess;
 }
 
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,

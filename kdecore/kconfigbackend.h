@@ -107,7 +107,7 @@ public:
    * @see KConfig::getConfigState
    */
   virtual KConfigBase::ConfigState getConfigState() const
-    { return KConfigBase::NoAccess; }
+    { return mConfigState; }
 
   /**
    * @return the filename as passed to the constructor.
@@ -130,6 +130,7 @@ protected:
   QCString localeString;
   QString mLocalFileName;
   QString mGlobalFileName;
+  KConfigBase::ConfigState mConfigState;
 
   KConfigBackEndPrivate *d;
 };
@@ -217,13 +218,6 @@ protected:
    *         files.
    */
   bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
-
-  /**
-   * Returns the state of the app-config object.
-   *
-   * @see KConfig::getConfigState
-   */
-  virtual KConfigBase::ConfigState getConfigState() const;
 
 private:
   KConfigINIBackEndPrivate *d;

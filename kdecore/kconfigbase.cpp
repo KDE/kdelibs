@@ -214,6 +214,41 @@ bool KConfigBase::hasGroup(const QCString &_pGroup) const
   return internalHasGroup( _pGroup);
 }
 
+bool KConfigBase::isImmutable() const
+{
+  return (getConfigState() != ReadWrite);
+}
+
+bool KConfigBase::groupIsImmutable(const QString &group) const
+{
+  if (getConfigState() != ReadWrite)
+     return true;
+     
+  KEntryKey groupKey(group.utf8(), 0);
+  KEntry entry = lookupData(groupKey);
+  return entry.bImmutable;
+}
+
+bool KConfigBase::entryIsImmutable(const QString &key) const
+{
+  if (getConfigState() != ReadWrite)
+     return true;
+     
+  KEntryKey entryKey(mGroup, 0);
+  KEntry aEntryData = lookupData(entryKey); // Group
+  if (aEntryData.bImmutable)
+    return true;
+
+  entryKey.c_key = key.utf8().data();
+  aEntryData = lookupData(entryKey); // Normal entry
+  if (aEntryData.bImmutable)
+    return true;
+
+  entryKey.bLocal = true;
+  aEntryData = lookupData(entryKey); // Localized entry
+  return aEntryData.bImmutable;
+}
+
 QString KConfigBase::readEntry( const QString& pKey,
                                 const QString& aDefault ) const
 {

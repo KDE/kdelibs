@@ -956,6 +956,23 @@ public:
   virtual void reparseConfiguration() = 0;
 
   /**
+   * @return whether changes may be made to this configuration file.
+   */
+  bool isImmutable() const;
+  
+  /**
+   * @return whether changes may be made to @p group in this configuration
+   * file.
+   */
+  bool groupIsImmutable(const QString &group) const;
+  
+  /**
+   * @return whether the entry @p key may be changed in the current group
+   * in this configuration file.
+   */
+  bool entryIsImmutable(const QString &key) const;
+
+  /**
    * Possible return values for @ref getConfigState().
    *
    * @see  getConfigState()
