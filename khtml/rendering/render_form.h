@@ -47,6 +47,11 @@ class QListboxItem;
 
 class KHTMLPartBrowserExtension;
 class KSpell;
+class KFindDialog;
+class KReplaceDialog;
+class KFind;
+class KReplace;
+class KAction;
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -260,6 +265,7 @@ private:
     DOM::HTMLInputElementImpl* m_input;
     KHTMLView* m_view;
     KSpell *m_spell;
+    KAction *m_spellAction;
 };
 // -------------------------------------------------------------------------
 
@@ -397,15 +403,35 @@ protected slots:
 };
 
 // -------------------------------------------------------------------------
-
 class TextAreaWidget : public KTextEdit
 {
     Q_OBJECT
 public:
     TextAreaWidget(int wrap, QWidget* parent);
+    virtual ~TextAreaWidget();
 
 protected:
     virtual bool event (QEvent *e );
+    virtual QPopupMenu *createPopupMenu(const QPoint& pos);
+private slots:
+    void slotFind();
+    void slotDoFind();
+    void slotFindNext();
+    void slotReplace();
+    void slotDoReplace();
+    void slotReplaceNext();
+    void slotReplaceText(const QString&, int, int, int);
+    void slotFindHighlight(const QString&, int, int);
+private:
+    KFindDialog *m_findDlg;
+    KFind *m_find;
+    KReplaceDialog *m_repDlg;
+    KReplace *m_replace;
+    KAction *m_findAction;
+    KAction *m_findNextAction;
+    KAction *m_replaceAction;
+    int m_findIndex, m_findPara;
+    int m_repIndex, m_repPara;
 };
 
 

@@ -23,13 +23,19 @@
  * $Id$
  */
 
-#include <kdebug.h>
-#include <klocale.h>
-#include <kfiledialog.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
-#include <kspell.h>
+#include <kdebug.h>
+#include <kfiledialog.h>
+#include <kfind.h>
+#include <kfinddialog.h>
 #include <kiconloader.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kreplace.h>
+#include <kreplacedialog.h>
+#include <kspell.h>
+#include <kwin.h>
 
 #include <qstyle.h>
 
@@ -289,15 +295,22 @@ LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view
     : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
     setMouseTracking(true);
+    KActionCollection *ac = new KActionCollection(this);
+    m_spellAction = KStdAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
 }
 
 LineEditWidget::~LineEditWidget()
 {
     delete m_spell;
+    m_spell = 0L;
 }
 
 void LineEditWidget::slotCheckSpelling()
 {
+    if ( text().isEmpty() ) {
+        return;
+    }
+
     delete m_spell;
     m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
 
@@ -346,28 +359,33 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 QPopupMenu *LineEditWidget::createPopupMenu()
 {
     QPopupMenu *popup = KLineEdit::createPopupMenu();
-    if ( !popup )
+
+    if ( !popup ) {
         return 0L;
+    }
+
     connect( popup, SIGNAL( activated( int ) ),
              this, SLOT( extendedMenuActivated( int ) ) );
 
     if (m_input->autoComplete()) {
         popup->insertSeparator();
         int id = popup->insertItem( i18n("Clear &History"), ClearHistory );
-        if (!completionObject())
-            popup->setItemEnabled( id, false);
+        if (!completionObject()) {
+            popup->setItemEnabled( id, false );
+        }
     }
 
     if (echoMode() == QLineEdit::Normal &&
         !isReadOnly()) {
         popup->insertSeparator();
-        int id = popup->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
-        if( text().isEmpty() )
-            popup->setItemEnabled( id, false );
+
+        m_spellAction->plug(popup);
+        m_spellAction->setEnabled( !text().isEmpty() );
     }
 
     return popup;
 }
+
 
 void LineEditWidget::extendedMenuActivated( int id)
 {
@@ -1248,7 +1266,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent)
+    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setCheckSpellingEnabled( true );
 
@@ -1266,7 +1284,296 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     setTextFormat(QTextEdit::PlainText);
     setAutoMask(true);
     setMouseTracking(true);
+
+    KActionCollection *ac = new KActionCollection(this);
+    m_findAction = KStdAction::find( this, SLOT( slotFind() ), ac );
+    m_findNextAction = KStdAction::findNext( this, SLOT( slotFindNext() ), ac );
+    m_replaceAction = KStdAction::replace( this, SLOT( slotReplace() ), ac );
 }
+
+
+TextAreaWidget::~TextAreaWidget()
+{
+    delete m_replace;
+    m_replace = 0L;
+    delete m_find;
+    m_find = 0L;
+    delete m_repDlg;
+    m_repDlg = 0L;
+    delete m_findDlg;
+    m_findDlg = 0L;
+}
+
+
+QPopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
+{
+    QPopupMenu *popup = KTextEdit::createPopupMenu(pos);
+
+    if ( !popup ) {
+        return 0L;
+    }
+
+    if (!isReadOnly()) {
+        popup->insertSeparator();
+
+        m_findAction->plug(popup);
+        m_findAction->setEnabled( !text().isEmpty() );
+
+        m_findNextAction->plug(popup);
+        m_findNextAction->setEnabled( m_find != 0 );
+
+        m_replaceAction->plug(popup);
+        m_replaceAction->setEnabled( !text().isEmpty() );
+    }
+
+    return popup;
+}
+
+
+void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
+{
+    Q_UNUSED(text)
+    //kdDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength << endl;
+    if (sender() == m_replace) {
+        setSelection(m_repPara, matchingIndex, m_repPara, matchingIndex + matchingLength);
+        setCursorPosition(m_repPara, matchingIndex);
+    } else {
+        setSelection(m_findPara, matchingIndex, m_findPara, matchingIndex + matchingLength);
+        setCursorPosition(m_findPara, matchingIndex);
+    }
+    ensureCursorVisible();
+}
+
+
+void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int replacedLength, int matchedLength) {
+    Q_UNUSED(text)
+    //kdDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
+    setSelection(m_repPara, replacementIndex, m_repPara, replacementIndex + matchedLength);
+    removeSelectedText();
+    insertAt(m_repDlg->replacement(), m_repPara, replacementIndex);
+    if (m_replace->options() & KReplaceDialog::PromptOnReplace) {
+        ensureCursorVisible();
+    }
+}
+
+
+void TextAreaWidget::slotDoReplace()
+{
+    if (!m_repDlg) {
+        // Should really assert()
+        return;
+    }
+
+    delete m_replace;
+    m_replace = new KReplace(m_repDlg->pattern(), m_repDlg->replacement(), m_repDlg->options(), this);
+    if (m_replace->options() & KFindDialog::FromCursor) {
+        getCursorPosition(&m_repPara, &m_repIndex);
+    } else if (m_replace->options() & KFindDialog::FindBackwards) {
+        m_repPara = paragraphs() - 1;
+        m_repIndex = paragraphLength(m_repPara) - 1;
+    } else {
+        m_repPara = 0;
+        m_repIndex = 0;
+    }
+
+    // Connect highlight signal to code which handles highlighting
+    // of found text.
+    connect(m_replace, SIGNAL(highlight(const QString &, int, int)),
+            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(m_replace, SIGNAL(findNext()), this, SLOT(slotReplaceNext()));
+    connect(m_replace, SIGNAL(replace(const QString &, int, int, int)),
+            this, SLOT(slotReplaceText(const QString &, int, int, int)));
+
+    m_repDlg->close();
+    slotReplaceNext();
+}
+
+
+void TextAreaWidget::slotReplaceNext()
+{
+    if (!m_replace) {
+        // assert?
+        return;
+    }
+
+    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace)) {
+        viewport()->setUpdatesEnabled(false);
+    }
+
+    KFind::Result res = KFind::NoMatch;
+    while (res == KFind::NoMatch) {
+        // If we're done.....
+        if (m_replace->options() & KFindDialog::FindBackwards) {
+            if (m_repIndex == 0 && m_repPara == 0) {
+                break;
+            }
+        } else {
+            if (m_repPara == paragraphs() - 1 &&
+                m_repIndex == paragraphLength(m_repPara) - 1) {
+                break;
+            }
+        }
+
+        if (m_replace->needData()) {
+            m_replace->setData(text(m_repPara), m_repIndex);
+        }
+
+        res = m_replace->replace();
+
+        if (res == KFind::NoMatch) {
+            if (m_replace->options() & KFindDialog::FindBackwards) {
+                if (m_repPara == 0) {
+                    m_repIndex = 0;
+                } else {
+                    m_repPara--;
+                    m_repIndex = paragraphLength(m_repPara) - 1;
+                }
+            } else {
+                if (m_repPara == paragraphs() - 1) {
+                    m_repIndex = paragraphLength(m_repPara) - 1;
+                } else {
+                    m_repPara++;
+                    m_repIndex = 0;
+                }
+            }
+        }
+    }
+
+    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace)) {
+        viewport()->setUpdatesEnabled(true);
+        repaintChanged();
+    }
+
+    if (res == KFind::NoMatch) { // at end
+        m_replace->displayFinalDialog();
+        delete m_replace;
+        m_replace = 0;
+        ensureCursorVisible();
+        //or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
+    } else {
+        //m_replace->closeReplaceNextDialog();
+    }
+}
+
+
+void TextAreaWidget::slotDoFind()
+{
+    if (!m_findDlg) {
+        // Should really assert()
+        return;
+    }
+
+    delete m_find;
+    m_find = new KFind(m_findDlg->pattern(), m_findDlg->options(), this);
+    if (m_find->options() & KFindDialog::FromCursor) {
+        getCursorPosition(&m_findPara, &m_findIndex);
+    } else if (m_find->options() & KFindDialog::FindBackwards) {
+        m_findPara = paragraphs() - 1;
+        m_findIndex = paragraphLength(m_findPara) - 1;
+    } else {
+        m_findPara = 0;
+        m_findIndex = 0;
+    }
+
+    // Connect highlight signal to code which handles highlighting
+    // of found text.
+    connect(m_find, SIGNAL(highlight(const QString &, int, int)),
+            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(m_find, SIGNAL(findNext()), this, SLOT(slotFindNext()));
+
+    m_findDlg->close();
+    m_find->closeFindNextDialog();
+    slotFindNext();
+}
+
+
+void TextAreaWidget::slotFindNext()
+{
+    if (!m_find) {
+        // assert?
+        return;
+    }
+
+    KFind::Result res = KFind::NoMatch;
+    while (res == KFind::NoMatch) {
+        // If we're done.....
+        if (m_find->options() & KFindDialog::FindBackwards) {
+            if (m_findIndex == 0 && m_findPara == 0) {
+                break;
+            }
+        } else {
+            if (m_findPara == paragraphs() - 1 &&
+                m_findIndex == paragraphLength(m_findPara) - 1) {
+                break;
+            }
+        }
+
+        if (m_find->needData()) {
+            m_find->setData(text(m_findPara), m_findIndex);
+        }
+
+        res = m_find->find();
+
+        if (res == KFind::NoMatch) {
+            if (m_find->options() & KFindDialog::FindBackwards) {
+                if (m_findPara == 0) {
+                    m_findIndex = 0;
+                } else {
+                    m_findPara--;
+                    m_findIndex = paragraphLength(m_findPara) - 1;
+                }
+            } else {
+                if (m_findPara == paragraphs() - 1) {
+                    m_findIndex = paragraphLength(m_findPara) - 1;
+                } else {
+                    m_findPara++;
+                    m_findIndex = 0;
+                }
+            }
+        }
+    }
+
+    if (res == KFind::NoMatch) { // at end
+        m_find->displayFinalDialog();
+        delete m_find;
+        m_find = 0;
+        //or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
+    } else {
+        //m_find->closeFindNextDialog();
+    }
+}
+
+
+void TextAreaWidget::slotFind()
+{
+    if( text().isEmpty() )  // saves having to track the text changes
+        return;
+
+    if ( m_findDlg ) {
+      KWin::setActiveWindow( m_findDlg->winId() );
+    } else {
+      m_findDlg = new KFindDialog(false, this, "KHTML Text Area Find Dialog");
+      connect( m_findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
+    }
+    m_findDlg->show();
+}
+
+
+void TextAreaWidget::slotReplace()
+{
+    if( text().isEmpty() )  // saves having to track the text changes
+        return;
+
+    if ( m_repDlg ) {
+      KWin::setActiveWindow( m_repDlg->winId() );
+    } else {
+      m_repDlg = new KReplaceDialog(this, "KHTMLText Area Replace Dialog", 0,
+                                    QStringList(), QStringList(), false);
+      connect( m_repDlg, SIGNAL(okClicked()), this, SLOT(slotDoReplace()) );
+    }
+    m_repDlg->show();
+}
+
 
 bool TextAreaWidget::event( QEvent *e )
 {
