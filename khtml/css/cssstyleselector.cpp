@@ -146,8 +146,10 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     f.open(IO_ReadOnly);
 
     QCString file( f.size()+1 );
-    f.readBlock( file.data(), f.size() );
+    int readbytes = f.readBlock( file.data(), f.size() );
     f.close();
+    if ( readbytes >= 0 )
+        file[readbytes] = '\0';
 
     QString style = QString::fromLatin1( file.data() );
     if(s)
