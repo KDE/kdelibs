@@ -35,7 +35,7 @@
 // Based on Qt's image conversion functions
 static bool kdither_32_to_8( const QImage *src, QImage *dst )
 {
-    register QRgb *p;
+    // register QRgb *p;
     uchar  *b;
     int	    y;
 	
@@ -102,7 +102,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     pv[2] = new int[sw];
 
     for ( y=0; y < src->height(); y++ ) {
-	p = (QRgb *)src->scanLine(y);
+	// p = (QRgb *)src->scanLine(y);
 	b = dst->scanLine(y);
 	int endian = (QImage::systemBitOrder() == QImage::BigEndian);
 	int x;

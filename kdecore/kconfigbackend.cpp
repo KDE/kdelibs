@@ -337,7 +337,6 @@ void KConfigINIBackEnd::sync(bool bMerge)
     return;
 
   bool bEntriesLeft = true;
-  bool bLocalGood = false;
 
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
@@ -366,7 +365,6 @@ void KConfigINIBackEnd::sync(bool bMerge)
     if (checkAccess(aLocalFileName, W_OK)) {
       // is it writable?
       bEntriesLeft = writeConfigFile( aLocalFileName, false, bMerge );
-      bLocalGood = true;
     }
   }
 
