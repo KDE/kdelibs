@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>KWalletWizard</class>
 <widget class="QWizard">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>600</width>
-            <height>480</height>
+            <width>732</width>
+            <height>484</height>
         </rect>
     </property>
     <property name="caption">
@@ -106,7 +106,10 @@
                             <cstring>_basic</cstring>
                         </property>
                         <property name="text">
-                            <string>&amp;Basic Setup (recommended)</string>
+                            <string>&amp;Basic setup (recommended)</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+B</string>
                         </property>
                         <property name="checked">
                             <bool>true</bool>
@@ -117,7 +120,10 @@
                             <cstring>_advanced</cstring>
                         </property>
                         <property name="text">
-                            <string>&amp;Advanced Setup</string>
+                            <string>&amp;Advanced setup</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+A</string>
                         </property>
                     </widget>
                 </grid>
@@ -518,8 +524,8 @@
     <tabstop>_pass2</tabstop>
 </tabstops>
 <includes>
-    <include location="local" impldecl="in implementation">kwalletwizard.ui.h</include>
     <include location="global" impldecl="in declaration">qcheckbox.h</include>
+    <include location="local" impldecl="in implementation">kwalletwizard.ui.h</include>
 </includes>
 <slots>
     <slot access="private">passwordPageUpdate()</slot>
