@@ -347,8 +347,8 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
-    // assumes (_tx/_ty) point to the upper left corner of the box
-    virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}
+    virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/, 
+                                     int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     virtual QRect viewRect() const;
 

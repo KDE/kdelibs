@@ -208,7 +208,7 @@ static int special(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterat
 
 }
 
-static int width(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator &it2,
+static int width(BiDiParagraph * /*par*/, const BiDiIterator &it1, const BiDiIterator &it2,
 		 bool ignoreLast = false)
 {
     int w = 0;
@@ -445,7 +445,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	if(!o->isHidden() && o->length() > 0)
 	{
 	    int aWidth = o->width(pos, o->length() - pos);
-	    assert(o->length() >= pos);
+	    assert((int) o->length() >= pos);
 	    w = new BiDiWord(o, pos, o->length() - pos, level, aWidth);
 	    // kdDebug( 6041 ) << "adding Word1: " << w << ", from=" << pos << " to=" << o->length()-1 << endl;
 	    width -= aWidth;
@@ -468,7 +468,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     }
 }
 
-void BiDiParagraph::breakLines(int xOff, int yOff)
+void BiDiParagraph::breakLines(int /*xOff*/, int yOff)
 {
     d->y = yOff;
 

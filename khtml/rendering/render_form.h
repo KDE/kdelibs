@@ -67,7 +67,7 @@ public:
 
     HTMLFormElementImpl *form() { return m_form; }
 
-    virtual bool isRendered() { return true; }
+    virtual bool isRendered() const  { return true; }
 
     // enum to get the type of form element
     enum Type {

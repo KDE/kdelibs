@@ -521,9 +521,7 @@ void RenderPushButton::slotClicked()
 
 
 QString RenderPushButton::defaultLabel() {
-  // why doesn't QString("") work? :(
   QString s;
-  s.sprintf("");
   return s;
 }
 
