@@ -108,7 +108,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
      d->uriMode = KURL::RawURI;
   else if (tmp == "mailto")
      d->uriMode = KURL::Mailto;
-  else if (tmp == "url"
+  else if (tmp == "url")
      d->uriMode = KURL::URL;
   else 
      d->uriMode = KURL::Auto;
