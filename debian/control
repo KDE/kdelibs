@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.2-1), uic (>= 2.3.2-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libssl-dev
+Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.2-1), uic (>= 2.3.2-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libssl-dev
 Build-Depends-Indep: kdoc, qt-doc
 Build-Conflicts: nas-lib, qt3-tools, libglib1.3-dev, kdelibs3-crypto
 Section: libs
