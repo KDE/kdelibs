@@ -95,7 +95,7 @@ QString Decoder::decode(const char *data, int len)
 		if(*(d+i) == 0) *(d+i) = ' ';
 		i--;
 	    }
-	    buffer += QCString(data, len);
+	    buffer += QCString(data, len+1);
 	
 	
 	    // we still don't have an encoding, and are in the head
