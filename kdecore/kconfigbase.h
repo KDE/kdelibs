@@ -1597,6 +1597,13 @@ public:
    */
   ConfigState getConfigState() const;
 
+  /**
+   * Check whether the config files are writable.
+   * @param warnUser Warn the user if the configuration files are not writable.
+   * @return Indicates that all of the configuration files used are writable.
+   */
+  bool checkConfigFilesWritable(bool warnUser);
+
 protected:
   /**
    * Reads the locale and put in the configuration data struct.

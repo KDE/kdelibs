@@ -2,17 +2,17 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Portions copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -38,10 +38,10 @@ class KConfigBackEndPrivate;
  * is one to read/write to INI-style files, but in the future, other
  * formats may be available, such as XML or a database.
  *
- * @author Preston Brown <pbrown@kde.org>, 
+ * @author Preston Brown <pbrown@kde.org>,
  *         Matthias Kalle Dalheimer <kalle@kde.org>
  * @version $Id$
- * @short KDE Configuration file loading/saving abstract base class 
+ * @short KDE Configuration file loading/saving abstract base class
  */
 class KConfigBackEnd
 {
@@ -133,6 +133,13 @@ public:
    * @param mode the filemode (as in chmod)
    */
   void setFileWriteMode(int mode);
+
+  /**
+   * Check whether the config files are writable.
+   * @param warnUser Warn the user if the configuration files are not writable.
+   * @return Indicates that all of the configuration files used are writable.
+   */
+  bool checkConfigFilesWritable(bool warnUser);
 
 #ifdef KDE_NO_COMPAT
 private:

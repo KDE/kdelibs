@@ -41,7 +41,9 @@
 
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
+#include <kapplication.h>
 #include <kglobal.h>
+#include <kprocess.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
@@ -340,7 +342,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       s = map;
       eof = s + rFile.size();
 
-#ifdef SIGBUS      
+#ifdef SIGBUS
       mmap_pEof = &eof;
       old_sighandler = signal(SIGBUS, mmap_sigbus_handler);
 #endif
@@ -564,7 +566,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    if (map)
    {
       munmap(( char* )map, rFile.size());
-#ifdef SIGBUS      
+#ifdef SIGBUS
       signal(SIGBUS, old_sighandler);
 #endif
    }
@@ -696,7 +698,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
               fputc('i', pStream);
            if (currentEntry.bExpand)
               fputc('e', pStream);
-           
+
            fputc(']', pStream);
         }
         fputc('=', pStream);
@@ -727,7 +729,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
        // fill the temporary structure with entries from the file
        parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal, false );
        rConfigFile.close();
-       
+
        if (bFileImmutable) // File has become immutable on disk
           return true; // pretend we wrote it
     }
@@ -871,3 +873,36 @@ void KConfigBackEnd::virtual_hook( int, void* )
 void KConfigINIBackEnd::virtual_hook( int id, void* data )
 { KConfigBackEnd::virtual_hook( id, data ); }
 
+bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
+{
+  // WARNING: Do NOT use the event loop as it may not exist at this time.
+  bool allWritable = TRUE;
+  QString errorMsg( I18N_NOOP("Will not save configuration.\n") );
+  if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
+  {
+    allWritable = FALSE;
+    errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mLocalFileName);
+  }
+  // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
+  // the local config file immutable is senseless.
+  if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
+  {
+    errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mGlobalFileName);
+    allWritable = FALSE;
+  }
+
+  if (warnUser && !allWritable)
+  {
+    // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
+    errorMsg = errorMsg + QString(I18N_NOOP("Please contact your systems administrator.\n"));
+    QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
+    KApplication *app = kapp;
+    if (!cmdToExec.isEmpty() && app)
+    {
+      KProcess lprocess;
+      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg;
+      lprocess.start( KProcess::Block );
+    }
+  }
+  return allWritable;
+}

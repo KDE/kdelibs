@@ -1653,5 +1653,12 @@ void KConfigBase::virtual_hook( int, void* )
 void KConfigGroup::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-#include "kconfigbase.moc"
+bool KConfigBase::checkConfigFilesWritable(bool warnUser)
+{
+  if (backEnd)
+    return backEnd->checkConfigFilesWritable(warnUser);
+  else
+    return FALSE;
+}
 
+#include "kconfigbase.moc"

@@ -671,6 +671,10 @@ void KApplication::init(bool GUIenabled)
 
   KConfig* config = KGlobal::config();
   d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
+  // For brain-dead configurations where the user's local config file is not writable.
+  config->setGroup("KDE Action Restrictions");
+  if (config->readBoolEntry("warn_unwritable_config",TRUE))
+    config->checkConfigFilesWritable(TRUE);
 
   if (GUIenabled)
   {
@@ -1546,16 +1550,16 @@ bool KApplication::x11EventFilter( XEvent *_event )
 void KApplication::invokeEditSlot( const char *slotName, const char *slot )
 {
   QObject *object = focusWidget();
-  
+
   if( !object || !slotName || !slot )
     return;
-  
+
   QMetaObject *meta = object->metaObject();
   QStrList l = meta->slotNames(true);
-  
+
   if( l.find( slotName ) == -1 )
     return;
-  
+
   connect( this, SIGNAL( editSignal() ), object, slot );
   emit editSignal();
   disconnect( this, SIGNAL( editSignal() ), object, slot );

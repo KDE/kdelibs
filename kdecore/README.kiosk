@@ -96,11 +96,18 @@ someOtherKey=11
 
 - The filesystem can also be used to mark files immutable. If KDE does not 
 have write-access to the user's version of a configuration file, the file
-will be automatically considered immutable.
+will be automatically considered immutable. If you do this, the user will
+be warned that the configuration file is not writable. If you do not want
+the warning, add the following to lines to the application's configuration
+file (or to kdeglobals to disable the warning for all applications):
+
+[KDE Action Restrictions]
+warn_config_unwritable=false
 
 Example:
 chown root.root /home/user/.kde/share/config/kickerrc
 chmod 644 /home/user/.kde/share/config/kickerrc
+  and add the two lines mentioned above to kickerrc. 
 
 Note that this example is not fool-proof, the user can potentially still 
 rename either the root-owned kickerrc file or any of the directories in 
