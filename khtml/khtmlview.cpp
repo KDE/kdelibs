@@ -2065,7 +2065,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	if ( root && !root->layouted() ) {
 	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
-	    scheduleRelayout(false);
+	    scheduleRelayout();
 	    return;
 	}
     }
