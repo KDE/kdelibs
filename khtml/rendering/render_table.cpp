@@ -908,29 +908,49 @@ void RenderTable::calcColMinMax()
 
     if(widthType > Relative) // Percent or fixed table
     {
+	// Netscape ignores width values of "0" or "0%"
+	if ( style()->htmlHacks() && style()->width().value == 0 )
+	    style()->setWidth( Length() );
         m_width = style()->width().minWidth(availableWidth);
         if(m_minWidth > m_width) m_width = m_minWidth;
-/*      kdDebug( 6040 ) << "1 width=" << width << " minWidth=" << minWidth << " m_availableWidth=" << m_availableWidth << " " << endl;
-        if (width>1000) for(int i = 0; i < totalCols; i++)
+	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
+      /*if (width>1000) for(int i = 0; i < totalCols; i++)
         {
             kdDebug( 6040 ) << "DUMP col=" << i << " type=" << colType[i] << " max=" << colMaxWidth[i] << " min=" << colMinWidth[i] << " value=" << colValue[i] << endl;
-        }*/
+	    }*/
 
     }
     else if (hasPercent && !hasFixed)
     {
         //kdDebug( 6040 ) << "2 percentWidest=" << percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
-        int tot = KMIN(99,int( totalPercent ));
-        int w = minVar+minRel > 0 ? minVar+minRel : availableWidth;
-        m_width = KMIN( availableWidth, w*100/(100-tot ) );
+	if ( hasVar || hasRel )
+	    m_width = availableWidth;
+	else {
+	    int tot = KMIN(100u, totalPercent );
+	    m_width = KMAX( availableWidth*tot/100, minPercent );
+	}
     }
     else if (hasPercent && hasFixed)
     {
-        unsigned int tot = KMIN(99u,totalPercent);
-//      kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
-        // int w necessary here to prevent arithmetic overflow of m_width !
-        int w = (maxFixed + minVar + minRel) * 100 / ( 100 - tot );
-        m_width = KMIN (w, availableWidth);
+	//kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
+	if ( style()->htmlHacks() ) {
+	    m_width = availableWidth;
+	    // Netscape degrades fixed to relative in this case.
+	    for(int i = 0; i < (int)totalCols; i++) {
+		if ( colType[i] == Fixed ) {
+		    colType[i] = Relative;
+		    hasRel=true;
+		    totalRelative += colValue[i] ;
+		    minRel += colMinWidth[i] + spacing;
+		}
+	    }
+	    maxFixed = 0;
+	    hasFixed = false;
+	} else {
+	    // more correct CSS2 compliant
+	    int w = (maxFixed + minVar + minRel);
+	    m_width = KMIN( availableWidth, minPercent + w );
+	}
     }
     else
     {
