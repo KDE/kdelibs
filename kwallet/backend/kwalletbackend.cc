@@ -45,6 +45,52 @@ KWalletBackend::~KWalletBackend() {
 }
 
 
+static int getRandomBlock(QByteArray& randBlock) {
+	if (QFile::exists("/dev/urandom")) {
+		QFile devrand("/dev/urandom");
+		if (devrand.open(IO_ReadOnly)) {
+
+		unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+
+			if (rc != randBlock.size())
+				return -3;		// not enough data read
+
+			return 0;
+		}
+	}
+
+	if (QFile::exists("/dev/random")) {
+		QFile devrand("/dev/random");
+		if (devrand.open(IO_ReadOnly)) {
+
+		unsigned int rc = 0;
+		unsigned int cnt = 0;
+		
+			do {
+				int rc2 = 
+				       devrand.readBlock(randBlock.data() + rc, 
+							 randBlock.size());
+
+				if (rc2 < 0)
+					return -3;	// read error
+
+				rc += rc2;
+				cnt++;
+				if (cnt > randBlock.size())
+					return -4;	// reading forever?!
+			} while(rc < randBlock.size());
+
+			return 0;
+		}
+	}
+
+	// EGD method?
+
+
+	return -1;
+}
+
+
 // this should be SHA-512 for release probably
 static int password2hash(const QByteArray& password, QByteArray& hash) {
 	QByteArray first, second, third;
@@ -211,6 +257,7 @@ int KWalletBackend::unlock(QByteArray& password) {
 	encrypted.truncate(fsize+blksz+4);
 	
 	// Load the data structures up
+	/* LOOK HERE DAWIT */
 	
 
 	// "0" out all the structures that we are done with
@@ -236,30 +283,75 @@ int KWalletBackend::lock(QByteArray& password) {
 	QByteArray decrypted;
 
 	// populate decrypted
+	/* LOOK HERE DAWIT */
 
 
 	// calculate the hash of the file
 	SHA1 sha;
+	BlowFish bf;
 
 	sha.process(decrypted.data(), decrypted.size());
 
 	// prepend and append the random data
-	
+	QByteArray wholeFile;
+	long blksz = bf.blockSize();
+	long newsize = decrypted.size() + 
+		       blksz            +    // encrypted block
+		       4                +    // file size
+		       20;      // size of the SHA hash
 
-	// append the hash
+	int delta = (blksz - (newsize % blksz));
+	newsize += delta;
+	wholeFile.resize(newsize);
+
+	QByteArray randBlock;
+	randBlock.resize(blksz+delta);
+	if (getRandomBlock(randBlock) < 0) {
+		sha.reset();
+		decrypted.fill(0);
+		return -3;		// Fatal error: can't get random
+	}
 	
-	
+	for (int i = 0; i < blksz; i++)
+		wholeFile[i] = randBlock[i];
+
+	for (int i = 0; i < 4; i++)
+		wholeFile[i+blksz] = (decrypted.size() >> 8*(3-i))&0xff;
+
+	for (unsigned int i = 0; i < decrypted.size(); i++)
+		wholeFile[i+blksz+4] = decrypted[i];
+
+	for (int i = 0; i < delta; i++)
+		wholeFile[i+blksz+4+decrypted.size()] = randBlock[i+blksz];
+
+	const char *hash = (const char *)sha.getHash();
+	for (int i = 0; i < 20; i++)
+		wholeFile[newsize-20+i] = hash[i];
+
+	sha.reset();
+	decrypted.fill(0);
+
 	// hash the passphrase
 	QByteArray passhash;
 	password2hash(password, passhash);
 	
 	// encrypt the data
-	
+	for (unsigned int i = 0; i < wholeFile.size() % blksz; i++) {
+		int rc = bf.encrypt(wholeFile.data() + i*blksz, blksz);
+		if (rc != 0) {
+			passhash.fill(0);
+			wholeFile.fill(0);
+			return -2;	// encrypt error
+		}
+	}
+
+	passhash.fill(0);        // passhash is UNUSABLE NOW
 
 	// write the file
+	qf.writeBlock(wholeFile, wholeFile.size());
+	qf.close();
 
-
-	passhash.fill(0);
+	wholeFile.fill(0);
 
 	return -1;
 }
