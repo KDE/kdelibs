@@ -564,12 +564,12 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     KKey event_key( e );
 
     // going up in the history, rotating when reaching QListBox::count()
-    if ( KKey(KStdAccel::rotateUp()) == event_key )
+    if ( KKey(KStdAccel::rotateUp().keyCodeQt()) == event_key )
         rotateUp();
 
     // going down in the history, no rotation possible. Last item will be
     // the text that was in the lineedit before Up was called.
-    else if ( KKey(KStdAccel::rotateDown()) == event_key )
+    else if ( KKey(KStdAccel::rotateDown().keyCodeQt()) == event_key )
         rotateDown();
     else
         KComboBox::keyPressEvent( e );
