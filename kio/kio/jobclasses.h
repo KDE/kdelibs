@@ -37,6 +37,8 @@
 class Observer;
 class QTimer;
 
+#define KIO_COPYJOB_HAS_SETINTERACTIVE // new in 3.4. Used by kio_trash.
+
 namespace KIO {
 
     class Slave;
@@ -1467,6 +1469,17 @@ namespace KIO {
          * @since 3.2.3
          */
         void setDefaultPermissions( bool b );
+
+        /**
+         * When an error happens while copying/moving a file, the user will be presented with
+         * a dialog for skipping the file that can't be copied/moved.
+         * Or if the error is that the destination file already exists, the standard
+         * rename dialog is shown.
+         * If the program doesn't want CopyJob to show dialogs, but to simply fail on error,
+         * call setInteractive( false ).
+         * @since 3.4
+         */
+        void setInteractive( bool b );
 
     signals:
 

@@ -219,7 +219,7 @@ void Job::emitResult()
 
 void Job::kill( bool quietly )
 {
-  kdDebug(7007) << "Job::kill this=" << this << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
+  kdDebug(7007) << "Job::kill this=" << this << " " << className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
   QPtrListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
@@ -2090,6 +2090,7 @@ class CopyJob::CopyJobPrivate
 public:
     CopyJobPrivate() {
         m_defaultPermissions = false;
+        m_interactive = false;
         m_bURLDirty = false;
     }
     // This is the dest URL that was initially given to CopyJob
@@ -2101,6 +2102,8 @@ public:
     CopyJob::DestinationState m_globalDestinationState;
     // See setDefaultPermissions
     bool m_defaultPermissions;
+    // See setInteractive
+    bool m_interactive;
     // Whether URLs changed (and need to be emitted by the next slotReport call)
     bool m_bURLDirty;
 };
@@ -2406,8 +2409,10 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if( !hasCustomURL ) {
                 // Make URL from displayName
                 url = ((SimpleJob *)job)->url();
-                if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
+                if ( m_bCurrentSrcIsDir ) { // Only if src is a directory. Otherwise uSource is fine as is
+                    //kdDebug(7007) << "adding path " << displayName << endl;
                     url.addPath( displayName );
+                }
             }
             //kdDebug(7007) << "displayName=" << displayName << " url=" << url << endl;
 
@@ -2668,6 +2673,11 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                     emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
                     dirs.remove( it ); // Move on to next dir
                 } else {
+                    if ( !d->m_interactive ) {
+                        Job::slotResult( job ); // will set the error and emit result(this)
+                        return;
+                    }
+
                     assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
                     subjobs.remove( job );
                     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
@@ -2907,6 +2917,11 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         }
         else
         {
+            if ( !d->m_interactive ) {
+                Job::slotResult( job ); // will set the error and emit result(this)
+                return;
+            }
+
             m_conflictError = job->error(); // save for later
             // Existing dest ?
             if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
@@ -3053,6 +3068,10 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     {
         if ( job->error() == ERR_USER_CANCELED )
             res = R_CANCEL;
+        else if ( !d->m_interactive ) {
+            Job::slotResult( job ); // will set the error and emit result(this)
+            return;
+        }
         else
         {
             SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 1,
@@ -3218,7 +3237,9 @@ void CopyJob::copyNextFile()
                            KSimpleConfig config( path );
                            config.setDesktopGroup();
                            config.writePathEntry( QString::fromLatin1("URL"), (*it).uSource.url() );
-                           config.writeEntry( QString::fromLatin1("Name"), (*it).uSource.url() );
+                           KURL urlName = (*it).uSource;
+                           urlName.setPass( "" );
+                           config.writeEntry( QString::fromLatin1("Name"), urlName.url() );
                            config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
                            QString protocol = (*it).uSource.protocol();
                            if ( protocol == QString::fromLatin1("ftp") )
@@ -3467,7 +3488,8 @@ void CopyJob::slotResult( Job *job )
                 Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
 
                 // Existing dest?
-                if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+                if ( ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+                     && d->m_interactive )
                 {
                     if (m_reportTimer)
                         m_reportTimer->stop();
@@ -3579,6 +3601,11 @@ void CopyJob::slotResult( Job *job )
 void KIO::CopyJob::setDefaultPermissions( bool b )
 {
     d->m_defaultPermissions = b;
+}
+
+void KIO::CopyJob::setInteractive( bool b )
+{
+    d->m_interactive = b;
 }
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
