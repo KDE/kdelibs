@@ -936,6 +936,10 @@ bool KWalletD::isEnabled() const {
 
 
 bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) {
+	if (!wallets().contains(wallet)) {
+		return true;
+	}
+
 	for (QIntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
@@ -953,6 +957,10 @@ bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) 
 
 
 bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key) {
+	if (!wallets().contains(wallet)) {
+		return true;
+	}
+
 	for (QIntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
