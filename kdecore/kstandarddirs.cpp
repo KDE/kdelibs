@@ -722,24 +722,27 @@ void KStandardDirs::createSpecialResource(const char *type)
    link[1023] = 0;
    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
    bool relink = (result == -1) && (errno == ENOENT);
-   if ((result > 0) && !QDir::isRelativePath(link))
+   if (result > 0)
    {
       link[result] = 0;
-      KDE_struct_stat stat_buf;
-      int res = KDE_lstat(link, &stat_buf);
-      if ((res == -1) && (errno == ENOENT))
+      if (!QDir::isRelativePath(link))
       {
-         relink = true;
-      }
-      else if ((res == -1) || (!S_ISDIR(stat_buf.st_mode)))
-      {
-         fprintf(stderr, "Error: \"%s\" is not a directory.\n", link);
-         relink = true;
-      }
-      else if (stat_buf.st_uid != getuid())
-      {
-         fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", link, stat_buf.st_uid, getuid());
-         relink = true;
+         KDE_struct_stat stat_buf;
+         int res = KDE_lstat(link, &stat_buf);
+         if ((res == -1) && (errno == ENOENT))
+         {
+            relink = true;
+         }
+         else if ((res == -1) || (!S_ISDIR(stat_buf.st_mode)))
+         {
+            fprintf(stderr, "Error: \"%s\" is not a directory.\n", link);
+            relink = true;
+         }
+         else if (stat_buf.st_uid != getuid())
+         {
+            fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", link, stat_buf.st_uid, getuid());
+            relink = true;
+         }
       }
    }
 #ifdef Q_WS_WIN
