@@ -393,7 +393,7 @@ bool KAccelBase::updateConnections()
 	m_mapKeyToAction = mapKeyToAction;
 
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-		kdDebug(125) << "Key: " << it.key().toString() << " => '"
+		kdDebug(125) << "Key: " << it.key().toStringInternal() << " => '"
 			<< (((*it).pAction) ? (*it).pAction->name() : QString::null) << "'" << endl;
 	}
 
