@@ -207,6 +207,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
       lst += KServiceFactory::self()->offers( servAll->offset() );
     else
       kdWarning(7009) << QString("KServiceType::offers : servicetype all/all not found") << endl;
+    delete servAll;
 
     // Support for services associated with "allfiles"
     if ( _servicetype != "inode/directory" && _servicetype != "inode/directory-locked" )
@@ -216,6 +217,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         lst += KServiceFactory::self()->offers( servAllFiles->offset() );
       else
         kdWarning(7009) << QString("KServiceType::offers : servicetype all/allfiles not found") << endl;
+      delete servAllFiles;
     }
   }
 
@@ -225,6 +227,8 @@ KService::List KServiceType::offers( const QString& _servicetype )
     lst += KServiceFactory::self()->offers( serv->offset() );
   else
     kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
+  delete serv;
+
   return lst;
 }
 
