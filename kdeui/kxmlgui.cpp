@@ -705,6 +705,59 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
     QString tag = e.tagName().lower();
     QString currName = e.attribute( d->attrName );
 
+    bool isActionTag = false;
+
+    if ( ( isActionTag = ( tag == tagAction ) ) || customTags.contains( tag ) )
+    {
+      if ( !parentNode->container )
+        continue;
+
+      QValueList<MergingIndex>::Iterator it = d->m_currentClientMergingIt;
+
+      bool haveGroup = false;
+      QString group = e.attribute( attrGroup );
+      if ( !group.isEmpty() )
+      {
+        group.prepend( attrGroup );
+        haveGroup = true;
+      }
+
+      int idx;
+      if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely cached running merging index values.
+          idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+      else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() ) // if we don't have a current merging index, then we
+          idx = parentNode->index;                                                // want to append our action
+      else
+          idx = (*d->m_currentClientMergingIt).value;
+
+
+      containerClient = findClient( parentNode, group, it );
+
+      if ( isActionTag )
+      {
+        // look up the action and plug it in
+        KAction *action = m_client->action( e );
+
+        if ( !action )
+          continue;
+
+        action->plug( parentNode->container, idx );
+
+        // save a reference to the plugged action, in order to properly unplug it afterwards.
+        containerClient->actions.append( action );
+      }
+      else
+      {
+        assert( parentNode->builder );
+
+        int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
+        if ( id != 0 )
+          containerClient->customElements.append( id );
+      }
+
+      // adjust any following merging indices and the current running index for the container
+      adjustMergingIndices( parentNode, 1, it );
+    }
     /*
      * The "Merge" tag specifies that all containers and actions from *other* clients should be
      * inserted/plugged in at the current index, and not appended.
@@ -712,7 +765,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
      * index of where the tags appear, in order to "substitute" them with other clients actions,
      * actionlists, containers, custom elements or even merging indices.
      */
-    if ( tag == tagMerge || tag == tagDefineGroup || tag == d->tagActionList )
+    else if ( tag == tagMerge || tag == tagDefineGroup || tag == d->tagActionList )
     {
       QString mergingName = currName;
       if ( mergingName.isEmpty() )
@@ -763,57 +816,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
       // re-calculate the running default and client merging indices.
       d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
       calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
-    }
-    else if ( tag == tagAction || customTags.contains( tag ) )
-    {
-      if ( !parentNode->container )
-        continue;
-
-      QValueList<MergingIndex>::Iterator it = d->m_currentClientMergingIt;
-
-      bool haveGroup = false;
-      QString group = e.attribute( attrGroup );
-      if ( !group.isEmpty() )
-      {
-        group.prepend( attrGroup );
-        haveGroup = true;
-      }
-
-      int idx;
-      if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely cached running merging index values.
-          idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
-      else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() ) // if we don't have a current merging index, then we
-          idx = parentNode->index;                                                // want to append our action
-      else
-          idx = (*d->m_currentClientMergingIt).value;
-
-
-      containerClient = findClient( parentNode, group, it );
-
-      if ( tag == tagAction )
-      {
-        // look up the action and plug it in
-        KAction *action = m_client->action( e );
-
-        if ( !action )
-          continue;
-
-        action->plug( parentNode->container, idx );
-
-        // save a reference to the plugged action, in order to properly unplug it afterwards.
-        containerClient->actions.append( action );
-      }
-      else
-      {
-        assert( parentNode->builder );
-
-        int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
-        if ( id != 0 )
-          containerClient->customElements.append( id );
-      }
-
-      // adjust any following merging indices and the current running index for the container
-      adjustMergingIndices( parentNode, 1, it );
     }
     else if ( containerTags.contains( tag ) )
     {
