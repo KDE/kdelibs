@@ -116,15 +116,12 @@ int main (int argc, char *argv[])
         while ((dirp = readdir(dp))) {
           if (dirp->d_fileno != dsb.st_ino)
             continue;
-	  {
-	  int pdlen = strlen(_PATH_DEV), namelen = strlen(dirp->d_name);
-	  pty = malloc(pdlen + namelen + 1);
+	  pty = malloc(sizeof(_PATH_DEV) + strlen(dirp->d_name));
 	  if (pty) {
-	    *pty = 0;
-	    strcat(pty, _PATH_DEV);
+	    strcpy(pty, _PATH_DEV);
 	    strcat(pty, dirp->d_name);
-	  }
           }
+	  break;
         }
 
         (void) closedir(dp);
@@ -138,7 +135,7 @@ int main (int argc, char *argv[])
 
   if (pty == NULL)
   {
-    fprintf(stderr,"%s: cannot determine the name of device.\n",argv[0]);
+    fprintf(stderr,"%s: cannot determine pty name.\n",argv[0]);
     return 1; /* FAIL */
   }
   close(fd);
@@ -146,7 +143,7 @@ int main (int argc, char *argv[])
   /* matches /dev/pty?? */
   if (strlen(pty) < 8 || strncmp(pty,"/dev/pty",8))
   {
-    fprintf(stderr,"%s: determined a strange device name `%s'.\n",argv[0],pty);
+    fprintf(stderr,"%s: determined a strange pty name `%s'.\n",argv[0],pty);
     return 1; /* FAIL */
   }
 
@@ -165,22 +162,23 @@ int main (int argc, char *argv[])
 
   if (chown(tty, uid, gid) < 0)
   {
-    fprintf(stderr,"%s: cannot chown %s.\n",argv[0],tty); perror("Reason");
+    fprintf(stderr,"%s: cannot chown %s: %s\n",argv[0],tty,strerror(errno));
     return 1; /* FAIL */
   }
 
   if (chmod(tty, mod) < 0)
   {
-    fprintf(stderr,"%s: cannot chmod %s.\n",argv[0],tty); perror("Reason");
+    fprintf(stderr,"%s: cannot chmod %s: %s\n",argv[0],tty,strerror(errno));
     return 1; /* FAIL */
   }
 
+#ifndef __linux__
   if (revoke(tty) < 0)
   {
-    fprintf(stderr,"%s: cannot revoke %s.\n",argv[0],tty); perror("Reason");
+    fprintf(stderr,"%s: cannot revoke %s: %s\n",argv[0],tty,strerror(errno));
     return 1; /* FAIL */
   }
-
+#endif
 
   return 0; /* OK */
 }
