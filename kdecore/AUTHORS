@@ -44,3 +44,6 @@ KWM, Changes to KApplication and KIconLoader
 
 Stephan Kulow <coolo@kde.org>
 heavy modifications to KURL, autoconf and automake stuff
+
+Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
+KCharset* classes
