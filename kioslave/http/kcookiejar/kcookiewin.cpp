@@ -247,7 +247,6 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     grid->addWidget( label, 1, 0 );
     m_name = new KLineEdit( this );
     m_name->setReadOnly( true );
-    m_name->setText( cookie->name() );
     m_name->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_name, 1 ,1 );
 
@@ -256,7 +255,6 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     grid->addWidget( label, 2, 0 );
     m_value = new KLineEdit( this );
     m_value->setReadOnly( true );
-    m_value->setText( cookie->value() );
     m_value->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_value, 2, 1);
 
@@ -264,12 +262,6 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     grid->addWidget( label, 3, 0 );
     m_expires = new KLineEdit( this );
     m_expires->setReadOnly( true );
-    QDateTime cookiedate;
-    cookiedate.setTime_t( cookie->expireDate() );
-    if ( cookie->expireDate() )
-      m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
-    else
-      m_expires->setText( i18n("End of Session") );
     m_expires->setMaximumWidth(fontMetrics().width('W') * 25 );
     grid->addWidget( m_expires, 3, 1);
 
@@ -277,7 +269,6 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     grid->addWidget( label, 4, 0 );
     m_path = new KLineEdit( this );
     m_path->setReadOnly( true );
-    m_path->setText( cookie->path() );
     m_path->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_path, 4, 1);
 
@@ -285,16 +276,13 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     grid->addWidget( label, 5, 0 );
     m_domain = new KLineEdit( this );
     m_domain->setReadOnly( true );
-    QString val = cookie->domain();
-    m_domain->setText( val.isEmpty()?i18n("Not specified"):val );
     m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_domain, 5, 1);
 
-    label = new QLabel( i18n("Is secure:"), this );
+    label = new QLabel( i18n("Exposure:"), this );
     grid->addWidget( label, 6, 0 );
     m_secure = new KLineEdit( this );
     m_secure->setReadOnly( true );
-    m_secure->setText( cookie->isSecure() ? i18n("True"):i18n("False") );
     m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_secure, 6, 1 );
 
@@ -309,7 +297,8 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 #endif
     }
     m_cookieList = cookieList;
-    m_cookie = cookie;
+    m_cookie = 0;
+    slotNextCookie();
 }
 
 KCookieDetail::~KCookieDetail()
@@ -319,7 +308,7 @@ KCookieDetail::~KCookieDetail()
 void KCookieDetail::slotNextCookie()
 {
     KHttpCookiePtr cookie = m_cookieList.first();
-    while(cookie)
+    if (m_cookie) while(cookie)
     {
        if (cookie == m_cookie)
        {
@@ -347,7 +336,22 @@ void KCookieDetail::slotNextCookie()
           m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
         else
           m_expires->setText( i18n("End of Session") );
-        m_secure->setText( m_cookie->isSecure() ? i18n("True"):i18n("False") );
+        QString sec;
+        if (m_cookie->isSecure())
+        {
+          if (m_cookie->isHttpOnly())
+            sec = i18n("Secure servers only");
+          else
+            sec = i18n("Secure servers, page scripts");
+        }
+        else
+        {
+          if (m_cookie->isHttpOnly())
+            sec = i18n("Servers");
+          else
+            sec = i18n("Servers, page scripts");
+        }
+        m_secure->setText( sec );
     }
 }
 
