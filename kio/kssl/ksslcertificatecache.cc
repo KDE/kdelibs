@@ -358,13 +358,13 @@ QStringList KSSLCertificateCache::getKDEKeyByEmail(const QString &email) {
 }     
 
 
-KSSLCertificate *KSSLCertificateCache::getCertByKDEKey(const QString &key) {
+KSSLCertificate *KSSLCertificateCache::getCertByMD5Digest(const QString &key) {
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
      arg << key;
      bool rc = d->dcc->call("kded", "kssld",
-                            "getCertByKDEKey(QString)",
+                            "getCertByMD5Digest(QString)",
                             data, rettype, retval);
 
      if (rc && rettype == "KSSLCertificate") {

@@ -105,7 +105,7 @@ k_dcop:
 
   QStringList getKDEKeyByEmail(const QString &email);
 
-  KSSLCertificate getCertByKDEKey(const QString &key);
+  KSSLCertificate getCertByMD5Digest(const QString &key);
 
   //
   //  Certificate Home methods

@@ -756,7 +756,7 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 }
 
 
-KSSLCertificate KSSLD::getCertByKDEKey(const QString &key) {
+KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 	QMap<QString, KSSLCertificate *>::iterator iter = skKDEKey.find(key);
 	
 	kdDebug() << "Searching cert for " << key.latin1() << endl;

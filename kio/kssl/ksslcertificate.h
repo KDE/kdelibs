@@ -75,6 +75,10 @@ friend class KSSLCertChain;
 friend class KSSLPeerInfo;
 friend class KSSLPKCS12;
 friend class KSSLD;
+friend class KSMIMECertProxy;
+friend class KSMIMEInterface;
+friend class KSMIMECrypto;
+
 
 public:
 	/**
@@ -279,12 +283,12 @@ public:
 	/**
 	 *  Compare two certificate to determine if they are the same.
 	 */
-	friend int operator==(KSSLCertificate &x, KSSLCertificate &y);
+	friend int operator==(KSSLCertificate& x, KSSLCertificate& y);
 
 	/**
 	 *  Compare two certificate to determine if they are not the same.
 	 */
-	inline friend int operator!=(KSSLCertificate &x, KSSLCertificate &y) 
+	inline friend int operator!=(KSSLCertificate& x, KSSLCertificate& y) 
                                                        { return !(x == y); }
 
 	/**
@@ -310,14 +314,19 @@ public:
 	/**
 	 *  FIXME: document
 	 */
-	void getEmails(QStringList &to) const;
+	void getEmails(QStringList& to) const;
 
 	/**
-	 * FIXME: document
-	 * result of getKDEKey might change and should not be used for
-	 * persistant storage
+	 * KDEKey is a concatenation "Subject (MD5)", mostly needed for SMIME.
+	 * The result of getKDEKey might change and should not be used for
+	 * persistant storage.
 	 */
 	QString getKDEKey() const;
+
+	/**
+	 * Aegypten semantics force us to search by MD5Digest only.
+	 */
+	static QString getMD5DigestFromKDEKey(const QString& k);
 
 private:
 	KSSLCertificatePrivate *d;

@@ -82,7 +82,7 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 
   // SMIME
   QStringList getKDEKeyByEmail(const QString &email);
-  KSSLCertificate *getCertByKDEKey(const QString &key);
+  KSSLCertificate *getCertByMD5Digest(const QString &key);
 
   void reload();
 
