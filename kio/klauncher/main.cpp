@@ -52,6 +52,7 @@ start_launcher(int socket)
 
    KLauncher *launcher = new KLauncher(socket);
    launcher->dcopClient()->setDefaultObject( name );
+   launcher->dcopClient()->setDaemonMode( true );
 
    KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);

@@ -913,6 +913,18 @@ void DCOPClient::setNotifications(bool enabled)
 	qWarning("I couldn't enable notifications at the dcopserver!");
 }
 
+void DCOPClient::setDaemonMode( bool daemonMode )
+{
+    QByteArray data;
+    QDataStream ds(data, IO_WriteOnly);
+    ds << static_cast<Q_INT8>( daemonMode );
+
+    QCString replyType;
+    QByteArray reply;
+    if (!call("DCOPServer", "", "setDaemonMode(bool)", data, replyType, reply))
+	qWarning("I couldn't enable daemon mode at the dcopserver!");
+}
+
 
 
 /*

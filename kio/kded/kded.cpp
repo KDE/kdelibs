@@ -258,6 +258,8 @@ int main(int argc, char *argv[])
      signal(SIGTERM, sighandler);
      KUniqueApplication k( false, false ); // No styles, no GUI
 
+     kapp->dcopClient()->setDaemonMode( true );
+
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't
      // changed.

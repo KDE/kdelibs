@@ -110,6 +110,7 @@ int main(int argc, char **argv)
     // start notify service
     KNotify notify;
     app.dcopClient()->setDefaultObject( "Notify" );
+    app.dcopClient()->setDaemonMode( true );
     return app.exec();
 }
 
@@ -185,7 +186,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
 	if ( !eventsFile->hasGroup( event ) && isGlobal(event) )
 	    eventsFile = d->globalEvents;
-	
+
         eventsFile->setGroup( event );
 
         // get event presentation

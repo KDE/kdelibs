@@ -109,6 +109,7 @@ private:
     QPtrDict<DCOPConnection> clients;
     DCOPSignals *dcopSignals;
     int currentClientNumber;
+    QCStringList daemons;
     QTimer * m_timer;
 };
 

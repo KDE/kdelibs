@@ -872,13 +872,16 @@ void DCOPServer::removeConnection( void* data )
 #ifndef NDEBUG
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
 #endif
-        if ( conn->appId.left(9) != "klauncher" && conn->appId != "kded" && conn->appId != "knotify" && conn->appId != "kio_uiserver" )
+        if ( !daemons.contains( conn->appId ) )
         {
             currentClientNumber--;
 #ifndef NDEBUG
             qDebug("DCOP: number of clients is now down to %d", currentClientNumber );
 #endif
         }
+        else
+            daemons.remove( conn->appId );
+
 	appIds.remove( conn->appId );
 
 	QPtrDictIterator<DCOPConnection> it( clients );
@@ -934,9 +937,52 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
         replyType = "void";
         return true;
     }
+    if ( fun == "setDaemonMode(bool)" ) {
+        QDataStream args( data, IO_ReadOnly );
+        if ( !args.atEnd() ) {
+            Q_INT8 iDaemon;
+            bool daemon;
+            args >> iDaemon;
+
+            daemon = static_cast<bool>( iDaemon );
+
+	    DCOPConnection* conn = clients.find( iceConn );
+            if ( conn && !conn->appId.isNull() ) {
+                if ( daemon ) {
+                    if ( !daemons.contains( conn->appId ) )
+                    {
+                        daemons.append( conn->appId );
+
+#ifndef NDEBUG
+                        qDebug( "DCOP: new daemon %s", conn->appId.data() );
+#endif
+
+                        currentClientNumber--;
+
+// David says it's safer not to do this :-)
+//                        if ( currentClientNumber == 0 )
+//                            m_timer->start( 10000 );
+                    }
+                } else
+                {
+                    if ( daemons.contains( conn->appId ) ) {
+                        daemons.remove( conn->appId );
+
+                        currentClientNumber++;
+
+                        m_timer->stop();
+                    }
+                }
+            }
+
+            replyType = "void";
+            return true;
+        }
+    }
     if ( fun == "registerAs(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
+            bool isDaemon = false;
 	    QCString app2;
 	    args >> app2;
 	    QDataStream reply( replyData, IO_WriteOnly );
@@ -945,21 +991,20 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		if ( !conn->appId.isNull() &&
 		     appIds.find( conn->appId ) == conn ) {
 		    appIds.remove( conn->appId );
+
+                    if ( daemons.contains( conn->appId ) )
+                    {
+                        daemons.remove( conn->appId );
+                        isDaemon = true;
+                    }
 		}
 
 		if ( conn->appId.isNull() )
                 {
-                    if ( app2.left(9) != "klauncher" && app2 != "kded" && app2 != "knotify" && app2 != "kio_uiserver" )
-                    {
-                        currentClientNumber++;
-                        m_timer->stop(); // abort termination if we were planning one
+                    currentClientNumber++;
+                    m_timer->stop(); // abort termination if we were planning one
 #ifndef NDEBUG
-                        qDebug("DCOP: register '%s' -> number of clients is now %d", app2.data(), currentClientNumber );
-#endif
-                    }
-#ifndef NDEBUG
-                    else
-		      qDebug("DCOP: register '%s'", app2.data() );
+                    qDebug("DCOP: register '%s' -> number of clients is now %d", app2.data(), currentClientNumber );
 #endif
                 }
 #ifndef NDEBUG
@@ -981,6 +1026,10 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->appId = tmp;
 		}
 		appIds.insert( conn->appId, conn );
+
+                if ( isDaemon )
+                    daemons.append( conn->appId );
+
 		int c = conn->appId.find( '-' );
 		if ( c > 0 )
 		    conn->plainAppId = conn->appId.left( c );

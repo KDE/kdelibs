@@ -479,14 +479,23 @@ class DCOPClient : public QObject
    * They are disabled by default.  */
   void setNotifications( bool enabled );
 
-  /** 
+  /**
+   * Tells the dcopserver to treat the client as daemon client, not
+   * as regular client.
+   * If the number of regular clients drops down to zero, the
+   * dcopserver will emit a KDE termination signal after 10
+   * seconds.
+   */
+  void setDaemonMode( bool daemonMode );
+
+  /**
    * Returns the application's main dcop client. The main client can
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
    * as KAppliction::dcopClient().
    */
   static DCOPClient* mainClient();
-    
+
  /**
    * Sets the application's main dcop client. The main client can
    * be used by objects that do not have any specific access to a dcop
@@ -539,7 +548,7 @@ signals:
    * issued.
    */
   void blockUserInput( bool );
-    
+
 public slots:
 
 protected slots:
