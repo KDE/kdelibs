@@ -115,15 +115,14 @@ protected:
 
     QRegion getRegion(int width_, int height);
 
-    Shape shape;
     QList<khtml::Length>* coords;
     DOMStringImpl *href;
     DOMStringImpl *target;
-    bool nohref;
 
     QRegion region;
-
+    Shape shape;
     int lastw, lasth;
+    bool nohref  : 1;
 };
 
 
