@@ -48,6 +48,7 @@ static bool qstrBeginEq( const QString &s1, const QString &s2 );
 KURLCompletion::KURLCompletion() : KCompletion()
 {
 	init();
+        m_current_url = 0L;
 }
 
 
@@ -55,6 +56,7 @@ KURLCompletion::KURLCompletion( Mode mode ) : KCompletion()
 {
 	init();
 	m_mode = mode;
+        m_current_url = 0L;
 }
 
 
