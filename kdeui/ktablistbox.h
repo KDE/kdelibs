@@ -17,6 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 /* Written by Stefan Taferner <taferner@kde.org>
+ *            Alessandro Russo <axela@bigfoot.com>
  * A multi column listbox. Requires the Qt widget set.
  */
 #ifndef KTabListBox_h
@@ -36,8 +37,43 @@ class KTabListBoxColumn;
 class KTabListBoxTable;
 class KTabListBoxItem;
 class KTabListBox;
+class KNumCheckButton;
 
 typedef QDict<QPixmap> KTabListBoxDict;
+
+//-----------------------------------------------------
+/**
+* Provides a different type of Check button.
+* 
+*/
+class KNumCheckButton : public QWidget
+{
+    Q_OBJECT
+public:
+    KNumCheckButton( QWidget *_parent = 0L, const char *name = 0L );
+    ~KNumCheckButton() {};
+    void setText( const char * );
+     
+signals:
+    void        selected();
+    void        deselected();    
+    /** leftbutton=true if is a leftbutton, =false if is a rightbutton
+    *   centerbutton doubleclick events aren't emitted.
+    */
+    void	doubleclick(bool leftbutton);
+
+protected:
+    virtual void leaveEvent( QEvent *_ev );
+    virtual void enterEvent( QEvent *_ev );
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void paintEvent( QPaintEvent *event);    
+    
+ private:    
+    bool raised;
+    QString     btext;
+};
+
 
 //--------------------------------------------------
 #define KTabListBoxTableInherited QTableView
@@ -48,6 +84,8 @@ class KTabListBoxTable: public QTableView
 public:
   KTabListBoxTable(KTabListBox *owner=0);
   virtual ~KTabListBoxTable();
+  void enableKey();
+  int findRealCol(int x);
 
 protected:
   virtual void focusInEvent(QFocusEvent*);
@@ -63,9 +101,9 @@ protected:
 
   void reconnectSBSignals (void);
 
-  static QPoint dragStartPos;
-  static int dragCol, dragRow;
-  static int selIdx;
+  QPoint dragStartPos;
+  int dragCol, dragRow;
+  int selIdx;
   bool dragging;
 };
 
@@ -73,8 +111,16 @@ protected:
 //--------------------------------------------------
 #define KTabListBoxInherited KDNDWidget
 
-/** A multi column listbox */
-
+/** A multi column listbox 
+* Features:
+*  - User resizeable columns.
+*  - The order of columns can be changed with drag&drop. (Alex)
+*  - 3 modes: Standard, SimpleOrder, ComplexOrder. (Alex)
+* ToDo: 
+*  - Configurable vertical column divisor lines. 
+*  - Save all setting to config file.
+*  - fix flickering into column headers.
+*/
 class KTabListBox : public KDNDWidget
 {
   Q_OBJECT
@@ -83,11 +129,18 @@ class KTabListBox : public KDNDWidget
 
 public:
   enum ColumnType { TextColumn, PixmapColumn, MixedColumn };
+  enum OrderMode { Ascending, Descending };
+  enum OrderType { NoOrder, SimpleOrder, ComplexOrder };
 
   KTabListBox (QWidget *parent=0, const char *name=0, 
 	       int columns=1, WFlags f=0);
   virtual ~KTabListBox();
 
+  /** This enable the key-bindings (and set StrongFocus!)
+  *   if you don't want StrongFocus you can implement your own keyPressEvent
+  *   and send an event to KTabListBox from there... */
+  void enableKey(void) { lbox.enableKey(); }
+  
   /** Returns the number of rows */
   uint count (void) const { return numRows(); };
   
@@ -145,14 +198,14 @@ public:
   virtual bool isMarked (int idx) const;
 
   /** Find item at given screen y position. */
-  int findItem (int yPos) const { return (lbox.findRow(yPos)); }
+  int findItem (int yPos) const { return (itemShowList[lbox.findRow(yPos)]); }
 
   /** Returns first item that is currently displayed in the widget. */
-  int topItem (void) const { return (lbox.topCell()); }
+  int topItem (void) const { return (itemShowList[lbox.topCell()]); }
 
   /** Change first displayed item by repositioning the visible part
     of the list. */
-  void setTopItem (int idx) { lbox.setTopCell(idx); }
+  void setTopItem (int idx) { lbox.setTopCell(itemPosList(idx)); }
 
   /** Set number of columns. Warning: this *deletes* the contents
     of the listbox. */
@@ -174,13 +227,13 @@ public:
   /** See the docs for the QTableView class. */
   int totalHeight (void) { return lbox.totalHeight(); }
   /** See the docs for the QTableView class. */
-  int topCell (void) const { return lbox.topCell(); }
+  int topCell (void) const { return itemShowList[lbox.topCell()]; }
   /** See the docs for the QTableView class. */
-  int leftCell (void) const { return lbox.leftCell(); }
+  int leftCell (void) const { return colShowList[lbox.leftCell()]; }
   /** See the docs for the QTableView class. */
-  int lastColVisible (void) const { return lbox.lastColVisible(); }
+  int lastColVisible (void) const { return colShowList[lbox.lastColVisible()]; }
   /** See the docs for the QTableView class. */
-  int lastRowVisible (void) const { return lbox.lastRowVisible(); }
+  int lastRowVisible (void) const { return itemShowList[lbox.lastRowVisible()]; }
   /** See the docs for the QTableView class. */
   bool autoUpdate (void) const { return lbox.autoUpdate(); }
   /** See the docs for the QTableView class. */
@@ -194,17 +247,30 @@ public:
   /** See the docs for the QTableView class. */
   void setTableFlags(uint f) { lbox.setTableFlags(f); }
   /** See the docs for the QTableView class. */
-  int findCol(int x) { return lbox.findCol(x); }
+  int findCol(int x) { return lbox.findRealCol(x); }
   /** See the docs for the QTableView class. */
-  int findRow(int y) { return lbox.findRow(y); }
+  int findRow(int y) { return itemShowList[lbox.findRow(y)]; }
   /** See the docs for the QTableView class. */
-  bool colXPos(int col, int* x) { return lbox.colXPos(col,x); }
+  bool colXPos(int col, int* x) { return lbox.colXPos(colPosList(col),x); }
   /** See the docs for the QTableView class. */
-  bool rowYPos(int row, int* y) { return lbox.rowYPos(row,y); }
+  bool rowYPos(int row, int* y) { return lbox.rowYPos(itemPosList(row),y); }
 
-  /** Set column caption, width, and type. */
+  /** This call the 'compar' functions if they were been defined in 
+  * setColumn or else use strcmp. (i.e. if you want a case-insensitive sort
+  * put strcasecmp in setColumn call).
+  * That compar function must take as arguments two char *, and must return
+  * an integer less  than, equal  to,  or  greater than zero if the first
+  * argument is considered to be respectively  less  than,  equal  to, 
+  * or greater than the second. */
+  virtual void reorderRows();
+  
+  /** Set column caption, width, type,order-type and order-mode */
   virtual void setColumn (int col, const char* caption, 
-			  int width=0, ColumnType type=TextColumn);
+			  int width=0, ColumnType type=TextColumn,
+			  OrderType ordt=NoOrder,
+			  OrderMode omode=Descending,
+			  bool verticalLine=false,
+			  int (*compar)(const char *, const char *)=0L);
 
   /** Set column width. */
   virtual void setColumnWidth (int col, int width=0);
@@ -214,8 +280,13 @@ public:
   /** Set default width of all columns. */
   virtual void setDefaultColumnWidth(int width0, ...);
 
+  /** change the Ascending/Descending mode of column col.*/
+  void changeMode(int col);
+  /** Clear all number-check-buttons (ComplexOrder only) */
+  void clearAllNum();
+  
   /** Set separator character, e.g. '\t'. */
-  virtual void setSeparator (char sep);
+  virtual void setSeparator (char sep) { sepChar = sep; } 
 
   /** Return separator character. */
   virtual char separator (void) const { return sepChar; }
@@ -223,16 +294,25 @@ public:
   /** For convenient access to the dictionary of pictures that this listbox understands. */
   KTabListBoxDict& dict (void) { return pixDict; }
 
-  void repaint (void) { QWidget::repaint(); lbox.repaint(); }
+  void repaint (void);
 
   /** Indicates that a drag has started with given item. Returns TRUE if we are dragging, FALSE if drag-start failed. */
   bool startDrag(int col, int row, const QPoint& mousePos);
 
   QPixmap& dndPixmap(void) { return dndDefaultPixmap; }
 
-  /** Read the config file entries in the group with the name of the listbox and set the column widths and those. */
+  /** Read the config file entries in the group with the name of the listbox and set the default column widths and those. */
   virtual void readConfig(void);
 
+  /** Write the config file entries in the group with the name of the listbox*/
+  virtual void writeConfig(void);
+  
+  /** Return the actual position of the colum in the table.*/
+  int colPosList(int num);
+  
+  /** Return the actual positon of the row number num.*/
+  int itemPosList(int num);
+  
 signals:
   /** emited when the current item changes (either via setCurrentItem() or via mouse single-click). */
   void highlighted (int Index, int column);
@@ -256,11 +336,22 @@ protected slots:
 protected:
   bool itemVisible (int idx) { return lbox.rowIsVisible(idx); }
   void updateItem (int idx, bool clear = TRUE);
-  bool needsUpdate (int id) { return (lbox.autoUpdate() && itemVisible(id)); }
-
+  bool needsUpdate (int id);
+  /// Internal method called by keyPressEvent.
+  void setCItem  (int idx);
+  /// Adjust the number in the number check boxes.
+  void adjustNumber(int num);
+  // This should really go into kdecore and should be used by all
+  // apps that have long scrollable widgets.
+  void flushKeys();
+  
+  /// For internal use.
+  bool recursiveSort(int level,int n,KTabListBoxColumn **c,int *iCol);
+  
   KTabListBoxItem* getItem (int idx);
   const KTabListBoxItem* getItem (int idx) const;
 
+  virtual void keyPressEvent(QKeyEvent*);
   virtual void resizeEvent (QResizeEvent*);
   virtual void paintEvent (QPaintEvent*);
   virtual void mouseMoveEvent(QMouseEvent*);
@@ -279,8 +370,13 @@ protected:
 
   /** Internal method that handles moving of columns with the mouse. */
   virtual void doMouseMoveCol(QMouseEvent*);
-
+  
+  // This array contain the list of columns as they are inserted.
   KTabListBoxColumn**	colList;
+  // This array contain the column numbers as they are shown.
+  int *colShowList;
+  // This array contain the row numbers as they are shown.
+  int *itemShowList;
   KTabListBoxItem**	itemList;
   int			maxItems, numColumns;
   int			current;
@@ -288,20 +384,29 @@ protected:
   KTabListBoxDict	pixDict;
   KTabListBoxTable	lbox;
   int			labelHeight;
+  
   QPixmap		dndDefaultPixmap;
+  QPixmap		upPix,downPix;
+  QPixmap		disabledUpPix,disabledDownPix;
   int			columnPadding;
   QColor		highlightColor;
   int			tabPixels;
   bool			mResizeCol;
+  bool			stopOrdering;
+  bool			needsSort;
+  /// contain the number of the last column where the user clicked on checkbutton.
+  int                   lastSelectedColumn;
+  int			nMarked; //number of marked rows.
   int			mSortCol;  // selected column for sorting order or -1
 
-  static int		mMouseCol; // column where the mouse action started
-				   // (resize, click, reorder)
-  static int		mMouseColLeft; // left offset of mouse column
-  static int		mMouseColWidth; // width of mouse column
-  static QPoint		mMouseStart;
-  static bool		mMouseAction;
-
+  int		mMouseCol; // column where the mouse action started
+			   // (resize, click, reorder)
+  int		mMouseColLeft; // left offset of mouse column
+  int		mLastX; // Used for drawing the XORed rect in column-drag.
+  int		mMouseColWidth; // width of mouse column
+  QPoint		mMouseStart;
+  bool		mMouseAction;
+  bool		mMouseDragColumn; // true when dragging the header of a column.
 private:
   // Disabled copy constructor and operator=
   KTabListBox (const KTabListBox &) {}
@@ -318,15 +423,15 @@ public:
 
   virtual const QString& text(int column) const { return txt[column]; }
   void setText (int column, const char *text) { txt[column] = text; }
-  virtual void setForeground (const QColor& color);
+  virtual void setForeground (const QColor& fg ) { fgColor = fg; }
   const QColor& foreground (void) { return fgColor; }
 
   KTabListBoxItem& operator= (const KTabListBoxItem&);
 
   int marked (void) const { return mark; }
   bool isMarked (void) const { return (mark >= -1); }
-  virtual void setMarked (int mark);
-
+  virtual void setMarked (int m) { mark = m; }
+ 
 private:
   QString* txt;
   int columns;
@@ -349,22 +454,44 @@ public:
   virtual ~KTabListBoxColumn();
 
   int width (void) const { return iwidth; }
-  virtual void setWidth (int w);
+  virtual void setWidth (int w) { iwidth = w; }
 
   int defaultWidth (void) const { return idefwidth; }
-  virtual void setDefaultWidth (int w);
+  virtual void setDefaultWidth (int w) { idefwidth = w; }
 
-  virtual void setType (KTabListBox::ColumnType);
+  virtual void setType (KTabListBox::ColumnType lbt) { colType = lbt; }
   KTabListBox::ColumnType type (void) const { return colType; }
 
+  /// @return true if need repaint.
+  virtual bool changeMode (void);
+  
+  virtual void setNumber(int num);
+  int number (void) const { return inumber;}
+  void hideCheckButton(void) { if(mbut) mbut->hide(); }
+  virtual void setOrder (KTabListBox::OrderType type,
+                             KTabListBox::OrderMode mode);
+  KTabListBox::OrderType orderType (void) const {return ordtype;}
+  KTabListBox::OrderMode orderMode (void) const {return ordmode;}
+  
   virtual void paintCell (QPainter*, int row, const QString& string, 
 			  bool marked);
   virtual void paint (QPainter*);
 
+protected slots:
+  virtual void setButton();
+  virtual void resetButton();
+  virtual void clearAll(bool leftbutton);
+  
 protected:
-  int iwidth, idefwidth;
+  int iwidth, idefwidth, inumber;
+  KTabListBox::OrderMode ordmode;
+  KTabListBox::OrderType ordtype;
   KTabListBox::ColumnType colType;
   KTabListBox* parent;
+  KNumCheckButton *mbut;
+public:
+  int (*columnSort)(const char *, const char *);
+  bool vline; // if true print a vertical line to the end of column.
 };
 
 typedef KTabListBoxColumn* KTabListBoxColumnPtr;
