@@ -20,6 +20,8 @@
 
 #include "vcard.h"
 
+using namespace KABC;
+
 VCard::VCard()
   : mLineMap( 0 )
 {

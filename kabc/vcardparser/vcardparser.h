@@ -23,6 +23,8 @@
 
 #include "vcard.h"
 
+namespace KABC {
+
 class VCardParser
 {
   public:
@@ -32,5 +34,7 @@ class VCardParser
     static VCard::List parseVCards( const QString& text );
     static QString createVCards( const VCard::List& list );
 };
+
+}
 
 #endif

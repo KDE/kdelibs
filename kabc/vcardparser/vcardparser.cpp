@@ -26,6 +26,8 @@
 
 #define FOLD_WIDTH 75
 
+using namespace KABC;
+
 VCardParser::VCardParser()
 {
 }

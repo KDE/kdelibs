@@ -27,6 +27,8 @@
 #include <qmap.h>
 #include <qstring.h>
 
+namespace KABC {
+
 class VCardLine
 {
   public:
@@ -91,5 +93,7 @@ class VCardLine
     class VCardLinePrivate;
     VCardLinePrivate *d;
 };
+
+}
 
 #endif

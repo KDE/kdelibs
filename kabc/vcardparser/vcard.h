@@ -26,6 +26,8 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 
+namespace KABC {
+
 class VCard
 {
   public:
@@ -82,5 +84,7 @@ class VCard
     class VCardPrivate;
     VCardPrivate *d;
 };
+
+}
 
 #endif
