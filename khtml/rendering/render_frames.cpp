@@ -494,6 +494,12 @@ void RenderFrame::slotViewCleared()
         }
     }    
 }
+
+void RenderFrame::slotWidgetDestructed()
+{
+    RenderWidget::slotWidgetDestructed();
+}
+
 /****************************************************************************************/
 
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )

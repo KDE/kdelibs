@@ -111,6 +111,7 @@ public:
 
 public slots:
     void slotViewCleared();
+    void slotWidgetDestructed();
     
 private:
   DOM::HTMLFrameElementImpl *m_frame;
