@@ -876,9 +876,12 @@ Completion HistoryFunc::tryExecute(const List &)
 {
   switch (id) {
   case Back:
+      // ###
   case Forward:
+      // ###
   case Go:
     // ###
+  default:
     kdDebug(6070) << "history.back/forward/go() not implemented yet." << endl;
     break;
   }
