@@ -25,7 +25,6 @@
 #include <qstrlist.h>
 #include <qcursor.h>
 
-
 #ifndef NO_KDE2
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -997,13 +996,22 @@ public:
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 :QObject( 0, name )
+  ,main(mainWindow)
+  ,currentDragWidget(0L)
+  ,currentMoveWidget(0L)
+  ,childDockWidgetList(0L)
+  ,autoCreateDock(0L)
+  ,storeW(0)
+  ,storeH(0)
+  ,draging(false)
+  ,undockProcess(false)
+  ,dropCancel(false)
 {
   d = new KDockManagerPrivate;
   d->splitterOpaqueResize = false;
   d->splitterKeepSize = false;
   d->splitterHighResolution = false;
 
-  main = mainWindow;
   main->installEventFilter( this );
 
   undockProcess = false;
@@ -1023,8 +1031,6 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 
   childDock = new QObjectList();
   childDock->setAutoDelete( false );
-  draging = false;
-  dropCancel = false;
 }
 
 KDockManager::~KDockManager()
@@ -1187,6 +1193,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   }
   if ( qt_find_obj_child( w, "KDockSplitter", "_dock_split_" ) ) return 0L;
   if ( qt_find_obj_child( w, "KDockTabGroup", "_dock_tab" ) ) return 0L;
+  if (!childDockWidgetList) return 0L;
   if ( childDockWidgetList->find(w) != -1 ) return 0L;
   if ( currentDragWidget->isGroup && ((KDockWidget*)w)->parentTabGroup() ) return 0L;
 
@@ -1332,6 +1339,7 @@ void KDockManager::drop()
 
   delete childDockWidgetList;
   childDockWidgetList = 0L;
+
   if ( dropCancel ) return;
   if ( !currentMoveWidget && ((currentDragWidget->eDocking & (int)KDockWidget::DockDesktop) == 0) ) {
     d->dragRect = QRect();  // cancel drawing
