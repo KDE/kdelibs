@@ -231,13 +231,13 @@ KJSO DatePrototype::get(const UString &p) const
     id = DateProtoFunc::GetMinutes;
   else if (p == "getSeconds" || p == "getUTCSeconds")
     id = DateProtoFunc::GetSeconds;
-  else if (p == "getMilliSeconds" || p == "getUTCMilliSeconds")
+  else if (p == "getMilliseconds" || p == "getUTCMilliseconds")
     id = DateProtoFunc::GetMilliSeconds;
   else if (p == "getTimezoneOffset")
     id = DateProtoFunc::GetTimezoneOffset;
   else if (p == "setTime")
     id = DateProtoFunc::SetTime;
-  else if (p == "setMilliSeconds" || p == "setUTCMilliSeconds")
+  else if (p == "setMilliseconds" || p == "setUTCMilliseconds")
     id = DateProtoFunc::SetMilliSeconds;
   else if (p == "setSeconds" || p == "setUTCSeconds")
     id = DateProtoFunc::SetSeconds;
