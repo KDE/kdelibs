@@ -819,7 +819,10 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
         new_view->setViewName( i18n("Detailed View") );
     }
     else /* if ( KFile::isSimpleView( view ) && !preview ) */ {
-        new_view = new KFileIconView( parent, "simple view");
+        KFileIconView *iconView =  new KFileIconView( parent, "simple view");
+        iconView->setAcceptDrops(false);
+        iconView->viewport()->setAcceptDrops(false);
+        new_view = iconView;
         new_view->setViewName( i18n("Short View") );
     }
 

@@ -48,6 +48,8 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     m_lastViewForPrevItem(0)
 {
     left = new KFileIconView( this, "left" );
+    left->setAcceptDrops(false);
+    left->viewport()->setAcceptDrops(false);
     left->setGridX( 160 );
     left->KFileView::setViewMode( Directories );
     left->setArrangement( QIconView::LeftToRight );
