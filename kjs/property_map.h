@@ -62,13 +62,19 @@ namespace KJS {
     PropertyMap2();
     ~PropertyMap2();
 
-    void put(UString &name,ValueImp *value);
-    void remove(UString &name);
-    ValueImp *get(const UString &name);
+    void put(UString name,ValueImp *value);
+    void remove(UString name);
+    ValueImp *get(UString name);
     void mark();
+
+    void dump(PropertyMapNode *node = 0, int indent = 0);
 
   private:
     PropertyMapNode *getNode(const UString &name);
+
+    void balance(PropertyMapNode* node);
+    void updateHeight(PropertyMapNode* &node);
+
     void singleRotateLeft(PropertyMapNode* &node);
     void singleRotateRight(PropertyMapNode* &node);
     void doubleRotateLeft(PropertyMapNode* &node);
