@@ -29,30 +29,18 @@ noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h
 
 METASOURCES = AUTO
 
+LDADD = ../libkdecore.la
 kconfigtest_SOURCES = kconfigtest.cpp
-kconfigtest_LDADD = $(LIB_KDECORE)
 kdebugtest_SOURCES = kdebugtest.cpp
-kdebugtest_LDADD = $(LIB_KDECORE)
 klocaletest_SOURCES = klocaletest.cpp
-klocaletest_LDADD = $(LIB_KDECORE)
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
-ksimpleconfigtest_LDADD = $(LIB_KDECORE)
 kurltest_SOURCES = kurltest.cpp
-kurltest_LDADD = $(LIB_KDECORE)
 kstddirstest_SOURCES = kstddirstest.cpp
-kstddirstest_LDADD = $(LIB_KDECORE)
 kprocesstest_SOURCES = kprocesstest.cpp
-kprocesstest_LDADD = $(LIB_KDECORE)
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
-kuniqueapptest_LDADD = $(LIB_KDECORE)
 ksocktest_SOURCES = ksocktest.cpp
-ksocktest_LDADD = $(LIB_KDECORE)
 ktempfiletest_SOURCES = ktempfiletest.cpp
-ktempfiletest_LDADD = $(LIB_KDECORE)
 krandomsequencetest_SOURCES = krandomsequencetest.cpp
-krandomsequencetest_LDADD = $(LIB_KDECORE)
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
-kstringhandlertest_LDADD = $(LIB_KDECORE)
 kcmdlineargstest_SOURCES = kcmdlineargstest.cpp
-kcmdlineargstest_LDADD = $(LIB_KDECORE)
 
