@@ -4,13 +4,15 @@
 #include "kjavaprocess.h"
 #include "kjavadownloader.h"
 
-#include <kconfig.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kconfig.h>
 #include <klocale.h>
-#include <kio/kprotocolmanager.h>
-#include <kio/job.h>
 #include <dcopobject.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
+
+#include <kio/job.h>
+#include <kio/kprotocolmanager.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
