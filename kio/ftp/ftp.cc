@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include <qdir.h>
 #include <kprotocolmanager.h>
 
 #include <kdebug.h>
@@ -908,7 +909,7 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
 
 void Ftp::stat( const KURL &url)
 {
-  QString path = url.path();
+  QString path = QDir::cleanDirPath( url.path() );
   if (!m_bLoggedOn)
      openConnection();
 
