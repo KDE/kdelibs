@@ -122,7 +122,7 @@
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
 <!ENTITY cervisia	"<application>Cervisia</application>">
-<!ENTITY CSS	"<trademark>CSS</trademark>">
+<!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DCOP	"<acronym>DCOP</acronym>">
@@ -341,7 +341,6 @@
 <!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
-<!ENTITY quanta	"<application>Quanta</application>">
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RealAudio '<trademark class="registered">RealAudio</trademark>'>
@@ -366,9 +365,9 @@
 <!ENTITY X-Server	"<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
 <!ENTITY X-Window '<trademark class="registered">X Window System</trademark>'>
-<!ENTITY XHTML	"<trademark>XHTML</trademark>">
-<!ENTITY XML	"<trademark>XML</trademark>">
-<!ENTITY XSL	"<trademark>XSL</trademark>">
+<!ENTITY XHTML	"<acronym>XHTML</acronym>">
+<!ENTITY XML	"<acronym>XML</acronym>">
+<!ENTITY XSL	"<acronym>XSL</acronym>">
 
 
 <!-- Deprecated, will be removed at a future time, do not use -->
@@ -382,3 +381,4 @@
 <!ENTITY kpanel	"<application>KPanel</application>">
 <!ENTITY kscore	"<application>KScore</application>">
 <!ENTITY tkmidi	"<application>tkmidi</application>">
+<!ENTITY quanta "<application>Quanta</application>">
