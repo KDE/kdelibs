@@ -49,6 +49,10 @@
 
 #define RECT_EXTENSION 300
 
+// MOC_SKIP_BEGIN
+template class QList<QIconViewItem>;
+// MOC_SKIP_END
+
 static const char *unknown[] = {
     "32 32 11 1",
     "c c #ffffff",
