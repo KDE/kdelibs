@@ -60,13 +60,13 @@ class KDialog : public QDialog
      * Returns the number of pixels you shall use between a 
      * dialog edge and the outermost widget(s) according to the KDE standard.
      */
-    int marginHint( void ) const;
+    static int marginHint( void );
 
     /**
      * Returns the number of pixels you shall use between 
      * widgets inside a dialog according to the KDE standard.
      */
-    int spacingHint( void ) const;
+    static int spacingHint( void );
 
     /**
      * Resizes every layout manager used in w and its nested children.  

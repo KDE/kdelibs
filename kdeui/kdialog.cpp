@@ -75,13 +75,13 @@ void KDialog::keyPressEvent(QKeyEvent *e)
 
 
 
-int KDialog::marginHint( void ) const
+int KDialog::marginHint( void )
 {
   return( mMarginSize );
 }
 
 
-int KDialog::spacingHint( void ) const
+int KDialog::spacingHint( void )
 {
   return( mSpacingSize );
 }
