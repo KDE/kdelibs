@@ -2267,13 +2267,12 @@ void QIconView::removeItem( QIconViewItem *item )
 	if ( d->lastItem )
 	    d->lastItem->next = 0;
     } else {
-	QIconViewItem *i = d->firstItem;
-	while ( i != item )
-	    i = i->next;
-
+	QIconViewItem *i = item;
 	if ( i ) {
-	    i->prev->next = i->next;
-	    i->next->prev = i->prev;
+	    if ( i->prev )
+		i->prev->next = i->next;
+	    if ( i->next )
+		i->next->prev = i->prev;
 	}
     }
 
