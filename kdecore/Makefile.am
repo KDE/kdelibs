@@ -39,6 +39,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
+libkdefakes_la_LDFLAGS = -version-info 3:0
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h 
 
