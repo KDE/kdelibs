@@ -125,10 +125,13 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
    e->acceptAction();
 
 
-   QListViewItem *item; // itemAt( contentsToViewport( e->pos() ) );
-   QListViewItem *par;
+   QListViewItem *afterme;
+   QListViewItem *parent;
 
-   findDrop( e->pos(), par, item );
+   findDrop( e->pos(), parent, afterme );
+
+   // "afterme" is 0 when aiming at a directory itself
+   QListViewItem *item = afterme ? afterme : parent;
 
    if( item && item->isSelectable() )
    {
@@ -148,7 +151,6 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
 
 void KFileTreeView::contentsDragLeaveEvent( QDragLeaveEvent * )
 {
-
    // Restore the current item to what it was before the dragging (#17070)
    if ( m_currentBeforeDropItem )
    {
@@ -179,6 +181,9 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
     QListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
 
+    //kdDebug(250) << " parent=" << (parent?parent->text(0):QString::null)
+    //             << " afterme=" << (afterme?afterme->text(0):QString::null) << endl;
+
     if (e->source() == viewport() && itemsMovable())
         movableDropEvent(parent, afterme);
     else
@@ -196,7 +201,9 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        if( parent )
            parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
        else
-           return; // can happen when dropping above the root item
+           // can happen when dropping above the root item
+           // Should we choose the first branch in such a case ??
+           return;
 
        emit dropped( urls, parentURL );
        emit dropped( this , e, urls, parentURL );
@@ -207,9 +214,11 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
 {
 
    bool ancestOK= acceptDrops();
-   // kdDebug(250) << "Do accept drops: " << parentOK << endl;
+   // kdDebug(250) << "Do accept drops: " << ancestOK << endl;
    ancestOK = ancestOK && itemsMovable();
-   // kdDebug(250) << "ismovable: " << parentOK << endl;
+   // kdDebug(250) << "acceptDrag: " << ancestOK << endl;
+   // kdDebug(250) << "canDecode: " << KURLDrag::canDecode(e) << endl;
+   // kdDebug(250) << "action: " << e->action() << endl;
 
    /*  KListView::acceptDrag(e);  */
    /* this is what KListView does:
@@ -217,6 +226,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
     * ask acceptDrops and itemsMovable, but not the third
     */
    return ancestOK && KURLDrag::canDecode( e ) &&
+       // Why this test? All DnDs are one of those AFAIK (DF)
       ( e->action() == QDropEvent::Copy
 	|| e->action() == QDropEvent::Move
 	|| e->action() == QDropEvent::Link );
