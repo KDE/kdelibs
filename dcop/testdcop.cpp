@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
+//   client->attach();
   client->attach(app.name());
 
   if (!client->call(app.name(), "unknownObj", "unknownFunction", data, reply))

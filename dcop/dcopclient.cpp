@@ -129,7 +129,8 @@ bool DCOPClient::attach(const QCString &appId)
 
   d->appId = appId;
 
-  if (IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
+  
+  if ( d->iceConn && IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
     detach();
   }
 
