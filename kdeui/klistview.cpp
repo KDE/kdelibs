@@ -89,11 +89,11 @@ public:
   {
 	connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
   }
-  
+
   ~KListViewPrivate ()
   {
   }
-  
+
   bool bUseSingle;
   bool bChangeCursorOverItem;
 
@@ -399,23 +399,32 @@ void KListView::slotAutoSelect()
 
 void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 {
-  if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
+    if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
 
-    Window root;
-    Window child;
-    int root_x, root_y, win_x, win_y;
-    uint keybstate;
-    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		   &root_x, &root_y, &win_x, &win_y, &keybstate );
+        // Double click mode ?
+        if ( !d->bUseSingle )
+        {
+            emit executed( item );
+            emit executed( item, pos, c );
+        }
+        else
+        {
+            Window root;
+            Window child;
+            int root_x, root_y, win_x, win_y;
+            uint keybstate;
+            XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+                           &root_x, &root_y, &win_x, &win_y, &keybstate );
 
-    d->autoSelect.stop();
+            d->autoSelect.stop();
 
-    //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-    if( !( d->bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
-      emit executed( item );
-      emit executed( item, pos, c );
+            //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+            if( !( ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+                emit executed( item );
+                emit executed( item, pos, c );
+            }
+        }
     }
-  }
 }
 
 void KListView::focusOutEvent( QFocusEvent *fe )
@@ -505,10 +514,14 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
 {
-  QListView::contentsMouseDoubleClickEvent( e );
+  // We don't want to call the parent method because it does setOpen,
+  // whereas we don't do it in single click mode... (David)
+  //QListView::contentsMouseDoubleClickEvent( e );
 
   QPoint vp = contentsToViewport(e->pos());
   QListViewItem *item = itemAt( vp );
+  emit QListView::doubleClicked( item ); // we do it now
+
   int col = item ? header()->mapToLogical( header()->cellAt( vp.x() ) ) : -1;
 
   if( item ) {
@@ -942,7 +955,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
   QListViewItem* nextItem = 0L;
   int items = 0;
 
-  /* no longer needed due to menuShortCutPressed 
+  /* no longer needed due to menuShortCutPressed
   if (((e->key() == Key_Enter)|| (e->key() == Key_Return)) && (e->state() == ControlButton))
 	{
       QListViewItem* item = currentItem();
@@ -1133,25 +1146,25 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
 void KListView::setSelectionModeExt (SelectionModeExt mode)
 {
-  d->selectionMode = mode;
+    d->selectionMode = mode;
 
-  switch (mode)
-	{
-	case Single:
-	case Multi:
-	case Extended:
-	case NoSelection:
-	  setSelectionMode (static_cast<QListView::SelectionMode>(static_cast<int>(mode)));
-	  break;
+    switch (mode)
+    {
+    case Single:
+    case Multi:
+    case Extended:
+    case NoSelection:
+        setSelectionMode (static_cast<QListView::SelectionMode>(static_cast<int>(mode)));
+        break;
 
     case Konqueror:
-      setSelectionMode (QListView::Extended);
-      break;
+        setSelectionMode (QListView::Extended);
+        break;
 
-	default:
-      kdDebug () << "Warning: illegal selection mode " << int(mode) << " set!" << endl;
-	  break;
-	}
+    default:
+        kdWarning () << "Warning: illegal selection mode " << int(mode) << " set!" << endl;
+        break;
+    }
 }
 
 KListView::SelectionModeExt KListView::selectionModeExt () const
@@ -1199,7 +1212,7 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
       QPixmap surface(view->size());
       bitBlt (&surface, QPoint (0,0), view, view->rect(), CopyROP);
       QPainter painter(&surface, view);
-      
+
       if (e->rect().intersects(drawDropVisualizer(&painter,d->parentItemDrop, d->afterItemDrop)))
         {
           bitBlt(view, d->mOldDropVisualizer.topLeft(), &surface,
