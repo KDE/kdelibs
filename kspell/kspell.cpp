@@ -259,7 +259,7 @@ KSpell::startIspell()
         break;
 
       case KS_E_KOI8U:
-	*proc << "-w\'"; // add ' as a word char
+	*proc << "-w'"; // add ' as a word char
 	break;
 
       }
