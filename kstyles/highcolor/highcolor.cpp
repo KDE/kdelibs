@@ -59,16 +59,19 @@ class HighColorStylePlugin : public QStylePlugin
 
 		QStringList keys() const
 		{
-			return QStringList() << "HighColor" << "Default";
+			return QStringList() << "HighColor" << "Default" << "B3";
 		}
 
 		QStyle* create( const QString& key )
 		{
 			if ( key == "highcolor" )
-				return new HighColorStyle( true );
+				return new HighColorStyle( HighColorStyle::HighColor );
 			
 			else if ( key == "default" )
-				return new HighColorStyle( false );
+				return new HighColorStyle( HighColorStyle::Default );
+
+			else if ( key == "b3" )
+				return new HighColorStyle( HighColorStyle::B3 );
 			
 			return 0;
 		}
@@ -89,7 +92,7 @@ QIntDict<GradientSet> gDict;
 
 static const int itemFrame       = 1;
 static const int itemHMargin     = 3;
-static const int itemVMargin     = 0;
+static const int itemVMargin     = 1;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
 
@@ -168,10 +171,16 @@ KPixmap* GradientSet::gradient(GradientType type)
 
 // ---------------------------------------------------------------------------
 
-HighColorStyle::HighColorStyle( bool hc ) 
+HighColorStyle::HighColorStyle( StyleType styleType ) 
 	: KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar )
 {
-	highcolor = (QPixmap::defaultDepth() > 8) ? hc : false;
+	type = styleType;
+	
+	if ( type == HighColor && QPixmap::defaultDepth() > 8 )
+		highcolor = true;
+	else
+		highcolor = false;
+	
 	gDict.setAutoDelete(true);
 }
 
@@ -213,8 +222,8 @@ void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg 
 	QColor col = cg.background();
 
 	if ( highcolor )
-		KPixmapEffect::gradient( pix, col.light(120), col.dark(115), 
-								 KPixmapEffect::HorizontalGradient );
+		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
+				KPixmapEffect::HorizontalGradient );
 	else
 		pix.fill( col );
 }
@@ -236,7 +245,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// BUTTONS
 		// -------------------------------------------------------------------
 		case PE_ButtonDefault: {
-			if ( ! highcolor ) {
+			if ( type != HighColor ) {
 				int x1, y1, x2, y2;
 				r.coords( &x1, &y1, &x2, &y2 );
 				
@@ -413,35 +422,91 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			drawPrimitive(PE_ButtonBevel, p, r, cg, flags | Style_Enabled | Style_Raised);
 
 			// Draw a scrollbar riffle (note direction after above changes)
-			if (flags & Style_Horizontal) {
-				if (r.height() >= 15) {
-					int x = r.x()+3;
-					int y = r.y() + (r.height()-7)/2;
-					int x2 = r.right()-3;
-					p->setPen(cg.light());
-					p->drawLine(x, y, x2, y);
-					p->drawLine(x, y+3, x2, y+3);
-					p->drawLine(x, y+6, x2, y+6);
+			if ( type != B3 ) {
+				
+				// HighColor & Default scrollbar
+				if (flags & Style_Horizontal) {
+					if (r.height() >= 15) {
+						int x = r.x()+3;
+						int y = r.y() + (r.height()-7)/2;
+						int x2 = r.right()-3;
+						p->setPen(cg.light());
+						p->drawLine(x, y, x2, y);
+						p->drawLine(x, y+3, x2, y+3);
+						p->drawLine(x, y+6, x2, y+6);
 
-					p->setPen(cg.mid());
-					p->drawLine(x, y+1, x2, y+1);
-					p->drawLine(x, y+4, x2, y+4);
-					p->drawLine(x, y+7, x2, y+7);
+						p->setPen(cg.mid());
+						p->drawLine(x, y+1, x2, y+1);
+						p->drawLine(x, y+4, x2, y+4);
+						p->drawLine(x, y+7, x2, y+7);
+					}
+				} else {
+					if (r.width() >= 15) {
+						int y = r.y()+3;
+						int x = r.x() + (r.width()-7)/2;
+						int y2 = r.bottom()-3;
+						p->setPen(cg.light());
+						p->drawLine(x, y, x, y2);
+						p->drawLine(x+3, y, x+3, y2);
+						p->drawLine(x+6, y, x+6, y2);
+
+						p->setPen(cg.mid());
+						p->drawLine(x+1, y, x+1, y2);
+						p->drawLine(x+4, y, x+4, y2);
+						p->drawLine(x+7, y, x+7, y2);
+					}
 				}
 			} else {
-				if (r.width() >= 15) {
-					int y = r.y()+3;
-					int x = r.x() + (r.width()-7)/2;
-					int y2 = r.bottom()-3;
-					p->setPen(cg.light());
-					p->drawLine(x, y, x, y2);
-					p->drawLine(x+3, y, x+3, y2);
-					p->drawLine(x+6, y, x+6, y2);
-
-					p->setPen(cg.mid());
-					p->drawLine(x+1, y, x+1, y2);
-					p->drawLine(x+4, y, x+4, y2);
-					p->drawLine(x+7, y, x+7, y2);
+				
+				// B3 scrollbar
+				if (flags & Style_Horizontal) {
+					int buttons = 0;
+					
+					if (r.height() >= 36) buttons = 3;
+					else if (r.height() >=24) buttons = 2;
+					else if (r.height() >=16) buttons = 1;
+					
+					int x = r.x() + (r.width()-7) / 2;
+					int y = r.y() + (r.height() - (buttons * 5) -
+							(buttons-1)) / 2;
+					int x2 = x + 7;
+					
+					for ( int i=0; i<buttons; i++, y+=6 )
+					{
+						p->setPen( cg.mid() );
+						p->drawLine( x+1, y, x2-1, y );
+						p->drawLine( x, y+1, x, y+3 );
+						p->setPen( cg.light() );
+						p->drawLine( x+1, y+1, x2-1, y+1 );
+						p->drawLine( x+1, y+1, x+1, y+3 );
+						p->setPen( cg.dark() );
+						p->drawLine( x+1, y+4, x2-1, y+4 );
+						p->drawLine( x2, y+1, x2, y+3 );
+					}
+				} else {
+					int buttons = 0;
+					
+					if (r.width() >= 36) buttons = 3;
+					else if (r.width() >=24) buttons = 2;
+					else if (r.width() >=16) buttons = 1;
+					
+					int x = r.x() + (r.width() - (buttons * 5) -
+							(buttons-1)) / 2;
+					int y = r.y() + (r.height()-7) / 2;
+					int y2 = y + 7;
+					
+					for ( int i=0; i<buttons; i++, x+=6 )
+					{
+						p->setPen( cg.mid() );
+						p->drawLine( x+1, y, x+3, y );
+						p->drawLine( x, y+1, x, y2-1 );
+						p->setPen( cg.light() );
+						p->drawLine( x+1, y+1, x+3, y+1 );
+						p->drawLine( x+1, y+1, x+1, y2-1 );
+						p->setPen( cg.dark() );
+						p->drawLine( x+1, y2, x+3, y2 );
+						p->drawLine( x+4, y+1, x+4, y2-1 );
+					}
 				}
 			}
 			break;
@@ -450,22 +515,43 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 		case PE_ScrollBarAddPage:
 		case PE_ScrollBarSubPage: {
-			p->setPen(cg.shadow());
 			int x, y, w, h;
 			r.rect(&x, &y, &w, &h);
 			int x2 = x+w-1;
 			int y2 = y+h-1;
 
-			if (flags & Style_Horizontal) {
-				p->drawLine(x, y, x2, y);
-				p->drawLine(x, y2, x2, y2);
-				renderGradient(p, QRect(x, y+1, w, h-2),
-							   cg.mid(), false);
+			if ( type != B3 ) {
+				// HighColor & Default scrollbar
+				
+				p->setPen(cg.shadow());
+				
+				if (flags & Style_Horizontal) {
+					p->drawLine(x, y, x2, y);
+					p->drawLine(x, y2, x2, y2);
+					renderGradient(p, QRect(x, y+1, w, h-2),
+								cg.mid(), false);
+				} else {
+					p->drawLine(x, y, x, y2);
+					p->drawLine(x2, y, x2, y2);
+					renderGradient(p, QRect(x+1, y, w-2, h),
+								cg.mid(), true);
+				}	
 			} else {
-				p->drawLine(x, y, x, y2);
-				p->drawLine(x2, y, x2, y2);
-				renderGradient(p, QRect(x+1, y, w-2, h),
-							   cg.mid(), true);
+				// B3 scrollbar
+				
+				p->setPen( cg.mid() );
+				
+				if (flags & Style_Horizontal) {
+					p->drawLine(x, y, x2, y);
+					p->drawLine(x, y2, x2, y2);
+					p->fillRect( QRect(x, y+1, w, h-2), 
+							flags & Style_Down ? cg.button() : cg.midlight() );
+				} else {
+					p->drawLine(x, y, x, y2);
+					p->drawLine(x2, y, x2, y2);
+					p->fillRect( QRect(x+1, y, w-2, h), 
+							flags & Style_Down ? cg.button() : cg.midlight() );
+				}
 			}
 			break;
 		}
@@ -717,24 +803,45 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft)
 			{
 				QPointArray a;
+				
+				if ( type != B3 ) {
+					// HighColor & Default arrows
+					switch(pe) {
+						case PE_ArrowUp:
+							a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
+							break;
 
-				switch(pe) {
-					case PE_ArrowUp:
-						a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
-						break;
+						case PE_ArrowDown:
+							a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
+							break;
 
-					case PE_ArrowDown:
-						a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
-						break;
+						case PE_ArrowLeft:
+							a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
+							break;
 
-					case PE_ArrowLeft:
-						a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
-						break;
+						default:
+							a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
+					}
+				} else {
+					// B3 arrows
+					switch(pe) {
+						case PE_ArrowUp:
+							a.setPoints(QCOORDARRLEN(B3::u_arrow), B3::u_arrow);
+							break;
 
-					default:
-						a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
+						case PE_ArrowDown:
+							a.setPoints(QCOORDARRLEN(B3::d_arrow), B3::d_arrow);
+							break;
+
+						case PE_ArrowLeft:
+							a.setPoints(QCOORDARRLEN(B3::l_arrow), B3::l_arrow);
+							break;
+
+						default:
+							a.setPoints(QCOORDARRLEN(B3::r_arrow), B3::r_arrow);
+					}
 				}
-
+					
 				p->save();
 				if ( flags & Style_Down )
 					p->translate( pixelMetric( PM_ButtonShiftHorizontal ),
@@ -753,7 +860,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 					p->drawLineSegments( a );
 				}
 				p->restore();
-
+			
 			} else
 				KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 		}
@@ -956,7 +1063,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			if ( widget == hoverWidget )
 				flags |= Style_MouseOver;
 			
-			if ( !highcolor ) {
+			if ( type != HighColor ) {
 				QPushButton *button = (QPushButton*) widget;
 				QRect br = r;
 				bool btnDefault = button->isDefault();
@@ -1552,12 +1659,19 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 4;
 
 		case PM_ButtonDefaultIndicator: {
-			if ( highcolor )
+			if ( type == HighColor )
 				return 0;					// No indicator when highcolor
 			else
 				return 3;
 		}
 
+		case PM_MenuButtonIndicator: {		// Arrow width
+			if ( type != B3 )
+				return 8;
+			else
+				return 7;
+		}
+										
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ExclusiveIndicatorWidth:	// Radiobutton size
@@ -1597,7 +1711,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 				if ( w < 80 && !button->pixmap() )
 					w = 80;
 
-				if ( ! highcolor ) {
+				if ( type != HighColor ) {
 					// Compensate for default indicator
 					int di = pixelMetric( PM_ButtonDefaultIndicator );
 					w += di * 2;

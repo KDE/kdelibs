@@ -1,8 +1,9 @@
 /*
  * $Id$
  *
- * KDE3 HighColor Style (version 0.0.99)
- * Copyright (C) 2001, Karol Szwed <gallium@kde.org>
+ * KDE3 HighColor Style (version 0.99)
+ * Copyright (C) 2001 Karol Szwed      <gallium@kde.org>
+ *           (C) 2001 Fredrik Höglund  <fredrik@kde.org> 
  *
  * Drawing routines adapted from the KDE2 HCStyle,
  * Copyright (C) 2000 Daniel M. Duley  <mosfet@kde.org>
@@ -30,9 +31,7 @@
 #define __HIGHCOLOR_H
 
 #include <qbitmap.h>
-#include <qcommonstyle.h>
 #include <qintdict.h>
-#include <qstyle.h>
 #include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kstyle.h>
@@ -59,7 +58,9 @@ class HighColorStyle : public KStyle
 	Q_OBJECT
 
 	public:
-		HighColorStyle( bool hc );
+		enum StyleType { HighColor = 0, Default, B3 };
+		
+		HighColorStyle( StyleType );
 		virtual ~HighColorStyle();
 
 		void polish( QWidget* widget );
@@ -140,8 +141,9 @@ class HighColorStyle : public KStyle
 					int pwidth=-1,
 					int pheight=-1 ) const;
 
-		QWidget *hoverWidget;
-		bool     highcolor;
+		QWidget    *hoverWidget;
+		StyleType   type;
+		bool        highcolor;
 
 	private:
 		// Disable copy constructor and = operator
