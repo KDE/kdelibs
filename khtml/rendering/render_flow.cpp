@@ -1236,6 +1236,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                     node = node->nextSibling();
                     beforeBox->appendChildNode(boxSource->removeChildNode(cnode));
                 }
+                boxSource->insertChildNode(beforeBox,boxSource->firstChild());
                 beforeBox->close();
                 beforeBox->setPos(beforeBox->xPos(), -100000);
                 beforeBox->setLayouted(false);
@@ -1255,6 +1256,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                     node = node->nextSibling();
                     afterBox->appendChildNode(boxSource->removeChildNode(cnode));
                 }
+                boxSource->appendChildNode(afterBox);
                 afterBox->close();
                 afterBox->setPos(afterBox->xPos(), -100000);
                 afterBox->setLayouted(false);
