@@ -3,9 +3,10 @@
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
+    <MergeLocal name="new_merge"/>
     <Action name="file_open"/>
     <Action name="file_open_recent"/>
-    <MergeLocal name="new_merge"/>
+    <MergeLocal name="open_merge"/>
     <Separator/>
     <Action name="file_save"/>
     <Action name="file_save_as"/>
@@ -25,6 +26,7 @@
     <Action name="file_close"/>
     <Action name="file_close_all"/>
     <MergeLocal name="close_merge"/>
+    <Separator/>
     <Action name="file_quit"/>
   </Menu>
   <Menu name="game"><text>&amp;Game</text>
@@ -59,6 +61,7 @@
     <Action name="edit_copy"/>
     <Action name="edit_paste"/>
     <MergeLocal name="edit_paste_merge"/>
+    <Separator/>
     <Action name="edit_select_all"/>
     <MergeLocal name="edit_select_merge"/>
     <Separator/>
@@ -129,6 +132,7 @@
   <Menu name="settings"><text>&amp;Settings</text>
     <Action name="options_show_menubar"/>
     <Action name="options_show_toolbar"/>
+    <MergeLocal name="show_toolbar_merge"/>
     <Action name="options_show_statusbar"/>
     <MergeLocal name="show_merge"/>
     <Separator/>
