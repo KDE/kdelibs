@@ -648,6 +648,10 @@ void CachedImage::movieStatus(int status)
     {
         const QImage& im = m->frameImage();
         monochrome = ( ( im.depth() <= 8 ) && ( im.numColors() - int( im.hasAlphaBuffer() ) <= 2 ) );
+        for (int i = 0; monochrome && i < im.numColors(); ++i)
+            if (im.colorTable()[i] != qRgb(0xff, 0xff, 0xff) &&
+                im.colorTable()[i] != qRgb(0x00, 0x00, 0x00))
+                monochrome = false;
         if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
         {
             QImage am = im.createAlphaMask();
@@ -682,7 +686,7 @@ void CachedImage::movieStatus(int status)
 
             // monochrome alphamasked images are usually about 10000 times
             // faster to draw, so this is worth the hack
-            if ( p && monochrome && p->depth() > 1 )
+            if (p && monochrome && p->depth() > 1 )
             {
                 QPixmap* pix = new QPixmap;
                 pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
