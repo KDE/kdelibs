@@ -397,6 +397,7 @@ public:
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 							 int _y1, int _x2, int _y2, int _tx, int _ty )
 		{ return false; } // Dummy
+    virtual bool selectText( const QRegExp & ) { return false; }
 protected:
 	int minWidth;
 	int prefWidth;  

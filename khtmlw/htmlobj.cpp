@@ -771,7 +771,30 @@ bool HTMLTextSlave::fitLine( bool startOfLine,
 
 bool HTMLTextSlave::selectText( const QRegExp &exp )
 {
-    return owner->isSelected();
+    short SelStart = owner->selStart;
+    short SelEnd = owner->selEnd;
+    int len;
+    int pos = exp.match( owner->text, posStart, &len );
+
+    if (( pos < posStart ) || ( pos >= posStart+posLen))
+    {
+    	return false;
+    }
+    SelStart = pos;
+    SelEnd = pos + len;
+    if (SelEnd > posStart+posLen)
+    {
+	SelEnd = posStart+posLen;
+    }
+    owner->selStart = SelStart;
+    owner->selEnd = SelEnd;
+    owner->setSelected( true );
+    setSelected( true );
+    if ((SelStart == posStart) && (SelEnd == posStart+posLen))
+    {
+	setAllSelected(true);
+    } 
+    return true;
 }
      
 // get the index of the character at _xpos.
