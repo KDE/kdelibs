@@ -296,13 +296,17 @@ void HTMLFrameElementImpl::attach()
 
     // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
-    // limit to how deep we can nest frames
-    KHTMLPart *part = w->part();
-    int depth = 0;
-    while ((part = part->parentPart()))
-        depth++;
+    // avoid endless recursion
+    KURL u;
+    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
+    bool selfreference = false;
+    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
+        if (part->url() == u) {
+            selfreference = true;
+            break;
+        }
 
-    if (depth < 5)  {
+    if (!selfreference)  {
         m_render = new RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -318,11 +322,8 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-    if (!url.isEmpty()) {
-        KURL fullURL = getDocument()->completeURL( url.string() );
-        if ( !(w->part()->onlyLocalReferences() && fullURL.protocol() != "file"))
-            w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
-    }
+    if ( !url.isEmpty() && !(w->part()->onlyLocalReferences() && u.protocol() != "file"))
+        w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::detach()

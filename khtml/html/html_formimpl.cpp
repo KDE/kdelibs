@@ -303,6 +303,10 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
         m_enctype = "multipart/form-data";
         m_multipart = true;
         m_post = true;
+    } else if (type.string().find("text", 0, false) != -1 || type.string().find("plain", 0, false) != -1)
+    {
+        m_enctype = "text/plain";
+        m_multipart = false;
     }
     else
     {
@@ -922,6 +926,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_MAXLENGTH:
         m_maxLen = attr->val() ? attr->val()->toInt() : -1;
+        setChanged();
         break;
     case ATTR_SIZE:
         m_size = attr->val() ? attr->val()->toInt() : 20;
