@@ -313,41 +313,40 @@ public:
      */
     KCompletionBox * completionBox( bool create = true );
 
+    /**
+     * Re-implemented for internal reasons.  API remains unaffected.
+     * NOTE: Only editable comboboxes can have a line editor. As such
+     * any attempt to assign a line-edit to a non-editable combobox will
+     * simply be ignored.
+     */
     virtual void setLineEdit( QLineEdit * );
 
 signals:
     /**
     * Emitted when the user presses the Enter key.
     *
-    * Note that this signal is only
-    * emitted if this widget is editable.
+    * Note that this signal is only emitted when the widget is editable.
     */
     void returnPressed();
 
     /**
-    * Emitted when the user presses
-    * the Enter key.
+    * Emitted when the user presses the Enter key.
     *
-    * The argument is the current
-    * text being edited.  This signal is just like
-    * @ref returnPressed() except it contains the
-    * current text as its argument.
+    * The argument is the current text being edited.  This signal is just like
+    * @ref returnPressed() except it contains the current text as its argument.
     *
-    * Note that this signal is only emitted if this
+    * Note that this signal is only emitted when the
     * widget is editable.
     */
     void returnPressed( const QString& );
 
     /**
-    * This signal is emitted when the completion key
-    * is pressed.
+    * Emitted when the completion key is pressed.
     *
-    * The argument is the current text
-    * being edited.
+    * The argument is the current text being edited.
     *
-    * Note that this signal is @em not available if this
-    * widget is non-editable or the completion mode is
-    * set to @p KGlobalSettings::CompletionNone.
+    * Note that this signal is @em not available when the widget is non-editable
+    * or the completion mode is set to @p KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
 
@@ -355,36 +354,32 @@ signals:
      * Emitted when the shortcut for substring completion is pressed.
      */
     void substringCompletion( const QString& );
-
-    /**
+    
+   /**
     * Emitted when the text rotation key-bindings are pressed.
     *
-    * The argument indicates which key-binding was pressed.
-    * In this case this can be either one of four values:
-    * @p PrevCompletionMatch, @p NextCompletionMatch, @p RotateUp or
-    * @p RotateDown. See @ref KCompletionBase::setKeyBinding() for
-    * details.
+    * The argument indicates which key-binding was pressed. In this case this
+    * can be either one of four values: @p PrevCompletionMatch, 
+    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See @ref 
+    * KCompletionBase::setKeyBinding() for details.
     *
     * Note that this signal is @em NOT emitted if the completion
     * mode is set to CompletionNone.
     */
     void textRotation( KCompletionBase::KeyBindingType );
-
+    
     /**
-     * Emitted when the user changed the completion mode by using the
-     * popupmenu.
+     * Emitted whenever the completion mode is changed by the user 
+     * through the context menu.
      */
     void completionModeChanged( KGlobalSettings::Completion );
 
     /**
      * Emitted before the context menu is displayed.
      *
-     * The signal allows you to add your own entries into the
-     * the context menu that is created on demand.
-     *
-     * NOTE: Do not store the pointer to the QPopupMenu
-     * provided through since it is created and deleted
-     * on demand.
+     * The signal allows you to add your own entries into the context menu.
+     * Note that you MUST NOT store the pointer to the QPopupMenu since it is
+     * created and deleted on demand.  Otherwise, you can crash your app.
      *
      * @param the context menu about to be displayed
      */
