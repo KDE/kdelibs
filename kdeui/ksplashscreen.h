@@ -30,7 +30,7 @@ class QPixmap;
  *  This class is based on QSplashScreen and exists solely to make
  *  splash screens obey KDE's Xinerama settings.
  * 
- *  For documentation on how to use the class, please see the documentation
+ *  For documentation on how to use the class, see the documentation
  *  for QSplashScreen.
  *
  *  @short KDE splash screen
