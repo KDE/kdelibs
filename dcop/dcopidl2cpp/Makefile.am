@@ -12,9 +12,3 @@ noinst_HEADERS =
 dcopidl2cpp_LDADD = $(top_builddir)/qk/libqk.la $(LIB_QT)
 dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
 
-DISTCLEANFILES = $(SRCMETA)
-
-####### Implicit rules
-
-####### Build rules
-
