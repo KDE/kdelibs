@@ -316,6 +316,7 @@ int main(int argc, char **argv)
    const char *tty = NULL;
    long avoid_loops = 0;
    const char* startup_id = NULL;
+   int sock;
 
    long size = 0;
 
@@ -343,7 +344,7 @@ int main(int argc, char **argv)
          fprintf(stderr, "Shuts down kdeinit master process and terminates all processes spawned from it.\n");
          exit( 255 );
       }
-      int sock = openSocket();
+      sock = openSocket();
       if( sock < 0 )
       {
           fprintf( stderr, "Error: Can't contact kdeinit!\n" );
@@ -367,7 +368,7 @@ int main(int argc, char **argv)
       start = argv[0];
    }
 
-   int sock = openSocket();
+   sock = openSocket();
    if( sock < 0 ) /* couldn't contact kdeinit, start argv[ 0 ] directly */
    {
       execvp( argv[ 0 ], argv );
