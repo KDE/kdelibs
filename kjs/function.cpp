@@ -253,7 +253,7 @@ Completion InternalFunctionImp::execute(const List &)
 }
 
 ConstructorImp::ConstructorImp() {
-  setPrototype(Global::current().functionPrototype());
+  setPrototype(KJScriptImp::current()->functionPrototype());
   // TODO ???  put("constructor", this);
   setLength(1);
 }
@@ -291,8 +291,8 @@ Function::Function(Imp *d)
 {
   if (d) {
     static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
-    assert(Global::current().hasProperty("[[Function.prototype]]"));
-    setPrototype(Global::current().functionPrototype());
+    assert(KJScriptImp::current()->globalObject().hasProperty("[[Function.prototype]]"));
+    setPrototype(KJScriptImp::current()->functionPrototype());
   }
 }
 
@@ -324,8 +324,8 @@ Constructor::Constructor(Imp *d)
   : Function(d)
 {
   if (d) {
-    assert(Global::current().hasProperty("[[Function.prototype]]"));
-    setPrototype(Global::current().get("[[Function.prototype]]"));
+    assert(KJScriptImp::current()->globalObject().hasProperty("[[Function.prototype]]"));
+    setPrototype(KJScriptImp::current()->globalObject().get("[[Function.prototype]]"));
     put("constructor", *this);
     KJSO tmp(d); // protect from GC
     ((FunctionImp*)d)->setLength(1);

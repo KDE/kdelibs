@@ -54,7 +54,8 @@ namespace KJS {
 	      AnonymousFunctionType,
 	      ConstructorType,
 	      ActivationType,
-	      ArgumentsType
+	      ArgumentsType,
+	      GlobalType
   };
 
   /**
@@ -617,8 +618,6 @@ namespace KJS {
     void setExtra(void *e);
   private:
     Global(void *);
-    void init();
-    void clear();
   };
 
   /**

@@ -70,7 +70,7 @@ Object FunctionObject::construct(const List &args)
   }
 
   List scopeChain;
-  scopeChain.append(Global::current());
+  scopeChain.append(KJScriptImp::current()->globalObject());
   FunctionBodyNode *bodyNode = progNode;
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
 					      &scopeChain);
@@ -111,9 +111,9 @@ Object FunctionObject::construct(const List &args)
   }
 
   fimp->setLength(params);
-  fimp->setPrototype(Global::current().functionPrototype());
+  fimp->setPrototype(KJScriptImp::current()->functionPrototype());
   List consArgs;
-  KJSO objCons = Global::current().get("Object");
+  KJSO objCons = KJScriptImp::current()->globalObject().get("Object");
   KJSO prototype = static_cast<ConstructorImp*>(objCons.imp())->construct(consArgs);
   prototype.setConstructor(fimp);
   fimp->setPrototypeProperty(prototype);
@@ -182,7 +182,7 @@ Completion FunctionProtoFunc::execute(const List &args)
 
     KJSO thisV;
     if (thisArg.isA(NullType) || thisArg.isA(UndefinedType))
-      thisV = Global::current();
+      thisV = KJScriptImp::current()->globalObject();
     else
       thisV = args[0];
 
@@ -215,7 +215,7 @@ Completion FunctionProtoFunc::execute(const List &args)
 
     KJSO thisV;
     if (thisArg.isA(NullType) || thisArg.isA(UndefinedType))
-      thisV = Global::current();
+      thisV = KJScriptImp::current()->globalObject();
     else
       thisV = args[0];
 

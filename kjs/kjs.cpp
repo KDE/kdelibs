@@ -34,6 +34,12 @@ KJScript::KJScript()
   rep->init();
 }
 
+KJScript::KJScript(const KJSO &global)
+{
+  rep = new KJScriptImp(this,global);
+  rep->init();
+}
+
 KJScript::~KJScript()
 {
   delete rep;
@@ -152,5 +158,5 @@ namespace KJS {
 void KJScript::enableDebug()
 {
   rep->init();
-  Global::current().put("debug", Function(new DebugPrint()));
+  KJScriptImp::current()->globalObject().put("debug", Function(new DebugPrint()));
 }

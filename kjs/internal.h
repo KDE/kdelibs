@@ -297,7 +297,7 @@ namespace KJS {
     friend class Global;
     friend class Collector;
   public:
-    KJScriptImp(KJScript *s);
+    KJScriptImp(KJScript *s, KJSO global = KJSO());
     ~KJScriptImp();
     void mark();
     static KJScriptImp *current() { return curr; }
@@ -353,6 +353,12 @@ namespace KJS {
     KJScript *scr;
     ExecutionStack *stack;
 
+    static void initGlobal(Imp *global);
+    KJSO globalObject() { return glob; }
+
+    KJSO objectPrototype() const;
+    KJSO functionPrototype() const;
+
   private:
     ProgramNode *progN;
     Node *firstN;
@@ -363,7 +369,7 @@ namespace KJS {
     bool initialized;
     Lexer *lex;
     Context *con;
-    Global glob;
+    KJSO glob;
     int errType, errLine;
     UString errMsg;
 #ifdef KJS_DEBUGGER

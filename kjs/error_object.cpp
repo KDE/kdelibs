@@ -83,8 +83,7 @@ Object ErrorObject::construct(const List &args)
 
 Object ErrorObject::create(ErrorType e, const char *m, int l)
 {
-  Global global(Global::current());
-  KJSO prot = Global::current().get("[[Error.prototype]]");
+  KJSO prot = KJScriptImp::current()->globalObject().get("[[Error.prototype]]");
   assert(prot.isObject());
   Imp *d = new ErrorObject(Object(prot.imp()), e, m, l);
 

@@ -37,7 +37,7 @@ noinst_HEADERS = nodes.h lexer.h regexp.h internal.h collector.h \
 	grammar.h object_object.h function_object.h function_object.h \
 	bool_object.h math_object.h array_object.h string_object.h \
 	number_object.h date_object.h regexp_object.h error_object.h \
-	debugger.h
+	global_object.h debugger.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 libkjs_la_LIBADD = -lm $(LIBPCRE)

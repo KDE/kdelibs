@@ -357,7 +357,7 @@ ErrorType KJSO::putValue(const KJSO& v)
 
   KJSO o = getBase();
   if (o.isA(NullType))
-    Global::current().put(getPropertyName(), v);
+    KJScriptImp::current()->globalObject().put(getPropertyName(), v);
   else {
     // are we writing into an array ?
     if (o.isA(ObjectType) && (o.toObject().getClass() == ArrayClass))
@@ -500,7 +500,7 @@ Object Object::create(Class c)
 // factory
 Object Object::create(Class c, const KJSO& val)
 {
-  Global global(Global::current());
+  KJSO global(KJScriptImp::current()->globalObject());
   Object obj = Object();
   obj.setClass(c);
   obj.setInternalValue(val);
@@ -550,7 +550,6 @@ Object Object::create(Class c, const KJSO& val)
 
 Object Object::create(Class c, const KJSO& val, const Object& p)
 {
-  Global global(Global::current());
   Object obj = Object();
   Object prot;
   obj.setClass(c);
@@ -980,7 +979,7 @@ void ObjectImp::mark(Imp*)
 
 HostImp::HostImp()
 {
-    setPrototype(Global::current().objectPrototype());
+    setPrototype(KJScriptImp::current()->objectPrototype());
     //printf("HostImp::HostImp() %p\n",this);
 }
 

@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,6 +33,18 @@
 #include "lexer.h"
 #include "collector.h"
 #include "debugger.h"
+
+#include "global_object.h"
+#include "object_object.h"
+#include "function_object.h"
+#include "array_object.h"
+#include "bool_object.h"
+#include "string_object.h"
+#include "number_object.h"
+#include "math_object.h"
+#include "date_object.h"
+#include "regexp_object.h"
+#include "error_object.h"
 
 #define I18N_NOOP(s) s
 
@@ -240,7 +253,7 @@ RegExpImp::~RegExpImp()
 Context::Context(CodeType type, Context *callingContext,
 		 FunctionImp *func, const List *args, Imp *thisV)
 {
-  Global glob(Global::current());
+  KJSO glob = KJScriptImp::current()->globalObject();
   codeType = type;
 
   // create and initialize activation object (ECMA 10.1.6)
@@ -386,7 +399,7 @@ Object DeclaredFunctionImp::construct(const List &args)
   if (p.isObject())
     obj.setPrototype(p);
   else
-    obj.setPrototype(Global::current().objectPrototype());
+    obj.setPrototype(KJScriptImp::current()->objectPrototype());
 
   KJSO res = executeCall(obj.imp(), &args);
 
@@ -412,7 +425,7 @@ Completion AnonymousFunction::execute(const List &)
 ArgumentsImp::ArgumentsImp(FunctionImp *func, const List *args)
   : ObjectImp(UndefClass)
 {
-  setPrototype(Global::current().objectPrototype());
+  setPrototype(KJScriptImp::current()->objectPrototype());
   put("callee", Function(func), DontEnum);
   if (args) {
     put("length", Number(args->size()), DontEnum);
@@ -472,7 +485,7 @@ KJScriptImp* KJScriptImp::hook = 0L;
 int          KJScriptImp::instances = 0;
 int          KJScriptImp::running = 0;
 
-KJScriptImp::KJScriptImp(KJScript *s)
+KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
   : scr(s),
     initialized(false),
     glob(0L),
@@ -486,6 +499,7 @@ KJScriptImp::KJScriptImp(KJScript *s)
   // are we the first interpreter instance ? Initialize some stuff
   if (instances == 1)
     globalInit();
+  glob = global;
   stack = new ExecutionStack();
   clearException();
   lex = new Lexer();
@@ -569,7 +583,9 @@ void KJScriptImp::init()
       hook = next = prev = this;
     }
 
-    glob.init();
+    if (!glob.imp())
+      glob = new GlobalImp();
+    initGlobal(glob.imp());
     con = new Context();
     firstN = 0L;
     progN = 0L;
@@ -603,7 +619,6 @@ void KJScriptImp::clear()
     retVal = 0L;
 
     delete con; con = 0L;
-    glob.clear();
 
     Collector::collect();
 
@@ -736,7 +751,7 @@ bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
   init();
   KJSO callScope(scope);
   if (callScope.isNull())
-    callScope = Global::current().imp();
+    callScope = KJScriptImp::current()->globalObject().imp();
   if (!callScope.hasProperty(func)) {
 #ifndef NDEBUG
       fprintf(stderr, "KJS: couldn't resolve function name %s. call() failed\n",
@@ -804,6 +819,94 @@ void KJScriptImp::clearException()
   assert(curr);
   curr->exMsg = 0L;
   curr->exVal = 0L;
+}
+
+void KJScriptImp::initGlobal(Imp *global)
+{
+  // constructor properties. prototypes as Global's member variables first.
+  Object objProto = new ObjectPrototype();
+  Object funcProto = new FunctionPrototype(objProto);
+  Object arrayProto(new ArrayPrototype(objProto,funcProto));
+  Object stringProto(new StringPrototype(objProto,funcProto));
+  Object booleanProto(new BooleanPrototype(objProto,funcProto));
+  Object numberProto(new NumberPrototype(objProto,funcProto));
+  Object dateProto(new DatePrototype(objProto,funcProto));
+  Object regexpProto(new RegExpPrototype(objProto,funcProto));
+  Object errorProto(new ErrorPrototype(objProto,funcProto));
+
+  objProto.get("toString").setPrototype(funcProto);
+  objProto.get("valueOf").setPrototype(funcProto);
+  global->setPrototype(objProto);
+
+  // these are internal kjs properties
+  global->put("[[Object.prototype]]", objProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Function.prototype]]", funcProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Array.prototype]]", arrayProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[String.prototype]]", stringProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Boolean.prototype]]", booleanProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Number.prototype]]", numberProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Date.prototype]]", dateProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[RegExp.prototype]]", regexpProto,ReadOnly|DontDelete|DontEnum);
+  global->put("[[Error.prototype]]", errorProto,ReadOnly|DontDelete|DontEnum);
+
+  Object objectObj(new ObjectObject(funcProto, objProto));
+  Object funcObj(new FunctionObject(funcProto));
+  Object arrayObj(new ArrayObject(funcProto, arrayProto));
+  Object stringObj(new StringObject(funcProto, stringProto));
+  Object boolObj(new BooleanObject(funcProto, booleanProto));
+  Object numObj(new NumberObject(funcProto, numberProto));
+  Object dateObj(new DateObject(funcProto, dateProto));
+  Object regObj(new RegExpObject(funcProto, regexpProto));
+  Object errObj(new ErrorObject(funcProto, errorProto));
+
+  // ECMA 15.3.4.1
+  funcProto.put("constructor", funcObj, DontEnum);
+
+  global->put("Object", objectObj, DontEnum);
+  global->put("Function", funcObj, DontEnum);
+  global->put("Array", arrayObj, DontEnum);
+  global->put("Boolean", boolObj, DontEnum);
+  global->put("String", stringObj, DontEnum);
+  global->put("Number", numObj, DontEnum);
+  global->put("Date", dateObj, DontEnum);
+  global->put("RegExp", regObj, DontEnum);
+  global->put("Error", errObj, DontEnum);
+
+  objProto.setConstructor(objectObj);
+  funcProto.setConstructor(funcObj);
+  arrayProto.setConstructor(arrayObj);
+  booleanProto.setConstructor(boolObj);
+  stringProto.setConstructor(stringObj);
+  numberProto.setConstructor(numObj);
+  dateProto.setConstructor(dateObj);
+  regexpProto.setConstructor(regObj);
+  errorProto.setConstructor(errObj);
+
+  global->put("NaN", Number(NaN), DontEnum);
+  global->put("Infinity", Number(Inf), DontEnum);
+  global->put("undefined", Undefined(), DontEnum);
+
+  // built-in functions
+  global->put("eval",       new GlobalFunc(GlobalFunc::Eval,       1), DontEnum);
+  global->put("parseInt",   new GlobalFunc(GlobalFunc::ParseInt,   2), DontEnum);
+  global->put("parseFloat", new GlobalFunc(GlobalFunc::ParseFloat, 1), DontEnum);
+  global->put("isNaN",      new GlobalFunc(GlobalFunc::IsNaN,      1), DontEnum);
+  global->put("isFinite",   new GlobalFunc(GlobalFunc::IsFinite,   1), DontEnum);
+  global->put("escape",     new GlobalFunc(GlobalFunc::Escape,     1), DontEnum);
+  global->put("unescape",   new GlobalFunc(GlobalFunc::UnEscape,   1), DontEnum);
+
+  // built-in objects
+  global->put("Math",       new Math(objProto),                        DontEnum);
+}
+
+KJSO KJScriptImp::objectPrototype() const
+{
+  return glob.get("[[Object.prototype]]");
+}
+
+KJSO KJScriptImp::functionPrototype() const
+{
+  return glob.get("[[Function.prototype]]");
 }
 
 #ifdef KJS_DEBUGGER

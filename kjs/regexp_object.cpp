@@ -66,7 +66,7 @@ Object RegExpObject::construct(const List &args)
 
   dat->setRegExp(new RegExp(p.value() /* TODO flags */));
   obj.setClass(RegExpClass);
-  obj.setPrototype(Global::current().get("[[RegExp.prototype]]"));
+  obj.setPrototype(KJScriptImp::current()->globalObject().get("[[RegExp.prototype]]"));
 
   return obj;
 }

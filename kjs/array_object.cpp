@@ -21,6 +21,7 @@
 #include "operations.h"
 #include "types.h"
 #include "array_object.h"
+#include "internal.h"
 #include <stdio.h>
 
 using namespace KJS;
@@ -291,7 +292,7 @@ Completion ArrayProtoFunc::execute(const List &args)
                     List l;
                     l.append(jObj);
                     l.append(minObj);
-                    cmp = sortFunction.executeCall( Global::current(), &l ).toInt32();
+                    cmp = sortFunction.executeCall( KJScriptImp::current()->globalObject(), &l ).toInt32();
                 }
                 else
                     cmp = ( jObj.toString().value() < minObj.toString().value() ) ? -1 : 1;

@@ -18,6 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include "global_object.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -32,56 +34,17 @@
 
 #include "object_object.h"
 #include "function_object.h"
-#include "array_object.h"
-#include "bool_object.h"
-#include "string_object.h"
-#include "number_object.h"
-#include "math_object.h"
-#include "date_object.h"
-#include "regexp_object.h"
-#include "error_object.h"
 
 extern int kjsyyparse();
 
-namespace KJS {
-
-  class GlobalImp : public ObjectImp {
-  public:
-    GlobalImp();
-    virtual ~GlobalImp();
-    virtual void mark(Imp*);
-    void init();
-    virtual void put(const UString &p, const KJSO& v);
-    Imp *filter;
-    void *extraData;
-    virtual const TypeInfo* typeInfo() const { return &info; }
-  private:
-    class GlobalInternal;
-    GlobalInternal *internal;
-    static const TypeInfo info;
-  };
-
-};
-
 using namespace KJS;
 
-class GlobalFunc : public InternalFunctionImp {
-public:
-  GlobalFunc(int i, int len);
-  Completion execute(const List &c);
-  virtual CodeType codeType() const;
-  enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape };
-private:
-  int id;
-};
-
-const TypeInfo GlobalImp::info = { "global", ObjectType, &ObjectImp::info, 0, 0 };
+const TypeInfo GlobalImp::info = { "global", GlobalType, &ObjectImp::info, 0, 0 };
 
 Global::Global()
   : Object(0L)
 {
   rep = 0;
-  init();
 }
 
 Global::Global(void *)
@@ -93,27 +56,18 @@ Global::~Global()
 {
 }
 
-void Global::init()
-{
-  if (rep)
-    rep->deref();
-  GlobalImp *g = new GlobalImp();
-  rep = g;
-  rep->ref();
-  g->init();
-}
-
-void Global::clear()
-{
-//   if (rep && rep->deref())
-//     delete rep;
-//   rep = 0L;
-}
-
 Global Global::current()
 {
+  // Applications that do not pass in their own global object to the
+  // KJScript constructor will get a GlobalImp, and Global::current()
+  // will return a global object. However, if the app uses it's own
+  // global object, then this will return 0.
   assert(KJScriptImp::current());
-  return KJScriptImp::current()->glob;
+  KJSO glob(KJScriptImp::current()->globalObject());
+  if (glob.derivedFrom(GlobalType))
+    return Global(static_cast<GlobalImp*>(glob.imp()));
+  else
+    return 0;
 }
 
 KJSO Global::objectPrototype() const
@@ -152,82 +106,11 @@ GlobalImp::GlobalImp()
     filter(0L),
     extraData(0L)
 {
-  // constructor properties. prototypes as Global's member variables first.
-  Object objProto = new ObjectPrototype();
-  Object funcProto = new FunctionPrototype(objProto);
-  Object arrayProto(new ArrayPrototype(objProto,funcProto));
-  Object stringProto(new StringPrototype(objProto,funcProto));
-  Object booleanProto(new BooleanPrototype(objProto,funcProto));
-  Object numberProto(new NumberPrototype(objProto,funcProto));
-  Object dateProto(new DatePrototype(objProto,funcProto));
-  Object regexpProto(new RegExpPrototype(objProto,funcProto));
-  Object errorProto(new ErrorPrototype(objProto,funcProto));
-
-  objProto.get("toString").setPrototype(funcProto);
-  objProto.get("valueOf").setPrototype(funcProto);
-  setPrototype(objProto);
-
-  put("[[Object.prototype]]", objProto);
-  put("[[Function.prototype]]", funcProto);
-  put("[[Array.prototype]]", arrayProto);
-  put("[[String.prototype]]", stringProto);
-  put("[[Boolean.prototype]]", booleanProto);
-  put("[[Number.prototype]]", numberProto);
-  put("[[Date.prototype]]", dateProto);
-  put("[[RegExp.prototype]]", regexpProto);
-  put("[[Error.prototype]]", errorProto);
-
-  Object objectObj(new ObjectObject(funcProto, objProto));
-  Object funcObj(new FunctionObject(funcProto));
-  Object arrayObj(new ArrayObject(funcProto, arrayProto));
-  Object stringObj(new StringObject(funcProto, stringProto));
-  Object boolObj(new BooleanObject(funcProto, booleanProto));
-  Object numObj(new NumberObject(funcProto, numberProto));
-  Object dateObj(new DateObject(funcProto, dateProto));
-  Object regObj(new RegExpObject(funcProto, regexpProto));
-  Object errObj(new ErrorObject(funcProto, errorProto));
-
-  // ECMA 15.3.4.1
-  funcProto.put("constructor", funcObj, DontEnum);
-
-  Imp::put("Object", objectObj, DontEnum);
-  Imp::put("Function", funcObj, DontEnum);
-  Imp::put("Array", arrayObj, DontEnum);
-  Imp::put("Boolean", boolObj, DontEnum);
-  Imp::put("String", stringObj, DontEnum);
-  Imp::put("Number", numObj, DontEnum);
-  Imp::put("Date", dateObj, DontEnum);
-  Imp::put("RegExp", regObj, DontEnum);
-  Imp::put("Error", errObj, DontEnum);
-
-  objProto.setConstructor(objectObj);
-  funcProto.setConstructor(funcObj);
-  arrayProto.setConstructor(arrayObj);
-  booleanProto.setConstructor(boolObj);
-  stringProto.setConstructor(stringObj);
-  numberProto.setConstructor(numObj);
-  dateProto.setConstructor(dateObj);
-  regexpProto.setConstructor(regObj);
-  errorProto.setConstructor(errObj);
-
-  Imp::put("NaN", Number(NaN), DontEnum);
-  Imp::put("Infinity", Number(Inf), DontEnum);
-  Imp::put("undefined", Undefined(), DontEnum);
+  KJScriptImp::initGlobal(this);
 };
 
 void GlobalImp::init()
 {
-  Imp::put("eval",       new GlobalFunc(GlobalFunc::Eval,       1), DontEnum);
-  Imp::put("parseInt",   new GlobalFunc(GlobalFunc::ParseInt,   2), DontEnum);
-  Imp::put("parseFloat", new GlobalFunc(GlobalFunc::ParseFloat, 1), DontEnum);
-  Imp::put("isNaN",      new GlobalFunc(GlobalFunc::IsNaN,      1), DontEnum);
-  Imp::put("isFinite",   new GlobalFunc(GlobalFunc::IsFinite,   1), DontEnum);
-  Imp::put("escape",     new GlobalFunc(GlobalFunc::Escape,     1), DontEnum);
-  Imp::put("unescape",   new GlobalFunc(GlobalFunc::UnEscape,   1), DontEnum);
-
-  // other properties
-  Object objProto = static_cast<Object>(get("[[Object.prototype]]").imp());
-  Imp::put("Math", Object(new Math(objProto)), DontEnum);
 }
 
 GlobalImp::~GlobalImp() { }

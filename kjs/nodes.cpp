@@ -174,7 +174,7 @@ KJSO RegExpNode::evaluate()
   list.append(f);
 
   // very ugly
-  KJSO r = Global::current().get("RegExp");
+  KJSO r = KJScriptImp::current()->globalObject().get("RegExp");
   RegExpObject *r2 = (RegExpObject*)r.imp();
   return r2->construct(list);
 }
