@@ -378,9 +378,15 @@ KJSO RelationalNode::evaluate()
   } else if (oper == OpGreater || oper == OpLessEq) {
     int r = relation(v2, v1);
     if (r < 0)
-      b = false; 
+      b = false;
     else
       b = (oper == OpGreater) ? r : !r;
+  } else if (oper == OpIn) {
+      /* Is all of this OK for host objects? */
+      if (!v2.isObject())
+          return throwError( TypeError,
+                             "Shift expression not an object into IN expression." );
+      b = v2.hasProperty(v1.toString().value());
   } else {
     /* TODO: instanceof */
     b = false;

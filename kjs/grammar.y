@@ -286,6 +286,8 @@ RelationalExpr:
                            { $$ = new RelationalNode($1, OpGreaterEq, $3); }
   | RelationalExpr INSTANCEOF ShiftExpr
                            { $$ = new RelationalNode($1, OpInstanceOf, $3); }
+  | RelationalExpr IN ShiftExpr
+                           { $$ = new RelationalNode($1, OpIn, $3); }
 ;
 
 EqualityExpr:
