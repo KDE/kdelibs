@@ -3690,7 +3690,9 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = QString::fromLatin1( "text/html" );
 
   if ( args.serviceType.isEmpty() ) {
-    kdDebug() << "Running new KHTMLRun for " << this << " and child=" << child << endl;
+    kdDebug(6050) << "Running new KHTMLRun for " << this << " and child=" << child << endl;
+    emit started( 0 ); // get the wheel to start spinning if necessary (#16616)
+    d->m_bComplete = false; // and ensure we'll stop it in checkCompleted
     child->m_run = new KHTMLRun( this, child, url, child->m_args, true );
     return false;
   } else {
@@ -3710,8 +3712,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   // khtmlrun called us this way to indicate a loading error
   if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) )
   {
-      checkEmitLoadEvent();
       child->m_bCompleted = true;
+      checkCompleted();
       return true;
   }
 
@@ -3724,6 +3726,22 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
   if ( child->m_serviceType != mimetype )
   {
+    // Before attempting to load a part, check if the user wants that.
+    // Many don't like getting ZIP files embedded.
+    KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
+      url, mimetype/*, suggestedFilename */ );
+    switch( res ) {
+    case KParts::BrowserRun::Save:
+      KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString::null, 0 /*, suggestedFilename */ );
+      // fall-through
+    case KParts::BrowserRun::Cancel:
+      child->m_bCompleted = true;
+      checkCompleted();
+      return true; // done
+    default: // Open
+      break;
+    }
+
     QStringList dummy; // the list of servicetypes handled by the part is now unused.
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, dummy, child->m_params );
 

@@ -304,14 +304,26 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
 {
+    KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
+    // Don't ask for:
+    // - html (even new tabs would ask, due to about:blank!)
+    // - dirs obviously (though not common over HTTP :),
+    // - images (reasoning: no need to save, most of the time, because fast to see)
+    // e.g. postscript is different, because takes longer to read, so
+    // it's more likely that the user might want to save it.
+    if ( mime->is( "text/html" ) ||
+         mime->is( "inode/directory" ) ||
+         mimeType.startsWith( "image" ) )
+        return Open;
+
     QString question = makeQuestion( url, mimeType, suggestedFilename );
 
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
         KStdGuiItem::saveAs(), KStdGuiItem::open(),
-        QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
+        QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
 

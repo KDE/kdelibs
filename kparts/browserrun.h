@@ -92,9 +92,10 @@ namespace KParts {
          * @param url the URL in question
          * @param mimeType the mimetype of the URL
          * @param suggestedFilename optional filename suggested by the server
+         * @param flags reserved for later use
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString::null );
+        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString::null, int flags = 0 );
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KURL & url, const QString & suggestedFilename );
