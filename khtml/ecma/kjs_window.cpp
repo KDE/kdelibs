@@ -797,7 +797,7 @@ bool Window::isSafeScript() const
 {
   KHTMLPart *act = (KHTMLPart*)KJS::Global::current().extra();
   if (!act)
-      kdDebug() << "Window::isSafeScript: KJS::Global::current().extra() is 0L!" << endl;
+      kdDebug(6070) << "Window::isSafeScript: KJS::Global::current().extra() is 0L!" << endl;
   return act && originCheck(m_part->url(), act->url());
 }
 
@@ -1315,7 +1315,7 @@ Completion LocationFunc::tryExecute(const List &args)
       return Completion(ReturnValue, result);
     }
   } else
-    kdDebug() << "LocationFunc::tryExecute - no part!" << endl;
+    kdDebug(6070) << "LocationFunc::tryExecute - no part!" << endl;
   return Completion(Normal);
 }
 
