@@ -121,15 +121,13 @@ private:
   /**
    * ftpSendCmd - send a command (@p cmd) and read response
    *
-   * @param expresp the expected first char, if you want the builtin check
    * @param maxretries number of time it should retry. Since it recursively
    * calls itself if it can't read the answer (this happens especially after
    * timeouts), we need to limit the recursiveness ;-)
    *
-   * return true if proper response received, false on error
-   * or if @p expresp doesn't match
+   * return true if any response received, false on error
    */
-  bool ftpSendCmd( const QCString& cmd, char expresp = '\0', int maxretries = 1 );
+  bool ftpSendCmd( const QCString& cmd, int maxretries = 1 );
 
   /**
    * Use the SIZE command to get the file size.
@@ -202,6 +200,8 @@ private:
   // used by ftpReadDir
   FtpEntry * ftpParseDir( char* buffer );
   void createUDSEntry( const QString & filename, FtpEntry * e, KIO::UDSEntry & entry, bool isDir );
+  void shortStatAnswer( const QString& filename, bool isDir );
+  void statAnswerNotFound( const QString & path, const QString & filename );
 
   bool ftpRename( const QString & src, const QString & dst, bool overwrite );
 

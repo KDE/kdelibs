@@ -226,7 +226,7 @@ void Ftp::closeConnection()
     if( sControl != 0 )
     {
       kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
-      if ( !ftpSendCmd( "quit", '2' ) )
+      if ( !ftpSendCmd( "quit" ) || rspbuf[0] != '2' )
         kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err=" << rspbuf[0] << rspbuf[1] << rspbuf[2] << endl;
       free( nControl );
       if (ksControl != NULL)
@@ -485,7 +485,7 @@ bool Ftp::ftpLogin()
         }
       }
       kdDebug(7102) << "Sending Login name: " << user << endl;
-      bool loggedIn = (ftpSendCmd( tempbuf, '2' ) &&
+      bool loggedIn = (ftpSendCmd( tempbuf ) &&
                        !strncmp( rspbuf, "230", 3));
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
@@ -501,7 +501,7 @@ bool Ftp::ftpLogin()
         tempbuf = "pass ";
         tempbuf += pass.latin1();
         kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
-        loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp(rspbuf, "230", 3));
+        loggedIn = (ftpSendCmd( tempbuf ) && !strncmp(rspbuf, "230", 3));
       }
 
       if ( loggedIn )
@@ -519,16 +519,16 @@ bool Ftp::ftpLogin()
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
-  if( ftpSendCmd( "syst", '2' ) )
+  if( ftpSendCmd( "syst" ) && rspbuf[0] == '2' )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
     {
-      (void)ftpSendCmd( "site dirstyle", '2' );
+      (void)ftpSendCmd( "site dirstyle" );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
       if( !strncmp( rspbuf, "200 MSDOS-like directory output is on", 37 ))
          //It was in Unix style already!
-         (void)ftpSendCmd( "site dirstyle", '2' );
+         (void)ftpSendCmd( "site dirstyle" );
 
     }
   }
@@ -555,7 +555,7 @@ bool Ftp::ftpLogin()
                       // TODO: Add support for arbitrary commands
                       // besides simply changing directory!!
                       if ( (*it).startsWith( "cwd" ) )
-                          ftpSendCmd( (*it).latin1(), '2' );
+                          ftpSendCmd( (*it).latin1() );
                   }
                   break;
               }
@@ -565,7 +565,7 @@ bool Ftp::ftpLogin()
 
   // Get the current working directory
   kdDebug(7102) << "Searching for pwd" << endl;
-  if ( !ftpSendCmd( "pwd", '2' ) )
+  if ( !ftpSendCmd( "pwd" ) || rspbuf[0] != '2' )
   {
     kdDebug(7102) << "Couldn't issue pwd command" << endl;
     error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host) ); // or anything better ?
@@ -594,15 +594,13 @@ bool Ftp::ftpLogin()
 /**
  * ftpSendCmd - send a command (@p cmd) and read response
  *
- * @param expresp the expected first char. '\001' for no check
  * @param maxretries number of time it should retry. Since it recursively
  * calls itself if it can't read the answer (this happens especially after
  * timeouts), we need to limit the recursiveness ;-)
  *
- * return true if proper response received, false on error
- * or if @p expresp doesn't match
+ * return true if any response received, false on error
  */
-bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
+bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
 {
   assert( sControl > 0 );
 
@@ -635,14 +633,14 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       }
       kdDebug(7102) << "Logged back in, reissuing command" << endl;
       // On success, try the command again
-      return ftpSendCmd( cmd, expresp, maxretries - 1 );
+      return ftpSendCmd( cmd, maxretries - 1 );
     } else
     {
       error( ERR_SERVER_TIMEOUT, m_host );
       return false;
     }
   }
-  return (expresp == 0) || (rsp == expresp);
+  return true;
 }
 
 /*
@@ -669,7 +667,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   m_bPasv = true;
 
   /* Let's PASsiVe*/
-  if (!(ftpSendCmd("PASV",'2')))
+  if (!(ftpSendCmd("PASV") || rspbuf[0] != '2'))
   {
     return false;
   }
@@ -731,7 +729,7 @@ bool Ftp::ftpOpenEPSVDataConnection()
     return false;
 
   m_bPasv = true;
-  if (!(ftpSendCmd("EPSV", '2')))
+  if (!ftpSendCmd("EPSV") || rspbuf[0] != '2')
     {
       // unknown command?
       if (rspbuf[0] == '5')
@@ -809,7 +807,7 @@ bool Ftp::ftpOpenEPRTDataConnection()
 		  sin->nodeName().latin1(), sin->port());
 
   // FIXME! Encoding for hostnames?
-  if (!ftpSendCmd(command, '2'))
+  if (!ftpSendCmd(command) || rspbuf[0] != '2')
     {
       // unknown command?
       if (rspbuf[0] == '5')
@@ -916,7 +914,7 @@ bool Ftp::ftpOpenDataConnection()
           (unsigned char)sin.sa.sa_data[4],(unsigned char)sin.sa.sa_data[5],
           (unsigned char)sin.sa.sa_data[0],(unsigned char)sin.sa.sa_data[1]);
 
-  return ftpSendCmd( buf, '2' );
+  return ftpSendCmd( buf ) && rspbuf[0] == '2';
 }
 
 
@@ -959,7 +957,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   QCString buf = "type ";
   buf += _mode;
 
-  if ( !ftpSendCmd( buf, '2' ) )
+  if ( !ftpSendCmd( buf ) || rspbuf[0] != '2' )
   {
     error( ERR_COULD_NOT_CONNECT, QString::null );
     return false;
@@ -974,12 +972,11 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
     sprintf(buf, "rest %ld", _offset);
-    if ( !ftpSendCmd( buf, '3' ) ) {
-      if ( rspbuf[0] != '3' ) // other errors were already emitted
-        {
-          error( ERR_CANNOT_RESUME, _path ); // should never happen
-          return false;
-        }
+    if ( !ftpSendCmd( buf ) )
+       return false;
+    if ( rspbuf[0] != '3' ) {
+      error( ERR_CANNOT_RESUME, _path ); // should never happen
+      return false;
     }
   }
 
@@ -990,7 +987,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     tmp += _path.ascii();
   }
 
-  if ( !ftpSendCmd( tmp, '1' ) ) {
+  if ( !ftpSendCmd( tmp ) || rspbuf[0] != '1' ) {
     if ( _offset > 0 && strcmp(_command, "retr") == 0 && rspbuf[0] == '4')
     {
       // Failed to resume
@@ -1063,7 +1060,7 @@ void Ftp::mkdir( const KURL & url, int permissions )
   QCString buf = "mkd ";
   buf += path.latin1();
 
-  if ( ! ftpSendCmd( buf, '2' ) )
+  if ( !ftpSendCmd( buf ) || rspbuf[0] != '2' )
   {
     error( ERR_COULD_NOT_MKDIR, path );
     return;
@@ -1105,11 +1102,11 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
   QCString cmd;
   cmd = "RNFR ";
   cmd += src.ascii();
-  if ( !ftpSendCmd( cmd, '3') )
+  if ( !ftpSendCmd( cmd ) || rspbuf[0] != '3')
     return false;
   cmd = "RNTO ";
   cmd += dst.ascii();
-  return ftpSendCmd( cmd, '2' );
+  return ftpSendCmd( cmd ) && rspbuf[0] == '2';
 }
 
 void Ftp::del( const KURL& url, bool isfile )
@@ -1134,14 +1131,14 @@ void Ftp::del( const KURL& url, bool isfile )
     QCString tmp = "cwd ";
     tmp += url.directory().ascii();
 
-    (void) ftpSendCmd( tmp, '2' );
+    (void) ftpSendCmd( tmp );
     // ignore errors
   }
 
   QCString cmd = isfile ? "DELE " : "RMD ";
   cmd += path.ascii();
 
-  if ( !ftpSendCmd( cmd, '2' ) )
+  if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
     error( ERR_CANNOT_DELETE, path );
   else
     finished();
@@ -1161,7 +1158,7 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
   cmd += buf;
   cmd += path.ascii();
 
-  return ftpSendCmd( cmd, '2' );
+  return ftpSendCmd( cmd ) && rspbuf[0] == '2';
 }
 
 void Ftp::chmod( const KURL & url, int permissions )
@@ -1247,6 +1244,53 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
      entry.append( atom ); */
 }
 
+
+void Ftp::shortStatAnswer( const QString& filename, bool isDir )
+{
+    UDSEntry entry;
+    UDSAtom atom;
+
+    atom.m_uds = KIO::UDS_NAME;
+    atom.m_str = filename;
+    entry.append( atom );
+
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = isDir ? S_IFDIR : S_IFREG;
+    entry.append( atom );
+
+    atom.m_uds = KIO::UDS_ACCESS;
+    atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    entry.append( atom );
+
+    // No details about size, ownership, group, etc.
+
+    statEntry(entry);
+    finished();
+}
+
+void Ftp::statAnswerNotFound( const QString & path, const QString & filename )
+{
+    // Only do the 'hack' below if we want to download an existing file (i.e. when looking at the "source")
+    // When e.g. uploading a file, we still need stat() to return "not found"
+    // when the file doesn't exist.
+    QString statSide = metaData(QString::fromLatin1("statSide"));
+    kdDebug() << "Ftp::stat statSide=" << statSide << endl;
+    if ( statSide == "source" )
+    {
+	kdDebug() << "Not found, but assuming found, because some servers don't allow listing" << endl;
+        // MS Server is incapable of handling "list <blah>" in a case insensitive way
+        // But "retr <blah>" works. So lie in stat(), to get going...
+	//
+	// There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
+	// where listing permissions are denied, but downloading is still possible.
+        shortStatAnswer( filename, false /*file, not dir*/ );
+    }
+    else
+    {
+        error( ERR_DOES_NOT_EXIST, path );
+    }
+}
+
 void Ftp::stat( const KURL &url)
 {
   kdDebug(7102) << "Ftp::stat : path='" << url.path() << "'" << endl;
@@ -1300,22 +1344,36 @@ void Ftp::stat( const KURL &url)
   QString filename = tempurl.fileName();
   ASSERT(!filename.isEmpty());
   QString search = filename;
-  bool isDir = false;
 
   // Try cwd into it, if it works it's a dir (and then we'll list the parent directory to get more info)
   // if it doesn't work, it's a file (and then we'll use dir filename)
   QCString tmp = "cwd ";
   tmp += path.latin1();
-  if ( !ftpSendCmd( tmp, '\0' /* no builtin response check */ ) )
+  if ( !ftpSendCmd( tmp ) )
   {
     kdDebug(7102) << "stat: ftpSendCmd returned false" << endl;
     // error already emitted, if e.g. transmission failure
     return;
   }
 
-  // TODO: if we're only interested in "file or directory", we should stop here
+  bool isDir = ( rspbuf[0] != '5' );
 
-  if ( rspbuf[0] == '5' )
+  // if we're only interested in "file or directory", we should stop here
+  QString sDetails = metaData(QString::fromLatin1("details"));
+  int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
+  kdDebug() << "Ftp::stat details=" << details << endl;
+  if ( details == 0 )
+  {
+     if ( !ftpSize( path, 'I' ) ) // is it a file ?
+     {  // no -> it doesn't exist at all
+        statAnswerNotFound( path, filename );
+        return;
+     }
+     shortStatAnswer( filename, isDir );
+     return;
+  }
+
+  if (!isDir)
   {
     // It is a file or it doesn't exist, try going to parent directory
     parentDir = tempurl.directory(false /*keep trailing slash*/);
@@ -1364,10 +1422,14 @@ void Ftp::stat( const KURL &url)
   // Now cwd the parent dir, to prepare for listing
   tmp = "cwd ";
   tmp += parentDir.latin1();
-  if ( !ftpSendCmd( tmp, '2' ) )
+  if ( !ftpSendCmd( tmp ) )
+    // error already emitted
+    return;
+
+  if ( rspbuf[0] != '2' )
   {
     kdDebug(7102) << "stat: Could not go to parent directory" << endl;
-    // error already emitted
+    error( ERR_CANNOT_ENTER_DIRECTORY, parentDir );
     return;
   }
 
@@ -1436,41 +1498,7 @@ void Ftp::stat( const KURL &url)
 
   if ( !bFound )
   {
-    // Only do the 'hack' below if we want to download an existing file (i.e. when looking at the "source")
-    // When e.g. uploading a file, we still need stat() to return "not found"
-    // when the file doesn't exist.
-    QString statSide = metaData(QString::fromLatin1("statSide"));
-    kdDebug() << "Ftp::stat statSide=" << statSide << endl;
-    if ( statSide == "source" )
-    {
-	kdDebug() << "Not found, but assuming found, because some servers don't allow listing" << endl;
-        // MS Server is incapable of handling "list <blah>" in a case insensitive way
-        // But "retr <blah>" works. So lie in stat(), to get going...
-	//
-	// There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
-	// where listing permissions are denied, but downloading is still possible.
-        UDSEntry entry;
-        UDSAtom atom;
-
-        atom.m_uds = KIO::UDS_NAME;
-        atom.m_str = filename;
-        entry.append( atom );
-
-        atom.m_uds = KIO::UDS_FILE_TYPE;
-        atom.m_long = S_IFREG;
-        entry.append( atom );
-
-        atom.m_uds = KIO::UDS_ACCESS;
-        atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-        entry.append( atom );
-
-        // No clue about size, ownership, group, etc.
-
-        statEntry(entry);
-        finished();
-        return;
-    }
-    error( ERR_DOES_NOT_EXIST, path );
+    statAnswerNotFound( path, filename );
     return;
   }
 
@@ -1580,7 +1608,7 @@ bool Ftp::ftpOpenDir( const QString & path )
   QCString tmp = "cwd ";
   tmp += ( !path.isEmpty() ) ? path.latin1() : "/";
 
-  if ( !ftpSendCmd( tmp, '2' ) )
+  if ( !ftpSendCmd( tmp ) || rspbuf[0] != '2' )
   {
     // We get '550', whether it's a file or doesn't exist...
       return false;
@@ -1590,7 +1618,8 @@ bool Ftp::ftpOpenDir( const QString & path )
   // We changed into this directory anyway ("cwd"), so it's enough just to send "list".
   // We use '-a' because the application MAY be interested in dot files.
   // The only way to really know would be to have a metadata flag for this...
-  if( !ftpOpenCommand( "list -a", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  // ####### can't use -a, ftp://160.39.200.55 answers "Sorry, I don't see that file"
+  if( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
     kdWarning(7102) << "Can't open for listing" << endl;
     return false;
@@ -1828,12 +1857,13 @@ void Ftp::get( const KURL & url )
 
   // try to find the size of the file (and check that it exists at the same time)
   // 550 is "File does not exist"/"not a plain file"
+  // If we got something else, maybe SIZE isn't supported.
   if ( !ftpSize( url.path(), 'I' ) && strncmp( rspbuf, "550", 3) == 0 )
   {
       // Not a file, or doesn't exist. We need to find out.
       QCString tmp = "cwd ";
       tmp += url.path().latin1();
-      if ( ftpSendCmd( tmp, '2' ) )
+      if ( ftpSendCmd( tmp ) && rspbuf[0] == '2' )
       {
           // Ok it's a dir in fact
           kdDebug(7102) << "Ftp::get: it is a directory in fact" << endl;
@@ -2042,7 +2072,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
       cmd += dest_orig.ascii();
-      if ( !ftpSendCmd( cmd, '2' ) )
+      if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
         return;
@@ -2063,7 +2093,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
       cmd += dest_part.ascii();
-      if ( !ftpSendCmd( cmd, '2' ) )
+      if ( !ftpSendCmd( cmd ) || rspbuf[0] != '2' )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
         return;
@@ -2127,7 +2157,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
       {
         QCString cmd = "DELE ";
         cmd += dest.ascii();
-        (void) ftpSendCmd( cmd, '\0' );
+        (void) ftpSendCmd( cmd );
       }
     }
     return;
@@ -2188,13 +2218,13 @@ bool Ftp::ftpSize( const QString & path, char mode )
 {
   QCString buf;
   buf.sprintf("type %c", mode);
-  if ( !ftpSendCmd( buf, '2' ) ) {
+  if ( !ftpSendCmd( buf ) || rspbuf[0] !='2' ) {
       return false;
   }
 
   buf="SIZE ";
   buf+=path.ascii();
-  if (!ftpSendCmd(buf,'2')) {
+  if ( !ftpSendCmd( buf ) || rspbuf[0] !='2' ) {
     m_size = 0;
     return false;
   }
