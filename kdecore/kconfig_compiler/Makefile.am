@@ -34,7 +34,7 @@ TESTFILES = test1.kcfg test2.kcfg test3.kcfg test4.kcfg
 
 check-local:
 	for i in $(TESTFILES); \
-	  do xmllint -noout -dtdvalid $(srcdir)/kcfg.dtd $(srcdir)/tests/$$i; \
+	  do xmllint --noout --schema $(srcdir)/kcfg.xsd $(srcdir)/tests/$$i; \
 	  perl $(top_srcdir)/kdecore/kconfig_compiler/checkkcfg.pl \
           $(top_srcdir)/kdecore/kconfig_compiler/tests/$$i; done
 	  

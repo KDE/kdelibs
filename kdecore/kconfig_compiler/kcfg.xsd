@@ -57,18 +57,18 @@
     <xsd:element name="kcfg">
         <xsd:complexType>
             <xsd:sequence>
+                <xsd:element name="include" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
                 <xsd:element name="kcfgfile" >
                     <xsd:complexType>
                         <xsd:attribute name="name" type="xsd:string"/>
                     </xsd:complexType>
                 </xsd:element>
-                <xsd:element name="include" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
                 <xsd:element name="group" maxOccurs="unbounded" >
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="entry" maxOccurs="unbounded">
                                 <xsd:complexType>
-                                    <xsd:all>
+                                    <xsd:sequence>
                                         <xsd:element name="parameter" minOccurs="0" type="kcfg:parameter"/>
                                         <xsd:element name="label" minOccurs="0" type="xsd:string"/>
                                         <xsd:element name="whatsthis" minOccurs="0" type="xsd:string"/>
@@ -90,7 +90,7 @@
                                         </xsd:element>
                                         
                                         <xsd:element name="code" minOccurs="0" type="kcfg:code"/>
-                                        <xsd:element name="default" minOccurs="0" >
+                                        <xsd:element name="default" maxOccurs="unbounded" minOccurs="0" >
                                             <xsd:complexType>
                                                 <xsd:simpleContent>
                                                     <xsd:extension base="xsd:string">
@@ -121,7 +121,7 @@
                                             </xsd:complexType>
                                         </xsd:element>
                                         
-                                    </xsd:all>
+                                    </xsd:sequence>
                                     <xsd:attribute name="name" use="optional" type="xsd:string"/>
                                     <xsd:attribute name="key" use="optional" type="xsd:string"/>
                                     <xsd:attribute name="hidden" use="optional" type="xsd:boolean"/>
@@ -164,7 +164,7 @@
     
     <xsd:complexType name="parameter">
         <xsd:sequence>
-            <xsd:element maxOccurs="unbounded" name="values"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="values"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string"/>
         <xsd:attributeGroup ref="kcfg:datatype"/>
