@@ -821,6 +821,7 @@ void KDirOperator::setView( KFile::FileView view )
     }
 
     m_viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
+    view = static_cast<KFile::FileView>(m_viewKind);
 
     KFileView *new_view = createView( this, view );
     if( preview ) {
