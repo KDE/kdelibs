@@ -200,6 +200,7 @@ AC_SUBST(LIB_KHTML, '$(top_builddir)/khtml/libkhtml.la')
 AC_SUBST(LIB_KDEPRINT, '$(top_builddir)/kdeprint/libkdeprint.la')
 AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 AC_SUBST(LIB_KIMGIO, '$(top_builddir)/kimgio/libkimgio.la')
+AC_SUBST(LIB_KNEWSTUFF, '$(top_builddir)/knewstuff/libknewstuff.la')
 
 AC_SUBST(EXTRA_SUBDIRS)
 
