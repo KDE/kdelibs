@@ -40,6 +40,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #ifndef QT_CLEAN_NAMESPACE
 #define QT_CLEAN_NAMESPACE
