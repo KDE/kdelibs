@@ -1777,6 +1777,10 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   anchors->deref();
 
   if(!n) {
+      n = d->m_doc->getElementById( name );
+  }
+
+  if(!n) {
       kdDebug(6050) << "KHTMLPart::gotoAnchor node '" << name << "' not found" << endl;
       return false;
   }
@@ -4473,18 +4477,16 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
         ( _mouse->state() == LeftButton )) {
       int offset;
-      //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
-      //              << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
-      //              << endl;
+      //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
       DOM::NodeImpl* node=0;
       innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
-                                                          event->absX()-innerNode.handle()->renderer()->xPos(),
+                                                           event->absX()-innerNode.handle()->renderer()->xPos(),
                                                            event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
        d->m_selectionEnd = node;
        d->m_endOffset = offset;
-//        if (d->m_selectionEnd.handle() && d->m_selectionEnd.handle()->renderer())
-//          kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
-//                          << d->m_endOffset << endl;
+       //if (d->m_selectionEnd.handle())
+       //   kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/"
+       //                   << d->m_endOffset << endl;
 
       // we have to get to know if end is before start or not...
       DOM::Node n = d->m_selectionStart;
