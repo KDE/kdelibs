@@ -36,6 +36,9 @@ class QTimer;
 class KSpell;
 class KSpellConfig;
 
+/**
+ * \brief Syntax sensitive text highlighter
+ */
 class KDEUI_EXPORT KSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
@@ -85,6 +88,9 @@ private:
     KSpellingHighlighterPrivate *d;
 };
 
+/**
+ * \brief Dictionary sensitive text highlighter
+ */
 class KDEUI_EXPORT KDictSpellingHighlighter : public QObject, public KSpellingHighlighter
 {
 Q_OBJECT
