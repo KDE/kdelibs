@@ -1,0 +1,88 @@
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+ <!ENTITY kdebug "<application>kdebug</application>">
+ <!ENTITY % addindex "IGNORE">
+ <![ %addindex; [ <!ENTITY docindex SYSTEM "docindex.docbook"> ]]>
+]>
+
+<book lang="en">
+<bookinfo>
+<title>The KDebug Reference</title>
+<authorgroup>
+<author>
+<firstname>Alex</firstname>
+<surname>Zepeda</surname>
+<affiliation>
+<address><email>jazepeda@pacbell.net</email></address>
+</affiliation>
+</author>
+</authorgroup>
+<date>07/28/2000</date>
+<releaseinfo>1.00.00</releaseinfo>
+<abstract>
+<para>KDebug is a set of functions and overloaded operators that allow one
+to manage debugging output without a lot of hassle.</para>
+</abstract>
+
+<keywordset>
+<keyword>kdebug</keyword>
+<keyword>debug</keyword>
+<keyword>KDE</keyword>
+<keyword>iostreams</keyword>
+</keywordset>
+</bookinfo>
+
+<chapter id="what-is-kdebug">
+<title>What is &kdebug</title>
+<para>&kdebug is a system of functions and overloaded operators that makes using diagnostic messages in your code more efficient. You can give a message one out of four severity level and an area. You can choose at runtime where diagnostic messages should go and which of them should be printed at all.</para>
+
+<sect1 id="about-debug-areas">
+<title>All about &kdebug areas</title>
+<para>An area is a part of KDE that you define yourself. You can then at runtime choose from which areas diagnostic messages should be printed. Please see the file kdelibs/kdecore/kdebugareas.txt for a list of already allocated area ranges. Choose an area within the range allocated for your application. If your application is not yet in here and you have CVS access, you can allocate a range for your application here, otherwise just send an e-mail to <email>kde-devel@kde.org</email> requesting a set of areas. It is probably a good idea to define symbolic constants for the areas you want to use, but this is completely up to you</para>
+</sect1>
+</chapter>
+
+<chapter id="how-to-use">
+<title>How to use KDebug in your code</title>
+
+<sect1 id="the-basics">
+<title>The basics</title>
+<para> Using &kdebug is very simple. All you have to do is to <programlisting>#include &lt;kdebug.h&gt;</programlisting> at the beginning of every source file in which you want to use &kdebug functions and operators.
+</para>
+<para>Using &kdebug is very similar to using the standard iostreams included with most C++ compilers, however instead of directing your stream towards cout, you choose one of the four &kdebug functions (in order of increasing severity):
+
+<itemizedlist>
+<listitem><para><constant>kdDebug()</constant></para></listitem>
+<listitem><para><constant>kdWarning()</constant></para></listitem>
+<listitem><para><constant>kdError()</constant></para></listitem>
+<listitem><para><constant>kdFatal()</constant></para></listitem>
+</itemizedlist>
+</para>
+
+<para>By choosing the correct level of severity, and end-user can easily decide which messages are important enough to save (or even terminate the application), and which ones should be skipped.</para>
+
+<para>For example, if one wanted to print out the value of a variable for informative purposes one might use code similar to the following:
+<programlisting>
+#include &lt;kdebug.h&gt;
+[...]
+kdDebug() &lt;&lt; &quot;Counter i=;&quot; &lt;&lt; i &lt;&lt; endl&semi;
+</programlisting>
+</para>
+</sect1>
+
+<sect1 id="using-areas">
+<title>Using &kdebug areas</title>
+<para>One can instruct &kdebug to use a specific area by simply passing the number of the area to the appropiate function.  So to use the area 100, instead of using: <constant>kdDebug()</constant> one should use <constant>kdDebug(100)</constant>.</para>
+</sect1>
+
+</chapter>
+
+<![ %addindex; [ &docindex; ]]>
+</book>
+<!--
+Local Variables:
+mode: sgml
+sgml-omittag: nil
+sgml-shorttag: t
+sgml-general-insert-case: lower
+End:
+-->

@@ -1,7 +1,5 @@
+# $Id$
 
-data_DATA = index.html
-
-datadir = $(kde_htmldir)/en/kdelibs/kdebug
-
-EXTRA_DIST = index.html
-
+KDB2HTML = $(KDB2HTML_UNINSTALLED)
+KDE_LANG = en
+KDE_DOCS = AUTO
