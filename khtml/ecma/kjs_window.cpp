@@ -891,7 +891,7 @@ void Window::clear()
 void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
-  kdDebug() << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+  //kdDebug() << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
