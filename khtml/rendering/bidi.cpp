@@ -827,9 +827,11 @@ void RenderFlow::layoutInlineChildren()
         RenderObject *o = first();
         while ( o ) {
             if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
-                //kdDebug(6041) << "layouting replaced or floating child" << endl;
+                kdDebug(6041) << "layouting replaced or floating child" << endl;
+                if (o->isReplaced() && (o->style()->width().isPercent() || o->style()->height().isPercent()))
+                    o->setLayouted(false);
                 if( !o->layouted() )
-		    o->layout();
+                    o->layout();
                 if(o->isPositioned())
                     static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
             }
@@ -898,7 +900,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
     // eliminate spaces at beginning of line
     if(!m_pre) {
 	// remove leading spaces
-	while(!start.atEnd() && 
+	while(!start.atEnd() &&
 #ifndef QT_NO_UNICODETABLES
 	      ( start.direction() == QChar::DirWS || start.obj->isSpecial() )
 #else
@@ -921,19 +923,19 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 			static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
 		    }
 		}
-		
+
 		++start;
 	}
     }
     if ( start.atEnd() )
 	return start;
-    
+
     BidiIterator lBreak = start;
 
     RenderObject *o = start.obj;
     RenderObject *last = o;
     int pos = start.pos;
-    
+
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
         kdDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW << endl;

@@ -300,7 +300,7 @@ void RenderImage::layout()
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
-    setLayouted(!style()->width().isPercent() && !style()->height().isPercent());
+    setLayouted();
 }
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)

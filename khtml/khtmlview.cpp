@@ -431,7 +431,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     if (!swallowEvent) {
 	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
 	QApplication::sendEvent( m_part, &event );
 
 	emit m_part->nodeActivated(mev.innerNode);
@@ -473,7 +472,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     if (!swallowEvent) {
 	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
 	QApplication::sendEvent( m_part, &event );
 
 	// ###
@@ -574,7 +572,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     if (!swallowEvent) {
         khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-        event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
         QApplication::sendEvent( m_part, &event );
     }
 }
@@ -611,7 +608,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if (!swallowEvent) {
 	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
 	QApplication::sendEvent( m_part, &event );
     }
 }
@@ -1354,15 +1350,15 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if (e->timerId()==d->timerId)
     {
-        d->firstRelayout = false;        
-        killTimer(d->timerId);        
-        
-        d->layoutSchedulingEnabled=false;                                        
-        layout();      
-        d->layoutSchedulingEnabled=true;        
-                
-        d->timerId = 0;        
-        
+        d->firstRelayout = false;
+        killTimer(d->timerId);
+
+        d->layoutSchedulingEnabled=false;
+        layout();
+        d->layoutSchedulingEnabled=true;
+
+        d->timerId = 0;
+
         //scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
 	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
@@ -1372,7 +1368,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 	resizeContents(root->docWidth(), root->docHeight());
 	if ( !root->layouted() ) {
-	    killTimer(d->repaintTimerId);       
+	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
 	    //qDebug("not layouted, delaying repaint");
 	    scheduleRelayout();
@@ -1384,7 +1380,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
     updateContents( d->updateRect );
-        
+
     d->repaintTimerId = 0;
 }
 
@@ -1396,17 +1392,17 @@ void KHTMLView::scheduleRelayout()
     bool parsing = false;
     if( m_part->xmlDocImpl() ) {
         parsing = m_part->xmlDocImpl()->parsing();
-    }        
-            
+    }
+
     d->timerId = startTimer( parsing ? 1000 : 0 );
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 {
-    
+
     //kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
 
-    
+
     bool parsing = false;
     if( m_part->xmlDocImpl() ) {
         parsing = m_part->xmlDocImpl()->parsing();
@@ -1414,7 +1410,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 
 //     kdDebug() << "parsing " << parsing << endl;
 //     kdDebug() << "complete " << d->complete << endl;
-   
+
     int time;
 
     // if complete...
@@ -1431,23 +1427,23 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
             // otherwise, repaint immediatly
             time = d->repaintTimerId ? 400 : 0;
     }
-    
+
     if (d->repaintTimerId) {
         killTimer(d->repaintTimerId);
-        d->updateRect = d->updateRect.unite(QRect(x,y,w,h)); 
+        d->updateRect = d->updateRect.unite(QRect(x,y,w,h));
     } else
-        d->updateRect = QRect(x,y,w,h);    
-              
+        d->updateRect = QRect(x,y,w,h);
+
     d->repaintTimerId = startTimer( time );
-    
-//     kdDebug() << "starting timer " << time << endl;       
+
+//     kdDebug() << "starting timer " << time << endl;
 }
 
 
 void KHTMLView::complete()
 {
 //     kdDebug() << "KHTMLView::complete()" << endl;
- 
+
     d->complete = true;
 
     // is there a relayout pending?
@@ -1465,6 +1461,6 @@ void KHTMLView::complete()
 //         kdDebug() << "requesting repaint now" << endl;
         // do it now
         killTimer(d->repaintTimerId);
-        d->repaintTimerId = startTimer( 1 );           
+        d->repaintTimerId = startTimer( 1 );
     }
 }

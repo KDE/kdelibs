@@ -66,7 +66,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 
     bool needsTable = false;
 
-    if(!newChild->isText()) {
+    if(!newChild->isText() && !newChild->isReplaced()) {
         switch(newChild->style()->display()) {
         case INLINE:
         case BLOCK:

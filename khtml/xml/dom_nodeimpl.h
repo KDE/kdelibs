@@ -161,7 +161,6 @@ public:
         MouseEventType type;
         DOMString url; // url under mouse or empty
         Node innerNode;
-        int nodeAbsX, nodeAbsY;
     };
 
     virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,

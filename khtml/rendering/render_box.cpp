@@ -417,7 +417,6 @@ void RenderBox::calcWidth()
         else
             w = style()->width();
 
-
         Length ml = style()->marginLeft();
         Length mr = style()->marginRight();
 
@@ -575,7 +574,7 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     Length w = style()->width();
     short width;
     if ( ieHack )
-        *ieHack = false;
+        *ieHack = style()->height().isPercent() || (w.isVariable() || w.isPercent());
 
     switch( w.type ) {
     case Variable:
@@ -591,16 +590,11 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     case Percent:
     {
         RenderObject* p = parent();
-        while (p && !p->isTableCell()) p = p->parent();
-        bool doIEHack = !p;
         int cw = containingBlockWidth();
-        if ( cw && doIEHack )
+        if ( cw )
             width = w.minWidth( cw );
         else
             width = intrinsicWidth();
-
-        if ( ieHack )
-            *ieHack = cw && doIEHack;
         break;
     }
     case Fixed:

@@ -538,17 +538,11 @@ bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const
 
 short RenderPart::intrinsicWidth() const
 {
-    if (widget() && widget()->inherits("QScrollView"))
-        return static_cast<QScrollView*>(widget())->contentsWidth();
-
     return 300;
 }
 
 int RenderPart::intrinsicHeight() const
 {
-    if (widget() && widget()->inherits("QScrollView"))
-        return static_cast<QScrollView*>(widget())->contentsHeight();
-
     return 200;
 }
 
@@ -832,6 +826,29 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     }
 }
 
+// duplication of RenderFormElement... FIX THIS!
+short RenderPartObject::calcReplacedWidth(bool* ieHack) const
+{
+    Length w = style()->width();
+    if (ieHack)
+        *ieHack = true;
+
+    if ( w.isVariable() )
+        return intrinsicWidth();
+    else
+        return RenderReplaced::calcReplacedWidth();
+}
+
+int RenderPartObject::calcReplacedHeight() const
+{
+    Length h = style()->height();
+    if ( h.isVariable() )
+        return intrinsicHeight();
+    else
+        return RenderReplaced::calcReplacedHeight();
+}
+// end duplication
+
 void RenderPartObject::layout( )
 {
     KHTMLAssert( !layouted() );
@@ -846,7 +863,6 @@ void RenderPartObject::layout( )
     if (m_width != m_oldwidth || m_height != m_oldheight)
         RenderPart::layout();
 
-    //qDebug("parent: %p width=%d", RenderObject::parent(), m_width);
     setLayouted();
 }
 

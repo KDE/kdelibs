@@ -91,9 +91,9 @@ void RenderReplaced::calcMinMaxWidth()
         m_minWidth = 0;
         m_maxWidth = width;
     }
-    else {
+    else
         m_minWidth = m_maxWidth = width;
-    }
+
     setMinMaxKnown();
 }
 

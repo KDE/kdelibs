@@ -168,7 +168,7 @@ public:
 #endif
     m_cacheId = 0;
     m_frameNameId = 1;
-    
+
     m_restored = false;
 
     m_bJScriptForce = false;
@@ -598,7 +598,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
   d->m_workingURL = url;
-  
+
   d->m_restored = true;
 
   // set the java(script) flags according to the current host.
@@ -622,7 +622,7 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
-  
+
   /**
    * rodda: The following code is my first shot at handling error:/ sub-urls.
    * The format of the sub-url is that two variables are passed in the query:
@@ -734,7 +734,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
   d->m_restored = false;
-  
+
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
   {
@@ -1836,7 +1836,7 @@ void KHTMLPart::checkCompleted()
                                  d->m_extension->urlArgs().yOffset );
 
   d->m_view->complete();
-  
+
   if ( !d->m_redirectURL.isEmpty() )
   {
     // Do not start redirection for frames here! That action is
@@ -3634,7 +3634,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     else
        restoreURL( u );
   }
-  
+
   d->m_restored = true;
 
 }
@@ -3889,9 +3889,13 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
       {
           int offset;
           DOM::Node node;
+          int absX, absY;
+          absX = absY = 0;
+          if (innerNode.handle()->renderer())
+            innerNode.handle()->renderer()->absolutePosition(absX, absY);
+
           innerNode.handle()->findSelectionNode( event->x(), event->y(),
-                                            event->nodeAbsX(), event->nodeAbsY(),
-                                                 node, offset );
+                                                 absX, absY, node, offset);
 
         if ( node.isNull() || !node.handle() )
         {
@@ -4044,9 +4048,12 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
       //              << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
       //              << endl;
+      int absX, absY;
+      absX = absY = 0;
+      if (innerNode.handle()->renderer())
+        innerNode.handle()->renderer()->absolutePosition(absX, absY);
       innerNode.handle()->findSelectionNode( event->x(), event->y(),
-                                             event->nodeAbsX(), event->nodeAbsY(),
-                                             node, offset );
+                                             absX, absY, node, offset);
       // When this stuff is finished, this should never happen.
       // But currently....
       if ( node.isNull() || !node.handle() )
@@ -4568,7 +4575,7 @@ long KHTMLPart::cacheId() const
 
 bool KHTMLPart::restored() const
 {
-  return d->m_restored;   
+  return d->m_restored;
 }
 
 using namespace KParts;

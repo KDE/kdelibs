@@ -115,7 +115,7 @@ void RenderApplet::layout()
         tmp->showApplet();
     }
 
-    setLayouted(!style()->width().isPercent() && !style()->height().isPercent());
+    setLayouted();
 }
 
 void RenderApplet::processArguments(QMap<QString, QString> args)

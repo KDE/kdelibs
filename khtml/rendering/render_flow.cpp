@@ -363,9 +363,10 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     while( child != 0 )
     {
 
-	// make sure we relayout children if we need it.
-	if ( relayoutChildren || floatBottom() > m_y )
-	    child->setLayouted( false );
+        // make sure we relayout children if we need it.
+        if ( relayoutChildren || floatBottom() > m_y ||
+             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
+                child->setLayouted(false);
 
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
@@ -378,9 +379,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
             child = child->nextSibling();
             continue;
         } else if ( child->isReplaced() ) {
-	    if ( !child->layouted() )
-		child->layout();
-	} else if ( child->isFloating() ) {
+            if ( !child->layouted() )
+                child->layout();
+        } else if ( child->isFloating() ) {
 	    // margins of floats and other objects do not collapse. The hack below assures this.
 	    if ( prevMargin != TABLECELLMARGIN )
 		m_height += prevMargin;
