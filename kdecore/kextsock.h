@@ -173,6 +173,12 @@ public:
    */
   virtual ~KExtendedSocket();
 
+  /**
+   * Resets the socket, disconnecting if still connected and
+   * freeing any related resources still being kept.
+   */
+  void reset();
+
   /*
    * --- status, flags and internal variables --- *
    */

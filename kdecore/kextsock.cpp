@@ -440,6 +440,15 @@ KExtendedSocket::~KExtendedSocket()
   delete d;
 }
 
+void KExtendedSocket::reset()
+{
+  closeNow();
+  release();
+  d->current = 0;
+  d->status = nothing;
+  d->syserror = 0;
+}
+
 int KExtendedSocket::socketStatus() const
 {
   return d->status;
@@ -1489,8 +1498,8 @@ void KExtendedSocket::closeNow()
     delete d->qsnOut;
   d->qsnIn = d->qsnOut = NULL;
 
-  if (sockfd != -1)
-    ::close(sockfd);
+  ::close(sockfd);
+  sockfd = -1;
 
   emit closed(closedNow |
 	      (readBufferSize() != 0 ? availRead : 0) |
@@ -2083,10 +2092,8 @@ void KExtendedSocket::connectionEvent()
     }
 
   // if we got here, it means that there are no more options to connect
-  QGuardedPtr<QObject> ptr = this;
+  d->status = lookupDone;	// go back
   emit connectionFailed(errcode);
-  if (ptr) // As long as we aren't deleted.
-    d->status = lookupDone;	// go back
 }
 
 void KExtendedSocket::dnsResultsReady()
