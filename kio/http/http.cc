@@ -2181,11 +2181,8 @@ bool HTTPProtocol::readBody()
      // FINALLY, we compute our final speed and let everybody know that we
      // are done
      t_last = time(0L);
-     if (t_last - t_start) {
+     if (sz && t_last - t_start)
        speed(sz / (t_last - t_start));
-     } else {
-       speed(0);
-     }
      m_bufReceive.resize( 0 );
      data( QByteArray() );
      return true;
@@ -2420,8 +2417,6 @@ bool HTTPProtocol::readBody()
   t_last = time(0L);
   if (t_last - t_start)
     speed((sz - m_request.offset) / (t_last - t_start));
-  else
-    speed(0);
 
   data( QByteArray() );
   return true;
