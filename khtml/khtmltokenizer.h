@@ -61,6 +61,11 @@ int getAttrID(const char *tagStr, int len);
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @internal
+ * This class takes QStrings as input, and splits up the input streams into
+ * tokens, which are passed on to the @ref KHTMLParser.
+ */
 class HTMLTokenizer
 {
 public:

@@ -38,6 +38,10 @@
 #define MAXFONTSIZES 7
 #endif
 
+/**
+ * @internal
+ * This class represents the fonr used during html rendering.
+ */
 class HTMLFont
 {
 public:
@@ -143,6 +147,10 @@ inline bool HTMLFont::operator==( const HTMLFont& f )
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @internal
+ * manages a list of already loaded @ref HTMLFont's.
+ */
 class HTMLFontManager
 {
 public:

@@ -180,7 +180,9 @@ const unsigned short tagPriority[] = {
     0, // ID_TEXT
 };
 
-/*
+/**
+ * @internal
+ *
  * The parser parses tokenized input into the document, building up the
  * document tree. If the document is wellformed, parsing it is
  * straightforward.

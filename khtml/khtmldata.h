@@ -37,6 +37,9 @@
 #define MAXFONTSIZES 7
 #endif
 
+/**
+ * @internal
+ */
 class HTMLSettings
 {
 public:
@@ -71,4 +74,6 @@ public:
 extern HTMLSettings* pSettings;
 
 #endif
+
+
 

@@ -49,6 +49,9 @@ class QMovie;
 
 class KHTMLWidget;
 
+/**
+ * @internal
+ */
 class HTMLURLRequester
 {
 public:
@@ -64,6 +67,9 @@ public:
 			     bool /* eof */ = false ) = 0;
 };
 
+/**
+ * @internal
+ */
 class HTMLImageRequester
 {
 public:
@@ -71,6 +77,9 @@ public:
     virtual void pixmapChanged( QPixmap *p ) = 0;
 };
 
+/**
+ * @internal
+ */
 struct HTMLURLRequest
 {
 public:
@@ -82,6 +91,9 @@ public:
   QList<HTMLURLRequester> m_lstClients;
 };
 
+/**
+ * @internal
+ */
 class HTMLURLRequestJob : QObject
 {
   Q_OBJECT
@@ -107,14 +119,8 @@ protected:
 
 
 
-struct HTMLPageInfo
-{
-public:
-  QStringList imageURLs;
-  QStringList hrefURLs;
-};
-
 /**
+ * @internal
  * Defines the DataSource for incremental loading of images.
  */
 class KHTMLImageSource : public QDataSource
@@ -163,6 +169,7 @@ class KHTMLImageSource : public QDataSource
 };
 
 /**
+ * @internal
  * contains one cached image
  */
 class KHTMLCachedImage : public QObject
@@ -230,6 +237,9 @@ private:
     KHTMLImageSource* imgSource;
 };
 
+/**
+ * @internal
+ */
 class ImageList : public QStringList
 {
 public:
@@ -244,6 +254,9 @@ public:
     }
 };
 
+/**
+ * @internal
+ */
 class KHTMLCache : public HTMLURLRequester
 {
 public:

@@ -896,25 +896,5 @@ private:
     static QPixmap* paintBuffer;
 };
 
-/**
- * @libdoc KDE HTML widget
- *
- * This library provides a full-featured HTML parser and widget. It is
- * used for rendering in all KDE applications which allow HTML viewing,
- * including the Konqueror browser/file manager and the KDE Help
- * system.
- *
- * This library provides (will provide)
- * full HTML4 support, support for embedding Java applets, and will at some
- * point (hopefully before KDE-2.0 provide support for cascading style sheets
- * (CSS) and JavaScript.
- *
- * If you want to add to your application a widget that oly needs simple text
- * browsing, you can also use the @ref KTextBrowser widget in kdeui.
- *
- * @see KHTMLWidget, KTextBrowser
- */
-
-
 #endif
 

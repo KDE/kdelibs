@@ -41,6 +41,7 @@ class KHTMLParser;
 namespace DOM {
     class NodeImpl;
 };
+
 //
 // Internal Classes
 //
@@ -58,6 +59,9 @@ void setNamedColor(QColor &color, const QString name);
 
 typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 
+/**
+ * @internal
+ */
 class HTMLStackElem
 {
 public:
@@ -92,6 +96,9 @@ public:
     HTMLStackElem *next;
 };
 
+/**
+ * @internal
+ */
 class CSSStyleFont
 {
 public:
@@ -110,6 +117,9 @@ public:
     const HTMLFont *fp;
 };
 
+/**
+ * @internal
+ */
 class CSSStyleText
 {
 public:
@@ -130,6 +140,9 @@ public:
     int     heightValue; // the scaling factor or fixed height
 };
 
+/**
+ * @internal
+ */
 class CSSStyleBox
 {
 public:
@@ -145,6 +158,9 @@ public:
     int     borderStyle;
 };
 
+/**
+ * @internal
+ */
 class CSSStyleList
 {
 public:
@@ -155,6 +171,9 @@ public:
 };
 
 
+/**
+ * @internal
+ */
 class CSSStyle
 {
 public:
@@ -181,6 +200,9 @@ class CSSSelector;
 typedef QList<CSSSelector> CSSSelecList;
 
 
+/**
+ * @internal
+ */
 class CSSStyleSheet
 {
 

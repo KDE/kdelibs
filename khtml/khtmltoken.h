@@ -34,6 +34,10 @@
 #include "khtmlstring.h"
 #include "dom_stringimpl.h"
 
+/**
+ * @internal
+ * represents one HTML Attribute
+ */
 class Attribute
 {
 public:
@@ -98,9 +102,13 @@ public:
     ushort id;
 
 protected:
-    DOMStringImpl *v;
+    DOM::DOMStringImpl *v;
 };
 
+/**
+ * @internal
+ * A list of Attributes
+ */
 class AttributeList
 {
 
@@ -142,6 +150,12 @@ protected:
 };
 
 
+/**
+ * @internal
+ * represents one HTML tag. Consists of a numerical id, and the list
+ * of attributes. Can also represent text. In this case the id = 0 and
+ * text contains the text.
+ */
 class Token
 {
 public:
