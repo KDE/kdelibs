@@ -39,8 +39,15 @@
 #include <qtabwidget.h>
 #include <kseparator.h>
 #include <qmultilineedit.h>
+#include <kparts/browserextension.h>
+#include <kparts/browserinterface.h>
 
 K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
+
+class KCertPartPrivate {
+	public:
+		KParts::BrowserExtension *browserExtension;
+};
 
 
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
@@ -51,6 +58,8 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  setInstance(instance);
 
  _p12 = NULL;
+ d = new KCertPartPrivate;
+ d->browserExtension = new KParts::BrowserExtension(this);
 
  _frame = new QFrame(parentWidget, widgetName);
  grid = new QGridLayout(_frame, 15, 6, KDialog::marginHint(),
@@ -160,6 +169,8 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 
 KCertPart::~KCertPart() {
 if (_p12) delete _p12;
+ delete d->browserExtension;
+ delete d;
 }
 
 
@@ -311,6 +322,8 @@ void KCertPart::slotSave() {
 
 
 void KCertPart::slotDone() {
+  KParts::BrowserInterface *iface = d->browserExtension->browserInterface();
+  iface->callMethod("goHistory(int)", -1);
 }
 
 
