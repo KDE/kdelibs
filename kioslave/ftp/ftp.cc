@@ -1725,7 +1725,7 @@ bool Ftp::ftpOpenDir( const QString & path )
   // We try to change to this directory first to see whether it really is a directory.
   // (And also to follow symlinks)
   QCString tmp = "cwd ";
-  tmp += ( !path.isEmpty() ) ? remoteEncoding()->encode(path) : "/";
+  tmp += ( !path.isEmpty() ) ? remoteEncoding()->encode(path) : QCString("/");
 
   if ( !ftpSendCmd( tmp ) || rspbuf[0] != '2' )
   {
