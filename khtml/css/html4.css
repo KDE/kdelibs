@@ -350,6 +350,11 @@ FIELDSET {
 	margin: 1.0em auto;
 } 
 
+BUTTON {
+        display: block;
+        border-style: outset;
+}
+
 /* we want a fixed font for form elements (input & textarea) */
       
 INPUT[type="text"],
