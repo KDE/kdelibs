@@ -34,6 +34,7 @@
 #include <kaboutdata.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <kprocess.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname."), 0 },
@@ -109,8 +110,8 @@ static QCStringList split(const QCString &str)
 
 void KHostName::changeX()
 {
-   QCString cmd = "xauth list";
-   FILE *xFile = popen(cmd.data(), "r");
+   QString cmd = "xauth list";
+   FILE *xFile = popen(QFile::encodeName(cmd), "r");
    if (!xFile)
    {
       fprintf(stderr, "Warning: Can't run xauth.\n");
@@ -154,10 +155,15 @@ void KHostName::changeX()
 
       QCString newNetId = newName+netId.mid(i);
 
-      cmd = "xauth remove "+netId;
-      system(cmd.data());
-      cmd = "xauth add "+newNetId+" "+authName+" "+authKey;
-      system(cmd.data());
+      cmd = "xauth remove "+KProcess::quote(netId);
+      system(QFile::encodeName(cmd));
+      cmd = "xauth add ";
+      cmd += KProcess::quote(newNetId);
+      cmd += " ";
+      cmd += KProcess::quote(authName);
+      cmd += " ";
+      cmd += KProcess::quote(authKey);
+      system(QFile::encodeName(cmd));
    }
 }
 
@@ -218,8 +224,8 @@ void KHostName::changeDcop()
       ::symlink(fname.data(), compatLink.data()); // Compatibility link
 
       // Update .ICEauthority
-      QCString cmd = "iceauth list netid="+oldNetId;
-      FILE *iceFile = popen(cmd.data(), "r");
+      QString cmd = "iceauth list "+KProcess::quote("netid="+oldNetId);
+      FILE *iceFile = popen(QFile::encodeName(cmd), "r");
       if (!iceFile)
       {
          fprintf(stderr, "Warning: Can't run iceauth.\n");
@@ -253,15 +259,22 @@ void KHostName::changeDcop()
          if (netId != oldNetId)
             continue;
 
-         cmd = "iceauth add "+protName+" \"\" "+newNetId+" "+authName+" "+authKey;
-         system(cmd.data());
+         cmd = "iceauth add ";
+         cmd += KProcess::quote(protName);
+         cmd += " '' ";
+         cmd += KProcess::quote(newNetId);
+         cmd += " ";
+         cmd += KProcess::quote(authName);
+         cmd += " ";
+         cmd += KProcess::quote(authKey);
+         system(QFile::encodeName(cmd));
       }
    }
 
    // Remove old entries
    {
-      QCString cmd = "iceauth remove netid="+oldNetId;
-      system(cmd.data());
+      QString cmd = "iceauth remove "+KProcess::quote("netid="+oldNetId);
+      system(QFile::encodeName(cmd));
       unlink(origFName.data());
       origFName = DCOPClient::dcopServerFileOld(oldName); // Compatibility link
       unlink(origFName.data());
