@@ -183,6 +183,7 @@ public:
   
   /**
    * This sets the KAboutData returned by aboutData()
+   * @since 3.3
    */
    void setAboutData( KAboutData* about );
 
