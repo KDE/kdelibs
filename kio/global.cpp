@@ -396,7 +396,7 @@ QString Job::errorString()
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
     STRUCT_SETMNTENT mtab;
-    kdDebug( 7007 ) << "findDeviceMountPoint " << filename << endl;
+    //kdDebug( 7007 ) << "findDeviceMountPoint " << filename << endl;
     char    realpath_buffer[MAXPATHLEN];
     QCString realname;
 
@@ -408,7 +408,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       // succes, use result from realpath
       realname = QFile::encodeName( realpath_buffer );
 
-    kdDebug( 7007 ) << "realname " << realname << endl;
+    //kdDebug( 7007 ) << "realname " << realname << endl;
 
     /* Get the list of mounted file systems */
 
@@ -457,6 +457,6 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     }
 
     ENDMNTENT(mtab);
-    kdDebug( 7007 ) << "Returning result " << result << endl;
+    //kdDebug( 7007 ) << "Returning result " << result << endl;
     return result;
 }
