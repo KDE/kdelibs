@@ -278,14 +278,10 @@ static pid_t launch(int argc, const char *_name, const char *args)
        }
        if (d.n == -1)
        {
-          if (errno == ECHILD)
-          {
-             kdWarning() << "kdeinit: a child died..." << endl;
+          if (errno == ECHILD) {  // a child died.
              continue;
           }
-          if (errno == EINTR)
-          {
-             kdWarning () << "kdeinit: interrupted." << endl;
+          if (errno == EINTR) { // interrupted
              continue;
           }
        }
