@@ -10,8 +10,8 @@
 /**
  * Can be used to control the lifetime of an object
  * that has derived @ref QShared. As long a someone holds
- * a KSharedPtr on some QShared object it wont become
- * deleted but is deleted once its refrence count is 0.
+ * a KSharedPtr on some QShared object it won't become
+ * deleted but is deleted once its reference count is 0.
  * This struct emulates C++ pointers perfectly. So just use
  * it like a simple C++ pointer.
  */
@@ -22,7 +22,7 @@ public:
   KSharedPtr() { ptr = 0; }
   KSharedPtr( T* t ) { ptr = t; ptr->ref(); }
   KSharedPtr( const KSharedPtr& p ) { ptr = p.ptr; ptr->ref(); }
-  ~KSharedPtr() { if ( ptr->deref() ) delete ptr; }
+  ~KSharedPtr() { if ( ptr && ptr->deref() ) delete ptr; }
 
   KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
     if ( ptr && ptr->deref() ) delete ptr;
