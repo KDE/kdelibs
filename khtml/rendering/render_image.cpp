@@ -314,7 +314,7 @@ void RenderImage::layout()
 	m_width = (int) (m_width/scale);
 	m_height = (int) (m_height/scale);
     }
-    
+
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
@@ -358,9 +358,10 @@ void RenderImage::updateFromElement()
 
     if(new_image && new_image != image && (!style() || !style()->contentObject())) {
         loadEventSent = false;
-        if(image) image->deref(this);
+        CachedImage* oldimage = image;
         image = new_image;
         image->ref(this);
+        if(oldimage) oldimage->deref(this);
         berrorPic = image->isErrorImage();
     }
 
