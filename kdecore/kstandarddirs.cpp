@@ -1298,7 +1298,10 @@ bool KStandardDirs::addCustomized(KConfig *config)
         config->setGroup(group);
         QStringList list = config->readListEntry("prefixes");
         for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
+        {
             addPrefix(*it, priority);
+	    addXdgConfigPrefix(*it+"/etc/xdg", priority);
+	}
 
         // iterating over all entries in the group Directories
         // to find entries that start with dir_$type
