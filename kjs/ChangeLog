@@ -1,3 +1,11 @@
+2003-11-17  Harri Porten  <harri@froglogic.com>
+
+	* object.h: renamed virtual get(), put(), hasProperty() and
+	deleteProperty() overloads accepting an int property to
+	getIntegerProperty() etc. Not only cleaner C++ that makes
+	compilers happier but also helps to make the code more
+	understandable and safer.
+
 2003-11-16  Harri Porten  <harri@froglogic.com>
 
 	* array_object.cpp: fixed range error in Array.slice()

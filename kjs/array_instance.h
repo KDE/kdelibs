@@ -34,30 +34,30 @@ namespace KJS {
     ~ArrayInstanceImp();
 
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    virtual Value get(ExecState *exec, unsigned propertyName) const;
+    virtual Value getIntegerProperty(ExecState *exec, unsigned propertyName) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
-    virtual void put(ExecState *exec, unsigned propertyName, const Value &value, int attr = None);
+    virtual void putIntegerProperty(ExecState *exec, unsigned propertyName, const Value &value, int attr = None);
     virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
-    virtual bool hasProperty(ExecState *exec, unsigned propertyName) const;
+    virtual bool hasIntegerProperty(ExecState *exec, unsigned propertyName) const;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-    virtual bool deleteProperty(ExecState *exec, unsigned propertyName);
+    virtual bool deleteIntegerProperty(ExecState *exec, unsigned propertyName);
     virtual ReferenceList propList(ExecState *exec, bool recursive);
 
     virtual void mark();
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    
+
     unsigned getLength() const { return length; }
-    
+
     void sort(ExecState *exec);
     void sort(ExecState *exec, Object &compareFunction);
-    
+
   private:
     void setLength(unsigned newLength, ExecState *exec);
-    
+
     unsigned pushUndefinedObjectsToEnd(ExecState *exec);
-    
+
     void resizeStorage(unsigned);
 
     unsigned length;

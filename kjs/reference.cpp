@@ -115,7 +115,7 @@ Identifier Reference::getPropertyName(ExecState */*exec*/) const
   return prop;
 }
 
-Value Reference::getValue(ExecState *exec) const 
+Value Reference::getValue(ExecState *exec) const
 {
   if (baseIsValue) {
     return base;
@@ -137,9 +137,10 @@ Value Reference::getValue(ExecState *exec) const
     return err;
   }
 
+  ObjectImp *oimp = static_cast<ObjectImp*>(o.imp());
   if (propertyNameIsNumber)
-    return static_cast<ObjectImp*>(o.imp())->get(exec,propertyNameAsNumber);
-  return static_cast<ObjectImp*>(o.imp())->get(exec,prop);
+    return oimp->getIntegerProperty(exec, propertyNameAsNumber);
+  return oimp->get(exec, prop);
 }
 
 void Reference::putValue(ExecState *exec, const Value &w)
@@ -157,10 +158,11 @@ void Reference::putValue(ExecState *exec, const Value &w)
   if (o.type() == NullType)
     o = Value(exec->context().imp()->scopeChain().bottom());
 
+  ObjectImp *oimp = static_cast<ObjectImp*>(o.imp());
   if (propertyNameIsNumber)
-    static_cast<ObjectImp*>(o.imp())->put(exec,propertyNameAsNumber, w);
+    oimp->putIntegerProperty(exec, propertyNameAsNumber, w);
   else
-    static_cast<ObjectImp*>(o.imp())->put(exec,prop, w);
+    oimp->put(exec, prop, w);
 }
 
 bool Reference::deleteValue(ExecState *exec)
@@ -179,12 +181,13 @@ bool Reference::deleteValue(ExecState *exec)
     return true;
   }
 
+  ObjectImp *bimp = static_cast<ObjectImp*>(b.imp());
   if (propertyNameIsNumber)
-    return static_cast<ObjectImp*>(b.imp())->deleteProperty(exec,propertyNameAsNumber);
-  return static_cast<ObjectImp*>(b.imp())->deleteProperty(exec,prop);
+    return bimp->deleteIntegerProperty(exec, propertyNameAsNumber);
+  return bimp->deleteProperty(exec, prop);
 }
 
 bool Reference::isMutable()
-{ 
+{
   return !baseIsValue;
 }

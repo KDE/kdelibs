@@ -92,7 +92,8 @@ Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) con
   return ObjectImp::get(exec, propertyName);
 }
 
-Value ArrayInstanceImp::get(ExecState *exec, unsigned index) const
+Value ArrayInstanceImp::getIntegerProperty(ExecState *exec,
+					   unsigned index) const
 {
   if (index > MAX_INDEX)
     return ObjectImp::get(exec, Identifier::from(index));
@@ -123,14 +124,15 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, cons
   bool ok;
   unsigned index = propertyName.toArrayIndex(&ok);
   if (ok) {
-    put(exec, index, value, attr);
+    putIntegerProperty(exec, index, value, attr);
     return;
   }
 
   ObjectImp::put(exec, propertyName, value, attr);
 }
 
-void ArrayInstanceImp::put(ExecState *exec, unsigned index, const Value &value, int attr)
+void ArrayInstanceImp::putIntegerProperty(ExecState *exec, unsigned index,
+					  const Value &value, int attr)
 {
   if (index < sparseArrayCutoff && index >= storageLength) {
     resizeStorage(index + 1);
@@ -168,7 +170,7 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
   return ObjectImp::hasProperty(exec, propertyName);
 }
 
-bool ArrayInstanceImp::hasProperty(ExecState *exec, unsigned index) const
+bool ArrayInstanceImp::hasIntegerProperty(ExecState *exec, unsigned index) const
 {
   if (index > MAX_INDEX)
     return ObjectImp::hasProperty(exec, Identifier::from(index));
@@ -201,7 +203,7 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
   return ObjectImp::deleteProperty(exec, propertyName);
 }
 
-bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
+bool ArrayInstanceImp::deleteIntegerProperty(ExecState *exec, unsigned index)
 {
   if (index > MAX_INDEX)
     return ObjectImp::deleteProperty(exec, Identifier::from(index));
