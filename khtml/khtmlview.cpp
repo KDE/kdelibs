@@ -1388,6 +1388,16 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
     return d->formCompletions->readListEntry(name);
 }
 
+void KHTMLView::clearCompletionHistory(const QString& name)
+{
+    if (!d->formCompletions)
+    {
+        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+    }
+    d->formCompletions->writeEntry(name, "");
+    d->formCompletions->sync();
+}
+
 void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
 {
     if (!m_part->settings()->isFormCompletionEnabled())

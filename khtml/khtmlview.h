@@ -233,6 +233,7 @@ private:
     void restoreScrollBar();
 
     QStringList formCompletionItems(const QString &name) const;
+    void clearCompletionHistory(const QString& name);
     void addFormCompletionItem(const QString &name, const QString &value);
 
     bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
