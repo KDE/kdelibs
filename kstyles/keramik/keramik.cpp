@@ -368,7 +368,7 @@ void KeramikStyle::polish( QPalette& )
 {
 	// Using QApplication::palette, because we follow the main palette, not the one set for
 	// only some classes (e.g. tooltips)
-	Keramik::PixmapLoader::the().setColor( QApplication::palette().color( QPalette::Active, QColorGroup::Button ) );
+//	Keramik::PixmapLoader::the().setColor( QApplication::palette().color( QPalette::Active, QColorGroup::Button ) );
 }
 
 // This function draws primitive elements as well as their masks.
@@ -1337,13 +1337,16 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			{
 				Keramik::SpinBoxPainter().draw( p, br );
 				if ( active & SC_SpinWidgetUp )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y(), br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y() + 2, br.width(), br.height() / 2 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y(), br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 2, br.width(), br.height() / 2 );
 				if ( active & SC_SpinWidgetDown )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 2 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 2 );
+				p->setPen( cg.light() );
+				p->setBrush( NoBrush );
+				p->drawRect( br );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
