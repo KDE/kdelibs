@@ -227,7 +227,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
-    m_decoderMibEnum = 0;
     m_paintDeviceMetrics = 0;
 
     m_view = v;
