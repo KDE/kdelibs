@@ -2601,7 +2601,14 @@ void DeleteJob::slotResult( Job *job )
         case STATE_LISTING:
             if ( job->error() )
             {
+                /*
                 Job::slotResult( job ); // will set the error and emit result(this)
+                */
+                // Try deleting nonetheless, it may be empty (and non-listable)
+                subjobs.remove( job );
+                assert( subjobs.isEmpty() );
+                state = STATE_DELETING_DIRS;
+                deleteNextDir();
                 return;
             }
             subjobs.remove( job );
