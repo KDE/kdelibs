@@ -60,7 +60,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
     QString appPageText =
-      i18n("Sorry, no information available.\n"
+      i18n("No information available.\n"
 	   "The supplied KAboutData object does not exist.");
     QLabel *appPageLabel = new QLabel( "\n\n\n\n"+appPageText+"\n\n\n\n", 0 );
     appPage->addWidget( appPageLabel );

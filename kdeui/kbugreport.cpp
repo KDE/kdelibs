@@ -432,15 +432,15 @@ void KBugReport::slotOk( void )
     if( !sendBugReport() )
     {
         QString msg = i18n(""
-                           "Couldn't send the bug report.\n"
-                           "Hmmm, submit a bug report manually, sorry...\n"
+                           "Unable to send the bug report.\n"
+                           "Please submit a bug report manually...\n"
                            "See http://bugs.kde.org/ for instructions.");
         KMessageBox::error(this, msg + "\n\n" + d->lastError);
         return;
     }
 
     KMessageBox::information(this,
-                             i18n("Bug report sent, thanks for your input."));
+                             i18n("Bug report sent, thank you for your input."));
     accept();
 }
 
