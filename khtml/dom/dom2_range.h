@@ -436,7 +436,12 @@ public:
      *
      */
     DOMString toString (  );
-
+    
+    /**
+     * @internal Not part of DOM
+     */
+    DOMString toHTML (  );
+    
     /**
      * Called to indicate that the range is no longer in use and that
      * the implementation may relinquish any resources associated with
@@ -448,7 +453,7 @@ public:
     void detach (  );
 
     /**
-     * Extracts or clones the contents of the Range depending on
+     * @internal Extracts or clones the contents of the Range depending on
      * it's argument, extract if contentExtract = true, else clone.
      */
     DocumentFragment masterTraverse(bool contentExtract);

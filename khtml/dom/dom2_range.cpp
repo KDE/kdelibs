@@ -23,6 +23,7 @@
  * $Id$
  */
 #include "dom2_range.h"
+#include "dom2_traversal.h"
 #include "dom_node.h"
 #include "dom_doc.h"
 #include "dom_string.h"
@@ -31,6 +32,8 @@
 #include "dom_docimpl.h"
 #include <qstring.h>
 #include <stdio.h>               // for printf
+
+
 
 //using namespace CSS;       // leff
 using namespace DOM;
@@ -214,12 +217,12 @@ void Range::setStart( const Node &refNode, long offset )
     if( endContainer != 0 )
     {
         Node oldCommonAncestorContainer = commonAncestorContainer;
-//        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-//            collapse( true );
+        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+            collapse( true );
     }
-
-//    if( !boundaryPointsValid() )
-//        collapse( true );
+    
+    if( !boundaryPointsValid() )
+        collapse( true );
 }
 
 void Range::setEnd( const Node &refNode, long offset )
@@ -264,12 +267,12 @@ void Range::setEnd( const Node &refNode, long offset )
     if( startContainer != 0 )
     {
         Node oldCommonAncestorContainer = commonAncestorContainer;
-//        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-//            collapse( false );
+        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+            collapse( false );
     }
     
-//    if( !boundaryPointsValid() )
-//        collapse( false );
+    if( !boundaryPointsValid() )
+        collapse( false );
 }
 
 void Range::setStartBefore( const Node &refNode )
@@ -653,7 +656,6 @@ bool Range::boundaryPointsValid(  )
 {
     short valid =  compareBoundaryPoints( getStartContainer(), getStartOffset(),
                                           getEndContainer(), getEndOffset() );
-    printf( "valid: %d\n", valid );
     if( valid == 1 )  return false;
     else  return true;
 }
@@ -714,6 +716,40 @@ Range Range::cloneRange(  )
 }
 
 DOMString Range::toString(  )
+{
+    if( isDetached() )
+        throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    NodeIterator iterator( getStartContainer().childNodes().item( getStartOffset() ) );
+    
+    DOMString _string;
+    Node _node = iterator.nextNode();
+    
+    while( !_node.isNull() )
+    {
+        printf( "\nNodetype: %s\n", _node.nodeName().string().ascii() );
+        if( _node.nodeType() == Node::TEXT_NODE )
+        {
+            QString str = _node.nodeValue().string();
+            if( _node == getStartContainer() && _node == getEndContainer() )
+                _string = str.mid( getStartOffset(), getEndOffset() - getStartOffset() );
+            else if( _node == getStartContainer() )
+                _string = str.mid( getStartOffset() );
+            else if( _node == getEndContainer() )
+                _string += str.left( getStartOffset() );
+            else
+                _string += str;
+        }
+        else if( _node.nodeName() == "BR" )  _string += "\n";
+        else if( _node.nodeName() == "P" || _node.nodeName() == "TD" )  _string += "\n\n";
+        else  _string += " ";
+        
+        _node = iterator.nextNode();
+    }
+    return _string;
+}
+
+DOMString Range::toHTML(  )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
