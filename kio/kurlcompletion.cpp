@@ -476,7 +476,7 @@ void KURLCompletion::init()
  */
 QString KURLCompletion::makeCompletion(const QString &text)
 {
-	kdDebug() << "KURLCompletion::makeCompletion: " << text << endl;
+	//kdDebug() << "KURLCompletion::makeCompletion: " << text << endl;
 
 	MyURL url(text);
 
