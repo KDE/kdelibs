@@ -79,6 +79,21 @@ public:
    */
   virtual void setFont( const QFont & );
 
+   /**
+    * Set the maximum number of lines that will be used to display icon text.
+    * Setting this value will enable word-wrap, too.
+    * @since 3.3
+    *
+    * @param n Number of lines
+    */
+  void setIconTextHeight( int n );
+
+   /**
+    * @return The height of icon text in lines
+    * @since 3.3
+    */
+  int iconTextHeight() const;
+
 signals:
 
   /**
@@ -208,7 +223,7 @@ public:
     * @param size The size to use
     */
     void setPixmapSize( const QSize& size );
-    
+
    /**
     * @return The size set by setPixmapSize() or QSize( 0, 0 )
     * @since 3.3

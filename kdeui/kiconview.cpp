@@ -50,11 +50,13 @@ public:
         mode = KIconView::Execute;
         fm = 0L;
         doAutoSelect = true;
+        textHeight = 0;
     }
     KIconView::Mode mode;
     bool doAutoSelect;
     QFontMetrics *fm;
     QPixmapCache maskCache;
+    int textHeight;
 };
 
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
@@ -361,6 +363,23 @@ QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
     return m;
 }
 
+int KIconView::iconTextHeight() const
+{
+    return d->textHeight > 0 ? d->textHeight : ( wordWrapIconText() ? 99 : 1 );
+}
+
+void KIconView::setIconTextHeight( int n )
+{
+    if ( n > 1 ) {
+        d->textHeight = n;
+        setWordWrapIconText( true );
+    }
+    else {
+        d->textHeight = 1;
+        setWordWrapIconText( false );
+    }
+}
+
 /////////////
 
 struct KIconViewItem::KIconViewItemPrivate
@@ -372,9 +391,7 @@ void KIconViewItem::init()
 {
     m_wordWrap = 0L;
     d = 0L;
-    //Only re-calculate rectangle when wrapping, otherwise Qt did what we want
-    if ( iconView() && iconView()->wordWrapIconText() )
-        calcRect();
+    calcRect();
 }
 
 KIconViewItem::~KIconViewItem()
@@ -432,48 +449,42 @@ void KIconViewItem::calcRect( const QString& text_ )
 #endif
     itemIconRect.setHeight( ph );
 
-    // When is text_ set ? Doesn't look like it's ever set.
-    QString t;
-    if ( iconView()->wordWrapIconText() )
-        t = text_.isEmpty() ? text() : text_;
-    else {
-        calcTmpText();
-        t = text_.isEmpty() ? tempText() : text_;
-    }
-    
     int tw = 0;
-    int th = 0;
+    if ( d && !d->m_pixmapSize.isNull() )
+        tw = view->maxItemWidth() - ( view->itemTextPos() == QIconView::Bottom ? 0 :
+                                      d->m_pixmapSize.width() + 2 );
+    else
+        tw = view->maxItemWidth() - ( view->itemTextPos() == QIconView::Bottom ? 0 :
+                                      itemIconRect.width() );
+    
     QFontMetrics *fm = view->itemFontMetrics();
-    QRect outerRect( 0, 0, view->maxItemWidth() -
-                     ( view->itemTextPos() == QIconView::Bottom ? 0 :
-                       pixmapRect().width() ), 0xFFFFFFFF );
-
+    QString t;
     QRect r;
     
-    if ( iconView()->wordWrapIconText() )
-    {
-        // Calculate the word-wrap
-        m_wordWrap = KWordWrap::formatText( *fm, outerRect, AlignHCenter | WordBreak /*| BreakAnywhere*/, t );
-        r = m_wordWrap->boundingRect();
-    }
-    else
-        r = QRect( 0, 0, fm->width( t ), fm->height() );
-
-    if ( r.width() > view->maxItemWidth() -
-        ( view->itemTextPos() == QIconView::Bottom ? 0 :
-        pixmapRect().width() ) )
-        r.setWidth( view->maxItemWidth() - ( view->itemTextPos() == QIconView::Bottom ? 0 :
-                                             pixmapRect().width() ) );
+    // When is text_ set ? Doesn't look like it's ever set.
+    t = text_.isEmpty() ? text() : text_;
     
-    r.setWidth( QMIN( r.width() + 4, view->maxItemWidth() ) );
-    tw = r.width();
-    th = r.height();
-    int minw = fm->width( "X" );
-    if ( tw < minw )
-        tw = minw;
+    // Max text height
+    int nbLines = static_cast<KIconView*>( iconView() )->iconTextHeight();
+    int height = nbLines > 0 ? fm->height() * nbLines : 0xFFFFFFFF;
+    
+    // Should not be higher than pixmap if text is alongside icons
+    if ( view->itemTextPos() != QIconView::Bottom ) {
+        if ( d && !d->m_pixmapSize.isNull() )
+            height = QMIN( d->m_pixmapSize.height() + 2, height );
+        else
+            height = QMIN( itemIconRect.height(), height );
+        height = QMAX( height, fm->height() );
+    }
+    
+    // Calculate the word-wrap
+    QRect outerRect( 0, 0, tw, height );
+    m_wordWrap = KWordWrap::formatText( *fm, outerRect, 0, t );
+    r = m_wordWrap->boundingRect();
 
-    itemTextRect.setWidth( tw );
-    itemTextRect.setHeight( th );
+    int realWidth = QMAX( QMIN( r.width() + 4, tw ), fm->width( "X" ) );
+    itemTextRect.setWidth( realWidth );
+    itemTextRect.setHeight( r.height() );
 
     int w = 0;    int h = 0;    int y = 0;
     if ( view->itemTextPos() == QIconView::Bottom ) {
@@ -503,7 +514,13 @@ void KIconViewItem::calcRect( const QString& text_ )
     } else {
         // If the pixmap size has been specified, use it
         if ( d && !d->m_pixmapSize.isNull() )
+        {
             h = QMAX( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
+#if QT_VERSION >= 0x030302
+            // With Qt < 3.1.2, the pixmapRect must stay on the top...
+            y = ( d->m_pixmapSize.height() + 2 - itemIconRect.height() ) / 2;
+#endif
+        }
         else
             h = QMAX( itemTextRect.height(), itemIconRect.height() );
         w = itemTextRect.width() + itemIconRect.width() + 1;
@@ -519,7 +536,7 @@ void KIconViewItem::calcRect( const QString& text_ )
             itemIconRect = QRect( 0, ( height - itemIconRect.height() ) / 2,
                                   itemIconRect.width(), itemIconRect.height() );
         else // icon smaller than text -> place in top or center with first line
-	    itemIconRect = QRect( 0, QMAX(( fm->height() - itemIconRect.height() ) / 2, 0),
+	    itemIconRect = QRect( 0, QMAX(( fm->height() - itemIconRect.height() ) / 2 + y, 0),
                                   itemIconRect.width(), itemIconRect.height() );
     }
 
@@ -620,13 +637,7 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
     }
 
     int align = iconView()->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
-    if ( iconView()->wordWrapIconText() )
-    {
-        m_wordWrap->drawText( p, textX, textY, align );
-    } else {
-        calcTmpText();
-        p->drawText( textRect( FALSE ), align, tempText() );
-    }
+    m_wordWrap->drawText( p, textX, textY, align | KWordWrap::Truncate );
 }
 
 QSize KIconViewItem::pixmapSize() const
