@@ -7,6 +7,7 @@ Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*
 Comment=Mod file
 Comment[cs]=Mod soubor
 Comment[de]=Mod Dokument
+Comment[es]=Música MOD
 Comment[fi]=Mod -musiikkitiedosto
 Comment[fr]=Fichier son au format MOD ou assimilé
 Comment[is]=Mod skrá
