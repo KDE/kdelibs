@@ -60,8 +60,6 @@ KBzip2Filter::KBzip2Filter()
     d->zStream.bzalloc = 0;
     d->zStream.bzfree = 0;
     d->zStream.opaque = 0;
-    d->zStream.next_in = 0;
-    d->zStream.avail_in = 0;
     m_mode = 0;
 }
 
@@ -73,6 +71,8 @@ KBzip2Filter::~KBzip2Filter()
 
 void KBzip2Filter::init( int mode )
 {
+    d->zStream.next_in = 0;
+    d->zStream.avail_in = 0;
     if ( mode == IO_ReadOnly )
     {
 #ifdef NEED_BZ2_PREFIX
@@ -80,7 +80,7 @@ void KBzip2Filter::init( int mode )
 #else
         int result = bzDecompressInit(&d->zStream, 0, 0);
 #endif
-        kdDebug() << "bzDecompressInit returned " << result << endl;
+        //kdDebug() << "bzDecompressInit returned " << result << endl;
         // No idea what to do with result :)
     } else if ( mode == IO_WriteOnly )
     {
@@ -89,7 +89,7 @@ void KBzip2Filter::init( int mode )
 #else
         int result = bzCompressInit(&d->zStream, 5, 0, 0);
 #endif
-        kdDebug() << "bzDecompressInit returned " << result << endl;
+        //kdDebug() << "bzDecompressInit returned " << result << endl;
     } else
         kdWarning() << "Unsupported mode " << mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
     m_mode = mode;
@@ -170,8 +170,6 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
     int result = bzCompress(&d->zStream, finish ? BZ_FINISH : BZ_RUN );
 #endif
     if ( result != BZ_OK )
-    {
         kdDebug() << "  bzCompress returned " << result << endl;
-    }
     return ( (result == BZ_OK || result == BZ_FLUSH_OK || result == BZ_RUN_OK || result == BZ_FINISH_OK) ? OK : ( result == BZ_STREAM_END ? END : ERROR ) );
 }
