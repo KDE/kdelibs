@@ -27,7 +27,8 @@
 /**
  * @brief A generic implementation of the "find" function.
  *
- * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
+ * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>,
+ *         Arend van Beelen jr. <arend@auton.nl>
  *
  * \b Detail:
  *
@@ -128,6 +129,7 @@ public:
      * calls to slotFindNext()).
      */
     bool needData() const;
+
     /**
      * Call this when needData returns true, before calling find().
      * @param data the text fragment (line)
@@ -138,6 +140,21 @@ public:
      * on FindBackwards.
      */
     void setData( const QString& data, int startPos = -1 );
+
+    /**
+     * Call this when needData returns true, before calling find(). The use of
+     * ID's is especially useful if you're using the FindIncremental option.
+     * @param id the id of the text fragment
+     * @param data the text fragment (line)
+     * @param startPos if set, the index at which the search should start.
+     * This is only necessary for the very first call to setData usually,
+     * for the 'find in selection' feature. A value of -1 (the default value)
+     * means "process all the data", i.e. either 0 or data.length()-1 depending
+     * on FindBackwards.
+     *
+     * @since 3.3
+     */
+    void setData( int id, const QString& data, int startPos = -1 );
 
     /**
      * Walk the text fragment (e.g. text-processor line, kspread cell) looking for matches.
@@ -273,8 +290,34 @@ signals:
     /**
      * Connect to this signal to implement highlighting of found text during the find
      * operation.
+     *
+     * If you've set data with setData(id, text), use the signal highlight(id,
+     * matchingIndex, matchedLength)
+     *
+     * WARNING: If you're using the FindIncremental option, the text argument
+     * passed by this signal is not necessarily the data last set through
+     * setData(), but can also be an earlier set data block.
+     *
+     * @see setData()
      */
     void highlight(const QString &text, int matchingIndex, int matchedLength);
+
+    /**
+     * Connect to this signal to implement highlighting of found text during the find
+     * operation.
+     *
+     * Use this signal if you've set your data with setData(id, text), otherwise
+     * use the signal with highlight(text, matchingIndex, matchedLength).
+     *
+     * WARNING: If you're using the FindIncremental option, the id argument
+     * passed by this signal is not necessarily the id of the data last set
+     * through setData(), but can also be of an earlier set data block.
+     *
+     * @see setData()
+     *
+     * @since 3.3
+     */
+    void highlight(int id, int matchingIndex, int matchedLength);
 
     // ## TODO docu
     // findprevious will also emit findNext, after temporarily switching the value
@@ -308,6 +351,7 @@ protected slots:
 
 private:
     void init( const QString& pattern );
+    void startNewIncrementalSearch();
 
     static bool isInWord( QChar ch );
     static bool isWholeWords( const QString &text, int starts, int matchedLength );

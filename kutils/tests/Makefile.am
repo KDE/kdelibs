@@ -1,6 +1,13 @@
 INCLUDES = $(all_includes)
 
-check_PROGRAMS = kreplacetest
+check_PROGRAMS = kfindtest kreplacetest
+
+check: kfindtest
+	./kfindtest
+
+kfindtest_SOURCES = kfindtest.cpp
+kfindtest_LDADD = ../libkutils.la
+kfindtest_LDFLAGS = $(all_libraries)
 
 kreplacetest_SOURCES = kreplacetest.cpp
 kreplacetest_LDADD = ../libkutils.la

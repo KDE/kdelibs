@@ -78,6 +78,7 @@ public:
 
     // Options.
 
+    // KDE4: move to KFind
     enum Options
     {
         WholeWordsOnly = 1,     // Match whole words only.
@@ -86,6 +87,7 @@ public:
         CaseSensitive = 8,      // Consider case when matching.
         FindBackwards = 16,     // Go backwards.
         RegularExpression = 32, // Interpret the pattern as a regular expression.
+        FindIncremental = 64,   // Find incremental.
         // Note that KReplaceDialog uses 256 and 512
         // User extensions can use boolean options above this value.
         MinimumUserOption = 65536
