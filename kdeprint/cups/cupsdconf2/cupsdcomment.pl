@@ -5,6 +5,7 @@
 # This code should produce strings identical to tooltips in cupsdcomment.cpp
 #
 my ($comment_, $example_);
+$example_ = "";
 
 load(); # Skip header
 
