@@ -210,6 +210,7 @@ class KMdiMainFrm : public KParts::DockMainWindow
    friend class KMdiToolViewAccessor;
 // attributes
 protected:
+   KMdi::MdiMode           m_mdiMode;
    KMdiChildArea           *m_pMdi;
    KMdiTaskBar             *m_pTaskBar;
    QPtrList<KMdiChildView> *m_pDocumentViews;
@@ -233,7 +234,6 @@ protected:
    QToolButton             *m_pRestore;
    QToolButton             *m_pClose;
    QPoint                  m_undockPositioningOffset;
-   KMdi::MdiMode    m_mdiMode;
    bool                    m_bMaximizedChildFrmMode;
    int                     m_oldMainFrmHeight;
    int                     m_oldMainFrmMinHeight;
@@ -241,7 +241,6 @@ protected:
    static KMdi::FrameDecor m_frameDecoration;
    bool                    m_bSDIApplication;
    KDockWidget*         m_pDockbaseAreaOfDocumentViews;
-   KDockWidget*         m_pDockbaseOfTabPage;
    QDomDocument*           m_pTempDockSession;
    bool                    m_bClearingOfWindowMenuBlocked;
 
