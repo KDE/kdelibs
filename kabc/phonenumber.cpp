@@ -113,7 +113,7 @@ QString PhoneNumber::typeLabel( int type )
 {
   switch ( type ) {
     case Home:
-      return i18n("Home");
+      return i18n("Home phone", "Home");
       break;
     case Work:
       return i18n("Work");

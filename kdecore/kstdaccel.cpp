@@ -66,7 +66,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ FindPrev,            "FindPrev", I18N_NOOP("Find Prev"), Qt::SHIFT+Qt::Key_F3, 0, 0, 0, KShortcut(), false },
 	{ Replace,             I18N_NOOP("Replace"), 0,  Qt::CTRL+Qt::Key_R, 0, 0, 0, KShortcut(), false },
 	{AccelNone,            "Group:Navigation", I18N_NOOP("Navigation"), 0, 0, 0, 0, KShortcut(), false },
-	{ Home,                I18N_NOOP("Home"), 0,     Qt::CTRL+Qt::Key_Home, 0, 0, 0, KShortcut(), false },
+	{ Home,                I18N_NOOP("Home key", "Home"), 0,     Qt::CTRL+Qt::Key_Home, 0, 0, 0, KShortcut(), false },
 	{ End,                 I18N_NOOP("End"), 0,      Qt::CTRL+Qt::Key_End, 0, 0, 0, KShortcut(), false },
 	{ Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_Prior, 0, 0, 0, KShortcut(), false },
 	{ Next,                I18N_NOOP("Next"), 0,     Qt::Key_Next, 0, 0, 0, KShortcut(), false },
