@@ -1807,7 +1807,15 @@ bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 
 short RenderTableCell::baselinePosition() const
 {
-    return 0;
+    RenderObject *o = firstChild();
+    RenderObject *last = o;
+    int offset = paddingTop();
+    if ( !o ) return offset;
+    while ( o->firstChild() ) {
+	offset += paddingTop() + borderTop();
+	o = o->firstChild();
+    }
+    offset += o->baselinePosition();
 }
 
 
