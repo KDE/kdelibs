@@ -1,0 +1,102 @@
+RFC: Printing in KDE 2.0
+========================
+Date: May 22, 2000
+Author: Waldo Bastian
+
+Printing support in KDE has not been changed since KDE 1.1.2. As such
+it is not completely up to spec with the rest of KDE 2.0. In this document 
+a printing architecture for KDE 2.0 is proposed.
+
+Requirements
+============
+
+Four different desired printing related abilities can be identified 
+within KDE:
+
+1) The ability of a user to select a printer from the list of installed 
+printers to be used for a print request and to select, possibly 
+application specific, options for the print request.
+
+2) The ability of a user to be notified of the status of his outstanding
+print requests and the ability for the user to cancel outstanding print
+requests.
+
+3) The ability of an application to query the properties of the printer
+used for a certain print request as well as options specified by the user
+for this specific print request.
+
+4) The ability of a user to add and configure a printer.
+
+
+Status in KDE 1.1.2
+===================
+
+Ad 1) QPrintDialog provides this functionality in KDE 1.1.2. The drawbacks 
+are that this dialog does not fit in well with the KDE translation meachanism
+and that it is not possible to add application specific options to this 
+dialog.
+
+Ad 2) In KDE 1.1.2 applications exists which provide this functionality. The 
+user has to start these applications explicitly. There is no integration
+with the application that issued the print-request.
+
+Ad 3) The QPrinter class provides basic information about the printer and
+the specific print request, mostly based on information supplied by the user.
+
+Ad 4) KDE 1.1.2 provides no way to do this.
+
+Proposed KDE 2.0 printing architecture
+======================================
+
+I suggest to adopt sysAPS as API to access the operating systems printing 
+system, e.g. CUPS or LPR:
+
+KDE -> sysAPS -> IPP -> CUPS -> filters -> driver -> backend
+              -> LPR -> filters -> driver -> backend
+
+Other printing systems can be supported by adding support for them to sysAPS.
+
+To quote the sysAPS homepage:
+
+"This project, driven by Corel, provides a unified API for accessing 
+printing-specific services outside the realm of the graphics API. This 
+includes querying & controlling features of a given printer model, sending 
+jobs, accessing queues and configuration."
+
+sysAPS is under LGPL, is written in C and has both a C as well as an optional 
+C++ API. It is a rather young project so it should not be a problem to adapt 
+to any specific wishes in the API. You can find them at 
+http://sourceforge.net/project/?group_id=2328.
+
+Based on sysAPS it will be relatively straightforward to meet KDEs printing
+requirements:
+
+1) A KPrintDialog based on KDIalogBase should be made. It can use sysAPS
+to query for available printers and enable/disable available options
+based on the capabilities of the selected printer.
+
+2) A notification/control interface should be made for printing job-control.
+sysAPS seems to provide all necassery functionality. We only need to provide
+the UI. Maybe this can be part of kio_uiserver. Maybe it should be made a
+seperate application.
+
+3) For now the QPrinter class seems to be adequate. It might be desirable to
+embed this class in a KPrinter class to make it possible to add KDE wide
+options not provided by Qt. In addition this class could give access to 
+a printer's PPD file allowing applications to fine tune their print output.
+
+4) A kcontrol module should be written which allows printer configuration.
+sysAPI seems to provided al necassery functionality. Only the GUI part needs
+to be added.
+
+
+Considerations
+==============
+
+*) The proposed printing architecture is not limited to Postscript output, 
+although that is what the Qt printing classes produce.
+
+*) The proposed sysAPS library can be used by non-KDE applications, including
+command line tools. Although the GNOME project is not interested in
+cooperation in this area, there are no compelling technical reasons which 
+prevent them from adopting sysAPS, now or in the future.
