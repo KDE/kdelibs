@@ -693,6 +693,8 @@ void RenderSelect::updateFromElement()
     // ### remove me, quick hack
     setMinMaxKnown(false);
     setLayouted(false);
+
+    RenderFormElement::updateFromElement();
 }
 
 void RenderSelect::calcMinMaxWidth()
@@ -845,8 +847,7 @@ void RenderSelect::layout( )
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
 	foundOption = (listItems[i]->id() == ID_OPTION);
 
-    if (!foundOption)
-	m_widget->setEnabled(false);
+    m_widget->setEnabled(foundOption && ! element()->disabled());
 
     m_ignoreSelectEvents = false;
 }
