@@ -31,10 +31,10 @@ class QPopupMenu;
 #include <kconfig.h>
 
 /**
- * Implement a panel applet.
+ * @short %KDE Panel Applet class
  *
  * Panel applets
- *   @li Are small applications living in the KDE panel.
+ *   @li Are small applications living in the %KDE panel.
  *   @li Are implemented as DSOs (Dynamic Shared Objects).
  *
  * Note: For security and stability reasons the panel won't load
@@ -42,7 +42,7 @@ class QPopupMenu;
  * external wrapper process.
  *
  * The panel locates available applets by searching for applet desktop
- * files in (ALL_KDEDIRS)/share/apps/kicker/applets. Every panel applet should
+ * files in (ALL_DIRS)/share/apps/kicker/applets. Every panel applet should
  * install a desktop file there to be recognized by the panel.
  *
  * Besides standard keys like "Name", "Comment" and "Icon" there are
@@ -65,7 +65,7 @@ class QPopupMenu;
  * digital clock. X-KDE-UniqueApplet is a boolean key which defaults
  * to "false".  Example: X-KDE-UniqueApplet=true
  *
- * Back to panel applet DSOs, the following conventions are used for KDE:
+ * Back to panel applet DSOs, the following conventions are used for %KDE:
  * Name:    lib<appletname>applet.la
  * LDFLAGS: -module -no-undefined
  *
@@ -93,7 +93,6 @@ class QPopupMenu;
  * fail to load your applet.
  *
  * @author Matthias Elter <elter@kde.org>
- * @short KDE Panel Applet class
  **/
 class KDEUI_EXPORT KPanelApplet : public QFrame
 {
@@ -181,10 +180,10 @@ public:
      * Always use this KConfig object to save/load your applet's configuration.
      *
      * For unique applets this config object will write to a config file called
-     * \<appletname\>rc in the user's local KDE directory.
+     * \<appletname\>rc in the user's local %KDE directory.
      *
      * For normal applets this config object will write to a instance specific config file
-     * called \<appletname\>\<instanceid\>rc in the user's local KDE directory.
+     * called \<appletname\>\<instanceid\>rc in the user's local %KDE directory.
      **/
     KConfig* config() const { return _config; }
     KSharedConfig::Ptr sharedConfig() const;
