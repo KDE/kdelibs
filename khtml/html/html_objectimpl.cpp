@@ -118,33 +118,33 @@ void HTMLAppletElementImpl::attach()
       return;
 
   khtml::RenderObject *r = _parent->renderer();
-  if(!r)
-      return;
+  RenderWidget *f = 0;
 
-  view = ownerDocument()->view();
-  RenderWidget *f;
+  if(r && m_style->display() != NONE) {
+      view = ownerDocument()->view();
 
-  if( view->part()->javaEnabled() )
-  {
-      QMap<QString, QString> args;
+      if( view->part()->javaEnabled() )
+      {
+          QMap<QString, QString> args;
 
-      args.insert( "code", QString(code->s, code->l));
-      if(codeBase)
-          args.insert( "codeBase", QString(codeBase->s, codeBase->l) );
-      if(name)
-          args.insert( "name", QString(name->s, name->l) );
-      if(archive)
-          args.insert( "archive", QString(archive->s, archive->l) );
+          args.insert( "code", QString(code->s, code->l));
+          if(codeBase)
+              args.insert( "codeBase", QString(codeBase->s, codeBase->l) );
+          if(name)
+              args.insert( "name", QString(name->s, name->l) );
+          if(archive)
+              args.insert( "archive", QString(archive->s, archive->l) );
 
-      if(!view->part()->baseURL().isEmpty())
-        args.insert( "baseURL", view->part()->baseURL().url() );
+          if(!view->part()->baseURL().isEmpty())
+              args.insert( "baseURL", view->part()->baseURL().url() );
+          else
+              args.insert( "baseURL", view->part()->url().url() );
+
+          f = new RenderApplet(view, args, this);
+      }
       else
-        args.insert( "baseURL", view->part()->url().url() );
-
-      f = new RenderApplet(view, args, this);
+          f = new RenderEmptyApplet(view);
   }
-  else
-      f = new RenderEmptyApplet(view);
 
   if(f)
   {
@@ -251,22 +251,22 @@ void HTMLEmbedElementImpl::attach()
    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
    RenderPartObject* p = 0;
-   if ( !r )
-      return;
-
-   if (w->part()->pluginsEnabled())
-   {
-     if ( _parent->id()!=ID_OBJECT )
-     {
-        p = new RenderPartObject( w, this );
-        m_render = p;
-        m_render->setStyle(m_style);
-        r->addChild( m_render, nextRenderer() );
-     } else
-        r->setStyle(m_style);
+   if ( r && m_style->display() != NONE ) {
+       if (w->part()->pluginsEnabled())
+       {
+           if ( _parent->id()!=ID_OBJECT )
+           {
+               p = new RenderPartObject( w, this );
+               m_render = p;
+               m_render->setStyle(m_style);
+               r->addChild( m_render, nextRenderer() );
+           } else
+               r->setStyle(m_style);
+       }
    }
 
-  HTMLElementImpl::attach();
+
+   HTMLElementImpl::attach();
 
   if ( p )
       p->updateWidget();
@@ -350,16 +350,14 @@ void HTMLObjectElementImpl::attach()
   setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
-  if ( !r )
-    return;
-
-  if (w->part()->pluginsEnabled())
-  {
-    RenderPartObject *p = new RenderPartObject( w, this );
-    m_render = p;
-    m_render->setStyle(m_style);
-    r->addChild( m_render, nextRenderer() );
-    p->updateWidget();
+  if ( r && m_style->display() != NONE ) {
+      if (w->part()->pluginsEnabled())
+      {
+          RenderPartObject *p = new RenderPartObject( w, this );
+          m_render = p;
+          m_render->setStyle(m_style);
+          r->addChild( m_render, nextRenderer() );
+      }
   }
 
   HTMLElementImpl::attach();
