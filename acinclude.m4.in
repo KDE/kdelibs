@@ -2129,4 +2129,23 @@ AC_MSG_RESULT($kde_cv_has_strdup)
 if test "$kde_cv_has_strdup" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_STRDUP)
 fi
+
 ])
+
+AC_DEFUN(KDE_CHECK_INSURE,
+[
+  AC_ARG_ENABLE(insure, [  --enable-insure             use insure++ for debugging [default=no]],
+  [
+  if test $enableval = "no"; dnl
+	then ac_use_insure="no"
+	else ac_use_insure="yes"
+   fi
+  ], [ac_use_insure="no"])
+
+  AC_MSG_CHECKING(if we will use Insure++ to debug)
+  AC_MSG_RESULT($ac_use_insure)
+  if test "$ac_use_insure" = "yes"; dnl
+       then CC="insure"; CXX="insure"; dnl CFLAGS="$CLAGS -fno-rtti -fno-exceptions "????
+   fi
+])          
+
