@@ -118,7 +118,8 @@ bool SGIImage::readData(QImage& img)
 {
 	QRgb *c;
 	Q_UINT32 *start = m_starttab;
-	uchar line[m_xsize];
+        QCString lguard(m_xsize);
+        uchar* line = (uchar*) lguard.data();
 	unsigned x, y;
 
 	if (!m_rle)
@@ -372,8 +373,10 @@ uint SGIImage::compact(uchar *d, uchar *s)
 bool SGIImage::scanData(QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
-	uchar line[m_xsize * 2];
-	uchar buf[m_xsize];
+        QCString lineguard(m_xsize*2);
+        QCString bufguard(m_xsize);
+	uchar* line = (uchar*) lineguard.data();
+	uchar* buf = (uchar*) bufguard.data();
 	QRgb *c;
 	unsigned x, y;
 	uint len;
