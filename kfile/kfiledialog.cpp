@@ -382,7 +382,7 @@ void KFileDialog::setLocationLabel(const QString& text)
 void KFileDialog::setFilter(const QString& filter)
 {
     if ( filter.contains( '/' )) { // mimetype filter!
-        QStringList filters = QStringList::split( filter, "/" );
+        QStringList filters = QStringList::split( " ", filter );
         setMimeFilter( filters );
         return;
     }

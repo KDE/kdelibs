@@ -18,6 +18,7 @@
 */
 
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "kfilefilter.h"
 
@@ -83,7 +84,7 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
     filters.clear();
     QString delim = QString::fromLatin1(", ");
 
-    m_allTypes = defaultType.isEmpty();
+    m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
     QString allComments, allTypes;
     int i = 0;
@@ -94,6 +95,7 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
             allTypes += ' ';
         }
 
+	kdDebug() << *it << endl;
         KMimeType::Ptr type = KMimeType::mimeType( *it );
         filters.append( type->name() );
         if ( m_allTypes )
