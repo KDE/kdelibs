@@ -147,59 +147,30 @@ void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
 // other way. Lars
 void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 {
-    if(_parent)
-    {
-	_parent->renderer()->absolutePosition( xPos, yPos );
-	// now we need to get the postion of this element. As it's
-	// not positioned, we use the first child which is positioned
-	NodeImpl *current = firstChild();
-	QStack<NodeImpl> nodeStack;
-	bool found = false;
-	while(1)
-	{
-	    if(!current)
-	    {
-		if(nodeStack.isEmpty()) break;
-		current = nodeStack.pop();
+    m_render->containingBlock()->absolutePosition( xPos, yPos );
+    RenderObject *o = m_render;
+    // find the next text/image after the anchor, to get a position
+    while(o) {
+	if(o->firstChild())
+	    o = o->firstChild();
+	else if(o->nextSibling())
+	    o = o->nextSibling();
+	else {
+	    RenderObject *next = 0;
+	    while(o && !next) {
+		o = o->parent();
+		next = o->nextSibling();
 	    }
-	    else
-	    {
-		RenderObject *o = current->renderer();
-		if( o && (o->isReplaced() || o->isText() || !o->isInline()) ) {
-		    found = true;
-		    break;
-		}
-	    }	
-
-	    NodeImpl *child = current->firstChild();
-	    if(child)
-	    {	
-		nodeStack.push(current);
-		current = child;
-	    }
-	    else
-	    {
-		current = current->nextSibling();
-	    }
+	    if(!o) return;
 	}
-	if(found)
-	{
-	    RenderObject *o = current->renderer();
-	    if(o)
-	    {
-		xPos += o->xPos();
-		yPos += o->yPos();
-	    }
-	}
-	else
-	{
-	  // we take the position of the parent.
-	  return;
+	if(o->isText() || o->isReplaced()) {
+	    xPos += o->xPos();
+	    yPos += o->yPos();
+	    return;
 	}
     }
-    else
-	xPos = yPos = -1;
 }
+
 // -------------------------------------------------------------------------
 
 HTMLBRElementImpl::HTMLBRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)

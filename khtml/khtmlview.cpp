@@ -740,21 +740,22 @@ bool KHTMLView::gotoLink()
     // let's ignore non anchors for the moment
     if(!d->currentNode || d->currentNode->id() != ID_A) return false;
     HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(d->currentNode);
-    printf("current item:%s\n", n->areaHref().string().latin1());
+    //printf("current item:%s\n", n->areaHref().string().latin1());
 
   if (d->linkPressed)
     n->setKeyboardFocus(DOM::ActivationActive);
   else
     n->setKeyboardFocus(DOM::ActivationPassive);
-  
+
 //calculate x- and ypos
   int x = 0, y = 0;
   n->getAnchorPosition(x,y);
-  ensureVisible(x, y);
+  // setContentsPos(x-50, y-50);
+    ensureVisible(x, y);
 
-  // Not needed. We force the repaint of the changed area in 
+  // Not needed. We force the repaint of the changed area in
   // NodeImpl::setKeyboardFocus(). Lars.
-  
+
   //overwrite old contents
   // ###: only repaint widget area of no-more active widget.
   //QRect re(0,0,viewport()->width(),viewport()->height());

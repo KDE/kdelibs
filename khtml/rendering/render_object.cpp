@@ -301,7 +301,7 @@ void RenderObject::repaintObject(RenderObject *o, int x, int y)
 
 void RenderObject::repaintContainingBlock()
 {
-    containingBlock()->repaintObject(containingBlock(), 0, 0);
+    containingBlock()->repaint();
 }
 
 // used for clear property & to layout replaced elements
