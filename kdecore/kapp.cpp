@@ -1326,6 +1326,22 @@ const QString& KApplication::kde_minidir()
 {
   static QString dir;
   if (dir.isNull()) 
+	dir = KDE_MINIDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_toolbardir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_TOOLBARDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_wallpaperdir()
+{
+  static QString dir;
+  if (dir.isNull()) 
 	dir = KDE_WALLPAPERDIR;
   return dir;
 }

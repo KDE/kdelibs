@@ -414,6 +414,20 @@ public:
 
   /**
 	* Returns the directory where wallpapers are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_wallpaperdir();
+
+  /**
+	* Returns the directory where executable programs are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_bindir();
+
+  /**
+	* Returns the directory where KParts are stored
+	* @return the name of the directory
+	*/
   static const QString& kde_partsdir();
 
 
