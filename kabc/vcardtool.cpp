@@ -31,6 +31,18 @@
 
 using namespace KABC;
 
+static bool needsEncoding( const QString &value )
+{
+  uint length = value.length();
+  for ( uint i = 0; i < length; ++i ) {
+    char c = value.at( i ).latin1();
+    if ( (c < 33 || c > 126) && c != ' ' && c != '=' )
+      return true;
+  }
+
+  return false;
+}
+
 VCardTool::VCardTool()
 {
   mAddressTypeMap.insert( "dom", Address::Dom );
@@ -94,13 +106,13 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       address.append( (*it).country().replace( ';', "\\;" ) );
 
       VCardLine adrLine( "ADR", address.join( ";" ) );
-      if ( version == VCard::v2_1 ) {
+      if ( version == VCard::v2_1 && needsEncoding( address.join( ";" ) ) ) {
         adrLine.addParameter( "charset", "UTF-8" );
         adrLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
       }
 
       VCardLine labelLine( "LABEL", (*it).label() );
-      if ( version == VCard::v2_1 ) {
+      if ( version == VCard::v2_1 && needsEncoding( (*it).label() ) ) {
         labelLine.addParameter( "charset", "UTF-8" );
         labelLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
       }
@@ -135,7 +147,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
         (*catIt).replace( ',', "\\," );
 
       VCardLine catLine( "CATEGORIES", categories.join( "," ) );
-      if ( version == VCard::v2_1 ) {
+      if ( version == VCard::v2_1 && needsEncoding( categories.join( "," ) ) ) {
         catLine.addParameter( "charset", "UTF-8" );
         catLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
       }
@@ -153,10 +165,6 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     bool pref = true;
     for ( strIt = emails.begin(); strIt != emails.end(); ++strIt ) {
       VCardLine line( "EMAIL", *strIt );
-      if ( version == VCard::v2_1 ) {
-        line.addParameter( "charset", "UTF-8" );
-        line.addParameter( "encoding", "QUOTED-PRINTABLE" );
-      }
       if ( pref == true && emails.count() > 1 ) {
         line.addParameter( "TYPE", "PREF" );
         pref = false;
@@ -166,7 +174,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // FN
     VCardLine fnLine( "FN", (*addrIt).formattedName() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).formattedName() ) ) {
       fnLine.addParameter( "charset", "UTF-8" );
       fnLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -191,7 +199,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // MAILER
     VCardLine mailerLine( "MAILER", (*addrIt).mailer() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).mailer() ) ) {
       mailerLine.addParameter( "charset", "UTF-8" );
       mailerLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -206,7 +214,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     name.append( (*addrIt).suffix().replace( ';', "\\;" ) );
 
     VCardLine nLine( "N", name.join( ";" ) );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( name.join( ";" ) ) ) {
       nLine.addParameter( "charset", "UTF-8" );
       nLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -214,7 +222,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // NAME
     VCardLine nameLine( "NAME", (*addrIt).name() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).name() ) ) {
       nameLine.addParameter( "charset", "UTF-8" );
       nameLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -226,7 +234,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // NOTE
     VCardLine noteLine( "NOTE", (*addrIt).note() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).note() ) ) {
       noteLine.addParameter( "charset", "UTF-8" );
       noteLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -234,7 +242,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // ORG
     VCardLine orgLine( "ORG", (*addrIt).organization() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).organization() ) ) {
       orgLine.addParameter( "charset", "UTF-8" );
       orgLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -252,7 +260,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // ROLE
     VCardLine roleLine( "ROLE", (*addrIt).role() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).role() ) ) {
       roleLine.addParameter( "charset", "UTF-8" );
       roleLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -282,7 +290,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // TITLE
     VCardLine titleLine( "TITLE", (*addrIt).title() );
-    if ( version == VCard::v2_1 ) {
+    if ( version == VCard::v2_1 && needsEncoding( (*addrIt).title() ) ) {
       titleLine.addParameter( "charset", "UTF-8" );
       titleLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
     }
@@ -325,7 +333,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
         continue;
 
       VCardLine line( identifier, value );
-      if ( version == VCard::v2_1 ) {
+      if ( version == VCard::v2_1 && needsEncoding( value ) ) {
         line.addParameter( "charset", "UTF-8" );
         line.addParameter( "encoding", "QUOTED-PRINTABLE" );
       }
