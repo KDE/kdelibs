@@ -14,6 +14,8 @@
 
 class QPixmap;
 class QImage;
+class QPoint;
+class QRect;
 class KPixmapIOPrivate;
 /**
  * @short Fast QImage to/from QPixmap conversion.

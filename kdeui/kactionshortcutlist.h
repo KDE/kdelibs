@@ -3,6 +3,9 @@
 
 #include <kshortcutlist.h>
 
+class KActionCollection;
+class KActionPtrList;
+
 //---------------------------------------------------------------------
 // class KActionShortcutList
 //---------------------------------------------------------------------
