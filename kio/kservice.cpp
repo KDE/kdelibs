@@ -107,6 +107,8 @@ KService::init( KDesktopFile *config )
   m_strName = config->readEntry( "Name" );
   if ( m_strName.isEmpty() )
   {
+    kDebugWarning( 7012, QString("The desktop entry file %1 has no Name")
+            .arg( m_strDesktopEntryPath ) );
     m_bValid = false;
     return;
   }
