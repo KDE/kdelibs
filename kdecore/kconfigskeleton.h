@@ -356,7 +356,7 @@ public:
 
     ItemString(const QString & group, const QString & key,
                QString & reference,
-               const QString & defaultValue = "", // NOT QString::null !!
+               const QString & defaultValue = QString::fromLatin1(""), // NOT QString::null !!
                Type type = Normal);
 
     void writeConfig(KConfig * config);
@@ -376,7 +376,7 @@ public:
   public:
     ItemPassword(const QString & group, const QString & key,
                QString & reference,
-               const QString & defaultValue = ""); // NOT QString::null !!
+               const QString & defaultValue = QString::fromLatin1("")); // NOT QString::null !!
   };
 
   /**
@@ -822,7 +822,7 @@ public:
    * @return The created item
    */
   ItemString *addItemString(const QString & name, QString & reference,
-                            const QString & defaultValue = "", // NOT QString::null !!
+                            const QString & defaultValue = QString::fromLatin1(""), // NOT QString::null !!
                             const QString & key = QString::null);
 
   /**
@@ -839,7 +839,7 @@ public:
    * @return The created item
    */
   ItemPassword *addItemPassword(const QString & name, QString & reference,
-                              const QString & defaultValue = "",
+                              const QString & defaultValue = QString::fromLatin1(""),
                               const QString & key = QString::null);
 
   /**
@@ -856,7 +856,7 @@ public:
    * @return The created item
    */
   ItemPath *addItemPath(const QString & name, QString & reference,
-                          const QString & defaultValue = "",
+                          const QString & defaultValue = QString::fromLatin1(""),
                           const QString & key = QString::null);
 
   /**
