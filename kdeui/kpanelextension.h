@@ -190,6 +190,17 @@ public:
      **/
     void setSize( Size size, int customSize );
 
+    /**
+    * @return the extension's size
+    **/
+    Size sizeSetting() const;
+
+    /**
+    * @return the custom sizel setting in pixels
+    **/
+    int customSize() const;
+                                                             
+
 signals:
     /**
      * Emit this signal to make the panel relayout all extensions in the dock, when you want
@@ -251,21 +262,6 @@ protected:
      * @return the extensions orientation. (horizontal or vertical)
      **/
     Orientation orientation();
-
-    /**
-     * @return the extensions size 
-     * 0 = Tiny, 
-     * 1 = Small, 
-     * 2 = Normal, 
-     * 3 = Large
-     * 4 = Custom
-     **/
-    Size sizeSetting() const;
-
-    /**
-     * @return the custome pixel setting)
-     **/
-    int customSize() const;
 
     /**
      * @return the appropriate size in pixels for the panel
