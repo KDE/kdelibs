@@ -357,6 +357,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 	setOptionText(opt, e.attribute("description"));
 	opt->set("format", e.attribute("format"));
 	opt->set("default", e.attribute("default"));
+	opt->set( "persistent", e.attribute( "persistent" ) );
 	opt->setValueText(opt->get("default"));
 
 	return opt;

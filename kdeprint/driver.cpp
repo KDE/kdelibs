@@ -68,7 +68,7 @@ void DrBase::setOptions(const QMap<QString,QString>& opts)
 void DrBase::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
 	QString	val = valueText();
-	if (incldef || get("default") != val)
+	if ( incldef || get( "persistent" ) == "1" || get("default") != val )
 		opts[name()] = val;
 }
 

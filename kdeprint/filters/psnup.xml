@@ -2,7 +2,7 @@
 <kprintfilter name="psnup">
 	<filtercommand data="psnup -p%psl %filterargs %filterinput %filteroutput" />
 	<filterargs>
-		<filterarg name="nup" description="Pages per sheet" format="-%value" type="list" default="1">
+		<filterarg name="nup" description="Pages per sheet" format="-%value" type="list" default="1" persistent="1">
 			<value name="1" description="1" />
 			<value name="2" description="2" />
 			<value name="4" description="4" />
