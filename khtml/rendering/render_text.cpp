@@ -119,19 +119,38 @@ inline QColor retrieveBackgroundColor(const RenderObject *obj)
   return obj->style()->palette().active().base();
 }
 
+/** returns the proper ::selection pseudo style for the given element
+ * @return the style or 0 if no ::selection pseudo applies.
+ */
+inline const RenderStyle *retrieveSelectionPseudoStyle(const RenderObject *obj)
+{
+  // http://www.w3.org/Style/CSS/Test/CSS3/Selectors/20021129/html/tests/css3-modsel-162.html
+  // is of the opinion that ::selection of parent elements is also to be applied
+  // to children, so let's do it.
+  while (obj) {
+    const RenderStyle *style = obj->style()->getPseudoStyle(RenderStyle::SELECTION);
+    if (style) return style;
+
+    obj = obj->parent();
+  }/*wend*/
+  return 0;
+}
+
 void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
 
-#if 0
-    QColor c = style->color();
-    p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
-#else
     QColor hc;
     QColor hbg;
-    // ### support ::selection as in WebCore, too
-    {
+    const RenderStyle* pseudoStyle = retrieveSelectionPseudoStyle(text);
+    if (pseudoStyle) {
+        // ### support outline (mandated by CSS3)
+	// ### support background-image? (optional by CSS3)
+        if (pseudoStyle->backgroundColor().isValid())
+            hbg = pseudoStyle->backgroundColor();
+        hc = pseudoStyle->color();
+    } else {
         const QColorGroup &grp = style->palette().active();
         hc = grp.highlightedText();
         hbg = grp.highlight();
@@ -146,7 +165,6 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     }
 
     p->setPen(hc);
-#endif
 
     ty += m_baseline;
 

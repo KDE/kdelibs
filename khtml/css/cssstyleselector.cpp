@@ -1011,12 +1011,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 break;
             }
 	case CSSSelector::PseudoSelection:
-#ifdef APPLE_CHANGES
 	    dynamicPseudo = RenderStyle::SELECTION;
 	    return true;
-#else
-	    break;
-#endif
 	case CSSSelector::PseudoBefore:
 	    dynamicPseudo = RenderStyle::BEFORE;
 	    return true;
