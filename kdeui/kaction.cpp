@@ -2674,7 +2674,11 @@ KWidgetAction::~KWidgetAction()
 int KWidgetAction::plug( QWidget* w, int index )
 {
   if ( !w->inherits( "KToolBar" ) ) {
-    kdError() << "KToggleToolBarAction must be plugged into KToolBar." << endl;
+    kdError() << "KWidgetAction::plug: KWidgetAction must be plugged into KToolBar." << endl;
+    return -1;
+  }
+  if ( !m_widget ) {
+    kdError() << "KWidgetAction::plug: Widget was deleted or null!" << endl;
     return -1;
   }
 
@@ -2690,6 +2694,14 @@ int KWidgetAction::plug( QWidget* w, int index )
   connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
   return containerCount() - 1;
+}
+
+void KWidgetAction::unplug( QWidget *w )
+{
+  if( !m_widget )
+    return;
+  m_widget->hide();
+  m_widget->reparent( 0L, QPoint() );
 }
 
 ////////

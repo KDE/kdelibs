@@ -1660,6 +1660,11 @@ public:
      * will be reparented to w, which must inherit KToolBar.
      */
     virtual int plug( QWidget* w, int index = -1 );
+    /**
+     * Unplug the action. Ensures that the action is not
+     * destroyed. It will be hidden and reparented to 0L instead.
+     */
+    virtual void unplug( QWidget *w );
 private:
     QGuardedPtr<QWidget> m_widget;
 protected:
