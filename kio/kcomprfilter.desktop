@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KDECompressionFilter
+Name=KDE Compression Filter

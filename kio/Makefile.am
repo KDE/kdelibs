@@ -38,6 +38,7 @@ libksycoca_la_SOURCES = \
 	kservice.cpp kservicefactory.cpp \
 	kuserprofile.cpp kservicegroupfactory.cpp \
 	kdirwatch.cpp kurifilter.cpp \
+	kcomprmanager.cpp kfilterbase.cpp kfilterdev.cpp \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
@@ -51,7 +52,8 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	progressbase.h defaultprogress.h statusbarprogress.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
-        kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h
+        kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
+	kcomprmanager.h kfilterbase.h kfilterdev.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) 
@@ -59,7 +61,7 @@ libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM)
 libkio_la_SOURCES = \
 	kshred.cpp ktar.cpp \
 	kprotocolmanager.cpp scheduler.cpp \
-	connection.cpp filter.cpp \
+	connection.cpp \
 	slaveinterface.cpp job.cpp  \
 	global.cpp \
 	slave.cpp \
@@ -98,10 +100,10 @@ noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h \
-	filter.h kprotocolinfofactory.h # old stuff
+	kprotocolinfofactory.h # old stuff
 
 kde_mime_DATA = magic
-kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop
+kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop kcomprfilter.desktop
 kde_services_DATA = kio_uiserver.desktop
 
 parserfiles = yacc.y lex.l

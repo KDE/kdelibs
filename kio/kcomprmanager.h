@@ -15,37 +15,30 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __filter_h__
-#define __filter_h__
 
-class KIOFilter
+#ifndef __kcompr_filter_h
+#define __kcompr_filter_h
+
+#include "kfilterbase.h"
+#include <qstring.h>
+
+class KComprManager
 {
 public:
-  /**
-   * If the arguments parameter is specified, it must be a null
-   * terminated list. ie. the last element of the array should 
-   * be null. 
-   */
-  KIOFilter( const char *_cmd, const char **arguments=0 );
-  virtual ~KIOFilter();
- 
-  int pid() { return m_pid; }
- 
-  bool send( void *_p, int _len );
-  bool finish();
-  
-protected:
-  virtual void emitData( void *_p, int _len );
-  
-private:
-  int buildPipe( int *_recv, int *_send );
-  
-  int m_pid;
+    static KComprManager * self();
 
-  int recv_in;
-  int recv_out;
-  int send_in;
-  int send_out;
+    ~KComprManager();
+
+protected:
+    KComprManager();
+
+public:
+
+    KFilterBase * findFilterByFileName( const QString & fileName );
+    KFilterBase * findFilterByMimeType( const QString & mimeType );
+
+private:
+    static KComprManager * s_comprManager;
 };
 
 #endif
