@@ -23,6 +23,10 @@ BUGS
 
 - Help buttons for "kprinter" and the wizard
 
+- CUPS: propagate changes of server properties to any applications,
+  the same for LPR (actually the "Settings" class should get
+  notify)
+
 
 WISHES
 ------

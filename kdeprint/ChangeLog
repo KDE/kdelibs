@@ -449,3 +449,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS: workaround to allow special characters in login/password without
     breaking security. Possible now to use safely chars like '@' and '/'
     in login.
+  * general: added a check box in the config dialog to enable/disable
+    font embedding into PS data (compatible with Qt settings).
