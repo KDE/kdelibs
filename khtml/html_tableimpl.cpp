@@ -753,8 +753,9 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     bool hasUsableCols=false;
     int tmax=distmax;
     int tmin=distmin;
+    int c;
     
-    for (int c=col; c < col+span ; ++c)
+    for (c=col; c < col+span ; ++c)
     {
     	if (colType[c]<=type)
 	    hasUsableCols=true;    
