@@ -664,16 +664,27 @@ bool Ftp::ftpOpenPASVDataConnection()
   if (sa != NULL && sa->family() != PF_INET)
     return false;		// no PASV for non-PF_INET connections
 
+  if (m_extControl & pasvUnknown)
+    return false;              // already tried and got "unknown command"
+
   m_bPasv = true;
 
   /* Let's PASsiVe*/
   if (!(ftpSendCmd("PASV") || rspbuf[0] != '2'))
   {
+    kdDebug(7102) << "PASV attempt failed" << endl;
+    // unknown command?
+    if (rspbuf[0] == '5')
+    {
+        kdDebug(7102) << "disabling use of PASV" << endl;
+        m_extControl |= pasvUnknown;
+    }
     return false;
   }
 
   if (sscanf(rspbuf, "%*[^(](%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6)
   {
+    kdError(7102) << "parsing IP and port numbers failed" << endl;
     return false;
   }
 
@@ -690,6 +701,7 @@ bool Ftp::ftpOpenPASVDataConnection()
 
   if (ks.connect() < 0)
     {
+      kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << ntohs(i[5] << 8 | i[4]) << endl;
       return false;
     }
 
@@ -697,6 +709,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   if ( (setsockopt( sDatal,SOL_SOCKET,SO_REUSEADDR,(char*)&on, sizeof(on) ) == -1)
        || (sDatal < 0) )
   {
+    kdError(7102) << "PASV: setsockopt failed" << endl;
     return false;
   }
 

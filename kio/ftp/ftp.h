@@ -266,7 +266,8 @@ private: // data members
     epsvUnknown = 0x01,
     epsvAllUnknown = 0x02,
     eprtUnknown = 0x04,
-    epsvAllSent = 0x10
+    epsvAllSent = 0x10,
+    pasvUnknown = 0x20
   };
   int m_extControl;
   KExtendedSocket *ksControl;
