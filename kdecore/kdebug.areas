@@ -74,6 +74,7 @@
 1903        kfind (KfindTabDialog::createQuery)
 2000        kfind
 2001        kregexpeditor
+2002        kfloppy
 
 # kdeadmin
 3000        ksysv 
