@@ -12,6 +12,9 @@ Type=bool
 [PropertyDef::X-KDE-BrowserView-HideFromMenus]
 Type=bool
 
+[PropertyDef::X-KDE-BrowserView-LinkedView]
+Type=bool
+
 [PropertyDef::X-KDE-BrowserView-PassiveMode]
 Type=bool
 
