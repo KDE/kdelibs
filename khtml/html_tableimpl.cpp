@@ -1211,6 +1211,7 @@ void HTMLTableElementImpl::calcRowHeights()
 	int baseline=0;
 	int highestBlCellBaseline=0;
 	int secVdelta=0;	
+	int bdesc=0;
 	HTMLTableCellElementImpl *highestBlCell=0;
 
 	for ( c = 0; c < totalCols; c++ )
@@ -1249,31 +1250,25 @@ void HTMLTableElementImpl::calcRowHeights()
 
 		    if (b>baseline)
 			baseline=b;
-		    
-		    if ( highestBlCell==0 ||
-		    	cell->getHeight() > highestBlCell->getHeight())
-		    {		    		    	
-			if (highestBlCell)
-			{
-			    secVdelta = 
-			    	highestBlCell->getHeight() - padding - 
-    			    	(highestBlCellBaseline-rowHeights[ indx ]);
-			}
-			
-			highestBlCell=cell;
-			highestBlCellBaseline=b;			
-		    }
+		    	    	
+		    int td = cell->getHeight() - (b-rowHeights[ indx ]);
+
+		    if (td>bdesc)
+			bdesc = td;
 		}
 	    }	    		
 	}
-	// increase rowheight if baseline requires
-	int vdelta = baseline-highestBlCellBaseline;
-	if (baseline && !vdelta && secVdelta)
-	    vdelta = secVdelta;
-	if (vdelta)
-	    rowHeights[r+1]+=vdelta;		    
+	
+	//do we have baseline elements?
 	if (baseline)
+	{
+	    // increase rowheight if baseline requires
+	    int bRowPos = baseline + bdesc + padding + spacing ;
+    	    if (rowHeights[r+1]<bRowPos)
+	    	rowHeights[r+1]=bRowPos;
+		
 	    rowBaselines[r]=baseline;
+	}
 
 	if ( rowHeights[r+1] < rowHeights[r] )
 	    rowHeights[r+1] = rowHeights[r];
