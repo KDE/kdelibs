@@ -108,6 +108,8 @@ bool KSSL::TLSInit() {
   if (m_bAutoReconfig)
     m_cfg->load();
 
+  if (!m_cfg->tlsv1()) return false;
+
   seedWithEGD();
   d->m_meth = d->kossl->TLSv1_client_method();
   d->lastInitTLS = true;
