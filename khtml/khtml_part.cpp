@@ -1730,6 +1730,7 @@ void KHTMLPart::slotRedirect()
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   d->m_referrer = QString::null;
+  // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
