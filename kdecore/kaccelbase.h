@@ -133,6 +133,7 @@ class KAccelBase
 	const KAccelAction* actionPtr( const QString& sAction ) const;
 	KAccelAction* actionPtr( const KKey& spec );
 
+	const QString& configGroup() const { return m_sConfigGroup; }
 	void setConfigGroup( const QString& group );
 	void setConfigGlobal( bool global );
 	virtual void setEnabled( bool bEnabled ) = 0;
