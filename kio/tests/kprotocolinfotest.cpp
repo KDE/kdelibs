@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 
     KURL url;
     url.setPath("/tmp");
+    assert( KProtocolInfo::supportsListing( KURL( "ftp://10.1.1.10") ) );
     assert( KProtocolInfo::inputType(url) == KProtocolInfo::T_NONE );
     assert( KProtocolInfo::outputType(url) == KProtocolInfo::T_FILESYSTEM );
     assert( KProtocolInfo::supportsReading(url) == true );
