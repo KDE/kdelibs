@@ -35,6 +35,10 @@
 #include <qasciidict.h>
 #include <qstrlist.h>
 
+#if HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 template class QAsciiDict<char>;
 template class QList<KCmdLineArgs>;
 
