@@ -51,6 +51,14 @@ private:
     QGridLayout *m_layout;
     QComboBox *_chain;
     KSSLCertificate *_cert;
+
+    QLabel *_serialNum;
+    QLabel *_csl;
+    QLabel *_validFrom;
+    QLabel *_validUntil;
+    QLabel *_digest;
+
+    KSSLCertBox *_subject, *_issuer;
 };
 
 
@@ -139,7 +147,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
     d->_chain = new QComboBox(this);
     layout->addMultiCellWidget(d->_chain, 1, 1, 0, 1);
-    connect(d->_chain, SIGNAL(activate(int)), SLOT(slotChain(int)));
+    connect(d->_chain, SIGNAL(activated(int)), this, SLOT(slotChain(int)));
 
     d->_chain->clear();
 
@@ -156,12 +164,12 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     } else d->_chain->setEnabled(false);
 
     layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 2, 0);
-    layout->addWidget(buildCertInfo(cert->getSubject()), 3, 0);
+    layout->addWidget(d->_subject = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
     layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
-    layout->addWidget(buildCertInfo(cert->getIssuer()), 3, 1);
+    layout->addWidget(d->_issuer = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
     d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
 
-    layout = new QGridLayout(8, 2, KDialog::spacingHint());
+    layout = new QGridLayout(11, 2, KDialog::spacingHint());
     layout->setColStretch(1, 1);
     layout->addWidget(new QLabel(i18n("IP Address:"), this), 0, 0);
     layout->addWidget(new QLabel(ip, this), 0, 1);
@@ -176,44 +184,79 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     connect(urlLabel, SIGNAL(leftClickedURL(const QString &)), SLOT(urlClicked(const QString &)));
     layout->addWidget(new QLabel(i18n("Certificate State:"), this), 2, 0);
 
-    QLabel *csl;
-    QPalette cspl;
-    switch(certState) {
-    case KSSLCertificate::Ok:
-      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %2.").arg(cert->getNotBefore()).arg(cert->getNotAfter()), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
-      csl->setPalette(cspl);
-    break;
-    default:
-      layout->addWidget(csl = new QLabel(KSSLCertificate::verifyText(certState), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
-    }
-    update();
+    layout->addWidget(d->_csl = new QLabel("", this), 2, 1);
 
-    layout->addWidget(new QLabel(i18n("Serial Number:"), this), 3, 0);
-    layout->addWidget(new QLabel(cert->getSerialNumber(), this), 3, 1);
-    layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 4, 0);
-    layout->addWidget(new QLabel(cipher, this), 4, 1);
-    layout->addWidget(new QLabel(i18n("Details:"), this), 5, 0);
-    layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 5, 1);
-    layout->addWidget(new QLabel(i18n("SSL Version:"), this), 6, 0);
-    layout->addWidget(new QLabel(sslversion, this), 6, 1);
-    layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 7, 0);
-    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 7, 1);
+    update();
+    
+    layout->addWidget(new QLabel(i18n("Valid from:"), this), 3, 0);
+    layout->addWidget(d->_validFrom = new QLabel("", this), 3, 1);
+    layout->addWidget(new QLabel(i18n("Valid until:"), this), 4, 0);
+    layout->addWidget(d->_validUntil = new QLabel("", this), 4, 1);
+
+    layout->addWidget(new QLabel(i18n("Serial Number:"), this), 5, 0);
+    layout->addWidget(d->_serialNum = new QLabel("", this), 5, 1);
+    layout->addWidget(new QLabel(i18n("MD5 Digest:"), this), 6, 0);
+    layout->addWidget(d->_digest = new QLabel("", this), 6, 1);
+
+    layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 7, 0);
+    layout->addWidget(new QLabel(cipher, this), 7, 1);
+    layout->addWidget(new QLabel(i18n("Details:"), this), 8, 0);
+    layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 8, 1);
+    layout->addWidget(new QLabel(i18n("SSL Version:"), this), 9, 0);
+    layout->addWidget(new QLabel(sslversion, this), 9, 1);
+    layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 10, 0);
+    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 10, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
+
+    displayCert(cert);
+}
+
+
+void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
+QPalette cspl;
+
+   d->_serialNum->setText(x->getSerialNumber());
+
+   cspl = d->_validFrom->palette();
+   if (x->getQDTNotBefore() > QDateTime::currentDateTime())
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+   else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   d->_validFrom->setPalette(cspl);
+   d->_validFrom->setText(x->getNotBefore());
+
+   cspl = d->_validUntil->palette();
+   if (x->getQDTNotAfter() < QDateTime::currentDateTime())
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+   else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   d->_validUntil->setPalette(cspl);
+   d->_validUntil->setText(x->getNotAfter());
+
+   cspl = d->_csl->palette();
+   if (x->validate() != KSSLCertificate::Ok)
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+   else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   d->_csl->setPalette(cspl);
+   d->_csl->setText(KSSLCertificate::verifyText(x->validate()));
+
+   d->_subject->setValues(x->getSubject());
+   d->_issuer->setValues(x->getIssuer());
+
+   d->_digest->setText(x->getMD5DigestText());
 }
 
 
 void KSSLInfoDlg::slotChain(int x) {
   if (x == 0) {
-//     displayCert(_p12->getCertificate());
-//     _certState->setText(KSSLCertificate::verifyText(_p12->validate()));
+     displayCert(d->_cert);
   } else {
-//     displayCert(_p12->getCertificate()->chain().getChain().at(c-1));
+     QPtrList<KSSLCertificate> cl = d->_cert->chain().getChain();
+     cl.setAutoDelete(true);
+     for (int i = 0; i < x-1; i++)
+        cl.remove((unsigned int)0);
+     KSSLCertificate thisCert = *(cl.at(0));
+     cl.remove((unsigned int)0);
+     thisCert.chain().setChain(cl);
+     displayCert(&thisCert);
   }
 }
 

@@ -57,6 +57,7 @@ public:
 
 private:
   QScrollView *buildCertInfo(const QString &certName);
+  void displayCert(KSSLCertificate *x);
 
   class KSSLInfoDlgPrivate;
   KSSLInfoDlgPrivate *d;
