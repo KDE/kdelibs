@@ -410,19 +410,6 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if (_name.at(0) == '/')
 	return _name;
 
-    int size;
-    if (group_or_size >= 0)
-	size = d->mpGroups[group_or_size].size;
-    else
-	size = -group_or_size;
-
-    if (_name.isEmpty()) {
-        if (canReturnNull)
-            return QString::null;
-        else
-            return unknownIconPath(size);
-    }
-
     QString name = removeIconExtension( _name );
 
     QString path;
@@ -448,6 +435,19 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     {
 	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
 	return path;
+    }
+
+    int size;
+    if (group_or_size >= 0)
+	size = d->mpGroups[group_or_size].size;
+    else
+	size = -group_or_size;
+
+    if (_name.isEmpty()) {
+        if (canReturnNull)
+            return QString::null;
+        else
+            return unknownIconPath(size);
     }
 
     KIcon icon = findMatchingIcon(name, size);
