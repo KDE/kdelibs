@@ -1,5 +1,5 @@
 Source: kdelibs
-Section: contrib/x11
+Section: contrib/libs
 Priority: extra
 Maintainer: Stephan Kulow <coolo@kde.org>
 Standards-Version: 2.5.0

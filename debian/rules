@@ -79,7 +79,7 @@ binary-arch:  build
 	   includedir=`pwd`/debian/tmp/usr/include/kde \
 	   libdir=`pwd`/debian/tmp/usr/lib install 
 
-	perl -w debian/kderules 
+	perl -w admin/debianrules
 	dh_movefiles 
 	dh_installdocs 
 	dh_installchangelogs 
@@ -92,6 +92,7 @@ binary-arch:  build
 	dh_shlibdeps 
 	dh_gencontrol
 	dh_md5sums
+	perl -w admin/debianrules update
 	dh_builddeb -v
 	
 # Below here is fairly generic really
