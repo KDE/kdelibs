@@ -2885,7 +2885,7 @@ Value ParameterNode::evaluate(ExecState */*exec*/) const
 
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
-  : BlockNode(s)
+  : BlockNode(s), program(false)
 {
   //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
 }
@@ -2894,6 +2894,16 @@ void FunctionBodyNode::processFuncDecl(ExecState *exec)
 {
   if (source)
     source->processFuncDecl(exec);
+}
+
+Completion FunctionBodyNode::execute(ExecState *exec)
+{
+  Completion c = BlockNode::execute(exec);
+  if (program && c.complType() == ReturnValue)
+    return Completion(Throw,
+		      throwError(exec, SyntaxError, "return outside of function body"));
+  else
+    return c;
 }
 
 // ----------------------------- FuncDeclNode ---------------------------------
@@ -3081,8 +3091,4 @@ void SourceElementsNode::processVarDecls(ExecState *exec)
 {
   for (SourceElementsNode *n = this; n; n = n->elements)
     n->element->processVarDecls(exec);
-}
-
-ProgramNode::ProgramNode(SourceElementsNode *s): FunctionBodyNode(s) {
-    //fprintf(stderr,"ProgramNode::ProgramNode %p\n",this);
 }

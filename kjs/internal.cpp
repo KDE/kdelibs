@@ -458,12 +458,12 @@ void SourceCode::cleanup()
 
 // ------------------------------ Parser ---------------------------------------
 
-ProgramNode *Parser::progNode = 0;
+FunctionBodyNode *Parser::progNode = 0;
 int Parser::sid = 0;
 SourceCode *Parser::source = 0;
 
-ProgramNode *Parser::parse(const UChar *code, unsigned int length, SourceCode **src,
-			   int *errLine, UString *errMsg)
+FunctionBodyNode *Parser::parse(const UChar *code, unsigned int length, SourceCode **src,
+				int *errLine, UString *errMsg)
 {
   if (errLine)
     *errLine = -1;
@@ -482,7 +482,7 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, SourceCode **
   //extern int kjsyydebug;
   //kjsyydebug=1;
   int parseError = kjsyyparse();
-  ProgramNode *prog = progNode;
+  FunctionBodyNode *prog = progNode;
   progNode = 0;
   //sid = -1;
   source = 0;
@@ -759,7 +759,7 @@ bool InterpreterImp::checkSyntax(const UString &code)
 {
   // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
   SourceCode *source;
-  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&source,0,0);
+  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,0,0);
   source->deref();
   bool ok = (progNode != 0);
   delete progNode;
@@ -781,7 +781,9 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   int errLine;
   UString errMsg;
   SourceCode *source;
-  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
+  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
+  if (progNode)
+    progNode->setProgram(true);
 
   // notify debugger that source has been parsed
   if (dbg) {

@@ -132,7 +132,7 @@ typedef union {
   ParameterNode       *param;
   FunctionBodyNode    *body;
   FuncDeclNode        *func;
-  ProgramNode         *prog;
+  FunctionBodyNode         *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
   StatListNode        *slist;
@@ -2000,13 +2000,13 @@ case 191:
     break;}
 case 192:
 #line 622 "grammar.y"
-{ yyval.prog = new ProgramNode(0L);
+{ yyval.prog = new FunctionBodyNode(0L);
                                      yyval.prog->setLoc(0, 0, Parser::source);
                                      Parser::progNode = yyval.prog; ;
     break;}
 case 193:
 #line 625 "grammar.y"
-{ yyval.prog = new ProgramNode(yyvsp[0].srcs);
+{ yyval.prog = new FunctionBodyNode(yyvsp[0].srcs);
                                      Parser::progNode = yyval.prog; ;
     break;}
 case 194:

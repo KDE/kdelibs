@@ -8,7 +8,7 @@ typedef union {
   ParameterNode       *param;
   FunctionBodyNode    *body;
   FuncDeclNode        *func;
-  ProgramNode         *prog;
+  FunctionBodyNode         *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
   StatListNode        *slist;

@@ -35,7 +35,6 @@ namespace KJS {
 
   class RegExp;
   class SourceElementsNode;
-  class ProgramNode;
   class ObjectLiteralNode;
   class PropertyNode;
   class SourceStream;
@@ -278,7 +277,7 @@ namespace KJS {
     PropertyValueNode(PropertyNode *n, Node *a)
       : name(n), assign(a), list(this) { }
     PropertyValueNode(PropertyNode *n, Node *a, PropertyValueNode *l)
-      : name(n), assign(a), list(l) { l->list = this; }
+      : name(n), assign(a), list(l->list) { l->list = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -999,11 +998,15 @@ namespace KJS {
     ParameterNode *next;
   };
 
-  // inherited by ProgramNode
   class FunctionBodyNode : public BlockNode {
   public:
     FunctionBodyNode(SourceElementsNode *s);
     virtual void processFuncDecl(ExecState *exec);
+    virtual Completion execute(ExecState *exec);
+    void setProgram(bool _program) { program = _program; }
+    bool isProgram() const { return program; }
+  private:
+    bool program;
   };
 
   class FuncDeclNode : public StatementNode {
@@ -1052,14 +1055,6 @@ namespace KJS {
     friend class BlockNode;
     StatementNode *element; // 'this' element
     SourceElementsNode *elements; // pointer to next
-  };
-
-  class ProgramNode : public FunctionBodyNode {
-  public:
-    ProgramNode(SourceElementsNode *s);
-  private:
-    // Disallow copy
-    ProgramNode(const ProgramNode &other);
   };
 
 } // namespace

@@ -57,7 +57,7 @@ using namespace KJS;
   ParameterNode       *param;
   FunctionBodyNode    *body;
   FuncDeclNode        *func;
-  ProgramNode         *prog;
+  FunctionBodyNode    *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
   StatListNode        *slist;
@@ -619,10 +619,10 @@ FunctionBody:
 ;
 
 Program:
-    /* nothing, empty script */      { $$ = new ProgramNode(0L);
+    /* nothing, empty script */      { $$ = new FunctionBodyNode(0L);
                                      $$->setLoc(0, 0, Parser::source);
                                      Parser::progNode = $$; }
-    | SourceElements                 { $$ = new ProgramNode($1);
+    | SourceElements                 { $$ = new FunctionBodyNode($1);
                                      Parser::progNode = $$; }
 ;
 

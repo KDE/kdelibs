@@ -41,7 +41,7 @@ namespace KJS {
   static const double D16 = 65536.0;
   static const double D32 = 4294967296.0;
 
-  class ProgramNode;
+  class FunctionBodyNode;
   class FunctionBodyNode;
   class FunctionPrototypeImp;
   class FunctionImp;
@@ -221,16 +221,16 @@ namespace KJS {
   /**
    * @internal
    *
-   * Parses ECMAScript source code and converts into ProgramNode objects, which
+   * Parses ECMAScript source code and converts into FunctionBodyNode objects, which
    * represent the root of a parse tree. This class provides a conveniant workaround
    * for the problem of the bison parser working in a static context.
    */
   class Parser {
   public:
-    static ProgramNode *parse(const UChar *code, unsigned int length, SourceCode **src,
-			      int *errLine = 0, UString *errMsg = 0);
+    static FunctionBodyNode *parse(const UChar *code, unsigned int length, SourceCode **src,
+				   int *errLine = 0, UString *errMsg = 0);
 
-    static ProgramNode *progNode;
+    static FunctionBodyNode *progNode;
     static SourceCode *source;
     static int sid;
   private:
