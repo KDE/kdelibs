@@ -100,7 +100,7 @@ dnl no need to, AC_BASE_PATH_KDE does it for us already (see also
 dnl comment below for mcopidl)
 dnl AC_PATH_PROG(ARTSCCONFIG, artsc-config, no)
 
-ARTS_WANT_VERSION=1.0.x
+ARTS_WANT_VERSION=1.1.x
 ARTS_HAVE_VERSION=none
 ARTS_HAVE_PREFIX=none
 
