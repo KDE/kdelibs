@@ -195,6 +195,9 @@ protected slots:
   /** Send status messages. */
   void setStatus(const QString&);
   // ############################################################################
+private:
+  class KAbAPIPrivate;
+  KAbAPIPrivate *d;
 };
 
 #endif // KABAPI_H

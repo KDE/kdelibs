@@ -50,6 +50,9 @@ public:
   void setKey(const QCString&); /**< Set this key. */
 protected:
   QCString key; /**< The key of the in this database. */
+
+  class KabKeyPrivate;
+  KabKeyPrivate *d;
 };
 
 // -----------------------------------------------------------------------------
@@ -539,6 +542,10 @@ signals:
   void setStatus(const QString&); /**< This is kab radio with the news... */
   void newFile(const QString&); /**< Notifies changes of the file name. */
   // ############################################################################
+
+private: 
+  class AddressBookPrivate;
+  AddressBookPrivate *d;
 };
 
 #endif // ADDRESSBOOK_H
