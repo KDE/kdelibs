@@ -189,7 +189,7 @@ class KHelpMenu : public QObject
     /**
      * Opens the help page for the application. The application name is
      * used as a key to determine what to display and the system will attempt
-     * to open <appName>/index.html.
+     * to open \<appName\>/index.html.
      */
     void appHelpActivated();
 

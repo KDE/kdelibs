@@ -199,7 +199,7 @@ namespace KJS {
     /**
      * Checks whether or not the value is of a particular tpye
      *
-     * @param The type to compare with
+     * @param t The type to compare with
      * @return true if the value is of the specified type, otherwise false
      */
     bool isA(Type t) const { return rep->dispatchType() == t; }

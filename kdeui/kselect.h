@@ -97,22 +97,12 @@ protected:
    * indicates the currently selected value pair.
    */
   virtual void drawCursor( QPainter *p, int xp, int yp );
-  /**
-   * @reimplemented
-   */
+
   virtual void paintEvent( QPaintEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void mousePressEvent( QMouseEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void mouseMoveEvent( QMouseEvent *e );
-  /**
-   * @reimplemented
-   */
   virtual void wheelEvent( QWheelEvent * );
+
   /**
    * Converts a pixel position to its corresponding values.
    */

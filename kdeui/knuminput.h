@@ -301,9 +301,6 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    /**
-     * @reimplemented
-     */
     virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
 
     /**
@@ -378,13 +375,7 @@ private slots:
     void slotEmitRelativeValueChanged(int); 
 
 protected:
-    /**
-     * @reimplemented
-     */
     virtual void doLayout();
-    /**
-     * @reimplemented
-     */
     void resizeEvent ( QResizeEvent * );
 
     KIntSpinBox* m_spin;

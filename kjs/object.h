@@ -294,6 +294,7 @@ namespace KJS {
      * extra object in it's scope. An example of this is functions declared
      * inside other functions:
      *
+     * \code
      * function f() {
      *
      *   function b() {
@@ -304,12 +305,12 @@ namespace KJS {
      *   // do some stuff
      * }
      * f.prototype = new String();
+     * \endcode
      *
      * When the function f.b is executed, its scope will include properties of
      * f. So in the example above the return value of f.b() would be the new
      * String object that was assigned to f.prototype.
      *
-     * @param exec The current execution state
      * @return The function's scope
      */
     const ScopeChain &scope() const;
@@ -393,6 +394,7 @@ namespace KJS {
      * where FooImp inherits from BarImp, you would add the following in your
      * class declarations:
      *
+     * \code
      *   class BarImp : public ObjectImp {
      *     virtual const ClassInfo *classInfo() const { return &info; }
      *     static const ClassInfo info;
@@ -404,11 +406,14 @@ namespace KJS {
      *     static const ClassInfo info;
      *     // ...
      *   };
+     * \endcode
      *
      * And in your source file:
      *
+     * \code
      *   const ClassInfo BarImp::info = {0, 0, 0}; // no parent class
      *   const ClassInfo FooImp::info = {&BarImp::info, 0, 0};
+     * \endcode
      *
      * @see inherits()
      */
