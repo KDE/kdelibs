@@ -55,8 +55,8 @@ Package: kdelibs4
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
-Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
-Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
+Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), kdelibs-bin (<< 4:3.1.90)
+Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), kdelibs-bin (<< 4:3.1.90)
 Description: KDE core libraries
  KDE is a powerful Open Source graphical desktop environment 
  for Unix workstations. It combines ease of use, contemporary 
