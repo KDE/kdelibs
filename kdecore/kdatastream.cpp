@@ -40,7 +40,7 @@ QDataStream & operator >> (QDataStream & str, long & l)
 }
 
 #else
-#warning SIZEOF_LONG is not 4 nor 8 ?
+#error SIZEOF_LONG is not 4 nor 8, check config.h
 #endif
 #endif
 
