@@ -1,5 +1,6 @@
 #include "kgradienttest.h"
 #include <kapp.h>
+#include <kpixmapeffect.h>
 #include <qpainter.h>
 #include <qdatetime.h>
 #include <qstring.h>
@@ -44,7 +45,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     //pyramidal
     it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Pyramidal);
+    KPixmapEffect::pyramidGradient(pix, Qt::black, Qt::red);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms";
     p.drawPixmap(width()/2, height()/2, pix);
