@@ -125,7 +125,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 * no communication is possible without that
 	 */
 	string globalCommName
-			= MCOPUtils::readConfigEntry("GlobalComm","TmpGlobalComm");
+			= MCOPUtils::readConfigEntry("GlobalComm","Arts::TmpGlobalComm");
 
 	d->globalComm = GlobalComm(SubClass(globalCommName));
 
