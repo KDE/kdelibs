@@ -1,3 +1,10 @@
+2004-10-25  George Staikos  <staikos@kde.org>
+
+        * rendering/render_image.cpp: Pass through the CachedObject so we can
+        use the suggested filename possibly provided by the HTTP headers.
+
+	* khtml_ext.cpp: Make use of the suggested filename for images.
+
 2004-10-24  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (value): Fixed m_value vs ATTR_VALUE problem

@@ -30,6 +30,9 @@
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
 #include "rendering/render_form.h"
+#include "rendering/render_image.h"
+#include "html/html_imageimpl.h"
+#include "misc/loader.h"
 #include "dom/html_form.h"
 #include "dom/html_image.h"
 #include <qclipboard.h>
@@ -342,6 +345,7 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
+  QString m_suggestedFilename;
 };
 
 
@@ -361,6 +365,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !e.isNull() && (e.elementId() == ID_IMG ||
                        (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
   {
+    if (e.elementId() == ID_IMG) {
+      DOM::HTMLImageElementImpl *ie = static_cast<DOM::HTMLImageElementImpl*>(e.handle());
+      khtml::RenderImage *ri = dynamic_cast<khtml::RenderImage*>(ie->renderer());
+      if (ri && ri->contentObject()) {
+        d->m_suggestedFilename = static_cast<khtml::CachedImage*>(ri->contentObject())->suggestedFilename();
+      }
+    }
     isImage=true;
   }
 
@@ -487,7 +498,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                  actionCollection(), "copyimagelocation" );
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    new KAction( i18n( "View Image (%1)" ).arg(name.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
+    new KAction( i18n( "View Image (%1)" ).arg(d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
                  actionCollection(), "viewimage" );
   }
 
@@ -529,7 +540,7 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 {
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_khtml->referrer();
-  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData );
+  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData, QString::null, 0, d->m_suggestedFilename );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
