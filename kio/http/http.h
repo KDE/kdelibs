@@ -58,7 +58,7 @@ public:
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
   enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, 
-                    HTTP_PROPFIND, HTTP_HEAD, HTTP_DELETE};
+                    HTTP_HEAD, HTTP_DELETE};
 
   typedef struct
   {
