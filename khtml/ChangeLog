@@ -1,3 +1,8 @@
+2004-02-09  David Faure  <faure@kde.org>
+
+	* ecma/kjs_html.cpp (getValueProperty): s/getString/String/ for meta attributes,
+        fixes http://www.accorhotels.com/fr/fidelisation/travelplus/tp_pros_adh_form.shtml
+
 2004-02-07  Harri Porten  <porten@kde.org>
 
 	* rendering/render_layer.cpp (sortByZOrder): compile fix for non-gcc
