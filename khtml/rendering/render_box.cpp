@@ -679,8 +679,8 @@ void RenderBox::calcHeight()
     kdDebug( 6040 ) << "RenderBox::calcHeight()" << endl;
 #endif
 
-    //cell height is managed by table
-    if (isTableCell())
+    //cell height is managed by table, inline elements do not have a height property.
+    if ( isTableCell() || (isInline() && !isReplaced()) )
         return;
 
     if (isPositioned())

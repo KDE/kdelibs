@@ -1170,12 +1170,16 @@ void RenderFlow::close()
 
     calcMinMaxWidth();
 
+    setParsing(false);
+
+    if ( isInline() )
+	return;
+    
     if(containingBlockWidth() < m_minWidth && parent())
         containingBlock()->updateSize();
     else
         containingBlock()->updateHeight();
 
-    setParsing(false);
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow)::close() total height =" << m_height << endl;
@@ -1192,9 +1196,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 
     RenderStyle* pseudoStyle=0;
-    if ((!firstChild() || firstChild()==beforeChild)
-            && (pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER))
-            && newChild->style()->styleType()==RenderStyle::NOPSEUDO)
+    if ( ( !firstChild() || firstChild() == beforeChild )
+	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
     {
 
         RenderText* newTextChild=0;
@@ -1210,6 +1213,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             kdDebug( 6040 ) << "letter=" << endl;
 
             RenderFlow* firstLetter = new RenderFlow();
+	    pseudoStyle->setDisplay( INLINE );
             firstLetter->setStyle(pseudoStyle);
 
             addChild(firstLetter);

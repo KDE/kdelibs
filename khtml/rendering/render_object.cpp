@@ -220,8 +220,6 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     // just add it...
     insertChildNode(newChild, beforeChild);
-    newChild->calcWidth();
-
 }
 
 RenderObject* RenderObject::removeChildNode(RenderObject* oldChild)
