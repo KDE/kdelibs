@@ -603,8 +603,6 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     int i = CHARSETS_COUNT-1; // avoid the "" entry
     while( i-- )
     {
-        qDebug("accessing: %s", xNames[i]);
-
        if( !QRegExp( xNames[i] ).match(name) )
             return charsetsIds[i];
     }
