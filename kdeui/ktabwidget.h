@@ -92,7 +92,7 @@ public slots:
 
     /*!
       If \a delayed is true, a close button will be shown on mouse hover
-      over tab icons immediately else after double mouse double click delay.
+      over tab icons after mouse double click delay else immediately.
     */
     void setHoverCloseButtonDelayed( bool delayed );
 
