@@ -149,22 +149,16 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
 void HTMLDocumentImpl::detach()
 {
     NodeImpl *b = body();
-    if (b)
-        b->dispatchWindowEvent(EventImpl::UNLOAD_EVENT,false,false);
+    if (b) {
+        if ( b->id() == ID_FRAMESET )
+            static_cast<HTMLFrameSetElementImpl*>( b )->m_loaded = false;
+        else if ( b->id() == ID_BODY )
+            static_cast<HTMLBodyElementImpl*>( b )->m_loaded = false;
 
-    kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
+        b->dispatchWindowEvent(EventImpl::UNLOAD_EVENT,false,false);
+    }
 
     DocumentImpl::detach();
-}
-
-void HTMLDocumentImpl::slotFinishedParsing()
-{
-    // first propagate that we finished parsing
-    DocumentImpl::slotFinishedParsing();
-
-    NodeImpl *b = body();
-    if (b)
-        b->dispatchWindowEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )

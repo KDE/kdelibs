@@ -43,7 +43,7 @@ namespace DOM {
     class CSSStyleSheetImpl;
     class HTMLMapElementImpl;
 
-class HTMLDocumentImpl : public DocumentImpl, public khtml::CachedObjectClient
+class HTMLDocumentImpl : public DOM::DocumentImpl, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
@@ -72,12 +72,6 @@ public:
     virtual ElementImpl *createElement ( const DOMString &tagName );
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
-
-signals:
-    void finishedParsing();
-
-public slots:
-    void slotFinishedParsing();
 
 protected:
     HTMLElementImpl *bodyElement;
