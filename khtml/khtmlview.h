@@ -97,6 +97,7 @@ public:
      * is visible.
      **/
     bool gotoPrevLink();
+
     void toggleActLink(bool);
 
     /**
@@ -172,14 +173,14 @@ public slots:
      */
     void triggerResize();
 
-protected:
-    void init();
-
+private:    
     bool gotoLink();
 
-    void followLink();
-
     void useSlowRepaints();
+
+    void init();
+
+    DOM::NodeImpl *nodeUnderMouse() const;
 
     // ------------------------------------- member variables ------------------------------------
  private:
@@ -187,8 +188,6 @@ protected:
      * List of all open browsers.
      */
     static QList<KHTMLView> *lstViews;
-
-    DOM::NodeImpl *nodeUnderMouse() const;
 
     int _width;
     int _height;
