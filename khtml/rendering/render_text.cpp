@@ -49,7 +49,7 @@ using namespace DOM;
 
 TextSlave::~TextSlave()
 {
-    if(deleteText)
+    if(m_reversed)
         QT_DELETE_QCHAR_VEC(m_text);
 }
 
@@ -294,6 +294,9 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     while(offset > off && si < m_lines.count())
     {
         s = m_lines[++si];
+        if ( s->m_reversed )
+            return 0L; // Abort if RTL (TODO)
+        // ### only for visuallyOrdered !
         off = s->m_text - m_lines[0]->m_text + s->m_len;
     }
     // we are now in the correct text slave
@@ -307,6 +310,10 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
     int si = 0;
     while(s)
     {
+        // TODO: this checks for a perfect intersection.
+        // Instead, we should find the closest char in the closest textslave
+        // This way it would be possible to select text when clicking on
+        // empty lines and when clicking after the end of the line.
         if( s->checkPoint(_x, _y, _tx, _ty) )
         {
             // now we need to get the exact position
@@ -323,9 +330,11 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
                 pos++;
                 delta -= w;
             }
+            if ( s->m_reversed )
+                return false; // Abort if RTL (TODO)
             // ### only for visuallyOrdered !
             offset = s->m_text - m_lines[0]->m_text + pos;
-            kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
+            //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
             return true;
         }
@@ -443,14 +452,19 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             // Eat the lines we don't print (startPos and endPos are from line 0!)
             if ( si > 0 )
             {
-                // ## Only valid for visuallyOrdered
-                int len = m_lines[si]->m_text - m_lines[0]->m_text;
-                //kdDebug(6040) << "RenderText::printObject adjustement si=" << si << " len=" << len << endl;
-                ASSERT( len > 0 );
-                startPos -= len;
-                endPos -= len;
-                if ( endPos < 0 )
-                    endPos = 0; // finished
+                if ( m_lines[si]->m_reversed )
+                     endPos = 0; // No selection if RTL (TODO)
+                else
+                {
+                    // ## Only valid for visuallyOrdered
+                    int len = m_lines[si]->m_text - m_lines[0]->m_text;
+                    //kdDebug(6040) << "RenderText::printObject adjustement si=" << si << " len=" << len << endl;
+                    ASSERT( len > 0 );
+                    startPos -= len;
+                    endPos -= len;
+                    if ( endPos < 0 )
+                        endPos = 0; // finished
+                }
             }
         }
 
@@ -459,7 +473,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         // know we can stop
         do {
             TextSlave* s = m_lines[si];
-            RenderStyle* style = pseudoStyle && s->firstLine ? pseudoStyle : m_style;
+            RenderStyle* style = pseudoStyle && s->m_firstLine ? pseudoStyle : m_style;
 
             if(style->font() != p->font())
                 p->setFont(style->font());
@@ -469,7 +483,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if((m_printSpecial  &&
                 (m_parent->isInline() || pseudoStyle)) &&
-               (!pseudoStyle || s->firstLine))
+               (!pseudoStyle || s->m_firstLine))
                 s->printBoxDecorations(p, style, this, tx, ty, si == 0, si == (int)m_lines.count());
 
             s->print(p, tx, ty);
@@ -489,6 +503,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 int diff;
                 if(si < (int)m_lines.count()-1)
                 {
+                    // ### only for visuallyOrdered ! (we disabled endPos for RTL, so we can't go here in RTL mode)
                     diff = m_lines[si+1]->m_text - s->m_text;
                     //kdDebug(6040) << "RenderText::printSelection eating the line si=" << si << " diff=" << diff << endl;
                 }
@@ -672,9 +687,8 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(len == 0) return;
 
     QChar *ch;
-    bool deleteChar = false;
-    if ( reverse && !m_style->visuallyOrdered() ) {
-        deleteChar = true;
+    reverse = reverse && !m_style->visuallyOrdered();
+    if ( reverse ) {
         // reverse String
         QString aStr = QConstString(str->s+from, len).string();
         //kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
@@ -711,7 +725,8 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-                                 bidiHeight(), baselineOffset(), width, deleteChar, firstLine);
+                                 bidiHeight(), baselineOffset(),
+                                 width, reverse, firstLine);
 
     if(m_lines.count() == m_lines.size())
         m_lines.resize(m_lines.size()*2+1);

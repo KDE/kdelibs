@@ -43,18 +43,19 @@ namespace khtml
 class TextSlave
 {
 public:
-    TextSlave(int _x, int _y, QChar *text, int _len,
-              int height, int baseline, int width, bool _deleteText = false, bool _firstLine = false)
+    TextSlave(int x, int y, QChar *text, int len,
+              int height, int baseline, int width,
+              bool reversed = false, bool firstLine = false)
     {
-        m_x = _x;
-        m_y = _y;
+        m_x = x;
+        m_y = y;
         m_text = text;
-        m_len = _len;
+        m_len = len;
         m_height = height;
         m_baseline = baseline;
         m_width = width;
-        deleteText = _deleteText;
-        firstLine = _firstLine;
+        m_reversed = reversed;
+        m_firstLine = firstLine;
     }
     ~TextSlave();
     void print( QPainter *p, int _tx, int _ty);
@@ -80,17 +81,21 @@ public:
     unsigned short m_baseline;
     unsigned short m_width;
 
-    // this is needed for right to left text. In this case, m_text will point to a QChar array which
-    // holds the already reversed string. The slave has to delete this string by itself.
-    bool deleteText : 1;
-    bool firstLine : 1;
+    // If m_reversed is true, this is right to left text.
+    // In this case, m_text will point to a QChar array which holds the already
+    // reversed string, and the slave has to delete this string by itself.
+    // If false, m_text points into the render text's own QChar array,
+    // and in this case it's allowed to do substractions between m_texts of
+    // different slaves.
+    bool m_reversed : 1;
+    bool m_firstLine : 1;
 private:
     // this is just for QVector::bsearch. Don't use it otherwise
     TextSlave(int _x, int _y)
     {
         m_x = _x;
         m_y = _y;
-        deleteText = false;
+        m_reversed = false;
     };
     friend class RenderText;
 };
