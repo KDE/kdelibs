@@ -83,12 +83,12 @@ public:
 	 * Sets the current directory (used as base for completion)
 	 * Default = $HOME.
 	 */
-	virtual void setDir(const QString &dir) { m_cwd = dir; };
+	virtual void setDir(const QString &dir);
 	
 	/**
 	 * Returns the current directory.
 	 */
-	virtual QString dir() const { return m_cwd; };
+	virtual QString dir() const;
 
 	/**
 	 * Returns true if asyncronous completion is in progress.
@@ -103,50 +103,50 @@ public:
 	/**
 	 * Returns the completion mode: exe or file completion (default FileCompletion)
 	 */
-	virtual Mode mode() const { return m_mode; };
+	virtual Mode mode() const;
 
 	/**
 	 * Changes the completion mode: exe or file completion
 	 */
-	virtual void setMode( Mode mode ) { m_mode = mode; };
+	virtual void setMode( Mode mode );
 
 	/**
 	 * Returns whether environment variables are completed and
 	 * whether they are replaced internally while finding completions.
 	 * Default is enabled.
 	 */
-	virtual bool replaceEnv() const { return m_replace_env; };
+	virtual bool replaceEnv() const;
 	
 	/**
 	 * Enables/disables completion and replacement (internally) of
 	 * environment variables in URLs. Default is enabled.
 	 */
-	virtual void setReplaceEnv( bool replace ) { m_replace_env = replace; };
+	virtual void setReplaceEnv( bool replace );
 
 	/**
 	 * Returns whether ~username is completed and whether ~username
 	 * is replaced internally with the user's home directory while
 	 * finding completions. Default is enabled.
 	 */
-	virtual bool replaceHome() { return m_replace_home; };
+	virtual bool replaceHome() const;
 	
 	/**
 	 * Enables/disables completion of ~username and replacement
 	 * (internally) of ~username with the user's home directory.
 	 * Default is enabled.
 	 */
-	virtual void setReplaceHome( bool replace ) { m_replace_home = replace; };
+	virtual void setReplaceHome( bool replace );
 
 	/**
 	 * Replaces username and/or environment variables, depending on the
 	 * current settings and returns the filtered url. Only works with
 	 * local files, i.e. returns back the original string for non-local
-         * urls.
+	 * urls.
 	 */
 	QString replacedPath( const QString& text );
 
-        class MyURL;
-        class DirLister;
+	class MyURL;
+	class DirLister;
 protected:
 	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match ) const;
@@ -161,7 +161,7 @@ private slots:
 
 private:
 
-        bool isAutoCompletion();
+	bool isAutoCompletion();
 	
 	bool userCompletion(const MyURL &url, QString *match);
 	bool envCompletion(const MyURL &url, QString *match);
@@ -185,14 +185,14 @@ private:
 	                        bool stat_files = true);
 
 	void listURLs( const QValueList<KURL *> &urls,
-		           const QString &filter = QString::null,
+	               const QString &filter = QString::null,
 	               bool only_exe = false,
 	               bool no_hidden = false );
 	
 	void addMatches( QStringList * );
 	QString finished();
 	
-	void init();
+	void init(Mode mode);
 
 	void setListedURL(int compl_type /* enum ComplType */,
 	                  QString dir = QString::null,
@@ -203,31 +203,6 @@ private:
 	                  QString dir = QString::null,
 	                  QString filter = QString::null,
 	                  bool no_hidden = false );
-
-	QString m_last_path_listed;
-	QString m_last_file_listed;
-	int m_last_compl_type;
-	int m_last_no_hidden; // int m_last_mode;
-
-	QString m_cwd; // "current directory" = base dir for completion // WAS: m_dir
-	
-	Mode m_mode; // ExeCompletion or FileCompletion
-	bool m_replace_env;
-	bool m_replace_home;
-
-	KIO::ListJob *m_list_job; // kio job to list directories
-
-	QString m_prepend; // text to prepend to listed items
-	QString m_compl_text; // text to pass on to KCompletion
-
-	bool m_list_urls_only_exe; // true = only list executables
-	bool m_list_urls_no_hidden; // bool m_running; // flag set when all dirs have been listed
-	QString m_list_urls_filter; // QString m_file_filter; // filter for listed files
-
-	QChar m_word_break_char;
-	QChar m_quote_char1;
-	QChar m_quote_char2;
-	QChar m_escape_char;
 
 	KURLCompletionPrivate *d;
 };
