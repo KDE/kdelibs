@@ -178,8 +178,9 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
     else
     {
 //WABA does this make sense? 
+//Lars: sorry... no, it makes some tbales look _really_ ugly
     	max_width = width; 
-	setFixedWidth( TRUE );
+//	setFixedWidth( TRUE );
     }
 }
 
