@@ -180,6 +180,7 @@ protected:
 
   void http_openConnection(); // Open connection
   void http_closeConnection(); // Close conection
+  bool http_isConnected(); // Checks for existing connection.
 
   bool readHeader();
   bool sendBody();
@@ -296,6 +297,8 @@ protected: // Members
   bool m_bCanResume;
 
   DCOPClient *m_dcopClient;
+
+  short unsigned int mDefaultPort;
 
 #ifdef DO_SSL
   // Stuff for OpenSSL/SSLeay

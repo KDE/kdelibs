@@ -12,8 +12,9 @@
 #endif
 
 #include <sys/stat.h>
-
+#include <sys/time.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/wait.h>
 
 #include <assert.h>
@@ -344,6 +345,27 @@ HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
 
   m_HTTPrev = HTTP_Unknown;
 
+#ifdef DO_SSL
+  if (mProtocol == "https") 
+  {
+     struct servent *sent = getservbyname("https", "tcp");
+     if (sent) {
+        mDefaultPort = ntohs(sent->s_port);
+     } else {
+        mDefaultPort = DEFAULT_HTTPS_PORT;
+     }
+  }
+  else
+#endif
+  {
+     struct servent *sent = getservbyname("http", "tcp");
+     if (sent) {
+        mDefaultPort = ntohs(sent->s_port);
+     } else {
+        mDefaultPort = DEFAULT_HTTP_PORT;
+     }
+  }
+
   cleanCache();
 }
 
@@ -446,49 +468,34 @@ bool HTTPProtocol::eof()
   return m_bEOF;
 }
 
+bool
+HTTPProtocol::http_isConnected()
+{
+   if (!m_sock) return false;
+   kDebugInfo( 7103, "Testing existing connection.");
+   fd_set rdfs;
+   struct timeval tv;
+   int retval;
+   FD_ZERO(&rdfs);
+   FD_SET(m_sock , &rdfs);
+   tv.tv_usec = 0;
+   tv.tv_sec = 0;
+   retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
+
+   kDebugInfo( 7103, "Select returns with = %d", retval);
+   if (retval != 0)
+   {
+       char buffer[100];
+       retval = recv(m_sock, buffer, 80, MSG_PEEK);
+       kDebugInfo( 7103, "Recv returns with = %d", retval);
+       return false;
+   }            
+   return true;
+}
+
 void HTTPProtocol::http_openConnection()
 {
-  // try to ensure that the port is something reasonable
-  unsigned short int port = m_request.port;
-  if ( port == 0 ) {
-#ifdef DO_SSL
-    if (mProtocol=="https") {
-      struct servent *sent = getservbyname("https", "tcp");
-      if (sent) {
-        port = ntohs(sent->s_port);
-      } else
-        port = DEFAULT_HTTPS_PORT;
-    } else
-#endif
-      if ( (mProtocol=="http") || (mProtocol == "httpf") ) {
-        struct servent *sent = getservbyname("http", "tcp");
-	if (sent) {
-	  port = ntohs(sent->s_port);
-	} else
-	  port = DEFAULT_HTTP_PORT;
-      } else {
-	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", mProtocol.data());
-	port = 80;
-      }
-  }
-  m_request.port = port;
-
-#if 0
-  // Move to initialisation
-  // make sure that we can support what we are asking for
-  if (mProtocol() == "https") {
-#ifdef DO_SSL
-    m_bUseSSL=true;
-#else
-    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
-    return false;
-#endif
-  }
-#endif
-
   // do we want to use a proxy?
-  m_request.do_proxy = m_bUseProxy;
-
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
@@ -532,6 +539,10 @@ void HTTPProtocol::http_openConnection()
      {
         closeDown = true;
         kDebugInfo( 7103, "keep_alive: proxy setting changed.");
+     }
+     if (!closeDown && !http_isConnected())
+     {
+        closeDown = true;
      }
      if (closeDown)
         http_closeConnection();
@@ -741,7 +752,7 @@ bool HTTPProtocol::http_open()
 
   header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
   header += m_state.hostname;
-  if (m_state.port != 0) {
+  if (m_state.port != mDefaultPort) {
     memset(c_buffer, 0, 64);
     sprintf(c_buffer, ":%u", m_state.port);
     header += c_buffer;
@@ -1334,27 +1345,9 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
   m_request.hostname = host;
 
   // try to ensure that the port is something reasonable
-  if ( port == 0 ) {
-#ifdef DO_SSL
-    if (mProtocol=="https") {
-      struct servent *sent = getservbyname("https", "tcp");
-      if (sent) {
-        port = ntohs(sent->s_port);
-      } else
-        port = DEFAULT_HTTPS_PORT;
-    } else
-#endif
-      if ( (mProtocol=="http") || (mProtocol == "httpf") ) {
-        struct servent *sent = getservbyname("http", "tcp");
-	if (sent) {
-	  port = ntohs(sent->s_port);
-	} else
-	  port = DEFAULT_HTTP_PORT;
-      } else {
-	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", mProtocol.data());
-	port = 80;
-      }
-  }
+  if ( port == 0 ) 
+     port = mDefaultPort;
+
   m_request.port = port;
   m_request.user = user;
   m_request.passwd = pass;
@@ -1375,11 +1368,17 @@ void HTTPProtocol::closeConnection( )
 
 void HTTPProtocol::slave_status()
 {
-  kDebugInfo( 7103, "Got slave_status (m_fsocket = %d) host = %s", 
-	m_fsocket, m_state.hostname.ascii() ? m_state.hostname.ascii() : "[None]" );
-  slaveStatus( m_state.hostname, (m_fsocket != 0) );
+  bool connected = (m_sock != 0);
+  if (connected && !http_isConnected())
+  {
+     http_closeConnection();
+     connected = false;
+  }
+  kDebugInfo( 7103, "Got slave_status host = %s [%s]", 
+	m_state.hostname.ascii() ? m_state.hostname.ascii() : "[None]",
+        connected ? "Connected" : "Not connected" );
+  slaveStatus( m_state.hostname, connected );
 }
-
 
 void HTTPProtocol::buildURL()
 {
