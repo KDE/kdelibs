@@ -30,20 +30,21 @@
 
 struct midifileinfo
 {
-int format;
-int ntracks;
-int ticksPerCuarterNote;
+    int format;
+    int ntracks;
+    int ticksPerCuarterNote;
 
+    ulong ticksTotal;
+    double millisecsTotal;
+    ulong ticksPlayed;
+    
+    int patchesUsed[256];
 
-ulong ticksTotal;
-double millisecsTotal;
-ulong ticksPlayed;
-
-int patchesUsed[256]; // 0 - it's not used
-                     // 1 - it's used only once
-                     // 2 - if it's used twice
-                     // 3 - if it's used three times
-                     // and so on
+    // 0 - it's not used
+    // 1 - it's used only once
+    // 2 - if it's used twice
+    // 3 - if it's used three times
+    // and so on
 };
 
 double tempoToMetronomeTempo(ulong x);

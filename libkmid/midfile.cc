@@ -211,7 +211,7 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     int parsing=1;
     int trk,minTrk;
     //ulong minTicks;
-    ulong tempo=(ulong)(1000000 * ratioTempo);
+    ulong tempo=(ulong)(500000 * ratioTempo);
     
 #ifdef MIDFILEDEBUG
     printf("Parsing 1 ...\n");
@@ -320,7 +320,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     };
     int parsing=1;
     int trk,minTrk;
-    ulong tempo=1000000;
+    ulong tempo=500000;
     
 #ifdef MIDFILEDEBUG
     printf("Parsing for patches ...\n");

@@ -121,7 +121,8 @@ void player::parseSpecialEvents(void)
     int minTrk;
     double minTime=0;
     double maxTime;
-    ulong tempo=(ulong)(1000000 * (ctl->ratioTempo));
+    ulong tempo=(ulong)(500000 * (ctl->ratioTempo));
+    ulong firsttempo=0;
     for (int i=0;i<info->ntracks;i++)
     {
         tracks[i]->init();
@@ -203,6 +204,7 @@ void player::parseSpecialEvents(void)
                             pspev->id=spev_id++;
                             tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ctl->ratioTempo);
                             pspev->tempo=tempo;
+                            if (firsttempo==0) firsttempo=tempo;
                             for (j=0;j<info->ntracks;j++)
                             {
                                 tracks[j]->changeTempo(tempo);
@@ -221,6 +223,9 @@ void player::parseSpecialEvents(void)
     delete ev;
     pspev->type=0;
     pspev->next=NULL;
+    if (firsttempo==0) firsttempo=tempo;
+    ctl->tempo=firsttempo;
+
     //writeSPEV();
     for (int i=0;i<info->ntracks;i++)
     {
@@ -333,7 +338,7 @@ void player::play(int calloutput,void output(void))
     double minTime=0;
     double maxTime;
     int i;
-    ulong tempo=(ulong)(1000000 * ctl->ratioTempo);
+    ulong tempo=(ulong)(500000 * ctl->ratioTempo);
     for (i=0;i<info->ntracks;i++)
     {
         tracks[i]->init();
@@ -547,7 +552,7 @@ void player::play(int calloutput,void output(void))
 void player::SetPos(ulong gotomsec,midiStat *midistat)
 {
     int trk,minTrk;
-    ulong tempo=(ulong)(1000000 * ctl->ratioTempo);
+    ulong tempo=(ulong)(500000 * ctl->ratioTempo);
     double minTime=0,maxTime,prevms=0;
     int i,j,likeplaying=1;
     
@@ -676,11 +681,16 @@ void player::setParseSong(bool b)
 
 void player::changeTempoRatio(double ratio)
 {
-    ctl->ratioTempo=ratio;
     if (songLoaded)
     {
+        ctl->ratioTempo=ratio;
         parseInfoData(info,tracks,ctl->ratioTempo);
         if (parseSong) parseSpecialEvents();
+    }
+    else
+    {
+        ctl->tempo=(ctl->tempo*ctl->ratioTempo)/ratio;
+        ctl->ratioTempo=ratio;
     };
 
 };
