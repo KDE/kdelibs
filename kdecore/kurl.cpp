@@ -154,7 +154,7 @@ void KURL::parse( const char * _url )
     // defaults
     malformed = false;
     path_part_decoded = 0;
-    search_part = NULL;
+    search_part = "";
     bNoPath = false;
 
     if ( _url[0] == '/' )
