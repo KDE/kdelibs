@@ -1,3 +1,8 @@
+2005-01-11  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_text.cpp (caretPos): Calculate absolute position
+	beginning from the RenderText, not from the containing block.
+
 2005-01-07  David Faure  <faure@kde.org>
 
         * ecma/kjs_html.cpp: Support for document.body.onload.
