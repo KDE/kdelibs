@@ -47,7 +47,7 @@ class KHTMLWidget;
 #include "htmlobj.h"
 
 // The border around an aligned object
-#define ALIGN_BORDER 2
+#define ALIGN_BORDER 0
 
 class HTMLAnchor;
 
@@ -88,7 +88,7 @@ public:
      * Calls all children and tells them to calculate their size.
      */
     virtual void calcSize( HTMLClue *parent = 0L );
-	virtual void recalcBaseSize( QPainter * );
+    virtual void recalcBaseSize( QPainter * );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxAscent( int );
@@ -134,8 +134,17 @@ public:
 	    }
 	}
 	
+    virtual void findFreeArea( int _y, int _width, int _height, int _indent,
+                               int *_y_pos, int *_lmargin, int *_rmargin)
+        { *_y_pos = _y; *_lmargin = 0; *_rmargin = max_width; }
+    // This method tries to find a free rectangular area of _width x _height
+    // from position _y on. The start of this area is written in *y_pos.
+    // The actual left and right margins of the area are returned in
+    // *lmargin and *rmargin.
     virtual void appendLeftAligned( HTMLClueAligned * ) { }
     virtual void appendRightAligned( HTMLClueAligned * ) { }
+    virtual int  appended(HTMLClueAligned * ) { return 0;}
+    virtual void removeAlignedByParent( HTMLObject *p ) { }
     virtual int  getLeftMargin( int )
         { return 0; }
     virtual int  getRightMargin( int )
@@ -238,8 +247,16 @@ public:
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClue::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
+    virtual void findFreeArea( int _y, int _width, int _height, int _indent,
+                               int *_y_pos, int *_lmargin, int *_rmargin);
+    // This method tries to find a free rectangular area of _width x _height
+    // from position _y on. The start of this area is written in *y_pos.
+    // The actual left and right margins of the area are returned in
+    // *lmargin and *rmargin.
+                   
     virtual void appendLeftAligned( HTMLClueAligned *_clue );
     virtual void appendRightAligned( HTMLClueAligned *_clue );
+    virtual int  appended(HTMLClueAligned * );
     virtual int  getLeftMargin( int _y );
     virtual int  getRightMargin( int _y );
     virtual int  getLeftClear( int _y );

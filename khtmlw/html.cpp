@@ -2156,15 +2156,18 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		    clear = HTMLVSpace::Right;
 		else if ( strncasecmp( token+6, "all", 3 ) == 0 )
 		    clear = HTMLVSpace::All;
-	    }
+            }
 	}
 
-	HTMLVSpace *vs = new HTMLVSpace( currentFont()->pointSize(), clear );
+	HTMLVSpace *vs = new HTMLVSpace( 1, clear );
 
-	if ( flow != 0 )
-	    flow->append( vs );
-	else
-	    _clue->append( vs );
+	if (flow == 0)
+	{
+	    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	    flow->setIndent( indent );
+	    _clue->append( flow );
+	}
+	flow->append( vs );
 
 	vspace_inserted = false;
     }
