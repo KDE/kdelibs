@@ -1653,8 +1653,8 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
 		  put_it_in( buffer, index, translate("pm") );
 		else
 		  put_it_in( buffer, index, translate("am") );
-		break;
 	      }
+	      break;
 	    default:
 	      buffer[index++] = rst.at( format_index );
 	      break;
