@@ -30,6 +30,13 @@
 /**
  * Generic DCOP interface for KDE instant messenger applications
  * Note one omission of this interface is the lack of control over the range of values used for protocols' names.
+ *
+ * If you are implementing this interface, note that your application must have the following information in its
+ * desktop file, so that it can be identified as providing KIMIface at runtime:
+ * X-DCOP-ServiceName=<application name>
+ * ServiceTypes=DCOP/InstantMessenger
+ * and the class implementing KIMIface must pass "KIMIface" to the DCOPObject constructor.
+ *
  * @since 3.3
  * @author Will Stephenson <lists@stevello.free-online.co.uk>
  */
@@ -99,6 +106,8 @@ k_dcop:
 	virtual bool canReceiveFiles( const QString & uid ) = 0;
 	/** 
 	 * Some media are unidirectional (eg, sending SMS via a web interface).
+	 * This refers to the contact's ability to respond as defined by the medium, not by their presence.
+	 * Someone may appear offline (SMS has no presence) to you but in fact be able to respond.
 	 * @param uid the KABC uid you are interested in.
 	 * @return Whether the specified addressee can respond.
 	 */

@@ -25,6 +25,7 @@
 #define KIMPROXY_H
 
 #include <qdict.h>
+#include <qmap.h>
 #include <qptrdict.h>
 #include <qstringlist.h>
 
@@ -40,13 +41,8 @@ class DCOPClient;
 class KIMIface_stub;
 class KURL;
 
-struct AppPresence
-{
-	int presence;
-	QString appId;
-};
-
-typedef QDict<AppPresence> PresenceMap;
+typedef QMap<QCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
+typedef QDict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 typedef QMap<int, QString> PresenceStringMap;
 
 /**
@@ -262,7 +258,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Update our records with the given data
 		 */
-		bool updatePresence( const QString &uid, const QString &appId, int presence );
+		bool updatePresence( const QString &uid, const QCString &appId, int presence );
 
 		/**
 		 * Get the name of the user's IM weapon of choice
@@ -282,8 +278,10 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 
 	private:
 		// client stubs used to get presence
+		// appId (from DCOP) -> KIMIface_stub
 		QDict<KIMIface_stub> m_im_client_stubs;
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
+		// KABC Uid -> (appId, numeric presence )(AppPresence)
 		PresenceMap m_presence_map;
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
