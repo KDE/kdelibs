@@ -59,8 +59,13 @@ public:
     QString m_preferredService;
 };
 
-// This is called by foundMimeType, since it knows the mimetype of the URL
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
+{
+    return runURL( u, _mimetype, false );
+}
+
+// This is called by foundMimeType, since it knows the mimetype of the URL
+pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
 {
 
   if ( _mimetype == "inode/directory-locked" )
@@ -88,6 +93,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
       QString path = u.path();
       shellQuote( path );
       return (KRun::runCommand(path)); // just execute the url as a command
+      // ## TODO implement deleting the file if tempFile==true
     }
   }
 
@@ -103,23 +109,28 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
     // Open-with dialog
     // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog !
     // Hmm, in fact KOpenWithDlg::setServiceType already guesses the mimetype from the first URL of the list...
-    return displayOpenWithDialog( lst );
+    return displayOpenWithDialog( lst, tempFile );
   }
 
-  return KRun::run( *offer, lst );
+  return KRun::run( *offer, lst, tempFile );
 }
 
 bool KRun::displayOpenWithDialog( const KURL::List& lst )
+{
+    return displayOpenWithDialog( lst, false );
+}
+
+bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
 {
     KOpenWithDlg l( lst, i18n("Open with:"), QString::null, 0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
       if ( !!service )
-        return KRun::run( *service, lst );
+        return KRun::run( *service, lst, tempFiles );
 
       kdDebug(250) << "No service set, running " << l.text() << endl;
-      return KRun::run( l.text(), lst );
+      return KRun::run( l.text(), lst ); // TODO handle tempFiles
     }
     return false;
 }
@@ -398,7 +409,12 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
   }
 }
 
-QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell)
+// BIC: merge with method below
+QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell) {
+    return processDesktopExec( _service, _urls, has_shell, false );
+}
+
+QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell, bool tempFiles)
 {
   QString exec = _service.exec();
   QString user = _service.username();
@@ -434,7 +450,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     if ( !(*it).isLocalFile() )
       b_local_files = false;
 
-  if ( b_local_app && !b_local_files )
+  if ( (b_local_app && !b_local_files) || tempFiles )
   {
      // We need to run the app through kfmexec
      QStringList result = breakup(exec);
@@ -481,7 +497,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 
   KConfigGroupSaver gs(KGlobal::config(), "General");
   QString terminal = KGlobal::config()->readEntry("TerminalApplication", "konsole");
-  
+
   if (terminal == "konsole")
     terminal += " -caption=%c %i %m";
 
@@ -604,10 +620,10 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
 #endif
 }
 
-static pid_t runTempService( const KService& _service, const KURL::List& _urls )
+static pid_t runTempService( const KService& _service, const KURL::List& _urls, bool tempFiles )
 {
   if (!_urls.isEmpty()) {
-    kdDebug(7010) << "First url " << _urls.first().url() << endl;
+    kdDebug(7010) << "runTempService: first url " << _urls.first().url() << endl;
   }
 
   QStringList args;
@@ -623,15 +639,15 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls )
       {
          KURL::List singleUrl;
          singleUrl.append(*it);
-         runTempService( _service, singleUrl );
+         runTempService( _service, singleUrl, tempFiles );
       }
       KURL::List singleUrl;
       singleUrl.append(_urls.first());
-      args = KRun::processDesktopExec(_service, singleUrl, false);
+      args = KRun::processDesktopExec(_service, singleUrl, false, tempFiles);
   }
   else
   {
-      args = KRun::processDesktopExec(_service, _urls, false);
+      args = KRun::processDesktopExec(_service, _urls, false, tempFiles);
   }
 
   KProcess * proc = new KProcess;
@@ -644,7 +660,13 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls )
   return runCommandInternal( proc, _service.exec(), _service.name(), _service.icon() );
 }
 
+// BIC merge with method below
 pid_t KRun::run( const KService& _service, const KURL::List& _urls )
+{
+    return run( _service, _urls, false );
+}
+
+pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFiles )
 {
   if (!KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
@@ -652,16 +674,19 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
      return 0;
   }
 
-  // Remember we opened those urls, for the "recent documents" menu in kicker
-  KURL::List::ConstIterator it = _urls.begin();
-  for(; it != _urls.end(); ++it) {
-     //kdDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
-     KRecentDocument::add( *it, _service.desktopEntryName() );
+  if ( !tempFiles )
+  {
+      // Remember we opened those urls, for the "recent documents" menu in kicker
+      KURL::List::ConstIterator it = _urls.begin();
+      for(; it != _urls.end(); ++it) {
+          //kdDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
+          KRecentDocument::add( *it, _service.desktopEntryName() );
+      }
   }
 
-  if (_service.desktopEntryPath().isEmpty())
+  if ( tempFiles || _service.desktopEntryPath().isEmpty())
   {
-     return runTempService(_service, _urls);
+     return runTempService(_service, _urls, tempFiles);
   }
 
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;

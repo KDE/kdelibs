@@ -48,7 +48,7 @@ namespace KIO {
  * If the mimetype is known, or if you even know the service (application) to
  * use for this file, use one of the static methods.
  *
- * By default KRun uses auto deletion. It causes the KRun instance to delete 
+ * By default KRun uses auto deletion. It causes the KRun instance to delete
  * itself when the it finished its task. If you allocate the KRun
  * object on the stack you must disable auto deletion, otherwise it will crash.
  *
@@ -113,7 +113,7 @@ public:
   bool hasFinished() const { return m_bFinished; }
 
   /**
-   * Checks whether auto delete is activated. 
+   * Checks whether auto delete is activated.
    * Auto-deletion causes the KRun instance to delete itself
    * when the it finished its task.
    * By default auto deletion is on.
@@ -142,13 +142,17 @@ public:
   void setPreferredService( const QString& desktopEntryName );
 
   /**
-   * Open a list of URLs with a certain service.
+   * Open a list of URLs with a certain service (application).
    *
    * @param _service the service to run
    * @param _urls the list of URLs, can be empty (app launched
    *        without argument)
+   * @param tempFiles if true and _urls are local files, they will be deleted
+   *        when the application exits.
    * @return the process id, or 0 on error
    */
+  static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles );
+  // BIC merge with method above, using tempFiles=false
   static pid_t run( const KService& _service, const KURL::List& _urls );
 
   /**
@@ -177,8 +181,12 @@ public:
    * the mime type and call @ref run() afterwards.
    * @param _url the URL to open
    * @param _mimetype the mime type of the resource
+   * @param tempFile if true and _url is a local file, it will be deleted
+   *        when the launched application exits.
    * @return the process id, or 0 on error
    */
+  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile );
+  // BIC merge with method above, using tempFiles=false
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
   /**
@@ -213,8 +221,12 @@ public:
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
    * @param lst the list of applications to run
+   * @param tempFiles if true and lst are local files, they will be deleted
+   *        when the application exits.
    * @return false if the dialog was canceled
    */
+  static bool displayOpenWithDialog( const KURL::List& lst, bool tempFiles );
+  // BIC merge with method above, using tempFiles=false
   static bool displayOpenWithDialog( const KURL::List& lst );
 
   /**
@@ -233,8 +245,12 @@ public:
    *        call.
    *        If the arguments are intended for an exec() kind of call and
    *        the Exec line contains shell commands then "/bin/sh -c" is added.
+   * @param tempFiles if true and _urls are local files, they will be deleted
+   *        when the application exits.
    * @return a list of arguments suitable for either system() or exec().
    */
+  static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell, bool tempFiles);
+  // BIC merge with method above, using tempFiles=false
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
 
   /**
