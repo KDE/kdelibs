@@ -2665,7 +2665,7 @@ void KHTMLPart::findTextNext()
 	    d->m_find->setPattern( d->m_findDialog->pattern() );
 	    d->m_find->resetCounts();
     }
-    long options = d->m_findDialog->options();
+    options = d->m_findDialog->options();
     if ( d->m_lastFindState.options != options )
     {
       d->m_find->setOptions( options );
@@ -2712,7 +2712,7 @@ void KHTMLPart::findTextNext()
       {
         // Grab text from render object
         QString s;
-        bool renderAreaText = (QCString(obj->parent()->renderName())== "RenderTextArea");
+        bool renderAreaText = obj->parent() && (QCString(obj->parent()->renderName())== "RenderTextArea");
         bool renderLineText = (QCString(obj->renderName())== "RenderLineEdit");
         if ( renderAreaText )
         {
