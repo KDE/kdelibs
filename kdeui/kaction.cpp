@@ -37,6 +37,7 @@
 #include <qtooltip.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
+#include <kmainwindow.h>
 #include <kglobalsettings.h>
 #include <kcombobox.h>
 #include <kdebug.h>
@@ -392,6 +393,16 @@ int KAction::plug( QWidget *w, int index )
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
+  }
+  // Plug into the KMainWindow accel so that keybindings work for
+  // actions that are only plugged into a toolbar, and in case of
+  // hiding the menubar.
+  if (!d->m_kaccel) // only if not already plugged into a kaccel
+  {
+    QWidget * tl = w->topLevelWidget();
+    KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
+    if (mw)
+      plugAccel( mw->accel() );
   }
 
   if ( w->inherits("QPopupMenu") )

@@ -39,6 +39,7 @@ class KMenuBar;
 class KMWSessionManaged;
 class KToolBar;
 class KMainWindowPrivate;
+class KAccel;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -316,6 +317,12 @@ public:
      * @return An iterator over the list of all toolbars for this window.
      */
     QListIterator<KToolBar> toolBarIterator();
+
+    /**
+     * @return A KAccel instance bound to this mainwindow. Used automatically
+     * by KAction to make keybindings work in all cases.
+     */
+    KAccel *accel();
 
     void setFrameBorderWidth( int ) {}
 

@@ -26,6 +26,7 @@
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
 
+#include <kaccel.h>
 #include <kapp.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -50,8 +51,9 @@ public:
     bool autoSaveSettings:1;
     bool settingsDirty:1;
     bool autoSaveWindowSize:1;
+    bool care_about_geometry:1;
     QString autoSaveGroup;
-    bool care_about_geometry;
+    KAccel * kaccel;
 };
 
 QList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -155,6 +157,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
+    d->kaccel = 0L;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -786,6 +789,13 @@ QListIterator<KToolBar> KMainWindow::toolBarIterator()
         }
     }
     return QListIterator<KToolBar>( toolbarList );
+}
+
+KAccel * KMainWindow::accel()
+{
+    if ( !d->kaccel )
+        d->kaccel = new KAccel( this, "kmw-kaccel" );
+    return d->kaccel;
 }
 
 void KMainWindow::paintEvent( QPaintEvent * )
