@@ -563,6 +563,10 @@ LabelledStatement:
 
 ThrowStatement:
     THROW Expr ';'                 { $$ = new ThrowNode($2); DBG($$,@1,@3); }
+  | THROW Expr error               { if (automatic()) {
+                                       $$ = new ThrowNode($2); DBG($$,@1,@1);
+                                     } else {
+				       YYABORT; } }
 ;
 
 TryStatement:
