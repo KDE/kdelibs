@@ -43,7 +43,7 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml/java  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc \
  -I$(top_srcdir)/khtml/css \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
- $(all_includes)
+ -I$(top_srcdir)/libltdl $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
