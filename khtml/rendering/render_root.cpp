@@ -64,16 +64,10 @@ RenderRoot::~RenderRoot()
 
 void RenderRoot::calcWidth()
 {
-    // the width gets set by KHTMLView::print when printing to a printer.
-    if(m_printingMode || !m_view)
-    {
-        m_width = m_rootWidth;
-        return;
-    }
+    RenderBox::calcWidth();
+    return;
 
-    m_width = m_view ?
-                m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
-                : m_minWidth;
+    // exception: m_width is already known and set in layout()
 
     if (style()->marginLeft().type==Fixed)
         m_marginLeft = style()->marginLeft().value;
@@ -104,9 +98,8 @@ void RenderRoot::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
-    if(firstChild()) {
+    if(firstChild())
         firstChild()->setLayouted(false);
-    }
 
 #ifdef SPEED_DEBUG
     QTime qt;
@@ -116,28 +109,42 @@ void RenderRoot::layout()
 	recalcMinMaxWidths();
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::calcMinMax time used=" << qt.elapsed() << endl;
-    // this fixes frameset resizing
     qt.start();
 #endif
 
-    RenderFlow::layout();
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
-    // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
-    if (m_view) m_view->resizeContents(docWidth(), docHeight());
+    int mw;
+    int mh;
+    if (m_view && !m_printingMode) {
+        QSize s = m_view->viewportSize(m_view->visibleWidth(), m_view->visibleHeight());
+        mw = s.width();
+        mh = s.height();
+        qDebug("s.height: %d, visibleHeight: %d, viewport->height(): %d",
+               s.height(), m_view->visibleHeight(), m_view->viewport()->height());
 
-    if (!m_printingMode && m_view)
-    {
-       m_height = m_view->visibleHeight();
-       m_width = m_view->visibleWidth();
     }
-    else if (!m_view)
-    {
-        m_height = m_rootHeight;
-        m_width = m_rootWidth;
+    else if (!m_view) {
+        mh = m_rootHeight;
+        mw = m_rootWidth;
     }
+
+    m_width = m_view->visibleWidth();
+    m_height = m_view->visibleHeight();
+
+    qDebug("height: %d",  m_height);
+
+
+    RenderFlow::layout();
+
+    if (m_view && !m_printingMode)
+        m_view->resizeContents(docWidth(), docHeight());
+
+    QSize s = m_view->viewportSize(m_view->contentsWidth(), m_view->contentsHeight());
+    m_width = s.width();
+    m_height = s.height();
 
     // ### we could maybe do the call below better and only pass true if the docsize changed.
     layoutSpecialObjects( true );
@@ -151,6 +158,7 @@ void RenderRoot::layout()
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
+
 
     setLayouted();
     //kdDebug(0) << "root: height = " << m_height << endl;
@@ -369,7 +377,7 @@ int RenderRoot::docHeight() const
     if (m_printingMode || !m_view)
         h = m_height;
     else
-        h = m_view->visibleHeight();
+        h = 0;
 
     RenderObject *fc = firstChild();
     if(fc) {
@@ -389,7 +397,7 @@ int RenderRoot::docWidth() const
     if (m_printingMode || !m_view)
         w = m_width;
     else
-        w = m_view->visibleWidth();
+        w = 0;
 
     RenderObject *fc = firstChild();
     if(fc) {

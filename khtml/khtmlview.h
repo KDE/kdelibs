@@ -165,6 +165,7 @@ protected:
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
     virtual void viewportMouseMoveEvent(QMouseEvent *);
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
+    virtual void viewportResizeEvent(QResizeEvent*);
 #ifndef QT_NO_WHEELEVENT
     virtual void viewportWheelEvent(QWheelEvent*);
 #endif

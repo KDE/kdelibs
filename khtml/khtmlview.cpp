@@ -29,9 +29,8 @@
 
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
-#include "rendering/render_object.h"
 #include "rendering/render_root.h"
-#include "rendering/render_style.h"
+#include "rendering/render_frames.h"
 #include "rendering/render_replaced.h"
 #include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
@@ -49,8 +48,8 @@
 
 #include <qtooltip.h>
 #include <qpainter.h>
-#include <qstylesheet.h>
 #include <qpaintdevicemetrics.h>
+#include <qstylesheet.h>
 #include <qobjectlist.h>
 #include <kapplication.h>
 
@@ -319,6 +318,7 @@ void KHTMLView::init()
 
 void KHTMLView::clear()
 {
+    // work around QScrollview's unbelievable bugginess
     setStaticBackground(true);
 
     d->reset();
@@ -345,15 +345,18 @@ void KHTMLView::showEvent(QShowEvent* e)
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     QScrollView::resizeEvent(e);
+}
 
-    int w = visibleWidth();
-    int h = visibleHeight();
+void KHTMLView::viewportResizeEvent (QResizeEvent* e)
+{
+    QScrollView::viewportResizeEvent(e);
 
-    layout();
 
-    //  this is to make sure we get the right width even if the scrolbar has dissappeared
-    // due to the size change.
-    if(visibleHeight() != h || visibleWidth() != w)
+
+     int w = visibleWidth();
+     int h = visibleHeight();
+
+    if (d->layoutSchedulingEnabled)
         layout();
 
     if ( m_part && m_part->xmlDocImpl() )
@@ -439,24 +442,26 @@ void KHTMLView::layout()
                  QScrollView::setVScrollBarMode(AlwaysOff);
                  QScrollView::setHScrollBarMode(AlwaysOff);
                  body->renderer()->setLayouted(false);
+//                  if (d->tooltip) {
+//                      delete d->tooltip;
+//                      d->tooltip = 0;
+//                  }
              }
+             else if (!d->tooltip)
+                 d->tooltip = new KHTMLToolTip( this, d );
          }
 
         _height = visibleHeight();
         _width = visibleWidth();
-
         //QTime qt;
         //qt.start();
         root->setMinMaxKnown(false);
         root->setLayouted(false);
-        // avoid recursing into relayouts because of scrollbar-flicker
-
         root->layout();
-
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
-    } else {
-        _width = visibleWidth();
     }
+    else
+       _width = visibleWidth();
 }
 
 void KHTMLView::closeChildDialogs()
@@ -592,13 +597,17 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
 
-    khtml::RenderStyle* style = (mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
-                                 mev.innerNode.handle()->renderer()->style()) ? mev.innerNode.handle()->renderer()->style() : 0;
+    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+    khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( mev.url.length() && m_part->settings()->changeCursor() )
             c = m_part->urlCursor();
+
+        if (r && r->isFrameSet() && !static_cast<RenderFrameSet*>(r)->noResize())
+            c = QCursor(static_cast<RenderFrameSet*>(r)->cursorShape());
+
         break;
     case CURSOR_CROSS:
         c = KCursor::crossCursor();
@@ -641,13 +650,15 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         break;
     }
 
-    QWidget *vp = viewport();
-    if ( vp->cursor().handle() != c.handle() ) {
-        if( c.handle() == KCursor::arrowCursor().handle())
-            vp->unsetCursor();
+    if ( viewport()->cursor().handle() != c.handle() ) {
+        if( c.handle() == KCursor::arrowCursor().handle()) {
+            for (KHTMLPart* p = m_part; p; p = p->parentPart())
+                p->view()->viewport()->unsetCursor();
+        }
         else
-            vp->setCursor( c );
+            viewport()->setCursor( c );
     }
+
     d->prevMouseX = xm;
     d->prevMouseY = ym;
 
@@ -1343,15 +1354,12 @@ void KHTMLView::setHScrollBarMode ( ScrollBarMode mode )
 #endif
 }
 
-void KHTMLView::restoreScrollBar ( )
+void KHTMLView::restoreScrollBar()
 {
     int ow = visibleWidth();
     QScrollView::setVScrollBarMode(d->vmode);
     if (visibleWidth() != ow)
-    {
         layout();
-//        scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
-    }
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
 }
 
@@ -1527,7 +1535,6 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-
     if ( ( e->state() & ShiftButton ) == ShiftButton )
     {
         emit zoomView( e->delta() );
@@ -1547,8 +1554,8 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         QScrollView::viewportWheelEvent( e );
 
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
-	emit viewportMouseMoveEvent ( tempEvent );
-	delete tempEvent;
+        emit viewportMouseMoveEvent ( tempEvent );
+        delete tempEvent;
     }
 
 }
@@ -1665,15 +1672,15 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if( m_part->xmlDocImpl() ) {
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
-	resizeContents(root->docWidth(), root->docHeight());
+
 	if ( !root->layouted() ) {
 	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
-	    //qDebug("not layouted, delaying repaint");
 	    scheduleRelayout();
 	    return;
 	}
     }
+
     setStaticBackground(d->useSlowRepaints);
 
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
@@ -1707,12 +1714,8 @@ void KHTMLView::scheduleRelayout()
     if (!d->layoutSchedulingEnabled || d->timerId)
         return;
 
-    bool parsing = false;
-    if( m_part->xmlDocImpl() ) {
-        parsing = m_part->xmlDocImpl()->parsing();
-    }
-
-    d->timerId = startTimer( parsing ? 1000 : 0 );
+    d->timerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
+                             ? 1000 : 0 );
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
@@ -1756,7 +1759,6 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 
 //     kdDebug() << "starting timer " << time << endl;
 }
-
 
 void KHTMLView::complete()
 {
