@@ -392,6 +392,9 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
     role = Client;
 
     if (! atoms_created) create_atoms(p->display);
+
+    if (p->protocols)
+	update(p->protocols);
 }
 
 
