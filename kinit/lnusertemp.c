@@ -199,7 +199,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      result = create_link(kde_tmp_dir, user_tmp_dir);
      if (result == 0) return 0; /* Success */
      unlink(kde_tmp_dir);
-     strncat(user_tmp_dir, "XXXXXX", PATH_MAX - user_tmp_dir);
+     strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
      mktemp(user_tmp_dir);
      return create_link(kde_tmp_dir, user_tmp_dir);
      return 1;
@@ -207,7 +207,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   result = check_tmp_dir(tmp_buf);
   if (result == 0) return 0; /* Success */
   unlink(kde_tmp_dir);
-  strncat(user_tmp_dir, "XXXXXX", PATH_MAX - user_tmp_dir);
+  strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
   mktemp(user_tmp_dir);
   return create_link(kde_tmp_dir, user_tmp_dir);
 }
