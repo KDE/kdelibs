@@ -202,14 +202,6 @@ signals:
      */
     void delAuthorization( const QCString& grpkey );
 
-    /**
-     * Emitted whenever session based cookie info is received.
-     *
-     * @param host   the host setting session based cookie
-     * @param winId  the id of the application window sending this data.
-     */
-    void sessionCookieData( const QString& host, int winId );
-
 protected:
     /////////////////
     // Dispatching
