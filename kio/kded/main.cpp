@@ -23,12 +23,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
+
 int main(int argc, char *argv[])
 {
      KUniqueApplication k(argc,argv, "kded", false /* not GUI */);
-
-     kapp->dcopClient()->attach();
-     kapp->dcopClient()->registerAs( kapp->name() );
 
      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
      sycoca->recreate();
@@ -48,6 +46,9 @@ int main(int argc, char *argv[])
 	  _exit(0);
      }
 #endif
+
+     kapp->dcopClient()->attach();
+     kapp->dcopClient()->registerAs( kapp->name() );
 
      return k.exec(); // keep running
 }
