@@ -122,15 +122,14 @@ namespace KIO {
          *
          * @param url This defines the username,password,host & port to 
          *            connect with.
-         * @param metaData Additional meta data to send to the slave before
-         *                 connecting.
+         * @param config Configuration data for the slave.
          *
          * @return A pointer to a connected slave or 0 if an error occured.
          * @see assignJobToSlave
          * @see disconnectSlave
          */
-        static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &metaData = MetaData() )
-		{ return self()->_getConnectedSlave(url, metaData); }
+        static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &config = MetaData() )
+		{ return self()->_getConnectedSlave(url, config); }
 
         /*
          * Use @p slave to do @p job.

@@ -730,7 +730,7 @@ void Scheduler::_removeSlaveOnHold()
 }
 
 Slave *
-Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &metaData )
+Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
 {
     QString proxy;
     QString protocol = KProtocolManager::slaveProtocol(url, proxy);
@@ -746,21 +746,11 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &metaData )
 
     slaveConfig->setConfigData(protocol, QString::null, "UseProxy", proxy);
     MetaData configData = slaveConfig->configData(protocol, url.host());
+    configData += config;
     slave->setConfig(configData);
     slave->setProtocol(url.protocol());
     slave->setHost(url.host(), url.port(), url.user(), url.pass());
 
-    if (!metaData.isEmpty())
-    {
-       kdDebug(7006) << "Scheduler::getConnectedSlave : Sending metadata :" << endl;
-       MetaData::ConstIterator mapit;
-       for ( mapit = metaData.begin() ; mapit != metaData.end() ; ++mapit )
-           kdDebug(7006) << "   " << mapit.key() << "=" << mapit.data() << endl;
-       QByteArray packedArgs; 
-       QDataStream stream( packedArgs, IO_WriteOnly ); 
-       stream << metaData;
-       slave->connection()->send( CMD_META_DATA, packedArgs );
-    }
     slave->connection()->send( CMD_CONNECT );
     connect(slave, SIGNAL(connected()),
                 SLOT(slotSlaveConnected()));
