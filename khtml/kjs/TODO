@@ -1,6 +1,12 @@
 * DOM- and HTML-bindings
 
-* check if NaN, Inf and -0 support is really possible
+* Date.*, String.*, Number.* and RegExp.*
+
+* modularize the extensions and load them on demand only (dlopen()) 
+
+* automatic semi-colon insertion
+
+* check if -0 support is really possible
 
 * clean up the mess in the KJSO class. ECMAScript requires its own runtime
   type information which lead to this bloated construct at the first
@@ -10,4 +16,5 @@
   insertion and Unicode stopped me from doing it this way so far.
 
 * idea for speed optimization: place the AST nodes in a block of pre-allocated
-  memory instead of calling `new' each time.
+  memory instead of calling `new' each time. Same holds true for objects
+  created during runtime.
