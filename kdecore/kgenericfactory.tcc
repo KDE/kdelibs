@@ -35,6 +35,7 @@
 //
 
 #include <qmetaobject.h>
+#include <ktypelist.h>
 
 namespace KParts
 {
