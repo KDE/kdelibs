@@ -442,7 +442,8 @@ void KGlobalAccel::writeSettings() const
          it != aKeyMap.end(); ++it) {
         if ( (*it).bConfigurable ){
             pConfig->writeEntry( it.key(),
-                                 KAccel::keyToString( (*it).aCurrentKeyCode),
+                                 KAccel::keyToString( (*it).aCurrentKeyCode,
+						      false),
                                  true, true);
         }
     }
@@ -510,7 +511,7 @@ uint keyToXSym( int keyCode )
 	int nb_toks = 0;
 
 	uint keysym = 0;
-	QString s = KAccel::keyToString( keyCode);
+	QString s = KAccel::keyToString( keyCode, false);
 	
 	if ( s.isEmpty() ) return keysym;
 
