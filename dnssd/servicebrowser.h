@@ -38,8 +38,8 @@ Suppose that you need list of web servers running. Example:
  
 \code
 DNSSD::ServiceBrowser* browser = new DNSSD::ServiceBrowser("_http._tcp");
-connect(browser,SIGNAL(serviceAdded(RemoteService::Ptr),this,SLOT(addService(RemoteService::Ptr)));
-connect(browser,SIGNAL(serviceRemoved(RemoteService::Ptr),this,SLOT(delService(RemoteService::Ptr)));
+connect(browser,SIGNAL(serviceAdded(RemoteService::Ptr)),this,SLOT(addService(RemoteService::Ptr)));
+connect(browser,SIGNAL(serviceRemoved(RemoteService::Ptr)),this,SLOT(delService(RemoteService::Ptr)));
 browser->startBrowse();
 \endcode
  
