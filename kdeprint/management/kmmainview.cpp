@@ -68,7 +68,7 @@ extern "C"
 			flag = 1;
 			// check if the printer already exists, and ask confirmation if needed.
 			if (KMFactory::self()->manager()->findPrinter(dlg.printer()->name()) != 0)
-				if (KMessageBox::warningYesNo(parent,i18n("<nobr>The printer <b>%1</b> already exists. Continuing will<br>overwrite existing printer. Do you want to continue ?</nobr>").arg(dlg.printer()->name())) == KMessageBox::No)
+				if (KMessageBox::warningYesNo(parent,i18n("The printer <b>%1</b> already exists. Continuing will overwrite existing printer. Do you want to continue?").arg(dlg.printer()->name())) == KMessageBox::No)
 					flag = 0;
 			// try to add printer only if flag is true.
 			if (flag && !KMFactory::self()->manager()->createPrinter(dlg.printer()))
@@ -400,7 +400,7 @@ void KMMainView::slotRemove()
 	{
 		KMTimer::self()->hold();
 		bool	result(false);
-		if (KMessageBox::warningYesNo(this,i18n("<nobr>Do you really want to remove <b>%1</b> ?</nobr>").arg(m_current->printerName())) == KMessageBox::Yes)
+		if (KMessageBox::warningYesNo(this,i18n("Do you really want to remove <b>%1</b>?").arg(m_current->printerName())) == KMessageBox::Yes)
 			if (m_current->isSpecial())
 			{
 				if (!(result=m_manager->removeSpecialPrinter(m_current)))
@@ -510,7 +510,7 @@ void KMMainView::slotTest()
 		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on <b>%1</b>. Do you want to continue?").arg(m_current->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
-				KMessageBox::information(this,i18n("<nobr>Test page successfully sent to printer <b>%1</b>.</nobr>").arg(m_current->printerName()));
+				KMessageBox::information(this,i18n("Test page successfully sent to printer <b>%1</b>.").arg(m_current->printerName()));
 			else
 				showErrorMsg(i18n("Unable to test printer <b>%1</b>.").arg(m_current->printerName()));
 		}
@@ -520,11 +520,11 @@ void KMMainView::slotTest()
 
 void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 {
-	QString	s("<nobr>"+msg+"</nobr>");
+	QString	s(msg);
 	if (usemgr)
 	{
-		s.append("<br>");
-		s += i18n("Error message received from manager:<br><br>%1").arg(m_manager->errorMsg());
+		s.append(" ");
+		s += i18n("Error message received from manager:<p>%1</p>").arg(m_manager->errorMsg());
 	}
 	KMTimer::self()->hold();
 	KMessageBox::error(this,s);
