@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -295,7 +295,7 @@ void KResolverThread::acquireResolver()
   time_t& mTime = resolverMTime; // thread-specific
 #endif
 
-#ifdef NEED_MUTEX
+#if defined(NEED_MUTEX) && !defined(Q_OS_FREEBSD)
   getXXbyYYmutex.lock();
 #endif
 
@@ -304,7 +304,7 @@ void KResolverThread::acquireResolver()
 
 void KResolverThread::releaseResolver()
 {
-#ifdef NEED_MUTEX
+#if defined(NEED_MUTEX) && !defined(Q_OS_FREEBSD)
   getXXbyYYmutex.unlock();
 #endif
 
