@@ -28,7 +28,7 @@
 
 using namespace KABC;
 
-static bool matchBinaryPattern( int value, int pattern, int max );
+bool matchBinaryPattern( int value, int pattern, int max );
 
 struct Addressee::AddresseeData : public KShared
 {
@@ -953,8 +953,10 @@ QString Addressee::fullEmail( const QString &email ) const
   if ( e.isEmpty() ) return QString::null;
   
   QString text;
-  if ( !realName().isEmpty() ) text = realName() + " ";
-  text.append( "<" + e + ">" );
+  if ( realName().isEmpty() )
+    text = e;
+  else
+    text = realName() + " <" + e + ">";
 
   return text;
 }
