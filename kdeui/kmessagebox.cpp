@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/09/12 13:35:04  espensa
+ * I have had problems getting the action button to be properly underlined.
+ * The changes should fix this once and for all. There were errors in the
+ * "box->setButtonText()" (index errors)
+ *
+ * One minor typo removed in kmessagebox.h as well.
+ *
  * Revision 1.5  1999/08/24 13:16:17  waba
  * WABA: Adding enums, fixing default for warningYesNo
  *
@@ -60,10 +67,6 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &buttonYes, 
                            const QString &buttonNo)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Question");
-    _caption += " - "+kapp->getCaption();
     QString _buttonYes = buttonYes;
     if (_buttonYes.isEmpty())
         _buttonYes = i18n("&Yes");
@@ -71,18 +74,20 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
     if (_buttonNo.isEmpty())
         _buttonNo = i18n("&No");
 
-    int result;
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Information,
-             QMessageBox::Yes | QMessageBox::Default,
-             QMessageBox::No | QMessageBox::Escape,	     
-	     0, parent, "information" );
-    box->setButtonText(QMessageBox::Yes, _buttonYes); // 0
-    box->setButtonText(QMessageBox::No, _buttonNo); // 1
+    QMessageBox *box = new QMessageBox(
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Question") : caption),
+      text,
+      QMessageBox::Information,
+      QMessageBox::Yes | QMessageBox::Default,
+      QMessageBox::No | QMessageBox::Escape,	     
+      0, parent, "information" );
+
+    box->setButtonText(QMessageBox::Yes, _buttonYes);
+    box->setButtonText(QMessageBox::No, _buttonNo);
     box->adjustSize();
     box->setFixedSize(box->size());
-    result = box->exec();
+
+    int result = box->exec();
     delete box;
     if (result == QMessageBox::Yes)
 	return Yes;
@@ -96,10 +101,6 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &buttonYes,  
                           const QString &buttonNo)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Warning");
-    _caption += " - "+kapp->getCaption();
     QString _buttonYes = buttonYes;
     if (_buttonYes.isEmpty())
         _buttonYes = i18n("&Yes");
@@ -107,18 +108,20 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
     if (_buttonNo.isEmpty())
         _buttonNo = i18n("&No");
 
-    int result;
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Warning,
-             QMessageBox::Yes,
-             QMessageBox::No | QMessageBox::Escape | QMessageBox::Default,
-	     0, parent, "warning" );
-    box->setButtonText(QMessageBox::Yes, _buttonYes); // 0
-    box->setButtonText(QMessageBox::No, _buttonNo); // 1
+    QMessageBox *box = new QMessageBox( 
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Warning") : caption),
+      text,
+      QMessageBox::Warning,
+      QMessageBox::Yes,
+      QMessageBox::No | QMessageBox::Escape | QMessageBox::Default,
+      0, parent, "warning" );
+
+    box->setButtonText(QMessageBox::Yes, _buttonYes);
+    box->setButtonText(QMessageBox::No, _buttonNo);
     box->adjustSize();
     box->setFixedSize(box->size());
-    result = box->exec();
+
+    int result = box->exec();
     delete box;
     if (result == QMessageBox::Yes)
 	return Yes;
@@ -132,10 +135,6 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &buttonYes,  
                                 const QString &buttonNo)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Warning");
-    _caption += " - "+kapp->getCaption();
     QString _buttonYes = buttonYes;
     if (_buttonYes.isEmpty())
         _buttonYes = i18n("&Yes");
@@ -143,20 +142,22 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
     if (_buttonNo.isEmpty())
         _buttonNo = i18n("&No");
 
-    int result;
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Warning,
-             QMessageBox::Yes | QMessageBox::Default,
-             QMessageBox::No,
-             QMessageBox::Cancel | QMessageBox::Escape,	     
-	     parent, "warning" );
-    box->setButtonText(QMessageBox::Yes, _buttonYes);  // 0
-    box->setButtonText(QMessageBox::No, _buttonNo);   // 1
-    box->setButtonText(QMessageBox::Cancel, i18n("&Cancel")); // 1
+    QMessageBox *box = new QMessageBox( 
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Warning") : caption),
+      text,
+      QMessageBox::Warning,
+      QMessageBox::Yes | QMessageBox::Default,
+      QMessageBox::No,
+      QMessageBox::Cancel | QMessageBox::Escape,	     
+      parent, "warning" );
+
+    box->setButtonText(QMessageBox::Yes, _buttonYes);
+    box->setButtonText(QMessageBox::No, _buttonNo);
+    box->setButtonText(QMessageBox::Cancel, i18n("&Cancel")); 
     box->adjustSize();
     box->setFixedSize(box->size());
-    result = box->exec();
+
+    int result = box->exec();
     delete box;
     if (result == QMessageBox::Yes)
 	return Yes;
@@ -170,19 +171,17 @@ void
 KMessageBox::error(QWidget *parent,  const QString &text,
                    const QString &caption)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Error");
-    _caption += " - "+kapp->getCaption();
-
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Critical,
-             QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-	     0, 0, parent, "critical" );
+    QMessageBox *box = new QMessageBox(
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Error") : caption),
+      text,
+      QMessageBox::Critical,
+      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
+      0, 0, parent, "critical" );
+ 
     box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
+
     box->exec();
     delete box;
     return;
@@ -192,22 +191,19 @@ void
 KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Sorry");
-    _caption += " - " + kapp->getCaption();
-
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Warning,
-             QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-	     0, 0, parent, "warning" );
+    QMessageBox *box = new QMessageBox( 
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Sorry") : caption),
+      text,
+      QMessageBox::Warning,
+      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
+      0, 0, parent, "warning" );
+ 
     box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
+
     box->exec();
     delete box;
-
     return;
 }
 
@@ -215,19 +211,17 @@ void
 KMessageBox::information(QWidget *parent,const QString &text,
                    const QString &caption)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty())
-        _caption = i18n("Information");
-    _caption += " - "+kapp->getCaption();
+    QMessageBox *box = new QMessageBox( 
+      kapp->makeStdCaption(caption.isEmpty() ? i18n("Information") : caption),
+      text,
+      QMessageBox::Information,
+      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
+      0, 0, parent, "information" );
 
-    QMessageBox *box;
-    box = new QMessageBox( _caption, text,
-             QMessageBox::Information,
-             QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-	     0, 0, parent, "information" );
     box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
+
     box->exec();
     delete box;
     return;
@@ -241,16 +235,17 @@ KMessageBox::about(QWidget *parent, const QString &text,
     if (_caption.isEmpty())
         _caption = i18n("About %1").arg(kapp->getCaption());
 
-    QMessageBox *box;
-    box  = new QMessageBox( _caption, text,
+    QMessageBox *box = new QMessageBox( _caption, text,
               QMessageBox::Information,
               QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape, 
               0, 0,
               parent, "about" );
+
     box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->setIconPixmap(kapp->getIcon());
     box->adjustSize();
     box->setFixedSize(box->size());
+
     box->exec();
     delete box;
     return;
