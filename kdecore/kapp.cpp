@@ -1119,11 +1119,12 @@ void KApplication::kdisplaySetPalette()
     int inlowlightVal = lowlightVal-25;
     if(inlowlightVal < 120)
         inlowlightVal = 120;
+    /*
     QColorGroup inactivegrp(foreground, button.light(110),
                             background.light(highlightVal),
                             background.dark(inlowlightVal), background,
                             foreground, highlightedText, base,
-                            background);
+                            background);*/
     /*
     QColorGroup disabledgrp( textColor, backgroundColor,
                              backgroundColor.light(highlightVal),
@@ -1147,11 +1148,25 @@ void KApplication::kdisplaySetPalette()
     disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
-
-    //QPalette newPal(colgrp, disabledgrp, inactivegrp);
-    QPalette newPal(colgrp, disabledgrp, inactivegrp);
-    setPalette(newPal, true );
-
+    QPalette newPal;
+    newPal.setActive(colgrp);
+    newPal.setDisabled(disabledgrp);
+    newPal.setInactive(colgrp);
+/* 
+    if(QPixmap::defaultDepth() > 8){
+        QColorGroup iGrp(colgrp);
+        iGrp.setColor(QColorGroup::Button, colgrp.button().light(115));
+        iGrp.setColor(QColorGroup::ButtonText, colgrp.buttonText().light(115));
+        iGrp.setColor(QColorGroup::Text, colgrp.text().light(115));
+        iGrp.setColor(QColorGroup::Dark, colgrp.dark().light(115));
+        iGrp.setColor(QColorGroup::Mid, colgrp.mid().light(115));
+        iGrp.setColor(QColorGroup::Midlight, colgrp.midlight().light(115));
+        iGrp.setColor(QColorGroup::Light, colgrp.light().light(115));
+        newPal.setInactive(iGrp);
+    }
+*/
+    setPalette(newPal, true);
+    
     // GJ: The cursor blink rate doesn't belong here. It should get it's own
     // change message but it doesn't really matter because it isn't set.
     int num = config->readNumEntry("cursorBlinkRate", cursorFlashTime());
