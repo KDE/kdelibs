@@ -20,6 +20,8 @@
 */
 
 #include "kdelibs_export.h"
+#include "kde_file.h"
+
 #include <config.h>
 
 #ifndef HAVE_SETENV
@@ -210,7 +212,7 @@ KDECORE_EXPORT int mkstemps (char* _template, int suffix_len)
       v /= 62;
       XXXXXX[5] = letters[v % 62];
 
-      fd = open (_template, O_RDWR|O_CREAT|O_EXCL, 0600);
+      fd = KDE_open (_template, O_RDWR|O_CREAT|O_EXCL, 0600);
       if (fd >= 0)
 	/* The file does not exist.  */
 	return fd;
