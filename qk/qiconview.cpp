@@ -815,7 +815,7 @@ void QIconViewItem::setIcon( const QPixmap &icon )
 
 /*!
   Sets \a text as text of the iconview item. Using \a recalc you can
-  specify, if the iconview should be recalculated and using \a redraw if it 
+  specify, if the iconview should be recalculated and using \a redraw if it
   should be repainted or not.
 */
 
@@ -835,7 +835,7 @@ void QIconViewItem::setText( const QString &text, bool recalc, bool redraw )
 
 /*!
   Sets \a icon as item icon of the iconview item. Using \a recalc you can
-  specify, if the iconview should be recalculated and using \a redraw if it 
+  specify, if the iconview should be recalculated and using \a redraw if it
   should be repainted or not.
 */
 
@@ -1423,7 +1423,7 @@ void QIconViewItem::calcRect( const QString &text_ )
 			       ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
 			       iconRect().width() ),
 			       0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
-    tw = r.width();
+    tw = r.width() - fm->minLeftBearing() - fm->minRightBearing();
     th = r.height();
     if ( tw < fm->width( "X" ) )
 	tw = fm->width( "X" );
@@ -2214,9 +2214,11 @@ void QIconView::slotUpdate()
 	    w += d->spacing;
 	else
 	    h += d->spacing;
+	viewport()->setUpdatesEnabled( FALSE );
 	resizeContents( w, h );
+	viewport()->setUpdatesEnabled( TRUE );
+	viewport()->repaint( FALSE );
     }
-    viewport()->repaint( FALSE );
 
     int cx = d->cachedContentsX == -1 ? contentsX() : d->cachedContentsX;
     int cy = d->cachedContentsY == -1 ? contentsY() : d->cachedContentsY;
@@ -2591,7 +2593,9 @@ void QIconView::alignItemsInGrid( bool update )
     else
 	h += d->spacing;
 
+    viewport()->setUpdatesEnabled( FALSE );
     resizeContents( w, h );
+    viewport()->setUpdatesEnabled( TRUE );
     d->dirty = FALSE;
     if ( update )
 	repaintContents( contentsX(), contentsY(), viewport()->width(), viewport()->height(), FALSE );
@@ -4454,6 +4458,8 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 	    while ( TRUE ) {
 		x += d->spacing + item->width();
 		if ( x > visibleWidth() && item != begin ) {
+		    h = QMAX( h, item->height() );
+		    ih = QMAX( ih, item->iconRect().height() );
 		    item = item->prev;
 		    break;
 		}
@@ -4480,6 +4486,8 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		else
 		    item->move( item->prev->x() + item->prev->width() + d->spacing,
 				y + ih - item->iconRect().height() );
+		if ( y + h < item->y() + item->height() )
+		    h = QMAX( h, ih + item->textRect().height() ); 
 		if ( item == end )
 		    break;
 		item = item->next;
@@ -4505,6 +4513,8 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		    x = i * d->rastX + sp * d->spacing;
 		}
 		if ( x > visibleWidth() && item != begin ) {
+		    h = QMAX( h, item->height() );
+		    ih = QMAX( ih, item->iconRect().height() );
 		    item = item->prev;
 		    break;
 		}
@@ -4547,6 +4557,8 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 			item->move( x, y + ih - item->iconRect().height() );
 		    i += r;
 		}
+		if ( y + h < item->y() + item->height() )
+		    h = QMAX( h, ih + item->textRect().height() ); 
 		if ( item == end )
 		    break;
 		item = item->next;
