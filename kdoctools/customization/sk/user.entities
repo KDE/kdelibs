@@ -11,3 +11,4 @@
 <!ENTITY Shift		"<keycap>Shift</keycap>">
 <!ENTITY Ctrl		"<keycap>Ctrl</keycap>">
 <!ENTITY Alt		"<keycap>Alt</keycap>">
+<!ENTITY Esc		"<keycap>Esc</keycap>">
