@@ -210,7 +210,7 @@ QString KFileMetaInfoItem::string( bool mangle ) const
             break;
 
         case QVariant::DateTime :
-            s = KGlobal::locale()->formatDateTime( d->value.toDate(),
+            s = KGlobal::locale()->formatDateTime( d->value.toDateTime(),
                                                    true, true );
             break;
 
