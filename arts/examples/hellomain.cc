@@ -24,8 +24,9 @@
     */
 
 #include "hello.h"
-#include <iostream.h>
+#include <iostream>
 
+using namespace std;
 using namespace Arts;
 
 int main()

@@ -24,7 +24,9 @@
 
 #include <stdio.h>
 #include <soundserver.h>
+#include <iostream>
 
+using namespace std;
 using namespace Arts;
 
 /*

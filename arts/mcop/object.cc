@@ -26,7 +26,7 @@
 #include "weakreference.h"
 #include "namedstore.h"
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 
 using namespace std;
 using namespace Arts;

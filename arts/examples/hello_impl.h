@@ -29,6 +29,8 @@
 
 #include "hello.h"
 
+using namespace std;
+
 class Hello_impl : virtual public Hello_skel {
 private:
 	long myvalue;

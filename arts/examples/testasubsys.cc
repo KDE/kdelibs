@@ -29,6 +29,7 @@
 #include "convert.h"
 #include "dispatcher.h"
 
+using namespace std;
 using namespace Arts;
 
 class SinTest : public ASProducer {

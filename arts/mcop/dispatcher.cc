@@ -35,7 +35,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <signal.h>
-#include <iostream.h>
+#include <iostream>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>

@@ -28,7 +28,7 @@
 
 namespace Arts {
 
-class IDLFileReg : StartupClass {
+class IDLFileReg : public StartupClass {
 	long nr;
 	const char *_name, *_contents;
 public:

@@ -6,6 +6,10 @@
 #include <sys/time.h>
 #include <signal.h>
 
+#include <iostream>
+
+using namespace std;
+
 namespace Arts {
 
 class Benchmark

@@ -27,6 +27,7 @@
 #include <iostream.h>
 #include <stdio.h>
 
+using namespace std;
 using namespace Arts;
 
 int x = 0;

@@ -24,7 +24,7 @@
     */
 
 #include "mcoputils.h"
-#include <csignal>
+#include <signal.h>
 #include <iostream>
 #include <stdio.h>
 #include "soundserver.h"

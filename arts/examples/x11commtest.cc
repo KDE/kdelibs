@@ -24,8 +24,10 @@
 
     */
 
-#include <core.h>
+#include <iostream>
+#include "core.h"
 
+using namespace std;
 using namespace Arts;
 
 /*

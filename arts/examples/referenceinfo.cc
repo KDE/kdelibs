@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	printf("objectID: %ld\n\n",r.objectID);
 
 	printf("URLs:\n");
-	vector<string>::iterator ui;
+	std::vector<std::string>::iterator ui;
 	for(ui = r.urls.begin(); ui != r.urls.end();ui++)
 		printf(" - %s\n",ui->c_str());
 
