@@ -71,8 +71,6 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     
     
     /* connections from the konqtree widget */
-    connect( this, SIGNAL( mouseButtonPressed(int, QListViewItem*, const QPoint&, int)),
-             this, SLOT( slotMouseButtonPressed(int, QListViewItem*, const QPoint&, int)) );
     connect( this, SIGNAL( selectionChanged() ),
              this, SLOT( slotSelectionChanged() ) );
     connect( this, SIGNAL( onItem( QListViewItem * )),
