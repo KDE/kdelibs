@@ -225,6 +225,7 @@ public:
   KIO::TransferJob * m_job;
 
   // QStrings for SSL metadata
+  // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
   bool m_ssl_in_use;
   QString m_ssl_peer_cert_subject,
           m_ssl_peer_cert_issuer,
@@ -2625,6 +2626,20 @@ void KHTMLPart::saveState( QDataStream &stream )
   // Save font data
   stream << fontSizes() << d->m_fontBase;
 
+  // Save ssl data
+  stream << d->m_ssl_in_use
+         << d->m_ssl_peer_cert_subject
+         << d->m_ssl_peer_cert_issuer
+         << d->m_ssl_peer_ip
+         << d->m_ssl_cipher
+         << d->m_ssl_cipher_desc
+         << d->m_ssl_cipher_version
+         << d->m_ssl_cipher_used_bits
+         << d->m_ssl_cipher_bits
+         << d->m_ssl_cert_state
+         << d->m_ssl_good_from
+         << d->m_ssl_good_until;
+
   // Save frame data
   stream << (Q_UINT32)d->m_frames.count();
 
@@ -2680,6 +2695,22 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> fSizes >> d->m_fontBase;
   setFontSizes( fSizes );
+
+  // Restore ssl data
+  stream >> d->m_ssl_in_use
+         >> d->m_ssl_peer_cert_subject
+         >> d->m_ssl_peer_cert_issuer
+         >> d->m_ssl_peer_ip
+         >> d->m_ssl_cipher
+         >> d->m_ssl_cipher_desc
+         >> d->m_ssl_cipher_version
+         >> d->m_ssl_cipher_used_bits
+         >> d->m_ssl_cipher_bits
+         >> d->m_ssl_cert_state
+         >> d->m_ssl_good_from
+         >> d->m_ssl_good_until;
+
+  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
          >> frameURLs >> frameStateBuffers;
