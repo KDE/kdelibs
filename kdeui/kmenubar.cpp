@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.60  1998/12/16 01:42:21  ettrich
+// last fix for today
+//
 // Revision 1.59  1998/12/16 01:40:22  ettrich
 // yet another bugfix (don't worry, didn't effect any yet-existing program)
 //
@@ -671,7 +674,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
    {
      if (mpos == Floating || mpos == FloatingSystem)
       {
-	  if ( mpos == FloatingSystem) 
+	  if ( mpos == FloatingSystem && position == Floating) 
 	  position = mpos;
 	  oldX = x();
 	  oldY = y();
