@@ -159,17 +159,27 @@ bool DCOPObject::processDynamic( const QCString&, const QByteArray&, QCString&, 
 {
     return FALSE;
 }
-
-QCStringList DCOPObject::interfaces()
+QCStringList DCOPObject::interfacesDynamic()
 {
     QCStringList result;
+    return result;
+}
+
+QCStringList DCOPObject::functionsDynamic()
+{
+    QCStringList result;
+    return result;
+}
+QCStringList DCOPObject::interfaces()
+{
+    QCStringList result = interfacesDynamic();
     result << "DCOPObject";
     return result;
 }
 
 QCStringList DCOPObject::functions()
 {
-    QCStringList result;
+    QCStringList result = functionsDynamic();
     result << "QCStringList interfaces()";
     result << "QCStringList functions()";
     return result;

@@ -119,6 +119,31 @@ public:
   virtual bool processDynamic(const QCString &fun, const QByteArray &data,
 			      QCString& replyType, QByteArray &replyData);
 
+   /**
+   * This function is of interest when you used an IDL compiler
+   * to generate the implementation for @ref functions() but
+   * you still want to list some functions dynamically.
+   * Dynamically means that the methods may appear and vanish
+   * during runtime.
+   *
+   * @return @p A list of the additional functions, default is an empty list.
+   *
+   * @see functions(),
+   */
+  virtual QCStringList functionsDynamic();
+
+    /**
+   * This function is of interest when you used an IDL compiler
+   * to generate the implementation for @ref interfaces() but
+   * you still want to list some interfaces dynamically.
+   * Dynamically means that they may appear and vanish
+   * during runtime.
+   *
+   * @return @p A list of the aditional interfaces, default is an empty list.
+   *
+   * @see interfaces(),
+   */
+  virtual QCStringList interfacesDynamic();
 
   /**
    * Returns the names of the interfaces, specific ones last. The
