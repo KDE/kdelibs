@@ -17,6 +17,8 @@ Package: kdelibs-bin
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, python
+Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
+Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core binaries
  KDE core binaries.
  You need these binaries to run kde applications.
@@ -24,6 +26,8 @@ Description: KDE core binaries
 Package: kdelibs-data
 Section: libs
 Architecture: all
+Conflicts: kchart (<< 1:1.2), kdeartwork-style (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
+Replaces: kchart (<< 1:1.2), kdeartwork-style (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kformula (<< 1:1.2), kivio (<< 1:1.2), koffice-libs (<< 1:1.2), kontour (<< 1:1.2), kpresenter (<< 1:1.2), kspread (<< 1:1.2), kugar (<< 1:1.2), kword (<< 1:1.2)
 Description: KDE core shared data
  KDE core shared data
  You need these data files to run kde applications.
@@ -32,8 +36,8 @@ Package: kdelibs4
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
-Conflicts: kdelibs3
-Replaces: kdelibs3
+Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
+Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core libraries
  KDE core libraries.
  You need these libraries to run kde applications.
@@ -43,8 +47,8 @@ Section: devel
 Architecture: any
 Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), arts-dev, libart-2.0-dev, libcupsys2-dev, libpcre3-dev
 Provides: kdelibs-dev
-Conflicts: kdelibs-dev
-Replaces: kdelibs-dev
+Conflicts: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
+Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these include files to compile kde applications.
