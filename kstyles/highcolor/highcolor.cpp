@@ -183,23 +183,34 @@ HighColorStyle::~HighColorStyle()
 
 void HighColorStyle::polish(QWidget* widget)
 {
-	if (widget->inherits("QMenuBar")) {
-		widget->setBackgroundMode(QWidget::NoBackground);
-	}
-	
-	else if (widget->inherits("QPushButton")) {
+	// Put in order of highest occurance to maximise hit rate
+	if (widget->inherits("QPushButton")) {
 		widget->installEventFilter(this);
+	}
+
+	else if (widget->inherits("QToolBar")) {
+		widget->installEventFilter(this);
+	}
+
+	else if (widget->inherits("QMenuBar")) {
+		widget->installEventFilter(this);
+		widget->setBackgroundMode(QWidget::NoBackground);
 	}
 }
 
 
 void HighColorStyle::unPolish(QWidget* widget)
 {
-	if (widget->inherits("QMenuBar")) {
-		widget->setBackgroundMode(QWidget::PaletteBackground);
+	if (widget->inherits("QPushButton")) {
+		widget->removeEventFilter(this);
 	}
 
-	else if (widget->inherits("QPushButton")) {
+	else if (widget->inherits("QToolBar")) {
+		widget->removeEventFilter(this);
+	}
+	
+	else if (widget->inherits("QMenuBar")) {
+		widget->setBackgroundMode(QWidget::PaletteBackground);
 		widget->removeEventFilter(this);
 	}
 }
@@ -299,7 +310,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 								cg.button(), false);
 			} else
 				kDrawBeButton(p, x, y, w, h, cg, false,
-								&cg.brush(QColorGroup::Mid));
+							  &cg.brush(QColorGroup::Button));
 			break;
 		}
 
@@ -326,10 +337,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x2-1, y+2, x2-1, y2-1);
 
 			if (sunken)
-				p->fillRect(x+2, y+2, w-4, h-4, cg.background());
+				p->fillRect(x+2, y+2, w-4, h-4, cg.button());
 			else
 				renderGradient( p, QRect(x+2, y+2, w-4, h-4),
-							    cg.background(), flags & Style_Horizontal );
+							    cg.button(), flags & Style_Horizontal );
 			break;
 		}
 
@@ -363,10 +374,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x2, y, x2, y2);
 
 			if (sunken)
-				p->fillRect(x+1, y+1, w-3, h-3, cg.background());
+				p->fillRect(x+1, y+1, w-3, h-3, cg.button());
 			else
 				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
-							    cg.background(), flags & Style_Horizontal );
+							    cg.button(), flags & Style_Horizontal );
 			break;
 		}
 
@@ -636,7 +647,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 			// ### Qt should specify Style_Horizontal where appropriate
 			renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
-				cg.background(), (r.width() < r.height()) &&
+				cg.button(), (r.width() < r.height()) &&
 								 (pe != PE_PanelMenuBar) );
 
 			break;
@@ -652,7 +663,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			if (p->device()->devType() == QInternal::Widget)
 				widget = dynamic_cast<QWidget*>(p->device());
 			else
-				return;		// Don't paint on non-widgets */
+				return;		// Don't paint on non-widgets
 
 			// Check if we are a normal toolbar or a hidden dockwidget.
 			if ( widget->parent() &&
@@ -665,7 +676,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				int y2 = r.y() + r.height()-1;
 
 				if (!(flags & Style_Horizontal)) {
-					renderGradient( p, r, cg.background(), true);
+					renderGradient( p, r, cg.button(), true);
 
 					p->setPen(cg.light());
 					p->drawLine(x+4, y+3, x2-4, y+3);
@@ -678,7 +689,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 					p->drawLine(x+4, y+8, x2-4, y+8);
 
 				} else {
-					renderGradient( p, r, cg.background(), false);
+					renderGradient( p, r, cg.button(), false);
 
 					p->setPen(cg.light());
 					p->drawLine(x+3, y+4, x+3, y2-4);
@@ -692,9 +703,55 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				}
 			} else
 				// We have a docked handle with a close button
-				p->fillRect(r, cg.highlight());
-				// ### Fixme - Add text caption to docked handle
+				if (widget->inherits("QDockWindowHandle"))
+				{
+					bool horizontal = flags & Style_Horizontal;
+					int x,y,w,h,x2,y2;
 
+					r.rect( &x, &y, &w, &h );
+					x2 = x + w - 1;
+					y2 = y + h - 1;
+
+					QFont fnt;
+					fnt = QApplication::font(widget);
+					fnt.setPointSize( fnt.pointSize()-2 );
+
+					// Draw the item on an off-screen pixmap
+					// to preserve Xft antialiasing for 
+					// vertically oriented handles.
+					QPixmap pix;
+					if (horizontal)
+						pix.resize( h-2, w-2 );
+					else	
+						pix.resize( w-2, h-2 );
+
+					pix.fill(cg.highlight());
+					QPainter p2;
+					p2.begin(&pix);
+					p2.setPen(cg.background());
+					p2.setFont(fnt);
+					p2.drawText(pix.rect(), AlignCenter, 
+							widget->property("caption").toString());
+					p2.end();
+
+					// Draw a sunken bevel
+					p->setPen(cg.dark());
+					p->drawLine(x, y, x2, y);
+					p->drawLine(x, y, x, y2);
+					p->setPen(cg.light());
+					p->drawLine(x+1, y2, x2, y2);
+					p->drawLine(x2, y+1, x2, y2);
+					
+					if (horizontal) {
+						QWMatrix m;
+						m.rotate(-90.0);
+						QPixmap vpix = pix.xForm(m);
+						bitBlt(widget, r.x()+1, r.y()+1, &vpix); 
+					} else
+						bitBlt(widget, r.x()+1, r.y()+1, &pix);
+
+				} else
+					p->fillRect(r, cg.highlight());
 			break;
 		}
 
@@ -702,7 +759,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// TOOLBAR SEPARATOR
 		// -------------------------------------------------------------------
 		case PE_DockWindowSeparator: {
-			renderGradient( p, r, cg.background(),
+			renderGradient( p, r, cg.button(),
 							!(flags & Style_Horizontal));
 			if ( !(flags & Style_Horizontal) ) {
 				p->setPen(cg.mid());
@@ -946,7 +1003,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
 								cg, true, 1, &cg.brush(QColorGroup::Midlight));
 			else
-				renderGradient( p, r, cg.background(), false,
+				renderGradient( p, r, cg.button(), false,
 								r.x(), r.y()-1, pr.width()-2, pr.height()-2);
 
 			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
@@ -1210,14 +1267,14 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 				p->drawLine(x2, y+1, x2, y2-1);
 
 				// Ensure the edge notches are properly colored
-				p->setPen(cg.background());
+				p->setPen(cg.button());
 				p->drawPoint(x,y);
 				p->drawPoint(x,y2);
 				p->drawPoint(x2,y);
 				p->drawPoint(x2,y2);
 
 				renderGradient( p, QRect(x+2, y+2, w-4, h-4),
-								cg.background(), false);
+								cg.button(), false);
 
 				p->setPen(sunken ? cg.light() : cg.mid());
 				p->drawLine(x2-1, y+2, x2-1, y2-1);
@@ -1263,7 +1320,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 					p->setBackgroundColor( cg.highlight() );
 				} else {
 					p->setPen( cg.text() );
-					p->setBackgroundColor( cg.background() );
+					p->setBackgroundColor( cg.button() );
 				}
 
 				if ( cb->hasFocus() && !cb->editable() ) {
@@ -1393,7 +1450,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 					QToolBar* parent = (QToolBar*)widget->parent();
 					QRect pr = parent->rect();
 
-					renderGradient( p, r, cg.background(),
+					renderGradient( p, r, cg.button(),
 									parent->orientation() == Qt::Vertical,
 									r.x(), r.y(), pr.width()-2, pr.height()-2);
 				}
@@ -1545,11 +1602,14 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ProgressBarChunkWidth:
 			return 1;
 
-		// MENU FRAME
+		// FRAMES
 		// -------------------------------------------------------------------
 		case PM_MenuBarFrameWidth:
 			return 1;
 
+		case PM_DockWindowFrameWidth:
+			return 1;
+			
 		// GENERAL
 		// -------------------------------------------------------------------
 		case PM_MaximumDragDistance:
@@ -1579,10 +1639,11 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			w += bm + fw + 6;	// ### Add 6 to make way for bold font.
 			h += bm + fw;
 
-			// Only affect the widgt if its not a (small) button with a pixmap.
-			if ( w < 80 && !button->pixmap() )
+			// Ensure we stick to standard width and heights.
+			if ( button->isDefault() || button->autoDefault() )
+				if ( w < 80 && !button->pixmap() )
 					w = 80;
-			// Ensure we stick to standard height.
+
 			if ( h < 22 )
 					h = 22;
 
@@ -1812,25 +1873,67 @@ void HighColorStyle::polishPopupMenu(QPopupMenu *p)
 
 bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 {
-	// For the sake of performance we're going to assume here that
-	// the object is a widget, and that the widget is a QPushButton.
-	// This should be safe since we only install event filters
-	// for those widgets.
-	
-	if ( event->type() == QEvent::Enter ) {
-		QPushButton *button = (QPushButton*) object;
+	bool isMenuBar = object->inherits( "QMenuBar" );
+	bool isToolBar = object->inherits( "QToolBar" );
 
-		if ( button->isEnabled() ) {
-			hoverWidget = button;
-			button->repaint( false );
+	// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
+	// ensure that the gradient contents are properly painted.
+	// We essentially modify the paintEvent's rect to include the
+	// panel border, which also paints the widget's interior.
+	// This is nasty, but I see no other way to properly repaint 
+	// gradients in all QMenuBars and QToolBars.
+	// -- Karol.
+	if ( isMenuBar || isToolBar ) 
+	{
+		if (event->type() == QEvent::Paint) 
+		{
+			bool horizontal = true;
+			QPaintEvent* pe = (QPaintEvent*)event;
+			QFrame* frame   = (QFrame*)object;
+			QRect r = pe->rect();
+
+			if ( isToolBar ) {
+				QToolBar* tb = (QToolBar*)object;
+				if (tb->orientation() == Qt::Vertical)
+					horizontal = false;
+			}
+
+			if (horizontal) {
+				if ( r.height() == frame->height() )
+					return false;	// Let QFrame handle the painting now.
+			
+				// Else, send a new paint event with an updated paint rect.
+				QPaintEvent dummyPE( QRect( r.x(), 0, r.width(), frame->height()) );
+				QApplication::sendEvent( frame, &dummyPE ); 
+			} 
+			else {	// Vertical
+				if ( r.width() == frame->width() )
+					return false;	// Let QFrame handle the painting now.
+
+				QPaintEvent dummyPE( QRect( 0, r.y(), frame->width(), r.height()) );
+				QApplication::sendEvent( frame, &dummyPE ); 
+			}
+			
+			// Discard this event as we sent a new paintEvent.
+			return true;
 		}
+		return false; // We obviously can't be a pushbutton
 	}
-	else if ( event->type() == QEvent::Leave ) {
-		QPushButton *button = (QPushButton*) object;
 
-		if ( button->isEnabled() ) {
-			hoverWidget = 0L;
-			button->repaint( false );
+	// Handle push button hover effects.
+	else if ( object-inherits("QPushButton") )
+	{
+		QPushButton* button = (QPushButton*) object;
+
+		if (button->isEnabled()) {
+			if (event->type() == QEvent::Enter) {
+				hoverWidget = button;
+				button->repaint( false );
+			} 
+			else if (event->type() == QEvent::Leave) {
+				hoverWidget = 0L;
+				button->repaint( false );
+			}
 		}
 	}
 	
