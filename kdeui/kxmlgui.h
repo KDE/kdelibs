@@ -70,7 +70,8 @@ class KXMLGUIFactory : public QObject
   // XXX move to somewhere else? (Simon)
   static QString readConfigFile( const QString &filename, bool never_null, KInstance *instance = 0 );
   static QString readConfigFile( const QString &filename, KInstance *instance = 0 );
-  static bool saveConfigFile( const QDomDocument& doc, const QString& filename, KInstance *instance = 0 );
+  static bool saveConfigFile( const QDomDocument& doc, const QString& filename,
+                              KInstance *instance = 0 );
 
   static QString documentToXML( const QDomDocument& doc );
   static QString elementToXML( const QDomElement& elem );
@@ -107,7 +108,8 @@ class KXMLGUIFactory : public QObject
    * and which is owned by the @p client. The container name is specified with a "name" attribute in the
    * XML document.
    *
-   * @param useTagName Specify whether the compare the specified name with the name attribute or the tag name.
+   * @param useTagName Specify whether the compare the specified name with the name attribute or
+   *        the tag name.
    *
    * This method may return 0L if no container with the given name exists or is not owned by the client.
    */
@@ -126,12 +128,13 @@ class KXMLGUIFactory : public QObject
   void reset();
 
   /**
-   * Use this method to free all memory allocated by the KXMLGUIFactory for a specific container, including
-   * all child containers and actions. This deletes the internal node subtree for the specified container. The
-   * actual GUI is not touched, no containers are deleted or any actions unplugged. Use this method only if you
-   * know what you are doing :-)
+   * Use this method to free all memory allocated by the KXMLGUIFactory for a specific container,
+   * including all child containers and actions. This deletes the internal node subtree for the
+   * specified container. The actual GUI is not touched, no containers are deleted or any actions
+   * unplugged. Use this method only if you know what you are doing :-)
    *
-   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all clients of the container)
+   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all clients of the
+   * container)
    */
   void resetContainer( const QString &containerName, bool useTagName = false );
 
@@ -146,16 +149,20 @@ class KXMLGUIFactory : public QObject
   void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
   bool removeRecursive( QDomElement &element, KXMLGUIContainerNode *node );
 
-  int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
-  void adjustMergingIndices( KXMLGUIContainerNode *node, int offset, const QValueList<MergingIndex>::Iterator &it );
+  int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName,
+                        QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
+  void adjustMergingIndices( KXMLGUIContainerNode *node, int offset,
+                             const QValueList<MergingIndex>::Iterator &it );
 
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
   QList<QWidget> findRecursive( KXMLGUIContainerNode *node, const QString &tagName );
 
-  QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id, KXMLGUIBuilder **builder );
+  QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
+                            KXMLGUIBuilder **builder );
 
-  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName, const QValueList<MergingIndex>::Iterator &mIt );
+  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName,
+                                      const QValueList<MergingIndex>::Iterator &mIt );
 
   void plugActionListRecursive( KXMLGUIContainerNode *node );
   void unplugActionListRecursive( KXMLGUIContainerNode *node );
