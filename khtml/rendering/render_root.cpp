@@ -50,6 +50,7 @@ RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
     setPositioned(true); // to 0,0 :)
 
     m_printingMode = false;
+    m_printImages = true;
 
     m_selectionStart = 0;
     m_selectionEnd = 0;
