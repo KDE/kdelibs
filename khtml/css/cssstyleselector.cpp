@@ -78,7 +78,7 @@ static CSSStyleSelector::Encodedurl *encodedurl;
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
     strictParsing = doc->parseMode() == DocumentImpl::Strict;
-    if(!defaultStyle) loadDefaultStyle(doc->view()?doc->view()->part()->settings():0);
+    if(!defaultStyle) loadDefaultStyle(doc->view() ? doc->view()->part()->settings() : 0);
 
     selectors = 0;
     selectorCache = 0;
@@ -92,7 +92,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
         userSheet->parseString( DOMString( doc->userStyleSheet() ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, doc->view()->mediaType() );
+        userStyle->append( userSheet, doc->view() ? doc->view()->mediaType() : "all" );
     }
 
     // add stylesheets from document
@@ -102,7 +102,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     QListIterator<StyleSheetImpl> it( ss->styleSheets );
     for ( ; it.current(); ++it )
         if( it.current()->isCSSStyleSheet() )
-     	    authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), doc->view()->mediaType() );
+     	    authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), doc->view() ? doc->view()->mediaType() : "all" );
 
     buildLists();
 
@@ -165,7 +165,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	style += s->settingsToCSS();
     DOMString str(style);
 
-    defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
+    defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
     defaultSheet->parseString( str );
 
     defaultStyle = new CSSStyleSelectorList();
