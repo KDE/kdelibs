@@ -283,10 +283,10 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     // disconnect() and connect() on events for a new widget
     if ( o != hideWidget ) {
     if ( hideWidget ) {
-	disconnect( hideWidget, SIGNAL( destroyed() ), 
+	disconnect( hideWidget, SIGNAL( destroyed() ),
 		    this, SLOT( slotWidgetDestroyed()));
     }
-    connect( o, SIGNAL( destroyed() ), 
+    connect( o, SIGNAL( destroyed() ),
 	     this, SLOT( slotWidgetDestroyed()));
     }
 
@@ -357,8 +357,7 @@ void KCursorPrivate::slotHideCursor()
 
 void KCursorPrivate::slotWidgetDestroyed()
 {
-    if ( isCursorHidden )
-	unhideCursor( hideWidget );
+    isCursorHidden = false;
     hideWidget = 0L;
 }
 
