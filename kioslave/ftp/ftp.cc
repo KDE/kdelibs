@@ -1787,6 +1787,9 @@ bool Ftp::ftpReadDir(FtpEntry& de)
                        else
                          de.link = QString::null;
 
+                       if ( tmp[0] == '/' ) // listing on ftp://ftp.gnupg.org/ starts with '/'
+                         tmp.remove( 0, 1 );
+
                        if (tmp.find('/') != -1)
                          continue; // Don't trick us!
                        // Some sites put more than one space between the date and the name
