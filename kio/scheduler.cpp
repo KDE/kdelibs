@@ -92,7 +92,7 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 {
-fprintf(stderr, "Desctructing KIO::Scheduler...\n");
+//fprintf(stderr, "Destructing KIO::Scheduler...\n");
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
