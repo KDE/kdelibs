@@ -119,12 +119,12 @@ class KGlobalAccel : public QObject
 	void connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
                           bool activate = true );
-						
+
 	/**
 	* Returns the number of accelerator items.
-	*/					
+	*/
 	uint count() const;
-	
+
 	/**
 	* Returns the key code of the accelerator item with the action name
 	* action, or zero if either the action name cannot be found or the current
@@ -137,19 +137,19 @@ class KGlobalAccel : public QObject
 	* action, or zero if the action name cannot be found.
 	*/
 	int defaultKey( const QString& action) const;
-	
+
 	/**
 	 * Disconnects an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
 			     const QObject* receiver, const char *member );
-	
+
 	/**
 	 * Returns that identifier of the accelerator item with the keycode key,
 	 * or zero if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
-	
+
 	/**
 	 * Attempts to make a passive X server grab of the key specified by key symbol
 	 * keysym and modifier mod. Returns false if unsuccessful.
@@ -158,11 +158,12 @@ class KGlobalAccel : public QObject
 	 *
 	 */
 	bool grabKey(uint keysym, uint mod);
-	
+	bool grabKey(uint keyCombQt);
+
 	/**
 	 * Inserts an accelerator item and returns false if the key code
 	 * 	defaultKeyCode is not valid.
-	 *	
+	 *
 	 * Arguments:
 	 *
 	 *  @param action is the accelerator item action name.
@@ -173,16 +174,16 @@ class KGlobalAccel : public QObject
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 	
+	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 			 int defaultKeyCode,
 			 bool configurable = true );
-	
+
 	 /**
 	 * Inserts an accelerator item and returns false if the key code
 	 * 	defaultKeyCode is not valid.
-	 *	
+	 *
 	 * Arguments:
 	 *
 	 *  @param action is the accelerator item action name.
@@ -261,6 +262,7 @@ class KGlobalAccel : public QObject
 	 *
 	 */
 	bool ungrabKey(uint keysym, uint mod);
+	bool ungrabKey(uint keyCombQt);
 
 	/**
 	 * Writes the current configurable associations to the application's
