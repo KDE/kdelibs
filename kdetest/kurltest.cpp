@@ -84,6 +84,31 @@ int main()
   QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
 
+  // WABA: The following tests are to test the handling of relative URLs as
+  //       found on web-pages.
+
+  KURL waba1( "http://www.website.com/directory/" );
+  {
+     KURL waba2( waba1, "relative.html");
+     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "../relative.html");
+     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "down/relative.html");
+     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "/down/relative.html");
+     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "relative.html?query=test&name=harry");
+     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");  
+  }
+ 
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
   check("mailto: URL, general form", umail1.path(), "faure@kde.org");
