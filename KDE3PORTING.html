@@ -104,10 +104,24 @@ setEncoding(int) instead.
 <li>languages() has been removed. Use languageList() instead.
 
 <H4>Accelerators Keys</H4>
-<li>KStdAccel::Insert and the corresponding KStdAccel::insert() have been removed.
-(Nobody on the list knew what its function was supposed to be.)  Calls to
-KStdAccel::insert() and the equivalent KStdAccel::key(KStdAccel::Insert) can
-be replaced with the former default of Qt::CTRL+Qt::Key_Insert.
+<h5>KStdAccel</h5>
+<ul>
+	<li><i>StdAccel::Insert</i> and the corresponding <i>insert()</i>
+	have been removed. (Nobody on the list knew what its function was
+	supposed to be.)  Calls to <i>insert()</i> and the equivalent
+	<i>key(KStdAccel::Insert)</i> can be replaced with the former default
+	of <i>Qt::CTRL+Qt::Key_Insert</i>.</li>
+</ul>
+<h5>KGlobalAccel</h5>
+<ul>
+	<li>Call <i>updateConnections()</i> after all <i>insertAction()</i> or
+	<i>insertItem()</i> calls have been made.  This function then performs the
+	actually key grabbing.  Grabbing is no longer done automatically in
+	order to improve program startup speed: usually <i>readSettings()</i>
+	is called after the actions have been defined, and this may cause
+	shortcut reassignments, which in turn used to make an ungrab of the
+	old key and second grab of the new key necessary.</li>
+</ul>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
