@@ -7,11 +7,11 @@
     <parameter name="folder" />
   </kcfgfile>
   <group name="General-$(folder)">
-    <entry name="OneOption" type="bool">
+    <entry name="OneOption" type="Bool">
       <label>One option</label>
       <default>true</default>
     </entry>
-    <entry name="AnotherOption" type="int" key="Another Option">
+    <entry name="AnotherOption" type="Int" key="Another Option">
       <label>Another option</label>
       <default>5</default>
     </entry>
@@ -27,7 +27,7 @@
     </entry>
   </group>
   <group name="MyOptions">
-    <entry name="MyString" type="QString">
+    <entry name="MyString" type="String">
       <label>This is a string</label>
       <default>Default String</default>
     </entry>
@@ -35,17 +35,17 @@
       <label>This is a path</label>
       <default code="true">QDir::homeDirPath()+".hidden_file"</default>
     </entry>
-    <entry name="AnotherOption2" type="int" key="Another Option">
+    <entry name="AnotherOption2" type="Int" key="Another Option">
       <label>Another option</label>
       <default>10</default>
     </entry>
-    <entry name="MyStringList" type="QStringList">
+    <entry name="MyStringList" type="StringList">
       <default>up,down</default>
     </entry>
-    <entry name="MyStringListHidden" hidden="true" type="QStringList">
+    <entry name="MyStringListHidden" hidden="true" type="StringList">
       <default>up,down</default>
     </entry>
-    <entry name="MyNumber" type="int" key="List-$(transport)-$(folder)">
+    <entry name="MyNumber" type="Int" key="List-$(transport)-$(folder)">
       <label>List Number</label>
       <default>1</default>
     </entry>

@@ -37,7 +37,7 @@
 		        Palette|ColorGroup|Point|Int|UInt|Bool|Double|
 			PointArray|Region|SizePolicy|Date|Time|
 			DateTime|KeySequence|Pen|LongLong|ULongLong|
-			Enum|Path) #REQUIRED
+			IntList|Enum|Path) #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 

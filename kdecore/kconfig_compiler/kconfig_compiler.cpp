@@ -1,8 +1,10 @@
+// -*- Mode: C++; c-basic-offset: 2; indent-tabs-mode: nil; -*-
 /*
     This file is part of KDE.
 
     Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
+    Copyright (c) 2003 Zack Rusin <zack@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -201,13 +203,13 @@ static QString filenameOnly(QString path)
 
 static void preProcessDefault(QString &defaultValue, const QString &name, const QString &type, const QStringList &values, QString &code)
 {
-    if ( type == "QString" && !defaultValue.isEmpty() ) {
+    if ( type == "String" && !defaultValue.isEmpty() ) {
       addQuotes( defaultValue );
 
     } else if ( type == "Path" && !defaultValue.isEmpty() ) {
       addQuotes( defaultValue );
 
-    } else if ( type == "QStringList" && !defaultValue.isEmpty() ) {
+    } else if ( type == "StringList" && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, IO_WriteOnly | IO_Append );
       if (!code.isEmpty())
          cpp << endl;
@@ -221,7 +223,7 @@ static void preProcessDefault(QString &defaultValue, const QString &name, const 
       }
       defaultValue = "default" + name;
 
-    } else if ( type == "QColor" && !defaultValue.isEmpty() ) {
+    } else if ( type == "Color" && !defaultValue.isEmpty() ) {
       QRegExp colorRe("\\d+,\\s*\\d+,\\s*\\d+");
       if (colorRe.exactMatch(defaultValue))
       {
@@ -241,7 +243,7 @@ static void preProcessDefault(QString &defaultValue, const QString &name, const 
       QTextStream cpp( &code, IO_WriteOnly | IO_Append );
       if (!code.isEmpty())
          cpp << endl;
-   
+
       cpp << "  QValueList<int> default" << name << ";" << endl;
       QStringList defaults = QStringList::split( ",", defaultValue );
       QStringList::ConstIterator it;
@@ -251,7 +253,7 @@ static void preProcessDefault(QString &defaultValue, const QString &name, const 
       }
       defaultValue = "default" + name;
     }
-}    
+}
 
 
 CfgEntry *parseEntry( const QString &group, const QDomElement &element )
@@ -292,7 +294,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         kdError() << "Parameter must have a type: " << dumpNode(e) << endl;
         return 0;
       }
-      if ((paramType == "int") || (paramType == "uint"))
+      if ((paramType == "Int") || (paramType == "UInt"))
       {
          bool ok;
          paramMax = e.attribute("max").toInt(&ok);
@@ -388,7 +390,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     label = key;
   }
 
-  if ( type.isEmpty() ) type = "QString";
+  if ( type.isEmpty() ) type = "String"; // XXX : implicit type might be bad
 
   if (!param.isEmpty())
   {
@@ -400,17 +402,17 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     {
       paramDefaultValues.append(QString::null);
     }
-    
+
     QDomNode n;
     for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
       QDomElement e = n.toElement();
-      QString tag = e.tagName();    
-      if ( tag == "default" ) 
+      QString tag = e.tagName();
+      if ( tag == "default" )
       {
         QString index = e.attribute("param");
         if (index.isEmpty())
            continue;
-           
+
         bool ok;
         int i = index.toInt(&ok);
         if (!ok)
@@ -422,7 +424,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
             return 0;
           }
         }
-        
+
         if ((i < 0) || (i > paramMax))
         {
           kdError() << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << endl;
@@ -433,7 +435,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
         if (e.attribute( "code" ) != "true")
            preProcessDefault(tmpDefaultValue, name, type, values, code);
-        
+
         paramDefaultValues[i] = tmpDefaultValue;
       }
     }
@@ -464,15 +466,37 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 */
 QString param( const QString &type )
 {
-  if ( type == "QString" ) return "const QString &";
-  else if ( type == "Path" ) return "const QString &";
-  else if ( type == "Enum" ) return "int";
-  else if ( type == "QStringList" ) return "const QStringList &";
-  else if ( type == "QColor" ) return "const QColor &";
-  else if ( type == "QFont" ) return "const QFont &";
-  else if ( type == "QSize" ) return "const QSize &";
-  else if ( type == "IntList" ) return "const QValueList<int> &";
-  else return type;
+    if ( type == "String" )           return "const QString &";
+    else if ( type == "StringList" )  return "const QStringList &";
+    else if ( type == "Font" )        return "const QFont &";
+    else if ( type == "Brush" )       return "const QBrush &";
+    else if ( type == "Rect" )        return "const QRect &";
+    else if ( type == "Size" )        return "const QSize &";
+    else if ( type == "Color" )       return "const QColor &";
+    else if ( type == "Palette" )     return "const QPalette &";
+    else if ( type == "ColorGroup" )  return "const QColorGroup &";
+    else if ( type == "Point" )       return "const QPoint &";
+    else if ( type == "Int" )         return "int";
+    else if ( type == "UInt" )        return "uint";
+    else if ( type == "Bool" )        return "bool";
+    else if ( type == "Double" )      return "double";
+    else if ( type == "PointArray" )  return "const QPointArray &";
+    else if ( type == "Region" )      return "const QRegion &";
+    else if ( type == "SizePolicy" )  return "const QSizePolicy &";
+    else if ( type == "Date" )        return "const QDate &";
+    else if ( type == "Time" )        return "const QTime &";
+    else if ( type == "DateTime" )    return "const QDateTime &";
+    else if ( type == "KeySequence" ) return "const QKeySequence &";
+    else if ( type == "Pen" )         return "const QPen &";
+    else if ( type == "LongLong" )    return "Q_LLONG";
+    else if ( type == "ULongLong" )   return "Q_ULLONG";
+    else if ( type == "IntList" )     return "const QValueList<int> &";
+    else if ( type == "Enum" )        return "int";
+    else if ( type == "Path" )        return "const QString &";
+    else {
+        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        return "QString"; //For now, but an assert would be better
+    }
 }
 
 /**
@@ -480,24 +504,46 @@ QString param( const QString &type )
 */
 QString cppType( const QString &type )
 {
-  if ( type == "Path" ) return "QString";
-  else if ( type == "Enum" ) return "int";
-  else if ( type == "IntList" ) return "QValueList<int>";
-  else return type;
+    if ( type == "String" )           return "QString";
+    else if ( type == "StringList" )  return "QStringList";
+    else if ( type == "Font" )        return "QFont";
+    else if ( type == "Brush" )       return "QBrush";
+    else if ( type == "Rect" )        return "QRect";
+    else if ( type == "Size" )        return "QSize";
+    else if ( type == "Color" )       return "QColor";
+    else if ( type == "Palette" )     return "QPalette";
+    else if ( type == "ColorGroup" )  return "QColorGroup";
+    else if ( type == "Point" )       return "QPoint";
+    else if ( type == "Int" )         return "int";
+    else if ( type == "UInt" )        return "uint";
+    else if ( type == "Bool" )        return "bool";
+    else if ( type == "Double" )      return "double";
+    else if ( type == "PointArray" )  return "QPointArray";
+    else if ( type == "Region" )      return "QRegion";
+    else if ( type == "SizePolicy" )  return "QSizePolicy";
+    else if ( type == "Date" )        return "QDate";
+    else if ( type == "Time" )        return "QTime";
+    else if ( type == "DateTime" )    return "QDateTime";
+    else if ( type == "KeySequence" ) return "QKeySequence";
+    else if ( type == "Pen" )         return "QPen";
+    else if ( type == "LongLong" )    return "Q_LLONG";
+    else if ( type == "ULongLong" )   return "Q_ULLONG";
+    else if ( type == "IntList" )     return "QValueList<int>";
+    else if ( type == "Enum" )        return "int";
+    else if ( type == "Path" )        return "QString";
+    else {
+        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        return "QString"; //For now, but an assert would be better
+    }
 }
 
 QString itemType( const QString &type )
 {
   QString t;
 
-  if ( type == "QString" || type == "QStringList" || type == "QColor" ||
-       type == "QFont" || type == "QSize" ) {
-    t = type.mid( 1 );
-  } else {
-    t = type;
-    t.replace( 0, 1, t.left( 1 ).upper() );
-  }
-  
+  t = type;
+  t.replace( 0, 1, t.left( 1 ).upper() );
+
   return t;
 }
 
@@ -539,7 +585,7 @@ QString paramString(const QString &s, const CfgEntry *e, int i)
     {
       tmp = QString("%1").arg(i);
     }
-    
+
     result.replace(needle, tmp);
   }
   return result;
@@ -576,17 +622,18 @@ QString userTextsFunctions( CfgEntry *e )
   }
   if ( !e->whatsThis().isEmpty() ) {
     txt += "  " + varName( e->name() ) + "Item->setWhatsThis( i18n(\"" +
-           e->whatsThis() + "\") );\n";    
+           e->whatsThis() + "\") );\n";
   }
   return txt;
 }
 
 int main( int argc, char **argv )
 {
-  KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.2",
+  KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.3",
   	I18N_NOOP("KConfig Compiler") , KAboutData::License_LGPL );
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
   aboutData.addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
+  aboutData.addAuthor( "Zack Rusin", 0, "zack@kde.org" );
 
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
@@ -603,7 +650,7 @@ int main( int argc, char **argv )
     kdError() << "Too many arguments." << endl;
     return 1;
   }
-  
+
   QString baseDir = QFile::decodeName(args->getOption("directory"));
   if (!baseDir.endsWith("/"))
     baseDir.append("/");
@@ -631,7 +678,7 @@ int main( int argc, char **argv )
   bool mutators = codegenConfig.readBoolEntry("Mutators");
   bool itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
   bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
-  
+
   globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
 
   QFile input( inputFilename );
@@ -914,8 +961,8 @@ int main( int argc, char **argv )
     for( e = entries.first(); e; e = entries.next() ) {
       h << "    Item" << itemType( e->type() ) << " *" << varName( e->name() )
         << "Item;" << endl;
-    }  
-  }  
+    }
+  }
 
   if (customAddons)
   {
@@ -1013,7 +1060,7 @@ int main( int argc, char **argv )
       if (e->param().isEmpty())
       {
         // Normal case
-        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() 
+        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name()
             << " = " << newItem( "Enum", e->name(), key, e->defaultValue() )
             << endl;
         cpp << "  addItem( \"" << e->name() << "\", item" << e->name() << " );" << endl;
@@ -1031,8 +1078,8 @@ int main( int argc, char **argv )
         for(int i = 0; i <= e->paramMax(); i++)
         {
           cpp << "  item" << e->name()
-              << " = new KConfigSkeleton::ItemEnum( currentGroup(), " 
-              << paramString(key, e, i) << ", " << varName(e->name()) 
+              << " = new KConfigSkeleton::ItemEnum( currentGroup(), "
+              << paramString(key, e, i) << ", " << varName(e->name())
               << QString("[%1], values").arg(i) << e->name();
         if ( !e->paramDefaultValue(i).isEmpty() )
           cpp << ", " << e->paramDefaultValue(i);
@@ -1040,7 +1087,7 @@ int main( int argc, char **argv )
           cpp << ", " << e->defaultValue();
           cpp << " );" << endl;
           cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", item" << e->name() << " );" << endl;
-        
+
           if ( itemAccessors ) {
             cpp << "  " << varName( e->name() ) << "Item = item" << e->name()
                 << ";" << endl;
@@ -1072,8 +1119,8 @@ int main( int argc, char **argv )
         // Indexed
         for(int i = 0; i <= e->paramMax(); i++)
         {
-          cpp << "  " << addFunction( e->type() ) << "( \"" 
-              << paramString(e->paramName(), e, i) << "\", " 
+          cpp << "  " << addFunction( e->type() ) << "( \""
+              << paramString(e->paramName(), e, i) << "\", "
               << paramString(key, e, i) << ", "
               << varName(e->name()) << QString("[%1]").arg(i);
           if ( !e->paramDefaultValue(i).isEmpty() )
