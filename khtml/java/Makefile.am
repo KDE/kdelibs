@@ -15,7 +15,7 @@ libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KIO)
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-data_DATA = kjava-classes.zip kjava.policy
+data_DATA = kjava.jar kjava.policy
 datadir = $(kde_datadir)/kjava/
 
 SUBDIRS = tests
