@@ -226,11 +226,13 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         scriptCodeSize = scriptCodeDest-scriptCode;
     }
 
+
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
 #endif
 
     bool doScriptExec = false;
+    HTMLQuote quot = NoQuote;
 
     while ( src.length() )
     {
@@ -250,7 +252,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-        if ( ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( quot == NoQuote && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -385,6 +387,10 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
+                if(!comment && ch == '\"')
+                    quot = (quot == NoQuote) ? DoubleQuote : NoQuote;
+                else if(ch == '\r' || ch == '\n')
+                    quot = NoQuote; // quoted lines go never beyond end of line
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
 	    }
@@ -586,7 +592,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 // according to HTML4 DTD, we can simplify
                 // strings like "  my \nstring " to "my string"
-                discard = SpaceDiscard; // ignore leading spaces
+                // However some pages require leading white space to be
+                // honored. example is leading whitespace in a
+                // <input type=text value=" > quoted text">
+                // so we eat only lf's at the beginning of quotes
+                discard = LFDiscard; // ignore leading LF`s
                 pending = NonePending;
                 if (curchar == '\'')
                     tquote = SingleQuote;
@@ -599,7 +609,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 tquote = IgnoreQuote;
                 discard = NoneDiscard;
                 pending = NonePending; // remove space at the end of value
-
             }
             else if (tquote == IgnoreQuote)
             {
@@ -613,11 +622,20 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             ++src;
         }
-        else if ( discard != NoneDiscard &&
-                  ( curchar == ' ' || curchar == '\t' ||
-                    curchar == '\n' || curchar == '\r' ) )
+        else if ( discard == AllDiscard &&
+                ( curchar == ' ' || curchar == '\t' || curchar == '\n' || curchar == '\r' ) )
         {
             pending = SpacePending;
+            ++src;
+        }
+        else if ( discard == SpaceDiscard && ( curchar == ' ' || curchar == '\t') )
+        {
+            pending = SpacePending;
+            ++src;
+        }
+        else if ( discard == LFDiscard && ( curchar == '\n' || curchar == '\r' ) )
+        {
+            pending = LFPending;
             ++src;
         }
         else
@@ -702,8 +720,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     {
                         // Start Tag
                         beginTag = true;
-                        // Ignore CR/LF's after a start tag
-                        discard = LFDiscard;
+                        // Ignore CR/LF's and spaces after a start tag
+                        discard = AllDiscard;
                     }
                     // limited xhtml support. Accept empty xml tags like <br/>
                     if((len > 1) && (*(dest-1) == '/')) len--;
@@ -778,7 +796,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                      ((curchar >= '0') && (curchar <= '9')) ||
                      curchar == '-') && !tquote )
                 {
-                    *dest = src[0].lower();
+                    if((curchar >= 'A') && (curchar <= 'Z'))
+                        *dest = curchar + 'a' - 'A';
+                    else
+                        *dest = src[0];
+
                     dest++;
                     ++src;
                 }
@@ -803,7 +825,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     }
 
                     tag = SearchEqual;
-                    discard = SpaceDiscard; // discard spaces before '='
+                    discard = AllDiscard; // discard whitespaces before '='
                 }
                 break;
             }
@@ -836,7 +858,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif
                     tag = SearchValue;
                     pending = NonePending; // ignore spaces before '='
-                    discard = SpaceDiscard; // discard spaces after '='
+                    discard = AllDiscard; // discard whitespaces after '='
                     ++src;
                 }
                 else if( curchar == '>' )
@@ -851,7 +873,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                     dest = buffer;
                     tag = SearchAttribute;
-                    discard = SpaceDiscard;
+                    discard = AllDiscard;
                     pending = NonePending;
                 }
                 break;
@@ -890,23 +912,25 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     Attribute a;
                     a.id = *buffer;
                     if(a.id==0) a.setName( attrName );
-                    while(*(dest-1) == ' ' && dest>buffer+1) dest--; // remove trailing spaces
+                    while(dest > buffer+1 &&
+                          (*(dest-1) == ' ' || *(dest-1) == '\t' || *(dest-1) == '\n' || *(dest-1) == '\r'))
+                        dest--; // remove trailing whitespaces
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
                     kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
 #endif
-
                     currToken->attrs.add(a);
 
                     dest = buffer;
                     tag = SearchAttribute;
-                    discard = SpaceDiscard;
+                    discard = AllDiscard;
                     pending = NonePending;
                     break;
                 }
-                if( pending ) addPending();
+                // eat LFs
+                if( pending && pending != LFPending ) addPending();
+                discard = LFDiscard;
 
-                discard = NoneDiscard;
                 *dest++ = src[0];
                 ++src;
                 break;
@@ -939,7 +963,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                     dest = buffer;
                     tag = SearchAttribute;
-                    discard = SpaceDiscard;
+                    discard = AllDiscard;
                     pending = NonePending;
                     break;
                 }
