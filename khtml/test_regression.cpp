@@ -334,16 +334,18 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
 static KCmdLineOptions options[] =
 {
-  { "g", 0, 0 } ,
-  { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
-  { "s", 0, 0 } ,
-  { "show", "Show the window while running tests", 0 } ,
-  { "t", 0, 0 } ,
-  { "test <filename>", "Run only a single test", 0 } ,
-  { "js",  "Only run .js tests", 0 },
-  { "html", "Only run .html tests", 0},
-  { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
-  KCmdLineLastOption
+    { "d", 0, 0 },
+    { "debug", "Do not supress debug output", 0},
+    { "g", 0, 0 } ,
+    { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
+    { "s", 0, 0 } ,
+    { "show", "Show the window while running tests", 0 } ,
+    { "t", 0, 0 } ,
+    { "test <filename>", "Run only a single test", 0 } ,
+    { "js",  "Only run .js tests", 0 },
+    { "html", "Only run .html tests", 0},
+    { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
+    KCmdLineLastOption
 };
 
 int main(int argc, char *argv[])
@@ -381,26 +383,28 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.sync();
 
-    KSimpleConfig dc( "kdebugrc" );
-    static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
-                           6031, 6035, 6036, 6040, 6041, 6045,
-                           6050, 6060, 6061, 7000, 7006, 170,
-                           171, 7101, 7002, 7019, 7027, 7014,
-                           7011, 6070, 6080, 6090, 0};
-    for ( int i = 0; areas[i]; ++i ) {
-        dc.setGroup( QString::number( areas[i] ) );
-        dc.writeEntry( "InfoOutput", 4 );
-    }
-    dc.sync();
-
-    kdClearDebugConfig();
-
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
 
     if ( args->count() < 1 ) {
 	KCmdLineArgs::usage();
 	::exit( 1 );
+    }
+
+    if ( !args->isSet( "debug" ) ) {
+        KSimpleConfig dc( "kdebugrc" );
+        static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
+                               6031, 6035, 6036, 6040, 6041, 6045,
+                               6050, 6060, 6061, 7000, 7006, 170,
+                               171, 7101, 7002, 7019, 7027, 7014,
+                               7011, 6070, 6080, 6090, 0};
+        for ( int i = 0; areas[i]; ++i ) {
+            dc.setGroup( QString::number( areas[i] ) );
+            dc.writeEntry( "InfoOutput", 4 );
+        }
+        dc.sync();
+
+        kdClearDebugConfig();
     }
 
     const char *subdirs[] = {"tests", "baseline", "output"};
