@@ -136,6 +136,18 @@ private:
 };
 
 
+/**
+ * List of KFileTreeBranches
+ */
+typedef QPtrList<KFileTreeBranch> KFileTreeBranchList;
+
+/**
+ * Iterator for KFileTreeBranchLists
+ */
+typedef QPtrListIterator<KFileTreeBranch> KFileTreeBranchIterator;
+
+
+
 
 #endif
 
