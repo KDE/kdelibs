@@ -385,7 +385,8 @@ public final class KJASAppletStub
         Thread [] ts = new Thread[Thread.activeCount()];
         Thread.enumerate(ts);
         for (int i = 0; i < ts.length; i++)
-            if (ts[i].getName().equals("applet destroy thread")) {
+            if (ts[i].getName() != null && 
+                ts[i].getName().equals("applet destroy thread")) {
                 try {
                     ts[i].join(10000);
                 } catch (InterruptedException ie) {}
