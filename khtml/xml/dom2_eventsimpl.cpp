@@ -28,6 +28,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "rendering/render_layer.h"
+#include "khtmlview.h"
 
 #include <kdebug.h>
 
@@ -360,7 +361,10 @@ void MouseEventImpl::computeLayerPos()
     DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
-        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
+
+        int x = doc->view()->contentsX();
+        int y = doc->view()->contentsY();
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX + x, m_clientY + y);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
         while (node && !node->renderer())

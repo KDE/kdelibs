@@ -1,3 +1,10 @@
+2004-01-15  Lars Knoll <knoll@kde.org>
+
+	* rendering/render_table.cpp: set overflowWidth to width 
+	when layouting (#72420)
+	* xml/dom2_eventsimpl.cpp rendering/render_block.cpp
+	nodeAtPoint() should always use contents coordinates.
+
 2004-01-14  Dirk Mueller  <mueller@kde.org>
 
 	* misc/loader.cpp: Fix uncachable image leak (#72197).

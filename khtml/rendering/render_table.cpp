@@ -244,6 +244,7 @@ void RenderTable::layout()
 
     //int oldWidth = m_width;
     calcWidth();
+    m_overflowWidth = m_width;
 
     // the optimization below doesn't work since the internal table
     // layout could have changed.  we need to add a flag to the table

@@ -1855,10 +1855,6 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
         int sty = _ty + yPos();
         if (style()->hidesOverflow() && m_layer)
             m_layer->subtractScrollOffset(stx, sty);
-        if (isCanvas()) {
-            stx += static_cast<RenderCanvas*>(this)->view()->contentsX();
-            sty += static_cast<RenderCanvas*>(this)->view()->contentsY();
-        }
         FloatingObject* o;
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for (it.toLast(); (o = it.current()); --it)
