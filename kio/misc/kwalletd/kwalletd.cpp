@@ -62,7 +62,7 @@ KWalletD::~KWalletD() {
 	for (QIntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
-		emitDCOPSignal("walletClosed(int)", it.currentKey());
+		doCloseSignals(it.currentKey(), it.current()->walletName());
 		delete it.current();
 	}
 	_wallets.clear();
@@ -178,6 +178,7 @@ KWallet::Backend *w = 0L;
 				_passwords[wallet].fill(0);
 				_passwords.remove(wallet);
 			}
+			doCloseSignals(handle, wallet);
 			delete w;
 			return 0;
 		}
@@ -211,6 +212,7 @@ KWallet::Backend *w = _wallets.find(handle);
 				_passwords[w->walletName()].fill(0);
 				_passwords.remove(w->walletName());
 			}
+			doCloseSignals(handle, w->walletName());
 			delete w;
 			return 0;
 		}
@@ -483,4 +485,21 @@ KWallet::Backend *w = _wallets.find(handle);
 return 0L;
 }
 
+
+void KWalletD::doCloseSignals(int handle, const QString& wallet) {
+QByteArray data;
+QDataStream ds(data, IO_WriteOnly);
+
+	ds << handle;
+	emitDCOPSignal("walletClosed(int)", data);
+
+QByteArray data2;
+QDataStream ds2(data2, IO_WriteOnly);
+	ds2 << wallet;
+	emitDCOPSignal("walletClosed(const QString&)", data2);
+
+	if (_wallets.isEmpty()) {
+		emitDCOPSignal("allWalletsClosed()", QByteArray());
+	}
+}
 #include "kwalletd.moc"

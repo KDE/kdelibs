@@ -101,6 +101,8 @@ class KWalletD : public KDEDModule {
 		int generateHandle();
 		// Invalidate a handle (remove it from the QMap)
 		void invalidateHandle(int handle);
+		// Emit signals about closing wallets
+		void doCloseSignals(int,const QString&);
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
 		QMap<QString,QCString> _passwords;
