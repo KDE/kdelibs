@@ -79,7 +79,7 @@ unsigned long CharacterDataImpl::length() const
 DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l || (long)offset < 0 || (long)count < 0) {
+    if (offset > str->l ) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return DOMString();
     }
