@@ -122,7 +122,13 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     m_loading = true;
     bool b;
     if(!charset.isEmpty())
+    {
 	m_codec = KGlobal::charsets()->codecForName(charset, b);
+        if(m_codec->mibEnum() == 11)  {
+            // iso8859-8 (visually ordered)
+            m_codec = QTextCodec::codecForName("iso8859-8-i");
+        }
+    }
     else
         m_codec = QTextCodec::codecForMib(4); // latin-1
 }
@@ -204,8 +210,13 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     Cache::loader()->load(dl, this, false);
     m_loading = true;
     bool b;
-    if(!charset.isEmpty())
+    if(!charset.isEmpty()) {
         m_codec = KGlobal::charsets()->codecForName(charset, b);
+        if(m_codec->mibEnum() == 11)  {
+            // iso8859-8 (visually ordered)
+            m_codec = QTextCodec::codecForName("iso8859-8-i");
+        }
+    }
     else
 	m_codec = QTextCodec::codecForMib(4); // latin-1
 }
