@@ -869,6 +869,11 @@ void HTMLOptionElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
+bool HTMLOptionElementImpl::selected() const
+{
+    return m_selected;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
