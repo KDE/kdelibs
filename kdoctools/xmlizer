@@ -41,7 +41,7 @@ text = re.sub("%ents;", "", text)
 
 text = re.sub("<!\[ %addindex; \[\s*([^\]]*)\s*\]\]>", r"\1", text)
 
-for tag in "imagedata", "colspec", "spanspec", "anchor", "xref", "area", "glossseealso", "footnoteref", "glosssee":
+for tag in "imagedata", "colspec", "spanspec", "anchor", "xref", "area", "footnoteref":
 	text = xmlizeTag(text, tag)
 
 pat = re.compile("(<\w*)([A-Z])")
