@@ -451,9 +451,9 @@ AttributeList *ElementImpl::defaultMap() const
 
 void ElementImpl::attach(KHTMLView *w)
 {
-    m_style = document->styleSelector()->styleForElement(this);
     if(_parent && _parent->renderer())
     {
+        m_style = document->styleSelector()->styleForElement(this);
 	m_render = khtml::RenderObject::createObject(this);
 	if(m_render)
 	{
