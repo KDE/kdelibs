@@ -1105,7 +1105,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
 
 void KDirListerCache::processPendingUpdates()
 {
-  kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
+  // TODO
 }
 
 
