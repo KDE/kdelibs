@@ -54,11 +54,6 @@ extern "C" void *init_libkhtml()
     return new KHTMLFactory( true );
 }
 
-extern "C" void* init_libkhtmlpart()
-{
-    return init_libkhtml();
-}
-
 KHTMLFactory *KHTMLFactory::s_self = 0;
 unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;
@@ -79,14 +74,10 @@ KHTMLFactory::~KHTMLFactory()
     {
         assert( !s_refcnt );
 
-        if ( s_instance )
-            delete s_instance;
-        if ( s_about )
-            delete s_about;
-        if ( s_settings )
-            delete s_settings;
-	if ( KHTMLSettings::avFamilies )
-	    delete KHTMLSettings::avFamilies;
+        delete s_instance;
+        delete s_about;
+        delete s_settings;
+	delete KHTMLSettings::avFamilies;
         if ( s_parts )
         {
             assert( s_parts->isEmpty() );

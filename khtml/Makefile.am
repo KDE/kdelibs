@@ -56,7 +56,8 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
         $(top_builddir)/kwallet/client/libkwalletclient.la
 
 dummy.cpp:
-	echo > $@
+	echo 'extern "C" void* init_libkhtml();' > $@
+	echo 'extern "C" void* init_libkhtmlpart() { return init_libkhtml(); } ' >> $@
 
 khtmlimagepart_la_SOURCES = dummy.cpp
 khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
