@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
   }
   {
      KURL waba2( waba1, "#");
-     check("http: Relative URL, with empty reference", waba2.url(), "http://www.website.com/directory/relative.html#");
+     check("http: Relative URL, with empty reference", waba2.url(), "http://www.website.com/directory/?hello#");
   }
 
   waba1 = "http://www.website.com/directory/filename?bla#blub";
