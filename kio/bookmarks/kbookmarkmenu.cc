@@ -67,7 +67,8 @@ static bool *s_advanced = 0;
 
 static bool isAdvanced()
 {
-  if (!s_advanced) {
+  if (!s_advanced) 
+  {
     s_advanced = new bool;
     KGlobal::config()->setGroup( "Settings" );
     (*s_advanced) = KGlobal::config()->readBoolEntry( "AdvancedAddBookmark", false );
@@ -164,14 +165,22 @@ QString KBookmarkMenu::s_highlightedAddress;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
-  s_highlightedAddress = action->property("address").toString();
-  // kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << action << "," << s_highlightedAddress << endl;
+  if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
+  {
+    s_highlightedAddress = action->property("address").toString()
+    kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
+  } 
+  else 
+  {
+    s_highlightedAddress = QString::null;
+  }
 }
 
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMenu* contextMenu )
 {
   kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) {
+  if (s_highlightedAddress.isNull()) 
+  {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
@@ -201,7 +210,8 @@ void KBookmarkMenu::fillContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu )
 void KBookmarkMenu::slotRMBActionEditAt()
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) {
+  if (s_highlightedAddress.isNull()) 
+  {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
@@ -214,7 +224,8 @@ void KBookmarkMenu::slotRMBActionEditAt()
 void KBookmarkMenu::slotRMBActionRemove()
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) {
+  if (s_highlightedAddress.isNull()) 
+  {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
@@ -231,7 +242,8 @@ void KBookmarkMenu::slotRMBActionRemove()
 void KBookmarkMenu::slotRMBActionOpen()
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) {
+  if (s_highlightedAddress.isNull()) 
+  {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
@@ -374,7 +386,7 @@ void KBookmarkMenu::fillBookmarkMenu()
       addNewFolder();
 
     if ( m_pManager->showNSBookmarks()
-         && QFile::exists( KNSBookmarkImporter::netscapeBookmarksFile() ) )
+      && QFile::exists( KNSBookmarkImporter::netscapeBookmarksFile() ) )
     {
       m_parentMenu->insertSeparator();
 
@@ -429,18 +441,14 @@ void KBookmarkMenu::fillBookmarkMenu()
       // kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
       KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
                                                           m_actionCollection, 0L );
-      // m_actionCollection->connectHighlight( actionMenu->popupMenu(), (KAction*)actionMenu );
       actionMenu->setProperty( "address", bm.address() );
-      // kdDebug(7043) << actionMenu << " := " << actionMenu->property( "address" ).toString() << endl;
-
       actionMenu->plug( m_parentMenu );
       m_actions.append( actionMenu );
+
       KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
-      // kdDebug(7043) << "( " << subMenu << " )" << endl;
-
       m_lstSubMenus.append( subMenu );
     }
   }
@@ -603,17 +611,15 @@ void KBookmarkMenuNSImporter::endFolder()
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name, const QString& caption)
-  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder...")))
+  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder..."))), m_mgr(mgr)
 {
-  m_mgr = mgr;
-
   setButtonOKText( i18n( "Add" ) );
 
   m_main = new QWidget( this );
   setMainWidget( m_main );
 
-  QBoxLayout *vert = new QVBoxLayout( m_main, spacingHint() );
-  QGridLayout *grid = new QGridLayout( vert, 2, 2 );
+  QBoxLayout *vbox = new QVBoxLayout( m_main, spacingHint() );
+  QGridLayout *grid = new QGridLayout( vbox, 2, 2 );
 
   m_title = new KLineEdit( m_main );
   m_title->setText( title );
@@ -626,21 +632,35 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
-  vert->addWidget( m_folderTree );
+  vbox->addWidget( m_folderTree );
 
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
 }
 
-void KBookmarkEditDialog::slotOk() { accept(); }
-void KBookmarkEditDialog::slotCancel() { reject(); } 
+void KBookmarkEditDialog::slotOk() 
+{ 
+  accept(); 
+}
+
+void KBookmarkEditDialog::slotCancel() 
+{ 
+  reject(); 
+} 
 
 QString KBookmarkEditDialog::finalAddress()
 { 
   return KBookmarkFolderTree::selectedAddress( m_folderTree ); 
 }
 
-QString KBookmarkEditDialog::finalUrl() { return m_url->text(); }
-QString KBookmarkEditDialog::finalTitle() { return m_title->text(); }
+QString KBookmarkEditDialog::finalUrl() 
+{ 
+  return m_url->text(); 
+}
+
+QString KBookmarkEditDialog::finalTitle() 
+{ 
+  return m_title->text(); 
+}
 
 void KBookmarkEditDialog::slotInsertFolder()
 {
@@ -682,9 +702,8 @@ static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup grou
   }
 }
 
-QListView* KBookmarkFolderTree::createTree( 
-  KBookmarkManager* mgr, QWidget* parent, const char* name 
-) {
+QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name )
+{
   QListView *listview = new QListView( parent, name );
 
   listview->setRootIsDecorated( false );
@@ -701,9 +720,8 @@ QListView* KBookmarkFolderTree::createTree(
   return listview;
 }
 
-void KBookmarkFolderTree::recreateTree( 
-  QListView *listview, KBookmarkManager* mgr
-) {
+void KBookmarkFolderTree::recreateTree( QListView *listview, KBookmarkManager* mgr ) 
+{
   listview->clear();
 
   KBookmarkGroup root = mgr->root();
@@ -718,7 +736,7 @@ void KBookmarkFolderTree::recreateTree(
 
 QString KBookmarkFolderTree::selectedAddress( QListView *listview )
 {
-  KBookmarkFolderTreeItem *item = static_cast<KBookmarkFolderTreeItem*>(listview->currentItem());
+  KBookmarkFolderTreeItem *item = static_cast<KBookmarkFolderTreeItem*>( listview->currentItem() );
   return item ? item->m_bookmark.address() : QString::null;
 }
 
