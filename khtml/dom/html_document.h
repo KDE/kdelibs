@@ -264,20 +264,6 @@ public:
     void writeln ( const DOMString &text );
 
     /**
-     * Returns the Element whose <code> id </code> is given by
-     * elementId. If no such element exists, returns <code> null
-     * </code> . Behavior is not defined if more than one element has
-     * this <code> id </code> .
-     *
-     * @param elementId The unique <code> id </code> value for an
-     * element.
-     *
-     * @return The matching element.
-     *
-     */
-    Element getElementById ( const DOMString &elementId );
-
-    /**
      * Returns the (possibly empty) collection of elements whose
      * <code> name </code> value is given by <code> elementName
      * </code> .

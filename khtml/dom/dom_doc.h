@@ -362,6 +362,21 @@ public:
     EntityReference createEntityReference ( const DOMString &name );
 
     /**
+     * Moved from HTMLDocument in DOM Level 2
+     * Returns the Element whose <code> id </code> is given by
+     * elementId. If no such element exists, returns <code> null
+     * </code> . Behavior is not defined if more than one element has
+     * this <code> id </code> .
+     *
+     * @param elementId The unique <code> id </code> value for an
+     * element.
+     *
+     * @return The matching element.
+     *
+     */
+    Element getElementById ( const DOMString &elementId ) const;
+
+    /**
      * Returns a <code> NodeList </code> of all the <code> Element
      * </code> s with a given tag name in the order in which they
      * would be encountered in a preorder traversal of the <code>

@@ -268,12 +268,6 @@ void HTMLDocument::writeln( const DOMString &text )
         ((HTMLDocumentImpl *)impl)->writeln( text );
 }
 
-Element HTMLDocument::getElementById( const DOMString &elementId )
-{
-    if(!impl) return 0;
-    return ((HTMLDocumentImpl *)impl)->getElementById( elementId );
-}
-
 NodeList HTMLDocument::getElementsByName( const DOMString &elementName )
 {
     if(!impl) return 0;

@@ -228,6 +228,12 @@ EntityReference Document::createEntityReference( const DOMString &name )
     return 0;
 }
 
+Element Document::getElementById( const DOMString &elementId ) const
+{
+    if(impl) return ((DocumentImpl *)impl)->getElementById( elementId );
+    return 0;
+}
+
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
     if (impl) return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
