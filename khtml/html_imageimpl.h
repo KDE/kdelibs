@@ -28,9 +28,8 @@
 #include "khtmlio.h"
 #include "html_documentimpl.h"
 
-#include "qmap.h"
-
-class QPixmap;
+#include <qmap.h>
+#include <qpixmap.h>
 
 namespace DOM {
 
@@ -103,11 +102,11 @@ protected:
      * from the internet for example.
      */
     QPixmap *pixmap;
-    
+
     /*
      * Cache for images that need resizing
      */
-    QPixmap *resizeCache;
+    QPixmap resizeCache;
 
     /**
      * The URL of this image.
@@ -163,7 +162,7 @@ protected:
     QList<Length>* coords;
     DOMStringImpl *href;
     DOMStringImpl *target;
-    
+
     QRegion region;
 
     int lastw, lasth;

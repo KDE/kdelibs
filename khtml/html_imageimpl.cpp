@@ -58,13 +58,10 @@ HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc)
     bComplete = true;
     border = 0;
     imgHeight = 0;
-    resizeCache = 0;
 }
 
 HTMLImageElementImpl::~HTMLImageElementImpl()
 {
-    if (resizeCache)
-    	delete resizeCache;
 }
 
 
@@ -173,14 +170,12 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
 {
     pixmap = p;
 
-
     // Image dimensions have been changed, recalculate layout
     //printf("Image: recalculating layout\n");
     calcMinMaxWidth();
     setLayouted(false);
     if(_parent) _parent->updateSize();	
 
-    resizeCache=0;
     static_cast<HTMLDocumentImpl *>(document)->print(this);
 }
 
@@ -250,16 +245,16 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 	  //printf("have to scale: width:%d<-->%d height %d<-->%d\n",
 	  //   width - border*2, pixmap->width(),
 	  //   getHeight() - border, pixmap->height() );
-	    if (resizeCache==0)
+	    if (resizeCache.isNull())
 	    {
 		QWMatrix matrix;
 		matrix.scale( (float)(width-border*2)/pixmap->width(),
 			(float)(getHeight()-border)/pixmap->height() );
-		resizeCache = new QPixmap(pixmap->xForm( matrix ));
+		resizeCache = QPixmap(pixmap->xForm( matrix ));
 	    }
 	    p->drawPixmap( QPoint( _tx + border,
-	       _ty - ascent + border ), *resizeCache, rect );
-	    
+	       _ty - ascent + border ), resizeCache, rect );
+	
 	}
 	else
 	    p->drawPixmap( QPoint( _tx + border,
@@ -304,7 +299,6 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	}
 	else if (width!=pixmap->width())
 	{
-	    resizeCache=0;
 	    width = pixmap->width();
 	    setLayouted(false);
 	    // if it doesn't fit... make it fit

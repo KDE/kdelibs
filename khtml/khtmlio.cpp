@@ -33,7 +33,7 @@
 #include <kio_error.h>
 
 #undef CACHE_DEBUG
-//#define CACHE_DEBUG
+#define CACHE_DEBUG
 
 #include <qpixmap.h>
 #undef Status
