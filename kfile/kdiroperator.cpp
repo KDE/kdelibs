@@ -67,6 +67,7 @@ public:
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
 	viewActionSeparator = new KActionSeparator;
+	dirHighlighting = false;
     }
 
     ~KDirOperatorPrivate() {
@@ -74,6 +75,7 @@ public:
 	delete viewActionSeparator;
     }
 
+    bool dirHighlighting;
     QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
@@ -773,11 +775,12 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     KFileItemListIterator it( newone );
     while ( (item = it.current()) ) {
 	// highlight the dir we come from, if possible
-	if ( item->isDir() && item->url().url(-1) == d->lastURL ) {
+	if ( d->dirHighlighting && item->isDir() && 
+	     item->url().url(-1) == d->lastURL ) {
 	    fileView->setCurrentItem( QString::null, (KFileViewItem*) item );
 	    fileView->ensureItemVisible( (KFileViewItem*) item );
 	}
-	    
+	
 	if ( !item->isMimeTypeKnown() )
 	    pendingMimeTypes.append(static_cast<KFileViewItem*>(item));
 	++it;
@@ -1234,6 +1237,16 @@ void KDirOperator::slotViewSortingChanged()
 {
     mySorting = fileView->sorting();
     updateSortActions();
+}
+
+void KDirOperator::setEnableDirHighlighting( bool enable )
+{
+    d->dirHighlighting = enable;
+}
+
+bool KDirOperator::dirHighlighting() const
+{
+    return d->dirHighlighting;
 }
 
 #include "kdiroperator.moc"
