@@ -65,7 +65,7 @@ const ClassInfo DatePrototypeImp::info = {"DatePrototype", 0, &dateTable, 0};
 
 /* Source for date_object.lut.h
    We use a negative ID to denote the "UTC" variant.
-@begin dateTable 47
+@begin dateTable 61
   toString		DateProtoFuncImp::ToString		DontEnum|DontDelete|ReadOnly|Function	0
   toUTCString		-DateProtoFuncImp::ToString		DontEnum|DontDelete|ReadOnly|Function	0
   toDateString		DateProtoFuncImp::ToDateString		DontEnum|DontDelete|ReadOnly|Function	0

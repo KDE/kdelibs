@@ -1,6 +1,10 @@
 #! /usr/bin/perl -w
 
 $file = $ARGV[0];
+shift;
+my $findSize = 0;
+# Use -s as second argument to make it try many hash sizes
+$findSize = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-s");
 print STDERR "Creating hashtable for $file\n";
 open(IN, $file) or die "No such file $file";
 
@@ -28,7 +32,13 @@ while (<IN>) {
       $name = $1;
       $hashsize = $2;
     } elsif (/^\@end\s*$/ && $inside) {
-      calcTable();
+
+      if($findSize) {
+	for( $i=3 ; $i<79 ; ++$i) { $hashsize=$i ; calcTable(); }
+      } else {
+        calcTable();
+      }
+
       output();
       @keys = ();
       @values = ();
@@ -52,12 +62,15 @@ sub calcTable() {
   @links = ();
   $size = $hashsize;
   my $collisions = 0;
+  my $maxdepth = 0;
   my $i = 0;
   foreach $key (@keys) {
+    my $depth = 0;
     my $h = hashValue($key) % $hashsize;
     while (defined($table[$h])) {
       if (defined($links[$h])) {
 	$h = $links[$h];
+	$depth++;
       } else {
 	$collisions++;
 	$links[$h] = $size;
@@ -67,10 +80,16 @@ sub calcTable() {
     }
     $table[$h] = $i;
     $i++;
+    $maxdepth = $depth if ( $depth > $maxdepth);
   }
 
-# print "// Number of collisions: $collisions\n";
-#  printf "total size: $size\n";
+  if ($findSize) {
+    my $emptycount = 0;
+    foreach $entry (@table) {
+      $emptycount++ if (!defined($entry));
+    }
+    print STDERR "Hashsize: $hashsize  Total Size: $size Empty: $emptycount MaxDepth: $maxdepth Collisions: $collisions\n";
+  }
 #  my $i = 0;
 #  foreach $entry (@table) {
 #    print "$i " . $entry;

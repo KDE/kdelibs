@@ -25,6 +25,7 @@
 
 #include "ustring.h"
 #include "value.h"
+#include <stdio.h>
 
 namespace KJS {
 
@@ -127,7 +128,6 @@ namespace KJS {
     if (!entry) // not found, forward to parent
       return thisObj->ParentImp::get(exec, propertyName);
 
-    int token = entry->value;
     //fprintf(stderr, "MathObjectImp::get, found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
     {
@@ -143,7 +143,24 @@ namespace KJS {
       const_cast<ThisImp *>(thisObj)->put(exec, propertyName, val, entry->attr);
       return val;
     }
-    return thisObj->getValue(exec, token);
+    return thisObj->getValue(exec, entry->value);
+  }
+
+  /**
+   * Simplified version of lookupOrCreate in case there are no functions, only "values".
+   */
+  template <class ThisImp, class ParentImp>
+  inline Value lookupValue(ExecState *exec, const UString &propertyName,
+                           const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::get(exec, propertyName);
+
+    if (entry->attr & Function)
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
+    return thisObj->getValue(exec, entry->value);
   }
 
 }; // namespace

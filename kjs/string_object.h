@@ -45,8 +45,11 @@ namespace KJS {
   class StringPrototypeImp : public StringInstanceImp {
   public:
     StringPrototypeImp(ExecState *exec,
-                       ObjectPrototypeImp *objProto,
-                       FunctionPrototypeImp *funcProto);
+                       ObjectPrototypeImp *objProto);
+    Value get(ExecState *exec, const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   /**
@@ -57,8 +60,7 @@ namespace KJS {
    */
   class StringProtoFuncImp : public InternalFunctionImp {
   public:
-    StringProtoFuncImp(ExecState *exec,
-                       FunctionPrototypeImp *funcProto, int i, int len);
+    StringProtoFuncImp(ExecState *exec, int i, int len);
 
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);

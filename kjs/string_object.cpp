@@ -30,6 +30,7 @@
 #include "string_object.h"
 #include "error_object.h"
 #include <stdio.h>
+#include "string_object.lut.h"
 
 using namespace KJS;
 
@@ -44,54 +45,72 @@ StringInstanceImp::StringInstanceImp(const Object &proto)
 }
 
 // ------------------------------ StringPrototypeImp ---------------------------
+const ClassInfo StringPrototypeImp::info = {"StringPrototype", 0, &stringTable, 0};
+/* Source for string_object.lut.h
+@begin stringTable 26
+  toString		StringProtoFuncImp::ToString	DontEnum|DontDelete|ReadOnly|Function	0
+  valueOf		StringProtoFuncImp::ValueOf	DontEnum|DontDelete|ReadOnly|Function	0
+  charAt		StringProtoFuncImp::CharAt	DontEnum|DontDelete|ReadOnly|Function	1
+  charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|DontDelete|ReadOnly|Function	1
+  indexOf		StringProtoFuncImp::IndexOf	DontEnum|DontDelete|ReadOnly|Function	2
+  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|DontDelete|ReadOnly|Function	2
+  match			StringProtoFuncImp::Match	DontEnum|DontDelete|ReadOnly|Function	1
+  replace		StringProtoFuncImp::Replace	DontEnum|DontDelete|ReadOnly|Function	2
+  search		StringProtoFuncImp::Search	DontEnum|DontDelete|ReadOnly|Function	1
+  slice			StringProtoFuncImp::Slice	DontEnum|DontDelete|ReadOnly|Function	0
+  split			StringProtoFuncImp::Split	DontEnum|DontDelete|ReadOnly|Function	1
+  substr		StringProtoFuncImp::Substr	DontEnum|DontDelete|ReadOnly|Function	2
+  substring		StringProtoFuncImp::Substring	DontEnum|DontDelete|ReadOnly|Function	2
+  toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|DontDelete|ReadOnly|Function	0
+  toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|DontDelete|ReadOnly|Function	0
+#
+# Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
+# I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
+# to select the right one... TODO. #####
+  big			StringProtoFuncImp::Big		DontEnum|DontDelete|ReadOnly|Function	0
+  small			StringProtoFuncImp::Small	DontEnum|DontDelete|ReadOnly|Function	0
+  blink			StringProtoFuncImp::Blink	DontEnum|DontDelete|ReadOnly|Function	0
+  bold			StringProtoFuncImp::Bold	DontEnum|DontDelete|ReadOnly|Function	0
+  fixed			StringProtoFuncImp::Fixed	DontEnum|DontDelete|ReadOnly|Function	0
+  italics		StringProtoFuncImp::Italics	DontEnum|DontDelete|ReadOnly|Function	0
+  strike		StringProtoFuncImp::Strike	DontEnum|DontDelete|ReadOnly|Function	0
+  sub			StringProtoFuncImp::Sub		DontEnum|DontDelete|ReadOnly|Function	0
+  sup			StringProtoFuncImp::Sup		DontEnum|DontDelete|ReadOnly|Function	0
+  fontcolor		StringProtoFuncImp::Fontcolor	DontEnum|DontDelete|ReadOnly|Function	1
+  fontsize		StringProtoFuncImp::Fontsize	DontEnum|DontDelete|ReadOnly|Function	1
+  anchor		StringProtoFuncImp::Anchor	DontEnum|DontDelete|ReadOnly|Function	1
+  link			StringProtoFuncImp::Link	DontEnum|DontDelete|ReadOnly|Function	1
+@end
+*/
 // ECMA 15.5.4
-
 StringPrototypeImp::StringPrototypeImp(ExecState *exec,
-                                       ObjectPrototypeImp *objProto,
-                                       FunctionPrototypeImp *funcProto)
+                                       ObjectPrototypeImp *objProto)
   : StringInstanceImp(objProto)
 {
   Value protect(this);
-  // The constructor will be added later in StringObject's constructor
+  // The constructor will be added later, after StringObjectImp has been built
   put(exec,"length",Number(0),DontDelete|ReadOnly|DontEnum);
 
-  put(exec,"toString",    new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToString,    0), DontEnum);
-  put(exec,"valueOf",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ValueOf,     0), DontEnum);
-  put(exec,"charAt",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::CharAt,      1), DontEnum);
-  put(exec,"charCodeAt",  new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::CharCodeAt,  1), DontEnum);
-  put(exec,"indexOf",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::IndexOf,     2), DontEnum);
-  put(exec,"lastIndexOf", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::LastIndexOf, 2), DontEnum);
-  put(exec,"match",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Match,       1), DontEnum);
-  put(exec,"replace",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Replace,     2), DontEnum);
-  put(exec,"search",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Search,      1), DontEnum);
-  put(exec,"slice",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Slice,       0), DontEnum);
-  put(exec,"split",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Split,       1), DontEnum);
-  put(exec,"substr",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Substr,      2), DontEnum);
-  put(exec,"substring",   new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Substring,   2), DontEnum);
-  put(exec,"toLowerCase", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToLowerCase, 0), DontEnum);
-  put(exec,"toUpperCase", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToUpperCase, 0), DontEnum);
-#ifndef KJS_PURE_ECMA
-  put(exec,"big",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Big,         0), DontEnum);
-  put(exec,"small",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Small,       0), DontEnum);
-  put(exec,"blink",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Blink,       0), DontEnum);
-  put(exec,"bold",        new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Bold,        0), DontEnum);
-  put(exec,"fixed",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fixed,       0), DontEnum);
-  put(exec,"italics",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Italics,     0), DontEnum);
-  put(exec,"strike",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Strike,      0), DontEnum);
-  put(exec,"sub",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Sub,         0), DontEnum);
-  put(exec,"sup",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Sup,         0), DontEnum);
-  put(exec,"fontcolor",   new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fontcolor,   1), DontEnum);
-  put(exec,"fontsize",    new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fontsize,    1), DontEnum);
-  put(exec,"anchor",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Anchor,      1), DontEnum);
-  put(exec,"link",        new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Link,        1), DontEnum);
-#endif
+}
+
+Value StringPrototypeImp::get(ExecState *exec, const UString &propertyName) const
+{
+  return lookupOrCreate<StringProtoFuncImp, StringPrototypeImp, StringInstanceImp>( exec, propertyName, &stringTable, this );
+}
+
+Value StringPrototypeImp::getValue(ExecState *, int) const
+{
+  // Can't be called, all properties in the hashtable have the Function bit
+  fprintf( stderr, "StringPrototypeImp::getValue called - impossible\n" );
+  return Null();
 }
 
 // ------------------------------ StringProtoFuncImp ---------------------------
 
-StringProtoFuncImp::StringProtoFuncImp(ExecState *exec,
-                                       FunctionPrototypeImp *funcProto, int i, int len)
-  : InternalFunctionImp(funcProto), id(i)
+StringProtoFuncImp::StringProtoFuncImp(ExecState *exec, int i, int len)
+  : InternalFunctionImp(
+    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    ), id(i)
 {
   Value protect(this);
   put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);

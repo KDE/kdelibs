@@ -28,6 +28,8 @@
 #include "number_object.h"
 #include "error_object.h"
 
+#include "number_object.lut.h"
+
 using namespace KJS;
 
 
@@ -51,7 +53,7 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
   Value protect(this);
   setInternalValue(Number(0));
 
-  // The constructor will be added later in NumberObject's constructor (?)
+  // The constructor will be added later, after NumberObjectImp has been constructed
 
   put(exec,"toString",       new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1), DontEnum);
   put(exec,"toLocaleString", new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0), DontEnum);
@@ -104,27 +106,53 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*a
 
 // ------------------------------ NumberObjectImp ------------------------------
 
+const ClassInfo NumberObjectImp::info = {"Number", 0, &numberTable, 0};
+
+/* Source for number_object.lut.h
+@begin numberTable 5
+  NaN			NumberObjectImp::NaNValue	DontEnum|DontDelete|ReadOnly
+  NEGATIVE_INFINITY	NumberObjectImp::NegInfinity	DontEnum|DontDelete|ReadOnly
+  POSITIVE_INFINITY	NumberObjectImp::PosInfinity	DontEnum|DontDelete|ReadOnly
+  MAX_VALUE		NumberObjectImp::MaxValue	DontEnum|DontDelete|ReadOnly
+  MIN_VALUE		NumberObjectImp::MinValue	DontEnum|DontDelete|ReadOnly
+@end
+*/
 NumberObjectImp::NumberObjectImp(ExecState *exec,
-                                 FunctionPrototypeImp *funcProto,
                                  NumberPrototypeImp *numberProto)
-  : InternalFunctionImp(funcProto)
+  : InternalFunctionImp(
+    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    )
 {
   Value protect(this);
   // Number.Prototype
   put(exec,"prototype",numberProto,DontEnum|DontDelete|ReadOnly);
 
-  // ECMA 15.7.3
-  put(exec,"NaN",               Number(NaN),                     DontEnum|DontDelete|ReadOnly);
-  put(exec,"NEGATIVE_INFINITY", Number(-Inf),                    DontEnum|DontDelete|ReadOnly);
-  put(exec,"POSITIVE_INFINITY", Number(Inf),                     DontEnum|DontDelete|ReadOnly);
-  put(exec,"MAX_VALUE",         Number(1.7976931348623157E+308), DontEnum|DontDelete|ReadOnly);
-  put(exec,"MIN_VALUE",         Number(5E-324),                  DontEnum|DontDelete|ReadOnly);
-
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
 }
 
+Value NumberObjectImp::get(ExecState *exec, const UString &propertyName) const
+{
+  return lookupValue<NumberObjectImp, InternalFunctionImp>( exec, propertyName, &numberTable, this );
+}
 
+Value NumberObjectImp::getValue(ExecState *, int token) const
+{
+  // ECMA 15.7.3
+  switch(token) {
+  case NaNValue:
+    return Number(NaN);
+  case NegInfinity:
+    return Number(-Inf);
+  case PosInfinity:
+    return Number(Inf);
+  case MaxValue:
+    return Number(1.7976931348623157E+308);
+  case MinValue:
+    return Number(5E-324);
+  }
+  return Null();
+}
 
 bool NumberObjectImp::implementsConstruct() const
 {

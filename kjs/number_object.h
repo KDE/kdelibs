@@ -76,7 +76,6 @@ namespace KJS {
   class NumberObjectImp : public InternalFunctionImp {
   public:
     NumberObjectImp(ExecState *exec,
-                    FunctionPrototypeImp *funcProto,
                     NumberPrototypeImp *numberProto);
 
     virtual bool implementsConstruct() const;
@@ -85,6 +84,11 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
+    Value get(ExecState *exec, const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { NaNValue, NegInfinity, PosInfinity, MaxValue, MinValue };
 
     Completion execute(const List &);
     Object construct(const List &);

@@ -798,7 +798,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
 
   ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto);
   b_ArrayPrototype = arrayProto;
-  StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto,funcProto);
+  StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto);
   b_StringPrototype = stringProto;
   BooleanPrototypeImp *booleanProto = new BooleanPrototypeImp(globExec,objProto,funcProto);
   b_BooleanPrototype = booleanProto;
@@ -825,7 +825,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   b_String = stringObj;
   BooleanObjectImp *booleanObj = new BooleanObjectImp(globExec,funcProto,booleanProto);
   b_Boolean = booleanObj;
-  NumberObjectImp *numberObj = new NumberObjectImp(globExec,funcProto,numberProto);
+  NumberObjectImp *numberObj = new NumberObjectImp(globExec,numberProto);
   b_Number = numberObj;
   DateObjectImp *dateObj = new DateObjectImp(globExec,funcProto,dateProto);
   b_Date = dateObj;
