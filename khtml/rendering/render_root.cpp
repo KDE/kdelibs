@@ -142,6 +142,13 @@ void RenderRoot::layout()
 
     // ### we could maybe do the call below better and only pass true if the docsize changed.
     layoutSpecialObjects( true );
+
+    // ### The layoutSpecialObjects call below can unfortunately reset some layouted flags if we have fixed positioned
+    // objects. This is a hack to still get everything working (all layouted flags set). It does some additional work, but fortunately
+    // fixed positioned objects are rare.
+    if ( !firstChild()->layouted() )
+	RenderFlow::layout();
+
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
