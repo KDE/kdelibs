@@ -960,6 +960,8 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
       QPoint p (width() / 2, height() / 2 );
       p = mapToGlobal( p );
+      //TODO we need something for the contextMenu, like:
+      // emit contectMenuShortcutPressed(p);
 	  //      popupMenu( p );
       return;
    }
@@ -1124,9 +1126,14 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 		 setOpen( item, TRUE );
        break;
 	 default:
-	   QListView::keyPressEvent (e);
-	   break;
-	 }
+
+          //this is mainly for the "goto filename beginning with pressed char" feature (alex)
+          KListView::SelectionModeExt mode=selectionModeExt();
+          setSelectionModeExt(KListView::Multi);
+          QListView::keyPressEvent (e);
+          setSelectionModeExt(mode);
+          break;
+   }
 }
 
 void KListView::setSelectionModeExt (SelectionModeExt mode)
