@@ -109,7 +109,7 @@ namespace khtml
 
       ChildFrame() { m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
 
-      ~ChildFrame() {  if (m_run) m_run->abort(); }
+      ~ChildFrame() { if (m_run) m_run->abort(); }
 
     QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -675,7 +675,6 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  d->m_workingURL = url;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
@@ -698,6 +697,8 @@ bool KHTMLPart::openURL( const KURL &url )
     m_url.setPath("/");
     emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
   }
+  // copy to m_workingURL after fixing m_url above
+  d->m_workingURL = m_url;
 
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
@@ -856,7 +857,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  //kdDebug() << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
+  //kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy || proxy->paused())
@@ -1765,8 +1766,8 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 
 void KHTMLPart::slotRedirect()
 {
-//  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
   QString u = d->m_redirectURL;
+  // kdDebug( 6050 ) << "KHTMLPart::slotRedirect() " << u << endl;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   QString target;
