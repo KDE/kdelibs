@@ -154,11 +154,12 @@ CSSValue::~CSSValue()
 
 DOMString CSSValue::cssText() const
 {
-    if(!impl) return 0;
+    return 0;
+    //if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("cssText");
 }
 
-void CSSValue::setCssText( const DOMString &value )
+void CSSValue::setCssText( const DOMString &/*value*/ )
 {
     //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
 }
@@ -183,7 +184,7 @@ CSSValueList::CSSValueList(CSSValueListImpl *impl) : CSSValue(impl)
 {
 }
 
-CSSValueList &CSSValueList::operator = (const CSSValueList &other)
+CSSValueList &CSSValueList::operator = (const CSSValueList &/*other*/)
 {
     // TODO
     //CSSValue::operator = (other);
@@ -200,7 +201,7 @@ unsigned long CSSValueList::length() const
     return ((CSSValueListImpl *)impl)->length();
 }
 
-CSSValue CSSValueList::item( unsigned long index )
+CSSValue CSSValueList::item( unsigned long /*index*/ )
 {
     //if(!impl) return 0;
     //return ((CSSValueListImpl *)impl)->item( index );
@@ -220,7 +221,7 @@ CSSPrimitiveValue::CSSPrimitiveValue(CSSPrimitiveValueImpl *impl) : CSSValue(imp
 {
 }
 
-CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSPrimitiveValue &other)
+CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSPrimitiveValue &/*other*/)
 {
     //CSSValue::operator = (other);
     return *this;
@@ -236,7 +237,7 @@ unsigned short CSSPrimitiveValue::primitiveType() const
     return ((CSSPrimitiveValueImpl *)impl)->primitiveType();
 }
 
-void CSSPrimitiveValue::setFloatValue( unsigned short unitType, float floatValue )
+void CSSPrimitiveValue::setFloatValue( unsigned short /*unitType*/, float /*floatValue*/ )
 {
     //if(impl)
     //    ((CSSPrimitiveValueImpl *)impl)->setFloatValue( unitType, floatValue );
@@ -256,7 +257,8 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 
 DOMString CSSPrimitiveValue::getStringValue(  )
 {
-    if(!impl) return 0;
+    return 0;
+    //if(!impl) return 0;
 
     //return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
@@ -288,11 +290,12 @@ Counter::Counter()
 {
 }
 
-Counter::Counter(const Counter &other)
+Counter::Counter(const Counter &/*other*/)
 {
+    //###
 }
 
-Counter &Counter::operator = (const Counter &other)
+Counter &Counter::operator = (const Counter &/*other*/)
 {
     //::operator = (other);
     return *this;
@@ -365,11 +368,11 @@ Rect::Rect()
 {
 }
 
-Rect::Rect(const Rect &other)
+Rect::Rect(const Rect &/*other*/)
 {
 }
 
-Rect &Rect::operator = (const Rect &other)
+Rect &Rect::operator = (const Rect &/*other*/)
 {
   // TODO
   return *this;
