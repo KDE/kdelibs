@@ -158,7 +158,6 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
 static Length parseLength(QChar *s, unsigned int l)
 {
     const QChar* last = s+l-1;
-
     if (l && *last == QChar('%')) {
         // CSS allows one decimal after the point, like
         //  42.2%, but not 42.22%
@@ -195,11 +194,6 @@ static Length parseLength(QChar *s, unsigned int l)
         return Length(v, Fixed);
 
     return Length(0, Variable);
-}
-
-Length DOMStringImpl::toLength() const
-{
-    return parseLength(s,l);
 }
 
 khtml::Length* DOMStringImpl::toLengthArray(int& len) const
@@ -270,7 +264,7 @@ DOMStringImpl *DOMStringImpl::upper() const
     return c;
 }
 
-DOMStringImpl *DOMStringImpl::capitalize()
+DOMStringImpl *DOMStringImpl::capitalize() const
 {
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;

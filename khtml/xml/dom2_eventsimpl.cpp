@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,6 +32,7 @@
 #include <kdebug.h>
 
 using namespace DOM;
+using namespace khtml;
 
 EventImpl::EventImpl()
 {
@@ -350,27 +351,24 @@ void MouseEventImpl::computeLayerPos()
     m_layerX = m_clientX;
     m_layerY = m_clientY;
 
-    DocumentImpl *doc = view()->document();
+    DocumentImpl* doc = view()->document();
+    if (doc) {
+        khtml::RenderObject::NodeInfo renderInfo(true, false);
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
 
-    if (!doc) {
-	return;
+        NodeImpl *node = renderInfo.innerNonSharedNode();
+        while (node && !node->renderer())
+            node = node->parent();
+
+        if (node) {
+            node->renderer()->enclosingLayer()->updateLayerPosition();
+            for (RenderLayer* layer = node->renderer()->enclosingLayer(); layer;
+                 layer = layer->parent()) {
+                m_layerX -= layer->xPos();
+                m_layerY -= layer->yPos();
+            }
+        }
     }
-
-    khtml::RenderObject::NodeInfo renderInfo(true, false);
-    doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
-
-    NodeImpl *node = renderInfo.innerNonSharedNode();
-    while (node && !node->renderer()) {
-	node = node->parent();
-    }
-
-    if (!node) {
-	return;
-    }
-
-    node->renderer()->enclosingLayer()->updateLayerPosition();
-    m_layerX -= node->renderer()->enclosingLayer()->xPos();
-    m_layerY -= node->renderer()->enclosingLayer()->yPos();
 }
 
 void MouseEventImpl::initMouseEvent(const DOMString &typeArg,

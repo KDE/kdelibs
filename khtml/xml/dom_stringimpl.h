@@ -76,11 +76,7 @@ public:
 
     DOMStringImpl *substring(unsigned int pos, unsigned int len);
 
-    const QChar &operator [] (int pos)
-	{ return *(s+pos); }
-
-    khtml::Length toLength() const;
-
+    const QChar &operator [] (int pos) { return s[pos]; }
     bool containsOnlyWhitespace() const;
 
     // ignores trailing garbage, unlike QString
@@ -90,7 +86,7 @@ public:
     bool isLower() const;
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;
-    DOMStringImpl *capitalize();
+    DOMStringImpl *capitalize() const;
 
     unsigned int l;
     QChar *s;
