@@ -573,6 +573,9 @@ bool KStringHandler::isUtf8(const char *buf)
   int i, n;
   register unsigned char c;
   bool gotone = false;
+  
+  if (!buf)
+    return true; // whatever, just don't crash
 
 #define F 0   /* character never appears in text */
 #define T 1   /* character appears in plain ASCII text */
