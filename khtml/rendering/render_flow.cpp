@@ -121,6 +121,9 @@ RenderFlow::~RenderFlow()
 {
     if (specialObjects)
     	delete specialObjects;
+    if(isAnonymousBox()) // usually the style object is deleted by the DOM tree, but
+	// since anonymous boxes don't have a corresponding DOM element...
+	delete m_style;
 }
 
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
@@ -1074,38 +1077,41 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if(m_last)
 	{
 //	    kdDebug( 6040 ) << "no inline child, moving previous inline children!" << endl;
-	    RenderStyle *newStyle = new RenderStyle(m_style);
-	    newStyle->setDisplay(BLOCK);
+	    RenderFlow *beforeBox = 0;
+	    if(beforeChild != m_first) {
+		RenderStyle *newStyle = new RenderStyle(m_style);
+		newStyle->setDisplay(BLOCK);
 	
-	    RenderFlow *beforeBox = new RenderFlow();
-	    beforeBox->setStyle(newStyle);
-	    beforeBox->setIsAnonymousBox(true);
-	    // ### the children have a wrong style!!!
-	    // They get exactly the style of this element, not of the anonymous box
-	    // might be important for bg colors!
-	    beforeBox->setFirstChild(m_first);
-	    RenderObject *beforeBoxLast;
-	    if (beforeChild)
-		beforeBoxLast = beforeChild->previousSibling() ? beforeChild->previousSibling() : m_first;
-	    else
-		beforeBoxLast = m_last;
-	    beforeBoxLast->setNextSibling(0);
-	    beforeBox->setLastChild(beforeBoxLast);
-	    RenderObject *o = beforeBox->firstChild();
-	    while(o)
-	    {
-		o->setParent(beforeBox);
-		o = o->nextSibling();
+		beforeBox = new RenderFlow();
+		beforeBox->setStyle(newStyle);
+		beforeBox->setIsAnonymousBox(true);
+		// ### the children have a wrong style!!!
+		// They get exactly the style of this element, not of the anonymous box
+		// might be important for bg colors!
+		beforeBox->setFirstChild(m_first);
+		RenderObject *beforeBoxLast;
+		if (beforeChild)
+		    beforeBoxLast = beforeChild->previousSibling();
+		else
+		    beforeBoxLast = m_last;
+		beforeBoxLast->setNextSibling(0);
+		beforeBox->setLastChild(beforeBoxLast);
+		RenderObject *o = beforeBox->firstChild();
+		while(o) {
+		    o->setParent(beforeBox);
+		    o = o->nextSibling();
+		}
+		beforeBox->setParent(this);
+		m_first = m_last = beforeBox;
+		beforeBox->close();
+		beforeBox->setYPos(-100000);
+		beforeBox->setLayouted(false);
+		beforeBox->layout();
 	    }
-	    beforeBox->setParent(this);
-	    m_first = m_last = beforeBox;
-	    beforeBox->close();
-	    beforeBox->setYPos(-100000);
-	    beforeBox->setLayouted(false);
-	    beforeBox->layout();
-
 	    if (beforeChild) {
 		RenderFlow *afterBox = new RenderFlow();
+		RenderStyle *newStyle = new RenderStyle(m_style);
+		newStyle->setDisplay(BLOCK);
 		afterBox->setStyle(newStyle);
 		afterBox->setIsAnonymousBox(true);
 		// ### the children have a wrong style!!!
@@ -1113,16 +1119,17 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 		// might be important for bg colors!
 		beforeChild->setPreviousSibling(0);
 		afterBox->setFirstChild(beforeChild);
-		afterBox->setLastChild(m_last);
 		RenderObject *o = afterBox->firstChild();
 		while(o)
 		{
+		    // a bit hacky, but should work
+		    afterBox->setLastChild(o);
 		    o->setParent(afterBox);
 		    o = o->nextSibling();
 		}
 		afterBox->setParent(this);
 		m_last = afterBox;
-		beforeBox->setNextSibling(afterBox);
+		if(beforeBox) beforeBox->setNextSibling(afterBox);
 		afterBox->setPreviousSibling(beforeBox);
 		afterBox->close();
 		afterBox->setYPos(-100000);
@@ -1138,6 +1145,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     {
 	if(newChild->isInline() || newChild->isFloating())
 	{
+	    // #### this won't work with beforeChild != 0 !!!!
+	    
 //	    kdDebug( 6040 ) << "adding inline child to anonymous box" << endl;
 	    if(!haveAnonymousBox())
 	    {
