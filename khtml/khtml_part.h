@@ -75,6 +75,7 @@ namespace khtml
   class CachedObject;
   class RenderWidget;
   class CSSStyleSelector;
+  class HTMLTokenizer;
 };
 
 namespace KJS {
@@ -164,7 +165,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::DocumentImpl;
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
-  friend class HTMLTokenizer;
+  friend class khtml::HTMLTokenizer;
   friend class XMLTokenizer;
   friend class khtml::RenderWidget;
   friend class khtml::CSSStyleSelector;

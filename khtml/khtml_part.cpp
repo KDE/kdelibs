@@ -1035,7 +1035,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
 
     {
     KHTMLPart *p = parentPart();
@@ -1044,15 +1043,12 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
 	p->d->m_paSecurity->setIcon( "halfencrypted" );
         p->d->m_bSecurityInQuestion = true;
-	kdDebug(6050) << "parent setIcon half done." << endl;
     }
     }
 
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
-    kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "encrypted" : "decrypted" ) << " done." << endl;
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
-
     d->m_ssl_parent_ip = d->m_job->queryMetaData("ssl_parent_ip");
     d->m_ssl_parent_cert = d->m_job->queryMetaData("ssl_parent_cert");
     d->m_ssl_peer_certificate = d->m_job->queryMetaData("ssl_peer_certificate");
