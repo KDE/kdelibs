@@ -29,6 +29,7 @@
 //#include "debugger.h"
 #ifndef NDEBUG
 #include <list>
+#include <assert.h>
 #endif
 
 namespace KJS {

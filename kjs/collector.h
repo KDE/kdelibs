@@ -26,6 +26,8 @@
 
 #define KJS_MEM_LIMIT 500000
 
+#include "global.h"
+
 #include <stdio.h> // for size_t
 
 namespace KJS {

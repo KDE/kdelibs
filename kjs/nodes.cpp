@@ -146,7 +146,7 @@ void Node::finalCheck()
 	  fprintf(stderr, "Node::finalCheck(): list 0\n");
 	  return;
   }
-  fprintf( stderr, "Node::finalCheck(): list count       : %d\n", (int)s_nodes.size() );
+  fprintf( stderr, "Node::finalCheck(): list count       : %d\n", (int)s_nodes->size() );
   std::list<Node *>::iterator it = s_nodes->begin();
   for ( uint i = 0; it != s_nodes->end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s) (refcount %d)\n", i, (void*)*it, typeid( **it ).name(), (*it)->refcount );
