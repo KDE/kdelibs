@@ -8,15 +8,15 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom  '<hardware>CD-ROM drev</hardware>'>
+<!ENTITY cdrom  '<hardware>CD-ROM-drev</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
-<!ENTITY eg     "<abbrev>f. eks.</abbrev>">
+<!ENTITY eg     "<abbrev>f.eks.</abbrev>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>osv.</abbrev>">
 <!ENTITY FAQ    '<acronym>OSS</acronym>'>
 <!ENTITY ftp    '<acronym>FTP</acronym>'>
-<!ENTITY ie     "<abbrev>altså</abbrev>">
+<!ENTITY ie     "<abbrev>dvs.</abbrev>">
 <!ENTITY kcontrolcenter	"<application>&kde;'s kontrolcenter</application>">
 <!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknap">
 <!ENTITY MMB    "<mousebutton>midterste</mousebutton> museknap">
