@@ -132,7 +132,7 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 		if (dlg->printer()->isSpecial())
 		{ // special case
 			dlg->addPage(new KPQtPage(dlg,"QtPage"));
-			dlg->enableSaveButton(false);
+			//dlg->enableSaveButton(false);
 		}
 		else
 		{

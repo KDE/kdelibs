@@ -29,6 +29,7 @@
 #include <kglobal.h>
 #include <ksimpleconfig.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include <unistd.h>
 #include <sys/types.h>

@@ -245,10 +245,12 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 		// List real printers (in subclasses)
 		if ( m_updatepossible )
 			listPrinters();
+		// Listing of special printers has to be done before the instances
+		// because now special printers can also have instances
+		m_specialmgr->refresh();
 		// list virtual printers (and undiscard virtual printers if necessary)
 		if ( m_updatepossible )
 			m_virtualmgr->refresh();
-		m_specialmgr->refresh();
 
 		// remove discarded printers
 		for (uint i=0; i<m_printers.count(); i++)

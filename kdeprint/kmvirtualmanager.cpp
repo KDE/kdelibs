@@ -32,6 +32,8 @@
 #include <qfileinfo.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kurl.h>
+#include <kdebug.h>
 
 #include <unistd.h>
 
@@ -113,6 +115,9 @@ void KMVirtualManager::create(KMPrinter *p, const QString& name)
 	printer->setInstanceName(name);
 	if (!name.isEmpty())
 		printer->setType(p->type()|KMPrinter::Virtual);
+	// we need some options to know how to load the driver
+	if (p->isSpecial())
+		printer->setOptions(p->options());
 	m_manager->addPrinter(printer);
 	triggerSave();
 }
@@ -220,6 +225,7 @@ void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prn
 	// then look for instances
 	list.setAutoDelete(false);
 	list.clear();
+	kdDebug() << "KMVirtualManager::virtualList() prname=" << prname << endl;
 	QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
 	for (;it.current();++it)
 		if (it.current()->printerName() == prname)
@@ -245,17 +251,17 @@ void KMVirtualManager::loadFile(const QString& filename)
 			words = QStringList::split(' ',line,false);
 			if (words.count() < 2) continue;
 			pair = QStringList::split('/',words[1],false);
-			realprinter = m_manager->findPrinter(pair[0]);
+			realprinter = m_manager->findPrinter(KURL::decode_string(pair[0]));
 			if (realprinter && !realprinter->isDiscarded())
 			{ // keep only instances corresponding to an existing and
 			  // non discarded printer.
 			  	// "clone" the real printer and modify settings as needed
 				printer = new KMPrinter(*realprinter);
-				printer->setName(words[1]);
-				printer->setPrinterName(pair[0]);
+				printer->setName(KURL::decode_string(words[1]));
+				printer->setPrinterName(KURL::decode_string(pair[0]));
 				if (pair.count() > 1)
 				{
-					printer->setInstanceName(pair[1]);
+					printer->setInstanceName(KURL::decode_string(pair[1]));
 					printer->addType(KMPrinter::Virtual);
 				}
 				// parse options
@@ -300,8 +306,14 @@ void KMVirtualManager::saveFile(const QString& filename)
 		QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
 		for (;it.current();++it)
 		{
-			if (it.current()->isSpecial()) continue;
-			t << (it.current()->isSoftDefault() ? "Default " : "Dest ") << it.current()->name();
+			if (it.current()->isSpecial())
+			{
+				t << "Special " << KURL::encode_string_no_slash( it.current()->printerName() );
+				if ( !it.current()->instanceName().isEmpty() )
+					t << "/" << KURL::encode_string_no_slash( it.current()->instanceName() );
+			}
+			else
+				t << (it.current()->isSoftDefault() ? "Default " : "Dest ") << it.current()->name();
 			QMap<QString,QString>	opts = it.current()->defaultOptions();
 			for (QMap<QString,QString>::ConstIterator oit=opts.begin(); oit!=opts.end(); ++oit)
 			{

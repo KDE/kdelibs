@@ -102,7 +102,8 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 
 	m_view->clear();
 	m_printer = p;
-	bool	ok = (p && !p->isSpecial());
+	//bool	ok = (p && !p->isSpecial());
+	bool	ok = (p != 0);
 	if (ok)
 	{
 		QPtrList<KMPrinter>	list;
@@ -210,7 +211,7 @@ void KMInstancePage::slotSettings()
 	{
 		if (src == i18n("(Default)")) src = QString::null;
 		KMPrinter	*pr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
-		if (pr && KMFactory::self()->manager()->completePrinterShort(pr))
+		if (pr && (pr->isSpecial() || KMFactory::self()->manager()->completePrinterShort(pr)))
 		{
 			KPrinter::setApplicationType(KPrinter::StandAlone);
 			KPrinterPropertyDialog::setupPrinter(pr, this);

@@ -1018,7 +1018,7 @@ void KMCupsManager::slotAsyncConnect()
 	m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
 }
 
-void KMCupsManager::slotConnectionFailed( int errno )
+void KMCupsManager::slotConnectionFailed( int errcode )
 {
 	kdDebug() << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
@@ -1032,7 +1032,7 @@ void KMCupsManager::slotConnectionFailed( int errno )
 	}
 
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( errno == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
+				"Error: %1." ).arg( errcode == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
 	setUpdatePossible( false );
 }
 
