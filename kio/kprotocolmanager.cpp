@@ -29,6 +29,7 @@
 #include <kio/kpac.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
+#include <kio/slaveconfig.h>
 
 #include "kprotocolmanager.h"
 
@@ -456,85 +457,12 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
-  QString user_agent = defaultUserAgent();
-  QStringList list = KProtocolManager::userAgentList();
-  if ( list.count() > 0 )
-  {
-    QStringList::ConstIterator it = list.begin();
-    for( ; it != list.end(); ++it)
-    {
-      QStringList split;
-      int pos = (*it).find("::");
-      if ( pos == -1 )
-      {
-        pos = (*it).find(':');
-        if ( pos != -1 )
-        {
-          split.append((*it).left(pos));
-          split.append((*it).mid(pos+1));
-        }
-      }
-      else
-        split = QStringList::split("::", (*it));
+  QString user_agent = KIO::SlaveConfig::self()->configData("http", hostname, "UserAgent");
 
-      QString match = split[0];
-      int match_len = match.length();
-      int host_len = hostname.length();
-      if ( match.isEmpty() || split[1].isEmpty() ||
-           match_len > host_len ||
-           (match.contains( '.' ) == 1 && match[0] == '.') )
-        continue;
+  if (user_agent.isEmpty())
+    user_agent = defaultUserAgent();
 
-      // We look for a reverse domain name match...
-      int rev_match = hostname.findRev(match, -1, false);
-      if ( rev_match != -1 && match_len == (host_len - rev_match) )
-      {
-        user_agent = split[1];
-        break;
-      }
-    }
-  }
   return user_agent;
-}
-
-QStringList KProtocolManager::userAgentList()
-{
-  KConfig *cfg = config();
-  // NOTE: Please, please DO NOT remove this check before
-  // this software is cycled into the next beta release!!!
-  // Otherwise, you will be breaking backwards compatability!!! (DA)
-  if( cfg->hasGroup("UserAgent") )
-    cfg->setGroup( "UserAgent" );
-  else
-    cfg->setGroup("Browser Settings/UserAgent");
-
-  QString entry;
-  QStringList settingsList;
-  int entries = cfg->readNumEntry( "EntriesCount", 0 );
-  for( int i = 0; i < entries; i++ )
-  {
-    entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
-    // Ignore wildcard matches...
-    if( !entry.isEmpty() && !entry.startsWith("*") )
-      settingsList.append(entry);
-  }
-  return settingsList;
-}
-
-void KProtocolManager::setUserAgentList( const QStringList& agentList )
-{
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-
-  int i = 0, count= agentList.count();
-  cfg->writeEntry( "EntriesCount", count );
-  QStringList::ConstIterator it = agentList.begin();
-  if ( count )
-  {
-    for( ; it != agentList.end(); ++it )
-      cfg->writeEntry( QString("Entry%1").arg(i++), *it );
-  }
-  cfg->sync();
 }
 
 QString KProtocolManager::cacheDir()
@@ -543,62 +471,37 @@ QString KProtocolManager::cacheDir()
     return cfg->readEntry("CacheDir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
 }
 
-void KProtocolManager::setDefaultUserAgentModifiers( const UAMODIFIERS& mods )
+QString KProtocolManager::defaultUserAgent( )
 {
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-
-  cfg->writeEntry("ShowOS", mods.showOS);
-  cfg->writeEntry("ShowOSVersion", mods.showOSVersion);
-  cfg->writeEntry("ShowPlatform", mods.showPlatform);
-  cfg->writeEntry("ShowMachine", mods.showMachine);
-  cfg->writeEntry("ShowLanguage", mods.showLanguage);
-  cfg->sync();
+  QString modifiers = KIO::SlaveConfig::self()->configData("http", QString::null, "UserAgentKeys");
+  return defaultUserAgent(modifiers);
 }
 
-void KProtocolManager::defaultUserAgentModifiers( UAMODIFIERS& mods )
+QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 {
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-
-  mods.showOS = cfg->readBoolEntry("ShowOS");
-  mods.showOSVersion = cfg->readBoolEntry("ShowOSVersion");
-  mods.showPlatform = cfg->readBoolEntry("ShowPlatform");
-  mods.showMachine = cfg->readBoolEntry("ShowMachine");
-  mods.showLanguage = cfg->readBoolEntry("ShowLanguage");
-}
-
-QString KProtocolManager::defaultUserAgent()
-{
-  KProtocolManager::UAMODIFIERS mods;
-  defaultUserAgentModifiers( mods );
-  return customDefaultUserAgent( mods );
-}
-
-QString KProtocolManager::customDefaultUserAgent( const UAMODIFIERS& mods )
-{
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-
+  QString modifiers = _modifiers.lower();
+  if (modifiers.isEmpty())
+     modifiers = DEFAULT_USER_AGENT_KEYS;
+     
   QString supp;
   struct utsname nam;
   if( uname(&nam) == 0 )
   {
-    if( mods.showOS )
+    if( modifiers.contains('o') )
     {
       supp += QString("; %1").arg(nam.sysname);
-      if ( mods.showOSVersion )
+      if ( modifiers.contains('v') )
         supp += QString(" %1").arg(nam.release);
     }
-    if( mods.showPlatform )
+    if( modifiers.contains('p') )
     {
       supp += QString::fromLatin1("; X11");  // TODO: determine this valye instead of hardcoding...
     }
-    if( mods.showMachine )
+    if( modifiers.contains('m') )
     {
       supp += QString("; %1").arg(nam.machine);
     }
-    if( mods.showLanguage )
+    if( modifiers.contains('l') )
     {
       QStringList languageList = KGlobal::locale()->languageList();
       QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
@@ -616,17 +519,12 @@ QString KProtocolManager::customDefaultUserAgent( const UAMODIFIERS& mods )
   return CFG_DEFAULT_UAGENT(supp);
 }
 
-bool KProtocolManager::sendUserAgent()
-{
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-  return cfg->readBoolEntry("SendUserAgent", true);
-}
+// obsolete, remove me in KDE 3.0
+void 
+KProtocolManager::setUserAgentList( const QStringList& /*agentlist*/ )
+{ }
 
-void KProtocolManager::setEnableSendUserAgent( bool show )
-{
-  KConfig *cfg = config();
-  cfg->setGroup("UserAgent");
-  cfg->writeEntry( "SendUserAgent", show );
-  cfg->sync();
-}
+// obsolete, remove me in KDE 3.0
+QStringList 
+KProtocolManager::userAgentList()
+{ return QStringList(); }

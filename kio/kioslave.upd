@@ -8,3 +8,7 @@ Key=UseCache
 File=kioslaverc
 Group=Browser Settings/UserAgent,UserAgent
 AllKeys
+Id=kde2.2/r2
+File=kioslaverc,kio_httprc
+Group=UserAgent
+Script=useragent.pl,perl

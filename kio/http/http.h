@@ -373,9 +373,6 @@ protected:
   // Chunked tranfer encoding
   bool m_bChunked;
 
-  // Send Useragent...
-  bool m_bSendUserAgent;
-
   // Cookie flags
   bool m_bUseCookiejar;
   enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;

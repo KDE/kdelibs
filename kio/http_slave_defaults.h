@@ -25,4 +25,7 @@
 #define DEFAULT_EXPIRE_TIME             1*60          //  1 MIN
 #define DEFAULT_CACHE_CONTROL		KIO::CC_Verify     // Verify with remote
 
+// USER AGENT
+#define DEFAULT_USER_AGENT_KEYS		"o"	// Show OS
+
 #endif

@@ -52,83 +52,28 @@ class KProtocolManager
 {
 public:
 
-  /** Values used to modify the default user-agent identification string */
-  struct UAMODIFIERS
-  {
-    UAMODIFIERS() {
-      showOS = false;
-      showPlatform = false;
-      showOSVersion = false;
-      showMachine = false;
-      showLanguage = false;
-    }
-    bool showOS;        // if true, the OS value will be included (ex: Linux/FreeBSD)
-    bool showPlatform;  // if true, the platform value will be included (ex: X11)
-    bool showOSVersion; // if true, the OS version will be included (ex: 2.4.1)
-    bool showMachine;   // if true, the processor type will be included (ex: i486)
-    bool showLanguage;  // if true, the language in use will be included (ex: en_US)
-  };
-
   /**
-   * Sets flags that determine which extra infromation, if any,
-   * will be appended to the default user-agent value.
+   * Returns the default user-agent value.
    *
-   * See @ref UAMODIFIERS above for details.
-   *
-   * @param mods the modifiers to be enabled.
+   * This function returns the default user-agent value
    */
-  static void setDefaultUserAgentModifiers( const UAMODIFIERS& );
-
-  /**
-   * Reads the default user-agent modifiers from config file
-   * and sets the values for the supplied argument accordingly.
-   *
-   * @param mod the modifier to be updated with config file values
-   */
-  static void defaultUserAgentModifiers( UAMODIFIERS& );
+  static QString defaultUserAgent();
 
   /**
    * Returns the default user-agent value.
    *
    * This function returns the default user-agent value
-   * set
+   * taking into account 'keys'
+   *
+   * Keys can be any of the folliwing:
+   * 'o'	Show OS
+   * 'v'	Show OS Version
+   * 'p'	Show platform
+   * 'm'	Show machine architecture
+   * 'l'	Show language
+   *
    */
-  static QString defaultUserAgent();
-
-  /**
-   * Returns the default user-agent with the specified extra
-   * identifiers enabled.
-   *
-   * This is a convienence method for modifying the default user-agent
-   * string without affecting the saved values.  Unlike @ref setUserAgentModifier
-   * this method niether reads nor changes the modifiers set in the
-   * config file.  It simply returns the default user-agent after
-   * applying the values of supplied by the modifier argument.
-   *
-   * @param mod values to be applied to default user-agent string.
-   */
-  static QString customDefaultUserAgent( const UAMODIFIERS& );
-
-  /**
-   * Returns true if the user-agent identification should be
-   * sent to remote sites.
-   *
-   * This function is present to respect the user's privacy
-   * concerns and should be respected by all io-slave that
-   * include the user-agent string.
-   *
-   * @return true if user-agent string should be included when
-   * communicating with remote machine
-   */
-  static bool sendUserAgent();
-
-  /**
-   * Sets the flag that determines whether the user agent string will
-   * be sent to remote sites.
-   *
-   * @param values to be applied to default user-agent string.
-   */
-  static void setEnableSendUserAgent( bool );
+  static QString defaultUserAgent(const QString &keys);
 
   /**
    * Returns the userAgent string configured for the
@@ -136,7 +81,7 @@ public:
    *
    * If hostname is not found or is empty (i.e. "" or
    * QString::null) this function will return the default
-   * agent string as defined above in DEFAULT_USERAGENT_STRING.
+   * user agent.
    *
    * @param hostname name of the host
    * @return specified userAgent string
@@ -144,26 +89,14 @@ public:
   static QString userAgentForHost( const QString& );
 
   /**
-   * Sets the list of userAgent.
-   *
-   * Sets the user agent name to be sent when connecting
-   * to different sites. The default user agent string is
-   * defined above by DEFAULT_USERAGENT_STRING.
-   *
-   * @param list the list of user agent strings to use.
+   * @obsolete
+   * TODO KDE 3.0: remove me
    */
-  static void setUserAgentList( const QStringList& );
+  static void setUserAgentList( const QStringList& /*agentlist*/ );
 
   /**
-   * Returns the list of user agents configured for
-   * specific domains.
-   *
-   * This function returns the list of site specific user-
-   * agent entries set by the user. The format is:
-   *
-   * site-name::user-agent string::alias (description of user-agent string)
-   *
-   * @return the list of per-site user-agent entries.
+   * @obsolete
+   * TODO KDE 3.0: remove me
    */
   static QStringList userAgentList();
 

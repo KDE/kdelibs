@@ -835,13 +835,13 @@ bool HTTPProtocol::http_open()
   header += "Connection: Keep-Alive\r\n";
 #endif
 
-  if ( m_bSendUserAgent )
-  {
-    QString agent = metaData("userAgent");
-    // If application did not specify a user agent,
-    // use configured by the user or the default!!
+  if ( config()->readBoolEntry("SendUserAgent", true) )
+  {  
+    QString agent = config()->readEntry("UserAgent");
+
     if( agent.isEmpty() )
-      agent = KProtocolManager::userAgentForHost( m_state.hostname );
+      agent = KProtocolManager::defaultUserAgent(
+      		config()->readEntry("UserAgentKeys", DEFAULT_USER_AGENT_KEYS));
 
     if( !agent.isEmpty() )
       header += "User-Agent: " + agent + "\r\n";
@@ -3695,9 +3695,6 @@ void HTTPProtocol::reparseConfiguration()
   m_strProxyAuthorization = QString::null;
 
   ProxyAuthentication = AUTH_None;
-
-  m_bSendUserAgent = KProtocolManager::sendUserAgent();
-
 
   // Define language and charset settings from KLocale (David)
   // Get rid of duplicate language entries!!
