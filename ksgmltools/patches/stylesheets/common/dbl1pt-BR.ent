@@ -1,11 +1,13 @@
 <!ENTITY Abstract	"Resumo">
+<!ENTITY Answer		"R:">
 <!ENTITY Appendix	"Ap&#234;ndice">
-<!ENTITY Article	"Article"> <!--usen-->
+<!ENTITY Article	"Artigo">
 <!ENTITY Bibliography	"Bibliografia">
-<!ENTITY Book		"Book"> <!--usen-->
-<!ENTITY CAUTION	"CAUTELA">
-<!ENTITY Caution	"Cautela">
+<!ENTITY Book		"Livro">
+<!ENTITY CAUTION	"CUIDADO">
+<!ENTITY Caution	"Cuidado">
 <!ENTITY Chapter	"Cap&#237;tulo">
+<!ENTITY Colophon	"Considera&#231;&#245;es finais">
 <!ENTITY Copyright	"Copyright">
 <!ENTITY Dedication	"Dedicat&#243;ria">
 <!ENTITY Edition	"Edi&#231;&#227;o">
@@ -14,12 +16,12 @@
 <!ENTITY Figure		"Figura">
 <!ENTITY GlossSee	"Ver">
 <!ENTITY GlossSeeAlso	"Ver Tamb&#233;m">
-<!ENTITY Glossary	"Glossario">
+<!ENTITY Glossary	"Gloss&#225;rio">
 <!ENTITY IMPORTANT	"IMPORTANTE">
 <!ENTITY ISBN		"ISBN">
 <!ENTITY Important	"Importante">
-<!ENTITY Index		"Index">
-<!ENTITY LegalNotice	"">
+<!ENTITY Index		"&#205;ndice Remissivo">
+<!ENTITY LegalNotice	"Nota Legal">
 <!ENTITY MsgAud		"Audi&#234;ncia">
 <!ENTITY MsgLevel	"N&#237;vel">
 <!ENTITY MsgOrig	"Origem">
@@ -28,18 +30,23 @@
 <!ENTITY Part		"Parte">
 <!ENTITY Preface	"Pref&#225;cio">
 <!ENTITY Procedure	"Procedimento">
-<!ENTITY PubDate        "Editado">
-<!ENTITY Published	"Published"> <!--usen-->
+<!ENTITY PubDate        "Data de Publica&#231;&#227;o">
+<!ENTITY Published	"Publicado">
+<!ENTITY Question	"P:">
+<!ENTITY RefEntry       "">
 <!ENTITY RefName	"Nome">
 <!ENTITY Reference	"Refer&#234;ncia">
+<!ENTITY RefSection     "">
+<!ENTITY RefSynopsisDiv "Sinopse">
 <!ENTITY Revision	"Revis&#227;o">
-<!ENTITY RevHistory	"Hitorial de Revis&#245;es">
-<!ENTITY Section	"Sec&#231;&#227;o">
+<!ENTITY RevHistory	"Hist&#243;rico de Revis&#245;es">
+<!ENTITY Section	"Se&#231;&#227;o">
 <!ENTITY See		"Ver">
 <!ENTITY SeeAlso	"Ver Tamb&#233;m">
-<!ENTITY Set		"Set"> <!--usen-->
-<!ENTITY SetIndex	"Set Index"> <!--usen-->
-<!ENTITY Sidebar	"Sidebar"> <!--usen-->
+<!ENTITY Set		"Conjunto">
+<!ENTITY SetIndex	"&#205;ndice do Conjunto">
+<!ENTITY Sidebar	"Quadro Lateral">
+<!ENTITY sidebar	"quadro lateral">
 <!ENTITY Step		"Passo">
 <!ENTITY TIP		"DICA">
 <!ENTITY Table		"Tabela">
@@ -48,7 +55,7 @@
 <!ENTITY Warning	"Aten&#231;&#227;o">
 <!ENTITY appendix	"ap&#234;ndice">
 <!ENTITY chapter	"cap&#237;tulo">
-<!ENTITY section	"sec&#231;&#227;o">
+<!ENTITY section	"se&#231;&#227;o">
 <!ENTITY step		"passo">
 <!ENTITY Seealso	"ver tamb&#233;m">
 
@@ -57,17 +64,25 @@
 <!ENTITY by		"por">
 <!ENTITY Edited		"Editado">
 <!ENTITY Editedby	"&Edited; &by;">
+<!ENTITY Revisedby      "Revisado &by;: ">
 <!ENTITY and		"e">
 <!ENTITY Notes		"Notas">
 <!ENTITY TableNotes     "Notas">
-<!ENTITY nonexistantelement	"non-existant element">
+<!ENTITY nonexistantelement	"elemento inexistente">
 <!ENTITY Pgs 		"P&#225;ginas">
-<!ENTITY unsupported	"unsupported">
-<!ENTITY xrefto		"xref to">
-<!ENTITY unexpectedelementname	"Unexpected element name">
+<!ENTITY unsupported	"não suportado">
+<!ENTITY xrefto		"refer&#234;ncia para">
+<!ENTITY unexpectedelementname	"Nome de elemento inesperado">
 
-<!ENTITY ListofTables "Lista de Tabelas">
+<!ENTITY ListofTables	"Lista de Tabelas">
 <!ENTITY ListofExamples "Lista de Exemplos">
-<!ENTITY ListofFigures "Lista de Figuras">
+<!ENTITY ListofFigures	"Lista de Figuras">
 <!ENTITY ListofEquations "Lista de Equa&#231;&#245;es">
-<!ENTITY ListofUnknown "List of ???">
+<!ENTITY ListofUnknown	"Lista de ???">
+
+<!ENTITY nav-prev		"Anterior">
+<!ENTITY nav-prev-sibling	"In&#237;cio">
+<!ENTITY nav-next-sibling	"Fim">
+<!ENTITY nav-next		"Pr&#243;xima">
+<!ENTITY nav-up			"Acima">
+<!ENTITY nav-home		"Principal">
