@@ -66,6 +66,12 @@ using namespace KJS;
   if (Collector::outOfMemory()) \
     return Undefined(); // will be picked up by KJS_CHECKEXCEPTION
 
+#define KJS_CHECKEXCEPTIONREF \
+  if (exec->hadException()) \
+    return Reference2(exec->exception()); \
+  if (Collector::outOfMemory()) \
+    return Reference2(); // will be picked up by KJS_CHECKEXCEPTION
+
 #define KJS_CHECKEXCEPTIONLIST \
   if (exec->hadException()) \
     return List(); \
@@ -96,10 +102,10 @@ Node::~Node()
 }
 
 // fallback for nodes without an evaluate() reimplementation
-Reference Node::evaluate(ExecState *exec) const
+Reference2 Node::evaluate(ExecState *exec) const
 {
   //  fprintf(stderr, "%s::evaluate()\n", typeid(*this).name());
-  return value(exec);
+  return Reference2(value(exec));
 }
 
 // fallback for those nodes without a value() reimplementation
@@ -222,7 +228,7 @@ Value ThisNode::value(ExecState *exec) const
 // ----------------------------- ResolveNode ----------------------------------
 
 // ECMA 11.1.2 & 10.1.4
-Reference ResolveNode::evaluate(ExecState *exec) const
+Reference2 ResolveNode::evaluate(ExecState *exec) const
 {
   const List chain = exec->context().scopeChain();
   ListIterator scope = chain.begin();
@@ -235,14 +241,14 @@ Reference ResolveNode::evaluate(ExecState *exec) const
     if (o->hasProperty(exec,ident)) {
       //cout << "Resolve: FOUND '" << ident.ascii() << "'"
       //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
-      return Reference(Object(o), ident);
+      return Reference2(Object(o), ident);
     }
     scope++;
   }
 
   // identifier not found
   //cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
-  return Reference(Null(), ident);
+  return Reference2(Null(), ident);
 }
 
 Value ResolveNode::value(ExecState *exec) const
@@ -538,15 +544,15 @@ bool AccessorNode1::deref()
 }
 
 // ECMA 11.2.1a
-Reference AccessorNode1::evaluate(ExecState *exec) const
+Reference2 AccessorNode1::evaluate(ExecState *exec) const
 {
   Value v1 = expr1->value(exec);
-  KJS_CHECKEXCEPTIONVALUE
+  KJS_CHECKEXCEPTIONREF
   Value v2 = expr2->value(exec);
-  KJS_CHECKEXCEPTIONVALUE
+  KJS_CHECKEXCEPTIONREF
   Object o = v1.toObject(exec);
   String s = v2.toString(exec);
-  return Reference(o, s.value());
+  return Reference2(o, s.value());
 }
 
 // ----------------------------- AccessorNode2 --------------------------------
@@ -570,12 +576,12 @@ bool AccessorNode2::deref()
 }
 
 // ECMA 11.2.1b
-Reference AccessorNode2::evaluate(ExecState *exec) const
+Reference2 AccessorNode2::evaluate(ExecState *exec) const
 {
   Value v = expr->value(exec);
-  KJS_CHECKEXCEPTIONVALUE
+  KJS_CHECKEXCEPTIONREF
   Object o = v.toObject(exec);
-  return Reference(o, ident);
+  return Reference2(o, ident);
 }
 
 // ----------------------------- ArgumentListNode -----------------------------
@@ -751,18 +757,18 @@ bool FunctionCallNode::deref()
 // ECMA 11.2.3
 Value FunctionCallNode::value(ExecState *exec) const
 {
-  Value e = expr->evaluate(exec);
+  Reference2 ref = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   List argList = args->evaluateList(exec);
 
   KJS_CHECKEXCEPTIONVALUE
 
-  Value v = e.getValue(exec);
+  Value v = ref.getValue(exec);
 
   if (v.type() != ObjectType) {
 #ifndef NDEBUG
-    printInfo(exec, "WARNING: Failed function call attempt on", e, line);
+    printInfo(exec, "WARNING: Failed function call attempt on", v, line);
 #endif
     return throwError(exec, TypeError, "Expression is no object. Cannot be called.");
   }
@@ -771,14 +777,14 @@ Value FunctionCallNode::value(ExecState *exec) const
 
   if (!func.implementsCall()) {
 #ifndef NDEBUG
-    printInfo(exec, "Failed function call attempt on", e, line);
+    printInfo(exec, "Failed function call attempt on", func, line);
 #endif
     return throwError(exec, TypeError, "Expression does not allow calls.");
   }
 
   Value thisVal;
-  if (e.type() == ReferenceType)
-    thisVal = e.getBase(exec);
+  if (ref.isValid())
+    thisVal = ref.base();
   else
     thisVal = Null();
 
@@ -826,7 +832,7 @@ bool PostfixNode::deref()
 // ECMA 11.3
 Value PostfixNode::value(ExecState *exec) const
 {
-  Value e = expr->evaluate(exec);
+  Reference2 e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   Value v = e.getValue(exec);
   Number n = v.toNumber(exec);
@@ -861,12 +867,12 @@ bool DeleteNode::deref()
 // ECMA 11.4.1
 Value DeleteNode::value(ExecState *exec) const
 {
-  Value e = expr->evaluate(exec);
+  Reference2 ref = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  if (e.type() != ReferenceType)
+  if (!ref.isValid())
     return Boolean(true);
-  Value b = e.getBase(exec);
-  UString n = e.getPropertyName(exec);
+  Value b = ref.base();
+  UString n = ref.propertyName();
 
   // The spec doesn't mention what to do if the base is null... just return true
   if (b.type() != ObjectType) {
@@ -934,14 +940,13 @@ bool TypeOfNode::deref()
 Value TypeOfNode::value(ExecState *exec) const
 {
   const char *s = 0L;
-  Value e = expr->evaluate(exec);
+  Reference2 ref = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  if (e.type() == ReferenceType) {
-    Value b = e.getBase(exec);
-    if (b.type() == NullType)
+  if (ref.isValid()) {
+    if (ref.base().type() == NullType)
       return String("undefined");
   }
-  Value v = e.getValue(exec);
+  Value v = ref.getValue(exec);
   switch (v.type())
     {
     case UndefinedType:
@@ -993,15 +998,15 @@ bool PrefixNode::deref()
 // ECMA 11.4.4 and 11.4.5
 Value PrefixNode::value(ExecState *exec) const
 {
-  Value e = expr->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  Value v = e.getValue(exec);
+  Reference2 ref = expr->evaluate(exec);
+  KJS_CHECKEXCEPTION
+  Value v = ref.getValue(exec);
   double n = v.toNumber(exec);
 
   double newValue = (oper == OpPlusPlus) ? n + 1 : n - 1;
   Value n2 = Number(newValue);
 
-  e.putValue(exec,n2);
+  ref.putValue(exec,n2);
 
   return n2;
 }
@@ -1522,8 +1527,8 @@ bool AssignNode::deref()
 // ECMA 11.13
 Value AssignNode::value(ExecState *exec) const
 {
-
-  Value l, v;
+  Reference2 l;
+  Value v;
   if (oper == OpEqual) {
     l = left->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
@@ -2228,19 +2233,17 @@ bool ForInNode::deref()
 // ECMA 12.6.4
 Completion ForInNode::execute(ExecState *exec)
 {
-  Value e, retval;
-  Object v;
+  Value retval;
   Completion c;
-  List propList;
 
   if ( varDecl ) {
     varDecl->value(exec);
     KJS_CHECKEXCEPTION
   }
 
-  v = expr->value(exec).toObject(exec);
+  Object v = expr->value(exec).toObject(exec);
   KJS_CHECKEXCEPTION
-  propList = v.propList(exec);
+  List propList = v.propList(exec);
 
   ListIterator propIt = propList.begin();
 
@@ -2251,9 +2254,9 @@ Completion ForInNode::execute(ExecState *exec)
       continue;
     }
 
-    e = lexpr->evaluate(exec);
+    Reference2 ref = lexpr->evaluate(exec);
     KJS_CHECKEXCEPTION
-    e.putValue(exec,String(name));
+    ref.putValue(exec, String(name));
 
     c = statement->execute(exec);
     if (c.isValueCompletion())

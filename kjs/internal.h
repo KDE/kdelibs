@@ -189,6 +189,42 @@ namespace KJS {
   /**
    * @internal
    */
+  /* TODO: KDE 4.0: delete Reference in types.h and rename this one. */
+  class Reference2 {
+  public:
+    /**
+     * Constructs an invalid reference
+     */
+    Reference2() : bs(0L) { }
+    /**
+     * Constructs an invalid reference containing a value instead.
+     */
+    Reference2(const Value& v) : bs(v.imp()) { }
+    /**
+     * Constructs an reference with the specified base and property.
+     */
+    Reference2(const Value& v, const UString& p) : bs(v.imp()), prop(p) { }
+
+    bool isValid() const { return bs && !prop.isNull(); }
+
+
+    // ECMA 8.7.1
+    Value base() const { return Value(bs); }
+    // ECMA 8.7.2
+    UString propertyName() const { return prop; }
+
+    // ECMA 8.7.1
+    Value getValue(ExecState *exec) const;
+    void putValue(ExecState *exec, const Value& w);
+
+  private:
+    ValueImp *bs;
+    UString prop;
+  };
+
+  /**
+   * @internal
+   */
   class ListNode {
     friend class List;
     friend class ListImp;

@@ -366,7 +366,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       RegExp reg(obj0.get(exec,"source").toString(exec));
       if (u.isEmpty() && !reg.match(u, 0).isNull()) {
 	// empty string matched by regexp -> empty array
-	res.put(exec,"length", Number(0));
+	res.put(exec, "length", Number(0), DontDelete|ReadOnly|DontEnum);
 	break;
       }
       pos = 0;

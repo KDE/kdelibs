@@ -31,6 +31,10 @@
 
 namespace KJS {
 
+  /**
+   * @deprecated
+   */
+  /* TODO: KDE 4.0: remove this one rename Reference2 in internal.h. */
   class Reference : public Value {
   public:
     Reference(const Object& b, const UString& p);
@@ -41,16 +45,6 @@ namespace KJS {
     virtual ~Reference();
 
     Reference& operator=(const Reference &v);
-
-    /**
-     * Converts a Value into an Reference. If the value's type is not
-     * ReferenceType, a null object will be returned (i.e. one with it's
-     * internal pointer set to 0). If you do not know for sure whether the
-     * value is of type ReferenceType, you should check the @ref isNull()
-     * methods afterwards before calling any methods on the returned value.
-     *
-     * @return The value converted to an Reference
-     */
     static Reference dynamicCast(const Value &v);
   };
 

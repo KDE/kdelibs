@@ -115,74 +115,39 @@ unsigned short ValueImp::toUInt16(ExecState *exec) const
   return static_cast<unsigned short>(d16);
 }
 
-// ECMA 8.7.1
+// TODO: remove
 Value ValueImp::getBase(ExecState *exec) const
 {
-  if (type() != ReferenceType) {
-    Object err = Error::create(exec, ReferenceError, I18N_NOOP("Invalid reference base"));
-    exec->setException(err);
-    return err;
-  }
-
-  return (static_cast<const ReferenceImp*>(this))->getBase();
+#ifndef NDEBUG
+  fprintf(stderr, "ValueImp::getBase: deprecated\n");
+#endif
+  return Undefined();
 }
 
-// ECMA 8.7.2
+// TODO: remove
 UString ValueImp::getPropertyName(ExecState * /*exec*/) const
 {
-  if (type() != ReferenceType)
-    // the spec wants a runtime error here. But getValue() and putValue()
-    // will catch this case on their own earlier. When returning a Null
-    // string we should be on the safe side.
-    return UString();
-
-  return (static_cast<const ReferenceImp*>(this))->getPropertyName();
-}
-
-// ECMA 8.7.1
-Value ValueImp::getValue(ExecState *exec) const
-{
-  if (type() != ReferenceType)
-    return Value(const_cast<ValueImp*>(this));
-
-  Value o = getBase(exec);
-
-  if (o.isNull() || o.type() == NullType) {
-    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec);
-    Object err = Error::create(exec, ReferenceError, m.ascii());
-    exec->setException(err);
-    return err;
-  }
-
-  if (o.type() != ObjectType) {
-    UString m = I18N_NOOP("Base is not an object");
-    Object err = Error::create(exec, ReferenceError, m.ascii());
-    exec->setException(err);
-    return err;
-  }
-
-  return static_cast<ObjectImp*>(o.imp())->get(exec,getPropertyName(exec));
-}
-
-void ValueImp::putValue(ExecState *exec, const Value w)
-{
-  if (type() != ReferenceType) {
-    Object err = Error::create(exec,ReferenceError);
-    exec->setException(err);
-    return;
-  }
-
-#ifdef KJS_VERBOSE
-  printInfo(exec,(UString("setting property ")+getPropertyName(exec)).cstring().c_str(),w);
+#ifndef NDEBUG
+  fprintf(stderr, "ValueImp::getPropertyName: deprecated\n");
 #endif
-  Value o = getBase(exec);
-  if (o.type() == NullType)
-    exec->interpreter()->globalObject().put(exec,getPropertyName(exec), w);
-  else {
-    static_cast<ObjectImp*>(o.imp())->put(exec,getPropertyName(exec), w);
-  }
+  return UString("");
+}
 
-  return;
+// TODO: remove
+Value ValueImp::getValue(ExecState *) const
+{
+#ifndef NDEBUG
+  fprintf(stderr, "ValueImp::getValue: deprecated\n");
+#endif
+  return Undefined();
+}
+
+// TODO: remove
+void ValueImp::putValue(ExecState *, const Value)
+{
+#ifndef NDEBUG
+  fprintf(stderr, "ValueImp::putValue: deprecated\n");
+#endif
 }
 
 bool KJS::operator==(const Value &v1, const Value &v2)
@@ -315,21 +280,25 @@ Object Value::toObject(ExecState *exec) const
   return rep->toObject(exec);
 }
 
+// TODO: remove
 Value Value::getBase(ExecState *exec) const
 {
   return rep->getBase(exec);
 }
 
+// TODO: remove
 UString Value::getPropertyName(ExecState *exec) const
 {
   return rep->getPropertyName(exec);
 }
 
+// TODO: remove
 Value Value::getValue(ExecState *exec) const
 {
   return rep->getValue(exec);
 }
 
+// TODO: remove
 void Value::putValue(ExecState *exec, const Value w)
 {
   rep->putValue(exec,w);
