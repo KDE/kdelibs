@@ -54,6 +54,12 @@ ushort HTMLBlockquoteElementImpl::id() const
     return ID_BLOCKQUOTE;
 }
 
+void HTMLBlockquoteElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
+}
+
 // -------------------------------------------------------------------------
 
 HTMLDivElementImpl::HTMLDivElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -217,6 +223,12 @@ void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLParagraphElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------

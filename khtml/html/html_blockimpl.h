@@ -44,6 +44,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
+    void attach(KHTMLView *w);
+    
     virtual tagStatus startTag() { return BLOCKQUOTEStartTag; }
     virtual tagStatus endTag() { return BLOCKQUOTEEndTag; }
 };
@@ -136,6 +138,7 @@ public:
     virtual tagStatus endTag() { return PEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
+    void attach(KHTMLView *w);
 };
 
 // -------------------------------------------------------------------------
