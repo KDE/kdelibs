@@ -222,16 +222,19 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     if(!firstBody && !head && !foot && !hasChildNodes())
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    //kdDebug(6030) << k_funcinfo << index << endl;
+    kdDebug(6030) << k_funcinfo << index << endl;
     // IE treats index=-1 as default value meaning 'append after last'
     // This isn't in the DOM. So, not implemented yet.
     HTMLTableSectionElementImpl* section = 0L;
     HTMLTableSectionElementImpl* lastSection = 0L;
     NodeImpl *node = firstChild();
-    bool append = index == -1;
+    bool append = (index == -1);
+    bool found = false;
     for ( ; node && (index>=0 || append) ; node = node->nextSibling() )
     {
-        if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
+	// there could be 2 tfoot elements in the table. Only the first one is the "foot", that's why we have the more
+	// complicated if statement below.
+        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
             lastSection = section;
@@ -239,31 +242,18 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
             if ( !append )
             {
                 int rows = section->numRows();
-                if ( rows > index )
+                if ( rows > index ) {
+		    found = true;
                     break;
-                else
+                } else
                     index -= rows;
                 //kdDebug(6030) << "       index is now " << index << endl;
             }
         }
-        // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
-        else if ( node->id() == ID_TR )
-        {
-            section = 0L;
-            //kdDebug(6030) << k_funcinfo << "row" << endl;
-            if (!append && !index)
-            {
-                // Insert row right here, before "node"
-                HTMLTableRowElementImpl* row = new HTMLTableRowElementImpl(docPtr());
-                insertBefore(row, node, exceptioncode );
-                return row;
-            }
-            if ( !append )
-                index--;
-            //kdDebug(6030) << "       index is now " << index << endl;
-        }
-        section = 0L;
     }
+    if ( !found && foot )
+	section = static_cast<HTMLTableSectionElementImpl *>(foot);
+
     // Index == 0 means "insert before first row in current section"
     // or "append after last row" (if there's no current section anymore)
     if ( !section && ( index == 0 || append ) )
@@ -272,7 +262,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         index = section ? section->numRows() : 0;
     }
     if ( section && index >= 0 ) {
-        //kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
+        kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
         // No more sections => index is too big
@@ -287,23 +277,28 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
     NodeImpl *node = firstChild();
     bool lastRow = index == -1;
     HTMLTableSectionElementImpl* lastSection = 0L;
+    bool found = false;
     for ( ; node ; node = node->nextSibling() )
     {
-        if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
+        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
             lastSection = section;
             int rows = section->numRows();
             if ( !lastRow )
             {
-                if ( rows > index )
-                    break;
-                else
+                if ( rows > index ) {
+                    found = true;
+		    break;
+                } else
                     index -= rows;
             }
         }
         section = 0L;
     }
+    if ( !found && foot )
+	section = static_cast<HTMLTableSectionElementImpl *>(foot);
+
     if ( lastRow )
         lastSection->deleteRow( lastSection->numRows(), exceptioncode );
     else if ( section && index >= 0 && index < section->numRows() )
@@ -657,26 +652,39 @@ NodeImpl::Id HTMLTableRowElementImpl::id() const
 
 long HTMLTableRowElementImpl::rowIndex() const
 {
-    // some complex traversal stuff here to take into account that some rows may be in different sections
     int rIndex = 0;
-    const NodeImpl *n = this;
-    do {
-        while (!n->previousSibling() && !(n->isElementNode() && n->id() == ID_TABLE))
-            n = n->parentNode();
-        if (n->isElementNode() && n->id() == ID_TABLE)
-            n = 0;
-        if (n) {
-            n = n->previousSibling();
-            while (!(n->isElementNode() && n->id() == ID_TR) && n->lastChild())
-                n = n->lastChild();
-        }
 
-        if (n && n->isElementNode() && n->id() == ID_TR)
-            rIndex++;
+    NodeImpl *table = parentNode();
+    if ( !table )
+	return -1;
+    table = table->parentNode();
+    if ( !table || table->id() != ID_TABLE )
+	return -1;
+
+    HTMLTableSectionElementImpl *foot = static_cast<HTMLTableElementImpl *>(table)->tFoot();
+    NodeImpl *node = table->firstChild();
+    while ( node ) {
+        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) ) {
+	    HTMLTableSectionElementImpl* section = static_cast<HTMLTableSectionElementImpl *>(node);
+	    const NodeImpl *row = section->firstChild();
+	    while ( row ) {
+		if ( row == this )
+		    return rIndex;
+		rIndex++;
+		row = row->nextSibling();
+	    }
+	}
+	node = node->nextSibling();
     }
-    while (n && n->isElementNode() && n->id() == ID_TR);
-
-    return rIndex;
+    const NodeImpl *row = foot->firstChild();
+    while ( row ) {
+	if ( row == this )
+	    return rIndex;
+	rIndex++;
+	row = row->nextSibling();
+    }
+    // should never happen
+    return -1;
 }
 
 long HTMLTableRowElementImpl::sectionRowIndex() const
@@ -755,7 +763,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
         if (attr->val()) {
             if ( strcasecmp(attr->value(), "middle" ) == 0 ||
-		 strcasecmp(attr->value(), "center" ) == 0 )
+                strcasecmp(attr->value(), "center" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, "-konq-center" );
             else
                 addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
