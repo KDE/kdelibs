@@ -20,7 +20,8 @@ libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp dockma
 
 kpartsincludedir = $(includedir)/kparts
 kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h dockmainwindow.h event.h \
-	browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h
+	browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h \
+	componentfactory.h
 
 libkparts_la_METASOURCES = AUTO
 
