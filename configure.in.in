@@ -154,6 +154,8 @@ LIB_KSYCOCA='$(top_builddir)/kio/libksycoca.la'
 AC_SUBST(LIB_KSYCOCA)
 LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
 AC_SUBST(LIB_KFILE)
+LIB_KPARTS='$(top_builddir)/kparts/libkparts.la'
+AC_SUBST(LIB_KPARTS)
 LIB_KAB='$(top_builddir)/kab/libkab.la'
 AC_SUBST(LIB_KAB)
 LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
