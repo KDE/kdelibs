@@ -20,9 +20,9 @@ int main ( int argc, char** argv )
                                                        QString::null, comment,
                                                        label );
     if ( res == QDialog::Accepted )
-        KMessageBox::information( 0L, "You entered:\n"
+        KMessageBox::information( 0L, QString("You entered:\n"
 					   "  Username: %1\n"
-                                           "  Password: %2".arg(usr).arg(pass),
+                                           "  Password: %2").arg(usr).arg(pass),
                                 	"Test Result");
     else
         KMessageBox::information( 0L, "Password dialog was cancelled!",
