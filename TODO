@@ -190,3 +190,6 @@ an alternative help->contents action)
 - KListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
   "dnd to move items" (e.g. keditbookmarks) and "dnd onto items" (e.g. kmail). Unless Qt4 does it all :)
 
+- Move KIO::findDeviceMountPoint, findPathMoundPoint, probably_slow_mounted, and testFileSystemFlag to KMountPoint,
+  to merge that code.
+
