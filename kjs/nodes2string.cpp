@@ -153,6 +153,8 @@ void ElementNode::streamTo(SourceStream &s) const
     for (int i = 0; i < n->elision; i++)
       s << ",";
     s << n->node;
+    if ( n->list )
+        s << ",";
   }
 }
 
