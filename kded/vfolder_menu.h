@@ -133,11 +133,6 @@ private:
   KService *findApplication(const QString &relPath);
 
   /**
-   * Lookup relative path of an application
-   */
-  QString relativePath(KService *service);
-
-  /**
    * Lookup applications by category
    */
   QPtrList<KService::List> findCategory(const QString &category);
@@ -145,7 +140,7 @@ private:
   /**
    * Add new application
    */
-  void addApplication(const QString &relPath, KService *service);
+  void addApplication(const QString &id, KService *service);
   
   /**
    * Build application indices
@@ -232,7 +227,7 @@ private:
   void registerDirectory(const QString &directory);
 
   void processKDELegacyDirs();
-  void processLegacyDir(const QString &dir, const QString &relDir);
+  void processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix);
   void processMenu(QDomElement &docElem, int pass);
   void processCondition(QDomElement &docElem, QDict<KService> *items);
 

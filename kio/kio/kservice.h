@@ -180,6 +180,14 @@ public:
   QString desktopEntryName() const { return m_strDesktopEntryName; }
 
   /**
+   * Returns the menu ID of the service desktop entry.
+   * The menu ID is used to add or remove the entry to a menu.
+   * @return the menu ID
+   * @since 3.2
+   */
+  QString menuId() const;
+
+  /**
    * Describes the DCOP type of the service.
    * @li None - This service has no DCOP support
    * @li Unique - This service provides a unique DCOP service.
@@ -340,6 +348,11 @@ public:
    * Save the service to a stream.
    */
   virtual void save( QDataStream& );
+  /**
+   * @internal
+   * Set the menu id
+   */
+  void setMenuId(const QString &menuId);
 
   /**
    * Find a service by name, i.e. the translated Name field. You should

@@ -52,7 +52,7 @@
 #include <kcmdlineargs.h>
 #include <kcrash.h>
 
-#undef ANNOYING_POPUP
+#define ANNOYING_POPUP
 
 #ifdef ANNOYING_POPUP
 #include <kmessagebox.h>
@@ -181,7 +181,7 @@ void KBuildSycoca::processGnomeVfs()
    fclose( f );
 }
 
-KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
+KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
 {
    Q_UINT32 timeStamp = g_ctimeInfo->ctime(file);
    if (!timeStamp)
@@ -237,7 +237,8 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
    }
    if ( entry && entry->isValid() )
    {
-      g_factory->addEntry( entry, g_resource );
+      if (addToFactory)
+         g_factory->addEntry( entry, g_resource );
       return entry;
    }
    return 0;
@@ -245,7 +246,7 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
 
 void KBuildSycoca::slotCreateEntry(const QString &file, KService **service)
 {
-   KSycocaEntry *entry = createEntry(file);
+   KSycocaEntry *entry = createEntry(file, false);
    *service = dynamic_cast<KService *>(entry);
 }
 
@@ -348,7 +349,7 @@ bool KBuildSycoca::build()
                // Check if file matches filter
                if (res.filter.search(*it3) == -1) continue;
 
-               createEntry(*it3);
+               createEntry(*it3, true);
            }
         }
         if ((g_factory == g_bsf) && (strcmp(g_resource, "services") == 0))
@@ -437,10 +438,12 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
   {
      if (bMenuTest)
      {
-        printf("%s\t%s\n", name.latin1(), locate("apps", it.current()->desktopEntryPath()).latin1());
+        printf("%s\t%s\t%s\n", name.latin1(), it.current()->menuId().latin1(), locate("apps", it.current()->desktopEntryPath()).latin1());
      }
      else
      {
+        // TODO: Check if problematic if same sevice is added twice
+        g_bsf->addEntry( it.current(), g_resource );
         g_bsgf->addNewEntryTo(name, it.current());
      }
   }

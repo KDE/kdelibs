@@ -53,6 +53,7 @@ class KService::KServicePrivate
 {
 public:
   QStringList categories;
+  QString menuId;
 };
 
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
@@ -94,7 +95,6 @@ KService::init( KDesktopFile *config )
   bool absPath = (entryPath()[0] == '/');
 
   config->setDesktopGroup();
-  config->setDollarExpansion( true ); // mainly for Exec and Path
   if(absPath && access(QFile::encodeName(entryPath()), R_OK))
   {
     m_bValid = false;
@@ -297,7 +297,7 @@ void KService::load( QDataStream& s )
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
     >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName
-    >> d->categories;
+    >> d->categories >> d->menuId;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -330,7 +330,7 @@ void KService::save( QDataStream& s )
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
     << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName
-    << d->categories;
+    << d->categories << d->menuId;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -612,6 +612,15 @@ QStringList KService::categories() const
   return d->categories;
 }
 
+QString KService::menuId() const
+{
+  return d->menuId;
+}
+
+void KService::setMenuId(const QString &menuId)
+{
+  d->menuId = menuId;
+}
 
 void KService::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }

@@ -63,7 +63,7 @@ protected:
     * Add single entry to the sycoca database.
     * Either from a previous database or regenerated from file.
     */
-   KSycocaEntry *createEntry(const QString &file);
+   KSycocaEntry *createEntry(const QString &file, bool addToFactory);
 
    /**
     * Convert a VFolderMenu::SubMenu to KServiceGroups.
