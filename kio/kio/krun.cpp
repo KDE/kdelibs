@@ -543,6 +543,11 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
   // (not when starting an executable)
   if ( KDesktopFile::isDesktopFile( bin ) )
   {
+      if (!KDesktopFile::isAuthorizedDesktopFile( bin))
+      {
+         KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
+         return;
+      }
       if( bin[0] == '/' ) // Full path
           service = new KService( bin );
       else
@@ -641,6 +646,12 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls )
 
 pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 {
+  if (!KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
+  {
+     KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
+     return;
+  }
+
   // Remember we opened those urls, for the "recent documents" menu in kicker
   KURL::List::ConstIterator it = _urls.begin();
   for(; it != _urls.end(); ++it) {
