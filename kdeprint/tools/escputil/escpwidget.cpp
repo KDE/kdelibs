@@ -31,6 +31,7 @@
 #include <kdialogbase.h>
 #include <klibloader.h>
 #include <kseparator.h>
+#include <kdebug.h>
 
 class EscpFactory : public KLibFactory
 {
@@ -61,6 +62,8 @@ extern "C"
 EscpWidget::EscpWidget(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
+	m_hasoutput = false;
+
 	connect(&m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
 	connect(&m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceivedStdout(KProcess*,char*,int)));
 	connect(&m_proc, SIGNAL(receivedStderr(KProcess*,char*,int)), SLOT(slotReceivedStderr(KProcess*,char*,int)));
@@ -187,6 +190,9 @@ void EscpWidget::startCommand(const QString& arg)
 
 	m_proc << arg << "-q";
 	m_errorbuffer = m_outbuffer = QString::null;
+	m_hasoutput = ( arg == "-i" || arg == "-d" );
+	for ( QValueList<QCString>::ConstIterator it=m_proc.args().begin(); it!=m_proc.args().end(); ++it )
+		kdDebug() << "ARG: " << *it << endl;
 	if (m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 		setEnabled(false);
 	else
@@ -213,6 +219,11 @@ void EscpWidget::slotProcessExited(KProcess*)
 		else
 			KMessageBox::error(this, msg1);
 	}
+	else if ( !m_outbuffer.isEmpty() && m_hasoutput )
+	{
+		KMessageBox::information( this, m_outbuffer );
+	}
+	m_hasoutput = false;
 }
 
 void EscpWidget::slotReceivedStdout(KProcess*, char *buf, int len)

@@ -51,6 +51,7 @@ private:
 	QString		m_errorbuffer, m_outbuffer;
 	QLabel		*m_printer, *m_device;
 	QCheckBox	*m_useraw;
+	bool		m_hasoutput;
 };
 
 #endif
