@@ -135,7 +135,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     KImageIO::registerFormats();
 
-    setCursor(arrowCursor);
+    viewport()->setCursor(arrowCursor);
 
     init();
 
