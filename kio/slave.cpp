@@ -147,7 +147,7 @@ void Slave::setHost( const QString &host, int port,
 {
     m_host = host;
     m_port = port;
-    m_user = user;
+
     m_passwd = passwd;
 
     slaveconn.connect(this, SLOT(gotAnswer()));
@@ -167,6 +167,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isAttached())
 	client->attach();
 
+#if 0
     // Check kioslave is running
     if (!client->isApplicationRegistered( "kioslave" ))
     {
@@ -190,6 +191,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
            return 0;
         }
     }
+#endif
 
     KTempFile socketfile(QString::null, QString::fromLatin1(".slave-socket"));
 
@@ -202,8 +204,8 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     QDataStream stream(params, IO_WriteOnly);
     stream << url.protocol() << url.host() << socketfile.name();
 
-    if (!client->call("kioslave", "kioslave", "requestSlave(QString,QString,QString)", params, replyType, reply)) {
-	error_text = i18n("can't talk to kioslave");
+    if (!client->call("klauncher", "klauncher", "requestSlave(QString,QString,QString)", params, replyType, reply)) {
+	error_text = i18n("can't talk to klauncher");
 	error = KIO::ERR_INTERNAL;
         delete slave;
 	return 0;

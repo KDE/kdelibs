@@ -39,8 +39,10 @@ class Connection;
 class SlaveBase
 {
 public:
-    SlaveBase( const QCString &protocol, Connection *connection );
+    SlaveBase( const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);
     virtual ~SlaveBase() { }
+
+    void dispatchLoop();
 
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
@@ -263,7 +265,6 @@ public:
 
     virtual bool dispatch();
     virtual void dispatch( int command, const QByteArray &data );
-    virtual void dispatchLoop();
 
     /**
      * Read data send by the job
@@ -287,6 +288,13 @@ protected:
     void listEntry( const UDSEntry& _entry, bool ready);
 
     /**
+     * internal function to connect a slave to/ disconnect from
+     * either the slave pool or the application
+     */
+    void connectSlave(const QString& path);
+    void disconnectSlave();
+
+    /**
      * Name of the protocol supported by this slave
      */
     QCString mProtocol;
@@ -296,6 +304,10 @@ private:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
+    Connection *appconn;
+    QString mPoolSocket;
+    QString mAppSocket;
+    bool mConnectedToApp;
 };
 
 };
