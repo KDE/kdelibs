@@ -117,15 +117,6 @@ KDialogBase* KFind::findNextDialog( bool create )
 KFind::Result KFind::find()
 {
     Q_ASSERT( m_index != INDEX_NOMATCH );
-    if ( m_text.isEmpty() ) {
-#ifdef DEBUG_FIND
-        kdDebug() << k_funcinfo << "Empty -> NoMatch" << endl;
-#endif
-        m_index = INDEX_NOMATCH;
-        m_lastResult = NoMatch;
-        return NoMatch;
-    }
-
     if ( m_lastResult == Match )
     {
         // Move on before looking for the next match, _if_ we just found a match
@@ -171,9 +162,9 @@ KFind::Result KFind::find()
             }
             else // Skip match
                 if (m_options & KFindDialog::FindBackwards)
-                    m_index -= m_matchedLength;
+                    m_index--;
                 else
-                    m_index += m_matchedLength;
+                    m_index++;
         } else
             m_index = INDEX_NOMATCH;
     }

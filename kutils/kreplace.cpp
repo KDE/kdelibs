@@ -106,11 +106,6 @@ KFind::Result KReplace::replace()
     kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
 #endif
     Q_ASSERT( m_index != INDEX_NOMATCH );
-    if ( m_text.isEmpty() ) {
-        m_index = INDEX_NOMATCH;
-        m_lastResult = NoMatch;
-        return NoMatch;
-    }
 
     if ( m_lastResult == Match )
     {
@@ -168,13 +163,13 @@ KFind::Result KReplace::replace()
                     doReplace();
                 }
             }
-            else // not validated -> skip match
-                if (m_options & KFindDialog::FindBackwards)
-                    m_index -= m_matchedLength;
-                else
-                    m_index += m_matchedLength;
+            // not validated, or auto-replaced -> move on
+            if (m_options & KFindDialog::FindBackwards)
+                m_index--;
+            else
+                m_index++;
         } else
-            m_index = INDEX_NOMATCH;
+            m_index = INDEX_NOMATCH; // will exit the loop
     }
     while (m_index != INDEX_NOMATCH);
 
