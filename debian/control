@@ -15,7 +15,7 @@ Description: KDE core libraries (development files)
 Package: kdelibs2g
 Architecture: any
 Depends: ${shlibs:Depends}, libjpeg62
-Supplies: kdelibs
+Provides: kdelibs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
