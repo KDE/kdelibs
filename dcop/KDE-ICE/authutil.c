@@ -32,7 +32,6 @@ Author: Ralph Mor, X Consortium
 #include <KDE-ICE/ICElib.h>
 #include "KDE-ICE/ICElibint.h"
 #include <KDE-ICE/ICEutil.h>
-#include <X11/Xos.h>
 #include <sys/stat.h>
 #include <errno.h>
 

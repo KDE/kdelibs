@@ -54,10 +54,6 @@ from The Open Group.
  * the internal implementation.
  */
 
-#ifdef XTHREADS
-#include <X11/Xthreads.h>
-#endif
-
 #ifdef X11_t
 
 /*
@@ -331,9 +327,6 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
     case AF_INET:
     {
 	struct sockaddr_in *saddr = (struct sockaddr_in *) peer_addr;
-#ifdef XTHREADS
-	_Xgethostbynameparams hparams;
-#endif
 	struct hostent * hostp = NULL;
 
 #ifdef SIGALRM
@@ -350,8 +343,8 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 	alarm (4);
 	if (setjmp(env) == 0) {
 #endif
-	    hostp = _XGethostbyaddr ((char *) &saddr->sin_addr,
-		sizeof (saddr->sin_addr), AF_INET, hparams);
+	    hostp = gethostbyaddr ((char *) &saddr->sin_addr,
+		sizeof (saddr->sin_addr), AF_INET);
 #ifdef SIGALRM
 	}
 	alarm (0);

@@ -48,9 +48,6 @@ from The Open Group.
  */
 
 #include <ctype.h>
-#ifdef XTHREADS
-#include <X11/Xthreads.h>
-#endif
 #ifndef WIN32
 
 #if defined(TCPCONN) || defined(UNIXCONN)
@@ -61,9 +58,7 @@ from The Open Group.
 #endif
 #endif
 #if defined(TCPCONN) || defined(UNIXCONN)
-#define X_INCLUDE_NETDB_H
-#define XOS_USE_NO_LOCKING
-#include <X11/Xos_r.h>
+#include <netdb.h>
 #endif
 
 #ifdef UNIXCONN
@@ -120,9 +115,7 @@ from The Open Group.
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #undef EINTR
 #define EINTR WSAEINTR
-#define X_INCLUDE_NETDB_H
-#define XOS_USE_MTSAFE_NETDBAPI
-#include <X11/Xos_r.h>
+#include <netdb.h>
 #endif /* WIN32 */
 
 #if defined(SO_DONTLINGER) && defined(SO_LINGER)
@@ -809,9 +802,6 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port)
     int		namelen = sizeof(sockname);
     int		status;
     long	tmpport;
-#ifdef XTHREADS
-    _Xgetservbynameparams sparams;
-#endif
     struct servent *servp;
 
 #ifdef X11_t
@@ -845,7 +835,7 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port)
 
 	if (!is_numeric (port))
 	{
-	    if ((servp = _XGetservbyname (port,"tcp",sparams)) == NULL)
+	    if ((servp = getservbyname (port,"tcp")) == NULL)
 	    {
 		PRMSG (1,
 	     "SocketINETCreateListener: Unable to get service for %s\n",
@@ -1237,10 +1227,6 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
 #else
     int namelen = sizeof sockname;
 #endif
-#ifdef XTHREADS
-    _Xgethostbynameparams hparams;
-    _Xgetservbynameparams sparams;
-#endif
     struct hostent	*hostp;
     struct servent	*servp;
 
@@ -1305,7 +1291,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
 
     if (tmpaddr == -1)
     {
-	if ((hostp = _XGethostbyname(host,hparams)) == NULL)
+	if ((hostp = gethostbyname(host,hparams)) == NULL)
 	{
 	    PRMSG (1,"SocketINETConnect: Can't get address for %s\n",
 		  host, 0, 0);
@@ -1351,7 +1337,7 @@ else
 
     if (!is_numeric (port))
     {
-	if ((servp = _XGetservbyname (port,"tcp",sparams)) == NULL)
+	if ((servp = getservbyname (port,"tcp")) == NULL)
 	{
 	    PRMSG (1,"SocketINETConnect: can't get service for %s\n",
 		  port, 0, 0);
@@ -1463,12 +1449,9 @@ UnixHostReallyLocal (char *host)
 	 */
 	char specified_local_addr_list[10][4];
 	int scount, equiv, i, j;
-#ifdef XTHREADS
-	_Xgethostbynameparams hparams;
-#endif
 	struct hostent *hostp;
 
-	if ((hostp = _XGethostbyname (host,hparams)) == NULL)
+	if ((hostp = gethostbyname (host)) == NULL)
 	    return (0);
 
 	scount = 0;
@@ -1489,7 +1472,7 @@ UnixHostReallyLocal (char *host)
 				hostp->h_addr_list[scount][3];
 	    scount++;
 	}
-	if ((hostp = _XGethostbyname (hostnamebuf,hparams)) == NULL)
+	if ((hostp = gethostbyname (hostnamebuf)) == NULL)
 	    return (0);
 
 	equiv = 0;
