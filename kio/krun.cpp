@@ -35,6 +35,7 @@
 
 KFileManager * KFileManager::pFileManager = 0L;
 
+// TODO : use QString for the url
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
 
@@ -59,6 +60,13 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     KURL u( _url );
     if ( u.isLocalFile() )
       return KDEDesktopMimeType::run( _url, true );
+  }
+  else if ( strcmp( _mimetype, "application/x-executable" ) == 0 ||
+          ( strcmp( _mimetype, "application/x-shellscript" ) == 0 ) )
+  {
+    KURL u( _url );
+    if ( u.isLocalFile() )
+      return KRun::run( u.path() ); // just execute the url as a command
   }
 
   QStringList lst;
@@ -256,7 +264,7 @@ bool KRun::run( const QString& _cmd )
 
   QString exec = _cmd;
   exec += " &";
-  system( exec.ascii() );
+  system( exec.ascii() ); // should we use KProcess here ?
 
   return true;
 }
