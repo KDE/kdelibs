@@ -784,6 +784,8 @@ void RenderTable::calcColMinMax()
     int margin=0;
 
     int realMaxWidth=spacing;
+    
+    LengthType widthType = style()->width().type;
 
     Length ml = style()->marginLeft();
     Length mr = style()->marginRight();
@@ -799,11 +801,14 @@ void RenderTable::calcColMinMax()
     if (margin<0) margin=0;
 
     availableWidth -= margin;
-    // PHASE 2, calculate simple minimums and maximums
+    // PHASE 2, calculate simple minimums and maximums   
+    
 
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
     {
         ColInfoLine* spanCols = colInfos[s];
+        
+        int spanMax=0;
 
         for ( unsigned int c=0; c<totalCols-s; ++c)
         {
@@ -814,23 +819,27 @@ void RenderTable::calcColMinMax()
             if (!col || col->span==0)
                 continue;
 #ifdef TABLE_DEBUG
-            kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value << endl;
+            kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value  <<
+                        "max="<<col->max<< endl;
 #endif
-
-            if (s==0)
-                realMaxWidth += col->max + spacing;
+            spanMax += col->max + spacing;
 
             col->update();
 
             calcSingleColMinMax(c, col);
 
-            if ( col->span>1 && style()->width().type != Percent
+            if ( col->span>1 && widthType != Percent
                 && (col->type==Fixed || col->type==Variable ))
             {
                 calcFinalColMax(c, col);
             }
 
         }
+        
+        // this should be some sort of generic path algorithm
+        // but we'll just hack it for now
+        if (spanMax>realMaxWidth)
+            realMaxWidth=spanMax;
     }
 
 
@@ -895,7 +904,7 @@ void RenderTable::calcColMinMax()
     }
 
 
-    if(style()->width().type > Relative) // Percent or fixed table
+    if(widthType > Relative) // Percent or fixed table
     {
         m_width = style()->width().minWidth(availableWidth);
         if(m_minWidth > m_width) m_width = m_minWidth;
@@ -955,25 +964,28 @@ void RenderTable::calcColMinMax()
 
     // PHASE 5, set table min and max to final values
 
-    if(style()->width().type == Fixed)
+    if(widthType == Fixed)
     {
         m_minWidth = m_maxWidth = m_width;
     }
 
-    else if(style()->width().type == Variable && hasPercent)
+    else if(widthType == Variable && hasPercent)
     {
         unsigned int tot = KMIN(99u,totalPercent);
         int mx;
         if (hasFixed)
             mx = (maxFixed + minVar + minRel) * 100 /(100 - tot);
-        else
+        else 
             mx = (minVar + minRel)*100/(100-tot);
 
         if (mx>0) m_maxWidth=mx;
+        
+        if (realMaxWidth > m_maxWidth)
+            m_maxWidth = realMaxWidth;
     }
 
 
-    else if (style()->width().type == Percent)
+    else if (widthType == Percent)
     {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
@@ -983,9 +995,10 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
-                " TABLE m_minWidth=" << m_minWidth <<
-                " TABLE m_maxWidth=" << m_maxWidth << endl;*/
+    /*kdDebug( 6040 ) << "TABLE width=" << m_width <<
+                " m_minWidth=" << m_minWidth <<
+                " m_maxWidth=" << m_maxWidth << 
+                " realMaxWidth=" << realMaxWidth << endl;*/
 
 
 //    setMinMaxKnown(true);
