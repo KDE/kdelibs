@@ -3,7 +3,7 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES=	-I $(srcdir)/.. -I $(srcdir)/../.. $(SSL_INCLUDES) $(all_includes)
+INCLUDES=	-I$(srcdir)/.. -I$(srcdir)/../.. $(SSL_INCLUDES) $(all_includes)
 LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS)
 
 ####### Files
