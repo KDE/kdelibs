@@ -1,0 +1,152 @@
+/* This file is part of the KDE project
+   Copyright (C) 2003 Daniel Molkentin <molkentin@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+ */
+
+#include "statusbarextension.h"
+
+#include <qvaluelist.h>
+
+#include <kstatusbar.h>
+#include <kmainwindow.h>
+
+#include <kparts/part.h>
+#include <kparts/event.h>
+
+#include <kdebug.h>
+
+using namespace KParts;
+
+///////////////////////////////////////////////////////////////////
+// Helper Classes
+///////////////////////////////////////////////////////////////////
+
+class KParts::StatusBarItem {
+  public:
+    StatusBarItem() // for QValueList
+      : m_widget(0), m_visible(false)
+      {}
+    StatusBarItem( QWidget * widget, int stretch, bool permanent )
+      : m_widget(widget), m_stretch(stretch), m_permanent(permanent), m_visible(false)
+      {}
+
+    QWidget * widget() const { return m_widget; }
+
+    void ensureItemShown( KStatusBar * sb )
+    {
+      if ( !m_visible )
+      {
+        sb->addWidget( m_widget, m_stretch, m_permanent );
+        m_visible = true;
+        m_widget->show();
+      }
+    }
+    void ensureItemHidden( KStatusBar * sb )
+    {
+      if ( m_visible )
+      {
+        sb->removeWidget( m_widget );
+        m_visible = false;
+        m_widget->hide();
+      }
+    }
+  private:
+    QWidget * m_widget;
+    int m_stretch;
+    bool m_permanent;
+    bool m_visible;  // true when the item has been added to the statusbar
+};
+
+///////////////////////////////////////////////////////////////////
+
+
+StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent, const char* name)
+  : QObject(parent, name), d(0)
+{
+  parent->installEventFilter(this);
+}
+
+StatusBarExtension::~StatusBarExtension()
+{
+}
+
+
+void StatusBarExtension::eventFilter(KParts::ReadOnlyPart * /*watched*/, GUIActivateEvent* ev)
+{
+  KStatusBar * sb = statusBar();
+  //kdDebug() << "StatusBarExtension::guiActivateEvent activated=" << ev->activated()
+  //          << " sb=" << (void*)sb << endl;
+  if ( !sb )
+    return;
+  if ( ev->activated() )
+  {
+    QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    for ( ; it != m_statusBarItems.end() ; ++it )
+      (*it).ensureItemShown( sb );
+  }
+  else
+  {
+    QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    for ( ; it != m_statusBarItems.end() ; ++it )
+      (*it).ensureItemHidden( sb );
+  }
+
+}
+
+KMainWindow * StatusBarExtension::mainWindow() const
+{
+  return dynamic_cast<KMainWindow *>
+    ( static_cast<KParts::ReadOnlyPart*>(parent())
+      ->widget()->topLevelWidget() );
+}
+
+KStatusBar * StatusBarExtension::statusBar() const
+{
+  KMainWindow *mw = mainWindow();
+  return mw ? mw->statusBar() : 0L;
+}
+
+void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
+{
+  StatusBarItem item( widget, stretch, permanent );
+  m_statusBarItems.append(item);
+  QValueListIterator<StatusBarItem> it = m_statusBarItems.fromLast();
+  KStatusBar * sb = statusBar();
+  Q_ASSERT(sb);
+  if (sb)
+    (*it).ensureItemShown( sb );
+}
+
+void StatusBarExtension::removeStatusBarItem( QWidget * widget )
+{
+  KStatusBar * sb = statusBar();
+  QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+  for ( ; it != m_statusBarItems.end() ; ++it )
+    if ( (*it).widget() == widget )
+    {
+      if ( sb )
+        (*it).ensureItemHidden( sb );
+      m_statusBarItems.remove( it );
+      break;
+    }
+  if ( it == m_statusBarItems.end() )
+    kdWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget << endl;
+}
+
+#include "statusbarextension.moc"
+
+// vim: ts=2 sw=2 et
