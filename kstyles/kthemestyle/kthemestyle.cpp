@@ -376,7 +376,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
         : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 ),
-         brushHandle(0), brushHandleSet(false)
+         brushHandle( 0 ), brushHandleSet( false )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -470,8 +470,6 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
-    //if (!w->backgroundPixmap() || w->inherits("KAboutContributor") )
-
     if (w->backgroundPixmap() && !w->isTopLevel())
     {
         //The brushHandle check verifies that the bg pixmap is actually the brush..
@@ -479,7 +477,6 @@ void KThemeStyle::polish( QWidget *w )
         {
             w->setBackgroundOrigin( QWidget::WindowOrigin );
         }
-        //	w->setBackgroundMode( QWidget::X11ParentRelative );
     }
 
     if (w->inherits("KActiveLabel"))
@@ -573,20 +570,10 @@ void KThemeStyle::polish( QWidget *w )
 
 void KThemeStyle::unPolish( QWidget* w )
 {
-    if ( !w->isTopLevel() )
+    if (w->backgroundPixmap() && !w->isTopLevel())
     {
-        if ( w->inherits( "QGroupBox" ) )
-        {
-            w->setAutoMask( FALSE );
-            return ;
-        }
-        if ( w->inherits( "QLabel" )
-                || w->inherits( "QSlider" )
-                || w->inherits( "QButton" )
-                || w->inherits( "QProgressBar" )
-                || w->inherits( "KActiveLabel" )
-                || w->inherits( "KJanusWidget" )
-           )
+        //The brushHandle check verifies that the bg pixmap is actually the brush..
+        if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
         {
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
         }
