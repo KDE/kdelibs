@@ -61,6 +61,9 @@ public:
 	virtual void position( int /*_x*/, int /*_y*/,
 			       int /*_width*/, int /*_height*/ ) {}
 
+	virtual bool positionChanged( int /*_x*/, int /*_y*/,
+			       int /*_width*/, int /*_height*/ ) { return true; }
+
 	virtual QString encoding()
 		{	return QString( "" ); }
 
@@ -101,6 +104,7 @@ public:
 	// absolute coordinates.  Also responsible for showing/hiding
 	// non-visible elements
 	virtual void position( int _x, int _y, int _width, int _height );
+	virtual bool positionChanged( int _x, int _y, int _width, int _height );
 
 	virtual void calcAbsolutePos( int _x, int _y );
 

@@ -108,6 +108,22 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 	}
 }
 
+bool HTMLWidgetElement::positionChanged( int _x, int _y, int , int _height )
+{
+	if ( widget == 0L ) // CC: HTMLHidden does not have a widget...
+		return false;
+
+  int x = absX() - _x;
+  int y = absY() - _y;
+
+  if (x != widget->x() || y != widget->y())
+  {
+    return true;
+  }
+
+  return false;
+}
+
 void HTMLWidgetElement::calcAbsolutePos( int _x, int _y )
 {
 	_absX = _x + x;
@@ -764,6 +780,7 @@ void HTMLForm::position( int _x, int _y, int _width, int _height )
         // smoother.
         for ( HTMLElement *e = elements.first(); e != 0; e = elements.next() )
         {
+          if (e->positionChanged(_x, _y, _width, _height))
             e->hideElement();
         }
     }
