@@ -59,7 +59,7 @@ libkdefakes_la_LDFLAGS = -version-info 5:0:1
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
-	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h \
+	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
@@ -69,8 +69,8 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
-	kaccelaction.cpp kaccelbase.cpp kaccel.cpp kglobalaccel_x11.cpp \
-	kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
+	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \
+	kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
 	kcrash.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
