@@ -108,6 +108,8 @@ private:
 
 
 /**
+ * @short A password input dialog.
+ *
  * This dialog asks the user to enter a password. The functions you're
  * probably interested in are the static methods, getPassword() and
  * getNewPassword().
@@ -116,10 +118,12 @@ private:
  *
  * \code
  * QCString password;
- * int result = KPasswordDialog::getPassword(password, i18n("Password"));
+ * int result = KPasswordDialog::getPassword(password, i18n("Prompt message"));
  * if (result == KPasswordDialog::Accepted)
  *     use(password);
  * \endcode
+ *
+ * \image html kpassworddialog.png "KDE Password Dialog"
  *
  * <b>Security notes:</b>\n
  *
@@ -138,7 +142,6 @@ private:
  * memory used for these conversion is probably not erased. This could lead
  * to stray  passwords in memory, even if you think you erased all of them.
  *
- * @short A password input dialog.
  * @author Geert Jansen <jansen@kde.org>
  */
 
