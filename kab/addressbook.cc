@@ -29,6 +29,7 @@ const char* AddressBook::DBFileName="addressbook.database";
 const char* AddressBook::Fields[]= {
     "name", "firstname", "emails",
     "telephone", "town", "address",
+    "state", "zip",
     "additionalName", "namePrefix",
     "fn", "comment", "org", "orgUnit",
     "orgSubUnit", "title", "role",
@@ -467,7 +468,7 @@ bool AddressBook::makeEntryFromSection
   KeyValueMap* map;
   list<int> birthday;
   Entry dummy;
-  // ----- clear up the old entry: (change on Jule 19 1998):
+  // ----- clear up the old entry: (change on July 19 1998):
   entry=dummy; // dummy is always completely empty
   // ----- 
   map=section.getKeys();
@@ -497,6 +498,9 @@ bool AddressBook::makeEntryFromSection
       map->get("fax", entry.fax);
       map->get("modem", entry.modem);
       map->get("URL", entry.URL);
+      map->get("zip", entry.zip);
+      map->get("state", entry.state);
+      map->get("country", entry.country);
       if(map->get("talk", entry.talk))
 	{
 	  LG(GUARD, "AddressBook::makeEntryFromSection: "
@@ -735,7 +739,9 @@ bool AddressBook::add(const Entry& entry, string& key)
 	 || !map->insert("birthday", birthday)
 	 || !map->insert("talk", entry.talk)
 	 || !map->insert("emails", entry.emails)
-	 || !map->insert("keywords", entry.keywords))
+	 || !map->insert("keywords", entry.keywords)
+	 || !map->insert("state", entry.state)
+	 || !map->insert("zip", entry.zip))
 	{ //       errors again may not happen:
 	  cerr << "Unable to create key-value-map for "
 	       << "entry." << endl;
@@ -823,6 +829,9 @@ bool AddressBook::change
      || !keys->insert("talk", contents.talk, true)
      || !keys->insert("emails", contents.emails, true)
      || !keys->insert("keywords", contents.keywords, true)
+     || !keys->insert("zip", contents.zip, true)
+     || !keys->insert("state", contents.state, true)
+     || !keys->insert("country", contents.country, true)	
      || (birthday.empty() 
 	 ? !keys->insert("birthday", "", true)
 	 : !keys->insert("birthday", birthday, true)))
@@ -1218,7 +1227,7 @@ bool AddressBook::nameOfField
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
-	  ("town", i18n("Town"))).second
+	  ("town", i18n("City/Town"))).second
 	 || 
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
@@ -1235,6 +1244,18 @@ bool AddressBook::nameOfField
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("URL", i18n("Homepage URL"))).second
+	 || 
+	 !names->insert
+	 (map<string, string, less<string> >::value_type
+	  ("zip", i18n("Zip/postal code"))).second
+	 || 
+	 !names->insert
+	 (map<string, string, less<string> >::value_type
+	  ("state", i18n("State/province"))).second
+	 || 
+	 !names->insert
+	 (map<string, string, less<string> >::value_type
+	  ("country", i18n("Country"))).second
 	 )
 	{ // ----- all errors here are typos:
 	  CHECK(false);

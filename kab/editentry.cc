@@ -50,7 +50,7 @@ void EditEntryDialog::createTabs()
   LG(GUARD, "EditEntryDialog::createTabs: "
      "creating tabbed dialog.\n");
   QLabel* label=0;
-  QWidget *name, *org, *contact, *others;
+  QWidget *name, *address, *org, *contact, *others;
   int count, x, y;
   int widestTab=0;
   int highestTab=0;
@@ -68,17 +68,13 @@ void EditEntryDialog::createTabs()
       i18n("First name:"), 	    
       i18n("Additional Name:"), 
       i18n("Name:"),
-      i18n("Formatted Name:"),
-      i18n("Address:"),
-      i18n("Town:") };
+      i18n("Formatted Name:") };
     QLineEdit** ledits[]= {
       &leTitle,
       &leFirstName,
       &leAddName,
       &leName,
-      &leFormattedName,
-      &leAddress,
-      &leTown };
+      &leFormattedName };
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
     name=new QWidget(this);
@@ -108,6 +104,53 @@ void EditEntryDialog::createTabs()
   }
   // end of first tab "&Name"
   // ------
+  // a tab containing the different address fields
+  {
+    LG(GUARD, "EditEntryDialog::createTabs:"
+       " creating address tab.\n");
+    QGridLayout *layout;
+    int widestString=0;
+    const char* labels[]= { 
+      i18n("Address:"),
+      i18n("Zip/postal code:"),
+      i18n("Town:"),
+      i18n("State:"),
+      i18n("Country:") };
+    QLineEdit** ledits[]= {
+      &leAddress,
+      &leZip,
+      &leTown,
+      &leState,
+      &leCountry };
+    const int Size=sizeof(labels)/sizeof(labels[0]);
+    CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
+    address=new QWidget(this);
+    layout=new QGridLayout(address, Size, 2, Border);
+    layout->setColStretch(0, 1);
+    layout->setColStretch(1, 2);
+    for(count=0; count<Size; count++)
+      {
+	label=new QLabel(labels[count], address);
+	// find the needed space:
+	y=label->fontMetrics().width(labels[count]);
+	if(widestString<y) widestString=y;
+	*ledits[count]=new QLineEdit(address);
+	layout->addWidget(label, count, 0);
+	layout->addWidget(*ledits[count], count, 1);
+      }      
+    addTab(address, i18n("&Address"));
+    y=(Size+1)*Border
+      +Size*((*ledits[0])->sizeHint().height());
+    if(y>highestTab) highestTab=y;
+    x=3*Border+3*widestString; // see column stretch factors
+    if(x>widestTab) widestTab=x;
+    layout->activate();
+    address->setFixedHeight(y);
+    LG(GUARD, "EditEntryDialog::createTabs: "
+       "finished, %ix%i pixels.\n", x, y);
+  }
+  // end of tab "&Address"
+  // ------  
   // a tab for the organizational data
   LG(GUARD, "EditEntryDialog::createTabs: "
      "creating org tab.\n");
@@ -116,14 +159,14 @@ void EditEntryDialog::createTabs()
     int widestString=0;
     const char* labels[]= {
       i18n("Organization:"),
-      i18n("Role:"),
       i18n("Org Unit:"),
-      i18n("Org Subunit:") };
+      i18n("Org Subunit:"),
+      i18n("Role:") };
     QLineEdit** ledits[]= {
       &leOrg,
-      &leRole,
       &leOrgUnit,
-      &leOrgSubUnit };
+      &leOrgSubUnit,
+      &leRole };
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
     org=new QWidget(this);
@@ -246,12 +289,13 @@ void EditEntryDialog::createTabs()
    x=3*Border+3*widestString;
    if(x>widestTab) widestTab=x;
   }
-//   // ------
-//   // set the height and width of the tab dialog
-//   name->setFixedWidth(widestTab);
-//   org->setFixedWidth(widestTab);  
-//   contact->setFixedWidth(widestTab);
-//   others->setFixedWidth(widestTab);
+  // ------
+  // set the height and width of the tab dialog
+  //   name->setFixedWidth(widestTab);
+  //   address->setFixedWidth(widestTab);
+  //   org->setFixedWidth(widestTab);  
+  //   contact->setFixedWidth(widestTab);
+  //   others->setFixedWidth(widestTab);
   // ########################################################
 }
 
@@ -267,7 +311,10 @@ void EditEntryDialog::okPressed()
     &entry.name,
     &entry.fn,
     &entry.address,
+    &entry.zip,
     &entry.town,
+    &entry.state,
+    &entry.country,
     &entry.org,
     &entry.orgUnit,
     &entry.orgSubUnit,
@@ -284,7 +331,10 @@ void EditEntryDialog::okPressed()
     leName,
     leFormattedName,
     leAddress,
+    leZip,
     leTown,
+    leState,
+    leCountry,
     leOrg,
     leOrgUnit,
     leOrgSubUnit,
@@ -343,7 +393,10 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     &data.telephone,
     &data.fax,
     &data.modem,
-    &data.URL };
+    &data.URL,
+    &data.zip,
+    &data.state,
+    &data.country };
   QLineEdit* ledits[]= {
     leTitle,
     leFirstName,
@@ -360,7 +413,10 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     leTelephone,
     leFax,
     leModem,
-    leURL };
+    leURL,
+    leZip,
+    leState,
+    leCountry };
   const int Size=sizeof(entries)/sizeof(entries[0]);
   int count;
   CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));

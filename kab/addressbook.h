@@ -25,7 +25,12 @@
 #if defined KAB_FILE_FORMAT
 #undef KAB_FILE_FORMAT
 #endif
-#define KAB_FILE_FORMAT 1
+/*
+  0: all format before the email list was implemented
+  1: format enhanced for unlimited number of email addresses
+  2: format enhanced by more address fields
+*/
+#define KAB_FILE_FORMAT 2
 // -----------------------------
 
 class AddressBook : public ConfigDB
@@ -34,8 +39,10 @@ public:
   /** An object of the class {\em Entry} represents one entry.
     * More fields can easily be added: add a new string, find a
     * name for it in the entry-sections of the database that is 
-    * not used until now, and change the {\tt makeEntryFromSection}-,
-    * the {\tt add(..)}- and the {\tt change}-methods.
+    * not used until now (automatically done by nextAvailEntryKey),
+    * and change the {\tt makeEntryFromSection}-,
+    * the {\tt add(..)}-, the {\tt change}- and the 
+    * nameOfField-methods.
     */
   class Entry {
   public:
@@ -75,6 +82,11 @@ public:
     list<string> emails;
     string address; 
     string town; 
+    // new fields, hint from Preston Brown:
+    string zip; // zip or postal code
+    string state; // for state or province
+    string country; // for federal states
+    // -----
     string telephone; 
     string fax; 
     string modem; 

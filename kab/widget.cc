@@ -205,11 +205,12 @@ bool AddressWidget::updateDB()
   Section::StringSectionMap::iterator pos;
   Entry entry;
   // versions:
-  const int NewEmailsStyle=1;
+  const int NewEmailsStyle=1,
+    NewAddressFields=2;
   // -----
   if(configSection()==0 || noOfEntries()==0)
     {
-      LG(GUARD, "AddressWidget::updateDB: no entries.\n");
+      LG(GUARD, "AddressWidget::updateDB: clean DB.\n");
       return true;
     }
   // ----- retrieve version:
@@ -271,12 +272,33 @@ bool AddressWidget::updateDB()
 	    }
 	}
     }
+  if(format<NewAddressFields)
+    {
+      QMessageBox::information
+	(this, i18n("kab database update"),
+	 i18n("Please note that kab now supports some new\n"
+	      "fields in its addresses. These new fields\n"
+	      "are:\n"
+	      "° the state field,\n"
+	      "° the country field and\n"
+	      "° the postal code field.\n"
+	      "You will probably need to edit some of your\n"
+	      "entries to make use of it."));
+    }
   // ----- set the new version:
   if(!keys->insert("FileFormat", KAB_FILE_FORMAT, true))
     {
       LG(GUARD, "AddressWidget::updateDB: "
 	 "could not set new file format number.\n");
       return false;
+    }
+  // ----- save DB:
+  if(!ConfigDB::save())
+    {
+      QMessageBox::information
+	(this, i18n("File handling error"), 
+	 i18n("Could not save database after update."));
+      exit(-1);
     }
   // ----- switch back to r/o:
   if(!setFileName(fileName(), true, true))

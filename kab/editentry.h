@@ -32,10 +32,12 @@ public:
 protected:
   // the "name" tab
   QLineEdit *leTitle, *leFirstName, *leAddName, 
-    *leName, *leFormattedName, 
-    *leAddress, *leTown;
+    *leName, *leRole, *leFormattedName;
+  // the "address" tab
+  QLineEdit *leAddress, *leZip, *leTown, 
+    *leState, *leCountry;
   // the "organization" tab
-  QLineEdit *leOrg, *leRole, *leOrgUnit, *leOrgSubUnit;
+  QLineEdit *leOrg, *leOrgUnit, *leOrgSubUnit;
   // the "contact" tab
   QLineEdit // *leEmail1, *leEmail2, *leEmail3,
     *leTelephone, *leFax, *leModem, *leURL;

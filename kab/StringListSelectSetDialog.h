@@ -36,7 +36,7 @@ public:
   // methods to retrieve the selected strings:
   bool getSelection(list<string>&);
   bool getSelection(QStrList&);
-protected:
+protected slots:
   void initializeGeometry();
 };
 

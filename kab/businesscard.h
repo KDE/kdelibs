@@ -26,11 +26,18 @@ public:
   virtual ~BusinessCard();
   static const int Grid;
 protected:
+  /** If tile is true, the card is displayed with a tile background,
+    * if it is false, the background color is used. The background
+    * color defaults to <???>.
+    */
+  bool tile;
   string filename; // of the background image
+  QColor bgColor;
   QPixmap* background;
   AddressBook::Entry current;
   void paintEvent(QPaintEvent*);
 public slots:
+  void useTile(bool);
   void currentChanged(AddressBook::Entry);
   string getBackground() { return filename; }
   void setBackground(QPixmap*);

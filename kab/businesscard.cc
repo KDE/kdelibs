@@ -24,13 +24,16 @@ extern "C" {
 const int BusinessCard::Grid=5;
 
 BusinessCard::BusinessCard(QWidget* parent, const char* name)
-  : QWidget(parent, name)
+  : QWidget(parent, name),
+    tile(false),
+    bgColor(lightGray),
+    background(0)
 {
   ID(bool GUARD=false);
   // ########################################################
   LG(GUARD, "BusinessCard constructor: creating object.\n");
-  background=new QPixmap(310, 160); // width x height
-  background->fill(); // white
+  // background=new QPixmap(310, 160); // width x height
+  // background->fill(); // white
   resize(310, 160);
   // ########################################################
 }
@@ -55,35 +58,42 @@ void BusinessCard::paintEvent(QPaintEvent*)
   bool drawSeparator=false;
   int posSeparator=0;
   string temp;
-  int cy;
+  int cy, addressHeight, contactHeight;
   QPixmap pm(width(), height());
   QPainter p;     
-  // ----- 
+  bool useTile;
+  // ----- initialize painter and draw background:
   p.begin(&pm);
-  if(background->isNull())
+  useTile=(background==0 
+	   ? false 
+	   : (!background->isNull() && tile));
+  if(useTile)
     {
-      p.setPen(darkYellow);
+      CHECK(background!=0 && !background.isNull);
+      p.drawTiledPixmap(0, 0, width(), height(), *background);
+    } else {
+      p.setPen(bgColor);
+      p.setBrush(bgColor);
       p.drawRect(0, 0, width(), height());
       p.setPen(black);
-    } else {
-      p.drawTiledPixmap(0, 0, width(), height(), *background);
     }
+  // ----- now draw on the background:
   original=p.font();
   font.setFamily(original.family());
   font.setPointSize(10);
   p.setFont(font);
-  // print the birthday in the upper right corner 
-  // if it is set:
+  // ----- print the birthday in the upper right corner 
+  //       if it has been entered:
   if(current.birthday.isValid())
-    { // by now I do not take care if there is enough 
-      // space left
+    { //       by now I do not take care if there is enough 
+      //       space left
       p.drawText
 	(width()-Grid-
 	 p.fontMetrics().width(current.birthday.toString()),
 	 Grid+p.fontMetrics().ascent(),
 	 current.birthday.toString());
     }
-  // ------				
+  // ----- now draw the contact data:
   cy=height()-Grid;
   if(!current.URL.empty())
     {
@@ -126,52 +136,17 @@ void BusinessCard::paintEvent(QPaintEvent*)
     {
       posSeparator=cy;
       cy-=Grid;
-    }
-  // now draw the comment:
-  if(!current.comment.empty())
+    } 
+  contactHeight=height()-cy;
+  CHECK(contactHeight>0);
+  if(drawSeparator)
     {
-      p.drawText(Grid, cy-2*p.fontMetrics().height(), 
-		 width()-2*Grid, 
-		 2*p.fontMetrics().height(),
-		 AlignHCenter | AlignBottom | WordBreak,
-		 current.comment.c_str(), -1, &rect);
-      if(rect.height()<2*p.fontMetrics().height())
-	{ // only one line needed for comment
-	  LG(GUARD, "BusinessCard::paintEvent: "
-	     "comment fits in 1 line only.\n");
-	  cy-=p.fontMetrics().height()+Grid;
-	} else {
-	  LG(GUARD, "BusinessCard::paintEvent: "
-	     "comment needs more than 1 line.\n");	  
-	  cy-=2*p.fontMetrics().height()+Grid;
-	}
+      p.drawLine(Grid, posSeparator, 
+		 width()-Grid, posSeparator);
     }
-  // ------
+  // ----- draw the address
+  cy=Grid; // begin at top
   font.setPointSize(12);
-  p.setFont(font);
-  // a space
-  if(current.comment.empty())
-    {
-      cy-=2*p.fontMetrics().height();
-    } else {
-      cy-=p.fontMetrics().height();
-    }
-  if(!current.town.empty())
-    {
-      p.drawText(2*Grid, cy, current.town.c_str());
-      cy-=p.fontMetrics().height();
-    }      
-  if(!current.address.empty())
-    {
-      p.drawText(2*Grid, cy, current.address.c_str());
-      cy-=p.fontMetrics().height();
-    }        
-  if(!current.role.empty())
-    {
-      p.drawText(2*Grid, cy, current.role.c_str());
-      cy-=p.fontMetrics().height();
-    }        
-  font.setItalic(true);
   p.setFont(font);
   if(!current.fn.empty())
     {
@@ -203,17 +178,81 @@ void BusinessCard::paintEvent(QPaintEvent*)
 	  temp+=current.name;
 	}
     }
-  p.setPen(blue);
   if(!temp.empty())
     {
-      p.drawText(2*Grid, cy, temp.c_str());
-      cy-=p.fontMetrics().height();
+      font.setItalic(true);
+      p.setFont(font);
+      p.setPen(blue);
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
+		 temp.c_str());
+      font.setItalic(false);
+      p.setFont(font);
+      p.setPen(black);
+      cy+=p.fontMetrics().height();
     }
-  if(drawSeparator)
+  if(!current.role.empty())
     {
-      p.drawLine(Grid, posSeparator, 
-		 width()-Grid, posSeparator);
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
+		 current.role.c_str());
+      cy+=p.fontMetrics().height();
+    }        
+  if(!current.address.empty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(),
+		 current.address.c_str());
+      cy+=p.fontMetrics().height();
+    }        
+  temp=current.zip;
+  if(!current.town.empty())
+    {
+      if(!temp.empty())
+	{
+	  temp+=" ";
+	}
+      temp+=current.town;
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
+		 temp.c_str());
+      cy+=p.fontMetrics().height();
+    } 
+  if(!current.state.empty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(),
+		 current.state.c_str());
+      cy+=p.fontMetrics().height();
+    }        
+  if(!current.country.empty())
+    {
+      p.drawText(2*Grid, cy+p.fontMetrics().height(),
+		 current.country.c_str());
+      cy+=p.fontMetrics().height();
+    }        
+  addressHeight=cy+Grid;
+  // ----- now draw the comment:
+  if(!current.comment.empty())
+    {
+      if(height()-addressHeight-contactHeight
+	 >p.fontMetrics().height())
+	{
+	  cy=height()-addressHeight-contactHeight;
+	  addressHeight+=cy%p.fontMetrics().height();
+	  cy-=cy%p.fontMetrics().height();
+	  p.drawText(Grid, addressHeight, 
+		     width()-2*Grid, cy,
+		     AlignHCenter | AlignBottom | WordBreak,
+		     current.comment.c_str(), -1, &rect);
+// 	  if(rect.height()<2*p.fontMetrics().height())
+// 	    { // only one line needed for comment
+// 	      LG(GUARD, "BusinessCard::paintEvent: "
+// 		 "comment fits in 1 line only.\n");
+// 	      cy-=p.fontMetrics().height()+Grid;
+// 	    } else {
+// 	      LG(GUARD, "BusinessCard::paintEvent: "
+// 		 "comment needs more than 1 line.\n");	  
+// 	      cy-=2*p.fontMetrics().height()+Grid;
+// 	    }
+	}
     }
+  // ----- finish painting:
   p.end();
   bitBlt(this, 0, 0, &pm);
   // ########################################################
@@ -236,17 +275,12 @@ void BusinessCard::setBackground(QPixmap* pixmap)
   // ########################################################
   LG(GUARD, "BusinessCard::setBackground: "
      "background pixmap changed.\n");
-  *background=*pixmap;
-  /*
-  if(pixmap->width()!=310 && pixmap->height()!=160)
+  if(background==0)
     {
-      QMessageBox::information
-	(this, "Size error",
-	 "The background pixmap must be 310x160 pixels.");
-      return;
-    } else {
+      background=new QPixmap;
     }
-  */
+  CHECK(background!=0);
+  *background=*pixmap;
   // ########################################################
 }
 
@@ -262,23 +296,20 @@ void BusinessCard::setBackground(const string& path)
 	 "Could not load background image!");
       return;
     }
-  /*
-    if(pixmap.width()!=310 || pixmap.height()!=160)
-    {
-    QMessageBox::information
-    (this, "Image size failure",
-    "The background image must be \n"
-    "    310 pixels wide and \n"
-    "    160 pixels high.");
-    return;
-    }
-  */
   LG(GUARD, "BusinessCard::setBackground: loaded image from "
      "file \"%s\".\n", path.c_str());
   filename=path;
+  tile=true; // WORK_TO_DO: respect settings!
   setBackground(&pixmap);
   // ########################################################
 }
 
+void BusinessCard::useTile(bool what)
+{
+  // ########################################################
+  tile=what;
+  repaint(false);
+  // ########################################################
+}
 
 #include "businesscard.moc"
