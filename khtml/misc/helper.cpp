@@ -47,6 +47,8 @@ struct colorMap {
 
 static const colorMap cmap[] = {
    { "green", "#008000" },
+   { "gray", "#808080" },
+   { "grey", "#808080" },
    { "silver", "#c0c0c0" },
    { "lime", "#00ff00" },
    { "olive", "#808000" },
