@@ -1104,7 +1104,7 @@ private:
 
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
-  DOM::EventListener *createHTMLEventListener( QString code );
+  DOM::EventListener *createHTMLEventListener( QString code, QString name, int firstLine, int lastLine );
 
   DOM::HTMLDocumentImpl *docImpl() const;
   DOM::DocumentImpl *xmlDocImpl() const;

@@ -33,6 +33,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <kjs/function.h>
 
 using namespace KJS;
 
@@ -47,7 +48,8 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    Completion *completion = 0);
   virtual void clear();
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code);
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, int firstLine,
+						     int lastLine, QString code);
   virtual void finishedWithEvent(const DOM::Event &event);
   virtual KJS::Interpreter *interpreter();
 
@@ -219,7 +221,8 @@ void KJSProxyImpl::clear() {
   }
 }
 
-DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString code)
+DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, int firstLine,
+							 int lastLine, QString code)
 {
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::instance())
@@ -236,6 +239,13 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   args.append(KJS::String(code));
   Object handlerFunc = constr.construct(m_script->globalExec(), args); // ### is globalExec ok ?
 
+  if (!handlerFunc.inherits(&DeclaredFunctionImp::info))
+    return 0; // Error creating function
+
+  DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(handlerFunc.imp());
+  declFunc->setName(name);
+  declFunc->setFirstLine(firstLine);
+  declFunc->setLastLine(lastLine);
   return KJS::Window::retrieveWindow(m_part)->getJSEventListener(handlerFunc,true);
 }
 

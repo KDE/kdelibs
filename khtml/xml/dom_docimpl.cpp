@@ -1989,9 +1989,9 @@ void DocumentImpl::removeWindowEventListener(int id)
     }
 }
 
-EventListener *DocumentImpl::createHTMLEventListener(QString code)
+EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
 {
-    return view()->part()->createHTMLEventListener(code);
+    return view()->part()->createHTMLEventListener(code,name,-1,-1);
 }
 
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)

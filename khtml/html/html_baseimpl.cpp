@@ -135,23 +135,23 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_ONLOAD:
         getDocument()->setWindowEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
     case ATTR_ONUNLOAD:
         getDocument()->setWindowEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
     case ATTR_ONBLUR:
         getDocument()->setWindowEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONFOCUS:
         getDocument()->setWindowEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONRESIZE:
         getDocument()->setWindowEventListener(EventImpl::RESIZE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onresize"));
         break;
     case ATTR_NOSAVE:
 	break;
@@ -278,12 +278,12 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ONLOAD:
         static_cast<HTMLDocumentImpl*>( getDocument() )->body()
               ->setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
     case ATTR_ONUNLOAD:
         static_cast<HTMLDocumentImpl*>( getDocument() )->body()
               ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
 
     default:
@@ -457,11 +457,11 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONLOAD:
         getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
     case ATTR_ONUNLOAD:
         getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

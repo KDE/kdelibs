@@ -23,7 +23,7 @@
 
 #include <qglobal.h>
 
-//#define KJS_DEBUGGER
+#define KJS_DEBUGGER
 
 #ifdef KJS_DEBUGGER
 
@@ -31,7 +31,7 @@
 #include <qpixmap.h>
 #include <qptrlist.h>
 
-#include <kjs/debugger.h>
+//#include <kjs/debugger.h>
 
 #include "dom/dom_misc.h"
 
@@ -66,28 +66,8 @@ protected:
     QWidget *modalWidget;
 };
 
-
-/**
- * @internal
- *
- * Represents a frame on the execution stack. The top frame is the global code for
- * the script, and each frame below it represents a function call.
- */
-class StackFrame {
- public:
-  StackFrame(int s, int l, QString n, bool stepped)
-    : sourceId(s), lineno(l), name(n), step(stepped),
-    next(stepped) {}
-  QString toString();
-
-  int sourceId;
-  int lineno;
-  QString name;
-  bool step;
-  bool next;
-};
-
-class SourceFile : public DOM::DomShared {
+class SourceFile : public DOM::DomShared
+{
  public:
   SourceFile(QString u, QString c, int i, KJS::Interpreter *interp) 
       : url(u), code(c), index(i), interpreter(interp) {}
@@ -112,7 +92,8 @@ class SourceFile : public DOM::DomShared {
  * In the case where a single file has multiple source fragments, the source objects
  * for these fragments will all point to the same SourceFile for their code.
  */
-class SourceFragment {
+class SourceFragment
+{
  public:
   SourceFragment(int sid, int bl, SourceFile *sf);
   ~SourceFragment();
@@ -125,13 +106,59 @@ class SourceFragment {
 /**
  * @internal
  *
+ * Represents a frame on the execution stack. The top frame is the global code for
+ * the script, and each frame below it represents a function call.
+ */
+class StackFrame
+{
+public:
+  StackFrame(KJS::ExecState *_exec,
+	     KJS::Debugger::CodeType _codeType,
+	     SourceFragment *_sourceFragment,
+	     int _lineno,
+	     KJS::Object &_function,
+	     KJS::Object &_thisVal,
+	     KJS::Object &_variable,
+	     QString _name,
+	     const KJS::List &_args,
+	     bool _next)
+  : exec(_exec),
+    codeType(_codeType),
+    sourceFragment(_sourceFragment),
+    lineno(_lineno),
+    function(_function),
+    thisVal(_thisVal),
+    variable(_variable),
+    name(_name),
+    args(_args),
+    next(_next)
+    { }
+
+  QString toString();
+
+  KJS::ExecState *exec;
+  KJS::Debugger::CodeType codeType;
+  SourceFragment *sourceFragment;
+  int lineno;
+  KJS::Object &function;
+  KJS::Object &thisVal;
+  KJS::Object &variable;
+  QString name;
+  const KJS::List &args;
+  bool next;
+};
+
+/**
+ * @internal
+ *
  * KJSDebugWin represents the debugger window that is visible to the user. It contains
  * a stack frame list, a code viewer and a source fragment selector, plus buttons
  * to control execution including next, step and continue.
  *
  * There is only one debug window per program. This can be obtained by calling #instance
  */
-class KJSDebugWin : public QWidget, public KJS::Debugger {
+class KJSDebugWin : public QWidget, public KJS::Debugger
+{
   Q_OBJECT
 public:
   KJSDebugWin(QWidget *parent=0, const char *name=0);
@@ -149,14 +176,14 @@ public:
 	                    // as soon as possible
   };
 
-  void highLight(int sourceId, int line);
+  void setSourceLine(int sourceId, int lineno);
   void setNextSourceInfo(QString url, int baseLine);
   void setSourceFile(QString url, QString code, KJS::Interpreter* interp);
   void appendSourceFile(QString url, QString code, KJS::Interpreter* interp);
   bool inSession() const { return m_inSession; }
   void setMode(Mode m) { m_mode = m; }
   void clear(KJS::Interpreter *interp);
-  KJS::ExecState * getExecState() const { return m_curExecState; }
+  KJS::ExecState *getExecState();
 
   // functions overridden from KJS:Debugger
   bool sourceParsed(KJS::ExecState *exec, int sourceId,
@@ -166,10 +193,12 @@ public:
                  int lineno, KJS::Object &exceptionObj);
   bool atStatement(KJS::ExecState *exec, int sourceId, 
                    int firstLine, int lastLine);
-  bool callEvent(KJS::ExecState *exec, int sourceId, int lineno,
-          KJS::Object &function, const KJS::List &args);
-  bool returnEvent(KJS::ExecState *exec, int sourceId, 
-                   int lineno, KJS::Object &function);
+  bool enterContext(KJS::ExecState *exec, CodeType codeType, int sourceId,
+		    int lineno, KJS::Object &thisVal, KJS::Object &variable,
+		    KJS::Object &function, const KJS::UString &name,
+		    const KJS::List &args);
+  bool exitContext(const KJS::Completion &completion, int lineno);
+
 public slots:
   void next();
   void step();
@@ -188,7 +217,7 @@ protected:
 private:
   void enterSession();
   void leaveSession();
-  void setCode(const QString &code,int SourceId);
+  void displaySourceFile(SourceFile *sourceFile);
   void updateFrameList();
 
   struct Breakpoint {
@@ -202,12 +231,12 @@ private:
   };
   SourceBreakpoints *m_sourceBreakpoints;
 
-  bool setBreakpoint(int sourceId, int line);
-  bool deleteBreakpoint(int sourceId, int line);
+  bool setBreakpoint(int sourceId, int lineno);
+  bool deleteBreakpoint(int sourceId, int lineno);
   void clearAllBreakpoints(int sourceId = -1);
   int breakpointLine(int sourceId, int line0, int line1);
   bool haveBreakpoint(int sourceId, int line0, int line1);
-  void setExecState(KJS::ExecState *exec);
+  bool haveBreakpoint(SourceFile *sourceFile, int line0, int line1);
 
   bool m_inSession;
 
@@ -237,7 +266,6 @@ private:
   QString m_nextSourceUrl;
   int m_nextSourceBaseLine;
   FakeModal m_fakeModal;
-  KJS::ExecState *m_curExecState;
   static KJSDebugWin *kjs_html_debugger;
 };
 

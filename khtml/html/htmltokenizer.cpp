@@ -448,7 +448,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
     else
       url = scriptURL;
 
-    view->part()->executeScript(url,baseLine,Node(),str);
+    view->part()->executeScript(url,baseLine+1,Node(),str);
     m_executingScript--;
     script = oldscript;
 }
@@ -1523,7 +1523,7 @@ void HTMLTokenizer::processToken()
 {
     KJSProxy *jsProxy = view ? view->part()->jScript() : 0L;
     if (jsProxy)
-        jsProxy->setEventHandlerLineno(tagStartLineno);
+        jsProxy->setEventHandlerLineno(tagStartLineno+1);
     if ( dest > buffer )
     {
 #ifdef TOKEN_DEBUG
@@ -1540,7 +1540,7 @@ void HTMLTokenizer::processToken()
     else if(!currToken.id) {
         currToken.reset();
         if (jsProxy)
-            jsProxy->setEventHandlerLineno(lineno+src.lineCount());
+            jsProxy->setEventHandlerLineno(lineno+src.lineCount()+1);
         return;
     }
 
@@ -1579,7 +1579,7 @@ void HTMLTokenizer::processToken()
 
     currToken.reset();
     if (jsProxy)
-        jsProxy->setEventHandlerLineno(0);
+        jsProxy->setEventHandlerLineno(1);
 }
 
 

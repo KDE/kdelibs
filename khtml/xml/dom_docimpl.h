@@ -372,7 +372,7 @@ public:
     virtual void setWindowEventListener(int id, EventListener *listener);
     EventListener *getWindowEventListener(int id);
     virtual void removeWindowEventListener(int id);
-    EventListener *createHTMLEventListener(QString code);
+    EventListener *createHTMLEventListener(QString code, QString name);
 
     /**
      * Searches through the document, starting from fromNode, for the next selectable element that comes after fromNode.

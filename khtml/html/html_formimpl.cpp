@@ -476,11 +476,11 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSUBMIT:
         setHTMLEventListener(EventImpl::SUBMIT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onsubmit"));
         break;
     case ATTR_ONRESET:
         setHTMLEventListener(EventImpl::RESET_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onreset"));
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -762,11 +762,11 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1026,19 +1026,19 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onselect"));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1390,11 +1390,11 @@ void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -1681,15 +1681,15 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string()));
+            getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2098,19 +2098,19 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onselect"));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onchange"));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);

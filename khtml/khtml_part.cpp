@@ -779,7 +779,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (!proxy || proxy->paused())
     return QVariant();
   d->m_runningScripts++;
-  QVariant ret = proxy->evaluate( QString::null, 0, script, n );
+  QVariant ret = proxy->evaluate( QString::null, 1, script, n );
   d->m_runningScripts--;
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
@@ -5085,14 +5085,14 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
-DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
+DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name, int firstLine, int lastLine )
 {
   KJSProxy *proxy = jScript();
 
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( m_url.url(), code );
+  return proxy->createHTMLEventHandler( m_url.url(), name, firstLine, lastLine, code );
 }
 
 KHTMLPart *KHTMLPart::opener()

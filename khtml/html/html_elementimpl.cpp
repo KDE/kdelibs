@@ -175,47 +175,47 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 // standard events
     case ATTR_ONCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onclick"));
         break;
     case ATTR_ONDBLCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"ondblclick"));
         break;
     case ATTR_ONMOUSEDOWN:
         setHTMLEventListener(EventImpl::MOUSEDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onmousedown"));
         break;
     case ATTR_ONMOUSEMOVE:
         setHTMLEventListener(EventImpl::MOUSEMOVE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onmousemove"));
         break;
     case ATTR_ONMOUSEOUT:
         setHTMLEventListener(EventImpl::MOUSEOUT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseout"));
         break;
     case ATTR_ONMOUSEOVER:
         setHTMLEventListener(EventImpl::MOUSEOVER_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseover"));
         break;
     case ATTR_ONMOUSEUP:
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseup"));
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::DOMFOCUSIN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
         break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeydown"));
 	break;
     case ATTR_ONKEYPRESS:
         setHTMLEventListener(EventImpl::KHTML_KEYPRESS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeypress"));
 	break;
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KHTML_KEYUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeyup"));
         break;
 // other misc attributes
     default:

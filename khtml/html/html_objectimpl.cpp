@@ -387,11 +387,11 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string()));
+	    getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
     default:
       HTMLElementImpl::parseAttribute( attr );
