@@ -167,7 +167,7 @@ static bool tabForward = true;
 
 // L0300: This class gives access protected members of class QWidget.
 //        Function focusData() is useful to reimplement tab focus management
-//        (L0651) Function topData() returns a structure QTLWExtra containing
+//        (L0620) Function topData() returns a structure QTLWExtra containing
 //        information unique to toplevel windows.  This structure contains two
 //        members for the sole use of QXEmbed. Flag `embedded' indicates whether
 //        the toplevel window is embedded using the XEMBED protocol (L0680). 
@@ -999,7 +999,7 @@ bool QXEmbed::focusNextPrevChild( bool next )
         //        When the user presses TAB, Qt will not change 
         //        the focus and pass the TAB key events to the QXEmbed widget.
         //        These key events will be forwarded to the client (L1400, L1450)
-        //        who eventually will manage the tab focus (L0651) and possible
+        //        who eventually will manage the tab focus (L0620) and possible
         //        instruct us to call QWidget::focusNextPrevChild (L2081).
         return false;
     else
