@@ -30,6 +30,7 @@
 #include <qpushbt.h>
 #include <qlined.h>
 #include <qmlined.h>
+#include <qfontmet.h>
 #include "htmlform.h"
 #include <strings.h>
 #include "htmlform.moc"
@@ -39,27 +40,31 @@
 
 QString HTMLElement::encodeString( const QString &e )
 {
+	static char *special = "=&%+<>;";
 	unsigned pos = 0;
 	QString encoded;
+	char buffer[5];
 
-	do
+	while ( pos < e.length() )
 	{
-		unsigned char c = e[pos];
+		unsigned c = e[pos];
 
 		if ( c == ' ' )
 			encoded += '+';
-		else if ( c > 127 || c == '=' || c == '&' || c == '%' ||
-		    c == '+' || c == '\n' )
+		else if ( c > 127 || strchr( special, c ) )
 		{
-			char buffer[5];
+			debug( "c = %d", (int)c );
 			sprintf( buffer, "%%%02X", (int)c );
 			encoded += buffer;
 		}
-		else
+		else if ( c == '\n' )
+		{
+			encoded += "%0D%0A";
+		}
+		else if ( c != '\r' )
 			encoded += c;
 		pos++;
 	}
-	while ( pos < e.length() );
 
 	return encoded;
 }
@@ -160,6 +165,7 @@ void HTMLSelect::addOption( const char *v, bool sel )
 		{
 			_defSelected = cb->count() - 1;
 			cb->setCurrentItem( _defSelected );
+			_item = _defSelected;
 		}
 		QSize size = widget->sizeHint();
 		widget->resize( size );
@@ -261,7 +267,9 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c )
 
 	widget = new QMultiLineEdit( parent );
 
-	QSize size( c * 8, r * 22 );
+	QFontMetrics fm( widget->font() );
+
+	QSize size( c * fm.width('a'), r * (fm.height()+1) );
 
 	widget->resize( size );
 

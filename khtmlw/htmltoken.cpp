@@ -108,6 +108,7 @@ void HTMLTokenizer::begin()
     script = false;
     select = false;
     comment = false;
+    textarea = false;
     squote = false;
     dquote = false;
     tquote = false;
@@ -290,7 +291,7 @@ void HTMLTokenizer::write( const char *str )
 		// Special character ?
 		else if ( isalpha( *(src + 1) ) )
 		{
-		     if (!tag){
+		     if (!tag && !textarea){
 		       // add currend token
 		       debugM("Not quoted amp-seq: %0.20s\n",src);
 		       *dest=0;
@@ -393,6 +394,15 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
 	    {
 		pre = false;
+	    }
+	    else if ( strncmp( buffer+2, "textarea", 8 ) == 0 )
+	    {
+		textarea = true;
+		discardCR = true;
+	    }
+	    else if ( strncmp( buffer+2, "/textarea", 9 ) == 0 )
+	    {
+		textarea = false;
 	    }
 	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
 	    {

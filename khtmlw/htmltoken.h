@@ -170,6 +170,9 @@ protected:
     // Area we in a <!-- comment --> block
     bool comment;
 
+    // Are we in a <textarea> ... </textarea> block
+    bool textarea;
+
     // Used to store the code of a srcipting sequence
     char *scriptCode;
     // Size of the script sequenze stored in @ref #scriptCode

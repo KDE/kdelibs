@@ -1,7 +1,12 @@
 KHTMLW CHANGES
 ==============
 
-Version 0.13.16 - 26 Mar 1998 (Torben)
+Version 0.12.16 - 28 Mar 1998 (Martin)
+---------------
+
+Fixes for <textarea>
+
+Version 0.12.16 - 26 Mar 1998 (Torben)
 ---------------
 
 Middle mouse button can now do what the left one can. 
