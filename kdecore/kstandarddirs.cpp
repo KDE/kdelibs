@@ -616,8 +616,15 @@ QString KStandardDirs::findExe( const QString& appname,
         return QString::null;
     }
 
+    QString p = QString("%1/%2").arg(__KDE_BINDIR).arg(appname);
+    info.setFile( p );
+    if( info.exists() && ( ignore || info.isExecutable() )
+         && ( info.isFile() || info.isSymLink() )  ) {
+         return p;
+    }
+
     QStringList tokens;
-    QString p = pstr;
+    p = pstr;
 
     if( p == QString::null ) {
 	p = getenv( "PATH" );
