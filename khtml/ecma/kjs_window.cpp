@@ -49,9 +49,9 @@ Window::~Window()
   delete winq;
 }
 
-bool Window::hasProperty(const UString &, bool) const
+bool Window::hasProperty(const UString &p, bool) const
 {
-  return true;
+  return !get(p).isA(UndefinedType);
 }
 
 KJSO Window::get(const UString &p) const
