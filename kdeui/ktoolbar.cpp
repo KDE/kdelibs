@@ -2442,6 +2442,7 @@ bool KToolBar::enable(BarStatus stat)
   else
     show();
 
+  emit moved (position); // force KTM::updateRects (David)
   return ( isVisible() == mystat );
 }
 
