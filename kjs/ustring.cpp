@@ -146,7 +146,7 @@ UString::UString(const char *c)
   operator=(c);
 }
 
-UString::UString(const UChar *c, int length, bool copy)
+UString::UString(UChar *c, int length, bool copy)
 {
   UChar *d;
   if (copy) {
