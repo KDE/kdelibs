@@ -39,6 +39,12 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     connect(tabBar(), SIGNAL(closeRequest( int )), SLOT(closeRequest( int )));
 }
 
+KTabWidget::~KTabWidget()
+{
+    //for the futur.
+    //delete d;
+}
+
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
@@ -143,7 +149,7 @@ void KTabWidget::moveTab( int from, int to )
     emit ( movedTab( from, to ) );
 }
 
-bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
+bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
 {
     QPoint point( p );
     QSize size( tabBar()->sizeHint() );

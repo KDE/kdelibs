@@ -35,6 +35,7 @@ class KTabBar: public QTabBar
 
 public:
     KTabBar( QWidget* parent=0, const char* name=0 );
+    virtual ~KTabBar();
 
     const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
@@ -69,7 +70,7 @@ protected:
 protected slots:
     virtual void closeButtonClicked();
     virtual void onLayoutChange();
-    
+
 private:
     QPoint mDragStart;
     int mReorderStartTab;

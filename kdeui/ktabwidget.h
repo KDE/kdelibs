@@ -34,7 +34,10 @@ class KTabWidget : public QTabWidget
 
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
-
+    /**
+     * Destructor.
+     */
+    virtual ~KTabWidget();
     /*!
       Set the tab of the given widget to \a color.
     */
@@ -137,7 +140,7 @@ protected slots:
     virtual void closeRequest( int );
 
 private:
-    bool isEmptyTabbarSpace( const QPoint & );
+    bool isEmptyTabbarSpace( const QPoint & )  const;
 
     KTabWidgetPrivate *d;
 };

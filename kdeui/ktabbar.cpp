@@ -30,7 +30,7 @@
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
-      mHoverCloseButtonTab( 0 ), mHoverCloseButton( 0 ), 
+      mHoverCloseButtonTab( 0 ), mHoverCloseButton( 0 ),
       mHoverCloseButtonEnabled( false ), mTabReorderingEnabled( false )
 {
     setAcceptDrops( true );
@@ -39,6 +39,12 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
 #if QT_VERSION >= 0x030200
     connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
 #endif
+}
+
+KTabBar::~KTabBar()
+{
+    //For the futur
+    //delete d;
 }
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
