@@ -42,14 +42,15 @@ public:
    * Constructs a KDesktopFile object and make it either read-write
    * or read-only.
    *
-   * @param fileName The file used for saving the data. The
-   *                  full path must be specified.
-   * @param bReadOnly Whether the object should be read-only.
+   * @param fileName  The name or path of the desktop file. If it
+   *                  is not absolute, it will be located
+   *                  using the resource type @p resType.
+   * @param readOnly  Whether the object should be read-only.
    * @param resType   Allows you to change what sort of resource
-   *                  to search for if @p pFileName is not absolute.  For
+   *                  to search for if @p fileName is not absolute.  For
    *                  instance, you might want to specify "config".
    */
-  KDesktopFile( const QString &fileName, bool bReadOnly = false,
+  KDesktopFile( const QString &fileName, bool readOnly = false,
 		const char * resType = "apps");
 
   /**
