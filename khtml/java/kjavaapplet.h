@@ -237,9 +237,9 @@ public:
     */
     void stateChange ( const int newState );
     void setFailed ();
-    AppletState state();
-    bool failed();
-    bool isAlive();
+    AppletState state() const;
+    bool failed() const;
+    bool isAlive() const;
 
 private:
     void showStatus( const QString &msg);

@@ -30,14 +30,15 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 
+typedef QMap< int, QGuardedPtr<KJavaApplet> > AppletMap;
+
 // For future expansion
 class KJavaAppletContextPrivate
 {
 friend class KJavaAppletContext;
 private:
-    QMap< int, QGuardedPtr<KJavaApplet> > applets;
+    AppletMap applets;
 };
-
 
 //  Static Factory Functions
 int KJavaAppletContext::contextCount = 0;
@@ -73,11 +74,17 @@ void KJavaAppletContext::setContextId( int _id )
     id = _id;
 }
 
-void KJavaAppletContext::create( KJavaApplet* applet )
+void KJavaAppletContext::registerApplet( KJavaApplet* applet )
 {
     static int appletId = 0;
 
-    server->createApplet( id, ++appletId,
+    applet->setAppletId( ++appletId );
+    d->applets.insert( appletId, applet );
+}
+
+void KJavaAppletContext::create( KJavaApplet* applet )
+{
+    server->createApplet( id, applet->appletId(),
                           applet->appletName(),
                           applet->appletClass(),
                           applet->baseURL(),
@@ -87,8 +94,6 @@ void KJavaAppletContext::create( KJavaApplet* applet )
                           applet->getParams(),
                           applet->getWindowName() );
 
-    applet->setAppletId( appletId );
-    d->applets.insert( appletId, applet );
 }
 
 void KJavaAppletContext::destroy( KJavaApplet* applet )
@@ -205,6 +210,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                 if (ok)
                 {
                     applet->stateChange(newState);
+                    if (newState == KJavaApplet::INITIALIZED) {
+                        kdDebug(6002) << "emit appletLoaded" << endl;
+                        emit appletLoaded();
+                    }
                 } else
                     kdError(6002) << "AppletStateNotification: status is not numerical" << endl;
             } else
@@ -226,6 +235,18 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             applet->setFailed();
         }
     }
+}
+
+bool KJavaAppletContext::appletsLoaded() const {
+    AppletMap::const_iterator it = d->applets.begin();
+    for (; it != d->applets.end(); it++) {
+        if (!(*it).isNull()) {
+            if (!(*it)->isAlive()) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool KJavaAppletContext::getMember(KJavaApplet * applet, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {

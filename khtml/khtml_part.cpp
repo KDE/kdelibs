@@ -735,6 +735,8 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
                this, SIGNAL(setStatusBarText(const QString&)) );
       connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),
                this, SLOT(slotShowDocument(const QString&, const QString&)) );
+      connect( d->m_javaContext, SIGNAL(appletLoaded()),
+               this, SLOT(checkCompleted()) );
   }
 
   return d->m_javaContext;
@@ -1587,6 +1589,11 @@ void KHTMLPart::checkCompleted()
   if ( requests > 0 )
     return;
 
+#ifndef Q_WS_QWS
+  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
+      return;
+#endif
+
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
@@ -1655,6 +1662,10 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
+#ifndef Q_WS_QWS
+  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
+      return;
+#endif
   // Still waiting for images/scripts from the loader ?
   // (onload must happen afterwards, #45607)
   // ## This makes this method very similar to checkCompleted. A brave soul should try merging them.
