@@ -913,11 +913,6 @@ void* Imp::operator new(size_t s)
   return Collector::allocate(s);
 }
 
-void Imp::operator delete(void*, size_t)
-{
-  // deprecated. a mistake.
-}
-
 void Imp::operator delete(void*)
 {
   // Do nothing. So far.
@@ -966,13 +961,6 @@ const TypeInfo ObjectImp::info = { "Object", ObjectType, 0, 0, 0 };
 Object ObjectImp::toObject() const
 {
   return Object(const_cast<ObjectImp*>(this));
-}
-
-KJSO ObjectImp::toPrimitive(Type preferred) const
-{
-  // ### Imp already does that now. Remove in KDE 3.0.
-  return defaultValue(preferred);
-  /* TODO: is there still any need to throw a runtime error _here_ ? */
 }
 
 void ObjectImp::mark(Imp*)

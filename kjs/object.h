@@ -434,10 +434,6 @@ namespace KJS {
 
     void* operator new(size_t);
     void operator delete(void*);
-    /**
-     * @deprecated
-     */
-    void operator delete(void*, size_t);
 
 #ifdef KJS_DEBUG_MEM
     /**
@@ -493,7 +489,6 @@ namespace KJS {
     ObjectImp(Class c, const KJSO &v);
     ObjectImp(Class c, const KJSO &v, const KJSO &p);
     virtual ~ObjectImp();
-    virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
     virtual Boolean toBoolean() const;
     virtual Number toNumber() const;
     virtual String toString() const;
