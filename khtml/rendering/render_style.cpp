@@ -127,7 +127,7 @@ RenderStyle::setBitDefaults()
 
     _visuallyOrdered = false;
     _direction = LTR;
-    _cursor = CURSOR_AUTO;
+    _cursor_style = CURSOR_AUTO;
 
     _htmlHacks=false;
     _flowAroundFloats=false;
@@ -197,7 +197,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _white_space = other._white_space;
     _text_decoration = other._text_decoration;
     _visuallyOrdered = other._visuallyOrdered;
-    _cursor = other._cursor;
+    _cursor_style = other._cursor_style;
 
     _htmlHacks = other._htmlHacks;
 
@@ -247,7 +247,7 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
     _text_decoration = inheritParent->_text_decoration;
     _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
-    _cursor = inheritParent->_cursor;
+    _cursor_style = inheritParent->_cursor_style;
 
     _htmlHacks = inheritParent->_htmlHacks;
 
@@ -290,7 +290,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 //             _white_space == o._white_space &&
 //             _text_decoration == o._text_decoration &&
 //             _visuallyOrdered == o._visuallyOrdered &&
-//             _cursor == o._cursor &&
+//               cursor_style == o.cursor_style &&
 //             _htmlHacks == o._htmlHacks &&
 //             _overflow == o._overflow &&
 //             _vertical_align == o._vertical_align &&

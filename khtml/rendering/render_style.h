@@ -353,6 +353,7 @@ public:
     Length y_position;
 };
 
+
 //------------------------------------------------
 // Inherited attributes.
 //
@@ -393,6 +394,7 @@ public:
 	indent = Length(0, Fixed);
 	border_spacing = 0;
 	style_image = 0;
+	cursor_image = 0;
     }
 
     StyleInheritedData() { setDefaultValues(); }
@@ -405,6 +407,7 @@ public:
 	letter_spacing = o.letter_spacing;
 	border_spacing = o.border_spacing;
 	style_image = o.style_image;
+	cursor_image = o.cursor_image;
 	font = o.font;
 	color = o.color;
 	decoration_color = o.decoration_color;
@@ -420,6 +423,7 @@ public:
                word_spacing == o.word_spacing &&
                border_spacing == o.border_spacing &&
                style_image == o.style_image &&
+	 cursor_image == o.cursor_image &&
                font == o.font &&
                color == o.color &&
                decoration_color == o.decoration_color;
@@ -437,6 +441,7 @@ public:
     short border_spacing;
 
     CachedImage *style_image;
+    CachedImage *cursor_image;
 
     QFont font;
     QColor color;
@@ -472,6 +477,7 @@ enum ECursor {
     CURSOR_E_RESIZE, CURSOR_NE_RESIZE, CURSOR_NW_RESIZE, CURSOR_N_RESIZE, CURSOR_SE_RESIZE, CURSOR_SW_RESIZE,
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
+
 
 //------------------------------------------------
 
@@ -511,7 +517,7 @@ protected:
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
-    ECursor _cursor : 4;
+    ECursor _cursor_style : 4;
 
     bool _htmlHacks :1;
 
@@ -692,7 +698,9 @@ public:
     Length paddingLeft() const { return surround->padding.left; }
     Length paddingRight() const {  return surround->padding.right; }
 
-    ECursor cursor() const { return _cursor; }
+    ECursor cursor() const { return _cursor_style; }
+    CachedImage *cursorImage() const { return inherited->cursor_image; }
+    
 
 // attribute setter methods
 
@@ -740,7 +748,7 @@ public:
 
     void setClear(EClear v) { _clear = v; }
     void setTableLayout(ETableLayout v) { _table_layout = v; }
-    void setColSpan(short v) { SET_VAR(visual,colspan,v) }
+    void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
     void setFont(const QFont & v) { SET_VAR(inherited,font,v) }
 
@@ -788,7 +796,8 @@ public:
     void setPaddingLeft(Length v)   {  SET_VAR(surround,padding.left,v) }
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
-    void setCursor( ECursor c ) { _cursor = c; }
+    void setCursor( ECursor c ) { _cursor_style = c; }
+    void setCursorImage( CachedImage *v ) { SET_VAR(inherited,cursor_image,v) }
 
     bool htmlHacks() const { return _htmlHacks; }
     void setHtmlHacks(bool b=true) { _htmlHacks = b; }

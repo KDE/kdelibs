@@ -455,7 +455,19 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     QCursor c = KCursor::arrowCursor();
     if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
-        switch( mev.innerNode.handle()->style()->cursor() ) {
+      khtml::RenderStyle* style = mev.innerNode.handle()->style();
+      if ((style->cursor() == CURSOR_AUTO) && (style->cursorImage()) 
+	    && !(style->cursorImage()->pixmap().isNull())) {
+        /* First of all it works: Check out http://www.iam.unibe.ch/~schlpbch/cursor.html
+	* 
+	* But, I don't know what exactly we have to do here: rescale to 32*32, change to monochrome..
+	*/
+    	//kdDebug( 6000 ) << "using custom cursor" << endl;
+	const QPixmap p = style->cursorImage()->pixmap();
+	// ### fix
+	c = QCursor(p);
+      } else {
+        switch ( style->cursor() ) {
         case CURSOR_AUTO:
             if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
                 c = m_part->urlCursor();
@@ -495,6 +507,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         case CURSOR_DEFAULT:
             break;
         }
+      }
     }
     viewport()->setCursor( c );
 
