@@ -1376,7 +1376,8 @@ void KHTMLPart::end()
     // make sure nothing's left in there...
     if(d->m_decoder)
         write(d->m_decoder->flush());
-    d->m_doc->finishParsing();
+    if (d->m_doc)
+	d->m_doc->finishParsing();
 }
 
 void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
