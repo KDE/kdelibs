@@ -440,8 +440,6 @@ KXMLGUIFactory::~KXMLGUIFactory()
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
-    static const QString &tagAction = KGlobal::staticQString( "action" );
-    static const QString &attrAccel = KGlobal::staticQString( "accel" );
 
 //    QTime dt; dt.start();
 
@@ -488,46 +486,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
         actionPropElement = docElement.namedItem( actionPropElementName.lower() ).toElement();
 
     if ( !actionPropElement.isNull() )
-    {
-        QDomElement e = actionPropElement.firstChild().toElement();
-        for (; !e.isNull(); e = e.nextSibling().toElement() )
-        {
-            if ( e.tagName().lower() != tagAction )
-                continue;
-
-            KAction *action = m_client->action( e );
-            if ( !action )
-                continue;
-
-            QDomNamedNodeMap attributes = e.attributes();
-            for ( uint i = 0; i < attributes.length(); i++ )
-            {
-                QDomAttr attr = attributes.item( i ).toAttr();
-                if ( attr.isNull() )
-                    continue;
-
-                //don't let someone change the name of the action! (Simon)
-                if ( attr.name() == d->attrName )
-                    continue;
-
-                QVariant propertyValue;
-
-                QVariant::Type propertyType = action->property( attr.name().latin1() ).type();
-
-                // readable accels please ;-)
-                if ( attr.name().lower() == attrAccel )
-                    propertyValue = QVariant( KKeySequence(attr.value()).keyQt() );
-                else if ( propertyType == QVariant::Int )
-                    propertyValue = QVariant( attr.value().toInt() );
-                else if ( propertyType == QVariant::UInt )
-                    propertyValue = QVariant( attr.value().toUInt() );
-                else
-                    propertyValue = QVariant( attr.value() );
-
-                action->setProperty( attr.name().latin1() /* ???????? */, propertyValue );
-            }
-        }
-    }
+        applyActionProperties( actionPropElement );
 
     buildRecursive( docElement, d->m_rootNode );
 
@@ -1379,5 +1338,52 @@ void KXMLGUIFactory::processStateElement( const QDomElement &element )
   
 }
 
+void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
+{
+    static const QString &tagAction = KGlobal::staticQString( "action" );
+    static const QString &attrAccel = KGlobal::staticQString( "accel" );
+
+    QDomElement e = actionPropElement.firstChild().toElement();
+    for (; !e.isNull(); e = e.nextSibling().toElement() )
+    {
+        if ( e.tagName().lower() != tagAction )
+            continue;
+
+        KAction *action = m_client->action( e );
+        if ( !action )
+            continue;
+
+        QDomNamedNodeMap attributes = e.attributes();
+        for ( uint i = 0; i < attributes.length(); i++ )
+        {
+            QDomAttr attr = attributes.item( i ).toAttr();
+            if ( attr.isNull() )
+                continue;
+
+            //don't let someone change the name of the action! (Simon)
+            if ( attr.name() == d->attrName )
+                continue;
+
+            QVariant propertyValue;
+
+            QVariant::Type propertyType = action->property( attr.name().latin1() ).type();
+
+            // readable accels please ;-)
+            if ( attr.name().lower() == attrAccel )
+                propertyValue = QVariant( KKeySequence(attr.value()).keyQt() );
+            else if ( propertyType == QVariant::Int )
+                propertyValue = QVariant( attr.value().toInt() );
+            else if ( propertyType == QVariant::UInt )
+                propertyValue = QVariant( attr.value().toUInt() );
+            else
+                propertyValue = QVariant( attr.value() );
+
+            action->setProperty( attr.name().latin1() /* ???????? */, propertyValue );
+        }
+    }
+}
 
 #include "kxmlguifactory.moc"
+
+/* vim: et sw=4
+ */

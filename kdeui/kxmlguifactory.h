@@ -182,6 +182,8 @@ class KXMLGUIFactory : public QObject
 
   void processStateElement( const QDomElement &element );
 
+  void applyActionProperties( const QDomElement &element );
+
   KXMLGUIClient *m_client;
   KXMLGUIBuilder *m_builder;
 
@@ -189,3 +191,5 @@ class KXMLGUIFactory : public QObject
 };
 
 #endif
+/* vim: et sw=4
+ */
