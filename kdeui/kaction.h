@@ -526,6 +526,7 @@ signals:
     void enabled( bool );
 
 private:
+    QString whatsThisWithIcon() const;
     class KActionPrivate;
     KActionPrivate *d;
 };

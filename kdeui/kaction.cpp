@@ -448,7 +448,7 @@ int KAction::plug( QWidget *w, int index )
         menu->setItemEnabled( id, false );
 
     if ( !d->m_whatsThis.isEmpty() )
-        menu->setWhatsThis( id, d->m_whatsThis );
+        menu->setWhatsThis( id, whatsThisWithIcon() );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -485,7 +485,7 @@ int KAction::plug( QWidget *w, int index )
     }
 
     if ( !d->m_whatsThis.isEmpty() )
-        QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
+        QWhatsThis::add( bar->getButton(id_), whatsThisWithIcon() );
 
     if ( !d->m_toolTip.isEmpty() )
       QToolTip::add( bar->getButton(id_), d->m_toolTip );
@@ -757,6 +757,14 @@ void KAction::setWhatsThis( int i, const QString& text )
 QString KAction::whatsThis() const
 {
   return d->m_whatsThis;
+}
+
+QString KAction::whatsThisWithIcon() const
+{
+    QString text = whatsThis();
+    if (!d->m_iconName.isEmpty())
+      return QString::fromLatin1("<img source=\"small|%1\"> %2").arg(d->m_iconName).arg(text);
+    return text;
 }
 
 QPixmap KAction::pixmap() const
