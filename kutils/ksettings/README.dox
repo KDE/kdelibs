@@ -125,11 +125,11 @@ Some explanation for those keys:
 - X-KDE-ParentComponents is a list of the components (plugin/KPart/whatever)
   this config page belongs to. Normally there is only one component.
   It is used for two things:
-  1. If you use KSettings::Dispatcher the dispatcher will notify all components
+  -# If you use KSettings::Dispatcher the dispatcher will notify all components
      in this list after the save() method of your KCM has been called. The
      components then can reload the configuration and apply the changes the user
      did to the config.
-  2. If your component is used by another application (that is not =
+  -# If your component is used by another application (that is not =
      X-KDE-ParentApp) then it may add the name of the component to the ctor of
      KSettings::Dialog and the dialog will automatically include all config
      pages that have the components name in their ParentComponents list.
