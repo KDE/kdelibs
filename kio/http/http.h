@@ -28,18 +28,13 @@
 
 #include <ksock.h>
 #include <kurl.h>
-#include <kmdcodec.h>
 #include <kio/slavebase.h>
 
-// Default ports.. you might want to change this if you're trying to dodge
-// a proxy with some creative network address translation..  HTTP_PORT
-// is used for HTTP and WebDAV/WebFolders, HTTPS_PORT is well used for
-// HTTPS. Duh.
-#define DEFAULT_FTP_PORT        21
-#define DEFAULT_HTTP_PORT       80
-#define DEFAULT_HTTPS_PORT      443
-
 class DCOPClient;
+
+namespace KIO {
+    class AuthInfo;
+}
 
 class HTTPProtocol : public KIO::SlaveBase
 {

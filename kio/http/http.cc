@@ -69,26 +69,13 @@
 #include <kssl.h>
 #endif
 
+#include <kmdcodec.h>
 #include <kio/http_slave_defaults.h>
 #include <kio/ioslave_defaults.h>
 
 #include "http.h"
 
 using namespace KIO;
-
-#define MAX_IPC_SIZE (1024*8)
-
-// Default expire time in seconds: 1 min.
-#define DEFAULT_EXPIRE (10)
-
-// time frame in which the cache cleaner is run
-// (30 Minutes)
-#ifndef MAX_CACHE_AGE
-#define MAX_CACHE_AGE 30*60
-#endif
-
-#define DEFAULT_MIME_TYPE       "text/html"
-#define DEFAULT_ACCEPT_HEADER   "text/*, image/png, image/jpeg, image/gif, image/*, */*"
 
 extern "C" {
   void sigalrm_handler(int);
@@ -1555,7 +1542,7 @@ bool HTTPProtocol::readHeader()
   }
 
   if (!expireDate)
-     expireDate = time(0) + DEFAULT_EXPIRE;
+     expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
 
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
@@ -3104,7 +3091,7 @@ void HTTPProtocol::closeCacheEntry()
 
 void HTTPProtocol::cleanCache()
 {
-   const time_t maxAge = MAX_CACHE_AGE; // 30 Minutes.
+   const time_t maxAge = DEFAULT_CLEAN_CACHE_INTERVAL; // 30 Minutes.
    bool doClean = false;
    QString cleanFile = m_strCacheDir;
    if (cleanFile[cleanFile.length()-1] != '/')
