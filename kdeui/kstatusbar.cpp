@@ -59,6 +59,13 @@ void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
   emit itemReleased (id);
 }
 
+class KStatusBarPrivate
+{
+  public:
+
+    // KDE 4.0: Move into KStatusBarLabel
+    QMap<int, bool> is_permanent_item;
+};
 
 KStatusBar::KStatusBar( QWidget *parent, const char *name )
   : QStatusBar( parent, name )
@@ -71,10 +78,12 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   bool grip_enabled = config->readBoolEntry(QString::fromLatin1("SizeGripEnabled"), false);
   setSizeGripEnabled(grip_enabled);
   config->setGroup(group);
+  d = new KStatusBarPrivate;
 }
 
 KStatusBar::~KStatusBar ()
 {
+  delete d;
 }
 
 void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
@@ -82,6 +91,7 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch, bool perm
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   l->setFixedHeight(fontMetrics().height()+2);
   items.insert(id, l);
+  d->is_permanent_item.insert(id, permanent);
   addWidget (l, stretch, permanent);
   l->show();
 }
@@ -93,6 +103,7 @@ void KStatusBar::removeItem (int id)
   {
     removeWidget (l);
     items.remove(id);
+    d->is_permanent_item.remove(id);
     delete l;
   }
   else
@@ -104,7 +115,10 @@ void KStatusBar::changeItem( const QString& text, int id )
   KStatusBarLabel *l = items[id];
   if (l)
   {
-    clear();
+    if(!d->is_permanent_item[id])
+    {
+      clear();
+    }
     l->setText(text);
     reformat();
   }
