@@ -131,7 +131,7 @@ namespace KJS {
     void lineDoubleClicked(int lineno);
 
   protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void contentsMousePressEvent(QMouseEvent *e);
     virtual void drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph);
 
     QString m_source;
@@ -141,6 +141,7 @@ namespace KJS {
 
     KJSDebugWin *m_debugWin;
     QFont m_font;
+    QPixmap m_breakpointIcon;
   };
 
   /**
@@ -268,6 +269,7 @@ namespace KJS {
 
     QComboBox *m_sourceSel;
     EvalMultiLineEdit *m_evalEdit;
+    int m_evalDepth;
 
     static KJSDebugWin *kjs_html_debugger;
   };

@@ -64,6 +64,7 @@
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
 #include "khtml_settings.h"
+#include "khtml_factory.h"
 #include "misc/decoder.h"
 #include <kjs/ustring.h>
 #include <kjs/object.h>
@@ -75,9 +76,11 @@ using namespace khtml;
 
 SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name)
   : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin), 
-    m_font(KGlobalSettings::fixedFont().family(),10)
+    m_font(KGlobalSettings::fixedFont())
 {
   verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
+  viewport()->setBackgroundMode(Qt::NoBackground);
+  m_breakpointIcon = KGlobal::iconLoader()->loadIcon("stop",KIcon::Small);
 }
 
 SourceDisplay::~SourceDisplay()
@@ -148,60 +151,75 @@ void SourceDisplay::setCurrentLine(int lineno, bool doCenter)
   updateContents();
 }
 
-void SourceDisplay::mouseDoubleClickEvent(QMouseEvent *e)
+void SourceDisplay::contentsMousePressEvent(QMouseEvent *e)
 {
   QScrollView::mouseDoubleClickEvent(e);
   QFontMetrics metrics(m_font);
-  int lineno = (e->y()+contentsY())/metrics.height();
+  int lineno = e->y()/metrics.height();
   emit lineDoubleClicked(lineno+1); // line numbers start from 1
 }
 
 void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph)
 {
-  if (!m_sourceFile)
+  if (!m_sourceFile) {
+    p->fillRect(clipx,clipy,clipw,cliph,palette().active().base());
     return;
+  }
 
   QFontMetrics metrics(m_font);
   int height = metrics.height();
 
+  int bottom = clipy + cliph;
+  int right = clipx + clipw;
+
   int firstLine = clipy/height-1;
   if (firstLine < 0)
     firstLine = 0;
-  int lastLine = (clipy+cliph)/height+2;
+  int lastLine = bottom/height+2;
   if (lastLine > (int)m_lines.count())
     lastLine = m_lines.count();
 
-  p->fillRect(clipx,clipy,clipw,cliph,palette().active().brush(QColorGroup::Base));
   p->setFont(m_font);
 
-  int linenoDisplayWidth = metrics.width("888888");
-  p->fillRect(0,clipy,linenoDisplayWidth,cliph,palette().active().brush(QColorGroup::Mid));
+  int linenoWidth = metrics.width("888888");
 
   for (int lineno = firstLine; lineno <= lastLine; lineno++) {
     QString linenoStr = QString().sprintf("%d",lineno+1);
-    p->drawText(0,height*lineno,linenoDisplayWidth,height,Qt::AlignRight,linenoStr);
 
+
+    p->fillRect(0,height*lineno,linenoWidth,height,palette().active().mid());
+
+    p->setPen(palette().active().text());
+    p->drawText(0,height*lineno,linenoWidth,height,Qt::AlignRight,linenoStr);
+
+    QColor bgColor;
+    QColor textColor;
 
     if (lineno == m_currentLine) {
-      p->fillRect(linenoDisplayWidth,height*lineno,
-		  contentsWidth()-linenoDisplayWidth,height,
-		  palette().active().brush(QColorGroup::Highlight));
-      p->setBrush(palette().active().brush(QColorGroup::HighlightedText));
+      bgColor = palette().active().highlight();
+      textColor = palette().active().highlightedText();
     }
     else if (m_debugWin->haveBreakpoint(m_sourceFile,lineno+1,lineno+1)) {
-      p->fillRect(linenoDisplayWidth,height*lineno,
-		  contentsWidth()-linenoDisplayWidth,height,
-		  QColor(255,192,192));
-      p->setBrush(palette().active().brush(QColorGroup::Text));
+      bgColor = palette().active().text();
+      textColor = palette().active().base();
+      p->drawPixmap(2,height*lineno+height/2-m_breakpointIcon.height()/2,m_breakpointIcon);
     }
     else {
-      p->setBrush(palette().active().brush(QColorGroup::Text));
+      bgColor = palette().active().base();
+      textColor = palette().active().text();
     }
 
-    p->drawText(linenoDisplayWidth+4,height*lineno,
-		contentsWidth()-linenoDisplayWidth-4,height,
+    p->fillRect(linenoWidth,height*lineno,right-linenoWidth,height,bgColor);
+    p->setPen(textColor);
+    p->drawText(linenoWidth+4,height*lineno,contentsWidth()-linenoWidth-4,height,
 		Qt::AlignLeft,m_lines[lineno]);
   }
+
+  int remainingTop = height*(lastLine+1);
+  p->fillRect(0,remainingTop,linenoWidth,bottom-remainingTop,palette().active().mid());
+
+  p->fillRect(linenoWidth,remainingTop,
+	      right-linenoWidth,bottom-remainingTop,palette().active().base());
 }
 
 //-------------------------------------------------------------------------
@@ -381,6 +399,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_evalEdit->setWordWrap(QMultiLineEdit::NoWrap);
   m_evalEdit->setFont(font);
   connect(m_evalEdit,SIGNAL(returnPressed()),SLOT(slotEval()));
+  m_evalDepth = 0;
 
   QVBoxLayout *evalLayout = new QVBoxLayout(evalContainer);
   evalLayout->addSpacing(KDialog::spacingHint());
@@ -400,17 +419,16 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   menuBar()->insertItem("&Debug",debugMenu);
 
   m_actionCollection = new KActionCollection(this);
-
-  // ### maybe find some more suitable icons... the kdevelop debugger icons look nice
-  m_nextAction       = new KAction(i18n("&Next"),"1rightarrow",KShortcut(),this,SLOT(slotNext()),
+  m_actionCollection->setInstance(KHTMLFactory::instance());
+  m_nextAction       = new KAction(i18n("&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
 				   m_actionCollection,"next");
-  m_stepAction       = new KAction(i18n("&Step"),"1downarrow",KShortcut(),this,SLOT(slotStep()),
+  m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
 				   m_actionCollection,"step");
-  m_continueAction   = new KAction(i18n("&Continue"),"2rightarrow",KShortcut(),this,SLOT(slotContinue()),
+  m_continueAction   = new KAction(i18n("&Continue"),"dbgrun",KShortcut(),this,SLOT(slotContinue()),
 				   m_actionCollection,"cont");
   m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(slotStop()),
 				   m_actionCollection,"stop");
-  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"bottom",KShortcut(),this,SLOT(slotBreakNext()),
+  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
 
   m_nextAction->setToolTip(i18n("Next"));
@@ -592,19 +610,22 @@ void KJSDebugWin::slotEval()
   List args;
   args.append(String(code));
 
+  m_evalDepth++;
   Value retval = obj.call(exec, thisobj, args);
+  m_evalDepth--;
   guard.stop();
 
   // Print the return value or exception message to the console
   if (exec->hadException()) {
-    msg = "Exception: " + exec->exception().toString(interp->globalExec()).qstring();
+    Value exc = exec->exception();
     exec->clearException();
+    msg = "Exception: " + exc.toString(interp->globalExec()).qstring();
   }
   else {
     msg = retval.toString(interp->globalExec()).qstring();
   }
 
-  m_evalEdit->insert(msg);
+  m_evalEdit->insert(msg+"\n");
   updateContextList();
 }
 
@@ -755,6 +776,8 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
   if (!part->settings()->isJavaScriptErrorReportingEnabled())
     return true;
 
+  QWidget *dlgParent = (m_evalDepth == 0) ? (QWidget*)part->view() : (QWidget*)this;
+
   QString exceptionMsg = value.toString(exec).qstring();
 
   // Syntax errors are a special case. For these we want to display the url & lineno,
@@ -780,7 +803,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
     // Object::put()
     QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1")
 		  .arg(exceptionMsg);
-    KJSErrorDialog dlg(part->view(),msg,false);
+    KJSErrorDialog dlg(dlgParent,msg,false);
     dlg.exec();
     dontShowAgain = dlg.dontShowAgain();
   }
@@ -792,7 +815,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
 		  .arg(sourceFragment->baseLine+ctx.curStmtFirstLine()-1)
 		  .arg(exceptionMsg);
 
-    KJSErrorDialog dlg(part->view(),msg,true);
+    KJSErrorDialog dlg(dlgParent,msg,true);
     dlg.exec();
     dontShowAgain = dlg.dontShowAgain();
 
