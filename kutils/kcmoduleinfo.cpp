@@ -21,8 +21,7 @@
   Boston, MA 02111-1307, USA.
 */
 
-
-#include "kcmoduleinfo.h"
+#include <qvariant.h>
 
 #include <kdesktopfile.h>
 #include <kdebug.h>
@@ -30,12 +29,25 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 
+#include "kcmoduleinfo.h"
+
+class KCModuleInfo::KCModuleInfoPrivate
+{
+  public:
+    KCModuleInfoPrivate() :
+      testModule( false )
+      { };
+
+    QString factoryName;
+    bool testModule;
+
+};
+
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
-  : _fileName(desktopFile), d(0L)
+  : _fileName(desktopFile)
 {
   _allLoaded = false;
 
-  //kdDebug(1208) << "desktopFile = " << desktopFile << endl;
   KService::Ptr sptr = KService::serviceByStorageId(desktopFile);
   if ( !sptr )
   {
@@ -55,7 +67,6 @@ KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
 }
 
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
-    : d( 0 )
 {
     ( *this ) = rhs;
 }
@@ -83,6 +94,18 @@ KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
     return *this;
 }
 
+QString KCModuleInfo::factoryName() const
+{
+  if( d->factoryName.isEmpty() )
+  {
+    d->factoryName = _service->property("X-KDE-FactoryName", QVariant::String).toString();
+    if ( d->factoryName.isEmpty() )
+      d->factoryName = library();
+  }
+
+  return d->factoryName;
+}
+
 bool KCModuleInfo::operator==( const KCModuleInfo & rhs ) const
 {
   return ( ( _name == rhs._name ) && ( _lib == rhs._lib ) && ( _fileName == rhs._fileName ) );
@@ -97,6 +120,8 @@ KCModuleInfo::~KCModuleInfo() { }
 
 void KCModuleInfo::init(KService::Ptr s)
 {
+  d = new KCModuleInfoPrivate;
+
   if ( !s )
     return;
 
@@ -141,6 +166,8 @@ KCModuleInfo::loadAll()
 
   // get the documentation path
   setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
+
+  setNeedsTest( _service->property( "X-KDE-Test-Module", QVariant::Bool).toBool() );
 }
 
 QString
@@ -190,5 +217,17 @@ KCModuleInfo::isHiddenByDefault() const
 
   return _isHiddenByDefault;
 }
+
+bool KCModuleInfo::needsTest() const 
+{
+  return d->testModule;
+}
+
+void KCModuleInfo::setNeedsTest( bool val )
+{
+  d->testModule = val;
+}
+
+
 
 // vim: ts=2 sw=2 et

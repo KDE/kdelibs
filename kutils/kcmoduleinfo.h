@@ -109,6 +109,14 @@ public:
   const QStringList &keywords() const { return _keywords; };
 
   /**
+   * Returns the module's factory name, if it's set. If not, the library
+   * name is returned.
+   * @returns the module's factory name
+   * @since 3.4
+   */
+  QString factoryName() const;
+
+  /**
    * @return the module\'s (translated) name
    */
   QString moduleName() const { return _name; };
@@ -161,6 +169,15 @@ public:
    */
   bool isHiddenByDefault() const KDE_DEPRECATED;
 
+
+  /**
+   * @returns true if the module should be conditionally 
+   * loaded.
+   * @since 3.4
+   */
+  bool needsTest() const;
+
+
 protected:
 
   /**
@@ -206,6 +223,14 @@ protected:
    * @param the new weight
    */
   void setWeight(int weight) { _weight = weight; };
+
+
+  /**
+   * Sets if the module should be tested for loading.
+   * @param val the value to set
+   * @since 3.4
+   */
+  void setNeedsTest( bool val );
 
   /**
    * Toggles whether the represented module needs root privileges. 
