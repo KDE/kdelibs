@@ -351,24 +351,32 @@ uchar SGIImage::intensity(uchar c)
 
 uint SGIImage::compact(uchar *d, uchar *s)
 {
-	uchar *dest = d, *src = s, patt, *cnt;
-	int n;
-	while (src - s < m_xsize) {
-		if (src - s + 1 == m_xsize) {		// last bit
-			*dest++ = 0x81;
-			*dest++ = *src;
-			break;
-		} else if (*src == src[1]) {
-			patt = *src++;
-			for (n = 1; src - s < m_xsize && n < 126 && *src == patt; src++)
-				n++;
-			*dest++ = n;
-			*dest++ = patt;
-		} else {
-			cnt = dest++;
-			for (n = 0; src - s < m_xsize && n < 126 && *src != src[1]; n++)
+	uchar *dest = d, *src = s, patt, *t, *end = s + m_xsize;
+	int i, n;
+	while (src < end) {
+		for (n = 0, t = src; t + 2 < end && !(*t == t[1] && *t == t[2]); t++)
+			n++;
+
+		while (n) {
+			i = n > 126 ? 126 : n;
+			n -= i;
+			*dest++ = 0x80 | i;
+			while (i--)
 				*dest++ = *src++;
-			*cnt = 0x80 | n;
+		}
+
+		if (src == end)
+			break;
+
+		patt = *src++;
+		for (n = 1; src < end && *src == patt; src++)
+			n++;
+
+		while (n) {
+			i = n > 126 ? 126 : n;
+			n -= i;
+			*dest++ = i;
+			*dest++ = patt;
 		}
 	}
 	*dest++ = 0;
