@@ -145,6 +145,149 @@ QColor mkColor( const QString& s )
     return c;
 }
 
+QCString demarshal( QDataStream &stream, const QString &type )
+{
+    QCString result;
+
+    if ( type == "int" )
+    {
+        int i;
+        stream >> i;
+        result.sprintf( "%d", i );
+    } else if ( type == "uint" )
+    {
+        uint i;
+        stream >> i;
+        result.sprintf( "%d", i );
+    } else if ( type == "long" )
+    {
+        long l;
+        stream >> l;
+        result.sprintf( "%ld", l );
+    } else if ( type == "float" )
+    {
+        float f;
+        stream >> f;
+        result.sprintf( "%f", (double)f );
+    } else if ( type == "double" )
+    {
+        double d;
+        stream >> d;
+        result.sprintf( "%f", d );
+    } else if ( type == "bool" )
+    {
+        bool b;
+        stream >> b;
+        result = b ? "true" : "false";
+    } else if ( type == "QString" )
+    {
+        QString s;
+        stream >> s;
+        result = s.local8Bit();
+    } else if ( type == "QCString" )
+    {
+        stream >> result;
+    } else if ( type == "QCStringList" )
+    {
+        return demarshal( stream, "QValueList<QCString>" );
+    } else if ( type == "QStringList" )
+    {
+        return demarshal( stream, "QValueList<QString>" );
+    } else if ( type == "QColor" )
+    {
+        QColor c;
+        stream >> c;
+        result = c.name().local8Bit();
+    } else if ( type == "QSize" )
+    {
+        QSize s;
+        stream >> s;
+        result.sprintf( "%dx%d", s.width(), s.height() );
+    } else if ( type == "QPoint" )
+    {
+        QPoint p;
+        stream >> p;
+        result.sprintf( "+%d+%d", p.x(), p.y() );
+    } else if ( type == "QRect" )
+    {
+        QRect r;
+        stream >> r;
+        result.sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() );
+    } else if ( type == "QVariant" )
+    {
+        QVariant::Type type;
+        stream >> (Q_UINT32)type;
+        return demarshal( stream, QVariant::typeToName( type ) );
+    } else if ( type == "DCOPRef" )
+    {
+        DCOPRef r;
+        stream >> r;
+        result.sprintf( "DCOPRef(%s,%s)", r.app().data(), r.object().data() );
+    } else if ( type.left( 11 ) == "QValueList<" )
+    {
+        if ( (uint)type.find( '>', 11 ) != type.length() - 1 )
+            return result;
+
+        QString nestedType = type.mid( 11, type.length() - 12 );
+
+        if ( nestedType.isEmpty() )
+            return result;
+
+        Q_UINT32 count;
+        stream >> count;
+
+        Q_UINT32 i = 0;
+        for (; i < count; ++i )
+        {
+            QCString arg = demarshal( stream, nestedType );
+            if ( arg.isEmpty() )
+                continue;
+
+            result += arg;
+
+            if ( i < count - 1 )
+                result += '\n';
+        }
+    } else if ( type.left( 5 ) == "QMap<" )
+    {
+        int commaPos = type.find( ',', 5 );
+
+        if ( commaPos == -1 )
+            return result;
+
+        if ( (uint)type.find( '>', commaPos ) != type.length() - 1 )
+            return result;
+
+        QString keyType = type.mid( 5, commaPos - 5 );
+        QString valueType = type.mid( commaPos + 1, type.length() - commaPos - 2 );
+
+        Q_UINT32 count;
+        stream >> count;
+
+        Q_UINT32 i = 0;
+        for (; i < count; ++i )
+        {
+            QCString key = demarshal( stream, keyType );
+
+            if ( key.isEmpty() )
+                continue;
+
+            QCString value = demarshal( stream, valueType );
+
+            if ( value.isEmpty() )
+                continue;
+
+            result += key + "->" + value;
+
+            if ( i < count - 1 )
+                result += '\n';
+        }
+    }
+
+    return result;
+
+}
+
 void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
 {
 
@@ -177,7 +320,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 		s = 0;
 	    else
 		s++;
-	
+
 	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
 		realfunc = (*it).mid( s );
 		int a = (*it).contains(',');
@@ -204,12 +347,16 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    (*it).stripWhiteSpace();
-#if 0
+//#if 0
 // This destroys all possible support for things like unsigned long int
+// Simon: I re-enabled this, because without it breaks what the dcop idl
+// compiler generates. For example from konq: 'openURL(QString name)' . We
+// certainly want to support that. If people want 'unsigned long int' then
+// they should IMHO fix the dcop interface to use 'ulong' or the like.
 	    int s = (*it).find(' ');
 	    if ( s > 0 )
 		(*it) = (*it).left( s );
-#endif
+//#endif
 	}
 	QString fc = f.left( left );
 	fc += '(';
@@ -295,98 +442,15 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
         exit(1);
     } else {
 	QDataStream reply(replyData, IO_ReadOnly);
-	if ( replyType == "int" ) {
-	    int i;
-	    reply >> i;
-	    printf( "%d\n", i );
-	} else if ( replyType == "uint" ) {
-	    uint i;	
-	    reply >> i;
-	    printf( "%d\n", i );
-	} else if ( replyType == "long" ) {
-	    long l;
-	    reply >> l;
-	    printf( "%ld\n", l );
-	} else if ( replyType == "long" ) {
-	    long l;
-	    reply >> l;
-	    printf( "%ld\n", l );
-	} else if ( replyType == "float" ) {
-	    float f;
-	    reply >> f;
-	    printf( "%f\n", (double) f );
-	} else if ( replyType == "double" ) {
-	    double d;
-	    reply >> d;
-	    printf( "%f\n", d );
-	} else if (replyType == "bool") {
-	    bool b;
-	    reply >> b;
-	    printf( "%s\n", b ? "true" : "false" );
-	} else if (replyType == "QString") {
-	    QString r;
-	    reply >> r;
-	    printf( "%s\n", r.latin1() );
-	} else if (replyType == "QCString") {
-	    QCString r;
-	    reply >> r;
-	    printf( "%s\n", r.data() );
-	} else if (replyType == "QCStringList") {
-	    QCStringList l;
-	    reply >> l;
-	    for ( QCStringList::Iterator it = l.begin(); it != l.end(); ++it )
-		printf( "%s\n", (*it).data() );
-	} else if (replyType == "QStringList") {
-	    QStringList l;
-	    reply >> l;
-	    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it )
-		printf( "%s\n", (*it).latin1() );
-	} else if (replyType == "QColor") {
-	    QColor c;
-	    reply >> c;
-	    printf( "%s\n", c.name().latin1() );
-	} else if (replyType == "QSize") {
-	    QSize s;
-	    reply >> s;
-	    printf( "%dx%d\n", s.width(), s.height() );
-	} else if (replyType == "QPoint") {
-	    QPoint p;
-	    reply >> p;
-	    printf( "+%d+%d\n", p.x(), p.y() );
-	} else if (replyType == "QRect") {
-	    QRect r;
-	    reply >> r;
-	    printf( "%dx%d+%d+%d\n", r.width(), r.height(), r.x(), r.y() );
-	} else if (replyType == "QVariant") {
-	    QVariant v;
-	    reply >> v;
-	    if ( v.type() == QVariant::Bool )
-		printf( "%s\n", v.toBool() ? "true" : "false" );
-	    else if ( v.type() == QVariant::Rect ) {
-		QRect r = v.toRect();
-		printf( "QRect(%d,%d,%d,%d)\n", r.x(), r.y(), r.width(), r.height() );
-	    } else if ( v.type() == QVariant::Point ) {
-		QPoint p = v.toPoint();
-		printf( "QPoint(%d,%d)\n", p.x(), p.y() );
-	    } else if ( v.type() == QVariant::Size ) {
-		QSize s = v.toSize();
-		printf( "QSize(%d,%d)\n", s.width(), s.height() );
-	    } else if ( v.type() == QVariant::Color ) {
-		QColor s = v.toColor();
-		printf( "QColor(%s)\n", s.name().latin1() );
-	    } else if ( v.canCast( QVariant::Int ) )
-		printf( "%d\n", v.toInt() );
-	    else if ( !v.toString().isNull() )
-		printf( "%s\n", v.toString().latin1() );
-	    else
-		printf( "<%s>\n", QVariant::typeToName( v.type() ) );
-	} else if ( replyType == "DCOPRef" ) {
-	    DCOPRef r;
-	    reply >> r;
-	    printf( "DCOPRef(%s,%s)\n", r.app().data(), r.object().data() );
-	} else if ( !replyType.isEmpty() && replyType != "void" && replyType != "ASYNC" ) {
-	    printf( "<%s>\n",  replyType.data() );
-	}
+
+        if ( replyType != "void" && replyType != "ASYNC" )
+        {
+            QCString replyString = demarshal( reply, replyType );
+            if ( replyString.isEmpty() )
+                replyString.sprintf( "<%s>", replyType.data() );
+
+            printf( "%s\n", replyString.data() );
+        }
     }
 }
 
@@ -394,16 +458,16 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 
 int main( int argc, char** argv )
 {
-    
+
     if ( argc > 1 && argv[1][0] == '-' ) {
 	fprintf( stderr, "Usage: dcop [ application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
 	exit(0);
     }
-    
+
     DCOPClient client;
     client.attach();
     dcop = &client;
-    
+
     switch ( argc ) {
     case 0:
     case 1:
