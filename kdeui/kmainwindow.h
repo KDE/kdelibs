@@ -260,10 +260,13 @@ public:
      * does not exist, then the XML UI code will only use the global
      * (standard) XML file for the layout purposes.
      *
+     * Note that when passing true for the conserveMemory argument subsequent
+     * calls to guiFactory()->addClient/removeClient may not work as expected.
+     *
      * @param xmlfile The local xmlfile (relative or absolute)
      * @param _conserveMemory Specify whether createGUI() should call
      *     @ref KXMLGuiClient::conserveMemory() to free all memory
-     *     allocated by the @ref QDomDocument .
+     *     allocated by the @ref QDomDocument and by the KXMLGUIFactory.
      */
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
 
