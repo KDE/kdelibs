@@ -1447,6 +1447,15 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     p += 6;
     f = AUTH_Digest;
     strAuth = strdup(p);
+  } else if (strncasecmp (p, "NTLM", 4) == 0) {
+    // NT Authentification sheme. not yet implemented
+    // we try to ignore it. maybe we return later here
+    // with a Basic or Digest authentification request
+    // and then it should be okay.
+    // i.e. NT IIS sends
+    // WWW-Authentification: NTLM\r\n
+    // WWW-Authentification: Basic\r\n
+    return;
   } else {
     kdDebug(7103) << "Invalid Authorization type requested" << endl;
     kdDebug(7103) << "buffer: " << p << endl;
