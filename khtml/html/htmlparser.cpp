@@ -55,7 +55,7 @@
 
 #include "htmlhashes.h"
 #include "htmltoken.h"
-#include "khtml.h"
+#include "khtmlview.h"
 
 #include "rendering/render_object.h"
 

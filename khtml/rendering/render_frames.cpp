@@ -1,7 +1,7 @@
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
-#include "khtml.h"
+#include "khtmlview.h"
 
 #include <kapp.h>
 

@@ -22,7 +22,7 @@
  */
 #include "render_root.h"
 
-#include "khtml.h"
+#include "khtmlview.h"
 using namespace khtml;
 
 RenderRoot::RenderRoot(RenderStyle *style, KHTMLWidget *view)

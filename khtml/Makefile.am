@@ -35,11 +35,11 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 SUBDIRS = misc dom css xml html rendering java kjs . ecma
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtml.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp
+libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp
 
 libkhtml_la_METASOURCES = AUTO
 
-include_HEADERS = khtml.h khtml_part.h
+include_HEADERS = khtmlview.h khtml_part.h
 
 noinst_HEADERS = design.h testkhtml.h
 

@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "khtml.moc"
+#include "khtmlview.moc"
 
 #include "misc/loader.h"
 
@@ -47,7 +47,7 @@
 
 #include <X11/Xlib.h>
 
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtmldata.h"
 #include "htmlhashes.h"
 

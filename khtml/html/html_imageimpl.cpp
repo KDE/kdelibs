@@ -35,7 +35,7 @@
 #include "dom_nodeimpl.h"
 #include "html_documentimpl.h"
 
-#include "khtml.h"
+#include "khtmlview.h"
 
 #include <stdio.h>
 

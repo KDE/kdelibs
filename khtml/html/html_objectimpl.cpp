@@ -29,7 +29,7 @@
 #include "dom_string.h"
 #include "htmlhashes.h"
 #include "htmlhashes.h"
-#include "khtml.h"
+#include "khtmlview.h"
 #include <qstring.h>
 
 #include "xml/dom_docimpl.h"

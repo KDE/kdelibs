@@ -28,7 +28,7 @@
 #include "htmltokenizer.h"
 //#include "khtmlfont.h"
 #include "khtmldata.h"
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtml_part.h"
 #include "htmlhashes.h"
 

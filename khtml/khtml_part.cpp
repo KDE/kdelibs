@@ -32,7 +32,7 @@
 #include "html/html_inlineimpl.h"
 #include "rendering/render_frames.h"
 
-#include "khtml.h"
+#include "khtmlview.h"
 #include "decoder.h"
 #include "kjs.h"
 
@@ -131,7 +131,7 @@ public:
 };
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
-: KParts::ReadOnlyPart( parent, name )
+: KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
   setInstance( KHTMLFactory::instance() );
   setXMLFile( "khtml.rc" );

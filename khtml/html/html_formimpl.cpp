@@ -34,7 +34,7 @@
 #include <qlistbox.h>
 #include <qstack.h>
 
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtml_part.h"
 #include "html_form.h"
 #include "dom_string.h"

@@ -38,7 +38,7 @@
 #include "dom_exception.h"
 
 #include "htmlhashes.h"
-#include "khtml.h"
+#include "khtmlview.h"
 
 #include "render_box.h"
 #include "render_style.h"

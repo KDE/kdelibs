@@ -27,7 +27,7 @@
 // -------------------------------------------------------------------------
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtml.h"
+#include "khtmlview.h"
 
 class KHTMLWidget;
 class QWidget;

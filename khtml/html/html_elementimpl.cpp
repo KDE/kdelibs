@@ -45,7 +45,7 @@
 #include "dom_exception.h"
 
 #include "htmlhashes.h"
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtml_part.h"
 
 #include "rendering/render_style.h"

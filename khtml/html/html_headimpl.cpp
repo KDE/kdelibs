@@ -30,7 +30,7 @@
 #include "html_documentimpl.h"
 using namespace DOM;
 
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtml_part.h"
 #include "htmlhashes.h"
 
