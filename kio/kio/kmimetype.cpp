@@ -750,7 +750,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
     QString fstype = cfg.readEntry( "FSType" );
     if ( fstype == "Default" ) // KDE-1 thing
       fstype = QString::null;
-    QString point = cfg.readPathEntry( "MountPoint" );
+    QString point = cfg.readEntry( "MountPoint" );
     (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
     retval = -1; // we don't want to return 0, but we don't want to return a pid
   }

@@ -500,5 +500,5 @@ QString KProtocolManager::proxyConfigScript()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readPathEntry( "Proxy Config Script" );
+  return cfg->readEntry( "Proxy Config Script" );
 }
