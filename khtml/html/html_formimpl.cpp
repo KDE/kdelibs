@@ -1068,7 +1068,6 @@ void HTMLInputElementImpl::attach()
             (m_render)->setImageUrl(m_src,
                                     static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL(),
                                     static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
-
     }
 }
 
@@ -1135,9 +1134,6 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             {
                 QString enc_str = m_value.isNull() ?
                     static_cast<RenderSubmitButton*>(m_render)->defaultLabel() : value().string();
-
-                if (m_render)
-                    static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 
                 if(!enc_str.isEmpty())
                 {
@@ -1218,8 +1214,6 @@ void HTMLInputElementImpl::reset()
 {
     setValue(m_defaultValue);
     setChecked(m_defaultChecked);
-    if ((m_type == SUBMIT || m_type == RESET || m_type == BUTTON) && m_render)
-        static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 }
 
 void HTMLInputElementImpl::setChecked(bool _checked)

@@ -165,11 +165,6 @@ public:
     virtual QString defaultLabel();
 
     virtual void calcMinMaxWidth();
-    bool clicked() { return m_clicked; }
-    void setClicked(bool _clicked) { m_clicked = _clicked; }
-
-protected:
-    bool m_clicked;
 };
 
 // -------------------------------------------------------------------------
