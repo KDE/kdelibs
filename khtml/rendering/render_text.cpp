@@ -298,6 +298,9 @@ void RenderText::setStyle(RenderStyle *_style)
         fm = new QFontMetrics( style()->font() );
     }
     m_contentHeight = style()->lineHeight().width(metrics().height());
+    
+    if(m_contentHeight<=0)
+        m_contentHeight = metrics().height();
 
     // ### does not work if texttransform is set to None again!
     switch(style()->textTransform()) {
