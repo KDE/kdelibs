@@ -238,16 +238,16 @@ public:
   ~KColorCells();
 
   void setColor( int colNum, const QColor &col );
-  QColor color( int indx )
+  QColor color( int indx ) const
   {	return colors[indx]; }
-  int numCells()
+  int numCells() const
   {	return numRows() * numCols(); }
 
   void setShading(bool _shade) { shade = _shade; }
 
   void setAcceptDrags(bool _acceptDrags) { acceptDrags = _acceptDrags; }
 
-  int getSelected()
+  int getSelected() const
   {	return selected; }
 
   signals:
@@ -399,7 +399,7 @@ class KColorDialog : public KDialogBase
     /**
      * Returns the currently selected color.
      **/
-    QColor color();
+    QColor color() const;
 
     /**
      * Creates a modal color dialog, let the user choose a

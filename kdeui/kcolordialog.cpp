@@ -1173,7 +1173,7 @@ KColorDialog::slotWriteSettings()
 }
 
 QColor
-KColorDialog::color()
+KColorDialog::color() const
 {
   if ( d->selColor.isValid() )
     d->table->addToRecentColors( d->selColor );

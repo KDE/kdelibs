@@ -57,12 +57,7 @@ void KColorButton::setColor( const QColor &c )
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
-#if QT_VERSION < 300
-  QRect r = style().buttonRect( 0, 0, width(), height() );
-#else
-  // ### FIXME: correct??
   QRect r = style().subRect( QStyle::SR_PushButtonContents, this );
-#endif
   int l = r.x();
   int t = r.y();
   int w = r.width();
