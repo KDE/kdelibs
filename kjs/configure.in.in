@@ -16,14 +16,14 @@ AC_CHECK_LIB(m, isnan, [
 
 AC_DEFUN(AC_CHECK_PCREPOSIX,
 [
-  AC_MSG_CHECKING([for pcreposix])
   AC_CACHE_VAL(ac_cv_have_pcreposix,
   [
     ac_save_libs="$LIBS"
     KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [PCRE_CONFIG="" ])
     if test -n "$PCRE_CONFIG" && $PCRE_CONFIG --libs >/dev/null 2>&1; then
         LIBS=`$PCRE_CONFIG --libs --libs-posix`
-        CPPFLAGS="$CPPFLAGS `$PCRE_CONFIG --cflags`"
+	PCRECFLAGS=`$PCRE_CONFIG --cflags`
+        CPPFLAGS="$CPPFLAGS $PCRECFLAGS"
     else
         LIBS="-lpcre -lpcreposix"
     fi
@@ -41,11 +41,20 @@ AC_DEFUN(AC_CHECK_PCREPOSIX,
     LDFLAGS="$ac_LDFLAGS_save"
     CPPFLAGS="$ac_CPPFLAGS_save"
   ])
+  AC_MSG_CHECKING([for pcreposix])
   AC_MSG_RESULT($ac_cv_have_pcreposix)
   if test "$ac_cv_have_pcreposix" = "yes"; then
     LIBPCRE="-lpcre -lpcreposix"
     AC_DEFINE(HAVE_PCREPOSIX, 1, [Define if you have pcreposix libraries and header files.])
   fi
+  AC_MSG_CHECKING([for pcre cflags])
+  AC_CACHE_VAL(ac_cv_pcre_cflags,[ac_cv_pcre_cflags="$PCRECFLAGS"])
+  if test -z "$ac_cv_pcre_cflags"; then
+    AC_MSG_RESULT("none")
+  else
+    AC_MSG_RESULT($ac_cv_pcre_cflags)
+  fi
 ])
 AC_CHECK_PCREPOSIX
 AC_SUBST(LIBPCRE)
+AC_SUBST(PCRECFLAGS)
