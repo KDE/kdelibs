@@ -157,8 +157,12 @@ bool KHTMLImage::closeURL()
 
 void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
 {
+    // prevent the base implementation from emitting setWindowCaption with
+    // our url. It destroys our pretty, previously caption. Konq saves/restores
+    // the caption for us anyway.
     if ( e->activated() )
-        emit setWindowCaption( m_url.prettyURL() );
+        return;
+    KParts::ReadOnlyPart::guiActivateEvent(e);
 }
 
 void KHTMLImage::slotImageJobFinished( KIO::Job *job )
