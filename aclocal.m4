@@ -233,7 +233,7 @@ LIBS="$ac_save_LIBS"
 ])dnl
 if eval "test \"`echo $ac_cv_lib_gif`\" = yes"; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED(HAVE_GIFLIB)
+  AC_DEFINE_UNQUOTED(HAVE_LIBGIF)
 else
   AC_MSG_ERROR(You need giflib23. Please install the kdesupport package)
 fi
@@ -262,7 +262,7 @@ LIBS="$ac_save_LIBS"
 ])dnl
 if eval "test \"`echo $ac_cv_lib_jpeg`\" = yes"; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED(HAVE_JPEGLIB)
+  AC_DEFINE_UNQUOTED(HAVE_LIBJPEG)
 else
   AC_MSG_ERROR(You need jpeglib6a. Please install the kdesupport package)
 fi
