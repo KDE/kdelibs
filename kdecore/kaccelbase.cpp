@@ -558,6 +558,7 @@ bool KAccelActions::init( KConfigBase& config, QString sGroup )
 			push_back( action );
 		}
 	}
+	return true;
 }
 
 void KAccelActions::updateShortcuts( KAccelActions& actions2 )
