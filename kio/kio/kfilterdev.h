@@ -105,6 +105,22 @@ public:
     static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null,
                                       bool forceFilter = false );
 
+    /**
+     * Creates an i/o device that is able to read from the QIODevice @p inDevice,
+     * whether the data is compressed or not. Available compression filters
+     * (gzip/bzip2 etc.) will automatically be used.
+     *
+     * The compression filter to be used is determined @p mimetype .
+     * Pass "application/x-gzip" or "application/x-bzip2"
+     * to use the corresponding decompression filter.
+     *
+     * Warning: application/x-bzip2 may not be available.
+     * In that case 0 will be returned !
+     *
+     * The returned QIODevice has to be deleted after using.
+     */
+    static QIODevice * deviceForFile( QIODevice* inDevice, const QString & mimetype);
+
 private:
     KFilterBase *filter;
     class KFilterDevPrivate;

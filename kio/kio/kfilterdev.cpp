@@ -89,6 +89,20 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
     }
 }
 
+//static
+QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype)
+{
+   if (inDevice==0)
+      return 0;
+   KFilterBase * base = KFilterBase::findFilterByMimeType(mimetype);
+   if ( base )
+   {
+      base->setDevice(inDevice, true);
+      return new KFilterDev(base, true);
+   }
+   return 0;
+}
+
 bool KFilterDev::open( int mode )
 {
     //kdDebug(7005) << "KFilterDev::open " << mode << endl;
