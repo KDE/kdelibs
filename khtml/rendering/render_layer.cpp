@@ -407,7 +407,7 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 
     if (show && !sb) {
         QScrollView* scrollView = m_object->element()->getDocument()->view();
-        sb = new QScrollBar(o, scrollView);
+        sb = new QScrollBar(o, scrollView, "__khtml");
         scrollView->addChild(sb, 0, -50000);
 	sb->setBackgroundMode(QWidget::NoBackground);
         sb->show();
