@@ -53,7 +53,7 @@ public:
 
 QPtrDict<Broker> *Broker::s_brokers = 0;
 
-Broker::Ptr Broker::openBroker( KSharedConfig *config )
+Broker *Broker::openBroker( KSharedConfig *config )
 {
     if ( s_brokers ) {
         Broker *broker = s_brokers->find( config );
