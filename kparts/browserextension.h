@@ -53,6 +53,9 @@ private:
   static const char *s_strOpenURLEvent;
   ReadOnlyPart *m_part;
   KURL m_url;
+
+  class OpenURLEventPrivate;
+  OpenURLEventPrivate *d;
 };
 
 struct URLArgsPrivate;
