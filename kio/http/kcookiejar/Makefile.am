@@ -22,7 +22,7 @@ kcookiejar_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 services_DATA = kcookiejar.desktop
 servicesdir = $(kde_servicesdir)
 
-update_DATA = kcookiecfg.upd
+update_DATA = kcookiescfg.upd
 updatedir = $(kde_datadir)/kconf_update
 
 dummy.cpp:
