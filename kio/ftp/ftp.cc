@@ -1425,7 +1425,12 @@ void Ftp::stat( const KURL &url)
 
   if ( !bFound )
   {
-    if ( 1 )
+    // Only do the 'hack' below if we want to download an existing file (i.e. when looking at the "source")
+    // When e.g. uploading a file, we still need stat() to return "not found"
+    // when the file doesn't exist.
+    QString statSide = metaData(QString::fromLatin1("statSide"));
+    kdDebug() << "Ftp::stat statSide=" << statSide << endl;
+    if ( statSide == "source" )
     {
 	kdDebug() << "Not found, but assuming found, because some servers don't allow listing" << endl;
         // MS Server is incapable of handling "list <blah>" in a case insensitive way
@@ -1454,8 +1459,8 @@ void Ftp::stat( const KURL &url)
         finished();
         return;
     }
-    //error( ERR_DOES_NOT_EXIST, path );
-    //return;
+    error( ERR_DOES_NOT_EXIST, path );
+    return;
   }
 
   if ( !linkURL.isEmpty() )
