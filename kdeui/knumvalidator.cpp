@@ -311,6 +311,11 @@ KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
   d = new Private();
 }
 
+KDoubleValidator::~KDoubleValidator()
+{
+	delete d;
+}
+
 bool KDoubleValidator::acceptLocalizedNumbers() const {
   return d->acceptLocalizedNumbers;
 }
