@@ -168,37 +168,42 @@ unsigned KBufferedIO::consumeReadBuffer(unsigned nbytes, char *destbuffer, bool 
 
   QByteArray *buf;
   unsigned copied = 0;
+  unsigned index = inBufIndex;
 
   buf = inBuf.first();
   while (nbytes && buf)
     {
       // should we copy it all?
-      unsigned to_copy = buf->size() - inBufIndex;
+      unsigned to_copy = buf->size() - index;
       if (to_copy > nbytes)
 	to_copy = nbytes;
 
       if (destbuffer)
-	memcpy(destbuffer + copied, buf->data() + inBufIndex, to_copy);
+	memcpy(destbuffer + copied, buf->data() + index, to_copy);
       nbytes -= to_copy;
       copied += to_copy;
 
-      if (discard)
+      if (buf->size() - index > to_copy)
 	{
-	  // discard the contents
-	  if (buf->size() - inBufIndex > to_copy)
-	    {
-	      inBufIndex += to_copy;
-	      break;		// we aren't copying everything, that means that's
-				// all the user wants
-	    }
-	  else
+	  index += to_copy;
+	  break;	// we aren't copying everything, that means that's
+			// all the user wants
+	}
+      else
+	{
+	  index = 0;
+	  if (discard)
 	    {
 	      inBuf.remove();
-	      inBufIndex = 0;
 	      buf = inBuf.first();
 	    }
+	  else
+	    buf = inBuf.next();
 	}
     }
+
+  if (discard)
+    inBufIndex = index;
 
   return copied;
 }
