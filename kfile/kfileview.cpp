@@ -29,6 +29,8 @@
 #include <kglobal.h>
 #include <assert.h>
 
+#include <qiconview.h> // remove after QIconView fix
+
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
 #endif
@@ -209,6 +211,13 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 #ifdef Q2HELPER
     qt_qstring_stats();
 #endif
+
+    // workaround for QIconView bug, which crashes on Shift-Left-click
+    // when there is no current item
+    QIconView *iconView = dynamic_cast<QIconView *>( this );
+    if ( iconView && tfirst ) {
+	iconView->setCurrentItem( (QIconViewItem *) tfirst->viewItem( this ));
+    }
 }
 
 KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
