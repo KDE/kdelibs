@@ -251,23 +251,6 @@ int KIntSpinBox::mapTextToValue(bool* ok)
 
 // -----------------------------------------------------------------------------
 
-KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
-    : KNumInput(parent, name)
-{
-    init(0, 10);
-}
-
-
-KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
-    : KNumInput(parent, name)
-{
-    init(val, _base);
-
-}
-
-
-// -----------------------------------------------------------------------------
-
 void KIntSpinBox::setEditFocus(bool mark)
 {
     editor()->setFocus();
@@ -291,6 +274,23 @@ KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
     : KNumInput(below, parent, name)
 {
     init(val, _base);
+}
+
+
+// -----------------------------------------------------------------------------
+
+KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
+    : KNumInput(parent, name)
+{
+    init(0, 10);
+}
+
+
+KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
+    : KNumInput(parent, name)
+{
+    init(val, _base);
+
 }
 
 

@@ -237,6 +237,15 @@ public:
      */
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
+    /**
+     * This method returns the minimum size necessary to display the
+     * control. The minimum size is enough to show all the labels
+     * in the current font (font change may invalidate the return value).
+     *
+     * @return the minimum size necessary to show the control
+     */
+    virtual QSize minimumSizeHint() const;
+
 public slots:
     /**
      * Sets the value of the control.
@@ -272,14 +281,6 @@ protected slots:
     void spinValueChanged(int);
 
 protected:
-    /**
-     * This method returns the minimum size necessary to display the
-     * control. The minimum size is enough to show all the labels
-     * in the current font (font change may invalidate the return value).
-     *
-     * @return the minimum size necessary to show the control
-     */
-    virtual QSize minimumSizeHint() const;
 
     void init(int value, int _base);
     virtual void doLayout();
