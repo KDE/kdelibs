@@ -1,6 +1,7 @@
 [Misc]
 Name=Qt CDE
 Name[af]=Qt Cde
+Name[cy]=CDE Qt
 Name[de]=Qt-CDE
 Name[mn]=Qt-CDE
 Name[nn]=Qt-CDE
@@ -16,6 +17,7 @@ Comment[br]=Giz CDE enframmet anwisket
 Comment[bs]=Ugrađeni CDE stil bez teme
 Comment[ca]=Estil incorporat CDE sense temes
 Comment[cs]=Zabudovaný CDE styl (bez motivu)
+Comment[cy]=Ardull mewnadeiladedig di-thema CDE 
 Comment[da]=Indbygget CDE-stil uden tema
 Comment[de]=Eingebauter, reduzierter CDE-Stil
 Comment[el]=Ενσωματωμένο στυλ παρόμοιο με το CDE

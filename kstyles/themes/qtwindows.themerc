@@ -1,6 +1,7 @@
 [Misc]
 Name=Qt Windows
 Name[af]=Qt Vensters
+Name[cy]=Ffenestri Qt
 Name[de]=Qt-Windows
 Name[eo]=Qt Vindozo
 Name[fa]=Qt ویندوز
@@ -26,6 +27,7 @@ Comment[br]=Giz Windows enframmet anwisket
 Comment[bs]=Ugrađeni Windows 9x stil bez teme
 Comment[ca]=Estil encastat del Windows 9x sense temes
 Comment[cs]=Zabudovaný Windows 9x styl (bez motivu)
+Comment[cy]=Arddull Windows 9x mewnadeiladedig heb thema
 Comment[da]=Indbygget Windows 9x-stil uden tema
 Comment[de]=Eingebauter, reduzierter Windows-9x-Stil
 Comment[el]=Ενσωματωμένο στυλ παρόμοιο με το Windows 9x
