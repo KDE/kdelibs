@@ -14,6 +14,34 @@
 
  // $Id$
  // $Log$
+ // Revision 1.28  1998/06/12 19:39:18  ettrich
+ // Matthias: Something I noticed with KLyX
+ //
+ //
+ //     /** Deletes all KTMainWindows. This is a good thing to call before
+ //       * an applications wants to exit via kapp->quit(). Rationale: The
+ //       * destructors of main windows may want to delete other widgets
+ //       * as well. Now, if an application calls kapp->quit() then Qt
+ //       * will destroy all widgets in a somewhat random order which may
+ //       * result in double-free'ed memory (=segfault). Since not every
+ //       * program checks for QApplication::closingDown() before deleting
+ //       * a widget, calling KTMainWindow::deleteAll() before is a good
+ //       * and proper solution.
+ //      */
+ //   static void deleteAll();
+ //
+ //     /** Deletes all KTopLevelWidgets. This is a good thing to call before
+ //       * an applications wants to exit via kapp->quit(). Rationale: The
+ //       * destructors of main windows may want to delete other widgets
+ //       * as well. Now, if an application calls kapp->quit() then Qt
+ //       * will destroy all widgets in a somewhat random order which may
+ //       * result in double-free'ed memory (=segfault). Since not every
+ //       * program checks for QApplication::closingDown() before deleting
+ //       * a widget, calling KTopLevelWidgets::deleteAll() before is a good
+ //       * and proper solution.
+ //       */
+ //       static void deleteAll();
+ //
  // Revision 1.27  1998/04/07 20:14:05  radej
  // Made memberList public, so YOU can use it
  // instead your window lists.
@@ -33,27 +61,34 @@
   *
   * Normally, you will inherit from KTopLevelWidget (further: KTW).
   * Then you must construct (or use some existing) widget that will be
-  * your main view. You set that main view only once with @ref #setView .
+  * your main view. You set that main view only once.
   *
-  * Adding toolbar(s) is done  with function @ref #addTtoolBar .
-  * Menubar is set with function @ref #setMmenu, and statusbar
-  * with function @ref #setStatusBar .
+  * You can add as many toolbar(s) as you like. There can be only one Menubar
+  * and only oneStatusBar.
   *
   * YOU MUST DELETE TOOLBARS AND MENUBAR ON EXIT (in destructor);
   * If you have multiple windows then create window on the heap and
-  * delete it in your reimplementation of @ref #closeEvent ().
+  * delete it in your reimplementation of closeEvent.
   *
-  * @ref #updateRects is the function that calculates the layout of all
-  * elements (toolbars, statusbar, main widget, etc). It is called from
-  * @ref #resizeEvent, and signals that indicate changing position
-  * of toolbars and menubar are connected to it. If you reimplement
-  * resizeEvent you have to call this function. KTW now handles fixed-size
-  * and Y-fixed main views properly. Just @ref QWidget::setFixedSize or
-  * @ref QWidget::setFixedHeight on your main view. You can change it runtime,
-  * the changes will take effect on next @ref updateRects call. Do not set
-  * fixed size on window! You may set minimum or maximum size on window, but
-  * only if main view is freely resizable. Minimum width can also be set if main
-  * view is Y-fixed.
+  * KTopLevelWidget maintaines the layout and resizing of all elements
+  * (toolbars, statusbar, main widget, etc).  KTW now handles fixed-size
+  * and Y-fixed main views properly. Just set fixed size or
+  * your main view. You can change it runtime, the changes will take effect
+  * on next updateRects call. Do not set fixed size on window! You may set
+  * minimum or maximum size on window, but only if main view is freely
+  * resizable. Minimum width can also be set if main view is Y-fixed.
+  *
+  * KTopLevelWidget will set icon, mini icon and caption,  which it gets
+  * from KApplication. It provides full session management, and will save
+  * its position geometry and positions of toolbar(s) and menubar on
+  * logout. If you want to save aditional data, overload saveProperties and
+  * (to read them again on next login) readProperties. To warn user
+  * that application has unsaved data on logout use setUnsavedData.
+  *
+  * There is also a macro RESTORE which can restore all your windows
+  * on next login.
+  *
+  * @see KApplication
   * @short KDE top level widget
   * @author Stephan Kullow (coolo@kde.org) Maintained by Sven Radej (sven@lisa.exp.univie.ac.at)
   */
@@ -68,7 +103,8 @@ public:
      */
     KTopLevelWidget( const char *name = 0L );
     /**
-     * Destructor. You must delete all *Bars here.
+     * Destructor. You must delete all *Bars either here or in
+     * @ref #closeEvent.
      */
     ~KTopLevelWidget();
 
@@ -142,8 +178,6 @@ public:
 
     /**
      * Returns a pointer to the toolbar with the specified ID. 
-     * If there is no such tool bar yet, it will be generated.
-     * Do not delete toolbars.
      */
     KToolBar *toolBar( int ID = 0 );
 
@@ -259,6 +293,7 @@ public:
     * for that.
     *
     * Default is False == No unsaved data.
+    * @see KApplication
     */
   void setUnsavedData( bool );
 
@@ -281,11 +316,14 @@ protected:
     /** 
      * The default implementation calls a->accept();
      * Reimplement this function if you want to handle closeEvents.
-     * If your window is created on the heap, you may want to delete this;
-     * You must delete any toolbars in your destructor; If application
-     * doesn't quit when this window is closed (i.e. you didn't call
-     * @ref QApplication::setMainWidget in your main () ) then you must
-     * delete (use 'delete this;').
+     * If your window is created on the heap, you may want to do
+     * 'delete this;'
+     * You must delete any toolbars in your either here or in destructor;
+     * The application will quit when this window is closed if you called
+     * @ref QApplication::setMainWidget in your main (). You can use
+     * memberList - list of all opened KTopLevelWidgets to check if the last
+     * window is closed. Or, you can use a signal from Kapplication
+     * lastWindowClosed.
      */
     virtual void closeEvent ( QCloseEvent *);
 
