@@ -2,15 +2,15 @@
 #include <stdio.h>
 
 /*
- * Usage : if you define TORBEN_TEST, run with ./ktartest /tmp/whatever.tar.gz 
+ * Usage : for the normal test (RO_TEST not defined), run with ./ktartest /tmp/whatever.tar.gz 
  * It will create the tar.gz, then close and reopen it
  *
- * if you don't, run with ./ktartest /path/to/existing_file.tar.gz
+ * If you define RO_TEST, run with ./ktartest /path/to/existing_file.tar.gz
  * it will list its contents
  *
  */
 
-#define TORBEN_TEST
+// #define RO_TEST
 
 void recursive_print( const KTarDirectory * dir, const QString & path )
 {
@@ -25,7 +25,7 @@ void recursive_print( const KTarDirectory * dir, const QString & path )
   }
 }
 
-#ifdef TORBEN_TEST
+#ifndef RO_TEST
 
 int main( int argc, char** argv )
 {
@@ -37,13 +37,13 @@ int main( int argc, char** argv )
     return 1;
   }
 
+  // A huge filename (first in order to debug with od -c :)
+  tar.writeFile( "/tmp/kprjap_ok.kpr/mnt/devel/kde/intervention_conference_Linux_Expo/img/dir/subdir/yetanothersubdir/ifyouwantanotherhereitis/whydoyoureadthisanyway/okthatsit/seeyousoon/david/f", "dfaure", "doesitwork", 1, "y" );
+
   tar.writeFile( "test1", "weis", "users", 5, "Hallo" );
   tar.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
   tar.writeFile( "mydir/test3", "weis", "users", 13, "Noch so einer" );
   tar.writeFile( "my/dir/test3", "dfaure", "hackers", 29, "I don't speak German (David)" );
-  // This last one should, in theory, create /my and /my/dir, but only creates /my/dir
-  // It doesn't really matter since we handle that when reopening the file
-  // See note near findOrCreate in ktar.h
 
 #define SIZE1 100
   // Now a medium file : 100 null bytes
@@ -88,7 +88,6 @@ int main( int argc, char** argv )
 }
 
 #else
-// David's test
 
 int main( int argc, char** argv )
 {
