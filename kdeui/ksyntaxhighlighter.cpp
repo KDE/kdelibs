@@ -331,7 +331,8 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 
 bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 {
-    kdDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
+    // This debug is expensive, only enable it locally
+    //kdDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
     // Normally isMisspelled would look up a dictionary and return
     // true or false, but kspell is asynchronous and slow so things
     // get tricky...
