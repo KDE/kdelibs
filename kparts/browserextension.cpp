@@ -435,6 +435,7 @@ void BrowserExtension::pasteRequest()
     filters.remove( "localdomainurifilter" );
     KURIFilterData filterData;
     filterData.setData( url );
+    filterData.setCheckForExecutables( false );
     if ( KURIFilter::self()->filterURI( filterData, filters ) )
     {
         switch ( filterData.uriType() )
