@@ -29,9 +29,8 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
-		kwindowtest klinetest kstatusbartest \
-		kprocesstest kbuttonboxtest ksimpleconfigtest \
-		kledtest kcontainertest klocaletest krulertest \
+		kwindowtest kstatusbartest kprocesstest kbuttonboxtest \
+	    ksimpleconfigtest kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
@@ -40,7 +39,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 
 noinst_HEADERS = kdatepicktestdlg.h \
 		ktabctltest.h kiconloadertestmain.h	\
-		kwindowtest.h klinetest.h kstatusbartest.h \
+		kwindowtest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
 		klocaletest.h krulertest.h kconfigtest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
@@ -49,7 +48,7 @@ noinst_HEADERS = kdatepicktestdlg.h \
 METASOURCES = kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
 	kiconloadertestmain.moc kledtest.moc \
-	klinetest.moc klocaletest.moc knuminputtest.moc \
+	klocaletest.moc knuminputtest.moc \
 	kprocesstest.moc krulertest.moc \
 	kstatusbartest.moc ktabctltest.moc \
 	kwindowtest.moc kunbalancedgrdtest.moc kdualcolortest.moc
@@ -70,7 +69,6 @@ kformulatest_LDADD = $(LIB_KFORMULA)
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
 kledtest_SOURCES = kledtest.cpp
-klinetest_SOURCES = klinetest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
 knuminputtest_SOURCES = knuminputtest.cpp
