@@ -3,13 +3,16 @@ Type=ServiceType
 X-KDE-ServiceType=Browser/View
 X-KDE-Derived=KParts/ReadOnlyPart
 Name=Browser View
+Name[az]=Səyyah Görünüşü
+Name[br]=Gwel Furchal
+Name[bs]=Pogled za pretragu
 Name[ca]=Vista de fullejador
 Name[cs]=Prohlížeč
 Name[da]=Netsøgningsvisning
 Name[de]=Browser-Ansicht
 Name[el]=Προβολή Φυλομετρητή
 Name[eo]=Rigardo de TTTilo
-Name[es]=Vista de Navegador
+Name[es]=Vista de navegador
 Name[et]=Brauseri vaade
 Name[fi]=Selainnäkymä
 Name[fr]=Module de navigation
@@ -20,16 +23,18 @@ Name[hu]=Böngészőnézet
 Name[is]=Vafrasýn
 Name[it]=Vista browser
 Name[ja]=ブラウズビュー
-Name[ko]=브라우저 보기
+Name[ko]=탐색기 보기
+Name[lt]=Rodyti naršyklėje
 Name[lv]=Pārlūka Skatījums
 Name[mk]=Разгледување
+Name[mt]=Vista Browser
 Name[nl]=Browserweergave
 Name[no]=Webleservisning
 Name[no_NY]=Nettlesarvising
 Name[oc]=Vista de navigador
-Name[pl]=Widok przegl�darki
-Name[pt]=Navegação
+Name[pl]=Widok przeglądarki
 Name[pt_BR]=Visão de navegador
+Name[pt]=Navegação
 Name[ro]=Vizualizare navigator
 Name[ru]=Вид броузера
 Name[sk]=Prehliadač
@@ -68,3 +73,7 @@ Type=QString
 
 [PropertyDef::X-KDE-BrowserView-ModePropertyValue]
 Type=QString
+
+[PropertyDef::X-KDE-BrowserView-ToggableView-NoHeader]
+Type=QString
+
