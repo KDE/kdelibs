@@ -415,11 +415,11 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   if ( port == -1 ) {
 #ifdef DO_SSL
-    if (strncasecmp(_url.protocol(), "https", 5)==0)
+    if (_url.protocol()=="https")
       port = DEFAULT_HTTPS_PORT;
     else
 #endif
-    if ((strncasecmp(_url.protocol(), "http", 4)==0) || (strncasecmp(_url.protocol(), "httpf", 5)==0))
+    if ( (_url.protocol()=="http") || ((_url.protocol() == "httpf") )
 	    port = DEFAULT_HTTP_PORT;
 
     else {
@@ -429,11 +429,13 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     }
   }
 
+  if (_url.protocol() == "https") {
 #ifdef DO_SSL
-  if (strncasecmp(_url.protocol(), "https", 5)==0)
     m_bUseSSL=true;
+#else
+    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support));
 #endif
-
+  }
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
   if ( m_sock < 0 )  {
     error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
@@ -798,7 +800,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.033199");
+  QString user_agent("Konqueror/1.9.040599");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
@@ -1030,6 +1032,7 @@ void HTTPProtocol::decodeGzip()
   ::write(fd, big_buffer.data(), big_buffer.size());
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
+  unlink(filename); // If you want to inspect the raw data, comment this line out
 
   // And then reads it back in with gzread so it'll
   // decompress on the fly.
@@ -1045,7 +1048,6 @@ void HTTPProtocol::decodeGzip()
   big_buffer.resize(0);
   big_buffer=ar;
   big_buffer.detach();
-  unlink(filename); // If you want to inspect the raw data, comment this line out
 #endif
 }
 
