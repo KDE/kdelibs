@@ -655,7 +655,6 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     else
 	setQWidget(createComboBox(), false);
 
-    connect(m_widget, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
     m_widget->installEventFilter(this);
     m_ignoreSelectEvents = false;
 }
@@ -690,8 +689,6 @@ void RenderSelect::layout( )
                 setQWidget(createListBox(), false);
             else
                 setQWidget(createComboBox(), false);
-
-            connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
@@ -861,7 +858,8 @@ KListBox* RenderSelect::createListBox()
     lb->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
-    connect(lb, SIGNAL(pressed(QListBoxItem*)), lb, SLOT(slotPressed(QListBoxItem*)));
+    // connect(lb, SIGNAL(pressed(QListBoxItem*)), lb, SLOT(slotPressed(QListBoxItem*)));
+    connect(lb, SIGNAL(highlighted(int)), this, SLOT(slotActivated(int)));
     lb->setMouseTracking(true);
 
     return lb;
@@ -871,6 +869,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 {
     ComboBoxWidget *cb = new ComboBoxWidget(m_view->viewport());
     cb->installEventFilter(this);
+    connect(cb, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
     return cb;
 }
 
