@@ -21,6 +21,8 @@
 
 #include <qtextbrowser.h>
 
+// ### inherit KTextBrowser in KDE4
+
 class KActiveLabelPrivate;
  /**
   * Label with support for selection and clickable links.
