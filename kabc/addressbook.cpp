@@ -562,7 +562,7 @@ void AddressBook::deleteRemovedAddressees()
   Addressee::List::Iterator it;
   for ( it = d->mRemovedAddressees.begin(); it != d->mRemovedAddressees.end(); ++it ) {
     Resource *resource = (*it).resource();
-    if ( resource )
+    if ( resource && !resource->readOnly() )
       resource->removeAddressee( *it );
   }
 
