@@ -1229,9 +1229,7 @@ void KHTMLPart::checkCompleted()
     emit setStatusBarText(i18n("Done."));
 
   if ( !d->m_redirectURL.isEmpty() )
-  {
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-  }
 
   //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
   if ( !d->m_redirectURL.isEmpty() )
@@ -1297,7 +1295,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
         d->m_delayRedirect = delay;
         d->m_redirectURL = url;
 
-        if(!d->m_bComplete)
+        if(d->m_bComplete)
             d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
     }
 }
