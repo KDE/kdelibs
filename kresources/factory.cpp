@@ -59,8 +59,10 @@ ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
 
   QStringList list = KGlobal::dirs()->findAllResources( "data", 
       "kresources/" + mResourceFamily + "/*.desktop", true, true );
-  // kdDebug(5650) << "Resource list: " << list.toString() << endl;
+  kdDebug(5650) << "ResourceFactory(): Resource list" << endl;
   for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
+    kdDebug() << "-- " << *it << endl;
+
     KSimpleConfig config( *it, true );
 
     if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )

@@ -49,6 +49,8 @@ Resource::~Resource()
 
 void Resource::writeConfig( KConfig* config ) const
 {
+  kdDebug() << "Resource::writeConfig()" << endl;
+
   config->writeEntry( "ResourceType", mType );
   config->writeEntry( "ResourceName", mName );
   config->writeEntry( "ResourceIsReadOnly", mReadOnly );
