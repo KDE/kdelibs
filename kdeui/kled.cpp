@@ -572,6 +572,8 @@ void
 KLed::setColor(const QColor& col)
 {
   if(led_color!=col) {
+    if(d->on_map)  { delete d->on_map; d->on_map = 0; }
+    if(d->off_map) { delete d->off_map; d->off_map = 0; }
     led_color = col;
     d->offcolor = col.dark(d->dark_factor);
     update();
