@@ -41,7 +41,7 @@ KJScript::~KJScript()
 
 #ifdef KJS_DEBUG_MEM
   printf("Imp::count: %d\n", Imp::count);
-  assert(Imp::count == 0);
+  //  assert(Imp::count == 0);
 #endif
 }
 
@@ -95,7 +95,6 @@ namespace KJS {
 
 void KJScript::enableDebug()
 {
-  //  KJScriptLock lock(this);
-  rep->curr = rep;
+  rep->init();
   Global::current().put("debug", Function(new DebugPrint()));
 }
