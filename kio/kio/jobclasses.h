@@ -1139,7 +1139,7 @@ namespace KIO {
 	* @param showProgressInfo true to show progress information to the user
 	* @param recursive true to get the data recursively from child directories, 
 	*        false to get only the content of the specified dir
-	* @param the prefix of the files, or QString::null for no prefix
+	* @param prefix the prefix of the files, or QString::null for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
         ListJob(const KURL& url, bool showProgressInfo,
