@@ -217,6 +217,9 @@ QString Job::errorString()
       result = i18n( "Warning: %1" ).arg( m_errorText );
       break;
 */
+    case  KIO::ERR_CANNOT_RENAME:
+      result = i18n( "Could not rename file %1" ).arg( m_errorText );
+      break;
     case  KIO::ERR_CHECKSUM_MISMATCH:
       if (m_errorText)
         result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg(m_errorText);
