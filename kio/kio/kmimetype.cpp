@@ -705,6 +705,21 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
       if ( mp.isNull() )
         return unmount_icon;
     }
+  } else if ( type == "Link" ) {
+      const QString emptyIcon = cfg.readEntry( "EmptyIcon" );
+      if ( !emptyIcon.isEmpty() ) {
+          const QString u = cfg.readPathEntry( "URL" );
+          const KURL url( u );
+          if ( url.protocol() == "trash" ) {
+              // We need to find if the trash is empty, preferrably without using a KIO job.
+              // So instead kio_trash leaves an entry in its config file for us.
+              KSimpleConfig trashConfig( "trashrc", true );
+              trashConfig.setGroup( "Status" );
+              if ( trashConfig.readBoolEntry( "Empty", true ) ) {
+                  return emptyIcon;
+              }
+          }
+      }
   }
 
   if ( icon.isEmpty() )
