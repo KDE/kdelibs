@@ -116,7 +116,8 @@ public:
      * string if the property has not been set.
      *
      */
-    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
+    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) const;
+    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
 
     /**
      * Used to retrieve the object representation of the value of a
@@ -137,7 +138,8 @@ public:
      * null </code> if the property has not been set.
      *
      */
-    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
+    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) const;
+    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
 
     /**
      * Used to remove a CSS property if it has been explicitly set
@@ -173,7 +175,8 @@ public:
      * exists.
      *
      */
-    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
+    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) const;
+    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
 
     /**
      * Used to set a property value and priority within this
@@ -214,7 +217,8 @@ public:
      * empty string if no property exists at this position.
      *
      */
-    DOM::DOMString item ( unsigned long index );
+    DOM::DOMString item ( unsigned long index ) const;
+    DOM::DOMString item ( unsigned long index ) KDE_DEPRECATED;
 
     /**
      * @internal
