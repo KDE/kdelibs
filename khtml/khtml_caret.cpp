@@ -434,7 +434,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 
       // Outside text nodes most likely stem from a continuation. Seek
       // the enclosing continued render object and use this one instead.
-      if (child->nodeType() == Node::TEXT_NODE) {
+      if (r && child->nodeType() == Node::TEXT_NODE) {
         r = r->parent();
         RenderObject *o = node->renderer();
 	while (o->continuation() && o->continuation() != r)
