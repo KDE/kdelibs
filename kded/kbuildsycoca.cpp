@@ -872,6 +872,16 @@ qWarning("Reusing existing ksycoca");
       if (args->isSet("track"))
          sycoca->setTrackId(QString::fromLocal8Bit(args->getOption("track")));
       sycoca->recreate();
+
+      if (bGlobalDatabase)
+      {
+        // These directories may have been created with 0700 permission
+        // better delete them if they are empty
+        QString applnkDir = KGlobal::dirs()->saveLocation("apps", QString::null, false);
+        ::rmdir(QFile::encodeName(applnkDir));
+        QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString::null, false);
+        ::rmdir(QFile::encodeName(servicetypesDir));
+      }
    }
 
    if (args->isSet("signal"))
