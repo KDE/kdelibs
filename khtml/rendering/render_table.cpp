@@ -6,6 +6,7 @@
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -74,6 +75,7 @@ RenderTable::~RenderTable()
 void RenderTable::setStyle(RenderStyle *_style)
 {
     ETableLayout oldTableLayout = style() ? style()->tableLayout() : TAUTO;
+    if ( _style->display() == INLINE ) _style->setDisplay( INLINE_TABLE );
     if ( _style->display() != INLINE_TABLE ) _style->setDisplay(TABLE);
     RenderFlow::setStyle(_style);
 
@@ -104,6 +106,25 @@ void RenderTable::position(int x, int y, int, int, int, bool, bool, int)
     m_y = y + marginTop();
 }
 
+short RenderTable::lineHeight(bool b) const
+{
+    // Inline tables are replaced elements. Otherwise, just pass off to
+    // the base class.
+    if (isReplaced())
+        return height()+marginTop()+marginBottom();
+    return RenderFlow::lineHeight(b);
+}
+
+short RenderTable::baselinePosition(bool b) const
+{
+    // Inline tables are replaced elements. Otherwise, just pass off to
+    // the base class.
+    if (isReplaced())
+        return height()+marginTop()+marginBottom();
+    return RenderFlow::baselinePosition(b);
+}
+
+
 void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
@@ -111,6 +132,11 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     RenderObject *o = child;
+
+    if (child->element() && child->element()->id() == ID_FORM) {
+        RenderContainer::addChild(child,beforeChild);
+        return;
+    }
 
     switch(child->style()->display())
     {
@@ -158,9 +184,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
                 newStyle->setDisplay(TABLE_ROW_GROUP);
-		o->setParent( this ); // so it finds the arena
 		o->setStyle(newStyle);
-		o->setParent( 0 );
 		o->setIsAnonymousBox(true);
 		addChild(o, beforeChild);
 	    }
@@ -218,6 +242,11 @@ void RenderTable::layout()
 
     m_height = 0;
 
+#if 0
+    // enable once we merged in the margin handling from safari
+    initMaxMarginValues();
+#endif
+
     //int oldWidth = m_width;
     calcWidth();
 
@@ -239,7 +268,7 @@ void RenderTable::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
-	if ( !child->layouted() )
+	if ( !child->layouted() && !(child->element() && child->element()->id() == ID_FORM) )
 	    child->layout();
 	if ( child->isTableSection() ) {
 	    static_cast<RenderTableSection *>(child)->calcRowHeight();
@@ -262,22 +291,29 @@ void RenderTable::layout()
     if (h.isFixed())
         th = h.value();
     else if (h.isPercent()) {
-        Length ch = containingBlock()->style()->height();
-        if (ch.isFixed())
-            th = h.width(ch.value());
-        else {
-            // check we or not inside a table
-            RenderObject* ro = parent();
-            for (; ro && !ro->isTableCell(); ro=ro->parent());
-            if (!ro)
-            {
-		// we need to substract the bodys margins
-		// ### fixme: use exact values here.
-                th = h.width(viewRect().height() - 20 );
-                // not really, but this way the view height change
-                // gets propagated correctly
-                setOverhangingContents();
+        RenderObject* c = containingBlock();
+        for ( ;
+            !c->isRoot() && !c->isBody() && !c->isTableCell() &&
+		  !c->isPositioned() && c->isFloating();
+             c = c->containingBlock()) {
+            Length ch = c->style()->height();
+            if (ch.isFixed()) {
+                th = h.width(ch.value());
+                break;
             }
+        }
+
+        if (!c->isTableCell()) {
+            Length ch = c->style()->height();
+	    if (ch.isFixed())
+		th = h.width(ch.value());
+	    else {
+		// we need to substract out the margins of this block. -dwh
+		th = h.width(viewRect().height() - c->marginBottom() - c->marginTop());
+		// not really, but this way the view height change
+		// gets propagated correctly
+		setOverhangingContents();
+	    }
         }
     }
 
@@ -355,11 +391,6 @@ void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
 
     _tx += xPos();
     _ty += yPos();
-
-    // add offset for relative positioning
-    if(isRelPositioned())
-        relativePositionOffset(_tx, _ty);
-
 
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")" << endl;
@@ -659,6 +690,11 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 #endif
     RenderObject *row = child;
 
+    if (child->element() && child->element()->id() == ID_FORM) {
+        RenderContainer::addChild(child,beforeChild);
+        return;
+    }
+
     if ( !child->isTableRow() ) {
 
         if( !beforeChild )
@@ -679,9 +715,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
 		newStyle->setDisplay( TABLE_ROW );
-		row->setParent( this ); // so it finds the arena
 		row->setStyle(newStyle);
-		row->setParent( 0 );
 		row->setIsAnonymousBox(true);
 		addChild(row, beforeChild);
 	    }
@@ -1032,40 +1066,66 @@ int RenderTableSection::layoutRows( int toAdd )
                 rindx = 0;
 
             rHeight = rowPos[r+1] - rowPos[rindx] - spacing;
-#ifdef DEBUG_LAYOUT
-            kdDebug( 6040 ) << "setting position " << r << "/" << c << ": "
-			    << table()->columnPos[c] /*+ padding */ << "/" << rowPos[rindx] << " height=" << rHeight<< endl;
-#endif
 
-            EVerticalAlign va = cell->style()->verticalAlign();
-            int te=0;
-            switch (va)
-            {
-            case SUB:
-            case SUPER:
-            case TEXT_TOP:
-            case TEXT_BOTTOM:
-            case BASELINE:
-		te = getBaseline(r) - cell->baselinePosition() ;
-                break;
-            case TOP:
-                te = 0;
-                break;
-            case MIDDLE:
-                te = (rHeight - cell->height())/2;
-                break;
-            case BOTTOM:
-                te = rHeight - cell->height();
-                break;
-            default:
-                break;
+            // Force percent height children to lay themselves out again.
+            // This will cause, e.g., textareas to grow to
+            // fill the area.  FIXME: <div>s and blocks still don't
+            // work right.  We'll need to have an efficient way of
+            // invalidating all percent height objects in a render subtree.
+            // For now, we just handle immediate children. -dwh
+            bool cellChildrenFlex = false;
+            RenderObject* o = cell->firstChild();
+            while (o) {
+                if (o->style()->height().isPercent()) {
+                    o->setLayouted(false);
+                    cellChildrenFlex = true;
+                }
+                o = o->nextSibling();
             }
-#ifdef DEBUG_LAYOUT
-	    //            kdDebug( 6040 ) << "CELL " << cell << " te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
-#endif
-            cell->setCellTopExtra( te );
-            cell->setCellBottomExtra( rHeight - cell->height() - te);
+            if (cellChildrenFlex) {
+                cell->setCellPercentageHeight(rHeight);
+                cell->layout();
 
+                // Alignment within a cell is based off the calculated
+                // height, which becomes irrelevant once the cell has
+                // been resized based off its percentage. -dwh
+                cell->setCellTopExtra(0);
+                cell->setCellBottomExtra(0);
+            } else {
+#ifdef DEBUG_LAYOUT
+		kdDebug( 6040 ) << "setting position " << r << "/" << c << ": "
+				<< table()->columnPos[c] /*+ padding */ << "/" << rowPos[rindx] << " height=" << rHeight<< endl;
+#endif
+
+		EVerticalAlign va = cell->style()->verticalAlign();
+		int te=0;
+		switch (va)
+		{
+		case SUB:
+		case SUPER:
+		case TEXT_TOP:
+		case TEXT_BOTTOM:
+		case BASELINE:
+		    te = getBaseline(r) - cell->baselinePosition() ;
+		    break;
+		case TOP:
+		    te = 0;
+		    break;
+		case MIDDLE:
+		    te = (rHeight - cell->height())/2;
+		    break;
+		case BOTTOM:
+		    te = rHeight - cell->height();
+		    break;
+		default:
+		    break;
+		}
+#ifdef DEBUG_LAYOUT
+		//            kdDebug( 6040 ) << "CELL " << cell << " te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
+#endif
+		cell->setCellTopExtra( te );
+		cell->setCellBottomExtra( rHeight - cell->height() - te);
+	    }
             if (style()->direction()==RTL) {
                 cell->setPos(
 		    table()->columnPos[(int)totalCols] -
@@ -1206,7 +1266,9 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
 
 void RenderTableRow::detach( RenderArena *arena )
 {
-    section()->setNeedCellRecalc();
+    RenderTableSection *s = section();
+    if (s)
+        s->setNeedCellRecalc();
 
     RenderContainer::detach( arena );
 }
@@ -1237,9 +1299,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE_CELL );
-	    cell->setParent( this ); // so it finds the arena
 	    cell->setStyle(newStyle);
-	    cell->setParent( 0 );
 	    cell->setIsAnonymousBox(true);
 	    addChild(cell, beforeChild);
         }
@@ -1303,6 +1363,7 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   setShouldPaintBackgroundOrBorder(true);
   _topExtra = 0;
   _bottomExtra = 0;
+  m_percentageHeight = 0;
 }
 
 void RenderTableCell::detach( RenderArena *arena )

@@ -32,6 +32,7 @@
 #include "misc/loader.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_root.h"
+#include "rendering/render_table.h"
 #include "render_layer.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
@@ -661,6 +662,15 @@ int RenderBox::availableHeight() const
 
     if (isRoot())
         return static_cast<const RenderRoot*>(this)->viewportHeight();
+
+    // We need to stop here, since we don't want to increase the height of the table
+    // artificially.  We're going to rely on this cell getting expanded to some new
+    // height, and then when we lay out again we'll use the calculation below.
+    if (isTableCell() && (h.isVariable() || h.isPercent())) {
+        const RenderTableCell* tableCell = static_cast<const RenderTableCell*>(this);
+        return tableCell->cellPercentageHeight() -
+	    (borderTop()+borderBottom()+paddingTop()+paddingBottom());
+    }
 
     if (h.isPercent())
         return h.width(containingBlock()->availableHeight());

@@ -101,6 +101,9 @@ public:
     virtual void calcMinMaxWidth();
     virtual void close();
 
+    virtual short lineHeight(bool b) const;
+    virtual short baselinePosition(bool b) const;
+
     virtual void setCellWidths( );
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
@@ -350,6 +353,11 @@ public:
 	return retval;
     }
 
+    int cellPercentageHeight() const
+	{ return m_percentageHeight; }
+    void setCellPercentageHeight(int h)
+	{ m_percentageHeight = h; }
+
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
                                      int _w, int _h, int _tx, int _ty);
@@ -363,6 +371,7 @@ protected:
     int _topExtra;
     int _bottomExtra : 31;
     bool m_widthChanged : 1;
+    int m_percentageHeight;
 };
 
 

@@ -88,7 +88,7 @@ FixedTableLayout::~FixedTableLayout()
 {
 }
 
-int FixedTableLayout::calcWidthArray( int tableWidth )
+int FixedTableLayout::calcWidthArray( int /*tableWidth*/ )
 {
     int usedWidth = 0;
 
@@ -234,15 +234,12 @@ void FixedTableLayout::calcMinMaxWidth()
     // unlimited.
 
     int bs = table->bordersAndSpacing();
-    table->m_minWidth = 0;
-    table->m_maxWidth = 0;
-    short tableWidth = table->style()->width().isFixed() ? table->style()->width().value() - bs : 0;
+    int tableWidth = table->style()->width().isFixed() ? table->style()->width().value() - bs : 0;
 
-    table->m_minWidth = calcWidthArray( tableWidth );
-    table->m_minWidth += bs;
-
-    table->m_minWidth = kMax( table->m_minWidth, tableWidth );
+    int mw = calcWidthArray( tableWidth ) + bs;
+    table->m_minWidth = kMin( kMax( mw, tableWidth ), 0x7fff );
     table->m_maxWidth = table->m_minWidth;
+
     if ( !tableWidth ) {
 	bool haveNonFixed = false;
 	for ( unsigned int i = 0; i < width.size(); i++ ) {
@@ -269,7 +266,7 @@ void FixedTableLayout::layout()
 #endif
 
 
-    QMemArray<short> calcWidth;
+    QMemArray<int> calcWidth;
     calcWidth.resize( nEffCols );
     calcWidth.fill( -1 );
 
@@ -397,7 +394,7 @@ void AutoTableLayout::recalcColumn( int effCol )
 			// ignore width=0
 			if ( w.value() > 0 && !l.width.isPercent() ) {
                             // ### we should use box'es paddings here I guess.
-                            int wval = w.value() + table->cellPadding() * 2;
+                            int wval = w.value() + cell->paddingLeft() + cell->paddingRight();
 			    if ( l.width.isFixed() ) {
                                 // Nav/IE weirdness
 				if ((wval > l.width.value()) ||
@@ -535,10 +532,11 @@ void AutoTableLayout::calcMinMaxWidth()
     }
 
     int totalpct = totalPercent();
-    if ( totalpct < 100 ) {
-	maxNonPercent = (maxNonPercent * 100 + 50) / (100-totalpct);
-	maxWidth = kMax( maxNonPercent,  maxWidth );
-    }
+    if ( totalpct >= 100 )
+	totalpct = 99;
+    maxNonPercent = (maxNonPercent * 100 + 50) / (100-totalpct);
+    maxWidth = kMax( maxNonPercent,  maxWidth );
+
     maxWidth = kMax( maxWidth, maxPercent );
     maxWidth = kMax( maxWidth, spanMaxWidth );
 
@@ -552,8 +550,8 @@ void AutoTableLayout::calcMinMaxWidth()
 	maxWidth = minWidth;
     }
 
-    table->m_maxWidth = kMin(maxWidth, 32767);
-    table->m_minWidth = minWidth;
+    table->m_maxWidth = kMin(maxWidth, 0x7fff);
+    table->m_minWidth = kMin(minWidth, 0x7fff);
 #ifdef DEBUG_LAYOUT
     qDebug("    minWidth=%d, maxWidth=%d", table->m_minWidth, table->m_maxWidth );
 #endif
@@ -695,21 +693,29 @@ int AutoTableLayout::calcEffectiveWidth()
 		qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", col, lastCol-1, cMinWidth, minWidth );
 #endif
 		int maxw = maxWidth;
-		for ( unsigned int pos = col; minWidth > 0 && pos < lastCol; pos++ ) {
-
-		    int w;
+		for ( unsigned int pos = col; maxw > 0 && pos < lastCol; pos++ ) {
 		    if ( layoutStruct[pos].width.isFixed() && haveVariable && fixedWidth <= cMinWidth ) {
-			w = QMAX( layoutStruct[pos].effMinWidth, layoutStruct[pos].width.value() );
+			int w = QMAX( layoutStruct[pos].effMinWidth, layoutStruct[pos].width.value() );
 			fixedWidth -= layoutStruct[pos].width.value();
-		    } else {
-			w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMaxWidth / maxw );
-		    }
 #ifdef DEBUG_LAYOUT
-		    qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
+			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 #endif
-		    maxw -= layoutStruct[pos].effMaxWidth;
-		    cMinWidth -= w;
-		    layoutStruct[pos].effMinWidth = w;
+			maxw -= layoutStruct[pos].effMaxWidth;
+			cMinWidth -= w;
+			layoutStruct[pos].effMinWidth = w;
+		    }
+		}
+
+		for ( unsigned int pos = col; maxw > 0 && pos < lastCol; pos++ ) {
+		    if ( !layoutStruct[pos].width.isFixed() ) {
+			int w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMaxWidth / maxw );
+#ifdef DEBUG_LAYOUT
+			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
+#endif
+			maxw -= layoutStruct[pos].effMaxWidth;
+			cMinWidth -= w;
+			layoutStruct[pos].effMinWidth = w;
+		    }
 		}
 	    }
 	}
@@ -838,7 +844,7 @@ void AutoTableLayout::layout()
     // then allocate width to fixed cols
     if ( available > 0 ) {
 	for ( int i = 0; i < nEffCols; ++i ) {
-	    Length w = layoutStruct[i].effWidth;
+	    const Length &w = layoutStruct[i].effWidth;
 	    if ( w.isFixed() && w.value() > layoutStruct[i].calcWidth ) {
 		available += layoutStruct[i].calcWidth - w.value();
 		layoutStruct[i].calcWidth = w.value();
@@ -852,7 +858,7 @@ void AutoTableLayout::layout()
     // then allocate width to percent cols
     if ( available > 0 && havePercent ) {
 	for ( int i = 0; i < nEffCols; i++ ) {
-	    Length width = layoutStruct[i].effWidth;
+	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isPercent() ) {
                 int w = kMax ( int( layoutStruct[i].effMinWidth ), width.minWidth( tableWidth ) );
 		available += layoutStruct[i].calcWidth - w;
@@ -883,7 +889,7 @@ void AutoTableLayout::layout()
     // now satisfy relative
     if ( available > 0 ) {
 	for ( int i = 0; i < nEffCols; i++ ) {
-	    Length &width = layoutStruct[i].effWidth;
+	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isRelative() && width.value() ) {
 		// width=0* gets effMinWidth.
 		int w = width.value()*tableWidth/totalRelative;
@@ -898,7 +904,7 @@ void AutoTableLayout::layout()
 	available += allocVariable; // this gets redistributed
  	//qDebug("redistributing %dpx to %d variable columns. totalVariable=%d",  available,  numVariable,  totalVariable );
 	for ( int i = 0; i < nEffCols; i++ ) {
-	    Length &width = layoutStruct[i].effWidth;
+	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isVariable() && totalVariable != 0 ) {
 		int w = kMax( int ( layoutStruct[i].calcWidth ),
                               available * layoutStruct[i].effMaxWidth / totalVariable );
@@ -916,7 +922,7 @@ void AutoTableLayout::layout()
     if ( available > 0 && numFixed) {
         // still have some width to spread, distribute to fixed columns
         for ( int i = 0; i < nEffCols; i++ ) {
-            Length &width = layoutStruct[i].effWidth;
+            const Length &width = layoutStruct[i].effWidth;
             if ( width.isFixed() ) {
                 int w = available * layoutStruct[i].effMaxWidth / totalFixed;
                 available -= w;
@@ -934,7 +940,7 @@ void AutoTableLayout::layout()
     if ( available > 0 && hasPercent && totalPercent < 100) {
         // still have some width to spread, distribute weighted to percent columns
         for ( int i = 0; i < nEffCols; i++ ) {
-            Length &width = layoutStruct[i].effWidth;
+            const Length &width = layoutStruct[i].effWidth;
             if ( width.isPercent() ) {
                 int w = available * width.value() / totalPercent;
                 available -= w;
