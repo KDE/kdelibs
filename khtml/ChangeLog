@@ -6,6 +6,9 @@
 
 2004-01-13  Dirk Mueller  <mueller@kde.org>
 
+	* ecma/kjs_events.cpp (JSEventListener): store them in a dictionary,
+	not a linked list.
+
 	* css/parser.y: fix rect() parsing problem (#72458).
 
 2004-01-12  Dirk Mueller  <mueller@kde.org>

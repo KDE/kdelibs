@@ -1002,10 +1002,9 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
     return 0;
   ObjectImp *listenerObject = static_cast<ObjectImp *>(val.imp());
 
-  QPtrListIterator<JSEventListener> it(jsEventListeners);
-  for (; it.current(); ++it)
-    if (it.current()->listenerObjImp() == listenerObject)
-      return it.current();
+  JSEventListener *existingListener = jsEventListeners[listenerObject];
+  if (existingListener)
+    return existingListener;
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
   return new JSEventListener(Object(listenerObject), Object(this), html);
@@ -1020,7 +1019,7 @@ void Window::clear( ExecState *exec )
   deleteAllProperties( exec );
 
   // Break the dependency between the listeners and their object
-  QPtrListIterator<JSEventListener> it(jsEventListeners);
+  QPtrDictIterator<JSEventListener> it(jsEventListeners);
   for (; it.current(); ++it)
     it.current()->clear();
   // Forget about the listeners (the DOM::NodeImpls will delete them)
@@ -1269,7 +1268,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
 
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0L;
-    emit p->browserExtension()->createNewWindow("", uargs,winargs,newPart);
+    emit p->browserExtension()->createNewWindow(KURL(), uargs,winargs,newPart);
     if (newPart && ::qt_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
