@@ -128,6 +128,8 @@ public:
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
     m_linkCursor = KCursor::handCursor();
+    m_loadedImages = 0;
+    m_totalImageCount = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -206,6 +208,9 @@ public:
   QPoint m_dragStartPos;
 
   QCursor m_linkCursor;
+
+  unsigned long m_loadedImages;
+  unsigned long m_totalImageCount;
 };
 
 namespace khtml {
@@ -293,16 +298,16 @@ void KHTMLPart::init( KHTMLView *view )
 
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 
-  connect( khtml::Cache::loader(), SIGNAL( requestDone() ),
-	   this, SLOT( checkCompleted() ) );
+  connect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject *) ),
+	   this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
 
   findTextBegin(); //reset find variables
 }
 
 KHTMLPart::~KHTMLPart()
 {
-  disconnect( khtml::Cache::loader(), SIGNAL( requestDone() ),
-	      this, SLOT( checkCompleted() ) );
+  disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
+	      this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
   if ( d->m_view )
   {
     d->m_view->hide();
@@ -542,6 +547,9 @@ void KHTMLPart::clear()
   d->m_selectionEnd = DOM::Node();
   d->m_startOffset = 0;
   d->m_endOffset = 0;
+  
+  d->m_totalImageCount = 0;
+  d->m_loadedImages = 0;
 }
 
 bool KHTMLPart::openFile()
@@ -681,9 +689,28 @@ void KHTMLPart::end()
     QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
     return;
   }
+  
+  HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
+  
+  d->m_totalImageCount = imgColl.length();
 
   checkCompleted();
 }
+
+void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj )
+{
+  if ( baseURL != m_url.url() )
+    return;
+  
+  if ( obj && obj->type() == khtml::CachedObject::Image && !d->m_bParsing )
+  {
+    d->m_loadedImages++;
+    
+    emit d->m_extension->infoMessage( i18n( "%1 of %2 Images loaded" ).arg( d->m_loadedImages ).arg( d->m_totalImageCount ) );
+  }
+  
+  checkCompleted(); 
+} 
 
 void KHTMLPart::checkCompleted()
 {

@@ -626,7 +626,10 @@ void Loader::slotFinished( KIO::Job* job )
 
     servePendingRequests();
   }
-  emit requestDone();
+  
+  emit requestDone( r->m_baseURL, r->object );
+    
+  delete r;
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
@@ -653,6 +656,23 @@ int Loader::numRequests( const DOMString &baseURL )
   QPtrDictIterator<Request> lIt( m_requestsLoading );
   for (; lIt.current(); ++lIt )
     if ( lIt.current()->m_baseURL == baseURL )
+      res++;
+
+  return res;
+}
+
+int Loader::numRequests( const DOMString &baseURL, CachedObject::Type type )
+{
+  int res = 0;
+
+  QListIterator<Request> pIt( m_requestsPending );
+  for (; pIt.current(); ++pIt )
+    if ( pIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
+      res++;
+
+  QPtrDictIterator<Request> lIt( m_requestsLoading );
+  for (; lIt.current(); ++lIt )
+    if ( lIt.current()->m_baseURL == baseURL && pIt.current()->object->type() == type )
       res++;
 
   return res;
@@ -995,7 +1015,7 @@ void Cache::autoloadImages( bool enable )
 
   QDictIterator<CachedObject> it( *cache );
   for (; it.current(); ++it )
-    if ( it.current()->isImage() )
+    if ( it.current()->type() == CachedObject::Image )
     {
       CachedImage *img = static_cast<CachedImage *>( it.current() );
 

@@ -59,6 +59,7 @@ namespace khtml
   class MouseMoveEvent;
   class MouseReleaseEvent;
   class DrawContentsEvent;
+  class CachedObject;
 };
 
 namespace KJS {
@@ -602,6 +603,7 @@ private slots:
    */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
+  void slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
   void checkCompleted();
 
 private:

@@ -128,8 +128,6 @@ namespace khtml
          */
         void setFree( bool b ) { m_free = b; }
 
-	virtual bool isImage() const = 0;
-
     protected:
 	DOM::DOMString m_url;
 	Type m_type;
@@ -159,8 +157,6 @@ namespace khtml
 
 	void checkNotify();
 
-	virtual bool isImage() const { return false; }
-	
     protected:
 	DOM::DOMString m_sheet;
 	bool loading;
@@ -192,8 +188,6 @@ namespace khtml
 	 * if o = 0  notify all clients
 	 */
 	void notify(CachedObjectClient *c = 0);
-
-	virtual bool isImage() const { return true; }
 
 	void load();
 
@@ -243,10 +237,12 @@ namespace khtml
 	void load(CachedObject *object, const DOM::DOMString &baseURL, bool incremental = true);
 
         int numRequests( const DOM::DOMString &baseURL );
+        int numRequests( const DOM::DOMString &baseURL, CachedObject::Type type );
+
         void cancelRequests( const DOM::DOMString &baseURL );	
 
     signals:
-	void requestDone();
+	void requestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
 
     protected slots:
 	void slotFinished( KIO::Job * );
