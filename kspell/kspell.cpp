@@ -964,12 +964,10 @@ void KSpell::ispellExit (KProcess *)
   else if (m_status == Running)
      m_status = Crashed;
   else // Error, Finished, Crashed
-    {
-      kdError(750) << "Death" << endl;
-      QTimer::singleShot( 0, this, SLOT(emitDeath()));
      return; // Dead already
-    }
-
+ 
+  kdDebug(750) << "Death" << endl;
+  QTimer::singleShot( 0, this, SLOT(emitDeath()));
 }
 
 // This is always called from the event loop to make
