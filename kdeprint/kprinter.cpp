@@ -250,6 +250,7 @@ void KPrinter::setOutputToFile(bool on)
 void KPrinter::setOutputFileName(const QString& f)
 {
 	m_psbuffer = f;
+	setOutputToFile( !f.isEmpty() );
 	m_wrapper->setOutputFileName(m_psbuffer);
 }
 
