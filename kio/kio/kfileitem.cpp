@@ -765,7 +765,8 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 
 const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
-    if ( autoget && m_url.isLocalFile() && !m_metaInfo.isValid() )
+    if ( autoget && !m_metaInfo.isValid() &&
+         KConfigGroup( KGlobal::config(), "PreviewSettings" ).readBoolEntry( m_url.protocol(), true ) )
     {
         m_metaInfo = KFileMetaInfo( m_url.path(), mimetype() );
     }
