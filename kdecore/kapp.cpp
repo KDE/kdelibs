@@ -20,6 +20,12 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// corrected order of signal and action (a party for the four-eyes-strategy ;)
+//
+// Revision 1.85  1998/01/25 20:09:43  kulow
+// patch created by me after Mario told me, what to do ;)
+// applyGUIStyle does not work exactly like QApplication::setStyle
+//
 // Revision 1.84  1998/01/22 16:29:45  jacek
 // Default locale's charset support added
 //
@@ -585,6 +591,9 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
       aDummyString2 += " ";
       break;
     case miniicon:
+      if (argv[i+1][0] == '/')
+        aMiniIconPixmap = QPixmap(argv[i+1]);
+      else
         aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
       aDummyString2 += parameter_strings[miniicon-1];
       aDummyString2 += " ";
