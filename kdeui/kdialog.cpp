@@ -21,6 +21,7 @@
 #include <kconfig.h>
 #include <kapplication.h>
 #include <kdialog.h>
+#include <kwhatsthis.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
@@ -45,6 +46,7 @@ template class QPtrList<QLayoutItem>;
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
 {
+    KWhatsThisManager::init ();
 }
 
 //

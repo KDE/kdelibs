@@ -26,6 +26,7 @@
 #include "kmainwindow.h"
 #include "kmainwindowiface.h"
 #include "ktoolbarhandler.h"
+#include "kwhatsthis.h"
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
 #include <qstyle.h>
@@ -177,6 +178,7 @@ KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, WFlags 
 
 void KMainWindow::initKMainWindow(const char *name, int cflags)
 {
+    KWhatsThisManager::init ();
     setDockMenuEnabled( false );
     mHelpMenu = 0;
     kapp->setTopWidget( this );
