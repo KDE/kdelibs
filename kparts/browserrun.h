@@ -126,7 +126,7 @@ namespace KParts {
     protected:
         KParts::URLArgs m_args;
         KParts::ReadOnlyPart *m_part; // QGuardedPtr?
-        QWidget *m_window;            // QGuardedPtr?
+        QGuardedPtr<QWidget> m_window;
         QString m_suggestedFilename;
         QString m_sMimeType;
         bool m_bRemoveReferrer;
