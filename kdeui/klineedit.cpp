@@ -43,6 +43,14 @@
 class KLineEdit::KLineEditPrivate
 {
 public:
+    KLineEditPrivate() {
+      hasReference= false;
+      grabReturnKeyEvents= false;
+      handleURLDrops= true;
+      completionBox= 0;
+      popupMenu= 0;
+      subMenu= 0;
+    }
     bool grabReturnKeyEvents;
     bool handleURLDrops;
     bool hasReference;;
@@ -75,13 +83,6 @@ KLineEdit::~KLineEdit ()
 void KLineEdit::init()
 {
     d = new KLineEditPrivate;
-    d->hasReference = false;
-    d->grabReturnKeyEvents = false;
-    d->handleURLDrops = true;
-    d->completionBox = 0;
-    d->popupMenu = 0;
-    d->subMenu = 0;
-
     // Enable the context menu by default.
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );

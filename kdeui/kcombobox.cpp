@@ -44,17 +44,18 @@ class KComboBox::KComboBoxPrivate
 {
 public:
     KComboBoxPrivate() {
-      handleURLDrops = true;
-      completionBox = 0L;
-      popupMenu = 0L;
-      subMenu = 0L;
+      hasReference= false;
+      handleURLDrops= true;
+      completionBox= 0;
+      popupMenu= 0;
+      subMenu= 0;
     }
-    QString origText;
     bool handleURLDrops;
     bool hasReference;
     KCompletionBox *completionBox;
     QPopupMenu* popupMenu;
     QPopupMenu* subMenu;
+    QString origText;
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
