@@ -1153,7 +1153,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const QString& pKey, Q_LLONG nValue,
+  void writeEntry( const QString& pKey, Q_INT64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
   /**
@@ -1170,7 +1170,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const char *pKey, Q_LLONG nValue,
+  void writeEntry( const char *pKey, Q_INT64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -1188,7 +1188,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const QString& pKey, Q_ULLONG nValue,
+  void writeEntry( const QString& pKey, Q_UINT64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
   /**
@@ -1205,7 +1205,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const char *pKey, Q_ULLONG nValue,
+  void writeEntry( const char *pKey, Q_UINT64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
