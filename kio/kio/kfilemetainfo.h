@@ -271,13 +271,13 @@ public:
     /**
      * This is just the same as @ref KFileMetaInfo()
      **/
-    Internal() : ::KFileMetaInfo() {}
+    Internal() : KFileMetaInfo() {}
 
     /**
      * Copy constructor to topy a @ref KFileMetaInfo object into a
      * KFileMetaInfo::Internal
      **/
-    Internal( ::KFileMetaInfo& info ) : ::KFileMetaInfo(info) {}
+    Internal( KFileMetaInfo& info ) : KFileMetaInfo(info) {}
     
     /**
      * The metainfo items are stored in a map internally. Normally, a 
