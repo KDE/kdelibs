@@ -73,7 +73,7 @@ public:
    * @return the path for which this factory is responsible.
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual QStringList pathList() const;
+  virtual const QStringList & pathList() const { return m_pathList; }
 
 private:
   QStringList m_pathList;
@@ -122,7 +122,7 @@ public:
    * @return the path for which this factory is responsible.
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual QStringList pathList() const;
+  virtual const QStringList & pathList() const { return m_pathList; }
 
 private:
   QStringList m_pathList;

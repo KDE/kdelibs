@@ -68,6 +68,10 @@ KServiceTypeFactory::KServiceTypeFactory()
   QString tmp = kapp->localkdedir();
   tmp += "/share/mimelnk";
   m_pathList.append( tmp );
+  // DEBUG CODE
+  QStringList::Iterator it = m_pathList.begin(); 
+  for ( ; it != m_pathList.end() ; ++it )
+     kdebug(0, 0, (*it).ascii());
 }
 
 KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )
@@ -113,6 +117,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
       break;
     default:
       ASSERT( 0 );
+      return 0;
     }
 
   if ( !e->isValid() )
@@ -164,11 +169,6 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
   e->deref();
   
   return res;
-}
-
-QStringList KServiceTypeFactory::pathList() const
-{
-  return m_pathList;
 }
 
 /**************************************************
@@ -262,10 +262,5 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
   service->deref();
 
   return e;
-}
-
-QStringList KServiceFactory::pathList() const
-{
-  return m_pathList;
 }
 

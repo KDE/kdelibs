@@ -61,9 +61,9 @@ void KRegistry::addFactory( KRegFactory *_factory )
 {
   m_lstFactories.append( _factory );
   
-  QStringList::Iterator it = _factory->pathList().begin();
-  QStringList::Iterator end = _factory->pathList().end();
-  for( ; it != end; ++it )
+  QStringList::ConstIterator it = _factory->pathList().begin();
+  // QStringList::ConstIterator end = _factory->pathList().end(); doesn't work ??? (David)
+  for( ; it != _factory->pathList().end(); ++it )
   {    
     kdebug( KDEBUG_INFO, 7011, "addFactory : adding path %s", (*it).ascii() );
     m_lstToplevelDirs.append( *it );
