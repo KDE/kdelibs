@@ -894,6 +894,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         }
         break;
     case ID_BODY:
+        // body no longer allowed if we have a frameset
+        if(haveFrameSet) break;
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         startBody();
