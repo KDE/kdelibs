@@ -46,7 +46,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h \
 		kdualcolorbtn.h kpalette.h ktoolbarbutton.h \
-		ktoolbarradiogroup.h
+		ktoolbarradiogroup.h ktextbrowser.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -67,7 +67,8 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		knumvalidator.cpp kdialog.cpp dialogbase.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp \
-		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp
+		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
+		ktextbrowser.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
@@ -81,5 +82,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \
 	qxembed.moc kdialog.moc dialogbase.moc kdialogbase.moc \
 	kjanuswidget.moc kaboutdialog.moc kauthicon.moc \
-	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc
+	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc \
+	ktextbrowser.moc
+
 
