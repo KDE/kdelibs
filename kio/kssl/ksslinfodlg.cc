@@ -269,14 +269,14 @@ QPalette cspl;
    d->_serialNum->setText(x->getSerialNumber());
 
    cspl = d->_validFrom->palette();
-   if (x->getQDTNotBefore() > QDateTime::currentDateTime())
+   if (x->getQDTNotBefore() > QDateTime::currentDateTime(Qt::UTC))
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
    else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
    d->_validFrom->setPalette(cspl);
    d->_validFrom->setText(x->getNotBefore());
 
    cspl = d->_validUntil->palette();
-   if (x->getQDTNotAfter() < QDateTime::currentDateTime())
+   if (x->getQDTNotAfter() < QDateTime::currentDateTime(Qt::UTC))
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
    else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
    d->_validUntil->setPalette(cspl);
@@ -292,8 +292,8 @@ QPalette cspl;
    } else {
       ksv = x->validate();
       if (ksv == KSSLCertificate::SelfSigned) {
-         if (x->getQDTNotAfter() > QDateTime::currentDateTime() &&
-             x->getQDTNotBefore() < QDateTime::currentDateTime()) {
+         if (x->getQDTNotAfter() > QDateTime::currentDateTime(Qt::UTC) &&
+             x->getQDTNotBefore() < QDateTime::currentDateTime(Qt::UTC)) {
             if (KSSLSigners().useForSSL(*x))
                ksv = KSSLCertificate::Ok;
 	 } else {
