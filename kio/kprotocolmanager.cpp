@@ -235,7 +235,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
   else
   {
     QString proxy = proxyFor( url.protocol() );
-    return proxy.isEmpty() ? "DIRECT" : proxy;
+    return proxy.isEmpty() ? QString::fromLatin1("DIRECT") : proxy;
   }
 }
 

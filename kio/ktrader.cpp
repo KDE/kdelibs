@@ -26,6 +26,8 @@
 #include <kstddirs.h>
 #include <kstaticdeleter.h>
 
+template class KStaticDeleter<KTrader>;
+
 class KTraderSorter
 {
 public:

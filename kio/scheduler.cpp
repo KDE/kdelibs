@@ -35,6 +35,8 @@
 
 using namespace KIO;
 
+template class QDict<KIO::Scheduler::ProtocolInfo>;
+
 Scheduler *Scheduler::instance = 0;
 
 /*

@@ -60,6 +60,7 @@ extern "C" {
 #include <kdirnotify_stub.h>
 
 using namespace KIO;
+template class QList<KIO::Job>;
 
 #define REPORT_TIMEOUT 200
 

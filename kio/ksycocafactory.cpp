@@ -26,6 +26,7 @@
 #include <kdebug.h>
 
 template class QDict<KSycocaEntry>;
+template class QDict<KSharedPtr<KSycocaEntry> >;
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)

@@ -43,8 +43,7 @@
 
 using namespace KIO;
 
-template class QList<Task>;
-
+template class QList<KIO::Task>;
 
 Connection::Connection()
 {

@@ -30,6 +30,8 @@
 
 using namespace KIO;
 
+template class QIntDict<KIO::Job>;
+
 Observer * Observer::s_pObserver = 0L;
 
 Observer::Observer() : DCOPObject("KIO::Observer")

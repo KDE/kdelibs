@@ -33,6 +33,8 @@
 #include <kurl.h>
 #include <kglobalsettings.h>
 
+template class QList<QRegExp>;
+
 class KDirLister::KDirListerPrivate
 {
 public:
