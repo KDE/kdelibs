@@ -237,14 +237,14 @@ protected:
 
 protected slots:
   /**
-   * Some setting was modified, updates the Apply and Default buttons.
+   * Updates the Apply and Default buttons.
    */
-  virtual void settingModified();
+  void updateButtons();
 
   /**
    * Some setting was changed. Emit the signal with the dialogs name
    */
-  virtual void settingsChangedSlot();
+  void settingsChangedSlot();
 
 protected:
   /**

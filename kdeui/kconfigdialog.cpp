@@ -26,6 +26,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
+
 #include <qlayout.h>
 #include <qvbox.h>
 
@@ -66,16 +67,18 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
   // TODO: Emit settingsChanged signal from slot to guarantee sequence
   connect(d->mgr, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
   connect(d->mgr, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(d->mgr, SIGNAL(widgetModified()), this, SLOT(settingModified()));
+  connect(d->mgr, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
 
   connect(kdialogbase, SIGNAL(okClicked()), this, SLOT(updateSettings()));
   connect(kdialogbase, SIGNAL(okClicked()), d->mgr, SLOT(updateSettings()));
+
   connect(kdialogbase, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
   connect(kdialogbase, SIGNAL(applyClicked()), d->mgr, SLOT(updateSettings()));
+  connect(kdialogbase, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
+
   connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
   connect(kdialogbase, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
-
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(settingModified()));
+  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
 
   kdialogbase->enableButton(KDialogBase::Apply, false);
 }
@@ -147,7 +150,7 @@ bool KConfigDialog::showDialog(const char* name)
   return (dialog != NULL);
 }
 
-void KConfigDialog::settingModified()
+void KConfigDialog::updateButtons()
 {
   if(d->track)
   {
@@ -159,7 +162,7 @@ void KConfigDialog::settingModified()
 void KConfigDialog::settingsChangedSlot()
 {
   // Update the buttons
-  settingModified();
+  updateButtons();
   emit (settingsChanged(name()));
 }
 
