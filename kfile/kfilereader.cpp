@@ -66,6 +66,7 @@
 #include <kdebug.h>
 #include <config-kfile.h>
 #include <kdebug.h>
+#include <kdebug2.h>
 
 template class QList<QRegExp>;
 
@@ -74,8 +75,9 @@ template class QList<QRegExp>;
 **
 */
 
+static bool probably_slow_mounted(const char *filename);
+
 KDirWatch * KFileReader::dirWatch = 0L;
-bool KFileReader::performChdir = true;
 
 KFileReader::KFileReader()
     : QObject(0, "KFileReader")
@@ -95,7 +97,6 @@ KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
 
 void KFileReader::init()
 {
-    myOpendir = 0L;
     myUpdateDir = 0L;
     readable  = false;
 
@@ -112,8 +113,6 @@ void KFileReader::init()
 KFileReader::~KFileReader()
 {
 }
-
-void qt_qstring_stats();
 
 void KFileReader::cleanup()
 {
@@ -164,10 +163,6 @@ void KFileReader::setURL(const KURL& url)
     if (!readable)
 	return;  // nothing more we can do here
 
-    if (myOpendir) {
-	closedir(myOpendir);
-	myOpendir = 0;
-    }
     myDirtyFlag= true;
     currentSize = 50;
 }
@@ -249,121 +244,9 @@ void KFileReader::getEntries()
 	myDirtyFlag = false;
     }
 
-    // remote files are loaded asynchronously
-    if ( true ) {
-	myDirtyFlag = startLoading();
-	return;
-    }
+    myDirtyFlag = true;
+    startLoading();
 
-    struct dirent *dp;
-
-    if (!myOpendir) {
-	QString ts = path();
-	myOpendir = opendir(ts.local8Bit());
-	if (!myOpendir)
-	    return;
-	(void) readdir(myOpendir); // take out the "."
-    }
-
-#ifdef Q2HELPER
-    qt_qstring_stats();
-#endif
-    kDebugInfo(kfile_area, "getEntries %ld", time(0));
-
-    KFileViewItem *i;
-    QString _url = url(+1);
-
-    while (true) {
-	dp = readdir(myOpendir);
-	if (!dp)
-	    break;
-	
-	i = new KFileViewItem(_url, QString::fromLocal8Bit(dp->d_name),
-			      true);
-	
-	CHECK_PTR(i);
-	myPendingEntries.append(i);
-    }
-
-    myPendingEntries.first();
-    closedir(myOpendir);
-    myOpendir = 0;
-
-    kDebugInfo(kfile_area, "got %d entries %ld", myPendingEntries.count(), time(0));
-
-    statLocalFiles();
-}
-
-void KFileReader::statLocalFiles()
-{
-    myNewEntries.clear();
-    char *cwd = getcwd(0, 0);
-
-    chdir(path(+1).local8Bit());
-
-    struct timeval tp;
-
-    gettimeofday(&tp, 0);
-    long tv_sec = tp.tv_sec;
-    long tv_usec = tp.tv_usec;
-
-    int counter = 0;
-
-    KFileViewItem *i;
-
-    static const int maximum_updatetime = 300;
-    static const int minimum_updatetime = (maximum_updatetime * 3) / 4;
-
-    while (!myPendingEntries.isEmpty()) {
-	
-	i = myPendingEntries.take(); // removes it as first item
-	i->stat(performChdir);
-
-	if (i->name().isEmpty()) {
-	    delete i;
-	    continue;
-	}
-	myEntries.append(i);
-	if (filterEntry(i)) {
-	    myNewEntries.append(i);
-	    i->setHidden(false);
-	} else
-	    i->setHidden(true);
-
-	counter++;
-	if (counter > currentSize) {
-	    gettimeofday(&tp, 0);
-	    long diff = ((tp.tv_sec - tv_sec) * 1000000 +
-			 tp.tv_usec - tv_usec) / 1000;
-	
-	    /*
-	      debug("called gettimeofday %ld %d %ld",
-	      diff, counter, currentSize);
-	    */
-
-	    if (diff > maximum_updatetime) {
-		currentSize = currentSize * 3 / 4;
-		break;
-	    } else if (diff < minimum_updatetime) {
-		currentSize = currentSize * 5 / 4;
-	    } else
-		break;
-	}
-    }
-
-#ifdef Q2HELPER
-    qt_qstring_stats();
-#endif
-
-    chdir(cwd);
-    free(cwd);
-
-    kDebugInfo(kfile_area, "emit contents %ld", time(0));
-    if (!myNewEntries.isEmpty())
-	emit contents( myNewEntries, myPendingEntries.isEmpty());
-
-    if (!myPendingEntries.isEmpty())
-	QTimer::singleShot(0, this, SLOT(statLocalFiles()));
 }
 
 void KFileReader::listContents()
@@ -407,21 +290,18 @@ bool KFileReader::filterEntry(KFileViewItem *i)
     return false;
 }
 
-bool KFileReader::startLoading()
+void KFileReader::startLoading()
 {
-    // If KIOJob is not busy
-    if (myJob == 0) {
-	myJob = KIO::listDir(*this); // listDir(url().ascii()); ?
-	CHECK_PTR(myJob);
+    if (myJob != 0) // sorry, get out of my way
+	myJob->kill();
 
-	connect(myJob, SIGNAL(result(KIO::Job*)),
-                    SLOT(slotIOFinished(KIO::Job*)));
-	connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
-	return true;
-    }
+    myJob = KIO::listDir(*this);
+    CHECK_PTR(myJob);
 
-    return false;
+    connect(myJob, SIGNAL(result(KIO::Job*)),
+	    SLOT(slotIOFinished(KIO::Job*)));
+    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+	    SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
 }
 
 void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
@@ -448,7 +328,7 @@ void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 
 void KFileReader::slotIOFinished( KIO::Job * job )
 {
-    kDebugInfo(kfile_area, "slotIOFinished");
+    kdDebug(kfile_area) << "slotIOFinished" << endl;
     myJob= 0;
     myNewEntries.clear();
     if (job->error())
@@ -467,7 +347,7 @@ void KFileReader::slotDirDirty( const QString& )
 // it will read the dir in chunks, delayed thru a QTimer
 void KFileReader::slotDirUpdate()
 {
-    if (myOpendir) { // still reading, or someone called setURL() during update
+    if (myJob) { // still reading, or someone called setURL() during update
         if (myUpdateDir) {
 	    closedir(myUpdateDir);
 	    myUpdateDir = 0L;
@@ -589,7 +469,7 @@ void KFileReader::setShowHiddenFiles(bool b)
 /**
  * Idea and code by Olaf Kirch <okir@caldera.de>
  **/
-bool KFileReader::probably_slow_mounted(const char *filename)
+static bool probably_slow_mounted(const char *filename)
 {
     STRUCT_SETMNTENT	mtab;
     char		realname[MAXPATHLEN];

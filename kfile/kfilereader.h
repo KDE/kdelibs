@@ -137,23 +137,6 @@ public:
     virtual void setAutoUpdate( bool b );
     bool autoUpdate() const { return myAutoUpdate; }
 
-    static bool probably_slow_mounted(const char *filename);
-
-    /**
-     * KFileReader uses chhdir() to change the current working directory to
-     * increase performance. If you don't like this, disable it.
-     * Default is enabled.
-     * @see #isChdirEnabled
-     */
-    static void setEnableChdir( bool enable ) { performChdir = enable; }
-
-    /**
-     * @returns whether KFileReader changes the current working directory
-     * (via chdir()).
-     * @see #setEnableChdir
-     */
-    static bool isChdirEnabled() { return performChdir; }
-
  signals:
     /**
      * Emitted when the url is changed. It is NOT emitted, when you manually
@@ -202,7 +185,6 @@ protected slots:
     void slotDirDirty(const QString& dir);
     void slotDirDeleted(const QString& dir);
     void slotDirUpdate();
-    void statLocalFiles();
 
 protected:
     void updateFiltered();
@@ -211,11 +193,10 @@ protected:
 
     virtual void getEntries();
 
-    /**
+    /*
      * Start listing the directory in the background (returns immeditately).
-     * @return true if KIO::Job was started successfully.
      */
-    virtual bool startLoading();
+    virtual void startLoading();
 
     KIO::Job *myJob;
     static KDirWatch *dirWatch;
@@ -235,11 +216,8 @@ private:
     bool myAutoUpdate;
     bool root;
 
-    // if the directory is to big, we must divide it
-    DIR *myOpendir;
     bool readable;
     bool showHidden;
-    static bool performChdir;
 
     // for KDirWatch update (async via QTimer)
     DIR *myUpdateDir;
