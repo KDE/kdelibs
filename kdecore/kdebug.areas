@@ -256,6 +256,8 @@
 30504        wmffilter
 30505        msodfilter
 30506        abiwordfilter
+30507        docbookfilter
+30508        kword-export-filter-lib
 30510        ole-lib
 30511        ole-excel
 30512        ole-powerpoint
