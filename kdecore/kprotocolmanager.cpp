@@ -26,19 +26,19 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
   QDir dir( _dir );
   if (!dir.exists())
     return;
-  const QStrList* p = dir.entryList();
+  const QStringList* p = dir.entryList();
   if ( !p )
     return;
     
-  QStrList lst( *p );
+  // QStringList lst( *p );
   
-  const char *e;
-  for( e = lst.first(); e; e = lst.next() )
+  QStringList::ConstIterator e;
+  for( e = p->begin(); e != p->end(); e++ )
   {
-    if ( strcmp( e, "." ) == 0 || strcmp( e, ".." ) == 0 )
+    if ( *e == "." || *e == ".." )
       continue;
 
-    KSimpleConfig config( _dir + "/" + e, TRUE );
+    KSimpleConfig config( _dir + "/" + *e, TRUE );
     config.setGroup( "Protocol" );
   
     Protocol p;
