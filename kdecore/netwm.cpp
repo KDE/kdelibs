@@ -2600,6 +2600,7 @@ void NETWinInfo::update(unsigned long dirty) {
     unsigned char *data_ret;
 
     if (dirty & XAWMState) {
+        p->mapping_state = Withdrawn;
 	if (XGetWindowProperty(p->display, p->window, xa_wm_state, 0l, 1l,
 			       False, xa_wm_state, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -2612,13 +2613,13 @@ void NETWinInfo::update(unsigned long dirty) {
 		    case IconicState:
 			p->mapping_state = Iconic;
 			break;
+		    case NormalState:
+			p->mapping_state = Visible;
+                        break;
 		    case WithdrawnState:
+		    default:
 			p->mapping_state = Withdrawn;
 			break;
-		    case NormalState:
-		    default:
-			p->mapping_state = Visible;
-
 		}
 
 		p->mapping_state_dirty = False;
