@@ -28,9 +28,7 @@
 #include <kipc.h>
 #include <kdebug.h>
 
-#define CHEAT
 #include "klistview.h"
-#undef CHEAT
 #include "klistviewlineedit.h"
 
 #include <X11/Xlib.h>

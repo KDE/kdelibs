@@ -19,13 +19,9 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#ifdef CHEAT
 #define private public
 #include <qlistview.h>
 #undef private
-#else
-#include <qlistview.h>
-#endif
 
 #include <qlist.h>
 
