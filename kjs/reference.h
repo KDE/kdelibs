@@ -29,6 +29,9 @@
 namespace KJS {
 
 // delme
+/**
+* Defines a Javascript reference.
+*/
   class Reference : public Value {
 // fixme
 /*   class Reference : private Value { */

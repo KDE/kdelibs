@@ -26,26 +26,59 @@
 
 namespace KJS {
 
+  /**
+   * Represents an Identifier for a Javascript object.
+   */
     class Identifier {
         friend class PropertyMap;
     public:
+	/** 
+	* Creates an empty identifier
+	*/
         Identifier() { }
+	/**
+	* Creates an identifier with the name of the string 
+	* @code
+	* KJS::Identifier method("someJSMethod");
+	* @endcode
+	*/
         Identifier(const char *s) : _ustring(add(s)) { }
         Identifier(const UChar *s, int length) : _ustring(add(s, length)) { }
         explicit Identifier(const UString &s) : _ustring(add(s.rep)) { }
 
+	/**
+	* returns a UString of the identifier
+	*/
         const UString &ustring() const { return _ustring; }
         DOM::DOMString string() const;
-        QString qstring() const;
+        /**
+	* returns a QString of the identifier
+	*/
+	QString qstring() const;
 
+	/**
+	* returns a UChar pointer to the string of the identifier with a size defined by @ref size().
+	*/
         const UChar *data() const { return _ustring.data(); }
+	/**
+	* The size of the UChar string returned.
+	*/
         int size() const { return _ustring.size(); }
 
+	/**
+	* Char * of the identifier's string.
+	*/
         const char *ascii() const { return _ustring.ascii(); }
 
         static Identifier from(unsigned y) { return Identifier(UString::from(y)); }
 
+	/**
+	* Returns the identfiers state of being unset.
+	*/
         bool isNull() const { return _ustring.isNull(); }
+	/**
+	* Returns that the identifiers string is set, but is empty.
+	*/
         bool isEmpty() const { return _ustring.isEmpty(); }
 
         unsigned long toULong(bool *ok) const { return _ustring.toULong(ok); }
@@ -54,6 +87,9 @@ namespace KJS {
 
         double toDouble() const { return _ustring.toDouble(); }
 
+	/**
+	* Creates an empty Identifier
+	*/
         static const Identifier &null();
 
         friend bool operator==(const Identifier &, const Identifier &);

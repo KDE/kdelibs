@@ -26,6 +26,9 @@ namespace KJS {
 
     class ObjectImp;
     
+/**
+* A scope chain node.
+*/
     class ScopeChainNode {
     public:
         ScopeChainNode(ScopeChainNode *n, ObjectImp *o)
@@ -36,6 +39,9 @@ namespace KJS {
         int refCount;
     };
 
+/**
+* A scope chain object.
+*/
     class ScopeChain {
     public:
         ScopeChain() : _node(0) { }

@@ -31,6 +31,9 @@ namespace KJS {
   class ReferenceListNode;
   class ReferenceListHeadNode;
 
+/**
+* An iterator for a  @ref ReferenceList.
+*/
   class ReferenceListIterator {
     friend class ReferenceList;
   
@@ -45,6 +48,9 @@ namespace KJS {
     ReferenceListNode *node;
   };
   
+/**
+* A list of @ref Reference objects.
+*/
   class ReferenceList {
   public:
     ReferenceList();

@@ -35,6 +35,9 @@ namespace KJS {
     
     struct PropertyMapHashTable;
     
+/**
+* Saved Properties
+*/
     class SavedProperties {
     friend class PropertyMap;
     public:
@@ -49,6 +52,9 @@ namespace KJS {
         SavedProperties& operator=(const SavedProperties&);
     };
     
+/**
+* A hashtable entry for the @ref PropertyMap.
+*/
     struct PropertyMapHashTableEntry
     {
         PropertyMapHashTableEntry() : key(0) { }
@@ -56,6 +62,9 @@ namespace KJS {
         ValueImp *value;
         int attributes;
     };
+/**
+* Javascript Property Map.
+*/
 
     class PropertyMap {
     public:
