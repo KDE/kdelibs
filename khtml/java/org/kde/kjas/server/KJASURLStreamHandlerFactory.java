@@ -71,7 +71,6 @@ class KIOConnection
             write(b, 0, b.length);
         }
         public void close() throws IOException {
-            checkConnected();
             disconnect();
         }
         public void flush() throws IOException {
@@ -114,7 +113,6 @@ class KIOConnection
             return false;
         }
         public void close() throws IOException {
-            checkConnected();
             disconnect();
         }
     }
