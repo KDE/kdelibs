@@ -1647,20 +1647,22 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_FONT_VARIANT:
     {
+        FontDef fontDef = style->htmlFont().fontDef;
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
-            style->setFontVariant(parentStyle->fontVariant());
-            return;
-        }
-        if(!primitiveValue) return;
-        switch(primitiveValue->getIdent()) {
-	    case CSS_VAL_NORMAL:
-		style->setFontVariant( FVNORMAL ); break;
-	    case CSS_VAL_SMALL_CAPS:
-		style->setFontVariant( SMALL_CAPS ); break;
-	    default:
-            return;
-        }
+            fontDef.smallCaps = parentStyle->htmlFont().fontDef.weight;
+        } else {
+	    if(!primitiveValue) return;
+	    int id = primitiveValue->getIdent();
+	    if ( id == CSS_VAL_NORMAL )
+		fontDef.smallCaps = false;
+	    else if ( id == CSS_VAL_SMALL_CAPS )
+		fontDef.smallCaps = true;
+	    else
+		return;
+	}
+	if (style->setFontDef( fontDef ))
+	    fontDirty = true;
 	break;
     }
 
@@ -1696,7 +1698,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    }
 	}
         if (style->setFontDef( fontDef ))
-	fontDirty = true;
+	    fontDirty = true;
         break;
     }
 
@@ -2904,7 +2906,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if ( !parentNode )
 		return;
             FontDef fontDef = parentStyle->htmlFont().fontDef;
-	    style->setFontVariant( parentStyle->fontVariant() );
 	    style->setLineHeight( parentStyle->lineHeight() );
 	    if (style->setFontDef( fontDef ))
 		fontDirty = true;

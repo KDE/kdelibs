@@ -39,7 +39,8 @@ using namespace khtml;
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
 {
-    QString qstr = QConstString(str, slen).string();
+    QConstString cstr = QConstString(str, slen);
+    QString qstr = cstr.string();
     // hack for fonts that don't have a welldefined nbsp
     if ( !fontDef.hasNbsp ) {
 	// str.setLength() always does a deep copy, so the replacement code below is safe.
@@ -51,7 +52,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
     }
 
     // ### fixme for RTL
-    if ( !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
+    if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
 	// simply draw it
 	p->drawText( x, y, qstr, pos, len, d );
     } else {
@@ -65,8 +66,16 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	if ( d == QPainter::RTL ) {
 	    x += width( str, slen, pos, len ) + toAdd;
 	}
+	QString upper = qstr;
+	QFontMetrics sc_fm = fm;
+	if ( scFont ) {
+	    // draw in small caps
+	    upper = qstr.upper();
+	    sc_fm = QFontMetrics( *scFont );
+	}
 	for( int i = 0; i < len; i++ ) {
-	    int chw = fm.charWidth( qstr, pos+i );
+	    bool lowercase = (str[pos+i].category() == QChar::Letter_Lowercase);
+	    int chw = lowercase ? sc_fm.charWidth( upper, pos+i ) : fm.charWidth( qstr, pos+i );
 	    if ( letterSpacing )
 		chw += letterSpacing;
 	    if ( (wordSpacing || toAdd) && str[i+pos].isSpace() ) {
@@ -80,16 +89,20 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    }
 	    if ( d == QPainter::RTL )
 		x -= chw;
-            if ( to==-1 || (i>=from && i<to) )
-            {
-                if ( bg.isValid() )
-                    p->fillRect( x, y-fm.ascent(), chw, fm.height(), bg );
+	    if ( to==-1 || (i>=from && i<to) )
+	    {
+		if ( bg.isValid() )
+		    p->fillRect( x, y-fm.ascent(), chw, fm.height(), bg );
 
-	        p->drawText( x, y, qstr, pos+i, 1, d );
-            }
+		if ( scFont )
+		    p->setFont( lowercase ? *scFont : f );
+		p->drawText( x, y, (lowercase ? upper : qstr), pos+i, 1, d );
+	    }
 	    if ( d != QPainter::RTL )
 		x += chw;
 	}
+	if ( scFont )
+	    p->setFont( f );
     }
 }
 
@@ -97,7 +110,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 int Font::width( QChar *chs, int, int pos, int len ) const
 {
     QConstString cstr(chs+pos, len);
-    int w;
+    int w = 0;
 
     QString qstr = cstr.string();
     // hack for fonts that don't have a welldefined nbsp
@@ -109,8 +122,20 @@ int Font::width( QChar *chs, int, int pos, int len ) const
 	    if ( (uc+i)->unicode() == 0xa0 )
 		*(uc+i) = ' ';
     }
-    // ### might be a little inaccurate
-    w = fm.width( qstr );
+    if ( scFont ) {
+	QString upper = qstr.upper();
+	const QChar *uc = qstr.unicode();
+	QFontMetrics sc_fm( *scFont );
+	for ( int i = 0; i < len; i++ ) {
+	    if ( (uc+i)->category() == QChar::Letter_Lowercase )
+		w += sc_fm.charWidth( upper, i );
+	    else
+		w += fm.charWidth( qstr, i );
+	}
+    } else {
+	// ### might be a little inaccurate
+	w = fm.width( qstr );
+    }
 
     if ( letterSpacing )
 	w += len*letterSpacing;
@@ -131,8 +156,14 @@ int Font::width( QChar *chs, int slen, int pos ) const
     if ( !fontDef.hasNbsp && (chs+pos)->unicode() == 0xa0 )
 	w = fm.width( QChar( ' ' ) );
     else {
-	QConstString cstr( chs, slen );
-	w = fm.charWidth( cstr.string(), pos );
+	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {
+	    QString str( chs, slen );
+	    str[pos] = chs[pos].upper();
+	    w = QFontMetrics( *scFont ).charWidth( str, pos );
+	} else {
+	    QConstString cstr( chs, slen );
+	    w = fm.charWidth( cstr.string(), pos );
+	}
     }
     if ( letterSpacing )
 	w += letterSpacing;
@@ -193,4 +224,13 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
 
     fm = QFontMetrics( f );
     fontDef.hasNbsp = fm.inFont( 0xa0 );
+
+    // small caps
+    delete scFont;
+    scFont = 0;
+
+    if ( fontDef.smallCaps ) {
+	scFont = new QFont( f );
+	scFont->setPixelSize( f.pixelSize()*7/10 );
+    }
 }

@@ -302,8 +302,6 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 */
 RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 {
-    Diff d = Equal;
-
     // we anyway assume they are the same
 // 	EDisplay _display : 5;
 
@@ -368,13 +366,11 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // 	ETextTransform _text_transform : 4;
 // 	EDirection _direction : 1;
 // 	EWhiteSpace _white_space : 2;
-// 	EFontVariant _font_variant : 1;
 //     EClear _clear : 2;
     if ( !(inherited_flags._text_align == other->inherited_flags._text_align) ||
 	 !(inherited_flags._text_transform == other->inherited_flags._text_transform) ||
 	 !(inherited_flags._direction == other->inherited_flags._direction) ||
 	 !(inherited_flags._white_space == other->inherited_flags._white_space) ||
-	 !(inherited_flags._font_variant == other->inherited_flags._font_variant) ||
 	 !(noninherited_flags._clear == other->noninherited_flags._clear)
 	)
         return Layout;
@@ -382,7 +378,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
-    if ( !(noninherited_flags._display == INLINE) && 
+    if ( !(noninherited_flags._display == INLINE) &&
          !(noninherited_flags._vertical_align == other->noninherited_flags._vertical_align) )
 	    return Layout;
 

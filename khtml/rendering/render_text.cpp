@@ -250,10 +250,8 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     if ( style() != _style ) {
-        // ### fontvariant being implemented as text-transform: upper. sucks!
-        bool changedText = (!style() && (_style->fontVariant() != FVNORMAL || _style->textTransform() != TTNONE)) ||
-            ((style() && style()->textTransform() != _style->textTransform()) ||
-             (style() && style()->fontVariant() != _style->fontVariant()));
+        bool changedText = (!style() && (_style->textTransform() != TTNONE)) ||
+            ((style() && style()->textTransform() != _style->textTransform()) );
 
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
@@ -528,8 +526,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if(_style->font() != p->font()) {
                 p->setFont(_style->font());
-		font = &_style->htmlFont();
 	    }
+	    //has to be outside the above if because of small caps.
+	    font = &_style->htmlFont();
 
             if ((pseudoStyle && s->m_firstLine) ||
                 (!pseudoStyle && hasSpecialObjects() && parent()->isInline()))
@@ -739,17 +738,14 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     str = text;
 
     if ( str && style() ) {
-        if ( style()->fontVariant() == SMALL_CAPS )
-            str = str->upper();
-        else
-            switch(style()->textTransform()) {
-            case CAPITALIZE:   str = str->capitalize();  break;
-            case UPPERCASE:   str = str->upper();       break;
-            case LOWERCASE:  str = str->lower();       break;
-            case NONE:
-            default:;
-            }
-        str->ref();
+	switch(style()->textTransform()) {
+	case CAPITALIZE:   str = str->capitalize();  break;
+	case UPPERCASE:   str = str->upper();       break;
+	case LOWERCASE:  str = str->lower();       break;
+	case NONE:
+	default:;
+	}
+	str->ref();
     }
 
     // ### what should happen if we change the text of a

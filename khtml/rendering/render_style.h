@@ -444,10 +444,6 @@ enum ECursor {
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
 
-enum EFontVariant {
-    FVNORMAL, SMALL_CAPS
-};
-
 enum ContentType {
     CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
     CONTENT_ATTR
@@ -513,11 +509,10 @@ protected:
 	EDirection _direction : 1;
 	bool _border_collapse : 1 ;
 	EWhiteSpace _white_space : 2;
-	EFontVariant _font_variant : 1;
         // non CSS2 inherited
         bool _visuallyOrdered : 1;
         bool _htmlHacks :1;
-        int _unused : 1;
+        int _unused : 2;
     } inherited_flags;
 
 // don't inherit
@@ -587,7 +582,6 @@ protected:
 	inherited_flags._direction = LTR;
 	inherited_flags._border_collapse = true;
 	inherited_flags._white_space = NORMAL;
-	inherited_flags._font_variant = FVNORMAL;
 	inherited_flags._visuallyOrdered = false;
 	inherited_flags._htmlHacks=false;
 	inherited_flags._unused = 0;
@@ -748,7 +742,6 @@ public:
     Length paddingRight() const {  return surround->padding.right; }
 
     ECursor cursor() const { return inherited_flags._cursor_style; }
-    EFontVariant fontVariant() { return inherited_flags._font_variant; }
 
 // attribute setter methods
 
@@ -855,7 +848,6 @@ public:
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { inherited_flags._cursor_style = c; }
-    void setFontVariant( EFontVariant f ) { inherited_flags._font_variant = f; }
 
     bool htmlHacks() const { return inherited_flags._htmlHacks; }
     void setHtmlHacks(bool b=true) { inherited_flags._htmlHacks = b; }
