@@ -79,7 +79,7 @@ HandlerImpl::rows() const
                 switch (m_fields[i].type) {
                 case FIELD_TYPE_TINY:
                 case FIELD_TYPE_SHORT:
-                    v = QVariant(v.toString().toInt());
+                    v = Value(v.toString().toInt());
                     //kdDebug(20012) << "To int: "<< v.toInt() << endl;
                     break;
                 case FIELD_TYPE_LONG:
@@ -197,7 +197,7 @@ HandlerImpl::rows() const
                         break;
                     }
                 case FIELD_TYPE_YEAR:
-                    v = QVariant(v.toString().toInt());
+                    v = Value(v.toString().toInt());
                     break;
                 case FIELD_TYPE_STRING:
                 case FIELD_TYPE_BLOB:
