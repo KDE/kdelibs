@@ -581,7 +581,7 @@ static bool isServerSocketOwnedByUser(const char*server)
 {
    if (strncmp(server, "local/", 6) != 0)
       return false; // Not a local socket -> foreign.
-   const char *path = index(server, ':');
+   const char *path = strchr(server, ':');
    if (!path)
       return false;
    path++;
