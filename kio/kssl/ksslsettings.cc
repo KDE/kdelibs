@@ -318,6 +318,7 @@ void KSSLSettings::save() {
   m_cfg->writeEntry("UseEFile", d->m_bUseEFile);
   m_cfg->writePathEntry("EGDPath", d->m_EGDPath);
 
+  m_cfg->sync();
   // FIXME - ciphers
 #if 0
 #ifdef KSSL_HAVE_SSL
@@ -351,9 +352,11 @@ void KSSLSettings::save() {
 
 
 bool KSSLSettings::warnOnEnter() const       { return m_bWarnOnEnter; }
+void KSSLSettings::setWarnOnEnter(bool x)    { m_bWarnOnEnter = x; }
 bool KSSLSettings::warnOnUnencrypted() const { return m_bWarnOnUnencrypted; }
 void KSSLSettings::setWarnOnUnencrypted(bool x) { m_bWarnOnUnencrypted = x; }
 bool KSSLSettings::warnOnLeave() const       { return m_bWarnOnLeave; }
+void KSSLSettings::setWarnOnLeave(bool x)    { m_bWarnOnLeave = x; }
 bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
 bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
 bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }

@@ -76,6 +76,14 @@ public:
 	bool warnOnEnter() const;
 
 	/**
+	 *  Change the user's warnOnEnter() setting
+	 *  @since 3.3
+	 *  @param x true if the user is to be warned
+	 *  @see warnOnEnter
+	 */
+	void setWarnOnEnter(bool x);
+	
+	/**
 	 *  Does the user want to be warned on sending unencrypted data
 	 *  @return true if the user wants to be warned
 	 *  @see setWarnOnUnencrypted
@@ -95,6 +103,14 @@ public:
 	 */
 	bool warnOnLeave() const;
 
+	/**
+	 *  Change the user's warnOnLeave() setting
+	 *  @since 3.3
+	 *  @param x true if the user is to be warned
+	 *  @see warnOnLeave
+	 */
+	void setWarnOnLeave(bool x);
+	
 	/**
 	 *  Does the user want to be warned during mixed SSL/non-SSL mode
 	 *  @return true if the user wants to be warned
