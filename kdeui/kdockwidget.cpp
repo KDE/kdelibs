@@ -48,6 +48,8 @@
 
 #include <stdlib.h>
 
+#undef BORDERLESS_WINDOWS
+
 #define DOCK_CONFIG_VERSION "0.0.5"
 
 static const char* const dockback_xpm[]={
@@ -524,7 +526,11 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
+#ifdef BORDERLESS_WINDOWS
+    KWin::setType( winId(), NET::Override); //d->windowType );
+#else
     KWin::setType( winId(), d->windowType );
+#endif
 #endif
 #endif
 
@@ -1344,6 +1350,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 
             d->dragOffset = QCursor::pos()-currentDragWidget->mapToGlobal(QPoint(0,0));
           }
+
         }
         break;
       case QEvent::MouseButtonRelease:
@@ -1373,11 +1380,11 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         if ( draging ) {	  
 	  pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
           KDockWidget* oldMoveWidget = currentMoveWidget;
-#if 0
+#ifdef BORDERLESS_WINDOWS
 //BEGIN TEST       
 	  if (curdw->parent()==0)
 	  {
-	  	curdw->move(QCursor::pos());
+	  	curdw->move(QCursor::pos()-d->dragOffset);
 	  }
 //END TEST
 #endif
