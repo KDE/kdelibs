@@ -110,6 +110,7 @@ bool ConnectorImpl::connect()
 
 void ConnectorImpl::close()
 {
+	//PQfinish(conn->conn);
 	conn = 0L;
 }
 
@@ -276,7 +277,7 @@ KDB::Handler *ConnectorImpl::query(const QString &SQL)
 	return new HandlerImpl(res, this);
 }
 
-KDB::DataType ConnectorImpl::nativeToKDB(const QString &type)
+KDB::DataType ConnectorImpl::nativeToKDB(const QString &/*type*/)
 {
 	KDB::DataType ret = KDB::CHAR; 
 	return ret;
@@ -284,12 +285,70 @@ KDB::DataType ConnectorImpl::nativeToKDB(const QString &type)
 
 QString ConnectorImpl::KDBToNative(KDB::DataType type)
 {
-	QString ret(QString::fromLatin1("CHAR"));
+	QString ret;
+	switch (type) {
+	case KDB::CHAR:
+		ret = "CHAR";
+		break;
+	case KDB::VARCHAR:
+		ret = "VARCHAR";
+		break;
+	case KDB::SMALLINT:
+		ret = "INT2";
+		break;
+	case KDB::INT:
+		ret = "INT4";
+		break;
+	case KDB::BIGINT:
+		ret = "INT8";
+		break;
+	case KDB::FLOAT:
+		ret = "FLOAT4"; // How do we check the precision?!
+		break;
+	case KDB::DOUBLE:
+		ret = "FLOAT8"; // Maybe this is how?
+	case KDB::DATE:
+		ret = "DATE";
+		break;
+	case KDB::TIME:
+		ret = "TIME";
+		break;
+	case KDB::TIMESTAMP:
+		ret = "TIMESTAMP";
+		break;
+	// The following are all unimplemented
+	case KDB::SET:
+	case KDB::ENUM:
+	case KDB::ARRAY:
+	case KDB::BLOB:
+	default:
+		ret = "UHOHFIXMEPLEASE";
+		break;
+	}
 	return ret;
 }
 
-bool ConnectorImpl::createTable(const KDB::Table &tab)
+QString constructTypeDef(KDB::Field *f)
 {
+}
+
+bool ConnectorImpl::createTable(const KDB::Table &t)
+{
+	QString cmd(QString::fromLatin1("CREATE TABLE %1 "));
+	cmd = cmd.arg(t.name());
+
+	KDB::FieldList fl = t.fields();
+	KDB::FieldIterator fit(fl);
+
+	KDB::Field *f;
+	QString s_field;
+
+	fit.toFirst();
+	for (fit.toFirst(); fit.current(); ++fit) {
+		f = fit.current();
+		s_field = QString::fromLatin1("%1 %2, ");
+		cmd = cmd.arg(f->name()).arg(constructTypeDef(f));
+	}
 	return false;
 }
 
@@ -360,15 +419,21 @@ void ConnectorImpl::rollback()
 
 bool ConnectorImpl::appendField(const QString &table, KDB::Field *f)
 {
+	QString cmd(QString::fromLatin1("ALTER TABLE %1 ADD COLUMN %2 %3"));
+	cmd = cmd.arg(table).arg(f->name()).arg(f->type());
+
+	execute(cmd);
+	return (!DBENGINE->error());
+}
+
+bool ConnectorImpl::removeField(const QString &/*table*/, const QString &/*field*/)
+{
+	// With postgresql right now you need to copy the table, and then recreate it without said field.  Yikes.  Soon.
 	return false;
 }
 
-bool ConnectorImpl::removeField(const QString &table, const QString &field)
+bool ConnectorImpl::changeField(const QString &/*table*/, KDB::Field */*field*/)
 {
-	return false;
-}
-
-bool ConnectorImpl::changeField(const QString &table, KDB::Field *f)
-{
+	// Not quite sure what is wanted here anyways.  Change field how?
 	return false;
 }
