@@ -22,16 +22,18 @@
 #include <dcopclient.h>
 #include <kapplication.h>
 #include <kdcopactionproxy.h>
+#include <kdcoppropertyproxy.h>
 #include <kmainwindow.h>
 #include <kaction.h>
 #include <qclipboard.h>
 
 
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
-	: DCOPObject( mainWindow->name())
+	: DCOPObject( mainWindow->name()) 
 {
 	m_MainWindow = mainWindow;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
+	m_dcopPropertyProxy = new KDCOPPropertyProxy(m_MainWindow);
 }
 
 KMainWindowInterface::~KMainWindowInterface()
@@ -135,31 +137,36 @@ void KMainWindowInterface::grabWindowToClipBoard()
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setPixmap(QPixmap::grabWindow(m_MainWindow->winId()));
 }
-
+/*
 bool KMainWindowInterface::isHidden()
 {
 	return m_MainWindow->isHidden();
 }
+*/
 void KMainWindowInterface::hide()
 {
 	m_MainWindow->hide();
 }
-bool KMainWindowInterface::isMaximized()
+/*bool KMainWindowInterface::isMaximized()
 {
 	return m_MainWindow->isMaximized();
 }
+*/
 void KMainWindowInterface::maximize()
 {
 	m_MainWindow->showMaximized();
 }
+/*
 bool KMainWindowInterface::isMinimized()
 {
 	return m_MainWindow->isMinimized();
 }
+*/
 void KMainWindowInterface::minimize()
 {
 	m_MainWindow->showMinimized();
 }
+/*
 int KMainWindowInterface::width()
 {
 	return m_MainWindow->width();
@@ -168,10 +175,12 @@ int KMainWindowInterface::height()
 {
 	return m_MainWindow->height();
 }
+*/
 void KMainWindowInterface::resize(int newX, int newY)
 {
 	m_MainWindow->resize(newX, newY);
 }
+/*
 int KMainWindowInterface::Xpos()
 {
 	return m_MainWindow->x();
@@ -180,6 +189,7 @@ int KMainWindowInterface::Ypos()
 {
 	return m_MainWindow->y();
 }
+*/
 void KMainWindowInterface::move(int newX, int newY)
 {
 	m_MainWindow->move(newX, newY);
@@ -196,7 +206,6 @@ void KMainWindowInterface::lower()
 {
 	m_MainWindow->lower();
 }
-
 void KMainWindowInterface::restore()
 {
 	m_MainWindow->showNormal();
@@ -204,5 +213,20 @@ void KMainWindowInterface::restore()
 void KMainWindowInterface::show()
 {
 	m_MainWindow->show();
+}
+/*
+QCStringList KMainWindowInterface::getQTProperties()
+{
+	return m_dcopPropertyProxy->functions();
+}
+*/
+QCStringList KMainWindowInterface::functionsDynamic()
+{
+	return m_dcopPropertyProxy->functions();
+}
+bool KMainWindowInterface::processDynamic(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)
+{
+	return m_dcopPropertyProxy->processPropertyRequest( fun, data, replyType, replyData);
+
 }
 

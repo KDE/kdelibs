@@ -26,6 +26,7 @@
 #include <dcopref.h>
 
 class KDCOPActionProxy;
+class KDCOPPropertyProxy;
 class KMainWindow;
 
 /**
@@ -50,6 +51,11 @@ public:
 	Cleans up the dcop action proxy object.
 	**/
 	~KMainWindowInterface();
+	
+	QCStringList functionsDynamic();
+	bool processDynamic(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData);
+
+
 k_dcop:
 	/**
 	Return a list of actions available to the application's window.
@@ -121,17 +127,17 @@ k_dcop:
 	the clipboard.
 	**/
 	void grabWindowToClipBoard();
-	bool isHidden();
+//	bool isHidden();
 	void hide();
-	bool isMaximized();
+//	bool isMaximized();
 	void maximize();
-	bool isMinimized();
+//	bool isMinimized();
 	void minimize();
-	int width();
-	int height();
+//	int width();
+//	int height();
 	void resize(int newWidth, int newHeight);
-	int Xpos();
-	int Ypos();
+//	int Xpos();
+//	int Ypos();
 	void move(int newX, int newY);
 	void setGeometry(int newX, int newY, int newWidth, int newHeight);
 	void raise();
@@ -139,9 +145,12 @@ k_dcop:
 	void restore();
 	void show();
 
+//	QCStringList getQTProperties();
+
 private:
 	KMainWindow *m_MainWindow;
 	KDCOPActionProxy *m_dcopActionProxy;
+	KDCOPPropertyProxy *m_dcopPropertyProxy;
 };
 
 #endif
