@@ -78,10 +78,10 @@ static int sendNotifyEvent(const QString &message, const QString &text,
 
   QString appname = KNotifyClient::instance()->instanceName();
 
-  int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
-
   if( canAvoidStartupEvent( message, appname, present ))
-      return uniqueId; // done "successfully" - there will be no event presentation
+      return -1; // done "successfully" - there will be no event presentation
+
+  int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
 
   // knotify daemon needs toplevel window
   QWidget* widget = QWidget::find( (WId)winId );
