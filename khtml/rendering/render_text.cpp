@@ -195,8 +195,8 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 
 void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
 {
-  p->drawRect(_tx+x,_ty+y-1, m_width, m_height+2);
-  p->drawRect(_tx+x-1,_ty+y, m_width+2, m_height);
+  p->drawRect(_tx+x-2,_ty+y, m_width+3, m_height+2);
+  p->drawRect(_tx+x-3,_ty+y+1, m_width+5, m_height);
 }
 
 

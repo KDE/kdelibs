@@ -340,6 +340,9 @@ bool HTMLElementImpl::isSelectable()
   switch(id())
     {
     case ID_A:
+	if (!getAttribute("href").isNull())
+	    return true;
+	return false;
     case ID_INPUT:
     case ID_TEXTAREA:
     case ID_BUTTON:

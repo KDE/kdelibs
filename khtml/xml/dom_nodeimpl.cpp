@@ -333,7 +333,7 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
       // repaint one pixel outside the element`s dimensions to make
       // sure that a Selection (that can be larger than the object)
       // is completely redrawn.
-      cb->repaintRectangle(-1, -1, cb->width()+2, cb->height()+2);
+      cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
     }
 }
 
