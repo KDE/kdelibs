@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libkdecore.la
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h \
 	kconfigbackend.h kcolorgroup.h kapp.h kcharsets.h \
-	kurl.h ksock.h drag.h \
+	kurl.h ksock.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h ltdl.h \
@@ -36,9 +36,9 @@ noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kdesktopfile.cpp \
-	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
+	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp libintl.cpp klocale.cpp \
-	 fakes.cpp kiconloader.cpp kdebug.cpp \
+	fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp \
@@ -50,7 +50,7 @@ libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cp
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = -lXext $(LIB_QT) $(LIBDL) $(LIB_DMALLOC)
 
-libkdecore_la_METASOURCES = drag.moc kapp.moc \
+libkdecore_la_METASOURCES = kapp.moc \
 	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \
 	kiconloader.moc kprocctrl.moc kprocess.moc ksimpleconfig.moc \
 	ksock.moc kstyle.moc kdesktopfile.moc
