@@ -255,36 +255,32 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
 
   fd_set rd, wr;
   struct timeval timeout;
-  int ret = 0, n;
 
-  n = timeOut;
-  FD_ZERO(&rd);
-  FD_ZERO(&wr);
-  FD_SET(sock, &rd);
-  FD_SET(sock, &wr);
-//  printf("timeout=%d\n", n);
+  int n = timeOut*10; // Timeout in 1/10th's of a second
   while(n--){
-      timeout.tv_usec = 0;
-      timeout.tv_sec = 1;
+      FD_ZERO(&rd);
+      FD_ZERO(&wr);
+      FD_SET(sock, &rd);
+      FD_SET(sock, &wr);
 
-      struct rlimit rlp;
-      getrlimit(RLIMIT_NOFILE, &rlp); // getdtablesize() equivalent. David Faure.
+      timeout.tv_usec = 100*1000; // 1/10th sec
+      timeout.tv_sec = 0;
 
-      ret = select(rlp.rlim_cur, (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
-                   (struct timeval *)&timeout);
-      // if(ret)
-      //    return(true);
+      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
 
-      switch (ret)
+      if (FD_ISSET(sock, &rd) || FD_ISSET(sock, &wr))
       {
-	  case 0: break; // Timeout
-	  case 1: case 2: return(true); // Success
-	  default: // Error
-	      ::close(sock);
-	      sock = -1;
-	      return false;
+         int errcode;
+         socklen_t len = sizeof(errcode);
+         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &errcode, &len);
+         if ((ret == -1) || (errcode != 0))
+         {
+            ::close(sock);
+            sock = -1;
+            return false;
+         }
+         return true;
       }
-
       qApp->processEvents();
       qApp->flushX();
   }
