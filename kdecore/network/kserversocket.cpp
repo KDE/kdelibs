@@ -32,6 +32,7 @@
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
 #include "kstreamsocket.h"
+#include "kbufferedsocket.h"
 #include "kserversocket.h"
 
 using namespace KNetwork;
@@ -45,10 +46,11 @@ public:
   enum { None, LookupDone, Bound, Listening } state;
   int backlog;
 
-  bool bindWhenFound : 1, listenWhenBound : 1;
+  bool bindWhenFound : 1, listenWhenBound : 1, useKBufferedSocket : 1;
 
   KServerSocketPrivate()
-    : state(None), bindWhenFound(false), listenWhenBound(false)
+    : state(None), bindWhenFound(false), listenWhenBound(false),
+      useKBufferedSocket(true)
   { 
     resolver.setFlags(KResolver::Passive);
     resolver.setFamily(KResolver::KnownFamily);
@@ -275,6 +277,11 @@ void KServerSocket::close()
   emit closed();
 }
 
+void KServerSocket::setAcceptBuffered(bool enable)
+{
+  d->useKBufferedSocket = enable;
+}
+
 KActiveSocketBase* KServerSocket::accept()
 {
   if (d->state < KServerSocketPrivate::Listening)
@@ -299,7 +306,11 @@ KActiveSocketBase* KServerSocket::accept()
       return NULL;
     }
 
-  KStreamSocket* streamsocket = new KStreamSocket();
+  KStreamSocket* streamsocket;
+  if (d->useKBufferedSocket)
+    streamsocket = new KBufferedSocket();
+  else
+    streamsocket = new KStreamSocket();
   streamsocket->setSocketDevice(accepted);
 
   // FIXME!

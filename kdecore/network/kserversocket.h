@@ -31,7 +31,9 @@
 namespace KNetwork {
 
 class KSocketDevice;
-class KStreamSocket;
+class KStreamSocket; 
+class KResolver;
+class KResolverResults;
 
 class KServerSocketPrivate;
 /**
@@ -254,6 +256,19 @@ public:
   virtual void close();
 
   /**
+   * Toggles whether the accepted socket will be buffered or not.
+   * That is, the @ref accept function will always return a KStreamSocket
+   * object or descended from it. If buffering is enabled, the class
+   * to be returned will be KBufferedSocket.
+   *
+   * By default, this flag is set to true.
+   *
+   * @param enable		whether to set the accepted socket to
+   *				buffered mode
+   */
+  void setAcceptBuffered(bool enable);
+
+  /**
    * Accepts one incoming connection and return the associated, open
    * socket.
    *
@@ -268,6 +283,7 @@ public:
    *       that the object will be a KStreamSocket or derived from it.
    *
    * @sa KBufferedSocket
+   * @sa setAcceptBuffered
    */
   virtual KActiveSocketBase* accept();
 
@@ -329,8 +345,8 @@ private:
   bool doBind();
 
 private:
-  KServerSocket(const KClientSocketBase&);
-  KServerSocket& operator=(const KClientSocketBase&);
+  KServerSocket(const KServerSocket&);
+  KServerSocket& operator=(const KServerSocket&);
 
   KServerSocketPrivate *d;
 };
