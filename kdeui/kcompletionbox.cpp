@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
-                 2000 Stefan Schimanski <1Stein@gmx.de>
+   Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
+   Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -113,25 +114,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         pageDown();
                         ev->accept();
                         return true;
-/*
-                    case Key_Home: {
-                        // shift/ctrl involved -> let our parent handle that!
-                        bool ours = (ev->state() == 0 && currentItem() != -1);
-                        if ( ours ) {
-                            home();
-                            ev->accept();
-                        }
-                        return ours;
-                    }
-                    case Key_End: {
-                        bool ours = (ev->state() == 0 && currentItem() != -1);
-                        if ( ours ) {
-                            end();
-                            ev->accept();
-                        }
-                        return ours;
-                    }
-*/
                     case Key_Escape:
                         cancelled();
                         ev->accept();
@@ -149,6 +131,28 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
+            else if ( type == QEvent::AccelOverride )
+            {
+                // Override any acceleartors that match
+                // the key sequences we use here...
+                QKeyEvent *ev = static_cast<QKeyEvent *>( e );
+                switch ( ev->key() )
+                {
+                    case Key_Tab:
+                    case Key_Down:
+                    case Key_Up:
+                    case Key_Prior:
+                    case Key_Next:
+                    case Key_Escape:
+                    case Key_Enter:
+                    case Key_Return:
+                      ev->accept();
+                      return true;
+                      break;
+                    default:
+                        break;
+                }
+            }
             // parent loses focus or gets a click -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ||
@@ -162,26 +166,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 resize( sizeHint() );
         }
     }
-/*
-    else if ( o == this ) {
-        switch( type ) {
-            case QEvent::Show:
-                if ( d->m_parent ) {
-                    move( d->m_parent->mapToGlobal( QPoint(0,
-                                                        d->m_parent->height())));
-                    qApp->installEventFilter( this );
-                }
-                resize( sizeHint() );
-                break;
-            case QEvent::Hide:
-                if ( d->m_parent )
-                    qApp->removeEventFilter( this );
-                break;
-            default:
-                break;
-        }
-    }
-*/
     else { // any other object received an event while we're visible
         if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
              (type == QEvent::Move && d->m_parent &&
