@@ -321,8 +321,8 @@ KSycocaDict::save(QDataStream &str)
 // fprintf(stderr, "Calculating minimum table size..\n");
    mHashTableSize = count();
    int minDups = count();
-   uint maxHashTableSize = count()*5;
-   for(uint hashTableSize = count(); hashTableSize < maxHashTableSize; hashTableSize++)
+   uint maxHashTableSize = count()*6;
+   for(uint hashTableSize = count()*4; hashTableSize < maxHashTableSize; hashTableSize++)
    {
       int *checkList = new int[hashTableSize];
       for(uint i = 0; i < hashTableSize; i++)
