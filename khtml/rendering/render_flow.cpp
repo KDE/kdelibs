@@ -553,11 +553,11 @@ void RenderFlow::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
         {
-            int fx = lo+leftRelOffset(y);
-            while (ro+rightRelOffset(y)-fx < fwidth)
+            int fx = leftRelOffset(y,lo);
+            while (rightRelOffset(y,ro)-fx < fwidth)
             {
                 y++;
-                fx = lo+leftRelOffset(y);
+                fx = leftRelOffset(y,lo);
             }
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
@@ -566,11 +566,11 @@ void RenderFlow::positionNewFloats()
         }
         else
         {
-            int fx = ro+rightOffset(y);
-            while (fx - lo-leftOffset(y) < fwidth)
+            int fx = rightRelOffset(y,ro);
+            while (fx - leftRelOffset(y,lo) < fwidth)
             {
                 y++;
-                fx = ro+rightOffset(y);
+                fx = rightRelOffset(y,ro);
             }
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
@@ -685,9 +685,9 @@ RenderFlow::leftOffset() const
 }
 
 int
-RenderFlow::leftRelOffset(int y) const
+RenderFlow::leftRelOffset(int y, int fixedOffset) const
 {
-    int left = 0;
+    int left = fixedOffset;
     if(!specialObjects) return left;
 
     SpecialObject* r;
@@ -724,9 +724,9 @@ RenderFlow::rightOffset() const
 }
 
 int
-RenderFlow::rightRelOffset(int y) const
+RenderFlow::rightRelOffset(int y, int fixedOffset) const
 {
-    int right = 0;
+    int right = fixedOffset;
 
     if (!specialObjects) return right;
 
