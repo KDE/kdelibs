@@ -451,10 +451,9 @@ RenderFrame::~RenderFrame()
 {
 }
 
-RenderPartObject::RenderPartObject( RenderStyle *style, QScrollView *view, DOM::HTMLObjectElementImpl *objElement )
+RenderPartObject::RenderPartObject( RenderStyle *style, QScrollView *view )
 : RenderPart( style, view )
 {
-  m_obj = objElement;
 }
 
 RenderPartObject::~RenderPartObject()
@@ -463,7 +462,7 @@ RenderPartObject::~RenderPartObject()
 
 void RenderPartObject::close()
 {
-/* 
+/*
   NodeImpl *child = m_obj->firstChild();
   while ( child )
   {
@@ -507,10 +506,11 @@ void RenderPartObject::setSize( int w, int h )
   m_width = w;
   m_height = h;
   m_minWidth = m_maxWidth = w;
-} 
+}
 
 void RenderPartObject::layout( bool )
 {
-  setSize( m_style->width().value, m_style->height().value ); 
+  setSize( m_style->width().width( m_view->clipper()->width() ), 
+	   m_style->height().width( m_view->clipper()->height() ) );
   RenderPart::layout();
-} 
+}

@@ -42,6 +42,7 @@ namespace DOM
   class HTMLDocumentImpl;
   class HTMLTitleElementImpl;
   class HTMLFrameElementImpl;
+  class HTMLIFrameElementImpl;
   class HTMLObjectElementImpl;
   class HTMLFormElementImpl;
 };
@@ -112,6 +113,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLView;
   friend class DOM::HTMLTitleElementImpl;
   friend class DOM::HTMLFrameElementImpl;
+  friend class DOM::HTMLIFrameElementImpl;
   friend class DOM::HTMLObjectElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;

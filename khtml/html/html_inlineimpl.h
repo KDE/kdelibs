@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *	     (C) 2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -113,6 +114,13 @@ public:
 
     virtual tagStatus startTag() { return IFRAMEStartTag; }
     virtual tagStatus endTag() { return IFRAMEEndTag; }
+
+    virtual void parseAttribute(Attribute *attr);
+    virtual void attach(KHTMLView *w);
+
+private:
+    DOMString url;
+    DOMString name;
 };
 
 // -------------------------------------------------------------------------

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *	     (C) 2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,6 +30,9 @@
 
 #include <stdio.h>
 
+#include "khtmlview.h"
+#include "khtml_part.h"
+
 #include "dom_textimpl.h"
 #include "dom_string.h"
 #include "html_inline.h"
@@ -40,6 +44,7 @@ using namespace DOM;
 #include "css/cssstyleselector.h"
 
 #include "rendering/render_br.h"
+#include "rendering/render_frames.h"
 
 using namespace khtml;
 
@@ -352,6 +357,56 @@ const DOMString HTMLIFrameElementImpl::nodeName() const
 ushort HTMLIFrameElementImpl::id() const
 {
     return ID_IFRAME;
+}
+
+void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
+{
+  switch (  attr->id )
+  {
+    case ATTR_SRC:
+      url = attr->value();
+      break;
+    case ATTR_NAME:
+      name = attr->value();
+      break;
+    case ATTR_WIDTH:
+      addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+      break;
+    case ATTR_HEIGHT:
+      addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
+      break;  
+    // ### MORE ATTRIBUTES
+    default:
+      HTMLElementImpl::parseAttribute( attr );
+  }
+}
+
+void HTMLIFrameElementImpl::attach(KHTMLView *w)
+{
+  m_style = document->styleSelector()->styleForElement( this );
+  
+  khtml::RenderObject *r = _parent->renderer();
+  
+  if ( !r )
+    return;
+  
+  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( m_style, w );
+  m_render = renderFrame;
+  m_render->ref();
+  r->addChild( m_render );
+  
+  // we need a unique name for every frame in the frameset. Hope that's unique enough.
+  if(name.isEmpty())
+  {
+    QString tmp;
+    tmp.sprintf("0x%p", this);
+    name = DOMString(tmp) + url;
+    printf("creating frame name: %s\n",name.string().ascii());
+  }
+
+  w->part()->requestFrame( renderFrame, url.string(), name.string() );
+
+  NodeBaseImpl::attach( w );
 }
 
 // -------------------------------------------------------------------------

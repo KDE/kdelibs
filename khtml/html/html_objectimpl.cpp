@@ -210,7 +210,7 @@ void HTMLObjectElementImpl::setTabIndex( long  )
 }
 
 void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
-{ 
+{
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch ( attr->id )
@@ -243,7 +243,7 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
 
   m_style = document->styleSelector()->styleForElement( this );
 
-  RenderPartObject *p = new RenderPartObject( m_style, w, this );
+  RenderPartObject *p = new RenderPartObject( m_style, w );
   m_render = p;
   m_render->ref();
   r->addChild( m_render );

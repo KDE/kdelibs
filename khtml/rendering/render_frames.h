@@ -114,7 +114,7 @@ private:
 class RenderPartObject : public RenderPart
 {
 public:
-  RenderPartObject( RenderStyle *style, QScrollView *view, DOM::HTMLObjectElementImpl *objElement );
+  RenderPartObject( RenderStyle *style, QScrollView *view );
   virtual ~RenderPartObject();
 
   virtual const char *renderName() const { return "RenderPartObject"; }
@@ -128,9 +128,6 @@ public:
   virtual void setSize( int w, int h );
 
   virtual void layout( bool deep = true );
-
-private:
-  DOM::HTMLObjectElementImpl *m_obj;
 };
 
 };
