@@ -318,7 +318,7 @@ QString whatstr;
   QHGroupBox *cwbg = new QHGroupBox(i18n("Cipher Wizard"), tabSSL);
   QComboBox *cwcb = new QComboBox(cwbg);
   grid->addMultiCellWidget(cwbg, 3, 3, 0, 1);
-  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following Modes: <ul>");
+  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
  
   cwcb->insertItem(QString::null);
   cwcb->insertItem(i18n("Most Compatible"));
