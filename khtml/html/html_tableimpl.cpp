@@ -502,6 +502,12 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     }
+    case ATTR_HEIGHT:
+        if (!attr->value().isEmpty())
+            addCSSLength(CSS_PROP_HEIGHT, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_HEIGHT);
+        break;
     case ATTR_NOSAVE:
 	break;
     default:
@@ -696,12 +702,6 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSLength(CSS_PROP_WIDTH, attr->value(), false, true);
         else
             removeCSSProperty(CSS_PROP_WIDTH);
-        break;
-    case ATTR_HEIGHT:
-        if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_HEIGHT, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_HEIGHT);
         break;
     case ATTR_NOSAVE:
 	break;
