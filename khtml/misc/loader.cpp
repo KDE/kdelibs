@@ -941,7 +941,7 @@ void Cache::init()
 {
     if(!cache)
     {
-	cache = new QDict<CachedObject>(401, false);
+	cache = new QDict<CachedObject>(401, true);
 	cache->setAutoDelete(true);
     }
     if(!lru)
