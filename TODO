@@ -159,3 +159,8 @@ that we would like to make for the next binary incompatible release.
 - Rename KDirNotify_stub and update API (no need for '*' arguments anymore)
 
 - KWallet::Wallet::* functions - remove the default = 0 argument for mainwindow for the dialog
+
+- Make libkwalletclient part of libkio and get rid of libkwalletclient.
+
+- Get rid of libkdesu dependency in libkio, get rid of SessionData::AuthData*,
+  get rid of SlaveInterface::authorizationKey and SlaveInterface::delAuthorization
