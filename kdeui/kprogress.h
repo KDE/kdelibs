@@ -30,7 +30,7 @@
 #include <kdialogbase.h>
 
 /**
- * A stylized progress bar.
+ * @short A progress indicator widget.
  *
  * KProgress is derived from QProgressBar, so
  * you can use all the methods from that class. The only real difference
@@ -41,9 +41,7 @@
  *
  * \image html kprogress.png "KDE Progress Widget"
  *
- * @short A progress indicator widget.
  * @author Aaron Seigo
- * @version $Id$
  */
 class KDEUI_EXPORT KProgress : public QProgressBar
 {
