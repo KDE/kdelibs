@@ -100,12 +100,12 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
     QTextCodec *codec = KGlobal::charsets()->codecForName(enc, b);
     if (!b)
         codec = 0;
-    
+
     if (type == EncodingFromMetaTag || type  == EncodingFromXMLHeader) {
         //Sometimes the codec specified is absurd, i.e. UTF-16 despite
         //us decoding a meta tag as ASCII. In that case, ignore it.
-        if (codec && 
-            (codec->mibEnum() == 1000)) //UTF16 or similar. 
+        if (codec &&
+            (codec->mibEnum() == 1000)) //UTF16 or similar.
                 codec = 0;
     }
 
@@ -426,6 +426,10 @@ QString Decoder::decode(const char *data, int len)
                 }
                 else
                     ptr++;
+            }
+            if (invalid > 0) {
+                body = true;
+                goto found;
             }
             return QString::null;
         }
