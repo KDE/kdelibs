@@ -46,6 +46,7 @@ class DCOPConnection;
 class DCOPListener;
 class DCOPSignalConnectionList;
 class DCOPSignals;
+class QTimer;
 
 typedef QValueList<QCString> QCStringList;
 
@@ -85,9 +86,9 @@ public:
     void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
     void ioError( IceConn iceConn );
 
-    virtual bool receive(const QCString &app, const QCString &obj,
-			 const QCString &fun, const QByteArray& data,
-			 QCString& replyType, QByteArray &replyData, IceConn iceConn);
+    bool receive(const QCString &app, const QCString &obj,
+                 const QCString &fun, const QByteArray& data,
+                 QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
     DCOPConnection *findApp(const QCString &appId);
 
@@ -98,6 +99,7 @@ public:
 private slots:
     void newClient( int socket );
     void processData( int socket );
+    void slotTerminate();
 
 private:
     int majorOpcode;
@@ -106,6 +108,8 @@ private:
     QAsciiDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;
     DCOPSignals *dcopSignals;
+    int currentClientNumber;
+    QTimer * m_timer;
 };
 
 extern DCOPServer* the_server;

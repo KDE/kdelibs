@@ -1,5 +1,7 @@
 /*****************************************************************
 
+#include "dcopserver.h"
+
 Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999,2000 Matthias Ettrich <ettrich@kde.org>
 
@@ -45,6 +47,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtextstream.h>
 #include <qdatastream.h>
 #include <qstack.h>
+#include <qtimer.h>
 
 #include <dcopserver.h>
 #include <dcopsignals.h>
@@ -661,7 +664,7 @@ extern "C" int _IceTransNoListen(const char *protocol);
 #endif
 
 DCOPServer::DCOPServer(bool _only_local)
-    : QObject(0,0), appIds(263), clients(263)
+    : QObject(0,0), appIds(263), clients(263), currentClientNumber(0)
 {
     serverKey = 42;
 
@@ -743,6 +746,9 @@ DCOPServer::DCOPServer(bool _only_local)
     char c = 0;
     write(ready[1], &c, 1); // dcopserver is started
     close(ready[1]);
+
+    m_timer =  new QTimer(this);
+    connect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
 }
 
 DCOPServer::~DCOPServer()
@@ -866,6 +872,13 @@ void DCOPServer::removeConnection( void* data )
 #ifndef NDEBUG
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
 #endif
+        if ( conn->appId.left(9) != "klauncher" && conn->appId != "kded" && conn->appId != "knotify" )
+        {
+            currentClientNumber--;
+#ifndef NDEBUG
+            qDebug("DCOP: number of clients is now down to %d", currentClientNumber );
+#endif
+        }
 	appIds.remove( conn->appId );
 
 	QPtrDictIterator<DCOPConnection> it( clients );
@@ -892,6 +905,18 @@ void DCOPServer::removeConnection( void* data )
     }
 
     delete conn;
+
+    if ( currentClientNumber == 0 )
+    {
+        m_timer->start( 10000 ); // if within 10 seconds nothing happens, we'll terminate
+    }
+}
+
+void DCOPServer::slotTerminate()
+{
+    fprintf( stderr, "DCOPServer : slotTerminate() -> sending terminateKDE signal.\n" );
+    QByteArray data;
+    dcopSignals->emitSignal(0L /* dcopserver */, "terminateKDE()", data, false);
 }
 
 bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
@@ -922,9 +947,22 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    appIds.remove( conn->appId );
 		}
 
-#ifndef NDEBUG
 		if ( conn->appId.isNull() )
-		    qDebug("DCOP: register '%s'", app2.data() );
+                {
+                    if ( app2.left(9) != "klauncher" && app2 != "kded" && app2 != "knotify" )
+                    {
+                        currentClientNumber++;
+                        m_timer->stop(); // abort termination if we were planning one
+#ifndef NDEBUG
+                        qDebug("DCOP: register '%s' -> number of clients is now %d", app2.data(), currentClientNumber );
+#endif
+                    }
+#ifndef NDEBUG
+                    else
+		      qDebug("DCOP: register '%s'", app2.data() );
+#endif
+                }
+#ifndef NDEBUG
 		else
 		    qDebug("DCOP:  '%s' now known as '%s'", conn->appId.data(), app2.data() );
 #endif

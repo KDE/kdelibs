@@ -44,7 +44,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
       fun = fun.mid(i+1);
    }
 
-   DCOPSignalConnectionList *list = connections.find(fun);	
+   DCOPSignalConnectionList *list = connections.find(fun);
    if (!list) return;
    for(DCOPSignalConnection *current = list->first(); current; current = list->next())
    {
@@ -56,7 +56,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
       }
       else if (!current->sender.isEmpty())
       {
-	 if (current->sender == conn->appId)
+         if ((conn && current->sender == conn->appId) || (current->sender == "DCOPServer"))
 	    doSend = true;
       }
       else
@@ -74,7 +74,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
          doSend = false;
       if (doSend)
       {
-         the_server->sendMessage(current->recvConn, conn->appId,
+         the_server->sendMessage(current->recvConn, conn ? conn->appId : QCString("DCOPServer"),
                                  current->recvConn->appId, current->recvObj,
                                  current->slot, data);
       }
@@ -220,7 +220,7 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj
 }
 
 /**
- * Removes all connections related to "obj" in the "conn" client 
+ * Removes all connections related to "obj" in the "conn" client
  * This means:
  *   All connections for which "conn"/"obj" is the receiver.
  *   All volatile connections for which "conn"/"obj" is the sender.

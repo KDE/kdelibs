@@ -39,7 +39,7 @@ public:
    DCOPConnection *senderConn; //Sender client.
    QCString senderObj;   // Object that sends the signal.
    QCString signal;      // Signal name. Connections are sorted on signal name.
-   
+
    DCOPConnection *recvConn; // Client that wants to receive the signal
    QCString recvObj;     // Object that wants to receive the signal
    QCString slot;        // Function to send to in the object.
@@ -58,9 +58,10 @@ class DCOPSignals
 {
 public:
    DCOPSignals();
-   
+
    /**
     * Client "conn" emits the signal "fun" with "data" as arguments.
+    * conn is 0L if the dcopserver sends the signal itself
     *
     * The emitting object is encoded in "fun".
     *
@@ -69,7 +70,7 @@ public:
    void emitSignal( DCOPConnection *conn, const QCString &fun, const QByteArray &data, bool excludeSelf);
 
    /**
-    * Connects "signal" of the client named "sender" with the "slot" of 
+    * Connects "signal" of the client named "sender" with the "slot" of
     * "receiverObj" in the "conn" client.
     *
     * If "Volatile" is true the connection will be removed when either
@@ -83,12 +84,12 @@ public:
     * results in a failure.
     */
    bool connectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal, 
-                       DCOPConnection *conn, const QCString &receiverObj, 
+                       const QCString &signal,
+                       DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot, bool Volatile);
 
    /**
-    * Disconnects "signal" of the client named "sender" from the "slot" of 
+    * Disconnects "signal" of the client named "sender" from the "slot" of
     * "receiverObj" in the "conn" client.
     *
     * If "receiverObj" is empty, every object is disconnected.
@@ -97,8 +98,8 @@ public:
     * Returns true if successfull, false if no connection was found.
     */
    bool disconnectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal, 
-                       DCOPConnection *conn, const QCString &receiverObj, 
+                       const QCString &signal,
+                       DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot);
 
    /**
@@ -109,7 +110,7 @@ public:
     */
    void removeConnections(DCOPConnection *conn, const QCString &obj=0);
 
-   
+
    /*
     * The administration.
     *
@@ -117,8 +118,8 @@ public:
     * administration as a list.
     *
     * connections[signal] gives a list of all connections related to
-    * a given signal. The connections in this list may specify different 
-    * senders and receiving clients/objects. 
+    * a given signal. The connections in this list may specify different
+    * senders and receiving clients/objects.
     */
    QAsciiDict<DCOPSignalConnectionList> connections;
 };
@@ -128,10 +129,10 @@ public:
 //
 // Check whether signal and slot match wrt arguments.
 // A slot may ignore arguments from the signal.
-// 
+//
 // If volatile
-//    then lookup senderConn... 
-//         If not found? 
+//    then lookup senderConn...
+//         If not found?
 //            then return false
 // Create DCOPSignalConnection.
 // Add DCOPSignalConnection to "connections".
