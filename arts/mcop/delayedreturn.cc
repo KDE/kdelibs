@@ -20,6 +20,7 @@
 
     */
 
+#include <assert.h>
 #include "anyref.h"
 #include "connection.h"
 #include "delayedreturn.h"
