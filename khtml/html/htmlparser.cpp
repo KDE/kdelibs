@@ -559,7 +559,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                    ( !checkChild( ID_TR, id ) && ( node->id() == ID_THEAD || node->id() == ID_TBODY || node->id() == ID_TFOOT ) &&
                      parent->id() == ID_TABLE ) )
                 {
-                    node = parentparent;
+                    node = ( node->id() == ID_TR ) ? parentparent : parent;
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
                     NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
