@@ -25,6 +25,7 @@
 #include "kstatusbar.h"
 #include "kmainwindow.h"
 #include "kaction.h"
+#include "kglobalsettings.h"
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -329,7 +330,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagTearOffHandle )
   {
-    if ( parent->inherits( "QPopupMenu" ) )
+    if ( parent->inherits( "QPopupMenu" )  && KGlobalSettings::insertTearOffHandle())
       return static_cast<QPopupMenu *>(parent)->insertTearOffHandle( -1, index );
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
