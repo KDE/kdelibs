@@ -32,7 +32,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   main_widget = new QWidget( this, "");
   QBoxLayout *topLayout = new QVBoxLayout( main_widget, 10, 5 );
-	
+
   QGridLayout *grid = new QGridLayout( 2, 2, 10 );
   topLayout->addLayout( grid );
 
@@ -213,7 +213,7 @@ void KioslaveTest::startJob() {
   if ( dest.isMalformed() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
     QMessageBox::critical(this, "Kioslave Error Message",
-		       "Destination URL is malformed" );
+                       "Destination URL is malformed" );
     return;
   }
 
@@ -280,10 +280,10 @@ void KioslaveTest::startJob() {
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ),
-	   SLOT( slotResult( KIO::Job * ) ) );
+           SLOT( slotResult( KIO::Job * ) ) );
 
   connect( job, SIGNAL( canceled( KIO::Job * ) ),
-	   SLOT( slotResult( KIO::Job * ) ) );
+           SLOT( slotResult( KIO::Job * ) ) );
 
   if (progressMode == ProgressStatus) {
     statusProgress->setJob( job );
@@ -303,6 +303,10 @@ void KioslaveTest::slotResult( KIO::Job * _job )
   {
       UDSEntry entry = ((KIO::StatJob*)_job)->statResult();
       printUDSEntry( entry );
+  }
+  else if ( selectedOperation == Mimetype )
+  {
+      kdDebug() << "mimetype is " << ((KIO::MimetypeJob*)_job)->mimetype() << endl;
   }
 
   if (job == _job)
