@@ -76,6 +76,7 @@ void usleep(unsigned int);
 extern "C"
 #endif
 int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
+int snprintf(char *str, size_t n, char const *fmt, ...);
 #endif
 
 #if !defined(HAVE_SETENV)
