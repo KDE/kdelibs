@@ -433,7 +433,7 @@ void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatV
     m_type = unitType;
 }
 
-float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType)
+float CSSPrimitiveValueImpl::getFloatValue( unsigned short /*unitType*/)
 {
     return m_value.num;
 }
