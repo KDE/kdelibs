@@ -28,25 +28,25 @@ libkdeui_la_LDFLAGS = -version-info 0:91
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \
 		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
-		ktreelist.h kstatusbar.h ktopwidget.h ktmainwindow.h ktoolbar.h kmenubar.h \
-		kbutton.h kslider.h kseparator.h \
+		ktreelist.h kstatusbar.h ktopwidget.h ktmainwindow.h \
+		ktoolbar.h kmenubar.h kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
-		kwmmapp.h kbuttonbox.h ktablistbox.h \
+		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
 		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h	\
 		kdbtn.h knotebook.h ktabbar.h kwizard.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
-		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp kmenubar.cpp \
-		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
-		klined.cpp kcombo.cpp krestrictedline.cpp \
+		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
+		kmenubar.cpp ktoolbar.cpp kbutton.cpp kslider.cpp \
+		kseparator.cpp klined.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
 		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp	\
-		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp
+		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -54,7 +54,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc ktmainwindow.moc kbutton.moc kslider.moc  \
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
-		kspinbox.moc kcolorbtn.moc \
+		kspinbox.moc kcolorbtn.moc kcontainer.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
 	  	ktoolboxmgr.moc kled.moc kdbtn.moc knotebook.moc kwizard.moc \
@@ -213,6 +213,9 @@ ktabbar.cpp: ktabbar.moc
 ktabbar.moc: ktabbar.h
 	$(MOC) ktabbar.h -o ktabbar.moc
 
+kcontainer.cpp: kcontainer.moc
+kcontainer.moc: kcontainer.h
+	$(MOC) kcontainer.h -o kcontainer.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
