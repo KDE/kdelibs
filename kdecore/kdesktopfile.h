@@ -91,6 +91,11 @@ public:
   QString readComment() const;
 
   /**
+   * Returns the value of the "GenericName=" entry.
+   */
+  QString readGenericName() const;
+
+  /**
    * Returns the value of the "Path=" entry.
    * @deprecated
    */
