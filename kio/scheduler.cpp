@@ -246,11 +246,9 @@ void Scheduler::_cancelJob(SimpleJob *job) {
     {
         // was not yet running (don't call this on a finished job!)
         JobData *jobData = extraJobData->find(job);
-if (!jobData)
-{
-    kdFatal(7006) << "BUG! _cancelJob(): No extraJobData for job!" << endl;
-    return;
-}
+        if (!jobData)
+           return; // I said: "Don't call this on a finished job!"
+
         newJobs.removeRef(job);
         ProtocolInfo *protInfo = protInfoDict->get(jobData->protocol);
         protInfo->joblist.removeRef(job);
