@@ -88,7 +88,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttrImpl *attr);
 
     bool isDefault() const { return shape==Default; }
     bool isNoref() const { return nohref && !href; }
@@ -96,9 +96,10 @@ public:
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );
 
-protected:
+    virtual QRect getRect() const;
 
-    QRegion getRegion(int width_, int height);
+protected:
+    QRegion getRegion(int width_, int height) const;
     QRegion region;
     QList<khtml::Length>* coords;
     int lastw, lasth;

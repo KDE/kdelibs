@@ -30,6 +30,7 @@
 #include <kdebug.h>
 
 #include "rendering/render_image.h"
+#include "rendering/render_flow.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
@@ -404,9 +405,19 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     return inside;
 }
 
+QRect HTMLAreaElementImpl::getRect() const
+{
+    if (parentNode()->renderer()==0)
+        return QRect();
+    int dx, dy;
+    if (!parentNode()->renderer()->absolutePosition(dx, dy))
+        return QRect();
+    QRegion region = getRegion(lastw,lasth);
+    region.translate(dx, dy);
+    return region.boundingRect();
+}
 
-
-QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
+QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
 {
     QRegion region;
     if (!coords)
