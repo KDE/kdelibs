@@ -79,6 +79,9 @@ kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-CN/entities/underArtis
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-CN/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-CN/entities/underX11License.docbook
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/mieterra-artistic-license.gz
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license.gz
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license.gz
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license.gz
 
 # this is a hack in order to provide ssl support via a seperate package
 # and without having to build 2 totally seperate kdelibs packages
