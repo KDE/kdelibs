@@ -25,12 +25,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-static const QString mon[12]=
-    {
-    i18n("Jan"),i18n("Feb"),i18n("Mar"),i18n("Apr"),i18n("May"),i18n("Jun"),
-    i18n("Jul"),i18n("Aug"),i18n("Sep"),i18n("Oct"),i18n("Nov"),i18n("Dec")
-    }; 
-
 #ifdef HAVE_SSL
 // This code is mostly taken from OpenSSL v0.9.5a
 // by Eric Young
@@ -40,6 +34,7 @@ char *v;
 int gmt=0;
 int i;
 int y=0,M=0,d=0,h=0,m=0,s=0;
+KLocale kl;
  
   i = tm->length;
   v = (char *)tm->data;
@@ -59,7 +54,9 @@ int y=0,M=0,d=0,h=0,m=0,s=0;
           (v[11] >= '0') && (v[11] <= '9'))
           s = (v[10]-'0')*10+(v[11]-'0');
  
-  qstr.sprintf("%s %2d %02d:%02d:%02d %d%s", mon[M-1].ascii(),d,h,m,s,y+1900,(gmt)?" GMT":""); 
+  // did I just defeat the purpose of klocale by calling ascii()?  No time to
+  // check this right now.
+  qstr.sprintf("%s %2d %02d:%02d:%02d %d%s", kl.monthName(1,true).ascii(),d,h,m,s,y+1900,(gmt)?" GMT":""); 
   return qstr;
 auq_err:
   qstr = "(Bad time value)";
