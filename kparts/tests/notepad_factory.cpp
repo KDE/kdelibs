@@ -33,7 +33,7 @@ NotepadFactory::~NotepadFactory()
   s_instance = 0L;
 }
 
-QObject* NotepadFactory::create( QObject* parent, const char* name, const char* classname, const QStringList & )
+QObject* NotepadFactory::createObject( QObject* parent, const char* name, const char* classname, const QStringList & )
 {
   if ( parent && !parent->inherits("QWidget") )
   {
@@ -48,8 +48,6 @@ QObject* NotepadFactory::create( QObject* parent, const char* name, const char* 
 
   // otherwise, it has to be readonly
   assert (QString(classname) == "KParts::ReadOnlyPart");
-
-  emit objectCreated( obj );
   return obj;
 }
 
