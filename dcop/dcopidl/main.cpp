@@ -1,6 +1,7 @@
 #include <qstring.h>
 #include <qfile.h>
 #include <qcstring.h>
+#include <stdlib.h>
 
 void dcopidlParse( const char *_code );
 
