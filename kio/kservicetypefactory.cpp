@@ -202,6 +202,8 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
    // Get stream to factory start
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
    // Read the dict offset - will serve as an end point for the list of entries
+   if (!str) return list;
+
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;
 
@@ -221,6 +223,8 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
 bool KServiceTypeFactory::checkMimeTypes()
 {
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
+   if (!str) return false;
+
    // Read the dict offset - will serve as an end point for the list of entries
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;
@@ -234,6 +238,8 @@ KServiceType * KServiceTypeFactory::createServiceType(int offset)
    KServiceType *newEntry = 0;
    KSycocaType type; 
    QDataStream *str = KSycoca::self()->findEntry(offset, type);
+   if (!str) return 0;
+
    switch(type)
    {
      case KST_KServiceType:

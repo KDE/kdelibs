@@ -26,12 +26,13 @@
 #include <kdebug.h>
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
- : m_pathList(0), m_entryDict(0)
+ : m_pathList(0), m_entryDict(0), m_sycocaDict(0)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
    {
       QDataStream *str = KSycoca::self()->findFactory( factory_id );
       // can't call factoryId() here since the constructor can't call inherited methods
+      if (!str) return; // No database!
 
       // Read position of index tables....
       Q_INT32 sycocaDictOffset;
@@ -62,6 +63,7 @@ KSycocaFactory::~KSycocaFactory()
 
 void KSycocaFactory::clear()
 {
+  if (!m_sycocaDict) return; // Error!
   m_sycocaDict->clear();
   m_entryDict->clear();
 }
@@ -71,7 +73,6 @@ KSycocaFactory::save(QDataStream &str)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
                              // building database
-
    if (!m_sycocaDict) return; // Error!
 
    mOffset = str.device()->at(); // store position in member variable

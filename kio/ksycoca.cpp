@@ -23,6 +23,7 @@
 
 #include <qdatastream.h>
 #include <qfile.h>
+#include <qbuffer.h>
 
 #include <kapp.h>
 #include <dcopclient.h>
@@ -54,15 +55,24 @@ void KSycoca::openDatabase()
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
-   if (!database->open( IO_ReadOnly ))
+   if (database->open( IO_ReadOnly ))
+   {
+     m_str = new QDataStream(database);
+   }
+   else
    {
      // No database file
      // TODO launch kded here, using KProcess, and upon completion
      // retry again (but not more than once)
      fprintf(stderr, "Error can't open database! Run kded !\n");
-     exit(-1);
+//     exit(-1);
+     // We open a dummy database instead.
+     QBuffer *buffer = new QBuffer( QByteArray() ); 
+     buffer->open(IO_ReadWrite);
+     m_str = new QDataStream( buffer);  
+     (*m_str) << (Q_INT32) KSYCOCA_VERSION;
+     (*m_str) << (Q_INT32) 0;
    }
-   m_str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
 }
@@ -172,7 +182,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    while(true)
    {
       (*m_str) >> aId;
-      assert( aId > 0 && aId <= 2 ); // to update in case of new factories
+      assert( aId >= 0 && aId <= 2 ); // to update in case of new factories
       //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
       {

@@ -54,17 +54,15 @@ void KMimeType::check()
 
   s_bChecked = true; // must be done before building mimetypes
 
-  // Try to find the default type
-  if ( ! ( s_pDefaultType = KMimeType::mimeType( "application/octet-stream" )) )
-    errorMissingMimeType( "application/octet-stream" );
+  // Set up very-default mimetype first.
+  s_pDefaultType = new KMimeType( "", "application/octet-stream", "unknown.png", "", QStringList() );
 
-  // No default type ?
-  if ( !s_pDefaultType )
-  {
-    QStringList tmp;
-    s_pDefaultType = new KMimeType( "", "application/octet-stream", "unknown.png", "", tmp );
-    assert(s_pDefaultType);
-  }
+  // Try to find the default type
+  KMimeType *defaultType = KMimeType::mimeType( "application/octet-stream" );
+  if (defaultType == s_pDefaultType)  
+     errorMissingMimeType( "application/octet-stream" );
+  else
+      s_pDefaultType = defaultType;
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
@@ -115,6 +113,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
+  check();
   KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
