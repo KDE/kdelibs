@@ -155,9 +155,9 @@ public class KJASAppletStub extends Frame
 
         try
         {
-            Main.debug( "Applet #" + appletID + ": class is loaded" );
             if( appletClass != null )
             {
+                Main.debug( "Applet #" + appletID + ": class is loaded" );
                 app = (Applet) appletClass.newInstance();
                 app.setStub( this );
                 app.resize( appletSize );

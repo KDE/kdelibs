@@ -1,7 +1,8 @@
 package org.kde.kjas.server;
 
 import java.io.*;
-
+//import com.sun.net.ssl.internal.ssl.*;
+import java.security.*;
 
 /**
  *  KJAS server recognizes these variablers:
@@ -100,6 +101,10 @@ public class Main
 
         if( show_console )
             console.setVisible( true );
+
+//        System.setProperty("java.protocol.handler.pkgs",
+//                           "com.sun.net.ssl.internal.www.protocol");
+//        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
         protocol.commandLoop();
     }
