@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,17 +22,30 @@
 #ifndef KMTIMER_H
 #define KMTIMER_H
 
-class KMMainView;
+#include <qtimer.h>
 
-class KMTimer
+class KMTimer : public QTimer
 {
+	Q_OBJECT
 public:
-	static void blockTimer();
-	static void releaseTimer(bool refresh = false);
-	static void setMainView(KMMainView*);
+	void delay(int t);
+
+public slots:
+	void hold();
+	void release();
+	void release(bool do_emit);
+
+	static KMTimer* self();
+
+private slots:
+	void slotTimeout();
+
 private:
-	static KMMainView	*m_view;
-	static int		m_count;
+	static KMTimer	*m_self;
+	int	m_count;
+	KMTimer(QObject *parent = 0, const char *name = 0);
+	void releaseTimer(bool do_emit = false);
+	void startTimer(int delay = -1);
 };
 
 #endif

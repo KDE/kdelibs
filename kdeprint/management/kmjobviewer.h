@@ -28,11 +28,12 @@
 
 class KMJobManager;
 class KMJob;
-class QListView;
+class KListView;
 class JobItem;
 class QPopupMenu;
 class QListViewItem;
 class KMPrinter;
+class QTimer;
 
 class KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
 {
@@ -41,14 +42,15 @@ public:
 	KMJobViewer(QWidget *parent = 0, const char *name = 0);
 	~KMJobViewer();
 
-	void addPrinter(const QString& prname);
 	void setPrinter(const QString& prname);
 	void setPrinter(KMPrinter *p);
-	void refresh();
-	void selectAll();
+	void refresh(bool reload = false);
+	QString printer() const;
 
 signals:
-	void jobsShown();
+	void jobsShown(KMJobViewer*, bool hasJobs);
+	void refreshClicked();
+	void printerChanged(KMJobViewer*, const QString& prname);
 
 protected slots:
 	void slotSelectionChanged();
@@ -58,14 +60,9 @@ protected slots:
 	void slotRestart();
 	void slotRightClicked(QListViewItem*,const QPoint&,int);
 	void slotMove(int prID);
-	void slotPrinterToggled(bool);
-	void slotAllPrinters();
-	void slotRefresh();
-	void slotShowMenu();
-	void slotHideMenu();
-	void slotOnItem(QListViewItem*);
-	void slotOnViewport();
+	void slotPrinterSelected(int);
 	void slotShowCompleted(bool);
+	void slotRefresh();
 
 protected:
 	void init();
@@ -79,14 +76,23 @@ protected:
 	void loadPluginActions();
 	void removePluginActions();
 	void reload();
+	void aboutToReload();
 	void closeEvent(QCloseEvent*);
+	void triggerRefresh();
+	void addToManager();
+	void removeFromManager();
 
 private:
-	QListView		*m_view;
+	KListView		*m_view;
 	QPtrList<KMJob>		m_jobs;
 	QPtrList<JobItem>		m_items;
 	QPopupMenu		*m_pop;
 	QPtrList<KMPrinter>	m_printers;
+	QString	m_prname;
+	static QStringList	m_filter;
 };
+
+inline QString KMJobViewer::printer() const
+{ return m_prname; }
 
 #endif

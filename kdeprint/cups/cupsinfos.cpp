@@ -92,14 +92,14 @@ const char* CupsInfos::getPasswordCB()
 		bool ok(false);;
 		KIO::PasswordDialog	dlg(msg,login_);
 		count_++;
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		if (dlg.exec())
 		{
 			setLogin(dlg.username());
 			setPassword(dlg.password());
 			ok = true;
 		}
-		KMTimer::releaseTimer(false);
+		KMTimer::self()->release();
 		return (ok ? password_.latin1() : NULL);
 	}
 	return NULL;

@@ -20,12 +20,12 @@
  **/
 
 #include "kmmainview.h"
+#include "kmtimer.h"
 #include "kmprinterview.h"
 #include "kmpages.h"
 #include "kmmanager.h"
 #include "kmuimanager.h"
 #include "kmfactory.h"
-#include "kmtimer.h"
 #include "kmvirtualmanager.h"
 #include "kmprinter.h"
 #include "driver.h"
@@ -76,14 +76,12 @@ extern "C"
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
 : QWidget(parent, name)
 {
-	KMTimer::setMainView(this);
 	m_current = 0;
 
 	// create widgets
 	m_splitter = new QSplitter(Qt::Vertical,this, "Splitter");
 	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
 	m_printerpages = new KMPages(m_splitter,"PrinterPages");
-	m_timer = new QTimer(this);
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
@@ -102,11 +100,11 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	lay0->addWidget(m_plugin, 0);
 
 	// connections
-	connect(m_timer,SIGNAL(timeout()),SLOT(slotTimer()));
+	connect(KMTimer::self(),SIGNAL(timeout()),SLOT(slotTimer()));
 	connect(m_printerview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
 	connect(m_printerview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SLOT(slotRightButtonClicked(KMPrinter*,const QPoint&)));
-	connect(m_pop,SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
-	connect(m_pop,SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
+	connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+	connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 
 	// actions
     if (coll)
@@ -118,21 +116,18 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	// first update
 	restoreSettings();
 	loadParameters();
-	slotTimer();
+
+	slotRefresh();
 }
 
 KMMainView::~KMMainView()
 {
-	KMTimer::setMainView(0);
 	saveSettings();
 	KMFactory::release();
 }
 
 void KMMainView::loadParameters()
 {
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("General");
-	m_timerdelay = conf->readNumEntry("TimerDelay",5);
 }
 
 void KMMainView::restoreSettings()
@@ -183,7 +178,7 @@ void KMMainView::initActions()
 	new KAction(i18n("Set as user default"),"exec",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
 	new KAction(i18n("Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
 	new KAction(i18n("Configure manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
-	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
+	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotRefresh()),m_actions,"view_refresh");
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
 	iconlst.clear();
@@ -231,22 +226,15 @@ void KMMainView::initActions()
 	slotPrinterSelected(0);
 }
 
-void KMMainView::startTimer()
+void KMMainView::slotRefresh()
 {
-	if (m_timerdelay > 0)
-		m_timer->start(m_timerdelay*1000,true);
-}
-
-void KMMainView::stopTimer()
-{
-	m_timer->stop();
+	KMTimer::self()->delay(10);
 }
 
 void KMMainView::slotTimer()
 {
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	m_printerview->setPrinterList(printerlist);
-	startTimer();
 }
 
 void KMMainView::slotPrinterSelected(KMPrinter *p)
@@ -277,16 +265,6 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 
 		KMFactory::self()->manager()->validatePluginActions(m_actions, p);
 	//}
-}
-
-void KMMainView::slotShowMenu()
-{
-	KMTimer::blockTimer();
-}
-
-void KMMainView::slotHideMenu()
-{
-	KMTimer::releaseTimer(false);
 }
 
 void KMMainView::setViewType(int ID)
@@ -372,11 +350,11 @@ void KMMainView::slotEnable()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		bool	result = m_manager->enablePrinter(m_current);
 		if (!result)
 			showErrorMsg(i18n("Unable to enable printer <b>%1</b>.").arg(m_current->printerName()));
-		KMTimer::releaseTimer(result);
+		KMTimer::self()->release(result);
 	}
 }
 
@@ -384,11 +362,11 @@ void KMMainView::slotDisable()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		bool	result = m_manager->disablePrinter(m_current);
 		if (!result)
 			showErrorMsg(i18n("Unable to disable printer <b>%1</b>.").arg(m_current->printerName()));
-		KMTimer::releaseTimer(result);
+		KMTimer::self()->release(result);
 	}
 }
 
@@ -396,7 +374,7 @@ void KMMainView::slotRemove()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		bool	result(false);
 		if (KMessageBox::warningYesNo(this,i18n("<nobr>Do you really want to remove <b>%1</b> ?</nobr>").arg(m_current->printerName())) == KMessageBox::Yes)
 			if (m_current->isSpecial())
@@ -406,7 +384,7 @@ void KMMainView::slotRemove()
 			}
 			else if (!(result=m_manager->removePrinter(m_current)))
 				showErrorMsg(i18n("Unable to remove printer <b>%1</b>.").arg(m_current->printerName()));
-		KMTimer::releaseTimer(result);
+		KMTimer::self()->release(result);
 	}
 }
 
@@ -414,7 +392,7 @@ void KMMainView::slotConfigure()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		bool	needRefresh(false);
 		if (m_current->isSpecial())
 		{
@@ -448,30 +426,30 @@ void KMMainView::slotConfigure()
 			else
 				showErrorMsg(i18n("Unable to load a valid driver for printer <b>%1</b>.").arg(m_current->printerName()));
 		}
-		KMTimer::releaseTimer(needRefresh);
+		KMTimer::self()->release(needRefresh);
 	}
 }
 
 void KMMainView::slotAdd()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	int	result(0);
 	if ((result=add_printer_wizard(this)) == -1)
 		showErrorMsg(i18n("Unable to create printer."));
 
-	KMTimer::releaseTimer((result == 1));
+	KMTimer::self()->release((result == 1));
 }
 
 void KMMainView::slotHardDefault()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		bool	result = m_manager->setDefaultPrinter(m_current);
 		if (!result)
 			showErrorMsg(i18n("Unable to define printer <b>%1</b> as default.").arg(m_current->printerName()));
-		KMTimer::releaseTimer(result);
+		KMTimer::self()->release(result);
 	}
 }
 
@@ -479,9 +457,9 @@ void KMMainView::slotSoftDefault()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		KMFactory::self()->virtualManager()->setAsDefault(m_current,QString::null);
-		KMTimer::releaseTimer(true);
+		KMTimer::self()->release(true);
 	}
 }
 
@@ -504,12 +482,12 @@ void KMMainView::slotTest()
 {
 	if (m_current)
 	{
-		KMTimer::blockTimer();
+		KMTimer::self()->hold();
 		if (KMFactory::self()->manager()->testPrinter(m_current))
 			KMessageBox::information(this,i18n("<nobr>Test page successfully sent to printer <b>%1</b>.</nobr>").arg(m_current->printerName()));
 		else
 			showErrorMsg(i18n("Unable to test printer <b>%1</b>.").arg(m_current->printerName()));
-		KMTimer::releaseTimer(true);
+		KMTimer::self()->release(true);
 	}
 }
 
@@ -526,20 +504,20 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 
 void KMMainView::slotServerRestart()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	bool	result = m_manager->restartServer();
 	if (!result)
 		showErrorMsg(i18n("Unable to restart print server."));
-	KMTimer::releaseTimer(result);
+	KMTimer::self()->release(result);
 }
 
 void KMMainView::slotServerConfigure()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	bool	result = m_manager->configureServer(this);
 	if (!result)
 		showErrorMsg(i18n("Unable to configure print server."));
-	KMTimer::releaseTimer(result);
+	KMTimer::self()->release(result);
 }
 
 void KMMainView::slotToggleToolBar(bool on)
@@ -550,26 +528,26 @@ void KMMainView::slotToggleToolBar(bool on)
 
 void KMMainView::slotManagerConfigure()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	KMConfigDialog	dlg(this,"ConfigDialog");
 	bool 	refresh(false);
 	if ((refresh=dlg.exec()))
 	{
 		loadParameters();
 	}
-	KMTimer::releaseTimer(refresh);
+	KMTimer::self()->release(refresh);
 }
 
 void KMMainView::slotAddSpecial()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	KMSpecialPrinterDlg	dlg(this);
 	if (dlg.exec())
 	{
 		KMPrinter	*prt = dlg.printer();
 		m_manager->createSpecialPrinter(prt);
 	}
-	KMTimer::releaseTimer(true);
+	KMTimer::self()->release(true);
 }
 
 void KMMainView::slotShowPrinterInfos(bool on)
@@ -608,8 +586,7 @@ void KMMainView::reload()
 	loadPluginActions();
 	// We must delay the refresh such that all objects has been
 	// correctly reloaded (otherwise, crash in KMJobViewer).
-	stopTimer();
-	QTimer::singleShot(10, this, SLOT(slotTimer()));
+	slotRefresh();
 }
 
 void KMMainView::showPrinterInfos(bool on)

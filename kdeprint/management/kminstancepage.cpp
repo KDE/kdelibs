@@ -24,9 +24,9 @@
 #include "kmfactory.h"
 #include "kmvirtualmanager.h"
 #include "kmmanager.h"
-#include "kmtimer.h"
 #include "kprinterpropertydialog.h"
 #include "kprinter.h"
+#include "kmtimer.h"
 
 #include <qlayout.h>
 #include <qinputdialog.h>
@@ -118,7 +118,7 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 
 void KMInstancePage::slotNew()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	bool	ok(false);
 	QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),
@@ -136,12 +136,12 @@ void KMInstancePage::slotNew()
 		}
 	}
 
-	KMTimer::releaseTimer();
+	KMTimer::self()->release();
 }
 
 void KMInstancePage::slotRemove()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	bool	reload(false);
 
 	QString	src = m_view->currentText();
@@ -155,12 +155,12 @@ void KMInstancePage::slotRemove()
 		setPrinter(m_printer);
 	}
 
-	KMTimer::releaseTimer(reload);
+	KMTimer::self()->release(reload);
 }
 
 void KMInstancePage::slotCopy()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	QString	src = m_view->currentText();
 	if (!src.isEmpty())
@@ -184,12 +184,12 @@ void KMInstancePage::slotCopy()
 		}
 	}
 
-	KMTimer::releaseTimer();
+	KMTimer::self()->release();
 }
 
 void KMInstancePage::slotSettings()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	QString	src = m_view->currentText();
 	if (!src.isEmpty())
@@ -210,12 +210,12 @@ void KMInstancePage::slotSettings()
 		}
 	}
 
-	KMTimer::releaseTimer();
+	KMTimer::self()->release();
 }
 
 void KMInstancePage::slotDefault()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	QString	src = m_view->currentText();
 	if (!src.isEmpty())
@@ -226,12 +226,12 @@ void KMInstancePage::slotDefault()
 		setPrinter(m_printer);
 	}
 
-	KMTimer::releaseTimer(true);
+	KMTimer::self()->release(true);
 }
 
 void KMInstancePage::slotTest()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	QString	src = m_view->currentText();
 	if (!src.isEmpty())
@@ -258,6 +258,6 @@ void KMInstancePage::slotTest()
 		}
 	}
 
-	KMTimer::releaseTimer(false);
+	KMTimer::self()->release(false);
 }
 #include "kminstancepage.moc"

@@ -20,10 +20,10 @@
  **/
 
 #include "kmpropwidget.h"
-#include "kmtimer.h"
 #include "kmwizard.h"
 #include "kmfactory.h"
 #include "kmmanager.h"
+#include "kmtimer.h"
 
 KMPropWidget::KMPropWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -42,9 +42,9 @@ KMPropWidget::~KMPropWidget()
 
 void KMPropWidget::slotChange()
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 	bool	value = requestChange();
-	KMTimer::releaseTimer(value);
+	KMTimer::self()->release(value);
 }
 
 void KMPropWidget::setPrinterBase(KMPrinter *p)

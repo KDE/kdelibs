@@ -28,7 +28,7 @@
 #include "jobitem.h"
 #include "kmtimer.h"
 
-#include <qlistview.h>
+#include <klistview.h>
 #include <qpopupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -39,9 +39,14 @@
 #include <kapplication.h>
 #include <kcursor.h>
 #include <kmenubar.h>
+#include <kdebug.h>
+#include <kwin.h>
+#include <qtimer.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
+
+QStringList KMJobViewer::m_filter;
 
 KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 : KMainWindow(parent,name)
@@ -57,13 +62,14 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 
 	if (!parent)
 	{
-		setCaption(i18n("Print queue"));
+		setCaption(i18n("No Printer"));
 		resize(500,200);
 	}
 }
 
 KMJobViewer::~KMJobViewer()
 {
+	removeFromManager();
 }
 
 void KMJobViewer::setPrinter(KMPrinter *p)
@@ -73,51 +79,92 @@ void KMJobViewer::setPrinter(KMPrinter *p)
 
 void KMJobViewer::setPrinter(const QString& prname)
 {
-	m_manager->clearFilter();
-	QValueList<KAction*>	acts = actionCollection()->actions("printer_group");
-	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
-		((KToggleAction*)(*it))->setChecked(false);
-	addPrinter(prname);
-}
+	if (m_prname == prname)
+		return;
 
-void KMJobViewer::addPrinter(const QString& prname)
-{
-	if (!prname.isEmpty())
+	removeFromManager();
+	m_prname = prname;
+	if (!m_prname.isEmpty())
 	{
-		m_manager->addPrinter(prname);
-		KToggleAction	*act_ = (KToggleAction*)(actionCollection()->action(("printer_"+prname).utf8()));
-		if (act_) act_->setChecked(true);
+		addToManager();
+		setCaption(i18n("Print Jobs for %1").arg(m_prname));
+		KMPrinter	*prt = KMManager::self()->findPrinter(m_prname);
+		if (prt)
+			KWin::setIcons(winId(), DesktopIcon(prt->pixmap()), SmallIcon(prt->pixmap()));
+		else
+			KWin::setIcons(winId(), DesktopIcon("fileprint"), SmallIcon("fileprint"));
 	}
-	slotRefresh();
+	else
+		setCaption(i18n("No Printer"));
+
+	triggerRefresh();
 }
 
-void KMJobViewer::refresh()
+void KMJobViewer::addToManager()
 {
-	m_jobs = m_manager->jobList();
-	if (m_jobs.count() == 0 && !isVisible() && !parentWidget())
-		kapp->quit();
+	if (m_prname == i18n("All Printers"))
+	{
+		loadPrinters();
+		QPtrListIterator<KMPrinter>	it(m_printers);
+		for (; it.current(); ++it)
+			m_manager->addPrinter(it.current()->printerName());
+	}
 	else
 	{
-		updateJobs();
-		slotSelectionChanged();
-		emit jobsShown();
+		m_manager->addPrinter(m_prname);
+		m_filter.append(m_prname);
 	}
+}
+
+void KMJobViewer::removeFromManager()
+{
+	if (m_prname == i18n("All Printers"))
+	{
+		// restore previous filter
+		m_manager->clearFilter();
+		for (QStringList::ConstIterator it=m_filter.begin(); it!=m_filter.end(); ++it)
+			m_manager->addPrinter(*it);
+	}
+	else
+	{
+		m_manager->removePrinter(m_prname);
+		m_filter.remove(m_prname);
+	}
+}
+
+void KMJobViewer::refresh(bool reload)
+{
+	// trigger printer list update: if in KControl, it's done automatically
+	// by the parent widget, and in KJobViewer it's done by the application.
+	// However, the update has to be delayed in case the original call comes
+	// from one of the menu that would then be cleared.
+	QTimer::singleShot(10, this, SLOT(slotRefresh()));
+
+	m_jobs.clear();
+	QPtrListIterator<KMJob>	it(m_manager->jobList(reload));
+	bool	all = (m_prname == i18n("All Printers"));
+	for (; it.current(); ++it)
+		if (all || it.current()->printer() == m_prname)
+			m_jobs.append(it.current());
+	updateJobs();
+	slotSelectionChanged();
+	emit jobsShown(this, (m_jobs.count() != 0));
 }
 
 void KMJobViewer::init()
 {
 	if (!m_view)
 	{
-		m_view = new QListView(this);
+		m_view = new KListView(this);
 		m_view->addColumn(i18n("Job ID"));
-		m_view->addColumn(i18n("Printer"));
-		m_view->addColumn(i18n("Name"));
 		m_view->addColumn(i18n("Owner"));
+		m_view->addColumn(i18n("Name"), 150);
 		m_view->addColumn(i18n("Status", "State"));
 		m_view->addColumn(i18n("Size (KB)"));
 		m_view->setColumnAlignment(5,Qt::AlignRight|Qt::AlignVCenter);
 		m_view->addColumn(i18n("Page(s)"));
 		m_view->setColumnAlignment(6,Qt::AlignRight|Qt::AlignVCenter);
+		//m_view->addColumn(i18n("Printer"));
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
 		m_view->setSorting(0);
@@ -125,8 +172,6 @@ void KMJobViewer::init()
 		m_view->setSelectionMode(QListView::Extended);
 		connect(m_view,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
 		connect(m_view,SIGNAL(rightButtonClicked(QListViewItem*,const QPoint&,int)),SLOT(slotRightClicked(QListViewItem*,const QPoint&,int)));
-		connect(m_view,SIGNAL(onItem(QListViewItem*)),SLOT(slotOnItem(QListViewItem*)));
-		connect(m_view,SIGNAL(onViewport()),SLOT(slotOnViewport()));
 		setCentralWidget(m_view);
 	}
 
@@ -143,8 +188,8 @@ void KMJobViewer::initActions()
 	KActionMenu *mact = new KActionMenu(i18n("Move to Printer..."),"fileprint",actionCollection(),"job_move");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(),SIGNAL(activated(int)),SLOT(slotMove(int)));
-	connect(mact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
-	connect(mact->popupMenu(),SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
+	connect(mact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+	connect(mact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 	KToggleAction	*tact = new KToggleAction(i18n("Toggle Completed Jobs"),"history",0,actionCollection(),"view_completed");
 	tact->setChecked(m_manager->jobType() == KMJobManager::CompletedJobs);
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
@@ -153,8 +198,8 @@ void KMJobViewer::initActions()
 	if (!m_pop)
 	{
 		m_pop = new QPopupMenu(this);
-		connect(m_pop,SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
-		connect(m_pop,SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
+		connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+		connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 		hact->plug(m_pop);
 		ract->plug(m_pop);
 		m_pop->insertSeparator();
@@ -165,11 +210,11 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(i18n("Modify Filter..."),"filter",actionCollection(),"filter_modify");
+	KActionMenu	*fact = new KActionMenu(i18n("Select Printer"), "kdeprint_printer", actionCollection(), "filter_modify");
 	fact->setDelayed(false);
-	new KAction(i18n("All Printers"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_all");
-	new KAction(i18n("No Printer"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_none");
-	new KActionSeparator(actionCollection(),"filter_sep");
+	connect(fact->popupMenu(),SIGNAL(activated(int)),SLOT(slotPrinterSelected(int)));
+	connect(fact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+	connect(fact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 
 	initPrinterActions();
 
@@ -206,34 +251,26 @@ void KMJobViewer::initPrinterActions()
 	loadPrinters();
 
 	// get menus
-	KActionMenu *mact = (KActionMenu*)(actionCollection()->action("job_move"));
-	KActionMenu *fact = (KActionMenu*)(actionCollection()->action("filter_modify"));
+	KActionMenu *mact = static_cast<KActionMenu*>(actionCollection()->action("job_move"));
+	KActionMenu *fact = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"));
 
 	// some clean-up
 	mact->popupMenu()->clear();
 	fact->popupMenu()->clear();
-	QValueList<KAction*>	acts = actionCollection()->actions("printer_group");
-	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
-		delete (*it);
-
-	// initialize "filter" menu
-	fact->insert(actionCollection()->action("filter_all"));
-	fact->insert(actionCollection()->action("filter_none"));
-	fact->insert(actionCollection()->action("filter_sep"));
 
 	// parse printers
 	QPtrListIterator<KMPrinter>	it(m_printers);
-	for (int i=0;it.current();++it,i++)
+	int	i(0);
+	fact->popupMenu()->insertItem(SmallIcon("fileprint"), i18n("All Printers"), i++);
+	fact->popupMenu()->insertSeparator();
+	for (;it.current();++it,i++)
 	{
 		if (!it.current()->instanceName().isEmpty())
 			continue;
 		mact->popupMenu()->insertItem(SmallIcon(it.current()->pixmap()),it.current()->printerName(),i);
-		KToggleAction	*nact = new KToggleAction(it.current()->printerName(),it.current()->pixmap(),0,actionCollection(),("printer_"+it.current()->printerName()).utf8());
-		nact->setGroup("printer_group");
-		connect(nact,SIGNAL(toggled(bool)),this,SLOT(slotPrinterToggled(bool)));
-		if (m_manager->filter().contains(it.current()->printerName()) > 0)
-			nact->setChecked(true);
-		fact->insert(nact);
+		fact->popupMenu()->insertItem(SmallIcon(it.current()->pixmap()),it.current()->printerName(),i);
+		if (it.current()->printerName() == m_prname)
+			KWin::setIcons(winId(), DesktopIcon(it.current()->pixmap()), SmallIcon(it.current()->pixmap()));
 	}
 }
 
@@ -328,15 +365,16 @@ void KMJobViewer::jobSelection(QPtrList<KMJob>& l)
 
 void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 {
-	KMTimer::blockTimer();
+	KMTimer::self()->hold();
 
 	QPtrList<KMJob>	l;
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
 		KMessageBox::error(this,i18n("Unable to perform action \"%1\" on selected jobs !").arg(name));
-	refresh();
 
-	KMTimer::releaseTimer();
+	triggerRefresh();
+
+	KMTimer::self()->release();
 }
 
 void KMJobViewer::slotHold()
@@ -387,69 +425,41 @@ void KMJobViewer::loadPrinters()
 	}
 }
 
-void KMJobViewer::slotPrinterToggled(bool toggle)
+void KMJobViewer::slotPrinterSelected(int prID)
 {
-	QString	name = sender()->name();
-	name.replace(0,8,"");
-	if (toggle)
-		m_manager->addPrinter(name);
-	else
-		m_manager->removePrinter(name);
-	refresh();
-}
-
-void KMJobViewer::selectAll()
-{
-	emit actionCollection()->action("filter_all")->activate();
-}
-
-void KMJobViewer::slotAllPrinters()
-{
-	bool	all_ = (sender()->name() == QString("filter_all"));
-	QValueList<KAction*>	acts = actionCollection()->actions("printer_group");
-	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
+	if (prID >= 0 && prID < (int)(m_printers.count()+1))
 	{
-		((KToggleAction*)(*it))->setChecked(all_);
-		QString	actname = (*it)->name();
-		actname.replace(0,8,"");
-		if (all_)
-			m_manager->addPrinter(actname);
-		else
-			m_manager->removePrinter(actname);
+		QString	prname = (prID == 0 ? i18n("All Printers") : m_printers.at(prID-1)->printerName());
+		emit printerChanged(this, prname);
 	}
-	refresh();
 }
 
 void KMJobViewer::slotRefresh()
 {
+	const QObject	*obj = sender();
 	initPrinterActions();
-	refresh();
+	if (obj->isA("KAction"))
+	{
+		triggerRefresh();
+	}
 }
 
-void KMJobViewer::slotShowMenu()
+void KMJobViewer::triggerRefresh()
 {
-	KMTimer::blockTimer();
-}
-
-void KMJobViewer::slotHideMenu()
-{
-	KMTimer::releaseTimer();
-}
-
-void KMJobViewer::slotOnItem(QListViewItem*)
-{
-	m_view->setCursor(KCursor::handCursor());
-}
-
-void KMJobViewer::slotOnViewport()
-{
-	m_view->setCursor(KCursor::arrowCursor());
+	// parent widget -> embedded in KControl and needs
+	// to update itself. Otherwise, it's standalone
+	// kjobviewer and we need to synchronize all possible
+	// opened windows -> do the job on higher level.
+	if (parentWidget())
+		refresh(true);
+	else
+		emit refreshClicked();
 }
 
 void KMJobViewer::slotShowCompleted(bool on)
 {
 	m_manager->setJobType((on ? KMJobManager::CompletedJobs : KMJobManager::ActiveJobs));
-	slotRefresh();
+	triggerRefresh();
 }
 
 void KMJobViewer::loadPluginActions()
@@ -492,14 +502,20 @@ void KMJobViewer::removePluginActions()
 	}
 }
 
+void KMJobViewer::aboutToReload()
+{
+	if (m_view)
+		m_view->clear();
+	m_jobs.clear();
+}
+
 void KMJobViewer::reload()
 {
 	removePluginActions();
 	loadPluginActions();
-	if (!parentWidget())
-		// refresh it only if no parent, otherwise it
-		// will be triggered by the parent itself.
-		slotRefresh();
+	// no refresh needed: view has been cleared before reloading
+	// and the actual refresh will be triggered either by the KControl
+	// module, or by KJobViewerApp using timer.
 }
 
 void KMJobViewer::closeEvent(QCloseEvent *e)

@@ -27,3 +27,7 @@
 - CUPS: warn user if daemon not running
 
 - support for job priority.
+
+- make the log window of kdeprintfax a real log window (refreshing
+  mechanism) -> has to be made a non temporary dialog as it is the
+  case now.

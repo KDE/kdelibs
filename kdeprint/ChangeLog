@@ -192,3 +192,9 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: print preview has been embedded in a real dialog, so that
     it is always centered on its parent now. It also have the dialog
     buttons in title bar (no minimize).
+
+23/11/2001 Michael Goffioul <goffioul@imec.be>
+  * job management: the job management has been re-engineered to follow
+    the paradigm "1 window == 1 queue". There's still the possibility to
+    view jobs for all printers within a single window. This should enhance
+    the usability of job management tools (I hope).

@@ -159,11 +159,14 @@ bool KMJobManager::listJobs()
 	return true;
 }
 
-const QPtrList<KMJob>& KMJobManager::jobList()
+const QPtrList<KMJob>& KMJobManager::jobList(bool reload)
 {
-	discardAllJobs();
-	listJobs();
-	removeDiscardedJobs();
+	if (reload || m_jobs.count() == 0)
+	{
+		discardAllJobs();
+		listJobs();
+		removeDiscardedJobs();
+	}
 	return m_jobs;
 }
 

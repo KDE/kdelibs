@@ -52,7 +52,7 @@ public:
 	//bool sendCommand(int ID, int action, const QString& arg = QString::null);
 	bool sendCommand(const QString& uri, int action, const QString& arg = QString::null);
 	bool sendCommand(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	const QPtrList<KMJob>& jobList();
+	const QPtrList<KMJob>& jobList(bool reload = true);
 	void addJob(KMJob*);
 	KMThreadJob* threadJob();
 

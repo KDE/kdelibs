@@ -44,8 +44,6 @@ public:
 	KMMainView(QWidget *parent = 0, const char *name = 0, KActionCollection *coll = 0);
 	~KMMainView();
 
-	void startTimer();
-	void stopTimer();
 	void setOrientation(int);
 	int orientation() const;
 	void setViewType(int);
@@ -70,11 +68,10 @@ public slots:
 	void slotServerConfigure();
 	void slotManagerConfigure();
 	void slotAddSpecial();
+	void slotRefresh();
 
 protected slots:
 	void slotPrinterSelected(KMPrinter*);
-	void slotShowMenu();
-	void slotHideMenu();
 	void slotRightButtonClicked(KMPrinter*, const QPoint&);
 	void slotToggleToolBar(bool);
 	void slotChangeView(int);
@@ -94,13 +91,11 @@ protected:
 private:
 	KMPrinterView	*m_printerview;
 	KMPages		*m_printerpages;
-	QTimer		*m_timer;
 	QPopupMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
 	QSplitter	*m_splitter;
 	KToolBar	*m_toolbar;
-	uint 		m_timerdelay;
 	PluginComboBox	*m_plugin;
 	int			m_pactionsindex;
 };
