@@ -51,23 +51,6 @@ public:
     const char *translate( const char *index );
     
     /**
-      * Translate the string index into the corresponing string 
-      * in the national language. If not available, it returns
-      * the string text.
-      * This function can be used, if you prefer small lookup
-      * strings for long textes. 
-      * Be aware, that this is, since it differs to the way of
-      * the standard gettext method, may confuse the translater.
-      * So, I suggest to use constants, that make clear, that
-      * the lookup string is not ment to be translated roughly.
-      * For example you can use a leading underscore or similar
-      * things for it.
-      * @param index the lookup text 
-      * @param text the default text, if index is not found
-      */
-    const char *translate( const char *index, const char *text);
-
-    /**
       * This function returns the first global instance of
       * KLocale. It relies on you, that you have one and only
       * one KLocale instance in your code. If no instance were

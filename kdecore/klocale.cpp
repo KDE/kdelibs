@@ -111,6 +111,7 @@ const char *KLocale::translate(const char *msgid)
 	return text;
 }
 
+/*
 const char *KLocale::translate(const char *index, const char *d_text)
 {
     if (!enabled)
@@ -126,6 +127,7 @@ const char *KLocale::translate(const char *index, const char *d_text)
     return text;
     
 }
+*/
 
 void KLocale::aliasLocale( const char* text, long int index)
 {
@@ -151,10 +153,12 @@ const char *KLocale::translate(const char *msgid)
     return msgid;
 }
 
+/*
 const char *KLocale::translate(const char *, const char *d_text)
 {
     return d_text;
 }
+*/
 
 void KLocale::alias(long index, const char* text)
 {
