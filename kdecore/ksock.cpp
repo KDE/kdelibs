@@ -365,7 +365,7 @@ KSocket::~KSocket()
 	delete writeNotifier;
 	if (sock != -1) {
 	  kdDebug() << "closing " << sock << endl;
-      ::close( sock );
+          ::close( sock );
     }
 }
 
@@ -570,6 +570,7 @@ void KServerSocket::slotAccept( int )
       return;
     }
 
+    kdDebug() << "accepted " << new_sock << endl;
     emit accepted( new KSocket( new_sock ) );
   }
 }
