@@ -27,13 +27,15 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
-#include <kseparator.h>
+#include <qvaluelist.h>
 
 #include <kstddirs.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kinstance.h>
 #include <kxmlgui.h>
+#include <kseparator.h>
+#include <kconfig.h>
 
 #include <qtextstream.h>
 #include <qfile.h>
@@ -45,6 +47,27 @@ static void dump_xml(const QDomDocument& doc)
     ts << doc;
     qDebug("%s", str.ascii());
 }
+
+typedef QValueList<QDomElement> ToolbarList;
+
+class XmlData
+{
+public:
+  enum XmlType { Shell = 0, Part, Local, Merged };
+  XmlData()
+  {
+    m_isModified = false;
+  }
+
+  QString      m_xmlFile;
+  QDomDocument m_document;
+  XmlType      m_type;
+  bool         m_isModified;
+
+  ToolbarList  m_barList;
+};
+
+typedef QValueList<XmlData> XmlDataList;
 
 class ToolbarItem : public QListViewItem
 {
@@ -69,8 +92,104 @@ public:
 private:
   QString m_name;
 };
-typedef QValueList<QAction*> ActionList;
 
+class ToolbarStyleItem
+{
+public:
+  ToolbarStyleItem(int icon_size = 1, int icontext = 0, int pos = 0)
+    : m_iconSize(icon_size), m_iconText(icontext), m_position(pos)
+  {
+    m_sizeChanged = false;
+    m_textChanged = false;
+    m_posChanged  = false;
+  }
+
+  int m_iconSize;
+  int m_iconText;
+  int m_position;
+
+  bool m_sizeChanged;
+  bool m_textChanged;
+  bool m_posChanged;
+};
+typedef QMap<QString, ToolbarStyleItem> StyleMap;
+
+class KEditToolbarWidgetPrivate
+{
+public:
+  KEditToolbarWidgetPrivate(KInstance *instance)
+  {
+    m_instance = instance;
+    m_isPart   = false;
+  }
+  ~KEditToolbarWidgetPrivate()
+  {
+  }
+
+  QString xmlFile(QString xml_file)
+  {
+    return xml_file.isNull() ? m_instance->instanceName() + "ui.rc" :
+                               xml_file;
+  }
+
+  /**
+   * Load in the specified XML file and dump the raw xml
+   */
+  QString loadXMLFile(QString xml_file)
+  {
+    QString raw_xml;
+    xml_file = xmlFile(xml_file);
+
+    if ( xml_file[0] == '/' )
+      raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
+    else
+    {
+      QString abs_xml( locate("data", QString(m_instance->instanceName()) +
+                                      "/" + xml_file) );
+      raw_xml = KXMLGUIFactory::readConfigFile(abs_xml);
+    }
+
+    return raw_xml;
+  }
+
+  /**
+   * Return a list of toolbar elements given a toplevel element
+   */
+  ToolbarList findToolbars(QDomElement& elem)
+  {
+    static QString tagToolbar = QString::fromLatin1( "ToolBar" );
+    ToolbarList list;
+
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+    {
+      if (elem.tagName() == tagToolbar)
+        list.append(elem);
+
+      QDomElement child = elem.firstChild().toElement();
+      list += findToolbars(child);
+    }
+
+    return list;
+  }
+
+
+  QActionCollection *m_collection;
+  KInstance         *m_instance;
+
+  XmlData     m_currentXmlData;
+  QDomElement m_currentToolbarElem;
+
+  QString            m_xmlFile;
+  QString            m_globalFile;
+  QString            m_rcFile;
+  QDomDocument       m_localDoc;
+  bool               m_isPart;
+
+  ToolbarList m_barList;
+  StyleMap    m_styleMap;
+
+  XmlDataList m_xmlFiles;
+};
 
 KEditToolbar::KEditToolbar(QActionCollection *collection, const QString& file,
                            bool global)
@@ -83,6 +202,20 @@ KEditToolbar::KEditToolbar(QActionCollection *collection, const QString& file,
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
 }
+
+KEditToolbar::KEditToolbar(QActionCollection *collection,
+                           const QString& shellxml,
+                           const QString& partxml)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
+      m_widget(new KEditToolbarWidget(collection, shellxml, partxml, this))
+{
+    setMainWidget(m_widget);
+
+    connect(m_widget, SIGNAL(enableOk(bool)),
+            this,     SLOT(enableButtonOK(bool)));
+    enableButtonOK(false);
+}
+
 
 QDomDocument KEditToolbar::localDocument() const
 {
@@ -105,26 +238,80 @@ KEditToolbarWidget::KEditToolbarWidget(QActionCollection *collection,
                                        const QString& file,
                                        bool global, QWidget *parent)
   : QWidget(parent),
-    m_collection(collection),
-    m_xmlFile(file)
+    d(new KEditToolbarWidgetPrivate(instance()))
 {
-  // construct our own filename if one is provided
-  if (m_xmlFile.isNull())
-    m_xmlFile = instance()->instanceName() + "ui.rc";
-  
-  // load in our local xml file for later use
-  m_localDoc.setContent(KXMLGUIFactory::readConfigFile((locate("data", QString(instance()->instanceName()) +"/"+ m_xmlFile))));
+  // let's not forget the stuff that's not xml specific
+  d->m_collection = collection;
 
+  // handle the merging
   if (global)
     setXMLFile(locate("config", "ui/ui_standards.rc"));
-  setXMLFile(m_xmlFile, true);
+  setXML(d->loadXMLFile(file), true);
 
-  QDomElement elem = document().documentElement().toElement();
-  findToolbars(elem);
+  // reusable vars
+  QDomElement elem;
 
+  // first, get all of the necessary info for our local xml 
+  XmlData local;
+  local.m_xmlFile = d->xmlFile(file);
+  local.m_type    = XmlData::Local;
+  local.m_document.setContent(d->loadXMLFile(file));
+  elem = local.m_document.documentElement().toElement();
+  local.m_barList = d->findToolbars(elem);
+  d->m_xmlFiles.append(local);
+
+  // then, the merged one
+  XmlData merge;
+  merge.m_xmlFile  = QString::null;
+  merge.m_type     = XmlData::Merged;
+  merge.m_document = document();
+  elem = merge.m_document.documentElement().toElement();
+  merge.m_barList  = d->findToolbars(elem);
+  d->m_xmlFiles.append(merge);
+
+  // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
 
-  loadComboBox();
+  // now load in our toolbar combo box
+  loadToolbarCombo();
+}
+
+KEditToolbarWidget::KEditToolbarWidget(QActionCollection *collection,
+                                       const QString& shellxml,
+                                       const QString& partxml,
+                                       QWidget *parent)
+  : QWidget(parent),
+    d(new KEditToolbarWidgetPrivate(instance()))
+{
+  // reusable vars
+  QDomElement elem;
+
+  // first, get all of the necessary info for our shell 
+  XmlData shell;
+  shell.m_xmlFile = shellxml;
+  shell.m_type    = XmlData::Shell;
+  shell.m_document.setContent(d->loadXMLFile(shellxml));
+  elem = shell.m_document.documentElement().toElement();
+  shell.m_barList = d->findToolbars(elem);
+  d->m_xmlFiles.append(shell);
+
+  // then, get all the necessary info for our part
+  XmlData part;
+  part.m_xmlFile = partxml;
+  part.m_type    = XmlData::Part;
+  part.m_document.setContent(d->loadXMLFile(partxml));
+  elem = part.m_document.documentElement().toElement();
+  part.m_barList = d->findToolbars(elem);
+  d->m_xmlFiles.append(part);
+
+  // and let's not forget the stuff that's not xml specific
+  d->m_collection = collection;
+
+  // okay, that done, we concern ourselves with the GUI aspects
+  setupLayout();
+
+  // now load in our toolbar combo box
+  loadToolbarCombo();
 }
 
 KEditToolbarWidget::~KEditToolbarWidget()
@@ -133,11 +320,29 @@ KEditToolbarWidget::~KEditToolbarWidget()
 
 bool KEditToolbarWidget::save()
 {
-  updateLocalDoc();
+  XmlDataList::Iterator it = d->m_xmlFiles.begin();
+  for ( ; it != d->m_xmlFiles.end(); ++it)
+  {
+    // let's not save non-modified files
+    if ( (*it).m_isModified == false )
+      continue;
 
-  dump_xml(m_localDoc.toDocument());
+    // let's also skip (non-existent) merged files
+    if ( (*it).m_type == XmlData::Merged )
+      continue;
 
-  QString file = m_xmlFile;
+    dump_xml((*it).m_document.toDocument());
+
+    // if we got this far, we might as well just save it
+    save((*it).m_document, (*it).m_xmlFile);
+  }
+
+  return true;
+}
+
+bool KEditToolbarWidget::save(QDomDocument& doc, const QString& xmlfile)
+{
+  QString file = xmlfile;
   if ( file[0] != '/' )
     file = locateLocal("data", QString(instance()->instanceName()) +"/"+ file);
 
@@ -150,7 +355,7 @@ bool KEditToolbarWidget::save()
 
   // write out our document
   QTextStream ts(&rc_file);
-  ts << m_localDoc.toDocument();
+  ts << doc.toDocument();
 
   rc_file.close();
 
@@ -159,7 +364,7 @@ bool KEditToolbarWidget::save()
 
 QDomDocument KEditToolbarWidget::localDocument() const
 {
-  return m_localDoc;
+  return d->m_localDoc;
 }
 
 void KEditToolbarWidget::setupLayout()
@@ -169,7 +374,7 @@ void KEditToolbarWidget::setupLayout()
   m_toolbarCombo = new QComboBox(this);
   m_toolbarCombo->setEnabled(false);
   connect(m_toolbarCombo, SIGNAL(activated(const QString&)),
-          this,           SLOT(slotComboClicked(const QString&)));
+          this,           SLOT(slotToolbarSelected(const QString&)));
 
   QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
   new_toolbar->setPixmap(BarIcon("filenew", KIconLoader::Small));
@@ -229,13 +434,16 @@ void KEditToolbarWidget::setupLayout()
   m_textCombo->insertItem(i18n("Text aside icon"));
   m_textCombo->insertItem(i18n("Text only"));
   m_textCombo->insertItem(i18n("Text under icon"));
+  connect(m_textCombo, SIGNAL(highlighted(int)),
+          this,        SLOT(slotTextClicked(int)));
 
   QLabel *icon_label = new QLabel(i18n("Icon size:"), this);
   m_iconCombo = new QComboBox(this);
   m_iconCombo->insertItem(i18n("Small icons"));
   m_iconCombo->insertItem(i18n("Normal icons"));
   m_iconCombo->insertItem(i18n("Large icons"));
-  m_iconCombo->insertItem(i18n("Default size"));
+  connect(m_iconCombo, SIGNAL(highlighted(int)),
+          this,        SLOT(slotIconClicked(int)));
 
   QLabel *pos_label = new QLabel(i18n("Toolbar position:"), this);
   m_posCombo = new QComboBox(this);
@@ -244,6 +452,14 @@ void KEditToolbarWidget::setupLayout()
   m_posCombo->insertItem(i18n("Right"));
   m_posCombo->insertItem(i18n("Bottom"));
   m_posCombo->insertItem(i18n("Floating"));
+  m_posCombo->insertItem(i18n("Flat"));
+  connect(m_posCombo, SIGNAL(highlighted(int)),
+          this,       SLOT(slotPosClicked(int)));
+
+  // initially, disable the styles
+  m_textCombo->setEnabled(false);
+  m_iconCombo->setEnabled(false);
+  m_posCombo->setEnabled(false);
 
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 5);
@@ -294,7 +510,7 @@ void KEditToolbarWidget::setupLayout()
   top_layout->addWidget(new KSeparator(this));
 }
 
-void KEditToolbarWidget::loadComboBox()
+void KEditToolbarWidget::loadToolbarCombo()
 {
   static QString attrName = QString::fromLatin1( "name" );
 
@@ -302,20 +518,138 @@ void KEditToolbarWidget::loadComboBox()
   m_toolbarCombo->clear();
 
   // load in all of the toolbar names into this combo box
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  XmlDataList::Iterator xit = d->m_xmlFiles.begin();
+  for ( ; xit != d->m_xmlFiles.end(); ++xit)
   {
-    m_toolbarCombo->setEnabled(true);
-    m_toolbarCombo->insertItem((*it).attribute( attrName ));
+    // skip the local one in favor of the merged
+    if ( (*xit).m_type == XmlData::Local )
+      continue;
+
+    // each xml file may have any number of toolbars
+    ToolbarList::Iterator it = (*xit).m_barList.begin();
+    for ( ; it != (*xit).m_barList.end(); ++it)
+    {
+      QString name( (*it).attribute( attrName ) );;
+      // the name of the toolbar might depend on whether or not
+      // it is in kparts
+      if ( ( (*xit).m_type == XmlData::Shell ) ||
+           ( (*xit).m_type == XmlData::Part ) )
+      {
+        QString doc_name((*xit).m_document.documentElement().attribute( attrName ));
+        name += " <" + doc_name + ">";
+      }
+
+      m_toolbarCombo->setEnabled( true );
+      m_toolbarCombo->insertItem( name );
+    }
   }
 
+
   // we want to the first item selected and its actions loaded
-  slotComboClicked(m_toolbarCombo->currentText());
+  slotToolbarSelected( m_toolbarCombo->currentText() );
+}
+
+void KEditToolbarWidget::saveToolbarStyle()
+{
+  KConfig *config = instance()->config();
+
+  StyleMap::Iterator it = d->m_styleMap.begin();
+  for( ; it != d->m_styleMap.end(); ++it)
+  {
+    QString bar_name(it.key());
+    int icon_text(it.data().m_iconText);
+    int icon_size(it.data().m_iconSize);
+    int position(it.data().m_position);
+
+    QString group_name;
+    if (bar_name == "mainToolBar")
+      group_name = QString::fromLatin1("Toolbar style");
+    else
+      group_name = bar_name + QString::fromLatin1(" Toolbar style");
+
+    config->setGroup(group_name);
+
+    if (it.data().m_textChanged)
+      config->writeEntry(QString::fromLatin1("IconText"), icon_text);
+    if (it.data().m_sizeChanged)
+      config->writeEntry(QString::fromLatin1("IconSize"), icon_size);
+    if (it.data().m_posChanged)
+      config->writeEntry(QString::fromLatin1("Position"), position);
+  }
+
+  config->sync();
+}
+
+void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
+{
+  static QString attrName      = QString::fromLatin1( "name" );
+  static QString attrIconText  = QString::fromLatin1( "iconText" );
+  static QString attrIconSize  = QString::fromLatin1( "iconSize" );
+  static QString attrPosition  = QString::fromLatin1( "position" );
+
+  QString name(elem.attribute(attrName));
+  QString icon_text(elem.attribute(attrIconText));
+  QString icon_size(elem.attribute(attrIconSize));
+  QString position(elem.attribute(attrPosition));
+
+  m_textCombo->setEnabled(true);
+  m_iconCombo->setEnabled(true);
+  m_posCombo->setEnabled(true);
+
+  if (icon_text == QString::fromLatin1("IconOnly"))
+    m_textCombo->setCurrentItem(0);
+  else if (icon_text == QString::fromLatin1("IconTextRight"))
+    m_textCombo->setCurrentItem(1);
+  else if (icon_text == QString::fromLatin1("TextOnly"))
+    m_textCombo->setCurrentItem(2);
+  else if (icon_text == QString::fromLatin1("IconTextBottom"))
+    m_textCombo->setCurrentItem(3);
+  else if ( name == "mainToolBar")
+  {
+    KConfig *config = KGlobal::config();
+    config->setGroup(QString::fromLatin1("Toolbar style"));
+    int index = config->readNumEntry(QString::fromLatin1("IconText"), 0);
+    m_textCombo->setCurrentItem(index);
+  }
+  else
+    m_textCombo->setCurrentItem(0);
+
+  if (icon_size == QString::fromLatin1("Small"))
+    m_iconCombo->setCurrentItem(0);
+  else if (icon_size == QString::fromLatin1("Medium"))
+    m_iconCombo->setCurrentItem(1);
+  else if (icon_size == QString::fromLatin1("Large"))
+    m_iconCombo->setCurrentItem(2);
+  else if ( name == "mainToolBar")
+  {
+    KConfig *config = KGlobal::config();
+    config->setGroup(QString::fromLatin1("Toolbar style"));
+    int index = config->readNumEntry(QString::fromLatin1("IconSize"), 0);
+    m_iconCombo->setCurrentItem(index);
+  }
+  else
+    m_iconCombo->setCurrentItem(0);
+
+  if (position == QString::fromLatin1("Top"))
+    m_posCombo->setCurrentItem(0);
+  else if (position == QString::fromLatin1("Left"))
+    m_posCombo->setCurrentItem(1);
+  else if (position == QString::fromLatin1("Right"))
+    m_posCombo->setCurrentItem(2);
+  else if (position == QString::fromLatin1("Bottom"))
+    m_posCombo->setCurrentItem(3);
+  else if (position == QString::fromLatin1("Floating"))
+    m_posCombo->setCurrentItem(4);
+  else if (position == QString::fromLatin1("Flat"))
+    m_posCombo->setCurrentItem(5);
+  else
+    m_posCombo->setCurrentItem(0);
 }
 
 void KEditToolbarWidget::loadActionList(QDomElement& elem)
 {
-  static QString attrSeparator = QString::fromLatin1( "separator" );
+  static QString attrSeparator = QString::fromLatin1( "Separator" );
+  static QString attrMerge     = QString::fromLatin1( "Merge" );
   static QString attrName      = QString::fromLatin1( "name" );
 
   // clear our lists
@@ -333,17 +667,24 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QDomElement it = elem.lastChild().toElement();
   for( ; !it.isNull(); it = it.previousSibling().toElement() )
   {
-    if (it.tagName().lower() == attrSeparator)
+    if (it.tagName() == attrSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, QString::null);
       act->setText(1, "-----");
       continue;
     }
 
-    // iterate through all of our actions
-    for (unsigned int i = 0;  i < m_collection->count(); i++)
+    if (it.tagName() == attrMerge)
     {
-      QAction *action = m_collection->action(i);
+      ToolbarItem *act = new ToolbarItem(m_activeList, "merge");
+      act->setText(1, "<Merge>");
+      continue;
+    }
+
+    // iterate through all of our actions
+    for (unsigned int i = 0;  i < d->m_collection->count(); i++)
+    {
+      QAction *action = d->m_collection->action(i);
 
       // do we have a match?
       if (it.attribute( attrName ) == action->name())
@@ -361,9 +702,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  for (int i = m_collection->count() - 1; i > -1; --i)
+  for (int i = d->m_collection->count() - 1; i > -1; --i)
   {
-    QAction *action = m_collection->action(i);
+    QAction *action = d->m_collection->action(i);
 
     // skip our active ones
     if (active_list.contains(action->name()))
@@ -387,34 +728,55 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
 QActionCollection *KEditToolbarWidget::actionCollection() const
 {
-  return m_collection;
+  return d->m_collection;
 }
 
-void KEditToolbarWidget::findToolbars(QDomElement& elem)
-{
-  static QString tagToolbar = QString::fromLatin1( "toolbar" );
-
-  for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
-  {
-    if (elem.tagName().lower() == tagToolbar)
-      m_barList.append(elem);
-
-    QDomElement child = elem.firstChild().toElement();
-    findToolbars(child);
-  }
-}
-
-void KEditToolbarWidget::slotComboClicked(const QString& _text)
+void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {
   static QString attrName = QString::fromLatin1( "name" );
 
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  // iterate through everything
+  XmlDataList::Iterator xit = d->m_xmlFiles.begin();
+  for ( ; xit != d->m_xmlFiles.end(); ++xit)
   {
-    if ((*it).attribute(attrName) == _text)
+    // each xml file may have any number of toolbars
+    ToolbarList::Iterator it = (*xit).m_barList.begin();
+    for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      loadActionList((*it));
-      return;
+      QString name( (*it).attribute( attrName ) );;
+      // the name of the toolbar might depend on whether or not
+      // it is in kparts
+      if ( ( (*xit).m_type == XmlData::Shell ) ||
+           ( (*xit).m_type == XmlData::Part ) )
+      {
+        QString doc_name((*xit).m_document.documentElement().attribute( attrName ));
+        name += " <" + doc_name + ">";
+      }
+      
+      // is this our toolbar?
+      if ( name == _text )
+      {
+        // save our current settings
+        d->m_currentXmlData     = (*xit);
+        d->m_currentToolbarElem = (*it);
+
+        // load in our values 
+        loadActionList(d->m_currentToolbarElem);
+
+        // we do not want to load in the styles for parts
+        if ( (*xit).m_type != XmlData::Part )
+          loadToolbarStyles(d->m_currentToolbarElem);
+        else
+        {
+          m_textCombo->setEnabled(false);
+          m_iconCombo->setEnabled(false);
+          m_posCombo->setEnabled(false);
+        }
+
+        if ((*xit).m_type == XmlData::Part || (*xit).m_type == XmlData::Shell)
+          setXML(KXMLGUIFactory::documentToXML((*xit).m_document.toDocument()));
+        return;
+      }
     }
   }
 }
@@ -462,93 +824,76 @@ void KEditToolbarWidget::slotInsertButton()
 
   ToolbarItem *item = (ToolbarItem*)m_inactiveList->currentItem();
 
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  QDomElement new_item;
+  // let's handle the separator specially
+  if (item->text(1) != "-----")
   {
-    QString toolbar_name((*it).attribute(attrName));
-    QString current(m_toolbarCombo->currentText());
+    new_item = document().createElement(tagAction);
+    new_item.setAttribute(attrName, item->internalName());
+  }
+  else
+    new_item = document().createElement(tagSeparator);
 
-    // of course, we only want to deal with the current toolbar
-    if (toolbar_name == current)
+  if (m_activeList->currentItem())
+  {
+    // we have a selected item in the active list.. so let's try
+    // our best to add our new item right after the selected one
+    ToolbarItem *act_item = (ToolbarItem*)m_activeList->currentItem();
+    QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
     {
-      QDomElement new_item;
-      // let's handle the separator specially
-      if (item->text(1) != "-----")
+      if (elem.attribute(attrName) == act_item->internalName())
       {
-        new_item = document().createElement(tagAction);
-        new_item.setAttribute(attrName, item->internalName());
+        d->m_currentToolbarElem.insertAfter(new_item, elem);
+        break;
       }
-      else
-        new_item = document().createElement(tagSeparator);
-
-      if (m_activeList->currentItem())
-      {
-        // we have a selected item in the active list.. so let's try
-        // our best to add our new item right after the selected one
-        ToolbarItem *act_item = (ToolbarItem*)m_activeList->currentItem();
-        QDomElement elem = (*it).firstChild().toElement();
-        for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
-        {
-          if (elem.attribute(attrName) == act_item->internalName())
-          {
-            (*it).insertAfter(new_item, elem);
-            break;
-          }
-        }
-      }
-      else
-      {
-        // just stick it at the end of this
-        (*it).appendChild(new_item);
-
-        // and set this container as a noMerge
-        (*it).setAttribute(QString::fromLatin1("noMerge"), "1");
-      }
-
-      break;
     }
   }
+  else
+  {
+    // just stick it at the end of this
+    d->m_currentToolbarElem.appendChild(new_item);
 
-  slotComboClicked( m_toolbarCombo->currentText() );
+    // and set this container as a noMerge
+    d->m_currentToolbarElem.setAttribute(QString::fromLatin1("noMerge"), "1");
+
+    // update the local doc
+    updateLocal(d->m_currentToolbarElem);
+  }
+
+  slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
 void KEditToolbarWidget::slotRemoveButton()
 {
-  static QString attrName = QString::fromLatin1( "name" );
+  static QString attrName    = QString::fromLatin1( "name" );
+  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
 
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
+
+  // now iterate through to find the child to nuke
+  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
+  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    QString name((*it).attribute(attrName));
-    QString current(m_toolbarCombo->currentText());
-
-    // only deal with the current toolbar
-    if (name == current)
+    if (item->internalName() == elem.attribute(attrName))
     {
-      ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
+      // nuke myself!
+      d->m_currentToolbarElem.removeChild(elem);
 
-      // now iterate through to find the child to nuke
-      QDomElement elem = (*it).firstChild().toElement();
-      for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
-      {
-        if (item->internalName() == elem.attribute(attrName))
-        {
-          // nuke myself!
-          (*it).removeChild(elem);
+      // and set this container as a noMerge
+      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-          // and set this container as a noMerge
-          (*it).setAttribute(QString::fromLatin1("noMerge"), "1");
+      // update the local doc
+      updateLocal(d->m_currentToolbarElem);
 
-          break;
-        }
-      }
       break;
     }
   }
-  slotComboClicked( m_toolbarCombo->currentText() );
+
+  slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
 void KEditToolbarWidget::slotUpButton()
@@ -559,51 +904,42 @@ void KEditToolbarWidget::slotUpButton()
   if (!item->itemAbove())
     return;
 
-  static QString attrName = QString::fromLatin1( "name" );
+  static QString attrName    = QString::fromLatin1( "name" );
+  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
 
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  // now iterate through to find where we are
+  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
+  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    QString toolbar_name((*it).attribute(attrName));
-    QString current_toolbar(m_toolbarCombo->currentText());
-
-    // only deal with the current toolbar
-    if (toolbar_name == current_toolbar)
+    if (item->internalName() == elem.attribute(attrName))
     {
-      // now iterate through to find where we are
-      QDomElement elem = (*it).firstChild().toElement();
-      for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
-      {
-        if (item->internalName() == elem.attribute(attrName))
-        {
-          // cool, i found me.  now clone myself
-          ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                               item->itemAbove()->itemAbove(),
-                                               item->internalName());
-          clone->setText(1, item->text(1));
+      // cool, i found me.  now clone myself
+      ToolbarItem *clone = new ToolbarItem(m_activeList,
+                                           item->itemAbove()->itemAbove(),
+                                           item->internalName());
+      clone->setText(1, item->text(1));
 
-          // only set new pixmap if exists
-          if( item->pixmap(0) )
-            clone->setPixmap(0, *item->pixmap(0));
+      // only set new pixmap if exists
+      if( item->pixmap(0) )
+        clone->setPixmap(0, *item->pixmap(0));
 
-          // remove the old me
-          m_activeList->takeItem(item);
+      // remove the old me
+      m_activeList->takeItem(item);
 
-          // select my clone
-          m_activeList->setSelected(clone, true);
+      // select my clone
+      m_activeList->setSelected(clone, true);
 
-          // and do the real move in the DOM
-          (*it).insertBefore(elem, elem.previousSibling());
+      // and do the real move in the DOM
+      d->m_currentToolbarElem.insertBefore(elem, elem.previousSibling());
 
-          // and set this container as a noMerge
-          (*it).setAttribute(QString::fromLatin1("noMerge"), "1");
+      // and set this container as a noMerge
+      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-          break;
-        }
-      }
+      // update the local doc
+      updateLocal(d->m_currentToolbarElem);
 
       break;
     }
@@ -618,98 +954,202 @@ void KEditToolbarWidget::slotDownButton()
   if (!item->itemBelow())
     return;
 
-  static QString attrName = QString::fromLatin1( "name" );
+  static QString attrName    = QString::fromLatin1( "name" );
+  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
 
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+  // now iterate through to find where we are
+  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
+  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    QString toolbar_name((*it).attribute(attrName));
-    QString current_toolbar(m_toolbarCombo->currentText());
-
-    // only deal with the current toolbar
-    if (toolbar_name == current_toolbar)
+    if (item->internalName() == elem.attribute(attrName))
     {
-      // now iterate through to find where we are
-      QDomElement elem = (*it).firstChild().toElement();
-      for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
-      {
-        if (item->internalName() == elem.attribute(attrName))
-        {
-          // cool, i found me.  now clone myself
-          ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                               item->itemBelow(),
-                                               item->internalName());
-          clone->setText(1, item->text(1));
-          
-          // only set new pixmap if exists
-          if( item->pixmap(0) )
-	    clone->setPixmap(0, *item->pixmap(0));
+      // cool, i found me.  now clone myself
+      ToolbarItem *clone = new ToolbarItem(m_activeList,
+                                           item->itemBelow(),
+                                           item->internalName());
+      clone->setText(1, item->text(1));
+      
+      // only set new pixmap if exists
+      if( item->pixmap(0) )
+        clone->setPixmap(0, *item->pixmap(0));
 
-          // remove the old me
-          m_activeList->takeItem(item);
+      // remove the old me
+      m_activeList->takeItem(item);
 
-          // select my clone
-          m_activeList->setSelected(clone, true);
+      // select my clone
+      m_activeList->setSelected(clone, true);
 
-          // and do the real move in the DOM
-          (*it).insertAfter(elem, elem.nextSibling());
+      // and do the real move in the DOM
+      d->m_currentToolbarElem.insertAfter(elem, elem.nextSibling());
 
-          // and set this container as a noMerge
-          (*it).setAttribute(QString::fromLatin1("noMerge"), "1");
+      // and set this container as a noMerge
+      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-          break;
-        }
-      }
+      // update the local doc
+      updateLocal(d->m_currentToolbarElem);
 
       break;
     }
   }
 }
 
-void KEditToolbarWidget::updateLocalDoc()
+void KEditToolbarWidget::slotTextClicked(int index)
 {
-  // TODO: debug this!  it is currently much too buggy
-  static QString tagToolBar = QString::fromLatin1( "ToolBar" );
-  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
-  static QString attrName = QString::fromLatin1( "name" );
+  static QString attrIconText = QString::fromLatin1( "iconText" );
+  static QString attrName     = QString::fromLatin1( "name" );
+  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
 
-  QDomElement elem = m_localDoc.documentElement().toElement();
-  for( elem = elem.firstChild().toElement(); !elem.isNull();
-       elem = elem.nextSibling().toElement())
+  enableOk(true);
+  QString current_name(m_toolbarCombo->currentText());
+
+  ToolbarList::Iterator it = d->m_barList.begin();
+  for ( ; it != d->m_barList.end(); ++it)
   {
-    // only look for toolbars
-    if (elem.tagName() == tagToolBar)
+    QString toolbar_name((*it).attribute(attrName));
+    (*it).setAttribute(attrNoMerge, "1");
+
+    // does the current toolbar match our stored one?
+    if (toolbar_name == current_name)
     {
-      // search through *our* toolbars and see if we match
-      ToolbarList::Iterator it = m_barList.begin();
-      for (; it != m_barList.end(); ++it)
+      switch (index)
       {
-        if ((*it).attribute(attrName) == elem.attribute(attrName))
-        {
-          // okay, they match.  now see if ours is modified
-          if ((*it).attribute(attrNoMerge) == "1")
-          {
-            QDomElement toolbar = m_localDoc.documentElement().toElement();
-            toolbar.replaceChild((*it), elem);
-          }
-        }
+      case 0:
+      default:
+        (*it).setAttribute(attrIconText, QString::fromLatin1("IconOnly"));
+        break;
+      case 1:
+        (*it).setAttribute(attrIconText, QString::fromLatin1("IconTextRight"));
+        break;
+      case 2:
+        (*it).setAttribute(attrIconText, QString::fromLatin1("TextOnly"));
+        break;
+      case 3:
+        (*it).setAttribute(attrIconText, QString::fromLatin1("IconTextBottom"));
+      break;
+      }
+    }
+  }
+}
+
+void KEditToolbarWidget::slotPosClicked(int index)
+{
+  static QString attrPosition = QString::fromLatin1( "position" );
+  static QString attrName     = QString::fromLatin1( "name" );
+  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
+
+  enableOk(true);
+  QString current_name(m_toolbarCombo->currentText());
+
+  ToolbarList::Iterator it = d->m_barList.begin();
+  for ( ; it != d->m_barList.end(); ++it)
+  {
+    QString toolbar_name((*it).attribute(attrName));
+    (*it).setAttribute(attrNoMerge, "1");
+
+    // does the current toolbar match our stored one?
+    if (toolbar_name == current_name)
+    {
+      switch (index)
+      {
+      case 0:
+      default:
+        (*it).setAttribute(attrPosition, QString::fromLatin1("Top"));
+        break;
+      case 1:
+        (*it).setAttribute(attrPosition, QString::fromLatin1("Left"));
+        break;
+      case 2:
+        (*it).setAttribute(attrPosition, QString::fromLatin1("Bottom"));
+        break;
+      case 3:
+        (*it).setAttribute(attrPosition, QString::fromLatin1("Floating"));
+        break;
+      case 4:
+        (*it).setAttribute(attrPosition, QString::fromLatin1("Flat"));
+        break;
       }
     }
   }
 
-  // finally, go through our toolbars again to see if there are any
-  // new ones
-  ToolbarList::Iterator it = m_barList.begin();
-  for ( ; it != m_barList.end(); ++it)
+}
+
+void KEditToolbarWidget::slotIconClicked(int index)
+{
+  static QString attrIconSize = QString::fromLatin1( "iconSize" );
+  static QString attrName     = QString::fromLatin1( "name" );
+  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
+
+  enableOk(true);
+  QString current_name(m_toolbarCombo->currentText());
+
+  ToolbarList::Iterator it = d->m_barList.begin();
+  for ( ; it != d->m_barList.end(); ++it)
   {
-    if ((*it).attribute(attrNoMerge) == "1")
+    QString toolbar_name((*it).attribute(attrName));
+    (*it).setAttribute(attrNoMerge, "1");
+
+    // does the current toolbar match our stored one?
+    if (toolbar_name == current_name)
     {
-      // if there are, just append them to the end
-      QDomElement orig = m_localDoc.documentElement().toElement();
-      orig.appendChild((*it));
+      switch (index)
+      {
+      case 0:
+      default:
+        (*it).setAttribute(attrIconSize, QString::fromLatin1("Small"));
+        break;
+      case 1:
+        (*it).setAttribute(attrIconSize, QString::fromLatin1("Medium"));
+        break;
+      case 2:
+        (*it).setAttribute(attrIconSize, QString::fromLatin1("Large"));
+        break;
+      }
     }
+  }
+}
+
+void KEditToolbarWidget::updateLocal(QDomElement& elem)
+{
+  static QString attrName = QString::fromLatin1( "name" );
+
+  XmlDataList::Iterator xit = d->m_xmlFiles.begin();
+  for ( ; xit != d->m_xmlFiles.end(); ++xit)
+  {
+    if ( (*xit).m_type == XmlData::Merged )
+      continue;
+
+    if ( (*xit).m_type == XmlData::Shell ||
+         (*xit).m_type == XmlData::Part )
+    {
+      if ( d->m_currentXmlData.m_xmlFile == (*xit).m_xmlFile )
+      {
+        (*xit).m_isModified = true;
+        return;
+      }
+
+      continue;
+    }
+
+    (*xit).m_isModified = true;
+
+    ToolbarList::Iterator it = (*xit).m_barList.begin();
+    for ( ; it != (*xit).m_barList.end(); ++it)
+    {
+      QString name( (*it).attribute( attrName ) );;
+      QString tag( (*it).tagName() );
+      if ( (tag != elem.tagName()) || (name != elem.attribute(attrName)) )
+        continue;
+
+      QDomElement toolbar = (*xit).m_document.documentElement().toElement();
+      toolbar.replaceChild(elem, (*it));
+      return;
+    }
+
+    // just append it 
+    QDomElement toolbar = (*xit).m_document.documentElement().toElement();
+    toolbar.appendChild(elem);
   }
 }

@@ -21,15 +21,12 @@
 #include <qwidget.h>
 #include <kxmlguiclient.h>
 #include <kdialogbase.h>
-#include <qvaluelist.h>
 
 class QActionCollection;
 class QComboBox;
 class QPushButton;
 class QListView;;
 class QListViewItem;
-
-typedef QValueList<QDomElement> ToolbarList;
 
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
@@ -67,10 +64,10 @@ class KEditToolbar : public KDialogBase
     Q_OBJECT
 public:
   /**
-   * Constructor.  This is the only entry point to this class.  You
-   * @bf must pass along your collection of actions (some of which
-   * appear in your toolbars).  The other two parameters are
-   * optional.
+   * Constructor for apps that do not use components.  This is the
+   * only entry point to this class.  You @bf must pass along your
+   * collection of actions (some of which appear in your toolbars).
+   * The other two parameters are optional.
    *
    * The second parameter, @ref #xmlfile, is the name (absolute or
    * relative) of your application's UI resource file.  If it is
@@ -94,6 +91,35 @@ public:
    */
   KEditToolbar(QActionCollection *collection,
                const QString& xmlfile = QString::null, bool global = true);
+
+  /**
+   * Constructor for KParts based apps.  You must pass along all of
+   * the parameters.
+   *
+   * The first parameter, @ref #collection, is your collection of all
+   * of the actions that appear in your application.  This is usually
+   * just 'actionCollection()' in nearly all apps
+   *
+   * The second parameter, @ref #shellxml, is the name of your shell
+   * (or MainWindow) XML resource file.  It may be relative or
+   * absolute.
+   *
+   * The last parameter, @ref #partxml, is the name of your currently
+   * active part's XML resource file.  It may be relative or absolute.
+   *
+   * A very typical example of this would be:
+   * <pre>
+   * KEditToolbar edit(actionCollection(), xmlFile(), * m_part->xmlFile());
+   * if (edit.exec())
+   * ...
+   * </pre>
+   *
+   * @param collection The collection of actions to work on
+   * @param xmlfile The shell XML resource file
+   * @param partxml The active part's XML resource file
+   */
+  KEditToolbar(QActionCollection *collection, const QString& shellxml,
+               const QString& partxml);
 
   /**
    * This will return  final XML after any user changes have been made
@@ -171,6 +197,28 @@ public:
                      bool global = true, QWidget *parent = 0L);
 
   /**
+   * Constructor for KParts based apps.  You must pass along all of
+   * the parameters.
+   *
+   * The first parameter, @ref #collection, is your collection of all
+   * of the actions that appear in your application.  This is usually
+   * just 'actionCollection()' in nearly all apps
+   *
+   * The second parameter, @ref #shellxml, is the name of your shell
+   * (or MainWindow) XML resource file.  It may be relative or
+   * absolute.
+   *
+   * The last parameter, @ref #partxml, is the name of your currently
+   * active part's XML resource file.  It may be relative or absolute.
+   *
+   * @param collection The collection of actions to work on
+   * @param xmlfile The shell XML resource file
+   * @param partxml The active part's XML resource file
+   */
+  KEditToolbarWidget(QActionCollection *collection, const QString& shellxml,
+                     const QString& partxml, QWidget *parent = 0L);
+
+  /**
    * Destructor.  Note that any changes done in this widget will
    * @bf NOT be saved in the destructor.  You @bf must call @ref save
    * to do that.
@@ -211,7 +259,8 @@ signals:
   void enableOk(bool);
 
 protected slots:
-  void slotComboClicked(const QString& text);
+  void slotToolbarSelected(const QString& text);
+
   void slotInactiveSelected(QListViewItem *item);
   void slotActiveSelected(QListViewItem *item);
 
@@ -220,21 +269,22 @@ protected slots:
   void slotUpButton();
   void slotDownButton();
 
-protected:
-  void findToolbars(QDomElement& elem);
+  void slotIconClicked(int);
+  void slotTextClicked(int);
+  void slotPosClicked(int);
 
+protected:
   void setupLayout();
 
-  void loadComboBox();
+  void loadToolbarCombo();
+  void saveToolbarStyle();
   void loadActionList(QDomElement& elem);
+  void loadToolbarStyles(QDomElement& elem);
+  void updateLocal(QDomElement& elem);
 
-  void updateLocalDoc();
+  bool save(QDomDocument& doc, const QString& xmlfile);
 
 private:
-  QActionCollection *m_collection;
-  QString            m_xmlFile;
-  QDomDocument       m_localDoc;
-
   QListView *m_inactiveList;
   QListView *m_activeList;
   QComboBox *m_toolbarCombo;
@@ -247,8 +297,6 @@ private:
   QComboBox *m_textCombo;
   QComboBox *m_iconCombo;
   QComboBox *m_posCombo;
-
-  ToolbarList m_barList;
 
   KEditToolbarWidgetPrivate *d;
 };
