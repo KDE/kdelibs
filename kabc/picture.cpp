@@ -108,11 +108,11 @@ QString Picture::asString() const
 
 QDataStream &KABC::operator<<( QDataStream &s, const Picture &picture )
 {
-  return s << picture.mIntern << picture.mUrl << picture.mType;
+  return s << picture.mIntern << picture.mUrl << picture.mType << picture.mData;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Picture &picture )
 {
-  s >> picture.mIntern >> picture.mUrl >> picture.mType;
+  s >> picture.mIntern >> picture.mUrl >> picture.mType >> picture.mData;
   return s;
 }

@@ -323,5 +323,5 @@ QDataStream &operator<<( QDataStream &, const Address & );
 QDataStream &operator>>( QDataStream &, Address & );
 
 }
+
 #endif
-// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://

@@ -25,7 +25,7 @@
 using namespace KABC;
 
 Sound::Sound()
-  : mIntern( true )
+  : mIntern( false )
 {
 }
 
@@ -100,11 +100,11 @@ QString Sound::asString() const
 
 QDataStream &KABC::operator<<( QDataStream &s, const Sound &sound )
 {
-  return s << sound.mIntern << sound.mUrl;
+  return s << sound.mIntern << sound.mUrl << sound.mData;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Sound &sound )
 {
-  s >> sound.mIntern >> sound.mUrl;
+  s >> sound.mIntern >> sound.mUrl >> sound.mData;
   return s;
 }
