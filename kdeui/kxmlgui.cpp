@@ -106,6 +106,7 @@ struct KXMLGUIContainerNode
   QValueList<MergingIndex>::Iterator findIndex( const QString &name );
   KXMLGUIContainerNode *findContainerNode( QWidget *container );
   KXMLGUIContainerNode *findContainer( const QString &_name, bool tag );
+  KXMLGUIContainerNode *findContainer( const QString &name, const QString &tagName, const QList<QWidget> *excludeList, KXMLGUIClient *currClient );
 };
 
 class KXMLGUIFactoryPrivate
@@ -143,7 +144,7 @@ public:
   QString attrName;
 
   QValueList<MergingIndex>::Iterator m_currentDefaultMergingIt;
-    
+
   QStringList m_builderContainerTags;
 };
 
@@ -167,7 +168,7 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
     builderCustomTags = builder->customTags();
     builderContainerTags = builder->containerTags();
   }
-  
+
   if ( parent )
     parent->children.append( this );
 }
@@ -208,6 +209,38 @@ KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &_name,
   }
 
   return 0;
+}
+
+KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &name, const QString &tagName, const QList<QWidget> *excludeList,
+							   KXMLGUIClient *currClient )
+{
+  KXMLGUIContainerNode *res = 0L;
+  QListIterator<KXMLGUIContainerNode> nIt( children );
+
+  if ( !name.isEmpty() )
+  {
+    for (; nIt.current(); ++nIt )
+     if ( nIt.current()->name == name && !excludeList->containsRef( nIt.current()->container ) )
+     {
+       res = nIt.current();
+       break;
+     }
+
+    return res;
+  }
+
+  if ( !tagName.isEmpty() )
+    for (; nIt.current(); ++nIt )
+    {
+      if ( nIt.current()->tagName == tagName && !excludeList->containsRef( nIt.current()->container ) &&
+	   nIt.current()->client == currClient )
+      {
+        res = nIt.current();
+	break;
+      }
+    }
+
+  return res;
 }
 
 QString KXMLGUIFactory::readConfigFile( const QString &filename, KInstance *instance )
@@ -533,6 +566,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   for (; !e.isNull(); e = e.nextSibling().toElement() )
   {
     QString tag = e.tagName().lower();
+    QString currName = e.attribute( d->attrName );
 
     /*
      * The "Merge" tag specifies that all containers and actions from *other* servants should be
@@ -540,7 +574,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
      */
     if ( tag == tagMerge || tag == tagDefineGroup || tag == d->tagActionList )
     {
-      QString mergingName = e.attribute( d->attrName );
+      QString mergingName = currName;
       if ( mergingName.isEmpty() )
       {
         if ( tag == tagDefineGroup )
@@ -628,7 +662,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
        * tree. However we have to ignore just newly created containers!
        */
 
-      KXMLGUIContainerNode *matchingContainer = findContainer( parentNode, e, &containerList );
+      KXMLGUIContainerNode *matchingContainer = parentNode->findContainer( currName, tag, &containerList, m_client );
 
       if ( matchingContainer )
       {
@@ -674,7 +708,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	  if ( it != parentNode->mergingIndices.end() )
   	    mergingName = (*it).mergingName;
 	
-          containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( d->attrName ), parentNode, m_client, builder, id, mergingName, group );
+          containerNode = new KXMLGUIContainerNode( container, tag, currName, parentNode, m_client, builder, id, mergingName, group );
 	}
 	
         buildRecursive( e, containerNode );
@@ -863,41 +897,6 @@ void KXMLGUIFactory::adjustMergingIndices( KXMLGUIContainerNode *node, int offse
     (*mergingIt).value += offset;
 
   node->index += offset;
-}
-
-KXMLGUIContainerNode *KXMLGUIFactory::findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList )
-{
-  KXMLGUIContainerNode *res = 0L;
-  QListIterator<KXMLGUIContainerNode> nIt( node->children );
-
-  QString name = element.attribute( d->attrName );
-
-  if ( !name.isEmpty() )
-  {
-    for (; nIt.current(); ++nIt )
-     if ( nIt.current()->name == name && !excludeList->containsRef( nIt.current()->container ) )
-     {
-       res = nIt.current();
-       break;
-     }
-
-    return res;
-  }
-
-  name = element.tagName();
-
-  if ( !name.isEmpty() )
-    for (; nIt.current(); ++nIt )
-    {
-      if ( nIt.current()->tagName == name && !excludeList->containsRef( nIt.current()->container ) &&
-	   nIt.current()->client == m_client )
-      {
-        res = nIt.current();
-	break;
-      }
-    }
-
-  return res;
 }
 
 QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )

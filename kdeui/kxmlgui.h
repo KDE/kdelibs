@@ -151,8 +151,6 @@ class KXMLGUIFactory : public QObject
   int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
   void adjustMergingIndices( KXMLGUIContainerNode *node, int offset, const QValueList<MergingIndex>::Iterator &it );
 
-  KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList );
-
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id, KXMLGUIBuilder **builder );
