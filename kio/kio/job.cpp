@@ -2325,7 +2325,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
     // Overwrite only if the existing thing is a dir (no chance with a file)
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
-        mode = (RenameDlg_Mode)( mode | M_OVERWRITE );
+        mode = (RenameDlg_Mode)( mode | ((*it).uSource == (*it).uDest) ? M_OVERWRITE_ITSELF : M_OVERWRITE );
 
     QString existingDest = (*it).uDest.path();
     QString newPath;
@@ -2957,14 +2957,14 @@ void CopyJob::slotResult( Job *job )
                 // Direct renaming didn't work. Try renaming to a temp name,
                 // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
                 // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
-                if ( m_currentSrcURL.isLocalFile() &&
+                if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
                      m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
                      ( job->error() == ERR_FILE_ALREADY_EXIST || job->error() == ERR_DIR_ALREADY_EXIST ) )
                 {
                     kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
                     QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
                     QCString _dest( QFile::encodeName(dest.path()) );
-                    KTempFile tmpFile( m_currentSrcURL.directory() );
+                    KTempFile tmpFile( m_currentSrcURL.directory(false) );
                     QCString _tmp( QFile::encodeName(tmpFile.name()) );
                     kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
                     tmpFile.unlink();
