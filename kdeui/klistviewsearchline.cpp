@@ -233,28 +233,30 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
 {
     QPopupMenu *popup = KLineEdit::createPopupMenu();
 
-    QPopupMenu *subMenu = new QPopupMenu(popup);
-    connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
+    if (d->listView->columns()>1) {
+        QPopupMenu *subMenu = new QPopupMenu(popup);
+        connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
 
-    popup->insertSeparator();
-    popup->insertItem(i18n("Search Columns"), subMenu);
+        popup->insertSeparator();
+        popup->insertItem(i18n("Search Columns"), subMenu);
     
-    subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
-    subMenu->insertSeparator();
+        subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
+        subMenu->insertSeparator();
     
-    bool allColumnsAreSearchColumns = true;
-    for(int i = 0; i < d->listView->columns(); i++) {
-        subMenu->insertItem(d->listView->columnText(i), i);
-        if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
-            subMenu->setItemChecked(i, true);
-        else
-            allColumnsAreSearchColumns = false;
+        bool allColumnsAreSearchColumns = true;
+        for(int i = 0; i < d->listView->columns(); i++) {
+            subMenu->insertItem(d->listView->columnText(i), i);
+            if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
+                subMenu->setItemChecked(i, true);
+            else
+                allColumnsAreSearchColumns = false;
+        }
+        subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
+    
+        // searchColumnsMenuActivated() relies on one possible "all" representation
+        if(allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
+            d->searchColumns.clear();
     }
-    subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
-    
-    // searchColumnsMenuActivated() relies on one possible "all" representation
-    if(allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
-      d->searchColumns.clear();
     
     return popup;   
 }    
