@@ -1061,7 +1061,7 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    ds >> name >> value;
 	    replyType = "bool";
 	    QDataStream reply( replyData, IO_WriteOnly );
-	    reply << (Q_INT32) o->setProperty( name, value );
+	    reply << (Q_INT8) o->setProperty( name, value );
 	    return true;
 	} else {
 	    QMetaData* slot = o->metaObject()->slot( fun, true );
