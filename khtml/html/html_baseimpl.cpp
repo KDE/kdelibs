@@ -612,19 +612,6 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    KHTMLView* w = getDocument()->view();
-    // avoid endless recursion
-    KURL u;
-    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
-    bool selfreference = false;
-    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
-        if (part->url() == u) {
-            selfreference = true;
-            break;
-        }
-
-    KHTMLPart *part = w->part();
-
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (isURLAllowed() &&
