@@ -616,7 +616,8 @@ void KLocale::removeCatalogue(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog )) {
     d->catalogNames.remove( catalog );
-	updateCatalogues();  // walk through the KCatalogue instances and weed out everything we no longer need
+    if (KGlobal::_instance)
+      updateCatalogues();  // walk through the KCatalogue instances and weed out everything we no longer need
   }
 }
 
