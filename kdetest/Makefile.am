@@ -34,7 +34,7 @@ ktreelisttest_SOURCES = ktreelisttest.cpp
 kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
 
 SUFFIXES = .moc
-LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore -L@x_libraries@ -lX11 -lXext -L@qt_libraries@ -lqt
+LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @X_LDFLAGS@ -lX11 -lXext @QT_LDFLAGS@ -lqt
 
 %.moc: %.h
 	$(MOC) $< -o $@

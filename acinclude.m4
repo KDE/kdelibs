@@ -67,20 +67,21 @@ fi
 
 if test -z $x_libraries; then
   X_LDFLAGS=""
-  x_libraries="."; dnl better than nothing :-)
+  x_libraries="/usr/lib"; dnl better than nothing :-)
+  all_libraries=""
  else
   X_LDFLAGS="-L$x_libraries"
+  all_libraries=$X_LDFLAGS
 fi
 
 AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LDFLAGS)
 all_includes=$X_INCLUDES
-all_libraries=$X_LDFLAGS
 ])
 ## ------------------------------------------------------------------------
 ## Try to find the QT headers and libraries.
 ## $(QT_LDLFLAGS) will be -Lqtliblocation (if needed)
-## and $(qt_includes) will be -Iqthdrlocation (if needed)
+## and $(QT_INCLUDES) will be -Iqthdrlocation (if needed)
 ## ------------------------------------------------------------------------
 ##
 AC_DEFUN(AC_PATH_QT,
@@ -103,9 +104,7 @@ ac_qt_includes=$qt_incdir
 qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
 AC_FIND_FILE(libqt.so libqt.a libqt.sl, $qt_libdirs, qt_libdir)
-ac_qt_libraries=$qt_libdir
-
-if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
+ac_qt_ltest "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"
   ac_qt_notfound=""
   if test "$ac_qt_includes" = NO; then
@@ -146,6 +145,8 @@ else
  all_includes="$all_includes $QT_INCLUDES"
 fi
 
+if test "$qt_libraries" = "$x_libraries"; then
+ QT_LDF
 if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else

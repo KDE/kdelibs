@@ -115,7 +115,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/ampseq.P .deps/formats.P .deps/gif.P .deps/html.P \
 .deps/htmlfont.P .deps/htmlform.P .deps/htmlobj.P .deps/jpeg.P

@@ -132,7 +132,7 @@ DIST_COMMON =  AUTHORS Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/dither.P .deps/kcolordlg.P .deps/kdatepik.P \
 .deps/kdatetbl.P .deps/kedit.P .deps/kfontdialog.P .deps/kledlamp.P \
