@@ -29,6 +29,20 @@ int setenv(const char *name, const char *value, int overwrite) {
     return putenv(a);
 }
 
+int unsetenv(const char *name) {
+    int i;
+    char * a;
+
+    i = strlen(name) + 2;
+    a = (char*)malloc(i);
+    if (!a) return 1;
+    
+    strcpy(a, name);
+    strcat(a, "=");
+    
+    return putenv(a);
+}
+
 #endif
 
 #ifndef HAVE_USLEEP
