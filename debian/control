@@ -1,5 +1,5 @@
 Source: kdelibs4
-Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, nas-dev, libpng2-dev | libpng-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libfam-dev, pkg-config, libglib1.3-dev, libssl-dev
+Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.1-1), libqt3-mt-dev (>= 2:3.0.1-1), qt3-tools (>= 2:3.0.1-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, nas-dev, libpng2-dev | libpng-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libfam-dev, pkg-config, libglib1.3-dev, libssl-dev
 Build-Depends-Indep: kdoc, qt3-doc
 Section: libs
 Priority: optional
@@ -19,9 +19,9 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs4-bin
 Architecture: any
 Section: libs
-Replaces: kdelibs3, kdelibs4 (<< 3.0-0.beta1-1)
+Replaces: kdelibs3 (<< 4:2.2.2-7), kdelibs3-bin, kdelibs4 (<< 3.0-0.beta1-1)
 Depends: ${shlibs:Depends}, python, xbase-clients
-Conflicts: kdelibs4 (<< 3.0-0.beta1-1)
+Conflicts: kdelibs4 (<< 3.0-0.beta1-1), kdelibs3-bin, kdelibs3 (<< 4:2.2.2-7)
 Provides: kdelibs-bin
 Description: KDE core binaries
  KDE core binaries.
@@ -161,7 +161,7 @@ Package: kdelibs4-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs4 (<< 3.0-0.alpha1-6), kdelibs3 (<< 4:2.2.2-1)
-Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, libbz2-dev
+Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.1-1), libqt3-mt-dev (>= 2:3.0.1-1), qt3-tools (>= 2:3.0.1-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, libbz2-dev
 Recommends: libarts-bin (= ${Source-Version}), libkmid-bin (= ${Source-Version}), kdelibs4-cups (= ${Source-Version})
 Conflicts: kdelibs-dev
 Suggests: kdelibs4-doc, kdoc, libxml2-dev, libxslt1-dev
