@@ -47,7 +47,7 @@ public:
    */
   static KMimeType* find( const char *_name );
   /**
-   * This function looks at umode_t first. If that does not help it looks at the extension. 
+   * This function looks at mode_t first. If that does not help it looks at the extension. 
    * This is ok for FTP, FILE, TAR and friends, but is not for
    * HTTP ( cgi scripts! ). You should use @ref KfmRun instead, but this function returns immediately
    * while @ref KfmRun is async. If no extension matches, then @ref KMimeMagic is used if the URL a local
@@ -62,7 +62,7 @@ public:
    *                   but it is FAST.
    * @return a pointer to the matching mimetype. 0L is NEVER returned.
    */
-  static KMimeType* findByURL( K2URL& _url, umode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
+  static KMimeType* findByURL( K2URL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
 
   /**
    * Called by the main function

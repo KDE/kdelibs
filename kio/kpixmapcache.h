@@ -16,17 +16,17 @@ public:
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
-  static QPixmap* pixmapForURL( K2URL& _url, umode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
+  static QPixmap* pixmapForURL( K2URL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
-  static QPixmap* pixmapForURL( const char *_url, umode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
+  static QPixmap* pixmapForURL( const char *_url, mode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
   /**
    * Never returns an empty string. If the image was not found, then the default pixmap is returned.
    *
    * @return the full path of the requested pixmap.
    */
-  static QString pixmapFileForURL( const char *_url, umode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
+  static QString pixmapFileForURL( const char *_url, mode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    * Use this function only if you dont have a special URL for which you search a pixmap.

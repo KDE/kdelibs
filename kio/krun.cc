@@ -289,7 +289,7 @@ bool KRun::runOldApplication( const char *_exec, list<string>& _urls, bool _allo
   return true;
 }
 
-KRun::KRun( const char *_url, umode_t _mode, bool _is_local_file, bool _auto_delete )
+KRun::KRun( const char *_url, mode_t _mode, bool _is_local_file, bool _auto_delete )
 {
   m_bFault = false;
   m_bAutoDelete = _auto_delete;

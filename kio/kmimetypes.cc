@@ -182,7 +182,7 @@ KMimeType* KMimeType::find( const char *_name )
   return mime;
 }
 
-KMimeType* KMimeType::findByURL( K2URL& _url, umode_t _mode, bool _is_local_file, bool _fast_mode )
+KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
 {
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
@@ -194,7 +194,7 @@ KMimeType* KMimeType::findByURL( K2URL& _url, umode_t _mode, bool _is_local_file
       _mode = buff.st_mode;
   }
 
-  // Look at umode_t first
+  // Look at mode_t first
   if ( S_ISDIR( _mode ) )
   {
     // Special hack for local files. We want to see wether we

@@ -21,7 +21,7 @@ public:
    *                       wether it is a local URL or not. This flag is just used to improve speed, since
    *                       the function @ref K2URL::isLocalFile is a bit slow.
    */
-  KRun( const char *_url, umode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
+  KRun( const char *_url, mode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
   ~KRun();
   
   bool hasError() { return m_bFault; }
@@ -96,7 +96,7 @@ protected:
   bool m_bInit;
   
   bool m_bIsLocalFile;
-  umode_t m_mode;
+  mode_t m_mode;
   
   /**
    * Open the given URL. This function is used after the mime type

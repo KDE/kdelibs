@@ -10,19 +10,19 @@
 
 #include <sys/stat.h>
 
-QPixmap* KPixmapCache::pixmapForURL( K2URL& _url, umode_t _mode, bool _is_local_file, bool _mini )
+QPixmap* KPixmapCache::pixmapForURL( K2URL& _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   return pixmap( KMimeType::findByURL( _url, _mode, _is_local_file )->icon( _url, _is_local_file ), _mini );
 }
 
-QPixmap* KPixmapCache::pixmapForURL( const char* _url, umode_t _mode, bool _is_local_file, bool _mini )
+QPixmap* KPixmapCache::pixmapForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   K2URL url( _url );
   
   return pixmap( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ), _mini );
 }
 
-QString KPixmapCache::pixmapFileForURL( const char* _url, umode_t _mode, bool _is_local_file, bool _mini )
+QString KPixmapCache::pixmapFileForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   K2URL url( _url );
   
