@@ -39,9 +39,23 @@ struct Object_skel::MethodTableEntry {
 
 long Object::_staticObjectCount = 0;
 
-Object::Object() : _scheduleNode(0), _refCnt(1), _deleteOk(false)
+Object::Object() :  _deleteOk(false), _scheduleNode(0), _refCnt(1)
 {
 	_staticObjectCount++;
+}
+
+void Object::_destroy()
+{
+	_deleteOk = true;
+
+	if(_scheduleNode)
+	{
+		FlowSystem *fs = Dispatcher::the()->flowSystem();
+		assert(fs);
+
+		fs->removeObject(_scheduleNode);
+	}
+	delete this;
 }
 
 Object::~Object()
@@ -52,13 +66,6 @@ Object::~Object()
 		cerr << "       call delete manually - use _release() instead" << endl;
 	}
 	assert(_deleteOk);
-	if(_scheduleNode)
-	{
-		FlowSystem *fs = Dispatcher::the()->flowSystem();
-		assert(fs);
-
-		fs->removeObject(_scheduleNode);
-	}
 	_staticObjectCount--;
 }
 
@@ -129,11 +136,7 @@ void Object_skel::_release()
 {
 	assert(_refCnt > 0);
 	_refCnt--;
-	if((_refCnt+_remoteSendCount) == 0)
-	{
-		_deleteOk = true;
-		delete this;
-	}
+	if((_refCnt+_remoteSendCount) == 0) _destroy();
 }
 
 void Object_skel::_copyRemote()
@@ -466,9 +469,8 @@ void Object_stub::_release()
 	_refCnt--;
 	if(_refCnt == 0)
 	{
-		_deleteOk = true;
 		_releaseRemote();
-		delete this;
+		_destroy();
 	}
 }
 

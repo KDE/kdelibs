@@ -37,6 +37,9 @@ class ScheduleNode;
 class Object_skel;
 
 class Object {
+private:
+	bool _deleteOk;				// ensure that "delete" is not called manually
+
 protected:
 	Object();
 	virtual ~Object();
@@ -50,8 +53,10 @@ protected:
 	virtual Object_skel *_skel();
 
 	long _refCnt;				// reference count
-	bool _deleteOk;				// ensure that "delete" is not called manually
 	static long _staticObjectCount;
+
+	void _destroy();			// use this instead of delete (takes care of
+								// properly removing flow system node)
 
 public:
 	/*
