@@ -38,11 +38,15 @@ class QTextStream;
 class CSSStyle;
 class KHTMLView;
 
+#ifndef NDEBUG
 #define KHTMLAssert( x ) if( !(x) ) { \
     const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
     assert( false ); \
 }
+#else
+#define KHTMLAssert( x )
+#endif
 
 namespace DOM {
     class DOMString;
