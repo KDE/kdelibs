@@ -305,6 +305,7 @@ void KBuildSycoca::save()
    // Write header (#pass 1)
    str->device()->at(0);
 
+   (*str) << (Q_INT32) KSYCOCA_VERSION;
    KSycocaFactory * servicetypeFactory = 0L;
    KSycocaFactory * serviceFactory = 0L;
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -349,6 +350,7 @@ void KBuildSycoca::save()
    // Write header (#pass 2)
    str->device()->at(0);
 
+   (*str) << (Q_INT32) KSYCOCA_VERSION;
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())

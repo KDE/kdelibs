@@ -28,6 +28,13 @@ class KSycocaFactory;
 class KSycocaFactoryList;
 
 /**
+ * Sycoca file version number.
+ * If the existing file is outdated, it will not get read
+ * but instead we'll ask kded to regenerate a new one...
+*/
+#define KSYCOCA_VERSION 10
+
+/**
  * @internal
  * Read-only SYstem COnfiguration CAche
  */
@@ -82,6 +89,7 @@ public:
    virtual bool isBuilding() { return false; }
 
 protected:
+   void checkVersion();
    KSycocaFactoryList *m_lstFactories;
    QDataStream *str;
    static KSycoca *_self;
