@@ -563,7 +563,7 @@ public:
    *
    * @param windowType is type of dock window
    */
-  void setDockWindowTransient (bool transientEnabled);
+  void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
 public slots:
   /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
