@@ -874,12 +874,12 @@ void KHTMLPart::checkCompleted()
   for (; it != end; ++it )
     if ( !it.data().m_bCompleted )
       return;
-  
+
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
   kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
     return;
-  
+
   if ( d->m_bParsing || d->m_bComplete )
     return;
 
@@ -1807,9 +1807,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     args.frameName = target;
 
     // construct some user headers if necessary
-    if (contentType.isNull())
+    if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
       d->m_userHeaders = "Content-type: application/x-www-form-urlencoded\r\n";
-    else
+    else // contentType must be "multipart/form-data"
       d->m_userHeaders = "Content-type: " + contentType + "; boundary=" + boundary + "\r\n";
 
     emit d->m_extension->openURLRequest( u, args );
