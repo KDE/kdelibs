@@ -118,9 +118,10 @@ public:
      *
      * Note that you probably want an item in the help menu calling
      * this method with force=true.
-     * 
+     *
      * @param parent Parent widget of TipDialog.
-     * @param tipFile The name of the tip file.
+     * @param tipFile The name of the tip file. It has be relative to the "apps"
+     *                resource of KStandardDirs
      * @param force If true, the dialog is show, even when the users
      *              disabled it.
      */
