@@ -55,6 +55,10 @@ public:
 	// interface against node implementation
 	
 	virtual void requireFlow() = 0;
+	virtual void virtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort) = 0;
+	virtual void devirtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort) = 0;
 
 	// interface to modify the node from outside
 	
@@ -83,6 +87,10 @@ public:
 	// interface against node implementation
 	
 	void requireFlow();
+	virtual void virtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort);
+	virtual void devirtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort);
 
 	// interface to modify the node from outside
 	

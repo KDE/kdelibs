@@ -469,20 +469,7 @@ interface StereoFFTScope : StereoEffect {
 /**
  * A stack of stereo effects
  */
-interface StereoEffectStack : SynthModule {
-	/**
-	 * these should be streams - however dynamic expansion isn't there
-	 * yet, so this is the quick & dirty solution
-	 */
-	void setInputs(object leftObj, string leftPort,
-					object rightObj, string rightPort);
-	/**
-	 * these should be streams - however dynamic expansion isn't there
-	 * yet, so this is the quick & dirty solution
-	 */
-	void setOutputs(object leftObj, string leftPort,
-					object rightObj, string rightPort);
-
+interface StereoEffectStack : StereoEffect {
 	/**
 	 * inserts an effect at the top side (= directly after the input)
 	 *

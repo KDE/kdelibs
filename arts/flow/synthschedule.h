@@ -51,12 +51,18 @@ public:		// yes, bad style, but needs to be fast
 class StdScheduleNode;
 
 class Port {
+	friend class VPort;				// TODO: debugging, remove me when it works?
+	friend class VPortConnection;	// TODO: debugging, remove me when it works?
 protected:
 	std::string _name;
 	void *_ptr;
 	AttributeType _flags;
 	StdScheduleNode *parent;
 
+	// each port has a virtual port, which allows port redirection
+	class VPort *_vport;
+
+	// dynamic ports are created to implement multiports
 	bool _dynamicPort;
 
 	// functionality to remove all connections automatically as soon as
@@ -76,6 +82,7 @@ public:
 	Port(std::string name, void *ptr, long flags, StdScheduleNode* parent);
 	virtual ~Port();
 
+	inline VPort* vport()		 { assert(_vport); return _vport; }
 	AttributeType flags();
 	std::string name();
 	void setPtr(void *ptr);
@@ -217,6 +224,10 @@ public:
 	void start();
 	void stop();
 	void requireFlow();
+	void virtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort);
+	void devirtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort);
 
 	// AutoSuspend stuff
 	bool suspendable();

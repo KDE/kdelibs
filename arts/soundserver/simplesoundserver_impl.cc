@@ -59,7 +59,7 @@ ByteStreamToAudio AttachedProducer::receiver()
  *     ~~~~~~~~~   ~~~~~~~~~~
  *        |            |
  *     ___V____________V____
- *    |      outStack       |      (here the user can plugin various effects)
+ *    |      outstack       |      (here the user can plugin various effects)
  *     ~~~~~~~~~~~~~~~~~~~~~
  *        |            |
  *     ___V____________V____
@@ -68,8 +68,9 @@ ByteStreamToAudio AttachedProducer::receiver()
  */
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
-	_outstack.setInputs(addLeft,"outvalue",addRight,"outvalue");
-	_outstack.setOutputs(playSound,"invalue_left",playSound,"invalue_right");
+	connect(addLeft,_outstack,"inleft");
+	connect(addRight,_outstack,"inright");
+	connect(_outstack,playSound);
 
 	addLeft.start();
 	addRight.start();

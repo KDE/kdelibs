@@ -30,12 +30,8 @@ using namespace std;
 class StereoEffectStack_impl : public StereoEffectStack_skel,
 							   public StdSynthModule
 {
-	Object leftIn,rightIn,leftOut,rightOut;
-	string leftInP, rightInP, leftOutP, rightOutP;
-	bool haveIn, haveOut;
 	long nextID;
 
-	float *inleft, *inright, *outleft, *outright;
 	struct EffectEntry {
 		StereoEffect effect;
 		string name;
@@ -50,13 +46,20 @@ class StereoEffectStack_impl : public StereoEffectStack_skel,
 		else
 			from._node()->disconnect(fromP,to._node(),toP);
 	}
+	void xvirtualize(bool connect, string myPort, Object impl, string implPort)
+	{
+		if(connect)
+			_node()->virtualize(myPort,impl._node(),implPort);
+		else
+			_node()->devirtualize(myPort,impl._node(),implPort);
+	}
 	void internalconnect(bool c)
 	{
-		if(!haveIn || !haveOut) return;
 		if(fx.empty())
 		{
-			xconnect(c,leftIn,leftInP,leftOut,leftOutP);
-			xconnect(c,rightIn,rightInP,rightOut,rightOutP);
+			/* no effects - forward input through to output */
+			xvirtualize(c,"outleft",this->_copy(),"inleft");
+			xvirtualize(c,"outright",this->_copy(),"inright");
 		}
 		else
 		{
@@ -67,10 +70,10 @@ class StereoEffectStack_impl : public StereoEffectStack_skel,
 			for(ei = fx.begin(); ei != fx.end(); ei++, count++)
 			{
 				EffectEntry *e = *ei;
-				if(count == 0)		/* top of chain? connect input nodes to effect */
+				if(count == 0)		/* top of chain? virtualize to effect */
 				{
-					xconnect(c,leftIn,leftInP,e->effect,"inleft");
-					xconnect(c,rightIn,rightInP,e->effect,"inright");
+					xvirtualize(c,"inleft",e->effect,"inleft");
+					xvirtualize(c,"inright",e->effect,"inright");
 				}
 				else				/* not top? connect last effect to current effect */
 				{
@@ -79,40 +82,18 @@ class StereoEffectStack_impl : public StereoEffectStack_skel,
 				}
 				laste = e;
 			}
-			/* end: connect effect output to output nodes */
-			xconnect(c,laste->effect,"outleft",leftOut,leftOutP);
-			xconnect(c,laste->effect,"outright",rightOut,rightOutP);
+			/* end: virtualize effect output to our output */
+			xvirtualize(c,"outleft",laste->effect,"outleft");
+			xvirtualize(c,"outright",laste->effect,"outright");
 		}
 	}
 	void disconnect() { internalconnect(false); }
 	void reconnect()  { internalconnect(true); }
 public:
-	StereoEffectStack_impl() : haveIn(false), haveOut(false), nextID(1)
+	StereoEffectStack_impl() : nextID(1)
 	{
-	}
-	void setInputs(Object leftObj, const string& leftPort,
-					Object rightObj, const string& rightPort)
-	{
-		disconnect();
-		leftIn = leftObj;
-		rightIn = rightObj;
-		leftInP = leftPort;
-		rightInP = rightPort;
-		haveIn = true;
 		reconnect();
 	}
-	void setOutputs(Object leftObj, const string& leftPort,
-					Object rightObj, const string& rightPort)
-	{
-		disconnect();
-		leftOut = leftObj;
-		rightOut = rightObj;
-		leftOutP = leftPort;
-		rightOutP = rightPort;
-		haveOut = true;
-		reconnect();
-	}
-
 	long insertTop(StereoEffect effect, const string& name)
 	{
 		disconnect();

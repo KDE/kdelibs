@@ -20,6 +20,7 @@
 
     */
 
+#include "virtualports.h"
 #include "startupmanager.h"
 #include "synthschedule.h"
 #include "debug.h"
@@ -73,12 +74,13 @@ Port::Port(string name, void *ptr, long flags, StdScheduleNode* parent)
 	: _name(name), _ptr(ptr), _flags((AttributeType)flags),
 	  parent(parent), _dynamicPort(false)
 {
-	//
+	_vport = new VPort(this);
 }
 
 Port::~Port()
 {
-	//
+	if(_vport)
+		delete _vport;
 }
 
 AttributeType Port::flags()
@@ -124,15 +126,21 @@ void Port::removeAutoDisconnect(Port *source)
 
 void Port::disconnectAll()
 {
+	if(_vport)
+		delete _vport;
+	_vport = 0;
+	assert(autoDisconnect.empty());
 	while(!autoDisconnect.empty())
 	{
 		Port *other = *autoDisconnect.begin();
 
 		// syntax is disconnect(source)
 		if(_flags & streamIn)
-			disconnect(other);		 // if we're incoming, other port is source
+			// if we're incoming, other port is source
+			vport()->disconnect(other->vport());
 		else
-			other->disconnect(this); // if we're outgoing, we're the source
+			// if we're outgoing, we're the source
+			other->vport()->disconnect(this->vport());
 	}
 }
 
@@ -247,7 +255,7 @@ void MultiPort::connect(Port *port)
 	initConns();
 
 	parent->addDynamicPort(dport);
-	dport->connect(port);
+	dport->vport()->connect(port->vport());
 }
 
 void MultiPort::disconnect(Port *sport)
@@ -265,7 +273,7 @@ void MultiPort::disconnect(Port *sport)
 			parts.erase(i);
 			initConns();
 
-			dport->disconnect(port);
+			dport->vport()->disconnect(port->vport());
 			parent->removeDynamicPort(dport);
 
 			delete dport;
@@ -352,7 +360,6 @@ StdScheduleNode::~StdScheduleNode()
 {
 	/* stop module if still running */
 	if(running) stop();
-
 	/* disconnect all ports */
 	stack<Port *> disconnect_stack;
 
@@ -373,7 +380,6 @@ StdScheduleNode::~StdScheduleNode()
 		disconnect_stack.top()->disconnectAll();
 		disconnect_stack.pop();
 	}
-
 	/* free them */
 	for(i=ports.begin();i != ports.end();i++)
 		delete (*i);
@@ -488,6 +494,32 @@ Port *StdScheduleNode::findPort(string name)
 	return 0;
 }
 
+void StdScheduleNode::virtualize(std::string port, ScheduleNode *implNode,
+													std::string implPort)
+{
+	StdScheduleNode *impl=(StdScheduleNode *)implNode->cast("StdScheduleNode");
+	if(impl)
+	{
+		Port *p1 = findPort(port);
+		Port *p2 = impl->findPort(implPort);
+
+		p1->vport()->virtualize(p2->vport());
+	}
+}
+
+void StdScheduleNode::devirtualize(std::string port, ScheduleNode *implNode,
+											std::string implPort)
+{
+	StdScheduleNode *impl=(StdScheduleNode *)implNode->cast("StdScheduleNode");
+	if(impl)
+	{
+		Port *p1 = findPort(port);
+		Port *p2 = impl->findPort(implPort);
+
+		p1->vport()->devirtualize(p2->vport());
+	}
+}
+
 void StdScheduleNode::connect(string port, ScheduleNode *dest, string destport)
 {
 	RemoteScheduleNode *rsn = dest->remoteScheduleNode();
@@ -505,11 +537,11 @@ void StdScheduleNode::connect(string port, ScheduleNode *dest, string destport)
 	{
 		if((p1->flags() & streamIn) && (p2->flags() & streamOut))
 		{
-			p1->connect(p2);
+			p1->vport()->connect(p2->vport());
 		}
 		else if((p2->flags() & streamIn) && (p1->flags() & streamOut))
 		{
-			p2->connect(p1);
+			p2->vport()->connect(p1->vport());
 		}
 	}
 }
@@ -532,11 +564,11 @@ void StdScheduleNode::disconnect(string port,
 	{
 		if((p1->flags() & streamIn) && (p2->flags() & streamOut))
 		{
-			p1->disconnect(p2);
+			p1->vport()->disconnect(p2->vport());
 		}
 		else if((p2->flags() & streamIn) && (p1->flags() & streamOut))
 		{
-			p2->disconnect(p1);
+			p2->vport()->disconnect(p1->vport());
 		}
 	}
 }

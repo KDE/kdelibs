@@ -19,7 +19,7 @@ libartsflow_la_SOURCES =  synth_play_impl.cc artsserver_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
   synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c asyncschedule.cc \
   bytestreamtoaudio_impl.cc stereovolumecontrol_impl.cc \
-  stereoeffectstack_impl.cc fft.c stereofftscope_impl.cc
+  stereoeffectstack_impl.cc fft.c stereofftscope_impl.cc virtualports.cc
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h artsserver_impl.h audiosubsys.h cache.h \

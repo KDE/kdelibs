@@ -75,6 +75,20 @@ void RemoteScheduleNode::requireFlow()
 	assert(false);
 }
 
+void RemoteScheduleNode::virtualize(std::string port, ScheduleNode *fromNode,
+			                        std::string fromPort)
+{
+	// (de)virtualization of ports is only implemented locally
+	assert(false);
+}
+
+void RemoteScheduleNode::devirtualize(std::string port, ScheduleNode *fromNode,
+			                        std::string fromPort)
+{
+	// (de)virtualization of ports is only implemented locally
+	assert(false);
+}
+
 // interface to modify the node from outside
 	
 void RemoteScheduleNode::start()
