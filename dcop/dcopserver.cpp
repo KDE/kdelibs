@@ -428,15 +428,21 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	if ( !receive( app, obj, fun, data, replyType, replyData, iceConn ) ) {
 	    qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
 	}
-      } else if ( app == "*") {
-	// handle a broadcast.
+      } else if ( app[app.length()-1] == '*') {
+	// handle a multicast.
 	QDictIterator<DCOPConnection> aIt(appIds);
-    for ( ; aIt.current(); ++aIt) {
-	    IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
-			 sizeof(DCOPMsg), DCOPMsg, pMsg);
-	    int datalen = ba.size();
-	    pMsg->length += datalen;
-	    IceSendData(aIt.current()->iceConn, datalen, (char *) ba.data());
+	int l = app.length()-1;
+	for ( ; aIt.current(); ++aIt) 
+        {
+	    DCOPConnection *client = aIt.current();
+	    if (!l || (strncmp(client->appId.data(), app.data(), l) == 0))
+	    {
+	        IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
+	                     sizeof(DCOPMsg), DCOPMsg, pMsg);
+	        int datalen = ba.size();
+	        pMsg->length += datalen;
+	        IceSendData(client->iceConn, datalen, (char *) ba.data());
+	    }
 	}
       }
     }
