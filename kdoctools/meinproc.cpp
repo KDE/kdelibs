@@ -70,6 +70,8 @@ static KCmdLineOptions options[] =
 {
     { "stylesheet <xsl>",  I18N_NOOP( "Stylesheet to use" ), 0 },
     { "stdout", I18N_NOOP( "output whole document to stdout" ), 0 },
+    { "o", 0, 0 },
+    { "output <file>", I18N_NOOP("output whole document to file" ), 0 },
     { "htdig", I18N_NOOP( "create a ht://dig compatible index" ), 0 },
     { "check", I18N_NOOP( "check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "create a cache file for the document" ), 0},
@@ -233,13 +235,16 @@ int main(int argc, char **argv) {
             goto end;
         }
 
-        if (output.find( "<FILENAME " ) == -1 || args->isSet( "stdout" ))
+        if (output.find( "<FILENAME " ) == -1 || args->isSet( "stdout" ) || args->isSet("output") )
         {
             QFile file;
             if (args->isSet( "stdout" ) ) {
                 file.open( IO_WriteOnly, stdout );
             } else {
-                file.setName( "index.html" );
+                if (args->isSet( "output" ) )
+                   file.setName( QFile::decodeName(args->getOption( "output" )));
+                else 
+                   file.setName( "index.html" );
                 file.open(IO_WriteOnly);
             }
             replaceCharsetHeader( output );
