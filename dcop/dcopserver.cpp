@@ -22,10 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
+#endif
+
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -33,18 +33,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <signal.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
-
+#ifdef HAVE_VORK_H
+#include <vfork.h>
+#endif
 
 #include <qfile.h>
 #include <qtextstream.h>
-
-#include "dcopserver.moc"
-#include <dcopglobal.h>
 #include <qdatastream.h>
 #include <qstack.h>
+
+#include <dcopserver.h>
+#include <dcopglobal.h>
 
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
@@ -53,6 +59,7 @@ static Bool HostBasedAuthProc ( char* /*hostname*/)
 
 // SM DUMMY
 #include <X11/SM/SMlib.h>
+
 static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
 {
     return 0;
@@ -842,12 +849,12 @@ int main( int argc, char* argv[] )
 
   if (!nofork)
   {
-    if (fork() > 0)
+    if (vfork() > 0)
       exit(0); // I am the parent
 
     setsid();
 
-    if (fork() > 0)
+    if (vfork() > 0)
       exit(0); // get rid of controlling terminal
   }
 
@@ -862,3 +869,5 @@ int main( int argc, char* argv[] )
 
   return a.exec();
 }
+
+#include "dcopserver.moc"

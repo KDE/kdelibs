@@ -19,6 +19,9 @@
    Boston, MA 02111-1307, USA.
 */
 
+#ifndef DCOPSERVER_H
+#define DCOPSERVER_H "$Id$"
+
 #include <qobject.h>
 #include <qstring.h>
 #include <qsocketnotifier.h>
@@ -70,3 +73,5 @@ private slots:
   QDict<DCOPConnection> appIds;
   QPtrDict<DCOPConnection> clients;
 };
+
+#endif
