@@ -2474,7 +2474,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         RenameDlg_Mode mode = (RenameDlg_Mode)
             ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
              ( (*it).uSource == (*it).uDest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
-        if ( files.count() > 0 ) // Not last one
+        if ( files.count() > 1 ) // Not last one
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
@@ -2494,7 +2494,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             res = R_CANCEL;
         else
         {
-            SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 0,
+            SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 1,
                                                                         job->errorString() );
 
             // Convert the return code from SkipDlg into a RenameDlg code
