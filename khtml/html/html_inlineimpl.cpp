@@ -102,6 +102,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         if ( target )
             utarget = QConstString( target->s, target->l ).string();
 
+        if ( e->button() == 1 )
+            utarget == "_blank";
+
         if ( e->target()->id() == ID_IMG ) {
             HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>( e->target() );
             if ( img && img->isServerMap() )
