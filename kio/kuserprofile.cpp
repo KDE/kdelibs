@@ -25,7 +25,6 @@
 #include <kdebug.h>
 
 #include <qtl.h>
-#include <qsmartptr.h>
 
 template class QList<KServiceTypeProfile>;
 

@@ -18,13 +18,14 @@
 */
 
 #ifndef __k_service_type_factory_h__
-#define __k_service_type_factory_h__
+#define __k_service_type_factory_h__ "$Id$"
+
+#include <assert.h>
 
 #include <qstringlist.h>
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"
-#include <assert.h>
 
 class KSycoca;
 class KSycocaDict;
