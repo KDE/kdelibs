@@ -162,7 +162,23 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     {
         // No domain set, check hostname.
         if (fqdn != mHost)
-          return false;
+        {
+          // If hostnames do not match, check if the TLD of the
+          // cookie and the request URL match.  If they do send 
+          // the cookie.  This means a cookie without a domain=
+          // field is available to every host under the TLD of 
+          // its fqdn.          
+          if ( domains.isEmpty() )
+            return false;
+          
+          int len = domains.count();
+          QString fqdnTLD = domains[len-2];
+          int matchpos = mHost.find(fqdnTLD, 0, false);
+          
+          if ((matchpos == -1 && domains[len-1] != mHost) ||
+              (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
+              return false;
+        }
     }
     else if (!domains.contains(mDomain))
     {
