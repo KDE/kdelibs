@@ -49,14 +49,17 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
   : Resource( config )
 {
   mLdap = 0;
-
-  mUser = config->readEntry( "LdapUser" );
-  mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
-  mDn = config->readEntry( "LdapDn" );
-  mHost = config->readEntry( "LdapHost" );
-  mPort = config->readNumEntry( "LdapPort", 389 );
-  mFilter = config->readEntry( "LdapFilter" );
-  mAnonymous = config->readBoolEntry( "LdapAnonymous" );
+  if ( config )
+  {
+     mUser = config->readEntry( "LdapUser" );
+     mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
+     mDn = config->readEntry( "LdapDn" );
+     mHost = config->readEntry( "LdapHost" );
+     mPort = config->readNumEntry( "LdapPort", 389 );
+     mFilter = config->readEntry( "LdapFilter" );
+     mAnonymous = config->readBoolEntry( "LdapAnonymous" );
+  }
+  else mPort = 389;
 }
 
 void ResourceLDAP::writeConfig( KConfig *config )
