@@ -374,7 +374,11 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     // as well, which might either be a) undesired or b) make it impossible
     // for the slave to connect to the application.
     // In such case we start the slave via KProcess.
-    if (!client->isAttached() || client->isAttachedToForeignServer())
+    // It's possible to force this by setting the env. variable
+    // KDE_FORK_SLAVES, Clearcase seems to require this.
+    static bool bForkSlaves = !QCString(getenv("KDE_FORK_SLAVES")).isEmpty();
+    
+    if (bForkSlaves || !client->isAttached() || client->isAttachedToForeignServer())
     {
        QString _name = KProtocolInfo::exec(protocol);
        if (_name.isEmpty())
