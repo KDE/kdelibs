@@ -256,8 +256,7 @@ void KFileList::slotOpenFile()
 	QListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
-		KURL url;
-		url.setPath(item->text(2));
+		KURL url( item->text( 2 ) );
 		new KRun(url);
 	}
 }
