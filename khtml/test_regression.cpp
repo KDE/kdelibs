@@ -134,7 +134,7 @@ RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
     putDirect("quit", new RegTestFunction(exec,m_regTest,RegTestFunction::Quit,1), DontEnum );
 }
 
-RegTestFunction::RegTestFunction(ExecState */*exec*/, RegressionTest *_regTest, int _id, int length)
+RegTestFunction::RegTestFunction(ExecState* /*exec*/, RegressionTest *_regTest, int _id, int length)
 {
     m_regTest = _regTest;
     id = _id;
@@ -670,6 +670,22 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
     }
 }
 
+void RegressionTest::dumpRenderTree( QTextStream &outputStream, KHTMLPart* part )
+{
+    static_cast<DocumentImpl*>( part->document().handle() )->renderer()->layer()->dump( outputStream );
+
+    // Dump frames if any
+    // Get list of names instead of frames() to sort the list alphabetically
+    QStringList names = part->frameNames();
+    for ( QStringList::iterator it = names.begin(); it != names.end(); ++it ) {
+        outputStream << "FRAME: " << (*it) << "\n";
+	KHTMLPart* frame = part->findFrame( (*it) );
+	Q_ASSERT( frame );
+	if ( frame )
+            dumpRenderTree( outputStream, frame );
+    }
+}
+
 QString RegressionTest::getPartOutput( OutputType type)
 {
     // dump out the contents of the rendering & DOM trees
@@ -677,7 +693,7 @@ QString RegressionTest::getPartOutput( OutputType type)
     QTextStream outputStream(dump,IO_WriteOnly);
 
     if ( type == RenderTree ) {
-        static_cast<DocumentImpl*>( m_part->document().handle() )->renderer()->layer()->dump( outputStream );
+        dumpRenderTree( outputStream, m_part );
     } else {
         assert( type == DOMTree );
         getPartDOMOutput( outputStream, m_part, 0 );

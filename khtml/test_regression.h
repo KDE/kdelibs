@@ -129,6 +129,7 @@ public:
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
     void getPartDOMOutput( QTextStream &outputStream, KHTMLPart* part, uint indent );
+    void dumpRenderTree( QTextStream &outputStream, KHTMLPart* part );
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
