@@ -33,7 +33,10 @@ KInstance::KInstance( const QCString& name)
 {
     ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
+    {
       KGlobal::_instance = this;
+      KGlobal::_activeInstance = this;
+    }
 
     _iconLoader = 0;
     _config = 0;
@@ -48,7 +51,10 @@ KInstance::KInstance( const KAboutData * aboutData )
     ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance)
+    {
       KGlobal::_instance = this;
+      KGlobal::_activeInstance = this;
+    }
 
     _iconLoader = 0;
     _config = 0;
@@ -66,6 +72,8 @@ KInstance::~KInstance()
 
     if (KGlobal::_instance == this)
         KGlobal::_instance = 0;
+    if (KGlobal::_activeInstance == this)
+        KGlobal::_activeInstance = 0;
 }
 
 

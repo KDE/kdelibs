@@ -74,6 +74,14 @@ public:
     static  QFont               *_fixedFont;
     static  QFont               *_toolBarFont;
     static  QFont               *_menuFont;
+
+    /**
+     * The instance currently active (useful in a multi-instance
+     * application, such as a KParts application).
+     * Don't use this - it's mainly for KAboutDialog and KBugReport.
+     */
+    static  KInstance           *_activeInstance;
+
 };
 
 /**

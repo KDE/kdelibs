@@ -185,6 +185,7 @@ void KGlobal::freeAll()
 // The Variables
 
 KInstance       *KGlobal::_instance     = 0;
+KInstance       *KGlobal::_activeInstance = 0;
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
 
