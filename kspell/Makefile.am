@@ -20,7 +20,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES=  $(all_includes)
+INCLUDES=  $(all_includes) -I$(top_srcdir)/dcop
 
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 3:0 $(all_libraries)
