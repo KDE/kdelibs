@@ -703,10 +703,10 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 		continue;
 	case 'b':
 	case 'h':
+                rst.replace(i, 2, MonthName(pDate.month()).left(3));
+		continue;
 	case 'B':
-		tmp = MonthName(pDate.month());
-		if (shortfmt) tmp.truncate(3);
-                rst.replace(i, 2, tmp);
+                rst.replace(i, 2, MonthName(pDate.month()));
 		continue;
 	case 'd':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.day() ));
@@ -718,10 +718,10 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
                 rst.replace(i, 2, QString().sprintf("%03d", pDate.dayOfYear()) );
 		continue;
 	case 'a':
+                rst.replace(i, 2, WeekDayName(pDate.dayOfWeek()).left(3));
+		continue;
 	case 'A':
-		tmp = WeekDayName( pDate.dayOfWeek() );		
-		if (shortfmt) tmp.truncate(3);
-                rst.replace(i, 2, tmp);
+                rst.replace(i, 2, WeekDayName(pDate.dayOfWeek()));
 		continue;
 	case 'u':
                 rst.replace(i, 2, QString::number( pDate.dayOfWeek() ) );
