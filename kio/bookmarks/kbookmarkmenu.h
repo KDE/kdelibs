@@ -125,7 +125,7 @@ protected slots:
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
   void slotRMBActionRemoveBookmark();
   void slotRMBActionOpenBookmark();
-  // void slotRMBActionOpenFolder(); TODO
+  void slotRMBActionOpenFolder();
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();

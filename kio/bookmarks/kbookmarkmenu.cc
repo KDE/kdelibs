@@ -183,7 +183,7 @@ QString KBookmarkMenu::contextMenuItemAddress()
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
 {
   QString address = contextMenuItemAddress();
-  kdDebug(7043) << "slotAboutToShowContextMenu" << address << endl;
+  kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -193,7 +193,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
 
   if (bookmark.isGroup()) {
      contextMenu->insertItem("Delete Folder", this, SLOT(slotRMBActionRemoveBookmark()));
-     // contextMenu->insertItem("Open Folder in Tabs", this, SLOT(slotRMBActionOpenFolder()));
+     contextMenu->insertItem("Open Folder in Tabs", this, SLOT(slotRMBActionOpenFolder()));
   } else {
      contextMenu->insertItem("Delete bookmark", this, SLOT(slotRMBActionRemoveBookmark()));
      contextMenu->insertItem("Open bookmark", this, SLOT(slotRMBActionOpenBookmark()));
@@ -203,7 +203,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
 void KBookmarkMenu::slotRMBActionRemoveBookmark()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(7043) << "slotRMBActionRemoveBookmark" << address << endl;
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemoveBookmark" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -219,13 +219,41 @@ void KBookmarkMenu::slotRMBActionRemoveBookmark()
 void KBookmarkMenu::slotRMBActionOpenBookmark()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(7043) << "slotRMBActionOpenBookmark" << address << endl;
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenBookmark" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
   m_pOwner->openBookmarkURL( bookmark.url().url() );
+}
+
+void KBookmarkMenu::slotRMBActionOpenFolder()
+{
+  QString address = contextMenuItemAddress();
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenFolder" << address << endl;
+  if (address.isNull())
+     return;
+  KBookmark bookmark = m_pManager->findByAddress( address );
+  Q_ASSERT(!bookmark.isNull());
+
+  Q_ASSERT(bookmark.isGroup());
+  KBookmarkOwnerListCapable* owner = dynamic_cast<KBookmarkOwnerListCapable*>( m_pOwner ); 
+  if (!owner) {
+    kdWarning(7043) << "slotRMBActionOpenFolder() - not KBookmarkOwnerListCapable!" << endl;
+    return;
+  }
+
+  QStringList urlList;
+  KBookmarkGroup parentBookmark = bookmark.toGroup();
+  for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) )
+  {
+    if ( bm.isSeparator() || bm.isGroup() ) 
+       continue;
+    urlList << bm.url().url().utf8();
+  }
+  
+  owner->openBookmarkURLList( urlList );
 }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
@@ -398,6 +426,7 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
+
       m_lstSubMenus.append( subMenu );
     }
   }
@@ -506,9 +535,8 @@ void KBookmarkMenu::slotBookmarkSelected()
 
 void KBookmarkMenu::slotNSBookmarkSelected()
 {
-    QString link(sender()->name()+8);
-
-    m_pOwner->openBookmarkURL( link );
+  QString link(sender()->name()+8);
+  m_pOwner->openBookmarkURL( link );
 }
 
 void KBookmarkMenu::slotNSLoad()
@@ -592,6 +620,8 @@ BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url,
   m_url->setText( url );
   grid->addWidget( m_url, 1, 1 );
   grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
+
+  // TODO move all setup stuff into tree
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
   m_folderTree->header()->hide();
