@@ -32,7 +32,6 @@
 KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale * locale)
   : KCalendarSystem(locale)
 {
-  kdDebug(5400) << "\nCreated gregorian calendar" << endl;
 }
 
 KCalendarSystemGregorian::~KCalendarSystemGregorian()
@@ -41,15 +40,12 @@ KCalendarSystemGregorian::~KCalendarSystemGregorian()
 
 int KCalendarSystemGregorian::year(const QDate& date) const
 {
-  kdDebug(5400) << "Gregorian year..." << endl;
   return date.year();
 }
 
 int KCalendarSystemGregorian::monthsInYear( const QDate & date ) const
 {
   Q_UNUSED( date )
-
-  kdDebug(5400) << "Gregorian monthsInYear" << endl;
 
   return 12;
 }
@@ -86,7 +82,6 @@ QString KCalendarSystemGregorian::monthNamePossessive(const QDate& date, bool sh
 
 QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName) const
 {
-  kdDebug(5400) << "Gregorian getMonthName" << endl;
   Q_UNUSED(year);
 
   if ( shortName )
@@ -152,7 +147,6 @@ QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName)
 QString KCalendarSystemGregorian::monthNamePossessive(int month, int year,
                                                       bool shortName) const
 {
-  kdDebug(5400) << "Gregorian getMonthName" << endl;
   Q_UNUSED(year);
 
   if ( shortName )
@@ -245,7 +239,6 @@ QString KCalendarSystemGregorian::weekDayName(int col, bool shortName) const
   // ### Should this really be different to each calendar system? Or are we
   //     only going to support weeks with 7 days?
 
-  //kdDebug(5400) << "Gregorian wDayName" << endl;
   return locale()->weekDayName(col, shortName);
 }
 
@@ -267,7 +260,6 @@ int KCalendarSystemGregorian::dayOfYear(const QDate & date) const
 
 int KCalendarSystemGregorian::daysInMonth(const QDate& date) const
 {
-  kdDebug(5400) << "Gregorian daysInMonth" << endl;
   return date.daysInMonth();
 }
 
