@@ -99,7 +99,7 @@ KFMExec::KFMExec()
             else
             // We must fetch the file
             {
-                // Build the destination filename, in ~/.kde/share/apps/kfmexec/tmp/
+                // Build the destination filename, in ~/.kde/share/apps/kioexec/tmp/
                 // Unlike KDE-1.1, we put the filename at the end so that the extension is kept
                 // (Some programs rely on it)
                 QString tmp = KGlobal::dirs()->saveLocation( "cache", "krun/" ) +
@@ -227,7 +227,7 @@ void KFMExec::slotRunApp()
                 {
                     kdDebug() << QString("src='%1'  dest='%2'").arg(src).arg(dest.url()).ascii() << endl;
                     // Do it the synchronous way.
-                    if ( !KIO::NetAccess::upload( src, dest ) )
+                    if ( !KIO::NetAccess::upload( src, dest, 0 ) )
                     {
                         KMessageBox::error( 0L, KIO::NetAccess::lastErrorString() );
                         continue; // don't delete the temp file
@@ -250,7 +250,7 @@ void KFMExec::slotRunApp()
 
 int main( int argc, char **argv )
 {
-    KAboutData aboutData( "kfmexec", I18N_NOOP("KFMExec"),
+    KAboutData aboutData( "kioexec", I18N_NOOP("KIOExec"),
         version, description, KAboutData::License_GPL,
         "(c) 1998-2000,2003 The KFM/Konqueror Developers");
     aboutData.addAuthor("David Faure",0, "faure@kde.org");

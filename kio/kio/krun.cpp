@@ -347,23 +347,23 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     mx2.ignFile = true;
   }
 
-  // FIXME: the current way of invoking kfmexec disables term and su use
+  // FIXME: the current way of invoking kioexec disables term and su use
 
-  // Check if we need "tempexec" (kfmexec in fact)
+  // Check if we need "tempexec" (kioexec in fact)
   if( tempFiles ) {
-    result << "kfmexec" << "--tempfiles" << exec;
+    result << "kioexec" << "--tempfiles" << exec;
     result += _urls.toStringList();
     if (has_shell)
       result = KShell::joinArgs( result );
     return result;
   }
 
-  // Check if we need kfmexec
+  // Check if we need kioexec
   if( !mx1.hasUrls ) {
     for( KURL::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
       if ( !(*it).isLocalFile() ) {
-        // We need to run the app through kfmexec
-        result << "kfmexec" << exec;
+        // We need to run the app through kioexec
+        result << "kioexec" << exec;
         result += _urls.toStringList();
         if (has_shell)
           result = KShell::joinArgs( result );

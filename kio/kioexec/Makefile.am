@@ -1,15 +1,18 @@
+AM_CPPFLAGS = $(all_includes)
 
-INCLUDES= $(all_includes)
-LDADD   = $(LIB_KIO) 
+bin_PROGRAMS = kioexec
 
-####### Files
+kioexec_SOURCES = main.cpp
+kioexec_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kioexec_LDADD   = $(LIB_KIO)
 
-bin_PROGRAMS = kfmexec
-
-kfmexec_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kfmexec_SOURCES = main.cpp
 noinst_HEADERS = main.h
 METASOURCES = AUTO
 
 messages:
-	$(XGETTEXT) $(kfmexec_SOURCES) -o $(podir)/kfmexec.pot
+	$(XGETTEXT) $(kioexec_SOURCES) -o $(podir)/kioexec.pot
+
+install-exec-hook:
+	@-rm -f $(DESTDIR)/$(bindir)/kfmexec
+	@$(LN_S) kioexec $(DESTDIR)/$(bindir)/kfmexec
+
