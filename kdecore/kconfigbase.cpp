@@ -145,8 +145,8 @@ QString KConfigBase::readEntry( const QString& aKey,
   return aValue;
 }
 
-QProperty KConfigBase::readPropertyEntry( const QString& aKey,
-					  QProperty::Type type ) const
+QVariant KConfigBase::readPropertyEntry( const QString& aKey,
+					  QVariant::Type type ) const
 { 
   QValueList<int> intList;
   QValueList<double> doubleList;
@@ -156,13 +156,13 @@ QProperty KConfigBase::readPropertyEntry( const QString& aKey,
   
   switch( type )
     {
-    case QProperty::Empty:
-      return QProperty();
-    case QProperty::StringType:
-      return QProperty( readEntry( aKey ) );
-    case QProperty::StringListType:
-      return QProperty( readListEntry( aKey ) );
-    case QProperty::IntListType:
+    case QVariant::Empty:
+      return QVariant();
+    case QVariant::String:
+      return QVariant( readEntry( aKey ) );
+    case QVariant::StringList:
+      return QVariant( readListEntry( aKey ) );
+    case QVariant::IntList:
 
       strList = readListEntry( aKey );
       
@@ -172,8 +172,8 @@ QProperty KConfigBase::readPropertyEntry( const QString& aKey,
       for (; it != end; ++it )
         intList.append( (*it).toInt() );
 
-      return QProperty( intList );
-    case QProperty::DoubleListType:
+      return QVariant( intList );
+    case QVariant::DoubleList:
 
       strList = readListEntry( aKey );
       
@@ -183,44 +183,44 @@ QProperty KConfigBase::readPropertyEntry( const QString& aKey,
       for (; it != end; ++it )
         doubleList.append( (*it).toDouble() );
 
-      return QProperty( doubleList );
-    case QProperty::FontType:
-      return QProperty( readFontEntry( aKey ) );
-    case QProperty::PixmapType:
+      return QVariant( doubleList );
+    case QVariant::Font:
+      return QVariant( readFontEntry( aKey ) );
+    case QVariant::Pixmap:
       ASSERT( 0 );
-      return QProperty();
-    case QProperty::ImageType:
+      return QVariant();
+    case QVariant::Image:
       ASSERT( 0 );
-      return QProperty();
-    case QProperty::BrushType:
+      return QVariant();
+    case QVariant::Brush:
       ASSERT( 0 );
-      return QProperty();
-    case QProperty::PointType:
-      return QProperty( readPointEntry( aKey ) );
-    case QProperty::RectType:
-      return QProperty( readRectEntry( aKey ) );
-    case QProperty::SizeType:
-      return QProperty( readSizeEntry( aKey ) );
-    case QProperty::ColorType:
-      return QProperty( readColorEntry( aKey ) );
-    case QProperty::PaletteType:
+      return QVariant();
+    case QVariant::Point:
+      return QVariant( readPointEntry( aKey ) );
+    case QVariant::Rect:
+      return QVariant( readRectEntry( aKey ) );
+    case QVariant::Size:
+      return QVariant( readSizeEntry( aKey ) );
+    case QVariant::Color:
+      return QVariant( readColorEntry( aKey ) );
+    case QVariant::Palette:
       ASSERT( 0 );
-      return QProperty();
-    case QProperty::ColorGroupType:
+      return QVariant();
+    case QVariant::ColorGroup:
       ASSERT( 0 );
-      return QProperty();
-    case QProperty::IntType:
-      return QProperty( readNumEntry( aKey ) );
-    case QProperty::BoolType:
-      return QProperty( readBoolEntry( aKey ) );
-    case QProperty::DoubleType:
-      return QProperty( readDoubleNumEntry( aKey ) );
+      return QVariant();
+    case QVariant::Int:
+      return QVariant( readNumEntry( aKey ) );
+    case QVariant::Bool:
+      return QVariant( readBoolEntry( aKey ) );
+    case QVariant::Double:
+      return QVariant( readDoubleNumEntry( aKey ) );
     default:
       ASSERT( 0 );
     }  
 
   // Never reached
-  return QProperty();
+  return QVariant();
 }
 
 int KConfigBase::readListEntry( const QString& pKey, 
@@ -688,7 +688,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
   return aValue;
 }
 
-void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop, 
+void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop, 
 			       bool bPersistent, 
 			       bool bGlobal, bool bNLS )
 {
@@ -702,16 +702,16 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
 
   switch( prop.type() )
     {
-    case QProperty::Empty:
+    case QVariant::Empty:
       writeEntry( pKey, "", bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::StringType:
+    case QVariant::String:
       writeEntry( pKey, prop.stringValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::StringListType:
+    case QVariant::StringList:
       writeEntry( pKey, prop.stringListValue(), ',', bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::IntListType:
+    case QVariant::IntList:
     
       iIt = prop.intListValue().begin();
       iEnd = prop.intListValue().end();
@@ -722,7 +722,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
       
       break;
-    case QProperty::DoubleListType:
+    case QVariant::DoubleList:
       
       dIt = prop.doubleListValue().begin();
       dEnd = prop.doubleListValue().end();
@@ -733,45 +733,45 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
       
       break;
-    case QProperty::FontType:
+    case QVariant::Font:
       writeEntry( pKey, prop.fontValue(), bPersistent, bGlobal, bNLS );
       break;
-      // case QProperty::MovieType:
+      // case QVariant::Movie:
       // return "QMovie";
-    case QProperty::PixmapType:
+    case QVariant::Pixmap:
       ASSERT( 0 );
       break;
-    case QProperty::ImageType:
+    case QVariant::Image:
       ASSERT( 0 );
       break;
-    case QProperty::BrushType:
+    case QVariant::Brush:
       ASSERT( 0 );
       break;
-    case QProperty::PointType:
+    case QVariant::Point:
       writeEntry( pKey, prop.pointValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::RectType:
+    case QVariant::Rect:
       writeEntry( pKey, prop.rectValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::SizeType:
+    case QVariant::Size:
       writeEntry( pKey, prop.sizeValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::ColorType:
+    case QVariant::Color:
       writeEntry( pKey, prop.colorValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::PaletteType:
+    case QVariant::Palette:
       ASSERT( 0 );
       break;
-    case QProperty::ColorGroupType:
+    case QVariant::ColorGroup:
       ASSERT( 0 );
       break;
-    case QProperty::IntType:
+    case QVariant::Int:
       writeEntry( pKey, prop.intValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::BoolType:
+    case QVariant::Bool:
       writeEntry( pKey, prop.boolValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QProperty::DoubleType:
+    case QVariant::Double:
       writeEntry( pKey, prop.doubleValue(), bPersistent, bGlobal, bNLS );
       break;
     default:

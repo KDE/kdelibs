@@ -26,7 +26,7 @@
 #include <qmap.h>
 #include <qshared.h>
 #include <qdatastream.h>
-#include <qproperty.h>
+#include <qvariant.h>
 
 #include <ksharedptr.h>
 #include <ksimpleconfig.h>
@@ -44,7 +44,7 @@ class KServiceType : public KShared
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef const QSharedPtr<QProperty> PropertyPtr;
+  typedef const QSharedPtr<QVariant> PropertyPtr;
 
   KServiceType( const QString& _name, const QString& _icon, 
 		const QString& _comment );
@@ -77,9 +77,9 @@ public:
 
   bool isValid() const { return m_bValid; }
 
-  virtual QProperty::Type propertyDef( const QString& _name ) const;
+  virtual QVariant::Type propertyDef( const QString& _name ) const;
   virtual QStringList propertyDefNames() const;
-  virtual const QMap<QString,QProperty::Type>& propertyDefs() const { return m_mapPropDefs; }
+  virtual const QMap<QString,QVariant::Type>& propertyDefs() const { return m_mapPropDefs; }
 
   virtual void load( QDataStream& );
   virtual void save( QDataStream& ) const;
@@ -106,8 +106,8 @@ protected:
   QString m_strName;
   QString m_strIcon;
   QString m_strComment;
-  QMap<QString,QProperty> m_mapProps;
-  QMap<QString,QProperty::Type> m_mapPropDefs;
+  QMap<QString,QVariant> m_mapProps;
+  QMap<QString,QVariant::Type> m_mapPropDefs;
 
   bool m_bValid;
   

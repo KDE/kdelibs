@@ -26,7 +26,7 @@
 #include <qshared.h>
 #include <qmap.h>
 #include <qdatastream.h>
-#include <qproperty.h>
+#include <qvariant.h>
 
 #include <ksimpleconfig.h>
 #include <ksharedptr.h>
@@ -53,7 +53,7 @@ class KService : public KShared
 
 public:  
   typedef KSharedPtr<KService> Ptr;
-  typedef const QSharedPtr<QProperty> PropertyPtr;
+  typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /*
    * Constructor.  You may pass in arguments to create a service with
@@ -186,7 +186,7 @@ private:
   // QString m_strFile;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
-  QMap<QString,QProperty> m_mapProps;
+  QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
   
   static QList<KService>* s_lstServices;

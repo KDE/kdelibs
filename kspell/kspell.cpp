@@ -15,11 +15,9 @@
 #endif
 
 #include <kapp.h>
-#include <kwm.h>
 #include <kdebug.h>
-
 #include "kspell.h"
- 
+#include <kwm.h>
 
 #define MAXLINELENGTH 150
 #define TEMPsz  3072

@@ -42,7 +42,7 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
       _cfg.setGroup( *gIt );
       m_mapProps.insert( (*gIt).mid( 10 ),
 			 _cfg.readPropertyEntry( "Value",
-						 QProperty::nameToType( _cfg.readEntry( "Type" ) ) ) );
+						 QVariant::nameToType( _cfg.readEntry( "Type" ) ) ) );
     }
   }
 
@@ -53,7 +53,7 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
     {
       _cfg.setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
-			    QProperty::nameToType( _cfg.readEntry( "Type" ) ) );
+			    QVariant::nameToType( _cfg.readEntry( "Type" ) ) );
     }
   }
 
@@ -78,23 +78,23 @@ KServiceType::~KServiceType()
 
 KServiceType::PropertyPtr KServiceType::property( const QString& _name ) const
 {
-  QProperty* p = 0;
+  QVariant* p = 0;
 
   if ( _name == "Name" )
-    p = new QProperty( m_strName );
+    p = new QVariant( m_strName );
   if ( _name == "Icon" )
-    p = new QProperty( m_strIcon );
+    p = new QVariant( m_strIcon );
   if ( _name == "Comment" )
-    p = new QProperty( m_strComment );
+    p = new QVariant( m_strComment );
 
   if ( p )
     return KServiceType::PropertyPtr( p );
 
-  QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
-    return (QProperty*)0;
+    return (QVariant*)0;
 
-  p = (QProperty*)(&(it.data()));
+  p = (QVariant*)(&(it.data()));
 
   p->ref();
   return KServiceType::PropertyPtr( p );
@@ -104,7 +104,7 @@ QStringList KServiceType::propertyNames() const
 {
   QStringList res;
 
-  QMap<QString,QProperty>::ConstIterator it = m_mapProps.begin();
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.begin();
   for( ; it != m_mapProps.end(); ++it )
     res.append( it.key() );
 
@@ -115,11 +115,11 @@ QStringList KServiceType::propertyNames() const
   return res;
 }
 
-QProperty::Type KServiceType::propertyDef( const QString& _name ) const
+QVariant::Type KServiceType::propertyDef( const QString& _name ) const
 {
-  QMap<QString,QProperty::Type>::ConstIterator it = m_mapPropDefs.find( _name );
+  QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.find( _name );
   if ( it == m_mapPropDefs.end() )
-    return QProperty::Empty;
+    return QVariant::Empty;
   return it.data();
 }
 
@@ -127,7 +127,7 @@ QStringList KServiceType::propertyDefNames() const
 {
   QStringList l;
 
-  QMap<QString,QProperty::Type>::ConstIterator it = m_mapPropDefs.begin();
+  QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.begin();
   for( ; it != m_mapPropDefs.end(); ++it )
     l.append( it.key() );
 

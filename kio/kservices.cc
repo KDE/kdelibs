@@ -113,8 +113,8 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
     KServiceType* s = KServiceType::serviceType( *it );
     if ( s )
     {
-      const QMap<QString,QProperty::Type>& pd = s->propertyDefs();
-      QMap<QString,QProperty::Type>::ConstIterator pit = pd.begin();
+      const QMap<QString,QVariant::Type>& pd = s->propertyDefs();
+      QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
       for( ; pit != pd.end(); ++pit )
       {
 	m_mapProps.insert( pit.key(), config.readPropertyEntry( pit.key(), pit.data() ) );
@@ -176,41 +176,41 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 
 KService::PropertyPtr KService::property( const QString& _name ) const
 {
-  QProperty* p = 0;
+  QVariant* p = 0;
 
   if ( _name == "Name" )
-    p = new QProperty( m_strName );
+    p = new QVariant( m_strName );
   if ( _name == "Exec" )
-    p = new QProperty( m_strExec );
+    p = new QVariant( m_strExec );
   if ( _name == "CORBAExec" )
-    p = new QProperty( m_strCORBAExec );
+    p = new QVariant( m_strCORBAExec );
   if ( _name == "Icon" )
-    p = new QProperty( m_strIcon );
+    p = new QVariant( m_strIcon );
   if ( _name == "TerminalOptions" )
-    p = new QProperty( m_strTerminalOptions );
+    p = new QVariant( m_strTerminalOptions );
   if ( _name == "Path" )
-    p = new QProperty( m_strPath );
+    p = new QVariant( m_strPath );
   if ( _name == "Comment" )
-    p = new QProperty( m_strComment );
+    p = new QVariant( m_strComment );
   if ( _name == "ActivationMode" )
-    p = new QProperty( m_strActivationMode );
+    p = new QVariant( m_strActivationMode );
   if ( _name == "RepoIds" )
-    p = new QProperty( m_lstRepoIds );
+    p = new QVariant( m_lstRepoIds );
   //  if ( _name == "File" )
-  //    p = new QProperty( m_strFile );
+  //    p = new QVariant( m_strFile );
   if ( _name == "ServiceTypes" )
-    p = new QProperty( m_lstServiceTypes );
+    p = new QVariant( m_lstServiceTypes );
   if ( _name == "AllowAsDefault" )
-    p = new QProperty( m_bAllowAsDefault );
+    p = new QVariant( m_bAllowAsDefault );
 
   if ( p )
     return KService::PropertyPtr( p );
 
-  QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
-    return (QProperty*)0;
+    return (QVariant*)0;
 
-  p = (QProperty*)(&(it.data()));
+  p = (QVariant*)(&(it.data()));
 
   p->ref();
   return KService::PropertyPtr( p );
@@ -220,7 +220,7 @@ QStringList KService::propertyNames() const
 {
   QStringList res;
 
-  QMap<QString,QProperty>::ConstIterator it = m_mapProps.begin();
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.begin();
   for( ; it != m_mapProps.end(); ++it )
     res.append( it.key() );
 

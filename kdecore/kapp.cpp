@@ -42,6 +42,12 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
+#include <kstyle.h>
+#include <qplatinumstyle.h>
+#include <qcdestyle.h>
+#include <kconfig.h>
+#include <kstddirs.h>
+
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -57,9 +63,6 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-
 #include "kprocctrl.h"
 
 #ifdef HAVE_PATHS_H
@@ -70,16 +73,13 @@
 #define _PATH_TMP "/tmp/"
 #endif
 
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
 // defined by X11 headers
 #ifdef KeyPress
 #undef KeyPress
 #endif
-
-#include <kstyle.h>
-#include <qplatinumstyle.h>
-#include <qcdestyle.h>
-#include <kconfig.h>
-#include <kstddirs.h>
 
 KApplication* KApplication::KApp = 0L;
 //extern bool bAreaCalculated;

@@ -22,6 +22,15 @@
 // $Id$
 //
 // $Log$
+// Revision 1.30  1999/06/19 20:15:39  kulow
+// implemented KConfigBase::getConfigState. I changed the elements
+// to NoAccess, ReadOnly, ReadWrite.
+//
+// BTW: Currently KConfigBackend contains only virtual functions and
+// everything else is in KConfigINIBackend. Shouldn't the code to collect
+// the filenames in a bit upper class and only the actual parsing put
+// into the INIBackend?
+//
 // Revision 1.29  1999/06/18 16:16:32  porten
 // made the ';' vs. ',' choice at consistent at least until we have a final solution.
 //
@@ -61,7 +70,7 @@
 #include <qfont.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
-#include <qproperty.h>
+#include <qvariant.h>
 #include <qmap.h>
 
 #include "kconfigdata.h"
@@ -168,7 +177,7 @@ public:
    *
    * @return an empty property on error.
    */
-  QProperty readPropertyEntry( const QString& aKey, QProperty::Type ) const;
+  QVariant readPropertyEntry( const QString& aKey, QVariant::Type ) const;
  
   /**
    * Read a list of strings.
@@ -383,7 +392,7 @@ public:
    *
    * @see #writeEntry
    */
-  void writeEntry( const QString& rKey, const QProperty& rValue,
+  void writeEntry( const QString& rKey, const QVariant& rValue,
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
 

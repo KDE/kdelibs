@@ -1,6 +1,7 @@
 #include "kio_job.h" 
 #include <qtimer.h>
 
+#include <kconfig.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <kwm.h>
