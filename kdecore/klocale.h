@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
+    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+    Copyright (C) 1999-2001 Hans Petter Bieker <bieker@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -770,16 +771,11 @@ private:
   void initCharset(KConfig * config);
 
   /**
-   * @internal FIgure out which encoding the user prefers.
+   * @internal Figure out which encoding the user prefers.
    * 
    * @param config The configuration object used for init
    */
   void initEncoding(KConfig * config);
-
-  /**
-   * @internal function used by setLanguage().
-   */
-  void initCodec();
 
   /**
    * @internal function used by readTime(const QString &) const.
@@ -849,6 +845,7 @@ private:
 
   // #### HPB: Remove in KDE 3
   QCString m_lang;
+  // #### HPB: Remove in KDE 3
   QTextCodec * m_codec; // Codec used for translations
   // #### HPB: Remove in KDE 3
   QString m_langs;

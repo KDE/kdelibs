@@ -1,3 +1,4 @@
+#undef NDEBUG
 // -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
@@ -63,7 +64,6 @@ public:
 extern void qt_set_locale_codec( QTextCodec *codec );
 
 KLocale::KLocale( const QString & catalogue, bool useEnv )
-  : m_codec( 0 )
 {
   d = new KLocalePrivate;
   // make it the owner of the objecs in the list
@@ -92,29 +92,6 @@ KLocale::KLocale( const QString & catalogue, bool useEnv )
   initLanguage(config, useEnv);
 }
 
-void KLocale::initCodec()
-{
-  m_codec = 0;
-  QString location = locate("locale",
-			    language() + QString::fromLatin1("/charset"));
-  if (!location.isNull())
-    {
-      QFile f(location);
-      if (f.open(IO_ReadOnly))
-	{
-	  char buf[256];
-	  f.readLine(buf, 256);
-	  QString codecName = QString::fromLatin1( buf ).stripWhiteSpace();
-	  m_codec = KGlobal::charsets()->codecForName( codecName );
-
-	  ASSERT( m_codec );
-	}
-    }
-  // default to UTF-8
-  if (!m_codec)
-    m_codec = QTextCodec::codecForMib(106); // UTF-8
-}
-
 void KLocale::initLanguage(KConfig * config, bool useEnv)
 {
   if (!config)
@@ -133,6 +110,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
       (':', QFile::decodeName( ::getenv("KDE_LANG") ));
 
   languageList += config->readListEntry("Language", ':');
+  kdDebug(173) << "languages:" << config->readEntry("Language");
 
   // same order as setlocale use
   if ( useEnv )
@@ -161,14 +139,6 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 
       languageList += langs;
     }
-      
-  // Remove duplicate entries in reverse so that we
-  // can keep user's language preference order intact. (DA)
-  for( QStringList::Iterator it = languageList.fromLast();
-         it != languageList.begin();
-         --it )
-    if ( languageList.contains(*it) > 1 )
-      it = languageList.remove( it );
 
   // now we have a language list -- let's use the first OK language
   setLanguage( languageList );
@@ -372,14 +342,14 @@ bool KLocale::setLanguage(const QString & language)
       {
 	QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
 	  .arg( language ).arg( (*it)->name() );
-	bRes &= !locate("locale", path).isNull();
+	bRes = !locate("locale", path).isNull();
+        if ( !bRes )
+	  kdDebug(173) << "message catalogue not found: " << path << endl;
       }
 
   if ( bRes )
     {
       d->language = language;
-
-      initCodec();
 
       doBindInit();
     }
@@ -389,10 +359,19 @@ bool KLocale::setLanguage(const QString & language)
 
 bool KLocale::setLanguage(const QStringList & languages)
 {
-  bool bRes = false;
+  QStringList languageList(languages);
 
-  for ( QStringList::ConstIterator it = languages.begin();
-	it != languages.end();
+  // Remove duplicate entries in reverse so that we
+  // can keep user's language preference order intact. (DA)
+  for( QStringList::Iterator it = languageList.fromLast();
+         it != languageList.begin();
+         --it )
+    if ( languageList.contains(*it) > 1 )
+      it = languageList.remove( it );
+
+  bool bRes = false;
+  for ( QStringList::ConstIterator it = languageList.begin();
+	it != languageList.end();
 	++it )
     if ( bRes = setLanguage( *it ) )
       break;
@@ -400,7 +379,7 @@ bool KLocale::setLanguage(const QStringList & languages)
   if ( !bRes )
     setLanguage(defaultLanguage());
 
-  d->languageList = languages;
+  d->languageList = languageList;
 
   return bRes;
 }
@@ -553,7 +532,7 @@ QString KLocale::translate_priv(const char *msgid,
 	  // we found it
 	  if (translated)
 	    *translated = text;
-	  return m_codec->toUnicode( text );
+	  return QString::fromUtf8( text );
 	}
     }
 
