@@ -97,9 +97,8 @@ Ftp::~Ftp()
   closeConnection();
 }
 
-#ifndef HAVE_MEMCCPY
-extern "C" {
-void *memccpy(void *dest, const void *src, int c, size_t n)
+/* memccpy appeared first in BSD4.4 */
+void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
     char *d = (char*)dest;
     const char *s = (const char*)src;
@@ -110,8 +109,6 @@ void *memccpy(void *dest, const void *src, int c, size_t n)
 
   return NULL;
 }
-}
-#endif
 
 /*
  * read a line of text
@@ -131,7 +128,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
     if (ctl->cavail > 0)
     {
       x = (max >= ctl->cavail) ? ctl->cavail : max-1;
-      end = (char*)memccpy(buf,ctl->cget,'\n',x);
+      end = (char*)mymemccpy(buf,ctl->cget,'\n',x);
       if (end != NULL)
 	x = end - buf;
       retval += x;
