@@ -700,7 +700,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     while ( src.length() )
     {
         checkBuffer();
-        char curchar = src->latin1();
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         int l = 0;
         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
@@ -934,6 +933,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("QuotedValue");
 #endif
+            ushort curchar;
             while(src.length()) {
                 checkBuffer();
 
@@ -1029,13 +1029,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 qDebug("SearchEnd");
 #endif
             while(src.length()) {
-                curchar = src->unicode();
-                if(curchar == '>')
+                if(*src == '>')
                     break;
 
                 ++src;
             }
-            if(curchar != '>') break;
+            if(!src.length() && *src != '>') break;
 
             searchCount = 0; // Stop looking for '<!--' sequence
             tag = NoTag;
