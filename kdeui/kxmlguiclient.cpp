@@ -33,7 +33,7 @@ static void dump_xml(const QDomElement& elem)
     QString doc;
     QTextStream ts(&doc, IO_WriteOnly);
     ts << elem;
-    qDebug("%s", doc.ascii());
+    qDebug("%s", doc.latin1());
 }
 
 class KXMLGUIClientPrivate
@@ -149,20 +149,14 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     if ( !document.isNull() )
       doc.setContent( document );
 
-    // we are instructed to merge... but the xml file itself might
-    // have other plans.  we had better see if it wants no part of a
-    // merge now (note that this is file-wide.. a container specific
-    // nomerge tag is/will be defined elsewhere)
-    if (doc.documentElement().attribute("nomerge") == "1")
-    {
-      d->m_doc.setContent( document );
-      return;
-    }
-    else
-      mergeXML(base, doc.documentElement(), actionCollection());
+    // merge our original (global) xml with our new one
+    mergeXML(base, doc.documentElement(), actionCollection());
 
+    // reassign our pointer as mergeXML might have done something
+    // strange to it
+    base = d->m_doc.documentElement();
     dump_xml(base.toElement());
-
+   
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
       d->m_doc.setContent( document );
@@ -182,6 +176,18 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, QA
   static QString tagMergeLocal = QString::fromLatin1( "MergeLocal" );
   static QString tagText = QString::fromLatin1( "text" );
   static QString attrAlreadyVisited = QString::fromLatin1( "alreadyVisited" );
+  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
+
+  // there is a possibility that we don't want to merge in the
+  // additive.. rather, we might want to *replace* the base with the
+  // additive.  this can be for any container.. either at a file wide
+  // level or a simple container level.  we look for the 'noMerge'
+  // tag, in any event and just replace the old with the new
+  if ( additive.attribute(attrNoMerge) == "1" )
+  {
+    base.parentNode().replaceChild(additive, base);
+    return true;
+  }
 
   QString tag;
 
