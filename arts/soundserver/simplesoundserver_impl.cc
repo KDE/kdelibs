@@ -31,6 +31,19 @@
 
 using namespace std;
 
+AttachedProducer::AttachedProducer(ByteSoundProducer *sender,
+										ByteStreamToAudio *receiver)
+{
+	this->sender = sender->_copy();
+	this->receiver = receiver->_copy();
+}
+
+bool AttachedProducer::finished()
+{
+	// TODO: might cut the last few milliseconds in some cases
+	return (sender->finished() || sender->_error());
+}
+
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
 	play_obj = ObjectManager::the()->create("Synth_PLAY");
@@ -99,12 +112,10 @@ long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
-	Object *bspCopy = bsp->_copy();
-
 	Object_skel *convertObj = ObjectManager::the()->create("ByteStreamToAudio");
 	assert(convertObj);
 
-	ByteStreamToAudio *convert =
+	ByteStreamToAudio_var convert =
 		(ByteStreamToAudio *)convertObj->_cast("ByteStreamToAudio");
 	assert(convert);
 
@@ -117,6 +128,8 @@ long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 	add_right->_node()->connect("invalue",convert->_node(),"right");
 
 	convert->_node()->start();
+
+	activeProducers.push_back(new AttachedProducer(bsp,convert));
 	return 1;
 }
 
@@ -146,6 +159,23 @@ void SimpleSoundServer_impl::notifyTime()
 			i = activeWavs.begin();
 		}
 		else i++;
+	}
+
+	list<AttachedProducer *>::iterator p;
+
+	p = activeProducers.begin();
+	while(p != activeProducers.end())
+	{
+		AttachedProducer *prod = (*p);
+		if(prod->finished())
+		{
+			cout << "stream finished" << endl;
+			delete prod;
+
+			activeProducers.erase(p);
+			p = activeProducers.begin();
+		}
+		else p++;
 	}
 }
 

@@ -30,12 +30,22 @@
 #include "artsflow.h"
 #include <list>
 
+class AttachedProducer {
+protected:
+	ByteSoundProducer_var sender;
+	ByteStreamToAudio_var receiver;
+public:
+	AttachedProducer(ByteSoundProducer *sender, ByteStreamToAudio *receiver);
+	bool finished();
+};
+
 class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 										public TimeNotify
 {
 protected:
 	Object_var play_obj, add_left, add_right;
 	std::list<Synth_PLAY_WAV *> activeWavs;
+	std::list<AttachedProducer *> activeProducers;
 	StereoEffectStack_var _outstack;
 
 public:

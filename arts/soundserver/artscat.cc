@@ -54,6 +54,7 @@ public:
 	~Sender()
 	{
 		if(waiting) Dispatcher::the()->ioManager()->remove(this,IOType::read);
+		Dispatcher::the()->terminate();
 	}
 
 	long samplingRate() { return 44100; }
@@ -66,7 +67,7 @@ public:
 		/*
 		 * start streaming
 		 */
-		outdata.setPull(8, packetCapacity);
+		outdata.setPull(16, packetCapacity);
 	}
 
 	enum { packetCapacity = 4096 };
@@ -163,5 +164,8 @@ int main(int argc, char **argv)
 	Sender *sender = new Sender(stdin);
 	server->attach(sender);
 	sender->start();
+	// we don't hold a reference to the sender at all any more - the
+	// soundserver should do so, as long as he wants
+	sender->_release();		// TODO: race condition? shouldn't be.
 	dispatcher.run();
 }
