@@ -1697,7 +1697,7 @@ int KEdit::doSave()
 
   int result = 0;
 
-    if(filename == "Untitled") {
+    if(filename == klocale->translate("Untitled")) {
       result = saveAs();
 
       if(result == KEDIT_OK)
