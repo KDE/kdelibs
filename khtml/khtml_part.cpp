@@ -304,10 +304,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                             "Make the font in this window smaller. "
 					    "Click and hold down the mouse button for a menu with all available font sizes." ) );
   /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom In Fast"),
-				0, this, SLOT(slotIncZoomFast()),
+				CTRL + Key_Plus, this, SLOT(slotIncZoomFast()),
 				actionCollection(), "incZoomFast");
   /*KAction *decZoomFactorFast = */new KAction(i18n("Zoom Out Fast"),
-				0, this, SLOT(slotDecZoomFast()),
+				CTRL + Key_Minus, this, SLOT(slotDecZoomFast()),
 				actionCollection(), "decZoomFast");
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
@@ -1503,7 +1503,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     emit setWindowCaption( title.prettyURL() );
   }
   else
-    emit setWindowCaption( i18n( "no title", "* Unknown *" ) );
+    emit setWindowCaption( i18n( "[Untitled]" ) );
 
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if (args.serviceType == "text/xml")
