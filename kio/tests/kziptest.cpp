@@ -156,6 +156,11 @@ int main( int argc, char** argv )
     zip.writeFile( "hugefile", "user", "group", n, huge );
     delete [] huge;
 
+    // Now a file from the harddisk
+    zip.addLocalFile( ".libs/lt-kziptest", "lt-kziptest" );
+
+    printf( "calling close\n" );
+
     zip.close();
 
     printf("-----------------------\n");
