@@ -87,9 +87,11 @@ binary-arch:  build
 	install -d debian/libarts-alsa/usr/share/man/man1
 	make DESTDIR=`pwd`/debian/tmp/ install
 	make -C arts/ clean
+	make -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl \
 		--includedir=/usr/include/kde
 	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	make -C libkmid/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default 
 	-rm -rf debian/libarts-alsa/usr/include \
 		debian/libarts-alsa/usr/bin/knotify build-stamp

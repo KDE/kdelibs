@@ -19,7 +19,7 @@ Description: KDE core libraries (runtime files)
 Package: libarts
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<= 4:2.1-20001210-0), libarts-alsa
+Replaces: kdelibs3 (<= 4:2.1-20010114-0), libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
 Conflicts: kdelibs3 (<= 4:2.1-20001210-0), suidmanager (<< 0.50), libarts-alsa
@@ -35,7 +35,7 @@ Description: aRts Sound system
 Package: libarts-alsa
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<= 4:2.1-20001210-0), libarts
+Replaces: kdelibs3 (<= 4:2.1-20010114-0), libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
 Conflicts: kdelibs3 (<= 4:2.1-20001210-0), suidmanager (<< 0.50), libarts
@@ -51,7 +51,7 @@ Description: aRts Sound system
 Package: libarts-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs3-dev (<= 4:2.1-20001210-0)
+Replaces: kdelibs3-dev (<= 4:2.1-20010114-0)
 Depends: libarts (= ${Source-Version}), libc6-dev, libaudiofile-dev
 Suggests: kdelibs3-dev
 Conflicts: kdelibs3-dev (<= 4:2.1-20001210-0)

@@ -1,6 +1,9 @@
 usr/lib/libmcop.so.0.0.0
 usr/lib/libmcop.so.0
 usr/lib/libmcop.la
+usr/lib/libkmid.so.0.0.95
+usr/lib/libkmid.so.0
+usr/lib/libkmid.la
 usr/lib/mcop/Arts/*
 usr/lib/libarts*.so.*
 usr/lib/libarts*.la
