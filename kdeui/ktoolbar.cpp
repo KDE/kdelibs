@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.79  1998/09/15 05:56:45  antlarr
+//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
+//
+// Revision 1.80  1998/10/05 15:09:53  kulow
 // Revision 1.78  1998/09/01 20:22:23  kulow
 // would do :)
 //
@@ -720,6 +724,7 @@ void KToolBar::init()
   highlight = 0;
   setFrameStyle(NoFrame);
   setLineWidth( 1 );
+  transparent = false;
   resize( width(), item_size );
   items.setAutoDelete(true);
   enableFloating (true);

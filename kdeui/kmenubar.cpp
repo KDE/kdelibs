@@ -39,6 +39,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.35  1998/10/05 15:09:52  kulow
+// purify (and me) likes initialized members, so I choose one (like the compiler
+// would do :)
 //
 // Revision 1.34  1998/09/07 18:44:29  ettrich
 // Matthias: preparation for new features
@@ -169,6 +172,8 @@ void KMenuBar::ContextCallback( int )
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
+  context->insertItem( i18n("Flat"), CONTEXT_FLAT );
+
   position = Top;
   moving = TRUE;
   highlight = false;
