@@ -136,6 +136,17 @@ bool KAccel::insertAction( const QString& sAction, const QString& sDesc,
 	return pAction != 0;
 }
 
+bool KAccel::insertAction( const char* psAction, const char* psShortcuts,
+		const QObject* pObjSlot, const char* psMethodSlot,
+		int nIDMenu, QPopupMenu* pMenu,
+		bool bConfigurable, bool bEnabled )
+{
+	return insertAction( psAction, i18n(psAction),
+		KShortcuts(psShortcuts), KShortcuts(psShortcuts),
+		pObjSlot, psMethodSlot,
+		nIDMenu, pMenu, bConfigurable, bEnabled );
+}
+
 /*bool KAccel::insertAction( const QString& sAction, KShortcuts rgCutDefaults,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		int nIDMenu, QPopupMenu *pMenu,

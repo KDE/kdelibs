@@ -30,15 +30,15 @@ public:
 	                 const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
-			 bool bConfigurable = true, bool bEnabled = true );
-	//bool insertAction( const QString& sAction, KShortcuts rgCutDefaults,
-	//                 const QObject* pObjSlot, const char* psMethodSlot,
-	//                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
-	//		 bool bConfigurable = true, bool bEnabled = true );
+	                 bool bConfigurable = true, bool bEnabled = true );
+	bool insertAction( const char* psAction, const char* psShortcuts,
+	                 const QObject* pObjSlot, const char* psMethodSlot,
+	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
+	                 bool bConfigurable = true, bool bEnabled = true );
 	bool insertAction( KStdAccel::StdAccel id,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0,
-			 bool bConfigurable = true, bool bEnabled = true );
+	                 bool bConfigurable = true, bool bEnabled = true );
 	// BCI: remove 'virtual's.
 	virtual bool removeAction( const QString& sAction );
 	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
