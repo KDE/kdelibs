@@ -168,12 +168,9 @@ public final class KJASAppletClassLoader
                 Main.kjas_err("Could not construct URL for jar file: " + codeBaseURL + " + " + jar, e);
             }
         }
-        if (archives.size() > 0)
-            return;
         // finally add code base url and docbase url
-        if (codeBaseURL != null)
         addURL(codeBaseURL);
-        else {
+
         // the docBaseURL has to be fixed.
         // strip file part from end otherwise this
         // will be interpreted as an archive
@@ -191,7 +188,6 @@ public final class KJASAppletClassLoader
         }
         if (docDirURL != null && !codeBaseURL.equals(docDirURL)) {
             addURL(docDirURL);
-        }
         }
     }
 
@@ -257,7 +253,7 @@ public final class KJASAppletClassLoader
     private Hashtable loadedClasses = new Hashtable();
     public synchronized Class loadClass( String name ) throws ClassNotFoundException
     {
-        Main.debug( dbgID + "loadClass, class name = " + name );
+        //Main.debug( dbgID + "loadClass, class name = " + name );
         //We need to be able to handle foo.class, so strip off the suffix
         String fixed_name = name;
         /*
