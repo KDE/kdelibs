@@ -192,20 +192,11 @@ enum EBorderStyle {
 class BorderValue
 {
 public:
-    BorderValue()
-    {
-	width = 3; // medium is default value
-	style = BNONE;
-    }
+    BorderValue() : width( 3 ), style( BNONE ) {}
+
     QColor color;
     unsigned short width : 12;
     EBorderStyle style : 4;
-
-    bool nonZero() const
-    {
-      // rikkus: workaround for gcc 2.95.3
-      return width!=0 && !(style==BNONE);
-    }
 
     bool operator==(const BorderValue& o) const
     {
@@ -224,7 +215,7 @@ public:
 
     bool hasBorder() const
     {
-    	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();
+    	return left.width || right.width || top.width || bottom.width;
     }
 
     bool operator==(const BorderData& o) const
@@ -324,7 +315,6 @@ public:
 
     bool operator==( const StyleVisualData &o ) const {
 	return ( clip == o.clip &&
-		 colspan == o.colspan &&
 		 counter_increment == o.counter_increment &&
 		 counter_reset == o.counter_reset &&
 		 palette == o.palette );
@@ -334,8 +324,6 @@ public:
     }
 
     LengthBox clip;
-
-    short colspan; // for html, not a css2 attribute
 
     short counter_increment; //ok, so these are not visual mode spesific
     short counter_reset;     //can't go to inherited, since these are not inherited
@@ -647,10 +635,7 @@ public:
 
     bool operator==(const RenderStyle& other) const;
     bool        isFloating() const { return !(noninherited_flags._floating == FNONE); }
-    bool        hasMargin() const { return surround->margin.nonZero(); }
-    bool        hasPadding() const { return surround->padding.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
-    bool        hasOffset() const { return surround->offset.nonZero(); }
 
     bool visuallyOrdered() const { return inherited_flags._visuallyOrdered; }
     void setVisuallyOrdered(bool b) {  inherited_flags._visuallyOrdered = b; }
@@ -711,8 +696,6 @@ public:
 
     EClear clear() const { return  noninherited_flags._clear; }
     ETableLayout tableLayout() const { return  noninherited_flags._table_layout; }
-
-    short colSpan() const { return visual->colspan; }
 
     const QFont & font() const { return inherited->font.f; }
     // use with care. call font->update() after modifications
@@ -818,8 +801,6 @@ public:
 
     void setClear(EClear v) {  noninherited_flags._clear = v; }
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
-    void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
-
     bool setFontDef(const khtml::FontDef & v) {
         // bah, this doesn't compare pointers. broken! (Dirk)
         if (!(inherited->font.fontDef == v)) {

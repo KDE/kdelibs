@@ -77,7 +77,7 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 }
 
 StyleVisualData::StyleVisualData()
-    : colspan( 1 ), counter_increment( 0 ), counter_reset( 0 ),
+     : counter_increment( 0 ), counter_reset( 0 ),
       palette( QApplication::palette() )
 {
 }
@@ -87,7 +87,7 @@ StyleVisualData::~StyleVisualData() {
 
 StyleVisualData::StyleVisualData(const StyleVisualData& o )
     : Shared<StyleVisualData>(),
-      clip( o.clip ), colspan( o.colspan ),
+      clip( o.clip ),
       counter_increment( o.counter_increment ), counter_reset( o.counter_reset ),
       palette( o.palette )
 {
@@ -339,9 +339,6 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     EPosition _position : 2;
 //     EFloat _floating : 2;
     if ( ((int)noninherited_flags._display) >= TABLE ) {
-	// Stupid gcc gives a compile error on
-	// a != other->b if a and b are bitflags. Using
-	// !(a== other->b) instead.
 	if ( !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
 	     !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
 	     !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
@@ -416,15 +413,11 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
 
 RenderStyle* RenderStyle::_default = 0;
-//int RenderStyle::counter = 0;
-//int SharedData::counter = 0;
 
 void RenderStyle::cleanup()
 {
     delete _default;
     _default = 0;
-//    counter = 0;
-//    SharedData::counter = 0;
 }
 
 void RenderStyle::setContent(CachedObject* o)
@@ -480,7 +473,6 @@ void ContentData::clearContent()
     switch (_contentType)
     {
         case CONTENT_OBJECT:
-//            _content.object->deref();
             _content.object = 0;
             break;
         case CONTENT_TEXT:
