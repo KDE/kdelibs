@@ -229,7 +229,7 @@ int KIntSpinBox::value() const
     if ( editor()->edited() )
         const_cast<KIntSpinBox*>(this)->interpretText();
     return QSpinBox::value();
-} 
+}
 
 
 void KIntSpinBox::setBase(int base)
@@ -634,7 +634,7 @@ void KDoubleNumInput::init(double value)
     edit->setValidator(new KFloatValidator(this,
                                                                                    "KDoubleNumInput::KFloatValidator"));
     edit->installEventFilter( this );
-    //setFocusProxy(edit);
+    setFocusProxy(edit);
 
     m_suffix = m_prefix = "";
     layout(true);
