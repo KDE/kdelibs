@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include <klocale.h>
+#include <klistbox.h>
 
 #include <qpushbutton.h>
 #include <qradiobutton.h>
@@ -34,7 +35,6 @@
 #include <qlineedit.h>
 #include <qmultilineedit.h>
 #include <qcombobox.h>
-#include <qlistbox.h>
 #include <qstack.h>
 
 #include "dom_nodeimpl.h"
@@ -554,7 +554,7 @@ RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
     m_size = size;
 
     if(m_multiple || m_size > 1) {
-        QListBox* w = new QListBox(view);
+        KListBox* w = new KListBox(view);
         w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
         m_widget = w;
     }
@@ -570,7 +570,7 @@ RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
 void RenderSelect::layout( bool )
 {
     if(m_multiple || m_size > 1) {
-        QListBox* w = static_cast<QListBox*>(m_widget);
+        KListBox* w = static_cast<KListBox*>(m_widget);
 
         QListBoxItem* p = w->firstItem();
         int width = 0;
@@ -608,7 +608,7 @@ void RenderSelect::close()
             DOMStringImpl *text = static_cast<TextImpl *>(current->firstChild())->string();
 
             if(m_multiple || m_size > 1)
-                static_cast<QListBox*>(m_widget)
+                static_cast<KListBox*>(m_widget)
                     ->insertItem(QString(text->s, text->l), i);
             else
                 static_cast<QComboBox*>(m_widget)
@@ -625,7 +625,7 @@ void RenderSelect::close()
         // the average of that is IMHO QMIN(number of elements, 15)
         // so I did that ;-)
         if(m_multiple && m_size < 1)
-            m_size = QMIN(static_cast<QListBox*>(m_widget)->count(), 15);
+            m_size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
     }
     else {
         // and now disable the widget in case there is no <option> given
@@ -655,7 +655,7 @@ void RenderSelect::reset()
             HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
 
             if(m_multiple || m_size > 1)
-                static_cast<QListBox*>(m_widget)
+                static_cast<KListBox*>(m_widget)
                     ->setSelected(i, p->selected());
             else if(p->selected()) {
                 static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
@@ -679,7 +679,7 @@ QString RenderSelect::encoding()
         QString prefix = encodeString( m_name.string() );
         prefix += '=';
 
-        QListBox* w = static_cast<QListBox*>(m_widget);
+        KListBox* w = static_cast<KListBox*>(m_widget);
 
         HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
 

@@ -51,13 +51,13 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   layout->addWidget (tmpQPushButtonRA, 1, 3);
   
 
-  QListBox* tmpQListBox;
-  tmpQListBox = new QListBox( this, "ListBox_1" );
-  tmpQListBox->setFrameStyle( 51 );
-  tmpQListBox->setLineWidth( 2 );
-  tmpQListBox->setMinimumSize (tmpQListBox->sizeHint());
-  children->append (tmpQListBox);
-  layout->addMultiCellWidget (tmpQListBox, 2, 5, 1, 1);
+  KListBox* tmpKListBox;
+  tmpKListBox = new KListBox( this, "ListBox_1" );
+  tmpKListBox->setFrameStyle( 51 );
+  tmpKListBox->setLineWidth( 2 );
+  tmpKListBox->setMinimumSize (tmpKListBox->sizeHint());
+  children->append (tmpKListBox);
+  layout->addMultiCellWidget (tmpKListBox, 2, 5, 1, 1);
 
   
   QLabel* tmpQLabel;
@@ -186,7 +186,7 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   qpbrep=tmpQPushButtonR;
   qpbrepa=tmpQPushButtonRA;
   editbox=tmpKLineEdit;
-  listbox=tmpQListBox;
+  listbox=tmpKListBox;
   
   
   connect (editbox,SIGNAL (textChanged (const QString &)),

@@ -6,9 +6,9 @@
 #include <qpushbutton.h>
 #include <qbutton.h>
 #include <qlabel.h>
-#include <qlistbox.h>
 #include <qlayout.h>
 
+#include <klistbox.h>
 #include <klined.h>
 #include <kprogress.h>
 
@@ -33,7 +33,7 @@ class KSpellDlg : public QWidget
 
   KLineEdit *editbox;
   KProgress *progbar;
-  QListBox *listbox;
+  KListBox *listbox;
   QStringList *sugg;
   QPushButton *qpbrep, *qpbrepa;
   QLabel *wordlabel;
