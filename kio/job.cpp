@@ -1594,7 +1594,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             for( ; renamedirit != dirs.end() ; ++renamedirit )
             {
                 QString path = (*renamedirit).uDest.path();
-                if ( strncmp( path, oldPath, oldPath.length() ) == 0 )
+                if ( path.left(oldPath.length()) == oldPath )
                     (*renamedirit).uDest.setPath( path.replace( 0, oldPath.length(), newPath ) );
             }
             // Change filenames inside the directory
@@ -1602,7 +1602,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             for( ; renamefileit != files.end() ; ++renamefileit )
             {
                 QString path = (*renamefileit).uDest.path();
-                if ( strncmp( path, oldPath, oldPath.length() ) == 0 )
+                if ( path.left(oldPath.length()) == oldPath )
                     (*renamefileit).uDest.setPath( path.replace( 0, oldPath.length(), newPath ) );
             }
         }
@@ -1646,7 +1646,7 @@ void CopyJob::createNextDir()
         QStringList::Iterator sit = m_skipList.begin();
         for( ; sit != m_skipList.end() && bCreateDir; sit++ )
             // Is dir a subdirectory of *sit ?
-            if ( qstrncmp( *sit, dir, (*sit).length() ) == 0 )
+            if ( *sit == dir.left( (*sit).length() ) )
                 bCreateDir = false; // skip this dir
 
         /* Don't look on the overwrite list. If a/ exists, we must still create a/b/
@@ -1837,7 +1837,7 @@ void CopyJob::copyNextFile()
         QStringList::Iterator sit = m_skipList.begin();
         for( ; sit != m_skipList.end() && bCopyFile; sit++ )
             // Is destFile in *sit (or a subdirectory of *sit) ?
-            if ( qstrncmp( *sit, destFile, (*sit).length() ) == 0 )
+            if ( *sit == destFile.left( (*sit).length() ) )
                 bCopyFile = false; // skip this file
 
         if (!bCopyFile) {
@@ -1853,7 +1853,7 @@ void CopyJob::copyNextFile()
         // or if on the overwrite list
         QStringList::Iterator sit = m_overwriteList.begin();
         for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
-            if ( strncmp( *sit, destFile, (*sit).length() ) == 0 )
+            if ( *sit == destFile.left( (*sit).length() ) )
                 bOverwrite = true;
 
         KIO::Job * newjob;

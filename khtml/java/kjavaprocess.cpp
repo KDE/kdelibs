@@ -123,7 +123,7 @@ void KJavaProcess::setClassArgs( const QString& args )
 
 void KJavaProcess::send( const QString& command )
 {
-    inputBuffer.append( command );
+    inputBuffer.append( command.ascii() );
 
     kdWarning() << "sendRequest: " << command;
 

@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <kdebug.h>
 #include <kmessagebox.h>
 #include <kstddirs.h>
 #include <kuniqueapp.h>
@@ -156,8 +157,8 @@ bool KNotify::notifyBySound(const QString &sound)
 	if (QFileInfo(sound).isRelative())
 		f=locate("sound", sound);
 
-	cerr << "KNotify::notifyBySound - Trying to play file " << sound << endl;
-	if(!server.isNull()) server.play((const char *)f);
+	kdDebug() << "KNotify::notifyBySound - Trying to play file " << sound << endl;
+	if(!server.isNull()) server.play(QFile::encodeName(f).data());
 	
 	return true;
 }

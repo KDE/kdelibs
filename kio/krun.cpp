@@ -465,7 +465,7 @@ void KRun::init()
     if ( m_mode == 0 )
     {
       struct stat buff;
-      if ( stat( m_strURL.path(), &buff ) == -1 )
+      if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
 	KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.url() ) );
 	m_bFault = true;

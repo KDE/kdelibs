@@ -281,19 +281,19 @@ void KTarBase::writeDir( const QString& name, const QString& user, const QString
   if ( dirName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
-    fillBuffer( buffer, "     0", dirName.length()+1, 'L', user, group );
+    fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.ascii(), group.ascii() );
     write( buffer, 0x200 );
     memset( buffer, 0, 0x200 );
-    strcpy( buffer, dirName );
+    strcpy( buffer, dirName.ascii() );
     // write long name
     write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
     // Write name
-    strcpy( buffer, dirName );
+    strcpy( buffer, dirName.ascii() );
 
-  fillBuffer( buffer, " 40755", 0, 0x35, user, group);
+  fillBuffer( buffer, " 40755", 0, 0x35, user.ascii(), group.ascii());
 
   // Write header
   write( buffer, 0x200 );
@@ -344,20 +344,20 @@ void KTarBase::writeFile( const QString& name, const QString& user, const QStrin
   if ( fileName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
-    fillBuffer( buffer, "     0", fileName.length()+1, 'L', user, group );
+    fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.ascii(), group.ascii() );
     write( buffer, 0x200 );
 
     memset( buffer, 0, 0x200 );
-    strcpy( buffer, fileName );
+    strcpy( buffer, fileName.ascii() );
     // write long name
     write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
     // Write name
-    strcpy( buffer, fileName );
+    strcpy( buffer, fileName.ascii() );
 
-  fillBuffer( buffer, "100644", size, 0x30, user, group );
+  fillBuffer( buffer, "100644", size, 0x30, user.ascii(), group.ascii() );
 
   // Write header
   write( buffer, 0x200 );
@@ -490,7 +490,7 @@ bool KTarGz::open( int mode )
     return false;
   }
 
-  m_f = gzopen( m_filename, m );
+  m_f = gzopen( m_filename.ascii(), m );
   if ( !m_f )
     return false;
 

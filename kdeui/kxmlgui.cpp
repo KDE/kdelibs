@@ -158,7 +158,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
   QFile file( xml_file );
   if ( !file.open( IO_ReadOnly ) )
   {
-    kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
+    kdError(1000) << "No such XML file " << filename << endl;
     if ( never_null )
       return QString::fromLatin1( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
     else
@@ -189,7 +189,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
   QFile file( xml_file );
   if ( !file.open( IO_WriteOnly ) )
   {
-    kdError(1000) << "Could not write to " << filename.local8Bit().data() << endl;
+    kdError(1000) << "Could not write to " << filename << endl;
     return false;
   }
 

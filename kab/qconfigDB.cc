@@ -71,7 +71,7 @@ QCString ReadLineFromStream(QTextStream& stream)
   // -----
   while(!stream.eof())
     {
-      line=stream.readLine();
+      line=stream.readLine().ascii();
       if(!line.isEmpty())
 	{
 	  if(isComment(line))
@@ -240,7 +240,7 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
       // -----
       while(!stream.eof())
 	{
-	  line=stream.readLine();
+	  line=stream.readLine().ascii();
 	  if(!line.isEmpty() /* && !stream.eof() */ && !isComment(line))
 	    {
 	      if(!insertLine(line, force, relax, false))
@@ -2082,7 +2082,7 @@ QConfigDB::IsLocked(const QString& file)
   QString lockfile=file+".lock";
   int pid=-1;
   // -----
-  if(access(lockfile, F_OK)==0)
+  if(access(QFile::encodeName(lockfile), F_OK)==0)
     {
       QFile f(lockfile);
       // -----
@@ -2147,7 +2147,7 @@ QConfigDB::lock(const QString& file)
   QString lockfile=file+".lock";
   QFile f(lockfile);
   // -----
-  if(access(lockfile, F_OK)==0)
+  if(access(QFile::encodeName(lockfile), F_OK)==0)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::lock: the file is locked by"
 		 " another process." << endl;
@@ -2187,9 +2187,9 @@ QConfigDB::unlock()
 		 "lock the file!" << endl;
       return false;
     }
-  if(access(lockfile, F_OK | W_OK)==0)
+  if(access(QFile::encodeName(lockfile), F_OK | W_OK)==0)
     {
-      if(::remove(lockfile)==0)
+      if(::remove(QFile::encodeName(lockfile))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::unlock: lockfile deleted." << endl;
@@ -2229,7 +2229,7 @@ QConfigDB::CleanLockFiles(int)
 	     "remaining lockfiles.", LockFiles.size()) << endl;
   for(pos=LockFiles.begin(); pos!=LockFiles.end(); pos++)
     {
-      if(::remove(*pos)==0)
+      if(::remove(QFile::encodeName(*pos))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	      "                          " << *pos << " removed.\n";
@@ -2378,7 +2378,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
   // ----- remove possible stale lockfile:
   if(IsLocked(filename_)!=0 && !CheckLockFile(filename_))
     { // ----- it is stale:
-      if(::remove(filename_+".lock")==0)
+      if(::remove(QFile::encodeName(filename_+".lock"))==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::setFileName: removed stale lockfile." << endl;
@@ -2391,7 +2391,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
   // -----
   if(mustexist)
     {
-      if(access(filename_, readonly_==true ? R_OK : W_OK | R_OK)==0)
+      if(access(QFile::encodeName(filename_), readonly_==true ? R_OK : W_OK | R_OK)==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 		     "QConfigDB::setFileName: permission granted." << endl;
@@ -2415,10 +2415,10 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	  return false;
 	}
     } else {
-      if(access(filename_, F_OK)==0)
+      if(access(QFile::encodeName(filename_), F_OK)==0)
 	{
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::setFileName: file exists." << endl;
-	  if(access(filename_, W_OK | R_OK)==0)
+	  if(access(QFile::encodeName(filename_), W_OK | R_OK)==0)
 	    {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			 "QConfigDB::setFileName: permission granted." << endl;

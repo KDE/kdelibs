@@ -319,18 +319,18 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	  switch
 	    (KMessageBox::questionYesNo
 	     (this,
-	      i18n("The currently loaded file\n\"")
-	      +oldfile.absFilePath()+"\"\n"+
-	      i18n
-	      ("cannot be reloaded. kab may close or save it.\n"
-	       "Save it if you accidently deleted your data file.\n"
-	       "Close it if you intended to do so.\n"
-	       "Your file will be closed by default."),
+	      i18n("The currently loaded file\n"
+                   "\"%1\"\n"
+	           "cannot be reloaded. kab may close or save it.\n"
+	           "Save it if you accidently deleted your data file.\n"
+	           "Close it if you intended to do so.\n"
+	           "Your file will be closed by default.")
+		 .arg(oldfile.absFilePath()),
 	      i18n("File error"),
 	      i18n("&Close"), i18n("&Save")))
 	    {
 	    case 1: // save
-	      if(!data->save(i18n("(Safety copy on file error)"), true))
+	      if(!data->save(i18n("(Safety copy on file error)").ascii(), true))
 		{
 		  KMessageBox::information(this,
 		     i18n("Cannot save the file, will close it now."),

@@ -79,7 +79,7 @@ void kimgio_imagemagick_read( QImageIO *io )
 
   // Initialize the image info structure and read an image.
   GetImageInfo(&image_info);
-  (void) strcpy(image_info.filename, io->fileName().ascii());
+  (void) strcpy(image_info.filename, QFile::encodeName(io->fileName()));
   im_image=ReadImage(&image_info);
   if (im_image == (Image *) NULL)
     return;
@@ -173,7 +173,7 @@ void kimgio_imagemagick_writePCX( QImageIO *io )
       q++;
    }
   }
-  (void) strcpy(image_info.filename, io->fileName().ascii());
+  (void) strcpy(image_info.filename, QFile::encodeName(io->fileName()));
   WritePCXImage(&image_info, im_image);
   io->setStatus(0); // We're really a stub function.
   return;

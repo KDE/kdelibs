@@ -34,14 +34,14 @@ ParseTreeBase::Ptr *pTree = 0L;
 
 ParseTreeBase::Ptr parseConstraints( const QString& _constr )
 {
-  mainParse( _constr );
+  mainParse( _constr.ascii() );
   assert( pTree );
   return *pTree;
 }
 
 ParseTreeBase::Ptr parsePreferences( const QString& _prefs )
 {
-  mainParse( _prefs );
+  mainParse( _prefs.ascii() );
   assert( pTree );
   return *pTree;
 }

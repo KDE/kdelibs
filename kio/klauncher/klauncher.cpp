@@ -127,7 +127,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 
    KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
    mPoolSocketName = domainname.name();
-   mPoolSocket = new KServerSocket(mPoolSocketName);
+   mPoolSocket = new KServerSocket(QFile::encodeName(mPoolSocketName));
    connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
            SLOT(acceptSlave(KSocket *)));
 
@@ -470,7 +470,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    KLaunchRequest *request = new KLaunchRequest;
    request->name = name;
    request->arg_list =  arg_list;
-   request->dcop_name = QString::null;
+   request->dcop_name = 0;
    request->dcop_service_type = KService::DCOP_None;
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
@@ -584,7 +584,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
    request->dcop_service_type =  service->DCOPServiceType();
 
    if (request->dcop_service_type == KService::DCOP_None)
-      request->dcop_name = QString::null;
+      request->dcop_name = 0;
    else
       request->dcop_name = request->name;
 
@@ -830,7 +830,7 @@ KLauncher::requestSlave(const QString &protocol,
     KLaunchRequest *request = new KLaunchRequest;
     request->name = name;
     request->arg_list =  arg_list;
-    request->dcop_name = QString::null;
+    request->dcop_name = 0;
     request->dcop_service_type = KService::DCOP_None;
     request->pid = 0;
     request->status = KLaunchRequest::Launching;

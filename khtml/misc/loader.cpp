@@ -789,7 +789,7 @@ void Loader::slotFinished( KIO::Job* job )
     return;
 
   if (job->error())
-    r->object->error( job->error(), job->errorText() );
+    r->object->error( job->error(), job->errorText().ascii() );
   else {
     r->object->data(r->m_buffer, true);
 

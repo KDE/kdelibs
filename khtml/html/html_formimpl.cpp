@@ -127,18 +127,18 @@ QByteArray HTMLFormElementImpl::formData()
                 int old_size = form_data.size();
 
 
-                QCString str("--" + _boundary.string() + "\r\n");
+                QCString str(("--" + _boundary.string() + "\r\n").ascii());
                 str += "Content-Disposition: form-data; ";
-                str += "name=\"" + current->name().string() + "\"";
+                str += ("name=\"" + current->name().string() + "\"").ascii();
 
                 // if the current type is FILE, then we also need to
                 // include the filename *and* the file type
                 if (current->type() == RenderFormElement::File)
                 {
-                    str += "; filename=\"" + current->value().string() + "\"\r\n";
+                    str += ("; filename=\"" + current->value().string() + "\"\r\n").ascii();
                     str += "Content-Type: ";
                     KMimeType::Ptr ptr = KMimeType::findByURL(KURL(current->value().string()), 0, false);
-                    str += ptr->name();
+                    str += ptr->name().ascii();
                 }
                 str += "\r\n\r\n";
 
@@ -154,7 +154,7 @@ QByteArray HTMLFormElementImpl::formData()
         }
     }
     if (multipart)
-        enc_string = "--" + _boundary.string() + "--\r\n";
+        enc_string = ("--" + _boundary.string() + "--\r\n").ascii();
 
     int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );

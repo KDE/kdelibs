@@ -528,7 +528,7 @@ void HTTPProtocol::http_checkConnection()
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-      m_request.do_proxy = !revmatch(m_request.hostname, m_strNoProxyFor);
+      m_request.do_proxy = !revmatch(m_request.hostname.ascii(), m_strNoProxyFor.ascii());
 
   if (m_sock)
   {
@@ -655,7 +655,7 @@ HTTPProtocol::http_openConnection()
     if( m_state.do_proxy ) {
       kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_strProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
-      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
+      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.ascii(), m_strProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
         return false;
       }
@@ -681,7 +681,7 @@ HTTPProtocol::http_openConnection()
       // apparently we don't want a proxy.  let's just connect directly
       ksockaddr_in server_name;
 
-      if(!KSocket::initSockaddr(&server_name, m_state.hostname, m_state.port)) {
+      if(!KSocket::initSockaddr(&server_name, m_state.hostname.ascii(), m_state.port)) {
         error( ERR_UNKNOWN_HOST, m_state.hostname );
         return false;
       }
@@ -937,10 +937,10 @@ bool HTTPProtocol::http_open()
   // check if we need to login
   if (!password.isNull() || !user.isNull()) {
     if (Authentication == AUTH_Basic || Authentication == AUTH_None) {
-      header += create_basic_auth("Authorization", user, password);
+      header += create_basic_auth("Authorization", user.ascii(), password.ascii());
     } else if (Authentication == AUTH_Digest) {
-      header += create_digest_auth("Authorization", user, password,
-                                   m_strAuthString);
+      header += create_digest_auth("Authorization", user.ascii(), password.ascii(),
+                                   m_strAuthString.ascii());
     }
     // Don't do this as the authorization methods already add it!!!
     // header+="\r\n";
@@ -951,13 +951,13 @@ bool HTTPProtocol::http_open()
     kdDebug(7103) << "http_open 3" << endl;
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
-	header += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
+	header += create_basic_auth("Proxy-authorization", m_strProxyUser.ascii(), m_strProxyPass.ascii());
       } else {
 	if (ProxyAuthentication == AUTH_Digest) {
 	  header += create_digest_auth("Proxy-Authorization",
-				       m_strProxyUser,
-				       m_strProxyPass,
-				       m_strProxyAuthString);
+				       m_strProxyUser.ascii(),
+				       m_strProxyPass.ascii(),
+				       m_strProxyAuthString.ascii());
 	}
       }
     }
@@ -969,7 +969,7 @@ bool HTTPProtocol::http_open()
   kdDebug(7103) << "Sending header: \n===\n" << header << "\n===" << endl;
   // now that we have our formatted header, let's send it!
   bool sendOk;
-  sendOk = (write(header, header.length()) == (ssize_t) header.length());
+  sendOk = (write(header.ascii(), header.length()) == (ssize_t) header.length());
   if (!sendOk) {
     kdDebug(7103) << "Connection broken! (" << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
@@ -979,7 +979,7 @@ bool HTTPProtocol::http_open()
        http_closeConnection();
        if (!http_openConnection())
           return false;
-       sendOk = (write(header, header.length()) == (ssize_t) header.length());
+       sendOk = (write(header.ascii(), header.length()) == (ssize_t) header.length());
     }
     if (!sendOk)
     {

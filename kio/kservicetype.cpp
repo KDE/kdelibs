@@ -72,7 +72,7 @@ KServiceType::init( KDesktopFile *config)
     {
       config->setGroup( *gIt );
       QVariant v = config->readPropertyEntry( "Value",
-                   QVariant::nameToType( config->readEntry( "Type" ) ) );
+                   QVariant::nameToType( config->readEntry( "Type" ).ascii() ) );
       if ( v.isValid() )
           m_mapProps.insert( (*gIt).mid( 10 ), v );
     }
@@ -85,7 +85,7 @@ KServiceType::init( KDesktopFile *config)
     {
       config->setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
-			    QVariant::nameToType( config->readEntry( "Type" ) ) );
+			    QVariant::nameToType( config->readEntry( "Type" ).ascii() ) );
     }
   }
 

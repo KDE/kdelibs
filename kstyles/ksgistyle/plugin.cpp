@@ -28,5 +28,5 @@ int major_version()
 
 const char* description()
 {
-	return (i18n("Sgi Style"));
+	return (i18n("Sgi Style").utf8());
 }

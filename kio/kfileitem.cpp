@@ -135,7 +135,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       struct stat buf;
-      if ( lstat( m_url.path( -1 ), &buf ) == 0 ) // set mode only if lstat succeeded! otherwise buf is
+      if ( lstat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 ) // set mode only if lstat succeeded! otherwise buf is
                                                   // undefined! (Simon)
       {
         mode = buf.st_mode;
@@ -143,7 +143,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
         if ( S_ISLNK( mode ) )
         {
           m_bLink = true;
-          stat( m_url.path( -1 ), &buf ); // shouldn't we check if stat() succeeded or not? (before
+          stat( QFile::encodeName(m_url.path( -1 )), &buf ); // shouldn't we check if stat() succeeded or not? (before
 	                                  // taking buf.st_mode blindly ) (Simon)
           mode = buf.st_mode;
         }
@@ -186,7 +186,7 @@ QString KFileItem::linkDest() const
   if ( m_bIsLocalURL )
   {
     char buf[1000];
-    int n = readlink( m_url.path( -1 ), buf, 1000 );
+    int n = readlink( QFile::encodeName(m_url.path( -1 )), buf, 1000 );
     if ( n != -1 )
     {
       buf[ n ] = 0;
@@ -207,7 +207,7 @@ long KFileItem::size() const
   if ( m_bIsLocalURL )
   {
     struct stat buf;
-    stat( m_url.path( -1 ), &buf );
+    stat( QFile::encodeName(m_url.path( -1 )), &buf );
     return buf.st_size;
   }
   return 0L;
@@ -225,7 +225,7 @@ time_t KFileItem::time( unsigned int which ) const
   if ( m_bIsLocalURL )
   {
     struct stat buf;
-    stat( m_url.path( -1 ), &buf );
+    stat( QFile::encodeName(m_url.path( -1 )), &buf );
     return (which == KIO::UDS_MODIFICATION_TIME) ? buf.st_mtime :
            (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
            (which == KIO::UDS_CREATION_TIME) ? buf.st_ctime :
@@ -298,7 +298,7 @@ bool KFileItem::acceptsDrops()
     return true;
 
   // Executable, shell script ... ?
-  if ( access( m_url.path(), X_OK ) == 0 )
+  if ( access( QFile::encodeName(m_url.path()), X_OK ) == 0 )
     return true;
 
   return false;

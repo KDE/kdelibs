@@ -1,20 +1,19 @@
 // This library is distributed under the conditions of the GNU LGPL.
 
-#ifdef HAVE_CONFIG_H
-#include"config.h"
-#endif
+#include "config.h"
 
 #ifdef HAVE_LIBTIFF
 
-#include<tiffio.h>
-#include<qimage.h>
+#include <tiffio.h>
 
-#include"g3r.h"
+#include <qimage.h>
+#include <qfile.h>
 
+#include "g3r.h"
 
 void kimgio_g3_read( QImageIO *io )
 {
-  TIFF *tiff = TIFFOpen(io->fileName(), "r");  
+  TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");  
   if (!tiff)
     return;
  

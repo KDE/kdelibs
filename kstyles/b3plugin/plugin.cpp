@@ -25,5 +25,5 @@ int major_version()
 
 const char *description()
 {
-    return(i18n("B3/K unthemed plugin"));
+    return(i18n("B3/K unthemed plugin").utf8());
 }

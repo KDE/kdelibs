@@ -144,7 +144,7 @@ void SlaveBase::dispatchLoop()
 
 void SlaveBase::connectSlave(const QString& path)
 {
-    appconn->init(new KSocket(path));
+    appconn->init(new KSocket(QFile::encodeName(path)));
     setConnection(appconn);
 }
 

@@ -25,5 +25,5 @@ int major_version()
 
 const char *description()
 {
-    return(i18n("KStep unthemed plugin"));
+    return(i18n("KStep unthemed plugin").utf8());
 }

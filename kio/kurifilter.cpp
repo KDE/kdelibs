@@ -37,7 +37,7 @@ void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) c
 {
     if ( data.uri() != uri )
     {
-        data.m_pURI = uri;
+        data.m_pURI = uri.path().ascii();
         data.m_bFiltered = true;
         data.m_bChanged = true;
     }
@@ -198,9 +198,9 @@ void KURIFilter::loadPlugins()
     for (; it != end; ++it )
     {
 	    if ((*it)->library().isEmpty()) { continue; }
-        KLibFactory *factory = KLibLoader::self()->factory((*it)->library());						
+        KLibFactory *factory = KLibLoader::self()->factory((*it)->library().ascii());						
     	if (!factory) { continue; }
-    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name(), "KURIFilterPlugin");
+    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name().ascii(), "KURIFilterPlugin");
 	    if ( plugin ) { m_lstPlugins.append( plugin ); }
     }
     m_lstPlugins.sort(); // TODO: Prioritize based on the user preference from control module.

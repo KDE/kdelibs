@@ -28,6 +28,7 @@
 
 #include <qstring.h>
 #include <qapplication.h>
+#include <qfile.h>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -114,7 +115,7 @@ void NetAccess::removeTempFile(const QString& name)
     return;
   if (tmpfiles->contains(name))
   {
-    unlink(name);
+    unlink(QFile::encodeName(name));
     tmpfiles->remove(name);
   }
 }

@@ -872,7 +872,7 @@ static void output_kmapnotify_path()
    {
       QString path(*it + "libkmapnotify.so");
       if (QFile::exists(path) && !output)
-         output = path;
+         output = QFile::encodeName(path);
    }
 
    printf("%s\n", (const char *)output);

@@ -25,5 +25,5 @@ int major_version()
 
 const char *description()
 {
-    return(i18n("Highcolor unthemed plugin"));
+    return(i18n("Highcolor unthemed plugin").utf8());
 }

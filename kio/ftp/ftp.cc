@@ -302,7 +302,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
   else if ( port == 0 )
     port = ntohs(pse->s_port);
 
-  if (!KSocket::initSockaddr(&sin, host, port)) {
+  if (!KSocket::initSockaddr(&sin, host.ascii(), port)) {
     error( ERR_UNKNOWN_HOST, host );
     return false;
   }
@@ -362,7 +362,7 @@ bool Ftp::ftpLogin( const QString & user )
 
   if ( !m_user.isEmpty() ) {
     QCString tempbuf = "user ";
-    tempbuf += m_user;
+    tempbuf += m_user.ascii();
 
     bool needPass = true;
     rspbuf[0] = '\0';
@@ -387,7 +387,7 @@ bool Ftp::ftpLogin( const QString & user )
       //kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
 
       tempbuf = "pass ";
-      tempbuf += m_pass;
+      tempbuf += m_pass.ascii();
 
       kdDebug(7102) << "Sending pass command" << endl;
       if ( !ftpSendCmd( tempbuf, '2' ) ) {
@@ -709,7 +709,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if ( _path != 0L ) {
     tmp += " ";
-    tmp += _path;
+    tmp += _path.ascii();
   }
 
   if ( !ftpSendCmd( tmp, '1' ) ) {
@@ -802,11 +802,11 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
 
   QCString cmd;
   cmd = "RNFR ";
-  cmd += src;
+  cmd += src.ascii();
   if ( !ftpSendCmd( cmd, '3') )
     return false;
   cmd = "RNTO ";
-  cmd += dst;
+  cmd += dst.ascii();
   return ftpSendCmd( cmd, '2' );
 }
 
@@ -823,14 +823,14 @@ void Ftp::del( const KURL& url, bool isfile )
     // When deleting a directory, we must exit from it first
     // The last command probably went into it (to stat it)
     QCString tmp = "cwd ";
-    tmp += url.directory();
+    tmp += url.directory().ascii();
 
     (void) ftpSendCmd( tmp, '2' );
     // ignore errors
   }
 
   QCString cmd = isfile ? "DELE " : "RMD ";
-  cmd += path;
+  cmd += path.ascii();
 
   if ( !ftpSendCmd( cmd, '2' ) )
     error( ERR_CANNOT_DELETE, path );
@@ -850,7 +850,7 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
   sprintf(buf, "%o ", permissions & 511 );
 
   cmd += buf;
-  cmd += path;
+  cmd += path.ascii();
 
   return ftpSendCmd( cmd, '2' );
 }
@@ -1180,7 +1180,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		      if ( i != -1 ) {
 			de.link = p_name + i + 4;
 			tmp.truncate( i );
-			p_name = tmp;
+			p_name = tmp.ascii();
 		      }
 		      else
 			de.link = "";
@@ -1497,7 +1497,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   {
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
-      cmd += dest_orig;
+      cmd += dest_orig.ascii();
       if ( !ftpSendCmd( cmd, '2' ) )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
@@ -1521,7 +1521,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   } else if ( ftpSize( dest_part, 'I' ) ) { // file with extension .part exists
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
-      cmd += dest_part;
+      cmd += dest_part.ascii();
       if ( !ftpSendCmd( cmd, '2' ) )
       {
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
@@ -1591,7 +1591,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
            ( m_size < (unsigned long) KProtocolManager::self().minimumKeepSize() ) )
       {
         QCString cmd = "DELE ";
-        cmd += dest;
+        cmd += dest.ascii();
         (void) ftpSendCmd( cmd, '\0' );
       }
     }
@@ -1658,7 +1658,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
   }
 
   buf="SIZE ";
-  buf+=path;
+  buf+=path.ascii();
   if (!ftpSendCmd(buf,'2')) {
     m_size = 0;
     return false;

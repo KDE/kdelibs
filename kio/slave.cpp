@@ -200,7 +200,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 
     KTempFile socketfile(QString::null, QString::fromLatin1(".slave-socket"));
 
-    KServerSocket *kss = new KServerSocket(socketfile.name());
+    KServerSocket *kss = new KServerSocket(socketfile.name().ascii());
 
     Slave *slave = new Slave(kss, url.protocol(), socketfile.name());
 

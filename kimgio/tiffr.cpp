@@ -1,14 +1,15 @@
 // This library is distributed under the conditions of the GNU LGPL.
-#ifdef HAVE_CONFIG_H
-#include"config.h"
-#endif
+
+#include "config.h"
 
 #ifdef HAVE_LIBTIFF
 
-#include<tiffio.h>
-#include<qimage.h>
+#include <tiffio.h>
 
-#include"tiffr.h"
+#include <qimage.h>
+#include <qfile.h>
+
+#include "tiffr.h"
 
 void kimgio_tiff_read( QImageIO *io )
 {
@@ -19,7 +20,7 @@ void kimgio_tiff_read( QImageIO *io )
 	// FIXME: use qdatastream
 
 	// open file
-	tiff = TIFFOpen( io->fileName().ascii(), "r" );
+	tiff = TIFFOpen( QFile::encodeName(io->fileName()), "r" );
 
 	if( tiff == 0 ) {
 		return;

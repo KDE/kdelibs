@@ -32,5 +32,5 @@ int major_version()
 
 const char *description()
 {
-    return(i18n("Basic themed plugin"));
+    return(i18n("Basic themed plugin").utf8());
 }

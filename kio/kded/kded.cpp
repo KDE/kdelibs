@@ -103,7 +103,7 @@ void Kded::build()
          ++it1 )
     {
       KSycocaResource res = (*it1);
-      QStringList dirs = KGlobal::dirs()->resourceDirs( res.resource );
+      QStringList dirs = KGlobal::dirs()->resourceDirs( res.resource.ascii() );
       // For each resource the factory deals with
       for( QStringList::ConstIterator it2 = dirs.begin();
            it2 != dirs.end();
