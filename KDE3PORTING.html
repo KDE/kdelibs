@@ -104,28 +104,71 @@ setEncoding(int) instead.
 <li>languages() has been removed. Use languageList() instead.
 
 <H4>Accelerators Keys</H4>
+<h5>KGlobalAccel</h5>
+<ul>
+	<li>Call <i>updateConnections()</i> after all <i>insertAction()</i> or
+	<i>insertItem()</i> (depricated) calls have been made.  This function then performs the
+	actually key grabbing.  In order to improve program startup speed,
+	grabbing is no longer done automatically: usually <i>readSettings()</i>
+	is called after the actions have been defined, and this may cause
+	shortcut reassignments, which in turn used to make an expensive ungrab
+	of the old key and second grab of the new key necessary.</li>
+</ul>
 <h5>KStdAccel</h5>
 <ul>
+	<li><i>StdAccel::WhatThis</i> has been renamed to <i>StdAccel::WhatsThis</i>.
 	<li><i>StdAccel::Insert</i> and the corresponding <i>insert()</i>
 	have been removed. (Nobody on the list knew what its function was
 	supposed to be.)  Calls to <i>insert()</i> and the equivalent
 	<i>key(KStdAccel::Insert)</i> can be replaced with the former default
 	of <i>Qt::CTRL+Qt::Key_Insert</i>.</li>
-</ul>
-<h5>KGlobalAccel</h5>
-<ul>
-	<li>Call <i>updateConnections()</i> after all <i>insertAction()</i> or
-	<i>insertItem()</i> calls have been made.  This function then performs the
-	actually key grabbing.  Grabbing is no longer done automatically in
-	order to improve program startup speed: usually <i>readSettings()</i>
-	is called after the actions have been defined, and this may cause
-	shortcut reassignments, which in turn used to make an ungrab of the
-	old key and second grab of the new key necessary.</li>
+	<li>The following functions have been depricated and will need to be changed if KDE_NO_COMPAT is defined:
+		<table border=1>
+			<tr><th>Old</th><th>New</th></tr>
+			<tr><td>QString action(StdAccel id)</td><td>QString name(StdAccel id)</td></tr>
+			<tr><td>int defaultKey(StdAccel accel)</td><td>KShortcut shortcutDefault(StdAccel id)</td></tr>
+			<tr><td>QString description(StdAccel id)</td><td>QString desc(StdAccel id)</td></tr>
+			<tr><td>bool isEqual(const QKeyEvent* pEvent, int keyQt)</td>
+				<td>The best method for replacing this varies.  One possibility is to use
+				<i>KKey(const QKeyEvent*) == KKey(int)</i>.  Another is to use
+				<i>KShortcut::contains( const KKey&/KKeySequence& )</i>.</td></tr>
+			<tr><td>int key(StdAccel)</td><td>const KShortcut& shortcut(StdAccel)</td></tr>
+		</table></li-->
 </ul>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
+
+<H4>KAccelMenu</H4>
+This class has been removed, Qt offers the same functionality.
+Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
+
+<H4>KAction</H4>
+<i>menuId()</i> has been depricated.  Use <i>itemId()</i>.
+
+<H4>KAlphaPainter</H4>
+KAlphaPainter has been dropped, since Qt 3 has native support for
+hardware accelerated alpha blending.
+
+<H4>KAnimWidget</H4>
+This class no longer supports reading a list of images, instead it uses a
+single image-file that has been prepared with the kimage_concat tool.
+See kdelibs/pics/hicolor/kde for an example of its use.
+
+<H4>KContainerLayout</H4>
+This class has been removed, use Qt layouts instead.
+
+<H4>KDialogBase</H4>
+The deprecated getMainWidget() method has been removed. Use mainWidget() instead.
+
+<H4>KDirectionButton</H4>
+...is gone. Use KArrowButton instead, it offers about the same
+functionality.
+
+<H4>KDockWidget</H4>
+The WidgetList parameter has been renamed to QWidgetList. Behaviour
+is identical.
 
 <H4>KPanelApplet</H4>
 A new protected member method 'void reportBug()' was added. It gets called by
@@ -133,10 +176,6 @@ Kicker if the 'Report Bug' entry in the context menu gets selected and should
 be overridden by applets which support the KPanelApplet::ReportBug action. This
 means that you don't have to extend KPanelApplet's generic action dispatcher
 void KPanelApplet::action() anymore.
-
-<H4>KDockWidget</H4>
-The WidgetList parameter has been renamed to QWidgetList. Behaviour
-is identical. 
 
 <H4>KPanelMenu</H4>
 The old KPanelMenu class has been renamed to KPanelAppMenu. The KPanelMenu
@@ -150,32 +189,9 @@ The KRootPixmap class has been extended to make it more flexible, and the
 <i>checkAvailable(bool ignored)</i> method has been renamed <i>isAvailable()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
 
-<H4>KAlphaPainter</H4>
-KAlphaPainter has been dropped, since Qt 3 has native support for
-hardware accelerated alpha blending. 
-
 <H4>KThemeBase, KThemeStyle</H4>
 Because of the QStyle rewrite our old extensions have been dropped
 in order to have styles that fully integrate in KDE and Qt applications.
-
-<H4>KDirectionButton</H4>
-...is gone. Use KArrowButton instead, it offers about the same
-functionality.
-
-<H4>KDialogBase</H4>
-The deprecated getMainWidget() method has been removed. Use mainWidget() instead.
-
-<H4>KContainerLayout</H4>
-This class has been removed, use Qt layouts instead.
-
-<H4>KAccelMenu</H4>
-This class has been removed, Qt offers the same functionality.
-Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
-
-<H4>KAnimWidget</H4>
-This class no longer supports reading a list of images, instead it uses a
-single image-file that has been prepared with the kimage_concat tool.
-See kdelibs/pics/hicolor/kde for an example of its use.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
