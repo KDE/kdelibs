@@ -1,5 +1,5 @@
 <!ENTITY Abstract	"R\latin-small-letter-e-with-acute;sum\latin-small-letter-e-with-acute;">
-<!ENTITY Answer		"R :">
+<!ENTITY Answer		"R&nbsp;:">
 <!ENTITY Appendix	"Annexe">
 <!ENTITY Article	"Article">
 <!ENTITY Bibliography	"Bibliographie">
@@ -31,7 +31,7 @@
 <!ENTITY Preface	"Pr\latin-small-letter-e-with-acute;face">
 <!ENTITY Procedure	"Proc\latin-small-letter-e-with-acute;dure">
 <!ENTITY Published	"Publi\latin-small-letter-e-with-acute;">
-<!ENTITY Question       "Q :">
+<!ENTITY Question       "Q&nbsp;:">
 <!ENTITY RefEntry       "">
 <!ENTITY RefName	"Nom">
 <!ENTITY RefSection     "">
@@ -71,7 +71,7 @@
 <!ENTITY unsupported	"Non reconnu par le syst\latin-small-letter-e-with-grave;me">
 <!ENTITY xrefto		"R\latin-small-letter-e-with-acute;f\latin-small-letter-e-with-acute;rence vers">
 <!ENTITY unexpectedelementname	"Nom d'\latin-small-letter-e-with-acute;l\latin-small-letter-e-with-acute;ment non attendu">
-<!ENTITY Revisedby      "Revu par : ">
+<!ENTITY Revisedby      "Revu par&nbsp;: ">
 
 <!ENTITY ListofTables "Liste des tableaux">
 <!ENTITY ListofExamples "Liste des exemples">
