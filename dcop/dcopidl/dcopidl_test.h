@@ -47,6 +47,8 @@ k_dcop:
 private:
     Test3 *doc();
 
+    struct KIODownload;
+    typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 };
 
 #endif // end

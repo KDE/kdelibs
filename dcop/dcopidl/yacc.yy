@@ -349,11 +349,15 @@ body
 	  {
 		$$ = $4;
 	  }
-    | T_FRIEND function_header T_SEMICOLON body
-      {
-        $$ = $4;
-      }
+	| T_FRIEND function_header T_SEMICOLON body
+	  {
+		$$ = $4;
+	  }
 	| T_CLASS Identifier T_SEMICOLON body
+	  {
+		$$ = $4;
+	  }
+	| T_STRUCT Identifier T_SEMICOLON body
 	  {
 		$$ = $4;
 	  }
