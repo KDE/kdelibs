@@ -42,6 +42,15 @@ KPushButton::KPushButton( const QIconSet &icon, const QString &text,
 {
 }
 
+KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
+                          const char *name )
+    : QPushButton( item.text(), parent, name ),
+      m_dragEnabled( false )
+{
+    if( item.hasIconSet() )
+        setIconSet( item.iconSet() );
+}
+
 KPushButton::~KPushButton()
 {
 }

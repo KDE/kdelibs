@@ -22,6 +22,8 @@
 
 #include <qpoint.h>
 #include <qpushbutton.h>
+#include <kguiitem.h>
+
 class QDragObject;
 
 /**
@@ -52,6 +54,12 @@ public:
      */
     KPushButton( const QIconSet &icon, const QString &text,
 		     QWidget *parent, const char *name=0 );
+
+    /**
+     * Constructor that takes a KGuiItem for the text, the icon, the tooltip
+     * and the what's this help
+     */
+    KPushButton( const KGuiItem &item, QWidget *parent, const char *name = 0 );
 
     /**
      * Destructs the button.
