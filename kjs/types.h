@@ -60,19 +60,71 @@ namespace KJS {
 
   /**
    * @short Handle for a Number type.
+   *
+   * Number is a handle for a number value. @ref KJSO::toPrimitive(),
+   * @ref KJSO::toBoolean(), @ref KJSO::toNumber(), @ref KJSO::toString() and
+   * @ref KJSO::toString() are re-implemented internally according to the
+   * specification.
+   *
+   * Example usage:
+   * <pre>
+   * Number a(2), b(3.0), c; // c defaults to 0.0
+   *
+   * c = a.value() * b.value(); // c will be 6.0 now
+   *
+   * String s = c.toString(); // s holds "6"
+   * </pre>
+   *
+   * Note the following implementation detail: Internally, the value is stored
+   * as a double and will be casted from and to other types when needed.
+   * This won't be noticable within a certain range of values but might produce
+   * unpredictable results when crossing these limits. In case this turns out
+   * to be a real problem for an application we might have to extend this class
+   * to behave more intelligently.
    */
   class Number : public KJSO {
     friend NumberImp;
   public:
+    /**
+     * Construct a Number type from an integer.
+     */
     Number(int i);
+    /**
+     * Construct a Number type from an unsigned integer.
+     */
     Number(unsigned int u);
+    /**
+     * Construct a Number type from a double.
+     */
     Number(double d = 0.0);
+    /**
+     * Construct a Number type from a long int.
+     */
     Number(long int l);
+    /**
+     * Construct a Number type from a long unsigned int.
+     */
     Number(long unsigned int l);
+    /**
+     * Destructor.
+     */
     virtual ~Number();
+    /**
+     * @return The internally stored value.
+     */
     double value() const;
+    /**
+     * Convenience function.
+     * @return The internally stored value converted to an int.
+     */
     int intValue() const;
+    /**
+     * @return True is this is not a number (NaN).
+     */
     bool isNaN() const;
+    /**
+     * @return True if Number is either +Infinity or -Infinity.
+     */
     bool isInf() const;
   };
 

@@ -85,7 +85,14 @@ public:
    * @ref KJScript::evaluate.
    */
   void clear();
+  /**
+   * @return Return code from last call to @ref evaluate(). 0 on success.
+   */
   int errorType() const;
+  /**
+   * @return Error message from last call to @ref evaluate(). Empty string
+   * if no error occured.
+   */
   const char *errorMsg() const;
   /**
    * Adds a debug() function to the set of pre-defined properties.

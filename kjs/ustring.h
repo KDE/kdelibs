@@ -96,19 +96,54 @@ namespace KJS {
 
   /**
    * @short Dynamic reference to a string character.
+   *
+   * UCharReference is the dynamic counterpart of @ref UChar. It's used when
+   * characters retrieved via index from a @ref UString are used in an
+   * assignment expression (and therefore can't be treated as being const):
+   * <pre>
+   * UString s("hello world");
+   * s[0] = 'H';
+   * </pre>
+   *
+   * If that sounds confusing your best bet is to simply forget about the
+   * existance of this class and treat is as being identical to @ref UChar.
    */
   class UCharReference {
     friend UString;
     UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
   public:
-    UCharReference& operator=(char c) { return operator=(UChar(c)); }
+    /**
+     * Set the referenced character to c.
+     */
     UCharReference& operator=(UChar c);
+    /**
+     * Same operator as above except the argument that it takes.
+     */
+    UCharReference& operator=(char c) { return operator=(UChar(c)); }
+    /**
+     * @return Unicode value.
+     */
     unsigned short unicode() const { return ref().unicode(); }
+    /**
+     * @return Lower byte.
+     */
     unsigned char& low() const { return ref().lo; }
+    /**
+     * @return Higher byte.
+     */
     unsigned char& high() const { return ref().hi; }
+    /**
+     * @return Character converted to lower case.
+     */
     UChar toLower() const { return ref().toLower(); }
+    /**
+     * @return Character converted to upper case.
+     */
     UChar toUpper() const  { return ref().toUpper(); }
   private:
+    // not implemented, can only be constructed from UString
+    UCharReference();
+
     UChar& ref() const;
     UString *str;
     int offset;

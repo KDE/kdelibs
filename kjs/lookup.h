@@ -52,8 +52,6 @@ namespace KJS {
     HashTable *table;
   };
 
-  void lookupTest();
-
 }; // namespace
 
 #endif
