@@ -144,19 +144,19 @@ void KURL::parse( const QString& _url )
     goto NodeErr;
   if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
     {
-      m_strProtocol = QString( orig, pos );
+      m_strProtocol = QString( orig, pos ).lower();
       pos += 3;
     }
   else if (buf[pos] == ':' && buf[pos+1] == '/' )
     {
-      m_strProtocol = QString( orig, pos );
+      m_strProtocol = QString( orig, pos ).lower();
       pos++;
       start = pos;
       goto Node9;
     }
   else if ( buf[pos] == ':' )
     {
-      m_strProtocol = QString( orig, pos );
+      m_strProtocol = QString( orig, pos ).lower();
       pos++;
       goto Node11;
     }
@@ -167,7 +167,11 @@ void KURL::parse( const QString& _url )
   if ( pos == len )
     goto NodeOk;
   //    goto NodeErr;
+#if 0
   start = pos++;
+#else
+  start = pos;
+#endif
 
   // Node 4: Accept any amount of characters.
   // Terminate or / or @
@@ -301,11 +305,38 @@ void KURL::parse( const QString& _url )
   //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
   //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
   //m_strRef_encoded.ascii(), m_iPort );
-  if ( m_strProtocol != "file" && !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
+  if (m_strProtocol == "file") 
+  {
+    if (!m_strHost.isEmpty())
     {
-      debug("Unknown protocol %s", m_strProtocol.data() );
-      m_bIsMalformed = TRUE;
+      // File-protocol has a host name..... hmm?
+      if (m_strHost.lower() == "localhost")
+      {
+        m_strHost = ""; // We can ignore localhost
+      }
+      else {
+        // What to do with a remote file?
+        QString remoteProtocol( KProtocolManager::self().remoteFileProtocol() );
+        if (remoteProtocol.isEmpty())
+        {
+           // Pass the hostname as part of the path. Perhaps system calls
+           // just handle it.
+           m_strPath = "//"+m_strHost+m_strPath;
+           m_strHost = "";
+        }
+        else
+        {
+           // Use 'remoteProtocol' as protocol.
+           m_strProtocol = remoteProtocol;
+         }
+      }
     }
+  }
+  else if (!KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
+  {
+    debug("Unknown protocol %s", m_strProtocol.data() );
+    m_bIsMalformed = TRUE;
+  }
   return;
 
  NodeErr:
@@ -500,7 +531,7 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-  return ( m_strProtocol == "file" );
+  return ( ( m_strProtocol == "file" ) && ( m_strHost.isEmpty()) );
 }
 
 bool KURL::hasSubURL() const

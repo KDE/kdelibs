@@ -313,6 +313,14 @@ QString KProtocolManager::noProxyFor() const
   return config.readEntry( "NoProxyFor" );
 }
 
+QString KProtocolManager::remoteFileProtocol() const
+{
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  return config.readEntry( "RemoteFileProtocol" );
+}
+
 void KProtocolManager::setReadTimeout( int _timeout )
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
@@ -407,6 +415,16 @@ void KProtocolManager::setNoProxyFor( const QString& _noproxy )
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "NoProxyFor", _noproxy );
+
+  config.sync();
+}
+
+void KProtocolManager::setRemoteFileProtocol(const QString &remoteFileProtocol)
+{
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		 KApplication::localconfigdir() + "/kioslaverc" );
+  
+  config.writeEntry( "RemoteFileProtocol", remoteFileProtocol );
 
   config.sync();
 }

@@ -32,7 +32,8 @@ public:
   int minimumKeepSize() const;
   bool autoResume() const;
   bool persistentConnections() const;
-
+  QString remoteFileProtocol() const;
+ 
   bool useProxy() const;
   QString ftpProxy() const;
   QString httpProxy() const;
@@ -85,6 +86,22 @@ public:
    *
    */
   void setPersistentConnections( bool _mode );
+
+  /**
+   * Set a protocol which should be used for remote "file"-URLs
+   *
+   * Default value is empty: Pass hostname as part of path.
+   *
+   * Example:
+   * With "setRemoteFileProtocol("smb"), the URL 
+   *    "file://atlas/dfaure" 
+   * will be converted to
+   *    "smb://atlas/dfaure"
+   *
+   * File URLs without a hostname are not affected.
+   *
+   */
+  void setRemoteFileProtocol( const QString &remoteFileProtocol );
 
   /**
    * Set this flag if you want use proxies
