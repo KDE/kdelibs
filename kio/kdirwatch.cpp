@@ -35,7 +35,7 @@
 #endif
 
 #ifdef __linux__
-#define HAVE_DNOTIFY
+//#define HAVE_DNOTIFY
 #endif
 
 #ifdef HAVE_DNOTIFY
@@ -43,8 +43,8 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-#include <signal.h>
 #include <fcntl.h>
+#include <signal.h>
 // appeared in 2.4.0, but we need the #defines here in case
 // code is compiled on an older kernel and later run on a newer
 // one -> runtime check
