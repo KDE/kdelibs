@@ -504,7 +504,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
 	colWidthKnown = false;
     
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "addColInfo():" << endl;
+    kdDebug( 6040 ) << "(" << this << "):addColInfo():" << endl;
     kdDebug( 6040 ) << "    startCol=" << col->start << " span=" << col->span << endl;
     kdDebug( 6040 ) << "    min=" << col->min << " max=" << col->max << endl;
     kdDebug( 6040 ) << "    type=" << col->type << " width=" << col->value << endl;
@@ -762,7 +762,6 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
         oldmin+=colMinWidth[o];
     }
 
-    int smin = col->min;
     int smax = col->max;
 
     if (col->type == Percent)
@@ -801,11 +800,6 @@ void RenderTable::calcColMinMax()
 // columns.
 // Calculate min and max width for the table.
 
-
-#ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "RenderTable::calcColMinMax(), maxCelSpan" << maxColSpan << " totalCols " << totalCols << endl;
-#endif
-
     // PHASE 1, prepare
 
     colMinWidth.fill(0);
@@ -819,6 +813,10 @@ void RenderTable::calcColMinMax()
     int* spanPercentMax = new int[maxColSpan];
 
     LengthType widthType = style()->width().type;
+
+#ifdef TABLE_DEBUG
+    kdDebug( 6040 ) << "RenderTable(" << this << ")::calcColMinMax(), maxCelSpan" << maxColSpan << " totalCols " << totalCols << " widthtype=" << widthType << " widthval=" << style()->width().value << endl;
+#endif
 
     Length l;
     if ( ( l = style()->marginLeft() ).isFixed() )
@@ -939,11 +937,7 @@ void RenderTable::calcColMinMax()
     delete[] spanPercentMax;
     delete[] spanPercent;
 
-    if(widthType > Relative) {
-	// Percent or fixed table
-        if(m_minWidth > m_width) m_width = m_minWidth;
-	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
-    } else if (hasPercent) {
+    if (widthType <= Relative && hasPercent) {
 	    int tot = KMIN(100u, totalPercent );
         if (tot>0)
 	        m_maxWidth = maxPercent*100/tot;
@@ -955,12 +949,10 @@ void RenderTable::calcColMinMax()
 
     // PHASE 5, set table min and max to final values
 
-    if(widthType == Fixed)
-    {
+    if(widthType == Fixed) {
+	m_width = style()->width().value;
         m_minWidth = m_maxWidth = m_width;
-    }
-    else
-    {
+    } else {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
     }
@@ -968,12 +960,12 @@ void RenderTable::calcColMinMax()
     m_minWidth += borderLeft() + borderRight();
     m_maxWidth += borderLeft() + borderRight();
 
-/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
+#ifdef TABLE_DEBUG    
+    kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " m_minWidth=" << m_minWidth <<
                 " m_maxWidth=" << m_maxWidth <<
                 " realMaxWidth=" << realMaxWidth << endl;
-*/
-
+#endif
 }
 
 void RenderTable::calcWidth()
@@ -1098,9 +1090,9 @@ void RenderTable::calcColWidth(void)
     }
 
 #ifdef TABLE_DEBUG
-    for(int i = 1; i <= (int)totalCols; i++)
+    for(int i = 0; i < (int)totalCols; i++)
     {
-        kdDebug( 6040 ) << "Start->target " << i << ": " << actColWidth[i-1] << "->" << colMaxWidth[i-1] << " type=" << colType[i-1] << endl;
+        kdDebug( 6040 ) << "Start->target " << i << ": " << actColWidth[i] << "->" << colMaxWidth[i] << " type=" << colType[i] << endl;
     }
 #endif
 
@@ -1121,16 +1113,29 @@ void RenderTable::calcColWidth(void)
     toAdd = distributeWidth(toAdd,Relative,numRel);
     toAdd = distributeWidth(toAdd,Variable,numVar);
 
+#ifdef TABLE_DEBUG
+    for(int i = 0; i < (int)totalCols; i++)
+    {
+        kdDebug( 6040 ) << "distributeWidth->target " << i << ": " << actColWidth[i] << "->" << colMaxWidth[i] << " type=" << colType[i] << endl;
+    }
+#endif
+
     /*
      * Some width still left?
      * Reverse order, variable->relative->percent
      */
 
-    toAdd = distributeRest(toAdd,Variable,maxVar);
-    toAdd = distributeRest(toAdd,Relative,maxRel);
-    toAdd = distributeRest(toAdd,Percent,maxPercent);
-    toAdd = distributeRest(toAdd,Fixed,maxFixed);
+    toAdd = distributeRest(toAdd,Variable,maxVar-minVar);
+    toAdd = distributeRest(toAdd,Relative,maxRel-minRel);
+    toAdd = distributeRest(toAdd,Percent,maxPercent-minPercent);
+    toAdd = distributeRest(toAdd,Fixed,maxFixed-minFixed);
 
+#ifdef TABLE_DEBUG
+    for(int i = 0; i < (int)totalCols; i++)
+    {
+        kdDebug( 6040 ) << "distributeRest->target " << i << ": " << actColWidth[i] << "->" << colMaxWidth[i] << " type=" << colType[i] << endl;
+    }
+#endif
     /*
      * If something remains, put it to the last column
      */
@@ -1210,7 +1215,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
     {
         if (colType[c]==type)
         {
-            int delta = (colMaxWidth[c] * distrib) / divider;
+            int delta = (colMaxWidth[c]-colMinWidth[c]) * distrib / divider;
             delta=KMIN(delta,tdis);
             if (delta==0 && tdis)
                 delta=1;
@@ -1303,7 +1308,7 @@ void RenderTable::layout()
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
-
+    
     //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
 
     _lastParentWidth = containingBlockWidth();
@@ -1386,7 +1391,6 @@ void RenderTable::layoutRows(int yoff)
     else if (h.isPercent())
     {
         Length ch = containingBlock()->style()->height();
-        RenderObject *containing = containingBlock();
         if (ch.isFixed())
             th = h.width(ch.value);
         else
@@ -1433,7 +1437,7 @@ void RenderTable::layoutRows(int yoff)
                 continue;
             if ( c < totalCols - 1 && cell == cells[r][c+1] )
                 continue;
-            if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
+            if ( r < totalRows - 1 && cell == cells[r+1][c] )
                 continue;
 
             if ( ( indx = c-cell->colSpan()+1 ) < 0 )
@@ -1548,8 +1552,8 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
     // check which rows and cols are visible and only print these
     // ### fixme: could use a binary search here
-    int startrow = 0;
-    int endrow = totalRows;
+    unsigned int startrow = 0;
+    unsigned int endrow = totalRows;
     for ( ; startrow < totalRows; startrow++ ) {
 	if ( _ty + rowHeights[startrow+1] > _y )
 	    break;
@@ -1558,8 +1562,8 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 	if ( _ty + rowHeights[endrow-1] < _y + _h )
 	    break;
     }
-    int startcol = 0;
-    int endcol = totalCols;
+    unsigned int startcol = 0;
+    unsigned int endcol = totalCols;
     for ( ; startcol < totalCols; startcol++ ) {
 	if ( _tx + columnPos[startcol+1] > _x )
 	    break;
@@ -1601,7 +1605,7 @@ void RenderTable::calcMinMaxWidth()
     if ( needsCellsRecalc )
 	recalcCells();
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+    kdDebug( 6040 ) << renderName() << "(Table " << this << ")::calcMinMaxWidth()" <<  endl;
 #endif
 
     /*
@@ -1612,6 +1616,9 @@ void RenderTable::calcMinMaxWidth()
      calcColMinMax();
 
     setMinMaxKnown();
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "END: (Table " << this << ")::calcMinMaxWidth() min = " << m_minWidth << " max = " << m_maxWidth <<  endl;
+#endif
 }
 
 void RenderTable::close()
