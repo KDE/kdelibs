@@ -56,8 +56,6 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
       config->revertToDefault( mKey );
     else if ( mType == Path )
       config->writePathEntry( mKey, mReference );
-    else if ( mType == PathList )
-      config->writePathEntry( mKey, mReference );
     else if ( mType == Password )
       config->writeEntry( mKey, KStringHandler::obscure( mReference ) );
     else
@@ -832,6 +830,20 @@ void KConfigSkeleton::ItemPathList::readConfig( KConfig *config )
   mLoadedValue = mReference;
 
   readImmutability( config );
+}
+
+void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
+{
+  if ( mReference != mLoadedValue ) // WABA: Is this test needed?
+  {
+    config->setGroup( mGroup );
+    if ((mDefault == mReference) && !config->hasDefault( mKey))
+      config->revertToDefault( mKey );
+    else {
+      QStringList sl = mReference;
+      config->writePathEntry( mKey, sl );
+    }
+  }
 }
 
 

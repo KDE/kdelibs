@@ -372,7 +372,7 @@ public:
   class KDECORE_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
-    enum Type { Normal, Password, Path, PathList };
+    enum Type { Normal, Password, Path };
 
     ItemString(const QString & group, const QString & key,
                QString & reference,
@@ -766,6 +766,7 @@ public:
                    const QStringList & defaultValue = QStringList());
 
     void readConfig(KConfig * config);
+    void writeConfig(KConfig * config);
   };
 
 
