@@ -34,7 +34,6 @@ DEALINGS IN THE SOFTWARE.
 #include <X11/X.h>
 
 class QString;
-// TODO docs
 /**
  * Sending string messages to other applications using the X Client Messages.
  *
@@ -58,6 +57,12 @@ class KXMessages
 	// CHECKME accept_broadcast == NULL is useless now
         KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
         virtual ~KXMessages();
+	/**
+	 * Sends the given message with the given message type only to given
+         * window.
+         * 
+         * @param w X11 handle for the destination window
+	 */
         void sendMessage( WId w, const char* msg_type, const QString& message );
 	/**
 	 * Broadcasts the given message with the given message type.
@@ -82,32 +87,15 @@ class KXMessages
 	 * @internal
 	 */
         virtual bool x11Event( XEvent* ev );
-	/**
-	 * @internal
-	 */
+    private:
         static void send_message_internal( WId w_P, const QString& msg_P, long mask_P,
             Display* disp, Atom atom_P, Window handle_P );
-	/**
-	 * @internal
-	 */
         QWidget* handle;
-	/**
-	 * @internal
-	 */
         Atom cached_atom;
-	/**
-	 * @internal
-	 */
         QCString cached_atom_name;
-	/**
-	 * @internal
-	 */
         Atom accept_atom;
-	/**
-	 * @internal
-	 */
         QMap< WId, QCString > incoming_messages;
-    private:
+
         class Private;
         Private* d;
     };
