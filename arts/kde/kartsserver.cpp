@@ -19,7 +19,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <flowsystem.h>
-#include <kconfig.h>
+#include <ksimpleconfig.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <qdir.h>
@@ -54,24 +54,23 @@ Arts::SoundServerV2 KArtsServer::server(void)
 
 	// aRts seems not to be running, let's try to run it
 	// First, let's read the configuration as in kcmarts
-	KConfig *config = new KConfig("kcmartsrc");
+	KConfig config("kcmartsrc", false /*bReadOnly*/, false /*bUseKDEGlobals*/);
 	KProcess proc;
 
-	config->setGroup("Arts");
+	config.setGroup("Arts");
 
-	bool rt = config->readBoolEntry("StartRealTime", false);
-	bool x11Comm = config->readBoolEntry("X11GlobalComm", false);
+	bool rt = config.readBoolEntry("StartRealTime", false);
+	bool x11Comm = config.readBoolEntry("X11GlobalComm", false);
 
 	// put the value of x11Comm into .mcoprc
-	KConfig *X11CommConfig = new KConfig(QDir::homeDirPath()+"/.mcoprc");
+	KSimpleConfig X11CommConfig(QDir::homeDirPath()+"/.mcoprc");
 
 	if(x11Comm)
-		X11CommConfig->writeEntry("GlobalComm", "Arts::X11GlobalComm");
+		X11CommConfig.writeEntry("GlobalComm", "Arts::X11GlobalComm");
 	else
-		X11CommConfig->writeEntry("GlobalComm", "Arts::TmpGlobalComm");
+		X11CommConfig.writeEntry("GlobalComm", "Arts::TmpGlobalComm");
 
-	X11CommConfig->sync();
-	delete X11CommConfig;
+	X11CommConfig.sync();
 
 	proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("kdeinit_wrapper")));
 
@@ -80,7 +79,7 @@ Arts::SoundServerV2 KArtsServer::server(void)
 	else
 		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artsd")));
 
-	proc << config->readEntry("Arguments", "-F 5 -S 8192");
+	proc << config.readEntry("Arguments", "-F 5 -S 8192");
 
 	if(proc.start(KProcess::Block) && proc.normalExit())
 	{
