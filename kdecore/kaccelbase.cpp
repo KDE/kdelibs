@@ -37,15 +37,13 @@
 
 class KAccelBasePrivate
 {
- public:
-	//QMap<KKeySequence, QString> m_mapKeyToActionName;
 };
 
 KAccelBase::KAccelBase( int fInitCode )
 :	m_rgActions( this )
 {
 	kdDebug(125) << "KAccelBase(): this = " << this << endl;
-	d = new KAccelBasePrivate;
+	//d = new KAccelBasePrivate;
 	m_bNativeKeys = fInitCode & NATIVE_KEYS;
 	m_bEnabled = true;
 	m_sConfigGroup = "Shortcuts";
@@ -56,7 +54,7 @@ KAccelBase::KAccelBase( int fInitCode )
 KAccelBase::~KAccelBase()
 {
 	kdDebug(125) << "~KAccelBase(): this = " << this << endl;
-	delete d;
+	//delete d;
 }
 
 uint KAccelBase::actionCount() const { return m_rgActions.count(); }
@@ -147,13 +145,11 @@ KAccelAction* KAccelBase::insert( const QString& sName, const QString& sDesc )
 
 bool KAccelBase::remove( const QString& sAction )
 {
-	kdDebug(125) << "KAccelBase::removeAction( \"" << sAction << "\" ) this = " << this << endl;
 	return m_rgActions.remove( sAction );
 }
 
 void KAccelBase::slotRemoveAction( KAccelAction* pAction )
 {
-	kdDebug(125) << "KAccelBase::slotRemoveAction( \"" << pAction << "\" ) this = " << this << endl;
 	removeConnection( *pAction );
 }
 
@@ -513,8 +509,7 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 
 bool KAccelBase::removeConnection( KAccelAction& action )
 {
-	kdDebug(125) << "KAccelBase::removeConnection( " << &action << " = " << action.m_sName << " )  this = " << this << endl;
-	kdDebug(125) << "\tkeys = " << action.m_cut.toString() << endl;
+	kdDebug(125) << "KAccelBase::removeConnection( " << &action << " = \"" << action.m_sName << "\"; shortcut = " << action.m_cut.toStringInternal() << " ): this = " << this << endl;
 
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
@@ -557,108 +552,6 @@ bool KAccelBase::setShortcut( const QString& sAction, const KShortcut& cut )
 	} else
 		return false;
 }
-
-// Create list of extended shortcuts
-
-/*QString KAccelBase::configGroup() const
-{
-	return aGroup;
-}
-
-bool KAccelBase::configGlobal() const
-{
-	return bGlobal;
-}*/
-
-/*bool KAccelBase::isConfigurable( const QString& sAction ) const
-{
-	const KAccelAction* pAction = actionPtr( sAction );
-	return (pAction) ? pAction->m_bConfigurable : false;
-}
-
-void KAccelBase::clearItem( const QString& sAction )
-{
-    if (!aKeyMap.contains(action))
-        return;
-
-    KKeyEntry entry = aKeyMap[ action ];
-    if ( entry.aAccelId  && entry.bConfigurable) {
-        QAccel::disconnectItem( entry.aAccelId, entry.receiver,
-				entry.member);
-        QAccel::removeItem( entry.aAccelId );
-        entry.aAccelId = 0;
-        entry.aCurrentKeyCode = 0;
-        aKeyMap[action] = entry; // reassign
-        if ( entry.menu ) {
-            changeMenuAccel(entry.menu, entry.menuId, action);
-        }
-    }
-}
-
-bool KAccelBase::updateItem( const QString &action, int keyCode)
-{
-    if (!aKeyMap.contains(action))
-        return false;
-    KKeyEntry entry = aKeyMap[ action ];
-    if ( entry.aCurrentKeyCode==keyCode )
-        return true;
-    if ( entry.aAccelId ) {
-        QAccel::disconnectItem( entry.aAccelId, entry.receiver,
-                                entry.member);
-        QAccel::removeItem( entry.aAccelId );
-    } else {
-        entry.aAccelId = aKeyMap[action].aAccelId = aAvailableId;
-        aAvailableId++;
-    }
-
-    aKeyMap[action].aCurrentKeyCode = keyCode;
-    if (keyCode) {
-        QAccel::insertItem( keyCode, entry.aAccelId );
-        QAccel::connectItem( entry.aAccelId, entry.receiver, entry.member );
-    }
-    emit keycodeChanged();
-    return true;
-
-}
-*/
-/*
-void KAccelBase::readActions( KAccelActions& rgActions, const QString& sGroup, KConfigBase* pConfig )
-{
-	kdDebug(125) << "readActions start" << endl;
-
-	if( !pConfig )
-		pConfig = KGlobal::config();
-	KConfigGroupSaver cgs( pConfig, sGroup );
-
-	for( KAccelActions::iterator it = rgActions.begin(); it != rgActions.end(); ++it ) {
-		KAccelAction& action = *it;
-
-		QString s = pConfig->readEntry( action.m_sName );
-		QStringList rgs = QStringList::split( ';', s );
-
-		if( rgs.size() ) {
-			action.m_rgShortcuts.resize( rgs.size() );
-
-			uint i = 0;
-			for( ; i < rgs.size(); i++ ) {
-				KAccelShortcut& cut = action.m_rgShortcuts[i];
-				QString sKey = !rgs[i].startsWith( "default(" ) ? rgs[i] : rgs[i].mid( 8, rgs[i].length() - 9 );
-				KKeySequence key;
-
-				if( sKey.isEmpty() )
-					key = cut.getKeyDefault();
-				else if( s != "none" )
-					key = KKey::stringToKey( rgs[i] );
-				seq.setKeySequence( key );
-			}
-		}
-
-		kdDebug(125) << "\t" << action.m_sName << " = '" << s << "' = " << QString::number(action.getPrimaryKey().key(),16) << endl;
-	}
-
-	kdDebug(125) << "readActions done" << endl;
-}
-*/
 
 void KAccelBase::readSettings( KConfig* pConfig )
 {
