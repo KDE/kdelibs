@@ -88,7 +88,6 @@ KPluginInfo::KPluginInfo( const QString & filename )
 		d->requirements = file.readListEntry( "Require" );
 	}
 	d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' in [X-KDE-KCDParents]" );
-	//d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' == [X-KDE-KCDParents]" );
 	kdDebug( 702 ) << "found " << d->services.count() << " offers for " << pluginname() << endl;
 	d->enabledbydefault = file.readBoolEntry( "EnabledByDefault", d->enabledbydefault );
 }
