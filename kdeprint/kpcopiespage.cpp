@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -181,7 +179,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	connect(m_rangeedit,SIGNAL(textChanged(const QString&)),SLOT(slotRangeEntered()));
 	connect(m_collate,SIGNAL(clicked()),SLOT(slotCollateClicked()));
 	connect(m_order,SIGNAL(clicked()),SLOT(slotCollateClicked()));
-	
+
 	if (!kapp->authorize("print/copies"))
 	{
 		setTitle(i18n("Pages"));

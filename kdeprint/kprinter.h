@@ -2,7 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -80,7 +79,7 @@ class DrPageSize;
  *
  * When compiling an application that uses KPrinter, you must link to -lkdeprint, which when
  * using the standard KDE build framework can be done by adding $(LIB_KDEPRINT) to _LDADD.
- * 
+ *
  * @short The central interface class to access the KDE print system.
  * @author Michael Goffioul
  * @see QPrinter, KPrintDialogPage
@@ -615,7 +614,7 @@ public:
 	//static int addPrinterWizard(QWidget *parent = 0);
 
 	/**
-	 * The KPrinter object stores all its settings in an internal QMap structure on 
+	 * The KPrinter object stores all its settings in an internal QMap structure on
 	 * QString. This allows to store any property. This method allows an application to access
 	 * any print option from the KPrinter object, using the option name. For example if your
 	 * application add a customized page to the print dialog, this page will saves its settings
@@ -647,7 +646,7 @@ public:
 	const QString& option(const QString& key) const;
 	/**
 	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
-	 * explicitly. This will be done implicitely for example when reimplementing 
+	 * explicitly. This will be done implicitely for example when reimplementing
 	 * KPrintDialogPage::getOptions().
 	 * @param key the option name
 	 * @param value the option value

@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -85,7 +83,7 @@ bool checkLpdQueue(const char *host, const char *queue)
 	snprintf(res,64,"%c%s\n",(char)4,queue);
 	if (sock.writeBlock(res, strlen(res)) != (Q_LONG)(strlen(res)))
 		return false;
-	
+
 	char	buf[1024] = {0};
 	int	n, tot(1);
 	while ((n = sock.readBlock(res, 63)) > 0)

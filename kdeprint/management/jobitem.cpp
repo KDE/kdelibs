@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -39,7 +37,7 @@ JobItem::~JobItem()
 void JobItem::init(KMJob *job)
 {
 	m_job->copy(job ? *job : KMJob());
-	
+
 	setPixmap(0,SmallIcon(m_job->pixmap()));
 	setText(0,QString::number(m_job->id()));
 	//setText(6,m_job->printer());

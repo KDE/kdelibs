@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -54,7 +52,7 @@ static struct
 {
 	const char *banner;
 	const char *name;
-} bannermap[] = 
+} bannermap[] =
 {
 	{ "none", I18N_NOOP( "No Banner" ) },
 	{ "classified", I18N_NOOP( "Classified" ) },

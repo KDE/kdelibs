@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -638,7 +636,7 @@ void KMJobViewer::reload()
 	// no refresh needed: view has been cleared before reloading
 	// and the actual refresh will be triggered either by the KControl
 	// module, or by KJobViewerApp using timer.
-	
+
 	// reload the columns needed: remove the old one
 	for (int c=m_view->columns()-1; c>5; c--)
 		m_view->removeColumn(c);

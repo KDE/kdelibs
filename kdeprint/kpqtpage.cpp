@@ -2,7 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -219,7 +218,7 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	m_nupbox->setButton(ID);
 	slotNupChanged(ID);
-	
+
 	if ( m_orientbox->isEnabled() )
 		m_orientbox->setDisabled( opts[ "kde-orientation-fixed" ] == "1" );
 	if ( m_pagesize->isEnabled() )

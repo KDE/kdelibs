@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -225,7 +223,7 @@ bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 		autoConfigure(QString::null, parent);
 		return true; // Just print it
 	}
-		
+
 	if (parent)
 		d->m_parentId = parent->winId();
 
@@ -330,7 +328,7 @@ void KPrinter::translateQtOptions()
 		DrPageSize *ps = d->m_pagesize;
 		d->m_wrapper->setMargins(
 				( int )( ( ps->topMargin() * res + 71 ) / 72 ),
-				( int )( ( ps->leftMargin() * res + 71 ) / 72 ), 
+				( int )( ( ps->leftMargin() * res + 71 ) / 72 ),
 				( int )( ( ps->bottomMargin() * res + 71 ) / 72 ),
 				( int )( ( ps->rightMargin() * res + 71 ) / 72 ) );
 	}

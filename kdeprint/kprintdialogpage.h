@@ -2,7 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +31,7 @@ class DrMain;
  * This class is intended to be used as base class for customized print dialog page. One of
  * the feature of the KDE print framework is to allow to customize the print dialog to
  * add some application specific print options. This is done by subclassing KPrintDialogPage
- * and reimplementing the 3 virtual functions getOptions, setOptions and 
+ * and reimplementing the 3 virtual functions getOptions, setOptions and
  * isValid(). The print options will be stored in the KPrinter object, and will be
  * accessible via KPrinter::option(). The option name should follow the form
  * "kde-appname-optionname" for internal reasons.

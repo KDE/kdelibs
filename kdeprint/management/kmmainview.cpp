@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -80,7 +78,7 @@ extern "C"
 		}
 		return flag;
 	}
-	
+
 	bool config_dialog(QWidget *parent)
 	{
 		KMConfigDialog	dlg(parent);
@@ -823,7 +821,7 @@ void KMMainView::slotToolSelected(int ID)
 			     "no printer selected, the selected printer doesn't have "
 			     "any local device defined (printer port), or the tool library "
 			     "could not be found."));
-	
+
 	KMTimer::self()->release();
 }
 
