@@ -31,6 +31,7 @@
 #include <kwinmodule.h>
 #include <kconfig.h>
 #include <assert.h>
+#include <qstyle.h>
 
 #include <kjs/collector.h>
 #include "kjs_proxy.h"
@@ -1013,13 +1014,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 	      if (winargs.y < screen.y() || winargs.y > screen.bottom())
 		  winargs.y = screen.y(); // only safe choice until size is determined
             } else if (key == "height") {
-              winargs.height = val.toInt() + 4;
+              winargs.height = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
 	      if (winargs.height > screen.height())  // should actually check workspace
 		  winargs.height = screen.height();
               if (winargs.height < 100)
 		  winargs.height = 100;
             } else if (key == "width") {
-              winargs.width = val.toInt() + 4;
+              winargs.width = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
 	      if (winargs.width > screen.width())    // should actually check workspace
 		  winargs.width = screen.width();
               if (winargs.width < 100)
