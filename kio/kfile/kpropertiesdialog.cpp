@@ -543,7 +543,7 @@ bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
   fclose(f);
 
   // return true if desktop file
-  return ( _item->mimetype() == QString::fromLatin1("application/x-desktop") );
+  return ( _item->mimetype() == "application/x-desktop" );
 }
 
 void KPropsDlgPlugin::setDirty( bool b )
@@ -755,7 +755,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     {
       KSimpleConfig config( properties->kurl().path() );
       config.setDesktopGroup();
-      iconStr = config.readEntry( QString::fromLatin1("Icon") );
+      iconStr = config.readEntry( "Icon" );
     }
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
@@ -1004,7 +1004,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 void KFilePropsPlugin::slotDirSizeUpdate()
 {
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
-    m_sizeLabel->setText( QString::fromLatin1("Calculating... %1 (%2)")
+    m_sizeLabel->setText( i18n("Calculating... %1 (%2)")
 			  .arg(KIO::convertSize(totalSize))
 			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
 }
@@ -1210,7 +1210,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
         KDesktopFile cfg(path);
         kdDebug(250) << "sIcon = " << (sIcon) << endl;
         kdDebug(250) << "str = " << (str) << endl;
-        cfg.writeEntry( QString::fromLatin1("Icon"), sIcon );
+        cfg.writeEntry( "Icon", sIcon );
         cfg.sync();
     }
   }
@@ -2213,7 +2213,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  URLStr = config.readPathEntry( QString::fromLatin1("URL") );
+  URLStr = config.readPathEntry( "URL" );
 
   if ( !URLStr.isNull() )
     URLEdit->setURL( URLStr );
@@ -2262,8 +2262,8 @@ void KURLPropsPlugin::applyChanges()
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link"));
-  config.writePathEntry( QString::fromLatin1("URL"), URLEdit->url() );
+  config.writeEntry( "Type", QString::fromLatin1("Link"));
+  config.writePathEntry( "URL", URLEdit->url() );
   // Users can't create a Link .desktop file with a Name field,
   // but distributions can. Update the Name field in that case.
   if ( config.hasKey("Name") )
@@ -2274,8 +2274,8 @@ void KURLPropsPlugin::applyChanges()
       nameStr.truncate( nameStr.length() - 8 );
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
-    config.writeEntry( QString::fromLatin1("Name"), nameStr );
-    config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
+    config.writeEntry( "Name", nameStr );
+    config.writeEntry( "Name", nameStr, true, false, true );
 
   }
 }
@@ -2358,10 +2358,10 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
 
   KSimpleConfig config( _props->kurl().path() );
   config.setDesktopGroup();
-  QString patternStr = config.readEntry( QString::fromLatin1("Patterns") );
-  QString iconStr = config.readEntry( QString::fromLatin1("Icon") );
-  QString commentStr = config.readEntry( QString::fromLatin1("Comment") );
-  m_sMimeStr = config.readEntry( QString::fromLatin1("MimeType") );
+  QString patternStr = config.readEntry( "Patterns" );
+  QString iconStr = config.readEntry( "Icon" );
+  QString commentStr = config.readEntry( "Comment" );
+  m_sMimeStr = config.readEntry( "MimeType" );
 
   if ( !patternStr.isEmpty() )
     patternEdit->setText( patternStr );
@@ -2370,8 +2370,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   if ( !m_sMimeStr.isEmpty() )
     mimeEdit->setText( m_sMimeStr );
   cbAutoEmbed->setTristate();
-  if ( config.hasKey( QString::fromLatin1("X-KDE-AutoEmbed") ) )
-      cbAutoEmbed->setChecked( config.readBoolEntry( QString::fromLatin1("X-KDE-AutoEmbed") ) );
+  if ( config.hasKey( "X-KDE-AutoEmbed" ) )
+      cbAutoEmbed->setChecked( config.readBoolEntry( "X-KDE-AutoEmbed" ) );
   else
       cbAutoEmbed->setNoChange();
 
@@ -2424,17 +2424,17 @@ void KBindingPropsPlugin::applyChanges()
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("MimeType") );
+  config.writeEntry( "Type", QString::fromLatin1("MimeType") );
 
-  config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"),
+  config.writeEntry( "Patterns",  patternEdit->text() );
+  config.writeEntry( "Comment", commentEdit->text() );
+  config.writeEntry( "Comment",
 		     commentEdit->text(), true, false, true ); // for compat
-  config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
+  config.writeEntry( "MimeType", mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
-      config.deleteEntry( QString::fromLatin1("X-KDE-AutoEmbed"), false );
+      config.deleteEntry( "X-KDE-AutoEmbed", false );
   else
-      config.writeEntry( QString::fromLatin1("X-KDE-AutoEmbed"), cbAutoEmbed->isChecked() );
+      config.writeEntry( "X-KDE-AutoEmbed", cbAutoEmbed->isChecked() );
   config.sync();
 }
 
@@ -2535,10 +2535,10 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  QString deviceStr = config.readEntry( QString::fromLatin1("Dev") );
-  QString mountPointStr = config.readEntry( QString::fromLatin1("MountPoint") );
-  bool ro = config.readBoolEntry( QString::fromLatin1("ReadOnly"), false );
-  QString unmountedStr = config.readEntry( QString::fromLatin1("UnmountIcon") );
+  QString deviceStr = config.readEntry( "Dev" );
+  QString mountPointStr = config.readEntry( "MountPoint" );
+  bool ro = config.readBoolEntry( "ReadOnly", false );
+  QString unmountedStr = config.readEntry( "UnmountIcon" );
 
   device->setEditText( deviceStr );
   if ( !deviceStr.isEmpty() ) {
@@ -2614,15 +2614,15 @@ void KDevicePropsPlugin::applyChanges()
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("FSDevice") );
+  config.writeEntry( "Type", QString::fromLatin1("FSDevice") );
 
-  config.writeEntry( QString::fromLatin1("Dev"), device->currentText() );
-  config.writeEntry( QString::fromLatin1("MountPoint"), mountpoint->text() );
+  config.writeEntry( "Dev", device->currentText() );
+  config.writeEntry( "MountPoint", mountpoint->text() );
 
-  config.writeEntry( QString::fromLatin1("UnmountIcon"), unmounted->icon() );
+  config.writeEntry( "UnmountIcon", unmounted->icon() );
   kdDebug(250) << "unmounted->icon() = " << unmounted->icon() << endl;
 
-  config.writeEntry( QString::fromLatin1("ReadOnly"), readonly->isChecked() );
+  config.writeEntry( "ReadOnly", readonly->isChecked() );
 
   config.sync();
 }
@@ -2686,9 +2686,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   m_startupBool = config.readBoolEntry( "X-KDE-StartupNotify", true );
   m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").lower();
 
-  QStringList mimeTypes = config.readListEntry( "ServiceTypes" );
-  // For compatibility with KDE 1.x
-  mimeTypes += config.readListEntry( "MimeType", ';' );
+  QStringList mimeTypes = config.readListEntry( "MimeType", ';' );
 
   if ( nameStr.isEmpty() || bKDesktopMode ) {
     // We'll use the file name if no name is specified
@@ -2705,16 +2703,24 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
   KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
   for(QStringList::ConstIterator it = mimeTypes.begin();
-      it != mimeTypes.end(); ++it)
+      it != mimeTypes.end(); )
   {
     KMimeType::Ptr p = KMimeType::mimeType(*it);
+    ++it;
+    QString preference;
+    if (it != mimeTypes.end())
+    {
+       bool numeric;
+       (*it).toInt(&numeric);
+       if (numeric)
+       {
+         preference = *it;
+         ++it;
+       }
+    }
     if (p && (p != defaultMimetype))
     {
-       new QListViewItem(w->filetypeList, p->name(), p->comment());
-    }
-    else
-    {
-       m_serviceTypes.append(*it);
+       new QListViewItem(w->filetypeList, p->name(), p->comment(), preference);
     }
   }
 
@@ -2879,19 +2885,18 @@ void KDesktopPropsPlugin::applyChanges()
 
   config.writePathEntry( "Exec", w->commandEdit->text() );
 
-  // Write mimeTypes + servicetypes
-  QString mimeTypes;
+  // Write mimeTypes
+  QStringList mimeTypes;
   for( QListViewItem *item = w->filetypeList->firstChild();
        item; item = item->nextSibling() )
   {
+    QString preference = item->text(2);
     mimeTypes.append(item->text(0));
+    if (!preference.isEmpty())
+       mimeTypes.append(preference);
   }
-  for(QStringList::ConstIterator it = m_serviceTypes.begin();
-      it != m_serviceTypes.end(); ++it)
-     mimeTypes.append(*it);
 
-  config.writeEntry( "MimeType", "" );
-  config.writeEntry( "ServiceTypes", mimeTypes );
+  config.writeEntry( "MimeType", mimeTypes, ';' );
 
   QString nameStr = w->nameEdit->text();
   if ( nameStr.isEmpty() )
@@ -2959,7 +2964,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"),
+  QString preferredTerminal = confGroup.readEntry("TerminalApplication",
 						  QString::fromLatin1("konsole"));
 
   bool terminalCloseBool = false;
@@ -3176,7 +3181,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"),
+  QString preferredTerminal = confGroup.readEntry("TerminalApplication",
 						  QString::fromLatin1("konsole"));
 
   int posOptions = 1;
@@ -3232,13 +3237,13 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDollarExpansion( false );
   config.setDesktopGroup();
-  execStr = config.readPathEntry( QString::fromLatin1("Exec") );
-  swallowExecStr = config.readPathEntry( QString::fromLatin1("SwallowExec") );
-  swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
-  termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
-  termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
-  suidBool = config.readBoolEntry( QString::fromLatin1("X-KDE-SubstituteUID") );
-  suidUserStr = config.readEntry( QString::fromLatin1("X-KDE-Username") );
+  execStr = config.readPathEntry( "Exec" );
+  swallowExecStr = config.readPathEntry( "SwallowExec" );
+  swallowTitleStr = config.readEntry( "SwallowTitle" );
+  termBool = config.readBoolEntry( "Terminal" );
+  termOptionsStr = config.readEntry( "TerminalOptions" );
+  suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
+  suidUserStr = config.readEntry( "X-KDE-Username" );
 
   if ( !swallowExecStr.isNull() )
     swallowExecEdit->setText( swallowExecStr );
@@ -3357,19 +3362,19 @@ void KExecPropsPlugin::applyChanges()
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  config.writePathEntry( QString::fromLatin1("Exec"), execEdit->text() );
-  config.writePathEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
-  config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
-  config.writeEntry( QString::fromLatin1("Terminal"), terminalCheck->isChecked() );
+  config.writeEntry( "Type", QString::fromLatin1("Application"));
+  config.writePathEntry( "Exec", execEdit->text() );
+  config.writePathEntry( "SwallowExec", swallowExecEdit->text() );
+  config.writeEntry( "SwallowTitle", swallowTitleEdit->text() );
+  config.writeEntry( "Terminal", terminalCheck->isChecked() );
   QString temp = terminalEdit->text();
   if (d->nocloseonexitCheck )
     if ( d->nocloseonexitCheck->isChecked() )
       temp += QString::fromLatin1("--noclose ");
   temp = temp.stripWhiteSpace();
-  config.writeEntry( QString::fromLatin1("TerminalOptions"), temp );
-  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), suidCheck->isChecked() );
-  config.writeEntry( QString::fromLatin1("X-KDE-Username"), suidEdit->text() );
+  config.writeEntry( "TerminalOptions", temp );
+  config.writeEntry( "X-KDE-SubstituteUID", suidCheck->isChecked() );
+  config.writeEntry( "X-KDE-Username", suidEdit->text() );
 }
 
 
@@ -3491,8 +3496,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  QString commentStr = config.readEntry( QString::fromLatin1("Comment") );
-  QString genNameStr = config.readEntry( QString::fromLatin1("GenericName") );
+  QString commentStr = config.readEntry( "Comment" );
+  QString genNameStr = config.readEntry( "GenericName" );
 
   QStringList selectedTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
@@ -3601,18 +3606,18 @@ void KApplicationPropsPlugin::applyChanges()
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true ); // for compat
-  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text() );
-  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text(), true, false, true ); // for compat
+  config.writeEntry( "Type", QString::fromLatin1("Application"));
+  config.writeEntry( "Comment", commentEdit->text() );
+  config.writeEntry( "Comment", commentEdit->text(), true, false, true ); // for compat
+  config.writeEntry( "GenericName", genNameEdit->text() );
+  config.writeEntry( "GenericName", genNameEdit->text(), true, false, true ); // for compat
 
   QStringList selectedTypes;
   for ( uint i = 0; i < extensionsList->count(); i++ )
     selectedTypes.append( extensionsList->text( i ) );
 
-  config.writeEntry( QString::fromLatin1("MimeType"), selectedTypes, ';' );
-  config.writeEntry( QString::fromLatin1("ServiceTypes"), "" );
+  config.writeEntry( "MimeType", selectedTypes, ';' );
+  config.writeEntry( "ServiceTypes", "" );
   // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
 
   QString nameStr = nameEdit ? nameEdit->text() : QString::null;
@@ -3624,8 +3629,8 @@ void KApplicationPropsPlugin::applyChanges()
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
   }
-  config.writeEntry( QString::fromLatin1("Name"), nameStr );
-  config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
+  config.writeEntry( "Name", nameStr );
+  config.writeEntry( "Name", nameStr, true, false, true );
 
   config.sync();
 }

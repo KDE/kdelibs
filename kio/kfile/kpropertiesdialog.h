@@ -690,7 +690,6 @@ private:
   KPropertiesDesktopBase* w;
 
   QString m_origCommandStr;
-  QStringList m_serviceTypes;
   QString m_terminalOptionStr;
   QString m_suidUserStr;
   QString m_dcopServiceType;

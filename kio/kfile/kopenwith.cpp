@@ -328,10 +328,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
   qServiceType = serviceType;
   init( text, value );
   if (remember)
-  {
-      remember->setChecked( true );
       remember->hide();
-  }
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
