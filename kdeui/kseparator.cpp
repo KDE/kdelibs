@@ -17,6 +17,7 @@
  *
  */
 
+#include <qstyle.h>
 
 #include <kdebug.h>
 #include <kapp.h>
@@ -93,7 +94,15 @@ void KSeparator::drawFrame(QPainter *p)
       p2 = QPoint( p1.x(), r.height() );
    }
 
-   kapp->style().drawSeparator( p, p1.x(), p1.y(), p2.x(), p2.y(), g, true, 1, midLineWidth() );
+#if QT_VERSION < 300
+   style().drawSeparator( p, p1.x(), p1.y(), p2.x(), p2.y(), g, true, 1, midLineWidth() );
+#else
+#if defined(Q_CC_GNU)
+#warning ### QStyle api does not allow to specify lineWidth and midLineWidth!!
+#endif
+   style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
+		          QStyle::Style_Sunken );
+#endif
 }
 
 
