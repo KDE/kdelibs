@@ -992,6 +992,8 @@ double KJS::roundValue(ExecState *exec, const Value &v)
   if (v.type() == UndefinedType) /* TODO: see below */
     return 0.0;
   double n = v.toNumber(exec);
+  if (isNaN(n))
+    return NaN;
   if (n == 0.0)   /* TODO: -0, NaN, Inf */
     return 0.0;
   double d = floor(fabs(n));

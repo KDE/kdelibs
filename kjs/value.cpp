@@ -109,6 +109,8 @@ int ValueImp::toInt32(ExecState *exec) const
     return (int)i;
 
   double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
+  if (isNaN(d) || isInf(d) || d == 0.0)
+    return 0;
   double d32 = fmod(d, D32);
 
   //Make sure we use the positive remainder. This matters since this may be
@@ -129,6 +131,8 @@ unsigned int ValueImp::toUInt32(ExecState *exec) const
     return i;
 
   double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
+  if (isNaN(d) || isInf(d) || d == 0.0)
+    return 0;
   double d32 = fmod(d, D32);
 
   return static_cast<unsigned int>(d32);
