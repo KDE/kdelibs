@@ -33,6 +33,9 @@
 
 #include <stdio.h>
 
+template class QList<DOM::DOMString>;
+template class QList<DOM::StyleBaseImpl>;
+
 using namespace DOM;
 
 // --------------------------------------------------------------------------------

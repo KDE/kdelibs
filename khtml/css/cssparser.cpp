@@ -51,6 +51,9 @@ using namespace DOM;
 #include "cssproperties.c"
 #include "cssvalues.c"
 
+template class QList<DOM::CSSProperty>;
+template class QList<DOM::CSSSelector>;
+
 int DOM::getPropertyID(const char *tagStr, int len)
 {
     const struct props *propsPtr = findProp(tagStr, len);
