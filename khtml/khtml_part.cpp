@@ -347,7 +347,7 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-        PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader *docLoader)
+        PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader * /*docLoader*/)
         {
 	    m_part = part;
 	    // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
