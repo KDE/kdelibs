@@ -249,6 +249,8 @@ public:
 
  private:
 
+	QString localkdedir() const;
+
 	QStringList prefixes;
 
 	// Directory dictionaries

@@ -48,7 +48,7 @@ void KStandardDirs::addPrefix( QString dir, bool)
 	dir += '/';
 
     if (!prefixes.contains(dir)) {
-	prefixes.append(dir);
+	prefixes.prepend(dir);
 	dircache.clear();
     }
 }
@@ -319,27 +319,28 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 				       const QString& suffix, 
 				       bool create) const
 {
-    QString local = QDir::homeDirPath() + "/.kde/";
-    struct stat st;
-
     QStringList *dirs = relatives.find(type);
+    if (!dirs)
+	fatal("there are no relative suffixes for type %s registered", type.ascii());
 
-    if (dirs) {
-      // Check for existance of typed directory + suffix
-      QString fullPath = local + dirs->last() + suffix;
-      if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    struct stat st;
+    QString local = localkdedir();
+   
+    // Check for existance of typed directory + suffix
+    QString fullPath = local + dirs->last() + suffix;
+    if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
-	  debug("save location %s doesn't exist", fullPath.ascii());
-	  return local;
+	    debug("save location %s doesn't exist", fullPath.ascii());
+	    return local;
 	}
 	if(!makeDir(fullPath)) {
-	  debug("failed to create %s", fullPath.ascii());
-	  return local;
+	    debug("failed to create %s", fullPath.ascii());
+	    return local;
 	}
-      }
-      return fullPath;
     }
+    return fullPath;
 
+    // I can't think of a case where this happens  
     debug("couldn't find save location for type %s", type.ascii());
     return local;
 }
@@ -377,14 +378,24 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     return true;
 }
 
-void KStandardDirs::addKDEDefaults() {
+void KStandardDirs::addKDEDefaults() 
+{
+    QStringList kdedirList;
+    
+    const char *kdedirs = getenv("KDEDIRS");
+    if (kdedirs)
+	tokenize(kdedirList, kdedirs, ":");
+    else {    
+	QString kdedir = getenv("KDEDIR");
+	if (kdedir.isEmpty())
+	    kdedir = KDEDIR;
+	kdedirList.append(kdedir);
+    }
 
-    QString kdedir = getenv("KDEDIR");
-    if (kdedir.isEmpty())
-          kdedir = KDEDIR;
-
-    addPrefix(kdedir);
-    addPrefix(QDir::homeDirPath() + "/.kde/");
+    addPrefix(localkdedir());
+    for (QStringList::ConstIterator it = kdedirList.begin();
+	 it != kdedirList.end(); it++)
+	addPrefix(*it);
 
     addResourceType("html", "share/doc/HTML/");
     addResourceType("icon", "share/icons/");
@@ -402,6 +413,11 @@ void KStandardDirs::addKDEDefaults() {
     addResourceType("wallpaper", "share/wallpapers/");
     addResourceType("exe", "bin/");
     addResourceType("lib", "lib/");
+}
+
+QString KStandardDirs::localkdedir() const
+{
+    return QDir::homeDirPath() + "/.kde/";
 }
 
 QString locate( const QString& type,
