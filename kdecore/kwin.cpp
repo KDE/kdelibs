@@ -20,6 +20,7 @@
  * kwin.cpp Part of the KDE project.
  */
 
+#include <stdlib.h>
 #include "kwin.h"
 #include "kapp.h"
 #include <dcopclient.h>   //
@@ -59,6 +60,7 @@ static Atom net_active_window;
 static Atom net_wm_context_help;
 static Atom net_kde_docking_window_for;
 static Atom net_avoid_spec;
+static Atom net_map_notify;
 static Atom kwm_dock_window;
 
 extern Atom qt_wm_state;
@@ -70,6 +72,7 @@ static void createAtoms() {
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
 	net_avoid_spec = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
+	net_map_notify = XInternAtom(qt_xdisplay(), "_NET_MAP_NOTIFY", False);
 	kwm_dock_window = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
 
 	const int max = 20;
@@ -98,6 +101,9 @@ static void createAtoms() {
 	
   atoms[n] = &net_avoid_spec;
 	names[n++] = "_NET_AVOID_SPEC";
+  
+  atoms[n] = &net_map_notify;
+	names[n++] = "_NET_MAP_NOTIFY";
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
@@ -494,3 +500,31 @@ bool KWin::avoid(WId win)
 
   return avoid;
 }
+
+long KWin::pid(WId win)
+{
+  XTextProperty prop;
+
+  if (0 == XGetTextProperty(qt_xdisplay(), win, &prop, net_map_notify))
+    return -1;
+
+  char ** stringList;
+  int stringListCount;
+
+  if (0 == XTextPropertyToStringList(&prop, &stringList, &stringListCount))
+    return -1;
+
+  if (stringListCount != 1) {
+    qDebug("KWin::pid(): string list count != 1");
+    return -1;
+  }
+
+  char * pidStr = stringList[0];
+
+  long pid = QString::fromUtf8(pidStr).toLong();
+
+  XFreeStringList(stringList);
+
+  return pid; 
+}
+

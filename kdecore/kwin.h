@@ -170,6 +170,11 @@ public:
      * have priority.
      */
     static QRect edgeClientArea();
+
+    /**
+     * @return pid of process that owns this window, or -1 if unavailable.
+     */
+    static long pid(WId win);
 };
 
 #endif
