@@ -165,7 +165,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Toolbar";
     groups += "MainToolbar";
     groups += "Small";
-    int defDefSizes[] = { 32, 22, 22, 16 };
+    groups += "Panel";
+    int defDefSizes[] = { 32, 22, 22, 16, 32 };
     cfg.setGroup("KDE Icon Theme");
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {

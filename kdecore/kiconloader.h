@@ -38,18 +38,19 @@ class KIconEffect;
  *
  * In KDE, it is encouraged to load icons by "Group". An icon group is a
  * location on the screen where icons are being used. Standard groups are:
- * Desktop, Toolbar, MainToolbar and Small. Each group has some centrally
- * configured properties bound to it, including the icon size and effects.
- * This makes it possible to offer a consistent icon look in all KDE
- * applications.
+ * Desktop, Toolbar, MainToolbar, Small and Panel. Each group has some 
+ * centrally configured properties bound to it, including the icon size
+ * and effects. This makes it possible to offer a consistent icon look in
+ * all KDE applications.
  *
  * The standard groups are defined below.
  *
  * @li KIcon::Desktop: Icons in the iconview of konqueror, kdesktop and similar apps.
  * @li KIcon::Toolbar: Icons in toolbars.
  * @li KIcon::MainToolbar: Icons in the main toolbars.
- * @li KIcon::Small: Various small (typical 16x16) places: titlebars, listviews and
- * menu entries.
+ * @li KIcon::Small: Various small (typical 16x16) places: titlebars, listviews
+ * and menu entries.
+ * @li KIcon::Panel: Icons in kicker's panel
  *
  * The icons are stored on disk in an icon theme or in a standalone
  * directory. The icon theme directories contain multiple sizes and/or
