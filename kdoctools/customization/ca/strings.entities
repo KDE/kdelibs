@@ -1,6 +1,6 @@
 <!-- These entities should be translated, but NOT CHANGED, NOR EXTENDED.
      For language-specific extensions, use user.entities.
-     Translate everything between quotes, except names of general 
+     Translate everything between quotes, except names of general
      entities (&...;). -->
 
 <!ENTITY kappname "aquesta aplicació">
@@ -15,9 +15,9 @@
 <!ENTITY FDLFCTTitles "LLISTAT"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "el text de la portada està &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "no hi ha text a la portada">
+<!ENTITY FDLFrontCoverText "sense text a la portada">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "ELS SEUS TÍTOLS LLISTATS"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "el text de la contraportada està &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "no hi ha text a la contraportada">
+<!ENTITY FDLBackCoverText "sense text a la contraportada">
