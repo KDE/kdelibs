@@ -73,16 +73,20 @@
      personally, I speak a language, not a locale.
  -->
 <!ENTITY % lang.attrib
-        "lang           (af|bg|br|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
-                        |es|et|eu|fi|fr|ga|he|hr|hu|id|is|it|ja|ko|lt
-                        |mi|mk|nl|no|nb|nn|pl|pt|pt-BR|pt-PT|ro|ru|si
-                        |sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh|zh-CN|zh-TW)
+        "lang           (af|az|bg|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
+                        |es|et|eu|fi|fr|ga|gl|he|hr|hu|id|is|it|ja|ko|lt|lv
+                        |mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT|ro|ru|si
+                        |sk|sl|sr|st|sv|ta|th|tr|uk|x-wa|xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
 <!-- List of languages
      An new version of ISO 639 is due quite soon; also RFC1766 may be replaced
+     (Languages that only have a three-character code from 639-2, must use 
+     that one)
 af      Afrikaans
+az	Azerbaijani
 bg      Bulgarian
 br      Breton
+bs	Bosnian
 ca      Catalan
 cs      Czech
 cy      Welsh
@@ -97,6 +101,7 @@ eu      Basque
 fi      Finnish
 fr      French
 ga      Irish
+gl	Gallegan
 he      Hebrew
 hr      Croatian
 hu      Hungarian
@@ -106,12 +111,16 @@ it      Italian
 ja      Japanese
 ko      Korean
 lt      Lituanian
+lv	Latvian
 mi      Maori
 mk      Macedonian
+mt	Maltese
 nb      Norwegian Bokmal
 nl      Dutch
 nn      Norwegian Nynorsk
 no      Norwegian
+nso	Northern Sotho
+oc	Occitan (post 1500); Provençal
 pl      Polish
 pt      Portuguese
 ro      Romanian
@@ -120,12 +129,15 @@ si      Sinhalese
 sk      Slovak
 sl      Slovenian
 sr      Serbian
+st	Sesotho (souther Sotho)
 sv      Swedish
 ta      Tamil
 th      Thai
 tr      Turkish
 uk      Ukrainian
+xh	Xhosa
 zh      Chinese
+zu	Zulu
 -->
 <!-- end of KDE languages -->
 <!-- Languages could be made compulsory for books -->
