@@ -215,6 +215,13 @@ private slots:
     void findTimeout();
     void accessKeysTimeout();
     
+    /**
+    * @internal
+    * @since 3.4
+    * used for autoscrolling with MMB
+    */
+    void slotMouseScrollTimer();
+    
 private:
 
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);

@@ -162,6 +162,7 @@ public:
         possibleTripleClick = false;
         emitCompletedAfterRepaint = CSNone;
 	cursor_icon_widget = NULL;
+        m_mouseScrollTimer = 0;
     }
     ~KHTMLViewPrivate()
     {
@@ -367,6 +368,13 @@ public:
     CompletedState emitCompletedAfterRepaint;
     
     QWidget* cursor_icon_widget;
+        
+    // autoscrolling with MMB
+    int m_mouseScroll_lastX;
+    int m_mouseScroll_lastY;
+    int m_mouseScroll_byX;
+    int m_mouseScroll_byY;
+    QTimer *m_mouseScrollTimer;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -832,7 +840,8 @@ void KHTMLView::closeEvent( QCloseEvent* ev )
 
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
-    if(!m_part->xmlDocImpl()) return;
+    if (d->m_mouseScrollTimer != 0) return;
+    if (!m_part->xmlDocImpl()) return;
     if (d->possibleTripleClick)
     {
         viewportMouseDoubleClickEvent( _mouse ); // it handles triple clicks too
@@ -935,6 +944,40 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
+    if (d->m_mouseScrollTimer != 0) {
+        int deltaX = _mouse->globalX() - d->m_mouseScroll_lastX;
+        int deltaY = _mouse->globalY() - d->m_mouseScroll_lastY;
+    
+        if (deltaX > 0) d->m_mouseScroll_byX = 1; // Direction
+        else if (deltaX < 0) d->m_mouseScroll_byX = -1; // Direction
+    
+        if (deltaY > 0) d->m_mouseScroll_byY = 1; // Direction
+        else if (deltaY < 0) d->m_mouseScroll_byY = -1; // Direction
+    
+        int adX, adY;
+        adX = abs(deltaX);
+        adY = abs(deltaY);
+    
+        if (adX > 100) d->m_mouseScroll_byX *= 6;
+        else if (adX > 80) d->m_mouseScroll_byX *= 4;
+        else if (adX > 40) d->m_mouseScroll_byX *= 2;
+        else if (adX > 20) d->m_mouseScroll_byX *= 1;
+        else d->m_mouseScroll_byX = 0; 
+    
+        if (adY > 100) d->m_mouseScroll_byY *= 6;
+        else if (adY > 80) d->m_mouseScroll_byY *= 4;
+        else if (adY > 40) d->m_mouseScroll_byY *= 2;
+        else if (adY > 20) d->m_mouseScroll_byY *= 1;
+        else d->m_mouseScroll_byY = 0; 
+    
+        if (d->m_mouseScroll_byX == 0 && d->m_mouseScroll_byY == 0) {
+            d->m_mouseScrollTimer->stop();
+        }
+        else if (!d->m_mouseScrollTimer->isActive()) {
+            d->m_mouseScrollTimer->changeInterval(10);
+        }
+        return;
+    }
 
     if(!m_part->xmlDocImpl()) return;
 
@@ -1082,9 +1125,43 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
+    if (d->m_mouseScrollTimer != 0) {
+        delete d->m_mouseScrollTimer;
+        d->m_mouseScrollTimer = 0;
+
+        viewport()->unsetCursor();
+        viewport()->setCursor( KCursor::ArrowCursor );
+
+        d->clickCount = 0;
+        khtml::MouseReleaseEvent event( _mouse, d->clickX, d->clickY, DOM::DOMString(), DOM::DOMString(), DOM::Node() );
+        QApplication::sendEvent( m_part, &event );
+        return;
+    }
+
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
+    if ( (_mouse->button() == MidButton) && !(m_part->d->m_bOpenMiddleClick) && (d->m_mouseScrollTimer == 0) && (mev.url.isNull())) {
+        d->m_mouseScroll_lastX = _mouse->globalX();
+        d->m_mouseScroll_lastY = _mouse->globalY();
+        d->m_mouseScroll_byX = 0;
+        d->m_mouseScroll_byY = 0;
+  
+        d->m_mouseScrollTimer = new QTimer(this);
+        connect(d->m_mouseScrollTimer, SIGNAL(timeout()), this, SLOT(slotMouseScrollTimer()));
+        
+        viewport()->unsetCursor();
+        bool hasHorBar = visibleWidth() < contentsWidth();
+        bool hasVerBar = visibleHeight() < contentsHeight();
+        if ( hasHorBar && !hasVerBar )
+            viewport()->setCursor( KCursor::SizeHorCursor );
+        else if ( !hasHorBar && hasVerBar )
+            viewport()->setCursor( KCursor::SizeVerCursor );
+        else
+            viewport()->setCursor( KCursor::SizeAllCursor );
+        return;
+    }
+ 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
@@ -2980,6 +3057,11 @@ void KHTMLView::complete( bool pendingAction )
             emit m_part->completed(true);
     }
 
+}
+
+void KHTMLView::slotMouseScrollTimer()
+{
+    scrollBy( d->m_mouseScroll_byX, d->m_mouseScroll_byY );
 }
 
 #ifndef KHTML_NO_CARET
