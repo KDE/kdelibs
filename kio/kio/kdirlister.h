@@ -53,6 +53,8 @@ namespace KIO { class Job; class ListJob; }
  */
 class KDirLister : public QObject
 {
+  class KDirListerPrivate;
+  friend class KDirListerPrivate;
   friend class KDirListerCache;
 
   Q_OBJECT
@@ -411,6 +413,10 @@ signals:
   void speed( int bytes_per_second );
 
 protected:
+  enum Changes {
+    NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8
+  };
+
   /**
    * Called for every new item before emitting @ref newItems().
    * @return true if the item is "ok".
@@ -466,11 +472,6 @@ private:
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
 
-  enum Changes {
-    NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8
-  };
-
-  class KDirListerPrivate;
   KDirListerPrivate *d;
 };
 
