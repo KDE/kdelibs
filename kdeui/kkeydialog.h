@@ -34,18 +34,13 @@ class KAccel;
 class KAccelAction;
 class KAccelActions;
 class KActionCollection;
+class KActionPtrList;
 class KGlobalAccel;
 class KShortcut;
-
-class KKeyDialogPrivate;
-class KKeyChooserPrivate;
-class KKeyChooserItemPrivate;
 
 class KKeyChooserItem : public KListViewItem
 {
  public:
-	//KKeyChooserItem( KListView* parent, KListViewItem* after, KKeyChooserItemPrivate* pInfo );
-	//KKeyChooserItem( KListViewItem* parent, KListViewItem* after, KKeyChooserItemPrivate* pInfo );
 	KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action );
 	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
 
@@ -54,6 +49,9 @@ class KKeyChooserItem : public KListViewItem
 
  protected:
 	KAccelAction* m_pAction;
+
+ private:
+	class KKeyChooserItemPrivate* d;
 };
 
 /**
@@ -62,7 +60,7 @@ class KKeyChooserItem : public KListViewItem
  *
  * The class takes care of all aspects of configuration, including
  * handling key conflicts internally. Connect to the @ref allDefault()
- * slot if you want to set all configurable keybindings to their
+ * slot if you want to set all configurable shortcuts to their
  * default values.
  *
  * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
@@ -74,40 +72,28 @@ class KKeyChooserItem : public KListViewItem
 class KKeyChooser : public QWidget
 {
 	Q_OBJECT
-
  public:
-	enum { NoKey = 1, DefaultKey, CustomKey };
+	enum ActionType { Application, ApplicationGlobal, Standard, Global };
 
 	/**
-	* Constructor.
-	*
-	* @param aKeyDict A dictionary (@ref QMap) of key definitons.
-	**/
-	// bAllowLetterShortcuts should be true if i.e. 'A' should be
-	//  usable as a shortcut.
-	// bAllowMetaKey should be true only if this is not a shortcut
-	//  for a specific application.
-	KKeyChooser( KAccelActions& actions, QWidget* parent,
-			bool bCheckAgainstStdKeys = false,
-			bool bAllowLetterShortcuts = true,
-			bool bAllowMetaKey = false );
-	KKeyChooser( KAccel* actions, QWidget* parent,
-			bool bCheckAgainstStdKeys = false,
-			bool bAllowLetterShortcuts = true,
-			bool bAllowMetaKey = false );
-	KKeyChooser( KGlobalAccel* actions, QWidget* parent,
-			bool bCheckAgainstStdKeys = false,
-			bool bAllowLetterShortcuts = true,
-			bool bAllowMetaKey = false );
+	 * Constructor.
+	 *
+	 * @param aKeyDict A dictionary (@ref QMap) of key definitons.
+	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
+	 *  are not permissible shortcuts.
+	 **/
+	KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
+	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
+	KKeyChooser( KGlobalAccel* actions, QWidget* parent );
+
 	~KKeyChooser();
 
 	void commitChanges();
 
  protected:
-	void init( KAccelActions& actions,
-			bool bCheckAgainstStdKeys,
-			bool bAllowLetterShortcuts,
-			bool bAllowMetaKey );
+	enum { NoKey = 1, DefaultKey, CustomKey };
+
+	void init( KAccelActions& actions, ActionType type, bool bAllowLetterShortcuts );
 	void buildListView();
 
 	void readGlobalKeys();
@@ -115,9 +101,9 @@ class KKeyChooser : public QWidget
 
 	void updateButtons();
 	void fontChange( const QFont& _font );
-	bool isKeyPresent( KShortcut cut, bool warnuser = true );
-	void _warning( KShortcut cut, QString sAction, QString sTitle );
-	void setShortcut( KShortcut cut );
+	void setShortcut( const KShortcut& cut );
+	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
+	void _warning( const KShortcut& cut, QString sAction, QString sTitle );
 
  signals:
 	/**
@@ -150,7 +136,7 @@ class KKeyChooser : public QWidget
 	void capturedShortcut( const KShortcut& cut );
 
  protected:
-	bool m_bAllowMetaKey;
+	bool m_bAllowWinKey;
 	// If this is set, then shortcuts require a modifier:
 	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
 	// Note, however, that this only applies to printable characters.
@@ -166,7 +152,21 @@ class KKeyChooser : public QWidget
 
  private:
 	class KKeyChooserPrivate *d;
+#ifndef KDE_NO_COMPAT
+ public:
+	/** @obsolete */
+	KKeyChooser( KAccel* actions, QWidget* parent,
+			bool bCheckAgainstStdKeys,
+			bool bAllowLetterShortcuts,
+			bool bAllowWinKey = false );
+	/** @obsolete */
+	KKeyChooser( KGlobalAccel* actions, QWidget* parent,
+			bool bCheckAgainstStdKeys,
+			bool bAllowLetterShortcuts,
+			bool bAllowWinKey = false );
+#endif
 };
+typedef KKeyChooser KKeyChooser;
 
 /**
  * The KKeyDialog class is used for configuring dictionaries of key/action
@@ -214,30 +214,45 @@ class KKeyDialog : public KDialogBase
   Q_OBJECT
 
 public:
-	KKeyDialog( KAccelActions& actions, QWidget *parent = 0,
-		bool bCheckAgainstStdKeys = false );
+	KKeyDialog( KAccelActions& actions, QWidget* parent = 0,
+		KKeyChooser::ActionType = KKeyChooser::Application );
 	virtual ~KKeyDialog();
 
-  void commitChanges();
+	void commitChanges();
 
-  /**
-   * Pops up a modal dialog for configuring key settings. The dialog is initialized
-   * from a @ref KAccelBase object, and the modifications are written to that object
-   * when the dialog is closed.
-   * @return Accept if the dialog was closed with OK, Reject otherwise.
-   **/
-  static int configureKeys( KAccelActions keys, QWidget *parent = 0  );
-  static int configureKeys( KAccel *keys, bool save_settings = true,
-                            QWidget *parent = 0  );
-  static int configureKeys( KGlobalAccel *keys, bool save_settings = true,
-                            QWidget *parent = 0  );
-  /**
-   * Pops up a modal dialog for configuring key settings. The dialog is initialized
-   * from an action collection (for XMLGUI based applications).
-   * @return Accept if the dialog was closed with OK, Reject otherwise.
-   **/
-  static int configureKeys( KActionCollection *coll, const QString& xmlfile,
-                            bool save_settings = true, QWidget *parent = 0 );
+	/**
+	 * Pops up a modal dialog for configuring key settings. The dialog is initialized
+	 * from a @ref KAccelBase object, and the modifications are written to that object
+	 * when the dialog is closed.
+	 * @return Accept if the dialog was closed with OK, Reject otherwise.
+	 **/
+	static int configure( KAccelActions& actions, QWidget* parent = 0,
+		KKeyChooser::ActionType = KKeyChooser::Application );
+	static int configure( KAccelActions& actions, const QString& sXmlFile = QString::null,
+		QWidget* parent = 0, bool bSaveSettings = true );
+	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
+	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
+	/**
+	 * Pops up a modal dialog for configuring key settings. The dialog is initialized
+	 * from an action collection (for XMLGUI based applications).
+	 * @return Accept if the dialog was closed with OK, Reject otherwise.
+	 **/
+	static int configure( KActionCollection* coll, const QString& sXmlFile,
+		QWidget* parent = 0, bool bSaveSettings = true );
+	static int configure( KActionPtrList* coll, const QString& sXmlFile,
+		QWidget* parent = 0, bool bSaveSettings = true );
+
+	// obsolete.
+	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
+		{ return configure( keys, parent, save_settings ); }
+	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
+		{ return configure( keys, parent, save_settings ); }
+	static int configureKeys( KActionCollection* coll, const QString& xmlfile,
+		bool save_settings = true, QWidget* parent = 0 )
+		{ return configure( coll, xmlfile, parent, save_settings ); }
+	static int configureKeys( KActionPtrList* coll, const QString& xmlfile,
+		bool save_settings = true, QWidget* parent = 0 )
+		{ return configure( coll, xmlfile, parent, save_settings ); }
 
 private:
 	KKeyChooser* m_pKeyChooser;
@@ -246,7 +261,7 @@ private:
 	QPushButton* bCancel;
 	QPushButton* bHelp;
 
-	KKeyDialogPrivate *d;
+	class KKeyDialogPrivate* d;
 };
 
 #endif // __KKEYDIALOG_H__

@@ -62,37 +62,31 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
-KAccelActions *g_pactionsGlobal, *g_pactionsApplication;
+static KAccelActions *g_pactionsGlobal, *g_pactionsApplication;
 
 class KKeyChooserPrivate {
 public:
-    //KAccelActions globalDict, stdDict;
-    //QDict<int> *globalDict;
-    //QDict<int> *stdDict;
-    KListView *pList;
-    QLabel *lInfo;
-    KKeyButton *bChange;
-    QGroupBox *fCArea;
-    QButtonGroup *kbGroup;
-    KAccelActions *pActionsOrig;
-    KAccelActions actionsNew;
+	KListView *pList;
+	QLabel *lInfo;
+	KKeyButton *bChange;
+	QGroupBox *fCArea;
+	QButtonGroup *kbGroup;
+	KAccelActions *pActionsOrig;
+	KAccelActions actionsNew;
 
-    //QMap<KListViewItem*, KAccelActions::Iterator> actionMap;
+	bool bAllowWinKey;
+	// If this is set, then shortcuts require a modifier:
+	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
+	// Note, however, that this only applies to printable characters.
+	//  'F1', 'Insert', etc., could still be used.
+	bool bAllowLetterShortcuts;
+	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
+	//  otherwise aDefaultKeycode.
+	bool bPreferFourModifierKeys;
+	};
 
-    bool bAllowMetaKey;
-    // If this is set, then shortcuts require a modifier:
-    //  so 'A' would not be valid, whereas 'Ctrl+A' would be.
-    // Note, however, that this only applies to printable characters.
-    //  'F1', 'Insert', etc., could still be used.
-    bool bAllowLetterShortcuts;
-    // When set, pressing the 'Default' button will select the aDefaultKeycode4,
-    //  otherwise aDefaultKeycode.
-    bool bPreferFourModifierKeys;
-};
-
-// HACK: for getting around some of Qt's lack of Meta support
+// HACK: for getting around some of Qt's lack of Win support
 enum { QT_META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
-//bool KKeyChooserPrivate::g_bMetaPressed = false;
 
 /************************************************************************/
 /* KKeyDialog                                                           */
@@ -105,12 +99,10 @@ enum { QT_META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
 /* (by using KDialogBase there is almost no code left ;)                */
 /*                                                                      */
 /************************************************************************/
-KKeyDialog::KKeyDialog( KAccelActions& actions, QWidget *parent,
-                        bool bCheckAgainstStdKeys)
-  : KDialogBase( parent, 0, true, i18n("Configure Key Bindings"), // Change to "Configure Shortcuts"
-                 Help|Default|Ok|Cancel, Ok )
+KKeyDialog::KKeyDialog( KAccelActions& actions, QWidget *parent, KKeyChooser::ActionType type )
+: KDialogBase( parent, 0, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
 {
-	m_pKeyChooser = new KKeyChooser( actions, this, bCheckAgainstStdKeys );
+	m_pKeyChooser = new KKeyChooser( actions, this, type );
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
 	enableButton( Help, false );
@@ -125,19 +117,86 @@ void KKeyDialog::commitChanges()
 	m_pKeyChooser->commitChanges();
 }
 
-int KKeyDialog::configureKeys( KAccelActions actions, QWidget *parent )
+int KKeyDialog::configure( KAccelActions& actions, QWidget* parent, KKeyChooser::ActionType type )
 {
-	KKeyDialog kd( actions, parent );
+	KKeyDialog kd( actions, parent, type );
 	int retcode = kd.exec();
-
 	if( retcode == Accepted )
 		kd.commitChanges();
 	return retcode;
 }
 
-int KKeyDialog::configureKeys( KAccel *keys, bool bSaveSettings, QWidget *parent )
+int KKeyDialog::configure( KAccelActions& actions, const QString& sXmlFile, QWidget* parent, bool bSaveSettings )
 {
-	int retcode = configureKeys( keys->actions(), parent );
+	kdDebug(125) << "KKeyDialog::configureKeys( KaccelActions&, " << sXmlFile << ", " << bSaveSettings << " )" << endl;
+
+	int retcode = configure( actions, parent, KKeyChooser::Application );
+	if( retcode != Accepted || !bSaveSettings || sXmlFile.isEmpty() )
+		return retcode;
+
+	// let's start saving this info
+	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
+	QDomDocument doc;
+	doc.setContent( raw_xml );
+
+	QString tagActionProp = QString::fromLatin1("ActionProperties");
+	QString tagAction     = QString::fromLatin1("Action");
+	QString attrName      = QString::fromLatin1("name");
+	QString attrShortcut  = QString::fromLatin1("shortcut");
+
+	// first, lets see if we have existing properties
+	QDomElement elem;
+	QDomElement it = doc.documentElement();
+	KXMLGUIFactory::removeDOMComments( it );
+	it = it.firstChild().toElement();
+	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
+		if( it.tagName() == tagActionProp ) {
+			elem = it;
+			break;
+		}
+	}
+
+	// if there was none, create one
+	if( elem.isNull() )
+	{
+		elem = doc.createElement( tagActionProp );
+		doc.firstChild().appendChild(elem);
+	}
+
+	// now, iterate through our actions
+	for( uint i = 0; i < actions.count(); i++ )
+	{
+		KAccelAction* pAction = actions.actionPtr( i );
+
+		// now see if this element already exists
+		QDomElement act_elem;
+		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
+			if( it.attribute( attrName ) == pAction->name() ) {
+				act_elem = it;
+				break;
+			}
+		}
+
+		// nope, create a new one
+		if( act_elem.isNull() ) {
+			act_elem = doc.createElement( tagAction );
+			act_elem.setAttribute( attrName, pAction->name() );
+		}
+		act_elem.setAttribute( attrShortcut, pAction->shortcut().toStringInternal() );
+
+		elem.appendChild( act_elem );
+	}
+
+	kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
+	// finally, write out the result
+	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
+
+	return retcode;
+}
+
+int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
+{
+	int retcode = configure( keys->actions(), parent, KKeyChooser::Application );
 	if( retcode == Accepted ) {
 		keys->updateConnections();
 		if( bSaveSettings )
@@ -146,9 +205,9 @@ int KKeyDialog::configureKeys( KAccel *keys, bool bSaveSettings, QWidget *parent
 	return retcode;
 }
 
-int KKeyDialog::configureKeys( KGlobalAccel *keys, bool bSaveSettings, QWidget *parent )
+int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings )
 {
-	int retcode = configureKeys( keys->actions(), parent );
+	int retcode = configure( keys->actions(), parent, KKeyChooser::Global );
 	if( retcode == Accepted ) {
 		keys->updateConnections();
 		if( bSaveSettings )
@@ -157,123 +216,81 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys, bool bSaveSettings, QWidget *
 	return retcode;
 }
 
-int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
-                               bool bSaveSettings, QWidget *parent )
+int KKeyDialog::configure( KActionCollection* coll, const QString& file, QWidget *parent, bool bSaveSettings )
 {
-    kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
-    KAccelActions actions;
-    coll->createKeyMap( actions );
+	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
+	KAccelActions actions;
+	coll->createKeyMap( actions );
 
-    KKeyDialog kd( actions, parent );
-    int retcode = kd.exec();
+	int retcode = configure( actions, file, parent, bSaveSettings );
+	if( retcode == Accepted )
+		coll->setKeyMap( actions );
 
-    if( retcode != Accepted )
-        return retcode;
+	return retcode;
+}
 
-    kd.commitChanges();
-    coll->setKeyMap( actions );
-    if (!bSaveSettings)
-        return retcode;
+int KKeyDialog::configure( KActionPtrList* coll, const QString& file, QWidget *parent, bool bSaveSettings )
+{
+	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
+	KAccelActions actions;
+	coll->createKeyMap( actions );
 
-    // let's start saving this info
-    QString raw_xml(KXMLGUIFactory::readConfigFile(file));
-    QDomDocument doc;
-    doc.setContent(raw_xml);
+	int retcode = configure( actions, file, parent, bSaveSettings );
+	if( retcode == Accepted )
+		coll->setKeyMap( actions );
 
-    QString tagActionProp = QString::fromLatin1( "ActionProperties" );
-    QString tagAction     = QString::fromLatin1( "Action" );
-    QString attrName      = QString::fromLatin1( "name" );
-    QString attrShortcut     = QString::fromLatin1( "shortcut" );
-
-    // first, lets see if we have existing properties
-    QDomElement elem;
-    QDomElement it = doc.documentElement();
-    KXMLGUIFactory::removeDOMComments( it );
-    it = it.firstChild().toElement();
-    for ( ; !it.isNull(); it = it.nextSibling().toElement() )
-        if ( it.tagName() == tagActionProp ) {
-            elem = it;
-            break;
-        }
-
-    // if there was none, create one
-    if ( elem.isNull() )
-    {
-        elem = doc.createElement( tagActionProp );
-        doc.firstChild().appendChild(elem);
-    }
-
-  // now, iterate through our actions
-  for (unsigned int i = 0; i < coll->count(); i++)
-  {
-    KAction *action = coll->action(i);
-
-    // see if we changed
-    //if (key.aCurrentKeyCode == key.aConfigKeyCode)
-    //  continue;
-
-    KAccelAction *pAccelAction = actions.actionPtr(action->name());
-    if( !pAccelAction )
-      continue;
-    const KShortcut &cut = pAccelAction->shortcut();
-
-    // now see if this element already exists
-    QDomElement act_elem;
-    for ( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() )
-    {
-      if ( it.attribute( attrName ) == action->name() )
-      {
-        act_elem = it;
-        break;
-      }
-    }
-
-    // nope, create a new one
-    if ( act_elem.isNull() )
-    {
-      act_elem = doc.createElement( tagAction );
-      act_elem.setAttribute( attrName, action->name() );
-    }
-    act_elem.setAttribute( attrShortcut, cut.toStringInternal() );
-
-    elem.appendChild( act_elem );
-  }
-
-  kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
-  // finally, write out the result
-  KXMLGUIFactory::saveConfigFile(doc, file);
-
-  return retcode;
+	return retcode;
 }
 
 //************************************************************************
 // KKeyChooser                                                           *
 //************************************************************************
-KKeyChooser::KKeyChooser( KAccelActions& actions, QWidget* parent,
-			bool bCheckAgainstStdKeys,
-			bool bAllowLetterShortcuts,
-			bool bAllowMetaKey )
+KKeyChooser::KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
 : QWidget( parent )
 {
-	init( actions, bCheckAgainstStdKeys, bAllowLetterShortcuts, bAllowMetaKey );
+	init( actions, type, bAllowLetterShortcuts );
+}
+
+KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts )
+: QWidget( parent )
+{
+	init( actions->actions(), Application, bAllowLetterShortcuts );
+}
+
+KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent )
+: QWidget( parent )
+{
+	init( actions->actions(), Global, false );
 }
 
 KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent,
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
-			bool bAllowMetaKey )
+			bool bAllowWinKey )
 : QWidget( parent )
 {
-	init( actions->actions(), bCheckAgainstStdKeys, bAllowLetterShortcuts, bAllowMetaKey );
+	ActionType type;
+	if( bAllowWinKey )
+		type = (bCheckAgainstStdKeys) ? ApplicationGlobal : Global;
+	else
+		type = Application;
+
+	init( actions->actions(), type, bAllowLetterShortcuts );
 }
 
 KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 			bool bCheckAgainstStdKeys,
 			bool bAllowLetterShortcuts,
-			bool bAllowMetaKey )
+			bool bAllowWinKey )
 : QWidget( parent )
 {
-	init( actions->actions(), bCheckAgainstStdKeys, bAllowLetterShortcuts, bAllowMetaKey );
+	ActionType type;
+	if( bAllowWinKey )
+		type = (bCheckAgainstStdKeys) ? ApplicationGlobal : Global;
+	else
+		type = Application;
+	
+	init( actions->actions(), type, bAllowLetterShortcuts );
 }
 
 KKeyChooser::~KKeyChooser()
@@ -290,16 +307,13 @@ void KKeyChooser::commitChanges()
 	d->pActionsOrig->updateShortcuts( d->actionsNew );
 }
 
-void KKeyChooser::init( KAccelActions& actions,
-			bool bCheckAgainstStdKeys,
-			bool bAllowLetterShortcuts,
-			bool bAllowMetaKey )
+void KKeyChooser::init( KAccelActions& actions, ActionType type, bool bAllowLetterShortcuts )
 {
   d = new KKeyChooserPrivate();
 
   d->pActionsOrig = &actions; // Keep pointer to original for saving
   d->actionsNew.init( actions ); // Make copy to modify
-  d->bAllowMetaKey = bAllowMetaKey;
+  d->bAllowWinKey = (type == Global || type == ApplicationGlobal);
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
   d->bPreferFourModifierKeys = KAccelAction::useFourModifierKeys();
 
@@ -323,20 +337,20 @@ void KKeyChooser::init( KAccelActions& actions,
   //
   // CREATE SPLIT LIST BOX
   //
-  // Copy all currentKeyCodes to configKeyCodes
-  // and fill up the split list box with the action/key pairs.
+  // fill up the split list box with the action/key pairs.
   //
   d->pList = new KListView( this );
   d->pList->setFocus();
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
-  QString wtstr = i18n("Here you can see a list of key bindings, \n"
-                       "i.e. associations between actions (e.g. 'Copy')\n"
-                       "shown in the left column and keys or combination\n"
-                       "of keys (e.g. CTRL-V) shown in the right column.");
+  QString wtstr = i18n("Here you can see a list of key bindings, "
+                       "i.e. associations between actions (e.g. 'Copy') "
+                       "shown in the left column and keys or combination "
+                       "of keys (e.g. Ctrl+V) shown in the right column.");
 
   QWhatsThis::add( d->pList, wtstr );
 
+  d->pList->setAllColumnsShowFocus( true );
   d->pList->addColumn(i18n("Action"));
   d->pList->addColumn(i18n("Shortcut"));
   d->pList->addColumn(i18n("Alternate"));
@@ -424,7 +438,7 @@ void KKeyChooser::init( KAccelActions& actions,
   readGlobalKeys();
   //d->stdDict = new QDict<int> ( 100, false );
   //d->stdDict->setAutoDelete( true );
-  if (bCheckAgainstStdKeys)
+  if (type == Application || type == ApplicationGlobal)
     readStdKeys();
 }
 
@@ -443,7 +457,7 @@ void KKeyChooser::buildListView()
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
-	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
+	for( uint i = 0; i < d->actionsNew.count(); i++ ) {
 		KAccelAction& action = *d->actionsNew.actionPtr( i );
 		kdDebug(125) << "Key: " << action.name() << endl;
 		if( action.name().startsWith( "Program:" ) ) {
@@ -586,7 +600,7 @@ void KKeyChooser::readGlobalKeys()
 	//debug("KKeyChooser::readGlobalKeys()");
 	//readKeysInternal( d->globalDict, QString::fromLatin1("Global Keys"));
 	KConfig config;
-	if( g_pactionsGlobal->size() == 0 )
+	if( g_pactionsGlobal->count() == 0 )
 		g_pactionsGlobal->init( config, QString::fromLatin1("Global Shortcuts") );
 }
 
@@ -598,7 +612,7 @@ void KKeyChooser::readStdKeys()
 	// debug("KKeyChooser::readStdKeys()");
 	//readKeysInternal( d->stdDict, QString::fromLatin1("Keys"));
 	KConfig config;
-	if( g_pactionsApplication->size() == 0 )
+	if( g_pactionsApplication->count() == 0 )
 		g_pactionsApplication->init( config, QString::fromLatin1("Shortcuts") );
 	// Only insert std keys which don't appear in the dictionary to be configured
 //	for( KAccelActions::ConstIterator it = d->pActionsOrig->begin(); it != d->pActionsOrig->end(); ++it )
@@ -620,7 +634,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	// Change all configKeyCodes to default values
 	kdDebug(125) << QString( "KKeyChooser::allDefault( %1 )\n" ).arg( useFourModifierKeys );
 
-	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
+	for( uint i = 0; i < d->actionsNew.count(); i++ ) {
 		KAccelAction& action = *d->actionsNew.actionPtr( i );
 		action.setShortcut( action.shortcutDefault() );
 	}
@@ -640,7 +654,6 @@ void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
 }
 
-// Remove this --ellis 12/31/01
 void KKeyChooser::capturedShortcut( const KShortcut& cut )
 {
 	if( cut.isNull() )
@@ -661,7 +674,7 @@ void KKeyChooser::listSync()
 }
 
 //#include <iostream.h>
-void KKeyChooser::setShortcut( KShortcut cut )
+void KKeyChooser::setShortcut( const KShortcut& cut )
 {
 	kdDebug(125) << "KKeyChooser::setShortcut( " << cut.toString() << " )" << endl;
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
@@ -683,8 +696,8 @@ void KKeyChooser::setShortcut( KShortcut cut )
 
    KAccelActions::Iterator it = d->mapItemToInfo[item];
 
-   if( !d->bAllowMetaKey && (keyCode & (Qt::ALT<<1)) ) {
-	QString s = i18n("The Meta key is not allowed in this context.");
+   if( !d->bAllowWinKey && (keyCode & (Qt::ALT<<1)) ) {
+	QString s = i18n("The Win key is not allowed in this context.");
 	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 	return;
    }
@@ -692,7 +705,7 @@ void KKeyChooser::setShortcut( KShortcut cut )
    if( keyCode < 0x1000  && !d->bAllowLetterShortcuts ) {
 	QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 				"it must be combined with the "
-				"Meta, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
+				"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
 	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 	return;
    }
@@ -708,35 +721,17 @@ void KKeyChooser::setShortcut( KShortcut cut )
 */
 }
 
-void KKeyChooser::_warning( KShortcut cut, QString sAction, QString sTitle )
-{
-	sAction = sAction.stripWhiteSpace();
-
-	QString s =
-		i18n("The '%1' key combination has already been allocated "
-		"to the global \"%2\" action.\n"
-		"Please choose a unique key combination.").
-		arg(cut.toString()).arg(sAction);
-
-	KMessageBox::sorry( this, s, sTitle );
-}
-
-bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
+bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 {
 	if( cut.count() == 0 )
 		return false;
 
+	// TODO: check for all sequences of a shortcut
+	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
 	KAccelAction* pAction = d->actionsNew.actionPtr( cut.seq(0) );
-	if( pAction ) {
-		if( bWarnUser ) {
-			QString s =
-				i18n("The %1 key combination has already "
-				"been allocated "
-				"to the action: %2.\n"
-				"Please choose a unique key combination.").
-				arg(cut.toString()).arg(pAction->desc());
-			KMessageBox::sorry( this, s, i18n("Key Conflict") );
-		}
+	if( pAction && pAction != &pItem->action() ) {
+		if( bWarnUser )
+			_warning( cut, pAction->name(), i18n("Key Conflict") );
 		return true;
 	}
 	return false;
@@ -805,6 +800,19 @@ bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
     }
 */
     return false;
+}
+
+void KKeyChooser::_warning( const KShortcut& cut, QString sAction, QString sTitle )
+{
+	sAction = sAction.stripWhiteSpace();
+
+	QString s =
+		i18n("The '%1' key combination has already been allocated "
+		"to the \"%2\" action.\n"
+		"Please choose a unique key combination.").
+		arg(cut.toString()).arg(sAction);
+
+	KMessageBox::sorry( this, s, sTitle );
 }
 
 //---------------------------------------------------

@@ -10,6 +10,9 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kglobalaccel.h>
+#include <kiconloader.h>
+#include <kkeynative.h>
 #include <klocale.h>
 
 #ifdef Q_WS_X11
@@ -49,6 +52,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 :	KDialog( parent, name ),
 	m_cut( cut )
 {
+	m_bKeyboardGrabbed = false;
 	m_iSeq = 0;
 	m_iKey = 0;
 	initGUI();
@@ -56,6 +60,12 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 #ifdef Q_WS_X11
 	kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
 #endif
+}
+
+KShortcutDialog::~KShortcutDialog()
+{
+	releaseKeyboard();
+	//releaseMouse();
 }
 
 void KShortcutDialog::initGUI()
@@ -68,29 +78,39 @@ void KShortcutDialog::initGUI()
 
 	m_prbSeq[0] = new QRadioButton( i18n("Primary"), pGroup );
 	m_prbSeq[0]->setChecked( true );
-	connect( m_prbSeq[0], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	connect( m_prbSeq[0], SIGNAL(clicked()), this, SLOT(slotSeq0Selected()) );
+	QPushButton* pb0 = new QPushButton( pGroup );
+	pb0->setFlat( true );
+	pb0->setPixmap( SmallIcon( "locationbar_erase" ) );
+	connect( pb0, SIGNAL(clicked()), this, SLOT(slotClearSeq0()) );
 	m_peditSeq[0] = new KShortcutBox( m_cut.seq(0), pGroup );
 	m_peditSeq[0]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 	m_pcbMultiKey[0] = new QCheckBox( i18n("Multi-Key"), pGroup );
 	m_pcbMultiKey[0]->setChecked( m_cut.seq(0).count() > 1 );
-	connect( m_pcbMultiKey[0], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	connect( m_pcbMultiKey[0], SIGNAL(clicked()), this, SLOT(slotSeq0Selected()) );
 
 	m_prbSeq[1] = new QRadioButton( i18n("Alternate"), pGroup );
-	connect( m_prbSeq[1], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	connect( m_prbSeq[1], SIGNAL(clicked()), this, SLOT(slotSeq1Selected()) );
+	QPushButton* pb1 = new QPushButton( pGroup );
+	pb1->setFlat( true );
+	pb1->setPixmap( SmallIcon( "locationbar_erase" ) );
+	connect( pb1, SIGNAL(clicked()), this, SLOT(slotClearSeq1()) );
 	m_peditSeq[1] = new KShortcutBox( m_cut.seq(1), pGroup );
 	m_peditSeq[1]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 	m_pcbMultiKey[1] = new QCheckBox( i18n("Multi-Key"), pGroup );
 	m_pcbMultiKey[1]->setChecked( m_cut.seq(1).count() > 1 );
-	connect( m_pcbMultiKey[1], SIGNAL(clicked()), this, SLOT(slotSeqSelected()) );
+	connect( m_pcbMultiKey[1], SIGNAL(clicked()), this, SLOT(slotSeq1Selected()) );
 
 	QGridLayout* pLayout = new QGridLayout( pGroup, 2, 3, KDialog::marginHint(), KDialog::spacingHint() );
-	pLayout->setColStretch( 1, 1 );
+	pLayout->setColStretch( 2, 1 );
 	pLayout->addWidget( m_prbSeq[0], 0, 0 );
-	pLayout->addWidget( m_peditSeq[0], 0, 1 );
-	pLayout->addWidget( m_pcbMultiKey[0], 0, 2 );
+	pLayout->addWidget( pb0, 0, 1 );
+	pLayout->addWidget( m_peditSeq[0], 0, 2 );
+	pLayout->addWidget( m_pcbMultiKey[0], 0, 3 );
 	pLayout->addWidget( m_prbSeq[1], 1, 0 );
-	pLayout->addWidget( m_peditSeq[1], 1, 1 );
-	pLayout->addWidget( m_pcbMultiKey[1], 1, 2 );
+	pLayout->addWidget( pb1, 1, 1 );
+	pLayout->addWidget( m_peditSeq[1], 1, 2 );
+	pLayout->addWidget( m_pcbMultiKey[1], 1, 3 );
 
 	QVBox* pVBox = new QVBox( this );
 	m_pcmdOK = new QPushButton( i18n("OK"), pVBox );
@@ -104,17 +124,61 @@ void KShortcutDialog::initGUI()
 	connect( m_pcmdCancel, SIGNAL(clicked()), this, SLOT(reject()) );
 
 	pHLayout->addWidget( pVBox );
+	m_prbSeq[0]->clearFocus();
 }
 
-void KShortcutDialog::slotSeqSelected()
+void KShortcutDialog::selectSeq( uint i )
 {
-	m_iSeq = m_prbSeq[0]->isChecked() ? 0 : 1;
+	kdDebug(125) << "KShortcutDialog::selectSeq( " << i << " )" << endl;
+	m_iSeq = i;
+	m_prbSeq[m_iSeq]->setChecked( true );
 	// Start editing at the first key in the sequence.
 	m_iKey = 0;
-
 	// Can't auto-close if editing a multi-key shortcut.
 	m_pcbAutoClose->setEnabled( !m_pcbMultiKey[m_iSeq]->isChecked() );
+	m_prbSeq[m_iSeq]->setFocus();
 }
+
+void KShortcutDialog::clearSeq( uint i )
+{
+	kdDebug(125) << "KShortcutDialog::deleteSeq( " << i << " )" << endl;
+	m_peditSeq[i]->setSeq( KKeySequence::null() );
+	selectSeq( i );
+}
+
+void KShortcutDialog::focusInEvent( QFocusEvent* )
+{
+	kdDebug(125) << "KShortcutDialog::focusInEvent()" << endl;
+	setFocus();
+	grabKeyboard();
+	//grabMouse();
+}
+
+void KShortcutDialog::focusOutEvent( QFocusEvent* )
+{
+	kdDebug(125) << "KShortcutDialog::focusOutEvent()" << endl;
+	releaseKeyboard();
+	//grabMouse();
+}
+
+void KShortcutDialog::paintEvent( QPaintEvent* pEvent )
+{
+	kdDebug(125) << "KShortcutDialog::paintEvent( QPaintEvent* )" << endl;
+	kdDebug(125) << "m_bKeyboardGrabbed = " << m_bKeyboardGrabbed << endl;
+	kdDebug(125) << "hasFocus() = " << hasFocus() << endl;
+	if( !m_bKeyboardGrabbed ) {
+	kdDebug(125) << "KShortcutDialog::2paintEvent( QPaintEvent* )" << endl;
+		m_bKeyboardGrabbed = true;
+		setFocus();
+		grabKeyboard();
+	}
+	KDialog::paintEvent( pEvent );
+}
+
+void KShortcutDialog::slotSeq0Selected() { selectSeq( 0 ); }
+void KShortcutDialog::slotSeq1Selected() { selectSeq( 1 ); }
+void KShortcutDialog::slotClearSeq0()    { clearSeq( 0 ); }
+void KShortcutDialog::slotClearSeq1()    { clearSeq( 1 ); }
 
 #ifdef Q_WS_X11
 bool KShortcutDialog::x11Event( XEvent *pEvent )
@@ -152,16 +216,22 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			break;
 		default:
 			if( pEvent->type == XKeyPress && keyNative.sym() ) {
-				KKey key = keyNative;
-				if( m_iSeq < m_cut.count() ) {
-					if( m_iKey == 0 )
-						m_cut.setSeq( m_iSeq, key );
-					else
-						m_cut.seq(m_iSeq).setKey( m_iKey, key );
-				} else if( m_iSeq == m_cut.count() )
-					m_cut.insert( key );
-				else
+				// If RETURN was pressed and we are recording a 
+				//  multi-key shortcut, then we are done.
+				if( keyNative.sym() == XK_Return && m_iKey > 0 ) {
+					accept();
 					return;
+				}
+
+				KKey key = keyNative;
+				KKeySequence seq;
+				if( m_iKey == 0 )
+					seq = key;
+				else {
+					seq = m_cut.seq( m_iSeq );
+					seq.setKey( m_iKey, key );
+				}
+				m_cut.setSeq( m_iSeq, seq );
 
 				if( m_pcbMultiKey[m_iSeq]->isChecked() )
 					m_iKey++;
@@ -178,22 +248,26 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			return;
 	}
 
-	if( pEvent->type == XKeyPress )
-		keyModX |= pEvent->xkey.state;
-	else
-		keyModX = pEvent->xkey.state & ~keyModX;
+	// If we are editing the first key in the sequence,
+	//  display modifier keys which are held down
+	if( m_iKey == 0 ) {
+		if( pEvent->type == XKeyPress )
+			keyModX |= pEvent->xkey.state;
+		else
+			keyModX = pEvent->xkey.state & ~keyModX;
 
-	QString keyModStr;
-	if( keyModX & KKeyNative::modX(KKey::WIN) )	keyModStr += i18n("Win") + "+";
-	if( keyModX & KKeyNative::modX(KKey::ALT) )	keyModStr += i18n("Alt") + "+";
-	if( keyModX & KKeyNative::modX(KKey::CTRL) )	keyModStr += i18n("Ctrl") + "+";
-	if( keyModX & KKeyNative::modX(KKey::SHIFT) )	keyModStr += i18n("Shift") + "+";
+		QString keyModStr;
+		if( keyModX & KKeyNative::modX(KKey::WIN) )	keyModStr += i18n("Win") + "+";
+		if( keyModX & KKeyNative::modX(KKey::ALT) )	keyModStr += i18n("Alt") + "+";
+		if( keyModX & KKeyNative::modX(KKey::CTRL) )	keyModStr += i18n("Ctrl") + "+";
+		if( keyModX & KKeyNative::modX(KKey::SHIFT) )	keyModStr += i18n("Shift") + "+";
 
-	// Display currently selected modifiers, or redisplay old key.
-	if( !keyModStr.isEmpty() )
-		m_peditSeq[m_iSeq]->setText( keyModStr );
-	else
-		m_peditSeq[m_iSeq]->setSeq( m_cut.seq(m_iSeq) );
+		// Display currently selected modifiers, or redisplay old key.
+		if( !keyModStr.isEmpty() )
+			m_peditSeq[m_iSeq]->setText( keyModStr );
+		else
+			m_peditSeq[m_iSeq]->setSeq( m_cut.seq(m_iSeq) );
+	}
 }
 #endif // QT_WS_X11
 
