@@ -636,16 +636,14 @@ bool KHTMLPart::openURL( const KURL &url )
   // be smart and instead of reloading the whole document we just jump to the
   // request html anchor
   if ( d->m_frames.count() == 0 &&
-       urlcmp( url.url(), m_url.url(), true, true ) && !args.doPost() && !args.reload )
+       urlcmp( url.url(), m_url.url(), true, true ) && 
+       !url.encodedHtmlRef().isEmpty() && !args.doPost() && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
     emit started( 0L );
 
-    if ( !url.encodedHtmlRef().isEmpty() )
-      gotoAnchor( url.encodedHtmlRef() );
-    else
-      d->m_view->setContentsPos( 0, 0 );
+    gotoAnchor( url.encodedHtmlRef() );
 
     d->m_bComplete = true;
     d->m_bParsing = false;
