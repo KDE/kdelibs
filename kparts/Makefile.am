@@ -14,12 +14,12 @@ lib_LTLIBRARIES = libkparts.la
 
 libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp dockmainwindow.cpp \
 		       event.cpp browserextension.cpp factory.cpp  historyprovider.cpp \
-		       browserinterface.cpp browserrun.cpp pluginselector.cpp
+		       browserinterface.cpp browserrun.cpp
 
 kpartsincludedir = $(includedir)/kparts
 kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h dockmainwindow.h event.h \
 	browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h \
-	componentfactory.h browserrun.h pluginselector.h
+	componentfactory.h browserrun.h
 
 libkparts_la_METASOURCES = AUTO
 
