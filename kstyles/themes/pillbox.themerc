@@ -44,9 +44,11 @@ Comment[ro]=Stil fără temă Pillbox
 Comment[ru]=Стиль упаковки с пилюлями
 Comment[sk]=Pillbox netémový štýl
 Comment[sl]=Netematski slog škatlice tablet.
+Comment[sr]=Pillbox stil bez teme
 Comment[sv]=Otemad bunker-stil.
 Comment[ta]=Pillbox ¯Õ¸ÕÅ¢øÄ¡¾ À¡½¢.
 Comment[tr]=Temasız Hap Kutusu stili
 Comment[uk]=Стиль 'маленька скринька' без теми
+Comment[zh_TW.Big5]=非主題式的確堡風格
 [KDE]
 widgetStyle=pillboxstyle.la

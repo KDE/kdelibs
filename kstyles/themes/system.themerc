@@ -236,6 +236,7 @@ Name[ro]=Sistem++
 Name[sk]=Systém++
 Name[sl]=Sistem++
 Name[tr]=Sistem++
+Name[zh_TW.Big5]=系統++
 Comment=System themed style
 Comment[ca]=Estil del sistema amb temes
 Comment[cs]=Systémový styl s motivem
@@ -263,11 +264,13 @@ Comment[ro]=Stil sistem cu temă
 Comment[ru]=Системный стиль
 Comment[sk]=Systémové témy štýlov
 Comment[sl]=Sistemski tematski slog
+Comment[sr]=System tema
 Comment[sv]=Systemets temade stil
 Comment[ta]=¸½¢É¢ ¯Õ¸ÕÅ¢ø À¡½¢
 Comment[tr]=Sistem temalı stil
 Comment[uk]=Системний стиль
 Comment[zh_CN.GB2312]=系统主题风格
+Comment[zh_TW.Big5]=主題式的系統風格
 
 [General]
 foreground=0,0,0
