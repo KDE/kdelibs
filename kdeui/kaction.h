@@ -483,7 +483,18 @@ public:
 
 
     void unplugAll();
+    
+    /**
+    * @since 3.4
+    */
+    enum ActivationReason { UnknownActivation, EmulatedActivation, AccelActivation, PopupMenuActivation, ToolBarActivation };
 
+    /**
+    * Returns what triggered the last activated() signal.
+    * @since 3.4
+    */
+    ActivationReason activationReason() const;
+    
 public slots:
     /**
      * Sets the text associated with this action. The text is used for menu

@@ -89,6 +89,7 @@ public:
 
   KShortcut m_cut;
   KShortcut m_cutDefault;
+  KAction::ActivationReason m_activationReason;
 
   bool m_configurable;
 
@@ -239,7 +240,8 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d = new KActionPrivate;
 
     d->m_cutDefault = cut;
-
+    d->m_activationReason = KAction::UnknownActivation;
+    
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
     kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
@@ -1049,12 +1051,28 @@ void KAction::addContainer( QWidget* c, QWidget* w )
 
 void KAction::activate()
 {
+  d->m_activationReason = KAction::EmulatedActivation;
   slotActivated();
 }
 
 void KAction::slotActivated()
 {
+  const QObject *senderObj = sender();
+  if ( senderObj )
+  {
+    if ( senderObj->inherits( "KAccelPrivate" ) ) 
+      d->m_activationReason = KAction::AccelActivation;
+    else if ( senderObj->inherits( "QSignal" ) ) 
+      d->m_activationReason = KAction::PopupMenuActivation;
+    else if ( senderObj->inherits( "KToolBarButton" ) ) 
+      d->m_activationReason = KAction::ToolBarActivation;
+  }
   emit activated();
+}
+
+KAction::ActivationReason KAction::activationReason() const
+{
+  return d->m_activationReason;
 }
 
 void KAction::slotDestroyed()
