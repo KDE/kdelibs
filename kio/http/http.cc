@@ -1743,11 +1743,14 @@ bool HTTPProtocol::readHeader()
       if( messageBox(QuestionYesNo, msg, i18n("Authentication")) != 3  )
       {
         kdDebug(7103) << "User rejected Authentication retry!!" << endl;
+        /*
         if( code == 401 )
             msg = QString("%1").arg(m_state.hostname);
         else if( code == 407 )
             msg = QString("%1").arg(m_proxyURL.host());
         error(ERR_ACCESS_DENIED, msg);
+        */
+        error(ERR_USER_CANCELED, QString::null);
         return false;
       }
     }
