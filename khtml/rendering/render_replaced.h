@@ -40,7 +40,7 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    short calcReplacedWidth() const;
+    short calcReplacedWidth(bool* ieHack=0) const;
     int   calcReplacedHeight() const;
 
     virtual void calcMinMaxWidth();

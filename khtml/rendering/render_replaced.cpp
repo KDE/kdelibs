@@ -55,10 +55,13 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-short RenderReplaced::calcReplacedWidth() const
+short RenderReplaced::calcReplacedWidth(bool* ieHack) const
 {
     Length w = style()->width();
     short width;
+    if ( ieHack )
+        ieHack = false;
+
     switch( w.type ) {
     case Variable:
     {
@@ -84,7 +87,9 @@ short RenderReplaced::calcReplacedWidth() const
         if ( doIEhack )
             width = w.minWidth(static_cast<const RenderRoot*>(o)->view()->visibleWidth() );
         else
-            width = w.minWidth( containingBlockWidth() );
+            width = intrinsicWidth();
+        if ( ieHack )
+            *ieHack = doIEhack;
         break;
     }
     case Fixed:
@@ -126,6 +131,8 @@ int RenderReplaced::calcReplacedHeight() const
         }
         if ( doIEhack )
             height = h.minWidth(static_cast<const RenderRoot*>( o)->view()->visibleHeight() );
+        else
+            height = intrinsicHeight();
     }
     break;
     case Fixed:
@@ -146,9 +153,10 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    int width = calcReplacedWidth();
+    bool ieHack = false;
+    int width = calcReplacedWidth(&ieHack);
 
-    if ( style()->width().isPercent() || style()->height().isPercent() ) {
+    if ( ieHack ) {
         m_minWidth = 0;
         m_maxWidth = width;
     }
