@@ -148,12 +148,12 @@ signals:
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void authorizationKey( const QCString&, const QCString&, bool ) KDE_DEPRECATED;
+    void authorizationKey( const QCString&, const QCString&, bool );
 
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void delAuthorization( const QCString& grpkey ) KDE_DEPRECATED;
+    void delAuthorization( const QCString& grpkey );
 
 protected:
     /////////////////
