@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1998/02/24 15:54:35  kulow
+ * replaced some hard coded paths with the kapp->kde_ methodes.
+ * I'm not sure, if kde_datadir() is optimal for /share/apps ;)
+ *
  * Revision 1.9  1998/01/03 19:47:28  kulow
  * changed the defaults for yesNo and co. It's no longer "Yes" and co, but
  * 0 to enable translation in case.
@@ -243,18 +247,7 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	bbox->layout();
 	topLayout->addWidget( bbox );
 	
-	setFixedWidth( 
-		QMAX ( bbox->sizeHint().width(), msg->width() + picture->width() )
-		+ 6*border
-	);
-		
-	setFixedHeight(
-		QMAX( msg->height(), picture->height() )
-		+ bbox->sizeHint().height() + 3*border + vertSpacing
-	);
-    
-    resize( width(), height() );
-	topLayout->activate();
+    topLayout->freeze();
 }
 
 void KMsgBox::initMe( const char */*caption*/, 
