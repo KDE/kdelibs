@@ -16,12 +16,14 @@
 <!ENTITY Douwe.vanderSchaaf '<othercredit role="translator"><firstname>Douwe</firstname><surname>van der Schaaf</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Rinse.devries31      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.1</contrib></othercredit>'>
 <!ENTITY Rinse.devries32      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.2</contrib></othercredit>'>
+<!ENTITY Bram.Schoenmakers    '<othercredit role="translator"><firstname>Bram</firstname><surname>Schoenmakers</surname><affiliation><address><email>bram_s@softhome.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
 <!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
+<!ENTITY vertaling.bram    "<para>Dit document is vertaald naar het Nederlands door &Bram.Schoenmakers;.</para>">
 <!ENTITY vertaling.douwe   "<para>Dit document is vertaald naar het Nederlands door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY vertaling.floris  "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
 <!ENTITY vertaling.jogchum "<para>Dit document is vertaald naar het Nederlands door &Jogchum.Reitsma;.</para>">
@@ -31,6 +33,7 @@
 <!ENTITY vertaling.rinse31 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries31;.</para>">
 <!ENTITY vertaling.rinse32 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries32;.</para>">
 
+<!ENTITY nagalezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
 <!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
 <!ENTITY nagelezen.jogchum "<para>De vertaling werd nagelezen door &Jogchum.Reitsma;.</para>">
@@ -60,6 +63,7 @@
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
+<!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
