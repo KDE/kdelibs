@@ -4301,7 +4301,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 {
   khtml::RenderObject* obj = node->renderer();
   QString str;
-  int len;
+  int len = 0;
   Q_ASSERT( obj->isText() );
   if ( obj->isText() ) {
     str = static_cast<khtml::RenderText *>(obj)->data().string();
