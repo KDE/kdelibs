@@ -157,7 +157,7 @@ signals:
 
 private slots:
 
-
+      void 	family_chosen_slot(const char* );
       void      size_chosen_slot(const char* );
       void      weight_chosen_slot(const char*);
       void      style_chosen_slot(const char*);

@@ -353,6 +353,11 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   //  example_label->setAutoResize(true);
 
   connect(this,SIGNAL(fontSelected( const QFont&  )),
+	  this,SLOT(display_example( const QFont&)));
+
+  this->setMaximumSize(405,330);
+  this->setMinimumSize(405,330);
+
   // let's initialize the display if possible
   if(family_combo->count() != 0){
     this->setFont(QFont(family_combo->text(0),12,QFont::Normal));
@@ -645,6 +650,29 @@ void KFontDialog::fill_family_combo(){
     fontNames ++;
 
   }
+
+  for(fontlist.first(); fontlist.current(); fontlist.next())
+      family_combo->insertItem(fontlist.current(),-1);
+
+  XFreeFontNames(fontNames_copy);
+  XCloseDisplay(kde_display);
+
+
+}
+
+
+void KFontDialog::setColors(){
+ 
+  /* this is to the the backgound of a widget to white and the
+     text color to black -- some lables such as the one of the
+     font manager really shouldn't follow colorschemes The
+     primary task of those label is to display the text clearly
+     an visibly and not to look pretty ...*/
+
+  QPalette mypalette = (example_label->palette()).copy();
+
+  QColorGroup cgrp = mypalette.normal();
+  QColorGroup ncgrp(black,cgrp.background(),
 		    cgrp.light(),cgrp.dark(),cgrp.mid(),black,white);
 
   mypalette.setNormal(ncgrp);
