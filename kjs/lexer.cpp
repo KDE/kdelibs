@@ -241,8 +241,8 @@ int Lexer::lex()
 	if (restrKeyword) {
 	  token = ';';
 	  setDone(Other);
-	}
-	state = Start;
+	} else
+	  state = Start;
       } else if (current == 0) {
 	setDone(Eof);
       }
