@@ -27,9 +27,7 @@ public final class KJASAppletStub
     private String            className;
     private Class             appletClass;
     private JFrame            frame;
-    private boolean           failed = false;
-   
-    
+
     /**
     * applet state unknown
     */
@@ -58,16 +56,160 @@ public final class KJASAppletStub
     * the applet has been destroyed 
     */
     public static final int DESTROYED = 6;
+    /**
+    * request for termination of the applet thread 
+    */
+    private static final int TERMINATE = 7;
+    /**
+    * like TERMINATE, an end-point state 
+    */
+    private static final int FAILED = 8;
    
     
-    private int state = UNKNOWN;  
     private KJASAppletClassLoader loader;
     private KJASAppletPanel       panel;
     private Applet                app;
-    private Thread                runThread;
-    private Thread                appletThread = null;
-    private Thread                destroyThread = null;
     KJASAppletStub                me;
+
+    private class RunThread extends Thread {
+        private int request_state = CLASS_LOADED;
+        private int current_state = UNKNOWN;
+
+        RunThread() {
+            super("KJAS-AppletStub-" + appletID + "-" + appletName);
+            setContextClassLoader(loader);
+        }
+        /**
+         * Ask applet to go to the next state
+         */
+        synchronized void requestState(int nstate) {
+            if (nstate > current_state) {
+                request_state = nstate;
+                notifyAll();
+            }
+        }
+        /**
+         * Get the asked state
+         */
+        synchronized private int getRequestState() {
+            while (request_state == current_state) {
+                try {
+                    wait ();
+                } catch(InterruptedException ie) {
+                }
+            }
+            return request_state;
+        }
+        /**
+         * Get the current state
+         */
+        synchronized int getState() {
+            return current_state;
+        }
+        /**
+         * Set the current state
+         */
+        synchronized private void setState(int nstate) {
+            current_state = nstate;
+        }
+        /**
+         * Put applet in asked state
+         * Note, kjavaapletviewer asks for create/start/stop/destroy, the
+         * missing states instance/init/terminate, we do automatically
+         */
+        private void doState(int nstate) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+            switch (nstate) {
+                case CLASS_LOADED:
+                    appletClass = loader.loadClass( className );
+                    requestState(INSTANCIATED);
+                    break;
+                case INSTANCIATED: {
+                    Object object = null;
+                    try {
+                        object = appletClass.newInstance();
+                        app = (Applet) object;
+                    }
+                    catch ( ClassCastException e ) {
+                        if ( object != null && object instanceof java.awt.Component) {
+                            app = new Applet();
+                            app.setLayout(new BorderLayout());
+                            app.add( (Component) object, BorderLayout.CENTER);
+                        } else
+                            throw e;
+                    }
+                    requestState(INITIALIZED);
+                    break;
+                }
+                case INITIALIZED:
+                    app.setStub( me );
+                    app.setVisible(false);
+                    panel.setApplet( app );
+                    if (appletSize.getWidth() > 0)
+                        app.setBounds( 0, 0, appletSize.width, appletSize.height );
+                    else
+                        app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
+                    app.init();
+                    loader.removeStatusListener(panel);
+                    app.setVisible(true);
+                    // stop the loading... animation 
+                    panel.stopAnimation();
+                    break;
+                case STARTED:
+                    active = true;
+                    frame.validate();
+                    app.start();
+                    app.repaint();
+                    break;
+                case STOPPED:
+                    active = false;
+                    app.stop();
+                    if (Main.java_version > 1.399) {
+                        // kill the windowClosing listener(s)
+                        WindowListener[] l = frame.getWindowListeners();
+                        for (int i = 0; l != null && i < l.length; i++)
+                            frame.removeWindowListener(l[i]);
+                    }
+                    frame.hide();
+                    break;
+                case DESTROYED:
+                    app.destroy();
+                    frame.dispose();
+                    app = null;
+                    loader = null;
+                    requestState(TERMINATE);
+                    break;
+                default:
+                    return;
+                }
+        }
+        /**
+         * RunThread run(), loop until state is TERMINATE
+         */
+        public void run() {
+            while (true) {
+                int nstate = getRequestState();
+                if (nstate == TERMINATE)
+                    return;
+                try {
+                    doState(nstate);
+                } catch (Exception ex) {
+                    Main.kjas_err("Error during state " + nstate, ex);
+                    if (nstate < INITIALIZED) {
+                        setState(FAILED);
+                        setFailed(ex.toString());
+                        return;
+                    }
+                } catch (Throwable tr) {
+                    setState(FAILED);
+                    setFailed(tr.toString());
+                    return;
+                }
+                setState(nstate);
+                stateChange(nstate);
+            }
+        }
+    }
+    private RunThread                runThread = null;
 
     /**
      * Create an AppletStub for the specified applet. The stub will be in
@@ -85,7 +227,6 @@ public final class KJASAppletStub
         codeBase   = _codeBase;
         docBase    = _docBase;
         active     = false;
-        state      = UNKNOWN;
         appletName = _appletName;
         className  = _className.replace( '/', '.' );
         appletSize = _appletSize;
@@ -110,24 +251,7 @@ public final class KJASAppletStub
         
     }
 
-    /**
-     * Helper function for ending the runThread and appletThread
-     **/
-    private void tryToStopThread(Thread thread) {
-        try {
-            thread.interrupt();
-        } catch (SecurityException se) {}
-        if (thread.isAlive()) {
-            try {
-                thread.join(5000);
-            } catch (InterruptedException ie) {}
-        }
-    }
-
     private void stateChange(int newState) {
-        if (failed)
-            return;
-        state = newState;
         Main.protocol.sendAppletStateNotification(
             context.getID(),
             appletID,
@@ -135,7 +259,6 @@ public final class KJASAppletStub
     }
     
     private void setFailed(String why) {
-        failed = true;
         loader.removeStatusListener(panel);
         panel.stopAnimation();
         panel.showFailed();
@@ -170,104 +293,7 @@ public final class KJASAppletStub
             frame.setBounds( 0, 0, 50, 50 );
         frame.setVisible(true);
         loader.addStatusListener(panel);
-        runThread = new Thread
-        (
-        new Runnable() {
-            public void run() {
-                //this order is very important and took a long time
-                //to figure out- don't modify it unless there are
-                //real bug fixes
-                
-                // till 2002 09 18
-                // commented out the synchronized block because
-                // it leads to a deadlock of the JVM with
-                // j2re 1.4.1
-                //synchronized( me ) {
-                    try {
-                        appletClass = loader.loadClass( className );
-                    } catch (Exception e) {
-                        Main.kjas_err("Class could not be loaded: " + className, e);
-                        setFailed(e.toString());
-                        return;
-                    }
-                    if (Thread.interrupted())
-                        return;
-                    stateChange(CLASS_LOADED);
-                    Object object = null;
-                    try {
-                        synchronized (appletClass) {
-                           object = appletClass.newInstance();
-                           app = (Applet) object;
-                        }
-                    }
-                    catch( InstantiationException e ) {
-                        Main.kjas_err( "Could not instantiate applet", e );
-                        setFailed(e.toString());
-                        return;
-                    }
-                    catch( IllegalAccessException e ) {
-                        Main.kjas_err( "Could not instantiate applet", e );
-                        setFailed(e.toString());
-                        return;
-                    }
-                    catch ( ClassCastException e ) {
-                        if ( object != null && object instanceof java.awt.Component) {
-                            app = new Applet();
-                            app.setLayout(new BorderLayout());
-                            app.add( (Component) object, BorderLayout.CENTER);
-                        } else {
-                            setFailed(e.toString());
-                            return;
-                        }
-                    }
-                    catch ( Throwable e ) {
-                        setFailed(e.toString());
-                        return;
-                    }
-                //} // synchronized
-                if (Thread.interrupted())
-                    return;
-                app.setStub( me );
-                stateChange(INSTANCIATED);
-                app.setVisible(false);
-                panel.setApplet( app );
-                if (appletSize.getWidth() > 0)
-                    app.setBounds( 0, 0, appletSize.width, appletSize.height );
-                else
-                    app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
-
-                try {
-                    app.init();
-                } catch (Error er) {
-                    Main.info("Error " + er.toString() + " during applet initialization"); 
-                    er.printStackTrace();
-                    setFailed(er.toString());
-                    return;
-                } catch (Exception ex) {
-                    Main.info("Exception " + ex.toString() + " during applet initialization"); 
-                    ex.printStackTrace();
-                    setFailed(ex.toString());
-                    return;
-                }
-
-                if (Thread.interrupted())
-                     return;
-                stateChange(INITIALIZED);
-                loader.removeStatusListener(panel);
-                app.setVisible(true);
-                //panel.validate();
-               
-                // stop the loading... animation 
-                panel.stopAnimation();
-                // create a new thread, so we know, when the applet was started
-                /*Thread appletThread = new KJASAppletThread(me, "KJAS-Applet-" + appletID + "-" + appletName); 
-                appletThread.start();
-                state = STARTED;
-                context.showStatus("Applet " + appletName + " started.");*/
-           }
-        }
-        , "KJAS-AppletStub-" + appletID + "-" + appletName);
-        runThread.setContextClassLoader(loader);
+        runThread = new RunThread();
         runThread.start();
     }
 
@@ -280,25 +306,7 @@ public final class KJASAppletStub
     */
     void startApplet()
     {
-        if( app != null && state == INITIALIZED) {
-            active = true;
-            if (appletThread == null) {
-                appletThread = new Thread("KJAS-Applet-" + appletID + "-" + appletName) {
-                    public void run() {
-                        frame.validate();
-                        app.start();
-                        app.repaint();
-                        appletThread = null;
-                    }
-                };
-                appletThread.start();
-            } /*else {
-                frame.validate();
-                app.start();
-                app.repaint();
-            }*/
-            stateChange(STARTED);
-       }
+        runThread.requestState(STARTED);
     }
 
     /**
@@ -310,23 +318,7 @@ public final class KJASAppletStub
     */
     void stopApplet()
     {
-        if( app != null ) {
-            if( appletThread != null && appletThread.isAlive() ) {
-                Main.debug( "appletThread is active when stop is called" );
-                tryToStopThread(appletThread);
-            }
-            appletThread = null;
-            active = false;
-            app.stop();
-            stateChange(STOPPED);
-            if (Main.java_version > 1.399) {
-                // kill the windowClosing listener(s)
-                WindowListener[] wl = frame.getWindowListeners();
-                for (int i = 0; wl != null && i < wl.length; i++)
-                    frame.removeWindowListener(wl[i]);
-            }
-            frame.hide();
-        }
+        runThread.requestState(STOPPED);
     }
 
     /**
@@ -335,10 +327,7 @@ public final class KJASAppletStub
     */
     void initApplet()
     {
-        if( app != null ) {
-            app.init();
-        }
-        stateChange(INITIALIZED);
+        runThread.requestState(INITIALIZED);
    }
 
     /**
@@ -348,52 +337,19 @@ public final class KJASAppletStub
     */
     synchronized void destroyApplet()
     {
-        if (state >= DESTROYED || destroyThread != null)
-            return;
-        destroyThread = new Thread("applet destroy thread") {
-            public void run() {
-                if( runThread != null && runThread.isAlive() ) {
-                    Main.debug( "runThread is active when stub is dying" );
-                    tryToStopThread(runThread);
-                    runThread = null;
-                    panel.stopAnimation();
-                    loader.removeStatusListener(panel);
-                }
-                if( app != null ) {
-                    synchronized (app) {
-                        if (active) {
-                            try {
-                                stopApplet();
-                            } catch (Exception e) {
-                            }
-                        }
-                        try {
-                            app.destroy();
-                        } catch (Exception e) {
-                        }
-                    }
-                    frame.dispose();
-                    app = null;
-                    stateChange(DESTROYED);
-                }
-
-                loader = null;
-                context = null;
-                destroyThread = null;
-            }
-        };
-        destroyThread.start();
+        runThread.requestState(DESTROYED);
     }
 
-    static void waitForDestroyThreads()
+    static void waitForAppletThreads()
     {
         Thread [] ts = new Thread[Thread.activeCount() + 5];
         int len = Thread.enumerate(ts);
         for (int i = 0; i < len; i++) {
             try {
                 if (ts[i].getName() != null && 
-                        ts[i].getName().equals("applet destroy thread")) {
+                        ts[i].getName().startsWith("KJAS-AppletStub-")) {
                     try {
+                        ((RunThread) ts[i]).requestState(TERMINATE);
                         ts[i].join(10000);
                     } catch (InterruptedException ie) {}
                 }
@@ -408,7 +364,9 @@ public final class KJASAppletStub
     */
     Applet getApplet()
     {
+        if (runThread != null && runThread.getState() > CLASS_LOADED)
             return app;
+        return null;
     }
 
     /**
@@ -438,7 +396,7 @@ public final class KJASAppletStub
     * @return true if the applet has been completely loaded.
     */
     boolean isLoaded() {
-        return state >= INSTANCIATED;
+        return runThread != null && runThread.getState() >= INSTANCIATED;
     }
     
     public void appletResize( int width, int height )
@@ -499,19 +457,4 @@ public final class KJASAppletStub
         return appletName;
     }
 
-    
-    /******************************************************************/
-    /**
-    * Helper class
-    */
-    class KJASAppletThread extends Thread {
-        private KJASAppletStub  stub;
-        public KJASAppletThread(KJASAppletStub stub, String name) {
-            super(name);
-            this.stub = stub;
-        }
-        public void run() {
-            stub.startApplet();
-        }
-    }
- }
+}
