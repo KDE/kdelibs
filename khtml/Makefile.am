@@ -125,7 +125,7 @@ testregression_SOURCES = test_regression.cpp test_regression_fontoverload.cpp
 testregression_LDADD = libkhtml.la
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
-DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test
+DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test *_p.h
 include ../admin/Doxyfile.am
 
 .PHONY: parser
