@@ -5,12 +5,13 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Continguts...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Inicia el sistema d'ajuda del KDE</action> 
+mostrant les pàgines d'ajuda de &kappname;. (aquest document).</para>
+</listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +19,42 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Què és això?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Canvia el cursor del ratolí a una combinació entre 
+flecha i interrogant.</action>  Clicant a sobre dels ítems de &kappname; 
+s'us obrirà una finestra d'ajuda (si existeix per aquest ítem en 
+particular) explicant la funció de l'ítem.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Informe d'eror...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Obre un diàleg d'informe d'error</action> a on 
+podreu informar d'un error o requerir una característica 
+<quote>wishlist</quote>.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Quant a &kappname;</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Us mostrarà informació quant a la versió i el seu 
+autor.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenuitem>Quant a KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
-</varlistentry>
-
-<varlistentry>
-<term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Us mostrarà informació quant a la versió del KDE i 
+d'altra informació bàsica.</action></para></listitem>
 </varlistentry>
 </variablelist>

@@ -25,11 +25,11 @@
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
 <!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//CA"
   "entities/update-doc.docbook"                     ><!-- level: para -->
-<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//EN"
+<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//CA"
   "entities/help-menu.docbook"                      ><!-- level: variablelist -->
-<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//EN"
+<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//CA"
   "entities/install-intro.docbook"                     ><!-- level: para -->
-<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//EN"
+<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//CA"
   "entities/install-compile.docbook"                     ><!-- level: para -->
 
 
