@@ -24,7 +24,19 @@
 #include <qstring.h>
 #include <qpixmap.h>
 
-typedef unsigned long CARD32; // play X11
+#if defined(__alpha) || defined(__alpha__)
+#define LONG64                          /* 32/64-bit architecture */
+#endif
+#ifdef __sgi
+#if (_MIPS_SZLONG == 64)
+#define LONG64
+#endif
+#endif
+#ifdef LONG64
+typedef unsigned int CARD32;
+#else
+typedef unsigned long CARD32;
+#endif
 #include "netwm_def.h"
 
 /**
