@@ -706,27 +706,33 @@ QString KStandardDirs::saveLocation(const char *type,
 				    const QString& suffix,
 				    bool create) const
 {
-    QString fullPath;
-
     checkConfig();
 
-    QStringList *dirs = relatives.find(type);
-    if (!dirs && (strcmp(type, "socket") == 0))
+    QString *pPath = savelocations.find(type);
+    if (!pPath)
     {
-        (void) resourceDirs(type); // Generate socket resource.
-        dirs = relatives.find(type); // Search again.
+       QStringList *dirs = relatives.find(type);
+       if (!dirs && (strcmp(type, "socket") == 0))
+       {
+          (void) resourceDirs(type); // Generate socket resource.
+          dirs = relatives.find(type); // Search again.
+       }
+       if (dirs)
+       {
+          // Check for existance of typed directory + suffix
+          pPath = new QString(realPath(localkdedir() + dirs->last()));
+       }
+       else {
+          dirs = absolutes.find(type);
+          if (!dirs)
+             qFatal("KStandardDirs: The resource type %s is not registered", type);
+          pPath = new QString(realPath(dirs->last()));
+       }
+
+       savelocations.insert(type, pPath);
     }
-    if (dirs)
-    {
-       // Check for existance of typed directory + suffix
-       fullPath = localkdedir() + dirs->last() + suffix;
-    }
-    else {
-       dirs = absolutes.find(type);
-       if (!dirs)
-          qFatal("KStandardDirs: The resource type %s is not registered", type);
-       fullPath = dirs->last() + suffix;
-    }
+    QString fullPath = *pPath + suffix;
+
     struct stat st;
     if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {

@@ -462,6 +462,7 @@ public:
 	QDict<QStringList> relatives;
 
 	mutable QDict<QStringList> dircache;
+	mutable QDict<QString> savelocations;
 
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );
