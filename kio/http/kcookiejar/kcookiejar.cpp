@@ -622,13 +622,14 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
 void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 {
     QString domain = stripDomain(cookiePtr); // We file the cookie under this domain.
-
     KHttpCookieList *cookieList = cookieDomains[domain];
 
     if (!cookieList)
     {
-        // Make a cookie list for domain
-
+        kdDebug(7104) << "Creating new list for domain: " << domain << endl;
+        kdDebug(7104) << "Cookie host: " << cookiePtr->host() << endl;
+        kdDebug(7104) << "Cookie Domain: " << cookiePtr->domain() << endl;
+        kdDebug(7104) << "Cookie Path: " << cookiePtr->path() << endl;
         // Make a new cookie list
         cookieList = new KHttpCookieList();
 
@@ -754,7 +755,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     }
     else
     {
-        kdDebug(7104) << "No domain specific policy found for. Use the global policy instead..." << endl;
+        kdDebug(7104) << "No domain specific advice found. Using global policy instead..." << endl;
         advice = globalAdvice;
     }
     kdDebug(7104) << "Domain name: " << domain << "\tCookie Advice: " << adviceToStr( advice ) << endl;
@@ -791,7 +792,6 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
     QString domain(_domain);
     KHttpCookieList *cookieList = cookieDomains[domain];
 
-    kdDebug(7104) << "Set cookie policy for => " << _domain.latin1() << ": " << adviceToStr( _advice ).latin1() << endl;
     if (cookieList)
     {
         if (cookieList->getAdvice() != _advice);
@@ -805,7 +805,6 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             (_advice == KCookieDunno))
         {
             // This deletes cookieList!
-            kdDebug(7104) << "Deleting cookie from the list ==> " << _domain.latin1() << ": " << adviceToStr( _advice ).latin1() << endl;
             cookieDomains.remove(domain);			
             domainList.remove(domain);
         }
@@ -825,8 +824,6 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             domainList.append( domain);
         }
     }
-
-    kdDebug(7104) << "Number of items in the domain cookie policy list : " << cookieDomains.count() << endl;
 }
 
 //
@@ -1189,14 +1186,5 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice(domain, advice);
     }
-
-    kdDebug(7104) << "********** COOKIE POLICY CONFIG **********\n" << endl;
-    kdDebug(7104) << "Global Cookie Policy: " << adviceToStr(globalAdvice) << endl;
-    kdDebug(7104) << "Domain Specific Policies: " << endl;
-    for ( QStringList::Iterator it = domainSettings.begin(); it != domainSettings.end(); ++it )
-        kdDebug(7104) << (*it) << endl;
-    kdDebug(7104) << "\n****************************************" << endl;
-
-
 }
 
