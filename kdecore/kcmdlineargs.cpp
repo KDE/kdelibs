@@ -976,10 +976,10 @@ KCmdLineArgs::url(int n)
       return result; // Absolute path.
    }
 
-   const char *a = index(urlArg, ':');
+   const char *a = strchr(urlArg, ':');
    if (a)
    {
-      const char *b = index(urlArg, '/');
+      const char *b = strchr(urlArg, '/');
       if (b && b>a)
          return KURL(QString::fromLatin1(urlArg)); // Argument is a URL
    }
