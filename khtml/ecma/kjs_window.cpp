@@ -1465,8 +1465,14 @@ Value LocationFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &ar
   if (part) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString(exec).value().qstring().prepend( "target://_self/?#" ));
+    {
+      QString str = args[0].toString(exec).value().qstring();
+      KHTMLPart* p = Window::retrieveActive(exec)->part();
+      if ( p )
+        part->scheduleRedirection(0, p->htmlDocument().
+                                  completeURL(str).string().prepend( "target://_self/?#" ));
       break;
+    }
     case Reload:
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/?#" ) );
       break;
