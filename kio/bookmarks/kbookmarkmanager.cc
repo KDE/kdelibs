@@ -384,14 +384,15 @@ void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
 
 bool KBookmarkManager::showNSBookmarks() const
 {
-    // The attr name is HIDE, so that the default is to show them
-    return root().internalElement().attribute("hide_nsbk") != "yes";
+    return showDynamicBookmarks("netscape").first;
 }
 
 void KBookmarkManager::setShowNSBookmarks( bool show )
 {
     m_showNSBookmarks = show;
-    root().internalElement().setAttribute("hide_nsbk", show ? "no" : "yes");
+    setDynamicBookmarks("netscape", 
+                        KNSBookmarkImporter::netscapeBookmarksFile(),
+                        show);
 }
 
 void KBookmarkManager::slotEditBookmarks()
@@ -509,6 +510,69 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
    
     if (emitSignal)
         emit notifier().updatedAccessMetadata( path(), url );
+}
+
+QPair<bool, QString> KBookmarkManager::showDynamicBookmarks( const QString &type ) const {
+   KConfig config("kbookmarkrc", false, false);
+   config.setGroup("Bookmarks");
+
+   bool show;
+   QString location;
+
+   if (!config.hasKey("DynamicMenus")) {
+      // no new version config
+      show = root().internalElement().attribute("hide_nsbk") != "yes";
+      location = KNSBookmarkImporter::netscapeBookmarksFile();
+      if (type != "netscape") {
+         show = false;
+      }
+
+   } else {
+      // have new version config
+      if (config.hasGroup("DynamicMenu-" + type)) {
+         config.setGroup("DynamicMenu-" + type);
+         show = config.readBoolEntry("Show");
+         location = config.readPathEntry("Location");
+      } else {
+         show = false;
+      }
+   }
+
+   return qMakePair(show, location);
+}
+
+void KBookmarkManager::setDynamicBookmarks( const QString &type, const QString &filename, bool show ) {
+   KConfig config("kbookmarkrc", false, false);
+
+   // add group unconditionally
+   config.setGroup("DynamicMenu-" + type);
+   config.writeEntry("Show", show);
+   config.writeEntry("Location", filename);
+
+   QStringList elist;
+
+   config.setGroup("Bookmarks");
+   if (!config.hasKey("DynamicMenus")) {
+      if (type != "netscape") {
+         // update from old xbel method to new rc method
+         // though only if not writing the netscape setting
+         config.setGroup("DynamicMenu-" "netscape");
+         QPair<bool, QString> oldSetting = showDynamicBookmarks("netscape");
+         config.writeEntry("Show", oldSetting.first);
+         config.writeEntry("Location", oldSetting.second);
+      }
+   } else {
+      elist = config.readListEntry("DynamicMenus");
+   }
+
+   // make sure list includes type
+   config.setGroup("Bookmarks");
+   if (elist.contains("DynamicMenu-" + type) < 1) {
+      elist << ("DynamicMenu-" + type);
+      config.writeEntry("DynamicMenus", elist);
+   }
+
+   config.sync();
 }
 
 #include "kbookmarkmanager.moc"

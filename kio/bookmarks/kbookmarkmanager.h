@@ -21,6 +21,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qobject.h>
+#include <qpair.h>
 #include <qdom.h>
 #include <dcopobject.h>
 #include "kbookmark.h"
@@ -139,8 +140,18 @@ public:
     /**
      * @return true if the NS bookmarks should be dynamically shown
      * in the toplevel kactionmenu
+     * @deprecated
      */
     bool showNSBookmarks() const;
+
+    /**
+     * @return tuple wiht true iff the the given bookmarks file should 
+     * be dynamically shown in the toplevel kactionmenu, and location
+     * of the shown dynamic menu.
+     * @param
+     * @since 3.2
+     */
+    QPair<bool, QString> showDynamicBookmarks( const QString &type ) const;
 
     /**
      * Shows an extra menu for NS bookmarks. Set this to false, if you don't
@@ -148,6 +159,16 @@ public:
      */
     void setShowNSBookmarks( bool show );
     
+    /**
+     * Shows an extra menu for the given bookmarks file and type. 
+     * Upgrades from option inside XBEL to option in rc file
+     * on first call of this function.
+     * @param type see KBookmarkImporterBase
+     * @param filename the filename of the to be included menu
+     * @since 3.2
+     */
+    void setDynamicBookmarks( const QString &type, const QString &filename, bool show );
+
     /**
      * This static function will return an instance of the
      * KBookmarkManager, responsible for the given @p bookmarksFile.
