@@ -73,9 +73,14 @@ class KPluginInfo
 		 */
 		KPluginInfo();
 
-		//copy ctor
+		/**
+		 * Standard copy ctor. (deep copy)
+		 */
 		KPluginInfo( const KPluginInfo & );
-		//copy operator
+
+		/**
+		 * Make a deep copy.
+		 */
 		const KPluginInfo & operator=( const KPluginInfo & );
 
 		virtual ~KPluginInfo();

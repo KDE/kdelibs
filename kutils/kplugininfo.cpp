@@ -105,6 +105,7 @@ KPluginInfo::KPluginInfo( const KPluginInfo & tocp )
 
 const KPluginInfo & KPluginInfo::operator=( const KPluginInfo & tocp )
 {
+	delete d;
 	d = new KPluginInfoPrivate;
 	m_propertymap = tocp.m_propertymap;
 	m_loaded = tocp.m_loaded;
