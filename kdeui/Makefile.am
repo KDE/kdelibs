@@ -17,7 +17,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
-		kspinbox.h kdocktoolbar.h kcolorbtn.h kiconloaderui.h
+		kspinbox.h kdocktoolbar.h kcolorbtn.h kiconloaderdialog.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
@@ -26,7 +26,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
 		klined.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp \
-		kcolorbtn.cpp kiconloaderui.cpp
+		kcolorbtn.cpp kiconloaderdialog.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -34,7 +34,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc  \
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
-		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc kiconloaderui.moc
+		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc kiconloaderdialog.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -61,7 +61,7 @@ krestrictedline.cpp: krestrictedline.moc
 kspinbox.cpp: kspinbox.moc
 kdocktoolbar.cpp: kdocktoolbar.moc
 kcolorbtn.cpp: kcolorbtn.moc
-kiconloaderui.cpp: kiconloaderui.moc
+kiconloaderdialog.cpp: kiconloaderdialog.moc
 
 kledlamp.moc: kledlamp.h
 	$(MOC) kledlamp.h -o kledlamp.moc
@@ -138,8 +138,8 @@ kdocktoolbar.moc: kdocktoolbar.h
 kcolorbtn.moc: kcolorbtn.h
 	$(MOC) kcolorbtn.h -o kcolorbtn.moc
 
-kiconloaderui.moc: kiconloaderui.h
-	$(MOC) kiconloaderui.h -o kiconloaderui.moc
+kiconloaderdialog.moc: kiconloaderdialog.h
+	$(MOC) kiconloaderdialog.h -o kiconloaderdialog.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 datadir = $(prefix)/share/apps/kde/pics
