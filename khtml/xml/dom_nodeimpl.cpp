@@ -450,7 +450,8 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     for (; it.current(); ++it)
         it.current()->deref(); // this may delete us
 
-    getDocument()->updateRendering();
+    if (getDocument())
+        getDocument()->updateRendering();
 
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
