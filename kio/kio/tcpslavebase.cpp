@@ -122,7 +122,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
 {
     doConstructorStuff();
     if (useSSL)
-        m_bIsSSL = InitializeSSL();
+        m_bIsSSL = initializeSSL();
 }
 
 // The constructor procedures go here now.
@@ -143,7 +143,7 @@ void TCPSlaveBase::doConstructorStuff()
 
 TCPSlaveBase::~TCPSlaveBase()
 {
-    CleanSSL();
+    cleanSSL();
     if (d->usingTLS) delete d->kssl;
     if (d->dcc) delete d->dcc;
     if (d->pkcs) delete d->pkcs;
@@ -173,11 +173,11 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
 }
 
 
-void TCPSlaveBase::setBlockSize(int sz) 
+void TCPSlaveBase::setBlockSize(int sz)
 {
   if (sz <= 0)
     sz = 1;
-  
+
   d->rblockSz = sz;
 }
 
@@ -190,7 +190,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 //   so that the while loop is as small as possible.  (GS)
 
   // let's not segfault!
-  if (!data) 
+  if (!data)
     return -1;
 
   char tmpbuf[1024];   // 1kb temporary buffer for peeking
@@ -1082,7 +1082,7 @@ bool TCPSlaveBase::isConnectionValid()
     do {
        retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
     } while ((retval == -1) && (errno == EAGAIN));
-    // retval == -1 ==> Error  
+    // retval == -1 ==> Error
     // retval ==  0 ==> Connection Idle
     // retval >=  1 ==> Connection Active
     //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
@@ -1090,21 +1090,21 @@ bool TCPSlaveBase::isConnectionValid()
 
     if (retval == -1)
        return false;
-    
+
     if (retval == 0)
        return true;
-       
+
     // Connection is active, check if it has closed.
     char buffer[100];
     do {
        retval = KSocks::self()->recv(m_iSock, buffer, 80, MSG_PEEK);
-                     
+
     } while ((retval == -1) && (errno == EAGAIN));
     //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
     //                 << retval << endl;
     if (retval <= 0)
        return false; // Error or connection closed.
-       
+
     return true; // Connection still valid.
 }
 
@@ -1142,7 +1142,7 @@ reSelect:
   // returned too early (perhaps from an errant signal) and
   // start over with the remaining time
   int timeDone = time(NULL) - startTime;
-  if (timeDone < n) 
+  if (timeDone < n)
   {
     n -= timeDone;
     timeout.tv_sec = n;
@@ -1200,7 +1200,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     d->kssl->setPeerHost(msgHost);
 
     d->status = d->kssl->connect(m_iSock);
-    if (d->status < 0) 
+    if (d->status < 0)
     {
         closeDescriptor();
         if ( sendError )
@@ -1211,7 +1211,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     setMetaData("ssl_in_use", "TRUE");
 
     int rc = verifyCertificate();
-    if ( rc != 1 ) 
+    if ( rc != 1 )
     {
         d->status = -1;
         closeDescriptor();
@@ -1227,7 +1227,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 }
 
 
-bool TCPSlaveBase::userAborted() const 
+bool TCPSlaveBase::userAborted() const
 {
    return d->userAborted;
 }
