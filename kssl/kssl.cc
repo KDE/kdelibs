@@ -126,6 +126,7 @@ bool KSSL::TLSInit() {
 
   // set cipher list
   QString clist = m_cfg->getCipherList();
+  kdDebug(7029) << "Cipher list: " << clist << endl;
   if (!clist.isEmpty())
     d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
@@ -172,6 +173,7 @@ bool KSSL::initialize() {
 
   // set cipher list
   QString clist = m_cfg->getCipherList();
+  kdDebug(7029) << "Cipher list: " << clist << endl;
   if (!clist.isEmpty())
     d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
