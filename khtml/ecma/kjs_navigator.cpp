@@ -56,7 +56,8 @@ KJSO Navigator::get(const UString &p) const
   else if (p == "appName") {
     if (userAgent.find(QString::fromLatin1("Netscape")) >= 0)
       return String("Netscape");
-    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0)
+    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
+	userAgent.find(QString::fromLatin1("MSIE")) >= 0)
       return String("Microsoft Internet Explorer");
     return String("Konqueror");
   } else if (p == "appVersion"){
