@@ -10,8 +10,8 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 
-#include <kio_interface.h>
-#include <kio_base.h>
+#include "../kio_interface.h"
+#include "../kio_base.h"
 
 class FileProtocol : public KIOProtocol
 {

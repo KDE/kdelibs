@@ -21,16 +21,16 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
+#include <iostream.h>
 
 #include <qvaluelist.h>
 
-#include "../kio_rename_dlg.h"
-#include "../kio_skip_dlg.h"
 #include <kurl.h>
 #include <kprotocolmanager.h>
 #include <kinstance.h>
 
-#include <iostream.h>
+#include "../kio_rename_dlg.h"
+#include "../kio_skip_dlg.h"
 
 #include "file.h"
 
@@ -780,7 +780,7 @@ void FileProtocol::slotGetSize( const char *_url )
   }
 
   if ( !usrc.isLocalFile() ) {
-    error( ERR_INTERNAL, "kio_file got non local file in get size command" );
+    error( ERR_INTERNAL, "kio_file got non local file in getSize command" );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1049,6 +1049,8 @@ void FileProtocol::slotDel( QStringList& _source )
 
 void FileProtocol::slotListDir( const char *_url )
 {
+  qDebug( "kio_file : =============== LIST %s ===============", _url  );
+
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, strdup(_url) );
@@ -1096,7 +1098,7 @@ void FileProtocol::slotListDir( const char *_url )
     if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
       continue;
 
-    // qDebug( "kio_file : Listing %s", ep->d_name );
+    qDebug( "kio_file : Listing %s", ep->d_name );
 
     entry.clear();
 
@@ -1195,9 +1197,13 @@ void FileProtocol::slotListDir( const char *_url )
   for (; it != end; ++it )
     listEntry( *it );
   
+  qDebug( "kio_file : ============= COMPLETED LIST ============" );
+
   m_cmd = CMD_NONE;
 
   finished();
+
+  qDebug( "kio_file : =============== BYE ===========" );
 }
 
 
