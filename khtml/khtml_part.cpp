@@ -3354,9 +3354,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   if( d->m_bMousePressed && !innerNode.isNull() /* && innerNode.nodeType() == DOM::Node::TEXT_NODE */ ) {
         int offset;
         DOM::Node node;
-        kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
-                      << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
-                      << endl;
+        //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
+        //              << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
+        //              << endl;
         innerNode.handle()->findSelectionNode( event->x(), event->y(),
                                                event->nodeAbsX(), event->nodeAbsY(),
                                                node, offset );
@@ -3364,7 +3364,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
         // But currently....
         if ( node.isNull() || !node.handle() )
         {
-            kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
+            //kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
             d->m_selectionEnd = innerNode;
             d->m_endOffset = 0; //?
         }
@@ -3373,8 +3373,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
             d->m_selectionEnd = node;
             d->m_endOffset = offset;
         }
-        kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
-                        << d->m_endOffset << endl;
+        //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
+        //                << d->m_endOffset << endl;
 
         // we have to get to know if end is before start or not...
         DOM::Node n = d->m_selectionStart;
