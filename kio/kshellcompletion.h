@@ -53,15 +53,15 @@ public:
 
 protected:
 	// Called by KCompletion
-	void postProcessMatch( QString *match );
-	void postProcessMatches( QStringList *matches );
+	void postProcessMatch( QString *match ) const;
+	void postProcessMatches( QStringList *matches ) const;
 
 private:
 	// Find the part of text that should be completed
-	void splitText(const QString &text, QString &text_start, QString &text_compl);
+	void splitText(const QString &text, QString &text_start, QString &text_compl) const;
 	// Insert quotes and neseccary escapes
-	bool quoteText(QString *text, bool force, bool skip_last);
-	QString unquote(const QString &text);
+	bool quoteText(QString *text, bool force, bool skip_last) const;
+	QString unquote(const QString &text) const;
 		                                                                        
 	QString m_text_start; // part of the text that was not completed
 	QString m_text_compl; // part of the text that was completed (unchanged)

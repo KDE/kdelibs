@@ -142,8 +142,8 @@ public:
 
 protected:
 	// Called by KCompletion, adds '/' to directories
-	void postProcessMatch( QString *match );
-	void postProcessMatches( QStringList *matches );
+	void postProcessMatch( QString *match ) const;
+	void postProcessMatches( QStringList *matches ) const;
 
 protected slots:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );

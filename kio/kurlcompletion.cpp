@@ -1457,11 +1457,11 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
  * Append '/' to directories for file completion. This is
  * done here to avoid stat()'ing a lot of files
  */
-void KURLCompletion::postProcessMatch( QString *match )
+void KURLCompletion::postProcessMatch( QString *match ) const
 {
 //	kdDebug() << "KURLCompletion::postProcess: " << *match << endl;
 
-	if ( !(*match).isEmpty() ) {
+	if ( !match->isEmpty() ) {
 
 		// Add '/' to directories in file completion mode
 		// unless it has already been done
@@ -1497,7 +1497,7 @@ void KURLCompletion::postProcessMatch( QString *match )
 	}
 }
 
-void KURLCompletion::postProcessMatches( QStringList * /*matches*/ )
+void KURLCompletion::postProcessMatches( QStringList * /*matches*/ ) const
 {
 	// Maybe '/' should be added to directories here as in
 	// postProcessMatch() but it would slow things down

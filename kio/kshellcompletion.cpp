@@ -82,14 +82,14 @@ QString KShellCompletion::makeCompletion(const QString &text)
  * Add add the part of the text that was not completed
  * Add quotes when needed 
  */
-void KShellCompletion::postProcessMatch( QString *match )
+void KShellCompletion::postProcessMatch( QString *match ) const
 {
 	//kDebugInfo("KShellCompletion::postProcessMatch() in: '%s'",
 	//	match->latin1());
 
 	KURLCompletion::postProcessMatch( match );
 
-	if ( *match == QString::null )
+	if ( match->isNull() )
 		return;
 		
 	if ( match->right(1) == QChar('/') )
@@ -103,7 +103,7 @@ void KShellCompletion::postProcessMatch( QString *match )
 	//	match->latin1());
 }
 
-void KShellCompletion::postProcessMatches( QStringList *matches )
+void KShellCompletion::postProcessMatches( QStringList *matches ) const
 {
 	KURLCompletion::postProcessMatches( matches );
 
@@ -130,7 +130,7 @@ void KShellCompletion::postProcessMatches( QStringList *matches )
  * text_compl = [out] text at the right
  */
 void KShellCompletion::splitText(const QString &text, QString &text_start, 
-		QString &text_compl)
+		QString &text_compl) const
 {
 	bool in_quote = false;
 	bool escaped = false;
@@ -194,7 +194,7 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
  *
  * skip_last => ignore the last charachter (we add a space or '/' to all filenames)
  */
-bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last)
+bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) const
 {
 	int pos;
 
@@ -249,7 +249,7 @@ bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last)
  * Remove quotes and return the result in a new string
  *
  */
-QString KShellCompletion::unquote(const QString &text)
+QString KShellCompletion::unquote(const QString &text) const
 {
 	bool in_quote = false;
 	bool escaped = false;
