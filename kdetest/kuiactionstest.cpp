@@ -6,11 +6,13 @@
 */
 
 #include<qmultilinedit.h>
-#include<kuiactions.h>
 #include<qpopupmenu.h>
 #include<qmenubar.h>
 #include<qapplication.h>
 #include<qnamespace.h>
+
+#include<kuiactions.h>
+#include<kactmenubuilder.h>
 
 /**
 * Test harness for KAction and KUIAction
@@ -49,12 +51,6 @@ KActTest::KActTest( QWidget *parent )
 {
 	// menus
 	QMenuBar *mymenu = new QMenuBar( this );
-	QPopupMenu *file = new QPopupMenu( this );
-
-	mymenu->insertItem( "File", file );
-	
-	int sid = file->insertItem( "Save" );
-	int lid = file->insertItem( "Load" );
 
 	debug( "built menus" );
 
@@ -67,9 +63,16 @@ KActTest::KActTest( QWidget *parent )
 	_act->newAction( "Quit", "Arrr", qApp, SLOT(quit()), CTRL + Key_Q );
 	debug( "created actions" );
 	
-	_act->action( "Save" )->addMenuItem( file, sid );
-	_act->action( "Load" )->addMenuItem( file, lid );
+	QPopupMenu *file = new QPopupMenu( this );
+	mymenu->insertItem( "File", file );
+	
+	KActionMenuBuilder mb( _act );
+	mb.setMenu( file, KActionMenuBuilder::Text );
 
+	mb.insert( "Save" );
+	mb.insert( "Load" );
+	mb.insert( "Quit" );
+	
 	debug( "connected actions" );
 
 	_mlined = new QMultiLineEdit( this );
