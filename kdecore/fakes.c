@@ -277,3 +277,11 @@ int mkstemp (char* _template)
 }
 #endif
 
+
+#ifndef HAVE_REVOKE
+int revoke(const char *tty)
+{
+        errno = ENOTSUP;
+        return -1;
+}
+#endif
