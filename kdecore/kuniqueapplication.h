@@ -137,7 +137,7 @@ private slots:
 
   void newInstanceNoFork();
   
-  KInstance* initHack( bool configUnique );
+  static KInstance* initHack( bool configUnique );
  
 private:
   static bool s_nofork;
