@@ -402,8 +402,6 @@ void CachedImage::ref( CachedObjectClient *c )
     kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
 #endif
 
-    // make sure we don't get it twice...
-    m_clients.remove(c);
     m_clients.append(c);
 
     if( m ) {

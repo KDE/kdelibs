@@ -89,8 +89,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     // Image dimensions have been changed, recalculate layout
     if(o->pixmap_size() !=  pixSize)
     {
-//        qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
-//               o->pixmap_size().width(), o->pixmap_size().height());
+        //qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+        //       o->pixmap_size().width(), o->pixmap_size().height());
 
         pix = p;
         if(!o->isErrorImage())
@@ -277,13 +277,11 @@ void RenderImage::layout()
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     CachedImage *new_image = docLoader->requestImage(url, baseUrl);
-    if(new_image && new_image != image)
-    {
-	if(image) image->deref(this);
-	image = new_image;
-	image->ref(this);
-	berrorPic = image->isErrorImage();
-    }
+    if(new_image) new_image->ref(this);
+    if(image) image->deref(this);
+
+    image = new_image;
+    berrorPic = image ? image->isErrorImage() : true;
 }
 
 void RenderImage::setAlt(DOM::DOMString text)
