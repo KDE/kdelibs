@@ -672,6 +672,16 @@ int main(int argc, char *argv[])
   check("host()?", weird.host(), "ftp.host.com" );
   check("KURL::upURL()", weird.upURL().url(), "ftp://user%40host.com@ftp.host.com/var/");
 
+  KURL ldap = "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)";
+  check("host()?", ldap.host(), "host.com");
+  check("port()?", QString("%1").arg(ldap.port()), "6666");
+  check("path()?", ldap.path(), "/o=University of Michigan,c=US");
+  check("query()?", ldap.query(), "??sub?(cn=Babs%20Jensen)");
+  check("url()?", ldap.url(), "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)");
+  ldap.setQuery("??sub?(cn=Karl%20Marx)");
+  check("query()?", ldap.query(), "??sub?(cn=Karl%20Marx)");
+  check("url()?", ldap.url(), "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Karl%20Marx)");
+
   printf("\nTest OK !\n");
 }
 

@@ -917,6 +917,8 @@ protected:
   void parse( const QString& _url, int encoding_hint = 0);
 
 private:
+  void _setQuery( const QString& _txt, int encoding_hint = 0);
+
   QString m_strProtocol;
   QString m_strUser;
   QString m_strPass;

@@ -840,7 +840,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   tmp = QString(buf + start, pos - start);
   if (delim=='#')
-      setQuery(tmp, encoding_hint);
+      _setQuery(tmp, encoding_hint);
   else
       m_strRef_encoded = tmp;
 
@@ -852,7 +852,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if (delim == '#')
       m_strRef_encoded = tmp;
   else
-      setQuery(tmp, encoding_hint);
+      _setQuery(tmp, encoding_hint);
 
  NodeOk:
   //kdDebug(126)<<"parsing finished. m_strProtocol="<<m_strProtocol<<" m_strHost="<<m_strHost<<" m_strPath="<<m_strPath<<endl;
@@ -1184,7 +1184,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
   else
   {
     setEncodedPath(_txt.left( pos ), encoding_hint);
-    setQuery(_txt.right(_txt.length() - pos - 1), encoding_hint);
+    _setQuery(_txt.right(_txt.length() - pos - 1), encoding_hint);
   }
 }
 
@@ -1236,9 +1236,9 @@ void KURL::setFileEncoding(const QString &encoding)
      args.append("charset="+encode_string(encoding));
 
   if (args.isEmpty())
-     setQuery(QString::null);
+     _setQuery(QString::null);
   else
-     setQuery(args.join("&"));
+     _setQuery(args.join("&"));
 }
 
 QString KURL::fileEncoding() const
@@ -1648,7 +1648,7 @@ KURL KURL::upURL( ) const
   if (!query().isEmpty())
   {
      KURL u(*this);
-     u.setQuery(QString::null);
+     u._setQuery(QString::null);
      return u;
   };
 
@@ -1784,15 +1784,18 @@ void KURL::setDirectory( const QString &dir)
 
 void KURL::setQuery( const QString &_txt, int encoding_hint)
 {
-   if (!_txt.length())
-   {
-      m_strQuery_encoded = _txt;
-      return;
-   }
-   if (_txt[0] =='?')
-      m_strQuery_encoded = _txt.mid(1);
+   if (_txt.length() && (_txt[0] =='?'))
+      _setQuery( _txt.mid(1), encoding_hint );
    else
-      m_strQuery_encoded = _txt;
+      _setQuery( _txt, encoding_hint );
+}
+
+// This is a private function that expects a query without '?'
+void KURL::_setQuery( const QString &_txt, int encoding_hint)
+{
+   m_strQuery_encoded = _txt;
+   if (!_txt.length())
+      return;
 
    int l = m_strQuery_encoded.length();
    int i = 0;
