@@ -3796,7 +3796,7 @@ int HTTPProtocol::readUnlimited()
 {
   if (m_bKeepAlive)
   {
-     kdWarning(7113) << "(" << m_pid << ") Unbounded datastream on a Keep "
+     kdDebug(7113) << "(" << m_pid << ") Unbounded datastream on a Keep "
                      << "alive connection!" << endl;
      m_bKeepAlive = false;
   }
