@@ -40,17 +40,17 @@ KFormulaToolBar::KFormulaToolBar(QWidget *parent, const char *name, int _item_si
 
   insertSeparator();
 
-  insertButton(BarIcon("index2"), POWER, true, "Power");
-  insertButton(BarIcon("index3"), SUB, true, "Subscript");
-  insertButton(BarIcon("bra"), PAREN, true, "Parentheses");
+  insertButton(BarIcon("rsup"), POWER, true, "Power");
+  insertButton(BarIcon("rsub"), SUB, true, "Subscript");
+  insertButton(BarIcon("paren"), PAREN, true, "Parentheses");
   insertButton(BarIcon("abs"), ABS, true, "Absolute value");
   insertButton(BarIcon("brackets"), BRACKET, true, "Brackets");
   insertButton(BarIcon("frac"), DIVIDE, true, "Fraction");
-  insertButton(BarIcon("root"), SQRT, true, "Root");
-  insertButton(BarIcon("integral"), INTEGRAL, true, "Integral");
+  insertButton(BarIcon("sqrt"), SQRT, true, "Root");
+  insertButton(BarIcon("int"), INTEGRAL, true, "Integral");
   insertButton(BarIcon("matrix"), MATRIX, true, "Matrix");
-  insertButton(BarIcon("index0"), LSUP, true, "Left superscript");
-  insertButton(BarIcon("index1"), LSUB, true, "Left subscript");
+  insertButton(BarIcon("lsup"), LSUP, true, "Left superscript");
+  insertButton(BarIcon("lsub"), LSUB, true, "Left subscript");
 }
 
 
