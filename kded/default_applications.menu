@@ -229,6 +229,10 @@
 				</And>
 			</Include>
 		</Menu>
+		<Menu>
+			<Name>ScreenSavers</Name>
+			<Directory>kde-system-screensavers.directory</Directory>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Toys</Name>
