@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="standard_containers" version="4">
+<kpartgui name="standard_containers" version="5">
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
@@ -33,6 +33,7 @@
     <Action name="game_new"/>
     <Action name="game_load"/>
     <Action name="game_load_recent"/>
+    <Action name="game_restart"/>
     <MergeLocal name="new_merge"/>
     <Separator/>
     <Action name="game_save"/>
@@ -80,6 +81,11 @@
     <Separator/>
     <Action name="move_end_turn"/>
     <MergeLocal name="move_turn_merge"/>
+    <Separator/>
+    <Action name="move_hint"/>
+    <Action name="move_demo"/>
+    <Action name="move_solve"/>
+    <MergeLocal name="move_solve_merge"/>
     <Separator/>
     <MergeLocal/>
   </Menu>
@@ -144,8 +150,12 @@
     <Action name="options_configure_toolbars"/>
     <Action name="options_configure_notifications"/>
     <Action name="options_configure_carddecks"/>
+    <Action name="options_configure_highscores"/>
     <Action name="options_configure"/>
     <MergeLocal name="configure_merge"/>
+    <Separator/>
+    <Action name="options_choose_game_type"/>
+    <MergeLocal name="choose_merge"/>
     <Separator/>
     <MergeLocal/>
   </Menu>
