@@ -125,7 +125,7 @@ public:
 	 * @param msg should contain an error message when returning false
 	 * @returns valid status
 	 */
-	virtual bool isValid(QString&);
+	virtual bool isValid(QString& msg);
 	/**
 	 * Get the ID of the page. Not used yet.
 	 * @returns the page ID
