@@ -148,7 +148,7 @@ struct URLArgs
   /**
    * @return true if the request was a result of a META refresh/redirect request.
    */
-  bool redirectedRequest ();
+  bool redirectedRequest () const;
 
   /**
    * Set the redirect flag to indicate URL is a result of a META

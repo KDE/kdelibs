@@ -141,7 +141,7 @@ void URLArgs::setEnableRedirectedRequest( bool enable )
   d->redirectedRequest = enable;
 }
 
-bool URLArgs::redirectedRequest ()
+bool URLArgs::redirectedRequest () const
 {
   return d ? d->redirectedRequest : false;
 }
