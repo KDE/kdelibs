@@ -971,15 +971,21 @@ int kdeinit_xio_errhandler( Display * )
       unlink(sock_file);
     }
 
+    qWarning( "kdeinit: sending SIGHUP to children." );
+
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
     kill(0, SIGHUP);
 
     sleep(2);
 
+    qWarning( "kdeinit: sending SIGTERM to children." );
+
     /* and if they don't listen to us, this should work */
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
+
+    qWarning( "kdeinit: Exit." );
 
     exit( 1 );
     return 0;
