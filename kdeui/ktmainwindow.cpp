@@ -62,7 +62,7 @@ KTMainWindow::KTMainWindow( const char *name )
     // see if there already is a member list
     if( !memberList )
       memberList = new QList<KTMainWindow>;
-    
+
     // enter the widget in the list of all KTWs
     memberList->append( this );
 
@@ -75,14 +75,14 @@ KTMainWindow::KTMainWindow( const char *name )
 KTMainWindow::~KTMainWindow()
 {
   localKill = true;
-  
+
   // remove this widget from the member list
   memberList->remove( this );
 
   // delete all toolbars (necessary if they are floating)
   KToolBar *toolbar = 0;
   for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() ) {
-    if (toolbar->barPos() == KToolBar::Floating 
+    if (toolbar->barPos() == KToolBar::Floating
         && !QApplication::closingDown())
     {
       delete toolbar;
@@ -90,14 +90,14 @@ KTMainWindow::~KTMainWindow()
     }
   }
   // delete the menubar (necessary if floating)
-  if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating  
+  if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating
       && !QApplication::closingDown())
   {
     delete kmenubar;
     debug ("KTM destructor: deleted menubar");
   }
 
-  
+
   // if this was the topWidget, find a new one to be it
   if( kapp && kapp->topWidget() == this ){
     KTMainWindow* pTemp = 0;
@@ -109,7 +109,7 @@ KTMainWindow::~KTMainWindow()
 	  // Matthias:
     //        Nope, not bad luck. We should simply
     //        exit the application in this case.
-    
+
     kapp->setTopWidget( 0 );
     // No need to quit  here; user can decide or use lastWindowClosed
     //kapp->quit();
@@ -197,7 +197,7 @@ void KTMainWindow::updateRects()
 {
   // This thing is first against the wall as
   // soon as I have some free time.
-  
+
   //debug ("Update");
   int t=0, b=0, l=0, r=0;
   int to=-1, bo=-1, lo=-1, ro=-1;
@@ -209,7 +209,7 @@ void KTMainWindow::updateRects()
   if (kmainwidget && kmainwidget->minimumSize().height() ==
       kmainwidget->maximumSize().height())
     fixedY = TRUE;
-    
+
   if (kmainwidget && kmainwidget->minimumSize() ==
       kmainwidget->maximumSize())
     {
@@ -239,7 +239,7 @@ void KTMainWindow::updateRects()
 	  }
 
       w+=l; //AAAARRRGGGHHH!!!
-        
+
       // Now right (I'm ok now)
       for ( toolbar = toolbars.first();
 	    toolbar != 0L; toolbar = toolbars.next() )
@@ -261,11 +261,11 @@ void KTMainWindow::updateRects()
 	    ro += toolbar->height();
 	  }
       w+=r;
-        
+
       // Now kmenubar and top toolbars
       // No, first I'll have a beer.
       // Aaah, kold beer.. my nerves ar circulating better now...
-        
+
       if (kmenubar && kmenubar->isVisible())   // (gulp)
 	if (kmenubar->menuBarPos() == KMenuBar::Top)      // !? This beer isn't cold!
 	  {
@@ -302,7 +302,7 @@ void KTMainWindow::updateRects()
 	  if (toolbar->barPos() == KToolBar::Left ||
 	      toolbar->barPos() == KToolBar::Right)
 	    toolbar->move(toolbar->x(), t);
-        
+
       // Bottom toolbars
       for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
 	if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
@@ -329,7 +329,7 @@ void KTMainWindow::updateRects()
 	  kstatusbar->setGeometry(0, h+b, w, kstatusbar->height());
 	  b += kstatusbar->height();
         }
-        
+
       // Bottom menubar
       if (kmenubar && kmenubar->isVisible())
 	if (kmenubar->menuBarPos() == KMenuBar::Bottom)
@@ -339,13 +339,13 @@ void KTMainWindow::updateRects()
 	    b+=mh;
 	  }
       h+=b;
-        
+
       // Move everything
       if (kmainwidgetframe)
 	kmainwidgetframe->move(l, t);
       if (kmainwidget)
 	kmainwidget->move(l+borderwidth, t+borderwidth);
-        
+
       // Set geometry
       setFixedSize(w, h);
       resize(w,h);
@@ -566,7 +566,7 @@ void KTMainWindow::saveYourself(){
   // hook is usefull for better document orientation
 
   saveData(kapp->getSessionConfig());
-  
+
   QListIterator<KTMainWindow> it(*memberList);
   int n = 0;
   KConfig* config = KApplication::getKApplication()->getSessionConfig();
@@ -574,7 +574,7 @@ void KTMainWindow::saveYourself(){
   config->writeEntry("NumberOfWindows", memberList->count());
   for (it.toFirst(); it.current(); ++it){
     n++;
-    it.current()->savePropertiesInternal(config, n); 
+    it.current()->savePropertiesInternal(config, n);
   }
   // According to Jochen, config is synced in kapp already
   // config->sync();
@@ -588,7 +588,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
                // in order they are in toolbar list
-    
+
     QString s;
     s.setNum(number);
     s.prepend("WindowProperties");
@@ -600,7 +600,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     //use KWM for window properties (Matthias)
     config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
     entryList.clear();
-    
+
     if (kstatusbar)
     {
         if (kstatusbar->isVisible())
@@ -608,7 +608,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
         else
             config->writeEntry("StatusBar", "Disabled");
     }
-    
+
     if (kmenubar)
     {
         if (kmenubar->isVisible())
@@ -675,7 +675,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
 bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 {
     // All comments by sven
-    
+
     QString entry;
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
@@ -695,7 +695,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     if (!geom.isEmpty()){
       setGeometry(KWM::setProperties(winId(), geom));
     }
-    
+
     if (kstatusbar)
     {
         entry = config->readEntry("StatusBar");
@@ -716,7 +716,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
         entry = entryList.first();
         if (entry=="Enabled")
 	  showmenubar = True; //Matthias
-        else 
+        else
 	  kmenubar->hide();
 	
         entry = entryList.next();
@@ -751,12 +751,12 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             //printf ("KTWRP: bad number of toolbar%d args\n", n);
             return FALSE;
         }
-        
+
 	bool showtoolbar = False;  //Matthias
         entry = entryList.first();
         if (entry=="Enabled")
 	  showtoolbar = True; //Matthias
-        else 
+        else
 	  toolbar->enable(KToolBar::Hide);
 
         entry = entryList.next();
@@ -871,11 +871,7 @@ void KTMainWindow::setStatusBar (KStatusBar *statusbar)
 KMenuBar *KTMainWindow::menuBar()
 {
   if (!kmenubar) {
-    kmenubar = new KMenuBar(this);
-    connect ( kmenubar, SIGNAL( moved (menuPosition) ),
-              this, SLOT( updateRects() ) );
-    connect (kmenubar, SIGNAL(destroyed ()), this, SLOT(menubarKilled ()));
-    updateRects();
+    setMenu(new KMenuBar(this));
   }
   return kmenubar;
 }
@@ -946,7 +942,7 @@ void KTMainWindow::menubarKilled()
     debug ("KTM: ACK mb kill, local kill, NOT zeroed");
     return;
   }
-  
+
   // No dead souls in here.
   const QObject *dyer = sender (); // Who need last rites?
   if (dyer)                  // Doe he live still
@@ -968,7 +964,7 @@ void KTMainWindow::toolbarKilled()
     debug ("KTM: ACK tb kill, local kill, NOT removed from list");
     return;
   }
-  
+
   // No dead souls in here.
   const QObject *dyer = sender (); // Who need last rites?
 

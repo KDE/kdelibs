@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/*
     Copyright (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
     Copyright (C) 1997 Matthias Ettrich (ettrich@kde.org)
 
@@ -38,6 +38,10 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.32  1998/09/07 13:45:19  ettrich
+// Matthias: removed old qt-1.2 compatibility hack
+//
 // Revision 1.31  1998/09/01 20:22:03  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -88,14 +92,6 @@ static QPixmap* miniGo = 0;
   menu = new _menuBar (frame);
   frame = new QFrame (this);
   frame->setFrameStyle(NoFrame);
-
-  // WARNING: this is a hack for qt-1.3
-  // Real qt-1.3 support should use heightFromWidth() in 
-  // resizeEvent. But this will not work for qt-1.2.
-  // Let us wait until qt-1.3 is released.  Matthias
-  frame->installEventFilter(menu);
-
-
   menu = new QMenuBar (frame);
   menu->setLineWidth( 1 );
   oldMenuFrameStyle = menu->frameStyle();
@@ -119,35 +115,14 @@ int KMenuBar::idAt( int index )
 int KMenuBar::heightForWidth ( int max_width ) const
 {
   return menu->heightForWidth( max_width - 9);
-  if (position == Floating) // What now?
-   {
-     // Khm... I'm resized from kwm
-     // menu bar installs eventFilter on parent, so we don't have
-     // to bother with resizing her
-     frame->setGeometry( 9, 0, width()-9, height());
-     frame->resize(menu->width(), menu->height());
+     frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()-9));
+     menu->resize(frame->width(), frame->height());
      if (height() != frame->height() ||
          width() != frame->width()+9)
       {
-        //warning ("resize");
-        resize(frame->width()+9, frame->height());
+	  resize(frame->width()+9, frame->height());
       }
      handle->setGeometry(0,0,9,height());
-   }
-  else
-   {
-     // I will be resized from KtopLevel
-	 
-	 // MD (17-9-97) change offset from 11 pixels to 9 pixels
-     frame->setGeometry (9, 0, width()-9, height());
-	 
-     if (menu->height() != height())
-      {
-        frame->resize(frame->width(), menu->height());
-        resize(width(), menu->height());
-      }
-     handle->setGeometry(0,0,9,height());
-   }
   {
     resize(width(), heightForWidth(width()));
 void KMenuBar::ContextCallback( int index )
@@ -173,7 +148,7 @@ void KMenuBar::ContextCallback( int )
       else {
         setMenuBarPos( Floating );
       break;
-  
+    case CONTEXT_FLAT:
         setFlat (position != Flat);
 	break;
    }
@@ -185,12 +160,14 @@ void KMenuBar::ContextCallback( int )
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
 //   connect( context, SIGNAL( activated( int ) ), this,
 // 	   SLOT( ContextCallback( int ) ) );
-  
+  context->insertItem( i18n("Top"),  CONTEXT_TOP );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
   position = Top;
   moving = TRUE;
+  highlight = false;
   transparent = false;
+
 
 
   resize( Parent->width(), menu->height());
@@ -204,9 +181,9 @@ void KMenuBar::ContextCallback( int )
   // destroying.... (Matthias)
 //  if (position == Floating)
 //      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-  
 
-    delete context; 
+
+
 KMenuBar::~KMenuBar()
 {
   if (!QApplication::closingDown())
@@ -218,7 +195,7 @@ void KMenuBar::mousePressEvent ( QMouseEvent *e )
   QApplication::sendEvent(menu, e);
 }
 
-  
+void KMenuBar::slotReadConfig ()
 {
   int _highlight;
   bool _transparent;
@@ -248,7 +225,7 @@ void KMenuBar::slotHotSpot (int hs)
       case 0: //top
         setMenuBarPos(Top);
         break;
-      
+
       case 1: //bottom
         setMenuBarPos(Bottom);
         break;
@@ -328,7 +305,7 @@ void KMenuBar::leaveEvent (QEvent *e){
         int oy = rr.y();
         int ow = rr.width();
         int oh = rr.height();
-            
+
         int  fat = 25; //ness
 
         mgr = new KToolBoxManager(this, transparent);
@@ -360,17 +337,17 @@ void KMenuBar::leaveEvent (QEvent *e){
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");
-    
+	    }
     if (ev->type() == Event_MouseButtonRelease)
 	return TRUE;
 	if (mgr)
 	  mgr->stop();
 	return TRUE;
 	      mgr->stop();
-    
+	  if ( position != Floating)
     if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
       }
-      QPainter paint(handle); 
+
 
 	  QBrush b;
 	  if (ev->type() == Event_Enter && highlight) // highlight? - sven
@@ -407,11 +384,12 @@ void KMenuBar::leaveEvent (QEvent *e){
     }
   }
   return FALSE;
-  moving = flag; 
+}
 
 void KMenuBar::enableMoving(bool flag)
 {
   moving = flag;
+    printf("setMenuBarPos %d\n", mpos);
     if (position == FloatingSystem && standalone_menubar == true) {
 	return; // Ignore positioning of Mac menubar
      if (mpos == Floating)
