@@ -492,6 +492,12 @@ void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
     static QBitmap leftArrow(9, 9, leftarrow_bits, true);
     static QBitmap rightArrow(9, 9, rightarrow_bits, true);
 
+    if(!upArrow.mask()){
+        upArrow.setMask(upArrow);
+        downArrow.setMask(downArrow);
+        leftArrow.setMask(leftArrow);
+        rightArrow.setMask(rightArrow);
+    }
     p->setPen(g.dark());
     switch(type){
     case Qt::UpArrow:
@@ -550,20 +556,7 @@ void KStepStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
 void KStepStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool, QBrush *)
 {
-    int x2 = x+w-1;
-    int y2 = y+h-1;
-    p->setPen(g.light());
-    p->drawLine(x, y, x2, y);
-    p->drawLine(x, y, x, y2);
-    p->setPen(g.midlight());
-    p->drawLine(x+1, y+1, x2-1, y+1);
-    p->drawLine(x+1, y+1, x+1, y2-1);
-    p->setPen(g.dark());
-    p->drawLine(x2, y, x2, y2);
-    p->drawLine(x, y2, x2, y2);
-    p->drawLine(x2-1, y+1, x2-1, y2-1);
-    p->drawLine(x+1, y2-1, x2-1, y2-1);
-    p->fillRect(x+2, y+2, w-4, h-4, g.mid());
+    drawButton(p, x, y, w, h, g, false, &g.brush(QColorGroup::Mid));
 }
 
 void KStepStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
