@@ -468,7 +468,7 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
 
        _domains.append( inet_ntoa( in ) );
 */
-       _domain.append( fqdn );
+       _domains.append( _fqdn );
        return true;
     }
 
