@@ -342,7 +342,7 @@ return false;
 }
 
 
-QMap<QString,QString> KWalletD::readMap(int handle, const QString& folder, const QString& key) {
+QByteArray KWalletD::readMap(int handle, const QString& folder, const QString& key) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {
@@ -353,7 +353,7 @@ KWallet::Backend *b;
 		}
 	}
 
-return QMap<QString,QString>();
+return QByteArray();
 }
 
 
@@ -399,7 +399,7 @@ return QString::null;
 }
 
 
-int KWalletD::writeMap(int handle, const QString& folder, const QString& key, const QMap<QString,QString>& value) {
+int KWalletD::writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value) {
 KWallet::Backend *b;
 
 	if ((b = getWallet(handle))) {

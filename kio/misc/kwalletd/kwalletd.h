@@ -79,7 +79,7 @@ class KWalletD : public KDEDModule {
 		// returns an empty result.  It is your responsibility to check
 		// hasEntry() first.
 		virtual QByteArray readEntry(int handle, const QString& folder, const QString& key);
-		virtual QMap<QString,QString> readMap(int handle, const QString& folder, const QString& key);
+		virtual QByteArray readMap(int handle, const QString& folder, const QString& key);
 		virtual QString readPassword(int handle, const QString& folder, const QString& key);
 
 		// Rename an entry.  rc=0 on success.
@@ -87,7 +87,7 @@ class KWalletD : public KDEDModule {
 
 		// Write an entry.  rc=0 on success.
 		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value);
-		virtual int writeMap(int handle, const QString& folder, const QString& key, const QMap<QString,QString>& value);
+		virtual int writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value);
 		virtual int writePassword(int handle, const QString& folder, const QString& key, const QString& value);
 
 		// Does the entry exist?
