@@ -408,9 +408,13 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     if (args.size() >= 3)
       t->tm_mday = args[2].toInt32(exec);
     break;
-  case SetYear:
-    t->tm_year = args[0].toInt32(exec) >= 1900 ? args[0].toInt32(exec) - 1900 : args[0].toInt32(exec);
+  case SetYear: {
+    int a0 = args[0].toInt32(exec);
+    if (a0 >= 0 && a0 <= 99)
+      a0 += 1900;
+    t->tm_year = a0 - 1900;
     break;
+  }
   }
 
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||

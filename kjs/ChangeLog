@@ -5,6 +5,8 @@
 	range. Might still have some bugs with e.g. leap days but this is
 	a big step forward to ECMA compliancy.
 
+	* date_object.cpp: fixed cut-off date in Date.setYear()
+
 2004-10-02  Harri Porten  <porten@kde.org>
 
 	* lexer.cpp: parse function expressions with identifier as
