@@ -2776,9 +2776,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
 
       p->begin();
-      p->m_url = url;
-      if (!url.url().startsWith("about:"))
+      if (!url.url().startsWith("about:")) {
+        p->m_url = url;
         p->write(url.path());
+      }
       if (d->m_doc && p->d->m_doc)
         p->d->m_doc->setBaseURL(d->m_doc->baseURL());
       p->end();
