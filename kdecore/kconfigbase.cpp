@@ -432,7 +432,6 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           return QVariant( readDateTimeEntry( pKey, &tmp.asDateTime() ) );
       case QVariant::Date:
           return QVariant(readDateTimeEntry( pKey, &tmp.asDateTime() ).date());
-          break;
 
       case QVariant::Pixmap:
       case QVariant::Image:
@@ -1181,10 +1180,10 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
       return;
     case QVariant::DateTime:
       writeEntry( pKey, prop.toDateTime(), bPersistent, bGlobal, bNLS);
-      break;
+      return;
     case QVariant::Date:
       writeEntry( pKey, QDateTime(prop.toDate()), bPersistent, bGlobal, bNLS);
-      break;
+      return;
 
     case QVariant::Pixmap:
     case QVariant::Image:
