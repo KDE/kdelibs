@@ -237,6 +237,8 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
     QCString disp = getenv("DISPLAY");
 #elif defined(Q_WS_QWS)
     QCString disp = getenv("QWS_DISPLAY");
+#else
+    QCString disp;
 #endif
     if (disp.isEmpty())
         disp = "NODISPLAY";
