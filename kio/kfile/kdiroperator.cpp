@@ -1131,7 +1131,13 @@ void KDirOperator::setupActions()
 
 void KDirOperator::setupMenu()
 {
+    setupMenu(AllActions);
+}
+
+void KDirOperator::setupMenu(int whichActions)
+{
     // first fill the submenus (sort and view)
+    sortActionMenu->popupMenu()->clear();
     sortActionMenu->insert( byNameAction );
     sortActionMenu->insert( byDateAction );
     sortActionMenu->insert( bySizeAction );
@@ -1140,6 +1146,7 @@ void KDirOperator::setupMenu()
     sortActionMenu->insert( dirsFirstAction );
     sortActionMenu->insert( caseInsensitiveAction );
 
+    viewActionMenu->popupMenu()->clear();
 //     viewActionMenu->insert( shortAction );
 //     viewActionMenu->insert( detailedAction );
 //     viewActionMenu->insert( actionSeparator );
@@ -1152,23 +1159,40 @@ void KDirOperator::setupMenu()
     // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
     // when you add/remove actions here!
 
+    // now plug everything into the popupmenua
+    actionMenu->popupMenu()->clear();
+    if (whichActions & NavActions)
+    {
+        actionMenu->insert( upAction );
+        actionMenu->insert( backAction );
+        actionMenu->insert( forwardAction );
+        actionMenu->insert( homeAction );
+        actionMenu->insert( actionSeparator );
+    }
 
-    // now plug everything into the popupmenu
-    actionMenu->insert( upAction );
-    actionMenu->insert( backAction );
-    actionMenu->insert( forwardAction );
-    actionMenu->insert( homeAction );
-    actionMenu->insert( actionSeparator );
+    if (whichActions & FileActions)
+    {
+        actionMenu->insert( mkdirAction );
+        actionMenu->insert( myActionCollection->action( "delete" ) );
+        actionMenu->insert( actionSeparator );
+    }
 
-    actionMenu->insert( mkdirAction );
-    actionMenu->insert( myActionCollection->action( "delete" ) );
-    actionMenu->insert( actionSeparator );
+    if (whichActions & SortActions)
+    {
+        actionMenu->insert( sortActionMenu );
+        actionMenu->insert( actionSeparator );
+    }
 
-    actionMenu->insert( sortActionMenu );
-    actionMenu->insert( actionSeparator );
-    actionMenu->insert( viewActionMenu );
-    actionMenu->insert( actionSeparator );
-    actionMenu->insert( myActionCollection->action( "properties" ) );
+    if (whichActions & ViewActions)
+    {
+        actionMenu->insert( viewActionMenu );
+        actionMenu->insert( actionSeparator );
+    }
+
+    if (whichActions & FileActions)
+    {
+        actionMenu->insert( myActionCollection->action( "properties" ) );
+    }
 }
 
 void KDirOperator::updateSortActions()

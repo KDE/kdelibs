@@ -101,6 +101,14 @@ class KDirOperator : public QWidget
 
  public:
     /**
+     * The various action types. These values can be or'd together
+     */
+    enum ActionTypes { SortActions = 1, 
+                       ViewActions = 2, 
+                       NavActions = 4,
+                       FileActions = 8,
+                       AllActions = 15 };
+    /**
      * Constructs the KDirOperator with no initial view. As the views are
      * configurable, call @ref readConfig() to load the user's configuration
      * and then @ref setView to explicitly set a view.
@@ -466,6 +474,12 @@ class KDirOperator : public QWidget
                  (mode & (KFile::File | KFile::Files)) == 0 );
     }
 
+    /**
+     * Sets up the action menu. 
+     * @param actionTypes is an value of OR'd @ref ActionTypes that controls which actions to show in the action menu
+     */
+    void setupMenu(int whichActions);
+     
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by @ref #setView

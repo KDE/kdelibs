@@ -777,11 +777,15 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     connect(ops, SIGNAL(finishedLoading()),
             SLOT(slotLoadingFinished()));
 
+    ops->setupMenu(KDirOperator::SortActions |
+                   KDirOperator::FileActions |
+                   KDirOperator::ViewActions);
     KActionCollection *coll = ops->actionCollection();
+    
+    // plug nav items into the toolbar
     coll->action( "up" )->plug( toolbar );
     coll->action( "back" )->plug( toolbar );
     coll->action( "forward" )->plug( toolbar );
-    coll->action( "home" )->plug( toolbar );
     coll->action( "reload" )->plug( toolbar );
     coll->action( "mkdir" )->setShortcut(Key_F10);
     coll->action( "mkdir" )->plug( toolbar );
