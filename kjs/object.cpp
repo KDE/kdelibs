@@ -308,7 +308,7 @@ UString KJSO::getPropertyName() const
 }
 
 // ECMA 8.7.1
-KJSO KJSO::getValue()
+KJSO KJSO::getValue() const
 {
   if (!isA(ReferenceType)) {
     return *this;
@@ -320,6 +320,12 @@ KJSO KJSO::getValue()
   }
 
   return o.get(getPropertyName());
+}
+
+/* TODO: remove in next version */
+KJSO KJSO::getValue()
+{
+    return getValue();
 }
 
 // ECMA 8.7.2

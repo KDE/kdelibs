@@ -327,7 +327,8 @@ namespace KJS {
      * Reference method.
      * @return Referenced value. This object if no reference.
      */
-    KJSO getValue();
+    KJSO getValue() const;
+    KJSO getValue();  	/* TODO: remove in next version */
     /**
      * Reference method. Set referenced value to v.
      */
