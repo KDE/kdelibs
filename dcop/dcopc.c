@@ -71,7 +71,7 @@ Bool dcop_protocol_setup();
 char * dcop_write_int     (char * buf, int i);
 char * dcop_read_int      (char * buf, int * i);
 char * dcop_write_string  (char * buf, const char * text);
-char * dcop_read_string   (char * buf, char * output);
+char * dcop_read_string   (char * buf, char ** output);
 
 static char           * dcop_requested_name = 0;
 static char           * dcop_app_name       = 0;
@@ -104,7 +104,13 @@ dcop_write_int(char * buf, int i)
   char *
 dcop_read_int(char * buf, int * i)
 {
-  *i = *((int *)buf);
+  char *p = (char *)i;
+
+  *p++ = buf[3];
+  *p++ = buf[2];
+  *p++ = buf[1];
+  *p   = buf[0];
+  
   return buf + 4;
 }
 
@@ -123,13 +129,13 @@ dcop_write_string(char * buf, const char * text)
 /***************************************************************************/
 
   char *
-dcop_read_string(char * buf, char * output)
+dcop_read_string(char * buf, char ** output)
 {
   int length;
   char * pos = dcop_read_int(buf, &length);
   fprintf(stderr, "dcop_read_string: length == %d\n", length);
-  output = (char *)malloc(length);
-  memcpy(output, pos, length);
+  *output = (char *)malloc(length);
+  memcpy(*output, pos, length);
   return pos + length;
 }
 
@@ -176,6 +182,7 @@ dcop_process_message(
   char  * objId       = 0L;
   char  * fun         = 0L;
   char  * pos         = 0L;
+  char  * replyType   = 0L;
 
   int     dataLength  = 0;
 
@@ -218,23 +225,12 @@ dcop_process_message(
 
       fprintf(stderr, "dcop_process_message(): Reading data\n");
       pos = buf;
-      pos = dcop_read_string(pos, senderId);
-      fprintf(stderr, "dcop_process_message(): senderId : `%s'\n", senderId);
-      pos = dcop_read_string(pos, app);
-      fprintf(stderr, "dcop_process_message(): app      : `%s'\n", app);
-      pos = dcop_read_string(pos, objId);
-      fprintf(stderr, "dcop_process_message(): objId    : `%s'\n", objId);
-      pos = dcop_read_string(pos, fun);
-      fprintf(stderr, "dcop_process_message(): fun      : `%s'\n", fun);
-      pos = dcop_read_int(pos, &dataLength);
+      pos = dcop_read_string(pos, &replyType);
+      fprintf(stderr, "dcop_process_message(): replyType : `%s'\n", replyType);
 
       /* TODO: Run user-provided callback. */
 
-      free(senderId);
-      free(app);
-      free(objId);
-      free(fun);
-      free(buf);
+      free(replyType);
 
       replyVal = DCOP_REPLY_OK;
       break;
@@ -267,10 +263,10 @@ dcop_process_message(
       IceReadData(dcop_ice_conn, length, buf);
 
       pos = buf;
-      pos = dcop_read_string(pos, senderId);
-      pos = dcop_read_string(pos, app);
-      pos = dcop_read_string(pos, objId);
-      pos = dcop_read_string(pos, fun);
+      pos = dcop_read_string(pos, &senderId);
+      pos = dcop_read_string(pos, &app);
+      pos = dcop_read_string(pos, &objId);
+      pos = dcop_read_string(pos, &fun);
       pos = dcop_read_int(pos, &dataLength);
 
       /* TODO: Run user-provided callback. */
@@ -486,7 +482,7 @@ dcop_call(
 
     readyRet = False;
 
-/*    do { */
+    do { 
 
       fprintf(stderr, "dcop_call(): Doing IceProcessMessages\n");
       status = IceProcessMessages(dcop_ice_conn, &waitInfo, &readyRet);
@@ -500,13 +496,13 @@ dcop_call(
 
       fprintf(stderr, "dcop_call(): readyRet == %s\n", readyRet ? "True" : "False");
 
-/*    } while (!readyRet); */
+    } while (!readyRet);
 
     /* if we were rejected by the server, we try again, otherwise we return */
     if (replyStruct.status == DCOP_REPLY_REJECTED)
       continue;
 
-    success = (replyStatus == DCOP_REPLY_OK) ? True : False;
+    success = (replyStruct.status == DCOP_REPLY_OK) ? True : False;
     break;
   }
 
@@ -614,7 +610,7 @@ dcop_register(const char * app_name, Bool add_pid)
   if (replyLen == 0)
     return 0L;
   
-  dcop_read_string(replyData, dcop_app_name);
+  dcop_read_string(replyData, &dcop_app_name);
 
   return dcop_app_name;
 }
