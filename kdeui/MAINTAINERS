@@ -9,7 +9,7 @@ kaboutapplication.cpp
 kaboutdialog.cpp
 kaboutkde.cpp
 kaction.cpp
-kanimwidget.cpp
+kanimwidget.cpp		Waldo Bastian <bastian@kde.org>
 karrowbutton.cpp
 kauthicon.cpp
 kbugreport.cpp
@@ -19,7 +19,7 @@ kcmenumngr.cpp
 kcmodule.cpp
 kcolorbutton.cpp
 kcolorcombo.cpp
-kcolordialog.cpp
+kcolordialog.cpp	Waldo Bastian <bastian@kde.org>
 kcolordrag.cpp
 kcombobox.cpp
 kcommand.cpp
@@ -27,15 +27,15 @@ kcompletionbox.cpp
 kcursor.cpp
 kdatepicker.cpp
 kdatetbl.cpp
-kdatewidget.cpp
+kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
 kdcopactionproxy.cpp
 kdialog.cpp
-kdialogbase.cpp
+kdialogbase.cpp		Waldo Bastian <bastian@kde.org>
 kdockwidget.cpp
 kdockwidget_private.cpp
 kdualcolorbutton.cpp
-keditcl1.cpp
-keditcl2.cpp
+keditcl1.cpp		Waldo Bastian <bastian@kde.org>
+keditcl2.cpp		Waldo Bastian <bastian@kde.org>
 keditlistbox.cpp
 kedittoolbar.cpp
 kfontcombo.cpp
@@ -54,14 +54,14 @@ klistview.cpp
 kmainwindow.cpp
 kmainwindowiface.cpp
 kmenubar.cpp
-kmessagebox.cpp
+kmessagebox.cpp		Waldo Bastian <bastian@kde.org>
 knuminput.cpp
 knumvalidator.cpp
 kpanelapplet.cpp
 kpanelappmenu.cpp
 kpanelextension.cpp
 kpanelmenu.cpp
-kpassdlg.cpp
+kpassdlg.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapio.cpp
 kpopupmenu.cpp
 kprogress.cpp
@@ -70,7 +70,7 @@ krestrictedline.cpp
 krootpixmap.cpp
 kruler.cpp
 kselect.cpp
-kseparator.cpp
+kseparator.cpp		Waldo Bastian <bastian@kde.org>
 ksharedpixmap.cpp
 ksqueezedtextlabel.cpp
 kstatusbar.cpp
