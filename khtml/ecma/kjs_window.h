@@ -88,13 +88,14 @@ namespace KJS {
     void scheduleClose();
     bool isSafeScript() const;
     Location *location() const;
-    virtual String toString() const;
     void setListener(int eventId, KJSO func);
     KJSO getListener(int eventId) const;
     JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
     void clear();
 
     QList<JSEventListener> jsEventListeners;
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;
@@ -111,7 +112,6 @@ namespace KJS {
     enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, Focus, Blur, Close,
           MoveBy, MoveTo, ResizeBy, ResizeTo, ScrollBy, ScrollTo, SetInterval, ClearInterval };
 
-    static void initJScript(KHTMLPart *);
   private:
     const Window *window;
     int id;
@@ -142,19 +142,20 @@ namespace KJS {
     virtual void put(const UString &p, const KJSO &v);
     virtual KJSO toPrimitive(Type preferred) const;
     virtual String toString() const;
+    KHTMLPart *part() const { return m_part; }
   private:
     friend class Window;
     Location(KHTMLPart *p);
-    QGuardedPtr<KHTMLPart> part;
+    QGuardedPtr<KHTMLPart> m_part;
   };
 
   class LocationFunc : public DOMFunction {
   public:
-    LocationFunc(KHTMLPart *p, int i);
+    LocationFunc(const Location *loc, int i);
     Completion tryExecute(const List &);
-    enum { Replace, Reload };
+    enum { Replace, Reload, ToString };
   private:
-    QGuardedPtr<KHTMLPart> part;
+    const Location *location;
     int id;
   };
 

@@ -155,11 +155,13 @@ KJSO Screen::get(const UString &p) const
 
 ////////////////////// Window Object ////////////////////////
 
+const TypeInfo Window::info = { "Window", HostType, 0, 0, 0 };
+
 Window::Window(KHTMLPart *p)
   : m_part(p), screen(0), history(0), frames(0), loc(0)
 {
   winq = new WindowQObject(this);
-  //kdDebug() << "Window::Window this=" << this << " part=" << part << endl;
+  //kdDebug() << "Window::Window this=" << this << " part=" << m_part << endl;
 }
 
 Window::~Window()
@@ -230,11 +232,6 @@ void Window::mark(Imp *)
 #endif
 }
 
-String Window::toString() const
-{
-  return UString( "object Window" );
-}
-
 bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
 {
   // emulate IE behaviour: it doesn't throw exceptions when undeclared
@@ -303,7 +300,7 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
       p == "scrollBy" ||
       p == "scrollTo" ||
       p == "setInterval" ||
-      p == "setTimeout" ||      
+      p == "setTimeout" ||
       p == "onAbort" || p == "onabort" ||
       p == "onBlur" || p == "onblur" ||
       p == "onChange" || p == "onchange" ||
@@ -326,7 +323,7 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
       p == "onResize" || p == "onresize" ||
       p == "onSelect" || p == "onselect" ||
       p == "onSubmit" || p == "onsubmit" ||
-      p == "onUnload" || p == "onunload" ||      
+      p == "onUnload" || p == "onunload" ||
       HostImp::hasProperty(p,recursive) ||
       m_part->findFrame( p.qstring() ))
     return true;
@@ -346,6 +343,7 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
 
 KJSO Window::get(const UString &p) const
 {
+  //kdDebug() << "Window::get " << p.qstring() << endl;
   if (p == "closed")
     return Boolean(m_part.isNull());
 
@@ -357,7 +355,6 @@ KJSO Window::get(const UString &p) const
     if (isSafeScript())
       return Imp::get(p);
   }
-
   if (p == "crypto")
     return Undefined(); // ###
   else if (p == "defaultStatus" || p == "defaultstatus")
@@ -444,7 +441,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "resizeTo")
     return Function(new WindowFunc(this, WindowFunc::ResizeTo));
   else if (p == "self" || p == "window")
-    return KJSO(retrieve(m_part));
+    return KJSO(retrieveWindow(m_part));
   else if (p == "top") {
     KHTMLPart *p = m_part;
     while (p->parentPart())
@@ -793,6 +790,8 @@ void Window::scheduleClose()
 bool Window::isSafeScript() const
 {
   KHTMLPart *act = (KHTMLPart*)KJS::Global::current().extra();
+  if (!act)
+      kdDebug() << "Window::isSafeScript: KJS::Global::current().extra() is 0L!" << endl;
   return act && originCheck(m_part->url(), act->url());
 }
 
@@ -827,7 +826,7 @@ JSEventListener *Window::getJSEventListener(const KJSO &obj, bool html)
 {
   if (obj.isA(KJS::NullType))
     return 0;
-    
+
   QListIterator<JSEventListener> it(jsEventListeners);
 
   for (; it.current(); ++it)
@@ -1105,11 +1104,6 @@ Completion WindowFunc::tryExecute(const List &args)
 
 }
 
-void WindowFunc::initJScript(KHTMLPart *p)
-{
-  (void)p->jScript(); // dummy call to create an interpreter
-}
-
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
@@ -1168,6 +1162,7 @@ void WindowQObject::timeoutClose()
 
 KJSO FrameArray::get(const UString &p) const
 {
+  //kdDebug() << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
   if (part.isNull())
     return Undefined();
 
@@ -1197,14 +1192,16 @@ KJSO FrameArray::get(const UString &p) const
 
 ////////////////////// Location Object ////////////////////////
 
-Location::Location(KHTMLPart *p) : part(p) { }
+Location::Location(KHTMLPart *p) : m_part(p) { }
 
 KJSO Location::get(const UString &p) const
 {
-  if (part.isNull())
+  //kdDebug() << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
+
+  if (m_part.isNull())
     return Undefined();
 
-  KURL url = part->url();
+  KURL url = m_part->url();
   QString str;
 
   if (p == "hash")
@@ -1231,12 +1228,14 @@ KJSO Location::get(const UString &p) const
     str = url.query();
   else if (p == "[[==]]")
     return toString();
+  else if (p == "toString")
+    return Function(new LocationFunc(this, LocationFunc::ToString));
   else if (HostImp::hasProperty(p))
     return HostImp::get(p);
   else if (p == "replace")
-    return Function(new LocationFunc(part, LocationFunc::Replace));
+    return Function(new LocationFunc(this, LocationFunc::Replace));
   else if (p == "reload")
-    return Function(new LocationFunc(part, LocationFunc::Reload));
+    return Function(new LocationFunc(this, LocationFunc::Reload));
   else
     return Undefined();
 
@@ -1245,7 +1244,7 @@ KJSO Location::get(const UString &p) const
 
 void Location::put(const UString &p, const KJSO &v)
 {
-  if (part.isNull())
+  if (m_part.isNull())
     return;
 
   QString str = v.toString().value().qstring();
@@ -1254,7 +1253,7 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "href")
        url = Window::retrieveActive()->part()->completeURL(str);
   else {
-    url = part->url();
+    url = m_part->url();
     if (p == "hash") url.setRef(str);
     else if (p == "host") {
       QString host = str.left(str.find(":"));
@@ -1271,7 +1270,7 @@ void Location::put(const UString &p, const KJSO &v)
       return;
     }
   }
-  part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
+  m_part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
 }
 
 KJSO Location::toPrimitive(Type) const
@@ -1282,26 +1281,31 @@ KJSO Location::toPrimitive(Type) const
 String Location::toString() const
 {
 
- if (!part->url().hasPath())
-        return String(part->url().prettyURL()+"/");
+ if (!m_part->url().hasPath())
+        return String(m_part->url().prettyURL()+"/");
     else
-        return String(part->url().prettyURL());
+        return String(m_part->url().prettyURL());
 }
 
-LocationFunc::LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
+LocationFunc::LocationFunc( const Location* loc, int i) : location(loc), id(i) { };
 
 Completion LocationFunc::tryExecute(const List &args)
 {
-  if (!part.isNull()) {
+  KHTMLPart *part = location->part();
+  if (part) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ) );
+      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ));
       break;
     case Reload:
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
       break;
+    case ToString:
+      KJSO result = location->toString();
+      return Completion(ReturnValue, result);
     }
-  }
+  } else
+    kdDebug() << "LocationFunc::tryExecute - no part!" << endl;
   return Completion(Normal);
 }
 
