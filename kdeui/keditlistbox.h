@@ -45,6 +45,8 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
+   Q_SETS( Button )
+   Q_PROPERTY( Button buttons READ buttons WRITE setButtons )
    Q_PROPERTY( QStringList items READ items WRITE setItems )
 
 public:
@@ -87,9 +89,10 @@ public:
 
       /**
        * Enumeration of the buttons, the listbox offers. Specify them in the
-       * constructor in the buttons parameter.
+       * constructor in the buttons parameter, or in setButtons.
        */
-      enum Button { Add = 1, Remove = 2, UpDown = 4, All = Add|Remove|UpDown };
+      enum Button { Add = 1, Remove = 2, UpDown = 4 };
+      enum { All = Add|Remove|UpDown }; // separated so that it doesn't appear in Qt designer
 
       /**
        * Create an editable listbox.
@@ -211,6 +214,16 @@ public:
        * @since 3.4
        */
       void setItems(const QStringList& items);
+
+      /**
+       * Returns which buttons are visible
+       */
+      int buttons() const;
+
+      /**
+       * Specifies which buttons should be visible
+       */
+      void setButtons( uint buttons );
 
    signals:
       void changed();

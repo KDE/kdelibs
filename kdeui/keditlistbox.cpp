@@ -42,7 +42,7 @@ class KEditListBoxPrivate
 {
 public:
     bool m_checkAtEntering;
-    int buttons;
+    uint buttons;
 };
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
@@ -76,72 +76,33 @@ KEditListBox::~KEditListBox()
 void KEditListBox::init( bool checkAtEntering, int buttons,
                          QWidget *representationWidget )
 {
-    d->m_checkAtEntering=checkAtEntering;
-    d->buttons = buttons;
-
-    int lostButtons = 0;
-    if ( !(buttons & Add) )
-        ++lostButtons;
-    if ( !(buttons & Remove) )
-        ++lostButtons;
-    if ( !(buttons & UpDown) )
-        lostButtons += 2;
-
+    d->m_checkAtEntering = checkAtEntering;
 
     servNewButton = servRemoveButton = servUpButton = servDownButton = 0L;
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
                               QSizePolicy::MinimumExpanding));
 
-    QWidget * gb = this;
-    QGridLayout * grid = new QGridLayout(gb, 7 - lostButtons, 2,
+    QGridLayout * grid = new QGridLayout(this, 7, 2,
                                          KDialog::marginHint(),
                                          KDialog::spacingHint());
     grid->addRowSpacing(0, fontMetrics().lineSpacing());
-    for ( int i = 1; i < 7 - lostButtons; ++i )
-        grid->setRowStretch(i, 1);
+    grid->setRowStretch( 6, 1 );
 
     grid->setMargin(15);
 
     if ( representationWidget )
-        representationWidget->reparent( gb, QPoint(0,0) );
+        representationWidget->reparent( this, QPoint(0,0) );
     else
-        m_lineEdit=new KLineEdit(gb);
+        m_lineEdit=new KLineEdit(this);
 
-    m_listBox = new QListBox(gb);
+    m_listBox = new QListBox(this);
 
     QWidget *editingWidget = representationWidget ?
                              representationWidget : m_lineEdit;
     grid->addMultiCellWidget(editingWidget,1,1,0,1);
-    grid->addMultiCellWidget(m_listBox, 2, 6 - lostButtons, 0, 0);
-    int row = 2;
-    if ( buttons & Add ) {
-        servNewButton = new QPushButton(i18n("&Add"), gb);
-        servNewButton->setEnabled(false);
-        connect(servNewButton, SIGNAL(clicked()), SLOT(addItem()));
+    grid->addMultiCellWidget(m_listBox, 2, 6, 0, 0);
 
-        grid->addWidget(servNewButton, row++, 1);
-    }
-
-    if ( buttons & Remove ) {
-        servRemoveButton = new QPushButton(i18n("&Remove"), gb);
-        servRemoveButton->setEnabled(false);
-        connect(servRemoveButton, SIGNAL(clicked()), SLOT(removeItem()));
-
-        grid->addWidget(servRemoveButton, row++, 1);
-    }
-
-    if ( buttons & UpDown ) {
-        servUpButton = new QPushButton(i18n("Move &Up"), gb);
-        servUpButton->setEnabled(false);
-        connect(servUpButton, SIGNAL(clicked()), SLOT(moveItemUp()));
-
-        servDownButton = new QPushButton(i18n("Move &Down"), gb);
-        servDownButton->setEnabled(false);
-        connect(servDownButton, SIGNAL(clicked()), SLOT(moveItemDown()));
-
-        grid->addWidget(servUpButton, row++, 1);
-        grid->addWidget(servDownButton, row++, 1);
-    }
+    setButtons( buttons );
 
     connect(m_lineEdit,SIGNAL(textChanged(const QString&)),this,SLOT(typedSomething(const QString&)));
     m_lineEdit->setTrapReturnKey(true);
@@ -150,6 +111,57 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
 
     // maybe supplied lineedit has some text already
     typedSomething( m_lineEdit->text() );
+}
+
+void KEditListBox::setButtons( uint buttons )
+{
+    if ( d->buttons == buttons )
+        return;
+
+    QGridLayout* grid = static_cast<QGridLayout *>( layout() );
+    if ( ( buttons & Add ) && !servNewButton ) {
+        servNewButton = new QPushButton(i18n("&Add"), this);
+        servNewButton->setEnabled(false);
+        servNewButton->show();
+        connect(servNewButton, SIGNAL(clicked()), SLOT(addItem()));
+
+        grid->addWidget(servNewButton, 2, 1);
+    } else if ( ( buttons & Add ) == 0 && servNewButton ) {
+        delete servNewButton;
+        servNewButton = 0;
+    }
+
+    if ( ( buttons & Remove ) && !servRemoveButton ) {
+        servRemoveButton = new QPushButton(i18n("&Remove"), this);
+        servRemoveButton->setEnabled(false);
+        servRemoveButton->show();
+        connect(servRemoveButton, SIGNAL(clicked()), SLOT(removeItem()));
+
+        grid->addWidget(servRemoveButton, 3, 1);
+    } else if ( ( buttons & Remove ) == 0 && servRemoveButton ) {
+        delete servRemoveButton;
+        servRemoveButton = 0;
+    }
+
+    if ( ( buttons & UpDown ) && !servUpButton ) {
+        servUpButton = new QPushButton(i18n("Move &Up"), this);
+        servUpButton->setEnabled(false);
+        servUpButton->show();
+        connect(servUpButton, SIGNAL(clicked()), SLOT(moveItemUp()));
+
+        servDownButton = new QPushButton(i18n("Move &Down"), this);
+        servDownButton->setEnabled(false);
+        servDownButton->show();
+        connect(servDownButton, SIGNAL(clicked()), SLOT(moveItemDown()));
+
+        grid->addWidget(servUpButton, 4, 1);
+        grid->addWidget(servDownButton, 5, 1);
+    } else if ( ( buttons & UpDown ) == 0 && servUpButton ) {
+        delete servUpButton; servUpButton = 0;
+        delete servDownButton; servDownButton = 0;
+    }
+
+    d->buttons = buttons;
 }
 
 void KEditListBox::typedSomething(const QString& text)
@@ -278,7 +290,7 @@ void KEditListBox::addItem()
     }
 }
 
-int KEditListBox::currentItem() const 
+int KEditListBox::currentItem() const
 {
     int nr = m_listBox->currentItem();
     if(nr >= 0 && !m_listBox->item(nr)->isSelected()) return -1;
@@ -381,6 +393,11 @@ void KEditListBox::setItems(const QStringList& items)
 {
   m_listBox->clear();
   m_listBox->insertStringList(items, 0);
+}
+
+int KEditListBox::buttons() const
+{
+  return d->buttons;
 }
 
 void KEditListBox::virtual_hook( int, void* )
