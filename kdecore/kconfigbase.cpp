@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.26  1998/03/30 17:30:51  kalle
+// Accept "true" and "on" as 1 in readNumEntry
+//
 // Revision 1.25  1998/03/30 15:40:08  kalle
 // Accepting non-null numerical values as true when reading bool entries
 //
@@ -358,9 +361,9 @@ int KConfigBase::readNumEntry( const char* pKey, int nDefault) const
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
 	return nDefault;
-  else if( aValue = "true" )
+  else if( aValue == "true" )
 	return 1;
-  else if( aValue = "on" )
+  else if( aValue == "on" )
 	return 1;
   else
 	{
