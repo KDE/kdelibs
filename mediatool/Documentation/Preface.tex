@@ -1,0 +1,38 @@
+
+
+\section{Preface}
+
+
+\subsection*{General information}
+This documentation contains the mediatool specifications.
+The specifications are regarded as V0.40. Last revision is from Sun Jun 15 12:48:45 CEST 1997.
+
+
+\subsection*{Topics not yet adressed in this document}
+There are a few things, which are still open for discussion. In fact, discussion about
+theese things are very welcome. Even if I have have an opinion, what might be right,
+I am aware I could be wrong.
+
+Please do skip this section for the first time you read this document. You will need
+some basic information to understand the meaning of some terms, which are used here
+(e.g. ``master'', ``slave'' or ``chunk'').
+
+\begin{itemize}
+\item	Playlists: These will be handled by the library code in the future. The master fills
+	the playlist using library functions. The advantage of playlist handling in the master
+	is, that it has to be programmed only once, and not again and again in
+	each slave. Furthermore, the master can have a playlist with different media types:
+	For example, there could be a playlist with your all-time-favourites: Theese could
+	be ``greatmidi1.mid'', ``greatmidi2.mid'', ``track3.cda'', ``greatmod4.mod'' and
+	``greatsid5.psid''. (*.mid = Midi music, *.cda = CD Audio,
+	*.mod = Soundtracker module, *.psid = C64 Sid music).
+\item	Text informations from slave to master (There is no use for the other direction,
+	as far as I can see). I am planning to do a big protocol revision, where this topic
+	will be adressed. The format of the ``text chunk'' is not fully defined, but
+	it will most likely have a ``catergory'' field (e.g. MD\_CAT\_INSTUMENTNAME), one
+	or more extra fields for storing extra informations (e.g. instrument number) and
+	the text field (e.g.  the instrument name).
+\item	\ldots
+\end{itemize}
+
+

@@ -1,0 +1,126 @@
+
+
+\section{Connection setup}
+
+\subsection*{Overview}
+I will briefly introduce an overview over the whole ``life'' of one
+connection.
+
+\begin{itemize}
+   \item The master creates a connection.
+   \item The master starts up a slave using fork() and exex() as usual.
+         He is passing an identifier via the ``-media'' option.
+   \item The slave starts up with main, parses the parameters, and sets
+   	 itself up as a slave.
+   \item The slave localizes the STAT chunk, and sets the {\it status}
+         field to {\bf MD\_STAT\_INIT}.
+   \item The slave fills in the {\it supp\_keys} field.
+   \item The slave sets the {\it status} field to {\bf MD\_STAT\_READY}.
+   \item Now the master can send any commands he likes by setting the
+         {\it keys} field to any desired and valid value\footnote{Surely
+         he should honor the slaves
+         {\it supp\_keys} field. If he does not, he should at least not
+         be angry, if the slave does not do the requested work.}. The slave
+         executes the requests and sets the {\it status} field accordingly.
+   \item When the user decides to quit playing, the master sets the
+   	 exit key\footnote{Using the exit event counter}. The slave will see
+	 the key and after deinitializing itself it should quit itself.
+   	 Right before calling exit(), the slave should set the
+   	 {\it status} field to {\bf MD\_STAT\_EXITED}.
+   \item When the master sees the {\bf MD\_STAT\_EXITED} status, he can
+         safely delete the connection.
+	 Main tasks here are detaching from the shared memory piece, deleting
+	 referenced files and clearing up internal data structures. This all is
+	 done automatically when calling MdConnectDelete()
+\end{itemize}
+   
+   
+
+\subsection*{Master setup}
+A master can control several slaves. Before a slave can connect, the master
+must create a dedicated connection. This connection is exclusevly used by one
+slave. The connection consists of a shared memory piece. Later pipes will
+be added for exchanging text messages.
+
+A master would work as follows:
+
+\begin{verbatim}
+#include <mediatool.h>
+int main(char argc, char *argv[])
+{
+  MediaCon      m;
+  char          *shared_mem;
+  char          *connection_name;
+
+  /* Initialize the library */
+  MdConnectInit();
+
+  ...
+
+  /* This part deals with creating a new connection */
+  MdConnectNew(&m);
+  shared_mem=m.shm_adr;
+  if ( shared_mem == NULL )
+    /* Oops, could not create connection */
+    exit(1);
+
+  /* Start up a new slave task with parameter "-media identification".
+   * (Use fork() and exec() ).
+   */
+    ...
+
+  ...
+\end{verbatim}
+\medskip
+
+After the connection is built, the master starts a new process, the slave
+process. Apart from other parameters, the parameter ``-media identification''
+is given. ``identification'' denotes the connection being used.
+
+\subsection*{Slave setup}
+
+The slave is started as usual, and parses its parameters. It detects the
+``-media identification'' parameter and sets itself up to be a slave.
+Slaves may not use  the
+MdConnectInit() call. See an example initialisation procedure for a slave:
+
+\begin{verbatim}
+#include <mediatool.h>
+
+int main(char argc, char *argv[])
+{
+  MediaCon      m;
+  char          *shared_mem;
+  char          *identification;
+  char          IsSlave=0;
+  int           i;
+
+  for (i=0; i<argc; i++)
+  {
+     /* Parse parameters */
+     if ( (strcmp (argv[i],"-media") == 0) && (i<argc-1) )
+     {
+        /* argv[i]="-media" and there exists at least one more
+         * parameter (i<argc-1).
+         */
+        IsSlave=1;
+        identification = argv[i+1];
+     }
+
+  if (IsSlave)
+  {
+     MdConnect(atoi(identification), &m);
+     shared_mem = m.shm_adr;
+     if ( shared_mem == NULL )
+        /* Oops, could not connect */
+        exit(1);
+  }
+
+...
+\end{verbatim}
+\medskip
+
+
+
+
+

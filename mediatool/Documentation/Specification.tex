@@ -1,0 +1,327 @@
+
+
+
+\section{The shared memory segment}
+
+\subsection*{Indtroduction}
+The memory segment is initialized by the server. When he calls
+{\it MdConnectNew()\/}, the memory segment is attached and initialized
+automatically. Two things are done:
+A signature is written at the very beginning, and several so called ``chunks''
+are written into the memory.
+
+\subsection*{Signature}
+Every mediatool shared memory segment begins with the signature ``MDTO''. The
+signature is represented as a 4 byte Ascii string, it is {\bf not} terminated with
+a zero.
+
+\subsection*{Chunks}
+After the signature several chunks may follow. Chunks are data portions with a name
+and some useful information stored in the ``payload'' part. The chunks are chained,
+so that it is easy to find a certain chunk, or to ignore an unknown chunk.
+The chunk structure is influenced by the PNG format. Every chunk looks similar, and
+it can be divided in two parts: The administrative part and the ``payload''.
+
+Chunks can be chained together in any order you like, with two exceptions. The
+first chunk is always the header chunk ({\bf IHDR}), the last chunk is always
+the end chunk ({\bf IEND}).
+
+
+\subsubsection*{The administrative part}
+The administrative part deals with giving the chunk a name, finding the next
+chunk of the chunk chain and it stores information of the chunk size. Every chunk
+starts with the administrative part.
+
+\begin{verbatim}
+typedef struct
+{
+    int32       DataLength;     /* Length of data field [maximum: (2^31)-1 ]    */
+    char        Type[4];        /* Chunk type. Ascii readable                   */
+} MdChunk;
+\end{verbatim}
+
+\subsubsection*{The payload part}
+The payload part follows directly the {\it MdChunk\/} structure. Here the useful
+information is stored. Several different chunks do exists, and everyone brings
+its own structure.
+
+\begin{verbatim}
+
+/* CHUNK: Header */
+typedef struct
+{
+  int32         shm_size;       /* Size of shared memory segment.       */
+  int32         ref;            /* Reference id.                        */
+  /* Connection name, e.g: "tracker" or "playmidi". Set by the master.  */
+  char          name[LEN_CON_NAME];
+} MdCh_IHDR;
+        
+
+
+/* CHUNK: Play options */
+typedef struct
+{
+  int32         repeats;        /* 0:forever, 1: 1 time, 2: 2 times, .. */
+  int32         transpose;      /* Tanspose all notes by "tanspose"     *
+                                 * half notes up (poitive value) or     *
+                                 * down (negative values)               */
+  int8          NTSCtiming;     /* 0:PALtiming(50Hz), 1:NTSCtiming(60Hz)*/
+  int8          samplesize;     /* 8 or 16 for today                    */
+  int8          stereo;         /* 0: Mono, 100: Full stereo            *
+                                 * Values in between are allowed.       */
+  int8          oversample;     /* Oversampling factor                  */
+} MdCh_POPT;
+
+
+
+/* CHUNK: Player information. */
+typedef struct
+{
+  float         version;
+  char          name[LEN_CON_NAME];     /* Player name. Looks like      */
+                                        /* "tracker V4.32"              */
+} MdCh_PINF;
+
+
+
+/* CHUNK: Key status ("Master status") */
+typedef struct
+{
+  /* The now following EventCounters are higher level representations
+   * of key presses. They tell, how often a key was pressed since last
+   * reading the event counter.
+   */
+  EventCounter  forward;        /* Event counter: Forward               */
+  EventCounter  backward;       /* Event counter: Backward              */
+  EventCounter  prevtrack;      /* Event counter: Previous track        */
+  EventCounter  nexttrack;      /* Event counter: Next Track            */
+  EventCounter  exit;           /* Event counter: Exit player           */
+  EventCounter  eject;          /* Event counter: Eject media/playlist  */
+  EventCounter  play;           /* Event counter: Play                  */
+  EventCounter  stop;           /* Event counter: Stop                  */
+  /* The pause key is an add-on. It is not helpful to use an event
+   * counter with the pause key. The key is simply pressed or unpressed.
+   */
+  int8          pause;          /* Status: Pause key                    */
+} MdCh_KEYS;
+
+
+
+/* CHUNK: Player status ("Slave status") */
+typedef struct
+{
+  int32         status;         /* Status of client. (Bit array).       */
+  int32         supp_keys;      /* Which keys are supported by the      */
+                                /* player (Bit array).                  */
+} MdCh_STAT;
+
+
+/* CHUNK: Text message */
+typedef struct
+{
+  int32         category;       /* What category falls the text in?     */
+                                /* e.g: lyric, errormessage, other      */
+  int32         info1;          /*                                      */
+  int32         info2;          /*                                      */
+  /* char       text[SIZE]; */  /* Text message                         */
+} MdCh_TEXT;
+
+
+/*
+ * The end chunk has no data portion. So there´s no point in defining an
+ * corresponding (empty) END-Chunk. The only effect would be an C compiler
+ * complaining about "empty" structure definitions and the like.
+ *
+ * typedef struct
+ * {
+ *
+ * } MdCh_IEND;
+ */
+
+\end{verbatim}
+
+
+\subsubsection*{The chunk library commands}
+There are service functions available for writing chunks, and getting the adress
+of a chunk or the chunk data. Getting the adress of a chunk is primarily used
+in the library internally, masters and slaves are usually only interested in
+the ``payload'' part.
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ * Function:    FindChunkData()
+ *
+ * Task:        Return the memory adress of the data portion of a chunk.
+ *
+ * in:          adress          Adress of memory piece to examine. Must be a
+ *                              valid (initialized) mediatool memory piece.
+ *                              Checks are done to ensure this.
+ *              ChunkName       Chunk to search for. Must be given as a 4
+ *                              byte Ascii string.
+ * 
+ * out:         MdChunk*        Memory adress of the data portion of thechunk.
+ *                              NULL, if chunk not exist.
+ *****************************************************************************/
+\end{verbatim}}
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ * Function:    FindChunk()
+ *
+ * Task:        Return the memory adress of a chunk.
+ *
+ * in:          adress          Adress of memory piece to examine. Must be a
+ *                              valid (initialized) mediatool memory piece.
+ *                              Checks are done to ensure this.
+ *              ChunkName       Chunk to search for. Must be given as a 4
+ *                              byte Ascii string.
+ * 
+ * out:         MdChunk*        Memory adress of chunk. NULL, if chunk does
+ *                              not exist.
+ *****************************************************************************/
+\end{verbatim}}
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ * Function:    WriteChunk()
+ *
+ * Task:        Write a chunk into a mediatool memory piece. The chunk
+ *              replaces the end chunk. A new end chunk is automatically
+ *              written.
+ * Comments:    Chunks may be written multiple times. It is not checked, if chunks
+ *              appear mutiple times.
+ *
+ * in:          adress          Adress of memory piece to write to. Must be a
+ *                              valid (initialized) mediatool memory piece.
+ *                              Checks are done to ensure this.
+ *              ChunkName       Chunk to write. Must be given as a 4
+ *                              byte Ascii string.
+ *              data            Adress of data piece to write.
+ *              length          Length of data piece.
+ * 
+ * out:         MdChunk*        Memory adress of chunk. NULL, if chunk could
+ *                              not be written (No memory left for chunk).
+ *****************************************************************************/
+\end{verbatim}}
+
+
+
+\subsection*{Connections}
+Before doing anything else, a dedicated connection between master and slave
+must be set up:
+
+\subsubsection*{The connections library commands}
+
+\vbox{For each slave a dedicated connection must be created by the {\sl master}:
+
+\begin{verbatim}
+/******************************************************************************
+ * Function:    MdConnectNew()
+ *
+ * Task:        Create a new media connection.
+ *
+ * in:          mcon            Pointer to a MediaCon structure
+ * 
+ * out:         -
+ *****************************************************************************/
+\end{verbatim}}
+
+\vbox{A {\sl slave} is passed a so called ``talkid'' (or media id) on the command line
+after the ``-media'' option. The slave can then connect by use of the
+following function.
+
+\begin{verbatim}
+/******************************************************************************
+ * Function:    MdConnect()
+ *
+ * Task:        Connect to an existing media connection by giving the id of
+ *              the connection.
+ *
+ * in:          shm_talkid      Id of connection. The client program can
+ *                              find out this name by evaluating the
+ *                              "-media" option (See documentation).
+ * 
+ * out:         mcon            Pointer to a MediaCon-structure. Is filled out
+ *                              here. If the shm_talkid is unknown,
+ *                              adress 0 is returned.
+ *****************************************************************************/
+\end{verbatim}}
+
+There should be a MdConnectDelete function for the master, but currently there is none.
+
+
+
+\subsection*{Event counter}
+An event counter counts a single dedicated event. Events used in
+the mediatool protocol are usually key presses. So you can regard event
+conters as a high level representation of key presses: The master increments
+the event counter each time an event occurs. A function are available
+for the slave to check how many key presses occured since his last
+``sampling''.
+
+Masters as well as clients may access eventcounters only by
+use of this functions\footnote{Please note that event counters are in shared
+memory regions. This means, event counters are fragile constructions, which
+need some care. A little thoughtlessness may lead to wierd bugs. This is one
+of the reasons, why the event counter service functions are provided.}. If you
+need to do something special with the event counters, try it as follows:
+
+1) Try to simulate your task with the existing functions.
+
+2) If this does not work, write a new service function.
+
+Please check with the author first, perhaps work on your problem is already
+in progress.
+
+
+\subsubsection*{The event counter library commands}
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ * Function:    EventCounterRaise()
+ *
+ * Task:        Increment the value of the event counter by "count".
+ *              May only be called by writer.
+ *
+ * in:          count   increment value
+ * 
+ * out:         -
+ *****************************************************************************/
+\end{verbatim}}
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ *
+ * Function:    EventCounterRead()
+ *
+ * Task:        Read the number of events since the last visit.
+ *              May only be called by reader.
+ *
+ * in:          evc     The event counter to be checked.
+ *              max     Return a maximum of "max" events. If there are more
+ *                      than "max" events pending, they will be stored for
+ *                      future reading. 0 denotes an unrestricted "max" value.
+ *
+ * out:         uint32  The number of events since the last visit. This value
+ *                      is never bigger than "max".
+ *
+ *****************************************************************************/
+\end{verbatim}}
+
+\vbox{\begin{verbatim}
+/******************************************************************************
+ * Function:    EventCounterReset()
+ *
+ * Task:        Reset the event counter, so that EventCounterRead() will
+ *              result in a value of 0. May only be called by reader.
+ *              This is primarily useful for ignoring key presses after long
+ *              busy times.
+ *
+ * in:          evc     The event counter to be reset.
+ * 
+ * out:         -
+ *****************************************************************************/
+\end{verbatim}}
+
+
+

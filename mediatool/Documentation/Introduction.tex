@@ -1,0 +1,41 @@
+
+
+
+\section{Introduction}
+
+\subsection{Abstract}
+
+Mediatool is a system for playing various types of multimedia objects, such
+as midi music, MPEG videos, Soundtracker modules and Sidplay tunes. The main
+idea behind mediatool is to distinguish between player and user interface.
+
+It is very useful to split up player and user interface. Traditionally players
+always brought with them their own user interface. Examples are tracker (Ascii
+based) and Sidplay (X11 based XSidplay).
+Mediatool provides a {\it single} interface to a lot of players\footnote{Well,
+this is the goal. The applications have to be adopted to use mediatool.  ;-)}
+
+
+
+
+\subsection{Core components}
+
+The core components of mediatool are the mediatool (shared) library and the
+mediatool protocol.
+
+Users of the two core components are players (slaves) and a player interface
+(master). The denomination ``master'' and ``slave'' comes from the main
+direction of data flow.
+
+The player interface tells the player, what do do:
+``Start playing'', ``Stop playing'', ``Pause'' and ``Next Track'' are typical
+commands given by the master. For this purpose the player interface usally has
+buttons, which the user can press.
+
+Players just do what the name associates. They play a given object (or a set of
+objects), following the commands given by the master.
+
+
+
+
+
