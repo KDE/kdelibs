@@ -98,6 +98,7 @@ public:
     virtual bool isListItem() const { return false; }
     virtual bool isRoot() const { return false; }
     virtual bool isBR() const { return false; }
+    virtual bool isHtml() const { return false; }
     virtual bool isTableCell() const { return false; }
     virtual bool isTableRow() const { return false; }
     virtual bool isTableSection() const { return false; }
@@ -327,7 +328,7 @@ public:
     bool isSpecial() const;
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
-    
+
     enum SelectionState {
     	SelectionNone,
     	SelectionStart,
@@ -345,6 +346,8 @@ public:
 
     virtual int lowestPosition() {return 0;}
 
+    CachedImage *backgroundImage() const { return m_bgImage; }
+    
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 

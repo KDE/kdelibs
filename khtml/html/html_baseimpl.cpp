@@ -32,6 +32,7 @@
 
 #include "rendering/render_frames.h"
 #include "rendering/render_html.h"
+#include "rendering/render_body.h"
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
@@ -48,7 +49,7 @@ using namespace khtml;
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
-    m_style = 0;
+    m_styleSheet = 0;
 }
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
@@ -74,10 +75,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     {
 	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->baseURL());
 	bgImage = u.url();
-	if(parentNode()) {
-	    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
-	parentNode()->recalcStyle();
-	}
+	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
 	break;
     }
     case ATTR_MARGINWIDTH:
@@ -98,10 +96,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_BGCOLOR:
 	bgColor = attr->value();
-	if(parentNode()) {
-	    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
-	    parentNode()->recalcStyle();
-	}
+	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
 	break;
     case ATTR_TEXT:
 	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
@@ -109,9 +104,9 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_LINK:
     {
 	kdDebug( 6030 ) << "ATTR_LINK" << endl;
-	if(!m_style) m_style = new CSSStyleSheetImpl(this);
+	if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
 	QString aStr = "a[href] { color: " + attr->value().string() + "; }";
-	m_style->parseString(aStr);
+	m_styleSheet->parseString(aStr);
 	break;
     }
     case ATTR_VLINK:
@@ -127,17 +122,6 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLBodyElementImpl::attach(KHTMLView *w)
 {
     bool recalc = false;
-    if(!bgImage.isEmpty()) {
-	static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, bgImage, false);
-	recalc = true;
-    }
-    if(!bgColor.isEmpty()) {
-	static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, bgColor, false);
-	recalc = true;
-    }
-    if ( recalc )
-	parentNode()->recalcStyle();
-
 
     if(w->marginWidth() != -1) {
 	QString str;
@@ -151,8 +135,21 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
 	addCSSProperty(CSS_PROP_PADDING_TOP, str, false);
         addCSSProperty(CSS_PROP_PADDING_BOTTOM, str, false);
     }
-    HTMLElementImpl::attach(w);
+
+    m_style = document->styleSelector()->styleForElement( this );
+    khtml::RenderObject *r = _parent->renderer();
+
+    if ( !r )
+      return;
+
+    m_render = new khtml::RenderBody();
+    m_render->setStyle(m_style);
+    m_render->ref();
+    r->addChild( m_render, _next ? _next->renderer() : 0 );
+
+    NodeBaseImpl::attach( w );
 }
+
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
@@ -495,8 +492,7 @@ void HTMLHtmlElementImpl::attach(KHTMLView *w)
     if ( !r )
       return;
 
-    khtml::RenderHtml *renderHtml = new khtml::RenderHtml();
-    m_render = renderHtml;
+    m_render = new khtml::RenderHtml();
     m_render->setStyle(m_style);
     m_render->ref();
     r->addChild( m_render, _next ? _next->renderer() : 0 );

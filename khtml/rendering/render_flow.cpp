@@ -175,7 +175,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     	    if (r->node->containingBlock()==this)
 	    {
 		RenderObject *o = r->node;	
-		kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+		//kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
 		o->print(p, _x, _y, _w, _h, _tx , _ty);
 	    }
 	}
@@ -288,7 +288,7 @@ void RenderFlow::layout()
 void RenderFlow::layoutSpecialObjects()
 {
     //kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
-    
+
     if(specialObjects) {
 	SpecialObject* r;	
 	QListIterator<SpecialObject> it(*specialObjects);

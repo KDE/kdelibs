@@ -273,7 +273,7 @@ RenderObject *RenderObject::containingBlock() const
 	    o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
-	while (o && o->style()->position() == STATIC && !o->isRoot())
+	while (o && o->style()->position() == STATIC && !o->isHtml())
 	    o = o->parent();
     } else {
 	while(o && o->style()->display() == INLINE)

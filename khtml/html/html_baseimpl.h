@@ -57,9 +57,9 @@ public:
     virtual void parseAttribute(AttrImpl *);
     void attach(KHTMLView *w);
 
-    CSSStyleSheetImpl *sheet() const { return m_style; }
+    CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
 protected:
-    CSSStyleSheetImpl *m_style;
+    CSSStyleSheetImpl *m_styleSheet;
     DOMString bgImage;
     DOMString bgColor;
 };
