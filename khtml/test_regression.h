@@ -132,8 +132,8 @@ public:
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    bool runTests(QString relPath = "", bool mustExist = false);
-    bool reportResult(bool passed, const QString & description = QString::null);
+    bool runTests(QString relPath = QString::null, bool mustExist = false, bool known_failure = false);
+    bool reportResult( bool passed, const QString & description = QString::null );
     void createMissingDirs(QString path);
 
     KHTMLPart *m_part;
@@ -145,11 +145,14 @@ public:
     QString m_currentTest;
 
     bool m_getOutput;
-    int m_passes;
-    int m_failures;
+    int m_passes_work;
+    int m_passes_fail;
+    int m_failures_work;
+    int m_failures_fail;
     int m_errors;
     bool saw_failure;
     bool ignore_errors;
+    bool m_known_failure;
 
     static RegressionTest *curr;
 

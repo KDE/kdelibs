@@ -433,15 +433,29 @@ int main(int argc, char *argv[])
 	}
 	else {
 	    printf("\nTests completed.\n");
-            printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
-	    printf("Passes:   %d\n",regressionTest->m_passes);
-	    printf("Failures: %d\n",regressionTest->m_failures);
-	    printf("Errors:   %d\n",regressionTest->m_errors);
+            printf("Total:    %d\n",
+                   regressionTest->m_passes_work+
+                   regressionTest->m_passes_fail+
+                   regressionTest->m_failures_work+
+                   regressionTest->m_failures_fail+
+                   regressionTest->m_errors);
+	    printf("Passes:   %d",regressionTest->m_passes_work);
+            if ( regressionTest->m_passes_fail )
+                printf( " (%d unexpected passes)\n", regressionTest->m_passes_fail );
+            else
+                printf( "\n" );
+	    printf("Failures: %d",regressionTest->m_failures_work);
+            if ( regressionTest->m_failures_fail )
+                printf( " (%d expected failures)\n", regressionTest->m_failures_fail );
+            else
+                printf( "\n" );
+            if ( regressionTest->m_errors )
+                printf("Errors:   %d\n",regressionTest->m_errors);
 	}
     }
 
     // Only return a 0 exit code if all tests were successful
-    if (regressionTest->m_failures == 0 && regressionTest->m_errors == 0)
+    if (regressionTest->m_failures_work == 0 && regressionTest->m_errors == 0)
 	rv = 0;
 
     // cleanup
@@ -471,8 +485,8 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     if ( m_baseDir.endsWith( "/" ) )
         m_baseDir = m_baseDir.left( m_baseDir.length() - 1 );
     m_genOutput = _genOutput;
-    m_passes = 0;
-    m_failures = 0;
+    m_passes_work = m_passes_fail = 0;
+    m_failures_work = m_failures_fail = 0;
     m_errors = 0;
 
     curr = this;
@@ -480,7 +494,29 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
 
 #include <qobjectlist.h>
 
-bool RegressionTest::runTests(QString relPath, bool mustExist)
+static QStringList readListFile( const QString &filename )
+{
+    // Read ignore file for this directory
+    QString ignoreFilename = filename;
+    QFileInfo ignoreInfo(ignoreFilename);
+    QStringList ignoreFiles;
+    if (ignoreInfo.exists()) {
+        QFile ignoreFile(ignoreFilename);
+        if (!ignoreFile.open(IO_ReadOnly)) {
+            fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
+            exit(1);
+        }
+        QTextStream ignoreStream(&ignoreFile);
+        QString line;
+        while (!(line = ignoreStream.readLine()).isNull())
+            ignoreFiles.append(line);
+        ignoreFile.close();
+    }
+    return ignoreFiles;
+}
+
+
+bool RegressionTest::runTests(QString relPath, bool mustExist, bool known_failure)
 {
     if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
@@ -501,31 +537,18 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
     }
 
     if (info.isDir()) {
-
-	// Read ignore file for this directory
-	QString ignoreFilename = m_baseDir + "/tests/"+relPath+"/ignore";
-	QFileInfo ignoreInfo(ignoreFilename);
-	QStringList ignoreFiles;
-	if (ignoreInfo.exists()) {
-	    QFile ignoreFile(ignoreFilename);
-	    if (!ignoreFile.open(IO_ReadOnly)) {
-		fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
-		exit(1);
-	    }
-	    QTextStream ignoreStream(&ignoreFile);
-	    QString line;
-	    while (!(line = ignoreStream.readLine()).isNull())
-		ignoreFiles.append(line);
-	    ignoreFile.close();
-	}
+        QStringList ignoreFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/ignore" );
+        QStringList failureFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/KNOWN_FAILURES" );
 
 	// Run each test in this directory, recusively
 	QDir sourceDir(m_baseDir + "/tests/"+relPath);
 	for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
 	    QString filename = sourceDir[fileno];
 	    QString relFilename = relPath.isEmpty() ? filename : relPath+"/"+filename;
-	    if (filename != "." && filename != ".." && !ignoreFiles.contains(filename))
-		runTests(relFilename,false);
+
+	    if (filename == "." || filename == ".." ||  ignoreFiles.contains(filename) )
+                continue;
+            runTests(relFilename, false, failureFiles.contains(filename) );
 	}
     }
     else if (info.isFile()) {
@@ -536,6 +559,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	m_currentBase = m_baseDir + "/tests/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
+        m_known_failure = known_failure;
 	if (filename.endsWith(".html") || filename.endsWith( ".htm" )) {
 	    testStaticFile(relPath);
 	}
@@ -546,39 +570,9 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
 	    return false;
 	}
-
-#if 0
-	PartMonitor pm(m_part);
-        m_part->closeURL();
-        kapp->processEvents(60000);
-        qApp->mainWidget()->resize( 800, 600); // restore size
-        m_part->begin(KURL());
-        m_part->write("<html><body></body></html>");
-        m_part->end();
-        pm.waitForCompletion();
-        RenderObject *r = static_cast<DocumentImpl*>( m_part->document().handle() )->renderer();
-
-        QObjectList *l = qApp->mainWidget()->queryList( "QWidget" );
-        QObjectListIt it( *l ); // iterate over the buttons
-        QObject *obj;
-
-        while ( (obj = it.current()) != 0 ) {
-            // for each found object...
-            ++it;
-            kdDebug() << ( QWidget* )*it << endl;
-        }
-        delete l; // delete the list, not the objects
-
-        if ( r->contentHeight() != 594 || r->contentWidth() != 796 )
-            printf( "ERROR renderer size %d %d\n", r->contentHeight(), r->contentWidth() );
-#endif
-    }
-
-    else {
-	if (mustExist) {
-	    fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
-	    return false;
-	}
+    } else if (mustExist) {
+        fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
+        return false;
     }
 
     return true;
@@ -737,12 +731,12 @@ void RegressionTest::testStaticFile(const QString & filename)
     }
 
     if ( m_genOutput ) {
-        reportResult( checkOutput(filename+"-dom") );
-        reportResult( checkOutput(filename+"-render") );
+        reportResult( checkOutput(filename+"-dom"), QString::null );
+        reportResult( checkOutput(filename+"-render"), QString::null );
     } else {
         // compare with output file
-        reportResult( checkOutput(filename+"-dom") );
-        reportResult(checkOutput(filename+"-render"));
+        reportResult( checkOutput(filename+"-dom"), QString::null );
+        reportResult( checkOutput(filename+"-render"), QString::null );
     }
 }
 
@@ -788,7 +782,7 @@ public:
   virtual UString className() const { return "global"; }
 };
 
-void RegressionTest::testJSFile(const QString & filename)
+void RegressionTest::testJSFile(const QString & filename )
 {
     qApp->mainWidget()->resize( 800, 600); // restore size
 
@@ -875,11 +869,19 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 
     if (passed) {
 	printf("PASS: ");
-	m_passes++;
+        if ( m_known_failure )
+            m_passes_fail++;
+        else
+            m_passes_work++;
     }
     else {
-	printf("FAIL: ");
-	m_failures++;
+        if ( m_known_failure ) {
+            printf("FAIL (known): ");
+            m_failures_fail++;
+        } else {
+            printf("FAIL: ");
+            m_failures_work++;
+        }
     }
 
     if (!m_currentCategory.isEmpty())
