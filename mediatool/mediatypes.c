@@ -1,8 +1,15 @@
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
+#endif
 #include "mediatool.h"
 #include "tools.h"
 
