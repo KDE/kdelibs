@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ModuleType=Library
+X-KDE-Library=kardsvc
+X-KDE-FactoryName=kardsvc
+Name=KDE Smartcard Service
+Comment=Smartcard Services for KDE and KDE Applications

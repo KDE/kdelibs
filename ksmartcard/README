@@ -1,0 +1,20 @@
+How it works:
+
+
+kpcsc is the lowlevel interface to the library
+kcardreader is the representation of a card reader
+
+ksmartcard is the high level interface for apps and kded to use smartcards
+
+kardsvc is the kded module  -- apps should try to use this via dcop instead
+                               of using ksmartcard directly
+
+kcmkard - kcontrol module for configuring smartcard preferences.
+
+
+
+CAVEATS:
+  Don't delete kpcsc before you're done with all the KCardReaders.  I'll try
+  to make this hard to do later.
+
+
