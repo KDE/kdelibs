@@ -252,6 +252,7 @@ KToolBar* Shell::createToolBar( const char* name )
 
 void Shell::createToolBars( const QDomElement& element )
 {
+    setUpdatesEnabled( FALSE );
     QDomElement e = element.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() )
     {
@@ -299,6 +300,7 @@ void Shell::createToolBars( const QDomElement& element )
 	    bar->show();
 	}
     }
+    setUpdatesEnabled( TRUE );
 }
 
 void Shell::createMenuBar( const QDomElement& shell, const QDomElement& part )
