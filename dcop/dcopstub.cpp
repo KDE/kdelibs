@@ -23,14 +23,39 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include "dcopstub.h"
+#include <dcopclient.h>
 
-DCOPStub::DCOPStub( const QCString& _app, const QCString& _obj )
-    : m_app( _app ), m_obj( _obj ), m_status( CallSucceeded )
+class DCOPStubPrivate
 {
+public:
+    DCOPStubPrivate():dcopClient(0){}
+    DCOPClient* dcopClient;
+};
+
+DCOPStub::DCOPStub( const QCString& app, const QCString& obj )
+    : m_app( app ), m_obj( obj ), m_status( CallSucceeded ),d(0)
+{
+}
+
+DCOPStub::DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj )
+    : m_app( app ), m_obj( obj ), m_status( CallSucceeded ),d(0)
+{
+    if ( client ) {
+	d = new DCOPStubPrivate;
+	d->dcopClient = client;
+    }
 }
 
 DCOPStub::~DCOPStub()
 {
+    delete d;
+}
+
+DCOPClient* DCOPStub::dcopClient()
+{
+    if ( d )
+	return d->dcopClient;
+    return DCOPClient::mainClient();
 }
 
 DCOPStub::Status DCOPStub::status() const

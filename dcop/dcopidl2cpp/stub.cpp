@@ -96,8 +96,9 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	    str << "{" << endl;
 	    str << "public:" << endl;
 	
-	    // Constructor
+	    // Constructors
 	    str << "    " << className << "( const QCString& app, const QCString& id );" << endl;
+	    str << "    " << className << "( DCOPClient* client, const QCString& app, const QCString& id );" << endl;
 
 	    s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {

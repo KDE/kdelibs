@@ -53,7 +53,6 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 
     str << "#include <" << header  << ">" << endl;
     str << "#include <dcopclient.h>" << endl << endl;
-    str << "#include <kapp.h>" << endl << endl;
     str << "#include <kdatastream.h>" << endl << endl;
 
     QDomElement e = de.firstChild().toElement();
@@ -71,7 +70,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    DCOPParent = s.firstChild().toText().data();
 	    }
 	
-	    // Write constructor
+	    // Write constructors
 	    str << className << "::" << className << "( const QCString& app, const QCString& obj )" << endl;
 	    str << "  : ";
 	
@@ -83,6 +82,16 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    str << "{" << endl;
 	    str << "}" << endl << endl;
 
+	    str << className << "::" << className << "( DCOPClient* client, const QCString& app, const QCString& obj )" << endl;
+	    str << "  : ";
+	
+	    if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
+		str << "DCOPStub( client, app, obj )" << endl;
+	    else
+		str << DCOPParent << "(  client, app, obj )" << endl;
+
+	    str << "{" << endl;
+	    str << "}" << endl << endl;
 	    // Write marshalling code
 	    s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
@@ -152,6 +161,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    funcName += ")";
 		
 		    if ( async ) {
+			str << "    if ( !dcopClient()  ) {"<< endl;
+			str << "\tsetStatus( CallFailed );" << endl;
+			str << "\treturn;" << endl;
+			str << "    }" << endl;
+		    
 			str << "    QByteArray data;" << endl;
 			if ( !args.isEmpty() ) {
 			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
@@ -159,12 +173,20 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 				str << "    arg << " << *args_count << ";" << endl;
 			    }
 			}
-			str << "    kapp->dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
+			str << "    dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
 			str << "    setStatus( CallSucceeded );" << endl;
 		    } else {
 		
 			if ( result != "void" )
 			    str << "    " << result << " result;" << endl;
+
+			str << "    if ( !dcopClient()  ) {"<< endl;
+			str << "\tsetStatus( CallFailed );" << endl;
+			if ( result != "void" )
+			    str << "\treturn result;" << endl;
+			else
+			    str << "\treturn;" << endl;
+			str << "    }" << endl;
 
 			str << "    QByteArray data, replyData;" << endl;
 			str << "    QCString replyType;" << endl;
@@ -175,7 +197,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 				str << "    arg << " << *args_count << ";" << endl;
 			    }
 			}
-			str << "    if ( kapp->dcopClient()->call( app(), obj(), \"" << funcName << "\",";
+			str << "    if ( dcopClient()->call( app(), obj(), \"" << funcName << "\",";
 			str << " data, replyType, replyData ) ) {" << endl;
 			if ( result != "void" ) {
 			    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;

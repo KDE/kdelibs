@@ -23,6 +23,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _DCOPSTUB_H
 #define _DCOPSTUB_H
 
+class DCOPClient;
+class DCOPStubPrivate;
+
 #include <qstring.h>
 
 /**
@@ -34,7 +37,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class DCOPStub
 {
 public:
-    DCOPStub( const QCString& _app, const QCString& _obj );
+    /**
+       Creates a DCOPStub for application @p app and object @p obj
+     */
+    DCOPStub( const QCString& app, const QCString& obj );
+
+    /** 
+      Creates a DCOPStub for application @p app and object @p obj
+       that operates on the DCOPClient @p client
+     */
+    DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj );
     virtual ~DCOPStub();
 
     /**
@@ -51,14 +63,14 @@ public:
      * Return the status of the last call, either @p CallSucceeded or
      * @p CallFailed
      *
-     *See @ref ok(); 
+     *See @ref ok();
      */
     Status status() const;
-    
-    
+
+
     /**
      *Return whether no error occured
-     * 
+     *
      * See @ref status();
      */
     bool ok()  const;
@@ -75,13 +87,18 @@ protected:
       sets the status to CallFailed.
      */
     virtual void callFailed();
+    
+    /** 
+      The dcopClient this stub operates on. Either the specific one
+       specified in the constructor or DCOPClient::mainClient.
+    */
+    DCOPClient* dcopClient();
 
 private:
     QCString m_app;
     QCString m_obj;
     Status m_status;
 
-    class DCOPStubPrivate;
     DCOPStubPrivate *d;
 };
 

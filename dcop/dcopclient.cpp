@@ -365,6 +365,20 @@ static IcePoVersionRec DCOPVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
+
+static DCOPClient* dcop_main_client = 0;
+
+DCOPClient* DCOPClient::mainClient()
+{
+    return dcop_main_client;
+}
+    
+void DCOPClient::setMainClient( DCOPClient* client )
+{
+    dcop_main_client = client;
+}
+
+
 DCOPClient::DCOPClient()
 {
     d = new DCOPClientPrivate;
@@ -380,6 +394,9 @@ DCOPClient::DCOPClient()
     d->transactionList = 0L;
     d->transactionId = 0;
     connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
+    
+    if ( !mainClient() )
+	setMainClient( this );
 }
 
 DCOPClient::~DCOPClient()
@@ -391,6 +408,9 @@ DCOPClient::~DCOPClient()
     delete d->notifier;
     delete d->transactionList;
     delete d;
+    
+    if ( mainClient() == this )
+	setMainClient( 0 );
 }
 
 void DCOPClient::setServerAddress(const QCString &addr)
@@ -1108,7 +1128,9 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    reply << l;
 	    return true;
 	}
-    } else if ( objId.isEmpty() || objId == "DCOPClient" ) {
+    }
+
+    if ( objId.isEmpty() || objId == "DCOPClient" ) {
 	if ( fun == "applicationRegistered(QCString)" ) {
 	    QDataStream ds( data, IO_ReadOnly );
 	    QCString r;

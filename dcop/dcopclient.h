@@ -479,6 +479,21 @@ class DCOPClient : public QObject
    * They are disabled by default.  */
   void setNotifications( bool enabled );
 
+  /** 
+   * Returns the application's main dcop client. The main client can
+   * be used by objects that do not have any specific access to a dcop
+   * client. In KDE applications, the main client usually is the same
+   * as KAppliction::dcopClient().
+   */
+  static DCOPClient* mainClient();
+    
+ /**
+   * Sets the application's main dcop client. The main client can
+   * be used by objects that do not have any specific access to a dcop
+   * client. In KDE applications, the main client usually is the same
+   * as KAppliction::dcopClient().
+   */
+  static void setMainClient( DCOPClient* );
 
 signals:
   /**
@@ -524,13 +539,12 @@ signals:
    * issued.
    */
   void blockUserInput( bool );
-
-
+    
 public slots:
 
 protected slots:
   void processSocketData(int socknum);
-    
+
 private slots:
   void processPostedMessagesInternal();
 
