@@ -135,7 +135,7 @@ NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState *exec, ErrorPrototype
 
 // ------------------------------ NativeErrorImp -------------------------------
 
-const ClassInfo NativeErrorImp::info = {"Error", 0, 0, 0};
+const ClassInfo NativeErrorImp::info = {"Error", &InternalFunctionImp::info, 0, 0};
 
 NativeErrorImp::NativeErrorImp(ExecState *exec, FunctionPrototypeImp *funcProto,
                                const Object &prot)

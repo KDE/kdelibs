@@ -91,8 +91,19 @@ int main(int argc, char **argv)
       fclose(f);
 
       if (comp.complType() == Throw) {
-        char *msg = comp.value().toString(interp.globalExec()).value().ascii();
-        fprintf(stderr,"Exception: %s\n",msg);
+        ExecState *exec = interp.globalExec();
+        Value exVal = comp.value();
+        char *msg = exVal.toString(exec).value().ascii();
+        int lineno = -1;
+        if (exVal.type() == ObjectType) {
+          Value lineVal = Object::dynamicCast(exVal).get(exec,"line");
+          if (lineVal.type() == NumberType)
+            lineno = int(lineVal.toNumber(exec).value());
+        }
+        if (lineno != -1)
+          fprintf(stderr,"Exception, line %d: %s\n",lineno,msg);
+        else
+          fprintf(stderr,"Exception: %s\n",msg);
         ret = false;
       }
       else if (comp.complType() == ReturnValue) {

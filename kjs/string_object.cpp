@@ -45,7 +45,7 @@ StringInstanceImp::StringInstanceImp(const Object &proto)
 }
 
 // ------------------------------ StringPrototypeImp ---------------------------
-const ClassInfo StringPrototypeImp::info = {"StringPrototype", 0, &stringTable, 0};
+const ClassInfo StringPrototypeImp::info = {"StringPrototype", &StringInstanceImp::info, &stringTable, 0};
 /* Source for string_object.lut.h
 @begin stringTable 26
   toString		StringProtoFuncImp::ToString	DontEnum|Function	0
@@ -213,7 +213,9 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       }
     else
       {
+#ifndef NDEBUG
         printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
+#endif
         result = Undefined(); // No idea what to do here
         break;
       }

@@ -90,7 +90,7 @@ void ArrayInstanceImp::putDirect(ExecState *exec, const UString &propertyName, c
 }
 // ------------------------------ ArrayPrototypeImp ----------------------------
 
-const ClassInfo ArrayPrototypeImp::info = {"ArrayPrototype" /* correct? */, 0, &arrayTable, 0};
+const ClassInfo ArrayPrototypeImp::info = {"ArrayPrototype" /* correct? */, &ArrayInstanceImp::info, &arrayTable, 0};
 
 /* Source for array_object.lut.h
 @begin arrayTable 13
