@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.5
+ Port version 0.9.6
 
  Palette setup code is from KApplication,
 		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -491,8 +491,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
             blend( preBlend[ i ] );
     }
 
-
-
+    d->props.clear();
 }
 
 KThemeBase::KThemeBase( const QString& dir, const QString & configFile )

@@ -5,7 +5,7 @@ This file is part of the KDE libraries
 Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
 KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.8.5
+Port version 0.9.6
 
 Includes code portions from the dotNET style, and the KDE HighColor style.
 

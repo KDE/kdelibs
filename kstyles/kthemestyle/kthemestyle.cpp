@@ -129,13 +129,10 @@ public:
         QStringList keys;
         bool ok;
 
-        if ( QPixmap::defaultDepth() > 8 )
-        {
-            keys = cfg.readListEntry( "/kthemestyle/themes", &ok);
-            if ( !ok )
-                qWarning( "KThemeStyle cache seems corrupt!\n" ); //Too bad one can't i18n this :-(
-        }
-
+        keys = cfg.readListEntry( "/kthemestyle/themes", &ok);
+        if ( !ok )
+            qWarning( "KThemeStyle cache seems corrupt!\n" ); //Too bad one can't i18n this :-(
+	    
         return keys;
     }
 
@@ -644,89 +641,8 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
     bool on = flags & Style_On;
     QColorGroup g = g_base;
 
-
-
-
     switch ( pe )
     {
-        case PE_SpinWidgetUp:
-            {
-                QCOORD points[ 8 ];
-                x += 2;
-                y += 2;
-                w -= 4;
-                h -= 4;
-
-                if ( ( w & 1 ) == 0 )  //Even width
-                    w -= 1;
-
-                points[ 0 ] = x;
-                points[ 1 ] = y + h - 1;
-                points[ 2 ] = x + w - 1;
-                points[ 3 ] = y + h - 1;
-                points[ 4 ] = x + ( w - 1 ) / 2;
-                points[ 5 ] = y;
-                points[ 6 ] = points[ 0 ];
-                points[ 7 ] = points[ 1 ];
-
-                QPointArray a;
-                a.setPoints( QCOORDARRLEN( points ), points );
-            WidgetType widget = enabled ? down ? SunkenArrowUp : ArrowUp : DisArrowUp;
-                const QColorGroup *cg = colorGroup( g, widget );
-                if ( enabled )
-                {
-                    p->setPen( cg->buttonText() );
-                    p->setBrush( cg->buttonText() );
-                }
-                else
-                {
-                    p->setPen( cg->mid() );
-                    p->setBrush( cg->mid() );
-                }
-                p->drawPolygon( a );
-
-                handled = true;
-                break;
-            }
-        case PE_SpinWidgetDown:
-            {
-                QCOORD points[ 8 ];
-                x += 2;
-                y += 2;
-                w -= 4;
-                h -= 4;
-
-                if ( ( w & 1 ) == 0 )  //Even width
-                    w -= 1;
-
-                points[ 0 ] = x;
-                points[ 1 ] = y;
-                points[ 2 ] = x + w - 1;
-                points[ 3 ] = y;
-                points[ 4 ] = x + ( w - 1 ) / 2;
-                points[ 5 ] = y + h - 1;
-                points[ 6 ] = points[ 0 ];
-                points[ 7 ] = points[ 1 ];
-
-                QPointArray a;
-                a.setPoints( QCOORDARRLEN( points ), points );
-            WidgetType widget = enabled ? down ? SunkenArrowUp : ArrowUp : DisArrowUp;
-                const QColorGroup *cg = colorGroup( g, widget );
-                if ( enabled )
-                {
-                    p->setPen( cg->buttonText() );
-                    p->setBrush( cg->buttonText() );
-                }
-                else
-                {
-                    p->setPen( cg->mid() );
-                    p->setBrush( cg->mid() );
-                }
-                p->drawPolygon( a );
-
-                handled = true;
-                break;
-            }
         case PE_ArrowUp:
         case PE_ArrowDown:
         case PE_ArrowRight:
@@ -1932,16 +1848,6 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
 
     switch ( control )
     {
-        case CC_SpinWidget:
-            {
-                //##### FIXME: Let QCommonStyle handle it so KStyle doesn't hand it off to winstyle
-                QCommonStyle::drawComplexControl( control, p, widget,
-                                                  r, g, how ,
-                                                  controls, active,
-                                                  opt );
-                handled = true;
-                break;
-            }
         case CC_ToolButton:
             {
                 const QToolButton * toolbutton = ( const QToolButton * ) widget;
