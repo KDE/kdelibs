@@ -23,6 +23,7 @@
 #include <qpainter.h>
 #include <qstring.h>
 #include <qfont.h>
+#include <kdebug.h> //will be included in practically all source files
 
 #define DEFAULT_FONT_SIZE 25
 #define MIN_FONT_SIZE  10
@@ -37,7 +38,8 @@
 //UNUSED_OFFSET is only used in this file.
 #define UNUSED_OFFSET  1000
 
-//temporary workaround:
+//temporary workaround--otherwise it warns since
+//there are two possible QChat constructors:
 #define QChar(__x) QChar((int)(__x))
 
 struct charinfo;

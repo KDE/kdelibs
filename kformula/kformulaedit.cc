@@ -171,12 +171,7 @@ void KFormulaEdit::redraw(int all)
   p.setFont(font());
   p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
 
-  //temp is just for debugging.
-  /*QString temp = formText;
-
-  temp.insert(cursorPos, '$');
-
-  fprintf(stderr, "\r%s       ", temp.ascii()); */
+  //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii()); 
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);

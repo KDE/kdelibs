@@ -149,6 +149,7 @@ QSize KFormula::size()
 //first call calculate, figure out the center, and draw the boxes
 void KFormula::redraw(QPainter &p)
 {
+
   if(boxes.size() == 0) return;
   boxes[boxes.size() - 1]->calculate(p, p.font().pointSize());
   QRect tmp = boxes[boxes.size() - 1]->getRect();
