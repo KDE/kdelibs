@@ -152,6 +152,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 				 bool _is_local_file, bool _fast_mode )
 {
   checkEssentialMimeTypes();
+  QString path = _url.path();
 
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
@@ -159,7 +160,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( !_fast_mode && _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
   {
     struct stat buff;
-    if ( stat( QFile::encodeName(_url.path()), &buff ) != -1 )
+    if ( stat( QFile::encodeName(path), &buff ) != -1 )
       _mode = buff.st_mode;
   }
 
@@ -170,7 +171,6 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     // are allowed to enter the directory
     if ( _is_local_file )
     {
-      QString path ( _url.path( 0 ) );
       if ( access( QFile::encodeName(path), R_OK ) == -1 )
 	return mimeType( "inode/directory-locked" );
     }
@@ -190,8 +190,9 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   QString fileName ( _url.fileName() );
 
-  if ( ! fileName.isNull() && _url.path().right(1) != "/" )
-    {
+  static const QString& slash = KGlobal::staticQString("/");
+  if ( ! fileName.isNull() && !path.endsWith( slash ) )
+  {
       // Try to find it out by looking at the filename
       KMimeType::Ptr mime = KServiceTypeFactory::self()->findFromPattern( fileName );
       if ( mime )
@@ -202,23 +203,26 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
           return mime;
       }
 
+      static const QString& dotdesktop = KGlobal::staticQString(".desktop");
+      static const QString& dotkdelnk = KGlobal::staticQString(".kdelnk");
+      static const QString& dotdirectory = KGlobal::staticQString(".directory");
+      
       // Another filename binding, hardcoded, is .desktop:
-      if ( fileName.right(8) == ".desktop" )
+      if ( fileName.endsWith( dotdesktop ) )
 	return mimeType( "application/x-desktop" );
       // Another filename binding, hardcoded, is .kdelnk;
       // this is preserved for backwards compatibility
-      if ( fileName.right(7) == ".kdelnk" )
+      if ( fileName.endsWith( dotkdelnk ) )
 	return mimeType( "application/x-desktop" );
       // .directory files are detected as x-desktop by mimemagic
       // but don't have a Type= entry. Better cheat and say they are text files
-      if ( fileName == ".directory" )
+      if ( fileName == dotdirectory )
 	return mimeType( "text/plain" );
     }
 
   if ( !_is_local_file || _fast_mode )
   {
-    QString path = _url.path();
-    if ( path.right(1) == "/" || path.isEmpty() )
+    if ( path.endsWith( slash ) || path.isEmpty() )
     {
       // We have no filename at all. Maybe the protocol has a setting for
       // which mimetype this means. For HTTP we set unknown now, because
@@ -234,7 +238,6 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     return mimeType( defaultMimeType() );
 
   // Do some magic for local files
-  QString path = _url.path( 0 );
   //kdDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
 
