@@ -47,6 +47,17 @@ using namespace DOM;
 using namespace khtml;
 
 
+static inline int MAX(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+static inline int MIN(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+
 RenderFlow::RenderFlow(RenderStyle* style)
     : RenderBox(style)
 {
@@ -199,11 +210,16 @@ void RenderFlow::layout( bool deep )
     else
 	layoutBlockChildren(deep);
 
-    if(floatBottom() > m_height && m_next)
+    if(floatBottom() > m_height)	
     {
-	assert(!m_next->isInline());
-	m_next->setLayouted(false);
-	m_next->layout();
+	if(isTableCell())
+	    m_height = floatBottom();
+	else if( m_next)
+	{
+	    assert(!m_next->isInline());
+	    m_next->setLayouted(false);
+	    m_next->layout();
+	}
     }
     setLayouted();
 }
@@ -529,47 +545,60 @@ RenderFlow::clearFloats()
 		specialObjects->remove(r);
     }
 
-    // add overhanging special objects from the previous RenderFlow
-    if(m_previous && m_previous->isFlow())
+    RenderObject *prev = m_previous;
+    int offset = 0;
+    if(prev)
     {
-	RenderFlow * flow = static_cast<RenderFlow *>(m_previous);
-	int offset = m_previous->height() + MAX(flow->marginBottom(), marginTop());
-	if(flow->floatBottom() > offset)
+	if(prev->isTableCell()) return;
+	offset = m_previous->height() + MAX(prev->marginBottom(), marginTop());
+    }
+    else
+    {
+	prev = m_parent;
+	if(!prev) return;
+	offset = m_y;
+    }
+
+    // add overhanging special objects from the previous RenderFlow
+
+    if(!prev->isFlow()) return;
+    RenderFlow * flow = static_cast<RenderFlow *>(prev);
+    if(flow->floatBottom() > offset)
+    {
+#ifdef DEBUG_LAYOUT
+	printf("adding overhanging floats\n");
+#endif
+	
+	// we have overhanging floats
+	if(!specialObjects)
 	{
-#ifdef DEBUG_LAYOUT
-	    printf("adding overhanging floats\n");
-#endif
+	    specialObjects = new QList<SpecialObject>;
+	    specialObjects->setAutoDelete(true);	
+	}
 	
-	    // we have overhanging floats
-	    if(!specialObjects)
+	QListIterator<SpecialObject> it(*flow->specialObjects);
+	SpecialObject *r;
+	for ( ; (r = it.current()); ++it )
+	{
+	    if (r->endY > offset && r->type <= SpecialObject::FloatRight)
 	    {
-		specialObjects = new QList<SpecialObject>;
-		specialObjects->setAutoDelete(true);	
-	    }
-	
-	    QListIterator<SpecialObject> it(*flow->specialObjects);
-	    SpecialObject *r;
-	    for ( ; (r = it.current()); ++it )
-	    {
-		if (r->endY > offset && r->type <= SpecialObject::FloatRight)
-		{
-		    // we need to add the float here too
-		    SpecialObject *special = new SpecialObject;
-		    special->startY = r->startY - offset;
-		    special->endY = r->endY - offset;
-		    special->left = r->left; // ### the object might have different m,p&b
-		    special->width = r->width;
-		    special->node = r->node;
-		    special->type = r->type;
-		    specialObjects->append(special);
+		// we need to add the float here too
+		SpecialObject *special = new SpecialObject;
+		special->startY = r->startY - offset;
+		special->endY = r->endY - offset;
+		special->left = r->left; // ### the object might have different m,p&b
+		special->width = r->width;
+		special->node = r->node;
+		special->type = r->type;
+		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
-		    printf("    y: %d-%d left: %d width: %d\n", special->startY, special->endY, special->left, special->width);
+		printf("    y: %d-%d left: %d width: %d\n", special->startY, special->endY, special->left, special->width);
 #endif
-		}
 	    }
 	}
     }
 }
+
 
 short RenderFlow::baselineOffset() const
 {
@@ -811,7 +840,7 @@ void RenderFlow::addChild(RenderObject *newChild)
     }
     else if(!m_childrenInline)
     {
-	if(newChild->isInline())
+	if(newChild->isInline() || newChild->isFloating())
 	{
 	    //printf("adding inline child to anonymous box\n");
 	    if(!haveAnonymousBox())
