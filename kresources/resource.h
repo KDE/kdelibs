@@ -245,7 +245,7 @@ public:
    * or Terrible Things(TM) will happen.
    * @param config Configuration to write persistence information to.
    */
-  virtual void writeConfig( KConfig* config ) const;
+  virtual void writeConfig( KConfig* config );
 
   /**
    * Open this resource, if it not already open. Increase the open

@@ -49,7 +49,7 @@ Resource::~Resource()
 {
 }
 
-void Resource::writeConfig( KConfig* config ) const
+void Resource::writeConfig( KConfig* config )
 {
   kdDebug() << "Resource::writeConfig()" << endl;
 
