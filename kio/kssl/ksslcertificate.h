@@ -336,8 +336,8 @@ public:
 	static QString getMD5DigestFromKDEKey(const QString& k);
 
 private:
-	friend int operator!=(KSSLCertificate& x, KSSLCertificate& y); 
-	friend int operator==(KSSLCertificate& x, KSSLCertificate& y); 
+	KIO_EXPORT friend int operator!=(KSSLCertificate& x, KSSLCertificate& y); 
+	KIO_EXPORT friend int operator==(KSSLCertificate& x, KSSLCertificate& y); 
 
 	KSSLCertificatePrivate *d;
 	int purposeToOpenSSL(KSSLPurpose p) const; 
