@@ -138,16 +138,7 @@ void RenderListItem::setStyle(RenderStyle *_style)
     if(!m_marker && style()->listStyleType() != LNONE) {
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
-	// add as first child. We do this by hand to not trigger a setLayouted( false ) on
-	// the marker.
-	if ( m_first ) {
-	    m_first->setPreviousSibling( m_marker );
-	    m_marker->setNextSibling( m_first );
-	}
-	m_marker->setParent( this );
-	m_first = m_marker;
-	setLayouted( false );
-	setMinMaxKnown( false );
+	insertChildNode( m_marker, firstChild() );
     } else if ( m_marker && style()->listStyleType() == LNONE) {
         m_marker->detach();
         m_marker = 0;
