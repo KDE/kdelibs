@@ -1,5 +1,6 @@
 dnl CUPS stuffs (to be changed)
 ac_use_cups="yes"
+ac_have_connect_encrypt="yes"
 CUPSSUBDIR=
 LIB_CUPS=
 AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=yes]],ac_use_cups=$enableval, ac_use_cups=yes)
@@ -13,6 +14,12 @@ if test "$ac_use_cups" = "yes"; then
   if test "$ac_cups_libs" = "0"; then
     AC_MSG_WARN(CUPS library not found. CUPS support disabled)
     ac_use_cups="no"
+  fi
+  AC_CHECK_LIB(cups,httpConnectEncrypt,[ac_have_connect_encrypt="yes"],[ac_have_connect_encrypt="no"],$LIBDL $LIBSOCKET)
+  if test "$ac_have_connect_encrypt" = "no"; then
+    AC_MSG_WARN(You should consider upgrading your CUPS library to version >= 1.1.8)
+  else
+    AC_DEFINE(HAVE_CUPS_CONNECT_ENCRYPT, 1, [Does CUPS contain httpConnectEncrypt (>= 1.1.8)])
   fi
   ac_cups_headers=0
   AC_CHECK_HEADER(cups/cups.h,[ac_cups_headers=1])
