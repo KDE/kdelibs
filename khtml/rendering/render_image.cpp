@@ -288,6 +288,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     }
     else if (i && !i->isTransparent())
     {
+        paintInfo.p->setPen( Qt::black ); // used for bitmaps
         const QPixmap& pix = i->pixmap();
         if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
              pix.width() > 0 && pix.height() > 0 && i->valid_rect().isValid())
