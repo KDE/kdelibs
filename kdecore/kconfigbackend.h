@@ -25,7 +25,7 @@
 #include "kconfigdata.h"
 #include <kconfigbase.h>
 #include <klockfile.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class QFile;
 class KConfigBackEndPrivate;

@@ -18,7 +18,7 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 #include <kinstance.h> // KDE4: class KInstance is enough here
 
 class KCharsets;

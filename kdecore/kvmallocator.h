@@ -26,7 +26,7 @@
 #define KVMALLOCATOR_H
 
 #include <sys/types.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class KVMAllocatorPrivate;
 

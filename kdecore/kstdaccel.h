@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <kshortcut.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class QKeyEvent;
 class KAccelActions;

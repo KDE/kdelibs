@@ -18,7 +18,7 @@
 #ifndef __kregexp_h__
 #define __kregexp_h__
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class KRegExpPrivate;
 

@@ -27,7 +27,7 @@
 #include <qstringlist.h>
 #include <qguardedptr.h>
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 #include <kglobalsettings.h>
 #include <ksortablevaluelist.h>
 #include <kshortcut.h>

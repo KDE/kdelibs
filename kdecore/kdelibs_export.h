@@ -20,34 +20,35 @@
 #ifndef _KDELIBS_EXPORT_H
 #define _KDELIBS_EXPORT_H
 
+/* needed for KDE_EXPORT macros */
+#include <kdemacros.h>
+
 /* needed, because e.g. Q_OS_UNIX is so frequently used */
 #include <qglobal.h>
 
 #ifdef Q_WS_WIN
-#include <kdelibs_win.h>
+#include <kdelibs_export_win.h>
+
 #else /* Q_OS_UNIX */
 
-/* export statements are not required for unix */
-#define _KDE_EXPORT_
-#define _KDE_IMPORT_
-#define KDECORE_EXPORT 
-#define KDEUI_EXPORT 
-#define KDEFX_EXPORT 
-#define KDEPRINT_EXPORT
-#define KIO_EXPORT
-#define KFILE_EXPORT
-#define DCOP_EXPORT
-#define KSSL_EXPORT
-#define KPARTS_EXPORT
-#define KSTORE_EXPORT
-#define KTEXTEDITOR_EXPORT
-#define KABC_EXPORT
-#define KDERESOURCES_EXPORT
-#define KSTYLE_EXPORT
-#define KMDI_EXPORT
-#define KUTILS_EXPORT
-#define KATEPARTINTERFACES_EXPORT
-#define KATEPART_EXPORT
+/* export statements for unix */
+#define KDECORE_EXPORT KDE_EXPORT
+#define KDEUI_EXPORT KDE_EXPORT
+#define KDEFX_EXPORT KDE_EXPORT
+#define KDEPRINT_EXPORT KDE_EXPORT
+#define KIO_EXPORT KDE_EXPORT
+#define KFILE_EXPORT KDE_EXPORT
+#define DCOP_EXPORT KDE_EXPORT
+#define KSSL_EXPORT KDE_EXPORT
+#define KPARTS_EXPORT KDE_EXPORT
+#define KTEXTEDITOR_EXPORT KDE_EXPORT
+#define KABC_EXPORT KDE_EXPORT
+#define KDERESOURCES_EXPORT KDE_EXPORT
+#define KSTYLE_EXPORT KDE_EXPORT
+#define KMDI_EXPORT KDE_EXPORT
+#define KUTILS_EXPORT KDE_EXPORT
+#define KATEPARTINTERFACES_EXPORT KDE_EXPORT
+#define KATEPART_EXPORT KDE_EXPORT
 
 #define KPATH_SEPARATOR ':'
 

@@ -22,7 +22,7 @@
 #define _KDESKTOPFILE_H
 
 #include "kconfig.h"
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class KDesktopFilePrivate;
 

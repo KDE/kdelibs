@@ -34,9 +34,15 @@
  * \end
  */
 
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 4)
+/* Visibility is available for GCC newer than 3.4.
+ * See: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=9283 
+ */
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("visible")))
+#define KDE_EXPORT __attribute__ ((visibility("default")))
+#elif defined(Q_WS_WIN)
+#define KDE_NO_EXPORT
+#define KDE_EXPORT __declspec(dllexport)
 #else
 #define KDE_NO_EXPORT
 #define KDE_EXPORT
@@ -185,7 +191,5 @@
 #define RESERVE_VIRTUAL_10 \
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
-
-#include "kdelibs_export.h"
 
 #endif // _KDE_MACROS_H_

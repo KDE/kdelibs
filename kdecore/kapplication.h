@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class KConfig;
 class KCharsets;

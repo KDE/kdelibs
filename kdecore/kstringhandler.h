@@ -24,7 +24,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>            // for the word ranges
 #include <qfontmetrics.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 /**
  * This class contains utility functions for handling strings.

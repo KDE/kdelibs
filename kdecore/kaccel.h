@@ -23,7 +23,7 @@
 #include <qaccel.h>
 #include <kshortcut.h>
 #include <kstdaccel.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class QPopupMenu; // for obsolete insertItem() methods below
 class QWidget;

@@ -27,7 +27,7 @@
 #include <qvaluelist.h>
 #include <qcstring.h>
 #include <qobject.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class QSocketNotifier;
 class KProcessPrivate;

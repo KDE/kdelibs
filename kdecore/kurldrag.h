@@ -23,7 +23,7 @@
 #include <qstringlist.h>
 #include <qdragobject.h>
 #include <kurl.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 class QMimeSource;
 
 class KURLDragPrivate;

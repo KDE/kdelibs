@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <qcstring.h>
 
+#include <kdelibs_export.h>
 
 struct sockaddr;
 struct sockaddr_in;

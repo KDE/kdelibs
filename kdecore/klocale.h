@@ -23,7 +23,7 @@
 #define _KLOCALE_H
 
 #include <qstring.h>
-#include "kdemacros.h"
+#include <kdelibs_export.h>
 
 class QStringList;
 class QTextCodec;

@@ -19,7 +19,7 @@
 #ifndef _KCMDLINEARGS_H_
 #define _KCMDLINEARGS_H_
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 #include <kurl.h>
 
 #include <qptrlist.h>

@@ -23,7 +23,7 @@
 #include <qwindowdefs.h>
 #include <qstring.h>
 #include <qpixmap.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX
 

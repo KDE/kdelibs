@@ -27,7 +27,7 @@
 #ifndef   __net_wm_h
 #define   __net_wm_h
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 #include <qwidget.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>

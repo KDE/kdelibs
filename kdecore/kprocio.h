@@ -21,7 +21,7 @@
 #include <qstring.h>
 #include <kprocess.h>
 #include <qstrlist.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class KProcIOPrivate;
 class QTextCodec;

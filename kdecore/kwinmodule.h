@@ -25,7 +25,7 @@
 
 #include <qobject.h>
 #include <qvaluelist.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX
 

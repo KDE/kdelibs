@@ -38,7 +38,6 @@
 #include <qsemaphore.h>
 #include <qevent.h>
 
-#include "kdemacros.h"
 #include "kresolver.h"
 
 /* decide whether we need a mutex */

@@ -20,7 +20,7 @@
 #ifndef KSOCK_H
 #define KSOCK_H
 
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX
 

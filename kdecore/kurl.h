@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
-#include "kdemacros.h"
+#include "kdelibs_export.h"
 
 class QUrl;
 class QStringList;
