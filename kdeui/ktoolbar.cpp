@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.73  1998/07/29 12:48:29  ssk
+// Removed more warnings, possible portability problems and ANSI violations.
+//
 // Revision 1.72  1998/07/23 09:42:26  radej
 // sven: improved styles
 //
@@ -145,6 +148,10 @@ enum {
 // this should be adjustable (in faar future... )
 #define MIN_AUTOSIZE 150
 
+// delay im ms (microsoft seconds) before delayed popup pops up
+#define POPUP_DELAY 500
+
+
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)
 {
@@ -163,58 +170,49 @@ KToolBarItem::~KToolBarItem ()
     delete item;
 }
 
+/*** A very important button which can be menuBarButton or toolBarButton ***/
+
+KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
+  : QButton( parentWidget , name)
+{
+  resize(6,6);
+  hide();
+  youreSeparator();
+}
+
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
-                                int item_size, const char *txt) : QButton( _parent, name )
+                                int, const char *txt,
+                                bool _mb) : QButton( _parent, name )
 {
   sep=false;
+  delayPopup = false;
   parentWidget = (KToolBar *) _parent;
   raised = false;
+  iconSet = 0L;
+  myPopup = 0L;
+  
+  toolBarButton = !_mb;
+  
   setFocusPolicy( NoFocus );
   id = _id;
   if (txt)
-  btext=txt;
+    btext = txt;
+  iconSet = new QIconSet (pixmap, QIconSet::Small);
   if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
+    setPixmap(pixmap);
   else
-    {
-      warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-      enabledPixmap.resize( item_size-4, item_size-4);
-    }
+    warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
   modeChange ();
-  makeDisabledPixmap();
-  setPixmap( enabledPixmap );
+
   connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
-  
   connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
   connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
   connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
-  //right = false;
-}
-
-void KToolBarButton::leaveEvent(QEvent *)
-{
-  if (isToggleButton() == false)
-    if( raised != false )
-    {
-      raised = false;
-      repaint();
-    }
-}
-
-void KToolBarButton::enterEvent(QEvent *)
-{
-  if (highlight == 1)
-    if (isToggleButton() == false)
-      if ( isEnabled() )
-      {
-        raised = true;
-        repaint(false);
-      }
 }
 
 void KToolBarButton::beToggle(bool flag)
-{
+    else
   setToggleButton(flag);
   if (flag == true)
     connect (this, SIGNAL(toggled(bool)), this, SLOT(ButtonToggled()));
@@ -233,143 +231,275 @@ void KToolBarButton::on(bool flag)
   }
   repaint();
 }
-  init();
-void KToolBarButton::drawButton( QPainter *_painter )
-{
-  // We are not using KButton any more!
-  if ( isDown() || isOn() )
-  {
-    if ( style() == WindowsStyle )
-      qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
-    else
-      qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
-  }
-  else if ( raised )
-  {
-    if ( style() == WindowsStyle )
-      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
-    else
-      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
-  }
-
-  int dx, dy;
-  
-  if ( pixmap() )
-    if (!icontext)
-    {
-      dx = ( width() - pixmap()->width() ) / 2;
-      dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle ) {
-        ++dx;
-        ++dy;
-      }
-      _painter->drawPixmap( dx, dy, *pixmap() );
-    }
-    else
-    {
-      dx = 1;
-      dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle ) {
-        ++dx;
-        ++dy;
-      }
-      _painter->drawPixmap( dx, dy, *pixmap() );
-
-      int tf = AlignVCenter|AlignLeft;
-      if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
-      dx= pixmap()->width();
-      _painter->setFont(buttonFont);
-      if(raised)
-        _painter->setPen(blue);
-      _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
-    }
-}
 
 void KToolBarButton::toggle()
 {
   setOn(!isOn());
   repaint();
 }
+void KToolBarButton::setText( const char *text)
+{
+  btext = text;;
+  modeChange();
+  repaint (false);
+}
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
   if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
-  else {
+    QButton::setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal ));
+  else
     warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-    enabledPixmap.resize(width()-4, height()-4);
-  }
-  QButton::setPixmap( enabledPixmap );
 }            
 
-void KToolBarButton::makeDisabledPixmap()
+void KToolBarButton::setPopup (QPopupMenu *p)
 {
-  if (ImASeparator())
-    return;             // No pixmaps for separators
+  myPopup = p;
+  p->installEventFilter (this);
+}
 
-  QPalette pal = palette();
-  QColorGroup g = pal.disabled();
+void KToolBarButton::setDelayedPopup (QPopupMenu *p)
+{
+  delayPopup = true;
+  delayTimer = new QTimer (this);
+  connect (delayTimer, SIGNAL(timeout ()), this, SLOT(slotDelayTimeout()));
+  setPopup(p);
+}
 
-  // Prepare the disabledPixmap for drawing
+void KToolBarButton::setEnabled( bool enabled )
+{
+  QButton::setPixmap((enabled ?
+                      iconSet->pixmap(iconSize, QIconSet::Normal)
+                      : iconSet->pixmap(iconSize, QIconSet::Disabled)));
+  QButton::setEnabled( enabled );
+}
+
+
+void KToolBarButton::leaveEvent(QEvent *)
+{
+  if (isToggleButton() == false)
+    if( raised != false )
+    {
+      raised = false;
+      repaint(false);
+    }
+  if (delayPopup)
+    delayTimer->stop();
+
+  if (isEnabled())
+    setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal));
+}
+
+void KToolBarButton::enterEvent(QEvent *)
+{
+  if (highlight == 1)
+  {
+    if (isEnabled())
+      setPixmap(iconSet->pixmap(iconSize, QIconSet::Active));
+    
+    if (isToggleButton() == false)
+      if (isEnabled())
+        raised = true;
+
+    repaint(false);
+  }
+}
+
+bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
+{
+  if ((QPopupMenu *) o != myPopup)
+    return false; // just in case
   
-  disabledPixmap.detach(); // prevent flicker
-  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
-  disabledPixmap.fill( g.background() );
-  const QBitmap *mask = enabledPixmap.mask();
-  bool allocated = false;
-  if (!mask) {// This shouldn't occur anymore!
-    mask = new QBitmap(enabledPixmap.createHeuristicMask());
-    allocated = true;
-  } 
+  switch (ev->type())
+  {
+    case Event_MouseButtonDblClick:
+    case Event_MouseButtonPress:
+      debug ("Got press | doubleclick");
+      // If I get this, it means that popup is visible
+      {
+      QRect r(geometry());
+      r.moveTopLeft(parentWidget->mapToGlobal(pos()));
+      if (r.contains(QCursor::pos()))   // on button
+        return true; // ignore
+      }
+      break;
+    
+    case Event_MouseButtonRelease:
+      debug ("Got release");
+      if (!myPopup->geometry().contains(QCursor::pos())) // not in menu...
+      {
+        QRect r(geometry());
+        r.moveTopLeft(parentWidget->mapToGlobal(pos()));
+
+        if (r.contains(QCursor::pos()))   // but on button
+        {
+          myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
+          return true;  // ignore release
+        }
+      }
+      break;
+
+    case Event_Hide:
+      debug ("Got hide");
+      on(false);
+      return false;
+      break;
+  }
+  return false;
+}
+  init();
+        setFlat (position != Flat);
+  items.setAutoDelete(true);
+void KToolBarButton::drawButton( QPainter *_painter )
+{
+  if ( raised )
+  {
+    if ( style() == WindowsStyle )
+      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
+    else
+      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
+  }
+  setMouseTracking(true);
+  else if ( isDown() || isOn() )
+  {
+    if ( style() == WindowsStyle )
+      qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
+    else
+      qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
+  }
   
-  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!   
-  bitmap.setMask(*mask);
+  int dx, dy;
   
-  QPainter p;
-  p.begin( &disabledPixmap );
-  p.setPen( g.light() );
-  p.drawPixmap(1, 1, bitmap);
-  p.setPen( g.mid() );
-  p.drawPixmap(0, 0, bitmap);
-  p.end();
   
-  if (allocated) // This shouldn't occur anymore!
-    delete mask;
+  if (icontext == 0) // icon only
+  {
+    if (pixmap())
+    {
+      dx = ( width() - pixmap()->width() ) / 2;
+      dy = ( height() - pixmap()->height() ) / 2;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      _painter->drawPixmap( dx, dy, *pixmap() );
+    }
+  }
+  else if (icontext == 1) // icon and text (if any)
+  {
+    if (pixmap())
+    {
+      dx = 1;
+      dy = ( height() - pixmap()->height() ) / 2;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      _painter->drawPixmap( dx, dy, *pixmap() );
+    }
+
+    if (!btext.isNull())
+    {
+      int tf = AlignVCenter|AlignLeft;
+      if (!isEnabled())
+        _painter->setPen(palette().disabled().dark());
+      if (pixmap())
+        dx= pixmap()->width();
+      else
+        dx= 1;
+      dy = 0;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      
+      if (toolBarButton)
+        _painter->setFont(buttonFont);
+      if(raised)
+        _painter->setPen(blue);
+      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
+    }
+  }
+  else if (icontext == 2) // only text, even if there is a icon
+  {
+    if (!btext.isNull())
+    {
+      int tf = AlignVCenter|AlignLeft;
+      if (!isEnabled())
+        _painter->setPen(palette().disabled().dark());
+      dx= 1;
+      dy= 0;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+
+      if (toolBarButton)
+        _painter->setFont(buttonFont);
+      if(raised)
+        _painter->setPen(blue);
+      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
+    }
+  }
+
+  if (myPopup)
+  {
+    if (isEnabled())
+      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
+                  width()-5, height()-5, 0, 0, colorGroup (), true);
+    else
+      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
+                  width()-5, height()-5, 0, 0, colorGroup (), false);
+  }
 }
   icontext=config->readNumEntry("IconText", 0);
 void KToolBarButton::paletteChange(const QPalette &)
 {
-  if(ImASeparator())  {
-    makeDisabledPixmap();
-    if ( !isEnabled() ) 
-      QButton::setPixmap( disabledPixmap );
-    repaint(false); // no need to delete it first therefore only false
-  }
+  repaint(false); // no need to delete it first therefore only false
 }
   bool doUpdate=false;
-
 void KToolBarButton::modeChange()
 {
   int myWidth;
   }
-  myWidth = enabledPixmap.width();
+  myWidth = pixmap()->width();
+  }
+  QFont fnt;
   
-  buttonFont.setFamily("Helvetica");
-  buttonFont.setPointSize(10);
-  buttonFont.setBold(false);
-  buttonFont.setItalic(false);
-  buttonFont.setCharSet(font().charSet());
+  if (toolBarButton) // I might be a menuBarButton
+  {
+    buttonFont.setFamily("Helvetica");
+    buttonFont.setPointSize(10);
+    buttonFont.setBold(false);
+    buttonFont.setItalic(false);
+    buttonFont.setCharSet(font().charSet());
   
-  QFontMetrics fm(buttonFont);
+    fnt=buttonFont;
+  }
+  else
+    fnt=kapp->generalFont;
+
+  QFontMetrics fm(fnt);
   
-  icontext=parentWidget->icon_text;
+  if (toolBarButton)
+    icontext=parentWidget->icon_text;
+  else
+    icontext = 1;
+
   _size=parentWidget->item_size;
   if (myWidth < _size)
     myWidth = _size;
 
+  if (_size > 38) // = 26*3/2 like QIconSet says
+    iconSize = QIconSet::Large;
+  else
+    iconSize = QIconSet::Small;
+
   highlight=parentWidget->highlight;
-  if (icontext) //Calculate my size
+  if (icontext > 0) //Calculate my size
   {
     QToolTip::remove(this);
     resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
@@ -382,32 +512,58 @@ void KToolBarButton::modeChange()
   }
 }
   int rightOffset;
-KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
-  : QButton( parentWidget , name)
+void KToolBarButton::showMenu()
 {
-  resize(6,6);
-  hide();
-  youreSeparator ();
+  // calculate that position carefully!!
+  // Later
+  QPoint p (parentWidget->mapToGlobal(pos()));
+  p.setY(p.y()+height());
+  raised = true;
+  repaint (false);
+  myPopup->popup(p);
 }
     else
-void KToolBarButton::setEnabled( bool enabled )
+void KToolBarButton::slotDelayTimeout()
 {
-  QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
-  QButton::setEnabled( enabled );
+  delayTimer->stop();
+  showMenu ();
 }
   if (fullWidth == true)
 void KToolBarButton::ButtonClicked()
 {
-  emit clicked( id );
+  if (myPopup && !delayPopup)
+    showMenu();
+  else
+    emit clicked( id );
 }
          }
 void KToolBarButton::ButtonPressed()
 {
-  emit pressed( id );
+  if (myPopup)
+  {
+    if (delayPopup)
+    {
+      delayTimer->stop(); // just in case?
+      delayTimer->start(POPUP_DELAY, true);
+      return;
+    }
+    else
+      showMenu();
+  }
+  else
+    emit pressed( id );
 }
   //debug ("Ho, ho, hooo... Up-Date!!! (vertical)");
 void KToolBarButton::ButtonReleased()
 {
+  // if popup is visible we don't get this
+  // (gram of praxis weights more than ton of theory)
+  //if (myPopup && myPopup->isVisible())
+  //  return;
+          widest =(b->width() +3);
+  if (myPopup && delayPopup)
+    delayTimer->stop();
+  
   emit released( id );
 }
    QApplication::sendEvent() which, as far as I understand, notifies
@@ -415,6 +571,7 @@ void KToolBarButton::ButtonToggled()
 {
   emit toggled(id);
 }
+
 
 /****************************** Tolbar **************************************/
 	    context->popup( mapToGlobal( m->pos() ), 0 );
@@ -1092,6 +1249,32 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   return items.at();
 }
 
+/// Inserts a button with popup.
+int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
+                            bool enabled, const char *_text, int index)
+{
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this,
+                                               0L, item_size, _text);
+  KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
+                                        true);
+  button->setPopup(_popup);
+
+  if ( index == -1 ) 
+    items.append( item );
+  else
+    items.insert( index, item );
+
+  item->setEnabled( enabled );
+  item->show();
+  
+  if (position == Floating)
+    updateRects( true );
+  else if (isVisible())
+    emit (moved(position));
+  return items.at();
+}
+
+
 /// Inserts a button with connection.
 
 int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
@@ -1385,6 +1568,15 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setPixmap( _pixmap );
 }
+
+
+void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup)
+{
+  for (KToolBarItem *b = items.first(); b; b=items.next())
+    if (b->ID() == id )
+      ((KToolBarButton *) b->getItem())->setDelayedPopup(_popup);
+}
+
 
 /// Toggle buttons
 void KToolBar::setToggle ( int id, bool yes )

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.36  1998/06/20 10:57:00  radej
+// sven: mispelled something...
+//
 // Revision 1.35  1998/06/19 13:09:31  radej
 // sven: Docs.
 //
@@ -42,6 +45,7 @@
 #include <qbutton.h>
 #include <qfont.h>
 #include <qsize.h>
+#include <qiconset.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -99,25 +103,34 @@ private:
   bool myItem;
 };
 
+
+/**
+ * This is internal button for use in KToolBar and...
+ */
+
 class KToolBarButton : public QButton
  {
    Q_OBJECT
 
  public:
    KToolBarButton(const QPixmap& pixmap, int id, QWidget *parent,
-                  const char *name=0L, int item_size = 26, const char *txt=0);
+                  const char *name=0L, int item_size = 26, const char *txt=0,
+                  bool _mb = false);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    ~KToolBarButton() {};
    void setEnabled(bool enable);
-   void makeDisabledPixmap();
    
-   void setPixmap( const QPixmap & );
+   virtual void setPixmap( const QPixmap & );
+   virtual void setText ( const char *text);
    void on(bool flag);
    void toggle();
    void beToggle(bool);
    bool ImASeparator () {return sep;};
    void youreSeparator () {sep = true;};
-
+   QPopupMenu *popup () {return myPopup;};
+   void setPopup (QPopupMenu *p);
+   void setDelayedPopup (QPopupMenu *p);
+   
  public slots:
    void modeChange();
    
@@ -126,8 +139,12 @@ class KToolBarButton : public QButton
    void leaveEvent(QEvent *e);
    void enterEvent(QEvent *e);
    void drawButton(QPainter *p);
+   bool eventFilter (QObject *o, QEvent *e);
+   void showMenu();
+   //void setIconSet (const QPixmap &);
    
  private:
+   bool toolBarButton;
    bool sep;
    QPixmap enabledPixmap;
    QPixmap disabledPixmap;
@@ -139,12 +156,18 @@ class KToolBarButton : public QButton
    KToolBar *parentWidget;
    QString btext;
    QFont buttonFont;
+   QPopupMenu *myPopup;
+   bool delayPopup;
+   QTimer *delayTimer;
+   QIconSet *iconSet;
+   QIconSet::Size iconSize;
    
-   protected slots:
+ protected slots:
      void ButtonClicked();
      void ButtonPressed();
      void ButtonReleased();
      void ButtonToggled();
+     void slotDelayTimeout();
 
  signals:
      void clicked(int);
@@ -152,6 +175,7 @@ class KToolBarButton : public QButton
      void released(int);
      void toggled(int);
  };
+
 
 /**
  * KToolBar is a self resizing, floatable widget.
@@ -230,6 +254,18 @@ public:
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
                    const char *tooltiptext = 0L, int index=-1 );
+
+  /**
+   * This inserts a button with popupmenu. If button is in toolbar a small
+   * trialngle will be drawn. You have to connect to popup's signals. The
+   * signals pressed, released or clikced are NOT emmited by this button
+   * (see @ref #setDelayedPopup for that).
+   * You can add custom popups which inherit @ref QPopupMenu to get popups
+   * with tables, drawings etc. Just don't fiddle with events there.
+   */
+  int insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
+                   bool enabled, const char *_text, int index=-1);
+  
   /**
    * Inserts a KLined. You have to specify signals and slots to
    * which KLined will be connected. KLined has all slots QLineEdit
@@ -320,6 +356,27 @@ public:
    */
   void setButtonPixmap( int id, const QPixmap& _pixmap );
 
+  /**
+   * Sets delayed popup to a button. Delayed popup is what you see in
+   * netscape's Previous&next buttons: if you click them you go back,
+   * or forth. If you press them long enough, you get a history-menu.
+   * This is exactly what we do here. <BR>
+   * You will insert normal button with connection (or use signals from
+   * toolbar):
+   * <pre>
+   * bar->insertButton(pixmap, id, const SIGNAL(clicked ()), this,
+   *     		SLOT (slotClick()), true, "click or wait for popup");
+   * </pre> And then add a delayed popup:
+   * <pre>
+   * bar->setDelayedPopup (id, historyPopup); </pre>
+   *
+   * Don't add delayed popups to buttons which have normal popups.
+   *
+   * You may add popups wich are derived from popupMenu.
+   */
+  void setDelayedPopup (int id , QPopupMenu *_popup);
+
+  
   /**
    * Makes button a toggle button if flag is true
    */
