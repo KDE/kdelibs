@@ -18,12 +18,15 @@
  **/
 
 #include "kmlpduimanager.h"
+#include "kmfactory.h"
+#include "kmmanager.h"
 #include "kmwizard.h"
 #include "kmwbackend.h"
 #include "kmpropertypage.h"
 #include "kmpropbackend.h"
 #include "kmpropdriver.h"
 
+#include <qfile.h>
 #include <klocale.h>
 
 KMLpdUiManager::KMLpdUiManager(QObject *parent, const char *name)
@@ -40,9 +43,14 @@ void KMLpdUiManager::setupWizard(KMWizard *wizard)
 	KMWBackend	*backend = wizard->backendPage();
 	backend->addBackend(KMWizard::Local,i18n("Local printer (parallel, serial, USB)"),false);
 	backend->addBackend(KMWizard::LPD,i18n("Remote LPD queue"),true);
-	backend->addBackend(KMWizard::SMB,i18n("SMB shared printer (Windows)"),true,KMWizard::Password);
-	backend->addBackend(KMWizard::TCP,i18n("Network printer (TCP)"),true);
+	backend->addBackend(KMWizard::SMB,i18n("SMB shared printer (Windows)"),false,KMWizard::Password);
+	backend->addBackend(KMWizard::TCP,i18n("Network printer (TCP)"),false);
 	backend->addBackend(KMWizard::File,i18n("File printer (print to file)"),true);
+
+	KMManager	*mgr = KMFactory::self()->manager();
+	if (QFile::exists(mgr->driverDirectory()+"/smbprint")) backend->enableBackend(KMWizard::SMB,true);
+	if (QFile::exists(mgr->driverDirectory()+"/directprint")) backend->enableBackend(KMWizard::TCP,true);
+	if (QFile::exists(mgr->driverDirectory()+"/ncpprint")) backend->enableBackend(KMWizard::Custom+1,true);
 }
 
 void KMLpdUiManager::setupPropertyPages(KMPropertyPage *p)
