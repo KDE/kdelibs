@@ -188,7 +188,7 @@ void KFileSimpleView::paintCell( QPainter *p, int row, int col)
              p->setPen( DotLine );               // used dashed line to
              p->drawRect( 0, 0, x2, y2 );        // draw rect along cell edges
              p->setPen( SolidLine );             // restore to normal
-             p->setPen( colorGroup().base() );
+	     p->setPen( colorGroup().text() );
         }
     } else // not on current cell, use the normal color
           p->setPen( colorGroup().text() );
