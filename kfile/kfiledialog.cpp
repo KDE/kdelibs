@@ -258,8 +258,10 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             KURL home;
             home.setPath( QDir::homeDirPath() );
             // if there is no docpath set (== home dir), we prefer the current
-            // directory over it.
-            if ( lastDirectory->path(+1) == home.path(+1) )
+            // directory over it. We also prefer the homedir when our CWD is
+            // different from our homedirectory
+            if ( lastDirectory->path(+1) == home.path(+1) || 
+                 QDir::currentDirPath() != QDir::homeDirPath() )
                 *lastDirectory = QDir::currentDirPath();
         }
         d->url = *lastDirectory;
@@ -1170,7 +1172,7 @@ void KFileDialog::setSelection(const QString& url)
         if (sep >= 0) { // there is a / in it
             if ( KProtocolInfo::supportsListing( u.protocol() ))
                 setURL(filename.left(sep), true);
-            
+
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KURL::fileName()
             filename = u.fileName();
@@ -1638,7 +1640,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
                                                  DefaultRecentURLsNumber ) );
-    locationEdit->setURLs( kc->readListEntry( RecentFiles ), 
+    locationEdit->setURLs( kc->readListEntry( RecentFiles ),
                            KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
