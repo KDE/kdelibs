@@ -34,7 +34,7 @@ using namespace DOM;
 CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
     : StyleListImpl(parent)
 {
-    m_type == CSSRule::UNKNOWN_RULE;
+    m_type = CSSRule::UNKNOWN_RULE;
 }
 
 CSSRuleImpl::~CSSRuleImpl()
@@ -63,9 +63,10 @@ CSSRuleImpl *CSSRuleImpl::parentRule() const
 DOM::DOMString CSSRuleImpl::cssText() const
 {
     // ###
+    return 0;
 }
 
-void CSSRuleImpl::setCssText(DOM::DOMString str)
+void CSSRuleImpl::setCssText(DOM::DOMString /*str*/)
 {
     // ###
 }
@@ -75,7 +76,7 @@ void CSSRuleImpl::setCssText(DOM::DOMString str)
 CSSCharsetRuleImpl::CSSCharsetRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::CHARSET_RULE;
+    m_type = CSSRule::CHARSET_RULE;
 }
 
 CSSCharsetRuleImpl::~CSSCharsetRuleImpl()
@@ -87,7 +88,7 @@ CSSCharsetRuleImpl::~CSSCharsetRuleImpl()
 CSSFontFaceRuleImpl::CSSFontFaceRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::FONT_FACE_RULE;
+    m_type = CSSRule::FONT_FACE_RULE;
     m_style = 0;
 }
 
@@ -106,7 +107,7 @@ CSSStyleDeclarationImpl *CSSFontFaceRuleImpl::style() const
 CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::IMPORT_RULE;
+    m_type = CSSRule::IMPORT_RULE;
     m_lstMedia = 0;
     m_styleSheet = 0;
 }
@@ -138,7 +139,7 @@ CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
 CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::MEDIA_RULE;
+    m_type = CSSRule::MEDIA_RULE;
     m_lstMedia = 0;
 }
 
@@ -157,12 +158,13 @@ CSSRuleList CSSMediaRuleImpl::cssRules()
     return this;
 }
 
-unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule, unsigned long index )
+unsigned long CSSMediaRuleImpl::insertRule( const DOMString &/*rule*/, unsigned long /*index*/ )
 {
     // ###
+    return 0;
 }
 
-void CSSMediaRuleImpl::deleteRule( unsigned long index )
+void CSSMediaRuleImpl::deleteRule( unsigned long /*index*/ )
 {
     // ###
 }
@@ -172,7 +174,7 @@ void CSSMediaRuleImpl::deleteRule( unsigned long index )
 CSSPageRuleImpl::CSSPageRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::PAGE_RULE;
+    m_type = CSSRule::PAGE_RULE;
     m_style = 0;
 }
 
@@ -191,7 +193,7 @@ CSSStyleDeclarationImpl *CSSPageRuleImpl::style() const
 CSSStyleRuleImpl::CSSStyleRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
-    m_type == CSSRule::STYLE_RULE;
+    m_type = CSSRule::STYLE_RULE;
     m_style = 0;
     m_selector = 0;
 }
@@ -210,16 +212,18 @@ CSSStyleDeclarationImpl *CSSStyleRuleImpl::style() const
 DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
     // ###
+    return 0;
 }
 
-void CSSStyleRuleImpl::setSelectorText(DOM::DOMString str)
+void CSSStyleRuleImpl::setSelectorText(DOM::DOMString /*str*/)
 {
     // ###
 }
 
-bool CSSStyleRuleImpl::parseString( const DOMString &string )
+bool CSSStyleRuleImpl::parseString( const DOMString &/*string*/ )
 {
     // ###
+    return false;
 }
 
 void CSSStyleRuleImpl::setSelector( QList<CSSSelector> *selector)

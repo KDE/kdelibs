@@ -40,7 +40,8 @@ namespace DOM {
     class CSSRuleImpl;
     class CSSStyleRuleImpl;
 
-    // these two classes are used internally as container classes
+
+    int getPropertyID(const char *tagStr, int len);
 
     // a style class which has a parent (almost all have)
     class StyleBaseImpl : public DomShared

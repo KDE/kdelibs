@@ -44,7 +44,7 @@ CSSRule::CSSRule(const CSSRule &other)
 CSSRule::CSSRule(CSSRuleImpl *i)
 {
     impl = i;
-    if(impl) impl->ref();    
+    if(impl) impl->ref();
 }
 
 CSSRule &CSSRule::operator = (const CSSRule &other)
@@ -71,9 +71,10 @@ DOMString CSSRule::cssText() const
     // ###
     if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("cssText");
+    return 0;
 }
 
-void CSSRule::setCssText( const DOMString &value )
+void CSSRule::setCssText( const DOMString &/*value*/ )
 {
     // ###
     //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
@@ -120,9 +121,10 @@ DOMString CSSCharsetRule::encoding() const
 {
     if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("encoding");
+    return 0;
 }
 
-void CSSCharsetRule::setEncoding( const DOMString &value )
+void CSSCharsetRule::setEncoding( const DOMString &/*value*/ )
 {
     //if(impl) ((ElementImpl *)impl)->setAttribute("encoding", value);
 }
@@ -279,9 +281,10 @@ DOMString CSSPageRule::selectorText() const
 {
     if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("selectorText");
+    return 0;
 }
 
-void CSSPageRule::setSelectorText( const DOMString &value )
+void CSSPageRule::setSelectorText( const DOMString &/*value*/ )
 {
     //if(impl) ((ElementImpl *)impl)->setAttribute("selectorText", value);
 }
@@ -320,9 +323,10 @@ DOMString CSSStyleRule::selectorText() const
 {
     if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("selectorText");
+    return 0;
 }
 
-void CSSStyleRule::setSelectorText( const DOMString &value )
+void CSSStyleRule::setSelectorText( const DOMString &/*value*/ )
 {
     //if(impl) ((ElementImpl *)impl)->setAttribute("selectorText", value);
 }
@@ -394,12 +398,14 @@ unsigned long CSSRuleList::length() const
 {
     if(!impl) return 0;
     //return ((CSSRuleListImpl *)impl)->length();
+    return 0;
 }
 
-CSSRule CSSRuleList::item( unsigned long index )
+CSSRule CSSRuleList::item( unsigned long /*index*/ )
 {
     if(!impl) return CSSRule();
     //return ((CSSRuleListImpl *)impl)->item( index );
+    return CSSRule();
 }
 
 

@@ -239,9 +239,10 @@ DOMString MediaList::cssText() const
     // ###
     if(!impl) return 0;
     //return ((ElementImpl *)impl)->getAttribute("cssText");
+    return 0;
 }
 
-void MediaList::setCssText( const DOMString &value )
+void MediaList::setCssText( const DOMString &/*value*/ )
 {
     // ###
     //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);

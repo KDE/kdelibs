@@ -50,7 +50,8 @@ public:
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
-    void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value, const DOM::DOMString &priority );
+    void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value, 
+		       const DOM::DOMString &priority );
     DOM::DOMString item ( unsigned long index );
 
     DOM::DOMString cssText() const;
@@ -59,6 +60,10 @@ public:
     virtual bool isStyleDeclaration() { return true; }
 
     virtual bool parseString( const DOMString &string );
+
+    CSSValueImpl *getPropertyCSSValue( int propertyID );
+    bool getPropertyPriority( int propertyID );
+
 protected:
     QList<CSSProperty> *m_lstValues;
 };

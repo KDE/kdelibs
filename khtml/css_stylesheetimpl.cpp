@@ -155,6 +155,7 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an
     //@import rule is inserted after a standard rule set or other at-rule.
     m_lstChildren->insert(index, r);
+    return index;
 }
 
 void CSSStyleSheetImpl::deleteRule( unsigned long index )
@@ -194,11 +195,13 @@ StyleSheetListImpl::~StyleSheetListImpl()
 unsigned long StyleSheetListImpl::length() const
 {
     //###
+    return 0;
 }
 
-StyleSheetImpl *StyleSheetListImpl::item( unsigned long index )
+StyleSheetImpl *StyleSheetListImpl::item( unsigned long /*index*/ )
 {
     //###
+    return 0;
 }
 
 
@@ -245,7 +248,7 @@ DOMString MediaListImpl::item( unsigned long index )
 void MediaListImpl::del( const DOMString &oldMedium )
 {
     int i;
-    for(i = 0; i < m_lstMedia.count(); i++)
+    for(i = 0; i < (int)m_lstMedia.count(); i++)
 	if( *(m_lstMedia.at(i)) == oldMedium )
 	{
 	    m_lstMedia.remove(i);
@@ -262,9 +265,10 @@ void MediaListImpl::append( const DOMString &newMedium )
 DOM::DOMString MediaListImpl::cssText() const
 {
     // ###
+    return 0;
 }
 
-void MediaListImpl::setCssText(DOM::DOMString str)
+void MediaListImpl::setCssText(DOM::DOMString /*str*/)
 {
     // ###
 }

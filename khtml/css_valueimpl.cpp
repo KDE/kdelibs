@@ -45,29 +45,69 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QList<CSSP
 
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
-    // ####
+    if(m_lstValues) delete m_lstValues;
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
 {
     // ###
+    return 0;
 }
 
 CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( const DOMString &propertyName )
 {
-    // ###
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    return getPropertyCSSValue(id);
 }
+
+CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
+{
+    int i = 0;
+    while(i < m_lstValues->count())
+    {
+	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->m_value;
+	i++;
+    }
+    return 0;
+}
+
 
 DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
 {
-    // ###
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    int i = 0;
+    while(i < m_lstValues->count())
+    {
+	if(id == m_lstValues->at(i)->m_id)
+	{
+	    m_lstValues->remove(i);
+	    // ###
+	    return 0;
+	}
+	i++;
+    }
+    return 0;
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyPriority( const DOMString &propertyName )
 {
-    // ###
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if(getPropertyPriority(id))
+	return DOMString("important");
+    return DOMString();
 }
 
+bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
+{
+    int i = 0;
+    while(i < m_lstValues->count())
+    {
+	if(propertyID == m_lstValues->at(i)->m_id ) return m_lstValues->at(i)->m_bImportant;
+	i++;
+    }
+    return false;
+}
+ 
 void CSSStyleDeclarationImpl::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
 {
     // ###
@@ -82,6 +122,8 @@ unsigned long CSSStyleDeclarationImpl::length() const
 DOMString CSSStyleDeclarationImpl::item( unsigned long index )
 {
     // ###
+    //return m_lstValues->at(index);
+    return 0;
 }
 
 CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const

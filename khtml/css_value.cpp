@@ -60,60 +60,64 @@ CSSStyleDeclaration::~CSSStyleDeclaration()
 DOMString CSSStyleDeclaration::cssText() const
 {
     if(!impl) return 0;
-    //    return ((ElementImpl *)impl)->getAttribute("cssText");
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->cssText();
 }
 
 void CSSStyleDeclaration::setCssText( const DOMString &value )
 {
-    //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
+    // ###
+    if(!impl) return;
+    impl->setCssText(value);
 }
 
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
     if(!impl) return 0;
-    return ((CSSStyleDeclarationImpl *)impl)->getPropertyValue( propertyName );
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue( propertyName );
 }
 
 CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
 {
-    //    if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->getPropertyCSSValue( propertyName );
+    if(!impl) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue( propertyName );
 }
 
 DOMString CSSStyleDeclaration::removeProperty( const DOMString &propertyName )
 {
-    //if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->removeProperty( propertyName );
+    if(!impl) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( propertyName );
+    return 0;
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
 {
-    //if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->getPropertyPriority( propertyName );
+    if(!impl) return 0;
+    return impl->getPropertyPriority(propertyName);
 }
 
 void CSSStyleDeclaration::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
 {
-    //if(impl)
-    //   ((CSSStyleDeclarationImpl *)impl)->setProperty( propertyName, value, priority );
+    // ###
+    if(!impl) return;
+    static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( propertyName, value, priority );
 }
 
 unsigned long CSSStyleDeclaration::length() const
 {
-    //if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->length();
+    if(!impl) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->length();
 }
 
 DOMString CSSStyleDeclaration::item( unsigned long index )
 {
-    //if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->item( index );
+    if(!impl) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->item( index );
 }
 
 CSSRule CSSStyleDeclaration::parentRule() const
 {
-    //if(!impl) return 0;
-    //return ((CSSStyleDeclarationImpl *)impl)->parentRule();
+    if(!impl) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->parentRule();
 }
 
 

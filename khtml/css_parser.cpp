@@ -32,6 +32,8 @@
 #include "dom_exception.h"
 using namespace DOM;
 
+#include <stdio.h>
+
 #include "khtmltokenizer.h"
 #include "khtmlattrs.h"
 #include "kcssprop.h"
@@ -49,7 +51,16 @@ using namespace DOM;
 #include "kcssprop.c"
 #include "kcssvalues.c"
 
-#include <stdio.h>
+int getPropertyID(const char *tagStr, int len)
+{
+    const struct props *propsPtr = findProp(tagStr, len);
+    if (!propsPtr)
+        return 0;
+
+    return propsPtr->id;
+}
+
+// ------------------------------------------------------------------------------------------------------
 
 bool StyleBaseImpl::deleteMe()
 {
@@ -172,25 +183,50 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
 CSSRuleImpl *
 StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 {
-//    const char *startP = curP;
-    while (curP < endP)
-    {
-        if (*curP == '{')
-        {
-            curP = parseToChar(curP + 1, endP, '}', false);
-            return 0;
-        }
-        else if (*curP == ';')
-        {
-            // check if [startP, curP] contains an include...
-            // if so, emit a signal
-            curP++;
-            return 0;
-        }
-        curP++;
-    }
-    curP = 0;
+    curP++;
+    const QChar *startP = curP;
+    while( *curP != ' ' && *curP != '{' && *curP != '\'')
+	curP++;
+    
+    QString rule(startP, curP-startP);
+    rule = rule.lower();
 
+    printf("rule = '%s'\n", rule.ascii());
+    
+    if(rule == "import")
+    {
+	// ### load stylesheet and pass it over
+	startP = curP++;
+	curP = parseToChar(startP, endP, ';', false);
+	printf("url = %s\n", QString(startP, curP - startP).ascii());
+    }
+    else if(rule == "charset")
+    {
+	// ### invoke decoder
+	startP = curP++;
+	curP = parseToChar(startP, endP, ';', false);
+	printf("charset = %s\n", QString(startP, curP - startP).ascii());
+    }
+    else if(rule == "font-face")
+    {
+	startP = curP++;
+	curP = parseToChar(startP, endP, '}', false);
+	printf("font rule = %s\n", QString(startP, curP - startP).ascii());	
+    }
+    else if(rule == "media")
+    {
+	startP = curP++;
+	curP = parseToChar(startP, endP, '}', false);
+	printf("media rule = %s\n", QString(startP, curP - startP).ascii());	
+    }
+    else if(rule == "page")
+    {
+	startP = curP++;
+	curP = parseToChar(startP, endP, '}', false);
+	printf("page rule = %s\n", QString(startP, curP - startP).ascii());	
+    }
+
+	
     return 0;
 }
 
@@ -468,7 +504,6 @@ printf("Property-name = \"%s\"\n", propName.data());
     // remove space after the value;
     while (endP > curP)
     {
-
         if (!isspace(*(endP-1)))
             break;
         endP--;
@@ -488,7 +523,7 @@ printf("Property-value = \"%s\"\n", propVal.data());
     CSSValueImpl *val = parseValue(curP, endP, propPtr->id);
 
     if(!val) return 0;
-    
+
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propPtr->id;
 
@@ -604,12 +639,12 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_WORD_SPACING:
     case CSS_PROP_Z_INDEX:
     {
-	printf("parseValue: value = %s\n", value.ascii());
-	const struct css_value *val = findValue(value.lower().ascii(), value.length());
-	if (val)
+	printf("parseValue: value = %s\n", val);
+	const struct css_value *cssval = findValue(val, value.length());
+	if (cssval)
 	{
-	    printf("got value %d\n", val->id);
-	    CSSPrimitiveValueImpl *v = new CSSPrimitiveValueImpl(val->id);
+	    printf("got value %d\n", cssval->id);
+	    CSSPrimitiveValueImpl *v = new CSSPrimitiveValueImpl(cssval->id);
 	    return v;
 	    // ### FIXME: should check if the identifier makes sense with the property
 	}
@@ -694,12 +729,17 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     }
   break;
 
-// uri || inherit    case CSS_PROP_BACKGROUND_IMAGE:
+// uri || inherit
+    case CSS_PROP_BACKGROUND_IMAGE:
     case CSS_PROP_CUE_AFTER:
     case CSS_PROP_CUE_BEFORE:
     case CSS_PROP_LIST_STYLE_IMAGE:
+    {
+	DOMString value(curP, endP - curP);
+	return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_URI);
 	break;
-	
+    }
+    
 // length
     case CSS_PROP_BORDER_TOP_WIDTH:
     case CSS_PROP_BORDER_RIGHT_WIDTH:
@@ -737,30 +777,6 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	return parseUnit(curP, endP, LENGTH | PERCENT );
 	break;
 
-// rect
-    case CSS_PROP_CLIP:
-	// rect, ident
-	break;
-	
-// lists
-    case CSS_PROP_CONTENT:
-	// list of string, uri, counter, attr, i
-    case CSS_PROP_COUNTER_INCREMENT:
-	// list of CSS2CounterIncrement
-    case CSS_PROP_COUNTER_RESET:
-	// list of CSS2CounterReset
-    case CSS_PROP_FONT_FAMILY:
-	// list of strings and ids
-    case CSS_PROP_QUOTES:
-	// list of strings or i
-    case CSS_PROP_SIZE:
-	// ### look up
-    case CSS_PROP_TEXT_DECORATION:
-	// list of ident
-    case CSS_PROP_VOICE_FAMILY:
-	// list of strings and i
-	break;
-	
 // angle
     case CSS_PROP_ELEVATION:
 	parseUnit(curP, endP, ANGLE);
@@ -797,6 +813,30 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_TEXT_ALIGN:
 	break;
 
+// rect
+    case CSS_PROP_CLIP:
+	// rect, ident
+	break;
+	
+// lists
+    case CSS_PROP_CONTENT:
+	// list of string, uri, counter, attr, i
+    case CSS_PROP_COUNTER_INCREMENT:
+	// list of CSS2CounterIncrement
+    case CSS_PROP_COUNTER_RESET:
+	// list of CSS2CounterReset
+    case CSS_PROP_FONT_FAMILY:
+	// list of strings and ids
+    case CSS_PROP_QUOTES:
+	// list of strings or i
+    case CSS_PROP_SIZE:
+	// ### look up
+    case CSS_PROP_TEXT_DECORATION:
+	// list of ident
+    case CSS_PROP_VOICE_FAMILY:
+	// list of strings and i
+	break;
+	
 // shorthand properties
     case CSS_PROP_BACKGROUND:
     case CSS_PROP_BORDER:
@@ -969,7 +1009,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 CSSStyleRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 {
-    printf("style rule is \'%s\'\n", QString(curP, endP-curP).latin1());
+    //printf("style rule is \'%s\'\n", QString(curP, endP-curP).latin1());
 
     const QChar *startP;
     QList<CSSSelector> *slist;
@@ -979,7 +1019,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     curP = parseToChar(startP, endP, '{', false);
     if (!curP)
         return(0);
-    printf("selector is \'%s\'\n", QString(curP, endP-curP).latin1());
+    //printf("selector is \'%s\'\n", QString(curP, endP-curP).latin1());
 
     slist = parseSelector(startP, curP );
 
@@ -1021,11 +1061,15 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 {
     curP = parseSpace(curP, endP);
     CSSRuleImpl *rule = 0;
+
+    //printf("parse rule: current = %c\n", curP->latin1());
+    
     if (*curP == '@')
 	rule = parseAtRule(curP, endP);
     else
 	rule = parseStyleRule(curP, endP);
 
+    curP++;
     return rule;
 }
 
