@@ -24,6 +24,7 @@
 #include <qfile.h>
 
 #include <kglobal.h>
+#include <kdebug.h>
 #include <kstddirs.h>
 #include <assert.h>
 
@@ -82,6 +83,7 @@ KSycoca::findEntry(int offset, KSycocaType &type)
 QDataStream *
 KSycoca::_findEntry(int offset, KSycocaType &type)
 {
+   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(%1,%2)").arg(offset).arg((int)type));
    str->device()->at(offset);
    Q_INT32 aType;
    (*str) >> aType;
@@ -107,7 +109,8 @@ KSycoca::_registerFactory( KSycocaFactoryId id)
    while(true)
    {
       (*str) >> aId;
-      if (aId == KST_KSycocaFactory) 
+      kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_registerFactory : found factory %1").arg(aId));
+      if (aId == KST_KSycocaFactory)  // ????? shouldn't that be 0 ??? (David)
       {
 fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
          break;
@@ -115,6 +118,7 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
       (*str) >> aOffset;
       if (aId == id)
       {
+         kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_registerFactory(%1) offset %2").arg((int)id).arg(aOffset));
          str->device()->at(aOffset);
          return str;
       }

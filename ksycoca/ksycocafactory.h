@@ -51,10 +51,6 @@ public:
     * @return the position of the factory in the sycoca file
     */
    int offset() { return mOffset; }
-   /**
-    * Store the position of the factory in the sycoca file
-    */
-   void setOffset(int _offset) { mOffset = _offset; }
 
    /**
     * Construct an entry from a config file.
@@ -76,6 +72,7 @@ public:
    /**
     * Saves all entries it maintains as well as index files
     * for these entries to the stream 'str'.
+    * Also sets mOffset to the starting position.
     */
    virtual void save(QDataStream &str);
 

@@ -21,6 +21,7 @@
 
 #include <qlist.h>
 #include <qvaluelist.h>
+#include <kdebug.h>
 
 // DEBUG only
 #include <stdio.h>
@@ -98,6 +99,8 @@ KSycocaEntry * KSycocaDict::findEntryInMemory( const QString & key )
 int 
 KSycocaDict::find_string(const QString &key )
 {
+   kdebug(KDEBUG_INFO, 7011, QString("KSycocaDict::find_string(%1)").arg(key));
+
    if (!mStr || !mOffset)
    {
       fprintf(stderr, "No database available!\n");
@@ -106,13 +109,16 @@ KSycocaDict::find_string(const QString &key )
 
    // Read hash-table data 
    uint hash = hashKey(key) % mHashTableSize;
+   kdebug(KDEBUG_INFO, 7011, QString("hash is %1").arg(hash));
 
-   mStr->device()->at(mOffset+sizeof(Q_INT32)*hash);
+   uint off = mOffset+sizeof(Q_INT32)*hash;
+   kdebug(KDEBUG_INFO, 7011, QString("off is %1").arg(hash));
+   mStr->device()->at( off );
 
    Q_INT32 offset;
    (*mStr) >> offset;
 
-   fprintf(stderr, "offset = %d\n", offset);
+   kdebug(KDEBUG_INFO, 7011, QString("offset is %1").arg(offset));
    if (offset == 0)
       return 0;
 

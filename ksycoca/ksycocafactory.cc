@@ -71,7 +71,7 @@ KSycocaFactory::save(QDataStream &str)
 
    if (!m_entryDict) return; // Error!
 
-   int startOfFactoryData = str.device()->at();
+   mOffset = str.device()->at(); // store position in member variable
    Q_INT32 entryDictOffset = 0;
 
    // Write header (pass #1)
@@ -93,7 +93,7 @@ KSycocaFactory::save(QDataStream &str)
    int endOfFactoryData = str.device()->at();
 
    // Update header (pass #2)
-   str.device()->at(startOfFactoryData);
+   str.device()->at(mOffset);
    str << entryDictOffset;
 
    // Seek to end.
