@@ -71,12 +71,11 @@ protected:
 };
 
 /**
- * @deprecated
  * A command which stores its name.
- * This class mostly exists for compatibility with KDE-2.x
- * It is more memory-efficient to use KCommand and to implement the name() method.
+ * It is more memory-efficient to use KCommand and to implement the name() method,
+ * but in some cases it's more simple or more flexible to store the name at creation time.
  */
-class KDE_DEPRECATED KNamedCommand : public KCommand
+class KNamedCommand : public KCommand
 {
 protected:
     /**
