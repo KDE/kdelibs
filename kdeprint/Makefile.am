@@ -37,10 +37,8 @@ testpage_DATA = testprint.ps
 testpagedir = $(kde_datadir)/kdeprint
 
 # parser and scanner
-$(srcdir)/maticparser.cpp: matic.h maticparser.yy
+parser: 
 	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
-
-maticscanner.cpp: matic.h maticparser.cpp $(srcdir)/maticscanner.ll
 	flex -omaticscanner.cpp -Pmatic $(srcdir)/maticscanner.ll
 
 noinst_DATA = kdeprint
