@@ -18,6 +18,7 @@
 
 #include <kapp.h>
 #include <kdebug.h>
+#include <kstddirs.h>
 
 #include "kregistry.h"
 #include "kdirwatch.h"
