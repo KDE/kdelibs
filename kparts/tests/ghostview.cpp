@@ -4,8 +4,11 @@
 #include <kaction.h>
 #include <klocale.h>
 #include <kfiledialog.h>
+#include <kmessagebox.h>
+#include <kcmdlineargs.h>
 #include <klibloader.h>
 #include <qwidget.h>
+#include <qdir.h>
 
 #include "ghostview.h"
 
@@ -19,13 +22,24 @@ Shell::Shell()
   KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "file_quit" );
   paQuit->setIconSet(QIconSet(BarIcon("exit")));
 
- // Looks like KTMainWindow needs to use a dummy widget ?
-  m_mainWidget = new QWidget( this );
-  m_mainWidget->setMinimumSize(400,300);
-  setView( m_mainWidget );
-  m_gvpart = 0;
-
-  createGUI( 0 ); // no active part
+  // Try to find libkghostview
+  KLibFactory *factory = KLibLoader::self()->factory( "libkghostview" );
+  if (factory)
+  {
+    // Create the part
+    m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
+               "KParts::ReadOnlyPart" );
+    // Set the main widget
+    setView( m_gvpart->widget() );
+    // Integrate its GUI
+    createGUI( m_gvpart );
+  }
+  else
+  {
+     KMessageBox::error(this, i18n("No libkghostview found !"));
+  }
+  // Set a reasonable size
+  resize( 600, 350 );
 }
 
 Shell::~Shell()
@@ -33,33 +47,40 @@ Shell::~Shell()
   delete m_gvpart;
 }
 
+void Shell::openURL( const KURL & url )
+{
+  m_gvpart->openURL( url );
+}
+
 void Shell::slotFileOpen()
 {
-  QString fileName = KFileDialog::getOpenFileName( QString::null, QString::null, 0L, "file dialog" );
+  QString fileName = KFileDialog::getOpenFileName( QString::null, "*.ps|Postscript files (*.ps)", 0L, "file dialog" );
  
   if( !fileName.isEmpty() )
-  {
-    // Try to find libkghostview
-    KLibFactory *factory = KLibLoader::self()->factory( "libkghostview" );
-    if (factory)
-    {
-      // Create the part
-      m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
-                 "KParts::ReadOnlyPart" );
-      setView( m_gvpart->widget() );
-      // Integrate its GUI
-      createGUI( m_gvpart );
-      // No need for this anymore
-      delete m_mainWidget;
-      m_mainWidget = 0;
-    }
-  }
+     openURL( KURL( fileName ) );
 }
+
+static KCmdLineOptions options[] =
+{
+ { "+file(s)",          I18N_NOOP("Files to load"), 0 },
+ { 0,0,0 }
+};
+static const char *version = "v0.0.1 2000 (c) David Faure";
+static const char *description = I18N_NOOP("This is a test shell for the kghostview part.");
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "ghostviewtest" );
+  KCmdLineArgs::init(argc, argv, "ghostviewtest", description, version);
+  KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
+  KApplication app;
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
   Shell *shell = new Shell;
+  if ( args->count() == 1 )
+  {
+    // Allow full paths, but also simple filenames from current dir
+    KURL url( QDir::currentDirPath()+"/", args->arg(0) );
+    shell->openURL( url );
+  }
   shell->show();
   return app.exec();
 }

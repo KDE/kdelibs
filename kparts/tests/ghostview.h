@@ -11,12 +11,13 @@ public:
   Shell();
   virtual ~Shell();
 
+  void openURL( const KURL & url );
+
 protected slots:
   void slotFileOpen();
 
 private:
   KParts::ReadOnlyPart *m_gvpart;
-  QWidget * m_mainWidget;
 };
 
 #endif
