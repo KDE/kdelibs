@@ -2385,11 +2385,11 @@ bool HTTPProtocol::httpOpen()
         info.username = m_request.user;
       if ( checkCachedAuthentication( info ) && !info.digestInfo.isEmpty() )
       {
-        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : info.digestInfo.startsWith("NTLM") ? AUTH_NTLM : AUTH_Digest ;
+        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : info.digestInfo.startsWith("NTLM") ? AUTH_NTLM : info.digestInfo.startsWith("Negotiate") ? AUTH_Negotiate : AUTH_Digest ;
         m_state.user   = info.username;
         m_state.passwd = info.password;
         m_strRealm = info.realmValue;
-        if ( Authentication != AUTH_NTLM ) // don't use the cached challenge
+        if ( Authentication != AUTH_NTLM && Authentication != AUTH_Negotiate ) // don't use the cached challenge
           m_strAuthorization = info.digestInfo;
       }
     }
@@ -3418,7 +3418,7 @@ bool HTTPProtocol::readHeader()
         if ( getAuthorization() )
         {
            // for NTLM Authentication we have to keep the connection open!
-           if ( (Authentication == AUTH_NTLM) && (m_prevResponseCode != 0) )
+           if ( (Authentication == AUTH_NTLM) && (m_strAuthorization.length() > 4) )
            {
              m_bKeepAlive = true;
              readBody( true );
@@ -4850,6 +4850,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     f = AUTH_NTLM;
     memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
     p += 4;
+    m_strRealm = "NTLM"; // set a dummy realm
   }
 #endif
   else
@@ -5318,6 +5319,8 @@ QString HTTPProtocol::createNegotiateAuth()
 
   if (GSS_ERROR(major_status)) {
     kdDebug(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
+    // reset the auth string so that subsequent methods aren't confused
+    m_strAuthorization = QString::null;
     return QString::null;
   }
 
@@ -5336,6 +5339,8 @@ QString HTTPProtocol::createNegotiateAuth()
       gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
       ctx = GSS_C_NO_CONTEXT;
     }
+    // reset the auth string so that subsequent methods aren't confused
+    m_strAuthorization = QString::null;
     return QString::null;
   }
 
