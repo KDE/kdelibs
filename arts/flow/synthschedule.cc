@@ -848,6 +848,14 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 	Port *port = sn->findPort(sourcePort);
 	assert(port);
 
+	StdScheduleNode *destsn =
+		(StdScheduleNode *)destObject._node()->cast("StdScheduleNode");
+	if(destsn)
+	{
+		sn->connect(sourcePort,destsn,destPort);
+		return;
+	}
+	
 	ASyncPort *ap = port->asyncPort();
 
 	if(ap)
