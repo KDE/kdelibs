@@ -24,6 +24,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qtimer.h>
 
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -154,6 +155,24 @@ private:
     * in only one rebuilding.
     */
    QTimer* m_pTimer;
+};
+
+class KHostnameD : public QObject
+{
+   Q_OBJECT
+public:
+   KHostnameD(int pollInterval);
+   ~KHostnameD();
+   
+public slots:
+   void checkHostname();
+
+private:
+   /**
+    * Timer for interval hostname checking.
+    */
+   QTimer m_Timer;
+   QCString m_hostname;
 };
 
 #endif

@@ -60,6 +60,14 @@ static void runKonfUpdate()
    KApplication::kdeinitExecWait( "kconf_update");
 }
 
+static void runDontChangeHostname(const QCString &oldName, const QCString &newName)
+{
+   QStringList args;
+   args.append(QFile::decodeName(oldName));
+   args.append(QFile::decodeName(newName));
+   KApplication::kdeinitExecWait( "kdontchangethehostname", args );
+}
+
 class KBuildSycoca : public KSycoca
 {
 public:
@@ -115,7 +123,6 @@ bool Kded::process(const QCString &obj, const QCString &fun,
   KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
   if (s && !s->library().isEmpty())
   {
-qWarning("Loading '%s'", s->name().latin1());
     // get the library loader instance
  
     KLibLoader *loader = KLibLoader::self();
@@ -128,12 +135,10 @@ qWarning("Loading '%s'", s->name().latin1());
     factory = "create_" + factory;
     QString libname = "libkded_"+s->library(); 
 
-qWarning("Opening '%s'", libname.latin1());
     KLibrary *lib = loader->library(QFile::encodeName(libname));
     if (lib)
     {
       // get the create_ function
-qWarning("Looking up '%s'", factory.latin1());
       void *create = lib->symbol(QFile::encodeName(factory));
 
       if (create)
@@ -141,13 +146,11 @@ qWarning("Looking up '%s'", factory.latin1());
         // create the module
         KDEDModule* (*func)(const QCString &); 
         func = (KDEDModule* (*)(const QCString &)) create;
-qWarning("Calling '%s'", factory.latin1());
         KDEDModule *module = func(obj);
         if (module)
         {
           m_modules.append(module);
           connect(module, SIGNAL(destroyed()), SLOT(slotKDEDModuleRemoved()));
-qWarning("Forwarding call to new object.");
           return module->process(fun, data, replyType, replyData);
         }
       }
@@ -270,7 +273,6 @@ bool Kded::process(const QCString &fun, const QByteArray &data,
                            QCString &replyType, QByteArray &replyData)
 {
   if (fun == "recreate()") {
-    kdDebug(7020) << "got a recreate signal!" << endl;
     if (m_requests.isEmpty())
     {
        m_pTimer->start(0, true /* single shot */ );
@@ -286,8 +288,6 @@ bool Kded::process(const QCString &fun, const QByteArray &data,
 
 void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
 {
-  //kdDebug(7020) << QString("reading %1").arg(_path) << endl;
-
   QString path( _path );
   if ( path.right(1) != "/" )
     path += "/";
@@ -382,6 +382,40 @@ void KUpdateD::slotNewUpdateFile()
     m_pTimer->start( 500, true /* single shot */ );
 }
 
+KHostnameD::KHostnameD(int pollInterval)
+{
+    m_Timer.start(pollInterval, false /* repetitive */ );
+    connect(&m_Timer, SIGNAL(timeout()), this, SLOT(checkHostname()));
+    checkHostname();
+}
+
+KHostnameD::~KHostnameD()
+{
+    // Empty
+}
+
+void KHostnameD::checkHostname()
+{
+    char buf[1024+1];
+    if (gethostname(buf, 1024) != 0)
+       return;
+
+    if (m_hostname.isEmpty())
+    {
+       m_hostname = buf;
+       return;
+    }
+
+    if (m_hostname == buf)
+       return;
+
+    QCString newHostname = buf;
+
+    runDontChangeHostname(m_hostname, newHostname);
+    m_hostname = newHostname;    
+}
+
+
 static KCmdLineOptions options[] =
 {
   { "check", I18N_NOOP("Check Sycoca database only once."), 0 },
@@ -455,6 +489,7 @@ int main(int argc, char *argv[])
      config->setGroup("General");
      int PollInterval = config->readNumEntry("PollInterval", 500);
      int NFSPollInterval = config->readNumEntry("NFSPollInterval", 5000);
+     int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
 
      Kded *kded = new Kded(PollInterval, NFSPollInterval); // Build data base
 
@@ -464,6 +499,7 @@ int main(int argc, char *argv[])
      KDEDApplication k;
 
      KUpdateD updateD(PollInterval, NFSPollInterval); // Watch for updates
+     KHostnameD hostnameD(HostnamePollInterval); // Watch for hostname changes
 
      DCOPClient *client = kapp->dcopClient();
      QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),
