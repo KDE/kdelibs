@@ -213,19 +213,18 @@ TABLE[align="center"] {
 
 THEAD { 
 	display: table-header-group; 
-	border: inherit;
+	padding: inherit; 
 }
       
 TBODY { 
 	display: table-row-group;
 	vertical-align: inherit; 
-        border: inherit;
 	padding: inherit; 
 }
       
 TFOOT { 
 	display: table-footer-group; 
-	border: inherit; 
+	padding: inherit; 
 }
 
 COL { 
