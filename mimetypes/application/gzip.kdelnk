@@ -2,14 +2,14 @@
 [KDE Desktop Entry]
 MimeType=application/x-gzip
 Comment=Gzip file
-Comment[fr]=Fichier compressé GZIP
+Comment[fr]=Fichier compressé par gzip
 Comment[it]=File Compresso Gzip
-DefaultApp=
 Comment[nl]=GZip bestand
-Icon=tgz.xpm
-Type=MimeType
-Patterns=*.gz;*.tgz;
 Comment[de]=GZip Datei
 Comment[pl]=Plik GZip
 Comment[fi]=Gzip paketti
 Comment[pt]=Ficheiro GZip
+DefaultApp=
+Icon=tgz.xpm
+Type=MimeType
+Patterns=*.gz;*.tgz;
