@@ -268,7 +268,12 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
             return 0L; // Still no database - maybe kdeinit was already running and it's too early
       }
    }
-   checkVersion(); // rewind and check
+   // rewind and check
+   if (!checkVersion(false))
+   {
+     kdWarning(7011) << "Outdated database found" << endl;
+     return 0L;
+   }
    Q_INT32 aId;
    Q_INT32 aOffset;
    while(true)
