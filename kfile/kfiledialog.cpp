@@ -1009,40 +1009,27 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
     KURL tmp ( dir->url() );
     tmp.cd(item->fileName());
-/*  QString tmp = dir->url();
-    if (tmp.right(1)[0] != '/')
-	tmp += "/";
-    QString tmps = item->fileName();
-    KURL::encodeURL(tmps);
-    tmp += tmps;
-    tmp += "/";
-*/
-    debugC("dirActivated %s", tmp.path().ascii());
+    kdebug(KDEBUG_INFO, 250, "dirActivated %s", tmp.path().ascii());
     setDir(tmp.path(), true);
 }
 
 void KFileBaseDialog::fileActivated(KFileInfo *item)
 {
-    debugC("fileAct");
-
+    kdebug(KDEBUG_INFO, 250, "KFileBaseDialog::fileActivated(...)");
     KURL tmp ( dir->url() );
+    kdebug(KDEBUG_INFO, 250, "tmp = %s",tmp.url().data());
     tmp.setFileName(item->fileName());
-/*
+    kdebug(KDEBUG_INFO, 250, "tmp with filename = %s",tmp.url().data());
+
+    kdebug(KDEBUG_INFO, 250, "acceptUrls = %d", acceptUrls);
     if (acceptUrls)
-	filename_ = dir->url();
+	filename_ = tmp.url();
     else
-	filename_ = dir->path();
+	filename_ = tmp.path();
 
-    if (filename_.right(1)[0] != '/')
-	filename_ += "/";
-
-    QString tmps= item->fileName();
-
-    KURL::encodeURL(tmps);
-    filename_ += tmps;
+    kdebug(KDEBUG_INFO, 250, "emit fileSelected(%s)", filename_.data() );
     emit fileSelected(filename_);
-*/
-    emit fileSelected( acceptUrls ? tmp.url() : tmp.path() );
+
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = false;
@@ -1059,21 +1046,13 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 
     KURL tmp ( dir->url() ); 
     tmp.setFileName(highlighted);
-/*
+
     if (acceptUrls)
-	filename_ = dir->url();
+	filename_ = tmp.url();
     else
-	filename_ = dir->path();
+	filename_ = tmp.path();
 
-    if (filename_.right(1)[0] != '/')
-	filename_ += "/";
-
-    QString tmp = highlighted;
-    KURL::encodeURL(tmp);
-    filename_ += tmp;
     locationEdit->setText(filename_);
-*/
-    locationEdit->setText( acceptUrls ? tmp.url() : tmp.path() );
     emit fileHighlighted(highlighted);
 }
 
