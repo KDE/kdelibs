@@ -40,10 +40,11 @@ void KRootProp::sync()
 {
   if ( !dirty )
       return;
+  
+  QString propString;
   if ( !propDict.isEmpty() )
   {
     QMap<QString,QString>::Iterator it = propDict.begin();
-    QString propString;
     QString keyvalue;
 
     while ( it != propDict.end() )
@@ -52,13 +53,13 @@ void KRootProp::sync()
       propString += keyvalue;
       ++it;
     }
-
-    XChangeProperty( qt_xdisplay(), qt_xrootwin(), atom,
-                    XA_STRING, 8, PropModeReplace,
-                    (const unsigned char *)propString.utf8().data(),
-                    propString.length());
-    kapp->flushX();
   }
+
+  XChangeProperty( qt_xdisplay(), qt_xrootwin(), atom,
+                  XA_STRING, 8, PropModeReplace,
+                  (const unsigned char *)propString.utf8().data(),
+                  propString.length());
+  kapp->flushX();
 }
 
 void KRootProp::setProp( const QString& rProp )
