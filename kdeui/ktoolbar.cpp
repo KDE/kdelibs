@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.128  1999/08/03 23:31:17  ettrich
+// make flat only with the handle, not the entire toolbar
+//
 // Revision 1.127  1999/07/26 19:42:44  pbrown
 // fixed for qcombobox.
 //
@@ -311,7 +314,9 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 
         if (r.contains(QCursor::pos()))   // but on button
         {
-          myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
+          myPopup->hide();        //Sven: proposed by Carsten Pfeiffer
+          emit clicked( id );
+          //myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
           return true;  // ignore release
         }
       }
