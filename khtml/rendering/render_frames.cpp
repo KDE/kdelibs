@@ -860,8 +860,7 @@ void RenderPartObject::layout( )
     calcWidth();
     calcHeight();
 
-    if (m_width != m_oldwidth || m_height != m_oldheight)
-        RenderPart::layout();
+    RenderPart::layout();
 
     setLayouted();
 }
