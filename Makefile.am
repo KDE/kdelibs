@@ -25,9 +25,13 @@ DISTCLEANFILES = kdedoc/Makefile kdetest/Makefile
 tests:
 	(cd kdetest && $(MAKE) all)
 
+distclean-local:
+	(cd kdetest && $(MAKE) distclean)
+
 acinclude.m4: acinclude.m4.in libtool.m4.in
 	cat acinclude.m4.in libtool.m4.in   > acinclude.m4
 
 messages:
 	@XGETTEXT@ -C -ktranslate -ki18n */*.cpp && mv messages.po po/kde.pot
 	(cd po && $(MAKE) merge)
+
