@@ -356,7 +356,7 @@ bool KAccelBase::updateConnections()
 			info.pAction = 0;
 		}
 
-		kdDebug(125) << "mapKeyToAction[" << key.toStringInternal() << "] = " << info.pAction << endl;
+		//kdDebug(125) << "mapKeyToAction[" << key.toStringInternal() << "] = " << info.pAction << endl;
 		mapKeyToAction[key] = info;
 	}
 
@@ -403,7 +403,7 @@ bool KAccelBase::updateConnections()
 // Construct a list of keys to be connected, sorted highest priority first.
 void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 {
-	kdDebug(125) << "KAccelBase::createKeyList()" << endl;
+	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !m_bEnabled )
 		return;
 
@@ -413,18 +413,18 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
 		if( pAction && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
 			// For each key sequence associated with action
-			for( uint iSeq = 0; iSeq < pAction->sequenceCount(); iSeq++ ) {
-				const KKeySequence& seq = pAction->seq(iSeq);
+			for( uint iSeq = 0; iSeq < pAction->shortcut().count(); iSeq++ ) {
+				const KKeySequence& seq = pAction->shortcut().seq(iSeq);
 				if( seq.count() > 0 ) {
 					KKeyNative::Variations vars;
 					vars.init( seq.key(0), !m_bNativeKeys );
 					for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 						rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
-						kdDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
+						//kdDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
 					}
 				}
-				else
-					kdDebug(125) << "\t*" << pAction->name() << ":" << endl;
+				//else
+				//	kdDebug(125) << "\t*" << pAction->name() << ":" << endl;
 			}
 		}
 	}
@@ -441,16 +441,16 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 	kdDebug(125) << "KAccelBase::insertConnection( " << &action << "=\"" << action.m_sName << "\"; shortcut = " << action.shortcut().toStringInternal() << " )  this = " << this << endl;
 
 	// For each sequence associated with the given action:
-	for( uint iSeq = 0; iSeq < action.sequenceCount(); iSeq++ ) {
+	for( uint iSeq = 0; iSeq < action.shortcut().count(); iSeq++ ) {
 		// Get the first key of the sequence.
 		KKeyNative::Variations vars;
-		vars.init( action.seq(iSeq).key(0), !m_bNativeKeys );
+		vars.init( action.shortcut().seq(iSeq).key(0), !m_bNativeKeys );
 		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 			KKey key = vars.key( iVari );
 
 			if( !key.isNull() ) {
 				if( !m_mapKeyToAction.contains( key ) ) {
-					if( action.seq(iSeq).count() == 1 ) {
+					if( action.shortcut().seq(iSeq).count() == 1 ) {
 						m_mapKeyToAction[key] = ActionInfo( &action, iSeq, iVari );
 						if( connectKey( action, key ) )
 							action.incConnections();
@@ -496,10 +496,10 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
 	// For each sequence associated with the given action:
-	for( uint iSeq = 0; iSeq < action.sequenceCount(); iSeq++ ) {
+	for( uint iSeq = 0; iSeq < action.shortcut().count(); iSeq++ ) {
 		// Get the first key of the sequence.
 		KKeyNative::Variations vars;
-		vars.init( action.seq(iSeq).key(0), !m_bNativeKeys );
+		vars.init( action.shortcut().seq(iSeq).key(0), !m_bNativeKeys );
 		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 			const KKey& key = vars.key( iVari );
 
@@ -561,8 +561,8 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 		if( bActionInserted && !pAction->isConfigurable() && pAction->name().contains( ':' ) )
 			bInsertSeparator = true;
 
-		for( uint iSeq = 0; iSeq < pAction->sequenceCount(); iSeq++ ) {
-			const KKeySequence& seqAction = pAction->seq(iSeq);
+		for( uint iSeq = 0; iSeq < pAction->shortcut().count(); iSeq++ ) {
+			const KKeySequence& seqAction = pAction->shortcut().seq(iSeq);
 			if( seqAction.startsWith( seq ) ) {
 				if( bInsertSeparator ) {
 					pMenu->insertSeparator();

@@ -59,7 +59,9 @@ class KConfigBase;
 					2) Keypad_Asterisk
 */
 
-//----------------------------------------------------
+//---------------------------------------------------------------------
+// KAccelAction
+//---------------------------------------------------------------------
 
 class KAccelAction
 {
@@ -80,7 +82,6 @@ class KAccelAction
 
 	KAccelAction& operator=( const KAccelAction& );
 
-	uint sequenceCount() const;
 	const QString& name() const                { return m_sName; }
 	const QString& label() const               { return m_sLabel; }
 	const QString& whatsThis() const           { return m_sWhatsThis; }
@@ -103,11 +104,10 @@ class KAccelAction
 
 	int getID() const   { return m_nIDAccel; }
 	void setID( int n ) { m_nIDAccel = n; }
-	const KKeySequence& seq( uint i ) const;
 	bool isConnected() const;
 
 	bool setKeySequence( uint i, const KKeySequence& );
-	void clearShortcuts();
+	void clearShortcut();
 	bool contains( const KKeySequence& );
 
 	QString toString() const;
@@ -140,7 +140,9 @@ class KAccelAction
 	friend class KAccelBase;
 };
 
-//----------------------------------------------------
+//---------------------------------------------------------------------
+// KAccelActions
+//---------------------------------------------------------------------
 
 class KAccelActions
 {
@@ -195,27 +197,6 @@ class KAccelActions
 	KAccelActions& operator =( KAccelActions& );
 
 	friend class KAccelBase;
-};
-
-class KAccelShortcutSet : public KShortcutSet
-{
- public:
-	KAccelShortcutSet( KAccelActions& );
-	virtual ~KAccelShortcutSet();
-
-	virtual uint count() const;
-	virtual int index( const QString& sName ) const;
-	virtual const QString& name( uint ) const;
-	virtual const KShortcut& shortcut( uint ) const;
-	virtual const KShortcut& shortcutDefault( uint ) const;
-	virtual bool isConfigurable( uint ) const;
-	virtual bool setShortcut( uint, const KShortcut& );
-
- protected:
-	KAccelActions& m_actions;
-
- private:
-	class KAccelShortcutSetPrivate* d;
 };
 
 #endif // _KACCELACTION_H
