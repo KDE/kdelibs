@@ -47,6 +47,7 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qcleanuphandler.h>
+#include <qheader.h>
 #include <qlineedit.h>
 #include <qlistbox.h>
 #include <qscrollbar.h>
@@ -761,47 +762,6 @@ void PlastikStyle::renderButton(QPainter *p,
     }
 
     p->setPen(oldPen);
-}
-
-void PlastikStyle::renderHeader(QPainter *p,
-                                const QRect &r,
-                                const QColorGroup &g,
-                                bool sunken,
-                                bool mouseOver,
-                                bool horizontal,
-                                bool enabled) const
-{
-    if(kickerMode) enabled = true;
-
-    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-    // Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-    if(!enabled) contourFlags|=Is_Disabled;
-    renderContour(p, r, g.background(), getColor(g,ButtonContour),
-                    contourFlags);
-
-    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-    // Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-    if(horizontal) surfaceFlags|=Is_Horizontal;
-    if(!enabled) surfaceFlags|=Is_Disabled;
-    else {
-        if(sunken) surfaceFlags|=Is_Sunken;
-        else {
-            if(mouseOver) {
-                surfaceFlags|=Is_Highlight;
-                if(horizontal) {
-                    surfaceFlags|=Highlight_Top;
-                    surfaceFlags|=Highlight_Bottom;
-                } else {
-                    surfaceFlags|=Highlight_Left;
-                    surfaceFlags|=Highlight_Right;
-                }
-            }
-        }
-    }
-    renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                    g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast,
-                    surfaceFlags);
-
 }
 
 void PlastikStyle::renderDot(QPainter *p,
@@ -1523,7 +1483,34 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             // the taskbar buttons seems to be painted with PE_HeaderSection but I
             // want them look like normal buttons (at least for now. :) )
             if(!kickerMode) {
-                renderHeader(p, r, cg, (on||down), mouseOver, true, enabled );
+                // detect if this is the left most header item
+                bool isFirst = false;
+                QHeader *header = dynamic_cast<QHeader*>(p->device() );
+                if (header) {
+                    isFirst = header->mapToIndex(header->sectionAt(r.x() ) ) == 0;
+                }
+
+                uint contourFlags = Draw_Right|Draw_Top|Draw_Bottom;
+                if (isFirst)
+                    contourFlags |= Draw_Left;
+                if(!enabled) contourFlags|=Is_Disabled;
+                renderContour(p, r, cg.background(), getColor(cg,ButtonContour),
+                                contourFlags);
+
+                uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                if(!enabled) surfaceFlags|=Is_Disabled;
+                else {
+                    if(on||down) surfaceFlags|=Is_Sunken;
+                    else {
+                        if(mouseOver) {
+                            surfaceFlags|=Is_Highlight|Highlight_Top|Highlight_Bottom;
+                        }
+                    }
+                }
+                renderSurface(p, QRect(isFirst?r.left()+1:r.left(), r.top()+1, isFirst?r.width()-2:r.width()-1, r.height()-2),
+                                cg.background(), cg.button(), getColor(cg,MouseOverHighlight), _contrast,
+                                surfaceFlags);
+
                 break;
             }
         }

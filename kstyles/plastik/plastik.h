@@ -221,14 +221,6 @@ protected:
                       bool enabled = true,
                       bool khtmlMode = false) const;
 
-    void renderHeader(QPainter *p,
-                      const QRect &r,
-                      const QColorGroup &g,
-                      bool sunken = false,
-                      bool mouseOver = false,
-                      bool horizontal = true,
-                      bool enabled = true) const;
-
     void renderPanel(QPainter *p,
                      const QRect &r,
                      const QColorGroup &g,
