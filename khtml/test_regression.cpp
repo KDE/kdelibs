@@ -543,6 +543,8 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     f.writeBlock( s.latin1(), s.length() );
     f.close();
 
+    m_paintBuffer = 0;
+
     curr = this;
 }
 
@@ -569,6 +571,10 @@ static QStringList readListFile( const QString &filename )
     return ignoreFiles;
 }
 
+RegressionTest::~RegressionTest()
+{
+    delete m_paintBuffer;
+}
 
 bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
 {
@@ -781,31 +787,60 @@ QString RegressionTest::getPartOutput( OutputType type)
     return dump;
 }
 
-QPixmap RegressionTest::outputPixmap()
+QImage RegressionTest::renderToImage()
 {
     int ew = m_part->view()->contentsWidth();
     int eh = m_part->view()->contentsHeight();
-    QPixmap paintBuffer(ew, eh, -1, QPixmap::NoOptim );
+#if 1
 
+    QImage img( ew, eh, 32 );
+    img.fill( 0xff0000 );
+    if (!m_paintBuffer )
+        m_paintBuffer = new QPixmap( 512, 64, -1, QPixmap::MemoryOptim );
+
+    for ( int py = 0; py < eh; py += 64 ) {
+        for ( int px = 0; px < ew; px += 512 ) {
+            QPainter* tp = new QPainter;
+            tp->begin( m_paintBuffer );
+            tp->translate( -px, -py );
+            tp->fillRect(px, py, 512, 64, Qt::magenta);
+            m_part->document().handle()->renderer()->layer()->paint( tp, QRect( px, py, 512, 64 ) );
+            tp->end();
+            delete tp;
+
+            // now fill the chunk into our image
+            QImage chunk = m_paintBuffer->convertToImage();
+            assert( chunk.depth() == 32 );
+            for ( int y = 0; y < 64 && py + y < eh; ++y )
+                memcpy( &img.scanLine( py+y )[px*4], chunk.scanLine( y ), kMin( 512, ew-px )*4 );
+        }
+    }
+#else
+    delete m_paintBuffer;
+    m_paintBuffer = new QPixmap( ew, eh, -1, QPixmap::MemoryOptim );
     QPainter* tp = new QPainter;
-    tp->begin( &paintBuffer );
-
-    tp->fillRect(0, 0, ew, eh, Qt::white);
+    tp->begin( m_paintBuffer );
+    tp->fillRect(0, 0, ew, eh, Qt::magenta);
+    // bad idea: this switches KHTML into *printing* mode. no wonder everything
+    // was so broken..
     m_part->paint( tp, QRect( 0, 0, ew, eh ) );
     tp->end();
     delete tp;
+    QImage img = m_paintBuffer->convertToImage();
 
-    return paintBuffer;
+#endif
+
+    assert( img.depth() == 32 );
+    return img;
 }
 
-bool RegressionTest::pixmapsSame( const QImage &lhsi, const QPixmap &rhs )
+bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
 {
-    if ( lhsi.width() != rhs.width() || lhsi.height() != rhs.height() ) {
-        kdDebug() << "dimensions different " << lhsi.size() << " " << rhs.size() << endl;
+    if ( lhsi.width() != rhsi.width() || lhsi.height() != rhsi.height() ) {
+        kdDebug() << "dimensions different " << lhsi.size() << " " << rhsi.size() << endl;
         return false;
     }
 
-    QImage rhsi = rhs.convertToImage().convertDepth( 32 );
     int bytes = lhsi.bytesPerLine();
     if ( bytes != rhsi.bytesPerLine() ) {
         kdDebug() << "different number of bytes per line\n";
@@ -956,7 +991,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
+        renderToImage().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
     } else {
         // compare with output file
         if ( m_known_failures & DomFailure)
@@ -966,11 +1001,11 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-#if 1
+
         QImage baseline;
         baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
-        QPixmap output = outputPixmap();
-        if ( !pixmapsSame( baseline, output ) ) {
+        QImage output = renderToImage();
+        if ( !imageEqual( baseline, output ) ) {
             output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 60);
             doFailureReport( baseline.size(), output.size(), m_baseDir, filename );
         }
@@ -979,7 +1014,6 @@ void RegressionTest::testStaticFile(const QString & filename)
             ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-dump.png" ) );
         }
 
-#endif
     }
 }
 

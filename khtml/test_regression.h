@@ -125,6 +125,7 @@ public:
 
     RegressionTest(KHTMLPart *part, const QString &baseDir,
 		   bool _genOutput);
+    ~RegressionTest();
 
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
@@ -138,8 +139,8 @@ public:
     bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
     void createMissingDirs(QString path);
 
-    QPixmap outputPixmap();
-    bool pixmapsSame( const QImage &lhs, const QPixmap &rhs );
+    QImage renderToImage();
+    bool imageEqual( const QImage &lhs, const QImage &rhs );
     void doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test );
 
     KHTMLPart *m_part;
@@ -149,6 +150,7 @@ public:
 
     QString m_currentCategory;
     QString m_currentTest;
+    QPixmap* m_paintBuffer;
 
     bool m_getOutput;
     int m_passes_work;
