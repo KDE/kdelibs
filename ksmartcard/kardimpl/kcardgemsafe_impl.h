@@ -29,7 +29,7 @@ class KCardGemSafeImplementation : public KCardImplementation {
 
  public:
 
-  KCardGemSafeImplementation(KCardReader *);
+  KCardGemSafeImplementation();
   ~KCardGemSafeImplementation();
 
   // Reimplemented

@@ -40,7 +40,7 @@ class KCardGsmImplementation:public KCardImplementation{
 
  public:
 
-  KCardGsmImplementation (KCardReader *);
+  KCardGsmImplementation ();
   ~KCardGsmImplementation();
 
   /**

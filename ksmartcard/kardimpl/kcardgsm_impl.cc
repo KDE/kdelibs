@@ -23,18 +23,15 @@
 #include <klocale.h>
 
 extern "C" {
-  KCardGsmImplementation *create_gsm(KCardReader * reader) {
-    return new KCardGsmImplementation (reader);
+  KCardGsmImplementation *create_gsm() {
+    return new KCardGsmImplementation ();
   }
   
 }
 
-KCardGsmImplementation::KCardGsmImplementation(KCardReader * reader)
-  :KCardImplementation (reader){
+KCardGsmImplementation::KCardGsmImplementation()
+  :KCardImplementation (KCARD_TYPE_PROCESSOR,"GSM","GSM"){
 
-  	_type = KCARD_TYPE_PROCESSOR;
-	_subType = "GSM";
-	_subSubType = "GSM";
 	_errorMessage=QString::null;
 	_errno=0;
 	_fileHeader=QString::null;
@@ -60,11 +57,11 @@ int KCardGsmImplementation::selectFile (const QString fileID){
   if ( _errno )
     
     {
-      _errorMessage= i18n("Error sending command: ")+KPCSC::translateError(_errno);
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
       return -1;
     }
   else if (status.left(2)!= "9F") {
-    _errorMessage= i18n("Error when selecting file: ")+fileID;
+    _errorMessage= i18n("Error when selecting GSM file: ")+fileID;
     _errorMessage+=KCardGsmImplementation::getStatusString (status);
     return -1;
   }
@@ -82,14 +79,14 @@ int KCardGsmImplementation::selectFile (const QString fileID){
   if ( _errno )
 
     {
-      _errorMessage= i18n("Error sending command: ")+KPCSC::translateError(_errno);
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
       _fileHeader=QString::null;
       return -1;
     }
 
   else if (status.left(2)!= "90" && status.left(2)!= "91") {
 
-    _errorMessage= i18n("Error when retrieving file information: ")+fileID;
+    _errorMessage= i18n("Error when retrieving GSM file information: ")+fileID;
     _errorMessage+=KCardGsmImplementation::getStatusString (status);
     _fileHeader=QString::null;
     return -1;
@@ -112,7 +109,7 @@ int KCardGsmImplementation::readTransparentFile (QString & fileContent){
   QString status=QString::null;
   
   if (_fileHeader==QString::null) {
-    _errorMessage= i18n("No file selected ");
+    _errorMessage= i18n("No GSM file selected ");
     return -1;
 
   }
@@ -125,14 +122,14 @@ int KCardGsmImplementation::readTransparentFile (QString & fileContent){
   if ( _errno )
     
     {
-      _errorMessage= i18n("Error sending command: ")+KPCSC::translateError(_errno);
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
       
       return -1;
     }
 
   else if (status.left(2)!= "90" && status.left(2)!= "91") {
     
-    _errorMessage= i18n("Error when reading transparent file ");
+    _errorMessage= i18n("Error when reading GSM card transparent file ");
     _errorMessage+=KCardGsmImplementation::getStatusString (status);
     return -1;
 

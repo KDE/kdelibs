@@ -21,18 +21,19 @@ INCLUDES= -I$(srcdir)/.. -I$(srcdir)/../kardlib -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkscard_gsm.la libkscard_gemsafe.la
 
+
 libkscard_gsm_la_LDFLAGS = $(all_libraries) ../kardlib/libksmartcard.la -module -avoid-version
 libkscard_gsm_la_LIBADD = 
-libkscard_gsm_la_SOURCES =kcardgsm_impl.h kcardgsm_impl.cc kcardimplementation.cc kcardimplementation.h
+libkscard_gsm_la_SOURCES =kcardgsm_impl.h kcardgsm_impl.cc
 
 
 libkscard_gemsafe_la_LDFLAGS = $(all_libraries) ../kardlib/libksmartcard.la -module -avoid-version
 libkscard_gemsafe_la_LIBADD = 
-libkscard_gemsafe_la_SOURCES =kcardgemsafe_impl.h kcardgemsafe_impl.cc kcardimplementation.cc kcardimplementation.h
+libkscard_gemsafe_la_SOURCES =kcardgemsafe_impl.h kcardgemsafe_impl.cc
 
 METASOURCES = AUTO
 
-include_HEADERS = 
+include_HEADERS =  kcardgsm_impl.h kcardgemsafe_impl.h
 
 noinst_HEADERS =
 

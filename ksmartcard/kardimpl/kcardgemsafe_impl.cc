@@ -22,19 +22,17 @@
 #include "kcardreader.h"
 
 extern "C" {
-  KCardGemSafeImplementation *create_gemsafe(KCardReader * reader) {
-    return new KCardGemSafeImplementation (reader);
+  KCardGemSafeImplementation *create_gemsafe() {
+    return new KCardGemSafeImplementation ();
   }
   
 }
 
 
-KCardGemSafeImplementation::KCardGemSafeImplementation(KCardReader * reader)
-  :KCardImplementation (reader){
+KCardGemSafeImplementation::KCardGemSafeImplementation()
+  :KCardImplementation (KCARD_TYPE_PROCESSOR,"GemSafe","GPK"){
 
-	_type = KCARD_TYPE_PROCESSOR;
-	_subType = "GemSafe";
-	_subSubType = "GPK";
+ 
 }
 
 
