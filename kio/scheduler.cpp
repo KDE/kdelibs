@@ -220,28 +220,30 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
 
 void Scheduler::_cancelJob(SimpleJob *job) {
 //    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
-    if ( job->slave() ) // was running
+    Slave *slave = job->slave();
+    if ( !slave  ) 
     {
-	Slave *slave = job->slave();
-//        kdDebug(7006) << "Scheduler: killing slave " << slave->slave_pid() << endl;
-        slave->kill();
-        _jobFinished( job, slave );
-	slotSlaveDied( slave);
-    } else { // was not yet running (don't call this on a finished job!)
+        // was not yet running (don't call this on a finished job!)
         newJobs.removeRef(job);
         QString protocol = job->url().protocol();
         ProtocolInfo *protInfo = protInfoDict->get(protocol);
         protInfo->joblist.removeRef(job);
 
-        // Search all coSlaves to see if job is in the queue
-        QPtrDictIterator<JobList> it( coSlaves );
-        while( it.current() )
+        // Search all slaves to see if job is in the queue of a coSlave
+        slave = slaveList->first();
+        for(; slave; slave = slaveList->next())
         {
-           JobList *list = it.current();
-           list->removeRef(job);
-           ++it;
+           JobList *list = coSlaves.find(slave);
+           if (list && list->find(job))
+              break;
         }
+        if (!slave)
+           return; // Job was not yet running and not in a coSlave queue.
     }
+    kdDebug(7006) << "Scheduler: killing slave " << slave->slave_pid() << endl;
+    slave->kill();
+    _jobFinished( job, slave );
+    slotSlaveDied( slave);
 }
 
 void Scheduler::startStep()
@@ -605,7 +607,7 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
     JobList *list = coSlaves.find(slave);
     if (list)
     {
-       //TODO: coSlave dies, kill jobs waiting in queue
+       // coSlave dies, kill jobs waiting in queue
        disconnectSlave(slave);
     }
 
@@ -757,7 +759,11 @@ void
 Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = (Slave *)sender();
-    emit slaveError(slave, errorNr, errorMsg);
+    if (coIdleSlaves->find(slave))
+    {
+       // Only forward to application if slave is idle 
+       emit slaveError(slave, errorNr, errorMsg);
+    }
 }
 
 bool 
@@ -794,6 +800,7 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
        job->kill();
     }
     delete list;
+    coIdleSlaves->removeRef(slave);
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
