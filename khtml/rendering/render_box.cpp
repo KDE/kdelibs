@@ -166,6 +166,9 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
 {
+    if ( cliph < 0 )
+	return;
+
     if(c.isValid())
         p->fillRect(_tx, clipy, w, cliph, c);
     // no progressive loading of the background image
