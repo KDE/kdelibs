@@ -162,7 +162,7 @@ class KGlobalSettings
     /**
      * Returns the preferred completion mode setting.
      *
-     * @return @see Completion.  Default is @p CompletionPopup.
+     * @return @ref Completion.  Default is @p CompletionPopup.
      */
     static Completion completionMode();
 

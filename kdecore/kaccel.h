@@ -462,7 +462,7 @@ class KAccel : public QAccel
 	void writeSettings(KConfig* config = 0) const;
 
         /**
-         * More flexible version of @see writeSettings. You can specify your
+         * More flexible version of @ref writeSettings. You can specify your
          * own key map. ( writeSettings calls this function internally )
          * @internal
          **/
