@@ -52,14 +52,3 @@ libkfile_la_LIBADD =  $(LIB_KSYCOCA)
 
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)
-
-check_PROGRAMS = kfstest kurlrequestertest
-
-kfstest_SOURCES =  kfstest.cpp
-kurlrequestertest_SOURCES =  kurlrequestertest.cpp
-
-kfstest_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
-kfstest_LDADD = libkfile.la
-
-kurlrequestertest_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
-kurlrequestertest_LDADD = libkfile.la
