@@ -1,3 +1,9 @@
+2005-02-14  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_flow.cpp (repaint): Only include top and bottom
+	overflow while not relayouting, otherwise root inline box may not be
+	available yet.
+
 2005-02-14  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (value): Fix for textarea onChange not emitted:

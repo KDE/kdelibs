@@ -228,16 +228,20 @@ void RenderFlow::repaint(bool immediate)
     if (isInlineFlow()) {
         // Find our leftmost position.
         int left = 0;
-        int top = firstLineBox() ? firstLineBox()->root()->topOverflow() : 0;
+        // root inline box not reliably availabe during relayout
+        int top = firstLineBox() ? (
+                needsLayout() ? firstLineBox()->xPos() : firstLineBox()->root()->topOverflow()
+            ) : 0;
         for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox())
             if (curr == firstLineBox() || curr->xPos() < left)
                 left = curr->xPos();
 
         // Now invalidate a rectangle.
         int ow = style() ? style()->outlineWidth() : 0;
+        RootInlineBox *lastRoot = lastLineBox() && !needsLayout() ? lastLineBox()->root() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2,
-					    (lastLineBox() ? lastLineBox()->root()->bottomOverflow() : height())+ow*2,
+					    (lastRoot ? lastRoot->bottomOverflow() : height())+ow*2,
 					    immediate);
     }
     else {
