@@ -97,6 +97,14 @@ KGuiItem::~KGuiItem() {
 QString KGuiItem::text() const {
     return d->m_text;
 }
+QString KGuiItem::plainText() const {
+  QString stripped( d->m_text );
+  int pos;
+  while( ( pos = stripped.find( '&' ) ) != -1 )
+    stripped.replace( pos, 1, QString::null );
+
+  return stripped;
+}
 QIconSet KGuiItem::iconSet() const {
     return d->m_iconSet;
 }

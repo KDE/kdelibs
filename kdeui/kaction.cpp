@@ -22,6 +22,7 @@
 */
 #include "kaction.h"
 
+#include <kguiitem.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kmenubar.h>
@@ -89,16 +90,15 @@ int KAction::getToolButtonID()
     return toolbutton_no--;
 }
 
-class KAction::KActionPrivate
+class KAction::KActionPrivate : public KGuiItem
 {
 public:
-  KActionPrivate()
+  KActionPrivate() : KGuiItem()
   {
     m_kaccel    = 0;
     m_pAccelAction   = 0;
     m_bIconSet  = false;
     m_bIconSetNotYetLoaded=false;
-    m_enabled   = true;
     m_accel     = 0;
   }
   ~KActionPrivate()
@@ -107,19 +107,11 @@ public:
   KAccel *m_kaccel;
   KAccelAction *m_pAccelAction;
 
-  QString m_iconName;
-  QString m_text;
-  QString m_plainText;
-  QString m_whatsThis;
   QString m_groupText;
   QString m_group;
-  QString m_toolTip;
 
-  QPixmap m_pixmap;
-  QIconSet m_iconSetDemand;
   bool m_bIconSet:1;
   bool m_bIconSetNotYetLoaded:1;
-  bool m_enabled:1;
   QKeySequence m_accel;
 
   struct Container
@@ -136,7 +128,7 @@ public:
 };
 
 KAction::KAction( const QString& text, QKeySequence accel, QObject* parent,
-                  const char* name )
+                             const char* name )
  : QObject( parent, name )
 {
     d = new KActionPrivate;
@@ -202,7 +194,7 @@ KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
     setText( text );
     setAccel( accel );
 
-    d->m_iconName=pix;
+    d->setIconName( pix );
     d->m_bIconSetNotYetLoaded=!(pix == "unknown");
     d->m_bIconSet=!(pix == "unknown");
 }
@@ -244,7 +236,7 @@ KAction::KAction( const QString& text, const QString& pix, QKeySequence accel,
     setAccel( accel );
     setText( text );
 
-    d->m_iconName=pix;
+    d->setIconName(pix);
     d->m_bIconSetNotYetLoaded=!(pix == "unknown");
     d->m_bIconSet=!(pix == "unknown");
     
@@ -392,12 +384,12 @@ QString KAction::group() const
 
 bool KAction::isEnabled() const
 {
-  return d->m_enabled;
+  return d->isEnabled();
 }
 
 void KAction::setToolTip( const QString& tt )
 {
-  d->m_toolTip = tt;
+  d->setToolTip( tt );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -417,7 +409,7 @@ void KAction::setToolTip( int i, const QString& tt )
 
 QString KAction::toolTip() const
 {
-  return d->m_toolTip;
+  return d->toolTip( );
 }
 
 // remove in KDE 3.0
@@ -428,10 +420,10 @@ void KAction::setStatusText( const QString &text )
 
 void KAction::setStatusText( int, const QString & )
 {
-  // ### remove in KDE 3.0
+  // ### remove in KDE 3.0 :-)
 }
 
-// remove in KDE 3.0
+// remove in KDE 4.0 .-)
 QString KAction::statusText() const
 {
   return toolTip();
@@ -454,24 +446,21 @@ int KAction::plug( QWidget *w, int index )
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
 
-    if ( !d->m_pixmap.isNull() )
-        id = menu->insertItem( d->m_pixmap, this, SLOT( slotActivated() ),
-                               d->m_accel, -1, index );
-    else if ( d->m_bIconSet )
-        id = menu->insertItem( iconSet(), d->m_text, this,//dsweet
+    if ( d->m_bIconSet )
+        id = menu->insertItem( iconSet(), d->text(), this,//dsweet
                                SLOT( slotActivated() ), d->m_accel,
                                -1, index );
     else
-        id = menu->insertItem( d->m_text, this,
+        id = menu->insertItem( d->text(), this,
                                SLOT( slotActivated() ),  //dsweet
                                d->m_accel, -1, index );
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
-    if ( !d->m_enabled )
+    if ( !d->isEnabled() )
         menu->setItemEnabled( id, false );
 
-    if ( !d->m_whatsThis.isEmpty() )
+    if ( !d->whatsThis().isEmpty() )
         menu->setWhatsThis( id, whatsThisWithIcon() );
 
     addContainer( menu, id );
@@ -491,7 +480,7 @@ int KAction::plug( QWidget *w, int index )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
-                         d->m_enabled, d->m_plainText, index );
+                         d->isEnabled(), d->plainText(), index );
     }
     else
     {
@@ -501,18 +490,18 @@ int KAction::plug( QWidget *w, int index )
       else
         instance = KGlobal::instance();
 
-      bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
-                         SLOT( slotActivated() ), d->m_enabled, d->m_plainText,
+      bar->insertButton( d->iconName(), id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ), d->isEnabled(), d->plainText(),
                          index, instance );
 
       bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
     }
 
-    if ( !d->m_whatsThis.isEmpty() )
+    if ( !d->whatsThis().isEmpty() )
         QWhatsThis::add( bar->getButton(id_), whatsThisWithIcon() );
 
-    if ( !d->m_toolTip.isEmpty() )
-      QToolTip::add( bar->getButton(id_), d->m_toolTip );
+    if ( !d->toolTip().isEmpty() )
+      QToolTip::add( bar->getButton(id_), d->toolTip() );
 
     addContainer( bar, id_ );
 
@@ -564,7 +553,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if (d->m_kaccel)
     unplugAccel();
   d->m_kaccel = kacc;
-  d->m_kaccel->insertAction(name(), d->m_plainText,
+  d->m_kaccel->insertAction(name(), d->plainText(),
       KShortcuts((QString)d->m_accel), KShortcuts((QString)d->m_accel),
       this, SLOT(slotActivated()),
       0, 0, configurable, isEnabled());
@@ -605,16 +594,16 @@ void KAction::setEnabled(bool enable)
   if (d->m_kaccel)
     d->m_kaccel->setActionEnabled(name(), enable);
 
-  if ( enable == d->m_enabled )
+  if ( enable == d->isEnabled() )
     return;
 
-  d->m_enabled = enable;
+  d->setEnabled( enable );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setEnabled( i, enable );
 
-  emit enabled( d->m_enabled );
+  emit enabled( d->isEnabled() );
 }
 
 void KAction::setEnabled( int i, bool e )
@@ -636,8 +625,7 @@ void KAction::setText( const QString& text )
   if (d->m_pAccelAction)
     d->m_pAccelAction->m_sDesc = text;
 
-  d->m_text = text;
-  d->m_plainText = plainText();
+  d->setText( text );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -648,7 +636,7 @@ void KAction::setText( const QString& text )
     KAccelActions& actions = m_parentCollection->keyMap();
     KAccelAction* pAction = actions.actionPtr(name());
     if ( pAction )
-      pAction->m_sDesc = d->m_plainText;
+      pAction->m_sDesc = d->plainText();
   }
 }
 
@@ -675,22 +663,17 @@ void KAction::setText( int i, const QString &text )
 
 QString KAction::text() const
 {
-  return d->m_text;
+  return d->text();
 }
 
 QString KAction::plainText() const
 {
-  QString stripped( d->m_text );
-  int pos;
-  while( ( pos = stripped.find( '&' ) ) != -1 )
-    stripped.replace( pos, 1, QString::null );
-
-  return stripped;
+  return d->plainText( );
 }
 
 void KAction::setIcon( const QString &icon )
 {
-  d->m_iconName = icon;
+  d->setIconName(  icon );
 
   // We load the "Small" icon as the main one (for menu items)
   // and we let setIcon( int, QString ) deal with toolbars
@@ -717,12 +700,12 @@ void KAction::setIcon( int id, const QString &icon )
 
 QString KAction::icon() const
 {
-  return d->m_iconName;
+  return d->iconName( );
 }
 
 void KAction::setIconSet( const QIconSet &iconset )
 {
-  d->m_iconSetDemand  = iconset;
+  d->setIconSet( iconset);
   d->m_bIconSet = true;
   d->m_bIconSetNotYetLoaded=false;
 
@@ -736,9 +719,9 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->m_text );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->text() );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->m_text );
+    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->text() );
   else if ( w->inherits( "KToolBar" ) )
   {
     if ( icon().isEmpty() && d->m_bIconSet ) // only if there is no named icon ( scales better )
@@ -749,8 +732,8 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
 QIconSet KAction::iconSet() const
 {
    if (d->m_bIconSetNotYetLoaded)
-      const_cast<KAction *>(this)->setIcon(d->m_iconName);
-   return d->m_iconSetDemand;
+      const_cast<KAction *>(this)->setIcon(d->iconName() );
+   return d->iconSet( );
 }
 
 bool KAction::hasIconSet() const
@@ -760,7 +743,7 @@ bool KAction::hasIconSet() const
 
 void KAction::setWhatsThis( const QString& text )
 {
-  d->m_whatsThis = text;
+  d->setWhatsThis(  text );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -788,20 +771,20 @@ void KAction::setWhatsThis( int i, const QString& text )
 
 QString KAction::whatsThis() const
 {
-  return d->m_whatsThis;
+  return d->whatsThis( );
 }
 
 QString KAction::whatsThisWithIcon() const
 {
     QString text = whatsThis();
-    if (!d->m_iconName.isEmpty())
-      return QString::fromLatin1("<img source=\"small|%1\"> %2").arg(d->m_iconName).arg(text);
+    if (!d->iconName().isEmpty())
+      return QString::fromLatin1("<img source=\"small|%1\"> %2").arg(d->iconName() ).arg(text);
     return text;
 }
 
 QPixmap KAction::pixmap() const
 {
-  return d->m_pixmap;
+  return QPixmap(); //remove next friday
 }
 
 QWidget* KAction::container( int index ) const
