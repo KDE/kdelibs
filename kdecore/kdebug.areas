@@ -143,6 +143,7 @@
 6045        khtml (rendering tree)
 6050        khtml (part)
 6060        khtml (cache)
+6061        khtml (cache-expiredates)
 6070        khtml (jscript)
 6080        khtml (css)
 6090        khtml (memory)
