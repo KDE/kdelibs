@@ -87,6 +87,7 @@ class KXMLGUIServant
 {
  public:
   KXMLGUIServant();
+  KXMLGUIServant( KXMLGUIServant *parent );
   virtual ~KXMLGUIServant();
 
   virtual QAction *action( const QDomElement &element ) = 0;
@@ -108,6 +109,15 @@ class KXMLGUIServant
 
   void setFactory( KXMLGUIFactory *factory );
   KXMLGUIFactory *factory() const;
+
+  KXMLGUIServant *parentServant() const;
+
+  void insertChildServant( KXMLGUIServant *child );
+  void removeChildServant( KXMLGUIServant *child );
+  const QList<KXMLGUIServant> *childServants();
+
+  void setServantBuilder( KXMLGUIBuilder *builder );
+  KXMLGUIBuilder *servantBuilder() const;
 
  private:
   KXMLGUIServantPrivate *d;
@@ -161,6 +171,8 @@ class KXMLGUIFactory
   KXMLGUIContainerNode *findContainerNode( KXMLGUIContainerNode *parentNode, QWidget *container );
 
   QWidget *findRecursive( KXMLGUIContainerNode *node );
+
+  QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder );
 
   KXMLGUIServant *m_servant;
   KXMLGUIBuilder *m_builder;
