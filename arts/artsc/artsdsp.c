@@ -200,17 +200,16 @@ int open (const char *pathname, int flags, ...)
   sndfd = orig_open("/dev/null",flags,mode);
   if(sndfd >= 0)
   {
-      if(!arts_init_done) {
+    if(!arts_init_done) {
 	  int rc = arts_init();
 	  if(rc < 0) {
-	      artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
-	      orig_close(sndfd);
-	      sndfd = -1;
-	      return orig_open (pathname, flags, mode);
-	  } else
-	      arts_init_done = 1;
-      }
-	
+	    artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
+	    orig_close(sndfd);
+	    sndfd = -1;
+	    return orig_open (pathname, flags, mode);
+	  }
+	  else arts_init_done = 1;
+    }
   }
 
   /* success */
@@ -601,3 +600,6 @@ FILE* fopen(const char *path, const char *mode)
 #endif
 
 #endif
+/*
+ * vim:ts=4
+ */
