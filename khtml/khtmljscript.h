@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Javascript
-// $Id:  $
+// $Id$
 
 #ifndef JSBUILTIN_H
 #define JSBUILTIN_H
@@ -56,7 +56,8 @@ protected:
     JSEnvironment *jsEnvironment;
 };
 
-#include "khtml.h"
+class KHTMLWidget;
+class KHTMLView;
 
 #define TYPE_JSDocumentObject 1000
 #define TYPE_JSWindowObject 1001

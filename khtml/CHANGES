@@ -4,6 +4,14 @@ KHTML CHANGES
 Version 0.20.0  - 6 Nov 1998 (Lars Knoll)
 --------------
 
+Fixed handling of GIF's in the cache.
+Removed some more unneeded functions in HTMLObject
+Removed lots of dependencies between header files
+Background image will get displayed again.
+
+Version 0.20.0  - 6 Nov 1998 (Lars Knoll)
+--------------
+
 Added a memory cache for images. This introduces some source
 incompatible changes, but they are in functions used only internally
 by khtmlw (removed some unneeded functions in HTMLImage).

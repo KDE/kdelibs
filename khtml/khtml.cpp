@@ -38,10 +38,16 @@
 #undef Color
 #endif
 
-#include "khtmlchain.h"
-#include "khtmltable.h"
 #include "khtml.h"
 #include "khtmlcache.h"
+#include "khtmlchain.h"
+#include "khtmlclue.h"
+#include "khtmldata.h"
+#include "khtmlform.h"
+#include "khtmlframe.h"
+#include "khtmltable.h"
+#include "khtmltoken.h"
+#include "khtmlview.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -245,11 +251,8 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url,
 			       bool update )
 {
 
-  printf("========================= REQUEST %s  ================\n", _url );
+  printf("==== REQUEST %s  ====\n", _url );
   
-  ///////////////
-  // The new code
-  ///////////////
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( p )
   {
@@ -265,15 +268,6 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url,
 
 void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
 {
-  /* if ( waitingFileList.findRef( _obj ) != -1 )
-     {
-     waitingFileList.removeRef( _obj );
-     emit cancelFileRequest( _obj->requestedFile() );
-     } */
-
-  ///////////////
-  // The new code
-  ///////////////
   QStrList lst;
   
   QDictIterator<HTMLPendingFile> it( mapPendingFiles );
@@ -300,16 +294,6 @@ void KHTMLWidget::cancelRequestFile( const char *_url )
 
 void KHTMLWidget::cancelAllRequests()
 {
-  /*  HTMLObject *o;
-
-    for ( o = waitingFileList.first(); o != 0; o = waitingFileList.next() )
-	emit cancelFileRequest( o->requestedFile() );
-
-    waitingFileList.clear(); */
-
-  ///////////////
-  // The new code
-  ///////////////
   QDictIterator<HTMLPendingFile> it( mapPendingFiles );
   for( ; it.current(); ++it )
     emit cancelFileRequest( it.current()->m_strURL );
@@ -325,10 +309,6 @@ void KHTMLWidget::requestBackgroundImage( const char *_url )
 
 void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof )
 {
-  ///////////////
-  // The new code
-  ///////////////
-
   bool do_update = false;
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
@@ -370,7 +350,19 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
+  {
+    if ( !bgPixmapURL.isEmpty() )
+    {
+	// Did the background image arrive ?
+	if ( strcmp( bgPixmapURL, _url ) == 0 )
+	{
+	    bgPixmap.load( _filename );					
+	    bgPixmapURL = 0;
+	    scheduleUpdate( true );
+	}
+    }    
     return;
+  }
 
   assert( !p->m_buffer.isOpen() );
   
@@ -385,45 +377,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
     emit documentDone();
     cache->flush();
   }
-  ///////////////
-  // The old code
-  ///////////////
 
-  /* QList<HTMLObject> del;
-    del.setAutoDelete( FALSE );
-
-    HTMLObject *p;    
-    for ( p = waitingFileList.first(); p != 0; p = waitingFileList.next() )
-    {
-	if ( strcmp( _url, p->requestedFile() ) == 0 )
-	{
-	    del.append( p );
-	    p->fileLoaded( _filename );
-	}
-    }
-
-    // Are we waiting for the background image ?
-    if ( !bgPixmapURL.isEmpty() )
-    {
-	// Did the background image arrive ?
-	if ( strcmp( bgPixmapURL, _url ) == 0 )
-	{
-	    bgPixmap.load( _filename );					
-	    bgPixmapURL = 0;
-	    scheduleUpdate( true );
-	}
-    }    
-
-    for ( p = del.first(); p != 0; p = del.next() )
-	waitingFileList.removeRef( p );
-
-    if ( waitingFileList.count() == 0 )
-    {
-	if ( !parsing )
-	{
-	    emit documentDone();
-	}
-    } */
 }
 
 void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data )
@@ -1918,7 +1872,7 @@ void KHTMLWidget::newFlow(HTMLClue * _clue)
          flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 
     flow->setIndent( indent );
-    flow->setHAlign( divAlign );
+    flow->setHAlign( (HTMLClue::HAlign)divAlign );
     _clue->append( flow );
 }
 
@@ -3105,7 +3059,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
      	      *(str+1)=='4' || *(str+1)=='5' || *(str+1)=='6' ) )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		HTMLClue::HAlign align = divAlign;
+		HTMLClue::HAlign align = (HTMLClue::HAlign)divAlign;
 
 		stringTok->tokenize( str + 3, " >" );
 		while ( stringTok->hasMoreTokens() )
@@ -3179,8 +3133,8 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		int size = 1;
 		int length = _clue->getMaxWidth();
 		int percent = 100;
-		HTMLClue::HAlign align = divAlign;
-		HTMLClue::HAlign oldAlign = divAlign;
+		HTMLClue::HAlign align = (HTMLClue::HAlign)divAlign;
+		HTMLClue::HAlign oldAlign = (HTMLClue::HAlign)divAlign;
 		bool shade = TRUE;
 
 		if ( flow )
@@ -3695,7 +3649,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	{
 		closeAnchor();
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		HTMLClue::HAlign align = divAlign;
+		HTMLClue::HAlign align = (HTMLClue::HAlign)divAlign;
 
 		stringTok->tokenize( str + 2, " >" );
 		while ( stringTok->hasMoreTokens() )
@@ -4023,7 +3977,7 @@ void KHTMLWidget::parseZ( HTMLClueV *, const char * )
 const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 {
     static const char *end[] = { "</cell>", 0 }; 
-    HTMLClue::HAlign olddivalign = divAlign;
+    HTMLClue::HAlign olddivalign = (HTMLClue::HAlign)divAlign;
     HTMLClue *oldFlow = flow;
     int oldindent = indent;
 
@@ -4093,7 +4047,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
     HTMLClueV *caption = 0;
     HTMLTableCell *tmpCell = 0;
     HTMLClue::VAlign capAlign = HTMLClue::Bottom;
-    HTMLClue::HAlign olddivalign = divAlign;
+    HTMLClue::HAlign olddivalign = (HTMLClue::HAlign)divAlign;
     HTMLClue *oldFlow = flow;
     int oldindent = indent;
     QColor tableColor;
@@ -5210,6 +5164,47 @@ bool KHTMLWidget::setCharset(const char *name){
           if (painter) painter->setFont( *font_stack.top() );
 	}
 	return TRUE;
+}
+
+void 
+KHTMLWidget::setDefaultFontBase( int size )
+{	
+  if ( size < 2 ) size = 2;
+  else if ( size > 5 ) size = 5;
+  defaultSettings->fontBaseSize = size - 1;
+}
+
+void 
+KHTMLWidget::setStandardFont( const char *name )
+{	
+  defaultSettings->fontBaseFace = name; 
+}
+
+void 
+KHTMLWidget::setFixedFont( const char *name )
+{	
+  defaultSettings->fixedFontFace = name; 
+}
+
+void 
+KHTMLWidget::setDefaultBGColor( const QColor &col )
+{	
+  defaultSettings->bgColor = col; 
+}
+
+void 
+KHTMLWidget::setDefaultTextColors( const QColor &normal, const QColor &link,
+				   const QColor &vlink )
+{
+  defaultSettings->fontBaseColor = normal;
+  defaultSettings->linkColor = link;
+  defaultSettings->vLinkColor = vlink;
+}
+
+void 
+KHTMLWidget::setUnderlineLinks( bool ul )
+{ 
+  defaultSettings->underlineLinks = ul; 
 }
 
 //-----------------------------------------------------------

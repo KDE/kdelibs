@@ -22,12 +22,14 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Javascript
-// $Id:  $
+// $Id$
 
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "khtmljscript.h"
+#include "khtml.h"
+#include "khtmlview.h"
 
 /**********************************************************
  *

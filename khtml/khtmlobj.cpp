@@ -31,6 +31,7 @@
 #include "khtmlobj.h"
 #include "khtml.h"
 #include "khtmlcache.h"
+#include "khtmltoken.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1222,12 +1223,6 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-QPixmap* HTMLImage::findImage( const char *_filename )
-{
-    // imitates old behavoir
-    return KHTMLCache::image( _filename );
-}
-
 void HTMLImage::cacheImage( const char *_filename )
 {
     // imitates old behavior
@@ -1368,9 +1363,10 @@ void HTMLImage::setPixmap( QPixmap *p )
     }
 }
 
-void HTMLImage::setMovie( QMovie *m )
+void HTMLImage::setMovie( QMovie *m, QPixmap *p )
 {
   movie = m;
+  pixmap = p;
   movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
 }
 
@@ -1378,7 +1374,7 @@ void HTMLImage::setMovie( QMovie *m )
 void HTMLImage::setOverlay( const char *_ol )
 {
     // overlays must be cached
-    overlay = HTMLImage::findImage( _ol );
+    overlay = KHTMLCache::image( _ol );
 }
 
 int HTMLImage::calcMinWidth()
@@ -1530,7 +1526,6 @@ void HTMLImage::movieUpdated( const QRect & )
 #ifdef USE_QMOVIE
     if ( !pixmap )
     {
-	pixmap = new QPixmap;
 	*pixmap = movie->framePixmap();
 	init();
 	if ( !predefinedWidth || !predefinedHeight )

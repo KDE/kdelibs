@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Forms
-// $Id:  $
+// $Id$
 
 #include <qobject.h>
 #include <qlistbox.h>
@@ -37,6 +37,7 @@
 #include <strings.h>
 #include "khtmlform.moc"
 
+#include "khtml.h"
 //----------------------------------------------------------------------------
 
 

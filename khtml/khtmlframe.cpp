@@ -22,11 +22,12 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Frames
-// $Id:  $
+// $Id$
 
 #include "khtmlframe.h"
 #include "khtml.h"
 #include "khtmlview.h"
+#include "khtmltoken.h"
 
 #include <strings.h>
 #include <stdlib.h>

@@ -190,7 +190,7 @@ public:
     virtual void reset() { setPrinted( false ); }
 
     virtual void setPixmap(QPixmap * ) { };
-    virtual void setMovie( QMovie * ) { };
+    virtual void setMovie( QMovie * , QPixmap * ) { };
 
     /********************************
      * These two functions are overloaded by objects that need to have a remote
@@ -202,11 +202,6 @@ public:
 			     const char * /*localfile*/ ) { }
     virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */, 
 			     bool /* eof */ = false ) { return false; }
-
-    /*
-     * returns the url of the file that has been requested.
-     */
-    virtual const char *requestedFile() { return 0; }
 
     enum ObjectType { Object, Clue };
 
@@ -589,15 +584,11 @@ public:
     virtual void changeImage( const char *_url );
 
     virtual void setPixmap( QPixmap * );
-    virtual void setMovie( QMovie * );
+    virtual void setMovie( QMovie *, QPixmap * );
 
     void setOverlay( const char *ol );
 
     static void cacheImage( const char * );
-    static QPixmap* findImage( const char * );
-
-    virtual const char *requestedFile()
-       	{ return imageURL.data(); }
 
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
@@ -744,9 +735,6 @@ public:
 			     const char* _filename );
     virtual bool fileLoaded( const char* _url, QBuffer& _buffer, 
 			     bool = false );
-
-    virtual const char *requestedFile()
-	    {	return mapurl; }
 
     void addArea( HTMLArea *_area )
 	    {	areas.append( _area ); }

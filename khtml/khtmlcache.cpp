@@ -32,30 +32,35 @@ KHTMLCachedImage::append( HTMLObject *o )
 	notify( o );
 }
 
+void 
+KHTMLCachedImage::remove( HTMLObject *o ) 
+{ 
+  clients.remove( o ); 
+  if(m && clients.isEmpty() && !m->finished())
+    m->pause();
+}
+
 inline QPixmap *
 KHTMLCachedImage::pixmap() 
 {
-    if(m && !p)
+/*    if(m && !p)
     {
 	p = new QPixmap();
 	*p = m->framePixmap();
     } 
     else if( m )
-	*p = m->framePixmap();
+	*p = m->framePixmap();*/
     return p;
 }
 
 inline void
 KHTMLCachedImage::computeStatus()
 {
-    // since we can't get the size of the movie
-    if( m )
-    { 
-	status = KHTMLCache::Uncacheable;
-	return;
-    }
     if( size > MAXCACHEABLE && size > KHTMLCache::size()/MAXPERCENT )
+    {
 	status = KHTMLCache::Uncacheable;
+	size = 0;
+    }
     else
 	status = KHTMLCache::Cached;
 }
@@ -71,6 +76,7 @@ KHTMLCachedImage::clear()
 	delete p;
 	p = 0;
     }
+    size = 0;
 }
 
 void
@@ -78,51 +84,39 @@ KHTMLCachedImage::load( const char * _file )
 {
     clear();
 
-    char buffer[ 4 ];
-    buffer[0] = 0;
+    // Workaround for bug in QMovie
+    // Load the image in memory to avoid vasting file handles
+    struct stat buff;
+    stat( _file, &buff );
+    int s = buff.st_size;
+    char *c = new char[ s ];
     FILE *f = fopen( _file, "rb" );
-    if ( f )
-    {
-	int n = fread( buffer, 1, 3, f );
-	if ( n >= 0 )
-	    buffer[ n ] = 0;
-	else
-	    buffer[0] = 0;
-	fclose( f );
-    }
-    else
+    if( !f )
     {
 	warning( "Could not load %s\n", _file );
 	perror( "" );
     }
-    if ( strcmp( buffer, "GIF" ) == 0 )
+    fread( c, 1, s, f );
+    fclose( f );
+    QByteArray arr;
+    arr.assign( c, s );
+
+    if ( strncmp( c, "GIF89a", 6 ) == 0 )
     {
-	// Workaround for bug in QMovie
-	// Load the image in memory to avoid vasting file handles
-	struct stat buff;
-	stat( _file, &buff );
-	int size = buff.st_size;
-	char *c = new char[ size ];
-	FILE *f = fopen( _file, "rb" );
-	fread( c, 1, size, f );
-	fclose( f );
-	QByteArray arr;
-	arr.duplicate( c, size );
-	delete c;
 	m = new QMovie( arr, 8192 );
-	// End Workaround
-	// im->movie = new QMovie( _file, 8192 );
+	p = new QPixmap();
+	*p = m->framePixmap();
+	// well, this is the size of the compressed gif...
+	// ... but that's better than nothing
+	size = s;
     }
     else
     {
 	p = new QPixmap();
-	p->load( _file );	    
+	p->loadFromData( arr );	    
+	if( p && !p->isNull() )
+	  size = p->width() * p->height() * p->depth() / 8;
     }
-    // set size of image. This is not correct for movies, but better
-    // than nothing
-    // FIXME: no pixmap for the movie up to now...
-    if( p && !p->isNull() )
-	size = p->width() * p->height() * p->depth() / 8;
 
     computeStatus();
     notify();
@@ -136,24 +130,27 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 
     clear();
 
-    char buffer[ 4 ];
+    char buffer[ 7 ];
     buffer[0] = 0;
     _buffer.open( IO_ReadOnly );
-    _buffer.readBlock( buffer, 3 );
+    _buffer.readBlock( buffer, 6 );
     _buffer.close();
 
-    if ( strcmp( buffer, "GIF" ) == 0 )
+    if ( strcmp( buffer, "GIF89a" ) == 0 )
+    {
 	m = new QMovie( _buffer.buffer() );
+	p = new QPixmap();
+	*p = m->framePixmap();
+	size = _buffer.size();
+    }
     else
     {
 	p = new QPixmap();
 	p->loadFromData( _buffer.buffer() );	    
+	// set size of image. 
+	if( p && !p->isNull() )
+	    size = p->width() * p->height() * p->depth() / 8;
     }
-    // set size of image. This is not correct for movies, but better
-    // than nothing
-    // FIXME: no pixmap for the movie up to now...
-    if( p && !p->isNull() )
-	size = p->width() * p->height() * p->depth() / 8;
 
     computeStatus();
     notify();
@@ -170,7 +167,11 @@ KHTMLCachedImage::notify( HTMLObject *o )
 	if( clients.find( o ) == -1 )
 	    clients.append( o );
 	if( m )
-	    o->setMovie( m );
+	{
+	    o->setMovie( m, p );
+	    if(m->finished()) m->restart();
+	    if(m->paused()) m->unpause();
+	}
 	else if ( p != 0 && !p->isNull() )
 	    o->setPixmap( p );
 	return;
@@ -180,7 +181,7 @@ KHTMLCachedImage::notify( HTMLObject *o )
     if( m )
     {
 	for( o = clients.first(); o != 0L; o = clients.next() )
-	  o->setMovie( m );
+	  o->setMovie( m, p );
 	return;
     }
 
@@ -266,9 +267,6 @@ KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
 void
 KHTMLCache::fileLoaded( const char * _url, const char *_file )
 { 
-#ifdef CACHE_DEBUG
-    printf("Cache: loaded: %s\n", _url);
-#endif
     KHTMLCachedImage *im = cache->find(_url);
 
     if(!im) 
@@ -428,17 +426,23 @@ KHTMLCache::setSize( int bytes )
 void 
 KHTMLCache::statistics()
 {
+  KHTMLCachedImage *im;
     // this function is for debugging purposes only
     init();
 
     int size = 0;
+    int msize = 0;
     int movie = 0;
     QDictIterator<KHTMLCachedImage> it(*cache);
     for(it.toFirst(); it.current(); ++it)
     {
-	QPixmap *p = it.current()->pixmap();
-	if(it.current()->m != 0)
+        im = it.current();
+	QPixmap *p = im->pixmap();
+	if(im->m != 0)
+	{
 	    movie++;
+	    msize += im->size;
+	}
 	else if( p != 0 && !p->isNull())
 	    size += p->width()*p->height()*p->depth()/8;
     }
@@ -450,7 +454,8 @@ KHTMLCache::statistics()
     printf("Number of cached images: %d\n", cache->count()-movie);
     printf("Number of cached movies: %d\n", movie);
     printf("calculated allocated space approx. %d kB\n", actSize/1024);
-    printf("actual     allocated space approx. %d kB\n", size);
+    printf("pixmaps:   allocated space approx. %d kB\n", size);
+    printf("movies :   allocated space approx. %d kB\n", msize/1024);
     printf("--------------------------------------------------------------------\n");
 }
 

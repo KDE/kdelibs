@@ -52,7 +52,7 @@ public:
 
     // just for convenience
     void append( HTMLObject *o ); 
-    void remove( HTMLObject *o ) { clients.remove( o ); }
+    void remove( HTMLObject *o );
     QPixmap *pixmap();
     int count() { return clients.count(); }
 

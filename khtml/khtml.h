@@ -43,18 +43,26 @@
 #include <qbuffer.h>
 
 class KHTMLWidget;
+class KHTMLView;
 class HTMLIterator;
 class KHTMLCache;
+class HTMLObject;
+class HTMLMap;
+class HTMLClue;
+class HTMLClueV;
+class HTMLSettings;
+class HTMLChain;
+class HTMLFont;
+class HTMLSelect;
+class HTMLTextArea;
+class HTMLForm;
+class JSWindowObject;
+class JSEnvironment;
+class HTMLTokenizer;
+class HTMLFrameSet;
+class StringTokenizer;
 
 #include "drag.h"
-#include "khtmldata.h"
-#include "khtmlobj.h"
-#include "khtmlclue.h"
-#include "khtmlform.h"
-#include "khtmltoken.h"
-#include "khtmlframe.h"
-#include "khtmlview.h"
-#include "khtmljscript.h"
 
 // Default borders between widgets frame and displayed text
 #define LEFT_BORDER 10
@@ -443,19 +451,14 @@ public:
      * Note that font sizes are not defined in points.
      * Font sizes range from 1 (smallest) to 7 (biggest).
      */
-    void setDefaultFontBase( int size )
-    {	if ( size < 2 ) size = 2;
-        else if ( size > 5 ) size = 5;
-        defaultSettings->fontBaseSize = size - 1;
-    }
+    void setDefaultFontBase( int size );
 
     /**
      * Sets the standard font style.
      *
      * @param name is the font name to use for standard text.
      */
-    void setStandardFont( const char *name )
-	{	defaultSettings->fontBaseFace = name; }
+    void setStandardFont( const char *name );
 
     /**
      * Sets the fixed font style.
@@ -463,32 +466,24 @@ public:
      * @param name is the font name to use for fixed text, e.g.
      * the <tt>&lt;pre&gt;</tt> tag.
      */
-    void setFixedFont( const char *name )
-	{	defaultSettings->fixedFontFace = name; }
+    void setFixedFont( const char *name );
 
     /**
      * Sets the default background color to use when one isn't specified
      * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
      */
-    void setDefaultBGColor( const QColor &col )
-	{	defaultSettings->bgColor = col; }
+    void setDefaultBGColor( const QColor &col );
 
     /**
      * Sets the default text colors.
      */
     void setDefaultTextColors( const QColor &normal, const QColor &link,
-	const QColor &vlink )
-    {
-	defaultSettings->fontBaseColor = normal;
-	defaultSettings->linkColor = link;
-	defaultSettings->vLinkColor = vlink;
-    }
+	const QColor &vlink );
 
     /**
      * Set whether links are drawn in underlined text.
      */
-    void setUnderlineLinks( bool ul )
-	{ defaultSettings->underlineLinks = ul; }
+    void setUnderlineLinks( bool ul );
 
     /**
      * Sets the cursor to use when the cursor is on a link.
@@ -1090,9 +1085,6 @@ protected:
 
     void popColor();
 
-    // List of all objects waiting to get a remote file loaded
-    // XXXX QList<HTMLObject> waitingFileList;
-    
     /*
      * The font stack. The font on top of the stack is the currently
      * used font. Poping a font from the stack deletes the font.
@@ -1320,7 +1312,8 @@ protected:
     /*
      * The current alignment, set by <DIV > or <CENTER>
      */
-    HTMLClue::HAlign divAlign;
+    // HTMLClue::HAlign divAlign;
+    int divAlign;
 
     /*
      * Number of tokens parsed in the current time-slice
