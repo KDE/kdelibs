@@ -70,6 +70,7 @@ libkiocore_la_SOURCES = authinfo.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
+	forwardingslavebase.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
 	kdirnotify.cpp kdirnotify.skel kdirnotify_stub.cpp \
@@ -91,6 +92,7 @@ kioinclude_HEADERS = connection.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h tcpslavebase.h \
+	forwardingslavebase.h \
 	observer.h chmodjob.h uiserver_stub.h \
         kmdbase.h authinfo.h \
 	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
