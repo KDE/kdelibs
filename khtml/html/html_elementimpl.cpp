@@ -237,7 +237,7 @@ DOMString HTMLElementImpl::innerText() const
 {
     DOMString text;
 
-    NodeImpl *n = firstChild();
+    const NodeImpl *n = this;
     // find the next text/image after the anchor, to get a position
     while(n) {
         if(n->firstChild())
@@ -254,7 +254,7 @@ DOMString HTMLElementImpl::innerText() const
             n = next;
         }
         if(n->isTextNode() ) {
-            text += static_cast<TextImpl *>(n)->data();
+            text += static_cast<const TextImpl *>(n)->data();
         }
     }
  end:
