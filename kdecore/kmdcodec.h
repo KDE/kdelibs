@@ -430,7 +430,7 @@ public:
   /**
    * @overload
    *
-   * Same as above except it accepts a QByteArray as its argument.
+   * Same as above except it accepts a QCString as its argument.
    */
   KMD5(const QCString& a );
 
@@ -459,7 +459,7 @@ public:
   /**
    * @overload
    *
-   * @param in     message to be added to the digest (QByteArray).
+   * @param in     message to be added to the digest (QCString).
    */
   void update(const QCString& in );
 
@@ -605,7 +605,7 @@ public:
   /**
    * @overload
    *
-   * Same as above except it accepts a QByteArray as its argument.
+   * Same as above except it accepts a QCString as its argument.
    */
   KMD4(const QCString& a );
 
@@ -634,7 +634,7 @@ public:
   /**
    * @overload
    *
-   * @param in     message to be added to the digest (QByteArray).
+   * @param in     message to be added to the digest (QCString).
    */
   void update(const QCString& in );
 
