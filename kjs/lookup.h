@@ -203,9 +203,16 @@ namespace KJS {
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
-    if (!entry || (entry->attr & Function)) { // not found, or function: forward to parent
-       thisObj->ParentImp::put(exec, propertyName, value, attr);
-    }
+    if (!entry) // not found: forward to parent
+      thisObj->ParentImp::put(exec, propertyName, value, attr);
+    else if (entry->attr & Function) // function: put as override property
+      thisObj->ObjectImp::put(exec, propertyName, value, attr);
+    else if (entry->attr & ReadOnly) // readonly! Can't put!
+#ifdef KJS_VERBOSE
+      fprintf(stderr,"Attempt to change value of readonly property '%s'\n",propertyName.ascii());
+#else
+      ; // do nothing
+#endif
     else
       thisObj->putValue(exec, entry->value, value, attr);
   }
