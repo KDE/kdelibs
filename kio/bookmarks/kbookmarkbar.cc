@@ -216,28 +216,32 @@ void KBookmarkBar::slotBookmarkSelected()
     m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
-// lovely code...
 static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions, 
-                 KToolBarButton* &b, KToolBar* &tb, KAction* &a)
+                           KToolBarButton* &b, KToolBar* &tb, KAction* &a)
 {
     // iterate actions list until we find a match
     QPtrListIterator<KAction> it( actions );
     kdDebug(7043) << "dme->pos() == " << dme->pos() << endl;
+    tb = 0;
     for (; (*it); ++it )
     {
         a = (*it);
         QWidget *c = a->container(0);
         // continue search unless we find a toolbarbutton at dme->pos()
         b = dynamic_cast<KToolBarButton*>(c->childAt(dme->pos()));
-        if (!(b && a->isPlugged(c, b->id()))) 
-            continue;
-        kdDebug(7043) << "c->geometry() == " << c->geometry() << endl;
-        kdDebug(7043) << "b->geometry() == " << b->geometry() << endl;
-        // we are done if the container is a ktoolbar
-        if (tb = dynamic_cast<KToolBar*>(c), tb) 
-            return true;
+        if (b && a->isPlugged(c, b->id())) 
+        {
+            tb = dynamic_cast<KToolBar*>(c);
+            break;
+        }
     }
-    return false;
+    if (tb)
+    {
+        kdDebug(7043) << "b->geometry() == " << r << endl;
+        QRect r = b->geometry();
+        // if ((r->left() + r->right())/2 <= dme->pos()->x())
+    }
+    return !!tb;
 }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
