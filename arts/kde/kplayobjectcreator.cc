@@ -71,8 +71,8 @@ bool KDE::PlayObjectCreator::create(const KURL& url, bool createBUS, const QObje
 	// usual stuff if we have a local file
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
 	emit playObjectCreated (
-		m_server.createPlayObjectForURL(string(QFile::encodeName(url.path())), 
-						 string(mimetype->name().latin1()), 
+		m_server.createPlayObjectForURL(std::string(QFile::encodeName(url.path())), 
+						 std::string(mimetype->name().latin1()), 
 						 createBUS)
 		);
 	return true;
@@ -93,6 +93,6 @@ void KDE::PlayObjectCreator::slotMimeType(const QString& mimetype)
 
 	emit playObjectCreated (
 		m_server.createPlayObjectForStream(
-		m_instream, string(mimetype_copy.latin1()), m_createBUS)
+		m_instream, std::string(mimetype_copy.latin1()), m_createBUS)
 		);
 }
