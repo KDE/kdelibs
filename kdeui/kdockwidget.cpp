@@ -1100,7 +1100,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 
 
     if( !target->toolTipString().isEmpty())
-      tab->setTabToolTip( target, target->toolTipString());
+     tab->setTabToolTip( target, target->toolTipString());
 
     tab->insertTab( this, icon() ? *icon() : QPixmap(),
                     tabPageLabel(), tabIndex );
@@ -2582,6 +2582,17 @@ void KDockManager::readConfig( KConfig* c, QString group )
 }
 #endif
 
+
+void KDockManager::dumpDockWidgets() {
+  QObjectListIt it( *childDock );
+  KDockWidget * obj;
+  while ( (obj=(KDockWidget*)it.current()) ) {
+    ++it;
+    kdDebug()<<"KDockManager::dumpDockWidgets:"<<obj->name()<<endl;
+  }
+
+}
+
 KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
 {
   QObjectListIt it( *childDock );
@@ -2865,7 +2876,7 @@ KDockContainer::~KDockContainer(){
 		while (tmp)
 		{
 			struct ListItem *tmp2=tmp->next;
-			delete tmp->data;
+			free(tmp->data);
 			delete tmp;
 			tmp=tmp2;
 		}

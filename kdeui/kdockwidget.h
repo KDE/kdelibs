@@ -902,6 +902,8 @@ public:
    */
   virtual ~KDockManager();
 
+  void dumpDockWidgets();
+
 #ifndef NO_KDE2
   /**
    * Saves the current state of the dockmanager and of all controlled widgets.
