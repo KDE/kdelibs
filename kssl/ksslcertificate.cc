@@ -408,14 +408,16 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     return KSSLCertificate::NoCARoot;
   }
 
+  qsl.prepend(KGlobal::dirs()->saveLocation("kssl"));
   KSSLCertificate::KSSLValidation ksslv = Unknown;
 
-  for (QValueListIterator<QString> j = qsl.begin();
-                                   j != qsl.end(); ++j) {
+  for (QStringList::Iterator j = qsl.begin();
+                             j != qsl.end(); 
+			     ++j) {
     struct stat sb;
-    QString _j = (*j)+"caroot/ca-bundle.crt";
+    QString _j = (*j)+"ca-bundle.crt";
     if (-1 == stat(_j.ascii(), &sb)) continue;
-    //kdDebug(7029) << "KSSL Certificate Root directory found: " << _j << endl;
+    kdDebug(7029) << "KSSL Certificate Root directory found: " << _j << endl;
 
     certStore = d->kossl->X509_STORE_new();
     if (!certStore)
