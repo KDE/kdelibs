@@ -70,6 +70,9 @@ bool Agent::operator!=( const Agent &a ) const
 
 Agent &Agent::operator=(  const Agent &addr )
 {
+  if ( this == &addr )
+    return *this;
+
   if ( addr.mIntern && addr.mAddressee ) {
     if ( mAddressee )
       delete mAddressee;
