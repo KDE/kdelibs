@@ -2506,10 +2506,12 @@ bool StyleBaseImpl::parse4Values( const QChar *curP, const QChar *endP, const in
 CSSPrimitiveValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
-    // Everything should be lowercase -> preprocess
-    //assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP));
+    /* e.g.: width=""  length="ffffff" */
+    if (curP==endP || *curP=='"')
+        return 0;
 
-    if (curP==endP || *curP=='"') {return 0; /* e.g.: width=""  length="ffffff" */}
+    if ( allowedUnits & RELATIVE && *curP == '*' )
+        return new CSSPrimitiveValueImpl( 1., CSSPrimitiveValue::CSS_HTML_RELATIVE );
 
     endP--;
     while(*endP == ' ' && endP > curP) endP--;
@@ -2526,12 +2528,9 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     bool ok;
     float value = s.toFloat(&ok);
-    if ( !ok ) {
-	if ( allowedUnits & RELATIVE && *curP == '*' )
-	    return new CSSPrimitiveValueImpl( 1., CSSPrimitiveValue::CSS_HTML_RELATIVE );
-	if ( value < 0 && (allowedUnits & NONNEGATIVE) )
-	    return 0;
-    }
+
+    if ( !ok || ( value < 0 && (allowedUnits & NONNEGATIVE) ))
+        return 0;
 
     if(split > endP) // no unit
     {
