@@ -734,8 +734,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	else
 	    listLevel++;
 	if(listLevel > 260) listLevel -= 5;
-	// numbered lists start at pos 3 of ListType...
-	l->setType((ListType)(listLevel-256+3));
 	break;
     }
     case ID_DIR:
