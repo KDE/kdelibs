@@ -78,7 +78,7 @@ KFileReader::~KFileReader()
 }
 
 KFileItem * KFileReader::createFileItem( const KIO::UDSEntry& entry,
-					 const KURL& url, bool, bool )
+					 const KURL& url, bool )
 {
     return new KFileViewItem( url, entry );
 }
