@@ -46,6 +46,7 @@
 #include <kdrawutil.h>
 
 #include "highcolor.h"
+#include "highcolor.moc"
 #include "bitmaps.h"
 
 
