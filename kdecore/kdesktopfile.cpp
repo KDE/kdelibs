@@ -191,7 +191,10 @@ bool KDesktopFile::tryExec() const
       else
 	return true;
     } else {
-      QStringList dirs = QStringList::split(':', QString::fromLatin1(::getenv("PATH")));
+      // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+      // Environment PATH may contain filenames in 8bit locale cpecified
+      // encoding (Like a filenames).
+      QStringList dirs = QStringList::split(':', QFile::decodeName(::getenv("PATH")));
       QStringList::Iterator it(dirs.begin());
       for (; it != dirs.end(); ++it) {
 	QString fName = *it + "/" + te;

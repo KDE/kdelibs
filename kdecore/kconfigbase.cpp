@@ -1,4 +1,4 @@
-/*
+;/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
@@ -249,9 +249,15 @@ QString KConfigBase::readEntry( const char *pKey,
           const char* pEnv = 0;
           if (!aVarName.isEmpty())
                pEnv = getenv( aVarName.ascii() );
-          if( pEnv )
-            aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromLatin1(pEnv) );
-          else
+          if( pEnv ) {
+	    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+	    // A environment variables may contain values in 8bit 
+	    // locale cpecified encoding or in UTF8 encoding.
+	    if (isUtf8( pEnv )) 
+		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromUtf8(pEnv) );
+	    else
+		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromLocal8Bit(pEnv) );
+          } else
             aValue.remove( nDollarPos, nEndPos-nDollarPos );
         } else {
           // remove one of the dollar signs
@@ -363,8 +369,8 @@ int KConfigBase::readListEntry( const char *pKey,
   if( !hasKey( pKey ) )
     return 0;
 
-  QString str_list, value;
-  str_list = readEntry( pKey );
+  QCString str_list, value;
+  str_list = readEntryUtf8( pKey );
   if (str_list.isEmpty())
     return 0;
 
@@ -385,14 +391,17 @@ int KConfigBase::readListEntry( const char *pKey,
     }
     // if we fell through to here, we are at a separator.  Append
     // contents of value to the list
-    list.append( value.ascii() );
+    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+    // A QStrList may contain values in 8bit locale cpecified 
+    // encoding
+    list.append( value );
     value.truncate(0);
   }
 
-  if ( str_list[len-1].latin1() != sep )
-    list.append( value.ascii() );
+  if ( str_list[len-1] != sep )
+    list.append( value );
   return list.count();
-  }
+}
 
 QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
 {
@@ -1056,7 +1065,14 @@ void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
   for( ; it.current(); ++it )
     {
       uint i;
-      QString value = QString::fromLatin1(it.current());
+      QString value;
+      // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+      // A QStrList may contain values in 8bit locale cpecified 
+      // encoding or in UTF8 encoding.
+      if (isUtf8(it.current())) 
+        value = QString::fromUtf8(it.current());
+      else
+        value = QString::fromLocal8Bit(it.current());
       for( i = 0; i < value.length(); i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
