@@ -161,6 +161,14 @@ public:
   void setRunExecutables(bool b);
 
   /**
+   * Sets whether the external webbrowser setting should be honoured.
+   * This is enabled by default.
+   * This should only be disabled in webbrowser applications.
+   * @since 3.4
+   */
+  void setEnableExternalBrowser(bool b);
+
+  /**
    * Open a list of URLs with a certain service (application).
    *
    * @param _service the service to run
