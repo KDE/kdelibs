@@ -144,6 +144,9 @@ public:
    */
   const QList<Part> *parts() const;
 
+  void addManagedTopLevelWidget( const QWidget *topLevel );
+  void removeManagedTopLevelWidget( const QWidget *topLevel );
+
 signals:
   /**
    * Emitted when a new part has been added.
@@ -180,6 +183,10 @@ protected slots:
    */
   void slotWidgetDestroyed();
 
+  /**
+   * @internal
+   */
+  void slotManagedTopLevelWidgetDestroyed();
 private:
   Part * findPartFromWidget( QWidget * widget, const QPoint &pos );
 

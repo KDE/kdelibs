@@ -59,6 +59,8 @@ public:
   QWidget *m_selectedWidget;
 
   bool m_bAllowNestedParts;
+
+  QList<QWidget> m_managedTopLevelWidgets;
 };
 
 };
@@ -71,10 +73,17 @@ PartManager::PartManager( QWidget * parent, const char * name )
   qApp->installEventFilter( this );
 
   d->m_policy = Direct;
+  
+  addManagedTopLevelWidget( parent );
 }
 
 PartManager::~PartManager()
 {
+  QListIterator<QWidget> it( d->m_managedTopLevelWidgets );
+  for (; it.current(); ++it )
+    disconnect( it.current(), SIGNAL( destroyed() ),
+		this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+ 
   // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
   delete d;
@@ -125,7 +134,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
       pos = ((QMouseEvent *)ev)->globalPos();
 
-    if ( w->topLevelWidget() != ((QWidget *)parent())->topLevelWidget() )
+    //    if ( w->topLevelWidget() != ((QWidget *)parent())->topLevelWidget() )
+    //      return false;
+    if ( !d->m_managedTopLevelWidgets.containsRef( w->topLevelWidget() ) )
       return false;
 
     part = findPartFromWidget( w, pos );
@@ -373,5 +384,35 @@ const QList<Part> *PartManager::parts() const
 {
   return &d->m_parts;
 }
+
+void PartManager::addManagedTopLevelWidget( const QWidget *topLevel )
+{
+  if ( !topLevel->isTopLevel() )
+    return;
+  
+  if ( d->m_managedTopLevelWidgets.containsRef( topLevel ) )
+    return;
+  
+  d->m_managedTopLevelWidgets.append( topLevel );
+  connect( topLevel, SIGNAL( destroyed() ),
+	   this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+}
+
+void PartManager::removeManagedTopLevelWidget( const QWidget *topLevel )
+{
+  if ( !topLevel->isTopLevel() )
+    return;
+  
+  if ( d->m_managedTopLevelWidgets.findRef( topLevel ) == -1 )
+    return;
+  
+  d->m_managedTopLevelWidgets.remove();
+}
+
+void PartManager::slotManagedTopLevelWidgetDestroyed()
+{
+  const QWidget *widget = static_cast<const QWidget *>( sender() );
+  removeManagedTopLevelWidget( widget );
+} 
 
 #include "partmanager.moc"
