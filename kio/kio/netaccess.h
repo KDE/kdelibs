@@ -391,6 +391,13 @@ public:
      */
     static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
 
+    /**
+     * Returns the error code for the last job, in case it failed.
+     * @return the last error code
+     * @since 3.3
+     */
+    static int lastError() { return lastErrorCode; }
+
 private:
     /**
      * Private constructor
@@ -425,6 +432,7 @@ private:
     static QStringList* tmpfiles;
 
     static QString* lastErrorMsg;
+    static int lastErrorCode;
     /**
      * Whether the download succeeded or not
      */

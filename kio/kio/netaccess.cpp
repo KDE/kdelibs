@@ -43,6 +43,7 @@
 using namespace KIO;
 
 QString * NetAccess::lastErrorMsg;
+int NetAccess::lastErrorCode = 0;
 QStringList* NetAccess::tmpfiles;
 
 bool NetAccess::download(const KURL& u, QString & target)
@@ -61,6 +62,7 @@ bool NetAccess::download(const KURL& u, QString & target, QWidget* window)
         if(!lastErrorMsg)
             lastErrorMsg = new QString;
         *lastErrorMsg = i18n("File '%1' is not readable").arg(target);
+        lastErrorCode = ERR_COULD_NOT_READ;
     }
     return accessible;
   }
@@ -405,6 +407,7 @@ void NetAccess::enter_loop()
 
 void NetAccess::slotResult( KIO::Job * job )
 {
+  lastErrorCode = job->error();
   bJobOK = !job->error();
   if ( !bJobOK )
   {
