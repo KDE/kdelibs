@@ -28,6 +28,8 @@
 #include "config.h"
 #endif
 
+#include <limits.h>
+
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qcleanuphandler.h>
