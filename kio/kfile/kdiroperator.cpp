@@ -271,6 +271,7 @@ void KDirOperator::slotSortByName()
     int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
     m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Name ));
     mySorting = m_fileView->sorting();
+    caseInsensitiveAction->setEnabled( true );
 }
 
 void KDirOperator::slotSortBySize()
@@ -278,6 +279,7 @@ void KDirOperator::slotSortBySize()
     int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
     m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Size ));
     mySorting = m_fileView->sorting();
+    caseInsensitiveAction->setEnabled( false );
 }
 
 void KDirOperator::slotSortByDate()
@@ -285,6 +287,7 @@ void KDirOperator::slotSortByDate()
     int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
     m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Time ));
     mySorting = m_fileView->sorting();
+    caseInsensitiveAction->setEnabled( false );
 }
 
 void KDirOperator::slotSortReversed()
@@ -1163,8 +1166,8 @@ void KDirOperator::setupMenu()
     sortActionMenu->insert( byNameAction );
     sortActionMenu->insert( byDateAction );
     sortActionMenu->insert( bySizeAction );
-    sortActionMenu->insert( reverseAction );
     sortActionMenu->insert( actionSeparator );
+    sortActionMenu->insert( reverseAction );
     sortActionMenu->insert( dirsFirstAction );
     sortActionMenu->insert( caseInsensitiveAction );
 
@@ -1208,11 +1211,12 @@ void KDirOperator::updateSortActions()
     else if ( KFile::isSortBySize( mySorting ) )
         bySizeAction->setChecked( true );
 
-    dirsFirstAction->setChecked( KFile::isSortDirsFirst( mySorting ));
-    caseInsensitiveAction->setChecked(KFile::isSortCaseInsensitive(mySorting));
+    dirsFirstAction->setChecked( KFile::isSortDirsFirst( mySorting ) );
+    caseInsensitiveAction->setChecked( KFile::isSortCaseInsensitive(mySorting) );
+    caseInsensitiveAction->setEnabled( KFile::isSortByName( mySorting ) );
 
     if ( m_fileView )
-	reverseAction->setChecked( m_fileView->isReversed() );
+        reverseAction->setChecked( m_fileView->isReversed() );
 }
 
 void KDirOperator::updateViewActions()
@@ -1220,7 +1224,7 @@ void KDirOperator::updateViewActions()
     KFile::FileView fv = static_cast<KFile::FileView>( m_viewKind );
 
     separateDirsAction->setChecked( KFile::isSeparateDirs( fv ) &&
-				    separateDirsAction->isEnabled() );
+                                    separateDirsAction->isEnabled() );
 
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
