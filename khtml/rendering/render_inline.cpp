@@ -716,7 +716,8 @@ static void paintOutlineSegment(RenderObject *o, QPainter *p, int tx, int ty,
     int ow = o->style()->outlineWidth();
     EBorderStyle os = o->style()->outlineStyle();
     QColor oc = o->style()->outlineColor();
-    int offset = o->style()->outlineOffset();
+    // ### outline-offset is not this simple to merge anymore
+    int offset = 0; // o->style()->outlineOffset();
 
     int x1 = tx + p1.x() - offset;
     int y1 = ty + p1.y() - offset;

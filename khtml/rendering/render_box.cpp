@@ -175,9 +175,9 @@ void RenderBox::setStyle(RenderStyle *_style)
         }
         m_layer->styleChanged();
     }
-    
-    if (style()->outlineWidth() > 0 && style()->outlineSize() > maximalOutlineSize(PaintActionOutline))
-        static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineSize());
+    // ### outlineSize() and outlineOffset() not merged yet
+    if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
+        static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineWidth());
     if (affectsParent)
         restructureParentFlow();
 }
@@ -662,7 +662,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 
 void RenderBox::repaint(bool immediate)
 {
-    int ow = style() ? style()->outlineSize() : 0;
+    int ow = style() ? style()->outlineWidth() /* style()->outlineSize() */ : 0;
     if( isInline() && !isReplaced() )
     {
 	RenderObject* p = parent();

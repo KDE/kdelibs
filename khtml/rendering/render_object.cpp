@@ -1007,7 +1007,8 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
     const QColor& oc = style->outlineColor();
     EBorderStyle os = style->outlineStyle();
-    int offset = style->outlineOffset();
+    // ### outline-offset should be implemented in renderInline before reactivated here
+    int offset = 0; // style->outlineOffset();
 
 #ifdef APPLE_CHANGES
     if (style->outlineStyleIsAuto()) {
