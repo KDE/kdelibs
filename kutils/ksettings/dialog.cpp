@@ -55,7 +55,14 @@ class KCMISortedList : public QPtrList<KCModuleInfo>
 			int size2 = info2->groups().size();
 
 			if( size1 == size2 )
-				return 0;
+			{
+				if( info1->weight() == info2->weight() )
+					return 0;
+				else if( info1->weight() < info2->weight() )
+					return -1;
+				else
+					return 1;
+			}
 			else if( size1 < size2 )
 				return -1;
 			else
@@ -273,6 +280,7 @@ void Dialog::createDialogFromServices()
 	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
+	d->moduleinfos.sort();
 	for( KCModuleInfo * info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
 	{
 		kdDebug( 700 ) << "add module: " << info->fileName() << " with ParentComponents=" << info->parentComponents() << endl;

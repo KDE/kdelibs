@@ -113,6 +113,8 @@ Some explanation for those keys:
      X-KDE-ParentApp) then it may add the name of the component to the ctor of
      KSettings::Dialog and the dialog will automatically include all config
      pages that have the components name in their ParentComponents list.
+- X-KDE-Weight sets the order for the modules to be inserted into the dialog.
+  The higher the number (heavier) the lower the module will appear in the list.
 - Name is the string that is shown in the listview/iconview right below the
   icon.
 - Comment is the string that is shown on top of the config page for a short

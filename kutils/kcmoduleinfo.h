@@ -121,6 +121,12 @@ public:
   QString handle() const;
 
   /**
+   * @return the weight of the module which determines the order of the pages in
+   * the KCMultiDialog. It's set by the X-KDE-Weight field.
+   */
+  int weight() const;
+
+  /**
    * @return the KCD parent
    */
   const QStringList & parentComponents() const;
@@ -147,20 +153,26 @@ protected:
   void setIcon(const QString &icon) { _icon = icon; };
   void setLibrary(const QString &lib) { _lib = lib; };
   void setHandle(const QString &handle) { _handle = handle; };
-  void setParentComponents(const QStringList &parentcomponents) { _parentcomponents = parentcomponents; }
-  void setNeedsRootPrivileges(bool needsRootPrivileges) { _needsRootPrivileges = needsRootPrivileges; };
-  void setIsHiddenByDefault(bool isHiddenByDefault) { _isHiddenByDefault = isHiddenByDefault; };
+  void setParentComponents(const QStringList &parentcomponents)
+  { _parentcomponents = parentcomponents; }
+  void setWeight(int weight) { _weight = weight; };
+  void setNeedsRootPrivileges(bool needsRootPrivileges)
+  { _needsRootPrivileges = needsRootPrivileges; };
+  void setIsHiddenByDefault(bool isHiddenByDefault)
+  { _isHiddenByDefault = isHiddenByDefault; };
   void setDocPath(const QString &p) { _doc = p; };
   void loadAll();
 
 private:
 
-  // when adding members, don't forget to take care about them in the assignment operator
+  // when adding members, don't forget to take care about them in the assignment
+  // operator
   QStringList _groups, _keywords, _parentcomponents;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
   bool        _needsRootPrivileges : 1; 
   bool        _isHiddenByDefault : 1;
   bool        _allLoaded : 1;
+  int         _weight;
 
   KService::Ptr _service;
 

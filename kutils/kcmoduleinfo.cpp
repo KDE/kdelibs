@@ -144,7 +144,11 @@ KCModuleInfo::loadAll()
   setHandle(_service->property("X-KDE-FactoryName").toString());
 
   // KCD parent
-  setParentComponents(_service->property("X-KDE-ParentComponents").toStringList());
+  setParentComponents(
+      _service->property("X-KDE-ParentComponents").toStringList());
+
+  // read weight
+  setWeight( desktop.readNumEntry( "X-KDE-Weight", -1 ) );
 
   // does the module need super user privileges?
   setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
@@ -199,6 +203,15 @@ KCModuleInfo::handle() const
      return _lib;
 
   return _handle;
+}
+
+int
+KCModuleInfo::weight() const
+{
+  if (!_allLoaded) 
+    const_cast<KCModuleInfo*>(this)->loadAll();
+
+  return _weight;
 }
 
 const QStringList &
