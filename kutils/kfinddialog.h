@@ -122,6 +122,15 @@ public:
     void setHasSelection( bool hasSelection );
 
     /**
+     * Hide/show the 'from cursor' option, depending
+     * on whether the application implements a cursor.
+     *
+     * @param hasCursor true if the application features a cursor
+     * This is assumed to be the case by default.
+     */
+    void setHasCursor( bool hasCursor );
+
+    /**
      * Set the options which are enabled.
      *
      * @param options The setting of the @ref Options.
@@ -140,7 +149,7 @@ public:
      * Returns the pattern to find.
      */
     QString pattern() const;
-    
+
     /**
      * Sets the pattern to find
      */

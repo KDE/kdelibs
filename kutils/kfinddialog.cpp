@@ -32,11 +32,23 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
+#include <kregexpeditorinterface.h>
+#include <kparts/componentfactory.h>
+
+class KFindDialog::KFindDialogPrivate
+{
+public:
+    KFindDialogPrivate() : m_regexpDialog(0), m_regexpDialogQueryDone(false) {}
+    QDialog* m_regexpDialog;
+    bool m_regexpDialogQueryDone;
+};
+
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
     KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok),
     m_findExtension (0),
     m_replaceExtension (0)
 {
+    d = new KFindDialogPrivate;
     init(false, findStrings, hasSelection);
     setOptions(options);
 }
@@ -44,10 +56,12 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
     KDialogBase(parent, name, true, i18n("Replace Text"), Ok | Cancel, Ok)
 {
+    d = new KFindDialogPrivate;
 }
 
 KFindDialog::~KFindDialog()
 {
+    delete d;
 }
 
 QWidget *KFindDialog::findExtension()
@@ -57,7 +71,7 @@ QWidget *KFindDialog::findExtension()
       m_findExtension = new QWidget(m_findGrp);
       m_findLayout->addMultiCellWidget(m_findExtension, 3, 3, 0, 1);
     }
-    
+
     return m_findExtension;
 }
 
@@ -90,8 +104,8 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_find = new KHistoryCombo(true, m_findGrp);
     m_find->setMaxCount(10);
     m_find->setDuplicatesEnabled(false);
-    m_regExp = new QCheckBox(i18n("&Use patterns"), m_findGrp);
-    m_regExpItem = new QPushButton(i18n("&Insert Pattern"), m_findGrp);
+    m_regExp = new QCheckBox(i18n("&Regular expression"), m_findGrp);
+    m_regExpItem = new QPushButton(i18n("&Edit..."), m_findGrp);
     m_regExpItem->setEnabled(false);
 
     m_findLayout->addWidget(m_findLabel, 0, 0);
@@ -114,7 +128,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_backRef = new QCheckBox(i18n("Us&e placeholders"), m_replaceGrp);
     m_backRefItem = new QPushButton(i18n("Insert Place&holder"), m_replaceGrp);
     m_backRefItem->setEnabled(false);
-    
+
     m_replaceLayout->addWidget(m_replaceLabel, 0, 0);
     m_replaceLayout->addMultiCellWidget(m_replace, 1, 1, 0, 1);
     m_replaceLayout->addWidget(m_backRef, 2, 0);
@@ -249,6 +263,14 @@ void KFindDialog::slotSelectedTextToggled(bool selec)
         m_fromCursor->setChecked( false );
 }
 
+void KFindDialog::setHasCursor(bool hasCursor)
+{
+    if ( !hasCursor ) {
+        m_fromCursor->hide();
+        m_fromCursor->setChecked( false );
+    }
+}
+
 void KFindDialog::setOptions(long options)
 {
     m_caseSensitive->setChecked(options & CaseSensitive);
@@ -263,51 +285,66 @@ void KFindDialog::setOptions(long options)
 // compose a regular expression search pattern.
 void KFindDialog::showPatterns()
 {
-    typedef struct
+    if ( !d->m_regexpDialogQueryDone )
     {
-        const char *description;
-        const char *regExp;
-        int cursorAdjustment;
-    } term;
-    static const term items[] =
-    {
-        { I18N_NOOP("Any Character"),                 ".",        0 },
-        { I18N_NOOP("Start of Line"),                 "^",        0 },
-        { I18N_NOOP("End of Line"),                   "$",        0 },
-        { I18N_NOOP("Set of Characters"),             "[]",       -1 },
-        { I18N_NOOP("Repeats, Zero or More Times"),   "*",        0 },
-        { I18N_NOOP("Repeats, One or More Times"),    "+",        0 },
-        { I18N_NOOP("Optional"),                      "?",        0 },
-        { I18N_NOOP("Escape"),                        "\\",       0 },
-        { I18N_NOOP("TAB"),                           "\\t",      0 },
-        { I18N_NOOP("Newline"),                       "\\n",      0 },
-        { I18N_NOOP("Carriage Return"),               "\\r",      0 },
-        { I18N_NOOP("White Space"),                   "\\s",      0 },
-        { I18N_NOOP("Digit"),                         "\\d",      0 },
-        // Those don't work
-        //{ I18N_NOOP("Unicode Point"),               "\x0000",   0 },
-        //{ I18N_NOOP("ASCII/Latin-1 Character"),       "\000",     0 }
-    };
-    int i;
-
-    // Populate the popup menu.
-    if (!m_patterns)
-    {
-        m_patterns = new QPopupMenu(this);
-        for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
-        {
-            m_patterns->insertItem(i18n(items[i].description), i, i);
-        }
+        d->m_regexpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString::null, this );
+        d->m_regexpDialogQueryDone = true;
     }
 
-    // Insert the selection into the edit control.
-    i = m_patterns->exec(QCursor::pos());
-    if (i != -1)
+    if ( d->m_regexpDialog )
     {
-        QLineEdit *editor = m_find->lineEdit();
+        KRegExpEditorInterface *iface = static_cast<KRegExpEditorInterface *>( d->m_regexpDialog->qt_cast( "KRegExpEditorInterface" ) );
+        assert( iface );
 
-        editor->insert(items[i].regExp);
-        editor->setCursorPosition(editor->cursorPosition() + items[i].cursorAdjustment);
+        iface->setRegExp( pattern() );
+        if ( d->m_regexpDialog->exec() == QDialog::Accepted )
+            setPattern( iface->regExp() );
+    }
+    else // No complete regexp-editor available, bring up the old popupmenu
+    {
+        typedef struct
+        {
+            const char *description;
+            const char *regExp;
+            int cursorAdjustment;
+        } term;
+        static const term items[] =
+            {
+                { I18N_NOOP("Any Character"),                 ".",        0 },
+                { I18N_NOOP("Start of Line"),                 "^",        0 },
+                { I18N_NOOP("End of Line"),                   "$",        0 },
+                { I18N_NOOP("Set of Characters"),             "[]",       -1 },
+                { I18N_NOOP("Repeats, Zero or More Times"),   "*",        0 },
+                { I18N_NOOP("Repeats, One or More Times"),    "+",        0 },
+                { I18N_NOOP("Optional"),                      "?",        0 },
+                { I18N_NOOP("Escape"),                        "\\",       0 },
+                { I18N_NOOP("TAB"),                           "\\t",      0 },
+                { I18N_NOOP("Newline"),                       "\\n",      0 },
+                { I18N_NOOP("Carriage Return"),               "\\r",      0 },
+                { I18N_NOOP("White Space"),                   "\\s",      0 },
+                { I18N_NOOP("Digit"),                         "\\d",      0 },
+            };
+        int i;
+
+        // Populate the popup menu.
+        if (!m_patterns)
+        {
+            m_patterns = new QPopupMenu(this);
+            for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
+            {
+                m_patterns->insertItem(i18n(items[i].description), i, i);
+            }
+        }
+
+        // Insert the selection into the edit control.
+        i = m_patterns->exec(QCursor::pos());
+        if (i != -1)
+        {
+            QLineEdit *editor = m_find->lineEdit();
+
+            editor->insert(items[i].regExp);
+            editor->setCursorPosition(editor->cursorPosition() + items[i].cursorAdjustment);
+        }
     }
 }
 
