@@ -226,6 +226,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
       jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
+      if (lister->d->window)
+        job->setWindow(lister->d->window);
+
       connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
                this, SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
       connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -538,12 +541,20 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   kdDebug(7004) << k_funcinfo << "update started in " << _dir << endl;
 
   if ( !killed && holders )
+  {
+    bool first = true;
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
     {
       kdl->d->numJobs++;
       kdl->d->complete = false;
+      if (first && kdl->d->window)
+      {
+         first = false;
+         job->setWindow(kdl->d->window);
+      }
       emit kdl->started( _dir );
     }
+  }
 }
 
 KFileItemList* KDirListerCache::itemsForDir( const KURL &_dir ) const
@@ -2007,6 +2018,15 @@ void KDirLister::slotClearState()
   d->jobData.clear();
 }
 
+void KDirLister::setMainWindow(QWidget *window)
+{
+  d->window = window;
+}
+
+QWidget *KDirLister::mainWindow()
+{
+  return d->window;
+}
 
 // to keep BC changes
 

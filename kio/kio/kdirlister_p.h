@@ -25,6 +25,7 @@
 #include <qmap.h>
 #include <qdict.h>
 #include <qcache.h>
+#include <qwidget.h>
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -55,9 +56,11 @@ public:
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
-
+    
     changes = NONE;
-
+    
+    window = 0;
+    
     lstFilters.setAutoDelete( true );
     oldFilters.setAutoDelete( true );
   }
@@ -97,6 +100,8 @@ public:
   KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems;
 
   int changes;
+ 
+  QWidget *window; // Main window ths lister is associated with
 
   QString nameFilter;
   QPtrList<QRegExp> lstFilters, oldFilters;

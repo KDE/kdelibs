@@ -431,6 +431,12 @@ void SimpleJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
+    if (m_window)
+    {
+       QString id;
+       addMetaData("window-id", id.setNum(m_window->winId()));
+    }
+
     if (!m_outgoingMetaData.isEmpty())
     {
        KIO_ARGS << m_outgoingMetaData;
@@ -885,13 +891,6 @@ void TransferJob::start(Slave *slave)
        // WABA: The slave was put on hold. Resume operation.
        slave->resume();
     }
-
-    if (m_window)
-    {
-       QString id;
-       addMetaData("window-id", id.setNum(m_window->winId()));
-    }
-
 
     SimpleJob::start(slave);
     if (m_suspended)
@@ -1676,6 +1675,7 @@ void ListJob::start(Slave *slave)
              SLOT( slotTotalSize( KIO::filesize_t ) ) );
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
+
     SimpleJob::start(slave);
 }
 

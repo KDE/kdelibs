@@ -282,6 +282,17 @@ public:
    */
   bool matchesMimeFilter( const QString& mime ) const;
 
+  /**
+   * Pass the main window this object is associated with
+   * this is used for caching authentication data
+   */
+  void setMainWindow(QWidget *window);
+
+  /**
+   * Returns the main window associated with this object.
+   */
+  QWidget *mainWindow();
+
 signals:
   /**
    * Tell the view that we started to list _url. NOTE: this does _not_ imply that there
