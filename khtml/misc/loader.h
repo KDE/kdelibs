@@ -99,12 +99,11 @@ namespace khtml
 	    Uncacheable   // to big to be cached,
 	};  	          // will be destroyed as soon as possible
 
-	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, time_t _expireDate)
+	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, time_t _expireDate, int size)
+            : m_url(url), m_type(type), m_cachePolicy(_cachePolicy),
+              m_expireDate(_expireDate), m_size(size)
 	{
-	    m_url = url;
-	    m_type = type;
 	    m_status = Pending;
-	    m_size = 0;
 	    m_free = false;
             m_accessCount = 0;
 	    m_cachePolicy = _cachePolicy;
@@ -112,11 +111,9 @@ namespace khtml
 	    m_expireDate = _expireDate;
             m_deleted = false;
             m_expireDateChanged = false;
+            m_prev = m_next = 0;
 	}
-	virtual ~CachedObject() {
-            if(m_deleted) abort();
-            m_deleted = true;
-        }
+        virtual ~CachedObject();
 
 	virtual void data( QBuffer &buffer, bool eof) = 0;
 	virtual void error( int err, const char *text ) = 0;
@@ -128,6 +125,7 @@ namespace khtml
 	virtual void deref(CachedObjectClient *consumer);
 
 	int count() const { return m_clients.count(); }
+        int accessCount() const { return m_accessCount; }
 
 	void setStatus(Status s) { m_status = s; }
 	Status status() const { return m_status; }
@@ -168,21 +166,27 @@ namespace khtml
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
     protected:
+        void setSize(int size);
         QPtrList<CachedObjectClient> m_clients;
-
 	DOM::DOMString m_url;
         QString m_accept;
         Request *m_request;
 	Type m_type;
 	Status m_status;
-	int m_size;
         int m_accessCount;
-	time_t m_expireDate;
 	KIO::CacheControl m_cachePolicy;
+	time_t m_expireDate;
+	int m_size;
         bool m_free : 1;
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
+
+    private:
+        bool allowInLRUList() const { return canDelete() && status() != Persistent; }
+        CachedObject* m_next;
+        CachedObject* m_prev;
+        friend class Cache;
     };
 
 
@@ -206,9 +210,9 @@ namespace khtml
 
         virtual bool schedule() const { return true; }
 
-	void checkNotify();
-
     protected:
+        void checkNotify();
+
 	DOM::DOMString m_sheet;
         QTextCodec* m_codec;
     };
@@ -490,33 +494,24 @@ namespace khtml
 
         static void removeCacheEntry( CachedObject *object );
 
-        protected:
-	/*
-	 * @internal
-	 */
-	class LRUList : public QStringList
-	{
-	public:
-	    /**
-	     * implements the LRU list
-	     * The least recently used item is at the beginning of the list.
-	     */
-	    void touch( const QString &url )
-	    {
-		remove( url );
-		prepend( url );
-	    }
-	};
-
+    protected:
+        friend class CachedObject;
 
 	static QDict<CachedObject> *cache;
-	static LRUList *lru;
         static QPtrList<DocLoader>* docloader;
+        static void insertInLRUList(CachedObject*);
+        static void removeFromLRUList(CachedObject*);
+        static bool adjustSize(CachedObject*, int sizeDelta);
+        static void moveToFront(CachedObject*);
 
 	static int maxSize;
 	static int flushCount;
 
 	static Loader *m_loader;
+        static int m_totalSizeOfLRULists;
+
+        static CachedObject *m_headOfUncacheableList;
+        static int m_countOfLRUAndUncacheableLists;
 
         static unsigned long s_ulRefCnt;
     };
