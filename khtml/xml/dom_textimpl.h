@@ -129,6 +129,8 @@ public:
     virtual void recalcStyle( StyleChange = NoChange );
     virtual bool childTypeAllowed( unsigned short type );
 
+    DOMStringImpl *renderString() const;
+    
     virtual DOMString toString() const;
     /** Return the text for the node, with < replaced with &lt; and so on.
      *  @param startOffset The number of characters counted from the left, zero indexed, counting "<" as one character, to start from.  Use -1 to start from 0.

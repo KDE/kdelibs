@@ -459,6 +459,14 @@ TextImpl *TextImpl::createNew(DOMStringImpl *_str)
     return new TextImpl(docPtr(),_str);
 }
 
+DOMStringImpl* TextImpl::renderString() const
+{
+    if (renderer()) 
+        return static_cast<RenderText*>(renderer())->string();
+    else 
+        return string();
+}
+
 DOMString TextImpl::toString() const
 {
     // FIXME: substitute entity references as needed!
