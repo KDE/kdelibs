@@ -32,13 +32,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kimageeffect.h>
 
-#include <iostream>
+#include <iostream.h>
 #include <string.h>
 #include <math.h>
 
 //Force-touch-embedded-revision: 1
-
-using namespace std;
 
 #include "keramikimage.h"
 
@@ -365,7 +363,7 @@ int main(int argc, char** argv)
 	
 	for (unsigned int c=0; c<images.size(); c++)
 	{
-		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<images[c].data<<"},";
+		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<(char *)images[c].data<<"},";
 		cout<<"\n";
 	}
 	cout<<"\t{0, 0, 0, 0, 0}\n";
