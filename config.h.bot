@@ -90,3 +90,14 @@ int setenv(const char *name, const char *value, int overwrite);
 int unsetenv(const char *name);
 #endif
 
+#ifdef __osf__
+#define RTLD_GLOBAL 0        /* dlopen flag not known under Tru64  */
+#ifndef HAVE_USLEEP         /* usleep not defined in Tru64        */
+#ifdef __cplusplus  
+extern "C" void usleep(unsigned int);
+#else
+void usleep(unsigned int);
+#endif
+#endif
+#endif
+
