@@ -236,7 +236,7 @@ void KKeyButton::paint( QPainter *painter )
 /************************************************************************/
 KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			bool check_against_std_keys)
-  : KDialogBase( parent, 0, TRUE, i18n("Configure key bindings"), 
+  : KDialogBase( parent, 0, TRUE, i18n("Configure Key Bindings"), 
 		 Help|Default|Ok|Cancel, Ok )
 {
   KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
