@@ -41,23 +41,18 @@ KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
     }
   setFrameStyle(QFrame::Panel | QFrame::Raised);
   // -----
-  connect(email, SIGNAL(leftClickedURL(const char*)),
-	  SLOT(emailClickedSlot(const char*)));
-  connect(url, SIGNAL(leftClickedURL(const char*)),
-	  SLOT(urlClickedSlot(const char*)));
+  connect(email, SIGNAL(leftClickedURL(const QString&)),
+	  SLOT(emailClickedSlot(const QString&)));
+  connect(url, SIGNAL(leftClickedURL(const QString&)),
+	  SLOT(urlClickedSlot(const QString&)));
   // ############################################################################
 }
 
 void
-KAboutContributor::setName(const char* n)
+KAboutContributor::setName(const QString& n)
 {
   // ############################################################################
-  if(n==0)
-    {
-      name->setText("");
-    } else {
-      name->setText(n);
-    }
+  name->setText(n);
   // ############################################################################
 }
 
@@ -69,15 +64,10 @@ KAboutContributor::getName()
   // ############################################################################
 }
 void
-KAboutContributor::setURL(const char* u)
+KAboutContributor::setURL(const QString& u)
 {
   // ############################################################################
-  if(u==0)
-    {
-      url->setText("");
-    } else {
-      url->setText(u);
-    }
+  url->setText(u);
   // ############################################################################
 }
 
@@ -90,15 +80,10 @@ KAboutContributor::getURL()
 }
 
 void
-KAboutContributor::setEmail(const char* e)
+KAboutContributor::setEmail(const QString& e)
 {
   // ############################################################################
-  if(e==0)
-    {
-      email->setText("");
-    } else {
-      email->setText(e);
-    }
+  email->setText(e);
   // ############################################################################
 }
 
@@ -111,33 +96,28 @@ KAboutContributor::getEmail()
 }
 
 void
-KAboutContributor::emailClickedSlot(const char* e)
+KAboutContributor::emailClickedSlot(const QString& e)
 {
   // ############################################################################
   debug("KAboutContributor::emailClickedSlot: called.");
-  emit(sendEmail(name->text(), e==0 ? "" : e));
+  emit(sendEmail(name->text(), e));
   // ############################################################################
 }
 
 void
-KAboutContributor::urlClickedSlot(const char* u)
+KAboutContributor::urlClickedSlot(const QString& u)
 {
   // ############################################################################
   debug("KAboutContributor::urlClickedSlot: called.");
-  emit(openURL(u==0 ? "" : u));
+  emit(openURL(u));
   // ############################################################################
 }
 
 void
-KAboutContributor::setWork(const char* w)
+KAboutContributor::setWork(const QString& w)
 {
   // ############################################################################
-  if(w==0)
-    {
-      work="";
-    } else {
-      work=w;
-    }
+  work=w;
   // ############################################################################
 }
 
@@ -235,14 +215,14 @@ KAboutWidget::KAboutWidget(QWidget* parent, const char* name)
   logo->setFrameStyle(QFrame::Panel | QFrame::Raised);
   version->setAlignment(AlignCenter);
   // -----
-  connect(author, SIGNAL(sendEmail(const char*, const char*)),
-	  SLOT(sendEmailSlot(const char*, const char*)));
-  connect(author, SIGNAL(openURL(const char*)),
-	  SLOT(openURLSlot(const char*)));
-  connect(maintainer, SIGNAL(sendEmail(const char*, const char*)),
-	  SLOT(sendEmailSlot(const char*, const char*)));
-  connect(maintainer, SIGNAL(openURL(const char*)),
-	  SLOT(openURLSlot(const char*)));
+  connect(author, SIGNAL(sendEmail(const QString&, const QString&)),
+	  SLOT(sendEmailSlot(const QString&, const QString&)));
+  connect(author, SIGNAL(openURL(const QString&)),
+	  SLOT(openURLSlot(const QString&)));
+  connect(maintainer, SIGNAL(sendEmail(const QString&, const QString&)),
+	  SLOT(sendEmailSlot(const QString&, const QString&)));
+  connect(maintainer, SIGNAL(openURL(const QString&)),
+	  SLOT(openURLSlot(const QString&)));
   // ############################################################################
 }
 
@@ -297,7 +277,7 @@ KAboutWidget::setLogo(const QPixmap& i)
 }
 
 void 
-KAboutWidget::sendEmailSlot(const char* name, const char* email)
+KAboutWidget::sendEmailSlot(const QString& name, const QString& email)
 {
   // ############################################################################
   debug("KAboutWidget::sendEmailSlot: called.");
@@ -306,7 +286,7 @@ KAboutWidget::sendEmailSlot(const char* name, const char* email)
 }
 
 void 
-KAboutWidget::openURLSlot(const char* url)
+KAboutWidget::openURLSlot(const QString& url)
 {
   // ############################################################################
   debug("KAboutWidget::openURLSlot: called.");
@@ -315,53 +295,53 @@ KAboutWidget::openURLSlot(const char* url)
 }
 
 void
-KAboutWidget::setAuthor(const char* name, const char* email,
-			const char* url, const char* w)
+KAboutWidget::setAuthor(const QString& name, const QString& email,
+			const QString& url, const QString& w)
 {
   // ############################################################################
-  author->setName(name==0 ? "" : name);
-  author->setEmail(email==0 ? "" : email);
-  author->setURL(url==0 ? "" : url);
-  author->setWork(w==0 ? "" : w);
+  author->setName(name);
+  author->setEmail(email);
+  author->setURL(url);
+  author->setWork(w);
   // ############################################################################
 }
 
 void
-KAboutWidget::setMaintainer(const char* name, const char* email,
-			    const char* url, const char* w)
+KAboutWidget::setMaintainer(const QString& name, const QString& email,
+			    const QString& url, const QString& w)
 {
   // ############################################################################
-  maintainer->setName(name==0 ? "" : name);
-  maintainer->setEmail(email==0 ? "" : email);
-  maintainer->setWork(w==0 ? "" : w);
-  maintainer->setURL(url==0 ? "" : url);
+  maintainer->setName(name);
+  maintainer->setEmail(email);
+  maintainer->setWork(w);
+  maintainer->setURL(url);
   showMaintainer=true;
   // ############################################################################
 }
 
 void
-KAboutWidget::addContributor(const char* n, const char* e,
-			     const char* url, const char* w)
+KAboutWidget::addContributor(const QString& n, const QString& e,
+			     const QString& url, const QString& w)
 {
   // ############################################################################
   KAboutContributor *c=new KAboutContributor(this);
   // -----
   c->setName(n);
   c->setEmail(e);
-  c->setURL(url==0 ? "" : url);
+  c->setURL(url);
   c->setWork(w);
   contributors.push_back(c);
-  connect(c, SIGNAL(sendEmail(const char*, const char*)),
-	  SLOT(sendEmailSlot(const char*, const char*)));
-  connect(c, SIGNAL(openURL(const char*)), SLOT(openURLSlot(const char*)));
+  connect(c, SIGNAL(sendEmail(const QString&, const QString&)),
+	  SLOT(sendEmailSlot(const QString&, const QString&)));
+  connect(c, SIGNAL(openURL(const QString&)), SLOT(openURLSlot(const QString&)));
   // ############################################################################
 }
 
 void
-KAboutWidget::setVersion(const char* name)
+KAboutWidget::setVersion(const QString& name)
 {
   // ############################################################################
-  version->setText(name==0 ? "" : name);
+  version->setText(name);
   // ############################################################################
 }
 
@@ -427,9 +407,9 @@ KAboutDialog::KAboutDialog(QWidget* parent, const char* name)
   setMainWidget(about);
   showButtonApply(false);
   showButtonCancel(false);
-  connect(about, SIGNAL(sendEmail(const char*, const char*)),
-	  SLOT(sendEmailSlot(const char*, const char*)));
-  connect(about, SIGNAL(openURL(const char*)), SLOT(openURLSlot(const char*)));
+  connect(about, SIGNAL(sendEmail(const QString&, const QString&)),
+	  SLOT(sendEmailSlot(const QString&, const QString&)));
+  connect(about, SIGNAL(openURL(const QString&)), SLOT(openURLSlot(const QString&)));
   // ############################################################################
 }
 
@@ -452,8 +432,8 @@ KAboutDialog::adjust()
 }
 
 void
-KAboutDialog::setMaintainer(const char* name, const char* email,
-			    const char* url, const char* w)
+KAboutDialog::setMaintainer(const QString& name, const QString& email,
+			    const QString& url, const QString& w)
 {
   // ############################################################################
   about->setMaintainer(name, email, url, w);
@@ -461,8 +441,8 @@ KAboutDialog::setMaintainer(const char* name, const char* email,
 }
 
 void
-KAboutDialog::setAuthor(const char* name, const char* email,
-			const char* url, const char* work)
+KAboutDialog::setAuthor(const QString& name, const QString& email,
+			const QString& url, const QString& work)
 {
   // ############################################################################
   about->setAuthor(name, email, url, work);
@@ -470,8 +450,8 @@ KAboutDialog::setAuthor(const char* name, const char* email,
 }
 
 void
-KAboutDialog::addContributor(const char* n, const char* e,
-			     const char* u, const char* w)
+KAboutDialog::addContributor(const QString& n, const QString& e,
+			     const QString& u, const QString& w)
 {
   // ############################################################################
   about->addContributor(n, e, u, w);
@@ -479,7 +459,7 @@ KAboutDialog::addContributor(const char* n, const char* e,
 }
 
 void
-KAboutDialog::setVersion(const char* name)
+KAboutDialog::setVersion(const QString& name)
 {
   // ############################################################################
   about->setVersion(name);
@@ -487,20 +467,20 @@ KAboutDialog::setVersion(const char* name)
 }
 
 void
-KAboutDialog::sendEmailSlot(const char* name, const char* email)
+KAboutDialog::sendEmailSlot(const QString& name, const QString& email)
 {
   // ############################################################################
   debug("KAboutDialog::sendEmailSlot: request to send an email to %s <%s>.",
-	name, email);
+	name.ascii(), email.ascii());
   emit(sendEmail(name, email));
   // ############################################################################
 }
 
 void
-KAboutDialog::openURLSlot(const char* url)
+KAboutDialog::openURLSlot(const QString& url)
 {
   // ############################################################################
-  debug("KAboutDialog::openURLSlot: request to open URL <%s>.", url);
+  debug("KAboutDialog::openURLSlot: request to open URL <%s>.", url.ascii());
   emit(openURL(url));
   // ############################################################################
 }

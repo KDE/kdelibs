@@ -102,22 +102,22 @@ public:
    *  The button shows \e OK, the tooltip contains "Accept settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the OK button in dialogs. */
-  void setButtonOKText(const QString& text=QString::null, const QString& tooltip=QString::null, 
-		       const QString& quickhelp=QString::null);
+  void setButtonOKText(const QString& text="", const QString& tooltip="", 
+		       const QString& quickhelp="");
   /** Set the text of the Apply button. If the default parameters are used (that 
    *  means, if no parameters are given) the standard texts are set:
    *  The button shows \e Apply, the tooltip contains "Apply settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the apply button in dialogs. */
-  void setButtonApplyText(const QString& text=QString::null, const QString& tooltip=QString::null, 
-			  const QString& quickhelp=QString::null);
+  void setButtonApplyText(const QString& text="", const QString& tooltip="", 
+			  const QString& quickhelp="");
   /** Set the text of the Cancel button. If the default parameters are used (that 
    *  means, if no parameters are given) the standard texts are set:
    *  The button shows \e Cancel, the tooltip contains "Cancel settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the cancel button in dialogs. */
-  void setButtonCancelText(const QString& text=QString::null, const QString& tooltip=QString::null, 
-			   const QString& quickhelp=QString::null);
+  void setButtonCancelText(const QString& text="", const QString& tooltip="", 
+			   const QString& quickhelp="");
   /** Show the OK button if \a state is \c true (default). */
   void showButtonOK(bool state);
   /** Show the Apply button if \a state is \c true (default). */
@@ -196,9 +196,13 @@ public slots:
   /** Set the help topic, thereby enabling and showing the help url label.
    *  \e path is the path to the html file, \e text is the text shown by the
    *  label.
-   *  If \e text is zero, the text is "Get help...", internationalized. */
-  void setHelp(const char* path, const char* topic, const QString& text=QString::null);
-  void helpClickedSlot(const char* url); /**< Connected to kurlHelp. */
+   *  If \e text is empty, the text is "Get help...", internationalized. 
+   *  WORK_TO_DO: I had to remove the default value ("") for text, since Qt 2.0 
+   *  moc shouted a syntax error in this line. Any comments how to fix it? */
+  void setHelp(const QString& path,
+	       const QString& topic,
+	       const QString& text);
+  void helpClickedSlot(const QString& url); /**< Connected to kurlHelp. */
   // ############################################################################
 };
 

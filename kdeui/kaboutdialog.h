@@ -33,20 +33,20 @@ public:
   /** The Qt constructor. */
   KAboutContributor(QWidget* parent=0, const char* name=0);
   /** Set the name (a literal string). */
-  void setName(const char*);
+  void setName(const QString&);
   /** Get the name. */
   QString getName();
   /** The email address (dito). */
-  void setEmail(const char*);
+  void setEmail(const QString&);
   /** Get the email address. */
   QString getEmail();
   /** The URL (dito). */
-  void setURL(const char*);
+  void setURL(const QString&);
   /** Get the URL. */
   QString getURL();
   /** The tasks the person worked on (a literal string). More than one line is 
    *  possible, but very long texts might look ugly. */
-  void setWork(const char*);
+  void setWork(const QString&);
   /** The size hint. Very important here, since KAboutWidget relies on it for
    *  geometry management. */
   QSize sizeHint();
@@ -69,15 +69,15 @@ protected:
   // ----------------------------------------------------------------------------
 protected slots:
   /** The homepage URL has been clicked. */
-  void urlClickedSlot(const char*);
+  void urlClickedSlot(const QString&);
   /** The email address has been clicked. */
-  void emailClickedSlot(const char* emailaddress);
+  void emailClickedSlot(const QString& emailaddress);
   // ----------------------------------------------------------------------------
 signals:
   /** The email address has been clicked. */
-  void sendEmail(const char* name, const char* email);
+  void sendEmail(const QString& name, const QString& email);
   /** The URL has been clicked. */
-  void openURL(const char* url);
+  void openURL(const QString& url);
   // ############################################################################
 };
 
@@ -97,28 +97,28 @@ public:
   /** Set the image as the application logo. */
   void setLogo(const QPixmap&);
   /** Set the authors name and email address. */
-  void setAuthor(const char* name, const char* email,
-		 const char* url, const char* work);
+  void setAuthor(const QString& name, const QString& email,
+		 const QString& url, const QString& work);
   /** Set the maintainers name and email address. */
-  void setMaintainer(const char* name, const char* email,
-		     const char* url, const char* work);
+  void setMaintainer(const QString& name, const QString& email,
+		     const QString& url, const QString& work);
   /** Show this person as one of the major contributors. */
-  void addContributor(const char* name, const char* email,
-		      const char* url, const char* work);
+  void addContributor(const QString& name, const QString& email,
+		      const QString& url, const QString& work);
   /** Set the text describing the version. */
-  void setVersion(const char* name);
+  void setVersion(const QString& name);
   // ----------------------------------------------------------------------------
 protected slots:
   /** Catch the signals from the contributors elements. */
-  void sendEmailSlot(const char* name, const char* email);
+  void sendEmailSlot(const QString& name, const QString& email);
   /** Catch the clicked URLs. */
-  void openURLSlot(const char* url);
+  void openURLSlot(const QString& url);
   // ----------------------------------------------------------------------------
 signals:
   /** An email address has been selected by the user. */
-  void sendEmail(const char* name, const char* email);
+  void sendEmail(const QString& name, const QString& email);
   /** An URL has been clicked. */
-  void openURL(const char* url);
+  void openURL(const QString& url);
   // ----------------------------------------------------------------------------
 protected:
   // events:
@@ -157,23 +157,23 @@ public:
   /** Set the image as the application logo. */
   void setLogo(const QPixmap&);
   /** Set the authors name and email address. */
-  void setAuthor(const char* name, const char* email,
-		 const char* url, const char* work);
+  void setAuthor(const QString& name, const QString& email,
+		 const QString& url, const QString& work);
   /** Set the maintainers name and email address. */
-  void setMaintainer(const char* name, const char* email,
-		     const char* url, const char* work);
+  void setMaintainer(const QString& name, const QString& email,
+		     const QString& url, const QString& work);
   /** Show this person as one of the major contributors. */
-  void addContributor(const char* name, const char* email,
-		      const char* url, const char* work);
+  void addContributor(const QString& name, const QString& email,
+		      const QString& url, const QString& work);
   /** Set the text describing the version. */
-  void setVersion(const char* name);
+  void setVersion(const QString& name);
   // ----------------------------------------------------------------------------
 signals:
   /** Send an email to this person. The application must provide the
    *  functionality. */
-  void sendEmail(const char* name, const char* email);
+  void sendEmail(const QString& name, const QString& email);
   /** Open the selected URL. */
-  void openURL(const char* url);
+  void openURL(const QString& url);
   // ----------------------------------------------------------------------------
 protected:
   /** The main widget. */
@@ -181,9 +181,9 @@ protected:
   // ----------------------------------------------------------------------------
 protected slots:
   /** Connected to widget->sendEmail. */
-  void sendEmailSlot(const char* name, const char* email);
+  void sendEmailSlot(const QString& name, const QString& email);
   /** Open this URL. */
-  void openURLSlot(const char* url);
+  void openURLSlot(const QString& url);
   // ############################################################################
 };
 

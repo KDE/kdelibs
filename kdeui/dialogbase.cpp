@@ -56,8 +56,8 @@ DialogBase::DialogBase(QWidget* parent, const char* name, bool modal)
   connect(buttonOK, SIGNAL(clicked()), SLOT(accept()));
   connect(buttonCancel, SIGNAL(clicked()), SLOT(reject()));
   connect(buttonApply, SIGNAL(clicked()), SLOT(applyPressed()));
-  connect(kurlHelp, SIGNAL(leftClickedURL(const char*)), 
-	  SLOT(helpClickedSlot(const char*)));
+  connect(kurlHelp, SIGNAL(leftClickedURL(const QString&)), 
+	  SLOT(helpClickedSlot(const QString&)));
   frameBase->setFrameStyle(34);
   frameMain->setFrameStyle(50);
   kurlHelp->hide(); // only shown if the path to a help topic is set
@@ -108,19 +108,17 @@ DialogBase::setButtonOKText(const QString& text, const QString& tooltip,
 			    const QString& quickhelp)
 {
   // ############################################################################
-  QString WhatsOK=i18n
+  const QString WhatsOK=i18n
     ("If you press the <b>OK</b> button, all changes\n"
      "you made will be used to proceed.");
   // -----
-  buttonOK->setText(text.isNull() ? i18n("&OK") : text);
-  QToolTip::add(buttonOK, tooltip==0 
-		? i18n("Accept settings.") 
-		: tooltip);
+  buttonOK->setText(text=="" ? i18n("&OK") : text);
+  QToolTip::add(buttonOK, tooltip=="" ? i18n("Accept settings.") : tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonOK);
     }
-  KQuickHelp::add(buttonOK, quickhelp.isNull() ? WhatsOK : quickhelp);
+  KQuickHelp::add(buttonOK, quickhelp=="" ? WhatsOK : quickhelp);
   // ############################################################################
 }
 
@@ -129,21 +127,19 @@ DialogBase::setButtonApplyText(const QString& text, const QString& tooltip,
 			       const QString& quickhelp)
 {
   // ############################################################################
-  QString WhatsApply=i18n
+  const QString WhatsApply=i18n
     ("When clicking <b>Apply</b>, the settings will be\n"
      "handed over to the program, but the dialog\n"
      "will not be closed."
      "Use this to try different settings.");
   // -----
-  buttonApply->setText(text.isNull() ? i18n("&Apply") : text);
-  QToolTip::add(buttonApply, tooltip.isNull() 
-		? i18n("Apply settings.") 
-		: tooltip);
+  buttonApply->setText(text=="" ? i18n("&Apply") : text);
+  QToolTip::add(buttonApply, tooltip=="" ? i18n("Apply settings.") : tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonApply);
     }
-  KQuickHelp::add(buttonApply, quickhelp.isNull() ? WhatsApply : quickhelp);
+  KQuickHelp::add(buttonApply, quickhelp=="" ? WhatsApply : quickhelp);
   // ############################################################################
 }
 
@@ -152,22 +148,20 @@ DialogBase::setButtonCancelText(const QString& text, const QString& tooltip,
 				const QString& quickhelp)
 {
   // ############################################################################
-  QString WhatsCancel=i18n
+  const QString WhatsCancel=i18n
     ("If you press the <b>Cancel</b> button, all changes\n"
      "you made will be abandoned and the dialog\n"
      "will be closed.\n"
      "The program will be in the state before\n"
      "opening the dialog.");
   // -----
-  buttonCancel->setText(text.isNull() ? i18n("&Cancel") : text);
-  QToolTip::add(buttonCancel, tooltip.isNull()
-		? i18n("Cancel settings.") 
-		: tooltip);
+  buttonCancel->setText(text=="" ? i18n("&Cancel") : text);
+  QToolTip::add(buttonCancel, tooltip=="" ? i18n("Cancel settings.") : tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonCancel);
     }  
-  KQuickHelp::add(buttonCancel, quickhelp.isNull() ? WhatsCancel : quickhelp);
+  KQuickHelp::add(buttonCancel, quickhelp=="" ? WhatsCancel : quickhelp);
   // ############################################################################
 }
 
@@ -475,13 +469,13 @@ void DialogBase::initializeGeometry()
   // ############################################################################
 }
 
-void DialogBase::setHelp(const char* newpath, const char* newtopic, 
+void DialogBase::setHelp(const QString& newpath, const QString& newtopic, 
 			 const QString& text)
 {
   // ############################################################################
-  path= (newpath==0) ? "" : newpath;
-  topic= (newtopic==0) ? "" : newtopic;
-  kurlHelp->setText(text.isNull() ? i18n("Get help...") : text);
+  path=newpath;
+  topic=newtopic;
+  kurlHelp->setText(text=="" ? i18n("Get help...") : text);
   showHelp=(!path.isEmpty());
   if(showHelp)
     {
@@ -492,7 +486,7 @@ void DialogBase::setHelp(const char* newpath, const char* newtopic,
   // ############################################################################
 }
 
-void DialogBase::helpClickedSlot(const char*)
+void DialogBase::helpClickedSlot(const QString&)
 {
   // ############################################################################
   if(path.isEmpty())
