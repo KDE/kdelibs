@@ -29,6 +29,7 @@ class KBookmark
 {
     friend class KBookmarkGroup;
 public:
+    KBookmark( ) {}
     KBookmark( QDomElement elem ) : element(elem) {}
 
     static KBookmark standaloneBookmark( const QString & text, const KURL & url, const QString & icon = QString::null );

@@ -20,10 +20,13 @@
 #include <kurldrag.h>
 #include <kdebug.h>
 
-KBookmarkDrag * KBookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dragSource, const char * name )
+KBookmarkDrag * KBookmarkDrag::newDrag( const QValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
 {
     KURL::List urls;
-    urls.append( bookmark.url() );
+
+    for ( QValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
+       urls.append( (*it).url() );
+    }
 
     // See KURLDrag::newDrag
     QStrList uris;
@@ -33,12 +36,20 @@ KBookmarkDrag * KBookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dr
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
         uris.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
-    return new KBookmarkDrag( bookmark, uris, dragSource, name );
+
+    return new KBookmarkDrag( bookmarks, uris, dragSource, name );
 }
 
-KBookmarkDrag::KBookmarkDrag( const KBookmark & bookmark, const QStrList & urls,
+KBookmarkDrag * KBookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dragSource, const char * name )
+{
+    QValueList<KBookmark> bookmarks;
+    bookmarks.append( KBookmark(bookmark) );
+    return newDrag(bookmarks, dragSource, name);
+}
+
+KBookmarkDrag::KBookmarkDrag( const QValueList<KBookmark> & bookmarks, const QStrList & urls,
                   QWidget * dragSource, const char * name )
-    : QUriDrag( urls, dragSource, name ), m_bookmark( bookmark ), m_doc("xbel")
+    : QUriDrag( urls, dragSource, name ), m_bookmarks( bookmarks ), m_doc("xbel")
 {
     // We need to create the XML for this drag right now and not
     // in encodedData because when cutting a folder, the children
@@ -46,7 +57,9 @@ KBookmarkDrag::KBookmarkDrag( const KBookmark & bookmark, const QStrList & urls,
     // is requested.
     QDomElement elem = m_doc.createElement("xbel");
     m_doc.appendChild( elem );
-    elem.appendChild( m_bookmark.internalElement().cloneNode( true /* deep */ ) );
+    for ( QValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
+       elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
+    }
     kdDebug(1203) << "KBookmarkDrag::KBookmarkDrag " << m_doc.toString() << endl;
 }
 
@@ -97,8 +110,9 @@ bool KBookmarkDrag::canDecode( const QMimeSource * e )
            e->provides("text/plain");
 }
 
-KBookmark KBookmarkDrag::decode( const QMimeSource * e )
+QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
 {
+    QValueList<KBookmark> bookmarks;
     if ( e->provides("application/x-xbel") )
     {
         QCString s( e->encodedData("application/x-xbel") );
@@ -107,19 +121,25 @@ KBookmark KBookmarkDrag::decode( const QMimeSource * e )
         doc.setContent( s );
         QDomElement elem = doc.documentElement();
         QDomNodeList children = elem.childNodes();
-        Q_ASSERT(children.count()==1);
-        return KBookmark( children.item(0).toElement() );
+        for ( uint childno = 0; childno < children.count(); childno++) 
+        {
+           bookmarks.append( KBookmark( children.item(childno).toElement() ));
+        }
+        return bookmarks;
     }
     if ( e->provides("text/uri-list") )
     {
         KURL::List m_lstDragURLs;
         if ( KURLDrag::decode( e, m_lstDragURLs ) )
         {
+            // FIXME iterate through them!!!
             if ( m_lstDragURLs.count() > 1 )
                 kdWarning() << "Only first URL inserted, known limitation" << endl;
             //kdDebug(1203) << "KBookmarkDrag::decode url=" << m_lstDragURLs.first().url() << endl;
-            return KBookmark::standaloneBookmark( m_lstDragURLs.first().fileName(), m_lstDragURLs.first() );
+            bookmarks.append( KBookmark::standaloneBookmark( m_lstDragURLs.first().fileName(), m_lstDragURLs.first() ));
+            return bookmarks;
         }
     }
-    return KBookmark(QDomElement());
+    bookmarks.append( KBookmark() );
+    return bookmarks;
 }

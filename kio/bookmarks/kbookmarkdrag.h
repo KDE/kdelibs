@@ -26,11 +26,14 @@
 class KBookmarkDrag : public QUriDrag
 {
 public:
+    static KBookmarkDrag * newDrag( const QValueList<KBookmark> & bookmarks,
+                                    QWidget * dragSource = 0,
+                                    const char * name = 0 );
     static KBookmarkDrag * newDrag( const KBookmark & bookmark,
                                     QWidget * dragSource = 0,
                                     const char * name = 0 );
 protected:
-    KBookmarkDrag( const KBookmark & bookmark,
+    KBookmarkDrag( const QValueList<KBookmark> & bookmarks,
                    const QStrList & urls,
                    QWidget * dragSource,
                    const char * name );
@@ -41,10 +44,10 @@ public:
     virtual QByteArray encodedData( const char* mime ) const;
 
     static bool canDecode( const QMimeSource * e );
-    static KBookmark decode( const QMimeSource * e );
+    static QValueList<KBookmark> decode( const QMimeSource * e );
 
 protected:
-    KBookmark m_bookmark;
+    QValueList<KBookmark> m_bookmarks;
     QDomDocument m_doc;
     class KBookmarkDragPrivate;
     KBookmarkDragPrivate * d;
