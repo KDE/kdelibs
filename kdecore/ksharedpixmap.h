@@ -20,7 +20,7 @@
 
 #include <kpixmap.h>
 
-class KSharedPixmapPrivate *d;
+class KSharedPixmapPrivate;
 
 /**
  * Shared pixmap client.
