@@ -43,7 +43,7 @@ KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
 	m_model = new QLabel(this);
 	m_uri = new QLabel(this);
 	m_device = new QLabel(this);
-	QLabel	*m_loclabel = new QLabel(i18n("Location:"), this);
+	QLabel	*m_loclabel = new QLabel(i18n("Phys. Location", "Location:"), this);
 	m_loclabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_desclabel = new QLabel(i18n("Description:"), this);
 	m_desclabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
