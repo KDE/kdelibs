@@ -26,6 +26,7 @@
 #include <qgrid.h>
 #include <qpainter.h>
 #include <qpopupmenu.h>
+#include <qstyle.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
 
@@ -187,16 +188,16 @@ void KURLBarItem::paint( QPainter *p )
 
         QBrush brush = box->colorGroup().brush( QColorGroup::Highlight );
         brush.setColor( brush.color().light( 115 ) );
-        p->fillRect( 1, 0, w - 2, h - 1, brush );
+        p->fillRect( 0, 0, w, h, brush );
         QPen pen = p->pen();
         QPen oldPen = pen;
         pen.setColor( box->colorGroup().mid() );
         p->setPen( pen );
 
-        p->drawPoint( 1, 0 );
-        p->drawPoint( 1, h - 2 );
-        p->drawPoint( w - 2, 0 );
-        p->drawPoint( w - 2, h - 2 );
+        p->drawPoint( 0, 0 );
+        p->drawPoint( 0, h - 1 );
+        p->drawPoint( w - 1, 0 );
+        p->drawPoint( w - 1, h - 1 );
 
         p->setPen( oldPen );
     }
@@ -407,7 +408,6 @@ void KURLBar::setListBox( KURLBarListBox *view )
     m_listBox->setSelectionMode( KListBox::Single );
     paletteChange( palette() );
     m_listBox->setFocusPolicy( TabFocus );
-    m_listBox->setFrameStyle( QFrame::NoFrame );
 
     connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
              SLOT( slotSelected( int, QListBoxItem * )));
@@ -833,6 +833,13 @@ KURLBarListBox::KURLBarListBox( QWidget *parent, const char *name )
 KURLBarListBox::~KURLBarListBox()
 {
     delete m_toolTip;
+}
+
+void KURLBarListBox::paintEvent( QPaintEvent* )
+{
+    QPainter p(this);
+    p.setPen( colorGroup().mid() );
+    p.drawRect( 0, 0, width(), height() );
 }
 
 QDragObject * KURLBarListBox::dragObject()
