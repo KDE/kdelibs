@@ -246,7 +246,7 @@ void KClipboard::fetchData()
       if ( i < nitems )
       {
 	m_mimeTypeLen = i + 1;
-	m_strFormat = (const char*)result;
+	m_strFormat = reinterpret_cast<const char*>(result);
       }
       else
       {  

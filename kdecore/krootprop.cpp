@@ -121,17 +121,15 @@ QString KRootProp::readEntry( const QString& rKey,
 		QString *aValue = propDict[ rKey.data() ];
 
 		if (!aValue && pDefault )
-			aValue->sprintf( pDefault );
+		    *aValue = pDefault;
 
 		return *aValue;
 	} else {
 	
-		QString aValue;
-		
-		if ( pDefault )
-			aValue.sprintf( pDefault );
-			
-		return aValue;
+		if ( !pDefault.isNull() )
+		    return pDefault;
+		else 
+		    return QString::null;
 	}
 }
 
@@ -270,7 +268,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
 	propDict.replace( rKey.data(), new QString( rValue.data() ) );
 	
 	if ( !aValue )
-		aValue->sprintf(rValue);
+	    *aValue = rValue;
 	
 	return *aValue;
 }
@@ -300,17 +298,18 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
   if( rFont.rawMode() )
 	nFontBits = nFontBits | 0x20;
 
-  aValue.sprintf( "%s,%d,%d,%d,%d,%d", (const char*)rFont.family(), rFont.pointSize(),
-				  rFont.styleHint(), rFont.charSet(), rFont.weight(),
-				  nFontBits );
-
+  aValue.sprintf( "%s,%d,%d,%d,%d,%d", rFont.family().ascii(), 
+		   rFont.pointSize(),
+		   rFont.styleHint(), rFont.charSet(), rFont.weight(),
+		   nFontBits );
+  
   return writeEntry( rKey, aValue );
 }
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 {
-  QString aValue;
-  aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
-
-  return writeEntry( rKey, aValue );
+    QString aValue;
+    aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
+    
+    return writeEntry( rKey, aValue );
 }

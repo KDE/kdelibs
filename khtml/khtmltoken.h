@@ -335,7 +335,7 @@ inline char* HTMLTokenizer::nextOption()
         return 0;
     }
     
-    nextOptionPtr = index(t, TAG_ESCAPE);
+    nextOptionPtr = strchr(t, TAG_ESCAPE);
     if (nextOptionPtr)
     {
         *nextOptionPtr++ = '\0';

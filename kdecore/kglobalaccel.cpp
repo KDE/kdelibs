@@ -73,10 +73,8 @@ void KGlobalAccel::connectItem( const QString& action,
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-		QString str;
-		str.sprintf(
-			"KGlobalAccel : Cannot connect action %s"\
-			"which is not in the object dictionary", (const char*)action );
+		QString str = i18n("KGlobalAccel : Cannot connect action %1 "
+				   "which is not in the object dictionary").arg(action);
 		warning( str );
 		return;
 	}
@@ -336,12 +334,10 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-		QString str;
-		str.sprintf(
-			"KGlobalAccel : cannont enable action %s"\
-			"which is not in the object dictionary", (const char*)action );
-		warning( str );
-		return;
+	    QString str = i18n("KGlobalAccel : cannont enable action %1 "
+			       "which is not in the object dictionary").arg(action);
+	    warning( str );
+	    return;
 	}
 
 	bool old = pEntry->bEnabled;

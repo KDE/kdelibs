@@ -191,9 +191,9 @@ QFont &KCharset::setQFont(QFont &fnt){
 
   /* If Qt doesn't support this charset we must use the hack */
   if (qtCharset()==QFont::AnyCharSet && faceStr){
-     kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
+     kchdebug("Face for font: \"%s\"\n",faceStr.ascii());
      faceStr.replace(QRegExp("\\*"),fnt.family());
-     kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
+     kchdebug("New face for font: \"%s\"\n",faceStr.ascii());
      fnt.setCharSet(QFont::AnyCharSet);
      fnt.setFamily(faceStr);
      QFontInfo fi(fnt);
@@ -225,9 +225,9 @@ QFont &KCharset::setQFont(QFont &fnt){
 	  fnt.setFamily(*(entry->good_family));
       }	  
       else if (faceStr){ /* nothing else works - we must use the hack */
-         kchdebug("Face for font: \"%s\"\n",(const char *)faceStr);
+         kchdebug("Face for font: \"%s\"\n",faceStr.ascii());
          faceStr.replace(QRegExp("\\*"),fnt.family());
-         kchdebug("New face for font: \"%s\"\n",(const char *)faceStr);
+         kchdebug("New face for font: \"%s\"\n",faceStr.ascii());
          fnt.setCharSet(QFont::AnyCharSet);
          fnt.setFamily(faceStr);
       }

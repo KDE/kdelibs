@@ -128,15 +128,15 @@ void KIntegerLine::putValue(QString &s, int val)
   switch (lineType)
     {
 	case  KEditTypeOct:
-	  s.sprintf("%o", val);
+	  s.setNum(val, 8);
 	  break;
        
 	case  KEditTypeDec:
-	  s.sprintf("%d", val);
+	  s.setNum(val, 10);
 	  break;
 
 	case  KEditTypeHex:
-	  s.sprintf("%X", val);
+	  s.setNum(val, 16);
 	  break;
     }
   setText(s);
@@ -148,20 +148,17 @@ void KIntegerLine::incValue(QString &s, int val)
     {
 	case  KEditTypeOct:
 	  val += 8;
-	  s.sprintf("%o", val);
 	  break;
        
 	case  KEditTypeDec:
 	  val += 10;
-	  s.sprintf("%d", val);
 	  break;
 
 	case  KEditTypeHex:
 	  val +=16;
-	  s.sprintf("%X", val);
 	  break;
     }
-  setText(s);
+  putValue(s, val);
 }
 
 void KIntegerLine::decValue(QString &s, int val)
@@ -170,20 +167,17 @@ void KIntegerLine::decValue(QString &s, int val)
     {
 	case  KEditTypeOct:
 	  if (val > 7)   val -= 8;
-	  s.sprintf("%o", val);
 	  break;
        
 	case  KEditTypeDec:
 	  if (val > 9)   val -= 10;
-	  s.sprintf("%d", val);
 	  break;
 
 	case  KEditTypeHex:
 	  if (val > 15)   val -= 16;
-	  s.sprintf("%X", val);
 	  break;
     }
-  setText(s);
+  putValue(s, val);
 }
 
 

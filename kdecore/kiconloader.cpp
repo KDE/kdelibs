@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.31  1999/03/09 16:39:48  dfaure
+   Merging with 1.1 branch : initPath(), and header doc update.
+#include <qpainter.h>
    Revision 1.30  1999/03/09 06:47:13  antlarr
    Added the getIconPath function that returns the full path to a icon filename and
    changed loadInternal to use it.
@@ -213,8 +216,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 /* 
    Stephan: See above
    if (result.isNull())
-    warning(i18n("ERROR: couldn't find mini icon: %s"), 
-    (const char*) name);
+    warning(i18n("ERROR: couldn't find mini icon: %1").arg(name));
 	// -- Bernd
 */
 

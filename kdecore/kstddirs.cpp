@@ -80,7 +80,7 @@ QString KStandardDirs::findExe( const QString& appname,
 	// If we reach here, the executable wasn't found.
 	// So return empty string.
 
-	onepath = (const char*)0;
+	onepath = QString::null;
 
 	return onepath;
 }

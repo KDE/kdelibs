@@ -1326,9 +1326,9 @@ void KFileBaseDialog::updateStatusLine()
     else
 	lFileText = i18n("files");
 
-    lStatusText.sprintf(i18n("%d %s and %d %s"),
-			fileList->numDirs(), lDirText.data(),
-			fileList->numFiles(), lFileText.data());
+    lStatusText = i18n("%1 %2 and %3 %4")
+	.arg(fileList->numDirs()).arg(lDirText.data())
+	.arg(fileList->numFiles()).arg(lFileText.data());
     myStatusLine->setText(lStatusText);
 }
 
@@ -1338,7 +1338,7 @@ void KDirDialog::updateStatusLine()
     if ( fileList->numDirs() == 1 )
         lDirText = i18n("one directory");
     else
-	lDirText.sprintf(i18n("%d directories"), fileList->numDirs());
+	lDirText = i18n("%1 directories").arg(fileList->numDirs());
 
     myStatusLine->setText(lDirText);
 }

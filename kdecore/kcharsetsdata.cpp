@@ -321,8 +321,8 @@ const char * KCharsetConverterData::convert(const char * str
                                  ,KCharsetConversionResult &result
 				 ,unsigned *pUnicode) {
 
-  kchdebug("Setteing result charset to %p ",&output);
-  kchdebug("(%s)\n",(const char *)output);
+  kchdebug("Setteing result charset to %p ",output);
+  kchdebug("(%s)\n",output->name);
   result.cCharset=output;
   kchdebug("----- %s ----- => ",str);
   if (!isOK) return 0;
@@ -436,7 +436,6 @@ const char * KCharsetConverterData::convert(const char * str
     i++;
     if (inBits>8 && str[i]) i++;
   }
-  kchdebug("----- %s -----\n",(const char *)result);
   if (pUnicode) *pUnicode=0;
   return 0;
 }
@@ -475,7 +474,7 @@ const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code)
 const KCharsetConversionResult & KCharsetConverterData::convertTag(
                                      const char *tag,int &l){
   
- kchdebug("Converting: %s\n",(const char *)tag);
+ kchdebug("Converting: %s\n",tag);
  return convert(kcharsetsData->decodeAmp(tag,l));
 }
 
@@ -518,7 +517,7 @@ KCharsetsData::KCharsetsData(){
   tempResult=new KCharsetConversionResult;
 
   QString fileName=KApplication::kde_configdir() + "/charsets";
-  kchdebug("Reading config from %s...\n",(const char *)fileName);
+  kchdebug("Reading config from %s...\n",fileName.ascii());
   config=new KSimpleConfig(fileName);
   config->setGroup("general");
   QString i18dir = config->readEntry("i18ndir");
@@ -581,9 +580,9 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
   kchdebug("Creating unicode dict for %s\n",e->name);
   config->setGroup("general");
   QString dir=config->readEntry("i18ndir");
-  kchdebug("Dir: %s\n",(const char *)dir);
+  kchdebug("Dir: %s\n",dir.ascii());
   QString filename=dir+'/'+e->name;
-  kchdebug("Trying to open file %s\n",(const char *)filename);
+  kchdebug("Trying to open file %s\n",filename.ascii());
   QFile f(filename);
   if (!f.open(IO_ReadOnly)) return;
   QTextStream t(&f);
@@ -695,7 +694,7 @@ QString KCharsetsData::charsetFace(const KCharsetEntry *charset
 }
 
 bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &face){
-  kchdebug("Testing if face %s is of charset %s...",(const char *)face,
+  kchdebug("Testing if face %s is of charset %s...",face.ascii(),
                                                                charset->name);
   config->setGroup("faces");
   const char *faceStr=config->readEntry(charset->name);
@@ -711,13 +710,13 @@ bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &f
 
 const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
 
-  kchdebug("Searching for charset for face %s...\n",(const char *)face);
+  kchdebug("Searching for charset for face %s...\n",face.ascii());
   KEntryIterator * it=config->entryIterator("faces");
   if (!it) return 0;
   while( it->current() ){
     const char * faceStr=it->current()->aValue;
     if (!faceStr || faceStr[0]==0) return charsetEntry(it->currentKey());
-    kchdebug("testing if it is %s (%s)...",(const char *)it->currentKey(),faceStr);
+    kchdebug("testing if it is %s (%s)...",it->currentKey().ascii(),faceStr);
     QRegExp rexp(faceStr,FALSE,TRUE);
     kchdebug("regexp: %s face: %s\n",rexp.pattern().ascii(), face.ascii());
     if (face.contains(rexp)){
@@ -885,7 +884,7 @@ unsigned chr;
    kchdebug("KCD:convert(code) %4X -> ",code);
    chr=0;
 
-   kchdebug("Clearing result (was: %s)...\n",(const char *)convResult.cText);
+   kchdebug("Clearing result (was: %s)...\n",convResult.cText.ascii());
    convResult.cText="";
    kchdebug("Clearing charset...\n");
    convResult.cCharset=charsetEntry("us-ascii");
@@ -907,7 +906,7 @@ unsigned chr;
      kchdebug("Setting text to code %2X...\n",code);
      convResult.cText+=(unsigned char)code;
    }   
-   kchdebug("%s\n",(const char *)convResult);
+   kchdebug("%s\n",convResult);
 }
 
 unsigned KCharsetsData::decodeAmp(const char *seq,int &len){

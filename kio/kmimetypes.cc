@@ -151,8 +151,11 @@ void KMimeType::scanMimeTypes( const char* _path )
 
 	if ( mime.isEmpty() )
 	{
-          QString tmp;
-          tmp.sprintf( i18n( "The mime type config file\n%s\ndoes not contain a MimeType=... entry"), file.c_str() );
+          QString tmp = i18n( "The mime type config file\n"
+			      "%1\n"
+			      "does not contain a MimeType=... entry")
+	      .arg(file.c_str() );
+
 	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
 	  continue;
 	}

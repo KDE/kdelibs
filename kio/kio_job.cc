@@ -185,8 +185,7 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
   
   if ( m_bGUI )
   {
-    QString buffer;
-    buffer.sprintf( i18n("Mounting %s ..."), _dev );
+    QString buffer = i18n("Mounting %1 ...").arg( _dev );
     m_pDialog = createDialog( buffer );
   }
   
@@ -206,8 +205,7 @@ bool KIOJob::unmount( const char *_point )
   
   if ( m_bGUI )
   {
-    QString buffer;
-    buffer.sprintf( i18n("Unmounting %s ..."), _point );
+    QString buffer = i18n("Unmounting %1 ...").arg( _point );
     m_pDialog = createDialog( buffer );
   }
   

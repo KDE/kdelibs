@@ -127,7 +127,7 @@ void KDateTable::paintCell( QPainter *p, int row, int col )
 	  p->drawEllipse(4,h/2-(w-8)/3,w-8,2*(w-8)/3); // think of better way
 	}
       QString day;
-      day.sprintf("%i", nDay);
+      day.setNum(nDay);
       p->setPen(bSelected? white : black);
       if (nDay > 0 && nDay <= m_date.daysInMonth()) 
 	{
@@ -135,12 +135,12 @@ void KDateTable::paintCell( QPainter *p, int row, int col )
 	} else if (nDay <= 0) 
 	  {
 	    int nDayPrv = m_daysInPrevMonth + nDay;
-	    day.sprintf("%i", nDayPrv);
+	    day.setNum(nDayPrv);
 	    p->setPen(bSelected? white : gray);
 	    p->drawText(0, 0, w, h, AlignCenter, day);
 	  } else {
 	    int nDayNext = nDay - m_date.daysInMonth();
-	    day.sprintf("%i", nDayNext);
+	    day.setNum(nDayNext);
 	    p->setPen(bSelected? white : gray);
 	    p->drawText(0, 0, w, h, AlignCenter, day);
 	  }

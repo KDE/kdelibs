@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.26  1999/03/01 23:33:44  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.25  1999/02/24 12:47:34  dfaure
  * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
  *
@@ -265,7 +268,7 @@ bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
   
   if ( !hostinfo )
     {
-	  warning("Unknown host %s.\n", (const char*)hostname);
+	  warning("Unknown host %s.\n", hostname.ascii());
 	  return false;	
     }
   server_name.sin_addr = *(struct in_addr*) hostinfo->h_addr;    
@@ -289,7 +292,7 @@ bool KSocket::connect( const QString& _path )
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
   {      
-    warning( "Too long PF_UNIX domain name '%s'\n",(const char*)_path);
+    warning( "Too long PF_UNIX domain name '%s'\n",_path.ascii());
     return false;
   }  
   strcpy( unix_addr.sun_path, _path );
@@ -438,7 +441,7 @@ bool KServerSocket::init( const QString& _path )
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
   {      
-    warning( "Too long PF_UNIX domain name '%s'\n",(const char*)_path);
+    warning( "Too long PF_UNIX domain name '%s'\n",_path.ascii());
     return false;
   }  
   strcpy( name.sun_path, _path );

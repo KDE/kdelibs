@@ -736,7 +736,7 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
     }
     else
     {
-        splitPtr = index( text+1, ' ');
+        splitPtr = strchr( text+1, ' ');
     }
 
     if (splitPtr)

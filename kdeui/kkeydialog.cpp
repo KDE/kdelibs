@@ -1026,13 +1026,14 @@ bool KKeyChooser::isKeyPresent()
 
 			QString keyName = keyToString( *gIt.current() );
 			
-			QString str;
-			str.sprintf( i18n(
-				"The %s key combination has already been allocated\nto the global %s action.\n\nPlease choose a unique key combination."),
-				keyName.data(),
-				actionName.data() );
+			QString str =
+			    i18n("The %1 key combination has already been "
+				 "allocated\n"
+				 "to the global %s action.\n\n"
+				 "Please choose a unique key combination.").
+			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Global key conflict"), str.data() );
+			QMessageBox::warning( this, i18n("Global key conflict"), str);
 			
 			return TRUE;
 		}
@@ -1053,13 +1054,15 @@ bool KKeyChooser::isKeyPresent()
 
 			QString keyName = keyToString( *sIt.current() );
 			
-			QString str;
-			str.sprintf( i18n(
-				"The %s key combination has already been allocated\nto the standard %s action.\n\nPlease choose a unique key combination."),
-				keyName.data(),
-				actionName.data() );
-				
-			QMessageBox::warning( this, i18n("Standard key conflict"), str.data() );
+			QString str = 
+			    i18n("The %1 key combination has already "
+				 "been allocated\n"
+				 "to the standard %2 action.\n"
+				 "\n"
+				 "Please choose a unique key combination.").
+			    arg(keyName).arg(actionName);
+			
+			QMessageBox::warning( this, i18n("Standard key conflict"), str );
 			
 			return TRUE;
 		}
@@ -1077,13 +1080,15 @@ bool KKeyChooser::isKeyPresent()
 
 			QString keyName = keyToString( aIt->current()->aConfigKeyCode );
 			
-			QString str;
-			str.sprintf( i18n(
-				"The %s key combination has already been allocated\nto the %s action.\n\nPlease choose a unique key combination."),
-				keyName.data(),
-				actionName.data() );
+			QString str = 
+			    i18n("The %1 key combination has already "
+				 "been allocated\n"
+				 "to the %s action.\n"
+				 "\n"
+				 "Please choose a unique key combination.").
+			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Key conflict"), str.data() );
+			QMessageBox::warning( this, i18n("Key conflict"), str );
 			
 			return TRUE;
 		}

@@ -345,7 +345,7 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 	    
 	    if ( v->getObject()->isA() == TYPE_JSIntegerObject )
 	    {
-		out.sprintf("%i",((JSIntegerObject*)(v->getObject()))->getValue() );
+		out.setNum(((JSIntegerObject*)(v->getObject()))->getValue() );
 		object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
 		printf( "%i ", ((JSIntegerObject*)(v->getObject()))->getValue() );
 	    }
@@ -372,7 +372,7 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 	    }
 	    else if ( v->getObject()->isA() == TYPE_JSFloatObject )
 	    {
-		out.sprintf( "%f", ((JSFloatObject*)(v->getObject()))->getValue() );	    
+		out.setNum( ((JSFloatObject*)(v->getObject()))->getValue() );	    
 		object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
 		printf( "%f ", ((JSFloatObject*)(v->getObject()))->getValue() );	    
 	    }

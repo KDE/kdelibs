@@ -238,7 +238,7 @@ QString KFileInfo::dateTime(time_t _time) {
 
     /* isn't there a sprintf modifier for this? */
     QString number;
-    number.sprintf("%d",t.date().day());
+    number.setNum(t.date().day());
     if (number.length() < 2)
 	number = " " + number;
 
@@ -248,9 +248,8 @@ QString KFileInfo::dateTime(time_t _time) {
     else
 	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
 
-    QString text;
-    text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(),
-		 sTime.data());
+    QString text = QString("% 31 %2 %3").arg(months[t.date().month() - 1]).
+	arg(number.data()).arg(sTime.data());
 
     return text;
 }

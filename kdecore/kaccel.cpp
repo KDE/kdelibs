@@ -61,11 +61,10 @@ void KAccel::connectItem( const QString& action,
     KKeyEntry *pEntry = aKeyDict[ action ];
 
 	if ( !pEntry ) {
-		QString str;
-		str.sprintf( "KAccel : Cannot connect action %s ", (const char*)action );
-		str.append( "which is not in the object dictionary" );
-		warning(str);
-		return;
+	    QString str = i18n("KAccel : Cannot connect action %1 "
+			       "which is not in the object dictionary").arg(action);
+	    warning(str);
+	    return;
 	}
 	
 	pEntry->receiver = receiver;
@@ -77,7 +76,7 @@ void KAccel::connectItem( const QString& action,
 	pAccel->connectItem( pEntry->aAccelId, receiver, member );
 	
 	if ( !activate )
-		setItemEnabled( action, FALSE );
+	    setItemEnabled( action, FALSE );
 }
 
 void KAccel::connectItem( StdAccel accel,
@@ -416,10 +415,8 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 {	
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-		QString str;
-		str.sprintf(
-			"KAccel : cannont enable action %s"\
-			"which is not in the object dictionary", (const char*)action );
+		QString str = i18n("KAccel : cannont enable action %1 "
+				   "which is not in the object dictionary").arg(action);
 		warning( str );
 		return;
 	}
@@ -678,7 +675,7 @@ QString keyToString( uint keyCode, bool i18_n )
 	QString res;
 	
 	if ( keyCode == 0 ) {
-		res.sprintf( "" );
+		res = "";
 		return res;
 	}
 	if (!i18_n){
@@ -733,7 +730,7 @@ uint stringToKey(const QString& key )
 	if ( key == 0 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");return 0; }
 	if( strcmp( key, "" ) == -1 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");return 0; }
 	
-	strncpy(sKey, (const char*)key, 200);
+	strncpy(sKey, key.ascii(), 200);
 	next_tok = strtok(sKey,"+");
 	
 	if ( next_tok== 0L ) return 0;

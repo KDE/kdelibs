@@ -111,14 +111,14 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
    
   QDate dNow = QDate::currentDate();
   QString sNow;
-  sNow.sprintf("Today: %i/%i/%i", 
-	       dNow.month(),dNow.day(),dNow.year());
+  sNow = i18n("Today: %1/%2/%3").arg(dNow.month()).
+	       arg(dNow.day()).arg(dNow.year());
    
   m_header = new QLabel(this);
   updateHeader(dt);
    
   m_tbl = new KDateTable(this, dt);
-  m_footer = new QLabel((const char*)sNow, this);
+  m_footer = new QLabel(sNow, this);
   // Mirko: changed Feb 25 1998
   m_back = new QPushButton(this);
   m_back->setPixmap(left);
@@ -240,19 +240,15 @@ void KDatePicker::sizeElements()
 void KDatePicker::updateHeader(QDate dt)
 {
   QString sHeader;
-  const char* month;
+  QString month;
   if(dt.month()>0 && dt.month()<13)
     {
       month=Month[dt.month()-1];
     } else {
       month=i18n("(invalid)");
     }
-  CHECK_PTR(month);
-  sHeader.sprintf("%s %i", 
-		  month,
-		  // (const char*)dt.monthName(dt.month()), 
-		  dt.year());
-  m_header->setText((const char*)sHeader);
+  sHeader = QString("%1 %2").arg(month).arg(dt.year());
+  m_header->setText(sHeader);
 }
 
 /* Mirko: Implementation of sizeHint and setDate methods.
