@@ -577,12 +577,14 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "maxrequestsize")
 	{
 		// FIXME: support for suffixes
-		maxrequestsize_ = value.toInt();
+		int suffix;
+		splitSizeSpec( value, maxrequestsize_, suffix );
 	}
 	else if (keyword == "maxlogsize")
 	{
 		// FIXME: support for suffixes
-		maxlogsize_ = value.toInt();
+		int suffix;
+		splitSizeSpec( value, maxlogsize_, suffix );
 	}
 	else if (keyword == "pagelog") pagelog_ = value;
 	else if (keyword == "port") listenaddresses_.append("Listen *:"+value);
