@@ -1,0 +1,46 @@
+This file describes the current known bugs in QStyle/KStyle/KThemeXXX...
+
+If you are developing code feel free to add to this if you like and hopefully
+close some ;-) If you are a cvsup user feel free to email me.
+
+Daniel M. Duley (mosfet@kde.org)
+
+-------------------------------------------------------------
+
+* Mosfet (04/26/99)
+There is a bug in check/radioboxes when using masks. At various times it
+seems to mask the text incorrectly causing it to be incomprehensible. When
+this occurs, it also happens with the Qt examples such as wood. It seems to
+happen when there are layout problems (ie: setMinimumSize to a invalid
+sizeHint()).
+Status: Closed. TT fixed this 2 days after the report :) (mosfet 4/27)
+
+* Mosfet (04/26/99)
+Check/radioboxes/sliders should be able to be any size pixmap, but drawXXXMask
+seems to send the wrong y coordinates on some sizes. Currently y is fixed to
+y-2 which works for 16x16 pixmaps.
+Status: Closed (Mosfet)
+
+* Mosfet (04/26/99)
+When I use a pixmapped slider groove it messes with the slider itself. This
+has been disabled for now.
+Status: Closed (Mosfet)
+
+* Mosfet (04/26/99)
+My scrollbar metrics seem to be a little off and if you change styles
+dynamically through KApp or if the scrollbar contents are too large
+the linestep buttons get overwritten with the background.
+Status: Closed (Mosfet)
+
+* Mosfet (04/26/99)
+In KApp's KDEChangeGeneral atom handler it clears the background pixmap. I
+think this is due to the palette being reloaded after QStyle::polish but I
+have not found where.
+Status: Closed (Mosfet)
+
+* Deller (05/03/99) [deller@gmx.de]
+KStyles are currently not usable on other archs, where the default ending
+of shared libraries is not .so (=Linux,ELF?). As example on HP-UX the
+default ending is .sl -> Example: "libbasicstyle.sl". The .kdelnk files
+have to be corrected (maybe via Perl-Script ??).
+Status: Open (I think coolo has fixed this now? - mosfet)

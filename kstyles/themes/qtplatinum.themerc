@@ -1,0 +1,18 @@
+[Misc]
+Name=Qt Platinum
+Name[ca]=Qt Platí
+Name[de]=Qt Platin
+Name[eo]=Qt Plateno
+Name[fi]=Qt Platinium
+Name[hu]=Qt Platina
+Name[sr]=QT Platinum
+Comment=Built-in unthemed Platinum style
+Comment[ca]=Estil incorporat Platí sense temes
+Comment[de]=Eingebauter Platin-Stil (kein komplettes Design)
+Comment[eo]=Originala Platena stilo sen temoj
+Comment[fi]=Sisäänrakennettu teemoittamaton Platinium tyyli
+Comment[hu]=Beépített platina kinézet
+Comment[ja]=Platinum¥¹¥¿¥¤¥ë
+Comment[sv]=Inbyggd otemad platinumstil
+[KDE]
+widgetStyle=Platinum
