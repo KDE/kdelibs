@@ -415,7 +415,7 @@ void DefaultProgress::slotClean() {
       int s = d->startTime.elapsed();
       if (!s)
 	s = 1;
-      speedLabel->setText(i18n("%1/s ( done )").arg(KIO::convertSize(1000 * m_iTotalSize / s)));
+      speedLabel->setText(i18n("%1/s (done)").arg(KIO::convertSize(1000 * m_iTotalSize / s)));
     }
     setOnlyClean(false);
   }

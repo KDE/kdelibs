@@ -310,7 +310,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         else
             sentence1 = i18n("A newer item than '%1' already exists.\n");
         
-        sentence1 +=  i18n("Do you want to use another file name ?");            
+        sentence1 +=  i18n("Do you want to use another file name?");            
         
         QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->src), this );
         d->m_pLayout->addWidget(lb);
