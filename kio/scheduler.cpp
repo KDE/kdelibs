@@ -111,6 +111,8 @@ void Scheduler::startStep()
                 idleSlaves->append(slave);
                 connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
 			SLOT(slotSlaveDied(KIO::Slave *)));
+                connect(slave, SIGNAL(slaveStatus(const QCString &,const QString &, bool)),
+                        SLOT(slotSlaveStatus(const QCString &, const QString &, bool)));
              }
              else
              {
@@ -163,6 +165,14 @@ void Scheduler::slotSlaveConnected() {
     slave->queueOnly(false);
 }
 
+void Scheduler::slotSlaveStatus(const QCString &protocol, const QString &host, bool connected) {
+    kDebugInfo(7006, "slave status");
+    Slave *slave = (Slave*)sender();
+    kDebugInfo(7006, "Slave = %p protocol = %s host = %s %s", 
+	slave, protocol.data(), host.ascii() ? host.ascii() : "[None]",
+	connected ? "Connected" : "Not connected");
+}
+
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
     slave->disconnect(job);
@@ -174,6 +184,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
            kDebugInfo(7006, "Scheduler has now %d jobs", joblist.count());
            mytimer.start(0, true);
        }
+       slave->connection()->send( CMD_SLAVE_STATUS );
     }
     else
     {

@@ -295,9 +295,8 @@ int verify_callback (int, X509_STORE_CTX *)
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
-  : SlaveBase( _conn )
+  : SlaveBase( protocol, _conn )
 {
-  m_protocol = protocol;
   m_maxCacheAge = 0;
   m_fsocket = 0L;
   m_sock = 0;
@@ -453,7 +452,7 @@ void HTTPProtocol::http_openConnection()
   unsigned short int port = m_request.port;
   if ( port == 0 ) {
 #ifdef DO_SSL
-    if (m_protocol=="https") {
+    if (mProtocol=="https") {
       struct servent *sent = getservbyname("https", "tcp");
       if (sent) {
         port = ntohs(sent->s_port);
@@ -461,14 +460,14 @@ void HTTPProtocol::http_openConnection()
         port = DEFAULT_HTTPS_PORT;
     } else
 #endif
-      if ( (m_protocol=="http") || (m_protocol == "httpf") ) {
+      if ( (mProtocol=="http") || (mProtocol == "httpf") ) {
         struct servent *sent = getservbyname("http", "tcp");
 	if (sent) {
 	  port = ntohs(sent->s_port);
 	} else
 	  port = DEFAULT_HTTP_PORT;
       } else {
-	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data());
+	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", mProtocol.data());
 	port = 80;
       }
   }
@@ -477,7 +476,7 @@ void HTTPProtocol::http_openConnection()
 #if 0
   // Move to initialisation
   // make sure that we can support what we are asking for
-  if (m_protocol() == "https") {
+  if (mProtocol() == "https") {
 #ifdef DO_SSL
     m_bUseSSL=true;
 #else
@@ -1337,7 +1336,7 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
   // try to ensure that the port is something reasonable
   if ( port == 0 ) {
 #ifdef DO_SSL
-    if (m_protocol=="https") {
+    if (mProtocol=="https") {
       struct servent *sent = getservbyname("https", "tcp");
       if (sent) {
         port = ntohs(sent->s_port);
@@ -1345,14 +1344,14 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
         port = DEFAULT_HTTPS_PORT;
     } else
 #endif
-      if ( (m_protocol=="http") || (m_protocol == "httpf") ) {
+      if ( (mProtocol=="http") || (mProtocol == "httpf") ) {
         struct servent *sent = getservbyname("http", "tcp");
 	if (sent) {
 	  port = ntohs(sent->s_port);
 	} else
 	  port = DEFAULT_HTTP_PORT;
       } else {
-	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data());
+	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", mProtocol.data());
 	port = 80;
       }
   }
@@ -1374,10 +1373,17 @@ void HTTPProtocol::closeConnection( )
   http_closeConnection();
 }
 
+void HTTPProtocol::slave_status()
+{
+  kDebugInfo( 7103, "Got slave_status (m_fsocket = %d) host = %s", 
+	m_fsocket, m_state.hostname.ascii() ? m_state.hostname.ascii() : "[None]" );
+  slaveStatus( m_state.hostname, (m_fsocket != 0) );
+}
+
 
 void HTTPProtocol::buildURL()
 {
-  m_request.url = m_protocol+":/";
+  m_request.url = mProtocol+":/";
   m_request.url.setUser( m_request.user );
   m_request.url.setPass( m_request.passwd );
   m_request.url.setHost( m_request.hostname );

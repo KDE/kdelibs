@@ -33,7 +33,8 @@ class Connection;
  */
  enum Command {
    CMD_CONNECT = '0', //
-   CMD_DISCONNECT,
+   CMD_DISCONNECT = '1',
+   CMD_SLAVE_STATUS = '2',
    CMD_NONE = 'A',
    CMD_TESTDIR = 'B',
    CMD_GET = 'C',
@@ -89,7 +90,8 @@ class Connection;
    MSG_STAT_ENTRY,
    MSG_LIST_ENTRIES,
    MSG_RENAMED,
-   MSG_RESUME
+   MSG_RESUME,
+   MSG_SLAVE_STATUS
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -123,6 +125,7 @@ public:
     void ready();
     void connected();
     void finished();
+    void slaveStatus(const QCString &, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
 

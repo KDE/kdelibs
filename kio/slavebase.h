@@ -39,7 +39,7 @@ class Connection;
 class SlaveBase
 {
 public:
-    SlaveBase( Connection *connection );
+    SlaveBase( const QCString &protocol, Connection *connection );
     virtual ~SlaveBase() { }
 
     // wrong IMHO (David)
@@ -66,6 +66,14 @@ public:
     void ready();
     void connected();
     void finished();
+    
+    /**
+     * Used to report the status of the slave. 
+     * @param host the slave is currently connected to. (Should be
+     *        empty if not connected)
+     * @param connected Whether an actual network connection exists.
+     **/
+    void slaveStatus(const QString &host, bool connected);
 
     void statEntry( const UDSEntry& _entry );
     void listEntries( const UDSEntryList& _entry );
@@ -206,6 +214,12 @@ public:
      */ 
     virtual void special( const QByteArray & );
 
+    /**
+     * Called to get the status of the slave. Slave should respond
+     * by calling slaveStatus(...)
+     */
+    virtual void slave_status();
+
     static void sigsegv_handler(int);
 
     /////////////////
@@ -237,8 +251,12 @@ protected:
      */
     void listEntry( const UDSEntry& _entry, bool ready);
 
-    Connection * m_pConnection;
+    /**
+     * Name of the protocol supported by this slave
+     */
+    QCString mProtocol;
 
+    Connection * m_pConnection;
 private:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;

@@ -39,7 +39,7 @@ using namespace KIO;
 
 QString testLogFile( const QString& _filename );
 
-FileProtocol::FileProtocol( Connection *_conn ) : SlaveBase( _conn )
+FileProtocol::FileProtocol( Connection *_conn ) : SlaveBase( "file", _conn )
 {
     usercache.setAutoDelete( TRUE );
     groupcache.setAutoDelete( TRUE );

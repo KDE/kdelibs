@@ -15,10 +15,9 @@ template class QList<QValueList<UDSAtom> >;
 
 //////////////
 
-SlaveBase::SlaveBase( Connection * connection )
+SlaveBase::SlaveBase( const QCString &protocol, Connection * connection )
+    : mProtocol(protocol), m_pConnection(connection)
 {
-    m_pConnection = connection;
-
     pendingListEntries.setAutoDelete(true);
     listEntryCurrentSize = 0;
     struct timeval tp;
@@ -63,6 +62,13 @@ void SlaveBase::renamed( const QString &_new )
 {
     KIO_DATA << _new;
     m_pConnection->send( MSG_RENAMED, data );
+}
+
+void SlaveBase::slaveStatus( const QString &host, bool connected )
+{
+    Q_INT8 b = connected ? 1 : 0;
+    KIO_DATA << mProtocol << host << b;
+    m_pConnection->send( MSG_SLAVE_STATUS, data );
 }
 
 void SlaveBase::canResume( bool _resume )
@@ -246,6 +252,9 @@ void SlaveBase::mkdir(QString const &, int)
 void SlaveBase::chmod(QString const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "chmod" ); }
 
+void SlaveBase::slave_status()
+{ slaveStatus( QString::null, false ); }
+
 void SlaveBase::dispatchLoop()
 {
     while( dispatch() );
@@ -321,6 +330,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_DISCONNECT:
 	closeConnection( );
 	break;
+    case CMD_SLAVE_STATUS:
+        slave_status();
+        break;
     case CMD_GET: {
         Q_INT8 iReload;
 

@@ -92,6 +92,14 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	kDebugInfo(7007, "error %d %s", i, debugString(str1));
 	emit error( i, str1 );
 	break;
+    case MSG_SLAVE_STATUS:
+        {
+           QCString protocol;
+           stream >> protocol >> str1 >> b;
+           emit slaveStatus(protocol, str1, (b != 0));
+        }
+        break;
+
     case INF_TOTAL_SIZE:
 	stream >> ul;
 	emit totalSize( ul );

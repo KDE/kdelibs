@@ -106,6 +106,7 @@ public:
    */
   virtual void closeConnection();
 
+  virtual void slave_status();
 
   virtual void get( const QString& path, const QString& query, bool reload );
   virtual void put( const QString& path, int _mode,
@@ -242,7 +243,6 @@ protected:
   void cleanCache();
 
 protected: // Members
-  QCString m_protocol;
   HTTPState m_state;
   HTTPRequest m_request;
 

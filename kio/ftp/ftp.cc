@@ -51,7 +51,7 @@
 using namespace KIO;
 
 Ftp::Ftp( Connection *connection )
-    : SlaveBase( connection )
+    : SlaveBase( "ftp", connection )
 {
   dirfile = 0L;
   sControl = sData = sDatal = 0;
