@@ -566,9 +566,9 @@ static QPtrList<KSessionManaged>* sessionClients()
   instance specific config object.
   Syntax:  "session/<appname>_<sessionId>"
  */
-static QString sessionConfigName()
+QString KApplication::sessionConfigName() const
 {
-  return QString("session/%1_%2").arg(qApp->name()).arg(qApp->sessionId());
+  return QString("session/%1_%2").arg(name()).arg(sessionId());
 }
 
 #ifndef Q_WS_QWS

@@ -729,6 +729,7 @@ private slots:
   void x11FilterDestroyed();
 
 private:
+  QString sessionConfigName() const;
   KConfig* pSessionConfig; //instance specific application config object
   static DCOPClient *s_DCOPClient; // app specific application communication client
   static bool s_dcopClientNeedsPostInit;
