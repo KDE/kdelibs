@@ -1,3 +1,9 @@
+2004-02-17  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp (addChildToFlow): first-letter:
+        better fix for pure punctuation/single letter text childs.
+        Fixes an invalid reference crash (#70546). 
+
 2004-02-16  Germain Garand  <germain@ebooksfrance.org>
 
         * css/cssstyleselector.cpp (styleForElement): pseudo-elements

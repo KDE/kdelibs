@@ -121,7 +121,6 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 firstLetterContainer = this;
 
             RenderText* newTextChild = static_cast<RenderText*>(textChild);
-        //kdDebug( 6040 ) << "first letter" << endl;
 
             // Force inline display (except for floating first-letters)
             pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
@@ -139,11 +138,9 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                     length++;
                 length++;
                 kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
+                newTextChild->setText( oldText->l > length ? 
+                                       oldText->substring(length,oldText->l-length) : new DOMStringImpl(""));
                 NodeImpl* letterElement = newTextChild->element() ? (NodeImpl*) newTextChild->element() : (NodeImpl*) document(); 
-                if (!(oldText->l-length))
-                    firstLetterContainer->removeChild(newTextChild);
-                else
-                    newTextChild->setText(oldText->substring(length,oldText->l-length));
                 RenderText* letter = new (renderArena()) RenderText(letterElement, oldText->substring(0,length));
                 RenderStyle* newStyle = new RenderStyle();
                 newStyle->inheritFrom(pseudoStyle);
@@ -2394,7 +2391,7 @@ const char *RenderBlock::renderName() const
     return "RenderBlock";
 }
 
-#ifdef ENABLE_DUMP
+#ifndef NDEBUG
 void RenderBlock::printTree(int indent) const
 {
     RenderFlow::printTree(indent);
