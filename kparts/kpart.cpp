@@ -20,6 +20,7 @@ KPart::KPart( const char* name )
 {
   m_widget = 0;
   m_host = 0;
+  m_bPluginActionsMerged = false;
 }
 
 KPart::~KPart()
@@ -38,6 +39,59 @@ void KPart::embed( QWidget * parentWidget )
 {
   m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
 }
+
+QStringList KPart::pluginActionDocuments()
+{
+  if ( !instance() )
+    return QStringList();
+  
+#warning FIX THIS WHEN MOVING TO KDELIBS
+  return instance()->dirs()->findAllResources( "appdata", "*", true, false );
+}
+
+QDomDocument KPart::mergedActionDOM()
+{
+  if ( m_bPluginActionsMerged )
+    return m_mergedDOM;
+
+ QStringList pluginDocuments = pluginActionDocuments();
+ if ( pluginDocuments.count() == 0 && instance() )
+  {
+    qDebug( "no plugins found for %s", instance()->instanceName().data() );
+    m_mergedDOM.setContent( config() );
+    m_bPluginActionsMerged = true;
+    return m_mergedDOM;
+  }
+
+  QStringList::ConstIterator pluginIt = pluginDocuments.begin();
+  QStringList::ConstIterator pluginEnd = pluginDocuments.end();
+
+  QDomDocument pluginDoc;
+  
+  for (; pluginIt !=  pluginEnd; ++pluginIt )
+  {
+    QString xml = KXMLGUIFactory::readConfigFile( *pluginIt );
+  
+    if ( pluginDoc.documentElement().isNull() )
+      pluginDoc.setContent( xml );
+    else
+    {
+      QDomDocument tempDoc;
+      tempDoc.setContent( xml );
+      QDomElement docElement = tempDoc.documentElement();
+      if ( !docElement.isNull() )
+        KXMLGUIFactory::mergeXML( pluginDoc.documentElement(), docElement );
+    }
+  }
+
+  m_mergedDOM.setContent( config() );
+  
+  KXMLGUIFactory::mergeXML( m_mergedDOM.documentElement(), pluginDoc.documentElement() );
+
+  m_bPluginActionsMerged = true;
+
+  return m_mergedDOM;
+} 
 
 void KPart::setWidget( QWidget *widget )
 {
@@ -240,10 +294,6 @@ KPartGUIServant::KPartGUIServant( KPart *part )
   : QObject( part )
 {
   m_part = part;
-
-  m_doc.setContent( part->config() );
-
-  mergePluginActions();
 }
 
 QAction *KPartGUIServant::action( const QDomElement &element )
@@ -266,50 +316,7 @@ QAction *KPartGUIServant::action( const QDomElement &element )
 
 QDomDocument KPartGUIServant::document()
 {
-  return m_doc;
-}
-
-void KPartGUIServant::mergePluginActions()
-{
-  //TODO: don't merge each time the GUI is constructed! (Simon)
-
-  KInstance *instance = m_part->instance();
-
-  if ( !instance )
-    return;
-
-#warning FIX THIS WHEN MOVING TO KDELIBS
-  QStringList pluginDocuments = instance->dirs()->findAllResources( "appdata", "*", true, false );
-
-  if ( pluginDocuments.count() == 0 )
-  {
-    qDebug( "no plugins found for %s", instance->instanceName().data() );
-    return;
-  }
-
-  QStringList::ConstIterator pluginIt = pluginDocuments.begin();
-  QStringList::ConstIterator pluginEnd = pluginDocuments.end();
-
-  QDomDocument pluginDoc;
-  
-  for (; pluginIt !=  pluginEnd; ++pluginIt )
-  {
-    QString xml = KXMLGUIFactory::readConfigFile( *pluginIt );
-  
-    if ( pluginDoc.documentElement().isNull() )
-      pluginDoc.setContent( xml );
-    else
-    {
-      QDomDocument tempDoc;
-      tempDoc.setContent( xml );
-      QDomElement docElement = tempDoc.documentElement();
-      if ( !docElement.isNull() )
-        KXMLGUIFactory::mergeXML( pluginDoc.documentElement(), docElement );
-    }
-  }
-  
-  KXMLGUIFactory::mergeXML( m_doc.documentElement(), pluginDoc.documentElement() );
-
+  return m_part->mergedActionDOM();
 }
 
 #include "kpart.moc"

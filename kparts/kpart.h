@@ -46,6 +46,10 @@ public:
 
     virtual KInstance *instance() = 0;
 
+    virtual QStringList pluginActionDocuments();
+
+    virtual QDomDocument mergedActionDOM();
+
 protected:
     /**
      * Call this in the KPart-inherited class constructor
@@ -65,6 +69,8 @@ private:
     QGuardedPtr<QWidget> m_widget;
     QString m_config;
     QActionCollection m_collection;
+    bool m_bPluginActionsMerged;
+    QDomDocument m_mergedDOM;
 };
 
 /**
@@ -200,11 +206,7 @@ class KPartGUIServant : public QObject, public KXMLGUIServant
   virtual QDomDocument document();
 
  private:
-
-  virtual void mergePluginActions();
-
   KPart *m_part;
-  QDomDocument m_doc;
 };
 
 #endif
