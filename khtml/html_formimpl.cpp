@@ -177,7 +177,7 @@ void HTMLFormElementImpl::slotSubmit()
 
 void HTMLFormElementImpl::slotReset()
 {
-    printf("rest pressed!\n");
+    printf("reset pressed!\n");
 }
 
 void HTMLFormElementImpl::radioClicked( NodeImpl *caller, DOMString ident )
@@ -233,6 +233,16 @@ void HTMLFormElementImpl::radioClicked( NodeImpl *caller, DOMString ident )
 }
 
 // -------------------------------------------------------------------------
+
+HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLPositionedElementImpl(doc)
+{
+    _form = f;
+    view = 0;
+    w = 0;
+
+    badPos = true;
+}
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     : HTMLPositionedElementImpl(doc)
@@ -481,6 +491,24 @@ ushort HTMLFieldSetElementImpl::id() const
 
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
+{
+    _type = TEXT;
+    _checked = false;
+    _disabled = false;
+    _maxLen = 0;
+    _size = 20;
+    _pixmap = 0;
+    _clicked = false;
+
+    setBlocking();
+
+    w = 0;
+    view = 0;
+    badPos = true;
+}
+
+HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
 {
     _type = TEXT;
     _checked = false;
@@ -949,6 +977,16 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc)
     _size = 1;
 }
 
+HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
+{
+    _multiple = false;
+    _disabled = false;
+    w = 0;
+    view = 0;
+    _size = 1;
+}
+
 HTMLSelectElementImpl::~HTMLSelectElementImpl()
 {
 }
@@ -1272,6 +1310,14 @@ bool HTMLOptionElementImpl::selected() const
 
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
+{
+    _rows = _cols = 0;
+    _disabled = false;
+
+}
+
+HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
+    : HTMLGenericFormElementImpl(doc, f)
 {
     _rows = _cols = 0;
     _disabled = false;

@@ -84,6 +84,7 @@ class HTMLGenericFormElementImpl : public HTMLPositionedElementImpl
 
 public:
     HTMLGenericFormElementImpl(DocumentImpl *doc);
+    HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLGenericFormElementImpl();
 
     HTMLFormElementImpl *form() {
@@ -190,6 +191,7 @@ public:
     };
 
     HTMLInputElementImpl(DocumentImpl *doc);
+    HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLInputElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -291,6 +293,7 @@ class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLSelectElementImpl(DocumentImpl *doc);
+    HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLSelectElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -394,6 +397,7 @@ class HTMLTextAreaElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLTextAreaElementImpl(DocumentImpl *doc);
+    HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLTextAreaElementImpl();
 
     virtual const DOMString nodeName() const;

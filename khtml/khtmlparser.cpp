@@ -250,6 +250,8 @@ void KHTMLParser::reset()
 
     inBody = false;
     _inline = false;
+
+    form = 0;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -395,54 +397,21 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	
 	    if(node->id() == ID_TABLE)
 	    {
-		// now we need to add the form at the right place in the blockstack
-		HTMLStackElem *tableElem = blockStack;
-		while(tableElem->id != ID_TABLE)
-		    tableElem = tableElem->next;
-		HTMLStackElem *parentElem = tableElem->next;
-
-		CSSStyle *newStyle = styleSheet->newStyle(parentElem->style);
+		CSSStyle *newStyle = styleSheet->newStyle(currentStyle);
 		
-		printf("trying to add form outside of table\n");
-		node->ref();
 		NodeImpl *parent = node->parentNode();
-		parent->removeChild(node);
-		printf("trying to add forn to %d\n", parent->id());
+		printf("trying to add form to %d\n", parent->id());
 		try
 		{
-		    parent->addChild(n);
+		    parent->insertBefore(n, node);
 		    n->attach(HTMLWidget);
 		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
-		    // ### FIXME, we have to change the style for all children...
 		}
 		catch(DOMException e)
 		{
-		    printf("adding form outside of table failed!!!!\n");
-		    // readd the child... this should work
-		    parent->addChild(node);
-		    node->deref();
+		    printf("adding form before of table failed!!!!\n");
 		    throw e;
 		}
-		try
-		{
-		    n->addChild(node);
-		}
-		catch(DOMException e)
-		{
-		    printf("adding table to form failed!!!!\n");
-		    // this should never happen!
-		    exit(1);
-		}
-
-		// bring the blockStack into the right order...
-		HTMLStackElem *Elem = new HTMLStackElem(ID_FORM, tagPriority[id],
-							newStyle,
-							n, 0, 0,
-							parentElem);
-		tableElem->next = Elem;
-		addForbidden(ID_FORM, forbiddenTag);
-		
-		node->deref();
 		return;
 	    }
 	}
@@ -612,14 +581,18 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	break;
 
 // form elements
+    case ID_FORM:
+	// close all open forms...
+	popBlock(ID_FORM);
+	form = new HTMLFormElementImpl(document);
+	n = form;
+	exitFunc = &KHTMLParser::blockEndForm;
+	break;
     case ID_BUTTON:
 	n = new HTMLButtonElementImpl(document);
 	break;
     case ID_FIELDSET:
 	n = new HTMLFieldSetElementImpl(document);
-	break;
-    case ID_FORM:
-	n = new HTMLFormElementImpl(document);
 	break;
     case ID_INPUT:
 	n = new HTMLInputElementImpl(document);
@@ -983,6 +956,11 @@ void KHTMLParser::freeBlock()
 void KHTMLParser::blockEndList( HTMLStackElem *Elem)
 {
     listLevel = Elem->miscData1;
+}
+
+void KHTMLParser::blockEndForm( HTMLStackElem * )
+{
+    form = 0;
 }
 
 

@@ -1327,7 +1327,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	break;
 
     case Key_Next:
-	scrollBy( 0, viewport()->height()*8/10 );
+	scrollBy( 0, clipper()->height()*8/10 );
 	flushKeys();
 	break;
 
@@ -1337,7 +1337,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	break;
 
     case Key_Prior:
-	scrollBy( 0, -viewport()->height()*8/10 );
+	scrollBy( 0, -clipper()->height()*8/10 );
 	flushKeys();
 	break;
 

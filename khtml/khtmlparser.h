@@ -41,6 +41,7 @@ class HTMLSettings;
 namespace DOM {
     class HTMLDocumentImpl;
     class NodeImpl;
+    class HTMLFormElementImpl;
 }
 using namespace DOM;
 
@@ -103,6 +104,7 @@ protected:
 
     // block exit functions:
     void blockEndList( HTMLStackElem *Elem);
+    void blockEndForm( HTMLStackElem *Elem);
 
     /*
      * Current style sheet
@@ -120,6 +122,11 @@ protected:
     HTMLSettings *settings;
 
     ushort *forbiddenTag;
+
+    /*
+     * currently active form
+     */
+    HTMLFormElementImpl *form;
 
     /*
      * degree of list nesting.
