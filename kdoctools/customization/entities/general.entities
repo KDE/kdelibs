@@ -15,7 +15,8 @@
      
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
+ 02111-1307, USA.
     
     Send suggestions, comments, etc. to Frederik Fouvry
     <fouvry@coli.uni-sb.de>.
@@ -25,7 +26,8 @@
 
     Refer to this file as
 
-      "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
+      "-//KDE//ENTITIES DocBook XML General Entity Declarations
+ V1.0//EN"
 
     This file contains what dbgenent.mod should contain and is read
     after all other files just like dbgenent.mod should be.
@@ -50,7 +52,8 @@
   NDATA linespecific	                                             >
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-  "../en/entities/gpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML (why?) -->
+  "../en/entities/gpl-notice.docbook"><!-- meant for inclusion, so no
+ [CN]DATA SGML (why?) -->
 <!ENTITY LGPL-html	    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
   "http://www.gnu.org/copyleft/lesser.html"
@@ -61,7 +64,8 @@
   NDATA linespecific	                                             >
 <!ENTITY LGPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
-  "../en/entities/lgpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML -->
+  "../en/entities/lgpl-notice.docbook"><!-- meant for inclusion, so no
+ [CN]DATA SGML -->
 <!ENTITY FDL-html           PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
   "http://www.gnu.org/copyleft/fdl.html"
@@ -142,7 +146,8 @@
 <!ENTITY GPL	"<acronym>GPL</acronym>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
 <!ENTITY Handspring "<trademark>Handspring</trademark>">
-<!ENTITY Hewlett-Packard	'<trademark class="registered">Hewlett-Packard</trademark>'>
+<!ENTITY Hewlett-Packard	'<trademark
+ class="registered">Hewlett-Packard</trademark>'>
 <!ENTITY HotSync '<trademark class="registered">HotSync</trademark>'>
 <!ENTITY HP	'<trademark class="registered">HP</trademark>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
@@ -174,8 +179,10 @@
 <!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
 <!ENTITY kdebugdialog	"<application>KDebugDialog</application>">
-<!ENTITY kde-http	'<ulink url="http://www.kde.org/">http://www.kde.org/</ulink>'>
-<!ENTITY kde-ftp	'<ulink url="ftp://ftp.kde.org/pub/kde/">ftp://ftp.kde.org/pub/kde/</ulink>'>
+<!ENTITY kde-http	'<ulink
+ url="http://www.kde.org/">http://www.kde.org/</ulink>'>
+<!ENTITY kde-ftp	'<ulink
+ url="ftp://ftp.kde.org/pub/kde/">ftp://ftp.kde.org/pub/kde/</ulink>'>
 <!ENTITY kdepasswd	"<application>kdepasswd</application>">
 <!ENTITY kdesktop	"<application>KDesktop</application>">
 <!ENTITY kdessh	"<application>kdessh</application>">
@@ -251,6 +258,7 @@
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY krayon	"<application>Krayon</application>">
+<!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
@@ -283,6 +291,7 @@
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
 <!ENTITY kugar "<application>Kugar</application>">
+<!ENTITY kuickshow "<application>KuickShow</application>">
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell "<application>KViewshell</application>">
@@ -302,7 +311,8 @@
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
-<!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
+<!ENTITY Microsoft	'<trademark
+ class="registered">Microsoft</trademark>'>
 <!ENTITY MIME	"<acronym>MIME</acronym>">
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
 <!ENTITY MRU	"<acronym>MRU</acronym>">
@@ -312,16 +322,19 @@
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
 <!ENTITY noatun "<application>Noatun</application>">
 <!ENTITY PalmOS	'<trademark class="registered">Palm OS</trademark>'>
-<!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
+<!ENTITY PalmPilot     
+ "<productname><trademark>PalmPilot</trademark></productname>">
 <!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
-<!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
+<!ENTITY PostScript	'<trademark
+ class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
 <!ENTITY quanta	"<application>Quanta</application>">
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY reslisa "<application>ResLisa</application>">
-<!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
+<!ENTITY Sendmail	'<application><trademark
+ class="registered">sendmail</trademark></application>'>
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
@@ -336,7 +349,8 @@
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY X-Server "<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
-<!ENTITY X-Window '<trademark class="registered">X Window System</trademark>'>
+<!ENTITY X-Window '<trademark class="registered">X Window
+ System</trademark>'>
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
@@ -351,7 +365,8 @@
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kworldwatch  "<application>KWorldClock</application>">
 <!ENTITY pixie	"<application>Pixie</application>">
-<!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
+<!ENTITY X-Windows	'<trademark class="registered">X Window
+ System</trademark>'> 
 
 <!-- Kind of obsolete: to be localised -->
 <!-- do NOT remove these without a version number change in the fpi! -->
