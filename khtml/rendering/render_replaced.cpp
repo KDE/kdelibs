@@ -35,6 +35,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h" // ### remove dependency
+//#include <kdebug.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -292,6 +293,7 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 
     if (evt->isMouseEvent()) {
 	MouseEventImpl *mev = static_cast<MouseEventImpl*>(evt);
+        //kdDebug() << "RenderWidget("<<this<<")::handleDOMEvent for a mouse event of type " << mev->type().string() << endl;
 
 	// Work out event type
 	QEvent::Type qtype = QEvent::None;
@@ -366,13 +368,18 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 	doRepaint = true;
     }
     else if (evt->id() == EventImpl::KHTML_KEYDOWN_EVENT ||
+             evt->id() == EventImpl::KHTML_KEYPRESS_EVENT || // necessary for auto-repeat keys
 	     evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
 	KeyEventImpl *keyEvent = static_cast<KeyEventImpl*>(evt);
+        //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent for a key event ("<<keyEvent->outputString().string()<< ") type " << keyEvent->type().string() << endl;
 
 	if (sendWidgetEvent(keyEvent->qKeyEvent)) {
+            //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event accepted" << endl;
 	    keyEvent->qKeyEvent->accept();
 	    doRepaint = true;
-	}
+        } else {
+            //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event NOT accepted" << endl;
+        }
     }
 
     if (doRepaint) {
@@ -387,6 +394,7 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 
 bool RenderWidget::sendWidgetEvent(QEvent *event)
 {
+    //kdDebug() << "RenderWidget("<<this<<")::sendWidgetEvent sending event to render-widget " << m_widget << endl;
     m_view->setIgnoreEvents(true);
     QWidget *prevFocusWidget = qApp->focusWidget();
     DocumentImpl *doc = m_view->part()->xmlDocImpl();
