@@ -1,23 +1,38 @@
 README
 
-kdeinit_wrapper is a program that starts programs via kdeinit.
+kdeinit_wrapper, kshell and kwrapper are a programs that
+start programs via kdeinit.
 
 E.g. You can make a symbolic link from $KDEDIR/bin/konsole to 
 $KDEDIR/bin/kdeinit_wrapper. Typing 'konsole' on the command line 
 will then start 'konsole.la' through kdeinit instead.
 
+kdeinit_wrapper is the simplest for, it only passes the program
+and arguments to kdeinit, nothing else
+
+kshell is usually the best choice, it passes the program,
+arguments, complete environment ( $PATH, etc. ) and current
+working directory to kdeinit
+
+kwrapper tries to make the program look like it was actually
+really started directly and not via kdeinit. In addition to
+what kshell does, it also tries to redirect the program
+output to the console from which kwrapper was started, it waits
+for the program started via kdeinit to finish and only after then
+it exits ( it doesn't return its return value though ), and
+it also passes most signals it gets to the process of the started
+program ( thus allowing you to break it using Ctrl+C or stopping
+it using Ctrl+Z ). The drawbacks of this are that you'll have one
+more process running, and also the signal passing and output
+redirection may not work 100% reliably
+
 
 TODO
 ====
 
-* CWD (Current Working Directory) is not passed to kdeinit.
 * There is no portable way to read out the complete environment and
-  pass it to kdeinit.
+  pass it to kdeinit. - kdeinit should probably unset every
+  variable that's not set in the environment it gets from kshell or
+  kwrapper
 * stdout/stderr of the started application goes to the console where
-  kdeinit was started.
-
-
-HOW TO PROCEED
-==============
-
-Implement the LAUNCHER_EXT_EXEC command (See klauncher_cmds.h)
+  kdeinit was started. - done, I hope it's ok

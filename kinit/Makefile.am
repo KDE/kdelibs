@@ -19,7 +19,7 @@ INCLUDES = -I$(srcdir)/../libltdl/ -I$(srcdir)/../kio/klauncher/ $(all_includes)
 
 SUBDIRS = .
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper kdeinit_shell kdeinit_shutdown lnusertemp
+bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper
 
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
@@ -33,8 +33,8 @@ kdeinit_METASOURCES = AUTO
 kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
 
-kdeinit_shell_SOURCES = wrapper.c
-kdeinit_shell_LDADD = $(LIBSOCKET)
+kshell_SOURCES = shell.c
+kshell_LDADD = $(LIBSOCKET)
 
 kdeinit_shutdown_SOURCES = wrapper.c
 kdeinit_shutdown_LDADD = $(LIBSOCKET)
@@ -42,3 +42,13 @@ kdeinit_shutdown_LDADD = $(LIBSOCKET)
 lnusertemp_SOURCES = lnusertemp.c 
 lnusertemp_LDFLAGS = $(KDE_RPATH)
 
+kwrapper_SOURCES = kwrapper.c
+kwrapper_LDADD = $(LIBSOCKET)
+
+kwrapper.c : wrapper.c
+# do nothing, it just depends on it
+	
+
+shell.c : wrapper.c
+# do nothing, it just depends on it
+	

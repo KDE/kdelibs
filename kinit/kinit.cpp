@@ -154,9 +154,34 @@ static void exitWithErrorMsg(const QString &errorMsg)
    exit(255);
 }
 
+static void setup_tty( const char* tty )
+{
+    if( tty == NULL || *tty == '\0' )
+        return;
+    int fd = open( tty, O_WRONLY );
+    if( fd < 0 )
+    {
+        perror( "kdeinit: couldn't open() tty" );
+        return;
+    }
+    if( dup2( fd, STDOUT_FILENO ) < 0 )
+    {
+        perror( "kdeinit: couldn't dup2() tty" );
+        close( fd );
+        return;
+    }
+    if( dup2( fd, STDERR_FILENO ) < 0 )
+    {
+        perror( "kdeinit: couldn't dup2() tty" );
+        close( fd );
+        return;
+    }
+    close( fd );
+}
+
 static pid_t launch(int argc, const char *_name, const char *args, 
                     const char *cwd=0, int envc=0, const char *envs=0,
-                    const char *tty=0)
+                    const char *tty=0, bool avoid_loops = false )
 {
   int launcher = 0;
   QCString lib;
@@ -186,7 +211,40 @@ static pid_t launch(int argc, const char *_name, const char *args,
      lib = name + ".la";
      exec = name;
      libpath = QFile::encodeName(KLibLoader::findLibrary( lib, s_instance ));
-     execpath = QFile::encodeName(s_instance->dirs()->findExe( exec ));
+     QStringList paths;
+     if( envc > 0 ) /* use the passed environment */
+     {
+         const char* env_l = envs;
+         for (int i = 0;  i < envc; i++)
+         {
+            if( strncmp( env_l, "PATH=", 5 ) == 0 )
+            {
+                paths = QStringList::split( QRegExp( "[:\b]" ), env_l + 5, true );
+                break; // -->
+            }    
+            while(*env_l != 0) env_l++;
+                env_l++;
+         }
+     }
+     else
+         paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
+     execpath = QFile::encodeName(
+         s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+     if( avoid_loops && !execpath.isEmpty())
+     {
+         int pos = execpath.findRev( '/' );
+         QString bin_path = execpath.left( pos );
+         for( QStringList::Iterator it = paths.begin();
+              it != paths.end();
+              ++it )
+             if( ( *it ) == bin_path || ( *it ) == bin_path + '/' )
+             {
+                 paths.remove( it );
+                 break; // -->
+             }
+         execpath = QFile::encodeName(
+             s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+     }
   }
   else
   {
@@ -286,7 +344,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         // We set the close on exec flag.
         // Closing of d.fd[1] indicates that the execvp succeeded!
         fcntl(d.fd[1], F_SETFD, FD_CLOEXEC);
-        execvp(exec.data(), d.argv);
+        
+        setup_tty( tty );
+        
+        execvp(execpath.data(), d.argv);
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
@@ -322,7 +383,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
                            getpid(), getpid());
            kill(getpid(), SIGSTOP);
         }
-
+        else
+            setup_tty( tty );
+        
         exit( d.func( argc, d.argv)); /* Launch! */
      }
      else
@@ -674,7 +737,8 @@ static void handle_launcher_request(int sock = -1)
    }
 
    if ((request_header.cmd == LAUNCHER_EXEC) ||
-       (request_header.cmd == LAUNCHER_EXT_EXEC))
+       (request_header.cmd == LAUNCHER_EXT_EXEC) ||
+       (request_header.cmd == LAUNCHER_KWRAPPER))
    {
       pid_t pid;
       klauncher_header response_header;
@@ -686,6 +750,7 @@ static void handle_launcher_request(int sock = -1)
       int envc = 0;
       char *envs = 0;
       char *tty = 0;
+      int avoid_loops = 0;
 
 #ifndef NDEBUG
       if (launcher)
@@ -699,20 +764,8 @@ static void handle_launcher_request(int sock = -1)
       {
         arg_n = arg_n + strlen(arg_n) + 1;
       }
-      if (request_header.cmd == LAUNCHER_EXEC)
-      {
-         if ((arg_n - request_data) != request_header.arg_length)
-         {
-#ifndef NDEBUG
-           fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
-#endif
-           free(request_data);
-           d.debug_wait = false;	
-           return;
-         }
-      }
-      else 
-      {  // Extended exec
+      if( request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_KWRAPPER )
+      {  // Extended exec or kwrapper
          cwd = arg_n; arg_n += strlen(cwd) + 1;
          envc = *((long *) arg_n); arg_n += sizeof(long);
          envs = arg_n;
@@ -720,8 +773,28 @@ static void handle_launcher_request(int sock = -1)
          {
            arg_n = arg_n + strlen(arg_n) + 1;
          }
-         tty = arg_n;
+         if( request_header.cmd == LAUNCHER_KWRAPPER )
+         {
+             tty = arg_n;
+             arg_n += strlen( tty ) + 1;
+         }
       }
+
+     if( ( arg_n - request_data ) == ( request_header.arg_length - (int)sizeof( int )))
+     { // keep backward compatibility, read it only if present
+         avoid_loops = *((int*)arg_n);
+         arg_n += sizeof( int );
+     }
+
+     if ((arg_n - request_data) != request_header.arg_length)
+     {
+#ifndef NDEBUG
+       fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
+#endif
+       free(request_data);
+       d.debug_wait = false;	
+       return;
+     }
 
       QCString olddisplay = getenv("DISPLAY");
       QCString kdedisplay = getenv("KDE_DISPLAY");
@@ -732,7 +805,7 @@ static void handle_launcher_request(int sock = -1)
       if (reset_display)
           setenv("DISPLAY", kdedisplay, true);
 
-      pid = launch(argc, name, args, cwd, envc, envs, tty);
+      pid = launch(argc, name, args, cwd, envc, envs, tty, avoid_loops );
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");

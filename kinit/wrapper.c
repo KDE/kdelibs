@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <signal.h>
 
 extern char **environ;
 
@@ -114,15 +115,15 @@ static int openSocket()
   struct sockaddr_un server;
 #define MAX_SOCK_FILE 255
   char sock_file[MAX_SOCK_FILE];
-  char *home_dir = getenv("HOME");
-  char *kde_home = getenv("KDEHOME");
+  const char *home_dir = getenv("HOME");
+  const char *kde_home = getenv("KDEHOME");
   char *display;
 
   sock_file[0] = 0;
 
   if (!kde_home || !kde_home[0])
   {
-     kde_home = (char *) "~/.kde/";
+     kde_home = "~/.kde/";
   }
 
   if (kde_home[0] == '~')
@@ -192,17 +193,102 @@ static int openSocket()
   return s;
 }
 
+static pid_t kwrapper_pid;
+static pid_t got_sig; /* = 0 */
+static pid_t last_sig; /* = 0 */
+
+static void sig_pass_handler( int signo );
+static void setup_signals( void );
+
+static void setup_signal_handler( int signo, int clean )
+{    
+    struct sigaction sa;
+    if( clean )
+        sa.sa_handler = SIG_DFL;
+    else
+        sa.sa_handler = sig_pass_handler;
+    sigemptyset( &sa.sa_mask );
+    sigaddset( &sa.sa_mask, signo );
+    sa.sa_flags = 0;
+    sigaction( signo, &sa, 0 );
+}
+
+static void sig_pass_handler( int signo )
+{
+    int save_errno = errno;
+    if( signo == SIGTSTP )
+        kill( kwrapper_pid, SIGSTOP ); /* pass the signal to the real process */
+    else                               /* SIGTSTP wouldn't work ... I don't think is much */
+        kill( kwrapper_pid, signo );   /* of a problem */
+    got_sig = signo;
+    if( got_sig == SIGCONT )
+        setup_signals(); /* restore signals */
+    errno = save_errno;
+}
+
+static void setup_signals()
+{
+    setup_signal_handler( SIGHUP, 0 );
+    setup_signal_handler( SIGINT, 0 );
+    setup_signal_handler( SIGQUIT, 0 );
+    setup_signal_handler( SIGILL, 0 );  /* e.g. this one is probably doesn't make sense to pass */
+    setup_signal_handler( SIGABRT, 0 ); /* but anyway ... */
+    setup_signal_handler( SIGFPE, 0 );
+    /*   SIGKILL   can't be handled :( */
+    setup_signal_handler( SIGSEGV, 0 );
+    setup_signal_handler( SIGPIPE, 0 );
+    setup_signal_handler( SIGALRM, 0 );
+    setup_signal_handler( SIGTERM, 0 );
+    setup_signal_handler( SIGUSR1, 0 );
+    setup_signal_handler( SIGUSR2, 0 );
+    setup_signal_handler( SIGCHLD, 0 ); /* is this a good idea ??? */
+    setup_signal_handler( SIGCONT, 0 ); /* SIGSTOP can't be handled, but SIGTSTP and SIGCONT can */
+    /* SIGSTOP */                       /* which should be enough */
+    setup_signal_handler( SIGTSTP, 0 );
+    setup_signal_handler( SIGTTIN, 0 ); /* is this a good idea ??? */
+    setup_signal_handler( SIGTTOU, 0 ); /* is this a good idea ??? */
+    /* some more ? */
+}
+
+static void kwrapper_run( pid_t pid )
+{
+    kwrapper_pid = pid;
+    setup_signals();
+    for(;;)
+    {
+        sleep( 1 ); /* poll and see if the real process is still alive */
+        if( got_sig != last_sig ) /* did we get a signal ? */
+            {
+            last_sig = got_sig;
+            if( got_sig == SIGCHLD )
+                ; /* nothing, ignore */
+            else if( got_sig == SIGCONT )
+                ; /* done in signal handler */
+            else /* do the default action ( most of them quit the app ) */
+                {
+                setup_signal_handler( got_sig, 1 );
+                raise( got_sig ); /* handle the signal again */
+                }
+            }
+        if( kill( pid, 0 ) < 0 )
+            break;
+    }
+ /* I'm afraid it won't be that easy to get the return value ... */
+}
+
 int main(int argc, char **argv)
 {
    int i;
    int wrapper = 0;
    int ext_wrapper = 0;
+   int kwrapper = 0;
    long arg_count;
    long env_count;
    klauncher_header header;
    char *start, *p, *buffer;
    char cwd[8192];
-   char *tty;
+   const char *tty;
+   int avoid_loops = 0;
 
    long size = 0;
    int sock = openSocket();
@@ -219,8 +305,10 @@ int main(int argc, char **argv)
 
    if (strcmp(start, "kdeinit_wrapper") == 0)
       wrapper = 1;
-   else if (strcmp(start, "kdeinit_shell") == 0)
+   else if (strcmp(start, "kshell") == 0)
       ext_wrapper = 1;
+   else if (strcmp(start, "kwrapper") == 0)
+      kwrapper = 1;
    else if (strcmp(start, "kdeinit_shutdown") == 0)
    {
       header.cmd = LAUNCHER_TERMINATE_KDE;
@@ -229,17 +317,30 @@ int main(int argc, char **argv)
       return 0;
    }
 
-   if (wrapper || ext_wrapper)
+   if (wrapper || ext_wrapper || kwrapper)
    {
       argv++;
       argc--;
       if (argc < 1)
       {
-         fprintf(stderr, "usage: kdeinit_wrapper <application> [<args>]\n");
-         exit(255);
+         fprintf(stderr, "Usage: %s <application> [<args>]\n", start);
+         exit(255); // usage should be documented somewhere ...
       }
       start = argv[0];
    }
+   
+   if( !wrapper && !ext_wrapper && !kwrapper )
+       { // was called as a symlink
+       avoid_loops = 1;
+#if defined(WE_ARE_KWRAPPER)
+       kwrapper = 1;
+#elif defined(WE_ARE_KSHELL)
+       ext_wrapper = 1;
+#else
+       wrapper = 1;
+#endif
+       }
+
    arg_count = argc;
 
    size += sizeof(long); /* Number of arguments*/
@@ -250,7 +351,7 @@ int main(int argc, char **argv)
    {
       size += strlen(argv[i])+1;
    }
-   if (!wrapper)
+   if (ext_wrapper || kwrapper)
    {
       if (!getcwd(cwd, 8192))
          cwd[0] = '\0';
@@ -265,16 +366,23 @@ int main(int argc, char **argv)
          size += l;
       }
 
-      tty = ttyname(1);
-      if (!tty)
-         tty = (char *) "";
-      size += strlen(tty)+1;
+      if( kwrapper )
+      {
+          tty = ttyname(1);
+          if (!tty)
+             tty = "";
+          size += strlen(tty)+1;
+      }
    }
+   
+   size += sizeof( avoid_loops );
 
-   if (!wrapper)
-      header.cmd = LAUNCHER_EXT_EXEC;
-   else
+   if (wrapper)
       header.cmd = LAUNCHER_EXEC;
+   else if (kwrapper)
+      header.cmd = LAUNCHER_KWRAPPER;
+   else
+      header.cmd = LAUNCHER_EXT_EXEC;
    header.arg_length = size;
    write_socket(sock, (char *) &header, sizeof(header));
 
@@ -293,7 +401,7 @@ int main(int argc, char **argv)
       p += strlen(argv[i])+1;
    }
 
-   if (!wrapper)
+   if (ext_wrapper || kwrapper)
    {
       memcpy(p, cwd, strlen(cwd)+1);
       p+= strlen(cwd)+1;
@@ -308,8 +416,21 @@ int main(int argc, char **argv)
          p += l;
       }
 
-      memcpy(p, tty, strlen(tty)+1);
-      p+=strlen(tty)+1;
+      if( kwrapper )
+      {
+          memcpy(p, tty, strlen(tty)+1);
+          p+=strlen(tty)+1;
+      }
+   }
+   
+   memcpy( p, &avoid_loops, sizeof( avoid_loops ));
+   p += sizeof( avoid_loops );
+   
+   if( p - buffer != size ) /* should fail only you change this source and do */
+                                 /* a stupid mistake, it should be assert() actually */
+   {
+      fprintf(stderr, "Oops. Invalid format.\n");
+      exit(255);
    }
 
    write_socket(sock, buffer, size);
@@ -327,7 +448,10 @@ int main(int argc, char **argv)
       buffer = (char *) malloc(header.arg_length);
       read_socket(sock, buffer, header.arg_length);
       pid = *((long *) buffer);
-      printf("Launched ok, pid = %ld\n", pid);
+      if( !kwrapper ) /* kwrapper shouldn't print any output */
+          printf("Launched ok, pid = %ld\n", pid);
+      else
+          kwrapper_run( pid );
    }
    else if (header.cmd == LAUNCHER_ERROR)
    {

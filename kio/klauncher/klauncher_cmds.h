@@ -109,4 +109,7 @@ typedef struct
  *
  * (Used for debugging io-slaves)
  */
+
+#define LAUNCHER_KWRAPPER	10
+
 #endif
