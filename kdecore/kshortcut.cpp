@@ -83,6 +83,7 @@ bool KKey::init( int keyQt )
 
 bool KKey::init( const QKeySequence& key )
 {
+	// TODO: if key.count() > 1, should we return failure?
 	return init( (int) key );
 }
 
@@ -222,12 +223,14 @@ void KKeySequence::clear()
 bool KKeySequence::init( const QKeySequence& seq )
 {
 	clear();
-	if( seq ) {
-		m_rgvar[0].init( seq );
-		if( !m_rgvar[0].isNull() ) {
-			m_nKeys = 1;
-			m_bTriggerOnRelease = false;
+	if( !seq.isEmpty() ) {
+		for( uint i = 0; i < seq.count(); i++ ) {	
+			m_rgvar[i].init( seq[i] );
+			if( m_rgvar[i].isNull() )
+				return false;
 		}
+		m_nKeys = seq.count();
+		m_bTriggerOnRelease = false;
 	}
 	return true;
 }
@@ -339,12 +342,12 @@ int KKeySequence::compare( const KKeySequence& seq ) const
 
 QKeySequence KKeySequence::qt() const
 {
-	QKeySequence seq;
+	int k[4] = { 0, 0, 0, 0 };
+	
+	for( uint i = 0; i < count(); i++ )
+		k[i] = KKeyNative(key(i)).keyCodeQt();
 
-	// TODO: Change this once QKeySequence can handle multiple keys.
-	if( count() == 1 )
-		seq = KKeyNative(key(0)).keyCodeQt();
-
+	QKeySequence seq( k[0], k[1], k[2], k[3] );
 	return seq;
 }
 
@@ -465,7 +468,7 @@ bool KShortcut::init( const QString& s )
 			if( sSeq.startsWith( "default(" ) )
 				sSeq = sSeq.mid( 8, sSeq.length() - 9 );
 			m_rgseq[i].init( sSeq );
-			//kdDebug(125) << "\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
+			//kdDebug(125) << "*\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
 		}
 	} else {
 		clear();
