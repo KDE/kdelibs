@@ -272,7 +272,7 @@ public:
   /**
    * Returns the type of this resource.
    */
-  QString type() { return mType; }
+  QString type() const { return mType; }
 
   /**
    * Mark the resource as read-only. You can override this method,
