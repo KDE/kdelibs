@@ -89,7 +89,6 @@ void RenderRoot::layout()
     }
 
     calcMinMaxWidth();
-    calcWidth();
 
     // this fixes frameset resizing
     if(firstChild()) {
