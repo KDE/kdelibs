@@ -21,6 +21,7 @@
 #include "operations.h"
 #include "object_object.h"
 #include "types.h"
+#include <stdio.h>
 
 using namespace KJS;
 
@@ -83,6 +84,13 @@ ObjectPrototype::ObjectPrototype()
   // Not sure if Null or C's NULL is needed.
 }
 
+bool ObjectPrototype::hasProperty(const UString &p, bool recursive) const
+{
+    if ( p == "toString" || p == "valueOf" )
+        return true;
+    return /*recursive &&*/ ObjectImp::hasProperty(p, recursive);
+}
+
 KJSO ObjectPrototype::get(const UString &p) const
 {
   if (p == "toString")
@@ -104,6 +112,7 @@ Completion ObjectProtoFunc::execute(const List &)
   Object thisObj = Object::dynamicCast(thisValue());
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
+  // Yes, this happens with Host Object at least (David)
   if (thisObj.isNull()) {
     UString str = "[object ";
     str += thisValue().isNull() ? "null" : thisValue().imp()->typeInfo()->name;
@@ -130,7 +139,9 @@ Completion ObjectProtoFunc::execute(const List &)
     break;
   case ObjectClass:
   {
-    str = "[object Object]";
+    str = "[object ";
+    str += thisValue().isNull() ? "Object" : thisValue().imp()->typeInfo()->name;
+    str += "]";
     break;
   }
   default:

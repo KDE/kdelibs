@@ -951,7 +951,7 @@ void ObjectImp::mark(Imp*)
 HostImp::HostImp()
 {
     setPrototype(Global::current().objectPrototype());
-    //printf("HostImp::HostImp() %p\n",this);
+    //printf("HostImp::HostImp() %p\n",this); 
 }
 
 HostImp::~HostImp() { }
@@ -959,6 +959,23 @@ HostImp::~HostImp() { }
 Boolean HostImp::toBoolean() const
 {
   return Boolean(true);
+}
+
+String HostImp::toString() const
+{
+  // Exact copy of ObjectImp::toString....
+  KJSO tmp;
+  String res;
+
+  if (hasProperty("toString") && (tmp = get("toString")).implementsCall()) {
+    // TODO live w/o hack
+    res = tmp.executeCall(KJSO(const_cast<HostImp*>(this)), 0L).toString();
+  } else {
+    tmp = toPrimitive(StringType);
+    res = tmp.toString();
+  }
+
+  return res;
 }
 
 const TypeInfo HostImp::info = { "HostObject", HostType, 0, 0, 0 };

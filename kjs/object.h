@@ -523,6 +523,7 @@ namespace KJS {
     virtual const TypeInfo* typeInfo() const { return &info; }
 
     virtual Boolean toBoolean() const;
+    virtual String toString() const;
 
     static const TypeInfo info;
   };
