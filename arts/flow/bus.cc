@@ -30,9 +30,27 @@ using namespace Arts;
 using namespace std;
 static BusManager *the_BusManager = 0;
 
+// shutdown bus manager on termination
+
+namespace Arts {
+	static class BusManagerShutdown :public StartupClass
+	{
+	public:
+		void startup() { };
+		void shutdown()
+		{
+			if(the_BusManager)
+			{
+				delete the_BusManager;
+				the_BusManager = 0;
+			}
+		}
+	}	The_BusManagerShutdown;
+};
+
 BusManager::BusManager()
 {
-	// this cosntructor isn't public (Singleton)
+	// this constructor isn't public (Singleton)
 }
 
 BusManager *BusManager::the()
