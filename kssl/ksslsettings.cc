@@ -149,10 +149,10 @@ QString clist = "";
         SSL_CIPHER *sc = (meth->get_cipher)(i);
         if (!sc) break;;
         tcipher.sprintf("cipher_%s", sc->name);
+        int bits = SSL_CIPHER_get_bits(sc, NULL);
  
-        if (m_cfg->readBoolEntry(tcipher)) {
-          cipherSort.inSort(new CipherNode(sc->name,
-                                           SSL_CIPHER_get_bits(sc, NULL) ));
+        if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
+          cipherSort.inSort(new CipherNode(sc->name,bits));
         } // if
       } // for  i
 
