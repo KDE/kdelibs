@@ -59,7 +59,7 @@ KDirListerCache::KDirListerCache( int maxCount )
 KDirListerCache::~KDirListerCache()
 {
   kdDebug(7004) << "-KDirListerCache" << endl;
-  
+
   itemsInUse.setAutoDelete( true );
   itemsInUse.clear();
   itemsCached.clear();
@@ -69,13 +69,13 @@ KDirListerCache::~KDirListerCache()
   kdirwatch->disconnect( this );
 }
 
-// TODO: hmpf, setting _reload to true will emit the old files and 
+// TODO: hmpf, setting _reload to true will emit the old files and
 //       just then call updateDirectory
-void KDirListerCache::listDir( KDirLister* lister, const KURL& _u, 
+void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
                                bool _keep, bool _reload )
 {
   // like this we don't have to worry about trailing slashes any further
-  KURL _url( _u.url(-1) ); 
+  KURL _url( _u.url(-1) );
 
   kdDebug(7004) << k_funcinfo << lister << " url=" << _url.prettyURL()
                 << " keep=" << _keep << " reload=" << _reload << endl;
@@ -235,11 +235,11 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     {
       if ( it.key()->url() == _url )
         break;
-        
+
       ++it;
     }
     Q_ASSERT( it != jobs.end() );
-    
+
     KIO::ListJob *job = it.key();
     connect( job, SIGNAL( infoMessage( KIO::Job *, const QString& ) ),
              lister, SLOT( slotInfoMessage( KIO::Job *, const QString& ) ) );
@@ -339,7 +339,7 @@ void KDirListerCache::stop( KDirLister *lister )
 void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
 {
   KURL _url( _u.url(-1) );
-  
+
   // TODO: consider to stop all the "child jobs" of _url as well
   kdDebug(7004) << k_funcinfo << lister << " url=" << _url.prettyURL() << endl;
 
@@ -457,17 +457,17 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 // NOTE: this *never* uses the cache!
 void KDirListerCache::updateDirectory( const KURL& _d )
 {
-  KURL _dir( _d.url(-1) ); 
+  KURL _dir( _d.url(-1) );
   kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
-  
+
   // TODO: if _dir is in itemsCached update it as well!
   if ( !itemsInUse[_dir.url()] )
   {
     kdDebug(7004) << k_funcinfo << "updateDirectory aborted, " << _dir.prettyURL() << " not in use!" << endl;
     return;
   }
-  
-  QPtrList<KDirLister> *listers = urlsCurrentlyListed[_dir.url()]; 
+
+  QPtrList<KDirLister> *listers = urlsCurrentlyListed[_dir.url()];
 
   // if there's a job running for _dir restart it
   KIO::ListJob *job;
@@ -481,7 +481,7 @@ void KDirListerCache::updateDirectory( const KURL& _d )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         {
           kdl->d->numJobs--;
-          emit kdl->canceled( _dir ); 
+          emit kdl->canceled( _dir );
           // and don't emit canceled() in any case as the
           // lister is not finished yet!
         }
@@ -515,7 +515,7 @@ void KDirListerCache::updateDirectory( const KURL& _d )
       kdl->d->complete = false;
       emit kdl->started( _dir );
     }
-      
+
   if ( (listers = urlsCurrentlyHeld[_dir.url()]) )
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
     {
@@ -545,8 +545,8 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
 // if lister == 0 all items are searched
 KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
 {
-  KURL _url( _u.url(-1) ); 
-  
+  KURL _url( _u.url(-1) );
+
   // TODO: this code could be improved :)
 
   if ( !lister || lister->d->lstDirs.contains( _url ) )
@@ -603,7 +603,7 @@ KDirListerCache* KDirListerCache::self()
 {
   if ( !s_pSelf )
     s_pSelf = sd_KDirListerCache.setObject( s_pSelf, new KDirListerCache );
-    
+
   return s_pSelf;
 }
 
@@ -626,7 +626,7 @@ void KDirListerCache::slotFileDirty( const QString& _file )
 
     // TODO: use urlsCurrentlyListed as well?
 
-    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[u.url(-1)]; 
+    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[u.url(-1)];
     if ( listers )
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         emit kdl->refreshItems( lst );
@@ -779,7 +779,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
   KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();
 
   kdDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << url.prettyURL() << endl;
-  
+
   // I don't think there can be dirItems that are childs of oldUrl.
   // Am I wrong here? And even if so, we don't need to delete them, right?
 
@@ -810,7 +810,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
     {
       for ( KFileItem *item = dir->lstItems->first(); item; item = dir->lstItems->next() )
         emit kdl->deleteItem( item );
-        
+
       emit kdl->redirection( oldUrl, url );
     }
   }
@@ -833,14 +833,14 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
   const KURL& url = job->url();
-  
+
   kdDebug(7004) << k_funcinfo << "finished update " << job->url().prettyURL() << endl;
-  
+
   KDirLister *kdl;
 
   QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
   QPtrList<KDirLister> *tmpLst = urlsCurrentlyListed.take( url.url() );
-  
+
   if ( tmpLst )
   {
     if ( listers )
@@ -855,10 +855,10 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       urlsCurrentlyHeld.insert( url.url(), listers );
     }
   }
-  
+
   // once we are updating dirs that are only in the cache this will fail!
   Q_ASSERT( listers );
-  
+
   if ( job->error() )
   {
     //don't bother the user
@@ -875,7 +875,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     }
 
     jobs.remove( job );
-    
+
     // TODO: if job is a parent of one or more
     // of the pending urls we should cancel them
     processPendingUpdates();
@@ -884,7 +884,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   DirItem *dir = itemsInUse[url.url()];
   dir->complete = true;
- 
+
 
   // check if anyone wants the mimetypes immediately
   bool delayedMimeTypes = true;
@@ -892,8 +892,8 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     delayedMimeTypes &= kdl->d->delayedMimeTypes;
 
   // should be enough to get reasonable speed in most cases
-  QDict<KFileItem> fileItems( 9973 );     
-  
+  QDict<KFileItem> fileItems( 9973 );
+
   KFileItemList lstRefreshItems;
   KFileItemListIterator kit ( *(dir->lstItems) );
 
@@ -904,7 +904,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     (*kit)->unmark();
     fileItems.insert( (*kit)->url().url(), *kit );
   }
-  
+
   static const QString& dot = KGlobal::staticQString(".");
   static const QString& dotdot = KGlobal::staticQString("..");
 
@@ -932,7 +932,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     // TODO: no need to update the root item??
     if ( name.isEmpty() || name == dot || name == dotdot )
       continue;
-  
+
     // Form the complete url
     KURL u( url );
     u.addPath( name );
@@ -969,10 +969,10 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       for ( kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->addNewItem( item );
     }
-  } 
+  }
 
   jobs.remove( job );
-  
+
   deleteUnmarkedItems( listers, dir->lstItems, true );
 
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
@@ -989,7 +989,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       emit kdl->completed();
     }
   }
-  
+
   // TODO: hmm, if there was an error and job is a parent of one or more
   // of the pending urls we should cancel it/them as well
   processPendingUpdates();
@@ -1007,7 +1007,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
     {
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         emit kdl->deleteItem( item );
-      
+
       if ( really )
       {
         // unregister and remove the deleted child folders
@@ -1017,9 +1017,9 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
    needs to be emitted? And maybe other listers holding the deleted dir
    need to be notified...
    hmm, and what about using KDirListerPrivate::lstDirs?
-      
+
         // dunno if this is enough - use KURL::isParentOf()?
-        if ( !itemsCached.remove( item->url().url(-1) ) ) 
+        if ( !itemsCached.remove( item->url().url(-1) ) )
         {
           DirItem *di;
           if ( (di = itemsInUse.take( item->url().url(-1) )) )
@@ -1029,7 +1029,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
               //kdDebug(7004) << "forgetting about " << item->url().path() << endl;
               kdirwatch->removeDir( item->url().path() );
             }
-            
+
             delete di;
           }
         }
@@ -1057,7 +1057,7 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   kdDebug(7003) << "+KDirLister" << endl;
 
   d = new KDirListerPrivate;
- 
+
   d->complete = true;
   d->urlChanged = false;
   d->delayedMimeTypes = _delayedMimeTypes;
@@ -1075,9 +1075,9 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
 }
 
 KDirLister::~KDirLister()
-{  
+{
   kdDebug(7003) << "-KDirLister" << endl;
-  
+
   // Stop all running jobs
   stop();
   s_pCache->forgetDirs( this );
@@ -1136,7 +1136,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
 
   d->isShowingDotFiles = _showDotFiles;
 }
-  
+
 bool KDirLister::dirOnlyMode() const
 {
   return d->dirOnlyMode;
@@ -1157,7 +1157,7 @@ const KURL& KDirLister::url() const
 
 void KDirLister::emitChanges()
 {
-  // FIXME TODO!! 
+  // FIXME TODO!!
   for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
     s_pCache->updateDirectory( *it );
 }
@@ -1204,7 +1204,7 @@ void KDirLister::setNameFilter( const QString& nameFilter )
   d->lstFilters.clear();
   d->urlChanged = true;         // TODO do not reload the cache, but just emit the changed items!
   d->nameFilter = nameFilter;
-            
+
   // Split on white space
   QStringList list = QStringList::split( ' ', nameFilter );
   for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
@@ -1235,7 +1235,7 @@ bool KDirLister::matchesFilter( const QString& name ) const
 {
   bool matched = false;
   for ( QPtrListIterator<QRegExp> it( d->lstFilters ); it.current(); ++it )
-    if ( it.current()->search( name ) != -1 ) 
+    if ( it.current()->search( name ) != -1 )
     {
       matched = true;
       break;
@@ -1248,7 +1248,7 @@ bool KDirLister::matchesMimeFilter( const QString& mime ) const
 {
   if ( d->mimeFilter.isEmpty() )
     return true;
-            
+
   QStringList::Iterator it = d->mimeFilter.begin();
   for ( ; it != d->mimeFilter.end(); ++it )
     if ( (*it) == mime )
@@ -1278,7 +1278,7 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
 bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
-  return matchesMimeFilter( item->mimeTypePtr()->name() );
+  return matchesMimeFilter( item->mimetype() );
 }
 
 
@@ -1302,10 +1302,10 @@ bool KDirLister::validURL( const KURL& _url ) const
 }
 
 void KDirLister::addNewItem( const KFileItem *item )
-{        
+{
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
   bool isMimeFilterMatch = !matchesMimeFilter( item );
-        
+
   if ( !isNameFilterMatch && !isMimeFilterMatch )
     d->lstNewItems.append( item );            // items not filtered
   else if ( !isNameFilterMatch )
@@ -1347,9 +1347,9 @@ void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
   d->jobData[static_cast<KIO::ListJob*>(job)].percent = pcnt;
 
   int result = 0;
- 
+
   KIO::filesize_t size = 0;
- 
+
   QMap< KIO::ListJob *, KDirListerPrivate::JobData >::Iterator dataIt = d->jobData.begin();
   while ( dataIt != d->jobData.end() )
   {
