@@ -188,6 +188,12 @@ interface StreamPlayObject : PlayObject {
 	 * prepares the playobject for the stream
 	 */
 	boolean streamMedia(InputStream instream);
+
+	/**
+	 * last used inputstream
+	 * it should never change
+	 */
+	 InputStream inputStream();
 };
 
 /**

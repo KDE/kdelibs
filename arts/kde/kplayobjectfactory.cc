@@ -32,6 +32,7 @@ KPlayObjectFactory::KPlayObjectFactory(Arts::SoundServerV2 server)
 {
 	m_server = server;
 	m_allowStreaming = true;
+	m_stream = false;
 }
 
 KPlayObjectFactory::~KPlayObjectFactory()
@@ -53,6 +54,8 @@ KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString
 			Arts::KIOInputStream instream;
 			instream.openURL(url.url().latin1());
 	    
+			m_stream = true;
+		
 			// TODO: what else than hardcoding audio/x-mp3 ?
 			return new KPlayObject(m_server.createPlayObjectForStream(instream, string("audio/x-mp3"), createBUS), true);
 		}

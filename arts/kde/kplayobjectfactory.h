@@ -38,9 +38,12 @@ public:
 	void setAllowStreaming(bool s) { m_allowStreaming = s; }
 	bool allowStreaming() { return m_allowStreaming; }
 
+	bool isAStream() { return m_stream; }
+	
 private:
 	Arts::SoundServerV2 m_server;
 	bool m_allowStreaming;
+	bool m_stream;
 };
 
 #endif
