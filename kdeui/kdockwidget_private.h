@@ -21,73 +21,7 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
 class QFrame;
-class QTimer;
-class QWidget;
-
-/**
- * Internal class. For internal purposes, only (It supports the dock process).
- * @internal
- *
- * @author Max Judin.
- * @version $Id$
-*/
-class KDockMoveManager: public QObject
-/*
-    Modify from KTolBoxManager
-    novaprint@mtu-net.ru
-    Judin Max
-**********************************/
-{
-  Q_OBJECT
-friend class KDockManager;
-
-private:
-  KDockMoveManager(QWidget *widget);
-  ~KDockMoveManager();
-  
-  void doMove();
-  void movePause(){ pauseMove = true; }
-  void moveContinue(){ pauseMove = false; }
-  void setGeometry(int x, int y, int w, int h);
-  void resize(int rw, int rh) {setGeometry(xp, yp, rw, rh);};
-  int mouseX() {return rx;};
-  int mouseY() {return ry;};
-  int x() {return xp;};
-  int y() {return yp;};
-  int width() {return w;};
-  int height() {return h;};
-  void stop ();
-  void drawRectangle (int x, int y, int w, int h);
-  void deleteLastRectangle ();
-
-private slots:
-  void doMoveInternal();
-
-private:
-  bool pauseMove;
-  int xp, yp, w, h;
-  int ox, oy, ow, oh;
-  int orig_x, orig_y, orig_w, orig_h;
-  bool noLast;
-  bool working;
-  
-  QWidget *widget;
-  QTimer *timer;
-  
-  int rx, ry, sx, sy;
-  int offX, offY;
-  
-  /* X-stuff */
-  Window root;
-  GC rootgc;
-  int scr;
-  XEvent ev;
-};
 
 /**
  * Like QSplitter but specially designed for dockwidgets stuff.

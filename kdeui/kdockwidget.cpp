@@ -918,7 +918,6 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 
   childDock = new QObjectList();
   childDock->setAutoDelete( false );
-  mg = 0L;
   draging = false;
   dropCancel = false;
 }
@@ -974,11 +973,44 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
   }
 
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
-    KDockWidget* ww = 0L;
+    KDockWidget* pDockWdgAtCursor = 0L;
     KDockWidget* curdw = ((KDockWidgetAbstractHeaderDrag*)obj)->dockWidget();
     switch ( event->type() ){
+      case QEvent::MouseButtonPress:
+        if ( ((QMouseEvent*)event)->button() == LeftButton ){
+          if ( curdw->eDocking != (int)KDockWidget::DockNone ){
+            dropCancel = false;
+            curdw->setFocus();
+            qApp->processOneEvent();
+
+            currentDragWidget = curdw;
+            currentMoveWidget = 0L;
+            childDockWidgetList = new WidgetList();
+            childDockWidgetList->append( curdw );
+            findChildDockWidget( curdw, childDockWidgetList );
+
+            oldDragRect = QRect();
+            dragRect = QRect(curdw->geometry());
+            QPoint p = curdw->mapToGlobal(QPoint(0,0));
+            dragRect.moveTopLeft(p);
+            drawDragRectangle();
+            readyToDrag = true;
+          }
+        }
+        break;
       case QEvent::MouseButtonRelease:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
+          if (readyToDrag) {
+              readyToDrag = false;
+              oldDragRect = QRect();
+              dragRect = QRect(curdw->geometry());
+              QPoint p = curdw->mapToGlobal(QPoint(0,0));
+              dragRect.moveTopLeft(p);
+              drawDragRectangle();
+              currentDragWidget = 0L;
+              delete childDockWidgetList;
+              childDockWidgetList = 0L;
+          }
           if ( draging && !dropCancel ){
             drop();
           }
@@ -988,40 +1020,33 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         break;
       case QEvent::MouseMove:
         if ( draging ) {
-          ww = findDockWidgetAt( QCursor::pos() );
+          pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
           KDockWidget* oldMoveWidget = currentMoveWidget;
-          if ( currentMoveWidget  && ww == currentMoveWidget ) { //move
+          if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
             dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );
             break;
           }
 
-          if ( !ww && (curdw->eDocking & (int)KDockWidget::DockDesktop) == 0 ){
-              currentMoveWidget = ww;
+          if ( !pDockWdgAtCursor && (curdw->eDocking & (int)KDockWidget::DockDesktop) == 0 ){
+              // just moving at the desktop
+              currentMoveWidget = pDockWdgAtCursor;
               curPos = KDockWidget::DockDesktop;
-              mg->movePause();
           } else {
-            if ( oldMoveWidget && ww != currentMoveWidget ) { //leave
-              currentMoveWidget = ww;
+            if ( oldMoveWidget && pDockWdgAtCursor != currentMoveWidget ) { //leave
+              currentMoveWidget = pDockWdgAtCursor;
               curPos = KDockWidget::DockDesktop;
-              mg->resize( storeW, storeH );
-              mg->moveContinue();
             }
           }
 
-          if ( oldMoveWidget != ww && ww ) { //enter ww
-            currentMoveWidget = ww;
+          if ( oldMoveWidget != pDockWdgAtCursor && pDockWdgAtCursor ) { //enter pDockWdgAtCursor
+            currentMoveWidget = pDockWdgAtCursor;
             curPos = KDockWidget::DockDesktop;
-            storeW = mg->width();
-            storeH = mg->height();
-            mg->movePause();
           }
         } else {
           if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel ){
-            if ( curdw->eDocking != (int)KDockWidget::DockNone ){
-              dropCancel = false;
-              curdw->setFocus();
-              qApp->processOneEvent();
-              startDrag( curdw );
+            if (readyToDrag) {
+              readyToDrag = false;
+              startDrag( curdw);
             }
           }
         }
@@ -1133,17 +1158,10 @@ void KDockManager::startDrag( KDockWidget* w )
     }
   }
 
-  currentMoveWidget = 0L;
-  currentDragWidget = w;
-  childDockWidgetList = new WidgetList();
-  childDockWidgetList->append( w );
-  findChildDockWidget( w, childDockWidgetList );
-  
-  if ( mg ) delete mg;
-  mg = new KDockMoveManager( w );
   curPos = KDockWidget::DockDesktop;
   draging = true;
-  mg->doMove();
+
+  QApplication::setOverrideCursor(QCursor(sizeAllCursor));
 }
 
 void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
@@ -1154,7 +1172,9 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
   QSize r = dw->widget->size();
   if ( dw->parentTabGroup() ){
     curPos = KDockWidget::DockCenter;
-  	if ( oldPos != curPos ) mg->setGeometry( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
+  	if ( oldPos != curPos ) {
+  	  dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
+    }  	
     return;
   }
 
@@ -1185,18 +1205,26 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
             p.setY( p.y() + h );
           }
 
-  if ( oldPos != curPos ) mg->setGeometry( p.x(), p.y(), w, h );
+  if ( oldPos != curPos ) {
+    dragRect.setRect( p.x(), p.y(), w, h );
+    drawDragRectangle();
+  }
 }
 
 void KDockManager::drop()
 {
-  mg->stop();
-  delete childDockWidgetList;
-  if ( dropCancel ) return;
-  if ( !currentMoveWidget && ((currentDragWidget->eDocking & (int)KDockWidget::DockDesktop) == 0) ) return;
+  QApplication::restoreOverrideCursor();
 
-  if ( !currentMoveWidget && !currentDragWidget->parent() )
-    currentDragWidget->move( mg->x(), mg->y() );
+  delete childDockWidgetList;
+  childDockWidgetList = 0L;
+  if ( dropCancel ) return;
+  if ( !currentMoveWidget && ((currentDragWidget->eDocking & (int)KDockWidget::DockDesktop) == 0) ) {
+    return;
+  }
+  if ( !currentMoveWidget && !currentDragWidget->parent() ) {
+    QPoint p = currentDragWidget->mapToGlobal(QPoint(0,0));
+    currentDragWidget->move(p);
+  }
   else {
     int splitPos = currentDragWidget->d->splitPosInPercent;
     // do we have to calculate 100%-splitPosInPercent?
@@ -1209,7 +1237,8 @@ void KDockManager::drop()
       default: break;
       }
     }
-    currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QPoint(mg->x(), mg->y()) );
+    QPoint p = currentDragWidget->mapToGlobal(QPoint(0,0));
+    currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QPoint(p.x(), p.y()) );
     currentDragWidget->makeDockVisible();
   }
 }
@@ -1648,7 +1677,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
 
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
-    // for KDockMainWindow->setView() in reafConfig()
+    // for KDockMainWindow->setView() in readConfig()
     c->writeEntry( "Main:view", dmain->centralWidget() ? dmain->centralWidget()->name():"" );
     c->writeEntry( "Main:dock", dmain->getMainDockWidget()     ? dmain->getMainDockWidget()->name()    :"" );
   }
@@ -1853,6 +1882,63 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
     if ( dock->widget == w ){ found  = dock; break; }
   }
   return found;
+}
+
+void KDockManager::drawDragRectangle()
+{
+  if (oldDragRect == dragRect)
+    return;
+
+  int i;
+  QRect oldAndNewDragRect[2];
+  oldAndNewDragRect[0] = oldDragRect;
+  oldAndNewDragRect[1] = dragRect;
+
+  // 2 calls, one for the old and one for the new drag rectangle
+  for (i = 0; i <= 1; i++) {
+    if (oldAndNewDragRect[i].isEmpty())
+      continue;
+
+    KDockWidget* pDockWdgAtRect = (KDockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft(), true );
+    if (!pDockWdgAtRect)
+      return;
+
+    bool isOverMainWdg = false;
+    bool unclipped;
+    KDockMainWindow* pMain = 0L;
+    KDockWidget* pTLDockWdg = 0L;
+    QWidget* topWdg;
+    if (pDockWdgAtRect->topLevelWidget() == main) {
+      isOverMainWdg = true;
+      topWdg = pMain = (KDockMainWindow*) main;
+      unclipped = pMain->testWFlags( WPaintUnclipped );
+      pMain->setWFlags( WPaintUnclipped );
+    }
+    else {
+      topWdg = pTLDockWdg = (KDockWidget*) pDockWdgAtRect->topLevelWidget();
+      unclipped = pTLDockWdg->testWFlags( WPaintUnclipped );
+      pTLDockWdg->setWFlags( WPaintUnclipped );
+    }
+
+    // draw the rectangle unclipped over the main dock window
+    QPainter p;
+    p.begin( topWdg );
+      if ( !unclipped ) {
+        if (isOverMainWdg)
+          pMain->clearWFlags(WPaintUnclipped);
+        else
+          pTLDockWdg->clearWFlags(WPaintUnclipped);
+      }
+      // draw the rectangle
+      p.setRasterOp(Qt::NotXorROP);
+      QRect r = oldAndNewDragRect[i];
+      r.moveTopLeft( r.topLeft() - topWdg->mapToGlobal(QPoint(0,0)) );
+      p.drawRect(r.x(), r.y(), r.width(), r.height());
+    p.end();
+  }
+
+  // memorize the current rectangle for later removing
+  oldDragRect = dragRect;
 }
 
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name

@@ -830,6 +830,12 @@ private slots:
    */
   void slotMenuActivated( int id);
 
+  /* clears the old drawn drag rectangle (oldDragRect) from screen and
+   * draws the new current drag rectangle (dragRect) depending on the current mouse position.
+   * This highlights the dockwidget which is the currently chosen target during a dock action.
+   */
+  void drawDragRectangle();
+
 private:
 
   /**
@@ -971,6 +977,21 @@ private:
    */
   QList<MenuDockData> *menuData;
 
+  /**
+   * This rectangle is used to highlight the current dockposition. It stores global screen coordinates.
+   */
+  QRect dragRect;
+
+  /**
+   * This rectangle is used to erase the previously highlighted dockposition. It stores global screen coordinates.
+   */
+  QRect oldDragRect;
+
+  /**
+   * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
+   */
+  bool readyToDrag;
+
   class KDockManagerPrivate;
   KDockManagerPrivate *d;
 };
@@ -1019,6 +1040,8 @@ private:
 class EXPORT_DOCKCLASS KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
+
+friend class KDockManager;
 
 public:
 
