@@ -1,76 +1,95 @@
-
 /*
- * KEdit.h
- * defines KEdit class
- *
- * $Id$
- */
+  $Id$
+ 
+         kedit+ , a simple text editor for the KDE project
 
-/*@ManDoc:
- This is a simple dialog for gathering a text value, used by KEdit search functions.
+  Copyright 1997 Bernd Johannes Wuebben, wuebben@math.cornell.edu
+  Requires the Qt widget libraries, available at no cost at 
+  http://www.troll.no
+  
+  Copyright (C) 1996 Bernd Johannes Wuebben   
+  wuebben@math.cornell.edu
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  
+  KEdit, simple editor class, hacked version of the original by 
+  Nov 96, Alexander Sanda <alex@darkstar.ping.at>
+ 
   */
+
+#include <qpopmenu.h>
+#include <qmenubar.h>
+#include <qapp.h>
+#include <qkeycode.h>
+#include <qaccel.h>
+#include <qobject.h>
+#include <qmlined.h>
+#include <qradiobt.h>
+#include <qfiledlg.h>
+#include <qchkbox.h>
+#include <qmsgbox.h>
+#include <qcombo.h>
+#include <qpushbt.h>
+#include <qgrpbox.h>
+#include <qregexp.h>
+#include <qkeycode.h>
+#include <qfileinf.h> 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+
+#include <pwd.h>
+
   
 
 #ifndef __KEDIT_H__
 #define __KEDIT_H__
 
-#include <qdialog.h>
-#include <qcombo.h>
-#include <qpushbt.h>
-#include <qchkbox.h>
-#include <qgrpbox.h>
-#include <qmlined.h>
-#include <qpopmenu.h>
-#include <qfiledlg.h>
 
 class KEdSrch : public QDialog
 {
     Q_OBJECT;
+
 public:
 
-    /*@ManDoc:
-     
-     construct a new KEdSrch dialog and all its child widgets. The function has
-     no special parameters.
-     */
-    
     KEdSrch ( QWidget *parent = 0, const char *name=0);
 
-    /*@ManDoc:
-     
-     return the index value of the currently selected item.
-     */
-    
-    int getSrchItem();
+    QString getText();
+    QLineEdit *values;
 
-    /*@ManDoc:
-     
-     get the currently selected text from the history list
-     */
-
-    const char *getSrchItemText();
 private:
-    QComboBox *values;
+
     QPushButton *ok, *cancel;
     QCheckBox *sensitive;
     QGroupBox *frame1;
     void resizeEvent(QResizeEvent *);
 
-    /*@ManDoc:
-     This slot function is called, whenever a selection from the list is made.
-     */
 public slots:
+
     void selected(int);
+
 };
 
-/*@ManDoc:
- The base editor class. It inherits QMultiLineEdit and provides several
- additional features like its own fileselector box, a little context menu
- and a collection of methods for load, save, search and so on.
 
- KEdit provides a number of creation-time options. You may use them to control the behaviour
- of the editor object
- */
 
 class KEdit : public QMultiLineEdit
 {
@@ -78,10 +97,18 @@ class KEdit : public QMultiLineEdit
     
 public:
 
+    KEdit (QWidget *parent=0, const char *name=0, const char *filename=0, 
+	   unsigned flags = 0);
+
+    ~KEdit();
+
+
     enum { ALLOW_OPEN = 1, ALLOW_SAVE = 2, ALLOW_SAVEAS = 4, ALLOW_SEARCH = 8,
             HAS_POPUP = 16,
             SHOW_ERRORS = 32
     };
+
+    enum { READ_ONLY ,READ_WRITE};
 
     enum { MENU_ID_OPEN = 1,
             MENU_ID_INSERT = 2,
@@ -91,57 +118,60 @@ public:
             MENU_ID_SEARCHAGAIN = 6
     };
 
-    enum { KEDIT_OK = 0, KEDIT_OS_ERROR = 1, KEDIT_USER_CANCEL = 2 };
+    enum { KEDIT_OK = 0, KEDIT_OS_ERROR = 1, KEDIT_USER_CANCEL = 2 ,KEDIT_RETRY =3
+	   ,KEDIT_NOPERMISSIONS = 4};
     enum { OPEN_READWRITE = 1, OPEN_READONLY = 2, OPEN_INSERT = 4 };
     
-    //@Include: KEdit.cpp
-    KEdit ( QWidget *parent=0, const char *name=0, const char *filename=0, unsigned flags = 0);
-    ~KEdit();
-
-    void loadFile(const char *, int);
+  
+    int loadFile(const char *, int);
     int saveFile();
     int saveAs();
     int openFile(int);
     bool isModified();
     const char *getName();
-    /// Set the name of the file
-    /**
-      You may mention an URL here, but you need not.
-      */
+
     void setName( const char *_name );
     int doSave();
-    /// Save the data to the file named '_filename'
+    int insertFile();
+
     int doSave( const char *_filename );
     int setEditMode(int);
     int doSearch(const char *, int);
     int repeatSearch();
     void initSearch();
-    /// Set the modified flag
+    void selectFont();
+    int  newFile(int);
     void toggleModified( bool );
+    void keyPressEvent ( QKeyEvent *e);
+    void mousePressEvent (QMouseEvent*) ;
+    void mouseReleaseEvent (QMouseEvent* e);
+    void mouseMoveEvent (QMouseEvent* e);
+    QString markedText();
+
 private:
-    //@Include: KEdit.cpp
+
+    QWidget* p_parent;
     bool modified;
-    QPopupMenu *context;
     QFileDialog *fbox;
     int edit_mode;
     char filename[1024];
     char pattern[256];
     bool eventFilter(QObject *, QEvent *);
-    /*@ManDoc:
-     This method is used to set the menu-item sensitivities for KEdit's popup menu. The
-     availability of certain menu entries depends on how the object has been created.
-     For example: If KEdit::ALLOW_SAVE is NOT set, the menuentry {\bf Save} will be grayed out.
-     */
     void setContextSens();
     KEdSrch *srchdialog;
     unsigned k_flags;
 
 signals:
+
     void fileChanged();
+    void update_status_bar();
+    void saving();
+    void loading();
 
 public slots:
-    void contextCallback(int);
+
     void setModified();
+
 };
 
 
