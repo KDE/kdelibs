@@ -36,8 +36,6 @@
  * http://cvs.sourceforge.net/viewcvs.py/gauche/Gauche/ext/charconv/guess.c?view=markup
  */
 
-using namespace khtml;
-
 namespace khtml {
     class guess_arc {
     public:
@@ -45,6 +43,8 @@ namespace khtml {
         double score;               /* score */
     };
 }
+
+using namespace khtml;
 
 static const signed char guess_eucj_st[4][256] = {
  { /* state init */

@@ -40,7 +40,10 @@
  * Maybe we should use QTextCodec::heuristicContentMatch()
  * But it fails detection. It's not useful.
  */
+#include "decoder.h"
 #include "guess_ja.h"
+
+using namespace khtml;
 
 enum JapaneseCode::Type JapaneseCode::guess_jp(const char *buf, int buflen)
 {
