@@ -1,7 +1,7 @@
 /*
     kimiface.h - KDE Instant Messenger DCOP Interface
 
-	Copyright (c) 2004    Will Stephenson	 <lists@stevello.free-online.co.uk>
+	Copyright (c) 2004-5    Will Stephenson	 <lists@stevello.free-online.co.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -54,19 +54,19 @@ k_dcop:
 	 */
 	virtual QStringList allContacts() = 0;
 	/**
-	 * Obtain a list of  KDE address book entries who are
+	 * Obtain a list of KDE address book entries who are
 	 * currently reachable.
-	 * @return a list of KABC uids who can receive a message, even if online.
+	 * @return a list of KABC uids who can receive a message, even if offline.
 	 */
 	virtual QStringList reachableContacts() = 0;
 	/**
-	 * Obtain a list of  KDE address book entries who are
+	 * Obtain a list of KDE address book entries who are
 	 * currently online.
 	 * @return a list of KABC uids who are online with unspecified presence.
 	 */
 	virtual QStringList onlineContacts() = 0;
 	/**
-	 * Obtain a list of  KDE address book entries who may
+	 * Obtain a list of KDE address book entries who may
 	 * receive file transfers.
 	 * @return a list of KABC uids capable of file transfer.
 	 */
@@ -74,34 +74,34 @@ k_dcop:
 
 // individual
 	/**
-	 * Confirm if a given KABC uid is known to KIMProxy
+	 * Confirm if a given contact is known to the IM application
 	 * @param uid the KABC uid you are interested in.
-	 * @return whether one of the chat programs KIMProxy talks to knows of this KABC uid.
+	 * @return whether the program knows of this KABC uid.
 	 */
 	virtual bool isPresent( const QString & uid ) = 0;
 	/**
 	 * Obtain the IM app's idea of the contact's display name
 	 * Useful if KABC lookups may be too slow
 	 * @param uid the KABC uid you are interested in.
-	 * @return The corresponding display name.
+	 * @return the corresponding display name.
 	 */
 	virtual QString displayName( const QString & uid ) = 0;
 	/**
-	 * Obtain the IM presence as a i18ned string for the specified addressee
+	 * Obtain the IM presence as a i18ned string for the specified contact
 	 * @param uid the KABC uid you want the presence for.
 	 * @return the i18ned string describing presence.
 	 */
 	virtual QString presenceString( const QString & uid ) = 0;
 	/**
-	 * Obtain the IM presence as a number (see KIMIface) for the specified addressee
+	 * Obtain the IM presence as a number for the specified contact
 	 * @param uid the KABC uid you want the presence for.
 	 * @return a numeric representation of presence - currently one of 0 (Unknown), 1 (Offline), 2 (Connecting), 3 (Away), 4 (Online)
 	 */
 	virtual int presenceStatus( const QString & uid ) = 0;
 	/**
-	 * Indicate if a given uid can receive files
+	 * Indicate if a given contact can receive files
 	 * @param uid the KABC uid you are interested in.
-	 * @return Whether the specified addressee can receive files.
+	 * @return whether the specified addressee can receive files.
 	 */
 	virtual bool canReceiveFiles( const QString & uid ) = 0;
 	/**
@@ -109,43 +109,43 @@ k_dcop:
 	 * This refers to the contact's ability to respond as defined by the medium, not by their presence.
 	 * Someone may appear offline (SMS has no presence) to you but in fact be able to respond.
 	 * @param uid the KABC uid you are interested in.
-	 * @return Whether the specified addressee can respond.
+	 * @return whether the specified contact can respond.
 	 */
 	virtual bool canRespond( const QString & uid ) = 0;
 	/**
 	 * Get the KABC uid corresponding to the supplied IM address
-	 * Protocols should be
 	 * @param contactId the protocol specific identifier for the contact, eg UIN for ICQ, screenname for AIM, nick for IRC.
 	 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol",
-	 * @return a KABC uid or null if none found/
+	 * @return a KABC uid or null if none found
 	 */
 	virtual QString locate( const QString & contactId, const QString & protocol ) = 0;
 // metadata
 	/**
-	 * Obtain the icon representing IM presence for the specified addressee
+	 * Obtain the icon representing IM presence for the specified contact
 	 * @param uid the KABC uid you want the presence for.
 	 * @return a pixmap representing the uid's presence.
 	 */
 	virtual QPixmap icon( const QString & uid ) = 0;
 	/**
-	 * Get the supplied addressee's current context (home, work, or any).
+	 * Get the supplied contact's current context (home, work, or any).
 	 * @param uid the KABC uid you want the context for.
-	 * @return A QString describing the context, or null if not supported.
+	 * @return a QString describing the context, or null if not supported.
 	 */
 	virtual QString context( const QString & uid ) = 0;
 // App capabilities
 	/**
 	 * Discover what protocols the application supports
-	 * @return the set of protocols that the application supports
+	 * @return the set of protocols that the application supports, ie a list of
+	 * protocol names, eg "AIMProtocol", "MSNProtocol", "ICQProtocol", ...
 	 */
 	virtual QStringList protocols() = 0;
 
 // ACTORS
 	/**
-	 * Send a single message to the specified addressee
+	 * Send a single message to the specified contact
 	 * Any response will be handled by the IM client as a normal
 	 * conversation.
-	 * @param uid the KABC uid you want to chat with.
+	 * @param uid the KABC uid you want to send the message to.
 	 * @param message the message to send them.
 	 */
 	virtual void messageContact( const QString &uid, const QString& message ) = 0;
@@ -156,13 +156,13 @@ k_dcop:
 	virtual void messageNewContact( const QString &contactId, const QString &protocol ) = 0;
 
 	/**
-	 * Start a chat session with the specified addressee
+	 * Start a chat session with the specified contact
 	 * @param uid the KABC uid you want to chat with.
 	 */
 	virtual void chatWithContact( const QString &uid ) = 0;
 
 	/**
-	 * Send the file to the contact
+	 * Send a file to the contact
 	 * @param uid the KABC uid you are sending to.
 	 * @param sourceURL a @see KURL to send.
 	 * @param altFileName an alternate filename describing the file
@@ -178,13 +178,14 @@ k_dcop:
 	 * @param contactId the protocol specific identifier for the contact, eg UIN for ICQ, screenname for AIM, nick for IRC.
 	 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol", ...
 	 * @return whether the add succeeded.  False may signal already present, protocol not supported, or add operation not supported.
+	 * @see locate     
 	 */
 	virtual bool addContact( const QString &contactId, const QString &protocol ) = 0;
 // SIGNALS
 k_dcop_signals:
 	/**
 	 * Indicates that a contact's presence has changed
-	 * @param uid the contact whose presence changed.
+	 * @param uid the KABC uid whose presence changed.
 	 * @param appId the dcop application id of the program the signal originates from.
 	 * @param presence the new numeric presence @ref presenceStatus
 	 */
