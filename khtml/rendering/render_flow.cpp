@@ -1216,7 +1216,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         newChild->setBlockBidi();
 
     RenderStyle* pseudoStyle=0;
-    if ( ( !firstChild() || firstChild() == beforeChild )
+    if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
     {
 
