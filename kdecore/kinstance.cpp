@@ -71,6 +71,10 @@ KIconLoader *KInstance::iconLoader() const
     return _iconLoader;
 }
 
+KAboutData * KInstance::aboutData() const
+{
+    return _aboutData;
+}
 QCString KInstance::instanceName() const
 {
     return _name;
