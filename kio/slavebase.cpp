@@ -91,11 +91,11 @@ return false; }
    void putData(const KEntryKey &, const KEntry&) { }
 
    KEntry lookupData(const KEntryKey &key) const
-   { 
+   {
      KEntry entry;
      QString value = slave->metaData(key.c_key);
      if (!value.isNull())
-        entry.mValue = value.utf8(); 
+        entry.mValue = value.utf8();
      return entry;
    }
 protected:
@@ -813,6 +813,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         special( data );
         break;
     case CMD_META_DATA:
+        kdDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
         stream >> mIncomingMetaData;
         break;
     case CMD_SUBURL:
@@ -901,23 +902,13 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     KDEsuClient client;
     bool found = false;
-    bool foundGroup = false;
     QCString grp_key = auth_key.copy();
-    if ( d->multipleAuthCaching && !info.username.isEmpty() )
-    {
-        if ( client.findGroup(grp_key + ':' + info.username.utf8()) )
-        {
-            grp_key += ':';
-            grp_key += info.username.utf8();
-            foundGroup = true;
-        }
-    }
 
     // Always ask for the keys that belong in a single group.  This
     // single check will determine whether we need to do further tests
     // to find a matching stored authentication key and hence reduce
     // the number of unnecessary calls to kdesud.
-    if ( foundGroup || client.findGroup(grp_key) )
+    if ( client.findGroup(grp_key) )
     {
         AuthKeysList list = client.getKeys(grp_key);
         int count = list.count();
@@ -928,90 +919,124 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
             // caching requirements. (DA)
             if ( info.verifyPath )
             {
+
+                AuthKeysMap path, keys;
+                AuthKeysList::Iterator lit = list.begin();
+                for( ; lit != list.end(); lit++ )
+                {
+                    kdDebug(7019) << "key: " << *lit << endl;
+                    path.insert(QString::fromUtf8( client.getVar(((*lit) +
+                                                   "-path"))), (*lit));
+
+                    if( !info.realmValue.isEmpty() )
+                        keys.insert(QString::fromUtf8( client.getVar(((*lit) +
+                                                       "-realm"))), (*lit));
+
+                    if( d->multipleAuthCaching && !info.username.isEmpty() )
+                        keys.insert(QString::fromUtf8( client.getVar(((*lit) +
+                                                       "-user"))), (*lit));
+                }
+
                 QString new_path = info.url.path();
                 if( new_path.isEmpty() )
                     new_path = '/';
 
-                AuthKeysMap map;
-                AuthKeysList::Iterator lit = list.begin();
-                for( ; lit != list.end(); lit++ )
+                // Look for an exact match...
+                if ( path.contains(new_path) )
                 {
-                    map.insert(QString::fromUtf8( client.getVar(((*lit) + "-path"))),
-                               (*lit));
-                    if( !info.realmValue.isEmpty() )
-                        map.insert(QString::fromUtf8( client.getVar(((*lit) + "-realm"))),
-                                   (*lit));
-                }
+                    kdDebug(7019) << "STRICT TEST: Absolute Path match for: "
+                                  << auth_key << endl;
 
-                // Tests for exact path (filename included) match
-                // first.  If it fails, then simply try the less
-                // stricter directory prefix match. (DA)
-                kdDebug(7019) << "STRICT TEST: Absolute path match for: " << auth_key << endl;
-                AuthKeysMap::Iterator mit = map.begin();
-                for( ; mit != map.end(); ++mit )
-                {
-                    if ( new_path == mit.key() )
+                    if ( !info.realmValue.isEmpty() )
                     {
-                        if ( !info.realmValue.isEmpty() )
+                        if ( keys.contains(info.realmValue) &&
+                             (!d->multipleAuthCaching ||
+                              info.username.isEmpty() ||
+                              keys.find(info.username).data() ==
+                              keys.find(info.realmValue).data()) )
                         {
-                            if ( (++mit != map.end()) && (mit.key() == info.realmValue) )
-                            {
-                                auth_key = mit.data();  // Update the Authentication key...
-                                found = true;       // Realm value mis-match!!
-                                kdDebug(7019) << "Found a STRICT path match!" << endl;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            auth_key = mit.data();
+                            auth_key = keys[info.realmValue];
                             found = true;
-                            kdDebug(7019) << "Found a STRICT path match!" << endl;
-                            break;
+                            kdDebug(7019) << "Realm match: " << auth_key
+                                          << endl;
+                        }
+                    }
+                    else
+                    {
+                        if ( !d->multipleAuthCaching ||
+                             info.username.isEmpty() ||
+                             keys.find(info.username).data() ==
+                             path.find(new_path).data() )
+                        {
+                            auth_key = path[new_path];
+                            found = true;
+                            kdDebug(7019) << "Path match: " << auth_key
+                                          << endl;
                         }
                     }
                 }
 
                 if ( !found )
                 {
-                    kdDebug(7019) << "LOOSE TEST: Directory only match for: " <<  auth_key << endl;
                     // Now we can attempt the directory prefix match, i.e.
                     // testing whether the directiory of the new URL contains
                     // the stored_one.  If it does, then we have a match...
                     int last_slash = new_path.findRev( '/' );
-                    if ( last_slash >= 0 )
+                    if ( last_slash >= 0 && new_path.length() > 1 )
                         new_path.truncate(last_slash);
 
                     uint slen;
                     QString str;
-                    mit = map.begin();
-                    for ( ; mit != map.end(); ++mit )
+                    AuthKeysMap::Iterator mit = path.begin();
+                    kdDebug(7019) << "LOOSE TEST: Path only "
+                                     "match for: " << auth_key << endl;
+                    for ( ; mit != path.end(); ++mit )
                     {
                         str = mit.key();
+
+                        kdDebug(7019) << "Stored path: " << str << endl;
+                        kdDebug(7019) << "Stored Value: " << mit.data()
+                                      << endl;
+
                         last_slash = str.findRev( '/' );
-                        if ( last_slash >= 0 )
-                            str.truncate(last_slash);
                         slen = str.length();
+
+                        if ( last_slash >= 0 && slen > 1 )
+                        {
+                            str.truncate(last_slash);
+                            slen = str.length();
+                        }
+
                         if ( new_path.startsWith(str) &&
                              (new_path.length() == slen ||
                              slen == 1 || new_path[slen] == '/') )
                         {
                             if ( !info.realmValue.isEmpty() )
                             {
-                                if ((++mit != map.end()) && (mit.key() == info.realmValue))
+                                if ( keys.contains(info.realmValue) &&
+                                     (!d->multipleAuthCaching ||
+                                      info.username.isEmpty() ||
+                                      keys.find(info.username).data() ==
+                                      keys.find(info.realmValue).data() ) )
                                 {
-                                    auth_key = mit.data();
+                                    auth_key = keys[info.realmValue];
                                     found = true;
-                                    kdDebug(7019) << "Found a LOOSE path match!" << endl;
-                                    break;
+                                    kdDebug(7019) << "Realm match: " << auth_key
+                                                  << endl;
                                 }
                             }
                             else
                             {
-                                auth_key = mit.data();
-                                found = true;
-                                kdDebug(7019) << "Found a LOOSE path match!" << endl;
-                                break;
+                                if ( !d->multipleAuthCaching ||
+                                     info.username.isEmpty() ||
+                                     keys.find(info.username).data() ==
+                                     mit.data() )
+                                {
+                                    auth_key = mit.data();
+                                    found = true;
+                                    kdDebug(7019) << "Path match: " << auth_key
+                                                  << endl;
+                                }
                             }
                         }
                     }
@@ -1024,6 +1049,18 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
                 // based verification...
                 if ( info.realmValue.isEmpty() )
                 {
+                    if ( d->multipleAuthCaching && !info.username.isEmpty() )
+                    {
+                        QCString key = auth_key;
+                        key += ':';
+                        key += info.username.utf8();
+                        kdDebug(7019) << "Looking for: " << key << endl;
+                        if ( list.findIndex(key) != -1 )
+                        {
+                            kdDebug(7019) << "Found matching key!" << endl;
+                            auth_key = key;
+                        }
+                    }
                     found = true;
                 }
                 else
@@ -1056,6 +1093,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
         // and the supplied one.
         QString stored_user = QString::fromUtf8(client.getVar( auth_key + "-user") );
         bool emptyUser = info.username.isEmpty();
+        kdDebug(7019) << "Stored username: " << stored_user << endl;
+        kdDebug(7019) << "Current username: " << info.username << endl;
         if ( emptyUser || info.username == stored_user )
         {
             if ( emptyUser )
@@ -1147,8 +1186,6 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     {
       auth_key += ':';
       auth_key += info.username.utf8();
-      grp_key += ':';
-      grp_key += info.username.utf8();
       isCached &= storeAuthInfo(auth_key, grp_key, info);
     }
     return isCached;
