@@ -23,6 +23,8 @@
 #ifndef __KWVIEV_H__
 #define __KWVIEV_H__
 
+#define i18nop // a no-operation i18n()
+
 #include <qstring.h>
 #include <qdialog.h>
 #include <qkeycode.h>
@@ -35,10 +37,11 @@
 
 #include <kurl.h>
 #include <kconfig.h>
-
 #include <kparts/part.h>
 
+
 class KWriteDoc;
+class KWCommandDispatcher;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
@@ -116,43 +119,52 @@ const int ctBookmarkCommands  = 3;
 const int ctStateCommands     = 4;
 
 //cursor movement commands
-const int selectFlag          = 0x100000;
-const int multiSelectFlag     = 0x200000;
-const int cmLeft              = 1;
-const int cmRight             = 2;
-const int cmWordLeft          = 3;
-const int cmWordRight         = 4;
-const int cmHome              = 5;
-const int cmEnd               = 6;
-const int cmUp                = 7;
-const int cmDown              = 8;
-const int cmScrollUp          = 9;
-const int cmScrollDown        = 10;
-const int cmTopOfView         = 11;
-const int cmBottomOfView      = 12;
-const int cmPageUp            = 13;
-const int cmPageDown          = 14;
-const int cmCursorPageUp      = 15;
-const int cmCursorPageDown    = 16;
-const int cmTop               = 17;
-const int cmBottom            = 18;
+enum KWCursorCommands {
+  kSelectFlag         = 0x100000,
+  kMultiSelectFlag    = 0x200000,
+  cmLeft              = 1,
+  cmRight             = 2,
+  cmWordLeft          = 3,
+  cmWordRight         = 4,
+  cmHome              = 5,
+  cmEnd               = 6,
+  cmUp                = 7,
+  cmDown              = 8,
+  cmScrollUp          = 9,
+  cmScrollDown        = 10,
+  cmTopOfView         = 11,
+  cmBottomOfView      = 12,
+  cmPageUp            = 13,
+  cmPageDown          = 14,
+  cmCursorPageUp      = 15,
+  cmCursorPageDown    = 16,
+  cmTop               = 17,
+  cmBottom            = 18,
+  cmSelectLeft        = cmLeft | kSelectFlag,
+  cmSelectRight       = cmRight | kSelectFlag,
+  cmSelectUp          = cmUp | kSelectFlag,
+  cmSelectDown        = cmDown | kSelectFlag
+};  
 
 //edit commands
-const int cmReturn            = 1;
-const int cmDelete            = 2;
-const int cmBackspace         = 3;
-const int cmKillLine          = 4;
-const int cmUndo              = 5;
-const int cmRedo              = 6;
-const int cmCut               = 7;
-const int cmCopy              = 8;
-const int cmPaste             = 9;
-const int cmIndent            = 10;
-const int cmUnindent          = 11;
-const int cmCleanIndent       = 12;
-const int cmSelectAll         = 13;
-const int cmDeselectAll       = 14;
-const int cmInvertSelection   = 15;
+enum KWEdigCommands {
+  cmReturn            = 1,
+  cmBackspace         = 2,
+  cmBackspaceWord     = 3,
+  cmDelete            = 4,
+  cmKillLine          = 6,
+  cmUndo              = 7,
+  cmRedo              = 8,
+  cmCut               = 9,
+  cmCopy              = 10,
+  cmPaste             = 11,
+  cmIndent            = 12,
+  cmUnindent          = 13,
+  cmCleanIndent       = 14,
+  cmSelectAll         = 15,
+  cmDeselectAll       = 16,
+  cmInvertSelection   = 17
+};
 
 //find commands
 const int cmFind              = 1;
@@ -174,32 +186,31 @@ const int cmToggleVertical    = 2;
 class KWrite;
 class KWriteView;
 
-class KWCursor
-{
+class KWCursor {
   public:
-    inline KWCursor() : m_x(0), m_y(0) {}
-    inline KWCursor(int x, int y) : m_x(x), m_y(y) {}
-    inline KWCursor(const KWCursor &c) : m_x(c.m_x), m_y(c.m_y) {}
+    KWCursor() : m_x(0), m_y(0) {}
+    KWCursor(int x, int y) : m_x(x), m_y(y) {}
+    KWCursor(const KWCursor &c) : m_x(c.m_x), m_y(c.m_y) {}
 
-    inline KWCursor &operator=(const KWCursor &c) {m_x = c.m_x; m_y = c.m_y; return *this;}
-    inline KWCursor &operator+=(const KWCursor &c) {m_x += c.m_x; m_y += c.m_y; return *this;}
-    inline KWCursor &operator-=(const KWCursor &c) {m_x -= c.m_x; m_y -= c.m_y; return *this;}
-    inline bool operator==(const KWCursor &c) {return m_x == c.m_x && m_y == c.m_y;}
-    inline bool operator!=(const KWCursor &c) {return m_x != c.m_x || m_y != c.m_y;}
-    inline bool operator>(const KWCursor &c) {return m_y > c.m_y || (m_y == c.m_y && m_x > c.m_x);}
+    KWCursor &operator=(const KWCursor &c) {m_x = c.m_x; m_y = c.m_y; return *this;}
+    KWCursor &operator+=(const KWCursor &c) {m_x += c.m_x; m_y += c.m_y; return *this;}
+    KWCursor &operator-=(const KWCursor &c) {m_x -= c.m_x; m_y -= c.m_y; return *this;}
+    bool operator==(const KWCursor &c) {return m_x == c.m_x && m_y == c.m_y;}
+    bool operator!=(const KWCursor &c) {return m_x != c.m_x || m_y != c.m_y;}
+    bool operator>(const KWCursor &c) {return m_y > c.m_y || (m_y == c.m_y && m_x > c.m_x);}
 
-    inline void set(int x, int y) {m_x = x; m_y = y;}
-    inline void setX(int x) {m_x = x;}
-    inline void setY(int y) {m_y = y;}
-    inline int x() const {return m_x;}
-    inline int y() const {return m_y;}
-    inline void incX() {m_x++;}
-    inline void incY() {m_y++;}
-    inline void decX() {m_x--;}
-    inline void decY() {m_y--;}
-    inline void add(int dx, int dy) {m_x += dx; m_y += dy;}
-    inline void addX(int dx) {m_x += dx;}
-    inline void addY(int dy) {m_y += dy;}
+    void set(int x, int y) {m_x = x; m_y = y;}
+    void setX(int x) {m_x = x;}
+    void setY(int y) {m_y = y;}
+    int x() const {return m_x;}
+    int y() const {return m_y;}
+    void incX() {m_x++;}
+    void incY() {m_y++;}
+    void decX() {m_x--;}
+    void decY() {m_y--;}
+    void add(int dx, int dy) {m_x += dx; m_y += dy;}
+    void addX(int dx) {m_x += dx;}
+    void addY(int dy) {m_y += dy;}
 
   protected:
     int m_x;
@@ -655,6 +666,11 @@ class KWrite : public QWidget {
     */
     void doEditCommand(int cmdNum);
 
+  protected:
+
+    KWCommandDispatcher *m_dispatcher;
+    bool m_persistent;
+    
 //edit functions
 
   public:

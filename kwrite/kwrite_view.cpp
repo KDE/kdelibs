@@ -196,17 +196,23 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
       //emit returnPressed();
       //event->ignore();
       return;
-    case cmDelete:
-      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
-        m_doc->delMarkedText(c); 
-      else 
-        m_doc->del(c);
-      return;
     case cmBackspace:
       if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
         m_doc->delMarkedText(c); 
       else 
         m_doc->backspace(c);
+      return;
+    case cmBackspaceWord:
+      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
+        m_doc->delMarkedText(c); 
+      else 
+        m_doc->backspaceWord(c);
+      return;
+    case cmDelete:
+      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
+        m_doc->delMarkedText(c); 
+      else 
+        m_doc->del(c);
       return;
     case cmKillLine:
       m_doc->killLine(c);
@@ -279,8 +285,9 @@ void KWriteView::wordLeft(VConfig &c) {
       cursor.decX();
   } else {
     if (cursor.y() > 0) {
-      textLine = m_doc->textLine(cursor.y() - 1);
-      cursor.set(cursor.y() - 1, textLine->length());
+      cursor.decY();
+      textLine = m_doc->textLine(cursor.y());
+      cursor.setX(textLine->length());
     }
   }
 
@@ -302,8 +309,9 @@ void KWriteView::wordRight(VConfig &c) {
       cursor.incX();
   } else {
     if (cursor.y() < m_doc->lastLine()) {
-      textLine = m_doc->textLine(cursor.y() + 1);
-      cursor.set(0, cursor.y() + 1);
+      cursor.incY();
+      textLine = m_doc->textLine(cursor.y());
+      cursor.setX(0);
     }
   }
 
@@ -966,7 +974,30 @@ void KWriteView::keyPressEvent(QKeyEvent *event) {
   VConfig c;
 
   getVConfig(c);
+//  ascii = event->ascii();
 
+  if (!m_mainview->isReadOnly()) {
+    if (c.flags & cfTabIndents && m_doc->hasMarkedText()) {
+      if (event->key() == Qt::Key_Tab) {
+        m_doc->indent(c);
+        m_doc->updateViews();
+        return;
+      }
+      if (event->key() == Qt::Key_Backtab) {
+        m_doc->unIndent(c);
+        m_doc->updateViews();
+        return;
+      }
+    }
+    if (m_doc->insertChars(c, event->text())) {
+      m_doc->updateViews();
+      event->accept();
+      return;
+    }
+  }
+  event->ignore();
+}
+/*
   if (!m_mainview->isReadOnly()) {
     if (c.flags & cfTabIndents && m_doc->hasMarkedText()) {
       if (event->key() == Qt::Key_Tab) {
@@ -1068,6 +1099,7 @@ void KWriteView::keyPressEvent(QKeyEvent *event) {
 
   event->ignore();
 }
+*/
 
 void KWriteView::mousePressEvent(QMouseEvent *event) {
   if (event->button() == LeftButton) {

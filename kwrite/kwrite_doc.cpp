@@ -1146,6 +1146,36 @@ void KWriteDoc::backspace(VConfig &c) {
   recordEnd(c);
 }
 
+void KWriteDoc::backspaceWord(VConfig &c) {
+ 
+  if (c.cursor.x() <= 0 && c.cursor.y() <= 0)
+    return;
+
+  if (c.cursor.x() > 0) {
+    TextLine *textLine = m_contents.at(c.cursor.y());
+    int x = c.cursor.x();
+
+    // backspace to next word
+    recordStart(c, KWActionGroup::ugDelChar);
+    do {
+      c.cursor.decX();
+    } while (c.cursor.x() > 0 && !m_highlight->isInWord(textLine->getChar(c.cursor.x())));
+
+    while (c.cursor.x() > 0 && m_highlight->isInWord(textLine->getChar(c.cursor.x() -1)))
+      c.cursor.decX();
+
+    recordDelete(c.cursor, x - c.cursor.x());
+  } else {
+    // c.cursor.x() == 0: wrap to previous line
+    recordStart(c, KWActionGroup::ugDelLine);
+    int len = m_contents.at(c.cursor.y() - 1)->length();
+    c.cursor.set(len, c.cursor.y() - 1);
+    recordAction(KWAction::delLine, c.cursor);
+  }
+
+  recordEnd(c);
+}
+
 
 void KWriteDoc::del(VConfig &c) {
   TextLine *textLine;

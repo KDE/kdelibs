@@ -1,12 +1,17 @@
-** main-developer (KWrite 1.0.0) ***
+*** main-developer (KWrite 1.0.0) ***
 
 -Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
--Michael Koch <koch@kde.org> (port to KParts)
+
+*** co-developers ***
+
+-Glen Parker <glenebob@nwlink.com>
+  (undo history, kspell-integration)
+
+-Michael Koch <koch@kde.org> 
+  (port to KParts)
 
 *** patches and bugfixes ***
 
--Glen Parker <glenebob@nwlink.com>
- (undo history, kspell-integration)
 -you? (please tell me :) )
 
 *** translators ***

@@ -49,9 +49,11 @@
 #include <kwrite/highlight.h>
 #include <kwrite/kwrite_doc.h>
 
+#include "kwrite_keys.h"
 #include "kwdialog.h"
 #include "ktextprint.h"
 #include "undohistory.h"
+
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -120,12 +122,11 @@ void releaseBuffer(void *user) {
 KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
   : QWidget(parent, name) {
 
-  if( !bufferInfoList )
+  if (!bufferInfoList)
     bufferInfoList = new QList<BufferInfo>;
 
   m_doc = doc;
   m_view = new KWriteView(this, doc, HandleOwnDND);
-
 
 
   // some defaults
@@ -140,6 +141,59 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   popup = 0L;
   bookmarks.setAutoDelete(true);
 
+  
+  // KWrite commands
+  m_dispatcher = new KWCommandDispatcher(m_view);
+  KWCommandGroup *g;
+  
+  // cursor commands
+  m_persistent = false;
+  m_dispatcher->addGroup(g = new KWCommandGroup(i18nop("Cursor Movement")));
+  g->setSelectModifiers(SHIFT, kSelectFlag, ALT, kMultiSelectFlag);
+  g->addCommand(cmLeft,            i18nop("Left"), Key_Left, CTRL+Key_B);
+  g->addCommand(cmRight,           i18nop("Right"), Key_Right, CTRL+Key_F);
+  g->addCommand(cmWordLeft,        i18nop("Word Left"), CTRL+Key_Left);
+  g->addCommand(cmWordRight,       i18nop("Word Right"), CTRL+Key_Right);
+  g->addCommand(cmHome,            i18nop("Home"), Key_Home, CTRL+Key_A, Key_F27);
+  g->addCommand(cmEnd,             i18nop("End"), Key_End, CTRL+Key_E, Key_F33);
+  g->addCommand(cmUp,              i18nop("Up"), Key_Up, CTRL+Key_P);
+  g->addCommand(cmDown,            i18nop("Down"), Key_Down, CTRL+Key_N);
+  g->addCommand(cmScrollUp,        i18nop("Scroll Up"), CTRL+Key_Up);
+  g->addCommand(cmScrollDown,      i18nop("Scroll Down"), CTRL+Key_Down);
+  g->addCommand(cmTopOfView,       i18nop("Top Of View"), CTRL+Key_PageUp);
+  g->addCommand(cmBottomOfView,    i18nop("Bottom Of View"), CTRL+Key_PageDown);
+  g->addCommand(cmPageUp,          i18nop("Page Up"), Key_PageUp, Key_F29);
+  g->addCommand(cmPageDown,        i18nop("Page Down"), Key_PageDown, Key_F35);
+  g->addCommand(cmTop,             i18nop("Top"), CTRL+Key_Home);
+  g->addCommand(cmBottom,          i18nop("Bottom"), CTRL+Key_End);
+  g->addCommand(cmSelectLeft,      i18nop("Left + Select") , SHIFT+Key_F30);//, SHIFT+Key_4);
+  g->addCommand(cmSelectRight,     i18nop("Right + Select") , SHIFT+Key_F32);//, SHIFT+Key_6);
+  g->addCommand(cmSelectUp,        i18nop("Up + Select") , SHIFT+Key_F28);//, SHIFT+Key_8);
+  g->addCommand(cmSelectDown,      i18nop("Down + Select") , SHIFT+Key_F34);//, SHIFT+Key_2);
+  connect(g, SIGNAL(activated(int)), this, SLOT(doCursorCommand(int)));
+
+  // edit commands (only handles extra keys)
+  m_dispatcher->addGroup(g = new KWCommandGroup(i18nop("Edit Commands")));
+  g->addCommand(cmReturn,          i18nop("Return"), Key_Return, Key_Enter);
+  g->addCommand(cmBackspace,       i18nop("Backspace"), Key_Backspace, CTRL+Key_H);
+  g->addCommand(cmBackspaceWord,   i18nop("Backspace Word"), CTRL+Key_Backspace);
+  g->addCommand(cmDelete,          i18nop("Delete"), Key_Delete, CTRL+Key_D);
+  g->addCommand(cmKillLine,        i18nop("Kill Line"), CTRL+Key_K);
+  g->addCommand(cmUndo,            i18nop("Undo"), /*CTRL+Key_Z, */Key_F14);
+  g->addCommand(cmRedo,            i18nop("Redo"), /*CTRL+Key_Y, */Key_F12);
+  g->addCommand(cmCut,             i18nop("Cut"), /*CTRL+Key_X, */SHIFT+Key_Delete, Key_F20);
+  g->addCommand(cmCopy,            i18nop("Copy"), /*CTRL+Key_C, */CTRL+Key_Insert, Key_F16);
+  g->addCommand(cmPaste,           i18nop("Paste"), /*CTRL+Key_V, */SHIFT+Key_Insert, Key_F18);
+  g->addCommand(cmIndent,          i18nop("Indent")/*, CTRL+Key_I*/);
+  g->addCommand(cmUnindent,        i18nop("Unindent")/*, CTRL+Key_U*/);
+  g->addCommand(cmCleanIndent,     i18nop("Clean Indent"));
+  g->addCommand(cmSelectAll,       i18nop("Select All"));
+  g->addCommand(cmDeselectAll,     i18nop("Deselect All"));
+  g->addCommand(cmInvertSelection, i18nop("Invert Selection"));
+  connect(g, SIGNAL(activated(int)), this, SLOT(doEditCommand(int)));
+
+
+
   //KSpell initial values
   kspell.kspell = 0;
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
@@ -150,17 +204,19 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
 }
 
 KWrite::~KWrite() {
+  delete m_dispatcher;
+
+  delete popup; //right mouse button popup
+
   if (kspell.kspell) {
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
   }
-
-  delete popup; //right mouse button popup
 }
 
 /*
 void KWrite::addCursorCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctCursorCommands, I18N_NOOP("Cursor Movement"));
+  cmdMngr.addCategory(ctCursorCommands, 18N_NOOP("Cursor Movement"));
   cmdMngr.setSelectModifiers(Qt::SHIFT, selectFlag, Qt::ALT, multiSelectFlag);
   cmdMngr.addCommand(cmLeft,            I18N_NOOP("Left"), Qt::Key_Left, Qt::CTRL+Qt::Key_B);
   cmdMngr.addCommand(cmRight,           I18N_NOOP("Right"), Qt::Key_Right, Qt::CTRL+Qt::Key_F);
@@ -789,13 +845,17 @@ void KWrite::doCursorCommand(int cmdNum) {
   VConfig c;
   m_view->getVConfig(c);
 
-  if (cmdNum & selectFlag)
+  if (cmdNum & kSelectFlag) {
     c.flags |= cfMark;
-
-  if (cmdNum & multiSelectFlag)
+    m_persistent = false;
+  }    
+  if (cmdNum & kMultiSelectFlag) {
     c.flags |= cfMark | cfKeepSelection;
+    m_persistent = true;
+  }
+  if (m_persistent) c.flags |= cfPersistent;
 
-  cmdNum &= ~(selectFlag | multiSelectFlag);
+  cmdNum &= ~(kSelectFlag | kMultiSelectFlag);
   m_view->doCursorCommand(c, cmdNum);
   m_doc->updateViews();
 }
