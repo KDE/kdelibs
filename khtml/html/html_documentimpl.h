@@ -121,6 +121,9 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
     void updateRendering();
 
+    void setOnload( const QString &script ) { onloadScript = script; }
+    void setOnunload( const QString &script ) { onUnloadScript = script; }
+    
 signals:
     void finishedParsing();
 
@@ -142,6 +145,9 @@ protected:
 
     CSSStyleSheetImpl *m_elemSheet;
     khtml::DocLoader *m_docLoader;
+
+    QString onloadScript;
+    QString onUnloadScript;
 };
 
 }; //namespace

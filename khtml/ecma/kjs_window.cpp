@@ -38,6 +38,7 @@
 #include "khtmlview.h"
 #include "htmlattrs.h"
 #include <html_element.h>
+#include <html_documentimpl.h>
 #include "khtml_part.h"
 
 using namespace KJS;
@@ -180,7 +181,7 @@ void Window::put(const UString &p, const KJSO &v)
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
-      part->htmlDocument().body().setAttribute("onload", s);
+      static_cast<HTMLDocumentImpl *>(part->htmlDocument().handle())->setOnload(s.string());
     }
   } else
     Imp::put(p, v);

@@ -607,6 +607,8 @@ void HTMLDocumentImpl::slotFinishedParsing()
             m_view->part()->executeScript( Node(this), script.string() );
         }
     }
+    if ( !onloadScript.isEmpty() )
+	m_view->part()->executeScript( Node(this), onloadScript );
     emit finishedParsing();
 }
 

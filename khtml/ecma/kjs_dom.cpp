@@ -120,7 +120,7 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "scrollLeft")
       result = rend ? Number(rend->xPos() - node.ownerDocument().view()->contentsX()) : KJSO(Undefined());
   else if (p == "scrollTop")
-      result = rend ? Number(rend->contentHeight()) : KJSO(Undefined());
+      result = rend ? Number(rend->yPos() - node.ownerDocument().view()->contentsY()) : KJSO(Undefined());
   else
     result = Imp::get(p);
 
