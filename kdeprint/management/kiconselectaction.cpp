@@ -85,12 +85,13 @@ int KIconSelectAction::plug(QWidget* widget, int index)
 	{
 		KToolBar* bar = static_cast<KToolBar*>(widget);
 		int id = KAction::getToolButtonID();
+		// To have a correct layout in the toolbar, a non
+		// empty icon has to be used. Use "unknown" by default.
+		QString	iconName = (currentItem() != -1 ? d->m_iconlst[currentItem()] : "unknown");
 
 		createPopupMenu();
-		bar->insertButton(QString::null, id, true, plainText(), index);
+		bar->insertButton(iconName, id, true, plainText(), index);
 		bar->getButton(id)->setPopup(d->m_menu, true);
-		if (currentItem() != -1)
-			bar->getButton(id)->setIcon(d->m_iconlst[currentItem()]);
 		bar->setItemEnabled(id, isEnabled());
 		addContainer(bar, id);
 		connect(bar, SIGNAL(destroyed()), SLOT(slotDestroyed()));
