@@ -279,9 +279,9 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		if (inputMimeTypes.find(mime) == inputMimeTypes.end())
 		{
 			if (KMessageBox::warningContinueCancel(0,
-				i18n("The mime type <b>%1</b> is not supported as input of the filter chain "
-				     "(this may happen with non CUPS spoolers when performing page selection "
-				     "on non PostScript file). Do you want KDE to convert the file to a supported "
+				i18n("The MIME type <b>%1</b> is not supported as input of the filter chain "
+				     "(this may happen with non-CUPS spoolers when performing page selection "
+				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
 				     "format?").arg(mime),
 				QString::null, i18n("Convert")) == KMessageBox::Continue)
 			{
@@ -293,7 +293,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 				{
 					bool	ok(false);
 					QString	targetMime = QInputDialog::getItem(
-						i18n("Select Mime Type"),
+						i18n("Select MIME Type"),
 						i18n("Select the target format for the conversion:"),
 						inputMimeTypes, 0, false, &ok);
 					if (!ok)
@@ -358,7 +358,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 		{
 			if ((result=KMessageBox::warningYesNoCancel(NULL,
 					       i18n("The file format <b>%1</b> is not directly supported by the current print system. "
-					            "KDE can try to convert automatically this file to a supported format. But you can "
+					            "KDE can try to convert this file automatically to a supported format. But you can "
 						    "still try to send the file to the printer without any conversion. Do you want KDE "
 						    "to try to convert this file to <b>%2</b>?").arg(mime).arg(info.primaryMimeType),
 					       QString::null,
