@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.15  1999/03/01 23:33:21  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.14.2.2  1999/02/14 02:05:44  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -441,7 +444,29 @@ public:
 					bool bPersistent = true, bool bGlobal = false,
 					bool bNLS = false );
 
-  /** Write the key value pair.
+  /** Write the key/value pair.
+	*
+	* This is stored to the most specific config file when destroying the
+	* config object or when calling sync().
+	*
+	*  @param pKey		The key to write.
+	*  @param pValue	The value to write.
+	*  @param bPersistent	If bPersistent is false, the entry's dirty
+	*			flag will not be set and thus the entry will
+	*			not be written to disk at deletion time.
+	*  @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*   application specific config file, but to the global ~/.kderc
+	*  @param bNLS	If bNLS is true, the locale tag is added to the key
+	*   when writing it back.
+	*  @return The old value for this key. If this key did not
+	*   exist, a null string is returned.	
+        */
+  const QString writeEntry( const QString& pKey, const char *pValue,
+                                                 bool bPersistent = true, bool bGlobal = false,
+                                                 bool bNLS = false );
+
+
+      /** Write the key value pair.
 	* Same as above, but write a numerical value.
 	* @param pKey The key to write.
 	* @param nValue The value to write.

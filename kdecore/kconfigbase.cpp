@@ -19,6 +19,15 @@
 // $Id$
 //
 // $Log$
+// Revision 1.39  1999/03/02 16:22:20  kulow
+// i18n is no longer a macro, but a function defined in klocale.h. So you
+// don't need to include kapp.h when you want to use i18n. I see klocale->translate
+// as obsolute (actually I seded it all over KDE :)
+// I wanted to remove the #include <klocale.h> from kapp.h, but this broke
+// too much, so I readded it after fixing half of kdeui. I guess I will
+// write a script once that fixed compilation problems (I like the qt20fix way :),
+// but for now it's only important to know that i18n works without kapp.h
+//
 // Revision 1.38  1999/03/01 23:33:20  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -542,6 +551,7 @@ double KConfigBase::readDoubleNumEntry( const QString& pKey,
 bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) const
 {
   QString aValue = readEntry( pKey );
+
   if( aValue.isNull() )
 	return bDefault;
   else
@@ -560,7 +570,7 @@ bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) cons
 	}
 }
 
-  
+ 
 
 
 QFont KConfigBase::readFontEntry( const QString& pKey,
@@ -897,6 +907,14 @@ void KConfigBase::writeEntry ( const QString& pKey, QStrList &list,
   if( str_list.right(1).at(0) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+}
+
+
+const QString KConfigBase::writeEntry( const QString &pKey, const char *pValue,
+                                                            bool bPersistent, bool bGlobal, 
+                                                            bool bNLS )
+{
+  return writeEntry( pKey, QString(pValue), bPersistent, bGlobal, bNLS );
 }
 
 
