@@ -1115,8 +1115,8 @@ void Loader::slotFinished( KIO::Job* job )
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
 #ifdef CACHE_DEBUG
-      kdDebug(6061) << "Loader::slotFinished, url = " << j->url().url() << " created " << creationDate-time(0) << " expires " << expireDate-time(0) << endl;
       time_t creationDate = j->queryMetaData("cache-creation-date").toLong();
+      kdDebug(6061) << "Loader::slotFinished, url = " << j->url().url() << " created " << creationDate-time(0) << " expires " << expireDate-time(0) << endl;
 #endif
       r->object->setExpireDate(expireDate, false);
   }
