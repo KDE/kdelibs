@@ -119,8 +119,10 @@ void KSystemTray::showEvent( QShowEvent * )
     }
 }
 
-void KSystemTray::enterEvent( QEvent* )
+// KDE4 remove
+void KSystemTray::enterEvent( QEvent* e )
 {
+#if QT_VERSION < 0x030200
 #ifndef Q_WS_QWS
     // FIXME(E): Implement for Qt Embedded
     if ( !qApp->focusWidget() ) {
@@ -137,6 +139,8 @@ void KSystemTray::enterEvent( QEvent* )
 	qt_x_time = time;
     }
 #endif
+#endif
+    QLabel::enterEvent( e );
 }
 
 KPopupMenu* KSystemTray::contextMenu() const
@@ -206,10 +210,14 @@ void KSystemTray::activateOrHide()
     KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
     // mapped = not hidden by calling hide()
     bool mapped = (info.mappingState() != NET::Withdrawn);
+#if QT_VERSION >= 0x030200
+    if( mapped && !pw->isActiveWindow()) // visible not active -> activate
+#else
     // SELI using !pw->isActiveWindow() should be enough here,
     // but it doesn't work - e.g. with kscd, the "active" window
     // is the widget docked in Kicker
-    if ( mapped && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
+    if ( mapped && ( KWinModule().activeWindow() != pw->winId() ))
+#endif
     {
         KWin::setActiveWindow( pw->winId() );
         return;
