@@ -41,8 +41,7 @@ testresources_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testresources_LDADD   = libkresources.la
 testresources_SOURCES = testresources.cpp
 
-appsdir = $(kde_appsdir)/Settings/Components
-apps_DATA = kresources.desktop
+xdg_apps_DATA = kresources.desktop
 
 servicetypedir = $(kde_servicetypesdir)
 servicetype_DATA = kresources_plugin.desktop

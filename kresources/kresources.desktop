@@ -11,3 +11,18 @@ X-KDE-FactoryName=kresources
 X-KDE-HasReadOnlyMode=false
 
 Name=KDE Resources Configuration
+Name[ca]=Configuració dels recursos KDE
+Name[cy]=Ffurfweddu Adnoddau KDE
+Name[da]=KDE Ressource-indstilling
+Name[es]=Configuración de recursos de KDE Resources
+Name[fa]=تنظیمات منابع KDE
+Name[hu]=KDE erőforrás-beállító
+Name[pt_BR]=Configuração dos Recursos do KDE
+Name[ru]=Настройка ресурсов KDE
+Name[sk]=Nastavenie zdrojov KDE
+Name[sr]=Подешавање KDE ресурса
+Name[sv]=Resursinställning för KDE
+Name[tr]=KDE Kaynak Yapılandırması
+Name[xx]=xxKDE Resources Configurationxx
+
+Categories=Qt;KDE;Settings;X-KDE-settings-components
