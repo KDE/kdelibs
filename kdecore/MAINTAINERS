@@ -7,9 +7,9 @@ more logical grouping.
 
 dmalloc.cpp
 kaboutdata.cpp
-kaccel.cpp
-kaccelaction.cpp
-kaccelbase.cpp
+kaccel.cpp		Ellis Whitehead <ellis@kde.org>
+kaccelaction.cpp	Ellis Whitehead <ellis@kde.org>
+kaccelbase.cpp		Ellis Whitehead <ellis@kde.org>
 kallocator.cpp		Waldo Bastian <bastian@kde.org>
 kappdcopiface.cpp
 kapplication.cpp	Waldo Bastian <bastian@kde.org>
@@ -27,23 +27,22 @@ kconfigbase.cpp		Waldo Bastian <bastian@kde.org>
 kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
 kdebug.cpp
-kdesktopfile.cpp	
+kdesktopfile.cpp
 kdestyle.cpp
 kextsock.cpp
-kglobal.cpp		
-kglobalaccel.cpp
-kglobalaccel_x11.cpp
+kglobal.cpp
+kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
+kglobalaccel_x11.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalsettings.cpp
 kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp
 kinstance.cpp
 kipc.cpp
-kkey.cpp
-kkey_x11.cpp
-kkeynative_x11.cpp
-kkeysequence.cpp
-kkeysequence_emb.cpp
+kkey_x11.cpp		Ellis Whitehead <ellis@kde.org>
+kkeynative_x11.cpp	Ellis Whitehead <ellis@kde.org>
+kkeysequence.cpp	Ellis Whitehead <ellis@kde.org>
+kkeysequence_emb.cpp	Ellis Whitehead <ellis@kde.org>
 klibloader.cpp
 klocale.cpp		Hans Petter Bieker <bieker@kde.org>
 kmdcodec.cpp
@@ -60,7 +59,7 @@ kregexp.cpp
 krfcdate.cpp		Waldo Bastian <bastian@kde.org>
 krootprop.cpp
 ksavefile.cpp		Waldo Bastian <bastian@kde.org>
-kshortcut.cpp
+kshortcut.cpp		Ellis Whitehead <ellis@kde.org>
 ksimpleconfig.cpp	Waldo Bastian <bastian@kde.org>
 ksock.cpp
 ksockaddr.cpp
@@ -68,7 +67,7 @@ ksocks.cpp
 kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
 kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
 kstaticdeleter.cpp
-kstdaccel.cpp
+kstdaccel.cpp		Ellis Whitehead <ellis@kde.org>
 kstringhandler.cpp
 ksycoca.cpp		Waldo Bastian <bastian@kde.org>
 ksycocadict.cpp		Waldo Bastian <bastian@kde.org>
