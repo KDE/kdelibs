@@ -94,7 +94,7 @@ KRulerTest::KRulerTest( const char *name )
   mouse_message->move(4,4);
 
   showMarks = new QGroupBox("Show which marks ?", bigwidget);
-  showMarks->setFixedSize(140, 120);
+  showMarks->setFixedSize(140, 160);
   showMarks->move(330,4);
   showTM = new QCheckBox("show tiny marks", showMarks);
   showTM->adjustSize();
@@ -120,18 +120,73 @@ KRulerTest::KRulerTest( const char *name )
   showEM->adjustSize();
   showEM->move(5,95);
   showEM->setChecked(true);
+  connect(showEM, SIGNAL(toggled(bool)), SLOT(slotSetEndMarks(bool)) );
+  showPT = new QCheckBox("show ruler pointer", showMarks);
+  showPT->adjustSize();
+  showPT->move(5,115);
+  showPT->setChecked(true);
+  connect(showPT, SIGNAL(toggled(bool)), SLOT(slotSetRulerPointer(bool)) );
+  fixLen = new QCheckBox("fix ruler length", showMarks);
+  fixLen->adjustSize();
+  fixLen->move(5,135);
+  fixLen->setChecked(true);
+  connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotFixRulerLength(bool)) );
+  connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotCheckLength(bool)) );
 
   lineEdit = new QGroupBox("Value of begin/end", bigwidget);
-  lineEdit->setFixedSize(140, 60);
-  lineEdit->move(330,4+120);
+  lineEdit->setFixedSize(140, 80);
+  lineEdit->move(330,4+160);
   beginMark = new KIntNumInput(0, lineEdit);
   beginMark->setRange(-1000, 1000, 1, false);
   beginMark->move(5, 15);
   beginMark->setFixedSize(beginMark->sizeHint());
+  connect(beginMark, SIGNAL(valueChanged(int)), 
+	  hruler, SLOT(slotNewOffset(int)) );
+  connect(beginMark, SIGNAL(valueChanged(int)), 
+	  vruler, SLOT(slotNewOffset(int)) );
   endMark = new KIntNumInput(0, lineEdit);
   endMark->setRange(-1000, 1000, 1, false);
   endMark->move(5, 35);
   endMark->setFixedSize(endMark->sizeHint());
+  connect(endMark, SIGNAL(valueChanged(int)), 
+	  hruler, SLOT(slotEndOffset(int)) );
+  connect(endMark, SIGNAL(valueChanged(int)), 
+	  vruler, SLOT(slotEndOffset(int)) );
+  lengthInput = new KIntNumInput(0, lineEdit);
+  lengthInput->setRange(-1000, 1000, 1, false);
+  lengthInput->move(5, 55);
+  lengthInput->setFixedSize(lengthInput->sizeHint());
+  connect(lengthInput, SIGNAL(valueChanged(int)), 
+	  hruler, SLOT(slotEndOffset(int)) );
+  connect(lengthInput, SIGNAL(valueChanged(int)), 
+	  vruler, SLOT(slotEndOffset(int)) );
+
+
+  vertrot = new QGroupBox("Value of rotate translate for Vert.", bigwidget);
+  vertrot->setFixedSize(140, 80);
+  vertrot->move(330,4+160+80+4);
+  transX = new KDoubleNumInput(0.0, vertrot);
+  transX->setRange(-1000, 1000, 1, false);
+  transX->move(5, 15);
+  transX->setFixedSize(transX->sizeHint());
+  //transX->setLabel("transx", AlignLeft);
+  connect(transX, SIGNAL(valueChanged(double)), 
+	  SLOT(slotSetXTrans(double)) );
+  transY = new KDoubleNumInput(-12.0, vertrot);
+  transY->setRange(-1000, 1000, 1, false);
+  transY->move(5, 35);
+  transY->setFixedSize(transY->sizeHint());
+  //transY->setLabel("transy", AlignLeft);
+  connect(transY, SIGNAL(valueChanged(double)), 
+	  SLOT(slotSetYTrans(double)) );
+  rotV = new KDoubleNumInput(90.0, vertrot);
+  rotV->setRange(-1000, 1000, 1, false);
+  rotV->move(5, 55);
+  rotV->setFixedSize(rotV->sizeHint());
+  //rotV->setLabel("rot", AlignLeft);
+  connect(rotV, SIGNAL(valueChanged(double)), 
+	  SLOT(slotSetRotate(double)) );
+  
 
   metricstyle = new QButtonGroup("metric styles", bigwidget);
   metricstyle->setFixedSize(100, 120);
@@ -159,6 +214,8 @@ KRulerTest::KRulerTest( const char *name )
   connect ( metricstyle, SIGNAL(clicked(int)), SLOT(slotSetMStyle(int)) );
 
   setView (mainframe);
+
+  slotUpdateShowMarks();
 }
 
 KRulerTest::~KRulerTest()
@@ -212,10 +269,88 @@ KRulerTest::slotSetBigMarks(bool set)
 }
 
 void
+KRulerTest::slotSetEndMarks(bool set)
+{
+  hruler->showEndMarks(set);
+  vruler->showEndMarks(set);
+}
+
+void 
+KRulerTest::slotSetRulerPointer(bool set)
+{
+  hruler->showPointer(set);
+  vruler->showPointer(set);
+}
+
+void 
+KRulerTest::slotSetRulerLength(int len)
+{
+  hruler->setLength(len);
+  vruler->setLength(len);
+}
+
+void 
+KRulerTest::slotFixRulerLength(bool fix)
+{
+  hruler->setLengthFix(fix);
+  vruler->setLengthFix(fix);
+}
+
+void
 KRulerTest::slotSetMStyle(int style)
 {
   hruler->setRulerStyle((KRuler::metric_style)style);
   vruler->setRulerStyle((KRuler::metric_style)style);
+  slotUpdateShowMarks();
+}
+
+
+void
+KRulerTest::slotUpdateShowMarks()
+{
+  showTM->setChecked(hruler->getShowTinyMarks());
+  showLM->setChecked(hruler->getShowLittleMarks());
+  showMM->setChecked(hruler->getShowMediumMarks());
+  showBM->setChecked(hruler->getShowBigMarks());
+  showEM->setChecked(hruler->getShowEndMarks());
+}
+
+void 
+KRulerTest::slotCheckLength(bool fixlen)
+{
+  beginMark->setValue(hruler->getOffset());
+  endMark->setValue(hruler->getEndOffset());
+  lengthInput->setValue(hruler->getLength());
+}
+
+void 
+KRulerTest::slotSetRotate(double d)
+{
+#ifdef KRULER_ROTATE_TEST
+  vruler->rotate = d;
+  vruler->update();
+  //debug("rotate %.1f", d);
+#endif
+}
+
+void 
+KRulerTest::slotSetXTrans(double d)
+{
+#ifdef KRULER_ROTATE_TEST
+  vruler->xtrans = d;
+  vruler->update();
+  //debug("trans x %.1f", d);
+#endif
+}
+
+void 
+KRulerTest::slotSetYTrans(double d)
+{
+#ifdef KRULER_ROTATE_TEST
+  vruler->ytrans = d;
+  vruler->update();
+  //debug("trans y %.1f", d);
+#endif
 }
 
 

@@ -57,8 +57,19 @@ private slots:
   void slotSetLittleMarks(bool);
   void slotSetMediumMarks(bool);
   void slotSetBigMarks(bool);
+  void slotSetEndMarks(bool);
+  void slotSetRulerPointer(bool);
 
+  void slotSetRulerLength(int);
+  void slotFixRulerLength(bool);
   void slotSetMStyle(int);
+  void slotUpdateShowMarks();
+  void slotCheckLength(bool);
+
+  void slotSetRotate(double);
+  void slotSetXTrans(double);
+  void slotSetYTrans(double);
+  
 
 private:
 
@@ -68,9 +79,10 @@ private:
   QFrame *mainframe;
 
   QLabel *mouse_message;
-  QGroupBox *showMarks, *lineEdit;
-  QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM;
-  KIntNumInput *beginMark, *endMark;
+  QGroupBox *showMarks, *lineEdit, *vertrot;
+  QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM, *showPT, *fixLen;
+  KIntNumInput *beginMark, *endMark, *lengthInput;
+  KDoubleNumInput *transX, *transY, *rotV;
   QButtonGroup *metricstyle;
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 
