@@ -1233,7 +1233,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
 #endif
 #ifdef HAVE_MNTENT_H
 #include <mntent.h>
-#elif HAVE_SYS_MNTENT_H
+#elif defined(HAVE_SYS_MNTENT_H)
 #include <sys/mntent.h>
 #endif
 #ifdef HAVE_SYS_UCRED_H
