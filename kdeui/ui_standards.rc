@@ -141,6 +141,8 @@
     <MergeLocal/>
   </Menu>
   <Menu name="settings"><text>&amp;Settings</text>
+    <MergeLocal/>
+    <Separator/>
     <Action name="options_show_menubar"/>
     <Action name="options_show_toolbar"/>
     <Merge name="StandardToolBarMenuHandler" />
@@ -148,6 +150,9 @@
     <MergeLocal name="show_toolbar_merge"/>
     <Action name="options_show_statusbar"/>
     <MergeLocal name="show_merge"/>
+    <Separator/>
+    <Action name="fullscreen"/>
+    <MergeLocal name="fullscreen_merge"/>
     <Separator/>
     <Action name="options_save_options"/>
     <Action name="options_choose_game_type"/>
@@ -158,10 +163,8 @@
     <Action name="options_configure_notifications"/>
     <Action name="options_configure_carddecks"/>
     <Action name="options_configure_highscores"/>
-    <Action name="options_configure"/>
     <MergeLocal name="configure_merge"/>
-    <Separator/>
-    <MergeLocal/>
+    <Action name="options_configure"/>
   </Menu>
   <MergeLocal name="settings_merge"/>
   <Menu name="help"><text>&amp;Help</text>
