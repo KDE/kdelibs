@@ -272,7 +272,9 @@ void KWM::setWmCommand(Window w, const QString &command){
   if (!getdomainname(buf, 200))
     domain = buf;
   if (!machine.isEmpty())
-      all = machine + "." + domain;
+      all = machine;
+  if (!domain.isEmpty() && domain != "(none)")
+      all += "." + domain;
   setQStringProperty(w, a, all);
 }
 
