@@ -417,7 +417,7 @@ InlineFlowBox* RenderBlock::createLineBoxes(RenderObject* obj)
     // as well.  In this situation our inline has actually been split in two on
     // the same line (this can happen with very fancy language mixtures).
     if (!box || box->isConstructed() || box->nextOnLine()) {
-        InlineBox* newBox = obj->createInlineBox(false);
+        InlineBox* newBox = obj->createInlineBox(false, obj == this);
         KHTMLAssert(newBox->isInlineFlowBox());
         box = static_cast<InlineFlowBox*>(newBox);
         box->setFirstLineStyleBit(m_firstLine);
@@ -444,7 +444,7 @@ InlineFlowBox* RenderBlock::constructLine(const BidiIterator &start, const BidiI
     QPtrListIterator<BidiRun> it(*sruns);
     for (BidiRun *r; (r = it.current()); ++it) {
         // Create a box for our object.
-        r->box = r->obj->createInlineBox(r->obj->isPositioned());
+        r->box = r->obj->createInlineBox(r->obj->isPositioned(), false);
 
         // If we have no parent box yet, or if the run is not simply a sibling,
         // then we need to construct inline boxes as necessary to properly enclose the
@@ -953,8 +953,8 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiCo
     int maxDescent = 0;
     BidiRun *r = sruns->first();
     while ( r ) {
-        int height = r->obj->lineHeight( m_firstLine );
-	int baseline = r->obj->baselinePosition( m_firstLine );
+        int height = r->obj->lineHeight( m_firstLine);
+	int baseline = r->obj->baselinePosition( m_firstLine);
         r->box->setHeight(height);
 	r->box->setBaseline(baseline);
 // 	if ( r->baseline > r->height )

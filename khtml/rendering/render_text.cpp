@@ -1274,8 +1274,9 @@ short RenderText::baselinePosition( bool firstLine ) const
         ( lineHeight( firstLine ) - fm.height() ) / 2;
 }
 
-InlineBox* RenderText::createInlineBox(bool)
+InlineBox* RenderText::createInlineBox(bool, bool isRootLineBox)
 {
+    KHTMLAssert( !isRootLineBox );
     // FIXME: Either ditch the array or get this object into it.
     return new (renderArena()) InlineTextBox(this);
 }

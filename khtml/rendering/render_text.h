@@ -169,7 +169,7 @@ public:
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }
 
-    virtual InlineBox* createInlineBox(bool);
+    virtual InlineBox* createInlineBox(bool, bool);
 
     virtual void layout() {assert(false);}
 

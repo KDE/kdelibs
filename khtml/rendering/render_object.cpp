@@ -1514,8 +1514,9 @@ void RenderObject::removeLeftoverAnonymousBoxes()
 {
 }
 
-InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/)
+InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/, bool isRootLineBox)
 {
+    KHTMLAssert( !isRootLineBox );
     return new (renderArena()) InlineBox(this);
 }
 

@@ -152,10 +152,11 @@ void RenderFlow::detach()
     RenderBox::detach();
 }
 
-InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox)
+InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox)
 {
-    if (isReplaced() || makePlaceHolderBox)          // Inline tables and inline blocks
-        return RenderBox::createInlineBox(false);    // (or positioned element placeholders).
+    if ( !isRootLineBox &&
+         (isReplaced() || makePlaceHolderBox) )       // Inline tables and inline blocks
+         return RenderBox::createInlineBox(false, false);    // (or positioned element placeholders).
 
     InlineFlowBox* flowBox = 0;
     if (isInlineFlow())

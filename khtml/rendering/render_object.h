@@ -273,7 +273,7 @@ public:
 
     void scheduleRelayout(RenderObject *clippedObj = 0);
 
-    virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
+    virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;

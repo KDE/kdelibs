@@ -63,7 +63,7 @@ public:
     InlineFlowBox* firstLineBox() const { return m_firstLineBox; }
     InlineFlowBox* lastLineBox() const { return m_lastLineBox; }
 
-    virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
+    virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
     RenderBlock* createAnonymousBlock();
 
