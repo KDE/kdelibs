@@ -62,7 +62,7 @@ void Receiver::slotStart()
 
 int main(int argc, char **argv)
 {
-  KApplication app( argc, argv );
+  KApplication app( argc, argv, "kruntest", true /* it _has_ a GUI ! */);
   Receiver receiver;
 
   app.setMainWidget(&receiver);
