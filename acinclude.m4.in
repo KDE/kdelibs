@@ -466,6 +466,27 @@ AC_DEFUN(AC_CHECK_BOOL,
         fi 
 ])
 
+AC_DEFUN(AC_CHECK_GNU_EXTENSIONS,
+[
+AC_MSG_CHECKING(if you need GNU extensions)
+cat > conftest.c << EOF
+#include <features.h>
+
+#ifdef __GNU_LIBRARY__
+yes
+#endif
+EOF
+
+if (eval "$ac_cpp conftest.c") 2>&5 |
+  egrep "yes" >/dev/null 2>&1; then
+  rm -rf conftest*
+  AC_DEFINE_UNQUOTED(_GNU_SOURCE)
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+])
+
 AC_DEFUN(AC_CHECK_WITH_GCC,
 [
 AC_ARG_WITH(gcc-flags,[  --without-gcc-flags     don't use gcc flags [default=no]])
