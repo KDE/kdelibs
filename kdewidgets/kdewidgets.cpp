@@ -18,6 +18,7 @@
 #include "kdatewidget.h"
 #include "kdialog.h"
 #include "knuminput.h"
+#include "knuminput.h"
 #include "kdualcolorbutton.h"
 #include "keditlistbox.h"
 #include "kfontcombo.h"
@@ -175,10 +176,18 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.group = "Input (KDE)";
 	widget.iconSet = "knuminput.png";
 	widget.includeFile = "knuminput.h";
-	widget.toolTip = "FLoat Number Input Widget (KDE)";
+	widget.toolTip = "Float Number Input Widget (KDE)";
 	widget.whatsThis = "KDoubleNumInput";
 	widget.isContainer = false;
 	m_widgets.insert("KDoubleNumInput", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "kdoublespinbox.png";
+	widget.includeFile = "knuminput.h";
+	widget.toolTip = "Enhanced Spinbox for Floating Point Values (KDE)";
+	widget.whatsThis = "KDoubleSpinBox";
+	widget.isContainer = false;
+	m_widgets.insert("KDoubleSpinBox", widget);
 
 	widget.group = "Graphics (KDE)";
 	widget.iconSet = "kdualcolorbutton.png";
@@ -393,6 +402,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KDialogPreview(parent, name);
 	if (key == "KDoubleNumInput")
 		return new KDoubleNumInput(parent, name);
+	if (key == "KDoubleSpinBox")
+		return new KDoubleSpinBox(parent, name);
 	if (key == "KDualColorButton")
 		return new KDualColorButton(parent, name);
 	if (key == "KEditListBox")
