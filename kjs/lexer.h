@@ -88,6 +88,7 @@ namespace KJS {
 
     bool isWhiteSpace() const;
     bool isLineTerminator() const;
+    bool isIgnored() const;
     bool isHexDigit(unsigned short c) const;
     bool isOctalDigit(unsigned short c) const;
 

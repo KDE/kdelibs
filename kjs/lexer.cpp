@@ -165,6 +165,8 @@ int Lexer::lex()
 	  token = ';';
 	  setDone(Other);
 	}
+      } else if (isIgnored()) {
+          break;
       } else if (current == '"' || current == '\'') {
 	state = InString;
 	stringType = current;
@@ -207,6 +209,8 @@ int Lexer::lex()
 	setDone(String);
       } else if (current == 0 || isLineTerminator()) {
 	setDone(Bad);
+      } else if (isIgnored()) {
+          break;
       } else if (current == '\\') {
 	state = InEscapeSequence;
       } else {
@@ -235,7 +239,9 @@ int Lexer::lex()
 	state = InHexEscape;
       else if (current == 'u')
 	state = InUnicodeEscape;
-      else {
+      else if (isIgnored()) {
+          break;
+      } else {
 	record16(singleEscape(current));
 	state = InString;
       }
@@ -478,9 +484,14 @@ bool Lexer::isWhiteSpace() const
 	  current == 0x0b || current == 0x0c);
 }
 
+bool Lexer::isIgnored() const
+{
+  return (current == '\r');
+}
+
 bool Lexer::isLineTerminator() const
 {
-  return (current == '\n' || current == '\r');
+  return (current == '\n');
 }
 
 bool Lexer::isIdentLetter(unsigned short c)
