@@ -53,6 +53,8 @@
 int waitForPid;
 int X11fd;
 static Display *X11display = 0;
+#define MAX_SOCK_FILE 255
+static char sock_file[MAX_SOCK_FILE];
 
 /* Group data */
 struct {
@@ -360,8 +362,6 @@ static void init_kdeinit_socket()
   struct sockaddr_un sa;
   ksize_t socklen;
   long options;
-#define MAX_SOCK_FILE 255
-  char sock_file[MAX_SOCK_FILE];
   char *home_dir = getenv("HOME");
   if (!home_dir || !home_dir[0])
   {
@@ -390,6 +390,36 @@ static void init_kdeinit_socket()
   {
      fprintf(stderr, "Aborting. Path of socketfile exceeds UNIX_PATH_MAX.\n");
      exit(255);
+  }
+
+  /** Test if socket file is already present **/
+  if (access(sock_file, W_OK) == 0)
+  {
+     int s;
+     struct sockaddr_un server;
+
+     fprintf(stderr, "kdeinit: Warning, socket_file already exists!\n");
+     /*
+      * create the socket stream
+      */
+     s = socket(PF_UNIX, SOCK_STREAM, 0);
+     if (s < 0) 
+     { 
+        perror("socket() failed: ");
+        exit(255);
+     }
+     server.sun_family = AF_UNIX;
+     strcpy(server.sun_path, sock_file);
+     socklen = sizeof(server);
+
+     if(connect(s, (struct sockaddr *)&server, socklen) == 0) 
+     {
+        fprintf(stderr, "kdeinit: Already running.\n");
+        close(s);
+        exit(255);
+     }
+     perror("connect() failed: ");
+     close(s);
   }
 
   /** Delete any stale socket file **/
@@ -723,9 +753,19 @@ static void kdeinit_library_path()
    setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
 }
 
+extern "C" {
+int kdeinit_xio_errhandler( Display * );
+}
+
 int kdeinit_xio_errhandler( Display * )
 {
     qWarning( "kdeinit: Fatal IO error: client killed" );
+
+    if (sock_file[0])
+    {
+      /** Delete any stale socket file **/
+      unlink(sock_file);
+    }
 
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
@@ -782,7 +822,7 @@ int main(int argc, char **argv, char **envp)
    }
 
    /** Make process group leader (for shutting down children later) **/
-   if(keep_running == 0)
+   if(keep_running)
       setsid();
 
    /** Prepare to change process name **/
@@ -794,21 +834,34 @@ int main(int argc, char **argv, char **envp)
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
    d.wrapper = 0;
+   sock_file[0] = 0;
    init_signals();
+
+   if (keep_running)
+   {
+      /*
+       * Create ~/.kdeinit-<hostname> socket for incoming wrapper
+       * requests.
+       */
+      init_kdeinit_socket();
+      if (fork() > 0) // Go into background
+         exit(0);
+   }
 
    printf("Pre Launcher, pid = %d\n", getpid());
 
    if (launch_dcop)
    {
-      pid = launch( 2, "dcopserver", "--nofork" );
+      pid = launch( 2, "dcopserver", "--nosid" );
       printf("DCOPServer: pid = %d result = %d\n", pid, d.result);
-      sleep(1);  /* give dcopserver some time to start up */
+      WaitPid(pid);
    }
 
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );
       printf("KLauncher: pid = %d result = %d\n", pid, d.result);
+      WaitPid(pid);
    }
 
    for(i = 1; i < argc; i++)
@@ -840,15 +893,6 @@ int main(int argc, char **argv, char **envp)
    kdeinit_setproctitle("Running...");
 
    if (!keep_running)
-      exit(0);
-
-   /*
-    * Create ~/.kdeinit-<hostname> socket for incoming wrapper
-    * requests.
-    */
-   init_kdeinit_socket();
-
-   if (fork() > 0) // Go into background
       exit(0);
 
    X11fd = initXconnection();
