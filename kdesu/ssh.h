@@ -27,15 +27,20 @@ public:
     SshProcess(QCString host=0, QCString user=0, QCString command=0);
     ~SshProcess();
 
+    enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
+
     /** Set the target host. */
     void setHost(QCString host) { m_Host = host; }
+
+    /** Set the localtion of the remote stub. */
+    void setStub(QCString stub);
 
     /** 
      * Check if the current user@host needs a password. 
      * @return The prompt for the password if a password is required. A null
      * string otherwise.
      */
-    QCString checkNeedPassword();
+    int checkNeedPassword();
 
     /**
      * Check if the stub is installed and if the password is correct.
@@ -45,6 +50,9 @@ public:
 
     /** Execute the command. */
     int exec(const char *password, int check=0);
+
+    QCString prompt() { return m_Prompt; }
+    QCString error() { return d->m_Error; }
 
 protected:
     virtual QCString display();
@@ -60,7 +68,12 @@ private:
     int m_dcopPort, m_dcopSrv;
     QCString m_Prompt, m_Host;
 
-    class SshProcessPrivate;
+    struct SshProcessPrivate
+    {
+	QCString m_Error;
+	QCString m_Stub;
+    };
+
     SshProcessPrivate *d;
 };
 

@@ -42,23 +42,29 @@
 
 SshProcess::SshProcess(QCString host, QCString user, QCString command)
 {
+    d = new SshProcessPrivate;
     m_Host = host;
     m_User = user;
     m_Command = command;
+    d->m_Stub = "kdesu_stub";
     srand(time(0L));
 }
 
 
 SshProcess::~SshProcess()
 {
+    delete d;
 }
 
 
-QCString SshProcess::checkNeedPassword()
+void SshProcess::setStub(QCString stub)
 {
-    if (exec(0L, 2) == 1)
-	return m_Prompt;
-    return 0;
+    d->m_Stub = stub;
+}
+
+int SshProcess::checkNeedPassword()
+{
+    return exec(0L, 2);
 }
 
 
@@ -87,17 +93,29 @@ int SshProcess::exec(const char *password, int check)
     }
     args += "-l"; args += m_User;
     args += "-o"; args += "StrictHostKeyChecking no";
-    args += m_Host; args += "kdesu_stub";
+    args += m_Host; args += d->m_Stub;
 
     if (StubProcess::exec("ssh", args) < 0)
-	return -1;
+    {
+	return check ? SshNotFound : -1;
+    }
 
     int ret = ConverseSsh(password, check);
-    if (ret < 0) 
+    if (ret < 0)
     {
 	kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
-	return -1;
-    } 
+	return ret;
+    }
+    if (check == 2)
+    {
+	if (ret == SshNeedsPassword)
+	{
+	    kill(m_Pid, SIGTERM);
+	    waitForChild();
+	}
+	return ret;
+    }
+
     if (m_bErase) 
     {
 	char *ptr = const_cast<char *>(password);
@@ -105,34 +123,40 @@ int SshProcess::exec(const char *password, int check)
 	    ptr[i] = '\000';
     }
 
-    setExitString("Waiting for forwarded connections to terminate");
-    if (ret == 0) 
+    ret = ConverseStub(check);
+    if (ret < 0)
     {
-	if (ConverseStub(check) < 0) 
-	{
-	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
-	    kill(m_Pid, SIGTERM);
-	}
-	if (!check)
-	{
-	    // Notify the taskbar that an app has been started.
-	    QString suffix = i18n("(as %1@%2)").arg(m_User).arg(m_Host);
-	    notifyTaskbar(suffix);
-	}
-	ret = waitForChild();
-    } else 
+	kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+	return ret;
+    }
+    if (ret == StubUnknownRequest)
     {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
+	return ret;
     }
+
+    if (check)
+    {
+	// All checks are ok.
+	waitForChild();
+	return 0;
+    }
+
+    // Notify the taskbar that an app has been started.
+    QString suffix = i18n("(as %1@%2)").arg(m_User).arg(m_Host);
+    notifyTaskbar(suffix);
+
+    setExitString("Waiting for forwarded connections to terminate");
+    ret = waitForChild();
     return ret;
 }
 
 /*
  * Create a port forwarding for DCOP. For the remote port, we take a pseudo
  * random number between 10k and 50k. This is not ok, of course, but I see
- * no other way. If the port happens to be occupied, we'll have no security 
- * concern because ssh will not start.
+ * no other way. There is, afaik, no security issue involved here. If the port 
+ * happens to be occupied, ssh will refuse to start.
  */
 
 QCString SshProcess::dcopForward()
@@ -191,12 +215,14 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	line = readLine();
 	if (line.isNull())
 	    return -1;
+
 	switch (state) {
 	case 0:
 	    // Check for "kdesu_stub" header.
 	    if (line == "kdesu_stub") 
 	    {
-		// We don't want this echoed back.
+		// This makes parsing a lot easier. Normally, 
+		// StubProcess::ConverseStub will do this.
 		enableLocalEcho(false);
 		if (check > 0)
 		    write(m_Fd, "stop\n", 5);
@@ -219,10 +245,10 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    }
 	    if ((colon == 1) && (line[j] == ':')) 
 	    {
-		if ((check > 1) || (password == 0L)) 
+		if (check == 2)
 		{
 		    m_Prompt = line;
-		    return 1;
+		    return SshNeedsPassword;
 		}
 		WaitSlave();
 		write(m_Fd, password, strlen(password));
@@ -230,8 +256,11 @@ int SshProcess::ConverseSsh(const char *password, int check)
 		state++; 
 		break;
 	    }
+
+	    // Warning/error message.
+	    d->m_Error += line; d->m_Error += "\n";
 	    if (m_bTerminal)
-		fputs(line, stdout);
+		fprintf(stderr, "ssh: %s\n", line.data());
 	    break;
 
 	case 1:
