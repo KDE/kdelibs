@@ -31,8 +31,8 @@ kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
 kdcopactionproxy.cpp
 kdialog.cpp
 kdialogbase.cpp		Waldo Bastian <bastian@kde.org>
-kdockwidget.cpp
-kdockwidget_private.cpp
+kdockwidget.cpp         Joseph Wenninger <jowenn@kde.org>
+kdockwidget_private.cpp Joseph Wenninger <jowenn@kde.org>
 kdualcolorbutton.cpp
 keditcl1.cpp		Waldo Bastian <bastian@kde.org>
 keditcl2.cpp		Waldo Bastian <bastian@kde.org>
