@@ -1583,20 +1583,28 @@ QPopupMenu* KSelectAction::popupMenu() const
   if ( !d->m_menu )
   {
     d->m_menu = new KPopupMenu(0L, "KSelectAction::popupMenu()");
-    QStringList::ConstIterator it = d->m_list.begin();
-    int id = 0;
-    for( ; it != d->m_list.end(); ++it ) {
-      if (!((*it).isEmpty())) {
-        d->m_menu->insertItem( d->makeMenuText( *it ), this, SLOT( slotActivated( int ) ), 0, id++ );
-      } else {
-        d->m_menu->insertSeparator();
-      }
-    }
+    setupMenu();
     if ( d->m_current >= 0 )
       d->m_menu->setItemChecked( d->m_current, true );
   }
 
   return d->m_menu;
+}
+
+void KSelectAction::setupMenu() const
+{
+    if ( !d->m_menu )
+        return;
+    d->m_menu->clear();
+
+    QStringList::ConstIterator it = d->m_list.begin();
+    for( uint id = 0; it != d->m_list.end(); ++it, ++id ) {
+        QString text = *it;
+        if ( !text.isEmpty() )
+            d->m_menu->insertItem( d->makeMenuText( text ), this, SLOT( slotActivated( int ) ), 0, id );
+        else
+            d->m_menu->insertSeparator();
+    }
 }
 
 void KSelectAction::changeItem( int index, const QString& text )
@@ -1640,18 +1648,7 @@ void KSelectAction::setItems( const QStringList &lst )
   d->m_list = lst;
   d->m_current = -1;
 
-  if ( d->m_menu )
-  {
-    d->m_menu->clear();
-    QStringList::ConstIterator it = d->m_list.begin();
-    int id = 0;
-    for( ; it != d->m_list.end(); ++it )
-      if (!((*it).isEmpty())) {
-        d->m_menu->insertItem( d->makeMenuText( *it ), this, SLOT( slotActivated( int ) ), 0, id++ );
-      } else {
-        d->m_menu->insertSeparator();
-      }
-  }
+  setupMenu();
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )

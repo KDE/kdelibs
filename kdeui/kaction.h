@@ -1062,6 +1062,7 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    void setupMenu() const;
     class KSelectActionPrivate;
     KSelectActionPrivate *d;
 
