@@ -38,7 +38,9 @@ class KHelpMenuPrivate;
 
 /**
  * This class provides the standard KDE help menu with the default "about"
- * dialog boxes and help entry. This class is used in @ref KTMainWindow so
+ * dialog boxes and help entry.
+ *
+ * This class is used in @ref KTMainWindow so
  * normally you don't need to use this class yourself. However, if you
  * need the help menu or any of its dialog boxes in your code that is
  * not subclassed from @ref KTMainWindow you should use this class.
@@ -58,13 +60,13 @@ class KHelpMenuPrivate;
  * </pre>
  *
  * IMPORTANT:
- * The first time you use mHelpMenu->menu(), a QPopupMenu object is
+ * The first time you use mHelpMenu->menu(), a @ref QPopupMenu object is
  * allocated. Only one object is created by the class so if you call
- * mHelpMenu->menu() twice or more, the same pointer is returned. The class
+ * @ref mHelpMenu->menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
  * pointer yourself.
  *
- * The KHelpMenu object will be deleted when its parent is destroyed but you
+ * The @ref KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
  * <pre>

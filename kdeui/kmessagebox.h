@@ -42,8 +42,8 @@ public:
  /**
   * Display a simple "question" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -52,7 +52,7 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotify event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -70,8 +70,8 @@ public:
  /**
   * Display a "question" dialog with a listbox to show information to the user 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param strlist List of strings to be written in the listbox. If the list is
@@ -103,8 +103,8 @@ public:
  /**
   * Display a "warning" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -132,8 +132,8 @@ public:
  /**
   * Display a "warning" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -159,8 +159,8 @@ public:
  /**
   * Display a Yes/No/Cancel "warning" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -192,8 +192,8 @@ public:
  /**
   * Display an "Error" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -219,8 +219,8 @@ public:
  /**
   * Display an "Sorry" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -245,8 +245,8 @@ public:
  /**
   * Display an "Information" dialog. 
   *
-  * @param parent  If parent is 0, then the message box becomes an 
-  *                application-global modal dialog box. If parent is a
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
@@ -281,8 +281,8 @@ public:
   /**
    * Display an "About" dialog. 
    *
-   * @param parent  If parent is 0, then the message box becomes an 
-   *                application-global modal dialog box. If parent is a
+   * @param parent  If @p parent is 0, then the message box becomes an 
+   *                application-global modal dialog box. If @p parent is a
    *                widget, the message box becomes modal relative to parent.
    * @param text    Message string. May contain newlines.
    * @param caption Message box title. The application name is added to

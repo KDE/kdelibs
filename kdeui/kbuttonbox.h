@@ -101,8 +101,8 @@ public:
     * Add a stretch to the buttonbox. 
     *
     * Can be used to separate buttons.  That is, if you add the
-    * buttons Ok and Cancel, add a stretch, and then add the button Help,
-    * the buttons Ok and Cancel will be left-aligned (or top-aligned
+    * buttons OK and Cancel, add a stretch, and then add the button Help,
+    * the buttons OK and Cancel will be left-aligned (or top-aligned
     * for vertical) whereas Help will be right-aligned (or
     * bottom-aligned for vertical).
     *

@@ -37,9 +37,9 @@ class QStringList;
 class KListBox;
 
 /**
- * The KFontChooser provides a widget for interactive font selection.
+ * A widget for interactive font selection.
  *
- * While KFontChooser as an ordinary widget can be embedded in
+ * While @ref KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
  * @ref KFontDialog.
@@ -54,9 +54,9 @@ class KFontChooser : public QWidget
   
 public:
   /**
-   *  @li @p FamilyList - Identifies the family (leftmost) list.
-   *  @li @p StyleList -  Identifies the style (center) list
-   *  @li @p SizeList -   Identifies the size (rightmost) list
+   *  @li @tt FamilyList - Identifies the family (leftmost) list.
+   *  @li @tt StyleList -  Identifies the style (center) list.
+   *  @li @tt SizeList -   Identifies the size (rightmost) list.
    */
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
 
@@ -65,7 +65,7 @@ public:
    *
    * @param parent The parent widget.
    * @param name The widget name.
-   * @param onlyFixedFonts only display fonts which have fixed-width
+   * @param onlyFixedFonts Only display fonts which have fixed-width
    *        character sizes.
    * @param fontList A list of fonts to display, in XLFD format.  If
    *        no list is formatted, the internal KDE font list is used.
@@ -80,22 +80,24 @@ public:
 	       bool makeFrame = true, int visibleListSize=8 );
 
   /**
-   * Enables or disables a font column in the chooser. Use this 
+   * Enable or disable a font column in the chooser. 
+   *
+   * Use this 
    * function if your application does not need or supports all font 
    * properties.
    *
-   * @param font Specifies the columns. An or'ed combination of 
-   *        FamilyList, StyleList and SizeList is possible.
-   * @param state If false the columns are disabled.
+   * @param font Specifie the columns. An or'ed combination of 
+   *        @tt FamilyList, @tt StyleList and @tt SizeList is possible.
+   * @param state If @tt false the columns are disabled.
    */
   void enableColumn( int column, bool state );
 
   /**
-   * Sets the currently selected font in the chooser.
+   * Set the currently selected font in the chooser.
    * 
    * @param font The font to select.
    * @param onlyFixed Readjust the font list to display only fixed
-   *        width fonts if @p true, or vice-versa.
+   *        width fonts if @tt true, or vice-versa.
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 
@@ -111,7 +113,9 @@ public:
   QString sampleText() const { return sampleEdit->text(); }
 
   /**
-   * Sets the sample text. Normally you should not change this 
+   * Set the sample text.
+   *
+   * Normally you should not change this 
    * text, but it can be better to do this if the default text is
    * too large for the edit area when using the default font of your
    * application.
@@ -124,7 +128,7 @@ public:
   }
 
   /**
-   * Converts a @ref QFont into the corresponding X Logical Font 
+   * Convert a @ref QFont into the corresponding X Logical Font 
    * Description (XLFD).
    *
    * @param theFont The font to convert.
@@ -134,7 +138,7 @@ public:
     { return theFont.rawName(); }
 
   /**
-   * Creates a list of font strings that match @p pattern.
+   * Create a list of font strings that match @p pattern.
    * 
    * @param list The list is returned here.
    * @param pattern The font pattern.

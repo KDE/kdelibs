@@ -179,7 +179,7 @@ private:
  * }
  * </pre>
  *
- * This will also implicitely save the settings. If you don't want this, 
+ * This will also implicitly save the settings. If you don't want this, 
  * you can call
  *
  * <pre>
@@ -201,10 +201,19 @@ public:
 	      bool check_against_std_keys = false );
   ~KKeyDialog() {};
 
+  /**
+   * Configure key settings.
+   **/
   static int configureKeys( KAccel *keys, bool save_settings = true, 
 			    QWidget *parent = 0  );
+  /**
+   * Configure key settings.
+   **/
   static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
 			    QWidget *parent = 0 );
+  /**
+   * Configure key settings.
+   **/
   static int configureKeys( KActionCollection *coll, const QString& xmlfile,
                             bool save_settings = true, QWidget *parent = 0 );
 

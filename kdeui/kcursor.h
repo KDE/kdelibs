@@ -25,9 +25,9 @@
 class QCursor;
 
 /**
- * A wrapper around QCursor that allows for "themed" cursors.
+ * A wrapper around @ref QCursor that allows for "themed" cursors.
  *
- * Currently, the only themed cursor is a 'hand' cursor.
+ * Currently, the only themed cursor is a hand shaped cursor.
  *
  * A typical usage would be
  * <PRE>

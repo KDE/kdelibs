@@ -26,7 +26,9 @@
 #include <qcolor.h>
 
 /**
- * KColorDrag for XDnd'ing objects of type application/x-color.
+ * Drag (XDnD) objects of type @tt application/x-color.
+ *
+ * 
  *
  * See the Qt drag'n'drop documentation.
  */
@@ -44,7 +46,7 @@ public:
      
      /**
       * Convenience function for making a dragobject with an
-      * associated pixmap
+      * associated pixmap.
       */
      static KColorDrag* makeDrag( const QColor&,QWidget *dragsource);
 protected:

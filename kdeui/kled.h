@@ -27,17 +27,16 @@
 
 class QColor;
 /** 
-* Display a round  or rectangular light emmitting diode.
+* Display a round  or rectangular light emitting diode.
 *
-* It is configurable to 5 colors, the 2 on/off states and 3 styles (or
-*  "looks");
+* It is configurable to five colors, the two on/off states and three
+* styles (or "looks");
 *
 * It may display itself in a performant flat view, a round view with
 * light spot or a round view sunken in the screen.
 *
 * @short An LED widget.
-* @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
-*/
+* @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999 */
 class KLed : public QWidget
 {
     Q_OBJECT
@@ -78,9 +77,9 @@ public:
    *
    * @sect Timings:
    * ( AMD K5/133, Diamond Stealth 64 PCI Graphics, widgetsize 29x29 )
-   *  @li flat approx. 0.7 msec per paint 
-   *  @li round approx. 2.9 msec per paint
-   *  @li sunken approx. 3.3 msec per paint
+   *  @li flat Approximately 0.7 msec per paint 
+   *  @li round Approximately 2.9 msec per paint
+   *  @li sunken Approximately 3.3 msec per paint
    *
    * The widget will be updated on the next repaining event.
    * NoOfLooks gives the total number Looks

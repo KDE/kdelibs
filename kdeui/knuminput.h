@@ -49,54 +49,54 @@ class KNumInput : public QWidget
     Q_OBJECT
 public:
     /**
-     * default constructor
+     * Default constructor
      *
      */
     KNumInput(QWidget* parent=0, const char* name=0);
 
     /**
-     * @param below a pointer to another KNumInput.
+     * @param below A pointer to another @ref KNumInput.
      *
      */
     KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
     ~KNumInput();
 
     /**
-     * Sets the text and alignment of the main description label.
+     * Set the text and alignment of the main description label.
      *
-     * @param label the text of the label.
-     *              Use QString::null to remove an existing one.
+     * @param label The text of the label.
+     *              Use @ref QString::null to remove an existing one.
      *
-     * @param a one of AlignLeft, AlignHCenter, AlignRight and
-     *          AlignTop, AlignVCenter, AlignBottom.
-     *          default is AlignLeft | AlignTop.
+     * @param a one of @tt AlignLeft, @tt AlignHCenter, YAlignRight and
+     *          @tt AlignTop, @tt AlignVCenter, @tt AlignBottom.
+     *          default is @tt AlignLeft | @tt AlignTop.
      *
-     * the vertical alignment flags have special meaning with this
+     * The vertical alignment flags have special meaning with this
      * widget:
      *
-     *     AlignTop     the label is placed above the edit/slider
-     *     AlignVCenter the label is placed left beside the edit
-     *     AlignBottom  the label is placed below the edit/slider
+     *     @li @tt AlignTop     The label is placed above the edit/slider
+     *     @li @tt AlignVCenter The label is placed left beside the edit
+     *     @li @tt AlignBottom  The label is placed below the edit/slider
      *
      */
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
     /**
-     * Sets the spacing of tickmarks for the slider.
+     * Set the spacing of tickmarks for the slider.
      *
-     * @param minor minor tickmark separation
-     * @param major major tickmark separation
+     * @param minor Minor tickmark separation.
+     * @param major Major tickmark separation.
      */
     void setSteps(int minor, int major);
 
     /**
-     * Specifies that this widget may stretch horizontally, but is
-     * fixed vertically (like QSpinBox itself)
+     * Specifie that this widget may stretch horizontally, but is
+     * fixed vertically (like @ref QSpinBox itself).
      */
     QSizePolicy sizePolicy() const;
 
     /**
-     * Returns a size which fits the contents of the control.
+     * Return a size which fits the contents of the control.
      *
      * @return the preferred size necessary to show the control
      */
@@ -104,15 +104,17 @@ public:
 
 protected:
     /**
-     * call this function whenever you change something in the geometry
-     * of your KNumInput child
+     * Call this function whenever you change something in the geometry
+     * of your @ref KNumInput child.
      *
      */
     void layout(bool deep);
 
     /**
-     * You need to overwrite this method and implement your layout
-     * calculations there. See KIntNumInput/KDoubleNumInput implementation
+     * You need to overwrite this method and implement yourlayout
+     * calculations there. 
+     *
+     * See @ref KIntNumInput / @ref KDoubleNumInput implementation
      * for details.
      *
      */

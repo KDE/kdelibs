@@ -341,7 +341,7 @@ private:
  * @sect Features:
  * 
  * @li Colour selection from a wide range of palettes.
- * @li Colour selection from a Palette of H vs S and V selectors (similar to windoze).
+ * @li Colour selection from a palette of H vs S and V selectors (similar to windoze).
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
  * 
@@ -378,20 +378,21 @@ class KColorDialog : public KDialogBase
 
   public:
     /** 
-     * Constructs a KColorDialog.
+     * Construct a @ref KColorDialog.
      */
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 		  bool modal = FALSE );
 
     /** 
-     * @returns the currently selected color. 
+     * Retrieve the currently selected color. 
      **/
     QColor color();
   
     /**
-     * Creates a modal color dialog, lets the user choose a
-     * color, and returns when the dialog is closed. The
-     * selected color is returned in the argument @p theColor.
+     * Create a modal color dialog, let the user choose a
+     * color, and return when the dialog is closed.
+     *
+     * The selected color is returned in the argument @p theColor.
      *
      * @returns @ref QDialog::result().
      */

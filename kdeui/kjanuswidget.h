@@ -40,7 +40,7 @@ class QWidgetStack;
 class KSeparator;
 
 /**
- * This class provides a number of ready to use layouts (faces). It is used 
+ * Provides a number of ready to use layouts (faces). It is used 
  * as an internal widget in @ref KDialogBase, but can also used as a 
  * widget of its own. 
  *

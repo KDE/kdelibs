@@ -50,6 +50,7 @@ class KDockDynTabBarToolTip;
 
 /**
  * The actual tab bar for dockwidgets  (and member of the dockwidget class set). 
+ *
  * This class is covered by its manager, @ref KDockTabCtl.
  * It provides some set/get methods and managment
  * methods like insert, remove, activate for tab widgets.
@@ -86,48 +87,52 @@ public:
   };
 
   /**
-   * Sets the position to tabpos and repaints this.
-   * @param tabpos either TAB_TOP or TAB_RIGHT, just where you want it to be
+   * Set the position to tabpos and repaints this.
+   *
+   * @param tabpos Either @tt TAB_TOP or @tt TAB_RIGHT, just where you
+   *  want it to be
    */
   void setTabPos( TabPos tabpos);
 
   /**
-   * Inserts a new empty tab page to the tab bar.
-   * If id is not specified, the tab is simply added. Otherwise it's inserted at the specified position.
+   * Insert a new empty tab page to the tab bar.
    *
-   * @param label the title in the tab page header
-   * @param id suggest an identification number for access operations but it will be shifted to the next free value
-   * @param index the tab page position (default=-1 means append)
-   * @return the new allocated id
+   * If @p id is not specified, the tab is simply added. Otherwise
+   * it's inserted at the specified position.
+   *
+   * @param label The title in the tab page header.
+   * @param id Suggest an identification number for access operations but it will be shifted to the next free value.
+   * @param index The tab page position (default=-1 means append)
+   * @return The new allocated id.
    */
   int insertTab( const QString &label, int id = -1, int index = -1 );
 
   /**
-   * Sets an icon for the tab page with that id.
+   * Set an icon for the tab page with that @p  id.
    *
-   * @param id the identification number of that desired page
-   * @param pix the new pixmap
+   * @param id The identification number of that desired page.
+   * @param pix The new pixmap.
    */
   void setPixmap( int id, const QPixmap &pix );
 
   /**
-   * Sets a tooltip for the tab page with that id.
+   * Set a tooltip for the tab page with that @p id.
    *
-   * @param id the identification number of that desired page
-   * @param toolTipStr the new tooltip
+   * @param id The identification number of that desired page.
+   * @param toolTipStr The new tooltip.
    */
   void setToolTip( int id, const QString &toolTipStr );
 
   /**
-   * Sets the text colour for the tab page with that id.
+   * Set the text colour for the tab page with that @p id.
    *
-   * @param id the identification number of that desired page
-   * @param color the new text colour
+   * @param id The identification number of that desired page.
+   * @param color The new text colour.
    */
   void setTextColor( int id, const QColor &color );
 
   /**
-   * Returns the text colour for the tab page with that id.
+   * Retrieve the text colour for the tab page with that @p id.
    *
    * @param id the identification number of that desired tab page
    * @return the current text colour of that tab page
@@ -135,64 +140,65 @@ public:
   const QColor& textColor( int id );
 
   /**
-   * Removes the tab page with that id.
+   * Removes the tab page with that @p id.
    *
-   * @param id the identification number of that desired page
+   * @param id The identification number of that desired page.
    */
   void removeTab( int id);
 
   /**
-   * Returns the current tab page.
+   * Retrieve the current tab page.
    *
-   * @return the id of the tab page
+   * @return The @p id of the tab page.
    */
   int  currentTab(){ return _currentTab; }
 
   /**
-   * Sets the current tab page to the page with that id.
+   * Set the current tab page to the page with that @p id.
    *
-   * @param id the identification number of that desired page
-   * @param allowDisable disables the tab page
+   * @param id The identification number of that desired page.
+   * @param allowDisable Disables the tab page.
    */
   void setCurrentTab( int id, bool allowDisable = false );
 
   /**
-   * Enables or disables the tab page with that id.
+   * Enable or disable the tab page with that @p id.
    */
   void setTabEnabled( int id, bool e);
 
   /**
-   * Returns if the tab page with that id is enabled or disabled.
+   * Returns if the tab page with that @p id is enabled or disabled.
    */
   bool isTabEnabled( int id);
 
   /**
-   * Sets the title of the tab page with that id.
+   * Set the title of the tab page with that @p id.
    *
-   * @param id the identification number of that desired page
-   * @param caption a string for the title
+   * @param id The identification number of that desired page.
+   * @param caption A string for the title.
    */
   void setTabCaption( int id, const QString &caption );
 
   /**
-   * Returns the title of the tab page with that id.
+   * Retrieve the title of the tab page with that @p id.
    *
    * @param id the identification number of that desired page
    */
   QString tabCaption( int id );
 
   /**
-   * Calls QWidget::show() and showPage(..) for the current tab page, additionally.
+   * Calls @ref QWidget::show() and @ref showPage() for the current tab
+   *  page, additionally.
    */
   virtual void show();
 
   /**
-   * Sets the font of this.
+   * Set the font of @tt this.
    */
   virtual void setFont( const QFont & );
 
   /**
-   * Shows or Hides the icons for the tab pages in the header.
+   * Show or hide the icons for the tab pages in the header.
    */
   void showTabIcon( bool );
 
@@ -211,9 +217,10 @@ signals:
   void tabSelected( int id);
 
   /**
-   * Signals that the right mouse buttons is pressed on the tab page with that id.
+   * Signals that the right mouse buttons is pressed on the tab page
+   * with that @pid.
    *
-   * @param id the identification number of that desired page
+   * @param id The identification number of that desired page.
    */
   void rightButtonPress( int id, QPoint );
 

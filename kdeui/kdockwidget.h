@@ -268,19 +268,24 @@ public:
 };
 
 /**
- * Floatable widget that can be dragged around with the mouse und encapsulate the actual widgets (and member of the dockwidget class set).
+ * Floatable widget that can be dragged around with the mouse and
+ * encapsulate the actual widgets (and member of the dockwidget class
+ * set).
  *
- * You just grip the double-lined panel, tear it off its parent widget,
- * drag it somewhere and let it loose. Depending on the position where you leave it, the dockwidget
- * becomes a toplevel window on the desktop (floating mode) or docks to a new widget (dock mode).
- + Note: A KDockWidget can only be docked to a KDockWidget.
+ * You just grip the double-lined panel, tear it off its parent
+ * widget, drag it somewhere and let it loose. Depending on the
+ * position where you leave it, the dockwidget becomes a toplevel
+ * window on the desktop (floating mode) or docks to a new widget
+ * (dock mode).  + Note: A @ref KDockWidget can only be docked to a
+ * @ref KDockWidget.
  *
- * If you want to use this kind of widget, your main application window has to be a @ref KDockMainWindow.
- * That is because it has got several additional dock management features, for instance a @ref KDockManager
- * that has an overview over all dockwidgets and and a dockmovemanager (internal class) that handles
- * the dock process.
+ * If you want to use this kind of widget, your main application
+ * window has to be a @ref KDockMainWindow.  That is because it has
+ * got several additional dock management features, for instance a
+ * @ref KDockManager that has an overview over all dockwidgets and and
+ * a dockmovemanager (internal class) that handles the dock process.
  *
- * Usually you create an KDockWidget that covers the actual widget in this way:
+ * Usually you create an @ref KDockWidget that covers the actual widget in this way:
  * <PRE>
  * ...
  * KDockMainWindow* mainWidget;
@@ -296,8 +301,7 @@ public:
  *
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
-*/
+ * @version $Id$ */
 class KDockWidget: public QWidget
 {
   Q_OBJECT
@@ -307,16 +311,18 @@ friend class KDockMainWindow;
 
 public:
   /**
-   * Constructs a dockwidget. Initially, docking to another and docking to this is allowed for every DockPosition.
-   * It is supposed to be no (tab) group. It will taken under control of its dockmanager.
+   * Construct a dockwidget.
    *
-   * @param dockManager the responsible manager (dock helper)
-   * @param name        object instance name
-   * @param pixmap      an icon (for instance shown when docked centered)
-   * @param parent      parent widget
-   * @param strCaption  title of the dockwidget window (shown when toplevel)
-   * @param strTabPageLabel the title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
-   */
+   * Initially, docking to another and docking to this is allowed for
+   * every @tt DockPosition.  It is supposed to be no (tab) group. It will
+   * taken under control of its dockmanager.
+   *
+   * @param dockManager The responsible manager (dock helper)
+   * @param name        Object instance name
+   * @param pixmap      An icon (for instance shown when docked centered)
+   * @param parent      Parent widget
+   * @param strCaption  Title of the dockwidget window (shown when toplevel)
+   * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption */
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
 
@@ -344,135 +350,145 @@ public:
   }; 
 
   /**
-   * This is a key method of this class! Use it to dock dockwidgets to another dockwidget at the right position within
-   * its @ref KDockMainWindow or a toplevel dockwidget.
+   * This is a key method of this class! Use it to dock dockwidgets to
+   * another dockwidget at the right position within its 
+   * @ref KDockMainWindow or a toplevel dockwidget.
+   *
+   *
    * If the target is null, it will become a toplevel dockwidget at position pos;
-   * Note: docking to another dockwidget means exactly:
+   * Note: Docking to another dockwidget means exactly:
    * A new parent dockwidget will be created, that replaces the target dockwidget and contains another single helper widget (tab widget or panner)
    * which contains both dockwidgets, this and the target dockwidget. So consider parent<->child relationships change completely during such actions.
    *
-   * @param  target the dockwidget to dock to
-   * @param  dockPos one of the DockPositions this is going to dock to
-   * @param  spliPos the split relation (in percent) between both dockwidgets, target and this
-   * @param  pos the dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
-   * @param  check only for internal use;
-   * @param  tabIndex the position index of the tab widget (when in tab page mode), -1 (default) means append
-   * @return result the group dockwidget that replaces the target dockwidget and will be grandparent of target and this
+   * @param  target The dockwidget to dock to
+   * @param  dockPos One of the DockPositions this is going to dock to
+   * @param  spliPos The split relation (in percent) between both dockwidgets, target and this
+   * @param  pos The dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
+   * @param  check Only for internal use;
+   * @param  tabIndex The position index of the tab widget (when in tab page mode), -1 (default) means append
+   * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @tt this. 
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false, int tabIndex = -1);
 
   /**
    * Specify where it is either possible or impossible for this to dock to another dockwidget.
    *
-   * @param pos an OR'ed set of DockPositions
+   * @param pos An OR'ed set of @tt DockPositions
    */
   void setEnableDocking( int pos );
 
   /**
-   * @return where it is either possible or impossible for this to dock to another dockwidget (an OR'ed set of DockPositions)
+   * @return Where it is either possible or impossible for this to dock to another dockwidget (an OR'ed set of DockPositions).
    */
   int enableDocking(){ return eDocking; }
 
   /**
    * Specify where it is either possible or impossible for another dockwidget to dock to this.
    *
-   * @param pos an OR'ed set of DockPositions
+   * @param pos An OR'ed set of @tt DockPositions
    */
   void setDockSite( int pos ){ sDocking = pos;}
 
   /**
-   * @return where it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of DockPositions)
+   * @return There it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of @tt DockPositions).
    */
   int dockSite(){ return sDocking; }
 
   /**
-   * Set the embedded widget. A QLayout takes care about proper resizing, automatically.
+   * Set the embedded widget.
    *
-   * @param w the pointer to the dockwidget's child widget
+   * A QLayout takes care about proper resizing, automatically.
+   *
+   * @param w The pointer to the dockwidget's child widget.
    */
   void setWidget( QWidget* w);
 
   /**
    * Get the embedded widget.
    *
-   * @return the pointer to the dockwidget's child widget, 0L if there's no such child
+   * @return The pointer to the dockwidget's child widget, 0L if there's no such child.
    */
   QWidget* getWidget() { return widget; };
 
   /**
-   * Set the header of this dockwidget. A QLayout takes care about proper resizing, automatically.
+   * Set the header of this dockwidget.
+   *
+   * A @ref QLayout takes care about proper resizing, automatically.
    * The header contains the drag panel, the close button and the stay button.
    *
-   * @param ah a base class pointer to the dockwidget header
+   * @param ah A base class pointer to the dockwidget header
    */
   void setHeader( KDockWidgetAbstractHeader* ah);
 
   /**
    * Normally it simply shows the dockwidget. 
-   * But additionally, if it is docked to a tab widget (DockCenter), it is set as the active (visible) tab page.
+   *
+   * But additionally, if it is docked to a tab widget (@tt DockCenter), it is set as the active (visible) tab page.
    */
   void makeDockVisible();
   
   /** 
-   * @return if it may be possible to hide this.  
+   * @return If it may be possible to hide this.
+   *
    * There are reasons that it's impossible:
-   * @li it is a (tab) group
-   * @li it is already invisible ;-)
-   * @li the parent of this is the KDockMainWindow
-   * @li it isn't able to dock to another widget
+   * @li It is a (tab) group.
+   * @li It is already invisible ;-)
+   * @li The parent of this is the @ref KDockMainWindow.
+   * @li It isn't able to dock to another widget.
    */
   bool mayBeHide();
   
   /** 
-   * @return if it may be possible to show this
+   * @return If it may be possible to show this.
    * There are reasons that it's impossible:
-   * @li it is a (tab) group
-   * @li it is already visible ;-)
-   * @li the parent of this is the KDockMainWindow
+   * @li It is a (tab) group.
+   * @li It is already visible ;-)
+   * @li The parent of this is the @tt KDockMainWindow.
    */
   bool mayBeShow();
 
   /**
-   * @return the dockmanager that is responsible for this.
+   * @return The dockmanager that is responsible for this.
    */
   KDockManager* dockManager(){ return manager; }
 
   /**
    * Stores a string for a tooltip.
+   *
    * That tooltip string has only a meaning when this dockwidget is shown as tab page.
    * In this case the tooltip is shown when one holds the mouse cursor on the tab page header.
    * Such tooltip will for instance be useful, if you use only icons there.
    * Note: Setting an empty string switches the tooltip off.
    *
-   * @param ttStr a string for the tooltip on the tab
+   * @param ttStr A string for the tooltip on the tab.
    */
   void setToolTipString(const QString& ttStr) { toolTipStr = ttStr; };
 
   /**
-   * @return the tooltip string being shown on the appropriate tab page header when in dock-centered mode.
+   * @return The tooltip string being shown on the appropriate tab page header when in dock-centered mode.
    */
   const QString& toolTipString() { return toolTipStr; };
 
-  /** @return true, if a dockback is possible, otherwise false. */
+  /** @return @tt true, if a dockback is possible, otherwise @tt false. */
   bool isDockBackPossible();
 
-  /** Sets a string that is used for the label of the tab page when in tab page mode 
-   * @param label the new tab page label
+  /** Set a string that is used for the label of the tab page when in tab page mode 
+   * @param label The new tab page label.
    */
   void setTabPageLabel( const QString& label) { tabPageTitle = label; }; 
 
   /** 
-   * @return a string that is used for the label of the tab page when in tab page mode 
+   * @return A string that is used for the label of the tab page when in tab page mode.
    */
   const QString& tabPageLabel() { return tabPageTitle; }; 
 
   /**
-   * Catches and processes some QWidget events that are interesting for dockwidgets.
+   * Catches and processes some @ref QWidget events that are interesting for dockwidgets.
    */
   virtual bool event( QEvent * );
   
   /**
-   * Add dockwidget management actions to QWidget::show. 
+   * Add dockwidget management actions to @ref QWidget::show. 
    */
   virtual void show();
 

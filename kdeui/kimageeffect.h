@@ -13,7 +13,9 @@
 class QImage;
 
 /**
- * This class includes various QImage based graphical effects. Everything is
+ * This class includes various @ref QImage based graphical effects. 
+ *
+ *Everything is
  * static, so there is no need to create an instance of this class. You can
  * just call the static methods. They are encapsulated here merely to provide
  * a common namespace.
@@ -49,6 +51,7 @@ public:
 
     /**
      * Create an unbalanced gradient.
+
      * An unbalanced gradient is a gradient where the transition from
      * color a to color b is not linear, but in this case, exponential.
      *
@@ -65,7 +68,8 @@ public:
 	    int yfactor = 100, int ncols = 3);
 
      /**
-     * Blends the provided image into a background of the indicated color
+     * Blend the provided image into a background of the indicated color.
+     *
      * @param initial_intensity this parameter takes values from -1 to 1:
      *              a) if positive: how much to fade the image in its
      *                              less affected spot
@@ -81,7 +85,7 @@ public:
                       bool anti_dir=false);
 
     /**
-     * Blends an image into another one, using a gradient type
+     * Blend an image into another one, using a gradient type
      * for blending from one to another.
      *
      * @param image1 source1 and result of blending
@@ -94,7 +98,7 @@ public:
 			 GradientType gt, int xf=100, int yf=100);
 
     /**
-     * Blends an image into another one, using a color channel of a 
+     * Blend an image into another one, using a color channel of a 
      * third image for the decision of blending from one to another.
      *
      * @param image1 Source 1 and result of blending
@@ -112,27 +116,27 @@ public:
      * Modifies the intensity of a pixmap's RGB channel component.
      *
      * @param image The QImage to process.
-     * @param percent percent value. Use a negative value to dim.
-     * @param channel which channel(s) should be modified
-     * @return Returns the @ref #image, provided for convenience.
+     * @param percent Percent value. Use a negative value to dim.
+     * @param channel Which channel(s) should be modified
+     * @return The @ref image, provided for convenience.
      */
     static QImage& channelIntensity(QImage &image, float percent,
                                     RGBComponent channel);
 
     /**
-     * Fade an image to a certain background color. The number of colors
-     * will not be changed.
+     * Fade an image to a certain background color.
+     *
+     * The number of colors will not be changed.
      *
      * @param image The QImage to process.
      * @param val The strength of the effect. 0 <= val <= 1.
      * @param color The background color.
-     * @return Returns the @ref #image, provided for convenience.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& fade(QImage &img, float val, const QColor &color);
 
 
     /**
-     * This recolors an image. The most dark color will become color a,
      * This recolors a pixmap. The most dark color will become color a,
      * the most bright one color b, and in between.
      *
@@ -144,28 +148,28 @@ public:
            const QColor &cb, int ncols=0);
 
     /**
-     * Builds a hash on any given QImage
+     * Build a hash on any given @ref QImage
      *
      * @param image The QImage to process
-     * @param lite - the hash faces the indicated lighting (cardinal poles)
-     * @param spacing - how many unmodified pixels inbetween hashes
-     * @return Returns the @ref #image, provided for convenience.
+     * @param lite The hash faces the indicated lighting (cardinal poles).
+     * @param spacing How many unmodified pixels inbetween hashes.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& hash(QImage &image, Lighting lite=NorthLite,
                         unsigned int spacing=0);
 
     /**
-     * Either brightens or dims the image by a specified percent.
-     * For example, .5 will modify the colors by 50%.
+     * Either brighten or dim the image by a specified percent.
+     * For example, .50 will modify the colors by 50%.
      *
      * @param image The QImage to process.
-     * @param percent the percent value. Use a negative value to dim.
-     * @return Returns the @ref #image, provided for convenience.
+     * @param percent The percent value. Use a negative value to dim.
+     * @return Returns The @ref image(), provided for convenience.
      */
     static QImage& intensity(QImage &image, float percent);
 
     /**
-     * Modulate the image with a color channel of another image
+     * Modulate the image with a color channel of another image.
      *
      * @param image The QImage to modulate and result.
      * @param modImage The QImage to use for modulation.
@@ -173,46 +177,47 @@ public:
      * @param type The modulation Type to use.
      * @param factor The modulation amplitude; with 0 no effect [-200;200].
      * @param channel The RBG channel of image2 to use for modulation.
-     * @return Returns the @ref #image, provided for convenience.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& modulate(QImage &image, QImage &modImage, bool reverse,
 		ModulationType type, int factor, RGBComponent channel);
 
     /**
-     * Converts an image to grayscale.
+     * Convert an image to grayscale.
      *
-     * @param image The QImage to process.
-     * @param fast Set to true in order to use a faster but non-photographic
+     * @param image The @ref QImage to process.
+     * @param fast Set to @tt true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
-     * @return Returns the @ref #image, provided for convenience.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& toGray(QImage &image, bool fast = false);
 
     /**
-     * Desaturates an image evenly.
+     * Desaturate an image evenly.
      *
      * @param image The QImage to process.
      * @param desat A value between 0 and 1 setting the degree of desaturation
-     * @return Returns the @ref #image, provided for convenience.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& desaturate(QImage &image, float desat = 0.3);
 
     /**
-     * Modifies the contrast of an image.
+     * Modifie the contrast of an image.
+     *
      * @param image The QImage to process.
      * @param c A contrast value between -255 to 255.
-     * @return Returns the @ref #image, provided for convenience.
+     * @return The @ref image(), provided for convenience.
      */
     static QImage& contrast(QImage &image, int c);
 
     /**
-     * Dithers an image using Floyd-Steinberg dithering for low-color
+     * Dither an image using Floyd-Steinberg dithering for low-color
      * situations.
      *
      * @param image The QImage to process.
      * @param palette The color palette to use
      * @param size The size of the palette
-     * @return Returns the @ref #image, provided for convenience.
+     * @return Returns the @ref image(), provided for convenience.
      */
     static QImage& dither(QImage &img, const QColor *palette, int size);
 

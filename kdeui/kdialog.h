@@ -30,13 +30,13 @@ class QLayoutItem;
  * compliance.
  *
  * If the dialog is modeless and has a parent, the default keybindings 
- * (escape = reject(), enter = accept() etc.) are disabled.
+ * (@tt escape = @tt reject(), @tt enter = @tt accept(), etc.) are disabled.
  *
  * The @ref marginHint() and @ref spacingHint() sizes shall be used
  * whenever you layout the interior of a dialog. One special note. If
- * you make your own action buttons (Ok, Cancel etc), the space
- * beteween the buttons shall be @ref spacingHint(), while the space
- * above, below, to right and to the left shall be @ref marginHint().
+ * you make your own action buttons (OK, Cancel etc), the space
+ * beteween the buttons shall be @ref spacingHint(), whereas the space
+ * above, below, to the right and to the left shall be @ref marginHint().
  * If you add a separator line above the buttons, there shall be a
  * @ref marginHint() between the buttons and the separator and a
  * @ref marginHint() above the separator as well.
@@ -114,8 +114,10 @@ class KDialog : public QDialog
 
    signals:
     /**
-     * This signal is emitted when the margin size and/or spacing size 
-     * have changed. Use @ref #marginHint and  @ref #spacingHint in your slot
+     * Emitted when the margin size and/or spacing size 
+     * have changed.
+     *
+     * Use @ref marginHint() and  @ref spacingHint() in your slot
      * to get the new values.
      */
     void layoutHintChanged();

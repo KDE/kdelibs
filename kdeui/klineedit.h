@@ -37,43 +37,51 @@
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
- * This widget inherits from QLineEdit and implements the following
- * additional functionalities: a completion object that provides both
+ * This widget inherits from @ref QLineEdit and implements the following
+ * additional functionalities: A completion object that provides both
  * automatic and manual text completion as well as multiple match iteration
  * features, configurable key-bindings to activate these features and a
  * popup-menu item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * To support these new features KLineEdit also emits a few more additional
- * signals.  These are: @ref completion, @ref previousMatch, @ref nextMatch
- * and @ref returnPressed.  The completion signal can be connected to a slot
- * that will assist the user in filling out the remaining text.  The two
- * iteration signals are intended to be used to iterate through the list of all
- * possible matches whenever there is more than one match for the given text.
- * The @p returnPressed signal is the same as QLineEdit's except it provides the
- * current text in the widget as its argument whenever appropriate.
+ * @sect Detail
  *
- * This widget by default creates a completion object when you invoke the
- * @ref completionObject member function for the first time or use
- * @ref setCompletionObject to assign your own completion object.  Additionally,
- * to make this widget more functional, KLineEdit will automatically handle the
- * iteration and completion signals internally when a completion object is created
- * through either one of the methods mentioned above.  If you do not need these
- * feature, simply use @ref KCompletionBase::setHandleSignals or alternatively the
- * boolean parameter in @p setCompletionObject, to turn them off.
+ * To support these new features @ref KLineEdit also emits a few more
+ * additional signals.  These are: @ref completion(), 
+ * @ref previousMatch(), @ref nextMatch() and @ref returnPressed().  The
+ * completion signal can be connected to a slot that will assist the
+ * user in filling out the remaining text.  The two iteration signals
+ * are intended to be used to iterate through the list of all possible
+ * matches whenever there is more than one match for the given text.
+ * The @p returnPressed signal is the same as @ref QLineEdit's except it
+ * provides the current text in the widget as its argument whenever
+ * appropriate.
  *
- * The default key-binding for completion and rotation is determined from the
- * global settings in @ref KStdAccel.  These values, however, can be set locally to
- * override the global settings through the @ref setKeyBinding member function.  To
- * default the values back, simply invoke @ref useGlobalSettings.  You can also default
- * individual key-binding by simply calling the @p setKeyBinding member function with
- * the default the second argument.
+ * This widget by default creates a completion object when you invoke
+ * the @ref completionObject() member function for the first time or
+ * use @ref setCompletionObject() to assign your own completion
+ * object.  Additionally, to make this widget more functional,
+ * @ref KLineEdit will automatically handle the iteration and completion
+ * signals internally when a completion object is created through
+ * either one of the methods mentioned above.  If you do not need
+ * these feature, simply use @ref KCompletionBase::setHandleSignals or
+ * alternatively the boolean parameter in @p setCompletionObject, to
+ * turn them off.
  *
- * NOTE: if the EchoMode for this widget is set to something other than @p QLineEdit::Normal,
- * the completion mode will always be defaulted to @ref KGlobal::CompletionNone.  This
- * is done purposefully to guard against protected entries such as passwords being cached
- * in KCompletion's list. Hence, if the EchoMode is not QLineEdit::Normal, the completion
- * mode is automatically disabled.
+ * The default key-binding for completion and rotation is determined
+ * from the global settings in @ref KStdAccel.  These values, however,
+ * can be set locally to override the global settings through the @ref
+ * setKeyBinding member function.  To default the values back, simply
+ * invoke @ref useGlobalSettings.  You can also default individual
+ * key-binding by simply calling the @ref setKeyBinding() member function
+ * with the default the second argument.
+ *
+ * NOTE: If the @tt EchoMode for this widget is set to something other
+ * than @p QLineEdit::Normal, the completion mode will always be
+ * defaulted to @ref KGlobal::CompletionNone.  This is done
+ * purposefully to guard against protected entries such as passwords
+ * being cached in @ref KCompletion's list. Hence, if the @tt EchoMode is not
+ * @ref QLineEdit::Normal, the completion mode is automatically disabled.
  *
  * @sect Examples:
  *
@@ -115,8 +123,7 @@
  * </pre>
  *
  * @short An enhanced single line input widget.
- * @author Dawit Alemayehu <adawit@kde.org>
- */
+ * @author Dawit Alemayehu <adawit@kde.org> */
 
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
@@ -126,21 +133,21 @@ class KLineEdit : public QLineEdit, public KCompletionBase
 public:
 
     /**
-    * Constructs a KLineEdit object with a default text, a parent,
+    * Construct a @ref KLineEdit object with a default text, a parent,
     * and a name.
     *
-    * @param string text to be shown in the edit widget
-    * @param parent the parent object of this widget
+    * @param string Text to be shown in the edit widget.
+    * @param parent The parent object of this widget.
     * @param name the name of this widget
     */
     KLineEdit( const QString &string, QWidget *parent, const char *name = 0 );
 
     /**
-    * Constructs a KLineEdit object with a parent and a name.
+    * Construct a @ref KLineEdit object with a parent and a name.
     *
-    * @param string text to be shown in the edit widget
-    * @param parent the parent object of this widget
-    * @param name the name of this widget
+    * @param string Text to be shown in the edit widget.
+    * @param parent The parent object of this widget.
+    * @param name The name of this widget.
     */
     KLineEdit ( QWidget *parent=0, const char *name=0 );
 
@@ -150,13 +157,13 @@ public:
     virtual ~KLineEdit ();
 
     /**
-    * Puts cursor at the end of the string.
+    * Put cursor at the end of the string.
     *
-    * This method is deprecated.  Use @ref QLineEdit::end
+    * This method is deprecated.  Use @ref QLineEdit::end()
     * instead.
     *
     * @deprecated
-    * @ref QLineEdit::end
+    * @ref QLineEdit::end()
     */
     void cursorAtEnd() { end( false ); }
 
@@ -174,7 +181,7 @@ public:
     * Enables/disables the popup (context) menu.
     *
     * Note that when this function is invoked with its argument
-    * set to @p true, then both the context menu and the completion
+    * set to @tt true, then both the context menu and the completion
     * menu item are enabled.  If you do not want to the completion
     * item to be visible simply invoke @ref hideModechanger() right
     * after calling this method.  Also by default, the context
@@ -182,55 +189,57 @@ public:
     * you need to call this function with the argument set to false
     * if you do not want this behaviour.
     *
-    * @param showMenu if true, show the context menu.
+    * @param showMenu If @tt true, show the context menu.
     */
     virtual void setContextMenuEnabled( bool showMenu ) {  m_bEnableMenu = showMenu; }
 
     /**
-    * Returns true when the context menu is enabled.
+    * Returns @tt true when the context menu is enabled.
     *
-    * @return @p true if context menu is enabled.
+    * @return @p true If context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
     
     /**
-     * By default, KComboBox recognizes Key_Return and Key_Enter and emits
-     * the @ref returnPressed() signals, but it also lets the event passr,
+     * By default, @ref KComboBox recognizes @tt Key_Return and @tt Key_Enter and emits
+     * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p grab = true to make KComboBox stop these
+     * Call this method with @tt grab = @tt true to make @tt KComboBox stop these
      * events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
      *
-     * @see #trapReturnKey
+     * @see trapReturnKey()
      */
     void setTrapReturnKey( bool grab );
 
     /**
-     * @returns true if keyevents of Key_Return or Key_Enter will be stopped
-     * or if they will be propagated.
+     * @returns @tt true if keyevents of @tt Key_Return or 
+     * @tt Key_Enter will be stopped or if they will be propagated.
      *
-     * @see #setTrapReturnKey
+     * @see setTrapReturnKey ()
      */
     bool trapReturnKey() const;   
 
 signals:
 
     /**
-    * This signal is emitted when the user presses the return
-    * key.  The argument is the current text.  Note that this
-    * signal is NOT emitted if the widget's EchoMode is set to
-    * QLineEdit::Password.
+    * Emitted when the user presses the return
+    * key.
+    *
+    *  The argument is the current text.  Note that this
+    * signal is @em not emitted if the widget's @tt EchoMode is set to
+    * @ref QLineEdit::Password.
     */
     void returnPressed( const QString& );
 
     /**
-    * Signal emitted when the completion key is pressed.
+    * Emitted when the completion key is pressed.
     *
-    * Please note that this signal is NOT emitted if the
-    * completion mode is set to CompletionNone or EchoMode is
-    * NOT normal.
+    * Please note that this signal is @em not emitted if the
+    * completion mode is set to @tt CompletionNone or @tt EchoMode is
+    * @em normal.
     */
     void completion( const QString& );
   
@@ -238,33 +247,33 @@ signals:
     * Emitted when the text rotation key-bindings are pressed.
     *
     * The argument indicates which key-binding was pressed.
-    * In KLineEdit's case this can be either one of two values:
-    * PrevCompletionMatch or NextCompletionMatch. See
+    * In @ref KLineEdit's case this can be either one of two values:
+    * @ref PrevCompletionMatch or @ref NextCompletionMatch. See
     * @ref KCompletionBase::setKeyBinding for details.
     *
-    * Note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone or EchoMode is NOT normal.
+    * Note that this signal is @em not emitted if the completion
+    * mode is set to @tt CompletionNone or @tt EchoMode is @em not  normal.
     */    
     void textRotation( KCompletionBase::KeyBindingType );
 
 public slots:
 
     /**
-    * Iterates through all possible matches of the completed text or
+    * Iterate through all possible matches of the completed text or
     * the history list.
     *
     * This function simply iterates over all possible matches in case
     * multimple matches are found as a result of a text completion request.
     * It will have no effect if only a single match is found.
     *
-    * @param type the key-binding invoked.
+    * @param type The key-binding invoked.
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
 protected slots:
 
     /**
-    * Completes the remaining text with a matching one from
+    * Complete the remaining text with a matching one from
     * a given list.
     */
     virtual void makeCompletion( const QString& );

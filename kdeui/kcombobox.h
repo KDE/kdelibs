@@ -34,46 +34,48 @@
  * A combined button, line-edit and a popup list widget.
  *
  * This widget inherits from @ref QComboBox and implements
- * the following additional functionalities:  a completion
+ * the following additional functionalities:  A completion
  * object that provides both automatic and manual text
  * completion as well as text rotation features, configurable
  * key-bindings to activate these features and a popup-menu
  * item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * To support these new features KComboBox also emits a few
- * more additional signals as well.  The main ones being the
+ * @sect Detail
+ *
+ * To support these new features @ref KComboBox also emits a few
+ * more additional signals as well.  The main ones are the
  * @ref completion() and @ref rotation() signals.  The completion signal
  * is intended to be connected to a slot that will assist the user
  * in filling out the remaining text while the rotation signals, both
- * @ref rotateUp and @ref rotateDown, are intended to be used to
- * transverse through some kind of list in opposing directions.
- * The @ref previousMatch and @ref nextMatch signals are used to
- * iterate through all possible matches whenever there are more than
- * one possible text completion matches and the @ref returnPressed
- * signals are emitted when the user presses the return key.
+ * @ref rotateUp() and @ref rotateDown(), are intended to be used to
+ * trasverse through some kind of list in opposing directions.
+ * The @ref previousMatch() and @ref nextMatch() signals are used to
+ * iterate through all possible matches whenever there is more than
+ * one possible text completion match and the @ref returnPressed()
+ * signal is emitted when the user presses the Enter key.
  *
  * This widget by default creates a completion object when you invoke
- * the @ref #completionObject() member function for the first time or use
- * @ref #setCompletionObject() to assign your own completion object.
- * Additionally, to make this widget more functional, KComboBox will
+ * the @ref completionObject() member function for the first time or use
+ * @ref setCompletionObject() to assign your own completion object.
+ * Additionally, to make this widget more functional, @ref KComboBox will
  * automatically handle the iteration and completion signals internally
  * when a completion object is created through either one of the methods
  * mentioned above.  If you do not need these feature, simply use
  * @ref KCompletionBase::setHandleSignals() or alternatively the boolean
- * parameter in @ref #setCompletionObject(), to turn them off.
+ * parameter in @ref setCompletionObject(), to turn them off.
  *
  * The default key-binding for completion and rotation is determined
  * from the global settings in @ref KStdAccel.  These values, however,
  * can be set locally to override the global settings through the
- * @ref #setKeyBinding() member function.  To default the values back,
- * simply invoke @ref #useGlobalSettings().  You can also default
- * individual key-binding by simply calling the @ref #setKeyBinding() member
+ * @ref setKeyBinding() member function.  To default the values back,
+ * simply invoke @ref useGlobalSettings().  You can also default
+ * individual key-binding by simply calling the @ref setKeyBinding() member
  * function with the default the second argument.
  *
  * Note that if this widget is not editable, i.e. it is constructed as a
- * "select-only" widget, then only one completion mode, @p CompletionAuto,
- * is allowed.  All the other modes are simply ignored.  The @p CompletionAuto
+ * "select-only" widget, then only one completion mode, @tt CompletionAuto,
+ * is allowed.  All the other modes are simply ignored.  The @tt CompletionAuto
  * mode in this case allows you to automatically select an item from the list
  * that matches the key-code of the first key pressed.
  *
@@ -125,21 +127,22 @@ class KComboBox : public QComboBox, public KCompletionBase
 public:
 	
     /**
-    * Constructs a read-only or rather select-only combo box with a parent object
-    * and a name.
+    * Construct a read-only or rather select-only combo box with a
+    * parent object and a name.
     *
-    * @p parent the parent object of this widget
-    * @p name the name of this widget
+    * @param parent The parent object of this widget
+    * @param name The name of this widget 
     */
     KComboBox( QWidget *parent=0, const char *name=0 );
 
     /**
-    * Constructs a "read-write" or "read-only" combo box depending on the value of
-    * the first argument( bool rw ) with a parent, a name.
+    * Construct a "read-write" or "read-only" combo box depending on
+    * the value of the first argument( @p rw ) with a parent, a
+    * name.
     *
-    * @p rw when @p true widget will be editable.
-    * @p parent the parent object of this widget.
-    * @p name the name of this widget.
+    * @param rw When @tt true, widget will be editable.
+    * @param parent The parent object of this widget.
+    * @param name The name of this widget.  
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
 
@@ -149,111 +152,119 @@ public:
     virtual ~KComboBox();
 
     /**
-    * Returns the current cursor position.
+    * Retreive the current cursor position.
     *
-    * This method always returns a -1 if the combo-box is NOT
+    * This method always returns a -1 if the combo-box is @em not
     * editable (read-write).
     *
-    * @returns current cursor position.
+    * @return Current cursor position.
     */
     int cursorPosition() const { return ( m_pEdit ) ? m_pEdit->cursorPosition() : -1; }
 
     /**
-    * Re-implemented from QComboBox.
+    * Re-implemented from @ref QComboBox.
     *
-    * If true, the completion mode will be set to automatic.
+    * If @tt true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.  This
-    * methods has been replaced by the more comprehensive @ref
-    * setCompletionMode.
+    * methods has been replaced by the more comprehensive 
+    * @ref setCompletionMode().
     *
-    * @p autocomplete flag to enable/disable automatic completion mode.
+    * @param autocomplete Flag to enable/disable automatic completion mode.
     */
     virtual void setAutoCompletion( bool autocomplete );
 
     /**
     * Re-implemented from QComboBox.
     *
-    * Returns true if the current completion mode is set
+    * Returns @tt true if the current completion mode is set
     * to automatic.  See its more comprehensive replacement
-    * @ref completionMode.
+    * @ref completionMode().
     *
-    * @returns true when completion mode is automatic.
+    * @return @tt true when completion mode is automatic.
     */
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
     /**
-    * Enables or disables the popup (context) menu.
+    * Enable or disable the popup (context) menu.
     *
     * This method only works if this widget is editable, i.e.
     * read-write and allows you to enable/disable the context
     * menu.  It does nothing if invoked for a none-editable
     * combo-box.  Note that by default the mode changer item
     * is made visiable whenever the context menu is enabled.
-    * Use * @ref hideModechanger() if you want to hide this
+    * Use @ref hideModechanger() if you want to hide this
     * item.    Also by default, the context menu is created if
     * this widget is editable. Call this function with the
     * argument set to false to disable the popup menu.
     *
-    * @p showMenu if true, show the context menu.
-    * @p showMode if true, show the mode changer.
+    * @param showMenu If @tt true, show the context menu.
+    * @param showMode If @tt true, show the mode changer.
     */
     virtual void setContextMenuEnabled( bool showMenu );
 
     /**
-    * Returns true when the context menu is enabled.
+    * Returns @tt true when the context menu is enabled.
     *
-    * @returns true if context menu is enabled.
+    * @return @tt true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
-    * Returns true if the combo-box is editable.
+    * Returns @tt true if the combo-box is editable.
     *
-    * @returns true if combo is editable.
+    * @return @tt true if combo is editable.
     */
     bool isEditable() const { return !m_pEdit.isNull() ; }
 
     /**
      * Convenience method which iterates over all items and checks if
-     * any of them is equal to @p text. If @p text is an empty string, false
+     * any of them is equal to @p text.
+     *
+     * If @p text is an empty string, @tt false
      * is returned.
-     * @returns true if an item with the string @p text is in the combobox.
+     *
+     * @return @tt true if an item with the string @p text is in the combobox.
      */
     bool contains( const QString& text ) const;
 
     /**
-     * By default, KComboBox recognizes Key_Return and Key_Enter and emits
-     * the @ref returnPressed() signals, but it also lets the event passr,
+     * By default, @ref KComboBox recognizes Key_Return and Key_Enter
+     * and emits
+     * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p grab = true to make KComboBox stop these
+     * Call this method with @p grab equal to @tt true to make @ref KComboBox
+     * stop these
      * events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
      *
-     * @see #grabReturnKeyEvents
+     * @see grabReturnKeyEvents()
      */
     void setTrapReturnKey( bool grab );
 
     /**
-     * @returns true if keyevents of Key_Return or Key_Enter will be stopped
-     * or if they will be propagated.
+     * @return @tt true if keyevents of Key_Return or Key_Enter will
+     * be stopped or if they will be propagated.
      *
-     * @see #setGrabReturnKeyEvents
+     * @see setGrabReturnKeyEvents ()
      */
     bool trapReturnKey() const;
 
 signals:
     /**
-    * This signal is emitted when the user presses
-    * the return key.  Note that this signal is only
+    * Emitted when the user presses the Enter key.
+    *
+    * Note that this signal is only
     * emitted if this widget is editable.
     */
     void returnPressed();
 
     /**
-    * This signal is emitted when the user presses
-    * the return key.  The argument is the current
+    * Emitted when the user presses
+    * the Enter key.
+    *
+    * The argument is the current
     * text being edited.  This signal is just like
     * @ref returnPressed() except it contains the
     * current text as its argument.
@@ -265,12 +276,14 @@ signals:
 
     /**
     * This signal is emitted when the completion key
-    * is pressed.  The argument is the current text
+    * is pressed. 
+    *
+    * The argument is the current text
     * being edited.
     *
-    * Note that this signal is NOT available if this
+    * Note that this signal is @em not available if this
     * widget is non-editable or the completion mode is
-    * set to KGlobalSettings::CompletionNone.
+    * set to @tt KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
 
@@ -279,11 +292,11 @@ signals:
     *
     * The argument indicates which key-binding was pressed.
     * In this case this can be either one of four values:
-    * PrevCompletionMatch, NextCompletionMatch, RotateUp or
-    * rotateDown. See @ref KCompletionBase::setKeyBinding for
+    * @tt PrevCompletionMatch, @tt NextCompletionMatch, @tt RotateUp or
+    * @Tt RotateDown. See @ref KCompletionBase::setKeyBinding() for
     * details.
     *
-    * Note that this signal is NOT emitted if the completion
+    * Note that this signal is @em NOT emitted if the completion
     * mode is set to CompletionNone.
     */
     void textRotation( KCompletionBase::KeyBindingType );
@@ -291,13 +304,13 @@ signals:
 public slots:
 
     /**
-    * Iterates through all possible matches of the completed text
+    * Iterate through all possible matches of the completed text
     * or the history list.
     *
     * Depending on the value of the argument, this function either
     * iterates through the history list of this widget or the all
     * possible matches in whenever multiple matches result from a
-    * text completion request.  Note that the all possible match
+    * text completion request.  Note that the all-possible-match
     * iteration will not work if there are no previous matches, i.e.
     * no text has been completed and the *nix shell history list
     * rotation is only available if the insertion policy for this
@@ -305,7 +318,7 @@ public slots:
     * For other insertion modes whatever has been typed by the user
     * when the rotation event was initiated will be lost.
     *
-    * @p type the key-binding invoked.
+    * @param type The key-binding invoked.
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
@@ -489,8 +502,9 @@ public:
     QStringList historyItems() const;
 
     /**
-     * Removes all items named @p item.
-     * @returns true if at least one item was removed.
+     * Remove all items named @p item.
+     *
+     * @return @tt true if at least one item was removed.
      *
      * @see #addToHistory
      */

@@ -31,7 +31,7 @@
  */
 
 /**
- * Draws a Next style button (solid black shadow with light and midlight
+ * Draw a Next-style button (solid black shadow with light and midlight
  * highlight).
  */
 void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
@@ -42,7 +42,7 @@ void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QBrush *fill=0);
 
 /**
- * Draws a Be-like style button.
+ * Draw a Be-like style button.
  */
 void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
                    bool sunken=false, const QBrush *fill=0);
@@ -52,8 +52,8 @@ void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
                    const QBrush *fill=0);
 
 /**
- * Draws a rounded oval button. This does not fill the button, see
- * kRoundMask and kRoundMaskRegion for setting masks for fills.
+ * Draw a rounded oval button. This does not fill the button, see
+ * @ref kRoundMask() and @ref kRoundMaskRegion() for setting masks for fills.
  */
 void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool sunken=false);
@@ -62,19 +62,19 @@ void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool sunken=false);
 
 /**
- * Sets the region to the pixels contained in a round button of the given
+ * Set the region to the pixels contained in a round button of the given
  * size. You can use this to set clipping regions.
  */
 void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h);
 
 /**
- * Paints the bitmap with the pixels contained in a round button of the given
- * size. This is mostly useful inside QStyle routines.
+ * Paint the bitmap with the pixels contained in a round button of the given
+ * size. This is mostly useful inside @ref QStyle routines.
  */
 void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear=false);
 
 /**
- * Paints the supplied bitmaps onto the QPainter using the colorgroup for
+ * Paint the supplied bitmaps onto the @ref QPainter using the colorgroup for
  * the foreground colors. Note: The bitmaps will be self-masked automatically
  * if not masked prior to calling this routine.
  *

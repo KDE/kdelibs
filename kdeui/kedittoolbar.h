@@ -40,7 +40,7 @@ class KEditToolbarWidgetPrivate;
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
  *
- * Typically, you would include the KStdAction::configureToolbars
+ * Typically, you would include the @ref KStdAction::configureToolbars()
  * standard action in your application.  In your slot to this action,
  * you would have something like so:
  *
@@ -55,9 +55,9 @@ class KEditToolbarWidgetPrivate;
  * That code snippet also takes care of redrawing the menu and
  * toolbars if you have made any changes.
  *
- * Note that the procedure is a bit different for KParts applications.
+ * Note that the procedure is a bit different for @ref KParts applications.
  * In this case, you need only pass along a pointer to your
- * application's KXMLGUIFactory object.  The editor will take care of
+ * application's @ref KXMLGUIFactory object.  The editor will take care of
  * finding all of the action collections and xml files.  The editor
  * aims to be semi-intelligent about where it assigns any
  * modifications.  In other words, it will not write out part specific
@@ -71,7 +71,7 @@ class KEditToolbarWidgetPrivate;
  * ...
  * </pre>
  *
- * @short A dialog used to customize or configure toolbars
+ * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
  * @id $Id$
  */
@@ -80,30 +80,32 @@ class KEditToolbar : public KDialogBase
     Q_OBJECT
 public:
   /**
-   * Constructor for apps that do not use components.  This is the
-   * only entry point to this class.  You @tt must pass along your
+   * Constructor for apps that do not use components. 
+   *
+   * This is the
+   * only entry point to this class.  You @em must pass along your
    * collection of actions (some of which appear in your toolbars).
    * The other two parameters are optional.
    *
-   * The second parameter, @ref #xmlfile, is the name (absolute or
+   * The second parameter, @ref xmlfile(), is the name (absolute or
    * relative) of your application's UI resource file.  If it is
    * left blank, then the resource file: share/apps/appname/appnameui.rc
    * is used.  This is the same resource file that is used by the
-   * default createGUI function in KTMainWindow so you're usually
+   * default @ref createGUI() function in @ref KTMainWindow so you're usually
    * pretty safe in leaving it blank.
    *
-   * The third parameter, @ref #global, controls whether or not the
-   * global resource file is used.  If this is true, then you may
+   * The third parameter, @ref global(), controls whether or not the
+   * global resource file is used.  If this is @tt true, then you may
    * edit all of the actions in your toolbars -- global ones and
-   * local one.  If it is false, then you may edit only your
+   * local one.  If it is @tt false, then you may edit only your
    * application's entries.  The only time you should set this to
    * false is if your application does not use the global resource
-   * file at all (very rare)
+   * file at all (very rare).
    *
-   * @param collection The collection of actions to work on
-   * @param xmlfile The application's local resource file
-   * @param global If true, then the global resource file will also
-   *               be parsed
+   * @param collection The collection of actions to work on.
+   * @param xmlfile The application's local resource file.
+   * @param global If @tt true, then the global resource file will also
+   *               be parsed.
    * @param parent The parent of the dialog.
    * @param name An internal name.
    */
@@ -112,9 +114,9 @@ public:
 			   QWidget* parent = 0, const char* name = 0);
 
   /**
-   * Constructor for KParts based apps.
+   * Constructor for @ref KParts based apps.
    *
-   * The main parameter, @ref #factory, is a pointer to the
+   * The main parameter, @ref factory(), is a pointer to the
    * XML GUI factory object for your application.  It contains a list
    * of all of the GUI clients (along with the action collections and
    * xml files) and the toolbar editor uses that.
