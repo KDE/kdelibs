@@ -5,6 +5,7 @@ Icon=core.xpm
 Patterns=core;core.*;
 MimeType=application/x-core
 Comment=Core dump
+Comment[cs]=Core dump
 Comment[es]=Archivo Core
 Comment[de]=Speicherauszug
 Comment[no]=Minnedump

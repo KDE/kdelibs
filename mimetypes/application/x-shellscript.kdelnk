@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=shell script
+Commnet[cs]=Shellový skript
 Comment[de]=Shellskript
 Comment[no]=Skallskript
 Comment[nl]=Shellscript 

@@ -5,6 +5,7 @@ MimeType=application/x-trash
 Icon=trash.xpm
 Patterns=*~;*%;*.bak;*.old;*.sik;
 Comment=Trash file
+Comment[cs]=Zálo¾ní soubor
 Comment[es]=Archivo a suprimir
 Comment[de]=zu löschende Datei
 Comment[no]=Søppelfil
