@@ -75,7 +75,6 @@ void kwin_net_create_atoms() {
 	atoms_created = True;
     }
 }
-static void createAtoms() { kwin_net_create_atoms(); }
 
 /*
   Sends a client message to the ROOT window.
@@ -122,7 +121,7 @@ public:
     ContextWidget()
 	: QWidget(0,0)
     {
-	createAtoms();
+	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
 	QWhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
