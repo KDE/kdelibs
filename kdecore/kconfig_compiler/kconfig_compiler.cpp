@@ -812,7 +812,6 @@ int main( int argc, char **argv )
   QString className = codegenConfig.readEntry("ClassName");
   QString inherits = codegenConfig.readEntry("Inherits");
   QString visibility = codegenConfig.readEntry("Visibility");
-  kdError() << "VISIBILITY " <<  visibility << "\n";
   if (!visibility.isEmpty()) visibility+=" ";
   bool singleton = codegenConfig.readBoolEntry("Singleton", false);
   bool staticAccessors = singleton;
