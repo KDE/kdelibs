@@ -495,23 +495,6 @@ public:
        NextCompletionMatch
     };
 
-    /**
-     * Constants that represent the ID's of the popup menu
-     * items that get inserted into the supplied QPopupMenu
-     */			
-    enum MenuID {
-       Default=0,
-       Cut,
-       Copy,
-       Paste,
-       Clear,
-       Unselect,
-       SelectAll,
-       NoCompletion,
-       AutoCompletion,
-       ShellCompletion,
-       SemiAutoCompletion	
-    };
 	
     // Map for the key binding types mentioned above.
     typedef QMap<KeyBindingType, int> KeyBindingMap;
@@ -768,48 +751,7 @@ protected:
      *
      * @return the key-binding used for the feature given by @p item.
      */
-	KeyBindingMap getKeyBindings() const { return m_keyMap; }
-	
-    /**
-     * Inserts a set of default menu items in the specified popup menu.
-     *
-     * The items inserted are: Cut, Copy, Paste, Completion, Unselect
-     * and SelectAll.  Each item has its own uniquie id defined by the
-     * @ref MenuID enumerator which allows any inheriting class to easily
-     * maniuplate these items.
-     *
-     * Note that the the enteries in the @p Completion sub-menu are
-     * capable of handling themselves and thus require no extra effort
-     * from except invoking the method you desire when these items are
-     * selected.  Also the completion menu item will not be added if
-     * a completion object has not already been created.  Refer to
-     * @ref completionObject() on how to create a completion object.
-     *
-     * @param popup popup-menu into which the default items are to be inserted
-     */
-    void insertDefaultMenuItems( QPopupMenu* /* popup */ ) const;
-
-    /**
-     * Inserts only the competion menu item into the specified popup menu.
-     *
-     * This method unlike its counterpart @ref insertDefaultMenuItems() only
-     * inserts the completion menu item into the given popup menu.
-     * It is provided for those who want to build their own popup menu, but
-     * do not want to deal with the completion menu item.  It is highly
-     * encouraged that you use the @ref insertDefaultMenuItems() instead of
-     * this method for the sake of consistency.
-     *	
-     * Note that the completion menu item will not be added if a completion
-     * object has not already been created or the value of the index is not
-     * valid.  Refer to @ref completionObject() on how to create a completion
-     * object.
-     *
-     * @param popup popup-menu into which the completion items are to be
-     *              inserted
-     * @param index position at which the menu gets inserted. Default is to
-     *              append to current position.
-     */	
-    void insertCompletionMenuItem( QPopupMenu*, int index = -1 ) const;
+     KeyBindingMap getKeyBindings() const { return m_keyMap; }	
 
 private:
 
