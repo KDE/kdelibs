@@ -212,11 +212,9 @@ void HTTPProtocol::resetSessionSettings()
 
   if ( config()->readBoolEntry("SendLanguageSettings", true) )
   {
-      m_request.charsets = config()->readEntry( "Charsets",
-                                           DEFAULT_FULL_CHARSET_HEADER );
-      if ( m_request.charsets.isEmpty() )
-        m_request.charsets += DEFAULT_PARIAL_CHARSET_HEADER;
-
+      m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
+      if ( !m_request.charsets.isEmpty() )
+          m_request.charsets += DEFAULT_PARTIAL_CHARSET_HEADER;
       m_request.languages = config()->readEntry( "Languages",
                                             DEFAULT_LANGUAGE_HEADER );
   }
