@@ -2,32 +2,33 @@
    Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU Lesser General Public License (LGPL) as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License (LGPL) 
+   version 2 as published by the Free Software Foundation.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
+   You should have received a copy of the GNU Library General Public 
+   License along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-   The KMD5 class is based upon a C++ implementation of "RSA
-   Data Security, Inc. MD5 Message-Digest Algorithm" by Mordechai
-   T. Abzug,	Copyright (c) 1995.  This implementation passes the
-   test-suite supplied with RFC 1321.
-
-   RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992,
+   RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.
    RSA Data Security, Inc. Created 1991. All rights reserved.
-
+   
+   The KMD5 class is based on a C++ implementation of
+   "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
+   Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
+   passes the test-suite as defined in RFC 1321.
+   
    The encoding and decoding utilities in KCodecs with the exception of
-   quoted-printable were ported from the HTTPClient java package by Ronald
-   Tschalär Copyright (C) 1996-1999. The quoted-printable codec as described
-   in RFC 2045, section 6.7. is by Rik Hemsley (C) 2001.
+   quoted-printable are based on the java implementation in HTTPClient 
+   package by Ronald Tschalär Copyright (C) 1996-1999.
+   
+   The quoted-printable codec as described in RFC 2045, section 6.7. is by
+   Rik Hemsley (C) 2001.
 */
 
 #include <config.h>
@@ -953,6 +954,7 @@ void KMD5::transform( const unsigned char block[64] )
 
     decode (x, block, 64);
     //memcpy( x, block, 64 );
+    
     Q_ASSERT(!m_finalized);  // not just a user error, since the method is private
 
     /* Round 1 */
