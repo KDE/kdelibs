@@ -20,6 +20,7 @@ AC_TRY_LINK(	[
 		],[
 			AC_MSG_RESULT(no)
                         LIB_DNSSD=""
+			DO_NOT_COMPILE="$DO_NOT_COMPILE dnssd"
 ])
 CPPFLAGS=$save_dnssdtest_CPPFLAGS
 LDFLAGS=$save_dnssdtest_LDFLAGS
