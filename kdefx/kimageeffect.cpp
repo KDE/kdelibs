@@ -1262,13 +1262,19 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         for (register int i=0; i<pixels; i++)
         {
 #ifdef WORDS_BIGENDIAN
-            *(data++) += (unsigned char)((rcol - *data) * opacity);
-            *(data++) += (unsigned char)((gcol - *data) * opacity);
-            *(data++) += (unsigned char)((bcol - *data) * opacity);
+            *data += (unsigned char)((rcol - *data) * opacity);
+            data++;
+            *data += (unsigned char)((gcol - *data) * opacity);
+            data++;
+            *data += (unsigned char)((bcol - *data) * opacity);
+            data++;
 #else
-            *(data++) += (unsigned char)((bcol - *data) * opacity);
-            *(data++) += (unsigned char)((gcol - *data) * opacity);
-            *(data++) += (unsigned char)((rcol - *data) * opacity);
+            *data += (unsigned char)((bcol - *data) * opacity);
+            data++;
+            *data += (unsigned char)((gcol - *data) * opacity);
+            data++;
+            *data += (unsigned char)((rcol - *data) * opacity);
+            data++;
 #endif
             data++; // skip alpha
         }
@@ -1484,13 +1490,19 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
         for (register int i=0; i<pixels; i++)
         {
 #ifdef WORDS_BIGENDIAN
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;            
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;
 #else
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;
+            *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
+            data1++;
 #endif
             data1++; // skip alpha
             data2++;
