@@ -1178,12 +1178,6 @@ void KHTMLParser::popBlock( int _id )
         }
         else
         {
-            if (Elem->id == ID_FORM && form)
-                // A <form> is being closed prematurely (and this is
-                // malformed HTML).  Set an attribute on the form to clear out its
-                // bottom margin.
-                form->setMalformed(true);
-
             popOneBlock();
             Elem = blockStack;
         }
@@ -1220,6 +1214,9 @@ void KHTMLParser::popOneBlock()
         --inPre;
 
     m_inline = Elem->m_inline;
+
+    if (current->id() == ID_FORM && form && haveMalformedTable)
+        form->setMalformed(true);
 
     setCurrent( Elem->node );
 
