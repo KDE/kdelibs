@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.90  1998/11/11 14:32:08  radej
+// Revision 1.92  1998/11/21 19:27:19  radej
+// sven: doubleClicked signal for buttons.
 // Revision 1.89  1998/11/10 14:12:46  radej
 // sven: windows-style handle smaller
 //
@@ -2138,7 +2141,13 @@ void KToolBar::setBarPos(BarPosition bpos)
       }
      else
       {
+        if (bpos == Flat)
+        {
+          setFlat (true);
+          return;
+        }
         position = bpos;
+        enableFloating (true);
         emit moved ( bpos );
         return;
       }

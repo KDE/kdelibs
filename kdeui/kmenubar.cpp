@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.45  1998/11/18 01:00:03  radej
+// sven: set*BarPos(Flat) works now (I hope)
+//
 // Revision 1.44  1998/11/11 14:32:10  radej
 // sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
 //
@@ -616,6 +619,12 @@ void KMenuBar::enableMoving(bool flag)
           menu->setFrameStyle(NoFrame);
         }
 
+        return;
+      }
+     else
+      {
+        if (mpos == Flat)
+        {
           setFlat (true);
           return;
         }
