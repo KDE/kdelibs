@@ -19,7 +19,7 @@
 
 #include <qdir.h>
 
-#include "userpaths.h"
+#include "kuserpaths.h"
 #include <ksimpleconfig.h>
 #include <kapp.h>
 #include <qstring.h>
@@ -30,12 +30,12 @@
 #include <unistd.h>
 #include <kstddirs.h>
 
-QString* UserPaths::s_desktopPath = 0;
-QString* UserPaths::s_templatesPath = 0;
-QString* UserPaths::s_autostartPath = 0;
-QString* UserPaths::s_trashPath = 0;
+QString* KUserPaths::s_desktopPath = 0;
+QString* KUserPaths::s_templatesPath = 0;
+QString* KUserPaths::s_autostartPath = 0;
+QString* KUserPaths::s_trashPath = 0;
 
-void UserPaths::initStatic() 
+void KUserPaths::initStatic() 
 {
   if ( s_desktopPath != 0 )
     return;
