@@ -48,7 +48,6 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     head = 0;
     foot = 0;
     firstBody = 0;
-    _currentCol = 0;
 
     rules = None;
     frame = Void;
@@ -732,6 +731,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
+    _currentCol = 0;
     _id = i;
     _span = 1;
 }
