@@ -1,0 +1,13 @@
+1999-10-15  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: Unary + and - 
+
+1999-10-12  Harri Porten  <porten@kde.org>
+
+	* fixed lots of -Wall warnings
+
+1999-10-10  Harri Porten  <porten@kde.org>
+
+	* initial import of sources at the KDE II meeting
+
+

@@ -339,13 +339,22 @@ KJSO *PrefixNode::evaluate()
 // ECMA 11.4.6
 KJSO *UnaryPlusNode::evaluate()
 {
-  /* TODO */
+  KJSO *e = expr->evaluate();
+  KJSO *v = e->getValue();
+  
+  return toNumber(v);
 }
 
 // ECMA 11.4.7
 KJSO *NegateNode::evaluate()
 {
-  /* TODO */
+  KJSO *e = expr->evaluate();
+  KJSO *v = e->getValue();
+  
+  double d = -toNumber(v)->dVal();
+  /* TODO: handle NaN */
+
+  return new KJSNumber(d);
 }
 
 // ECMA 11.4.8
@@ -408,10 +417,7 @@ KJSO *AddNode::evaluate()
   if ((p1->isA(String) || p2->isA(String)) && oper == '+') {
     KJSO *s1 = toString(p1);
     KJSO *s2 = toString(p2);
-    //    char *s = new char[strlen(s1->sVal()->data())+strlen(s2->sVal()->data())+1];
-    //    strcpy(s, s1->sVal()->data());
-    //    strcat(s, s2->sVal()->data());
-
+ 
     UString s = s1->sVal() + s2->sVal();
 
     KJSO *res = new KJSString(s);
