@@ -1186,10 +1186,24 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 		return;
 	}
 #else
+
+
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
-    QCString dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
+    QCString dev;
+    if ( _dev.startsWith( "LABEL=" ) ) { // turn LABEL=foo into -L foo (#71430)
+        QString labelName = _dev.mid( 6 );
+        dev = "-L ";
+        dev += QFile::encodeName( KProcess::quote( labelName ) ); // is it correct to assume same encoding as filesystem?
+    } else if ( _dev.startsWith( "UUID=" ) ) { // and UUID=bar into -U bar
+        QString uuidName = _dev.mid( 5 );
+        dev = "-U ";
+        dev += QFile::encodeName( KProcess::quote( uuidName ) );
+    }
+    else
+        dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
+
     QCString point = QFile::encodeName( KProcess::quote(_point) );
     bool fstype_empty = !_fstype || !*_fstype;
     QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
