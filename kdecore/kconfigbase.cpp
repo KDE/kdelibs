@@ -496,6 +496,7 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
       case QVariant::ByteArray:
       case QVariant::BitArray:
       case QVariant::KeySequence:
+      case QVariant::Pen:
           break;
   }
 
@@ -1217,6 +1218,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::ByteArray:
     case QVariant::BitArray:
     case QVariant::KeySequence:
+    case QVariant::Pen:
         break;
     }
 
