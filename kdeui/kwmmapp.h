@@ -124,6 +124,15 @@ signals:
   void windowAdd(Window);
 
   /**
+     Add a dialog window. Note that dialog windows are also included
+     in the set of windows you recieve with windowAdd (see above).
+     The dialogs are reported extra (before the windowAdd) to allow a
+     taskbar to exclude them. The dialogWindowAdd signal is guaranteed
+     to be emitted before the correspondinging windowAdd signal.
+   */
+  void dialogWindowAdd(Window);
+
+  /**
    * Remove a window
    */
   void windowRemove(Window);

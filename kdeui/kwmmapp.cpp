@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.15  1998/10/22 16:50:14  ettrich
+    support for kstart
+
     Revision 1.14  1998/03/08 22:08:50  wuebben
     Bernd: adjusted the size of kfontdialog for localization
 
@@ -77,6 +80,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom module_initialized;
   static Atom module_desktop_change;
   static Atom module_win_add;
+  static Atom module_dialog_win_add;
   static Atom module_win_remove;
   static Atom module_win_change;
   static Atom module_win_raise;
@@ -118,6 +122,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 
       module_win_add = XInternAtom(qt_xdisplay(),
 				   "KWM_MODULE_WIN_ADD", False);
+      module_dialog_win_add = XInternAtom(qt_xdisplay(),
+				   "KWM_MODULE_DIALOG_WIN_ADD", False);
       module_win_remove = XInternAtom(qt_xdisplay(),
 				      "KWM_MODULE_WIN_REMOVE", False);
       module_win_change = XInternAtom(qt_xdisplay(),
@@ -149,7 +155,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     a = ev->xclient.message_type;
     w = (Window) (ev->xclient.data.l[0]);
 
-    
+
     if ( a ==  module_init) {
       windows.clear();
       windows_sorted.clear();
@@ -178,6 +184,9 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       windows.append(wp);
       windows_sorted.append(wp);
       emit windowAdd(w);
+    }
+    else if (a == module_dialog_win_add){
+      emit dialogWindowAdd(w);
     }
 
     else if (a == module_win_remove){
