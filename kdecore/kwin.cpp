@@ -648,13 +648,13 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
     if( properties & NET::WMName ) {
-        if( d->info->name())
+        if( d->info->name() && d->info->name()[ 0 ] != '\0' )
 	    d->name_ = QString::fromUtf8( d->info->name() );
         else
             d->name_ = readNameProperty( win, XA_WM_NAME );
     }
     if( properties & NET::WMIconName ) {
-        if( d->info->iconName())
+        if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
             d->iconic_name_ = QString::fromUtf8( d->info->iconName());
         else
             d->iconic_name_ = readNameProperty( win, XA_WM_ICON_NAME );
@@ -796,7 +796,8 @@ QString KWin::WindowInfo::visibleName() const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
         << "Pass NET::WMVisibleName to KWin::windowInfo()" << endl;
-    return d->info->visibleName() ? QString::fromUtf8(d->info->visibleName()) : name();
+    return d->info->visibleName() && d->info->visibleName()[ 0 ] != '\0'
+        ? QString::fromUtf8(d->info->visibleName()) : name();
 #else
     return QString("name");
 #endif
@@ -818,9 +819,9 @@ QString KWin::WindowInfo::visibleIconName() const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
         << "Pass NET::WMVisibleIconName to KWin::windowInfo()" << endl;
-    if( d->info->visibleIconName())
+    if( d->info->visibleIconName() && d->info->visibleIconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->visibleIconName());
-    if( d->info->iconName())
+    if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->iconName());
     if( !d->iconic_name_.isEmpty())
         return d->iconic_name_;
@@ -833,7 +834,7 @@ QString KWin::WindowInfo::iconName() const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
         << "Pass NET::WMIconName to KWin::windowInfo()" << endl;
-    if( d->info->iconName())
+    if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->iconName());
     if( !d->iconic_name_.isEmpty())
         return d->iconic_name_;
