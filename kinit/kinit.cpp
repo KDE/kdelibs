@@ -200,11 +200,15 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         d.sym = lt_dlsym( d.handle, "main");
         if (!d.sym )
         {
-           fprintf(stderr, "Could not find main: %s\n", lt_dlerror());        
-           d.result = 1; // Error
-           write(d.fd[1], &d.result, 1);
-           close(d.fd[1]);
-           exit(255);
+           d.sym = lt_dlsym( d.handle, "kdemain");
+           if (!d.sym )
+           {
+              fprintf(stderr, "Could not find main: %s\n", lt_dlerror());        
+              d.result = 1; // Error
+              write(d.fd[1], &d.result, 1);
+              close(d.fd[1]);
+              exit(255);
+           }
         }
      
         d.result = 0; // Success
