@@ -17,7 +17,7 @@
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
 char *k_dcgettext (const char *__domainname, const char *__msgid,
-		   const char *language);
+		   const char *_language);
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
@@ -46,14 +46,6 @@ char *k_bindtextdomain (const char *__domainname,
 KLocale *KLocale::pLocale = NULL;
 
 #ifdef ENABLE_NLS
-/*
-bool domain_exist(const char * directory, const char * language, const char * catalogue)
-{
-    QString tmp;
-    tmp.sprintf("%s/%s/%s",directory, language, catalogue);
-    return QDir::exists(tmp);
-}
-*/
 
 KLocale::KLocale( const char *_catalogue ) 
 {
@@ -70,14 +62,14 @@ KLocale::KLocale( const char *_catalogue )
     strcpy(catalogue, _catalogue);
 
     QString languages;
-    const char *lang = getenv("LANG");
+    const char *g_lang = getenv("LANG");
 
-    if (! lang ) {
+    if (! g_lang ) {
 	KConfig config;
 	config.setGroup("Locale");
 	languages = config.readEntry("Language", "C");
     } else
-	languages = lang;
+	languages = g_lang;
    
     if (languages.isEmpty())
 	languages = "C";
@@ -87,17 +79,15 @@ KLocale::KLocale( const char *_catalogue )
     QString directory = kapp->kdedir() + "/share/locale";
 
     while (1) {
-	language = languages.left(languages.find(':'));
-	languages = languages.right(languages.length() - language.length() - 1);
-	if (language.isEmpty() || language == "C")
+	lang = languages.left(languages.find(':'));
+	languages = languages.right(languages.length() - lang.length() - 1);
+	if (lang.isEmpty() || lang == "C")
 	    break;
-	QDir d(directory + "/" +  language + "/LC_MESSAGES");
+	QDir d(directory + "/" +  lang + "/LC_MESSAGES");
 	if (d.exists(QString(catalogue) + ".mo") && d.exists(QString(SYSTEM_MESSAGES) + ".mo"))
 	    break;
-	debug("STRING %s %s",language.data(),languages.data());
     }
     /* Set the text message domain.  */
-    debug("STRING2 %s %s",language.data(),languages.data());
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
 
@@ -119,17 +109,17 @@ const char *KLocale::translate(const char *msgid)
     if (!enabled)
       return msgid;
 
-    char *text = k_dcgettext( catalogue, msgid, language.data() );
+    char *text = k_dcgettext( catalogue, msgid, lang.data() );
 
     if (text == msgid) // just compare the pointers
-	return k_dcgettext( SYSTEM_MESSAGES, msgid, language.data() );
+	return k_dcgettext( SYSTEM_MESSAGES, msgid, lang.data() );
     else
 	return text;
 }
 
-const QString& KLocale::directory() 
+QString KLocale::directory() 
 {
-    return kapp->kdedir() + "/locale/share/" +  language;
+    return kapp->kdedir() + "/locale/share/" +  lang;
 }
 
 void KLocale::aliasLocale( const char* text, long int index)

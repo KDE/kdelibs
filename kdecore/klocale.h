@@ -73,17 +73,17 @@ public:
       * library translation must be available in this language. 
       * 'C' is default, if no other available.
       **/
-    const QString& language() const { return language; }
+    const QString& language() const { return lang; }
 
     /**
       * Return the base directory, where you can find the language
       * specific things like messages
       **/
-    const QString& directory();
+    QString directory();
 
 private:
     char *catalogue;
-    QString language;
+    QString lang;
     int enabled;
     QIntDict<char> aliases;
     static KLocale *pLocale;
