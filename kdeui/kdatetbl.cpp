@@ -129,6 +129,20 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
 }
 
+KDateTable::KDateTable(QWidget *parent, const char* name, WFlags f)
+  : QGridView(parent, name, f)
+{
+  d = new KDateTablePrivate;
+  setFontSize(10);
+  setFocusPolicy( QWidget::StrongFocus );
+  setNumRows(7); // 6 weeks max + headline
+  setNumCols(7); // 7 days a week
+  setHScrollBarMode(AlwaysOff);
+  setVScrollBarMode(AlwaysOff);
+  viewport()->setEraseColor(KGlobalSettings::baseColor());
+  setDate(QDate::currentDate()); // this initializes firstday, numdays, numDaysPrevMonth
+}
+
 KDateTable::~KDateTable()
 {
   delete d;
