@@ -68,7 +68,7 @@ class KStartupInfo
 	enum {
 	    CleanOnCantDetect		= 1 << 0,
 	    DisableKWinModule		= 1 << 1,
-	    AnnounceSuspendChanges	= 1 << 2
+	    AnnounceSilenceChanges	= 1 << 2
 	    };
 	
 	/**
@@ -80,8 +80,8 @@ class KStartupInfo
 	 * @li DisableKWinModule - KWinModule, which is normally used to detect
 	 *     new windows, is disabled. With this flag, checkStartup() must be
 	 *     called in order to check newly mapped windows
-	 * @li AnnounceSuspendChanges - normally, startup notifications are
-	 *     "removed" when they're suspended, and "recreated" when they're resumed.
+	 * @li AnnounceSilenceChanges - normally, startup notifications are
+	 *     "removed" when they're silenced, and "recreated" when they're resumed.
 	 *     With this flag, the change is normally announced with gotStartupChange().
 	 *
 	 * @param flags OR-ed combination of flags
@@ -528,17 +528,17 @@ class KStartupInfoData
 	
 	/**
 	 * Sets whether the visual feedback for this startup notification
-	 * should be temporarily suspended.
+	 * should be silenced (temporarily suspended).
 	 * @since 3.1.1
 	 */
-	void setSuspend( TriState state );
+	void setSilent( TriState state );
 	
 	/**
-	 * Return the suspend status for the startup notification.
-	 * @return KStartupInfoData::Yes if visual feedback is suspended
+	 * Return the silence status for the startup notification.
+	 * @return KStartupInfoData::Yes if visual feedback is silenced
 	 * @since 3.1.1
 	 */
-	TriState suspend() const;
+	TriState silent() const;
 
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop

@@ -92,8 +92,8 @@ struct KStartupInfoPrivate
     {
     public:
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
-	// contains suspended ASN's only if !AnnounceSupendChanges
-        QMap< KStartupInfoId, KStartupInfo::Data > suspended_startups;
+	// contains silenced ASN's only if !AnnounceSilencedChanges
+        QMap< KStartupInfoId, KStartupInfo::Data > silent_startups;
         KWinModule* wm_module;
         KXMessages msgs;
         KXMessages msgs_2;
@@ -206,9 +206,9 @@ void KStartupInfo::window_added( WId w_P )
             kdDebug( 172 ) << "new window match" << endl;
 	    // HACK
 	    // with KDE's spec, first matching window ends ASN
-	    // but when suspended, ASN shouldn't be ended
+	    // but when silenced, ASN shouldn't be ended
 	    // TODO this shouldn't be needed with the new spec?
-	    if( data.suspend() != KStartupInfoData::Yes )
+	    if( data.silent() != KStartupInfoData::Yes )
         	remove_startup_info_internal( id );
           break;
         case NoMatch:
@@ -240,26 +240,26 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
         d->startups[ id_P ].update( data_P );
         d->startups[ id_P ].age = 0; // CHECKME
         kdDebug( 172 ) << "updating" << endl;
-	if( d->startups[ id_P ].suspend() == Data::Yes
-	    && !( d->flags & AnnounceSuspendChanges ))
+	if( d->startups[ id_P ].silent() == Data::Yes
+	    && !( d->flags & AnnounceSilenceChanges ))
 	    {
-	    d->suspended_startups[ id_P ] = d->startups[ id_P ];
+	    d->silent_startups[ id_P ] = d->startups[ id_P ];
 	    d->startups.remove( id_P );
-	    emit gotRemoveStartup( id_P, d->suspended_startups[ id_P ] );
+	    emit gotRemoveStartup( id_P, d->silent_startups[ id_P ] );
 	    return;
 	    }
         emit gotStartupChange( id_P, d->startups[ id_P ] );
         return;
         }
-    if( d->suspended_startups.contains( id_P ))
+    if( d->silent_startups.contains( id_P ))
         { // already reported, update
-        d->suspended_startups[ id_P ].update( data_P );
-        d->suspended_startups[ id_P ].age = 0; // CHECKME
-        kdDebug( 172 ) << "updating suspended" << endl;
-	if( d->suspended_startups[ id_P ].suspend() != Data::Yes )
+        d->silent_startups[ id_P ].update( data_P );
+        d->silent_startups[ id_P ].age = 0; // CHECKME
+        kdDebug( 172 ) << "updating silenced" << endl;
+	if( d->silent_startups[ id_P ].silent() != Data::Yes )
 	    {
-	    d->startups[ id_P ] = d->suspended_startups[ id_P ];
-	    d->suspended_startups.remove( id_P );
+	    d->startups[ id_P ] = d->silent_startups[ id_P ];
+	    d->silent_startups.remove( id_P );
 	    emit gotNewStartup( id_P, d->startups[ id_P ] );
 	    return;
 	    }
@@ -268,16 +268,16 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
         }
     if( update_only_P )
         return;
-    if( data_P.suspend() != Data::Yes || d->flags & AnnounceSuspendChanges )
+    if( data_P.silent() != Data::Yes || d->flags & AnnounceSilenceChanges )
 	{
         kdDebug( 172 ) << "adding" << endl;
         d->startups.insert( id_P, data_P );
 	emit gotNewStartup( id_P, data_P );
 	}
-    else // new suspended, and suspended shouldn't be announced
+    else // new silenced, and silent shouldn't be announced
 	{
-        kdDebug( 172 ) << "adding suspended" << endl;
-	d->suspended_startups.insert( id_P, data_P );
+        kdDebug( 172 ) << "adding silent" << endl;
+	d->silent_startups.insert( id_P, data_P );
 	}
     d->cleanup->start( 1000 ); // 1 sec
     }
@@ -306,10 +306,10 @@ void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
 	emit gotRemoveStartup( id_P, d->startups[ id_P ]);
 	d->startups.remove( id_P );
 	}
-    else if( d->suspended_startups.contains( id_P ))
+    else if( d->silent_startups.contains( id_P ))
 	{
-	kdDebug( 172 ) << "removing suspended" << endl;
-	d->suspended_startups.remove( id_P );
+	kdDebug( 172 ) << "removing silent" << endl;
+	d->silent_startups.remove( id_P );
 	}
     return;
     }
@@ -338,8 +338,8 @@ void KStartupInfo::remove_startup_pids( const KStartupInfoId& id_P,
     Data* data = NULL;
     if( d->startups.contains( id_P ))
 	data = &d->startups[ id_P ];
-    else if( d->suspended_startups.contains( id_P ))
-	data = &d->suspended_startups[ id_P ];
+    else if( d->silent_startups.contains( id_P ))
+	data = &d->silent_startups[ id_P ];
     else
 	return;
     for( QValueList< pid_t >::ConstIterator it2 = data_P.pids().begin();
@@ -566,7 +566,7 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
         if( data_O != NULL )
             *data_O = d->startups[ id ];
         if( remove_P
-	    && d->startups[ id ].suspend() != Data::Yes ) // HACK
+	    && d->startups[ id ].silent() != Data::Yes ) // HACK
             d->startups.remove( id );
         kdDebug( 172 ) << "check_startup_id:match" << endl;
         return true;
@@ -590,7 +590,7 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
             if( data_O != NULL )
                 *data_O = *it;
             if( remove_P
-		&& ( *it ).suspend() != Data::Yes ) // HACK
+		&& ( *it ).silent() != Data::Yes ) // HACK
                 d->startups.remove( it );
             kdDebug( 172 ) << "check_startup_pid:match" << endl;
             return true;
@@ -618,7 +618,7 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
             if( data_O != NULL )
                 *data_O = *it;
             if( remove_P
-		&& ( *it ).suspend() != Data::Yes ) // HACK
+		&& ( *it ).silent() != Data::Yes ) // HACK
                 d->startups.remove( it );
             kdDebug( 172 ) << "check_startup_wclass:match" << endl;
             return true;
@@ -707,7 +707,7 @@ void KStartupInfo::startups_cleanup_no_age()
 void KStartupInfo::startups_cleanup()
     {
     if (!d) return;
-    if( d->startups.count() == 0 && d->suspended_startups.count() == 0 )
+    if( d->startups.count() == 0 && d->silent_startups.count() == 0 )
         {
         d->cleanup->stop();
         return;
@@ -725,7 +725,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         if( age_P )
             ( *it ).age++;
 	int tout = timeout;
-	if( ( *it ).suspend() == Data::Yes ) // TODO 
+	if( ( *it ).silent() == Data::Yes ) // TODO 
 	    tout *= 20;
         if( ( *it ).age >= timeout )
             {
@@ -737,14 +737,14 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         else
             ++it;
         }
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->suspended_startups.begin();
-         it != d->suspended_startups.end();
+    for( QMap< KStartupInfoId, Data >::Iterator it = d->silent_startups.begin();
+         it != d->silent_startups.end();
          )
         {
         if( age_P )
             ( *it ).age++;
 	int tout = timeout;
-	if( ( *it ).suspend() == Data::Yes ) // TODO 
+	if( ( *it ).silent() == Data::Yes ) // TODO 
 	    tout *= 20;
         if( ( *it ).age >= timeout )
             {
@@ -916,7 +916,7 @@ bool KStartupInfoId::none() const
 struct KStartupInfoDataPrivate
     {
     KStartupInfoDataPrivate() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-	suspend( KStartupInfoData::Unknown ) {};
+	silent( KStartupInfoData::Unknown ) {};
     QString bin;
     QString name;
     QString icon;
@@ -924,7 +924,7 @@ struct KStartupInfoDataPrivate
     QValueList< pid_t > pids;
     QCString wmclass;
     QCString hostname;
-    KStartupInfoData::TriState suspend; // SELI check spec
+    KStartupInfoData::TriState silent;
     };
 
 QString KStartupInfoData::to_text() const
@@ -946,8 +946,8 @@ QString KStartupInfoData::to_text() const
          it != d->pids.end();
          ++it )
         ret += QString::fromLatin1( " PID=%1" ).arg( *it );
-    if( d->suspend != Unknown )
-	ret += QString::fromLatin1( " SUSPEND=%1" ).arg( d->suspend == Yes ? 1 : 0 );
+    if( d->silent != Unknown )
+	ret += QString::fromLatin1( " SILENT=%1" ).arg( d->silent == Yes ? 1 : 0 );
     return ret;
     }
 
@@ -962,7 +962,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
     const QString wmclass_str = QString::fromLatin1( "WMCLASS=" );
     const QString hostname_str = QString::fromLatin1( "HOSTNAME=" );
     const QString pid_str = QString::fromLatin1( "PID=" );
-    const QString suspend_str = QString::fromLatin1( "SUSPEND=" );
+    const QString silent_str = QString::fromLatin1( "SILENT=" );
     for( QStringList::Iterator it = items.begin();
          it != items.end();
          ++it )
@@ -981,8 +981,8 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
             d->hostname = get_cstr( *it );
         else if( ( *it ).startsWith( pid_str ))
             addPid( get_num( *it ));
-        else if( ( *it ).startsWith( suspend_str ))
-            d->suspend = get_num( *it ) != 0 ? Yes : No;
+        else if( ( *it ).startsWith( silent_str ))
+            d->silent = get_num( *it ) != 0 ? Yes : No;
         }
     }
 
@@ -1018,8 +1018,8 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
          it != data_P.d->pids.end();
          ++it )
         addPid( *it );
-    if( data_P.suspend() != Unknown )
-	d->suspend = data_P.suspend();
+    if( data_P.silent() != Unknown )
+	d->silent = data_P.silent();
     }
 
 KStartupInfoData::KStartupInfoData()
@@ -1142,14 +1142,14 @@ bool KStartupInfoData::is_pid( pid_t pid_P ) const
     return d->pids.contains( pid_P );
     }
 
-void KStartupInfoData::setSuspend( TriState state_P )
+void KStartupInfoData::setSilent( TriState state_P )
     {
-    d->suspend = state_P;
+    d->silent = state_P;
     }
     
-KStartupInfoData::TriState KStartupInfoData::suspend() const
+KStartupInfoData::TriState KStartupInfoData::silent() const
     {
-    return d->suspend;
+    return d->silent;
     }
 
 static
