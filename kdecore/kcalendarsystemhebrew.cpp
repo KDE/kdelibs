@@ -234,18 +234,19 @@ int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
     return 12;
 }
 
-// ### HPB Recursive call without termination
+// ### CFM check
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
   QDate temp;
-  setYMD(temp, year + 1, 1, 1);
+  setYMD(temp, year, monthsInYear(temp), hndays(monthsInYear(temp), year) );
 
-  // If the first day of the next year is in the first week, we have to
-  // check the week before
-  int yearNum;
-  int nWeekNumber = weekNumber(temp, &yearNum);
-  if ( yearNum != year )
-    temp = addDays(temp, -7);
+  int nWeekNumber = weekNumber(temp);
+  if(nWeekNumber == 1)  // last week belongs to next year
+  {
+    temp.addDays(-7);
+    nWeekNumber = weekNumber(temp);
+  }
+	
 
   return nWeekNumber;
 }
