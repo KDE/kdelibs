@@ -8,8 +8,7 @@ and this package is both: the debian package and the kde package.
 Andreas Jellinghaus <aj@debian.org> used to maintain the debian part
 and Stephan Kulow took them over, when he orphaned them.
 
-Since then Ivan Moore has been working on them with Stephan's guidance
-and has just recently taken them over completely.
+Since then Ivan Moore has taken them over.
 
 ---
 
