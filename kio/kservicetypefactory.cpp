@@ -26,6 +26,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <assert.h>
+#include <qfile.h>
 
 KServiceTypeFactory::KServiceTypeFactory()
  : KSycocaFactory( KST_KServiceTypeFactory )
@@ -75,29 +76,31 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
    return newServiceType;
 }
 
-bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  ) const
+bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  )
 {
   int len = _filename.length();
-  const char* s = _pattern.ascii();
-  int pattern_len = _pattern.length();
+  QCString pattern = QFile::encodeName( _pattern );
+  int pattern_len = pattern.length();
   if (!pattern_len)
      return false;
 
+  QCString filename = QFile::encodeName( _filename );
+
   // Patterns like "Makefile*"
-  if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
-     if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
+  if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
+     if ( strncasecmp( filename.data(), pattern.data(), pattern_len - 1 ) == 0 )
 	return true;
 
   // Patterns like "*~", "*.extension"
-  if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
+  if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
   {
-     if ( strncasecmp( _filename.ascii() + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
+     if ( strncasecmp( filename.data() + len - pattern_len + 1, pattern.data() + 1, pattern_len - 1 ) == 0 )
 	return true;
      // TODO : Patterns like "*.*pk"
   }
 
   // Patterns like "Makefile"
-  return (strcasecmp( _filename.ascii(), s ) == 0);
+  return ( filename == pattern );
 }
 
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)

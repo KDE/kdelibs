@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -49,13 +49,13 @@ public:
    * Create factory
    */
   KServiceTypeFactory();
-  
+
   virtual ~KServiceTypeFactory();
 
   /**
    * Not meant to be called at this level
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *) 
+  virtual KSycocaEntry *createEntry(const QString &, const char *)
     { assert(0); return 0; }
 
   /**
@@ -74,7 +74,7 @@ public:
    * Slow and memory consuming, avoid using
    */
   KMimeType::List allMimeTypes();
-  
+
   /**
    * @return all servicetypes
    * Slow and memory consuming, avoid using
@@ -92,15 +92,17 @@ public:
    */
   static KServiceTypeFactory * self();
 
-protected:
-  virtual KServiceType *createEntry(int offset);
-
-  /** 
+  /**
    * Looks whether the given filename matches the given pattern
    * @param _filename is the real decoded filename (or dirname
    *        without trailing '/').
+   * @param _pattern is a pattern like *.txt, *.tar.gz, etc.
+   * Patterns with two asterisks like "*.*pk" are not supported yet.
    */
-  bool matchFilename( const QString& _filename, const QString& _pattern ) const;
+  static bool matchFilename( const QString& _filename, const QString& _pattern );
+
+protected:
+  virtual KServiceType *createEntry(int offset);
 
 private:
   static KServiceTypeFactory *_self;
