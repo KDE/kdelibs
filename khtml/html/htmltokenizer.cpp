@@ -287,8 +287,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         checkScriptBuffer();
 
         char ch = src[0].latin1();
-        if ( script && !escaped && ch == '\\' )
-            escaped = true;
 
         if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
@@ -436,8 +434,12 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 }
 
                 scriptCode[ scriptCodeSize++ ] = src[0];
+                if ( script && !escaped && ch == '\\' )
+                    escaped = true;
+                else
+                    escaped = false;
+
                 ++src;
-                escaped = false;
             }
         }
     }
