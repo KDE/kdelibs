@@ -533,6 +533,8 @@ QString kdBacktrace(int levels)
 #ifdef HAVE_BACKTRACE
     void* trace[256];
     int n = backtrace(trace, 256);
+    if (!n)
+	return s;
     char** strings = backtrace_symbols (trace, n);
 
     if ( levels != -1 )
@@ -544,7 +546,8 @@ QString kdBacktrace(int levels)
              QString::fromLatin1(": ") +
              QString::fromLatin1(strings[i]) + QString::fromLatin1("\n");
     s += "]\n";
-    free (strings);
+    if (strings)
+        free (strings);
 #endif
     return s;
 }
