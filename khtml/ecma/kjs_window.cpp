@@ -1071,7 +1071,7 @@ Completion WindowFunc::tryExecute(const List &args)
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
   case Focus:
-    if (widget) 
+    if (widget)
       widget->setActiveWindow();
     result = Undefined();
     break;
@@ -1305,7 +1305,9 @@ Completion LocationFunc::tryExecute(const List &args)
   if (part) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ));
+      QString str = v.toString().value().qstring();
+      part->scheduleRedirection(0, Window::retrieveActive()->part()->
+                              completeURL(str).url().prepend( "target://_self/#" ));
       break;
     case Reload:
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
