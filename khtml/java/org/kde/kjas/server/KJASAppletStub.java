@@ -338,7 +338,7 @@ public class KJASAppletStub extends Frame
             repaint();
         }
         
-        public void paint(Graphics g) {
+        public synchronized void paint(Graphics g) {
             super.paint(g);
             int x = getWidth() / 2;
             int y = getHeight() / 2;
