@@ -200,7 +200,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     return Undefined();
 
   // Check for images with name==propertyName, return item or list if found
-  // We don't use the images collection because
+  // We don't use the images collection because it looks for id=p and name=p, we only want name=p
   DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
   int len = list.length();
   if ( len == 1 ) {
@@ -1696,21 +1696,43 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AreaAccessKey:       return getString(area.accessKey());
     case AreaAlt:             return getString(area.alt());
     case AreaCoords:          return getString(area.coords());
-    case AreaHref:            return getString(area.href());
-    case AreaHash:            return getString('#'+KURL(area.href().string()).ref());
-    case AreaHost:            return getString(KURL(area.href().string()).host());
-    case AreaHostName: {
-      KURL url(area.href().string());
-      kdDebug(6070) << "link::hostname uses:" <<url.url()<<endl;
-      if (url.port()==0)
-        return getString(url.host());
-      else
-        return getString(url.host() + ":" + QString::number(url.port()));
+    // Group everything that needs href
+    case AreaHref:
+    case AreaHash:
+    case AreaHost:
+    case AreaHostName:
+    case AreaPathName:
+    case AreaPort:
+    case AreaProtocol:
+    case AreaSearch:
+    {
+      DOM::Document doc = area.ownerDocument();
+      DOM::DOMString href = area.href();
+      KURL url;
+      if ( !href.isNull() ) {
+        url = doc.completeURL( href ).string();
+        if ( href.isEmpty() )
+          url.setFileName( QString::null ); // href="" clears the filename (in IE)
+      }
+      switch(token) {
+      case AreaHref:
+        return String(url.url());
+      case AreaHash:            return String(url.isEmpty() ? "" : '#'+url.ref());
+      case AreaHost:            return String(url.host());
+      case AreaHostName: {
+        if (url.port()==0)
+          return String(url.host());
+        else
+          return String(url.host() + ":" + QString::number(url.port()));
+      }
+      case AreaPathName:        {
+        return String(url.path());
+      }
+      case AreaPort:            return String(QString::number(url.port()));
+      case AreaProtocol:        return String(url.isEmpty() ? "" : url.protocol()+":");
+      case AreaSearch:          return String(url.query());
+      }
     }
-    case AreaPathName:        return getString(KURL(area.href().string()).path());
-    case AreaPort:            return getString(QString::number(KURL(area.href().string()).port()));
-    case AreaProtocol:        return getString(KURL(area.href().string()).protocol()+":");
-    case AreaSearch:          return getString(KURL(area.href().string()).query());
     case AreaNoHref:          return Boolean(area.noHref());
     case AreaShape:           return getString(area.shape());
     case AreaTabIndex:        return Number(area.tabIndex());
