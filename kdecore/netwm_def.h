@@ -296,7 +296,7 @@ public:
 
        @li Visible indicates the client window is visible to the user.
 
-       @li Withdraw indicates that neither the client window nor its icon is visible.
+       @li Withdrawn indicates that neither the client window nor its icon is visible.
 
        @li Iconic indicates that the client window is not visible, but its icon is.
     **/
