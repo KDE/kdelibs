@@ -32,7 +32,9 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc,argv,"cupsdconf",I18N_NOOP("A CUPS configuration tool"),"0.0.1");
+	KCmdLineArgs::init(argc,argv,"cupsdconf",
+			   I18N_NOOP("A CUPS configuration tool"),
+			   I18N_NOOP("A CUPS configuration tool"),"0.0.1");
 	KCmdLineArgs::addCmdLineOptions(options);
 	KApplication	app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
