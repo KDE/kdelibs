@@ -21,6 +21,7 @@
 #ifndef KABC_ADDRESS_H
 #define KABC_ADDRESS_H
 
+#include <qmap.h>
 #include <qstring.h>
 #include <qvaluelist.h>
 
@@ -283,7 +284,7 @@ class Address
       @param cname  name of the country
       @return       two digit ISO code
     */
-    QString countryToISO( const QString &cname ) const;
+    static QString countryToISO( const QString &cname );
     
   private:
     /** 
@@ -317,6 +318,8 @@ class Address
     QString mPostalCode;
     QString mCountry;
     QString mLabel;
+
+    static QMap<QString, QString> mISOMap;
 };
 
 QDataStream &operator<<( QDataStream &, const Address & );

@@ -30,6 +30,8 @@
 
 using namespace KABC;
 
+QMap<QString, QString> Address::mISOMap;
+
 Address::Address() :
   mEmpty( true ), mType( 0 )
 {
@@ -499,8 +501,12 @@ int Address::findBalancedBracket( const QString &tsection, int pos ) const
   return -1;
 }
 
-QString Address::countryToISO( const QString &cname ) const 
+QString Address::countryToISO( const QString &cname )
 {
+  QString isoCode = mISOMap[ cname ];
+  if ( !isoCode.isEmpty() )
+    return isoCode;
+
   // as we have no clean way of mapping country names (which in vcf
   // can be in any language) we do wild grepping here. Ideally,
   // somewhere a QMap<QString,QString> should be stored, which is
@@ -524,6 +530,7 @@ QString Address::countryToISO( const QString &cname ) const
           index = tag.findRev('/');
           tag = tag.mid(index+1);
           file.close();
+          mISOMap[ cname ] = tag;
           return tag;
         }
         strbuf = s.readLine();
@@ -532,6 +539,7 @@ QString Address::countryToISO( const QString &cname ) const
     }
   }
   // fall back to system country
+  mISOMap[ cname ] = KGlobal::locale()->country();
   return KGlobal::locale()->country();
 }
 
