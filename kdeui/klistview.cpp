@@ -559,6 +559,16 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
     blockSignals( block );
   }
+  else if ((selectionModeExt()==Konqueror) && (d->selectedBySimpleMove))
+  {
+     d->selectedBySimpleMove=false;
+     if (currentItem()!=0)
+     {
+        currentItem()->setSelected(false);
+        currentItem()->repaint();
+//        emit selectionChanged();
+     };
+  };
 
   QPoint p( contentsToViewport( e->pos() ) );
   QListViewItem *at = itemAt (p);
@@ -1242,11 +1252,8 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        //toggle selection of current item
        if (d->selectedBySimpleMove)
           d->selectedBySimpleMove=false;
-//       else
-//       {
        item->setSelected(!item->isSelected());
        emitSelectionChanged=TRUE;
-//       };
        break;
 
     case Key_Insert:
