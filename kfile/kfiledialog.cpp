@@ -535,7 +535,8 @@ void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 	pathChanged();
     }
 
-    toolbar->getButton(PARENT_BUTTON)->enable(!dir->isRoot());
+    //toolbar->getButton(PARENT_BUTTON)->setEnabled(!dir->isRoot());
+    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot()); //sven
 }
 
 void KFileBaseDialog::rereadDir()
