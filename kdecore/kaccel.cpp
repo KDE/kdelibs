@@ -106,6 +106,7 @@ KAccelEventHandler* KAccelEventHandler::g_pSelf = 0;
 bool KAccelEventHandler::g_bAccelActivated = false;
 
 KAccelEventHandler::KAccelEventHandler()
+    : QWidget( 0, "KAccelEventHandler" )
 {
 #	ifdef Q_WS_X11
 	if ( kapp )
