@@ -146,8 +146,8 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 		printer->setPrinterName(printer->name());
 		printer->setDescription(conf.readEntry("Description"));
 		printer->setLocation(conf.readEntry("Comment"));
-		printer->setOption("kde-special-command",conf.readEntry("Command"));
-		printer->setOption("kde-special-file",conf.readEntry("File"));
+		printer->setOption("kde-special-command",conf.readPathEntry("Command"));
+		printer->setOption("kde-special-file",conf.readPathEntry("File"));
 		printer->setOption("kde-special-extension",conf.readEntry("Extension"));
 		printer->setOption("kde-special-require",conf.readEntry("Require"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));

@@ -21,7 +21,7 @@
 
 <!ENTITY cdrom  '<hardware>CD-ROM</hardware>'>
 
-<!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
+<!ENTITY nt     "<abbrev>nt.</abbrev>">		   <!-- English: &eg; -->
 <!ENTITY st     "<abbrev>st.</abbrev>">         <!-- English: &ie; -->
 <!ENTITY jne    "<abbrev>jne.</abbrev>">        <!-- English: &etc; -->
 
@@ -36,6 +36,7 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menüü">
+<!ENTITY OS     "operatsioonisüsteem">         <!-- <acronym>OS</acronym>-->
 
 <!-- Temporary solution to have at least partially translated docs.
  -->

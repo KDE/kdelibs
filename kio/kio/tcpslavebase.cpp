@@ -298,7 +298,8 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     d->userAborted = false;
 
     //  - leaving SSL - warn before we even connect
-    if (metaData("ssl_activate_warnings") == "TRUE" &&
+    if (metaData("main_frame_request") == "TRUE" &&
+               metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
         !m_bIsSSL) {
        KSSLSettings kss;
@@ -343,7 +344,10 @@ bool TCPSlaveBase::connectToHost( const QString &host,
 
     // store the IP for later
     const KSocketAddress *sa = ks.peerAddress();
-    d->ip = sa->nodeName();
+    if (sa)
+      d->ip = sa->nodeName();
+    else
+      d->ip = "";
 
     ks.release(); // KExtendedSocket no longer applicable
 
@@ -624,6 +628,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
   if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
      KIO::AuthInfo ai;
+     bool showprompt = !checkCachedAuthentication(ai);
      do {
         QString pass;
         QByteArray authdata, authval;
@@ -634,7 +639,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         ai.setModified(true);
         ai.username = certname;
         ai.keepPassword = true;
-        if (!checkCachedAuthentication(ai)) {
+        if (showprompt) {
            qds << ai;
 
            if (!d->dcc) {
@@ -668,9 +673,10 @@ KSSLCertificateHome::KSSLAuthAction aa;
                                                      "new password?"),
                                                 i18n("SSL"));
               if (rc == KMessageBox::No) break;
+              showprompt = true;
         }
      } while (!pkcs);
-     cacheAuthentication(ai);
+     if (pkcs) cacheAuthentication(ai);
   }
 
    // If we could open the certificate, let's send it
@@ -976,24 +982,22 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
              rc = 1;
              cp = KSSLCertificateCache::Accept;
-             d->cc->addHost(pc, ourHost);
-                result = messageBox( WarningYesNo,
+             result = messageBox( WarningYesNo,
                                i18n("Would you like to accept this "
                                     "certificate forever without "
                                     "being prompted?"),
                                i18n("Server Authentication"),
                                i18n("&Forever"),
                                i18n("&Current Sessions Only"));
-                if (result == KMessageBox::Yes)
-                   permacache = true;
-                else
-                   permacache = false;
+             permacache = (result == KMessageBox::Yes);
+             d->cc->addCertificate(pc, cp, permacache);
+             d->cc->addHost(pc, ourHost);
           } else {
              setMetaData("ssl_action", "reject");
              rc = -1;
              cp = KSSLCertificateCache::Prompt;
+             d->cc->addCertificate(pc, cp, permacache);
           }
-          d->cc->addCertificate(pc, cp, permacache);
         }
       }
     }

@@ -87,7 +87,12 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
 
 KFileTreeView::~KFileTreeView()
 {
-   m_mapCurrentOpeningFolders.clear();
+   // we must make sure that the KFileTreeViewItems are deleted _before_ the
+   // branches are deleted. Otherwise, the KFileItems would be destroyed 
+   // and the KFileTreeViewItems had dangling pointers to them.
+   hide();
+   clear();
+   m_branches.clear(); // finally delete the branches and KFileItems
 }
 
 
@@ -272,7 +277,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    KFileTreeBranch *branch = it->branch();
 
    /* Start the animation for the branch object */
-   if( it->isDir() && branch )
+   if( it->isDir() && branch && item->childCount() == 0 )
    {
       /* check here if the branch really needs to be populated again */
       kdDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;
@@ -391,7 +396,7 @@ bool KFileTreeView::removeBranch( KFileTreeBranch *branch )
 {
    if(m_branches.contains(branch))
    {
-      takeItem(branch->root());
+      delete (branch->root());
       m_branches.remove( branch );
       return true;
    }

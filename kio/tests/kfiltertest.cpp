@@ -1,6 +1,7 @@
 #include "kfilterdev.h"
 #include "kfilterbase.h"
 #include <unistd.h>
+#include <limits.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kdebug.h>

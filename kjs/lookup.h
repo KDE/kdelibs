@@ -25,6 +25,8 @@
 
 #include "ustring.h"
 #include "value.h"
+#include "object.h"
+#include "interpreter.h"
 #include <stdio.h>
 
 namespace KJS {
@@ -299,7 +301,7 @@ namespace KJS {
     bool hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
   }; \
   const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
-  };
+  }
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
     KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::UString &propertyName) const \
@@ -343,7 +345,7 @@ namespace KJS {
   private: \
     int id; \
   }; \
-  };
+  }
 
   // To be used in all call() implementations, before casting the type of thisObj
 #define KJS_CHECK_THIS( ClassName, theObj ) \
@@ -369,6 +371,6 @@ namespace KJS {
    * - cleanup old stuff (e.g. hasProperty)
    * - compile, test, commit ;)
    */
-}; // namespace
+} // namespace
 
 #endif

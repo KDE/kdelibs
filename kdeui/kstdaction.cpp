@@ -356,4 +356,4 @@ KAction *aboutApp( const QObject *recvr, const char *slot, KActionCollection* pa
 KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( AboutKDE, name, recvr, slot, parent ); }
 
-};
+}

@@ -176,5 +176,8 @@ int KKeyNative::keyCodeQt() const
 uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
 bool KKeyNative::keyboardHasWinKey()           { return KKeyServer::keyboardHasWinKey(); }
 uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMaskX(); }
+uint KKeyNative::modXNumLock()                 { return KKeyServer::modXNumLock(); }
+uint KKeyNative::modXLock()                    { return KKeyServer::modXLock(); }
+uint KKeyNative::modXScrollLock()              { return KKeyServer::modXScrollLock(); }
 
 #endif // Q_WS_X11

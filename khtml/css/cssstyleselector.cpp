@@ -69,8 +69,6 @@ CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
 
-static CSSStyleSelector::Encodedurl *encodedurl = 0;
-
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
 
@@ -272,7 +270,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     // set some variables we will need
     dynamicState = state;
     usedDynamicStates = StyleSelector::None;
-    ::encodedurl = &encodedurl;
     pseudoState = PseudoUnknown;
 
     element = e;
@@ -288,7 +285,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // try to sort out most style rules as early as possible.
     // ### implement CSS3 namespace support
-    int cssTagId = (e->id() & NodeImpl::IdLocalMask);
+    int cssTagId = (e->id() & NodeImpl_IdLocalMask);
     int smatch = 0;
     int schecked = 0;
 
@@ -595,7 +592,7 @@ static void cleanpath(QString &path)
     //kdDebug() << "checkPseudoState " << path << endl;
 }
 
-static void checkPseudoState( DOM::ElementImpl *e )
+static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
 {
     DOMString attr;
     if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isNull() ) {
@@ -605,11 +602,11 @@ static void checkPseudoState( DOM::ElementImpl *e )
     QString u = attr.string();
     if ( u.find("://") == -1 ) {
 	if ( u[0] == '/' )
-	    u = encodedurl->host + u;
+	    u = encodedurl.host + u;
 	else if ( u[0] == '#' )
-	    u = encodedurl->file + u;
+	    u = encodedurl.file + u;
 	else
-	    u = encodedurl->path + u;
+	    u = encodedurl.path + u;
 	cleanpath( u );
     }
     //completeURL( attr.string() );
@@ -625,7 +622,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 //     sel->print();
 
 
-    if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
+    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
 
     if(sel->attr)
     {
@@ -741,7 +738,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'l':
 	    if( value == "link") {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState == PseudoLink ) {
 		    return true;
 		}
@@ -750,7 +747,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'v':
 	    if ( value == "visited" ) {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState == PseudoVisited )
 		    return true;
 	    }
@@ -765,7 +762,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'a':
 	    if ( value == "active" ) {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState != PseudoNone ) {
 		    selectorDynamicState |= StyleSelector::Active;
 		    return true;
@@ -1115,7 +1112,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 {
     Length l;
     if ( !primitiveValue ) {
-	if ( *ok )
+	if ( ok )
 	    *ok = false;
     } else {
 	int type = primitiveValue->primitiveType();
@@ -1577,7 +1574,13 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 //     case CSS_PROP_SPEAK_NUMERAL:
 //     case CSS_PROP_SPEAK_PUNCTUATION:
     case CSS_PROP_TABLE_LAYOUT: {
-	if ( !primitiveValue->getIdent() )
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
+            if(parentNode)
+		style->setTableLayout(parentStyle->tableLayout());
+            return;
+        }
+
+	if ( !primitiveValue )
 	    return;
 
 	ETableLayout l = TAUTO;
@@ -2221,7 +2224,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     {
         FontDef fontDef = style->htmlFont().fontDef;
         int oldSize;
-        float size = 0;
+        int size = 0;
 
         float toPix = paintDeviceMetrics->logicalDpiY()/72.;
         if (toPix  < 96./72.) toPix = 96./72.;
@@ -2238,20 +2241,20 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         } else if(primitiveValue->getIdent()) {
             switch(primitiveValue->getIdent())
             {
-            case CSS_VAL_XX_SMALL: size = m_fontSizes[0]; break;
-            case CSS_VAL_X_SMALL:  size = m_fontSizes[1]; break;
-            case CSS_VAL_SMALL:    size = m_fontSizes[2]; break;
-            case CSS_VAL_MEDIUM:   size = m_fontSizes[3]; break;
-            case CSS_VAL_LARGE:    size = m_fontSizes[4]; break;
-            case CSS_VAL_X_LARGE:  size = m_fontSizes[5]; break;
-            case CSS_VAL_XX_LARGE: size = m_fontSizes[6]; break;
+            case CSS_VAL_XX_SMALL: size = int( m_fontSizes[0] ); break;
+            case CSS_VAL_X_SMALL:  size = int( m_fontSizes[1] ); break;
+            case CSS_VAL_SMALL:    size = int( m_fontSizes[2] ); break;
+            case CSS_VAL_MEDIUM:   size = int( m_fontSizes[3] ); break;
+            case CSS_VAL_LARGE:    size = int( m_fontSizes[4] ); break;
+            case CSS_VAL_X_LARGE:  size = int( m_fontSizes[5] ); break;
+            case CSS_VAL_XX_LARGE: size = int( m_fontSizes[6] ); break;
             case CSS_VAL__KONQ_XXX_LARGE:  size = ( m_fontSizes[6]*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
-                size = oldSize * 1.2;
+                size = ( oldSize * 5 ) / 4;
                 break;
             case CSS_VAL_SMALLER:
-                size = oldSize / 1.2;
+                size = ( oldSize * 4 ) / 5;
                 break;
             default:
                 return;
@@ -2259,26 +2262,28 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
         } else {
             int type = primitiveValue->primitiveType();
-            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                size = primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics);
+            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
+                if (!khtml::printpainter && element && element->getDocument()->view())
+                    size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
+                                element->getDocument()->view()->part()->zoomFactor() ) / 100;
+                else size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) );
+            }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+                size = int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                         * parentStyle->font().pixelSize()) / 100;
             else
                 return;
 
-            if (!khtml::printpainter && element && element->getDocument()->view())
-                size *= element->getDocument()->view()->part()->zoomFactor() / 100.0;
         }
 
-        if(size <= 0) return;
+        if(size < 1) return;
 
         // we never want to get smaller than the minimum font size to keep fonts readable
         if(size < minFontSize ) size = minFontSize;
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
-	fontDef.size = int(size);
+	fontDef.size = size;
         if (style->setFontDef( fontDef ))
 	fontDirty = true;
         return;

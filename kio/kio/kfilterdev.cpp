@@ -27,10 +27,12 @@
 class KFilterDev::KFilterDevPrivate
 {
 public:
-    KFilterDevPrivate() : bNeedHeader(true), bSkipHeaders(false), autoDeleteFilterBase(false) {}
+    KFilterDevPrivate() : bNeedHeader(true), bSkipHeaders(false),
+                          autoDeleteFilterBase(false), bOpenedUnderlyingDevice(false) {}
     bool bNeedHeader;
     bool bSkipHeaders;
     bool autoDeleteFilterBase;
+    bool bOpenedUnderlyingDevice;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
     QCString ungetchBuffer;
     QCString origFileName;
@@ -47,6 +49,8 @@ KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
 
 KFilterDev::~KFilterDev()
 {
+    if ( isOpen() )
+        close();
     if ( d->autoDeleteFilterBase )
         delete filter;
     delete d;
@@ -66,7 +70,7 @@ QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
 
    base->setDevice(file);
    return new KFilterDev(base);
-};
+}
 #endif
 
 //static
@@ -123,7 +127,8 @@ bool KFilterDev::open( int mode )
     }
     d->bNeedHeader = !d->bSkipHeaders;
     filter->init( mode );
-    bool ret = !filter->device()->isOpen() ? filter->device()->open( mode ) : true;
+    d->bOpenedUnderlyingDevice = !filter->device()->isOpen();
+    bool ret = d->bOpenedUnderlyingDevice ? filter->device()->open( mode ) : true;
     d->result = KFilterBase::OK;
 
     if ( !ret )
@@ -145,8 +150,9 @@ void KFilterDev::close()
     //kdDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
 
     filter->terminate();
-    //kdDebug(7005) << "KFilterDev::close. Terminate() done. Closing device." << endl;
-    filter->device()->close();
+    if ( d->bOpenedUnderlyingDevice )
+        filter->device()->close();
+
     setState( 0 ); // not IO_Open
 }
 

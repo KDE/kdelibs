@@ -28,7 +28,7 @@ extern "C"
 	{
 		return new KExtFactory;
 	}
-};
+}
 
 KExtFactory::KExtFactory(QObject *parent, const char *name)
 : KLibFactory(parent,name)

@@ -3,7 +3,6 @@
 
 #include "khtml_part.h"
 
-#include <qguardedptr.h>
 
 #include <kaction.h>
 #include <kio/global.h>

@@ -319,6 +319,9 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   connect( d->pList, SIGNAL(currentChanged(QListViewItem*)),
            SLOT(slotListItemSelected(QListViewItem*)) );
+  // handle double clicking an item
+  connect ( d->pList, SIGNAL ( doubleClicked ( QListViewItem *, const QPoint &, int ) ),
+                       SLOT ( slotListItemDoubleClicked ( QListViewItem *, const QPoint &, int ) ) );
 
   //
   // CREATE CHOOSE KEY GROUP
@@ -571,6 +574,16 @@ void KKeyChooser::slotListItemSelected( QListViewItem* )
 	updateButtons();
 }
 
+
+void KKeyChooser::slotListItemDoubleClicked ( QListViewItem *, const QPoint & , int )
+{
+
+  KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
+  if( pItem != NULL && pItem->isConfigurable())
+      d->pbtnShortcut->captureShortcut ( );
+
+}
+
 void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 {
 	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
@@ -706,7 +719,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			}
 		}
 	}
-        
+
         if( isKeyPresentLocally( cut, pItem, bWarnUser ? i18n("Key Conflict") : QString::null ))
             return true;
 
@@ -725,7 +738,10 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
 {
-	// Search for shortcut conflicts with other actions in the
+    if ( cut.toString().isEmpty())
+	       return false;
+
+		// Search for shortcut conflicts with other actions in the
 	//  lists we're configuring.
 	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
 		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
@@ -738,7 +754,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			}
 		}
 	}
-        return false;            
+        return false;
 }
 
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
@@ -800,11 +816,10 @@ QString KKeyChooserItem::text( int iCol ) const
 {
 	if( iCol == 0 ) {
 		// Quick HACK to get rid of '&'s.
-		// TODO: convert '&&' => '&' and leave it in.
 		QString s = m_pList->label(m_iAction);
 		QString s2;
 		for( uint i = 0; i < s.length(); i++ )
-			if( s[i] != '&' )
+			if( s[i] != '&' || ( i+1<s.length() && s[i+1] == '&' ) )
 				s2 += s[i];
 		return s2;
 	}

@@ -16,6 +16,8 @@ import java.awt.Image;
  */
 public class KJASSwingConsole extends javax.swing.JFrame implements Console {
     
+    private boolean force_append = true;
+
     /** Creates new form KJASSwingConsole */
     public KJASSwingConsole() {
         initComponents();
@@ -48,6 +50,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
             System.out.println( "WARNING: Security Manager disabled!" );
             textField.setForeground(java.awt.Color.red);
         }
+        force_append = false;
     }
     
     /** This method is called from within the constructor to
@@ -191,7 +194,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
     // End of variables declaration//GEN-END:variables
 
     public void append(String txt) {
-        if (txt == null) {
+        if (txt == null || (!isVisible() && !force_append)) {
             return;
         }
         int length = txt.length();

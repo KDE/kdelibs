@@ -41,7 +41,7 @@ extern "C"
     extern const char *kss_version;
     KScreenSaver *kss_create( WId d );
     QDialog *kss_setup();
-};
+}
 
 static const KCmdLineOptions options[] =
 {

@@ -42,6 +42,7 @@
 #include <qmovie.h>
 #include <qwidget.h>
 
+#include <kapplication.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
@@ -106,8 +107,6 @@ void CachedObject::setRequest(Request *_request)
     if ( _request && !m_request )
         m_status = Pending;
     m_request = _request;
-    if (canDelete() && m_free)
-        delete this;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -161,9 +160,6 @@ void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
     Cache::flush();
     m_clients.remove(c);
-
-    if ( canDelete() && m_free )
-      delete this;
 }
 
 void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
@@ -250,8 +246,6 @@ void CachedScript::deref(CachedObjectClient *c)
 {
     Cache::flush();
     m_clients.remove(c);
-    if ( canDelete() && m_free )
-      delete this;
 }
 
 void CachedScript::data( QBuffer &buffer, bool eof )
@@ -502,12 +496,20 @@ void CachedImage::deref( CachedObjectClient *c )
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
-    if ( canDelete() && m_free )
-        delete this;
 }
 
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
+
+class KHTMLPixmap : public QPixmap
+{
+public:
+#ifdef Q_WS_X11
+    bool hasAlphaImage() const { return data->alphapm; }
+#else
+    bool hasAlphaImage() const { return false; }
+#endif
+};
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
@@ -537,7 +539,8 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
-    if ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask()))
+    if ( !static_cast<const KHTMLPixmap*>( &r )->hasAlphaImage() &&
+        ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask())) )
     {
         QPixmap pix = r;
         if ( w != r.width() || (isvalid && pix.mask()))
@@ -686,7 +689,6 @@ void CachedImage::movieStatus(int status)
         delete bg;
         bg = 0;
     }
-
 
     if((status == QMovie::EndOfMovie && (!m || m->frameNumber() <= 1)) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
@@ -880,6 +882,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 
 DocLoader::~DocLoader()
 {
+    Cache::loader()->cancelRequests( this );
     Cache::docloader->remove( this );
 }
 
@@ -938,6 +941,7 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -948,6 +952,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -958,6 +963,7 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -1030,7 +1036,7 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
 
     emit requestStarted( req->m_docLoader, req->object );
 
-    servePendingRequests();
+    QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
 }
 
 void Loader::servePendingRequests()
@@ -1054,6 +1060,8 @@ void Loader::servePendingRequests()
   if ( req->m_docLoader )  {
       KURL r = req->m_docLoader->doc()->URL();
       r.setRef(QString::null);
+      r.setUser(QString::null);
+      r.setPass(QString::null);
       if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
           r.setPath( "/" );
       job->addMetaData("referrer", r.url());
@@ -1112,7 +1120,7 @@ void Loader::slotFinished( KIO::Job* job )
 #endif
 
   delete r;
-  servePendingRequests();
+  QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
@@ -1208,6 +1216,7 @@ KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 
 QDict<CachedObject> *Cache::cache = 0;
 QPtrList<DocLoader>* Cache::docloader = 0;
+QPtrList<CachedObject> *Cache::freeList = 0;
 Cache::LRUList *Cache::lru = 0;
 Loader *Cache::m_loader = 0;
 
@@ -1233,11 +1242,22 @@ void Cache::init()
         nullPixmap = new QPixmap;
 
     if ( !brokenPixmap )
-//        brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::FileSystem, 16, KIcon::DisabledState));
         brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::Desktop, 16, KIcon::DisabledState));
 
     if ( !m_loader )
         m_loader = new Loader();
+
+    if ( !freeList ) {
+        freeList = new QPtrList<CachedObject>;
+        freeList->setAutoDelete(true);
+    }
+}
+
+void Cache::flushFreeList()
+{
+    for ( CachedObject* p = freeList->first(); p; p = freeList->next() )
+        if (p->canDelete())
+            freeList->remove();
 }
 
 void Cache::clear()
@@ -1249,8 +1269,10 @@ void Cache::clear()
 #endif
     cache->setAutoDelete( true );
 
-#ifndef NDEBUG
+#if 0
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
+        assert(it.current()->canDelete());
+    for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
         assert(it.current()->canDelete());
 #endif
 
@@ -1260,6 +1282,7 @@ void Cache::clear()
     delete brokenPixmap; brokenPixmap = 0;
     delete m_loader;   m_loader = 0;
     delete docloader; docloader = 0;
+    delete freeList; freeList = 0;
 }
 
 CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool reload, time_t _expireDate )
@@ -1476,6 +1499,8 @@ void Cache::flush(bool force)
 
     init();
 
+    flushFreeList();
+
 #ifdef CACHE_DEBUG
     statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
@@ -1576,10 +1601,6 @@ void Cache::removeCacheEntry( CachedObject *object )
 {
   QString key = object->url().string();
 
-  // this indicates the deref() method of CachedObject to delete itself when the reference counter
-  // drops down to zero
-  object->setFree( true );
-
   cache->remove( key );
   lru->remove( key );
 
@@ -1587,8 +1608,7 @@ void Cache::removeCacheEntry( CachedObject *object )
   for ( dl=docloader->first(); dl; dl=docloader->next() )
       dl->removeCachedObject( object );
 
-  if ( object->canDelete() )
-     delete object;
+  object->setFree();
 }
 
 

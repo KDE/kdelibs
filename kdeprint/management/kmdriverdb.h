@@ -23,7 +23,7 @@
 #define KMDRIVERDB_H
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 #include <qstring.h>
 

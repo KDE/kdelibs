@@ -29,6 +29,7 @@
 #include <qpointarray.h>
 #include <qpainter.h>
 #include <qtextstream.h>
+#include <qfileinfo.h>
 
 #include <kinstance.h>
 #include <klocale.h>
@@ -76,7 +77,7 @@ public:
 
   bool m_bSelectable;
 };
-};
+}
 
 PartBase::PartBase()
 {
@@ -286,7 +287,7 @@ public:
   bool m_showProgressInfo;
 };
 
-};
+}
 
 ReadOnlyPart::ReadOnlyPart( QObject *parent, const char *name )
  : Part( parent, name ), m_bTemp( false )
@@ -338,11 +339,12 @@ bool ReadOnlyPart::openURL( const KURL &url )
   {
     m_bTemp = true;
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-    QString extension;
     QString fileName = url.fileName();
-    int extensionPos = fileName.findRev( '.' );
-    if ( extensionPos != -1 && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
-        extension = fileName.mid( extensionPos ); // keep the '.'
+    QFileInfo fileInfo(fileName);
+    QString ext = fileInfo.extension();
+    QString extension;
+    if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
+        extension = "."+ext; // keep the '.'
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
@@ -462,11 +464,11 @@ void ReadWritePart::setModified()
   setModified( true );
 }
 
-bool ReadWritePart::closeURL()
+bool ReadWritePart::queryClose()
 {
-  abortLoad(); //just in case
-  if ( m_bModified && m_bReadWrite )
-  {
+  if ( !isReadWrite() || !isModified() )
+    return true;
+
     int res = KMessageBox::warningYesNoCancel( widget(),
             i18n( "The document \"%1\" has been modified.\n"
                   "Do you want to save it?" ).arg( url().fileName() ),
@@ -474,34 +476,43 @@ bool ReadWritePart::closeURL()
 
     switch(res) {
     case KMessageBox::Yes :
-      m_bClosing = true; // remember to clean up the temp file
       if (m_url.isEmpty())
       {
           KURL url = KFileDialog::getSaveURL();
           if (url.isEmpty())
-          {
-            m_bClosing = false;
             return false;
-          }
+
           return saveAs( url );
       }
       return save();
     case KMessageBox::No :
-      setModified( false ); // the user isn't interested in the changes, forget them
       return true;
     default : // case KMessageBox::Cancel :
       return false;
     }
+}
+
+bool ReadWritePart::closeURL()
+{
+  abortLoad(); //just in case
+  if ( isReadWrite() && isModified() )
+  {
+    if (!queryClose())
+       return false;
   }
   // Not modified => ok and delete temp file.
   return ReadOnlyPart::closeURL();
+}
+
+bool ReadWritePart::closeURL( bool promptToSave )
+{
+  return promptToSave ? closeURL() : ReadOnlyPart::closeURL();
 }
 
 bool ReadWritePart::save()
 {
   if( saveFile() )
     return saveToURL();
-  m_bClosing = false;
   return false;
 }
 
@@ -510,7 +521,6 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (kurl.isMalformed())
   {
       kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
-      m_bClosing = false;
       return false;
   }
   m_url = kurl; // Store where to upload in saveToURL
@@ -547,12 +557,20 @@ bool ReadWritePart::saveToURL()
     emit completed();
     // if m_url is a local file there won't be a temp file -> nothing to remove
     assert( !m_bTemp );
-    m_bClosing = false; // no temp file to cleaned up
     return true; // Nothing to do
   }
   else
   {
-    KIO::Job * job = KIO::file_copy( m_file, m_url, -1, true /*overwrite*/ );
+    KTempFile tempFile;
+    QString uploadFile = tempFile.name();
+    tempFile.unlink();
+    // Create hardlink
+    if (::link(QFile::encodeName(m_file), QFile::encodeName(uploadFile)) != 0)
+    {
+       // Uh oh, some error happened.
+       return false;
+    }
+    KIO::Job * job = KIO::file_move( uploadFile, m_url, -1, true /*overwrite*/ );
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
   }
@@ -560,19 +578,17 @@ bool ReadWritePart::saveToURL()
 
 void ReadWritePart::slotUploadFinished( KIO::Job * job )
 {
+  KIO::FileCopyJob *copyJob = static_cast<KIO::FileCopyJob *>(job);
   if (job->error())
+  {
+    unlink(QFile::encodeName(copyJob->srcURL().path()));
     emit canceled( job->errorString() );
+  }
   else
   {
     setModified( false );
-    if ( m_bClosing && m_bTemp ) // We're finished with this document -> remove temp file
-    {
-      unlink( QFile::encodeName(m_file) );
-      m_bTemp = false;
-    }
     emit completed();
   }
-  m_bClosing = false; // temp file was cleaned up
 }
 
 #include "part.moc"

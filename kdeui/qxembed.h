@@ -78,7 +78,40 @@ public:
      */
     ~QXEmbed();
 
+    /**
+     * Embedded applications should call this function to make sure 
+     * they support the XEMBED protocol. It is called automatically
+     * when you use @ref #embedClientIntoWindow() or 
+     * @ref #processClientCmdline(). Clients might have to call it
+     * manually when you use @ref #embed().
+     */
     static void initialize();
+
+    enum Protocol { XEMBED, XPLAIN };
+
+    /** 
+     * Sets the protocol used for embedding windows.
+     * This function must be called before embedding a window.
+     * Protocol XEMBED provides maximal functionality (focus, tabs, etc)
+     * but requires explicit cooperation from the embedded window.  
+     * Protocol XPLAIN provides maximal compatibility with 
+     * embedded applications that do not support the XEMBED protocol.
+     * The default is XEMBED.  
+     *
+     * Future work:
+     * Create a protocol AUTO that selects the best option.  
+     * This will be possible with the XEMBED v2 specification.
+     */
+
+    void setProtocol( Protocol proto );
+
+    /** 
+     * Returns the protocol used for embedding the current window.
+     *
+     * @return the protocol used by QXEmbed.
+     */
+
+    Protocol protocol();
 
     /**
      * Embeds the window with the identifier w into this xembed widget.
@@ -88,8 +121,9 @@ public:
      * about its target embedder. In that case, it is not necessary to call
      * embed(). Instead, the client will call the static function
      * @ref #embedClientIntoWindow().
-     * 
+     *
      * @param w the identifier of the window to embed
+     * @param proto is the embedding protocol to use
      * @see #embeddedWinId()
      */
     void embed( WId w );
@@ -181,6 +215,7 @@ protected:
 private:
     WId window;
     QXEmbedData* d;
+    void checkGrab();
     void sendSyntheticConfigureNotifyEvent();
 };
 

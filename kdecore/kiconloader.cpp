@@ -705,8 +705,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	if(ext != "SVG" && ext != "VGZ")
 	{
 	    img = new QImage(icon.path, ext.latin1());
-	    if (img->isNull())
+	    if (img->isNull()) {
+                delete img;
 		return pix;
+            }
 	}
 #ifdef HAVE_LIBART
 	else
@@ -795,8 +797,15 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         if (pix.mask())
         {
             QBitmap mask = *pix.mask();
-            bitBlt(&mask, x, y,
-                   favIcon.mask() ? const_cast<QBitmap *>(favIcon.mask()) : &favIcon,
+            QBitmap fmask;
+            if (favIcon.mask())
+		fmask = *favIcon.mask();
+	    else {
+		// expensive, but works
+		fmask = favIcon.createHeuristicMask();
+	    }
+		
+            bitBlt(&mask, x, y, &fmask,
                    0, 0, favIcon.width(), favIcon.height(),
                    favIcon.mask() ? Qt::OrROP : Qt::SetROP);
             pix.setMask(mask);
@@ -844,7 +853,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 {
     if (!d->mpGroups) return QString::null;
 
-    if ((group < -1) || (group >= KIcon::LastGroup))
+    if ( ((group < -1) || (group >= KIcon::LastGroup)) && (group != KIcon::User) )
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	group = KIcon::Desktop;
@@ -1120,7 +1129,7 @@ KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
 {
     setAutoDelete( true );
-};
+}
 
 QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode mode_P, QIconSet::State )
     {

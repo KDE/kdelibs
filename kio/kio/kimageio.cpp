@@ -48,8 +48,8 @@ KImageIOFormat::KImageIOFormat( const QString &path)
    mSuffices = config.readListEntry("Suffices");
    mPattern = config.readEntry("Name");
    mMimetype = config.readEntry("Mimetype");
-   mLib = config.readEntry("Library");
-   rPaths = config.readListEntry("rPaths");
+   mLib = config.readPathEntry("Library");
+   rPaths = config.readPathListEntry("rPaths");
 }
 
 KImageIOFormat::KImageIOFormat( QDataStream& _str, int offset) :

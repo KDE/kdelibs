@@ -85,6 +85,8 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false), d(0)
 
 KStandardDirs::~KStandardDirs()
 {
+    delete d;
+    d = 0L;
 }
 
 bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPath) const
@@ -517,7 +519,8 @@ KStandardDirs::findAllResources( const char *type,
     return findAllResources(type, filter, recursive, uniq, relList);
 }
 
-static QString realPath(const QString &dirname)
+QString 
+KStandardDirs::realPath(const QString &dirname)
 {
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
@@ -1018,8 +1021,11 @@ void KStandardDirs::addKDEDefaults()
 
     }
 
-    fixHomeDir(localKdeDir);
-    addPrefix(localKdeDir);
+    if (localKdeDir != "-/")
+    {
+        fixHomeDir(localKdeDir);
+        addPrefix(localKdeDir);
+    }
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)

@@ -48,6 +48,13 @@
 #include <sys/stat.h>
 #endif
 
+#ifdef HAVE_ALSA_ASOUNDLIB_H
+#	define HAVE_ALSA_SUPPORT
+#	include <alsa/asoundlib.h>
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
+#	define HAVE_ALSA_SUPPORT
+#	include <sys/asoundlib.h>
+#else
 #ifdef HAVE_LIBASOUND2
 #	define HAVE_ALSA_SUPPORT
 #	include <sound/asound.h>
@@ -56,11 +63,6 @@
 #	define HAVE_ALSA_SUPPORT
 #	include <linux/asequencer.h>
 #endif
-
-#ifdef HAVE_ALSA_ASOUNDLIB_H
-#	include <alsa/asoundlib.h>
-#elif defined(HAVE_SYS_ASOUNDLIB_H)
-#	include <sys/asoundlib.h>
 #endif
 
 #if 1
@@ -112,7 +114,7 @@ DeviceManager::DeviceManager(int def)
 
     config->setGroup("Configuration");
     default_dev=config->readNumEntry("midiDevice",0);
-    QString mapurl(config->readEntry("mapFilename",""));
+    QString mapurl(config->readPathEntry("mapFilename"));
     if ((config->readBoolEntry("useMidiMapper", false))&&(!mapurl.isEmpty()))
     {
       mapper_tmp = new MidiMapper( mapurl.mid(mapurl.find(":")+1 ).local8Bit() );

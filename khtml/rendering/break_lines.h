@@ -33,6 +33,6 @@ namespace khtml {
 	return false;
     }
 
-};
+}
 
 #endif

@@ -142,6 +142,12 @@ public:
     long options() const { return m_options; }
 
     /**
+     * Set new options. Usually this is used for setting or clearing the
+     * FindBackwards options.
+     */
+    virtual void setOptions( long options );
+
+    /**
      * Return the number of matches found (i.e. the number of times
      * the @ref highlight signal was emitted).
      * If 0, can be used in a dialog box to tell the user "no match was found".
@@ -175,8 +181,14 @@ public:
      *
      * @param forceAsking set to true if the user modified the document during the
      * search. In that case it makes sense to restart the search again.
+     *
+     * @param showNumMatches set to true if the dialog should show the number of
+     * matches. Set to false if the application provides a "find previous" action,
+     * in which case the match count will be erroneous when hitting the end,
+     * and we could even be hitting the beginning of the document (so not all
+     * matches have even been seen).
      */
-    virtual bool shouldRestart( bool forceAsking = false ) const;
+    virtual bool shouldRestart( bool forceAsking = false, bool showNumMatches = true ) const;
 
     /**
      * Search the given string, and returns whether a match was found. If one is,
@@ -200,6 +212,22 @@ public:
      */
     virtual void displayFinalDialog() const;
 
+    /**
+     * Return (or create) the dialog that shows the "find next?" prompt.
+     * Usually you don't need to call this.
+     * One case where it can be useful, is when the user selects the "Find"
+     * menu item while a find operation is under way. In that case, the
+     * program may want to call setActiveWindow() on that dialog.
+     */
+    KDialogBase* findNextDialog( bool create = false );
+
+    /**
+     * Close the "find next?" dialog. The application should do this when
+     * the last match was hit. If the application deletes the KFind, then
+     * "find previous" won't be possible anymore.
+     */
+    void closeFindNextDialog();
+
 signals:
 
     /**
@@ -213,6 +241,21 @@ signals:
     // of FindBackwards
     void findNext();
 
+    /**
+     * Emitted when the options have changed.
+     * This can happen e.g. with "Replace All", or if our 'find next' dialog
+     * gets a "find previous" one day.
+     */
+    void optionsChanged();
+
+    /**
+     * Emitted when the 'find next' dialog is being closed.
+     * Some apps might want to remove the highlighted text when this happens.
+     * Apps without support for "Find Next" can also do m_find->deleteLater()
+     * to terminate the find operation.
+     */
+    void dialogClosed();
+
 protected:
     /**
      * @internal Constructor for KReplace
@@ -224,11 +267,10 @@ protected:
 protected slots:
 
     void slotFindNext();
-    void slotDialogClosed() { m_dialogClosed = true; }
+    void slotDialogClosed();
 
 private:
     void init( const QString& pattern );
-    KDialogBase* dialog();
 
     static bool isInWord( QChar ch );
     static bool isWholeWords( const QString &text, int starts, int matchedLength );
@@ -246,6 +288,7 @@ private:
     int m_index;
     int m_matchedLength;
     bool m_dialogClosed;
+    bool m_lastResult;
 
     // Binary compatible extensibility.
     class KFindPrivate;

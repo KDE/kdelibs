@@ -39,8 +39,8 @@ public:
 
     virtual const char *renderName() const { return "RenderBR"; }
 
-    virtual void print( QPainter *, int, int, int, int, int, int) {}
-    virtual void printObject( QPainter *, int, int, int, int, int, int) {}
+    virtual void paint( QPainter *, int, int, int, int, int, int) {}
+    virtual void paintObject( QPainter *, int, int, int, int, int, int) {}
 
     virtual void position(int, int, int, int, int, bool, bool, int) {}
     virtual unsigned int width(unsigned int, unsigned int, const Font *) const { return 0; }
@@ -58,5 +58,5 @@ public:
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
 };
 
-};
+}
 #endif

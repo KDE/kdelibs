@@ -17,14 +17,13 @@
    $Id$	 
 */
 
-namespace std { };
-using namespace std;
-
 #include <list>
 #include <map>
 #include <qwidget.h>
 #include <qcstring.h>
 #include <qstrlist.h>
+
+using namespace std;
 
 class QTimer;
 class QDate;

@@ -38,7 +38,7 @@ namespace KTextEditor
 	private:
 		ViewStatusMsgInterface *m_parent;
 	};
-};
+}
 #endif
 
 

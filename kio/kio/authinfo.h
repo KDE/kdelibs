@@ -303,5 +303,5 @@ private:
   class NetRCPrivate;
   NetRCPrivate* d;
 };
-};
+}
 #endif

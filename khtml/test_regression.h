@@ -1,7 +1,7 @@
-/*
+/**
  * This file is part of the KDE project
  *
- * (C) 2001 Peter Kelly (pmk@post.com)
+ * (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,22 +26,25 @@
 
 #include <khtml_part.h>
 #include <kurl.h>
-#include <kjs/object.h>
+#include <qobject.h>
 #include <kjs/ustring.h>
-#include <kjs/function.h>
+#include <kjs/object.h>
+#include <kjs/interpreter.h>
 
 class RegressionTest;
 
 /**
  * @internal
  */
-class PageLoader : public QObject
+class PartMonitor : public QObject
 {
   Q_OBJECT
 public:
-    static void loadPage(KHTMLPart *part, KURL url);
-    bool m_started;
+    PartMonitor(KHTMLPart *_part);
+    void waitForCompletion();
+    bool m_inLoop;
     bool m_completed;
+    KHTMLPart *m_part;
 public slots:
     void partCompleted();
 };
@@ -49,12 +52,11 @@ public slots:
 /**
  * @internal
  */
-class RegTestObject : public KJS::HostImp
+class RegTestObject : public KJS::ObjectImp
 {
 public:
-    RegTestObject(RegressionTest *_regTest);
-    KJS::KJSO get(const KJS::UString &p) const;
-    void put(const KJS::UString &p, const KJS::KJSO& v);
+    RegTestObject(KJS::ExecState *exec, RegressionTest *_regTest);
+
 private:
     RegressionTest *m_regTest;
 };
@@ -62,12 +64,16 @@ private:
 /**
  * @internal
  */
-class RegTestFunction : public KJS::InternalFunctionImp
+class RegTestFunction : public KJS::ObjectImp
 {
 public:
-    RegTestFunction(RegressionTest *_regTest, int _id, int length);
-    KJS::Completion execute(const KJS::List &);
-    enum { ReportResult, CheckOutput };
+    RegTestFunction(KJS::ExecState *exec, RegressionTest *_regTest, int _id, int length);
+
+    bool implementsCall() const;
+    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+
+    enum { Print, ReportResult, CheckOutput };
+
 private:
     RegressionTest *m_regTest;
     int id;
@@ -76,12 +82,13 @@ private:
 /**
  * @internal
  */
-class KHTMLPartObject : public KJS::HostImp
+class KHTMLPartObject : public KJS::ObjectImp
 {
 public:
-    KHTMLPartObject(KHTMLPart *_part);
-    KJS::KJSO get(const KJS::UString &p) const;
-    void put(const KJS::UString &p, const KJS::KJSO& v);
+    KHTMLPartObject(KJS::ExecState *exec, KHTMLPart *_part);
+
+    virtual KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const;
+
 private:
     KHTMLPart *m_part;
 };
@@ -89,12 +96,15 @@ private:
 /**
  * @internal
  */
-class KHTMLPartFunction : public KJS::InternalFunctionImp
+class KHTMLPartFunction : public KJS::ObjectImp
 {
 public:
-    KHTMLPartFunction(KHTMLPart *_part, int _id, int length);
-    KJS::Completion execute(const KJS::List &);
-    enum { OpenPage, Open, Write, Close };
+    KHTMLPartFunction(KJS::ExecState *exec, KHTMLPart *_part, int _id, int length);
+
+    bool implementsCall() const;
+    KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
+
+    enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript, ProcessEvents };
 private:
     KHTMLPart *m_part;
     int id;
@@ -114,9 +124,10 @@ public:
     QByteArray getPartOutput();
     void testStaticFile(QString filename);
     void testJSFile(QString filename);
-    bool checkOutput(QString againstFilename, QByteArray data);
-    void runTests(QString relDir = "");
-    void reportResult(bool passed, QString testname = "", QString description = "");
+    bool checkOutput(QString againstFilename);
+    bool runTests(QString relPath = "", bool mustExist = false);
+    void reportResult(bool passed, QString description = "");
+    void createMissingDirs(QString path);
 
     KHTMLPart *m_part;
     QString m_sourceFilesDir;
@@ -128,10 +139,15 @@ public:
     QString m_currentTest;
 
     bool m_getOutput;
-    int m_totalPassed;
-    int m_totalFailed;
+    int m_passes;
+    int m_failures;
+    int m_errors;
 
     static RegressionTest *curr;
+
+private slots:
+  void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+
 };
 
 #endif

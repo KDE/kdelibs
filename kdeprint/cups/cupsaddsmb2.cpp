@@ -125,7 +125,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	l2->addWidget(m_doit);
 	l2->addWidget(m_cancel);
 
-	m_logined->setText( CupsInfos::self()->realLogin() );
+	m_logined->setText( CupsInfos::self()->login() );
 	m_passwded->setText( CupsInfos::self()->password() );
 	m_servered->setText( cupsServer() );
 

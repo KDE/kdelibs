@@ -24,6 +24,7 @@
 
 #include <qfile.h>
 #include <qstringlist.h>
+#include <kdebug.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -649,8 +650,9 @@ bool DrConstraint::check(DrMain *driver)
  **********************/
 
 DrPageSize::DrPageSize(const QString& s,int w, int h, int ml, int mb, int mr, int mt)
-: m_name(s), m_pagesize(w,h), m_pagerect(ml,mb,mr-ml+1,mt-mb+1)
+: m_name(s), m_pagesize(w,h), m_pagerect(ml,mt,w-ml-mr,h-mt-mb)
 {
+	//kdDebug( 500 ) << "left=" << ml << ", bottom=" << mb << ", right=" << mr << ", top=" << mt << endl;
 }
 
 DrPageSize::DrPageSize(const DrPageSize& d)

@@ -612,6 +612,6 @@ public:
 };
 */
 
-}; // namespace
+} // namespace
 
 #endif

@@ -48,7 +48,7 @@
 #define _KDOCKWIDGET_2_2_
 
 #include <qpoint.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qframe.h>
 #include <qdom.h>
 #include <qtabwidget.h>
@@ -413,8 +413,8 @@ public:
    * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
    */
   KDockWidget( KDockManager* dockManager, const char* name,
-               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L,
-               const QString& strTabPageLabel = " ", WFlags f = 0);
+               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString::null,
+               const QString& strTabPageLabel = QString::fromLatin1( " " ), WFlags f = 0);
 
   /**
    * Destructs a dockwidget.
@@ -1264,7 +1264,8 @@ public:
    * @param strTabPageLabel title of the tab page (visible when in tab page mode), if it is "", only the icon will be shown; if it is 0L, the label is set to strCaption
    * @return    a pointer to the new created dockwidget
    */
-  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
+  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
+    const QString& strCaption = QString::null, const QString& strTabPageLabel = QString::fromLatin1( " " ) );
 
   /**
    * Saves the current dock window layout into a DOM tree below the given element.
@@ -1403,7 +1404,8 @@ public:
   void setMainDockWidget( KDockWidget* );
   KDockWidget* getMainDockWidget(){ return mainDockWidget; }
 
-  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
+  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
+    const QString& strCaption = QString::null, const QString& strTabPageLabel = QString::fromLatin1( " " ) );
 
   void writeDockConfig(QDomElement &base);
   void readDockConfig(QDomElement &base);

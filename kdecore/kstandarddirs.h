@@ -522,6 +522,15 @@ public:
 	 */
 	static bool exists(const QString &fullPath);
 
+        /**
+         * Expands all symbolic links and resolves references to 
+         * '/./', '/../' and extra  '/' characters in @p dirname
+         * and returns the canonicalized absolute pathname.
+         * The resulting path will have no symbolic link, '/./' 
+         * or '/../' components.
+	 * @since 3.1
+         */
+        static QString realPath(const QString &dirname);
  private:
 
 	QStringList prefixes;

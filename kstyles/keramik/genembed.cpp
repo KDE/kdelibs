@@ -32,7 +32,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kimageeffect.h>
 
-#include <iostream.h>
+#include <iostream>
+using namespace std;
+
 #include <string.h>
 #include <math.h>
 

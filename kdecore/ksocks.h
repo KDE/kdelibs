@@ -35,7 +35,7 @@ struct sockaddr;
  * This class provides you with an interface to a 
  * <a href="http://www.socks.nec.com/">SOCKS</a> Proxy server. A SOCKS server
  * is able to provide full internet access behind a firewall.
- * KSocks is a singleton, there can noly be one instance at any
+ * KSocks is a singleton; there can only be one instance at any
  * given time. To obtain a reference to that instance, use
  * @ref self().
  *
@@ -80,6 +80,12 @@ public:
     * @return true if SOCKS is available for use.
     */
    bool hasSocks();
+
+   /**
+    * Returns whether asynchronous connects work with the
+    * selected SOCKS impementation
+    */
+   bool hasWorkingAsyncConnect();
 
    /*
     **     REIMPLEMENTATIONS OF LIBC SOCKET FUNCTIONS

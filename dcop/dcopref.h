@@ -81,7 +81,7 @@ public:
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    * @param t the type will be written here, if successful
-   * @param tname the signature type name
+   * @param T the signature type name
    * @return true if successful, false otherwise
    */
     template <class T> bool get(  T& t ) {
@@ -358,7 +358,7 @@ public:
      * Changes the referenced object.
      * @param app the application id.
      * @param obj the object id
-     * @param tyoe the object's type
+     * @param type the object's type
      */
     void setRef( const QCString& app, const QCString& obj, const QCString& type );
 

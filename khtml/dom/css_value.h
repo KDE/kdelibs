@@ -116,6 +116,7 @@ public:
      * string if the property has not been set.
      *
      */
+    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) const;
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
 
     /**
@@ -137,6 +138,7 @@ public:
      * null </code> if the property has not been set.
      *
      */
+    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) const;
     CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
 
     /**
@@ -173,6 +175,7 @@ public:
      * exists.
      *
      */
+    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) const;
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
 
     /**
@@ -214,6 +217,7 @@ public:
      * empty string if no property exists at this position.
      *
      */
+    DOM::DOMString item ( unsigned long index ) const;
     DOM::DOMString item ( unsigned long index );
 
     /**
@@ -727,6 +731,6 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif

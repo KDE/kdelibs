@@ -88,7 +88,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
     for (KBookmark bm = parent.first(); !bm.isNull(); bm = parent.next(bm))
     {
-		QString text = bm.text();
+	QString text = bm.text();
         text.replace( '&', "&&" );
         if (!bm.isGroup())
         {
@@ -118,7 +118,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KBookmarkMenu *menu = new KBookmarkMenu(m_pManager, m_pOwner, action->popupMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
-            //menu->fillBookmarkMenu();
+            menu->fillBookmarkMenu();
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
         }

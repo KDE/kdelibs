@@ -39,7 +39,7 @@
 using namespace khtml;
 using namespace DOM;
 
-void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
+void TextSlave::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
@@ -50,13 +50,13 @@ void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, Ren
 
     ty += m_baseline;
 
-    //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
+    //kdDebug( 6040 ) << "textSlave::painting(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
     p->restore();
 }
 
-void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
+void TextSlave::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
 {
     _tx += m_x;
     _ty += m_y;
@@ -82,7 +82,7 @@ void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, 
     // support it. Lars
 }
 
-void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
+void TextSlave::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
@@ -116,7 +116,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 #endif
 
     if(style->hasBorder())
-        p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
+        p->paintBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
 FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
@@ -456,7 +456,7 @@ int RenderText::rightmostPosition() const
     return 0;
 }
 
-void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
+void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
     int ow = style()->outlineWidth();
@@ -464,16 +464,16 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     int d = style()->textDecoration();
     TextSlave f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
-    // something matching found, find the first one to print
+    // something matching found, find the first one to paint
     bool isPrinting = (p->device()->devType() == QInternal::Printer);
     if(si >= 0)
     {
-        // Move up until out of area to be printed
+        // Move up until out of area to be painted
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h, m_lineHeight))
             si--;
 
-        // Now calculate startPos and endPos, for printing selection.
-        // We print selection while endPos > 0
+        // Now calculate startPos and endPos, for painting selection.
+        // We paint selection while endPos > 0
         int endPos, startPos;
         if (!isPrinting && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
@@ -512,7 +512,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 int lh = lineHeight( false ) + paddingBottom() + borderBottom();
                 if (ty+s->m_y < y)
                 {
-                   // This has been printed already we suppose.
+                   // This has been painted already we suppose.
                    continue;
                 }
 
@@ -535,7 +535,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if ((pseudoStyle && s->m_firstLine) ||
                 (!pseudoStyle && hasSpecialObjects() && parent()->isInline()))
-                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
+                s->paintBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
 
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
@@ -547,16 +547,16 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(d != TDNONE)
             {
                 p->setPen(_style->textDecorationColor());
-                s->printDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
+                s->paintDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
             if (!isPrinting && (selectionState() != SelectionNone)) {
 		int offset = s->m_start;
 		int sPos = QMAX( startPos - offset, 0 );
 		int ePos = QMIN( endPos - offset, s->m_len );
-                //kdDebug(6040) << this << " printSelection with startPos=" << sPos << " endPos=" << ePos << endl;
+                //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
-		    s->printSelection(font, this, p, _style, tx, ty, sPos, ePos);
+		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos);
 
             }
             if(renderOutline) {
@@ -596,12 +596,12 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    linerects.append(new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight));
 	    linerects.append(new QRect());
 	    for (unsigned int i = 1; i < linerects.count() - 1; i++)
-                printTextOutline(p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
+                paintTextOutline(p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
 	  }
     }
 }
 
-void RenderText::print( QPainter *p, int x, int y, int w, int h,
+void RenderText::paint( QPainter *p, int x, int y, int w, int h,
                       int tx, int ty)
 {
     if (style()->visibility() != VISIBLE) return;
@@ -613,7 +613,7 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
     if ( ty + m_lines[0]->m_y > y + h + 64 ) return;
     if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < y ) return;
 
-    printObject(p, x, y, w, h, tx, ty);
+    paintObject(p, x, y, w, h, tx, ty);
 }
 
 void RenderText::calcMinMaxWidth()
@@ -939,7 +939,7 @@ const Font *RenderText::htmlFont(bool firstLine) const
     return f;
 }
 
-void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
+void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
 {
   int ow = style()->outlineWidth();
   EBorderStyle os = style()->outlineStyle();

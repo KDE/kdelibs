@@ -391,6 +391,7 @@ QString kdBacktrace(int levels);
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
 inline QString kndBacktrace() { return QString::null; }
+inline QString kndBacktrace(int) { return QString::null; }
 
 /**
  * Returns a warning stream. You can use it to print warning

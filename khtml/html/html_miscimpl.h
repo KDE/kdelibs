@@ -125,11 +125,10 @@ protected:
     virtual NodeImpl *nextNamedItemInternal( const DOMString &name ) const;
 private:
     NodeImpl* getNamedFormItem(int attr_id, const DOMString& name, int duplicateNumber) const;
-    NodeImpl* getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name, int& duplicateNumber) const;
     mutable int currentPos;
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

@@ -86,7 +86,7 @@ extern "C"
 		KMConfigDialog	dlg(parent);
 		return dlg.exec();
 	}
-};
+}
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
 : QWidget(parent, name)

@@ -198,6 +198,6 @@ extern "C"
     {
         return new KPACImpl;
     }
-};
+}
 
 // vim: ts=4 sw=4 et

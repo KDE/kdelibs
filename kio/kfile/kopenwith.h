@@ -146,10 +146,9 @@ protected:
 
     QString qName, qServiceType;
     bool m_terminaldirty;
-    QCheckBox   *terminal, *remember;
-    QPushButton *ok;
-    QPushButton *clear;
-    QPushButton *cancel;
+    QCheckBox   *terminal, *remember, *UNUSED_IN_BRANCH;
+    QPushButton *UNUSED;
+    QPushButton *UNUSED2;
 
     KService::Ptr m_pService;
 

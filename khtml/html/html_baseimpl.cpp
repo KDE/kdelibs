@@ -83,14 +83,20 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
             m_bgSet = false;
         break;
     }
-    case ATTR_MARGINWIDTH:
+    case ATTR_MARGINWIDTH: {
+	KHTMLView* w = getDocument()->view();
+	w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
+    }
         /* nobreak; */
     case ATTR_LEFTMARGIN:
         addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
         break;
-    case ATTR_MARGINHEIGHT:
+    case ATTR_MARGINHEIGHT: {
+	KHTMLView* w = getDocument()->view();
+	w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+    }
         /* nobreak */
     case ATTR_TOPMARGIN:
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
@@ -210,8 +216,6 @@ void HTMLBodyElementImpl::attach()
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
-    parentWidget = 0;
-
     frameBorder = true;
     frameBorderSet = false;
     marginWidth = -1;
@@ -236,26 +240,33 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
+        // FIXME_APPLE: load new url in the iframe
         setChanged();
         break;
     case ATTR_ID:
     case ATTR_NAME:
+        // FIXME: if already attached, doesn't change the frame name
+        // FIXME: frame name conflicts, no unique frame name anymore
         name = attr->value();
         break;
     case ATTR_FRAMEBORDER:
     {
         frameBorder = attr->value().toInt();
         frameBorderSet = ( attr->val() != 0 );
+        // FIXME: when attached, has no effect
     }
     break;
     case ATTR_MARGINWIDTH:
         marginWidth = attr->val()->toInt();
+        // FIXME: when attached, has no effect
         break;
     case ATTR_MARGINHEIGHT:
         marginHeight = attr->val()->toInt();
+        // FIXME: when attached, has no effect
         break;
     case ATTR_NORESIZE:
         noresize = true;
+        // FIXME: when attached, has no effect
         break;
     case ATTR_SCROLLING:
         if( strcasecmp( attr->value(), "auto" ) == 0 )
@@ -264,6 +275,7 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
             scrolling = QScrollView::AlwaysOn;
         else if( strcasecmp( attr->value(), "no" ) == 0 )
             scrolling = QScrollView::AlwaysOff;
+        // when attached, has no effect
         break;
     case ATTR_ONLOAD:
         static_cast<HTMLDocumentImpl*>( getDocument() )->body()
@@ -309,17 +321,8 @@ void HTMLFrameElementImpl::attach()
 
     // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
-    // avoid endless recursion
-    KURL u;
-    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
-    bool selfreference = false;
-    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
-        if (part->url() == u) {
-            selfreference = true;
-            break;
-        }
 
-    if (!selfreference)  {
+    if (isURLAllowed(url.string()))  {
         m_render = new RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -335,14 +338,7 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-    if ( url.isEmpty() || !(w->part()->onlyLocalReferences() && u.protocol() != "file"))
-        w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
-}
-
-void HTMLFrameElementImpl::detach()
-{
-    HTMLElementImpl::detach();
-    parentWidget = 0;
+    w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
@@ -519,15 +515,6 @@ void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )
 
 // -------------------------------------------------------------------------
 
-HTMLHeadElementImpl::HTMLHeadElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLHeadElementImpl::~HTMLHeadElementImpl()
-{
-}
-
 NodeImpl::Id HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
@@ -547,15 +534,6 @@ void HTMLHtmlElementImpl::attach()
 }
 
 // -------------------------------------------------------------------------
-
-HTMLHtmlElementImpl::HTMLHtmlElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
-{
-}
 
 NodeImpl::Id HTMLHtmlElementImpl::id() const
 {
@@ -607,25 +585,9 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    KHTMLView* w = getDocument()->view();
-    // avoid endless recursion
-    KURL u;
-    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
-    bool selfreference = false;
-    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
-        if (part->url() == u) {
-            selfreference = true;
-            break;
-        }
-
-    KHTMLPart *part = w->part();
-    int depth = 0;
-    while ((part = part->parentPart()))
-	depth++;
-
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (!selfreference && !(w->part()->onlyLocalReferences() && u.protocol() != "file") &&
+    if (isURLAllowed(url.string()) &&
         parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderPartObject(this);
         m_render->setStyle(_style);

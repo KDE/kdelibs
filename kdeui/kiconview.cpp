@@ -479,8 +479,8 @@ void KIconViewItem::calcRect( const QString& text_ )
         if ( itemIconRect.height() > itemTextRect.height() ) // icon bigger than text -> center vertically
             itemIconRect = QRect( 0, ( height - itemIconRect.height() ) / 2,
                                   itemIconRect.width(), itemIconRect.height() );
-        else // icon smaller than text -> center with first line
-            itemIconRect = QRect( 0, ( fm->height() - itemIconRect.height() ) / 2,
+        else // icon smaller than text -> place in top or center with first line
+	    itemIconRect = QRect( 0, QMAX(( fm->height() - itemIconRect.height() ) / 2, 0),
                                   itemIconRect.width(), itemIconRect.height() );
     }
 #if 0

@@ -239,7 +239,7 @@ KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
 
 KPixmap KPixmapEffect::createTiled(const KPixmap& pixmap, QSize size)
 {
-    KPixmap pix;
+    KPixmap pix(size);
 
     QPainter p(&pix);
     p.drawTiledPixmap(0, 0, size.width(), size.height(), pixmap);

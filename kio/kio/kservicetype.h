@@ -26,7 +26,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 #include <qshared.h>
 #include <qdatastream.h>

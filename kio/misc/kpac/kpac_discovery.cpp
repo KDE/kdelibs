@@ -18,7 +18,9 @@
 
 // $Id$
 
+#include <netdb.h>
 #include <unistd.h>
+#include <sys/utsname.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -27,12 +29,27 @@
 #include "kpac_discovery.moc"
 
 KPACDiscovery::KPACDiscovery()
-    : QObject(),
-      m_stage(DHCP)
+              : QObject(), m_stage(DHCP)
 {
-    char hostname[256];
-    if (gethostname(hostname, 255) == 0)
-        m_hostname = hostname;
+    struct utsname uts;
+
+    if (uname (&uts) > -1)
+    {
+        struct hostent *hent = gethostbyname (uts.nodename);
+        if (hent != 0)
+            m_hostname = hent->h_name;
+    }
+
+    // If no hostname, try gethostname as a last resort.
+    if (m_hostname.isEmpty())
+    {
+        char buf [256];
+        if (gethostname (buf, sizeof(buf)) == 0)
+        {
+            buf[255] = '\0';
+            m_hostname = buf;
+        }
+    }
 }
 
 bool KPACDiscovery::tryDiscovery()
@@ -80,7 +97,7 @@ bool KPACDiscovery::tryDiscovery()
             m_curl.setPath("/wpad.dat");
             kdDebug(7025) << "KPACDiscovery::tryDiscovery(): returning " << m_curl.prettyURL() << endl;
             return true;
-        }    
+        }
         default:
             return false;
     }

@@ -46,13 +46,17 @@ public class KJASBrokenClassFixer {
             return;
         }
         try {
-            URL [] urls = { new URL(
-                "file", "", 0,
-                System.getProperty("java.home")
-                + System.getProperty("file.separator")
-                + "lib"
-                + System.getProperty("file.separator")
-                + "javaplugin.jar") 
+            URL [] urls = {
+                new URL( "file", "", 0, System.getProperty("java.home")
+                                      + System.getProperty("file.separator")
+                                      + "lib"
+                                      + System.getProperty("file.separator")
+                                      + "javaplugin.jar"),
+                new URL( "file", "", 0, System.getProperty("java.home")
+                                      + System.getProperty("file.separator")
+                                      + "lib"
+                                      + System.getProperty("file.separator")
+                                      + "plugin.jar")
             };
             URLClassLoader loader = new URLClassLoader(urls);
             fixerClass = Class.forName(fixerClassName, true, loader);

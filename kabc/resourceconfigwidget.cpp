@@ -35,7 +35,7 @@ void ResourceConfigWidget::saveSettings( KConfig * )
 {
 }
 
-void ResourceConfigWidget::setEditMode( bool value )
+void ResourceConfigWidget::setEditMode( bool )
 {
 }
 

@@ -69,6 +69,6 @@ namespace KJS {
    */
   Value mult(ExecState *exec, const Value &v1, const Value &v2, char oper);
 
-};
+}
 
 #endif

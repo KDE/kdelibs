@@ -19,7 +19,6 @@
 */
 #include <qfile.h>
 #include <qregexp.h>
-#include <qtextstream.h>
 
 #include <kdebug.h>
 #include <kmdcodec.h>
@@ -37,14 +36,12 @@ using namespace VCARD;
 bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::load()" << endl;
-  QString data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
-  
-  VCardEntity e( data.utf8() );
-  
+  QByteArray fdata = file->readAll();
+  QCString data(fdata.data(), fdata.size()+1);
+
+  VCardEntity e( data );
+
   VCardListIterator it( e.cardList() );
 
   if ( it.current() ) {
@@ -59,14 +56,12 @@ bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::loadAll()" << endl;
-  QString data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
-  
-  VCardEntity e( data.utf8() );
-  
+  QByteArray fdata = file->readAll();
+  QCString data(fdata.data(), fdata.size()+1);
+
+  VCardEntity e( data );
+
   VCardListIterator it( e.cardList() );
 
   for (; it.current(); ++it) {
@@ -93,9 +88,8 @@ void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
   vcardlist.append( v );
   vcards.setCardList( vcardlist );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << QString::fromUtf8( vcards.asString() );
+  QCString vcardData = vcards.asString();
+  file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
 void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file )
@@ -116,9 +110,8 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
 
   vcards.setCardList( vcardlist );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << QString::fromUtf8( vcards.asString() );
+  QCString vcardData = vcards.asString();
+  file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
 bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
@@ -136,7 +129,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
                         QString::fromUtf8( cl->value()->asString() ) );
         continue;
     }
-    
+
     EntityType type = cl->entityType();
     switch( type ) {
 
@@ -286,7 +279,7 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool 
   addTextValue( v, EntityName, addressee.name() );
   addTextValue( v, EntityUID, addressee.uid() );
   addTextValue( v, EntityFullName, addressee.formattedName() );
-    
+
   QStringList emails = addressee.emails();
   QStringList::ConstIterator it4;
   for( it4 = emails.begin(); it4 != emails.end(); ++it4 ) {
@@ -427,9 +420,9 @@ void VCardFormatImpl::addLabelValue( VCard *vcard, const Address &a )
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityLabel ) );
   cl.setValue( new TextValue( a.label().utf8() ) );
-  
+
   addAddressParam( &cl, a.type() );
-  
+
   vcard->add( cl );
 }
 
@@ -547,7 +540,7 @@ void VCardFormatImpl::addNValue( VCard *vcard, const Addressee &a )
   v->setMiddle( a.additionalName().utf8() );
   v->setPrefix( a.prefix().utf8() );
   v->setSuffix( a.suffix().utf8() );
-  
+
   cl.setValue( v );
   vcard->add(cl);
 }

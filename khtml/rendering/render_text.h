@@ -45,7 +45,7 @@ class TextSlave
 public:
     TextSlave(int x, int y, int start, int len,
 	      int baseline, int width,
-              bool reversed = false, int toAdd = 0, bool firstLine = false)
+              bool reversed = false, unsigned toAdd = 0, bool firstLine = false)
     {
         m_x = x;
         m_y = y;
@@ -57,9 +57,9 @@ public:
         m_firstLine = firstLine;
         m_toAdd = toAdd;
     }
-    void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
-    void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
-    void printSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
+    void paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
+    void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
+    void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
@@ -81,7 +81,7 @@ public:
 
     bool m_reversed : 1;
     bool m_firstLine : 1;
-    int m_toAdd : 14; // for justified text
+    unsigned m_toAdd : 14; // for justified text
 private:
     // this is just for QVector::bsearch. Don't use it otherwise
     TextSlave(int _x, int _y)
@@ -118,9 +118,9 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void print( QPainter *, int x, int y, int w, int h,
+    virtual void paint( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
+    virtual void paintObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
 
     void deleteSlaves();
@@ -195,7 +195,7 @@ public:
     { return static_cast<DOM::TextImpl*>(RenderObject::element()); }
 
 protected:
-    void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
+    void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 
     TextSlave * findTextSlave( int offset, int &pos );
 
@@ -217,5 +217,5 @@ protected: // members
 };
 
 
-};
+}
 #endif

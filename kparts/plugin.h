@@ -148,6 +148,6 @@ private:
     PluginPrivate *d;
 };
 
-};
+}
 
 #endif

@@ -55,7 +55,7 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 void KMConfigCupsDir::loadConfig(KConfig *conf)
 {
 	conf->setGroup("CUPS");
-	QString	dir = conf->readEntry("InstallDir",QString::null);
+	QString	dir = conf->readPathEntry("InstallDir");
 	m_stddir->setChecked(dir.isEmpty());
 	m_installdir->setURL(dir);
 }

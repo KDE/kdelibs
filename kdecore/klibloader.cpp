@@ -60,23 +60,17 @@ template class QAsciiDict<KLibrary>;
 
 extern "C" {
 extern int lt_dlopen_flag;
-};
+}
 
-
-class KLibFactoryPrivate {
-public:
-};
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    d = new KLibFactoryPrivate;
 }
 
 KLibFactory::~KLibFactory()
 {
 //    kdDebug(150) << "Deleting KLibFactory " << this << endl;
-    delete d;
 }
 
 QObject* KLibFactory::create( QObject* parent, const char* name, const char* classname, const QStringList &args )
@@ -96,10 +90,6 @@ QObject* KLibFactory::createObject( QObject*, const char*, const char*, const QS
 
 // -----------------------------------------------
 
-class KLibraryPrivate {
-public:
-};
-
 KLibrary::KLibrary( const QString& libname, const QString& filename, void * handle )
 {
     /* Make sure, we have a KLibLoader */
@@ -109,7 +99,6 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, void * hand
     m_handle = handle;
     m_factory = 0;
     m_timer = 0;
-    d = new KLibraryPrivate;
 }
 
 KLibrary::~KLibrary()
@@ -136,7 +125,6 @@ KLibrary::~KLibrary()
 //	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
 	delete m_factory;
     }
-    delete d;
 }
 
 QString KLibrary::name() const
@@ -200,7 +188,8 @@ bool KLibrary::hasSymbol( const char* symname ) const
 
 void KLibrary::unload() const
 {
-   KLibLoader::self()->unloadLibrary(QFile::encodeName(name()));
+   if (KLibLoader::s_self)
+      KLibLoader::s_self->unloadLibrary(QFile::encodeName(name()));
 }
 
 void KLibrary::slotObjectCreated( QObject *obj )

@@ -129,50 +129,6 @@ void usleep(unsigned int usec) {
 
 #endif
 
-#if !defined(HAVE_GETDOMAINNAME)
-
-#include <sys/utsname.h>
-#include <netdb.h>
-#include <strings.h>
-#include <errno.h>
-#include <stdio.h>
-
-int getdomainname(char *name, size_t len)
-{
-        struct utsname uts;
-        struct hostent *hent;
-        int rv = -1;
-
-        if (name == 0L)
-          errno = EINVAL;
-        else
-        {
-                name[0] = '\0';
-                if (uname(&uts) >= 0)
-                {
-                        if ((hent = gethostbyname(uts.nodename)) != 0L)
-                        {
-                                char *p = strchr(hent->h_name, '.');
-                                if (p != 0L)
-                                {
-                                        ++p;
-                                        if (strlen(p) > len-1)
-                                          errno = EINVAL;
-                                        else
-                                        {
-                                                strcpy(name, p);
-                                                rv = 0;
-                                        }
-                                }
-                        }
-                }
-        }
-        return rv;
-}
-
-
-#endif
-
 #ifndef HAVE_RANDOM
 long int random()
 {
@@ -282,5 +238,47 @@ int revoke(const char *tty)
 {
         errno = ENOTSUP;
         return -1;
+}
+#endif
+
+#ifndef HAVE_STRLCPY
+unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
+{
+    size_t len, ret = strlen(s);
+
+    if (ret >= bufsize) {
+        if (bufsize) {
+            len = bufsize - 1;
+            memcpy(d, s, len);
+            d[len] = '\0';
+        }
+    } else
+	memcpy(d, s, ret + 1);
+	
+    return ret;
+}
+#endif
+
+#ifndef HAVE_STRLCAT
+unsigned long strlcat(char* d, const char* s, unsigned long bufsize)
+{
+    char *cp;
+    unsigned int len1;
+    unsigned int len2 = strlen(s);
+    unsigned int ret;
+
+    cp = memchr (d, '\0', bufsize);
+    if (!cp)
+	return bufsize + len2;
+    len1 = cp - d;
+    ret = len1 + len2;
+    if (ret >= bufsize) {
+        len2 = bufsize - len1 - 1;
+        memcpy(cp, s, len2);
+        cp[len2] = '\0';
+    } else
+        memcpy(cp, s, len2 + 1);
+
+    return ret;
 }
 #endif

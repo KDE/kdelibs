@@ -277,17 +277,11 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
   if (!bHasHeader)
   {
      bEof = false;
-     if (headerData.isEmpty())
-     {
-        headerData = d;
-     }
-     else
-     {
-        // Add data to header.
-        int orig_size = headerData.size();
-        headerData.resize(orig_size+d.size());
-        memcpy(headerData.data()+orig_size, d.data(), d.size());
-     }
+
+     // Add data to header.
+     int orig_size = headerData.size();
+     headerData.resize(orig_size+d.size());
+     memcpy(headerData.data()+orig_size, d.data(), d.size());
 
      zstr.avail_in = headerData.size();
      zstr.next_in = (Bytef *) headerData.data();     

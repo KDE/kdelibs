@@ -14,6 +14,8 @@
 
 class QPixmap;
 class QImage;
+class QPoint;
+class QRect;
 class KPixmapIOPrivate;
 /**
  * @short Fast QImage to/from QPixmap conversion.
@@ -167,11 +169,11 @@ private:
     };
 
     bool m_bShm;
-    void initXImage(int w, int h);
+    bool initXImage(int w, int h);
     void doneXImage();
-    void createXImage(int w, int h);
+    bool createXImage(int w, int h);
     void destroyXImage();
-    void createShmSegment(int size);
+    bool createShmSegment(int size);
     void destroyShmSegment();
     void convertToXImage(const QImage &);
     QImage convertFromXImage();

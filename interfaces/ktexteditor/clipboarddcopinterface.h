@@ -47,7 +47,7 @@ namespace KTextEditor
 	private:
 		ClipboardInterface *m_parent;
 	};
-};
+}
 #endif
 
 

@@ -11,4 +11,4 @@ const struct HashEntry DOMAbstractViewTableEntries[] = {
 
 const struct HashTable DOMAbstractViewTable = { 2, 2, DOMAbstractViewTableEntries, 2 };
 
-}; // namespace
+} // namespace

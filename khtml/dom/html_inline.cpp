@@ -96,7 +96,8 @@ void HTMLAnchorElement::setCoords( const DOMString &value )
 DOMString HTMLAnchorElement::href() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
+    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
+    return href.length() ? impl->getDocument()->completeURL(href.string()) : href;
 }
 
 void HTMLAnchorElement::setHref( const DOMString &value )
@@ -334,13 +335,15 @@ HTMLModElement::HTMLModElement(HTMLElementImpl *_impl)
 
 HTMLModElement &HTMLModElement::operator = (const Node &other)
 {
-    if( other.elementId() != ID_INS &&
-	other.elementId() != ID_DEL )
-    {
-	if ( impl ) impl->deref();
-	impl = 0;
-    } else {
-    Node::operator = (other);
+    if (other.handle() != handle()) {
+        if( other.elementId() != ID_INS &&
+            other.elementId() != ID_DEL )
+        {
+            if ( impl ) impl->deref();
+            impl = 0;
+        } else {
+            Node::operator = (other);
+        }
     }
     return *this;
 }

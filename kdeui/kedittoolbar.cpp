@@ -103,8 +103,8 @@ private:
 class KEditToolbarWidgetPrivate
 {
 public:
-  KEditToolbarWidgetPrivate(KInstance *instance)
-  //: m_collection( parent, "KEditToolbarWidgetPrivate::m_collection" )
+  KEditToolbarWidgetPrivate(KInstance *instance, KActionCollection* collection)
+      : m_collection( collection )
   {
     m_instance = instance;
     m_isPart   = false;
@@ -127,6 +127,7 @@ public:
   {
     QString raw_xml;
     QString xml_file = xmlFile(_xml_file);
+    //kdDebug() << "loadXMLFile xml_file=" << xml_file << endl;
 
     if ( xml_file[0] == '/' )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
@@ -158,7 +159,7 @@ public:
   }
 
   QValueList<KAction*> m_actionList;
-  //KActionCollection m_collection;
+  KActionCollection* m_collection;
   KInstance         *m_instance;
 
   XmlData     m_currentXmlData;
@@ -252,9 +253,8 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
                                        const QString& file,
                                        bool global, QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance()))
+    d(new KEditToolbarWidgetPrivate(instance(), collection))
 {
-  actionCollection()->setWidget( this );
   // let's not forget the stuff that's not xml specific
   //d->m_collection = *collection;
   d->m_actionList = collection->actions();
@@ -262,7 +262,8 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   // handle the merging
   if (global)
     setXMLFile(locate("config", "ui/ui_standards.rc"));
-  setXML(d->loadXMLFile(file), true);
+  QString localXML = d->loadXMLFile(file);
+  setXML(localXML, true);
 
   // reusable vars
   QDomElement elem;
@@ -271,7 +272,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   XmlData local;
   local.m_xmlFile = d->xmlFile(file);
   local.m_type    = XmlData::Local;
-  local.m_document.setContent(d->loadXMLFile(file));
+  local.m_document.setContent(localXML);
   elem = local.m_document.documentElement().toElement();
   KXMLGUIFactory::removeDOMComments( elem );
   local.m_barList = d->findToolbars(elem);
@@ -293,14 +294,14 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   loadToolbarCombo();
   adjustSize();
 
-  kdDebug() << "kedittoolbarwidget " << sizeHint() << endl;
+  //kdDebug() << "kedittoolbarwidget " << sizeHint() << endl;
   setMinimumSize(sizeHint());
 }
 
 KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
                                         QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance()))
+    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
 {
   // reusable vars
   QDomElement elem;
@@ -381,15 +382,25 @@ bool KEditToolbarWidget::save()
   }
 
   client = clients.first();
+  KXMLGUIClient *firstClient = client;
+
   // now, rebuild the gui from the first to the last
   //kdDebug() << "rebuildling the gui" << endl;
   for (; client; client = clients.next() )
   {
-    // passing an empty stream forces the clients to reread the XML
-    client->setXMLGUIBuildDocument( QDomDocument() );
+    QString file( client->xmlFile() ); // before setting ui_standards!
+    if ( !file.isEmpty() )
+    {
+        // passing an empty stream forces the clients to reread the XML
+        client->setXMLGUIBuildDocument( QDomDocument() );
 
-    // and this forces it to use the *new* XML file
-    client->reloadXML();
+        // for the shell, merge in ui_standards.rc
+        if ( client == firstClient ) // same assumption as in the ctor: first==shell
+            client->setXMLFile(locate("config", "ui/ui_standards.rc"));
+
+        // and this forces it to use the *new* XML file
+        client->setXMLFile( file, client == firstClient /* merge if shell */ );
+    }
 
     //kdDebug() << "factory->addClient " << client << endl;
     // finally, do all the real work
@@ -664,10 +675,10 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   act->setText(1, "-----");
 }
 
-/*KActionCollection *KEditToolbarWidget::actionCollection() const
+KActionCollection *KEditToolbarWidget::actionCollection() const
 {
-  return &d->m_collection;
-}*/
+  return d->m_collection;
+}
 
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {

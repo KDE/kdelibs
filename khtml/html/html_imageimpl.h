@@ -33,13 +33,14 @@
 namespace DOM {
 
 class DOMString;
+class HTMLFormElementImpl;
 
 class HTMLImageElementImpl
     : public HTMLElementImpl
 {
+    friend class HTMLFormElementImpl;
 public:
-    HTMLImageElementImpl(DocumentPtr *doc);
-
+    HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     ~HTMLImageElementImpl();
 
     virtual Id id() const;
@@ -62,6 +63,7 @@ public:
 protected:
     DOMString usemap;
     bool ismap;
+    HTMLFormElementImpl *m_form;
 };
 
 
@@ -121,6 +123,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

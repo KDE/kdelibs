@@ -548,6 +548,6 @@ public:
     void setText( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif

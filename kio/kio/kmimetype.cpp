@@ -714,7 +714,7 @@ pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _service
 
 pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
 {
-  QString url = cfg.readEntry( "URL" );
+  QString url = cfg.readPathEntry( "URL" );
   if ( url.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.").arg( _url.url() );
@@ -739,9 +739,16 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   // Hmm, can't really use keditfiletype since we might be looking
   // at the global file, or at a file not in share/mimelnk...
 
+  QStringList args;
+  args << "openProperties";
+  args << url.path();
+
+  int pid;
+  if ( !KApplication::kdeinitExec("kfmclient", args, 0, &pid) )
+      return pid;
+
   KProcess p;
-  p.setUseShell(true);
-  p << "kfmclient" << "openProperties" << url.path().local8Bit();
+  p << "kfmclient" << args;
   p.start(KProcess::DontCare);
   return p.getPid();
 }
@@ -812,7 +819,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
   if ( cfg.hasKey( "TryExec" ) )
   {
-      QString tryexec = cfg.readEntry( "TryExec" );
+      QString tryexec = cfg.readPathEntry( "TryExec" );
       QString exe =  KStandardDirs::findExe( tryexec );
       if (exe.isEmpty()) {
           return result;
@@ -843,7 +850,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
         bInvalidMenu = true;
       else
       {
-        QString exec = cfg.readEntry( "Exec" );
+        QString exec = cfg.readPathEntry( "Exec" );
         if ( bLocalFiles || exec.contains("%U") || exec.contains("%u") )
         {
           Service s;

@@ -734,7 +734,7 @@ IceReplyWaitInfo *replyWait;
 	    case IceMajorOpcodeDuplicate:
 
 		prefix = "The major opcode was already used : ";
-		errorStr = (char *) malloc (strlen (prefix) + 2);
+		errorStr = (char *) malloc (strlen (prefix) + 16);
 		sprintf (errorStr, "%s%d", prefix, (int) *pData);
 		break;
 

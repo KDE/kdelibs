@@ -72,7 +72,7 @@ namespace KJS
     private:
         int m_id;
     };
-};
+}
 
 #endif
 

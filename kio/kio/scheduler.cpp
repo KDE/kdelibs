@@ -852,6 +852,9 @@ Scheduler::_checkSlaveOnHold(bool b)
 void
 Scheduler::_registerWindow(QWidget *wid)
 {
+   if (!wid)
+      return;
+
    QObject *obj = static_cast<QObject *>(wid);
    if (!m_windowList.contains(obj))
    {
@@ -868,13 +871,15 @@ Scheduler::_registerWindow(QWidget *wid)
       if( !kapp->dcopClient()->send( "kded", "kded",
                     "registerWindowId(long int)", params ) )
       kdDebug(7006) << "Could not register window with kded!" << endl;
-      
    }
 }
 
 void
 Scheduler::slotUnregisterWindow(QObject *obj)
 {
+   if (!obj)
+      return;
+
    QMap<QObject *, long>::Iterator it = m_windowList.find(obj);
    if (it == m_windowList.end())
       return;

@@ -82,6 +82,7 @@ private:
         if (_prefix) _prefix->ref();
     }
     void allocateImpl(ElementImpl* e);
+    void detachImpl();
 
 protected:
     NodeImpl::Id m_id;
@@ -112,6 +113,7 @@ public:
     // DOM methods & attributes for Attr
     bool specified() const { return m_specified; }
     ElementImpl* ownerElement() const { return m_element; }
+    void setOwnerElement( ElementImpl* impl ) { m_element = impl; }
     AttributeImpl* attrImpl() const { return m_attribute; }
 
     //DOMString value() const;
@@ -224,6 +226,7 @@ class XMLElementImpl : public ElementImpl
 
 public:
     XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName);
+    XMLElementImpl(DocumentPtr *doc, Id id);
     XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 
@@ -260,9 +263,9 @@ public:
 
     // Other methods (not part of DOM)
     virtual NodeImpl::Id mapId(const DOMString& namespaceURI,  const DOMString& localName,  bool readonly);
-    AttributeImpl* attributeItem(unsigned long index) const { return attrs ? attrs[index] : 0; }
+    AttributeImpl* attributeItem(unsigned long index) const { return m_attrs ? m_attrs[index] : 0; }
     AttributeImpl* getAttributeItem(NodeImpl::Id id) const;
-    virtual bool isReadOnly() { return element ? element->isReadOnly() : false; }
+    virtual bool isReadOnly() { return m_element ? m_element->isReadOnly() : false; }
 
     // used during parsing: only inserts if not already there
     // no error checking!
@@ -282,11 +285,11 @@ private:
     void detachFromElement();
 
 protected:
-    ElementImpl *element;
-    AttributeImpl **attrs;
-    uint len;
+    ElementImpl *m_element;
+    AttributeImpl **m_attrs;
+    uint m_len;
 };
 
-}; //namespace
+} //namespace
 
 #endif

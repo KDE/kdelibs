@@ -953,8 +953,10 @@ QString Addressee::fullEmail( const QString &email ) const
   if ( e.isEmpty() ) return QString::null;
   
   QString text;
-  if ( !realName().isEmpty() ) text = realName() + " ";
-  text.append( "<" + e + ">" );
+  if ( realName().isEmpty() )
+    text = e;
+  else
+    text = assembledName() + " <" + e + ">";
 
   return text;
 }

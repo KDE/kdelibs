@@ -35,7 +35,7 @@ class KURL;
 
 namespace KIO {
   class Job;
-};
+}
 
 /**
  * Observer for @ref KIO::Job progress information

@@ -26,11 +26,13 @@
 #include <sys/socket.h>
 #include <sys/times.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/un.h>
 
 #ifdef HAVE_RES_INIT
 # include <arpa/nameser.h>
 # include <resolv.h>
+extern "C" int res_init();
 #endif
 
 #include <stdio.h>
@@ -107,7 +109,8 @@ public:
 
   QSocketNotifier *qsnIn, *qsnOut;
   int inMaxSize, outMaxSize;
-  bool emitRead, emitWrite;
+  bool emitRead : 1, emitWrite : 1;
+  mutable bool addressReusable : 1, ipv6only : 1;
 
   KExtendedSocketLookup *dns, *dnsLocal;
 
@@ -116,7 +119,7 @@ public:
     host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
     resolution(0), bindres(0), current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
-    dns(0), dnsLocal(0)
+    addressReusable(false), ipv6only(false), dns(0), dnsLocal(0)
   {
     timeout.tv_sec = timeout.tv_usec = 0;
   }
@@ -378,6 +381,9 @@ kde_addrinfo* KExtendedSocketLookup::results()
 void KExtendedSocketLookup::freeresults(kde_addrinfo *res)
 {
   addrinfo *ai = res->data;
+  if (ai == NULL)
+    return;                    // No data? Bizarre, but nonetheless possible
+
   if (ai->ai_canonname)
     free(ai->ai_canonname);
   while (ai)
@@ -724,19 +730,30 @@ bool KExtendedSocket::blockingMode()
 bool KExtendedSocket::setAddressReusable(bool enable)
 {
   cleanError();
+  d->addressReusable = enable;
   if (d->status < created)
-    return false;
+    return true;
 
   if (sockfd == -1)
-    return false;		// error!
+    return true;
 
-  int on = (int)enable;		// just to be on the safe side
-
-  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
+  if (!setAddressReusable(sockfd, enable))
     {
       setError(IO_UnspecifiedError, errno);
       return false;
     }
+  return true;
+}
+
+bool KExtendedSocket::setAddressReusable(int fd, bool enable)
+{
+  if (fd == -1)
+    return false;
+
+  int on = (int)enable;		// just to be on the safe side
+
+  if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
+    return false;
   return true;
 }
 
@@ -747,10 +764,10 @@ bool KExtendedSocket::addressReusable()
 {
   cleanError();
   if (d->status < created)
-    return false;
+    return d->addressReusable;
 
   if (sockfd == -1)
-    return false;
+    return d->addressReusable;
 
   int on;
   socklen_t onsiz = sizeof(on);
@@ -761,6 +778,67 @@ bool KExtendedSocket::addressReusable()
     }
 
   return on != 0;
+}
+
+/*
+ * Set the IPV6_V6ONLY flag
+ */
+bool KExtendedSocket::setIPv6Only(bool enable)
+{
+#ifdef IPV6_V6ONLY
+  cleanError();
+
+  d->ipv6only = enable;
+  if (sockfd == -1)
+    return true;		// can't set on a non-existing socket
+
+  int on = enable;
+
+  if (setsockopt(sockfd, IPPROTO_IPV6, IPV6_V6ONLY,
+		 (char *)&on, sizeof(on)) == -1)
+    {
+      setError(IO_UnspecifiedError, errno);
+      return false;
+    }
+  else
+    return true;
+
+#else
+  // we don't have the IPV6_V6ONLY constant in this system
+  d->ipv6only = enable;
+
+  setError(IO_UnspecifiedError, ENOSYS);
+  return false;			// can't set if we don't know about this flag
+#endif
+}
+
+/*
+ * retrieve the IPV6_V6ONLY flag
+ */
+bool KExtendedSocket::isIPv6Only()
+{
+#ifdef IPV6_V6ONLY
+  cleanError();
+
+  if (d->status < created || sockfd == -1)
+    return d->ipv6only;
+
+  int on;
+  socklen_t onsiz = sizeof(on);
+  if (getsockopt(sockfd, IPPROTO_IPV6, IPV6_V6ONLY,
+		 (char *)&on, &onsiz) == -1)
+    {
+      setError(IO_UnspecifiedError, errno);
+      return false;
+    }
+
+  return d->ipv6only = on;
+
+#else
+  // we don't have the constant
+  setError(IO_UnspecifiedError, ENOSYS);
+  return false;
+#endif
 }
 
 /*
@@ -1011,7 +1089,7 @@ int KExtendedSocket::startAsyncLookup()
   else
     {
       d->status = lookupDone;
-      dnsResultsReady();
+      emit lookupFinished(n);
     }
   return 0;
 }
@@ -1067,6 +1145,10 @@ int KExtendedSocket::listen(int N)
 	  continue;
 	}
 
+      if (d->addressReusable)
+	setAddressReusable(sockfd, true);
+      setIPv6Only(d->ipv6only);
+      cleanError();
       if (KSocks::self()->bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  kdDebug(170) << "Failed to bind: " << perror << endl;
@@ -1243,6 +1325,10 @@ int KExtendedSocket::connect()
 	  setError(IO_ConnectError, errno);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Bind failed: " << perror << endl;
@@ -1260,13 +1346,17 @@ int KExtendedSocket::connect()
 	      setError(IO_ConnectError, errno);
 	      continue;
 	    }
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	}
 
 //      kdDebug(170) << "Socket " << sockfd << " created" << endl;
       d->status = created;
 
       // check if we have to do timeout
-      if (doingtimeout)
+      if (doingtimeout && KSocks::self()->hasWorkingAsyncConnect())
 	{
 	  fd_set rd, wr;
 
@@ -1488,18 +1578,25 @@ void KExtendedSocket::close()
 
 void KExtendedSocket::closeNow()
 {
-  if (sockfd == -1 || d->status >= done)
+  if (d->status >= done)
     return;			// nothing to close
-
-  d->status = done;
 
   // close the socket
   delete d->qsnIn;
   delete d->qsnOut;
   d->qsnIn = d->qsnOut = NULL;
 
-  ::close(sockfd);
-  sockfd = -1;
+  if (d->status > connecting && sockfd != -1)
+    {
+      ::close(sockfd);
+      sockfd = -1;
+    }
+  else if (d->status == connecting)
+    cancelAsyncConnect();
+  else if (d->status == lookupInProgress)
+    cancelAsyncLookup();
+
+  d->status = done;
 
   emit closed(closedNow |
 	      (readBufferSize() != 0 ? availRead : 0) |
@@ -1570,8 +1667,8 @@ void KExtendedSocket::flush()
       while (a && count + (a->size() - offset) < buf.size())
 	{
 	  memcpy(buf.data() + count, a->data() + offset, a->size() - offset);
-	  offset = 0;
 	  count += a->size() - offset;
+	  offset = 0;
 	  a = outBuf.next();
 	}
 
@@ -1604,8 +1701,6 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
   cleanError();
   if (d->status < connected || d->flags & passiveSocket)
     return -2;
-  if (sockfd == -1)
-    return -2;
 
   int retval;
 
@@ -1614,6 +1709,8 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
       // we aren't buffering this socket, so just pass along
       // the call to the real read method
 
+      if (sockfd == -1)
+	return -2;
       if (data)
 	retval = KSocks::self()->read(sockfd, data, maxlen);
       else
@@ -1632,6 +1729,8 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
 	{
 	  // consumeReadBuffer returns 0 only if the buffer is
 	  // empty
+	  if (sockfd == -1)
+	    return 0;		// buffer is clear now, indicate EOF
 	  setError(IO_ReadError, EWOULDBLOCK);
 	  retval = -1;
 	}
@@ -1720,7 +1819,7 @@ int KExtendedSocket::unreadBlock(const char *, uint)
 
 int KExtendedSocket::bytesAvailable() const
 {
-  if (d->status < connected || d->status >= closing || d->flags & passiveSocket)
+  if (d->status < connected || d->flags & passiveSocket)
     return -2;
 
   // as of now, we don't do any extra processing
@@ -1887,12 +1986,15 @@ void KExtendedSocket::socketActivityRead()
 	      else if (len == 0)
 		{
 		  // EOF condition here
-		  d->qsnIn->setEnabled(false);
+		  ::close(sockfd);
+		  sockfd = -1;	// we're closed
+		  d->qsnIn->deleteLater();
+		  delete d->qsnOut;
+		  d->qsnIn = d->qsnOut = NULL;
+		  d->status = done;
 		  emit closed(involuntary |
 			      (readBufferSize() ? availRead : 0) |
 			      (writeBufferSize() ? dirtyWrite : 0));
-		  sockfd = -1;	// we're closed
-		  d->status = done;
 		  return;
 		}
 	      else
@@ -1942,13 +2044,13 @@ void KExtendedSocket::socketActivityWrite()
     {
       // done sending the missing data!
       d->status = done;
-      emit closed(delayed | (readBufferSize() ? availRead : 0));
 
       delete d->qsnOut;
       ::close(sockfd);
 
       d->qsnOut = NULL;
       sockfd = -1;
+      emit closed(delayed | (readBufferSize() ? availRead : 0));
     }
 }
 
@@ -2039,6 +2141,10 @@ void KExtendedSocket::connectionEvent()
 	  errcode = errno;
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      ::close(sockfd);
@@ -2056,9 +2162,14 @@ void KExtendedSocket::connectionEvent()
 	      errcode = errno;
 	      continue;
 	    }
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	}
 
-      setBlockingMode(false);
+      if (KSocks::self()->hasWorkingAsyncConnect())
+        setBlockingMode(false);
       if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  if (errno != EWOULDBLOCK && errno != EINPROGRESS)

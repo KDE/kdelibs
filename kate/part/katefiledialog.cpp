@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <qstringlist.h>
+#include <qtextcodec.h>
 
 KateFileDialog::KateFileDialog (const QString& startDir,
                     const QString& encoding,
@@ -33,13 +34,11 @@ KateFileDialog::KateFileDialog (const QString& startDir,
                     KFileDialog::OperationMode opMode )
   : KFileDialog (startDir, QString::null, parent, "", true)
 {
-  int iIndex=0;
   QString sEncoding (encoding);
 
   setCaption (caption);
 
-  toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, 0L,
-          0L, 0L, true);
+  toolBar()->insertCombo(QStringList(), 33333, false, 0L, 0L, 0L, true);
 
   setOperationMode( opMode );
   if (opMode == Opening)
@@ -49,14 +48,26 @@ KateFileDialog::KateFileDialog (const QString& startDir,
 
   m_encoding = toolBar()->getCombo(33333);
 
-  if (encoding == QString::null)
-    sEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+  m_encoding->clear ();
+  QStringList encodings (KGlobal::charsets()->availableEncodingNames());
+  int insert = 0;
+  for (uint i=0; i < encodings.count(); i++)
+  {
+    bool found = false;
+    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);
 
-  iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding);
-  if (iIndex < 0) /* Try again with upper */
-    iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding.lower());
+    if (found)
+    {
+      m_encoding->insertItem (encodings[i]);
 
-  m_encoding->setCurrentItem (iIndex);
+      if ( codecForEnc->name() == encoding )
+      {
+        m_encoding->setCurrentItem(insert);
+      }
+
+      insert++;
+    }
+  }
 }
 
 KateFileDialog::~KateFileDialog ()

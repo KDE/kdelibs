@@ -22,6 +22,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef DCOPTYPES_H
 #define DCOPTYPES_H
 
+#include <dcopref.h>
+
 // standard c/c++ types
 inline const char* dcopTypeName( bool ) { return "bool"; }
 inline const char* dcopTypeName( char ) { return "char"; }

@@ -37,7 +37,7 @@ struct MergingIndex;
 class ContainerNode;
 class ContainerClient;
 class BuildHelper;
-};
+}
 
 /**
  * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create

@@ -71,7 +71,7 @@ void ResourceDirConfig::loadSettings( KConfig *config )
   QString format = config->readEntry( "FileFormat" );
   mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
 
-  mFileNameEdit->setURL( config->readEntry( "FilePath" ) );    
+  mFileNameEdit->setURL( config->readPathEntry( "FilePath" ) );    
   if ( mFileNameEdit->url().isEmpty() )
     mFileNameEdit->setURL( KABC::StdAddressBook::directoryName() );
 }

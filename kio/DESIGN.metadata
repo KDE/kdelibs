@@ -58,6 +58,7 @@ setcookies	string		Used to send/receive HTTP cookies when "cookies" is set to "m
 errorPage	bool		Flag that indicates that an errorPage() is preferred over an error(). (default:true)
 
 no-auth		bool		Flag that indicates that no authentication attempts should be made.
+no-auth-prompt	bool		Flag that indicates that only cached authentication tokens should be used.
 
 ssl_activate_warnings	bool	Flag that disables SSL warning dialogs if set to false.  (default: true)
 

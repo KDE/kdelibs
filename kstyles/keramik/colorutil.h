@@ -32,6 +32,6 @@ namespace Keramik
 	public:
 		static QColor lighten(QColor in, int factor);
 	};
-};
+}
 
 #endif

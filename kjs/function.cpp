@@ -52,7 +52,7 @@ namespace KJS {
     UString name;
     Parameter *next;
   };
-};
+}
 
 FunctionImp::FunctionImp(ExecState *exec, const UString &n)
   : InternalFunctionImp(

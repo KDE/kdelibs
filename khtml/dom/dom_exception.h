@@ -89,5 +89,5 @@ public:
     unsigned short code;
 };
 
-}; //namespace
+} //namespace
 #endif

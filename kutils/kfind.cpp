@@ -27,6 +27,10 @@
 #include <qregexp.h>
 #include <kdebug.h>
 
+//#define DEBUG_FIND
+
+#define INDEX_NOMATCH -1
+
 class KFindNextDialog : public KDialogBase
 {
 public:
@@ -60,7 +64,8 @@ void KFind::init( const QString& pattern )
     m_pattern = pattern;
     m_dialog = 0;
     m_dialogClosed = false;
-    m_index = -1;
+    m_index = INDEX_NOMATCH;
+    m_lastResult = NoMatch;
     if (m_options & KFindDialog::RegularExpression)
         m_regExp = new QRegExp(pattern, m_options & KFindDialog::CaseSensitive);
     else {
@@ -79,7 +84,7 @@ bool KFind::needData() const
     if (m_options & KFindDialog::FindBackwards)
         return m_index < 0;
     else
-        return m_index >= (int)m_text.length() || m_index == -1;
+        return m_index >= (int)m_text.length() || m_index == INDEX_NOMATCH;
 }
 
 void KFind::setData( const QString& data, int startPos )
@@ -91,13 +96,16 @@ void KFind::setData( const QString& data, int startPos )
         m_index = QMAX( (int)m_text.length() - 1, 0 );
     else
         m_index = 0;
-    //kdDebug() << k_funcinfo << " m_index=" << m_index << endl;
-    Q_ASSERT( m_index != -1 );
+#ifdef DEBUG_FIND
+    kdDebug() << "setData: '" << m_text << "' m_index=" << m_index << endl;
+#endif
+    Q_ASSERT( m_index != INDEX_NOMATCH );
+    m_lastResult = NoMatch;
 }
 
-KDialogBase* KFind::dialog()
+KDialogBase* KFind::findNextDialog( bool create )
 {
-    if ( !m_dialog )
+    if ( !m_dialog && create )
     {
         m_dialog = new KFindNextDialog( m_pattern, parentWidget() );
         connect( m_dialog, SIGNAL( user1Clicked() ), this, SLOT( slotFindNext() ) );
@@ -108,17 +116,32 @@ KDialogBase* KFind::dialog()
 
 KFind::Result KFind::find()
 {
-    //kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
-    Q_ASSERT( !needData() ); // happens if setData(QString::null) was called -> don't do that
-    Q_ASSERT( m_index != -1 );
-    do
+    Q_ASSERT( m_index != INDEX_NOMATCH );
+    if ( m_lastResult == Match )
     {
-        // Find the next match.
-        if (m_options & KFindDialog::RegularExpression)
+        // Move on before looking for the next match, _if_ we just found a match
+        if (m_options & KFindDialog::FindBackwards) {
+            m_index--;
+            if ( m_index == -1 ) // don't call KFind::find with -1, it has a special meaning
+            {
+                m_lastResult = NoMatch;
+                return NoMatch;
+            }
+        } else
+            m_index++;
+    }
+
+#ifdef DEBUG_FIND
+    kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
+#endif
+    do // this loop is only because validateMatch can fail
+    {
+        // Find the next candidate match.
+        if ( m_options & KFindDialog::RegularExpression )
             m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
         else
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
-        if (m_index != -1)
+        if ( m_index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
             if ( validateMatch( m_text, m_index, m_matchedLength ) )
@@ -127,24 +150,30 @@ KFind::Result KFind::find()
                 // Tell the world about the match we found, in case someone wants to
                 // highlight it.
                 emit highlight(m_text, m_index, m_matchedLength);
+
                 if ( !m_dialogClosed )
-                    dialog()->show();
-                // Get ready for next match
-                if (m_options & KFindDialog::FindBackwards)
-                    m_index--;
-                else
-                    m_index++;
+                    findNextDialog(true)->show();
+
+#ifdef DEBUG_FIND
+                kdDebug() << k_funcinfo << "Match. Next m_index=" << m_index << endl;
+#endif
+                m_lastResult = Match;
                 return Match;
             }
             else // Skip match
                 if (m_options & KFindDialog::FindBackwards)
-                    m_index -= m_matchedLength;
+                    m_index--;
                 else
-                    m_index += m_matchedLength;
-        }
+                    m_index++;
+        } else
+            m_index = INDEX_NOMATCH;
     }
-    while (m_index != -1);
+    while (m_index != INDEX_NOMATCH);
 
+#ifdef DEBUG_FIND
+    kdDebug() << k_funcinfo << "NoMatch. m_index=" << m_index << endl;
+#endif
+    m_lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -308,6 +337,12 @@ void KFind::slotFindNext()
     emit findNext();
 }
 
+void KFind::slotDialogClosed()
+{
+    emit dialogClosed();
+    m_dialogClosed = true;
+}
+
 void KFind::displayFinalDialog() const
 {
     QString message;
@@ -318,7 +353,7 @@ void KFind::displayFinalDialog() const
     KMessageBox::information(parentWidget(), message);
 }
 
-bool KFind::shouldRestart( bool forceAsking ) const
+bool KFind::shouldRestart( bool forceAsking, bool /*showNumMatches*/ ) const
 {
     // Only ask if we did a "find from cursor", otherwise it's pointless.
     // Well, unless the user can modify the document during a search operation,
@@ -328,18 +363,33 @@ bool KFind::shouldRestart( bool forceAsking ) const
         displayFinalDialog();
         return false;
     }
+    //// ### This ignores showNumMatches. The initial i18n string was broken in the 3.1-branch.
+    //// ### This is all fixed in CVS HEAD (for 3.2)
     QString message;
-    if ( numMatches() )
-        message = i18n( "1 match found.", "%n matches found.", numMatches() );
+    if ( m_options & KFindDialog::FindBackwards )
+        message = i18n( "Beginning of document reached.\n"\
+                        "Continue from the end?" );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.<br>"
-                       "Do you want to restart the search at the beginning?</qt>").arg(m_pattern);
+        message = i18n( "End of document reached.\n"\
+                        "Continue from the beginning?" );
 
-    int ret = KMessageBox::questionYesNo( parentWidget(), message );
+    int ret = KMessageBox::questionYesNo( parentWidget(), QString("<qt>")+message+QString("</qt>") );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
         const_cast<KFind*>(this)->m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
     return yes;
+}
+
+void KFind::setOptions( long options )
+{
+    m_options = options;
+}
+
+void KFind::closeFindNextDialog()
+{
+    delete m_dialog;
+    m_dialog = 0L;
+    m_dialogClosed = true;
 }
 
 #include "kfind.moc"

@@ -47,15 +47,11 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
+#include <kapplication.h>
 #include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
-
-HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
-    : ElementImpl(doc)
-{
-}
 
 HTMLElementImpl::~HTMLElementImpl()
 {
@@ -109,11 +105,11 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
 // standard events
     case ATTR_ONCLICK:
-	setHTMLEventListener(EventImpl::KHTML_CLICK_EVENT,
+	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONDBLCLICK:
-	setHTMLEventListener(EventImpl::KHTML_DBLCLICK_EVENT,
+	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEDOWN:
@@ -322,7 +318,7 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
 
     removeChildren();
 
-    TextImpl *t = new TextImpl( docPtr(), text );
+    TextImpl *t = new TextImpl( docPtr(), text.implementation() );
     int ec = 0;
     appendChild( t, ec );
     if ( !ec )
@@ -374,6 +370,38 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
     if ( propvalign != -1 )
 	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
 }
+
+bool HTMLElementImpl::isURLAllowed(const QString& url) const
+{
+    KHTMLView *w = getDocument()->view();
+
+    KURL newURL(getDocument()->completeURL(url));
+    newURL.setRef(QString::null);
+
+    // Prohibit non-file URLs if we are asked to.
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // do we allow this suburl ?
+    if ( !kapp || !kapp->kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
+        return false;
+
+    // We allow one level of self-reference because some sites depend on that.
+    // But we don't allow more than one.
+    bool foundSelfReference = false;
+    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+        KURL partURL = part->url();
+        partURL.setRef(QString::null);
+        if (partURL == newURL) {
+            if (foundSelfReference)
+                return false;
+            foundSelfReference = true;
+        }
+    }
+
+    return true;
+}
+
 
 
 // -------------------------------------------------------------------------

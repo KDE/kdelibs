@@ -48,11 +48,6 @@ public:
     /**
      * Constructs a KCompletionBox.
      *
-     * Notice: the parent needs to be always 0L,
-     * so you can't specify it in the constructor. Because of that, Qt's
-     * auto-deletion does not take place, so you have to explicitly delete
-     * this widget when you don't need it anymore.
-     *
      * The parent widget is used to give the focus back when pressing the
      * up-button on the very first item.
      */

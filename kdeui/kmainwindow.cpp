@@ -30,6 +30,7 @@
 #include <qstyle.h>
 #include <qlayout.h>
 #include <qwidgetlist.h>
+#include <qtimer.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -63,6 +64,7 @@ public:
     KAccel * kaccel;
     KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
+    QTimer* settingsTimer;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -222,6 +224,7 @@ void KMainWindow::initKMainWindow(const char *name)
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
     d->toolBarHandler = 0;
+    d->settingsTimer = 0;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -284,6 +287,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
+    delete d->settingsTimer;
     QMenuBar* mb = internalMenuBar();
     delete mb;
     delete d->m_interface;
@@ -510,17 +514,12 @@ void KMainWindow::slotStateChanged(const QString &newstate,
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
+    // Save settings if auto-save is enabled, and settings have changed
+    if (d->settingsDirty && d->autoSaveSettings)
+        saveAutoSaveSettings();
+
     if (queryClose()) {
         e->accept();
-
-        // Save settings if auto-save is enabled, and settings have changed
-        if (d->settingsDirty && d->autoSaveSettings)
-        {
-            //kdDebug(200) << "KMainWindow::closeEvent -> saving settings" << endl;
-            saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
-            KGlobal::config()->sync();
-            d->settingsDirty = false;
-        }
 
         int not_withdrawn = 0;
         QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
@@ -530,7 +529,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if ( queryExit() ) {            // Yes, Quit app?
+            if ( queryExit() && !kapp->sessionSaving()) {            // Yes, Quit app?
                 // We saved the toolbars already
                 disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
                 kapp->deref();             // ...and quit aplication.
@@ -814,6 +813,17 @@ void KMainWindow::setSettingsDirty()
 {
     //kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
     d->settingsDirty = true;
+    if ( d->autoSaveSettings )
+    {
+        // Use a timer to save "immediately" user-wise, but not too immediately
+        // (to compress calls and save only once, in case of multiple changes)
+        if ( !d->settingsTimer )
+        {
+           d->settingsTimer = new QTimer( this );
+           connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
+        }
+        d->settingsTimer->start( 500, true );
+    }
 }
 
 bool KMainWindow::settingsDirty() const
@@ -841,11 +851,29 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
 void KMainWindow::resetAutoSaveSettings()
 {
     d->autoSaveSettings = false;
+    if ( d->settingsTimer )
+        d->settingsTimer->stop();
 }
 
 bool KMainWindow::autoSaveSettings() const
 {
     return d->autoSaveSettings;
+}
+
+QString KMainWindow::autoSaveGroup() const
+{
+    return d->autoSaveGroup;
+}
+
+void KMainWindow::saveAutoSaveSettings()
+{
+    Q_ASSERT( d->autoSaveSettings );
+    //kdDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
+    saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
+    KGlobal::config()->sync();
+    d->settingsDirty = false;
+    if ( d->settingsTimer )
+        d->settingsTimer->stop();
 }
 
 void KMainWindow::resizeEvent( QResizeEvent * )

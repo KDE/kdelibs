@@ -27,7 +27,7 @@ class KURL;
 namespace KIO
 {
     class Job;
-};
+}
 
 class KPACDownloader : public QObject
 {

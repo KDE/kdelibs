@@ -26,7 +26,7 @@ static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt
 
 
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
-    : QFrame( 0, name, f | POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), layout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -34,7 +34,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
 }
 
 KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
-    : QFrame( 0, name, f | POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), layout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -177,7 +177,7 @@ void KPassivePopup::positionSelf()
     QRect target;
 
     if ( window == 0L ) {
-	target = defaultArea();
+        target = defaultArea();
     }
 
     else {
@@ -198,6 +198,12 @@ void KPassivePopup::positionSelf()
         else {
             NETRect r = ni.iconGeometry();
             target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
+                if ( target.isNull() ) { // bogus value, use the exact position
+                    NETRect dummy;
+                    ni.kdeGeometry( dummy, r );
+                    target.setRect( r.pos.x, r.pos.y, 
+                                    r.size.width, r.size.height);
+                }
         }
     }
 
@@ -212,14 +218,19 @@ void KPassivePopup::moveNear( QRect target )
     int w = width();
     int h = height();
 
-    if ( x < ( qApp->desktop()->width() / 2 ) )
+    QRect r( qApp->desktop()->screenGeometry( QPoint(x+w/2,y+h/2) ) );
+
+    if ( x < ( r.width() / 2 ) )
 	x = x + target.width();
     else
 	x = x - w;
 
     // It's apparently trying to go off screen, so display it ALL at the bottom.
-    if ( (y + h) > qApp->desktop()->height() )
-	y = qApp->desktop()->height() - h;
+    if ( (y + h) > r.height() )
+	y = r.height() - h;
+
+    if ( y < 0 )
+        y = 0;
 
 #ifdef OLD_BITS
     if ( (x - w) >= 0  )

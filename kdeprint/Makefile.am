@@ -82,6 +82,8 @@ noinst_DATA = kdeprint
 kdeprint:
 	$(LN_S) $(srcdir)/management kdeprint
 
+CLEANFILES = kdeprint
+
 # convenience static library
 noinst_LIBRARIES = libdriverparse.a
 libdriverparse_a_SOURCES = driverparse.c

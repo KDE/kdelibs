@@ -64,13 +64,15 @@ KURL smbToUrl(const QString& s)
 	int	p = s.find('@');
 	if (p == -1)
 	{
-		url = KURL(s);
+		// assumes url starts with "smb://". Use encoding in
+		// case the printer name contains chars like '#'.
+		url = KURL("smb://" + KURL::encode_string(s.mid(6)));
 	}
 	else
 	{
 		// assumes URL starts with "smb://"
 		QString	username = s.mid(6, p-6);
-		url = KURL("smb://" + s.mid(p+1));
+		url = KURL("smb://" + KURL::encode_string(s.mid(p+1)));
 		int	q = username.find(':');
 		if (q == -1)
 			url.setUser(username);
@@ -94,7 +96,7 @@ QString urlToSmb(const KURL& url)
 			s.append(":").append(url.pass());
 		s.append("@");
 	}
-	s.append(url.host()).append(url.path());
+	s.append(url.host()).append(KURL::decode_string(url.path()));
 	return s;
 }
 

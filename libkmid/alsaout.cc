@@ -121,7 +121,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
 #endif
 
   _ok=1;
-};
+}
 
 AlsaOut::~AlsaOut()
 {
@@ -548,7 +548,7 @@ void AlsaOut::tmrStart(int tpcn)
 
 void AlsaOut::tmrStop(void)
 {
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   di->timerStarted=false;
   timerEventSend(SND_SEQ_EVENT_STOP);
 #endif
@@ -560,7 +560,7 @@ void AlsaOut::tmrContinue(void)
 
 const char * AlsaOut::deviceName(void) const
 {
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   return di->tgtname;
 #else
   return 0L;

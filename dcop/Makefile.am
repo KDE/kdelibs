@@ -34,13 +34,9 @@ libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 5:0:1 -no-undefined $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h
-noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h dcop-path.h
+noinst_HEADERS = version.h dcopglobal.h dcopserver.h testdcop.h dcopsignals.h dcop-path.h
 
-# we don't use AUTO here, because dcop-doc.h would be mocified (it contains
-# Q_OBJECT), and this would give an ugly warning
-libDCOP_la_METASOURCES = dcopclient.moc
-dcopserver_la_METASOURCES = dcopserver.moc
-testdcop_METASOURCES = testdcop.moc
+METASOURCES = AUTO
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp
@@ -63,11 +59,12 @@ testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcopc_SOURCES = testdcopc.c dcopc.c
 testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
-EXTRA_DIST = HOWTO ICE
+EXTRA_DIST = HOWTO ICE Mainpage.dox
 
 dummy.cpp:
 	echo > dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore
-DOXYGEN_EXCLUDE = KDE-ICE/*
+DOXYGEN_EXCLUDE = KDE-ICE
+
 include ../admin/Doxyfile.am

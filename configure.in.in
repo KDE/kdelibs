@@ -77,7 +77,11 @@ ac_cpp_safe=$ac_cpp
 ac_CPPFLAGS_safe=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $X_INCLUDES"
 ac_cpp='$CXXCPP $CPPFLAGS'
-KDE_CHECK_HEADERS(X11/extensions/shape.h)
+KDE_CHECK_HEADERS(X11/extensions/shape.h,,,
+[
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+])
 KDE_CHECK_HEADERS(X11/extensions/XShm.h, 
   [have_mitshm=yes], [have_mitshm=no], [#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/ICE/ICElib.h)
@@ -96,7 +100,6 @@ AC_LANG_RESTORE
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
-dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
 AC_CHECK_SETENV
@@ -104,7 +107,8 @@ AC_CHECK_UNSETENV
 AC_CHECK_RANDOM
 AC_CHECK_MKSTEMP
 AC_CHECK_MKSTEMPS
-AC_CHECK_FUNCS(socket vsnprintf seteuid setegid strfmon stpcpy gettimeofday)
+KDE_CHECK_STRLCPY
+AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday)
 
 AH_BOTTOM([
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
@@ -142,13 +146,12 @@ dnl arguments), so we switch languages here.
 AC_FUNC_VFORK
 AC_LANG_RESTORE
 
+AC_CHECK_INITGROUPS
 AC_CHECK_USLEEP
-AC_CHECK_GETDOMAINNAME
 AC_CHECK_GETHOSTNAME
 AC_CHECK_RANDOM
 AC_CHECK_S_ISSOCK
 dnl AC_CHECK_SOCKLEN_T already in kde_misc_tests
-AC_CHECK_INITGROUPS
 
 AC_MSG_CHECKING([for mount tab file])
 AC_CACHE_VAL(kde_cv_mtab_file,
@@ -268,7 +271,7 @@ KCC*)
  ;;
 *)
   for flag in '-v' '-V' '--version' '-version'; do
-    compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using built-?in specs|Configured with|Thread model" | head -1`
+    compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using built-?in specs|Configured with|Thread model" | head -n 1`
     clean_compiler_version=`echo $compiler_version | egrep -vi 'Usage|ERROR|unknown option|WARNING|missing|###'`
     test -n "$clean_compiler_version" && break
   done
@@ -288,7 +291,7 @@ case `uname -s` in
 AIX)
   IBM_ARCH=PowerPC #good default
   if [ -x /usr/sbin/lsdev -a -x /usr/sbin/lsattr ]; then
-    IBM_CPU_ID=`/usr/sbin/lsdev -C -c processor -S available | head -1 | awk '{ print $1 }'`
+    IBM_CPU_ID=`/usr/sbin/lsdev -C -c processor -S available | head -n 1 | awk '{ print $1 }'`
     if /usr/sbin/lsattr -El ${IBM_CPU_ID} | grep ' POWER' >/dev/null 2>&1; then
       IBM_ARCH=POWER
     fi

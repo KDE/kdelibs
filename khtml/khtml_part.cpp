@@ -7,6 +7,8 @@
  *                     2000 Simon Hausmann <hausmann@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
  *                     2001 George Staikos <staikos@kde.org>
+ *                     2001-2003 Dirk Mueller <mueller@kde.org>
+ *                     2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +26,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define SPEED_DEBUG
+//#define SPEED_DEBUG
 #include "khtml_part.h"
 
 #include "khtml_pagecache.h"
@@ -118,7 +120,7 @@ namespace khtml {
         QGuardedPtr<KHTMLPart> m_part;
         khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
-};
+}
 
 
 FrameList::Iterator FrameList::find( const QString &name )
@@ -215,11 +217,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   // set the default java(script) flags according to the current host.
-  d->m_bBackRightClick = KHTMLFactory::defaultHTMLSettings()->isBackRightClickEnabled();
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
-  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
+  d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
+  d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
+  d->m_bJScriptDebugEnabled = d->m_settings->isJavaScriptDebugEnabled();
+  d->m_bJavaEnabled = d->m_settings->isJavaEnabled();
+  d->m_bPluginsEnabled = d->m_settings->isPluginsEnabled();
+
+  // Set the meta-refresh flag...
+  d->m_metaRefreshEnabled = d->m_settings->isAutoDelayedActionsEnabled ();
 
   connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );
 
@@ -379,7 +384,7 @@ bool KHTMLPart::openURL( const KURL &url )
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
-  if ( !isFrameSet &&
+  if ( !isFrameSet && !args.redirectedRequest() &&
        urlcmp( url.url(), m_url.url(), true, true ) &&
        url.hasRef() && !args.doPost() && !args.reload )
   {
@@ -607,7 +612,10 @@ bool KHTMLPart::metaRefreshEnabled() const
 // You need to edit khtml/Makefile.am to add ./ecma/libkjs_html.la to LIBADD
 // and to edit khtml/ecma/Makefile.am to s/kjs_html/libkjs_html/, remove libkhtml from LIBADD,
 //        remove LDFLAGS line, and replace kde_module with either lib (shared) or noinst (static)
-//#define DIRECT_LINKAGE_TO_ECMA
+//        Also, change the order of "ecma" and "." in khtml's SUBDIRS line.
+// OK - that's the default now, use the opposite of the above instructions to go back
+// to "dlopening it" - but it breaks exception catching in kjs_binding.cpp
+#define DIRECT_LINKAGE_TO_ECMA
 
 #ifdef DIRECT_LINKAGE_TO_ECMA
 extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
@@ -735,6 +743,8 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
                this, SIGNAL(setStatusBarText(const QString&)) );
       connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),
                this, SLOT(slotShowDocument(const QString&, const QString&)) );
+      connect( d->m_javaContext, SIGNAL(appletLoaded()),
+               this, SLOT(checkCompleted()) );
   }
 
   return d->m_javaContext;
@@ -801,13 +811,13 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
-      executeScript( url.right( url.length() - 11) );
+      executeScript( KURL::decode_string( url.right( url.length() - 11) ) );
       return;
   }
 
   if ( child ) {
       requestObject( child, KURL(url), args );
-  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  }  else if ( frameName == "_self" )
   {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
@@ -958,8 +968,6 @@ void KHTMLPart::clear()
   connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
 #endif
 
-  d->m_totalObjectCount = 0;
-  d->m_loadedObjects = 0;
   d->m_jobPercent = 0;
 
   if ( !d->m_haveEncoding )
@@ -1006,7 +1014,9 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
   {
       //kdDebug( 6050 ) << "begin!" << endl;
 
+    d->m_job->suspend();
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+    d->m_job->resume();
 
 
     d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
@@ -1312,9 +1322,14 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   args.yOffset = yOffset;
   d->m_extension->setURLArgs( args );
 
+  if ( d->m_referrer != url.url() )
+      d->m_pageReferrer = d->m_referrer;
+
   KURL ref(url);
   ref.setRef(QString::null);
-  d->m_referrer = ref.url();
+  ref.setUser(QString::null);
+  ref.setPass(QString::null);
+  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : QString::fromLatin1( "" );
 
   m_url = url;
   KURL baseurl;
@@ -1328,7 +1343,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     KURL title( baseurl );
     title.setRef( QString::null );
     title.setQuery( QString::null );
-    emit setWindowCaption( title.url() );
+    emit setWindowCaption( title.prettyURL() );
   }
   else
     emit setWindowCaption( i18n( "no title", "* Unknown *" ) );
@@ -1372,7 +1387,7 @@ void KHTMLPart::write( const char *str, int len )
 {
     if ( !d->m_decoder ) {
         d->m_decoder = new khtml::Decoder();
-        if(d->m_encoding != QString::null)
+        if(!d->m_encoding.isNull())
             d->m_decoder->setEncoding(d->m_encoding.latin1(), d->m_haveEncoding);
         else
             d->m_decoder->setEncoding(settings()->encoding().latin1(), d->m_haveEncoding);
@@ -1512,9 +1527,7 @@ void KHTMLPart::slotProgressUpdate()
   else
     percent = d->m_jobPercent;
 
-  if( percent == 100 ) // never set 100% here
-    percent = 99;
-  if( d->m_bComplete ) // only if it's really complete
+  if( d->m_bComplete )
     percent = 100;
 
   if( d->m_bComplete )
@@ -1587,10 +1600,17 @@ void KHTMLPart::checkCompleted()
   if ( requests > 0 )
     return;
 
+#ifndef Q_WS_QWS
+  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
+      return;
+#endif
+
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
   d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
+  d->m_totalObjectCount = 0;
+  d->m_loadedObjects = 0;
 
   KHTMLPart* p = this;
   while ( p ) {
@@ -1655,6 +1675,10 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
+#ifndef Q_WS_QWS
+  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
+      return;
+#endif
   // Still waiting for images/scripts from the loader ?
   // (onload must happen afterwards, #45607)
   // ## This makes this method very similar to checkCompleted. A brave soul should try merging them.
@@ -1704,8 +1728,8 @@ KURL KHTMLPart::completeURL( const QString &url )
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
-
-    if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
+    if ( delay < 24*60*60 &&
+       ( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) )
     {
        d->m_delayRedirect = delay;
        d->m_redirectURL = url;
@@ -1722,7 +1746,8 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = QString::null;
+  d->m_pageReferrer = d->m_referrer = "";
+  // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
@@ -1738,11 +1763,26 @@ void KHTMLPart::slotRedirect()
   KParts::URLArgs args;
   // Redirecting to the current URL leads to a reload.
   // But jumping to an anchor never leads to a reload.
+  KURL cUrl( m_url );
   KURL url( u );
+
+  // handle windows opened by JS
+  if ( openedByJS() && d->m_opener )
+      cUrl = d->m_opener->url();
+
+  if (!kapp || !kapp->kapp->authorizeURLAction("redirect", cUrl, url))
+  {
+    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+    return;
+  }
+
   if ( !url.hasRef() && urlcmp( u, m_url.url(), true, true ) )
   {
     args.reload = true;
   }
+
+  // Indicate that this request is due to a redirection.
+  args.setRedirectedRequest(true);
 
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
@@ -1819,9 +1859,21 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   }
 
   int x = 0, y = 0;
+  int gox, dummy;
   HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
+
   a->getUpperLeftCorner(x, y);
-  d->m_view->setContentsPos(x-50, y-50);
+  if (x <= d->m_view->contentsX())
+    gox = x - 10;
+  else {
+    gox = d->m_view->contentsX();
+    if ( x + 10 > d->m_view->contentsX()+d->m_view->visibleWidth()) {
+      a->getLowerRightCorner(x, dummy);
+      gox = x - d->m_view->visibleWidth() + 10;
+    }
+  }
+
+  d->m_view->setContentsPos(gox, y-20);
 
   return true;
 }
@@ -2118,7 +2170,10 @@ void KHTMLPart::findTextNext()
         // Grab text from render object
         QString s;
         if ( obj->isText() )
+        {
           s = static_cast<khtml::RenderText *>(obj)->data().string();
+          s = s.replace(0xa0, ' ');
+        }
         else if ( obj->isBR() )
           s = '\n';
         else if ( !obj->isInline() && !str.isEmpty() )
@@ -2248,7 +2303,7 @@ QString KHTMLPart::selectedText() const
   QString text;
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
-      if(n.nodeType() == DOM::Node::TEXT_NODE) {
+      if(n.nodeType() == DOM::Node::TEXT_NODE && n.handle()->renderer()) {
         QString str = n.nodeValue().string();
         hasNewLine = false;
         if(n == d->m_selectionStart && n == d->m_selectionEnd)
@@ -2417,7 +2472,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 
   if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 ) {
-    QString jscode = url.mid( url.find( "javascript:", 0, false ) );
+    QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
     return;
@@ -2503,14 +2558,14 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   else
   {
     QString extra;
-    if (target == QString::fromLatin1("_blank"))
+    if (target.lower() == "_blank")
     {
       extra = i18n(" (In new window)");
     }
     else if (!target.isEmpty() &&
-             (target != QString::fromLatin1("_top")) &&
-             (target != QString::fromLatin1("_self")) &&
-             (target != QString::fromLatin1("_parent")))
+             (target.lower() != "_top") &&
+             (target.lower() != "_self") &&
+             (target.lower() != "_parent"))
     {
       extra = i18n(" (In other frame)");
     }
@@ -2573,7 +2628,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    executeScript( url.right( url.length() - 11 ) );
+    executeScript( KURL::decode_string( url.right( url.length() - 11 ) ) );
     return;
   }
 
@@ -2940,7 +2995,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-      QVariant res = executeScript( DOM::Node(frame->element()), url.right( url.length() - 11) );
+      QVariant res = executeScript( DOM::Node(frame->element()), KURL::decode_string( url.right( url.length() - 11) ) );
       KURL myurl;
       myurl.setProtocol("javascript");
       if ( res.type() == QVariant::String )
@@ -3577,7 +3632,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       // Inform someone that we are about to show something else.
       child->m_bNotify = true;
       requestObject( child, url, args );
-  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  }  else if ( frameName== "_self" ) // this is for embedded objects (via <object>) which want to replace the current document
   {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
@@ -4119,6 +4174,26 @@ QString KHTMLPart::referrer() const
    return d->m_referrer;
 }
 
+QString KHTMLPart::pageReferrer() const
+{
+   KURL referrerURL = d->m_pageReferrer;
+   if (referrerURL.isValid())
+   {
+      QString protocol = referrerURL.protocol();
+
+      if ((protocol == "http") ||
+         ((protocol == "https") && (m_url.protocol() == "https")))
+      {
+          referrerURL.setRef(QString::null);
+          referrerURL.setUser(QString::null);
+          referrerURL.setPass(QString::null);
+          return referrerURL.url();
+      }
+   }
+   
+   return QString::null;
+}
+
 QString KHTMLPart::lastModified() const
 {
   if ( d->m_lastModified.isEmpty() && m_url.isLocalFile() ) {
@@ -4160,11 +4235,13 @@ void KHTMLPart::reparseConfiguration()
   d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
   d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
+  d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
+
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
   QApplication::setOverrideCursor( waitCursor );
-  if(d->m_doc) d->m_doc->recalcStyle( NodeImpl::Force );
+  if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
 }
 
@@ -4427,7 +4504,6 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
-  DOM::Node innerNode = event->innerNode();
 
   if( d->m_bRightMousePressed && parentPart() != 0 && d->m_bBackRightClick )
   {
@@ -4436,9 +4512,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     d->m_bRightMousePressed = false;
   }
 #ifndef QT_NO_DRAGANDDROP
-  if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || (!innerNode.isNull() && innerNode.elementId() == ID_IMG) ) &&
-      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
-      d->m_bDnd && d->m_mousePressNode == innerNode ) {
+  if( d->m_bDnd && d->m_bMousePressed &&
+      (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) &&
+      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay()) {
 
       QPixmap p;
       QDragObject *drag = 0;
@@ -4450,7 +4526,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           drag = urlDrag;
           p = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
       } else {
-          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(d->m_mousePressNode.handle());
           if( i ) {
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
@@ -4480,6 +4556,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
   DOM::DOMString url = event->url();
   DOM::DOMString target = event->target();
+  DOM::Node innerNode = event->innerNode();
 
   // Not clicked -> mouse over stuff
   if ( !d->m_bMousePressed )
@@ -4634,13 +4711,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
       if ( uriType == KURIFilterData::LOCAL_FILE
            || uriType == KURIFilterData::LOCAL_DIR
            || uriType == KURIFilterData::NET_PROTOCOL )
-      {
-        KURL u = m_filterData.uri();
-        QString savedReferrer = d->m_referrer;
-        d->m_referrer = QString::null; // Disable referrer.
-        urlSelected(u.url(), 0,0, "_top");
-        d->m_referrer = savedReferrer; // Restore original referrer.
-      }
+        emit d->m_extension->openURLRequest( m_filterData.uri().url() );
     }
   }
 #endif
@@ -4889,7 +4960,16 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
 {
 //    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
     if ( part == d->m_activeFrame )
+    {
         d->m_activeFrame = 0L;
+        if ( !part->inherits( "KHTMLPart" ) )
+        {
+            if (factory()) {
+                factory()->removeClient( part );
+            }
+            removeChildClient( part );
+        }
+    }
 }
 
 void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
@@ -4911,6 +4991,22 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
            frame->repaint();
         }
     }
+
+    if( d->m_activeFrame && !d->m_activeFrame->inherits( "KHTMLPart" ) )
+    {
+        if (factory()) {
+            factory()->removeClient( d->m_activeFrame );
+        }
+        removeChildClient( d->m_activeFrame );
+    }
+    if( part && !part->inherits( "KHTMLPart" ) )
+    {
+        if (factory()) {
+            factory()->addClient( part );
+        }
+        insertChildClient( part );
+    }
+
 
     d->m_activeFrame = part;
 

@@ -64,5 +64,5 @@ protected:
     RenderObject *m_first;
     RenderObject *m_last;
 };
-};
+}
 #endif

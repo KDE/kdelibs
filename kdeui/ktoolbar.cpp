@@ -194,6 +194,7 @@ KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, cons
 
 KToolBar::~KToolBar()
 {
+    emit toolbarDestroyed();
     delete d;
 }
 
@@ -1254,7 +1255,8 @@ QSize KToolBar::sizeHint() const
 
     this_too->polish();
 
-    int margin = ((QWidget *)this)->layout()->margin();
+    int margin = ((QWidget *)this)->layout()->margin() + frameWidth();
+
     switch( barPos() )
     {
      case KToolBar::Top:
@@ -1617,7 +1619,7 @@ void KToolBar::slotRepaint()
     resizeEvent(&ev);
     QApplication::sendPostedEvents( this, QEvent::LayoutHint );
     setUpdatesEnabled( TRUE );
-    repaint( FALSE );
+    repaint( TRUE );
 }
 
 void KToolBar::toolBarPosChanged( QToolBar *tb )
@@ -1828,7 +1830,7 @@ KPopupMenu *KToolBar::contextMenu()
   if ( context )
     return context;
 
-  // Construct our context popup menu. Name it qt_dockwidget_internal so it 
+  // Construct our context popup menu. Name it qt_dockwidget_internal so it
   // won't be deleted by QToolBar::clear().
   context = new KPopupMenu( this, "qt_dockwidget_internal" );
   context->insertTitle(i18n("Toolbar Menu"));

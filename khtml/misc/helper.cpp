@@ -176,7 +176,7 @@ HTMLColors::HTMLColors()
     bckgrConfig.setGroup("Desktop0");
         // Desktop background.
     map["background"] = bckgrConfig.readColorEntry("Color1", &pal.disabled().background());
-};
+}
 
 
 
@@ -278,7 +278,9 @@ QRgb khtml::parseColor(QString name, bool strictParsing)
     return invalidColor;
 }
 
-QPainter *khtml::printpainter = 0;
+namespace khtml {
+  QPainter *printpainter = 0;
+}
 
 void khtml::setPrintPainter( QPainter *printer )
 {

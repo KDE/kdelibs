@@ -16,6 +16,7 @@
 
 #include <qstring.h>
 #include <qpixmap.h>
+#include <qwidget.h>
 
 #ifndef Q_WS_QWS // FIXME: Implement for Qt Embedded
 #include <kpixmap.h>

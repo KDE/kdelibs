@@ -32,6 +32,7 @@
 #include "misc/htmlattrs.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "css/csshelper.h"
 #include "misc/htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -153,12 +154,12 @@ void RenderFrameSet::layout( )
             // percentage ones and distribute remaining over relative
             for(int i = 0; i< gridLen; ++i)
                 if (grid[i].isFixed()) {
-                    gridLayout[i] = kMin(grid[i].value > 0 ? grid[i].value : 0, remainingLen[k]);
+                    gridLayout[i] = kMin(grid[i].value() > 0 ? grid[i].value() : 0, remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
                     totalFixed += gridLayout[i];
                 }
                 else if(grid[i].isRelative()) {
-                    totalRelative += grid[i].value > 1 ? grid[i].value : 1;
+                    totalRelative += grid[i].value() > 1 ? grid[i].value() : 1;
                     countRelative++;
                 }
 
@@ -166,7 +167,7 @@ void RenderFrameSet::layout( )
                 if(grid[i].isPercent()) {
                     gridLayout[i] = kMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
-                    totalPercent += grid[i].value;
+                    totalPercent += grid[i].value();
                     countPercent++;
                 }
 
@@ -176,7 +177,7 @@ void RenderFrameSet::layout( )
                 int remaining = remainingLen[k];
                 for (int i = 0; i < gridLen; ++i)
                     if (grid[i].isRelative()) {
-                        gridLayout[i] = ((grid[i].value > 1 ? grid[i].value : 1) * remaining) / totalRelative;
+                        gridLayout[i] = ((grid[i].value() > 1 ? grid[i].value() : 1) * remaining) / totalRelative;
                         remainingLen[k] -= gridLayout[i];
                     }
             }
@@ -187,8 +188,8 @@ void RenderFrameSet::layout( )
                 int total = countPercent ? totalPercent : totalFixed;
                 if (!total) total = 1;
                 for (int i = 0; i < gridLen; ++i)
-                    if (grid[i].type == distributeType) {
-                        int toAdd = (remainingLen[k] * grid[i].value) / total;
+                    if (grid[i].type() == distributeType) {
+                        int toAdd = (remainingLen[k] * grid[i].value()) / total;
                         gridLayout[i] += toAdd;
                     }
             }
@@ -627,6 +628,10 @@ void RenderPartObject::updateWidget()
 
       params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
       params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( o->getAttribute(ATTR_CODEBASE).string() ) );
+      if (!o->getAttribute(ATTR_WIDTH).isEmpty())
+          params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( o->getAttribute(ATTR_WIDTH).string() ) );
+      if (!o->getAttribute(ATTR_HEIGHT).isEmpty())
+          params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( o->getAttribute(ATTR_HEIGHT).string() ) );
 
       if ( !embed )
       {
@@ -654,19 +659,22 @@ void RenderPartObject::updateWidget()
               // TODO: add more plugins here
           }
 
-          if((url.isEmpty() || url.isNull())) {
+          if(url.isEmpty()) {
               // look for a SRC attribute in the params
               NodeImpl *child = o->firstChild();
               while ( child ) {
                   if ( child->id() == ID_PARAM ) {
                       HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-                      if ( p->name().lower()==QString::fromLatin1("src") ||
-                           p->name().lower()==QString::fromLatin1("movie") ||
-                           p->name().lower()==QString::fromLatin1("code") )
+                      if ( ( p->name().lower()==QString::fromLatin1("src") ||
+                             p->name().lower()==QString::fromLatin1("movie") ||
+                             p->name().lower()==QString::fromLatin1("code") ) && !p->value().isNull() )
                       {
-                          url = p->value();
-                          break;
+                          url = p->getDocument()->completeURL(khtml::parseURL(p->value()).string());
+                          if (!p->getDocument()->isURLAllowed(url))
+                              url = QString::null;
+                          else
+                              break;
                       }
                   }
                   child = child->nextSibling();
@@ -695,6 +703,7 @@ void RenderPartObject::updateWidget()
           }
           part->requestObject( this, url, serviceType, params );
       }
+      o->setLiveConnect(part->liveConnectExtension(this));
   }
   else if ( element()->id() == ID_EMBED ) {
 
@@ -823,30 +832,15 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             {
                 // Display vendor download page
                 ext->createNewWindow( pluginPageURL );
+                return;
             }
         }
     }
-}
 
-// duplication of RenderFormElement... FIX THIS!
-short RenderPartObject::calcReplacedWidth(bool*) const
-{
-    Length w = style()->width();
-    if ( w.isVariable() )
-        return intrinsicWidth();
-    else
-        return RenderReplaced::calcReplacedWidth();
+    // didn't work, render alternative content.
+ //   if ( element() && element()->id() == ID_OBJECT )
+   //     static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
 }
-
-int RenderPartObject::calcReplacedHeight() const
-{
-    Length h = style()->height();
-    if ( h.isVariable() )
-        return intrinsicHeight();
-    else
-        return RenderReplaced::calcReplacedHeight();
-}
-// end duplication
 
 void RenderPartObject::layout( )
 {

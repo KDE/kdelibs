@@ -556,4 +556,4 @@ static const char * const attrList[] = {
 DOMString getAttrName(unsigned short id)
 {
     return attrList[id-1];
-};
+}

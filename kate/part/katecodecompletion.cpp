@@ -34,7 +34,7 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qsizegrip.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qsizegrip.h>
 #include <kdebug.h>
 

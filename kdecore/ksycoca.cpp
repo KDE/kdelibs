@@ -32,10 +32,12 @@
 #include <kdebug.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
+
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <fcntl.h>
+              
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -59,18 +61,20 @@ struct KSycocaPrivate {
         database = 0;
         readError = false;
         updateSig = 0;
+        autoRebuild = true;
     }
     QFile *database;
     QStringList changeList;
     QString language;
     bool readError;
+    bool autoRebuild;
     Q_UINT32 updateSig;
 };
 
 // Read-only constructor
 KSycoca::KSycoca()
   : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
-    m_sycoca_size(0), m_sycoca_mmap(0)
+    m_sycoca_size(0), m_sycoca_mmap(0), m_timeStamp(0)
 {
    d = new KSycocaPrivate;
    // Register app as able to receive DCOP messages
@@ -102,6 +106,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
+     fcntl(database->handle(), F_SETFD, FD_CLOEXEC);
      m_sycoca_size = database->size();
 #ifdef HAVE_MMAP
      m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size,
@@ -399,8 +404,14 @@ void KSycoca::flagError()
       if (_self->d->readError)
          return;
       _self->d->readError = true;
-      system("kbuildsycoca"); // Rebuild the damned thing.
+      if (_self->d->autoRebuild)
+         system("kbuildsycoca"); // Rebuild the damned thing.
    }
+}
+
+void KSycoca::disableAutoRebuild()
+{
+   d->autoRebuild = false;
 }
 
 bool KSycoca::readError()

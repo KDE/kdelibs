@@ -85,6 +85,6 @@ class Document;
 ConfigInterface *configInterface (Document *doc);
 ConfigInterface *configInterface (Plugin *plugin);
 
-};
+}
 
 #endif

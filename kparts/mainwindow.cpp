@@ -55,7 +55,7 @@ public:
   bool m_bShellGUIActivated;
   KHelpMenu *m_helpMenu;
 };
-};
+}
 
 MainWindow::MainWindow( QWidget* parent,  const char *name, WFlags f )
     : KMainWindow( parent, name, f )

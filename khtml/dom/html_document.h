@@ -288,6 +288,6 @@ public:
     HTMLCollection all() const;
 };
 
-}; //namespace
+} //namespace
 
 #endif

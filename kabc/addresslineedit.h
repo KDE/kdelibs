@@ -101,7 +101,7 @@ private:
   bool m_useCompletion;
   bool m_completionInitialized;
   bool m_smartPaste;
-  QString m_typedText;
+  QString m_typedText; // unused
 
   static bool s_addressesDirty;
   static KCompletion *s_completion;

@@ -490,6 +490,7 @@ class KJanusWidget : public QWidget
   private:
     bool mValid;
 
+    // Obsolete members. Remove in KDE 4.
     QPtrList<QWidget> *mPageList;
     QStringList *mTitleList;
 

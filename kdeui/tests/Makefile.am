@@ -20,7 +20,7 @@
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 	  $(all_includes)
 
-LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
+AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \

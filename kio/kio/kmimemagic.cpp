@@ -1074,16 +1074,12 @@ hextoint(int c)
 static int
 mconvert(union VALUETYPE *p, struct magic *m)
 {
-	char *rt;
-
 	switch (m->type) {
 		case BYTE:
 			return 1;
 		case STRING:
-			/* Null terminate and eat the return */
+			/* Null terminate */
 			p->s[sizeof(p->s) - 1] = '\0';
-			if ((rt = strchr(p->s, '\n')) != NULL)
-				*rt = '\0';
 			return 1;
 #ifndef WORDS_BIGENDIAN
 		case SHORT:
@@ -1529,7 +1525,9 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 					char *tmp;
 					char buf2[BUFSIZ + BUFSIZ + 4];
 
-					strcpy(buf2, fn);
+					strncpy(buf2, fn, BUFSIZ);
+                    buf2[BUFSIZ] = 0;
+
 					if ((tmp = strrchr(buf2, '/')) == NULL) {
 						tmp = buf; /* in current dir */
 					} else {

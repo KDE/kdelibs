@@ -109,5 +109,5 @@ protected:
     mutable unsigned short total_percent;
 };
 
-};
+}
 #endif

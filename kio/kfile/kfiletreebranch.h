@@ -165,6 +165,7 @@ protected:
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
 						  KFileItem *fileItem );
 
+public:
    /**
     * find the according KFileTreeViewItem by an url
     */
@@ -200,6 +201,7 @@ private slots:
 
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
+   void                 deleteChildrenOf( QListViewItem *parent );
 
    KFileTreeViewItem 	*m_root;
    KURL 		m_startURL;

@@ -54,6 +54,6 @@ private:
 	unsigned char *m_outBlock;
 };
 
-};
+}
 
 #endif

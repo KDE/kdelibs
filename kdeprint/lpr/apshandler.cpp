@@ -168,9 +168,22 @@ QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)
 DrMain* ApsHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool config)
 {
 	DrMain	*driver = loadApsDriver(config);
-	if (driver && config)
+	if (driver /* && config */ )    // Load resources in all case, to get the correct page size
 	{
 		QMap<QString,QString>	opts = loadResources(entry);
+		if ( !config && opts.contains( "PAPERSIZE" ) )
+		{
+			// this is needed to keep applications informed
+			// about the current selected page size
+			opts[ "PageSize" ] = opts[ "PAPERSIZE" ];
+
+			// default page size needs to be set to the actual
+			// value of the printer driver, otherwise it's blocked
+			// to A4
+			DrBase *opt = driver->findOption( "PageSize" );
+			if ( opt )
+				opt->set( "default", opts[ "PageSize" ] );
+		}
 		driver->setOptions(opts);
 		driver->set("gsdriver", opts["PRINTER"]);
 	}
@@ -363,7 +376,7 @@ QString ApsHandler::printOptions(KPrinter *printer)
 	QMap<QString,QString>	opts = printer->options();
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
-		if (it.key().startsWith("kde") || it.key().startsWith("_kde"))
+		if (it.key().startsWith("kde-") || it.key().startsWith("_kde-") || it.key().startsWith( "app-" ))
 			continue;
 		optstr.append((*it)).append(":");
 	}

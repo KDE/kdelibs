@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Reginald Stadlbauer <reggie@kde.org>
-   Copyright (C) 2000 Charles Samuels <charles@kde.org>
+   Copyright (C) 2000,2003 Charles Samuels <charles@kde.org>
    Copyright (C) 2000 Peter Putzer
 
    This library is free software; you can redistribute it and/or
@@ -78,6 +78,7 @@ public:
     : pCurrentItem (0L),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
+      cursorInExecuteArea(false),
       itemsMovable (true),
       selectedBySimpleMove(false),
       selectedUsingMouse(false),
@@ -99,9 +100,13 @@ public:
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
-      mDropVisualizerWidth (4)
+      mDropVisualizerWidth (4),
+      paintAbove (0),
+      paintCurrent (0),
+      paintBelow (0),
+      painting (false)
   {
-      renameable += 0;
+      renameable.append(0);
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
   }
 
@@ -155,6 +160,11 @@ public:
   QRect mOldDropHighlighter;
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
+
+  QListViewItem *paintAbove;
+  QListViewItem *paintCurrent;
+  QListViewItem *paintBelow;
+  bool painting;
 
   QColor alternateBackground;
 };
@@ -232,7 +242,7 @@ QListViewItem *prevItem (QListViewItem *pi)
 	if (pa && pa->parent() == pi->parent())
 		return pa;
 
-	return NULL;
+	return 0;
 }
 
 QListViewItem *lastQChild (QListViewItem *pi)
@@ -453,13 +463,15 @@ bool KListView::isExecuteArea( int x )
     for ( int index = 0; index < pos; index++ )
       offset += columnWidth( header()->mapToSection( index ) );
 
+    x += contentsX(); // in case of a horizontal scrollbar
     return ( x > offset && x < ( offset + width ) );
   }
 }
 
 void KListView::slotOnItem( QListViewItem *item )
 {
-  if ( item && isExecuteArea( QCursor::pos().x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
+  QPoint vp = viewport()->mapFromGlobal( QCursor::pos() );
+  if ( item && isExecuteArea( vp.x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
     d->autoSelect.start( d->autoSelectDelay, true );
     d->pCurrentItem = item;
   }
@@ -981,25 +993,34 @@ int KListView::depthToPixels( int depth )
 
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
 {
-  QPoint p (contentsToViewport(pos));
+	QPoint p (contentsToViewport(pos));
 
-  // Get the position to put it in
-  QListViewItem *atpos = itemAt(p);
+	// Get the position to put it in
+	QListViewItem *atpos = itemAt(p);
 
-  QListViewItem *above;
-  if (!atpos) // put it at the end
-    above = lastItem();
-  else
-  {
-    // Get the closest item before us ('atpos' or the one above, if any)
-      if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2))
-          above = atpos->itemAbove();
-      else
-          above = atpos;
-  }
+	QListViewItem *above;
+	if (!atpos) // put it at the end
+		above = lastItem();
+	else
+	{
+		// Get the closest item before us ('atpos' or the one above, if any)
+		if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2))
+			above = atpos->itemAbove();
+		else
+			above = atpos;
+	}
 
-  if (above)
-  {
+	if (above)
+	{
+		// if above has children, I might need to drop it as the first item there
+
+		if (above->firstChild() && above->isOpen())
+		{
+			parent = above;
+			after = 0;
+			return;
+		}
+
       // Now, we know we want to go after "above". But as a child or as a sibling ?
       // We have to ask the "above" item if it accepts children.
       if (above->isExpandable())
@@ -1057,6 +1078,11 @@ QListViewItem *KListView::lastItem() const
     last = it.current();
 
   return last;
+}
+
+KLineEdit *KListView::renameLineEdit() const
+{
+  return d->editor;
 }
 
 void KListView::startDrag()
@@ -1140,7 +1166,7 @@ QPtrList<QListViewItem> KListView::selectedItems() const
 
 void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after)
 {
-  // sanity check - don't move a item into it's own child structure
+  // sanity check - don't move a item into its own child structure
   QListViewItem *i = parent;
   while(i)
     {
@@ -1255,8 +1281,11 @@ void KListView::cleanItemHighlighter ()
 
 void KListView::rename(QListViewItem *item, int c)
 {
+  if (d->renameable.contains(c))
+  {
   ensureItemVisible(item);
   d->editor->load(item,c);
+  }
 }
 
 bool KListView::isRenameable (int col) const
@@ -1373,7 +1402,7 @@ void KListView::deactivateAutomaticSelection()
 bool KListView::automaticSelection() const
 {
    return d->selectedBySimpleMove;
-};
+}
 
 void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
@@ -1389,7 +1418,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           selectAll(FALSE);
        d->selectionDirection=0;
        d->wasShiftEvent = (e_state == ShiftButton);
-    };
+    }
 
     //d->wasShiftEvent = (e_state == ShiftButton);
 
@@ -1673,9 +1702,10 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (realKey && selectCurrentItem)
           item->setSelected(false);
        //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+       QListView::SelectionMode oldSelectionMode = selectionMode();
        setSelectionMode (QListView::Multi);
        QListView::keyPressEvent (e);
-       setSelectionMode (QListView::Extended);
+       setSelectionMode (oldSelectionMode);
        if (realKey && selectCurrentItem)
        {
           currentItem()->setSelected(true);
@@ -1772,7 +1802,7 @@ QListViewItem* KListView::itemAtIndex(int index)
       j++;
    };
    return 0;
-};
+}
 
 
 void KListView::emitContextMenu (KListView*, QListViewItem* i)
@@ -1806,6 +1836,11 @@ int KListView::dropVisualizerWidth () const
 
 void KListView::viewportPaintEvent(QPaintEvent *e)
 {
+  d->paintAbove = 0;
+  d->paintCurrent = 0;
+  d->paintBelow = 0;
+  d->painting = true;
+
   QListView::viewportPaintEvent(e);
 
   if (d->mOldDropVisualizer.isValid() && e->rect().intersects(d->mOldDropVisualizer))
@@ -1827,6 +1862,7 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
                             QStyle::Style_FocusAtBorder);
 #endif
     }
+  d->painting = false;
 }
 
 void KListView::setFullWidth()
@@ -1935,6 +1971,10 @@ bool KListView::ascendingSort(void) const
   return d->sortAscending;
 }
 
+
+
+
+
 KListViewItem::KListViewItem(QListView *parent)
   : QListViewItem(parent)
 {
@@ -1997,7 +2037,9 @@ KListViewItem::~KListViewItem()
 
 void KListViewItem::init()
 {
-  m_known = false;
+  m_known = m_odd = false;
+  KListView *lv = static_cast<KListView *>(listView());
+  setDragEnabled( dragEnabled() || lv->dragEnabled() );
 }
 
 const QColor &KListViewItem::backgroundColor()
@@ -2012,8 +2054,46 @@ bool KListViewItem::isAlternate()
   KListView *lv = static_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    KListViewItem *above = 0;
-    above = dynamic_cast<KListViewItem *>(itemAbove());
+    KListViewItem *above;
+
+    // Ok, there's some weirdness here that requires explanation as this is a
+    // speed hack.  itemAbove() is a O(n) operation (though this isn't
+    // immediately clear) so we want to call it as infrequently as possible --
+    // especially in the case of painting a cell.
+    //
+    // So, in the case that we *are* painting a cell:  (1) we're assuming that
+    // said painting is happening top to bottem -- this assumption is present
+    // elsewhere in the implementation of this class, (2) itemBelow() is fast --
+    // roughly constant time.
+    // 
+    // Given these assumptions we can do a mixture of caching and telling the
+    // next item that the when that item is the current item that the now
+    // current item will be the item above it.
+    //
+    // Ideally this will make checking to see if the item above the current item
+    // is the alternate color a constant time operation rather than 0(n).
+
+    if (lv->d->painting) {
+      if (lv->d->paintCurrent != this)
+      {
+        lv->d->paintAbove = lv->d->paintBelow == this ? lv->d->paintCurrent : 0;
+        lv->d->paintCurrent = this;
+        lv->d->paintBelow = itemBelow();
+      }
+
+      above = dynamic_cast<KListViewItem *>(lv->d->paintAbove);
+
+      if (!above && !lv->d->paintAbove)
+      {
+        above = dynamic_cast<KListViewItem *>(itemAbove());
+        lv->d->paintAbove = above;
+      }
+    }
+    else
+    {
+      above = dynamic_cast<KListViewItem *>(itemAbove());
+    }
+
     m_known = above ? above->m_known : true;
     if (m_known)
     {
@@ -2057,6 +2137,9 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
         p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
   }
   else if (isAlternate())
+       if (listView()->viewport()->backgroundMode()==Qt::FixedColor)
+            _cg.setColor(QColorGroup::Background, static_cast< KListView* >(listView())->alternateBackground());
+       else
         _cg.setColor(QColorGroup::Base, static_cast< KListView* >(listView())->alternateBackground());
 
   QListViewItem::paintCell(p, _cg, column, width, alignment);
@@ -2068,4 +2151,4 @@ void KListView::virtual_hook( int, void* )
 #include "klistview.moc"
 #include "klistviewlineedit.moc"
 
-// vim: ts=2 sw=2 et
+// vim: noet

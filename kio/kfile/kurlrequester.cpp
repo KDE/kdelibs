@@ -236,7 +236,7 @@ void KURLRequester::setCaption( const QString& caption )
 QString KURLRequester::url() const
 {
     return d->url();
-};
+}
 
 
 void KURLRequester::slotOpenDialog()

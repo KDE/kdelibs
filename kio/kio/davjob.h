@@ -76,7 +76,7 @@ namespace KIO {
    DavJob* davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo=true );
    DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
 
-};
+}
 
 #endif
 

@@ -210,6 +210,27 @@ class KKeyNative
 	 */
 	static uint accelModMaskX();
 
+	/**
+	 * Returns the X11 NumLock modifier mask/flag.
+	 * @return the X11 NumLock modifier mask/flag.
+	 * @see accelModMaskX()
+	 */
+	static uint modXNumLock();
+
+	/**
+	 * Returns the X11 Lock modifier mask/flag.
+	 * @return the X11 Lock modifier mask/flag.
+	 * @see accelModMaskX()
+	 */
+	static uint modXLock();
+
+	/**
+	 * Returns the X11 ScrollLock modifier mask/flag.
+	 * @return the X11 ScrollLock modifier mask/flag.
+	 * @see accelModMaskX()
+	 */
+	static uint modXScrollLock();
+
  private:
 	uint m_code, m_mod, m_sym;
 	KKeyNativePrivate* d;

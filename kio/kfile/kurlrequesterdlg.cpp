@@ -72,7 +72,9 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     urlRequester_->setFocus();
     connect( urlRequester_->lineEdit(), SIGNAL(textChanged(const QString&)),
              SLOT(slotTextChanged(const QString&)) );
-    enableButtonOK( !urlName.isEmpty() );
+    bool state = !urlName.isEmpty();
+    enableButtonOK( state );
+    enableButton( KDialogBase::User1, state );
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
@@ -83,7 +85,9 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
 
 void KURLRequesterDlg::slotTextChanged(const QString & text)
 {
-    enableButtonOK( !text.isEmpty() );
+    bool state = !text.isEmpty();
+    enableButtonOK( state );
+    enableButton( KDialogBase::User1, state );
 }
 
 void KURLRequesterDlg::slotClear()

@@ -113,6 +113,6 @@ private:
   QWidget *m_widget;
 };
 
-};
+}
 
 #endif

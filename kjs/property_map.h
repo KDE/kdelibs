@@ -98,6 +98,6 @@ namespace KJS {
 
   int uscompare(const UString &s1, const UString &s2);
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_PROPERTY_MAP_H_

@@ -103,6 +103,6 @@ namespace KIO {
         static SlaveConfig *_self;
         SlaveConfigPrivate *d;
     };
-};
+}
 
 #endif

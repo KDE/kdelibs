@@ -135,8 +135,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
          uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
         QCString s = uris.join( "\n" ).local8Bit();
-        a.resize( s.length() + 1 ); // trailing zero
-        memcpy( a.data(), s.data(), s.length() + 1 );
+        a.resize( s.length());
+        memcpy( a.data(), s.data(), s.length()); // no trailing zero in clipboard text
     }
     else if ( mimetype.lower() == "text/plain;charset=iso-8859-1")
     {
@@ -145,8 +145,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
          uris.append(KURL(*it, 106).url(0, 4)); // 106 is mib enum for utf8 codec; 4 for latin1
 
         QCString s = uris.join( "\n" ).latin1();
-        a.resize( s.length() + 1 ); // trailing zero
-        memcpy( a.data(), s.data(), s.length() + 1 );    
+        a.resize( s.length());
+        memcpy( a.data(), s.data(), s.length());    
     }
     else if ( mimetype.lower() == "text/plain;charset=utf-8")
     {
@@ -154,8 +154,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         for (QStrListIterator it(m_urls); *it; ++it)
          uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
         QCString s = uris.join( "\n" ).utf8();
-        a.resize( s.length() + 1 ); // trailing zero
-        memcpy( a.data(), s.data(), s.length() + 1 );    
+        a.resize( s.length());
+        memcpy( a.data(), s.data(), s.length());    
     }    
     else if ( mimetype == "application/x-kio-metadata" )
     {

@@ -58,9 +58,11 @@ char* KTraderParse_putSymbolInBrackets( char *_name )
 {
   int l = strlen( _name )-1;
   char *p = (char *)malloc( l );
-
-  strncpy( p, _name+1, l-1 );
-  p[l-1] = 0;
+  if (p != NULL)
+  {
+    strncpy( p, _name+1, l-1 );
+    p[l-1] = 0;
+  }
 
   return p;
 }
@@ -68,7 +70,10 @@ char* KTraderParse_putSymbolInBrackets( char *_name )
 char *KTraderParse_putSymbol( char *_name )
 {
   char *p = (char*)malloc( strlen( _name ) + 1 );
-  strcpy( p, _name );
+  if (p != NULL)
+  {
+      strcpy( p, _name );
+  }
   return p;
 }
 
@@ -78,6 +83,10 @@ char* KTraderParse_putString( char *_str )
   char *p = (char*)malloc( l );
   char *s = _str + 1;
   char *d = p;
+
+  if (p == NULL)
+    return NULL;
+
   while ( s != _str + l - 1 )
   {
      if ( *s != '\\' )

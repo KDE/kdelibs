@@ -75,6 +75,12 @@ public:
 
     static const int PassLen;
 
+public slots:
+    /**
+     * Reimplementation
+     */
+    virtual void insert( const QString &);
+
 protected:
     virtual void keyPressEvent(QKeyEvent *);
     virtual void focusInEvent(QFocusEvent *e);

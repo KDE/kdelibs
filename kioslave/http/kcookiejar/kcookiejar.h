@@ -28,7 +28,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <time.h>
 
 class KConfig;
@@ -61,6 +61,7 @@ protected:
     int     mProtocolVersion;
     bool    mSecure;
     bool    mCrossDomain;
+    bool    mHttpOnly;
     QValueList<long> mWindowIds;
 
     QString cookieStr(bool useDOMFormat);
@@ -73,7 +74,8 @@ public:
                 const QString &_value=QString::null,
                 time_t _expireDate=0,
                 int _protocolVersion=0,
-                bool _secure = false);
+                bool _secure = false,
+                bool _httpOnly = false);
 
     QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }
@@ -87,6 +89,7 @@ public:
     bool    isSecure(void) { return mSecure; }
     bool    isExpired(time_t currentDate);
     bool    isCrossDomain(void) { return mCrossDomain; }
+    bool    isHttpOnly(void) { return mHttpOnly; }
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
 };
 

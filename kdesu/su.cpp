@@ -81,7 +81,15 @@ int SuProcess::exec(const char *password, int check)
     args += "-c";
     args += QCString(__KDE_BINDIR) + "/kdesu_stub";
 
-    if (StubProcess::exec(__PATH_SU, args) < 0)
+    QCString command = __PATH_SU;
+    if (::access(__PATH_SU, X_OK) != 0)
+    {
+       command = QFile::encodeName(KGlobal::dirs()->findExe("su"));
+       if (command.isEmpty())
+          return check ? SuNotFound : -1;
+    }
+
+    if (StubProcess::exec(command, args) < 0)
     {
 	return check ? SuNotFound : -1;
     }
@@ -97,8 +105,10 @@ int SuProcess::exec(const char *password, int check)
     {
 	if (ret == 1)
 	{
-	    kill(m_Pid, SIGTERM);
-	    waitForChild();
+	    if (kill(m_Pid, SIGTERM) == 0)
+               waitForChild();
+            else
+	       close(fd());
 	}
 	return ret;
     }
@@ -112,9 +122,11 @@ int SuProcess::exec(const char *password, int check)
 
     if (ret == 2)
     {
-	kill(m_Pid, SIGTERM);
-	waitForChild();
-	return SuIncorrectPassword;
+       if (kill(m_Pid, SIGTERM) == 0)
+          waitForChild();
+       else
+          close(fd());
+       return SuIncorrectPassword;
     }
 
     ret = ConverseStub(check);
@@ -125,9 +137,11 @@ int SuProcess::exec(const char *password, int check)
 	return ret;
     } else if (ret == 1)
     {
-	kill(m_Pid, SIGTERM);
-	waitForChild();
-	return SuIncorrectPassword;
+        if (kill(m_Pid, SIGTERM) == 0)
+           waitForChild();
+        else
+           close(fd());
+        return SuIncorrectPassword;
     }
 
     if (check == 1)
@@ -136,9 +150,6 @@ int SuProcess::exec(const char *password, int check)
 	return 0;
     }
 	
-    // Notify the taskbar that an app has been started. 
-    //QString suffix = i18n("(as %1)").arg(m_User);
-    //notifyTaskbar(suffix);
     ret = waitForChild();
     return ret;
 }

@@ -26,7 +26,7 @@
 #include "xml/dom_docimpl.h"
 #include "khtmlview.h"
 
-
+#include <kglobal.h>
 #include <kdebug.h>
 
 using namespace khtml;
@@ -54,10 +54,10 @@ void RenderBody::setStyle(RenderStyle* style)
     scrollbarsStyled = false;
 }
 
-void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
+void RenderBody::paintBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
     QColor c;
     if( parent()->style()->backgroundColor().isValid() )
 	c =  style()->backgroundColor();
@@ -73,10 +73,10 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     int end = QMIN( _y + _h,  _ty + h );
     int mh = end - my;
 
-    printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+    paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-	printBorder( p, _tx, _ty, w, h, style() );
+	paintBorder( p, _tx, _ty, w, h, style() );
 
 }
 
@@ -100,4 +100,16 @@ void RenderBody::layout()
         }
         scrollbarsStyled=true;
     }
+}
+
+int RenderBody::availableHeight() const
+{
+    int h = RenderFlow::availableHeight();
+
+    if( style()->marginTop().isFixed() )
+        h  -= style()->marginTop().value();
+    if( style()->marginBottom().isFixed() )
+        h -= style()->marginBottom().value();
+
+    return kMax(0, h);
 }

@@ -40,6 +40,9 @@ int main(int argc, char **argv)
 	KCmdLineArgs::addCmdLineOptions(options);
 
 	KApplication app;
+	
+	if (!app.authorize("shell_access"))
+		return 3;
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
@@ -48,6 +51,7 @@ int main(int argc, char **argv)
 
 	KURL url(args->arg(0));
 	QStringList cmd;
+	cmd << "--noclose";
 
 	cmd << "-e";
         if ( url.protocol() == "telnet" )
@@ -63,7 +67,12 @@ int main(int argc, char **argv)
 		cmd << "-l";
 		cmd << url.user();
 	}
-	cmd << url.host();
+
+        if (!url.host().isEmpty())
+           cmd << url.host(); // telnet://host
+        else if (!url.path().isEmpty())
+           cmd << url.path(); // telnet:host
+        
 	if (url.port())
 		cmd << QString::number(url.port());
 

@@ -459,8 +459,9 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
-    slotSendData(0);
     innot->setEnabled(true);
+    if (input_total)
+      slotSendData(0);
     rv = true;
   } else
     rv = false;

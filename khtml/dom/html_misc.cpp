@@ -89,6 +89,22 @@ void HTMLBaseFontElement::setSize( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
 }
 
+long HTMLBaseFontElement::getSize() const
+{
+    if(!impl) return 0;
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE).toInt();
+}
+
+void HTMLBaseFontElement::setSize( long _value )
+{
+    if ( impl )
+    {
+        DOMString value( QString::number( _value ) );
+        ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
+    }
+}
+
+
 // --------------------------------------------------------------------------
 
 HTMLCollection::HTMLCollection()
@@ -111,9 +127,9 @@ HTMLCollection::HTMLCollection(NodeImpl *base, int type)
 HTMLCollection &HTMLCollection::operator = (const HTMLCollection &other)
 {
     if(impl != other.impl) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }

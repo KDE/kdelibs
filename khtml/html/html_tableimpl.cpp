@@ -273,7 +273,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         section = lastSection;
         index = section ? section->numRows() : 0;
     }
-    if ( section && index >= 0 ) {
+    if ( section && ( index >= 0 || append ) ) {
         //kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
@@ -307,7 +307,7 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
         section = 0L;
     }
     if ( lastRow )
-        lastSection->deleteRow( lastSection->numRows(), exceptioncode );
+        lastSection->deleteRow( -1, exceptioncode );
     else if ( section && index >= 0 && index < section->numRows() )
         section->deleteRow( index, exceptioncode );
     else

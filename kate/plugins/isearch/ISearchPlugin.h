@@ -75,6 +75,7 @@ private slots:
 	void slotSearchAction( bool reverse );
 	void slotTextChanged( const QString& text );
 	void slotReturnPressed( const QString& text );
+	void slotAddContextMenuItems( QPopupMenu *menu);
 	
 private:
 	void readConfig();
@@ -84,6 +85,8 @@ private:
 	                      bool wrapped = false, bool overwrapped = false );
 	void startSearch();
 	void endSearch();
+	void quitToView( const QString &text );
+
 	void nextMatch( bool reverse );
 	bool iSearch( uint startLine, uint startCol,
 	              const QString& text, bool reverse, bool autoWrap );
@@ -95,8 +98,10 @@ private:
 	KTextEditor::SelectionInterface* m_selectIF;
 	KAction*               m_searchForwardAction;
 	KAction*               m_searchBackwardAction;
+	KWidgetAction*         m_comboAction;
 	QGuardedPtr<KToolBarLabel> m_label;
 	QGuardedPtr<KHistoryCombo> m_combo;
+	QString        m_lastString;
 	bool           m_searchBackward;
 	bool           m_caseSensitive;
 	bool           m_fromBeginning;
