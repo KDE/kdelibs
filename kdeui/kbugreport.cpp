@@ -365,6 +365,7 @@ bool KBugReport::sendBugReport()
 
   QString btext = text();
   fwrite(btext.ascii(),btext.length(),1,fd);
+  fflush(fd);
 
   int error = pclose(fd);
   if (error == 42) {
