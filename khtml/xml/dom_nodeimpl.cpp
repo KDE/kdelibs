@@ -403,8 +403,10 @@ NodeBaseImpl::~NodeBaseImpl()
 
     for( n = _first; n != 0; n = next )
     {
-	n->setParent(0);
 	next = n->nextSibling();
+        n->setPreviousSibling(0);
+        n->setNextSibling(0);
+	n->setParent(0);
 	if(n->deleteMe()) delete n;
     }
 }
