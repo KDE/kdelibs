@@ -35,6 +35,8 @@
  * original code is here.
  * http://cvs.sourceforge.net/viewcvs.py/gauche/Gauche/ext/charconv/guess.c?view=markup
  */
+#ifndef GUESS_JA_H
+#define GUESS_JA_H
 
 namespace khtml {
     class guess_arc {
@@ -391,3 +393,5 @@ namespace khtml {
     } while (0)
 
 #define DFA_ALIVE(dfa)  (dfa->state >= 0)
+
+#endif  /* GUESS_JA_H */
