@@ -256,8 +256,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     clear();
 
-    m_strURL = _url;
-    
     //emit scrollHorz( _x_offset );
     //emit scrollVert( _y_offset );
 
@@ -266,6 +264,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     if ( !_url.isEmpty() )
     {
+	m_strWorkingURL = _url;
+    
         // Set a default title
         KURL title(_url);
         title.setRef(QString::null);
