@@ -102,6 +102,11 @@ public:
     virtual QWidget *widget() = 0;
 
     /**
+     * As const-method, to be fixed in 3.0
+     */
+    QWidget *widget() const { return const_cast<KFileView*>(this)->widget(); }
+    
+    /**
       * set the current item in the view.
       *
       * the normal use of this function is to use the parameter filename to
@@ -214,6 +219,7 @@ public:
      * somewhere, e.g. in a menu, where the user can choose between views.
      * @see #setViewName
      */
+    // ### make const!
     QString viewName() { return viewname; }
 
     /**

@@ -84,6 +84,7 @@ class KDirOperator : public QWidget {
 
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
+    // ### make non-const
     const KFileView * view() const { return fileView; }
 
     /**
@@ -243,7 +244,7 @@ class KDirOperator : public QWidget {
      * Clears the forward and backward history.
      */
     void clearHistory();
-    
+
 protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
