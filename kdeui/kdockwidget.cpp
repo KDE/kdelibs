@@ -590,7 +590,13 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 void KDockWidgetHeader::setTopLevel( bool isTopLevel )
 {
   if ( isTopLevel ){
-    dockbackButton->show();
+    KDockWidget* par = (KDockWidget*)parent();
+    if( par) {
+      if( par->isDockBackPossible())
+        dockbackButton->show();
+      else
+        dockbackButton->hide();
+    }
     stayButton->hide();
     closeButton->hide();
     drag->setEnabled( true );
@@ -969,6 +975,7 @@ void KDockWidget::undock()
   KDockTabGroup* parentTab = parentTabGroup();
   if ( parentTab ){
     parentTab->removePage( this );
+    formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
     applyToWidget( 0L );
     if ( parentTab->pageCount() == 1 ){
 
@@ -1019,19 +1026,18 @@ void KDockWidget::undock()
 
     } else {
       setDockTabName( parentTab );
-      formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
     }
   } else {
 /*********************************************************************************************/
     if ( parentW->inherits("KDockSplitter") ){
       KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)parentW;
 
-      applyToWidget( 0L );
       KDockWidget* secondWidget = (KDockWidget*)parentSplitterOfDockWidget->getAnother( this );
       KDockWidget* group        = (KDockWidget*)parentSplitterOfDockWidget->parentWidget();
+      formerBrotherDockWidget = secondWidget;
+      applyToWidget( 0L );
       group->hide();
 
-      formerBrotherDockWidget = secondWidget;
       if( formerBrotherDockWidget != 0L)
         QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
                           this, SLOT(loseFormerBrotherDockWidget()) );
@@ -1188,8 +1194,16 @@ void KDockWidget::dockBack()
 	}
 
 	// else dockback to the dockmainwindow (default behaviour)
-  manualDock( ((KDockMainWindow*)manager->parent())->getMainDockWidget(), formerDockPos);
+  manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos);
   formerBrotherDockWidget = 0L;
+}
+
+bool KDockWidget::isDockBackPossible()
+{
+  if( formerBrotherDockWidget == 0L)
+    return false;
+  else
+    return true;
 }
 
 /**************************************************************************************/
