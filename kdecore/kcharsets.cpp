@@ -36,7 +36,7 @@
 
 template class QList<QFont::CharSet>;
 
-#if QT_VERSION == 221
+#if QT_VERSION > 220
 #define CHARSETS_COUNT 30
 #else
 #define CHARSETS_COUNT 29
@@ -71,7 +71,7 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "utf-8",
     "utf-16",
     "iso-8859-11",
-#if QT_VERSION == 221
+#if QT_VERSION > 220
     "koi8u",
 #endif
     "Any"
@@ -108,7 +108,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "utf8",
     "utf16",
     "tis620-*",
-#if QT_VERSION == 221
+#if QT_VERSION > 220
     "koi8-u",
 #endif
     ""  // this will always return true...
@@ -143,7 +143,7 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Unicode,
     QFont::Unicode,
     QFont::ISO_8859_11,
-#if QT_VERSION == 221
+#if QT_VERSION > 220
     QFont::KOI8U,
 #endif
     QFont::AnyCharSet
@@ -549,7 +549,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "iso8859-15";
     case QFont::KOI8R:
         return "koi8-r";
-#if QT_VERSION == 221
+#if QT_VERSION > 220
     case QFont::KOI8U:
         return "koi8-u";
 #endif
