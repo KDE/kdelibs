@@ -22,6 +22,7 @@
 #include "printcapentry.h"
 #include "lpchelper.h"
 #include "matichandler.h"
+#include "lprsettings.h"
 
 #include <qfileinfo.h>
 #include <qlist.h>
@@ -45,7 +46,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 
 void KMLprManager::listPrinters()
 {
-	QFileInfo	fi("/etc/printcap");
+	QFileInfo	fi(LprSettings::self()->printcapFile());
 
 	if (m_lpchelper)
 		m_lpchelper->updateStates();
