@@ -525,7 +525,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 
   if ( stat )
-    error( ERR_UNSUPPORTED_PROTOCOL, i18n("Your server did not return a WebDAV 1.0 compliant response.") );
+    error( ERR_UNSUPPORTED_ACTION, i18n("Your server did not return a WebDAV 1.0 compliant response.") );
   else {
     listEntry( entry, true );
     finished();
