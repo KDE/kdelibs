@@ -208,7 +208,8 @@ QString KXMLGUIFactory::elementToXML( const QDomElement& elem )
   return str;
 }
 
-KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder )
+KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const char *name )
+: QObject( parent, name )
 {
   d = new KXMLGUIFactoryPrivate;
   m_builder = builder;
@@ -297,6 +298,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   d->m_clientName = QString::null;
   d->m_clientBuilder = 0L;
 
+  emit clientAdded( client );
+  
   if ( client->childClients()->count() > 0 )
   {
     const QList<KXMLGUIClient> *children = client->childClients();
@@ -331,6 +334,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
   m_client = 0L;
   d->m_clientBuilder = 0L;
   d->m_clientName = QString::null;
+  
+  emit clientRemoved( client );
 }
 
 QValueList<KXMLGUIClient*> KXMLGUIFactory::clients() const
@@ -606,7 +611,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     if ( node->clients.count() == 1 && clientIt.current()->m_client == node->client && node->client == m_client )
       node->container->hide(); // this container is going to die, that's for sure. in this case let's just hide it, which makes the
                                // destruction faster
-    
+
     while ( clientIt.current() )
       //only unplug the actions of the client we want to remove, as the container might be owned
       //by a different servant
@@ -998,3 +1003,5 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUIContainerNode *node )
   for (; childIt.current(); ++childIt )
     unplugActionListRecursive( childIt.current() );
 }
+
+#include "kxmlgui.moc"

@@ -20,6 +20,7 @@
 #ifndef __kxmlgui_h__
 #define __kxmlgui_h__
 
+#include <qobject.h>
 #include <qlist.h>
 #include <qdom.h>
 #include <qmap.h>
@@ -49,14 +50,15 @@ class KXMLGUIContainerClient;
  * according to the XML and the merging rules of previously inserted clients. Container widgets
  * are built via a @ref KXMLGUIBuilder , which has to be provided with the KXMLGUIFactory constructor.
  */
-class KXMLGUIFactory
+class KXMLGUIFactory : public QObject
 {
+  Q_OBJECT
  public:
   /**
    * Constructs a KXMLGUIFactory. The provided @p builder @ref KXMLGUIBuilder will be called
    * for creating and removing container widgets, when clients are added/removed from the GUI.
    */
-  KXMLGUIFactory( KXMLGUIBuilder *builder );
+  KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0, const char *name = 0 );
 
   /**
    * Destructor
@@ -132,6 +134,10 @@ class KXMLGUIFactory
    * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all clients of the container)
    */
   void resetContainer( const QString &containerName, bool useTagName = false );
+
+ signals:
+  void clientAdded( KXMLGUIClient *client );
+  void clientRemoved( KXMLGUIClient *client );
 
  private:
 
