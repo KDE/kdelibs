@@ -569,9 +569,7 @@ void KFileDialog::initGUI()
     d->lafBox->addWidget(filterWidget, 1, 1, AlignVCenter);
     d->lafBox->addWidget(d->cancelButton, 1, 2, AlignVCenter);
 
-    //    d->lafBox->setColStretch(0, 0);
     d->lafBox->setColStretch(1, 4);
-    //    d->lafBox->setColStretch(2, 1);
 
     delete d->myStatusLine;
     d->myStatusLine = 0L;
