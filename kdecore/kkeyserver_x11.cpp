@@ -4,6 +4,8 @@
 #ifdef Q_WS_X11	// Only compile this module if we're compiling for X11
 
 #include "kkeyserver_x11.h"
+#include "kkeynative.h"
+#include "kshortcut.h"
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -168,9 +170,15 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_Menu,       XK_Menu },
 	{ Qt::Key_Hyper_L,    XK_Hyper_L },
 	{ Qt::Key_Hyper_R,    XK_Hyper_R },
-	{ Qt::Key_Help,       XK_Help }
+	{ Qt::Key_Help,       XK_Help },
 	//{ Qt::Key_Direction_L, XK_Direction_L,
 	//{ Qt::Key_Direction_R, XK_Direction_R
+
+	{ '/',                XK_KP_Divide },
+	{ '*',                XK_KP_Multiply },
+	{ '-',                XK_KP_Subtract },
+	{ '+',                XK_KP_Add },
+	{ Qt::Key_Return,     XK_KP_Enter }
 };
 
 //---------------------------------------------------------------------
@@ -214,7 +222,7 @@ bool initializeMods()
 static void initializeVariations()
 {
 	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
-		g_rgSymVariation[i].bActive = (XKeysymToKeycode( qt_xdisplay(), g_rgSymVariation[i].sym ) != 0);
+		g_rgSymVariation[i].bActive = (XKeysymToKeycode( qt_xdisplay(), g_rgSymVariation[i].symVariation ) != 0);
 	g_bInitializedVariations = true;
 }
 
@@ -348,11 +356,23 @@ uint Sym::getModsRequired() const
 	}
 
 	uchar code = XKeysymToKeycode( qt_xdisplay(), m_sym );
-	if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 0 )
+	if( !code
+	    || m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 0 )
 	    || m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 2 ) )
 		return 0;
 	else
 		return KKey::SHIFT;
+}
+
+uint Sym::getSymVariation() const
+{
+	if( !g_bInitializedVariations )
+		initializeVariations();
+
+	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
+		if( g_rgSymVariation[i].sym == m_sym && g_rgSymVariation[i].bActive )
+			return g_rgSymVariation[i].symVariation;
+	return 0;
 }
 
 void Sym::capitalizeKeyname( QString& s )
@@ -395,18 +415,6 @@ uint accelModMaskX()
 		initializeMods();
 	return ShiftMask | ControlMask | Mod1Mask | g_rgModInfo[3].modX;
 }
-
-uint getSymVariation( uint sym )
-{
-	if( !g_bInitializedVariations )
-		initializeVariations();
-
-	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
-		if( g_rgSymVariation[i].sym == sym && g_rgSymVariation[i].bActive )
-			return g_rgSymVariation[i].symVariation;
-	return 0;
-}
-
 
 bool keyQtToSym( int keyQt, uint& keySym )
 {
@@ -638,6 +646,125 @@ QString modToStringUser( uint mod )     { return modToString( mod, true ); }
 	if( pKeyModX )  *pKeyModX = keyModX;
 }*/
 
+//---------------------------------------------------------------------
+// Key
+//---------------------------------------------------------------------
+
+bool Key::init( const KKey& key, bool bQt )
+{
+	if( bQt ) {
+		m_code = CODE_FOR_QT;
+		m_sym = key.keyCodeQt();
+	} else {
+		KKeyNative keyNative( key );
+		*this = keyNative;
+	}
+	return true;
+}
+
+KKey Key::key() const
+{
+	if( m_code == CODE_FOR_QT )
+		return KKey( keyCodeQt() );
+	else {
+		uint mod;
+		modXToMod( m_mod, mod );
+		return KKey( m_sym, mod );
+	}
+}
+
+Key& Key::operator =( const KKeyNative& key )
+{
+	m_code = key.code(); m_mod = key.mod(); m_sym = key.sym();
+	return *this;
+}
+
+int Key::compare( const Key& b ) const
+{
+	if( m_code == CODE_FOR_QT )
+		return m_sym - b.m_sym;
+	if( m_sym != b.m_sym )	return m_sym - b.m_sym;
+	if( m_mod != b.m_mod )	return m_mod - b.m_mod;
+	return m_code - b.m_code;
+}
+
+//---------------------------------------------------------------------
+// Variations
+//---------------------------------------------------------------------
+
+// TODO: allow for sym to have variations, such as Plus => { Plus, KP_Add }
+void Variations::init( const KKey& key, bool bQt )
+{
+	if( key.isNull() ) {
+		m_nVariations = 0;
+		return;
+	}
+
+	m_nVariations = 1;
+	m_rgkey[0] = KKeyNative(key);
+	uint symVar = Sym(key.sym()).getSymVariation();
+	if( symVar ) {
+		uint modReq = Sym(m_rgkey[0].sym()).getModsRequired();
+		uint modReqVar = Sym(symVar).getModsRequired();
+		// If 'key' doesn't require any mods that are inherent in
+		//  the primary key but not required for the alternate,
+		if( (key.modFlags() & modReq) == (key.modFlags() & modReqVar) ) {
+			m_rgkey[1] = KKeyNative(KKey(symVar, key.modFlags()));
+			m_nVariations = 2;
+		}
+	}
+
+	if( bQt ) {
+		uint nVariations = 0;
+		for( uint i = 0; i < m_nVariations; i++ ) {
+			int keyQt = KKeyNative( m_rgkey[i].code(), m_rgkey[i].mod(), m_rgkey[i].sym() ).keyCodeQt();
+			if( keyQt )
+				m_rgkey[nVariations++].setKeycodeQt( keyQt );
+		}
+		m_nVariations = nVariations;
+
+		// Two different native codes may produce a single
+		//  Qt code.  Search for duplicates.
+		for( uint i = 1; i < m_nVariations; i++ ) {
+			for( uint j = 0; j < i; j++ ) {
+				// If key is already present in list, then remove it.
+				if( m_rgkey[i].keyCodeQt() == m_rgkey[j].keyCodeQt() ) {
+					for( uint k = i; k < m_nVariations - 1; k++ )
+						m_rgkey[k].setKeycodeQt( m_rgkey[k+1].keyCodeQt() );
+					m_nVariations--;
+					i--;
+					break;
+				}
+			}
+		}
+	}
+}
+
 }; // end of namespace KKeyServer block
 #undef KeyPress
+
+// FIXME: This needs to be moved to kshortcut.cpp, and create a 
+//  KKeyServer::method which it will call.
+// Alt+SysReq => Alt+Print
+// Ctrl+Shift+Plus => Ctrl+Plus (en)
+// Ctrl+Shift+Equal => Ctrl+Plus
+// Ctrl+Pause => Ctrl+Break
+void KKey::simplify()
+{
+	if( m_sym == XK_Sys_Req ) {
+		m_sym = XK_Print;
+		m_mod |= ALT;
+	} else if( m_sym == XK_ISO_Left_Tab ) {
+		m_sym = XK_Tab;
+		m_mod |= SHIFT;
+	} else {
+		// Shift+Equal => Shift+Plus (en)
+		m_sym = KKeyNative(*this).sym();
+	}
+
+	// Remove modifers from modifier list which are implicit in the symbol.
+	// Ex. Shift+Plus => Plus (en)
+	m_mod &= ~KKeyServer::Sym(m_sym).getModsRequired();
+}
+
 #endif // Q_WS_X11

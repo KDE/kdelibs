@@ -2,65 +2,89 @@
 #define _KKEYSERVER_X11_H
 
 #include "kshortcut.h"
+#include "kkeynative.h"
 
 namespace KKeyServer
 {
 	struct CodeMod	{ int code, mod; };
 
-struct Sym
-{
-public:
-	uint m_sym;
-
-	Sym()
-		{ m_sym = 0; }
-	Sym( uint sym )
-		{ m_sym = sym; }
-	Sym( const QString& s )
-		{ init( s ); }
-
-	bool initQt( int keyQt );
-	bool init( const QString& );
-
-	int qt() const;
-	QString toStringInternal() const;
-	QString toString() const;
-
-	uint getModsRequired() const;
-
-	operator uint() const { return m_sym; }
-	Sym& operator =( uint sym ) { m_sym = sym; return *this; }
-
-private:
-	QString toString( bool bUserSpace ) const;
-
-	static void capitalizeKeyname( QString& );
-};
-
-/*	struct SymMod
+	struct Sym
 	{
-		uint m_sym, m_mod;
+	 public:
+		uint m_sym;
 
-		SymMod( int sym, int mod )
-			{ m_sym = sym; m_mod = mod; }
+		Sym()
+			{ m_sym = 0; }
+		Sym( uint sym )
+			{ m_sym = sym; }
+		Sym( const QString& s )
+			{ init( s ); }
 
-		// This sets m_sym = sym, and sets mod to any modifiers required
-		//  in order to activate that key.
-		// getModsRequiredForSym( int sym ) & KKeyX11::symInfoPtr( sym );
-		//void init( uint sym );
-		// KKeyX11::keyCodeXToKeySymX( (uchar) code, (uint) mod );
-		void initX( uchar codeX, uint modX );
-		// KKeySequenceOlds( QString )
+		bool initQt( int keyQt );
 		bool init( const QString& );
 
-		// KKeyX11::keySymXToKeyQt( sym, 0 );
 		int qt() const;
-
-		// KKeyX11::keySymXToString( symNative, 0, true );
 		QString toStringInternal() const;
-		QString toStringUser() const;
+		QString toString() const;
+
+		uint getModsRequired() const;
+		uint getSymVariation() const;
+
+		operator uint() const { return m_sym; }
+		Sym& operator =( uint sym ) { m_sym = sym; return *this; }
+
+	 private:
+		QString toString( bool bUserSpace ) const;
+
+		static void capitalizeKeyname( QString& );
 	};
-*/
+
+	struct Key
+	{
+		enum { CODE_FOR_QT = 256 };
+
+		uint m_code;
+		uint m_mod;
+		uint m_sym;
+
+		bool init( const KKey& key, bool bQt );
+
+		bool isNative() const { return m_code != CODE_FOR_QT; }
+
+		uint code() const { return m_code; }
+		uint mod() const { return m_mod; }
+		uint sym() const { return m_sym; }
+		int keyCodeQt() const { return (int) m_sym; }
+
+		void setKeycodeQt( int keyQt )
+			{ m_code = CODE_FOR_QT; m_sym = keyQt; }
+
+		Key& operator =( const KKeyNative& key );
+		int compare( const Key& ) const;
+
+		bool operator ==( const Key& b ) const
+			{ return compare( b ) == 0; }
+		bool operator <( const Key& b ) const
+			{ return compare( b ) < 0; }
+
+		KKey key() const;
+	};
+
+	struct Variations
+	{
+		enum { MAX_VARIATIONS = 4 };
+
+		Key m_rgkey[MAX_VARIATIONS];
+		uint m_nVariations;
+
+		Variations() { m_nVariations = 0; }
+
+		void init( const KKey&, bool bQt );
+		
+		uint count() const { return m_nVariations; }
+		const Key& key( uint i ) const { return m_rgkey[i]; }
+	};
+
 	bool initializeMods();
 
 	/** Returns the equivalent X modifier mask of the given modifier flag. */
@@ -80,7 +104,6 @@ private:
 	/** Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
 	 * Win (if available). */
 	uint accelModMaskX();
-	uint getSymVariation( uint sym );
 
 	bool keyQtToSym( int keyQt, uint& sym );
 	bool keyQtToMod( int keyQt, uint& mod );
@@ -93,8 +116,6 @@ private:
 
 	bool codeXToSym( uchar codeX, uint modX, uint& symX );
 
-	//QString symToStringInternal( uint sym );
-	//QString symToStringUser( uint sym );
 	QString modToStringInternal( uint mod );
 	QString modToStringUser( uint mod );
 
