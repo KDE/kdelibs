@@ -821,10 +821,14 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
 		for( i = 0; i < MOD_KEYS; i++ ) {
 			if( g_aModKeys[i].keyModMaskQt && stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
-				// If there is no X mod flag defined for this key,
-				//  then abort.  Ex: Meta+F1, but X hasn't assigned Meta.
-				if( g_aModKeys[i].keyModMaskX == 0 )
-					return 0;
+				// If there is no X mod flag defined for this modifier,
+				//  then all zeroes should be returned for the X-codes.
+				// Ex: If string="Meta+F1", but X hasn't assigned Meta, don't return 'F1'.
+				if( g_aModKeys[i].keyModMaskX == 0 ) {
+					pKeyCodeX = 0;
+					pKeySymX = 0;
+					pKeyModX = 0;
+				}
 				keyCombQt |= g_aModKeys[i].keyModMaskQt;
 				keyModX |= g_aModKeys[i].keyModMaskX;
 				break;
