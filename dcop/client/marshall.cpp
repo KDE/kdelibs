@@ -20,6 +20,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#define QT_ONLY
+#include "../../kdecore/kurl.cpp"
+
 bool mkBool( const QString& s )
 {
     if ( s.lower()  == "true" )
@@ -173,6 +176,11 @@ QCString demarshal( QDataStream &stream, const QString &type )
         DCOPRef r;
         stream >> r;
         result.sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) );
+    } else if ( type == "KURL" )
+    {
+        KURL r;
+        stream >> r;
+        result = r.url().local8Bit();
     } else if ( type.left( 11 ) == "QValueList<" )
     {
         if ( (uint)type.find( '>', 11 ) != type.length() - 1 )
@@ -289,6 +297,8 @@ void  marshall(QDataStream &arg, int argc, char **argv, int &i, QString type)
 	    arg << mkSize( s );
 	else if ( type == "QRect" )
 	    arg << mkRect( s );
+	else if ( type == "KURL" )
+	    arg << KURL( s );
 	else if ( type == "QVariant" ) {
 	    if ( s == "true" || s == "false" )
 		arg << QVariant( mkBool( s ), 42 );
