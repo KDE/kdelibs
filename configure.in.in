@@ -152,8 +152,6 @@ LIB_KAB='$(top_builddir)/kab/libkab.la'
 AC_SUBST(LIB_KAB)
 LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
 AC_SUBST(LIB_KHTML)
-LIB_KIMGIO='$(top_builddir)/kimgio/libkimgio.la'
-AC_SUBST(LIB_KIMGIO)
 LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
 AC_SUBST(LIB_DCOP)
 KDB2HTML_UNINSTALLED='$(SHELL) $(top_srcdir)/ksgmltools/kdb2html_uninstalled $(top_builddir)/ksgmltools/kdb2html'

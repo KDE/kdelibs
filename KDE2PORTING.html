@@ -59,6 +59,7 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#KFileDialogPreview">KFileDialog - Preview Mode</A></LI>
 <LI><A HREF="#ImageEffects">Image Effects</A></LI>
 <LI><A HREF="#KAudio">KAudio (kaudio.h)</A></LI>
+<LI><A HREF="#KImageIO">KImageIO (kimgio.h)</A></LI>
 </UL>
 
 <H3><A NAME="general">General</A></H3>
@@ -831,6 +832,20 @@ even more advanced sound/multimedia support, that using the aRts/MCOP
 libraries directly can offer you.
 </ul>
 Stefan Westerfeld <A HREF="mailto:stefan@space.twc.de">stefan@space.twc.de</A>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="KImageIO">KImageIO (kimgio.h)</A></H3>
+<p>
+KImageIO has moved from 'kimgio.h' to 'kimageio.h'. LIB_KIMGIO does no longer
+exists, you need to link against LIB_KSYCOCA instead.
+</p>
+<p>
+kimgioRegister() has been replaced by KImageIO::registerFormats().
+</p>
+
+<p>
+Waldo Bastian <A HREF="mailto:bastian@kde.org">bastian@kde.org</A>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 

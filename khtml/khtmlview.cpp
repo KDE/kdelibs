@@ -44,7 +44,7 @@
 
 #include <kapp.h>
 #include <kmimetype.h>
-#include <kimgio.h>
+#include <kimageio.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
@@ -108,7 +108,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
 
-    kimgioRegister();
+    KImageIO::registerFormats();
 
     setCursor(arrowCursor);
     linkCursor = QCursor(PointingHandCursor);
