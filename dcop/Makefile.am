@@ -30,7 +30,8 @@ bin_PROGRAMS = dcopserver
 check_PROGRAMS = testdcop
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
-libDCOP_la_LIBADD = $(LIBSM) -lICE  $(LIB_QT)
+#LIB_QT already includes LIBSM (and thereby -lSM -lICE)
+libDCOP_la_LIBADD = $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
