@@ -24,6 +24,7 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kcharsets.h>
 
 #define MAXFONTSIZES 15
 const int defaultSmallFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
@@ -169,7 +170,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
   if ( reset || config->hasKey( "DefaultCharset" ) )
-    m_charset = (QFont::CharSet) config->readNumEntry( "DefaultCharset", QFont::Latin1 );
+    {
+	m_charset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultCharset", "iso-8859-1") );
+    };
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
     enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
