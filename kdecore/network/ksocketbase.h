@@ -22,6 +22,37 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/*
+ * Even before our #ifdef, clean up the namespace
+ */
+#ifdef socket
+#undef socket
+#endif
+
+#ifdef bind
+#undef bind
+#endif
+
+#ifdef listen
+#undef listen
+#endif
+
+#ifdef connect
+#undef connect
+#endif
+
+#ifdef accept
+#undef accept
+#endif
+
+#ifdef getpeername
+#undef getpeername
+#endif
+
+#ifdef getsockname
+#undef getsockname
+#endif
+
 #ifndef KSOCKETBASE_H
 #define KSOCKETBASE_H
 
