@@ -27,6 +27,9 @@
 class KHTMLPart;
 class KInstance;
 
+/**
+ * @internal
+ */
 class KHTMLImageFactory : public KParts::Factory
 {
     Q_OBJECT
@@ -44,6 +47,9 @@ private:
     static KInstance *s_instance;
 };
 
+/**
+ * @internal
+ */
 class KHTMLImage : public KParts::ReadOnlyPart
 {
     Q_OBJECT
@@ -62,6 +68,7 @@ public:
 
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
+    virtual bool eventFilter( QObject *filterTarget, QEvent *e );
 
 private slots:
     void slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u, const QString &mime, mode_t mode );
@@ -75,6 +82,9 @@ private:
     QString m_mimeType;
 };
 
+/**
+ * @internal
+ */
 class KHTMLImageBrowserExtension : public KParts::BrowserExtension
 {
     Q_OBJECT

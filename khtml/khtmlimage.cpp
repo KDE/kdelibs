@@ -65,6 +65,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart" );
     m_khtml->setAutoloadImages( true );
+    m_khtml->widget()->installEventFilter(this);
 
     setWidget( box );
 
@@ -223,6 +224,20 @@ void KHTMLImage::updateWindowCaption()
 
     emit setWindowCaption( caption );
     emit setStatusBarText(i18n("Done."));
+}
+
+bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
+    switch (e->type()) {
+      case QEvent::DragEnter:
+      case QEvent::DragMove:
+      case QEvent::DragLeave:
+      case QEvent::Drop:
+        // simply forward all dnd events to the part widget,
+	// konqueror will handle them properly there
+        return QApplication::sendEvent(widget(), e);
+      default:
+        return false;
+    }
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
