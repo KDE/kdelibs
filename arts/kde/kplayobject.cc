@@ -29,15 +29,78 @@ using namespace Arts;
 KPlayObject::KPlayObject() : QObject()
 {
     m_playObject = PlayObject::null();
+    m_isStream = false;
 }
 
-KPlayObject::KPlayObject(PlayObject playobject) : QObject()
+KPlayObject::KPlayObject(PlayObject playobject, bool isStream) : QObject()
 {
     m_playObject = playobject;
+    m_isStream = isStream;
 }
 
 KPlayObject::~KPlayObject()
 {
+}
+
+void KPlayObject::play()
+{
+    if(!m_isStream)
+	object().play();
+}
+
+void KPlayObject::seek(Arts::poTime newTime)
+{
+    if(!m_isStream)
+	object().seek(newTime);
+}
+
+void KPlayObject::pause()
+{
+    if(!m_isStream)
+	object().pause();
+}
+
+void KPlayObject::halt()
+{
+    if(!m_isStream)
+	object().halt();
+}
+
+QString KPlayObject::description()
+{
+    if(!m_isStream)
+	return QString::fromLatin1(object().description().c_str());
+}
+
+
+Arts::poTime KPlayObject::currentTime()
+{
+    if(!m_isStream)
+	return object().currentTime();
+}
+
+Arts::poTime KPlayObject::overallTime()
+{
+    if(!m_isStream)
+	return object().overallTime();
+}
+
+Arts::poCapabilities KPlayObject::capabilities()
+{
+    if(!m_isStream)
+	return object().capabilities();
+}
+
+QString KPlayObject::mediaName()
+{
+    if(!m_isStream)
+	return QString::fromLatin1(object().mediaName().c_str());
+}
+
+Arts::poState KPlayObject::state()
+{
+    if(!m_isStream)
+	return object().state();
 }
 
 PlayObject KPlayObject::object()
@@ -48,4 +111,9 @@ PlayObject KPlayObject::object()
 void KPlayObject::setObject(Arts::PlayObject playObject)
 {
     m_playObject = playObject;
+}
+
+bool KPlayObject::stream()
+{
+    return m_isStream;
 }

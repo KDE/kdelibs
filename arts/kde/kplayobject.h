@@ -33,14 +33,29 @@ class KPlayObject : private QObject
     Q_OBJECT
     public:
 	KPlayObject();
-	KPlayObject(Arts::PlayObject playobject);
+	KPlayObject(Arts::PlayObject playobject, bool isStream);
 	~KPlayObject();
 
-	Arts::PlayObject object();
 	void setObject(Arts::PlayObject playObject);
+	Arts::PlayObject object();
+
+	bool stream();
+
+	void play();
+	void seek(Arts::poTime newTime);
+	void pause();
+	void halt();
+	
+	QString description();
+	Arts::poTime currentTime();
+	Arts::poTime overallTime();
+	Arts::poCapabilities capabilities();
+	QString mediaName();
+	Arts::poState state();
 
     private:
 	Arts::PlayObject m_playObject;
+	bool m_isStream;
 };
 
 #endif

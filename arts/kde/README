@@ -23,7 +23,7 @@ to ie. play a sound
 7	KPlayObjectFactory factory(d->server);
 8	playobj = factory.createPlayObject(file, true);
 
-9	playobj->object().play();
+9	playobj->play();
 <snap>
 
 Line:

@@ -38,15 +38,22 @@ KPlayObjectFactory::~KPlayObjectFactory()
 KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 {
     QString mimetypename;
+    bool isStream;
     if(!m_factory.isNull())
     {
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
 	// ICEcast/SHOUTcast
 	if(mimetype->name() == "application/octet-stream")
+	{
 	    mimetypename = "audio/x-mp3";
+	    isStream = true;
+	}
 	else
+	{
 	    mimetypename = mimetype->name();
-	return new KPlayObject(m_factory.createPlayObject(string(url.path().latin1()), string(mimetypename.latin1()), createBUS));
+	    isStream = false;
+	}
+	return new KPlayObject(m_factory.createPlayObject(string(url.path().latin1()), string(mimetypename.latin1()), createBUS), isStream);
     }
     else
 	return new KPlayObject();
