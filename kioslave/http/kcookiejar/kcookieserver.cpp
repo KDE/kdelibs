@@ -559,7 +559,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      mCookieJar->setDomainAdvice(domains[0],
+      mCookieJar->setDomainAdvice(domains[1],
                                   KCookieJar::strToAdvice(advice));
    }
 }
@@ -575,7 +575,7 @@ KCookieServer::getDomainAdvice(QString url)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      advice = mCookieJar->getDomainAdvice(domains[0]);
+      advice = mCookieJar->getDomainAdvice(domains[1]);
    }
    return KCookieJar::adviceToStr(advice);
 }
