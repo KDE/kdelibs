@@ -68,9 +68,47 @@
   * area by area basis.
   */
 
+void kDebugInfo( const char* fmt, ... );
+void kDebugInfo( unsigned short area, const char* fmt, ... );
+void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... );
+void kDebugWarning( const char* fmt, ... );
+void kDebugWarning( unsigned short area, const char* fmt, ... );
+void kDebugWarning( bool cond, unsigned short area, const char* fmt, ... );
+void kDebugError( const char* fmt, ... );
+void kDebugError( unsigned short area, const char* fmt, ... );
+void kDebugError( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugFatal( const char* fmt, ... );
 void kDebugFatal( unsigned short area, const char* fmt, ... );
 void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... );
+void kDebugPError( const char* fmt, ... );
+void kDebugPError( unsigned short area, const char* fmt, ... );
+
+#ifdef NDEBUG
+inline void kDebugInfo( const char* , ... ) {}
+inline void kDebugInfo( unsigned short , const char* , ... ) {}
+inline void kDebugInfo( bool , unsigned short , const char* , ... ) {}
+// All the others remained defined, even with NDEBUG
+#endif
+
+/**
+ * The second family of functions have more feature for debug output.
+ * Those print file and line information, which kDebugInfo can't do.
+ * And they also natively support QString.
+ *
+ * Applications using areas, or libraries :
+ * use kDebugArea( area, my_char_* ) and kDebugStringArea( area, my_QString )
+ *
+ * Applications not using areas :
+ * use kDebug( my_char_* ) and kDebugString( my_QString )
+ *
+ */
+#ifdef NDEBUG
+#define kDebugArea(area, a) ;
+#else
+#define kDebugArea(area, a) kDebugInfo( area, "[%s:%d] %s", __FILE__, __LINE__, a )
+#endif
+
+inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
 
 class kdbgstream;
 class kndbgstream;
