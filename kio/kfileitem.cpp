@@ -569,7 +569,7 @@ QString KFileItem::getToolTipText()
 {
   // we can return QString::null if no tool tip should be shown
 #ifdef _GNUC  
-#waring move that tool tip maxcount elsewhere (make it configurable?)
+#warning move that tool tip maxcount elsewhere (make it configurable?)
 #endif
   const int maxcount = 6;
 
