@@ -200,8 +200,12 @@ QString KStringHandler::capwords( const QString &text )
         return text;
     }
 
-    const QStringList words = QStringList::split( ' ', text );
-    return capwords( words ).join( " " );
+    const QString strippedText = text.stripWhiteSpace();
+    const QStringList words = capwords( QStringList::split( ' ', strippedText ) );
+
+    QString result = text;
+    result.replace( strippedText, words.join( " " ) );
+    return result;
 }
 
 QStringList KStringHandler::capwords( const QStringList &list )
