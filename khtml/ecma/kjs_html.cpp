@@ -1088,6 +1088,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   left		  KJS::HTMLElement::LayerLeft			DontDelete
   visibility	  KJS::HTMLElement::LayerVisibility		DontDelete
   bgColor	  KJS::HTMLElement::LayerBgColor		DontDelete
+  document  	  KJS::HTMLElement::LayerDocument		DontDelete|ReadOnly
   clip	  	  KJS::HTMLElement::LayerClip			DontDelete|ReadOnly
   layers	  KJS::HTMLElement::LayerLayers			DontDelete|ReadOnly
 @end
@@ -1842,6 +1843,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case LayerVisibility:     return getString(layerElement.visibility());
     case LayerBgColor:        return getString(layerElement.bgColor());
     /*case LayerClip:           return getLayerClip(exec, layerElement); */
+    case LayerDocument:       return Undefined();
     case LayerLayers:         return getHTMLCollection(exec,layerElement.layers());
     }
   }
@@ -3053,6 +3055,13 @@ KJS::HTMLCollection::~HTMLCollection()
 
 bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
+}
+
+Type KJS::HTMLCollection::type() const {
+    if (hidden) // what, me? No, I do not exist..
+        return UndefinedType;
+    else
+        return ObjectImp::type();
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
