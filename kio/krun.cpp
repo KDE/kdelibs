@@ -536,6 +536,7 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
+  kdDebug(7010) << "###### KRun::scanFile " << m_strURL.url() << endl;
   // First, let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   if ( m_strURL.query().isEmpty() )
@@ -545,7 +546,8 @@ void KRun::scanFile()
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
       // Found something - can we trust it ? (see mimetypeFastMode)
-      if ( KProtocolManager::self().mimetypeFastMode( m_strURL.protocol(), mime->name() ) )
+      if ( KProtocolManager::self().mimetypeFastMode( m_strURL.protocol(), mime->name() ) &&
+           KProtocolManager::self().patternFastMode( m_strURL.protocol(), m_strURL.fileName() ) )
       {
         kdDebug(7010) << "Scanfile: MIME TYPE is " << mime->name() << endl;
         foundMimeType( mime->name() );
