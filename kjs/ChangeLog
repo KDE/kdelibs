@@ -1,3 +1,7 @@
+2003-11-16  Harri Porten  <harri@froglogic.com>
+
+	* array_object.cpp: fixed range error in Array.slice()
+
 2003-11-11  Harri Porten  <porten@kde.org>
 
 	* array_object.cpp: patch from Darin that adds checks for
@@ -9,12 +13,12 @@
 
 2003-11-06  Harri Porten  <porten@kde.org>
 
-	* adapted patch from Maciej that plugs string leaks on parse errors 
+	* adapted patch from Maciej that plugs string leaks on parse errors
 
 2003-11-05  Zack Rusin  <zack@kde.org>
 
 	* value.cpp: (operator=): increment reference count on the copying
-	object before dereferencing the currently held value  
+	object before dereferencing the currently held value
 
 2003-11-04  David Faure  <faure@kde.org>
 
