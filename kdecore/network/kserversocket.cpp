@@ -161,14 +161,14 @@ bool KServerSocket::lookup()
 
   if (d->resolver.status() <= 0)
     // if it's already running, there's no harm in calling again
-    d->resolver.start();
+    d->resolver.start();	// signal may emit
 
   if (blocking())
     {
       // we're in blocking mode operation
       // wait for the results
 
-      d->resolver.wait();
+      d->resolver.wait();	// signal may be emitted again
       // lookupFinishedSlot has been called
     }
 
@@ -354,7 +354,7 @@ KSocketAddress KServerSocket::externalAddress() const
 
 void KServerSocket::lookupFinishedSlot()
 {
-  if (d->resolver.isRunning())
+  if (d->resolver.isRunning() || d->state > KServerSocketPrivate::LookupDone)
     return;
 
   if (d->resolver.status() < 0)
