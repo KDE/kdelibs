@@ -1861,6 +1861,7 @@ int KWidgetAction::plug( QWidget* w, int index )
   toolBar->insertWidget( id, 0, m_widget, index );
   toolBar->setItemAutoSized( id, m_autoSized );
 
+  QWhatsThis::add( m_widget, whatsThis() );
   addContainer( toolBar, id );
 
   connect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
