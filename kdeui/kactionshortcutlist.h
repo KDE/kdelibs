@@ -2,9 +2,7 @@
 #define _KACTIONSHORTCUTLIST_H
 
 #include <kshortcutlist.h>
-
-class KActionCollection;
-class KActionPtrList;
+#include <kaction.h>
 
 //---------------------------------------------------------------------
 // class KActionShortcutList
