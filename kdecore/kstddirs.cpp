@@ -751,6 +751,28 @@ QString KStandardDirs::saveLocation(const char *type,
     return fullPath;
 }
 
+QString KStandardDirs::relativeLocation(const char *type, const QString &absPath)
+{
+    QString fullPath = absPath;
+    int i = absPath.findRev('/');
+    if (i != -1)
+    {
+       fullPath = realPath(absPath.left(i+1))+absPath.mid(i+1); // Normalize
+    }
+
+    QStringList candidates = resourceDirs(type);
+
+    for (QStringList::ConstIterator it = candidates.begin();
+	 it != candidates.end(); it++)
+      if (fullPath.startsWith(*it))
+      {
+	return fullPath.mid((*it).length());
+      }
+
+    return absPath;
+}
+
+
 bool KStandardDirs::makeDir(const QString& dir, int mode)
 {
     // we want an absolute path

@@ -379,6 +379,7 @@ public:
 	 * Find a location to save files into for the given type
 	 * in the user's home directory.
 	 *
+	 * @param type The type of location to return.
 	 * @param suffix A subdirectory name.
 	 *             Makes it easier for you to create subdirectories.
 	 *   You can't pass filenames here, you _have_ to pass
@@ -394,6 +395,23 @@ public:
 	 QString saveLocation(const char *type,
 			      const QString& suffix = QString::null,
 			      bool create = true) const;
+			      
+        /**
+         * Converts an absolute path to a path relative to a certain 
+         * resource.
+         *
+         * If "abs = locate(resource, rel)"
+         * then "rel = relativeLocation(resource, abs)" and vice versa.
+         *
+         * @param type The type of resource.
+         *
+         * @param absPath An absolute path to make relative.
+         *
+         * @return A relative path relative to resource @p type that 
+         * will find @p absPath. If no such relative path exists, absPath
+         * will be returned unchanged.
+         */
+         QString relativeLocation(const char *type, const QString &absPath);
 
 	/**
 	 * Recursively create still-missing directories in the given path.
