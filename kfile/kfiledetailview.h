@@ -104,7 +104,7 @@ private slots:
     void rightButtonPressed ( QListViewItem *item );
 
 private:
-    virtual void insertItem(QListViewItem *) {}
+    virtual void insertItem(QListViewItem *i) { KListView::insertItem(i); }
     virtual void setSorting(int, bool) {}
     virtual void setSelected(QListViewItem *, bool) {}
     class KFileDetailViewPrivate;
