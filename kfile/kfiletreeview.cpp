@@ -433,6 +433,12 @@ KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
    return ( 0L );
 }
 
+KFileTreeBranchList& KFileTreeView::branches()
+{
+   return( m_branches );
+}
+
+
 bool KFileTreeView::removeBranch( const KFileTreeBranch *branch )
 {
    return( m_branches.remove( branch ));
