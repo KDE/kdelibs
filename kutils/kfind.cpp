@@ -27,7 +27,7 @@
 #include <qregexp.h>
 #include <kdebug.h>
 
-//#define DEBUG_FIND
+#define DEBUG_FIND
 
 #define INDEX_NOMATCH -1
 
@@ -396,6 +396,12 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
 void KFind::setOptions( long options )
 {
     m_options = options;
+    if (m_options & KFindDialog::RegularExpression)
+        m_regExp = new QRegExp(m_pattern, m_options & KFindDialog::CaseSensitive);
+    else {
+        delete m_regExp;
+        m_regExp = 0;
+    }
 }
 
 void KFind::closeFindNextDialog()
@@ -408,6 +414,12 @@ void KFind::closeFindNextDialog()
 int KFind::index() const
 {
     return m_index;
+}
+
+void KFind::setPattern( const QString& pattern )
+{
+    m_pattern = pattern;
+    setOptions( options() ); // rebuild m_regExp if necessary
 }
 
 #include "kfind.moc"

@@ -40,17 +40,29 @@ class KFindDialog::KFindDialogPrivate
 {
 public:
     KFindDialogPrivate() : m_regexpDialog(0),
-        m_regexpDialogQueryDone(false), m_hasCursor(true), m_hasSelection(false) {}
+        m_regexpDialogQueryDone(false), m_hasCursor(true), m_hasSelection(false),
+        m_initialShowDone(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
     bool m_hasCursor;
     bool m_hasSelection;
+    bool m_initialShowDone;
     QStringList findStrings;
     QString pattern;
 };
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
     KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok),
+    m_findExtension (0),
+    m_replaceExtension (0)
+{
+    d = new KFindDialogPrivate;
+    init(false, findStrings, hasSelection);
+    setOptions(options);
+}
+
+KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
+    KDialogBase(parent, name, modal, i18n("Find Text"), Ok | Cancel, Ok),
     m_findExtension (0),
     m_replaceExtension (0)
 {
@@ -156,6 +168,11 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_findBackwards = new QCheckBox(i18n("Find &backwards"), m_optionGrp);
     m_selectedText = new QCheckBox(i18n("&Selected text"), m_optionGrp);
     setHasSelection( hasSelection );
+    // If we have a selection, we make 'find in selection' default
+    // and if we don't, then the option has to be unchecked, obviously.
+    m_selectedText->setChecked( hasSelection );
+    slotSelectedTextToggled( hasSelection );
+
     m_promptOnReplace = new QCheckBox(i18n("&Prompt on replace"), m_optionGrp);
     m_promptOnReplace->setChecked( true );
 
@@ -230,14 +247,18 @@ void KFindDialog::textSearchChanged( const QString & text)
 
 void KFindDialog::showEvent( QShowEvent *e )
 {
-    kdDebug() << "showEvent\n";
-    if (!d->findStrings.isEmpty())
-        setFindHistory(d->findStrings);
-    d->findStrings = QStringList();
-    if (!d->pattern.isEmpty()) {
-        m_find->lineEdit()->setText( d->pattern );
-        m_find->lineEdit()->selectAll();
-        d->pattern = QString::null;
+    if ( !d->m_initialShowDone )
+    {
+        d->m_initialShowDone = true; // only once
+        kdDebug() << "showEvent\n";
+        if (!d->findStrings.isEmpty())
+            setFindHistory(d->findStrings);
+        d->findStrings = QStringList();
+        if (!d->pattern.isEmpty()) {
+            m_find->lineEdit()->setText( d->pattern );
+            m_find->lineEdit()->selectAll();
+            d->pattern = QString::null;
+        }
     }
     KDialogBase::showEvent(e);
 }
@@ -290,10 +311,11 @@ void KFindDialog::setHasSelection(bool hasSelection)
 {
     d->m_hasSelection = hasSelection;
     m_selectedText->setEnabled( hasSelection );
-    // If we have a selection, we make 'find in selection' default
-    // and if we don't, then the option has to be unchecked, obviously.
-    m_selectedText->setChecked( hasSelection );
-    slotSelectedTextToggled( hasSelection );
+    if ( !hasSelection )
+    {
+        m_selectedText->setChecked( false );
+        slotSelectedTextToggled( hasSelection );
+    }
 }
 
 void KFindDialog::slotSelectedTextToggled(bool selec)
@@ -445,7 +467,8 @@ void KFindDialog::slotOk()
     }
     m_find->addToHistory(pattern());
     emit okClicked();
-    accept();
+    if ( testWFlags( WShowModal ) )
+        accept();
 }
 
 #include "kfinddialog.moc"

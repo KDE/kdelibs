@@ -43,7 +43,7 @@ class QCheckBox;
  *
  * @sect Example
  *
- * To use the basic find dialog:
+ * To use the basic modal find dialog, and then run the search:
  *
  * <pre>
  *  KFindDialog dlg(....)
@@ -53,7 +53,20 @@ class QCheckBox;
  *  // proceed with KFind from here
  * </pre>
  *
- * To use your own extensions:
+ * To create a non-modal find dialog:
+ * <pre>
+ *   if ( m_findDia )
+ *     KWin::setActiveWindow( m_findDia->winId() );
+ *   else
+ *   {
+ *     m_findDia = new KFindDialog(false,...);
+ *     connect( m_findDia, SIGNAL(okClicked()), this, SLOT(findTextNext()) );
+ *   }
+ * </pre>
+ * Don't forget to delete and reset m_findDia when closed.
+ * (But do NOT delete your KFind object at that point, it's needed for "Find Next")
+ *
+ * To use your own extensions: see @ref findExtension().
  *
  * <pre>
  * </pre>
@@ -80,7 +93,7 @@ public:
     };
 
     /**
-     * Construct a find dialog with a parent object and a name.
+     * Construct a modal find dialog
      *
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
@@ -89,6 +102,19 @@ public:
      * @param hasSelection Whether a selection exists
      */
     KFindDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
+                 const QStringList &findStrings = QStringList(), bool hasSelection = false );
+
+    /**
+     * Construct a non-modal find dialog
+     *
+     * @param modal set to false to get a non-modal dialog
+     * @param parent The parent object of this widget.
+     * @param name The name of this widget.
+     * @param options A bitfield of the @ref Options to be enabled.
+     * @param findStrings The find history, see @ref findHistory()
+     * @param hasSelection Whether a selection exists
+     */
+    KFindDialog( bool modal, QWidget *parent = 0, const char *name = 0, long options = 0,
                  const QStringList &findStrings = QStringList(), bool hasSelection = false );
 
     /**
@@ -162,14 +188,6 @@ public:
      * widgets for the pattern string.
      */
     QWidget *findExtension();
-
-signals:
-
-    /**
-     * The OK button was pressed, the pattern was not empty, and if it is
-     * supposed to be a regular expression, it is known to be valid.
-     */
-    void okClicked();
 
 protected slots:
 

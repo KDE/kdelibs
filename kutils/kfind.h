@@ -54,6 +54,9 @@
  *          this, SLOT( slotFindNext() ) );
  * </pre>
  *
+ * If you are using a non-modal find dialog (the recommended new way
+ * in KDE-3.2), you should call right away m_find->closeFindNextDialog().
+ *
  *  Then initialize the variables determining the "current position"
  *  (to the cursor, if the option FromCursor is set,
  *   to the beginning of the selection if the option SelectedText is set,
@@ -148,6 +151,16 @@ public:
     virtual void setOptions( long options );
 
     /**
+     * @return the pattern we're currently looking for
+     */
+    QString pattern() const { return m_pattern; }
+
+    /**
+     * Change the pattern we're looking for
+     */
+    void setPattern( const QString& pattern );
+
+    /**
      * Return the number of matches found (i.e. the number of times
      * the @ref highlight signal was emitted).
      * If 0, can be used in a dialog box to tell the user "no match was found".
@@ -225,6 +238,9 @@ public:
      * Close the "find next?" dialog. The application should do this when
      * the last match was hit. If the application deletes the KFind, then
      * "find previous" won't be possible anymore.
+     *
+     * IMPORTANT: you should also call this if you are using a non-modal
+     * find dialog, to tell KFind not to pop up its own dialog.
      */
     void closeFindNextDialog();
 
