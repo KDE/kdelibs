@@ -25,6 +25,7 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <qdir.h>
 
 using namespace KIO;
 
@@ -65,7 +66,7 @@ QString KIO::convertSize( unsigned long size )
 QString KIO::encodeFileName( const QString & _str )
 {
   QString str( _str );
- 
+
   int i = 0;
   while ( ( i = str.find( "%", i ) ) != -1 )
   {
@@ -76,11 +77,11 @@ QString KIO::encodeFileName( const QString & _str )
       str.replace( i, 1, "%2f");
   return str;
 }
- 
+
 QString KIO::decodeFileName( const QString & _str )
 {
   QString str( _str );
- 
+
   int i = 0;
   while ( ( i = str.find( "%%", i ) ) != -1 )
   {
@@ -359,6 +360,7 @@ QString Job::errorString()
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
     STRUCT_SETMNTENT mtab;
+#if 0
     char    realname[MAXPATHLEN];
 
     /* If the path contains symlinks, get the real name */
@@ -367,6 +369,8 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	    return QString::null;
 	strcpy(realname, QFile::encodeName(filename));
     }
+#endif
+    QCString realname = QFile::encodeName( QDir( filename ).canonicalPath() );
 
     /* Get the list of mounted file systems */
 
@@ -385,7 +389,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
      * How kinky can you get with a filesystem?
      */
 
-    int max = 0;
+    unsigned int max = 0;
     STRUCT_MNTENT me;
 
     QString result;
@@ -394,14 +398,15 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       if (!GETMNTENT(mtab, me))
 	break;
 
-      int  length = strlen(FSNAME(me));
+      unsigned int length = strlen(FSNAME(me));
 
-      if (!strncmp(FSNAME(me), realname, length)
-	  && length > max) {
+      if (!strncmp(FSNAME(me), realname.data(), length)   // mountpoint included in real path
+	  && length > max                                 // better than previous matches
+          && realname.length() >= length) {               // real path long enough
 	max = length;
-	if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
-	
-	  result = MOUNTPOINT(me);
+	if (length == 1 || realname.length() == length || realname[length] == '/' )
+        {
+          result = MOUNTPOINT(me);
 	}
       }
     }
