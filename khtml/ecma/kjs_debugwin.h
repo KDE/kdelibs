@@ -24,7 +24,9 @@
 #include <qglobal.h>
 
 #if QT_VERSION >= 300
+#ifdef __GNUC__
 #warning TODO port the debugger
+#endif
 //#define KJS_DEBUGGER
 #endif
 
