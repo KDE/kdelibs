@@ -1,20 +1,24 @@
 // $Id$
 
 #include <qcheckbox.h>
+#include <qcombobox.h>
 #include <qfiledialog.h>
 #include <qlabel.h>
+#include <qlayout.h>
 #include <qpushbutton.h>
 
 #include <kapp.h>
-#include <klocale.h>
+#include <kconfig.h>
 #include <kdebug.h>
+#include <kdialog.h>
+#include <kglobal.h>
 #include <klined.h>
+#include <klocale.h>
 
 #include "ksconfig.h"
-#include <kglobal.h>
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
-	: QWidget(0, 0)
+  : QWidget(0, 0), nodialog(true)
 {  
   setNoRootAffix (_ksc.noRootAffix());
   setRunTogether (_ksc.runTogether());
@@ -24,223 +28,210 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   setIgnoreList (_ksc.ignoreList());
   setEncoding (_ksc.encoding());
   setClient (_ksc.client());
-
-  nodialog=TRUE;
 }
 
-KSpellConfig::KSpellConfig (QWidget *parent, const char *name,
-			    KSpellConfig *_ksc) : QWidget (parent, name)
+
+KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
+			    KSpellConfig *_ksc, bool addHelpButton ) 
+  : QWidget (parent, name), nodialog(false)
 {
-  kc=KGlobal::config();
-
-  if (_ksc==0)
-    {
-      //I'd like to read these from a kspellrc file so that we could have
-      //_adjustable_ system-wide defaults.
-
-      //Here it is.
-      readGlobalSettings();
-    }
+  kc = KGlobal::config();
+  if( _ksc == 0 )
+  {
+    readGlobalSettings();
+  }
   else
-    {
-      setNoRootAffix (_ksc->noRootAffix());
-      setRunTogether (_ksc->runTogether());
-      setDictionary  (_ksc->dictionary());
-      setDictFromList (_ksc->dictFromList());
-      //      setPersonalDict (_ksc->personalDict());
-      setIgnoreList (_ksc->ignoreList());
-      setEncoding (_ksc->encoding());
-      setClient (_ksc->client());
-    }
+  {
+    setNoRootAffix (_ksc->noRootAffix());
+    setRunTogether (_ksc->runTogether());
+    setDictionary  (_ksc->dictionary());
+    setDictFromList (_ksc->dictFromList());
+    //setPersonalDict (_ksc->personalDict());
+    setIgnoreList (_ksc->ignoreList());
+    setEncoding (_ksc->encoding());
+    setClient (_ksc->client());
+  }
 
-  nodialog=FALSE;
+  QGridLayout *glay = new QGridLayout (this, 6, 3, 0, KDialog::spacingHint() );
+  cb1 = new QCheckBox(i18n("Create root/affix combinations"
+			   " not in dictionary"), this );
+  connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
+  glay->addMultiCellWidget( cb1, 0, 0, 0, 2 );
 
-  //  if (parent!=0)
-    {
-      //From dlgedit
+  cb2 = new QCheckBox( i18n("Consider run-together words"
+			    " as spelling errors"), this );
+  connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
+  glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
+  
+  dictcombo = new QComboBox( this );
+  dictcombo->setInsertionPolicy (QComboBox::NoInsertion);
+  connect (dictcombo, SIGNAL (activated (int)),
+	   this, SLOT (sSetDictionary (int)));
+  glay->addMultiCellWidget( dictcombo, 2, 2, 1, 2 );
 
-      layout = new QGridLayout (this, 6, 3, 10, 1);
+  dictlist = new QLabel (dictcombo, i18n("Dictionary:"), this);
+  glay->addWidget( dictlist, 2 ,0 );
 
-      cb1 = new QCheckBox(i18n("Create root/&affix combinations"
-			       " not in dictionary"), this);
-      connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
-      cb1->setMinimumSize (cb1->sizeHint());
-      layout->addMultiCellWidget (cb1, 0, 0, 0, 2);
+  encodingcombo = new QComboBox( this );
+  encodingcombo->insertItem (i18n("7-Bit/ASCII"));
+  encodingcombo->insertItem (i18n("Latin1"));
+  encodingcombo->insertItem (i18n("Latin2"));
+  connect (encodingcombo, SIGNAL (activated(int)), this,
+	   SLOT (sChangeEncoding(int)));
+  glay->addMultiCellWidget (encodingcombo, 3, 3, 1, 2);
 
-      cb2 = new QCheckBox( i18n("Consider &run-together words"
-				" as spelling errors"), this );
-      connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
-      cb2->setMinimumSize (cb2->sizeHint());
-      layout->addMultiCellWidget (cb2, 1, 1, 0, 2);
+  QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("Encoding:"), this);
+  glay->addWidget( tmpQLabel, 3, 0 );
 
-      dictcombo = new QComboBox (this);
-      dictcombo->setInsertionPolicy (QComboBox::NoInsertion);
-      dictcombo->setMinimumSize (dictcombo->sizeHint());
-      connect (dictcombo, SIGNAL (activated (int)),
-	       this, SLOT (sSetDictionary (int)));
-      layout->addMultiCellWidget (dictcombo, 2, 2, 1, 2);
+  
+  clientcombo = new QComboBox( this );
+  clientcombo->insertItem (i18n("International Ispell"));
+  clientcombo->insertItem (i18n("Aspell"));
+  connect (clientcombo, SIGNAL (activated(int)), this,
+	   SLOT (sChangeClient(int)));
+  glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
+  
+  tmpQLabel = new QLabel( clientcombo, i18n("Client:"), this );
+  glay->addWidget( tmpQLabel, 4, 0 );
+  
+  if( addHelpButton == true )
+  {
+    QPushButton *pushButton = new QPushButton( i18n("&Help"), this );
+    connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
+    glay->addWidget(pushButton, 5, 2);
+  }
+  
+  fillInDialog();	
 
-      dictlist=new QLabel (dictcombo, i18n("&Dictionary:"), this);
-      dictlist->setAlignment (AlignVCenter);
-      dictlist->setMinimumSize (dictlist->sizeHint());
-      layout->addWidget (dictlist, 2 ,0);
+  //
+  // 2000-02-19 Espen Sand
+  // What is this? can it be removed?
+  //
 
-      encodingcombo = new QComboBox (FALSE, this);
-      encodingcombo->insertItem (i18n("7-Bit/ASCII"));
-      encodingcombo->insertItem (i18n("Latin1"));
-      encodingcombo->insertItem (i18n("Latin2"));
-      encodingcombo->setMinimumSize (encodingcombo->sizeHint());
-      connect (encodingcombo, SIGNAL (activated(int)), this,
-	       SLOT (sChangeEncoding(int)));
-      layout->addMultiCellWidget (encodingcombo, 3, 3, 1, 2);
-
-
-      QLabel* tmpQLabel;
-      tmpQLabel = new QLabel( encodingcombo, i18n("&Encoding:"), this);
-      dictlist->setAlignment (AlignVCenter);
-      tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
-      layout->addWidget (tmpQLabel, 3, 0);
-
-      clientcombo = new QComboBox (FALSE, this);
-      clientcombo->insertItem (i18n("International Ispell"));
-      clientcombo->insertItem (i18n("Aspell"));
-      clientcombo->setMinimumSize (clientcombo->sizeHint());
-      connect (clientcombo, SIGNAL (activated(int)), this,
-	       SLOT (sChangeClient(int)));
-      layout->addMultiCellWidget (clientcombo, 4, 4, 1, 2);
-
-
-      tmpQLabel = new QLabel( clientcombo, i18n("Cl&ient:"), this);
-      dictlist->setAlignment (AlignVCenter);
-      tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
-      layout->addWidget (tmpQLabel, 4, 0);
-
-
-
-      QPushButton* tmpQPushButton;
-      tmpQPushButton = new QPushButton( this);
-      tmpQPushButton->setText ( i18n("&Help") );
-      connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sHelp()) );
-      tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
-      layout->addWidget (tmpQPushButton, 5, 2);
-
-
-
-      layout->activate();
-      
-      fillInDialog();	
-
-
-
-
-
-
-
-	/* not w/o alternate dict.
-	  dictgroup=new QButtonGroup ();
-	  dictgroup->setFrameStyle (QFrame::NoFrame);
-	  //layout->addWidget (dictgroup,rdictgroup,0);
+  /* not w/o alternate dict.
+     dictgroup=new QButtonGroup ();
+     dictgroup->setFrameStyle (QFrame::NoFrame);
+     //layout->addWidget (dictgroup,rdictgroup,0);
 	  
-	dictlistbutton=new QRadioButton (i18n("Language:"),this);
-	connect (dictlistbutton, SIGNAL (toggled(bool)),
-		 this, SLOT (sDictionary(bool)));
-	layout->addWidget (dictlistbutton,rdictlist,0);
-	*/
+     dictlistbutton=new QRadioButton (i18n("Language:"),this);
+     connect (dictlistbutton, SIGNAL (toggled(bool)),
+     this, SLOT (sDictionary(bool)));
+     layout->addWidget (dictlistbutton,rdictlist,0);
+  */
 
-	/* No alternate now -- is this needed?
-	dicteditbutton=new QRadioButton (i18n("Alternate Dictionary"),this);
-	connect (dicteditbutton, SIGNAL (toggled(bool)),
-		 this, SLOT (sPathDictionary(bool)));
-	layout->addWidget (dicteditbutton,rdictedit,0);
+  /* No alternate now -- is this needed?
+     dicteditbutton=new QRadioButton (i18n("Alternate Dictionary"),this);
+     connect (dicteditbutton, SIGNAL (toggled(bool)),
+     this, SLOT (sPathDictionary(bool)));
+     layout->addWidget (dicteditbutton,rdictedit,0);
 	dicteditbutton->setMinimumSize (dicteditbutton->
-					 sizeHint();
-					 */
+	sizeHint();
+  */
 
-	/*
-	dictgroup->insert (dictlistbutton);
-	dictgroup->insert (dicteditbutton);
-	*/
+  /*
+    dictgroup->insert (dictlistbutton);
+    dictgroup->insert (dicteditbutton);
+  */
 
 
-	/*	
-	tmpQLabel = new QLabel( this, "Label_1" );
-	tmpQLabel->setGeometry( 20, 120, 120, 30 );
-	tmpQLabel->setText( i18n("Language:"));
-	tmpQLabel->setAlignment( 290 );
-	tmpQLabel->setMargin( -1 );
-	layout->addWidget (tmpQLabel, 3, 1);
-	*/
+  /*	
+    tmpQLabel = new QLabel( this, "Label_1" );
+    tmpQLabel->setGeometry( 20, 120, 120, 30 );
+    tmpQLabel->setText( i18n("Language:"));
+    tmpQLabel->setAlignment( 290 );
+    tmpQLabel->setMargin( -1 );
+    layout->addWidget (tmpQLabel, 3, 1);
+  */
 
-	/*  I'll put this back if peple think that it's necessary,
-	    but it would need to be supported better. */
-	/*
-	tmpQLabel = new QLabel( this, "Label_2" );
-	//tmpQLabel->setGeometry( 30, 160, 120, 30 );
-	tmpQLabel->setText( i18n("Personal dictionary:") );
-	//	tmpQLabel->setAlignment( 290 );
-	tmpQLabel->setAlignment( AlignLeft );
-	tmpQLabel->setMargin( -1 );
-	layout->addWidget (tmpQLabel, rpersdict, 0);
-	tmpQLabel->setMinimumWidth (tmpQLabel->sizeHint().width());
-	*/
+  /*  I'll put this back if peple think that it's necessary,
+      but it would need to be supported better. */
+  /*
+    tmpQLabel = new QLabel( this, "Label_2" );
+    //tmpQLabel->setGeometry( 30, 160, 120, 30 );
+    tmpQLabel->setText( i18n("Personal dictionary:") );
+    //	tmpQLabel->setAlignment( 290 );
+    tmpQLabel->setAlignment( AlignLeft );
+    tmpQLabel->setMargin( -1 );
+    layout->addWidget (tmpQLabel, rpersdict, 0);
+    tmpQLabel->setMinimumWidth (tmpQLabel->sizeHint().width());
+  */
 
 
 	
-	/* for alternate dict
+  /* for alternate dict
 
-	kle1 = new KLineEdit( this, "LineEdit_1" );
-	//	kle1->setGeometry( 150, 120, 290, 30 );
-	kle1->setText( "" );
-	kle1->setMaxLength( 32767 );
-	kle1->setEchoMode( QLineEdit::Normal );
-	kle1->setFrame( TRUE );
-	connect (kle1, SIGNAL (textChanged (const char*)), this, 
-		 SLOT (textChanged1 (const char*)));
-	layout->addMultiCellWidget (kle1, rdictedit, rdictedit, 1,4);
-	//	kle1->setMinimumSize (290,30);
-	*/
-
-
-	/*
-	browsebutton1=new QPushButton;
-	browsebutton1 = new QPushButton( this, "PushButton_1" );
-	connect( browsebutton1, SIGNAL(clicked()), SLOT(sBrowseDict()) );
-	browsebutton1->setText( i18n("Browse...") );
-	browsebutton1->setAutoRepeat( FALSE );
-	browsebutton1->setAutoResize( FALSE );
-	layout->addWidget (browsebutton1, rdictedit, 6);
-	browsebutton1->setGeometry( 460, 120, 70, 30 );
-	browsebutton1->setMinimumWidth (30);
-	*/
+     kle1 = new KLineEdit( this, "LineEdit_1" );
+     //	kle1->setGeometry( 150, 120, 290, 30 );
+     kle1->setText( "" );
+     kle1->setMaxLength( 32767 );
+     kle1->setEchoMode( QLineEdit::Normal );
+     kle1->setFrame( TRUE );
+     connect (kle1, SIGNAL (textChanged (const char*)), this, 
+     SLOT (textChanged1 (const char*)));
+     layout->addMultiCellWidget (kle1, rdictedit, rdictedit, 1,4);
+     //	kle1->setMinimumSize (290,30);
+  */
 
 
-	/*
-	tmpQPushButton = new QPushButton( this, "PushButton_2" );
-	tmpQPushButton->setGeometry( 460, 160, 70, 30 );
-	tmpQPushButton->setMinimumWidth(tmpQPushButton->sizeHint().width());
-	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sBrowsePDict()) );
-	tmpQPushButton->setText( i18n("Browse...") );
-	tmpQPushButton->setAutoRepeat( FALSE );
-	tmpQPushButton->setAutoResize( FALSE );
-	layout->addWidget (tmpQPushButton, rpersdict, 6);
-	//	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
-	*/
+  /*
+    browsebutton1=new QPushButton;
+    browsebutton1 = new QPushButton( this, "PushButton_1" );
+    connect( browsebutton1, SIGNAL(clicked()), SLOT(sBrowseDict()) );
+    browsebutton1->setText( i18n("Browse...") );
+    browsebutton1->setAutoRepeat( FALSE );
+    browsebutton1->setAutoResize( FALSE );
+    layout->addWidget (browsebutton1, rdictedit, 6);
+    browsebutton1->setGeometry( 460, 120, 70, 30 );
+    browsebutton1->setMinimumWidth (30);
+  */
 
-	/*
-	kle2 = new KLineEdit( this, "LineEdit_2" );
-	//	kle2->setGeometry( 150, 160, 290, 30 );
-	kle2->setText( "" );
-	kle2->setMaxLength( 32767 );
-	kle2->setEchoMode( QLineEdit::Normal );
-	kle2->setFrame( TRUE );
-	connect (kle2, SIGNAL (textChanged (const char*)), this, 
-		 SLOT (textChanged2 (const char*)));
-	layout->addMultiCellWidget (kle2, rpersdict,rpersdict,1,4);
-	///	kle2->setMinimumSize (290,30);
-	*/
 
-    }
+  /*
+    tmpQPushButton = new QPushButton( this, "PushButton_2" );
+    tmpQPushButton->setGeometry( 460, 160, 70, 30 );
+    tmpQPushButton->setMinimumWidth(tmpQPushButton->sizeHint().width());
+    connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sBrowsePDict()) );
+    tmpQPushButton->setText( i18n("Browse...") );
+    tmpQPushButton->setAutoRepeat( FALSE );
+    tmpQPushButton->setAutoResize( FALSE );
+    layout->addWidget (tmpQPushButton, rpersdict, 6);
+    //	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
+  */
+
+  /*
+    kle2 = new KLineEdit( this, "LineEdit_2" );
+    //	kle2->setGeometry( 150, 160, 290, 30 );
+    kle2->setText( "" );
+    kle2->setMaxLength( 32767 );
+    kle2->setEchoMode( QLineEdit::Normal );
+    kle2->setFrame( TRUE );
+    connect (kle2, SIGNAL (textChanged (const char*)), this, 
+    SLOT (textChanged2 (const char*)));
+    layout->addMultiCellWidget (kle2, rpersdict,rpersdict,1,4);
+    ///	kle2->setMinimumSize (290,30);
+  */
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 KSpellConfig::~KSpellConfig ()
 {
@@ -614,21 +605,26 @@ KSpellConfig::sPathDictionary(bool on)
     {
       //kle1->setEnabled (TRUE);
       //      browsebutton1->setEnabled (TRUE);
-      setDictionary (kle1->text());
+      //setDictionary (kle1->text());
       setDictFromList (FALSE);
     }
   else
     {
-      kle1->setEnabled (FALSE);
-      //      browsebutton1->setEnabled (FALSE);
+      //kle1->setEnabled (FALSE);
+      //browsebutton1->setEnabled (FALSE);
     }
 }
 
-void
-KSpellConfig::sHelp()
+
+void KSpellConfig::activateHelp( void )
+{
+  sHelp();
+}
+
+void KSpellConfig::sHelp( void )
 {
   QString file ("kspell/index-2.html"), label ("");
-  kapp->invokeHTMLHelp (file, label);
+  kapp->invokeHTMLHelp(file, label);
 }
 
 /*
