@@ -41,6 +41,8 @@
 #include <kdesu/client.h>
 #include <kwin.h>
 #include <kdialog.h>
+#include <ksystemtray.h>
+#include <kpopupmenu.h>
 
 #include <qcheckbox.h>
 #include <qlabel.h>
@@ -84,6 +86,18 @@ static const int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
                                     70,  // SPEED
                                     70,  // REMAINING_TIME
                                     450  // URL
+};
+
+class UIServerSystemTray:public KSystemTray
+{
+   public:
+      UIServerSystemTray(UIServer* uis)
+         :KSystemTray(uis)
+      {
+         KPopupMenu* pop= contextMenu();
+         pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
+         setPixmap(UserIcon("I_need_an_icon"));
+      }
 };
 
 class ProgressConfigDialog:public KDialogBase
@@ -539,11 +553,18 @@ void ListProgress::writeSettings() {
 //------------------------------------------------------------
 
 
-UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
-,m_configDialog(0), m_contextMenu(0)
+UIServer::UIServer()
+:KMainWindow(0, "")
+,DCOPObject("UIServer")
+,m_configDialog(0)
+,m_contextMenu(0)
+,m_systemTray(0)
 {
 
   readSettings();
+
+  m_systemTray=new UIServerSystemTray(this);
+  m_systemTray->show();
 
   // setup toolbar
   toolBar()->insertButton("editdelete", TOOL_CANCEL,
@@ -592,7 +613,7 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
      show();
   }
   else*/
-     hide();
+  hide();
 }
 
 UIServer::~UIServer() {
@@ -621,8 +642,6 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem *item, const QPoint
       m_contextMenu->insertSeparator();
       m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
    }
-
-
    m_contextMenu->popup(pos);
 }
 

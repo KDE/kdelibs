@@ -192,6 +192,7 @@ protected:
 class QResizeEvent;
 class ProgressConfigDialog;
 class QPopupMenu;
+class UIServerSystemTray;
 
 /**
  * It's purpose is to show progress of IO operations.
@@ -348,6 +349,8 @@ k_dcop:
    */
   KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList);
 
+public slots:
+  void slotConfigure();
 protected slots:
 
   void slotUpdate();
@@ -358,7 +361,6 @@ protected slots:
   void slotSelection();
 
   void slotJobCanceled( ProgressItem * );
-  void slotConfigure();
   void slotApplyConfig();
   void slotShowContextMenu(KListView*, QListViewItem *item, const QPoint& pos);
 
@@ -395,6 +397,7 @@ private:
   bool m_bUpdateNewJob;
   ProgressConfigDialog *m_configDialog;
   QPopupMenu* m_contextMenu;
+  UIServerSystemTray *m_systemTray;
 
   static int s_jobId;
 };
