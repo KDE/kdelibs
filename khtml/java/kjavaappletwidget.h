@@ -25,6 +25,7 @@
 #define KJAVAAPPLETWIDGET_H
 
 #define EMBEDCLASS KJavaEmbed
+//#define EMBEDCLASS QXEmbed
 
 #include <qwidget.h>
 #ifndef Q_WS_QWS //FIXME(?) I don't think this is possible with Qt Embedded
