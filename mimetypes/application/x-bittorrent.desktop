@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=BitTorrent Download
+Hidden=false
+Icon=mime
+MimeType=application/x-bittorrent
+Type=MimeType
+Patterns=*.torrent
+X-KDE-AutoEmbed=false
