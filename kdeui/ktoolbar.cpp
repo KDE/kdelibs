@@ -1190,6 +1190,8 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
                 else
                     kdWarning(220) << "No such menu item " << i << " in toolbar context menu" << endl;
             }
+            if ( mw->inherits("KMainWindow") )
+                static_cast<KMainWindow *>(mw)->setSettingsDirty();
         }
     }
 }

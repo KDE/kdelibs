@@ -43,8 +43,11 @@
 
 class KMainWindowPrivate {
 public:
+    bool showHelpMenu:1;
 
-    bool showHelpMenu;
+    bool settingsDirty:1;
+    bool autoSaveWindowSize:1;
+    QString autoSaveGroup;
 };
 
 QList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -129,6 +132,8 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
+    d->settingsDirty = false;
+    d->autoSaveWindowSize = true; // for compatibility
 
     setCaption( kapp->caption() );
 }
@@ -339,6 +344,16 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
     if (queryClose()) {
         e->accept();
 
+        // Save settings if auto-save is enabled, and settings have changed
+        if (d->settingsDirty && !d->autoSaveGroup.isEmpty())
+        {
+            kdDebug(200) << "KMainWindow::closeEvent -> saving settings" << endl;
+            KConfigGroupSaver cgs( KGlobal::config(), d->autoSaveGroup );
+            saveMainWindowSettings( KGlobal::config() );
+            KGlobal::config()->sync();
+            d->settingsDirty = false;
+        }
+
         int not_withdrawn = 0;
         QListIterator<KMainWindow> it(*KMainWindow::memberList);
         for (it.toFirst(); it.current(); ++it){
@@ -410,11 +425,15 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     if (!configGroup.isEmpty())
        config->setGroup(configGroup);
 
-    // store objectName, className, Width and Height  for later restorating
-    config->writeEntry(QString::fromLatin1("ObjectName"), name());
-    config->writeEntry(QString::fromLatin1("ClassName"), className());
-    config->writeEntry(QString::fromLatin1("Width"), width() );
-    config->writeEntry(QString::fromLatin1("Height"), height() );
+    // Called by session management - or if we want to save the window size anyway
+    if (!configGroup.isEmpty() || d->autoSaveWindowSize)
+    {
+       // store objectName, className, Width and Height  for later restoring
+       config->writeEntry(QString::fromLatin1("ObjectName"), name());
+       config->writeEntry(QString::fromLatin1("ClassName"), className());
+       config->writeEntry(QString::fromLatin1("Width"), width() );
+       config->writeEntry(QString::fromLatin1("Height"), height() );
+    }
 
     if (internalStatusBar()) {
         entryList.clear();
@@ -479,7 +498,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     if (!configGroup.isEmpty())
        config->setGroup(configGroup);
 
-    // restore the object name (window role )
+    // restore the object name (window role)
     if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
         setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
@@ -543,6 +562,29 @@ void KMainWindow::finalizeGUI( bool force )
     QListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++ it )
         it.current()->positionYourself( force );
+
+    d->settingsDirty = false;
+}
+
+void KMainWindow::setSettingsDirty()
+{
+    kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
+    d->settingsDirty = true;
+}
+
+void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
+{
+    d->autoSaveGroup = groupName;
+    d->autoSaveWindowSize = saveWindowSize;
+    // Get notified when the user moves a toolbar around
+    connect( this, SIGNAL( endMovingToolBar( QToolBar * ) ),
+             this, SLOT( setSettingsDirty() ) );
+}
+
+void KMainWindow::resizeEvent( QResizeEvent * )
+{
+    if ( d->autoSaveWindowSize )
+        setSettingsDirty();
 }
 
 KMenuBar *KMainWindow::menuBar()

@@ -320,6 +320,23 @@ public:
     void setFrameBorderWidth( int ) {}
 
     /**
+     * Call this to enable "auto-save" of toolbar/menubar/statusbar settings
+     * (and optionnally window size).
+     * If the *bars were moved around/shown/hidden when the window is closed,
+     * saveMainWindowSettings( KGlobal::config(), groupName ) will be called.
+     *
+     * @param groupName a name that identifies this "type of window".
+     * You can have several types of window in the same application.
+     * @param saveWindowSize set it to true to include the window size
+     * when saving.
+     *
+     * Note that you'll have to call applyMainWindowSettings yourself,
+     * calling KGlobal::config()->setGroup( groupName ) first, for instance from
+     * your mainwindow's constructor.
+     */
+    void setAutoSaveSettings( const QString & groupName, bool saveWindowSize );
+
+    /**
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
@@ -393,9 +410,15 @@ public slots:
      */
     void appHelpActivated( void );
 
+    /**
+     * @internal. Used for the auto-save-settings feature.
+     */
+    void setSettingsDirty();
+
 protected:
-    void paintEvent( QPaintEvent *e );
+    void paintEvent( QPaintEvent* e );
     void childEvent( QChildEvent* e);
+    void resizeEvent( QResizeEvent* e);
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
      *
