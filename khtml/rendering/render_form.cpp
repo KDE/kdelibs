@@ -149,6 +149,10 @@ void RenderCheckBox::updateFromElement()
 void RenderCheckBox::slotStateChanged(int state)
 {
     element()->setChecked(state == 2);
+
+    ref();
+    element()->onChange();
+    deref();
 }
 
 // -------------------------------------------------------------------------------
@@ -159,6 +163,7 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
     setQWidget(b);
+    connect(b,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
 }
 
 void RenderRadioButton::updateFromElement()
@@ -179,6 +184,13 @@ void RenderRadioButton::calcMinMaxWidth()
     setIntrinsicHeight( s.height() );
 
     RenderButton::calcMinMaxWidth();
+}
+
+void RenderRadioButton::slotToggled(bool)
+{
+    ref();
+    element()->onChange();
+    deref();
 }
 
 // -------------------------------------------------------------------------------
@@ -1170,8 +1182,8 @@ void RenderSelect::updateSelection()
         // if multi-select, we select only the new selected index
         KListBox *listBox = static_cast<KListBox*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
-            listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
-                                static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+	listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
+	                                static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {
         bool found = false;
