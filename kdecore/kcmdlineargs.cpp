@@ -439,7 +439,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
    }
    if (!args && (_opt[0] == '-') && _opt[1] && (_opt[1] != '-'))
    {
-      // Option not found check if it is a valid option 
+      // Option not found check if it is a valid option
       // in the style of -Pprinter1 or ps -aux
       int p = 1;
       while (true)
@@ -460,7 +460,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
          p++;
          if (result == 1) // Single option
          {
-            args->setOption(singleCharOption, enabled); 
+            args->setOption(singleCharOption, enabled);
             if (_opt[p])
                continue; // Next option
             else
@@ -888,7 +888,7 @@ KCmdLineArgs::usage(const char *id)
          }
          for(QStringList::Iterator it = dl.begin();
              it != dl.end();
-             it++)
+             ++it)
          {
             printQ(optionFormatString.arg("", -25).arg(*it));
          }

@@ -302,7 +302,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
 	        m += (*ait).item;
 	        m += "</td></tr>";
 
-	        for ( ait++; ait != list.end(); ++ait ) {
+	        for ( ++ait; ait != list.end(); ++ait ) {
 		    m += "<tr><td>";
 	            m += (*ait).item;
 		    m += "</td></tr>";

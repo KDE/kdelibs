@@ -532,7 +532,7 @@ bool KAccelBase::removeConnection( KAccelAction* pAction )
 			KKeyToActionMap::iterator itRemove = it++;
 			m_mapKeyToAction.remove( itRemove );
 		} else
-			it++;
+			++it;
 	}
 	return true;
 }
