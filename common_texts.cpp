@@ -262,3 +262,7 @@ i18n("font style", "Demi bold Italic");
 i18n("font style", "Oblique");
 i18n("font style", "Book");
 i18n("font style", "Book Oblique");
+
+//fix KWin after 3.1
+i18n("window operation", "Sticky");
+i18n("window operation", "Un-Sticky");
