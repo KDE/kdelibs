@@ -30,12 +30,12 @@
 //#include "misc/khtmllayout.h"
 
 class KHTMLView;
-class DOM::DOMStringImpl;
 
 // -------------------------------------------------------------------------
 namespace DOM {
 
 class HTMLFormElementImpl;
+class DOMStringImpl;
 
 class HTMLAppletElementImpl : public HTMLElementImpl
 {
