@@ -109,7 +109,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         {
             themeDirs += cDir;
 	    if (mDir.isEmpty()
-		    && KStandardDirs::exists( cDir + "index.desktop"))
+		    && (KStandardDirs::exists( cDir + "index.desktop") || KStandardDirs::exists( cDir + "index.theme")))
 		mDir = cDir;
         }
     }
@@ -409,7 +409,7 @@ QStringList KIconTheme::list()
         {
             if ((*it2 == ".") || (*it2 == ".."))
                 continue;
-            if (!KStandardDirs::exists(*it + *it2 + "/index.desktop"))
+            if (!KStandardDirs::exists(*it + *it2 + "/index.desktop") && !KStandardDirs::exists(*it + *it2 + "/index.theme"))
                 continue;
             if (!_theme_list->contains(*it2))
                 _theme_list->append(*it2);
