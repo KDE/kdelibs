@@ -2,6 +2,10 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Picture
+Name[ca]=Imatge portable Pixmap
+Name[da]=Portable Pixmap-billede
+Name[fi]=Portable Pixmap kuva
+Name[sv]=Flyttbar pixmappbild
 Read=true
 Write=true
 Suffices=PPM,ppmraw,PPMRAW,pnm,PNM

@@ -2,6 +2,11 @@
 Type=PNM
 Header=
 Name=Portable Graymap Picture
+Name[ca]=Imatge portable Graymap
+Name[da]=Portable Graymap-billede
+Name[en_GB]=Portable Greymap Picture
+Name[fi]=Portable Graymap kuva
+Name[sv]=Flyttbar gråskalebild
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW
