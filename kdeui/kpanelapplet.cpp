@@ -127,6 +127,7 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       int pos;
       dataStream >> pos;
       _pos = static_cast<Position>(pos);
+      resizeEvent(0);
       return true;
     }
  else if ( fun == "setOrientation(int)" )
@@ -135,6 +136,7 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       int orient;
       dataStream >> orient;
       _orient = static_cast<Qt::Orientation>(orient);
+      resizeEvent(0);
       return true;
     }
   else if ( fun == "removedFromPanel()" )
