@@ -80,8 +80,9 @@ public:
 
   QCursor oldCursor;
 
-  QPoint pressPos;
   QPoint startDragPos;
+  bool validDrag;
+
   KListViewLineEdit *editor;
   QValueList<int> renameable;
 
@@ -175,11 +176,11 @@ KListView::KListView( QWidget *parent, const char *name )
 	d->selectionMode = Single;
 	d->contextMenuKey = KGlobalSettings::contextMenuKey ();
 	d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
-	
+	d->validDrag = false;
+
 	connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
   }
 
-//   setAcceptDrops(true);
   setDragAutoScroll(true);
   d->oldCursor = viewport()->cursor();
   connect( this, SIGNAL( onViewport() ),
@@ -440,35 +441,31 @@ void KListView::leaveEvent( QEvent *e )
 
 void KListView::contentsMousePressEvent( QMouseEvent *e )
 {
-  if( (selectionModeExt() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
-    bool block = signalsBlocked();
-    blockSignals( true );
-
-    clearSelection();
-
-    blockSignals( block );
-  }
-
-
-
-  QPoint p( contentsToViewport( e->pos() ) );
-  QListViewItem *i = itemAt( p );
-  if ( i )
-  {
-    // if the user clicked into the root decoration of the item, don't try to start a drag!
-    if (p.x() > header()->cellPos( header()->mapToIndex( 0 ) ) +
-        treeStepSize() * ( i->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() ||
-        p.x() < header()->cellPos( header()->mapToIndex( 0 ) ) )
+  if( (selectionModeExt() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) )
     {
-      d->pressPos = p;
+      bool block = signalsBlocked();
+      blockSignals( true );
+      
+      clearSelection();
+      
+      blockSignals( block );
     }
-  }
-
-// If the row was already selected, create an editor widget.
-	QListViewItem *at=itemAt(p);
-	if (at && at->isSelected() && itemsRenameable())
-		rename(at, 0); // TODO
-
+  
+  QPoint p( contentsToViewport( e->pos() ) );
+  QListViewItem *at = itemAt (p);
+  
+  // If the row was already selected, create an editor widget.
+  if (at && at->isSelected() && itemsRenameable())
+    rename(at, 0); // TODO
+  
+  if (e->button() == LeftButton)
+    {
+      d->startDragPos = e->pos();
+     
+      if (at)
+        d->validDrag = true;
+    }
+  
   QListView::contentsMousePressEvent( e );
 }
 
@@ -476,42 +473,32 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 {
   QPoint vp = contentsToViewport(e->pos());
   QListViewItem *item = itemAt( vp );
-
+  
   //do we process cursor changes at all?
-  if ( item && d->bChangeCursorOverItem && d->bUseSingle ) {
-    //Cursor moved on a new item or in/out the execute area
-    if( (item != d->pCurrentItem) ||
-		(isExecuteArea(vp) != d->cursorInExecuteArea) ) {
-
-      d->cursorInExecuteArea = isExecuteArea(vp);
-
-      if( d->cursorInExecuteArea ) //cursor moved in execute area
-		viewport()->setCursor( KCursor().handCursor() );
-      else //cursor moved out of execute area
-		viewport()->setCursor( d->oldCursor );
+  if ( item && d->bChangeCursorOverItem && d->bUseSingle )
+    {
+      //Cursor moved on a new item or in/out the execute area
+      if( (item != d->pCurrentItem) ||
+          (isExecuteArea(vp) != d->cursorInExecuteArea) )
+        {        
+          d->cursorInExecuteArea = isExecuteArea(vp);
+          
+          if( d->cursorInExecuteArea ) //cursor moved in execute area
+            viewport()->setCursor( KCursor::handCursor() );
+          else //cursor moved out of execute area
+            viewport()->setCursor( d->oldCursor );
+        }
     }
-  }
 
   QListView::contentsMouseMoveEvent( e );
 
-  // I have just started to move my mouse..
-  if (e->state() == LeftButton)
-	{
-	  if (d->startDragPos.isNull())
-		{
-		  d->startDragPos = e->pos();
-		}
-	  else if (dragEnabled())
-		{			  
-		  // Have we moved the mouse far enough?
-		  if ((d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
-			{
-			  d->startDragPos = e->pos();
-			  
-			  startDrag();
-			}
-		}
-	}
+  if (dragEnabled() &&
+      d->validDrag && (d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
+    {
+      startDrag();
+      d->startDragPos = QPoint();
+      d->validDrag = false;
+    }
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
@@ -687,7 +674,12 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
 
 void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
-  d->pressPos = QPoint ();
+  if (e->button() == LeftButton)
+    {
+      d->validDrag = false;
+      d->startDragPos = QPoint();
+    }
+
   QListView::contentsMouseReleaseEvent( e );
 }
 
