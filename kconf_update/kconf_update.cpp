@@ -40,6 +40,7 @@
 
 static KCmdLineOptions options[] =
 {
+	{ "check <update-file>", I18N_NOOP("Check config file itself whether it require updating."), 0 },
 	{ "+[file]", I18N_NOOP("File to read update instructions from"), 0 },
         { 0, 0, 0 }
 };
@@ -48,7 +49,12 @@ class KonfUpdate
 {
 public:
    KonfUpdate();
-   QStringList findDirtyUpdateFiles();
+   ~KonfUpdate();
+   QStringList findUpdateFiles(bool dirtyOnly);
+
+   bool checkFile(const QString &filename);
+   void checkGotFile(const QString &_file, const QString &id);
+
    bool updateFile(const QString &filename);
 
    void gotId(const QString &_id);
@@ -85,6 +91,7 @@ protected:
 
    bool m_bCopy;
    bool m_bOverwrite;
+   bool m_bUseConfigInfo;
 };
 
 KonfUpdate::KonfUpdate()
@@ -97,7 +104,35 @@ KonfUpdate::KonfUpdate()
 
    QStringList updateFiles;
    KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
-   if (args->count())
+   if (!config->readBoolEntry("updateInfoAdded", false))
+   {
+       config->writeEntry("updateInfoAdded", true);
+       updateFiles = findUpdateFiles(false);
+
+       for(QStringList::ConstIterator it = updateFiles.begin();
+           it != updateFiles.end();
+           ++it)
+       {
+           QString file = *it;
+           checkFile(file);
+       }
+       updateFiles.clear();
+   }
+
+   m_bUseConfigInfo = false;
+   if (args->isSet("check"))
+   {
+      m_bUseConfigInfo = true;
+      QString file = locate("data", "kconf_update/"+QFile::decodeName(args->getOption("check")));
+      if (file.isEmpty())
+      {
+         qWarning("File '%s' not found.", args->getOption("check").data());
+         return;
+      }
+      updateFiles.append(file);
+   }
+   
+   else if (args->count())
    {
       for(int i = 0; i < args->count(); i++)
       {
@@ -109,8 +144,9 @@ KonfUpdate::KonfUpdate()
    }
    else
    {
-      updateFiles = findDirtyUpdateFiles();
+      updateFiles = findUpdateFiles(true);
    }
+
    for(QStringList::ConstIterator it = updateFiles.begin();
        it != updateFiles.end();
        ++it)
@@ -120,8 +156,12 @@ KonfUpdate::KonfUpdate()
    }
 }
 
+KonfUpdate::~KonfUpdate()
+{
+   delete config;
+}
 
-QStringList KonfUpdate::findDirtyUpdateFiles()
+QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 {
    QStringList result;
    QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd", false, true);
@@ -139,13 +179,67 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
          config->setGroup(file);
          time_t ctime = config->readUnsignedLongNumEntry("ctime");
          time_t mtime = config->readUnsignedLongNumEntry("mtime");
-         if ((ctime != buff.st_ctime) || (mtime != buff.st_mtime))
+         if (!dirtyOnly ||
+             (ctime != buff.st_ctime) || (mtime != buff.st_mtime))
          {
             result.append(*it);
          }
       }
    }
    return result;
+}
+
+bool KonfUpdate::checkFile(const QString &filename)
+{
+   currentFilename = filename;
+   int i = currentFilename.findRev('/');
+   if (i != -1) 
+      currentFilename = currentFilename.mid(i+1);
+   skip = true;
+   QFile file(filename);
+   if (!file.open(IO_ReadOnly))
+      return false;
+
+   QTextStream ts(&file);
+   ts.setEncoding(QTextStream::Latin1);
+   int lineCount = 0;
+   resetOptions();
+   QString id;
+   while(!ts.atEnd())
+   {
+      QString line = ts.readLine().stripWhiteSpace();
+      lineCount++;
+      if (line.isEmpty() || (line[0] == '#'))
+         continue;
+      if (line.startsWith("Id="))
+         id = currentFilename+":"+line.mid(3);
+      else if (line.startsWith("File="))
+         checkGotFile(line.mid(5), id);
+   }
+  
+   return true;
+}
+
+void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
+{
+   QString file;
+   int i = _file.find(',');
+   if (i == -1)
+   {
+      file = _file.stripWhiteSpace();
+   }
+   else
+   {
+      file = _file.mid(i+1).stripWhiteSpace();
+   }
+   qWarning("File %s, id %s", file.latin1(), id.latin1());
+   KSimpleConfig cfg(file);
+   cfg.setGroup("$Version");
+   QStringList ids = cfg.readListEntry("update_info");
+   if (ids.contains(id))
+       return;
+   ids.append(id);
+   cfg.writeEntry("update_info", ids);
 }
 
 /**
@@ -242,6 +336,8 @@ bool KonfUpdate::updateFile(const QString &filename)
    return true;
 }
 
+
+
 void KonfUpdate::gotId(const QString &_id)
 {
    // Flush pending changes
@@ -249,18 +345,18 @@ void KonfUpdate::gotId(const QString &_id)
 
    config->setGroup(currentFilename);
    QStringList ids = config->readListEntry("done");
-   if (!id.isEmpty())
+   if (!_id.isEmpty())
    {
       if (!ids.contains(_id))
-         ids.append(id);
+         ids.append(_id);
       else
-         qWarning("Id '%s' was already in done-list!", id.latin1());
+         qWarning("Id '%s' was already in done-list!", _id.latin1());
       config->writeEntry("done", ids);
       config->sync();
    }
    if (!_id.isEmpty())
    {
-      if (ids.contains(_id))
+      if (!m_bUseConfigInfo && ids.contains(_id))
       {
          skip = true;
          return;
@@ -332,6 +428,21 @@ void KonfUpdate::gotFile(const QString &_file)
       else
       {
          newConfig = oldConfig2;
+      }
+      newConfig->setGroup("$Version");
+      QStringList ids = newConfig->readListEntry("update_info");
+      QString cfg_id = currentFilename + ":" + id;
+      if (!ids.contains(cfg_id))
+      {
+         ids.append(cfg_id);
+         newConfig->writeEntry("update_info", ids);
+      }
+      else
+      {
+         if (m_bUseConfigInfo)
+         {
+            skip = true;
+         }
       }
    }
    else
