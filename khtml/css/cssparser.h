@@ -166,6 +166,8 @@ public:
 
 	virtual void checkLoaded();
 	
+	void setStrictParsing( bool b ) { strictParsing = b; }
+	
     protected:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1; 

@@ -205,6 +205,7 @@ static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document )
     CSSStyleDeclarationImpl *m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->ref();
+    m_styleDecls->setStrictParsing( document->parseMode() == DocumentImpl::Strict );
     return m_styleDecls;
 }
 
