@@ -15,7 +15,9 @@
 #include "kwindowtest.moc"
 
 #include <kmsgbox.h>
-#include <dclock.h>
+#ifndef __FreeBSD__
+#include <dclock.h> // What IS this for?
+#endif
 
 /*
  Ok this is a constructor of our top widget. It inherits KTW.
