@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.37.4.1  1999/03/03 15:33:15  kuepper
+// WriteConfig( ..., double, ... ) does store the full information !
+// (At least for 8 byte doubles, should be modified to use the machine
+// precision for even better handling on different architectures. )
+//
 // Revision 1.37  1999/01/18 10:56:16  kulow
 // .moc files are back in kdelibs. Built fine here using automake 1.3
 //
@@ -536,7 +541,7 @@ bool KConfigBase::readBoolEntry( const char* pKey, const bool bDefault ) const
 	return bDefault;
   else
 	{
-	  if( aValue == "true" || aValue == "on" )
+	  if( aValue == "true" || aValue == "on" || aValue == "yes" || aValue == "1" )
 		return true;
 	  else
 		{
