@@ -273,13 +273,9 @@ void KFileDialog::slotOk()
     QString thePath = u.path();
 
     if ( mode() == Directory) {
-      if ( QFileInfo(thePath).isDir() ) {
+      if ( QFileInfo(thePath).isDir() )
 	accept();
-	return;
-      }
-      else {
-	return;
-      }
+      return;
     }   
 
     if ( u.isLocalFile() ) {
