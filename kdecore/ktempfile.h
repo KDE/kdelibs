@@ -61,6 +61,10 @@ public:
     *
     * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname"
     * The default @p fileExtension is ".tmp"
+    * @param filePrefix the prefix of the file name, or QString::null
+    *        for the default value
+    * @param the extension of the prefix, or QString::null for the 
+    *        default value
     **/
    KTempFile(QString filePrefix=QString::null, 
              QString fileExtension=QString::null, 
@@ -76,6 +80,7 @@ public:
    /**
     * Turn automatic deletion on or off.
     * Automatic deletion is off by default.
+    * @param autoDelete true to turn automatic deletion on
     **/
    void setAutoDelete(bool autoDelete) { bAutoDelete = autoDelete; }
 
@@ -88,37 +93,49 @@ public:
     *
     * You may check the status after closing the file to verify that
     * the file has indeed been written correctly.
+    * @return the errno status, 0 means ok
     **/
    int status() const;
 
    /**
-    * The name of the file.
-    * This is the full path and name of the file.
+    * Returns the full path and name of the file.
+    * @return The name of the file, or QString::null if opening the
+    *         file has failed or the file has been unlinked
     **/
    QString name() const;
    
    /**
     * An integer file descriptor open for writing to the file 
+    * @return The file descriptor, or a negative number if opening
+    *         the file failed
     **/
    int handle() const;
    
    /**
-    * @return FILE* stream open for writing to the file
+    * Returns the FILE* of the temporary file.
+    * @return FILE* stream open for writing to the file, or 0
+    *         if opening the file failed
     **/
    FILE *fstream();
 
    /**
-    * @return QTextStream open for writing to the file
+    * Returns the @ref QTextStream for writing.
+    * @return QTextStream open for writing to the file, or 0
+    *         if opening the file failed
     **/
    QTextStream *textStream();
 
    /**
-    * @return QDataStream open for writing to the file
+    * Returns a @ref QDataStream for writing.
+    * @return QDataStream open for writing to the file, or 0 
+    *         if opening the file failed
     **/
    QDataStream *dataStream();
 
    /**
-    * A QFile open for writing to the file
+    * Returns a @ref QFile.
+    * @return A QFile open for writing to the file, or 0 if 
+    *         opening the file failed.
     **/
    QFile *file();
 
@@ -130,8 +147,9 @@ public:
 
    /**
     * Closes the file.
-    * Returns 'true' is successful, or 'false' if an error has occured.
-    * See status() for details about errors.
+    * 
+    * See @ref #status() for details about errors.
+    * @return true if successful, or false if an error has occured.
     **/
    bool close();
 
