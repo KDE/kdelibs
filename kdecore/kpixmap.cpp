@@ -376,9 +376,9 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         ytable[1] = new unsigned char[height()];
         ytable[2] = new unsigned char[height()];
         for (y = 0; y < height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
-            ytable[0][h] = (unsigned char) rd;
-            ytable[1][h] = (unsigned char) gd;
-            ytable[2][h] = (unsigned char) bd;
+            ytable[0][y] = (unsigned char) rd;
+            ytable[1][y] = (unsigned char) gd;
+            ytable[2][y] = (unsigned char) bd;
         }
 
         for (y = 0; y < height(); y++) {
