@@ -4,7 +4,7 @@
 
 #include <kapp.h>
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
@@ -38,4 +38,6 @@ for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
    }
 
    debug("done");
+   
+   return 0;
 }
