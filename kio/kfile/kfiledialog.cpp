@@ -1221,6 +1221,15 @@ void KFileDialog::setSelection(const QString& url)
             d->selection = filename;
             locationEdit->setCurrentItem( 0 );
             locationEdit->setEditText( filename );
+
+            // tell the line edit that it has beenedited 
+            // otherwise we won't know this was set by the user 
+            // and it will be ignoreg if there has been an
+            // auto completion. this caused bugs where automcompletion
+            // would start, the user would pick something from the
+            // history and then hit Ok only to get the autocompleted
+            // selection. OOOPS.
+            locationEdit->lineEdit()->setEdited( true );
         }
 
         d->url = ops->url();
@@ -1266,7 +1275,7 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 	        base.append('/');
             QString newText = base + complete;
             QString fileProt = QString::fromLatin1( "file:" );
-            
+
             if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
                 newText = newText.mid( 5 ); // remove file:
 
