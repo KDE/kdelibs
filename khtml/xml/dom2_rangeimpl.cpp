@@ -1029,8 +1029,20 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     }
 
 
-    if(!hasBodyTag) text = DOMString("<html><body>") + text + "</body></html>";
-    else if(!hasHtmlTag) text = DOMString("<html>") + text + "</html>";
+    if(!hasBodyTag) text = DOMString("<body>") + text + "</body>";
+    else if(!hasHtmlTag) { 
+      text = DOMString("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+		      "<head>\n"
+		      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n"
+		      "<meta name=\"Generator\" content=\"KHTML, the KDE Web Page Viewer\" />\n"
+		      "</head>\n") +
+	    text +
+	    "</html>";
+    }
+    text = DOMString("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n") + text;
+	    
+		    
+		    
     
     return text;
 
