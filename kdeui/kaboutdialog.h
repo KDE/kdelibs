@@ -6,7 +6,7 @@
    in a general way. It provides geometry management and some
    options to connect for, like emailing the author or
    maintainer.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -34,8 +34,7 @@
 
 class QVBoxLayout;
 class KURLLabel;
-class KTabCtl;
-
+class QTabWidget;
 
 class KImageTrackLabel : public QLabel
 {
@@ -55,10 +54,10 @@ class KImageTrackLabel : public QLabel
 
   signals:
     void mouseTrack( int mode, const QMouseEvent *e );
-  
+
   protected:
     virtual void mousePressEvent( QMouseEvent *e );
-    virtual void mouseReleaseEvent( QMouseEvent *e ); 
+    virtual void mouseReleaseEvent( QMouseEvent *e );
     virtual void mouseDoubleClickEvent( QMouseEvent *e );
     virtual void mouseMoveEvent ( QMouseEvent *e );
 };
@@ -70,7 +69,7 @@ class KAboutContainer : public QFrame
   Q_OBJECT
 
   public:
-    KAboutContainer( QWidget *parent=0, const char *name=0, 
+    KAboutContainer( QWidget *parent=0, const char *name=0,
 		     int margin=0, int spacing=0,
 		     int childAlignment = AlignCenter,
 		     int innerAlignment = AlignCenter );
@@ -78,9 +77,9 @@ class KAboutContainer : public QFrame
     void addWidget( QWidget *widget );
     void addPerson( const QString &name, const QString &email,
 		    const QString &url, const QString &task,
-		    bool showHeader = false, bool showframe = false, 
+		    bool showHeader = false, bool showframe = false,
 		    bool showBold = false );
-    void addTitle(  const QString &title, int alignment=AlignLeft, 
+    void addTitle(  const QString &title, int alignment=AlignLeft,
 		    bool showframe = false, bool showBold = false );
     void addImage( const char *fileName, int alignment=AlignLeft );
 
@@ -118,7 +117,7 @@ class KAboutContainerBase : public QWidget
       AbtProduct       = 0x0040,
       AbtKDEStandard   = AbtTabbed|AbtTitle|AbtImageLeft,
       AbtAppStandard   = AbtTabbed|AbtTitle|AbtProduct,
-      AbtImageAndTitle = AbtPlain|AbtTitle|AbtImageOnly 
+      AbtImageAndTitle = AbtPlain|AbtTitle|AbtImageOnly
     };
 
   public:
@@ -133,13 +132,13 @@ class KAboutContainerBase : public QWidget
     void setProduct( const QString &appName, const QString &version,
 		     const QString &author, const QString &year );
 
-    QFrame *addTextPage( const QString &title, const QString &text, 
+    QFrame *addTextPage( const QString &title, const QString &text,
 			 bool richText=false, int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
       int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
     QFrame *addEmptyPage( const QString &title );
 
-    KAboutContainer *addContainer( int childAlignment, int innerAlignment ); 
+    KAboutContainer *addContainer( int childAlignment, int innerAlignment );
 
   public slots:
     virtual void slotMouseTrack( int mode, const QMouseEvent *e );
@@ -156,15 +155,15 @@ class KAboutContainerBase : public QWidget
 
   private:
     QArray<QWidget*>  mContainerList;
-   
-    QVBoxLayout *mTopLayout; 
+
+    QVBoxLayout *mTopLayout;
     KImageTrackLabel *mImageLabel;
     QLabel  *mTitleLabel;
     QLabel  *mIconLabel;
     QLabel  *mVersionLabel;
     QLabel  *mAuthorLabel;
     QFrame  *mImageFrame;
-    KTabCtl *mPageTab;
+    QTabWidget *mPageTab;
     QFrame  *mPlainSpace;
 };
 
@@ -179,9 +178,9 @@ class KAboutContributor : public QFrame
     KAboutContributor( QWidget *parent=0, const char *name=0,
 		       const QString &name=QString::null,
 		       const QString &email=QString::null,
-		       const QString &url=QString::null, 
+		       const QString &url=QString::null,
 		       const QString &work=QString::null,
-		       bool showHeader=false, bool showFrame=true, 
+		       bool showHeader=false, bool showFrame=true,
 		       bool showBold=false );
 
     void setName( const QString &text, const QString &header=QString::null,
@@ -224,9 +223,9 @@ class KAboutContributor : public QFrame
 
 
 
-/** 
+/**
  * KAboutWidget is the main widget for KAboutDialog.
- * It has a minimum size set. 
+ * It has a minimum size set.
  */
 class KAboutWidget : public QWidget
 {
@@ -235,19 +234,19 @@ class KAboutWidget : public QWidget
 
   public:
 
-  /** 
-   * The Qt constructor. 
+  /**
+   * The Qt constructor.
    */
   KAboutWidget(QWidget* parent=0, const char* name=0 );
 
-  /** 
-   * Adjust the minimum size (after setting the properties of the image and 
-   * the labels. 
+  /**
+   * Adjust the minimum size (after setting the properties of the image and
+   * the labels.
    */
   void adjust();
 
-  /** 
-   * Set the image as the application logo. 
+  /**
+   * Set the image as the application logo.
    */
   void setLogo(const QPixmap&);
   /** Set the authors name and email address. */
@@ -295,34 +294,34 @@ protected:
   // #########################################################################
 };
 
-/** 
+/**
  * KAboutDialog is a @ref KDialogBase with predefined main widget.
  * Being a KDialogBase it uses your application wide settings for KDialogBase
- * objects (base frame tiles, main frame tiles etc). 
+ * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a KAboutDialog object, set all (or some) of its
- * properties and show it. Do not derive it to create your own about dialog 
- * until yoiu need some cool features that are unsupported and you have 
- * contacted me to add them. 
- * 
- * The dialog can be created using two different constructors. The 
- * difference between these constructors is the available components that 
+ * properties and show it. Do not derive it to create your own about dialog
+ * until yoiu need some cool features that are unsupported and you have
+ * contacted me to add them.
+ *
+ * The dialog can be created using two different constructors. The
+ * difference between these constructors is the available components that
  * can be used to build the contents of the dialog. The first (Constructor I)
  * provides a number of easy to use methods. Basically it allows you
  * to add the components of choice, and the components are placed in a
- * predefined layout. You do not have to plan the layout. Everything is 
+ * predefined layout. You do not have to plan the layout. Everything is
  * taken care of.
  *
  * The second constructor (Constructor II) works in quite the same manner
- * as the first, but you have better control on where the components 
+ * as the first, but you have better control on where the components
  * are postioned in the layout and you have access to an extended number
- * of components you can install such as titles, product information, 
- * a tabbed pages (where you can display rich text with url links) and 
- * a person (developer) information field. The "About KDE" dialog box is 
+ * of components you can install such as titles, product information,
+ * a tabbed pages (where you can display rich text with url links) and
+ * a person (developer) information field. The "About KDE" dialog box is
  * created with Constructor II.
  *
- * For the derived features, see the basic class @ref KDialogBase. 
+ * For the derived features, see the basic class @ref KDialogBase.
  * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espensa@online.no)
- * @see KDialogBase 
+ * @see KDialogBase
  */
 class KAboutDialog : public KDialogBase
 {
@@ -340,18 +339,18 @@ class KAboutDialog : public KDialogBase
       AbtProduct       = 0x0040,
       AbtKDEStandard   = AbtTabbed|AbtTitle|AbtImageLeft,
       AbtAppStandard   = AbtTabbed|AbtTitle|AbtProduct,
-      AbtImageAndTitle = AbtPlain|AbtTitle|AbtImageOnly 
+      AbtImageAndTitle = AbtPlain|AbtTitle|AbtImageOnly
     };
 
   public:
-    /** 
+    /**
      * The standard Qt constructor (Constructor I).
      */
     KAboutDialog( QWidget *parent=0, const char *name=0, bool modal=true );
 
    /**
     * The extended constructor. (Constructor II).
-    * 
+    *
     * @param dialogLayout Use a mask of @ref LayoutType flags.
     * @param caption The dialog caption. The text you specify is prepended
     *        by i18n("About").
@@ -359,8 +358,8 @@ class KAboutDialog : public KDialogBase
     * @param defaultButton Specifies what button we be marked as the default.
     * @param parent Parent of the dialog.
     * @param name Dialog name (for internal use only)
-    * @param modal Sets dialog modality. If false, the rest of the 
-    *        program interface (example: other dialogs) is accessible while 
+    * @param modal Sets dialog modality. If false, the rest of the
+    *        program interface (example: other dialogs) is accessible while
     *        the dialog is open.
     * @param separator If true, a separator line is drawn between the action
     *        buttons an the main widget.
@@ -369,31 +368,31 @@ class KAboutDialog : public KDialogBase
     * @param user3 User button3 text.
     *
     */
-    KAboutDialog( int dialogLayout, const QString &caption, int buttonMask, 
-		  int defaultButton, QWidget *parent=0, const char *name=0, 
+    KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
+		  int defaultButton, QWidget *parent=0, const char *name=0,
 		  bool modal=false, bool separator = false,
 		  const QString &user1 = QString::null,
-		  const QString &user2 = QString::null, 
+		  const QString &user2 = QString::null,
 		  const QString &user3 = QString::null );
 
-  /** 
-   * Adjust the dialog. You can call this method after you have set up all 
-   * the contents but it is not required. It is done automaticaly when 
+  /**
+   * Adjust the dialog. You can call this method after you have set up all
+   * the contents but it is not required. It is done automaticaly when
    * @ref show is executed.
    */
   void adjust();
 
   /**
    * Use this method to make a modless (modal = false in constructor)
-   * visible. If you reimplmement this method make sure you run it 
-   * in the new method (i.e., KAboutDialog::show()). Reimplemented 
+   * visible. If you reimplmement this method make sure you run it
+   * in the new method (i.e., KAboutDialog::show()). Reimplemented
    * from &ref KDialogBase.
    */
   virtual void show( void );
 
   /**
    * Use this method to make a modless (modal = false in constructor)
-   * visible. If you reimplmement this method make sure you run it 
+   * visible. If you reimplmement this method make sure you run it
    * in the new method (i.e., KAboutDialog::show( parent )).
    *
    * @param centerParent Center the dialog with respect to this widget.
@@ -403,7 +402,7 @@ class KAboutDialog : public KDialogBase
   /**
    * (Constructor II only)
    * Sets a title (not caption) in the uppermost area of the dialog
-   * 
+   *
    * @param title Title string.
    */
   void setTitle( const QString &title );
@@ -412,15 +411,15 @@ class KAboutDialog : public KDialogBase
    * (Constructor II only)
    * Defines an image to be shown in the dialog. The position is dependent
    * on the dialogLayout in the constructor
-   * 
+   *
    * @param fileName Path to image file.
    */
   void setImage( const char *fileName );
 
   /**
    * (Constructor II only)
-   * The image has a minimum size, but is centered within a an area if the 
-   * dialog box is enlarged by the user. You set the background color 
+   * The image has a minimum size, but is centered within a an area if the
+   * dialog box is enlarged by the user. You set the background color
    * of the area with this method.
    *
    * @param color Background color.
@@ -435,7 +434,7 @@ class KAboutDialog : public KDialogBase
    * @param state True enables the frame
    */
   void setImageFrame( bool state );
-  
+
   /**
    * (Constructor II only)
    * Prints the application name, KDE version, author, a copyright sign
@@ -452,7 +451,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Adds a text page to a tab box. The text can be regular text or 
+   * Adds a text page to a tab box. The text can be regular text or
    * rich text. The rich text can contain urls and mail links
    *
    * @param title Tab name
@@ -461,78 +460,78 @@ class KAboutDialog : public KDialogBase
    * @param numLines The text area height will be ajusted so that this
    *        is the minimum lines of text that are visible.
    */
-  QFrame *addTextPage( const QString &title, const QString &text, 
+  QFrame *addTextPage( const QString &title, const QString &text,
                        bool richText=false, int numLines=10 );
 
   /**
    * (Constructor II only)
-   * Adds a container to a tab box. You can add text and images to a 
+   * Adds a container to a tab box. You can add text and images to a
    * container.
-   * 
+   *
    * @param title Tab name
    * @param childAlignment Specifies how the clildren of the container are
    *        aligned with respect to the container.
-   * @param innerAlignment Specifies how the clildren are aligned with 
+   * @param innerAlignment Specifies how the clildren are aligned with
    *        respect to each other.
    */
   KAboutContainer *addContainerPage( const QString &title,
     int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
-  
+
   /**
    * (Constructor II only)
    * Adds a container. You can add text and images to a container.
-   * 
+   *
    * @param childAlignment Specifies how the clildren of the container are
    *        aligned with respect to the container.
-   * @param innerAlignment Specifies how the clildren are aligned with 
+   * @param innerAlignment Specifies how the clildren are aligned with
    *        respect to each other.
    */
-  KAboutContainer *addContainer( int childAlignment, int innerAlignment ); 
+  KAboutContainer *addContainer( int childAlignment, int innerAlignment );
 
   /**
    * (Constructor II only)
    * Adds an empty page to a tab box.
-   * 
+   *
    * @param title Tab name
    */
   QFrame *addPage( const QString &title );
 
 
-  /** 
+  /**
    * (Constructor I only)
-   * Set the image as the application logo. 
+   * Set the image as the application logo.
    */
   void setLogo(const QPixmap&);
 
   /**
    * (Constructor I only)
-   * Set the authors name and email address. 
+   * Set the authors name and email address.
    */
   void setAuthor(const QString& name, const QString& email,
 		 const QString& url, const QString& work);
 
   /**
    * (Constructor I only)
-   * Set the maintainers name and email address. 
+   * Set the maintainers name and email address.
    */
   void setMaintainer(const QString& name, const QString& email,
 		     const QString& url, const QString& work);
 
   /**
    * (Constructor I only)
-   * Show this person as one of the major contributors. 
+   * Show this person as one of the major contributors.
    */
   void addContributor(const QString& name, const QString& email,
 		      const QString& url, const QString& work);
 
   /**
    * (Constructor I only)
-   * Set the text describing the version. 
+   * Set the text describing the version.
    */
   void setVersion(const QString& name);
 
   /**
-   * Creates a modal dialog with an image in the upper area with an 
+   * Creates a modal dialog with an image in the upper area with an
    * url link below.
    */
   static void imageURL( QWidget *parent, const QString &caption,
@@ -540,45 +539,45 @@ class KAboutDialog : public KDialogBase
 			  const QString &url );
 
 signals:
-  /** 
+  /**
    * Send an email to this person. The application must provide the
-   *  functionality. 
+   *  functionality.
    */
   void sendEmail(const QString& name, const QString& email);
 
-  /** 
-   * Open the selected URL. 
+  /**
+   * Open the selected URL.
    */
   void openURL(const QString& url);
   // ----------------------------------------------------------------------------
 protected:
-  /** 
-   * The main widget (Constructor I) 
+  /**
+   * The main widget (Constructor I)
    */
   KAboutWidget * about;
-  
-  /** 
-   * The main widget (Constructor II) 
+
+  /**
+   * The main widget (Constructor II)
    */
   KAboutContainerBase *mContainerBase;
 
   // ----------------------------------------------------------------------------
 protected slots:
 
-  /** 
-   * Connected to widget->sendEmail. 
+  /**
+   * Connected to widget->sendEmail.
    */
   void sendEmailSlot(const QString& name, const QString& email);
 
-  /** 
-   * Open this URL. 
+  /**
+   * Open this URL.
    */
   void openURLSlot(const QString& url);
 
   /**
-   * (Constructor II only) 
+   * (Constructor II only)
    * Tells the position of the mouse cursor when the left mouse button
-   * is pressed above an image 
+   * is pressed above an image
    */
   virtual void mouseTrackSlot( int mode, const QMouseEvent *e );
 
