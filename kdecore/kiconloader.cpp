@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.43  1999/06/03 09:07:50  reggie
+   made it compiling with recent Qt (there is no operator-> for QValueListIterator anymore)
+
    Revision 1.42  1999/05/26 18:02:13  kulow
    David is right when he says addIcons is overkill. Removed the function
    again and renamed the old function setDir to changeDirs as this is what
@@ -205,9 +208,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 {
-        flush( name );
-	
-	return loadInternal( name, w, h );
+	return loadInternal( name, w, h, false );
 }
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
@@ -257,14 +258,15 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 	return full_path;
 }
 
-QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h )
+QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
+	bool hcache )
 {
 
 	QString cacheKey = "$kico_";
 	cacheKey += name;
 	KPixmap pix;
 
-	if ( QPixmapCache::find( cacheKey, pix ) == true ) {
+	if ( hcache && QPixmapCache::find( cacheKey, pix ) == true ) {
 		return pix;
 	}
 

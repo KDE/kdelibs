@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.30  1999/05/26 18:02:14  kulow
+   David is right when he says addIcons is overkill. Removed the function
+   again and renamed the old function setDir to changeDirs as this is what
+   it does. For this I added getResourceDirs(type) to kstddirs. Don't use
+   it if you can avoid it ;)
+
    Revision 1.29  1999/05/26 12:29:32  kulow
    adding getIconList() - the iconloader will find all icons itself. Currently
    it's just a call to findAllResources("toolbar"), but in this case we urgently
@@ -254,7 +260,12 @@ protected:
   KConfig		*config;
   QStringList           pixmap_dirs;
 
-  QPixmap loadInternal( const QString& name, int w = 0, int h = 0 );
+  /**
+	honourcache will check if the icon is contained in the cache before
+	trying to load it. 
+  */
+  QPixmap loadInternal( const QString& name, int w = 0, int h = 0,
+		bool honourcache = true );
 
 private:
   void initPath();
