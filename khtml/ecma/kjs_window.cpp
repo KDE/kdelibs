@@ -854,7 +854,14 @@ void Location::put(const UString &p, const KJSO &v)
 
   KURL url = part->url();
 
-  if (p == "href") url = part->completeURL(str);
+  if (p == "href") url = part->completeURL(str); // ### this is wrong, here
+                                                 // we have to construct the
+                                                 // new URL with the base URL
+                                                 // of the part _calling_ this
+                                                 // javascript code, _not_ the
+                                                 // the one it points to! But
+                                                 // I have no idea how to
+                                                 // pass that url through :-(
   else if (p == "hash") url.setRef(str);
   else if (p == "host") {
     // danimo: KURL doesn't have a way to
