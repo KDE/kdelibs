@@ -392,7 +392,7 @@ bool KSpell::addPersonal (QString word)
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
-  qs.prepend ("&");
+  qs.prepend ("*");
   personaldict=TRUE;
 
   return proc->fputs(qs);
