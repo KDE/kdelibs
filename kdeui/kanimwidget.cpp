@@ -154,7 +154,6 @@ void KAnimWidget::drawContents( QPainter *p )
   
   p2.drawPixmap (x, y, d->pixmap);
   p->drawPixmap( 0, 0, pm);
-  kdDebug() << "In REGULAR size" << endl;
 }
 
 void KAnimWidget::updateIcons()
