@@ -25,6 +25,8 @@ public:
     bool load( AddressBook * );
     bool save( Ticket * );
 
+    QString identifier() const;
+
 private:
     void init(const QString &user, const QString &password,
 	    const QString &db, const QString &host );

@@ -40,6 +40,8 @@ class ResourceFile : public QObject, public Resource {
     */
     QString fileName() const;
 
+    virtual QString identifier() const;
+
   protected slots:
     void checkFile();
 

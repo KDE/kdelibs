@@ -46,7 +46,7 @@ class StdAddressBook : public AddressBook
     */
     static bool save();
 
-    static QString fileName();
+    QString fileName();
 
     QString identifier();
     
@@ -56,6 +56,7 @@ class StdAddressBook : public AddressBook
     
   private:
     static AddressBook *mSelf;
+    QString mName;
     QString mIdentifier;
 };
 

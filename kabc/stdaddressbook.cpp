@@ -36,8 +36,7 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
-	// dummy value
-	return locateLocal( "data", "kabc/std.vcf" );
+    return mName;
 }
 
 AddressBook *StdAddressBook::self()
@@ -68,36 +67,47 @@ StdAddressBook::StdAddressBook()
     config.setGroup( "General" );
 
     QStringList keys = config.readListEntry( "ResourceKeys" );
+    bool firstResource = true;
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config.setGroup( "Resource_" + (*it) );
 	uint type = config.readNumEntry( "Type" );
 
 	Resource *resource = 0;
 
+	QString ident;
 	switch ( type ) {
 	    case RES_SQL:
 		resource = new ResourceSql( this, &config );
+		ident = ((ResourceSql*)resource)->identifier();
 		break;
 	    case RES_BINARY:
 		resource = new ResourceFile( this, &config, new BinaryFormat );
+		ident = ((ResourceFile*)resource)->identifier();
 		break;
 	    case RES_VCARD:
 	    default:
 		resource = new ResourceFile( this, &config, new VCardFormat );
+		ident = ((ResourceFile*)resource)->identifier();
 		break;
 	}
 
-	addResource( resource );
+	if ( addResource( resource ) ) {
+	    mIdentifier += ident + ( firstResource ? "" : ":" );
+
+	    if ( firstResource ) {
+		firstResource = false;
+		mName = config.readEntry( "Name" );
+	    }
+	}
     }
 
     if ( keys.count() == 0 ) {
 	/* there is an empty config file, so we create a default resource */
 	addResource( new ResourceFile( this, &config, new VCardFormat ) );
+	mName = config.readEntry( "VCard-Default" );
     }
 
     load();
-
-    mIdentifier = KApplication::randomString( 10 );
 }
 
 StdAddressBook::~StdAddressBook()
@@ -107,5 +117,5 @@ StdAddressBook::~StdAddressBook()
 
 QString StdAddressBook::identifier()
 {
-  return fileName();
+    return mIdentifier;
 }

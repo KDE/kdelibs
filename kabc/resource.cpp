@@ -47,3 +47,8 @@ void Resource::setAddressBook( AddressBook *ab )
 {
   mAddressBook = ab;
 }
+
+QString Resource::identifier()
+{
+    return "NoIdentifier";
+}

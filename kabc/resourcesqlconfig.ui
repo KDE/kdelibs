@@ -203,5 +203,14 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>resourceName</tabstop>
+    <tabstop>user</tabstop>
+    <tabstop>password</tabstop>
+    <tabstop>dbName</tabstop>
+    <tabstop>host</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -48,6 +48,8 @@ class Resource {
     void setAddressBook( AddressBook * );
     AddressBook *addressBook() { return mAddressBook; }
 
+    virtual QString identifier();
+
   protected:
     Ticket *createTicket( Resource * );
 

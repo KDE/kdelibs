@@ -195,3 +195,8 @@ void ResourceFile::checkFile()
     addressBook()->emitAddressBookChanged();
   }
 }
+
+QString ResourceFile::identifier() const
+{
+    return fileName();
+}

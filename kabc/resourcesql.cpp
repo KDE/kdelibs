@@ -302,3 +302,8 @@ bool ResourceSql::save( Ticket * )
 
     return true;
 }
+
+QString ResourceSql::identifier() const
+{
+    return mHost + "_" + mDbName;
+}
