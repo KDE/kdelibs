@@ -253,35 +253,22 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
             if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
                 num += 3;
             }
-            DOMString size;
+            int size;
             switch (num)
             {
-                // size = 3 is the normal size according to html specs
-                case 1:
-                    size = "x-small";
-                    break;
-                case 2:
-                    size = "small";
-                    break;
-                case 3:
-                    size = "medium";
-                    break;
-                case 4:
-                    size = "large";
-                    break;
-                case 5:
-                    size = "x-large";
-                    break;
-                default:
-                    if (num >= 6)
-                        size = "xx-large";
-                    else if (num < 1)
-                        size = "xx-small";
-
-                    break;
+            case 1: size = CSS_VAL_X_SMALL; break;
+            case 2: size = CSS_VAL_SMALL;   break;
+            case 3: size = CSS_VAL_MEDIUM;  break;
+            case 4: size = CSS_VAL_LARGE;   break;
+            case 5: size = CSS_VAL_X_LARGE; break;
+            case 6: size = CSS_VAL_XX_LARGE;break;
+            default:
+                if (num >= 6)
+                    size = CSS_VAL__KONQ_XXX_LARGE;
+                else if (num < 1)
+                    size = CSS_VAL_XX_SMALL;
             }
-            if( !size.isNull() )
-                addCSSProperty(CSS_PROP_FONT_SIZE, size);
+            addCSSProperty(CSS_PROP_FONT_SIZE, size);
         }
         break;
     }
