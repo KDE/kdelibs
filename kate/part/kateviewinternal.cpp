@@ -898,8 +898,8 @@ void KateViewInternal::updateMicroFocusHint()
   int line = displayViewLine(displayCursor, true);
   if (line == -1)
       return;
-  
-  // Cursor placement code is changed for Asian input method that
+
+// Cursor placement code is changed for Asian input method that
   // shows candidate window. This behavior is same as Qt/E 2.3.7
   // which supports Asian input methods. Asian input methods need
   // start point of IM selection text to place candidate window as
@@ -907,8 +907,8 @@ void KateViewInternal::updateMicroFocusHint()
   uint preeditStrLen = m_view->renderer()->textWidth(textLine(m_imPreeditStartLine), cursor.col()) - m_view->renderer()->textWidth(textLine(m_imPreeditStartLine), m_imPreeditSelStart);
   uint x = cXPos - m_startX - lineRanges[line].startX + lineRanges[line].xOffset() - preeditStrLen;
   uint y = line * m_view->renderer()->fontHeight();
-  
-  setMicroFocusHint( x, y, 0, m_view->renderer()->fontHeight() );  
+
+  setMicroFocusHint( x, y, 0, m_view->renderer()->fontHeight() );
 }
 
 
@@ -2960,10 +2960,17 @@ void KateViewInternal::dropEvent( QDropEvent* event )
       return;
     }
 
+    // use one transaction
+    m_doc->editStart ();
+
     // on move: remove selected text; on copy: duplicate text
     if ( event->action() != QDropEvent::Copy )
       m_doc->removeSelectedText();
+
     m_doc->insertText( cursor.line(), cursor.col(), text );
+
+    m_doc->editEnd ();
+
     placeCursor( event->pos() );
 
     event->acceptAction();
@@ -3014,7 +3021,7 @@ void KateViewInternal::imComposeEvent( QIMEvent *e )
 
   updateView( true );
   updateCursor( cursor, true );
-  
+
   m_imPreeditLength = e->text().length();
   m_imPreeditSelStart = m_imPreeditStart + e->cursorPos();
 }
