@@ -5,6 +5,7 @@ MimeType=application/x-x509-ca-cert
 Icon=lock
 Patterns=*.der;*.cer;*.crt;*.cert;*.pem;
 Comment=DER, PEM, or Netscape encoded X.509 certificate
+Comment[af]=Der, Pem, of Netscape geënkodeerde X.509 sertifikaat
 Comment[az]=DER, PEM, ya da Netscape kodlamalı X.509 vəsiqəsi
 Comment[bs]=DER, PEM, ili Netscape kodirani X.509 certifikat
 Comment[cs]=Certifikát X.509 kódovaný DER, PEM, nebo Netscapem

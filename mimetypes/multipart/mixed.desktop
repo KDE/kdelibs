@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=multipart/mixed
 Patterns=
 Comment=Compound documents
+Comment[af]=Opgelope dokumente
 Comment[ar]=مستند مركب
 Comment[bg]=Съставяне на Документи
 Comment[bs]=Kombinirani dokumenti

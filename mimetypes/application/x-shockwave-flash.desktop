@@ -5,7 +5,6 @@ MimeType=application/x-shockwave-flash
 Icon=netscape
 Patterns=*.swf
 Comment=Shockwave Flash Media
-Comment[af]=shockwave flash media
 Comment[ar]=ملف Shockwave Flash
 Comment[br]=Medium Shockwave Flash
 Comment[de]=Shockwave-Flashmedien

@@ -5,7 +5,6 @@ MimeType=video/quicktime
 Icon=video
 Patterns=*.qt;*.mov;*.moov;*.qtvr;*.QT;*.MOV;*.MOOV;*.MooV;*.QTVR;
 Comment=Quicktime Video
-Comment[af]=quicktime video
 Comment[ar]=ملف فيديو Quicktime
 Comment[bg]=Файл на QuickTime
 Comment[br]=Video Quicktime
