@@ -1044,4 +1044,5 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
     if (cacheControl == KIO::CC_Reload)
 	return "Reload";
     kdFatal() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
+    return QString::null;
 }
