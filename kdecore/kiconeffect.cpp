@@ -43,6 +43,7 @@ class KIconEffectPrivate
 {
 public:
 	QString mKey[6][3];
+	QColor  mColor2[6][3];
 };
 
 KIconEffect::KIconEffect()
@@ -80,6 +81,7 @@ void KIconEffect::init()
     QString _desaturate("desaturate");
     QString _togamma("togamma");
     QString _none("none");
+    QString _tomonochrome("tomonochrome");
 
     KConfigGroupSaver cs(config, "default");
 
@@ -99,6 +101,9 @@ void KIconEffect::init()
         mColor[i][0] = QColor(144,128,248);
         mColor[i][1] = QColor(169,156,255);
         mColor[i][2] = QColor(34,202,0);
+        d->mColor2[i][0] = QColor(0,0,0);
+        d->mColor2[i][1] = QColor(0,0,0);
+        d->mColor2[i][2] = QColor(0,0,0);
 
 	config->setGroup(*it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
@@ -112,6 +117,8 @@ void KIconEffect::init()
 		effect = DeSaturate;
 	    else if (tmp == _togamma)
 		effect = ToGamma;
+	    else if (tmp == _tomonochrome)
+		effect = ToMonochrome;
             else if (tmp == _none)
 		effect = NoEffect;
 	    else
@@ -120,6 +127,7 @@ void KIconEffect::init()
                 mEffect[i][j] = effect;
 	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
 	    mColor[i][j] = config->readColorEntry(*it2 + "Color");
+	    d->mColor2[i][j] = config->readColorEntry(*it2 + "Color2");
 	    mTrans[i][j] = config->readBoolEntry(*it2 + "SemiTransparent");
 
 	}
@@ -150,10 +158,15 @@ QString KIconEffect::fingerprint(int group, int state) const
         cached += ':';
         cached += mTrans[group][state] ? QString::fromLatin1("trans")
             : QString::fromLatin1("notrans");
-        if (mEffect[group][state] == Colorize)
+        if (mEffect[group][state] == Colorize || mEffect[group][state] == ToMonochrome)
         {
             cached += ':';
             cached += mColor[group][state].name();
+        }
+        if (mEffect[group][state] == ToMonochrome)
+        {
+            cached += ':';
+            cached += d->mColor2[group][state].name();
         }
     
         d->mKey[group][state] = cached;    
@@ -175,10 +188,15 @@ QImage KIconEffect::apply(QImage image, int group, int state) const
 	return image;
     }
     return apply(image, mEffect[group][state], mValue[group][state],
-	    mColor[group][state], mTrans[group][state]);
+	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
 }
 
 QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans) const
+{
+    apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
+}
+
+QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, const QColor col2, bool trans) const
 {
     if (effect >= LastEffect )
     {
@@ -203,6 +221,9 @@ QImage KIconEffect::apply(QImage image, int effect, float value, const QColor co
     case ToGamma:
         toGamma(image, value);
         break;
+    case ToMonochrome:
+        toMonochrome(image, col, col2, value);
+        break;
     }
     if (trans == true)
     {
@@ -224,11 +245,17 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 	return pixmap;
     }
     return apply(pixmap, mEffect[group][state], mValue[group][state],
-	    mColor[group][state], mTrans[group][state]);
+	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
 }
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 	const QColor col, bool trans) const
+{
+    apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
+}
+
+QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
+	const QColor col, const QColor col2, bool trans) const
 {
     QPixmap result;
 
@@ -246,7 +273,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
     else if ( effect != NoEffect )
     {
         QImage tmpImg = pixmap.convertToImage();
-        tmpImg = apply(tmpImg, effect, value, col, trans);
+        tmpImg = apply(tmpImg, effect, value, col, col2, trans);
         result.convertFromImage(tmpImg);
     }
     else
@@ -319,6 +346,40 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 	alpha = qAlpha(data[i]);
 	data[i] = qRgba(rval, gval, bval, alpha);
     }
+}
+
+void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
+   int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
+   unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
+         : (unsigned int *) img.colorTable();
+   int rval, gval, bval, alpha, i;
+   int rw = white.red(), gw = white.green(), bw = white.blue();
+   int rb = black.red(), gb = black.green(), bb = black.blue();
+   
+   double values = 0, sum = 0;
+   // Step 1: determine the average brightness
+   for (i=0; i<pixels; i++) {
+      sum += qGray(data[i])*qAlpha(data[i]) + 255*(255-qAlpha(data[i]));
+      values += 255;
+   }
+   double medium = sum/values;
+
+   // Step 2: Modify the image
+   for (i=0; i<pixels; i++) {
+      if (qGray(data[i]) <= medium) {
+         rval = static_cast<int>(value*rb+(1.0-value)*qRed(data[i]));
+         gval = static_cast<int>(value*gb+(1.0-value)*qGreen(data[i]));
+         bval = static_cast<int>(value*bb+(1.0-value)*qBlue(data[i]));
+      }
+      else {
+         rval = static_cast<int>(value*rw+(1.0-value)*qRed(data[i]));
+         gval = static_cast<int>(value*gw+(1.0-value)*qGreen(data[i]));
+         bval = static_cast<int>(value*bw+(1.0-value)*qBlue(data[i]));
+      }
+      
+      alpha = qAlpha(data[i]);
+      data[i] = qRgba(rval, gval, bval, alpha);
+   }
 }
 
 void KIconEffect::deSaturate(QImage &img, float value)
