@@ -8,13 +8,46 @@
 #include <kconfig.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <main.h>
 #include <pwd.h>
+#include <stdlib.h>
 
 static KCmdLineOptions options[] = {
     { "subject <argument>", I18N_NOOP("Subject line"), 0 },
     { "recipient <argument>", I18N_NOOP("Recipient"), "submit@bugs.kde.org" },
     { 0, 0, 0 }
 };
+
+void BugMailer::slotError(int errornum) {
+    kdDebug() << "slotError\n";
+    QString str, lstr;
+
+    switch(errornum) {
+        case SMTP::CONNECTERROR:
+            lstr = i18n("Error connecting to server.");
+            break;
+        case SMTP::NOTCONNECTED:
+            lstr = i18n("Not connected.");
+            break;
+        case SMTP::CONNECTTIMEOUT:
+            lstr = i18n("Connection timed out.");
+            break;
+        case SMTP::INTERACTTIMEOUT:
+            lstr = i18n("Time out waiting for server interaction.");
+            break;
+        default:
+            lstr = sm->getLastLine().stripWhiteSpace();
+            lstr = i18n("Server said: \"%1\"").arg(lstr);
+    }
+    fputs(lstr.utf8().data(), stdout);
+
+    ::exit(1);
+}
+
+void BugMailer::slotSend() {
+    kdDebug() << "slotSend\n";
+    ::exit(0);
+}
 
 int main(int argc, char **argv) {
 
@@ -29,6 +62,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     KApplication a;
+
 
     QCString recipient = args->getOption("recipient");
     if (recipient.isEmpty())
@@ -66,17 +100,21 @@ int main(int argc, char **argv) {
     emailConf.setGroup( QString::fromLatin1("ServerInfo") );
     QString  server = emailConf.readEntry(QString::fromLatin1("Outgoing"), "bugs.kde.org");
 
-    SMTP * sm = new SMTP();
-    QObject::connect(sm, SIGNAL(messageSent()), &a, SLOT(quit()));
-    QObject::connect(sm, SIGNAL(error(int)), &a, SLOT(quit()));
-    sm->setServerHost(server);
-    sm->setPort(25);
-    sm->setSenderAddress(fromaddr);
-    sm->setRecipientAddress(recipient);
-    sm->setMessageSubject(subject);
-    sm->setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
-    sm->setMessageBody(text);
-    sm->sendMessage();
+    SMTP sm;
+    BugMailer bm(&sm);
+
+    QObject::connect(&sm, SIGNAL(messageSent()), &bm, SLOT(slotSend()));
+    QObject::connect(&sm, SIGNAL(error(int)), &bm, SLOT(slotError(int)));
+    sm.setServerHost(server);
+    sm.setPort(25);
+    sm.setSenderAddress(fromaddr);
+    sm.setRecipientAddress(recipient);
+    sm.setMessageSubject(subject);
+    sm.setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
+    sm.setMessageBody(text);
+    sm.sendMessage();
 
     return a.exec();
 }
+
+#include "main.moc"

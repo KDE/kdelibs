@@ -45,10 +45,14 @@
 #include "kdepackages.h"
 #include <kcombobox.h>
 #include <config.h>
+#include <ktempfile.h>
+#include <qtextstream.h>
+#include <qfile.h>
 
 class KBugReportPrivate {
 public:
     KComboBox *appcombo;
+    QString lastError;
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
@@ -274,29 +278,29 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 
 void KBugReport::slotOk( void )
 {
-  if( m_lineedit->text().isEmpty() == true ||
-      m_subject->text().isEmpty() == true )
-  {
-    QString msg = i18n(""
+    if( m_lineedit->text().isEmpty() == true ||
+        m_subject->text().isEmpty() == true )
+    {
+        QString msg = i18n(""
       "You must specify both a subject and a description\n"
       "before the report can be sent.");
-    KMessageBox::error(this,msg);
-    return;
-  }
+        KMessageBox::error(this,msg);
+        return;
+    }
 
-  if( !sendBugReport() )
-  {
-    QString msg = i18n(""
-      "Couldn't send the bug report.\n"
-      "Hmmm, submit a bug report manually, sorry...\n"
-      "See http://bugs.kde.org/ for instructions.");
-    KMessageBox::error(this, msg );
-    return;
-  }
+    if( !sendBugReport() )
+    {
+        QString msg = i18n(""
+                           "Couldn't send the bug report.\n"
+                           "Hmmm, submit a bug report manually, sorry...\n"
+                           "See http://bugs.kde.org/ for instructions.");
+        KMessageBox::error(this, msg + "\n\n" + d->lastError);
+        return;
+    }
 
-   KMessageBox::information(this,
-			    i18n("Bug report sent, thanks for your input."));
-   accept();
+    KMessageBox::information(this,
+                             i18n("Bug report sent, thanks for your input."));
+    accept();
 }
 
 
@@ -342,7 +346,10 @@ bool KBugReport::sendBugReport()
   if (command.isEmpty())
       command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
 
-  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\"").arg(m_subject->text()).arg(recipient);
+  KTempFile outputfile;
+  outputfile.close();
+
+  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").arg(m_subject->text()).arg(recipient).arg(outputfile.name());
 
   FILE * fd = popen(command.local8Bit(), "w");
   if (!fd)
@@ -354,8 +361,23 @@ bool KBugReport::sendBugReport()
   QString btext = text();
   fwrite(btext.ascii(),btext.length(),1,fd);
 
-  pclose(fd);
-
+  int error = pclose(fd);
+  if (error) {
+      QFile of(outputfile.name());
+      if (of.open(IO_ReadOnly )) {
+          QTextStream is(&of);
+          is.setEncoding(QTextStream::UnicodeUTF8);
+          QString line;
+          while (!is.eof())
+              line = is.readLine();
+          d->lastError = line;
+      } else {
+          d->lastError = QString::null;
+      }
+      outputfile.unlink();
+      return false;
+  }
+  outputfile.unlink();
   return true;
 }
 
