@@ -321,6 +321,8 @@ void HTTPProtocol::resetSessionSettings()
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
 
+  // Bounce back the actual referrer sent
+  setMetaData("referrer", m_request.referrer);
 
   // Set the SSL meta-data here...
   setSSLMetaData();
@@ -522,6 +524,15 @@ void HTTPProtocol::stat(const KURL& url)
 
   if ( m_protocol != "webdav" && m_protocol != "webdavs" )
   {
+    QString statSide = metaData(QString::fromLatin1("statSide"));
+    if ( statSide != "source" )
+    {
+      // When uploading we assume the file doesn't exit
+      error( ERR_DOES_NOT_EXIST, url.prettyURL() );
+      return;
+    }
+
+    // When downloading we assume it exists
     UDSEntry entry;
     UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
