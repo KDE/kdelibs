@@ -351,11 +351,13 @@ NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
     QList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
     for ( unsigned i = 0; i < l.count(); i++ ) {
-        if ( !index )
-            return l.at( i );
 
-        if( l.at( i )->isEnumeratable() )
+        if( l.at( i )->isEnumeratable() ) {
+            if ( !index )
+                return l.at( i );
+
             --index;
+        }
     }
 
     return 0;
