@@ -72,15 +72,15 @@ public:
 
 
 
-protected:
-    QCString automaticDetectionForArabic( const char* str );
-    QCString automaticDetectionForBaltic( const char* str );
-    QCString automaticDetectionForCentralEuropean( const char* str );
-    QCString automaticDetectionForCyrillic( const char* str, AutomaticDetectinonLanguage _language );
-    QCString automaticDetectionForGreek( const char* str );
-    QCString automaticDetectionForHebrew( const char* str );
-    QCString automaticDetectionForTurkish( const char* str );
-    QCString automaticDetectionForWesternEuropean( const char* str );
+private:
+    QCString automaticDetectionForArabic( const unsigned char* str, int size );
+    QCString automaticDetectionForBaltic( const unsigned char* str, int size );
+    QCString automaticDetectionForCentralEuropean( const unsigned char* str, int size );
+    QCString automaticDetectionForCyrillic( const unsigned char* str, int size, AutomaticDetectinonLanguage _language );
+    QCString automaticDetectionForGreek( const unsigned char* str, int size );
+    QCString automaticDetectionForHebrew( const unsigned char* str, int size );
+    QCString automaticDetectionForTurkish( const unsigned char* str, int size );
+    QCString automaticDetectionForWesternEuropean( const unsigned char* str, int size );
 
 
 

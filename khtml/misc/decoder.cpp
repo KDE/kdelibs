@@ -1,7 +1,9 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
+    Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+    Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
+    Copyright (C) 2003 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -49,7 +51,7 @@ class KanjiCode
 {
 public:
     enum Type {ASCII, JIS, EUC, SJIS, UNICODE, UTF8 };
-    static enum Type judge(const char *str);
+    static enum Type judge(const char *str, int length);
     static const int ESC;
     static const int _SS2_;
     static const unsigned char kanji_map_sjis[];
@@ -119,7 +121,7 @@ const unsigned char KanjiCode::kanji_map_sjis[] =
  * But it fails detection. It's not useful.
  */
 
-enum KanjiCode::Type KanjiCode::judge(const char *str)
+enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
 {
     enum Type code;
     int i;
@@ -129,13 +131,12 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
     int euc = 0;
 
     const unsigned char *ptr = (const unsigned char *) str;
-    int size = strlen(str);
 
     code = ASCII;
 
     i = 0;
-    while (i < size) {
-	if (ptr[i] == ESC && (size - i >= 3)) {
+    while (i < length) {
+	if (ptr[i] == ESC && (length- i >= 3)) {
 	    if ((ptr[i + 1] == '$' && ptr[i + 2] == 'B')
 	    || (ptr[i + 1] == '(' && ptr[i + 2] == 'B')) {
 		code = JIS;
@@ -175,14 +176,14 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
 		}
 	    } else {
 		/* ?? check hiragana or katana ?? */
-		if ((size - i > 1) && (ptr[i] == 0x82) && (0xa0 <= ptr[i + 1])) {
+		if ((length- i > 1) && (ptr[i] == 0x82) && (0xa0 <= ptr[i + 1])) {
 		    sjis++;	/* hiragana */
-		} else if ((size - i > 1) && (ptr[i] == 0x83)
+		} else if ((length - i > 1) && (ptr[i] == 0x83)
 			 && (0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x9f)) {
 		    sjis++;	/* katakana */
-		} else if ((size - i > 1) && (ptr[i] == 0xa4) && (0xa0 <= ptr[i + 1])) {
+		} else if ((length - i > 1) && (ptr[i] == 0xa4) && (0xa0 <= ptr[i + 1])) {
 		    euc++;	/* hiragana */
-		} else if ((size - i > 1) && (ptr[i] == 0xa5) && (0xa0 <= ptr[i + 1])) {
+		} else if ((length - i > 1) && (ptr[i] == 0xa5) && (0xa0 <= ptr[i + 1])) {
 		    euc++;	/* katakana */
 		}
 		if (bfr) {
@@ -220,7 +221,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
 			bfk = 0;
 		    }
 		} else if (0x8e == ptr[i]) {
-		    if (size - i <= 1) {
+		    if (length - i <= 1) {
 			;
 		    } else if (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xdf) {
 			/* EUC KANA or SJIS KANJI */
@@ -237,7 +238,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
 		} else if (0x81 <= ptr[i] && ptr[i] <= 0x9f) {
 		    /* SJIS only */
 		    code = SJIS;
-		    if ((size - i >= 1)
+		    if ((length - i >= 1)
 			    && ((0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x7e)
 			    || (0x80 <= ptr[i + 1] && ptr[i + 1] <= 0xfc))) {
 			goto breakBreak;
@@ -245,7 +246,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
 		} else if (0xfd <= ptr[i] && ptr[i] <= 0xfe) {
 		    /* EUC only */
 		    code = EUC;
-		    if ((size - i >= 1)
+		    if ((length - i >= 1)
 			    && (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xfe)) {
 			goto breakBreak;
 		    }
@@ -472,29 +473,28 @@ QString Decoder::decode(const char *data, int len)
 	kdDebug( 6005 ) << "Decoder: use auto-detect (" << strlen(data) << ")" << endl;
 #endif
 
-        if ( m_automaticDetectionLanguage == Decoder::Arabic ) {
-            enc = automaticDetectionForArabic( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Baltic ) {
-            enc = automaticDetectionForBaltic( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::CentralEuropean ) {
-            enc = automaticDetectionForCentralEuropean( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Russian ) {
-            enc = automaticDetectionForCyrillic( data, Decoder::Russian );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Ukrainian ) {
-            enc = automaticDetectionForCyrillic( data, Decoder::Ukrainian );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Greek ) {
-            enc = automaticDetectionForGreek( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Hebrew ) {
-            enc = automaticDetectionForHebrew( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Japanese ) {
-            switch ( KanjiCode::judge( data ) ) {
+        switch ( m_automaticDetectionLanguage) {
+        case Decoder::Arabic:
+            enc = automaticDetectionForArabic( (const unsigned char*) data, len );
+            break;
+        case Decoder::Baltic:
+            enc = automaticDetectionForBaltic( (const unsigned char*) data, len );
+            break;
+        case Decoder::CentralEuropean:
+            enc = automaticDetectionForCentralEuropean( (const unsigned char*) data, len );
+            break;
+        case Decoder::Russian:
+        case Decoder::Ukrainian:
+            enc = automaticDetectionForCyrillic( (const unsigned char*) data, len, m_automaticDetectionLanguage );
+            break;
+        case Decoder::Greek:
+            enc = automaticDetectionForGreek( (const unsigned char*) data, len );
+            break;
+        case Decoder::Hebrew:
+            enc = automaticDetectionForHebrew( (const unsigned char*) data, len );
+            break;
+        case Decoder::Japanese:
+            switch ( KanjiCode::judge( data, len ) ) {
                 case KanjiCode::JIS:
                     enc = "jis7";
                     break;
@@ -508,12 +508,20 @@ QString Decoder::decode(const char *data, int len)
                     enc = NULL;
                     break;
             }
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::Turkish ) {
-            enc = automaticDetectionForTurkish( data );
-        }
-        else if ( m_automaticDetectionLanguage == Decoder::WesternEuropean ) {
-            enc = automaticDetectionForWesternEuropean( data );
+            break;
+        case Decoder::Turkish:
+            enc = automaticDetectionForTurkish( (const unsigned char*) data, len );
+            break;
+        case Decoder::WesternEuropean:
+            enc = automaticDetectionForWesternEuropean( (const unsigned char*) data, len );
+            break;
+        case Decoder::SemiautomaticDetection:
+        case Decoder::Chinese:
+        case Decoder::Korean:
+        case Decoder::Thai:
+        case Decoder::Unicode:
+            // huh. somethings broken in this code ### FIXME
+            break;
         }
 
 #ifdef DECODE_DEBUG
@@ -570,11 +578,8 @@ QString Decoder::flush() const
     return m_decoder->toUnicode(buffer, buffer.length());
 }
 
-QCString Decoder::automaticDetectionForArabic( const char* str )
+QCString Decoder::automaticDetectionForArabic( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) || ptr[ i ] == 0xA1 || ptr[ i ] == 0xA2 || ptr[ i ] == 0xA3
              || ( ptr[ i ] >= 0xA5 && ptr[ i ] <= 0xAB ) || ( ptr[ i ] >= 0xAE && ptr[ i ] <= 0xBA )
@@ -587,11 +592,8 @@ QCString Decoder::automaticDetectionForArabic( const char* str )
     return "iso-8859-6";
 }
 
-QCString Decoder::automaticDetectionForBaltic( const char* str )
+QCString Decoder::automaticDetectionForBaltic( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9E ) )
              return "cp1257";
@@ -603,11 +605,8 @@ QCString Decoder::automaticDetectionForBaltic( const char* str )
     return "iso-8859-13";
 }
 
-QCString Decoder::automaticDetectionForCentralEuropean( const char* str )
+QCString Decoder::automaticDetectionForCentralEuropean(const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     QCString charset = QCString();
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) {
@@ -638,11 +637,8 @@ QCString Decoder::automaticDetectionForCentralEuropean( const char* str )
     return charset.data();
 }
 
-QCString Decoder::automaticDetectionForCyrillic( const char* str, AutomaticDetectinonLanguage _language )
+QCString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutomaticDetectinonLanguage _language )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     QCString charset = QCString();
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) {
@@ -677,11 +673,8 @@ QCString Decoder::automaticDetectionForCyrillic( const char* str, AutomaticDetec
     return charset.data();
 }
 
-QCString Decoder::automaticDetectionForGreek( const char* str )
+QCString Decoder::automaticDetectionForGreek( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x87 ) || ptr[ i ] == 0x89 || ptr[ i ] == 0x8B
              || ( ptr[ i ] >= 0x91 && ptr[ i ] <= 0x97 ) || ptr[ i ] == 0x99 || ptr[ i ] == 0x9B || ptr[ i ] == 0xA4
@@ -693,11 +686,8 @@ QCString Decoder::automaticDetectionForGreek( const char* str )
     return "iso-8859-7";
 }
 
-QCString Decoder::automaticDetectionForHebrew( const char* str )
+QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x89 ) || ptr[ i ] == 0x8B
              || ( ptr[ i ] >= 0x91 && ptr[ i ] <= 0x99 ) || ptr[ i ] == 0x9B || ptr[ i ] == 0xA1 || ( ptr[ i ] >= 0xBF && ptr[ i ] <= 0xC9 )
@@ -712,11 +702,8 @@ QCString Decoder::automaticDetectionForHebrew( const char* str )
     return "iso-8859-8";
 }
 
-QCString Decoder::automaticDetectionForTurkish( const char* str )
+QCString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] == 0x80 || ( ptr[ i ] >= 0x82 && ptr[ i ] <= 0x8C ) || ( ptr[ i ] >= 0x91 && ptr[ i ] <= 0x9C ) || ptr[ i ] == 0x9F ) {
             return "cp1254";
@@ -726,11 +713,8 @@ QCString Decoder::automaticDetectionForTurkish( const char* str )
     return "iso-8859-9";
 }
 
-QCString Decoder::automaticDetectionForWesternEuropean( const char* str )
+QCString Decoder::automaticDetectionForWesternEuropean( const unsigned char* ptr, int size )
 {
-    const unsigned char *ptr = (const unsigned char*)str;
-    int size = strlen( str );
-
     for ( int i = 0; i < size; ++i ) {
         if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F )
             return "cp1252";
