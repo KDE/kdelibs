@@ -16,7 +16,9 @@
 
 #include <kmsgbox.h>
 #ifndef __FreeBSD__
-#include <dclock.h> // What IS this for?
+//#include <dclock.h> // What IS this for?
+// Sorry Coolo, it was a demo widget for inserting into *Bars.
+// But I didn't #ifndef it!
 #endif
 
 /*
@@ -71,7 +73,7 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("Clear comboBox", this, SLOT(slotClearCombo()));
     itemsMenu->insertItem ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
     itemsMenu->insertItem ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
-    itemsMenu->insertItem ("Insert clock!", this, SLOT(slotInsertClock()));
+    //itemsMenu->insertItem ("Insert clock!", this, SLOT(slotInsertClock()));
     itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
 
 	menuBar->insertSeparator();
@@ -82,12 +84,12 @@ testWindow::testWindow (QWidget *, const char *name)
     /*Now, we setup statusbar order is not important. */
     /**************************************************/
     statusBar = new KStatusBar (this);
-    statusBar->insertItem("Hi there! Can you see the clock?) ", 0);
+    statusBar->insertItem("Hi there!", 0);
     statusBar->insertItem("What?", 1);
 
-    DigitalClock *clk = new DigitalClock (statusBar);
-    clk->setFrameStyle(QFrame::NoFrame);
-    statusBar->insertWidget(clk, 70, 2);
+    //DigitalClock *clk = new DigitalClock (statusBar);
+    //clk->setFrameStyle(QFrame::NoFrame);
+    //statusBar->insertWidget(clk, 70, 2);
 
     /***********************/
     /* And now the toolbar */
@@ -246,9 +248,9 @@ testWindow::testWindow (QWidget *, const char *name)
 
 void testWindow::slotInsertClock()
 {
-  DigitalClock *clock = new DigitalClock(tb1);;
-  clock->setFrameStyle(QFrame::NoFrame);
-  tb1->insertWidget(8, 70, clock);
+  //DigitalClock *clock = new DigitalClock(tb1);;
+  //clock->setFrameStyle(QFrame::NoFrame);
+  //tb1->insertWidget(8, 70, clock);
 }
 
 void testWindow::slotNew()
