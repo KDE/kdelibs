@@ -1324,7 +1324,7 @@ bool Ftp::ftpCloseDir()
 
 //////////// get, put ////////
 
-void Ftp::get( const KURL & url, bool /*reload*/ )
+void Ftp::get( const KURL & url )
 {
   if (!m_bLoggedOn)
      openConnection();

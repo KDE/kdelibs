@@ -377,10 +377,10 @@ void SlaveBase::special(QArray<char> const &)
 { error(  ERR_UNSUPPORTED_ACTION, "special" ); }
 void SlaveBase::listDir(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, "listDir" ); }
-void SlaveBase::get(KURL const &, bool)
+void SlaveBase::get(KURL const & )
 { error(  ERR_UNSUPPORTED_ACTION, "get" ); }
 void SlaveBase::mimetype(KURL const &url)
-{ get(url, false); }
+{ get(url); }
 void SlaveBase::rename(KURL const &, KURL const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, "rename" ); }
 void SlaveBase::copy(KURL const &, KURL const &, int, bool)
@@ -483,11 +483,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_GET: {
         Q_INT8 iReload;
 
-        stream >> url >> iReload;
-
-        bool reload = (iReload != 0);	
-
-	get( url, reload );
+        stream >> url;
+	get( url );
     }
     break;
     case CMD_PUT: {

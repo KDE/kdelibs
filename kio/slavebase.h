@@ -225,10 +225,9 @@ public:
      * get, aka read.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
-     * @param reload if true, make sure to get an up to date version
      * The slave emits the data through @ref data
      */
-    virtual void get( const KURL& url, bool reload );
+    virtual void get( const KURL& url );
 
     /**
      * put, aka write.

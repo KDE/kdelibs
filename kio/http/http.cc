@@ -748,12 +748,12 @@ bool HTTPProtocol::http_open()
   {
      m_fcache = checkCacheEntry( m_state.cef );
 #ifdef DO_SSL
-     if (m_request.reload || m_bUseSSL)
+     if ((m_request.cache == CC_Reload) || m_bUseSSL)
 #else
-     if (m_request.reload && m_fcache)
+     if ((m_request.cache == CC_Reload) && m_fcache)
 #endif
      {
-	 	if (m_fcache)
+        if (m_fcache)
           fclose(m_fcache);
         m_fcache = 0;
      }
@@ -763,6 +763,11 @@ bool HTTPProtocol::http_open()
      {
         m_bCachedRead = true;
         return true;
+     }
+     if (m_request.cache == CC_CacheOnly)
+     {
+        error( ERR_DOES_NOT_EXIST, m_request.url.url() );
+        return false;
      }
   }
 
@@ -858,7 +863,7 @@ bool HTTPProtocol::http_open()
   }
 
 
-  if ( m_request.reload ) { /* No caching for reload */
+  if ( m_request.cache == CC_Reload ) { /* No caching for reload */
     header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
     header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
@@ -1584,54 +1589,6 @@ void HTTPProtocol::http_closeConnection()
   m_sock = 0;
 }
 
-// Returns only the file size, that's all kio_http can guess.
-void HTTPProtocol::stat(const KURL& url)
-{
-  if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "stat: No host specified!");
-
-  m_request.method = HTTP_HEAD;
-  m_request.path = url.path();
-  m_request.query = url.query();
-  m_request.reload = false; // Use the cache
-  m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
-  m_request.url = url;
-
-  if (http_open()) {
-
-    if (readHeader())
-    {
-      UDSEntry entry;
-      UDSAtom atom;
-      atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = url.fileName();
-      entry.append( atom );
-
-      atom.m_uds = KIO::UDS_FILE_TYPE;
-      atom.m_long = S_IFREG; // a file
-      entry.append( atom );
-
-      atom.m_uds = KIO::UDS_ACCESS;
-      atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
-      entry.append( atom );
-
-      atom.m_uds = KIO::UDS_SIZE;
-      atom.m_long = m_iSize;
-      entry.append( atom );
-
-      statEntry( entry );
-
-      http_close();
-      finished();
-    }
-    else {
-      http_close();
-      // error already emitted
-    }
-
-  }
-}
 
 const char *HTTPProtocol::getUserAgentString ()
 {
@@ -1751,7 +1708,71 @@ void HTTPProtocol::buildURL()
     m_request.url.setQuery( m_request.query );
 }
 
-void HTTPProtocol::get( const KURL& url, bool reload )
+static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
+{
+  if (cacheControl.isEmpty()) 
+     return HTTPProtocol::CC_Cache; // Default
+  
+  QString tmp = cacheControl.lower();   
+  if (tmp == "cacheonly")
+     return HTTPProtocol::CC_CacheOnly;
+  if (tmp == "verify")
+     return HTTPProtocol::CC_Verify;
+  if (tmp == "reload")
+     return HTTPProtocol::CC_Reload;
+  return HTTPProtocol::CC_Cache; // "cache" and Default
+}
+
+// Returns only the file size, that's all kio_http can guess.
+void HTTPProtocol::stat(const KURL& url)
+{
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "stat: No host specified!");
+
+  m_request.method = HTTP_HEAD;
+  m_request.path = url.path();
+  m_request.query = url.query();
+  m_request.cache = parseCacheControl(metaData("cache"));
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  m_request.url = url;
+
+  if (http_open()) {
+
+    if (readHeader())
+    {
+      UDSEntry entry;
+      UDSAtom atom;
+      atom.m_uds = KIO::UDS_NAME;
+      atom.m_str = url.fileName();
+      entry.append( atom );
+
+      atom.m_uds = KIO::UDS_FILE_TYPE;
+      atom.m_long = S_IFREG; // a file
+      entry.append( atom );
+
+      atom.m_uds = KIO::UDS_ACCESS;
+      atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
+      entry.append( atom );
+
+      atom.m_uds = KIO::UDS_SIZE;
+      atom.m_long = m_iSize;
+      entry.append( atom );
+
+      statEntry( entry );
+
+      http_close();
+      finished();
+    }
+    else {
+      http_close();
+      // error already emitted
+    }
+
+  }
+}
+
+void HTTPProtocol::get( const KURL& url )
 {
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "http GET: No host specified!");
@@ -1759,7 +1780,8 @@ void HTTPProtocol::get( const KURL& url, bool reload )
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
-  m_request.reload = reload;
+  m_request.cache = parseCacheControl(metaData("cache"));
+
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1787,7 +1809,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.method = HTTP_PUT;
   m_request.path = url.path();
   m_request.query = QString::null;
-  m_request.reload = true;
+  m_request.cache = CC_Reload;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1813,7 +1835,7 @@ void HTTPProtocol::post( const KURL& url)
   m_request.method = HTTP_POST;
   m_request.path = url.path();
   m_request.query = url.query();
-  m_request.reload = true;
+  m_request.cache = CC_Reload;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1841,7 +1863,7 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
   m_request.query = url.query();
-  m_request.reload = false;
+  m_request.cache = CC_Cache;
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;

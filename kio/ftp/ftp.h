@@ -84,7 +84,7 @@ public:
   virtual void del( const KURL & url, bool isfile );
   virtual void chmod( const KURL & url, int permissions );
 
-  virtual void get( const KURL& url, bool reload );
+  virtual void get( const KURL& url );
   virtual void put( const KURL& url, int permissions, bool overwrite, bool resume);
   //virtual void mimetype( const KURL& url );
 

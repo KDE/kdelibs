@@ -113,7 +113,7 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     return;
 }
 
-void FileProtocol::get( const KURL& url, bool /* reload */)
+void FileProtocol::get( const KURL& url )
 {
     QCString _path( QFile::encodeName(url.path()));
     struct stat buff;

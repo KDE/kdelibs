@@ -489,11 +489,9 @@ void TransferJob::slotFinished()
         QDataStream istream( m_packedArgs, IO_ReadOnly );
         switch( m_command ) {
             case CMD_GET: {
-                Q_INT8 iReload;
-                istream >> dummyUrl >> iReload;
                 m_packedArgs.truncate(0);
                 QDataStream stream( m_packedArgs, IO_WriteOnly );
-                stream << m_url << iReload;
+                stream << m_url;
                 break;
             }
             case CMD_PUT: {
@@ -511,12 +509,10 @@ void TransferJob::slotFinished()
                 assert(specialcmd == 1); // you have to switch() here if other cmds are added
                 if (specialcmd == 1) // Assume HTTP POST
                 {
-                   QString contentType;
-                   istream >> dummyUrl >> contentType;
-                   Q_INT8 iReload = 1;
+                   addMetaData("cache","reload");
                    m_packedArgs.truncate(0);
                    QDataStream stream( m_packedArgs, IO_WriteOnly );
-                   stream << m_url << iReload << contentType;
+                   stream << m_url;
                    m_command = CMD_GET;
                 }
                 break;
@@ -633,8 +629,10 @@ void TransferJob::start(Slave *slave)
 TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
-    KIO_ARGS << url << Q_INT8( reload ? 1 : 0);
+    KIO_ARGS << url;
     TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
+    if (reload)
+       job->addMetaData("cache", "reload");
     return job;
 }
 
