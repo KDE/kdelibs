@@ -46,9 +46,19 @@
 
 using namespace KABC;
 
+class ResourceFile::ResourceFilePrivate
+{
+  public:
+    KIO::Job *mLoadJob;
+    bool mIsLoading;
+
+    KIO::Job *mSaveJob;
+    bool mIsSaving;
+};
+
 ResourceFile::ResourceFile( const KConfig *config )
   : Resource( config ), mFormat( 0 ), mLocalTempFile( 0 ),
-    mAsynchronous( false )
+    mAsynchronous( false ), d( new ResourceFilePrivate )
 {
   QString fileName, formatName;
 
@@ -66,13 +76,18 @@ ResourceFile::ResourceFile( const KConfig *config )
 ResourceFile::ResourceFile( const QString &fileName,
                             const QString &formatName )
   : Resource( 0 ), mFormat( 0 ), mLocalTempFile( 0 ),
-    mAsynchronous( false )
+    mAsynchronous( false ), d( new ResourceFilePrivate )
 {
   init( fileName, formatName );
 }
 
 void ResourceFile::init( const QString &fileName, const QString &formatName )
 {
+  d->mLoadJob = 0;
+  d->mIsLoading = false;
+  d->mSaveJob = 0;
+  d->mIsSaving = false;
+
   mFormatName = formatName;
 
   FormatFactory *factory = FormatFactory::self();
@@ -94,6 +109,13 @@ void ResourceFile::init( const QString &fileName, const QString &formatName )
 
 ResourceFile::~ResourceFile()
 {
+  if ( d->mIsLoading )
+    d->mLoadJob->kill();
+  if ( d->mIsSaving )
+    d->mSaveJob->kill();
+
+  delete d;
+  d = 0;
   delete mFormat;
   mFormat = 0;
   delete mLocalTempFile;
@@ -207,8 +229,9 @@ bool ResourceFile::asyncLoad()
   src.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false, false );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
+  d->mLoadJob = KIO::file_copy( src, dest, -1, true, false, false );
+  d->mIsLoading = true;
+  connect( d->mLoadJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( downloadFinished( KIO::Job* ) ) );
 
   return true;
@@ -257,8 +280,9 @@ bool ResourceFile::asyncSave( Ticket * )
   dest.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false, false );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
+  d->mSaveJob = KIO::file_copy( src, dest, -1, true, false, false );
+  d->mIsSaving = true;
+  connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
   return true;
@@ -321,6 +345,8 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 
 void ResourceFile::downloadFinished( KIO::Job* )
 {
+  d->mIsLoading = false;
+
   if ( !mLocalTempFile )
     emit loadingError( this, i18n( "Download failed in some way!" ) );
 
@@ -338,6 +364,8 @@ void ResourceFile::downloadFinished( KIO::Job* )
 
 void ResourceFile::uploadFinished( KIO::Job *job )
 {
+  d->mIsSaving = false;
+
   if ( job->error() )
     emit savingError( this, job->errorString() );
   else

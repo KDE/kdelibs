@@ -36,9 +36,20 @@
 
 using namespace KABC;
 
+class ResourceNet::ResourceNetPrivate
+{
+  public:
+    KIO::Job *mLoadJob;
+    bool mIsLoading;
+
+    KIO::Job *mSaveJob;
+    bool mIsSaving;
+};
+
 ResourceNet::ResourceNet( const KConfig *config )
   : Resource( config ), mFormat( 0 ),
-    mLocalTempFile( 0 ), mUseLocalTempFile( false )
+    mLocalTempFile( 0 ), mUseLocalTempFile( false ),
+    d( new ResourceNetPrivate )
 {
   if ( config ) {
     init( KURL( config->readPathEntry( "NetUrl" ) ), config->readEntry( "NetFormat" ) );
@@ -49,13 +60,19 @@ ResourceNet::ResourceNet( const KConfig *config )
 
 ResourceNet::ResourceNet( const KURL &url, const QString &format )
   : Resource( 0 ), mFormat( 0 ),
-    mLocalTempFile( 0 ), mUseLocalTempFile( false )
+    mLocalTempFile( 0 ), mUseLocalTempFile( false ),
+    d( new ResourceNetPrivate )
 {
   init( url, format );
 }
 
 void ResourceNet::init( const KURL &url, const QString &format )
 {
+  d->mLoadJob = 0;
+  d->mIsLoading = false;
+  d->mSaveJob = 0;
+  d->mIsSaving = false;
+
   mFormatName = format;
 
   FormatFactory *factory = FormatFactory::self();
@@ -70,6 +87,14 @@ void ResourceNet::init( const KURL &url, const QString &format )
 
 ResourceNet::~ResourceNet()
 {
+  if ( d->mIsLoading )
+    d->mLoadJob->kill();
+  if ( d->mIsSaving )
+    d->mSaveJob->kill();
+
+  delete d;
+  d = 0;
+
   delete mFormat;
   mFormat = 0;
 
@@ -149,8 +174,9 @@ bool ResourceNet::asyncLoad()
   dest.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( mUrl, dest, -1, true, false, false );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
+  d->mLoadJob = KIO::file_copy( mUrl, dest, -1, true, false, false );
+  d->mIsLoading = true;
+  connect( d->mLoadJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( downloadFinished( KIO::Job* ) ) );
 
   return true;
@@ -187,8 +213,9 @@ bool ResourceNet::asyncSave( Ticket* )
   src.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, mUrl, -1, true, false, false );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
+  d->mSaveJob = KIO::file_copy( src, mUrl, -1, true, false, false );
+  d->mIsSaving = true;
+  connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
   return true;
@@ -221,6 +248,8 @@ QString ResourceNet::format() const
 
 void ResourceNet::downloadFinished( KIO::Job* )
 {
+  d->mIsLoading = false;
+
   if ( !mLocalTempFile )
     emit loadingError( this, i18n( "Download failed in some way!" ) );
 
@@ -238,6 +267,8 @@ void ResourceNet::downloadFinished( KIO::Job* )
 
 void ResourceNet::uploadFinished( KIO::Job *job )
 {
+  d->mIsSaving = false;
+
   if ( job->error() )
     emit savingError( this, job->errorString() );
   else
