@@ -75,7 +75,7 @@ class KURL;
  * mode, unlike in the read-write mode, works by matching any typed key with the
  * first letter of entries in the combobox.
  *
- * @sect Useage
+ * @sect Usage
  *
  * To enable the basic completion feature:
  *
