@@ -18,7 +18,9 @@
 
 // $Id$
 
+#include <netdb.h>
 #include <unistd.h>
+#include <sys/utsname.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -29,29 +31,23 @@
 KPACDiscovery::KPACDiscovery()
               : QObject(), m_stage(DHCP)
 {
-    char buf[ 256 ];
+    struct utsname uts;
 
-    if (gethostname( buf, sizeof( buf ) ) == 0)
+    if (uname (&uts) > -1)
     {
-        buf[ 255 ] = 0;
-        m_hostname = buf;
+        struct hostent *hent = gethostbyname (uts.nodename);
+        if (hent != 0)
+            m_hostname = hent->h_name;
+    }
 
-        // Need to ensure that the hostname is fully qualified
-        // Otherwise this would fail on some systems that return
-        // non-fully qualified hostname when gethostname is invoked.
-        if (getdomainname (buf, sizeof( buf ) ) == 0)
+    // If no hostname, try gethostname as a last resort.
+    if (m_hostname.isEmpty())
+    {
+        char buf [256];
+        if (gethostname (buf, sizeof(buf)) == 0)
         {
-            buf[255] = 0;
-            QCString domainname = buf;
-
-            if (m_hostname.findRev(domainname) == -1)
-            {
-              if (m_hostname.length() && (domainname[0] != '.' ||
-                  m_hostname[m_hostname.length()-1] != '.'))
-                  m_hostname += ".";
-
-              m_hostname += domainname;
-            }
+            buf[255] = '\0';
+            m_hostname = buf;
         }
     }
 }
