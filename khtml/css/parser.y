@@ -280,6 +280,8 @@ maybe_charset:
      kdDebug( 6080 ) << "charset rule: " << qString($3) << endl;
 #endif
  }
+  | CHARSET_SYM error invalid_block
+  | CHARSET_SYM error ';'
  ;
 
 import_list:
@@ -326,6 +328,12 @@ import:
 	    $$ = new CSSImportRuleImpl( p->styleElement, domString($3), $5 );
 	else
 	    $$ = 0;
+    }
+  | IMPORT_SYM error invalid_block {
+        $$ = 0;
+    }
+  | IMPORT_SYM error ';' {
+        $$ = 0;
     }
   ;
 
@@ -409,14 +417,20 @@ font_face
 */
 
 page:
-    PAGE_SYM error '}' {
+    PAGE_SYM error invalid_block {
+      $$ = 0;
+    }
+  | PAGE_SYM error ';' {
       $$ = 0;
     }
     ;
 
 font_face:
-    FONT_FACE_SYM error '}' {
-	$$ = 0;
+    FONT_FACE_SYM error invalid_block {
+      $$ = 0;
+    }
+  | FONT_FACE_SYM error ';' {
+      $$ = 0;
     }
 ;
 
