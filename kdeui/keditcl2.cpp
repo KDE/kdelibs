@@ -1062,7 +1062,9 @@ void KEdGotoLine::selected(int)
 
 void KEdGotoLine::focusInEvent( QFocusEvent *)
 {
+#ifdef __GNUC__
 #warning fixme! Focus should be handled by KIntNumInput itself    
+#endif
     lineNum->setFocus();
 //    lineNum->selectAll();
 }
