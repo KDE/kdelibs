@@ -8,11 +8,25 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kdrawutil.h>
+#include <kglobalsettings.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
 
 #include "bitmaps.h"
+
+static unsigned char up_bits[] = {
+    0x00, 0x18, 0x3c, 0x7e, 0xff, 0xff, 0x00, 0x00};
+
+static unsigned char down_bits[] = {
+    0x00, 0x00, 0xff, 0xff, 0x7e, 0x3c, 0x18, 0x00};
+
+static unsigned char left_bits[] = {
+    0x30, 0x38, 0x3c, 0x3e, 0x3e, 0x3c, 0x38, 0x30};
+
+static unsigned char right_bits[] = {
+    0x0c, 0x1c, 0x3c, 0x7c, 0x7c, 0x3c, 0x1c, 0x0c};
+
 
 B2Style::B2Style()
     :KStyle()
@@ -317,15 +331,15 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if(controls & AddPage){
         if(addPageR.width()){
             p->fillRect(addPageR, activeControl == AddPage ?
-                        g.brush(QColorGroup::Mid) :
-                        g.brush(QColorGroup::Button));
+                        g.brush(QColorGroup::Midlight) :
+                        g.brush(QColorGroup::Mid));
             p->setPen(g.mid());
             if(horiz){
                 p->drawLine(addPageR.x(), addPageR.y(), addPageR.right(),
                             addPageR.y());
                 p->drawLine(addPageR.x(), addPageR.bottom(), addPageR.right(),
                             addPageR.bottom());
-                p->setPen(activeControl==AddPage ? g.button() : g.midlight());
+                p->setPen(activeControl==AddPage ? g.mid() : g.button());
                 p->drawLine(addPageR.x(), addPageR.y()+1, addPageR.right(),
                             addPageR.y()+1);
             }
@@ -334,7 +348,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             addPageR.bottom());
                 p->drawLine(addPageR.right(), addPageR.y(), addPageR.right(),
                             addPageR.bottom());
-                p->setPen(activeControl==AddPage ? g.button() : g.midlight());
+                p->setPen(activeControl==AddPage ? g.mid() : g.button());
                 p->drawLine(addPageR.x()+1, addPageR.y(), addPageR.x()+1,
                             addPageR.bottom());
             }
@@ -343,15 +357,15 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if(controls & SubPage){
         if(subPageR.height()){
             p->fillRect(subPageR, activeControl == SubPage ?
-                        g.brush(QColorGroup::Mid) :
-                        g.brush(QColorGroup::Button));
+                        g.brush(QColorGroup::Midlight) :
+                        g.brush(QColorGroup::Mid));
             p->setPen(g.mid());
             if(horiz){
                 p->drawLine(subPageR.x(), subPageR.y(), subPageR.right(),
                             subPageR.y());
                 p->drawLine(subPageR.x(), subPageR.bottom(), subPageR.right(),
                             subPageR.bottom());
-                p->setPen(activeControl==SubPage ? g.button() : g.midlight());
+                p->setPen(activeControl==SubPage ? g.mid() : g.button());
                 p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.right(),
                             subPageR.y()+1);
                 p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.x(),
@@ -362,7 +376,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             subPageR.bottom());
                 p->drawLine(subPageR.right(), subPageR.y(), subPageR.right(),
                             subPageR.bottom());
-                p->setPen(activeControl==SubPage ? g.button() : g.midlight());
+                p->setPen(activeControl==SubPage ? g.mid() : g.button());
                 p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.x()+1,
                             subPageR.bottom());
                 p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.right()-1,
@@ -383,7 +397,7 @@ void B2Style::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
     p->setPen(g.mid());
     p->drawRect(r);
     p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
-                    g.brush(QColorGroup::Midlight));
+                g.brush(QColorGroup::Midlight));
 
     p->setPen(g.light());
     if(down){
@@ -625,11 +639,42 @@ void B2Style::drawSliderMask(QPainter *p, int x, int y, int, int h,
     p->drawPixmap(x+1, y+dy, sliderMaskBmp);
 }
 
-void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
+void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
-    qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);
+    static QBitmap up(8, 8, up_bits, true);
+    static QBitmap down(8, 8, down_bits, true);
+    static QBitmap left(8, 8, left_bits, true);
+    static QBitmap right(8, 8, right_bits, true);
+
+    if(!up.mask()){
+        up.setMask(up);
+        down.setMask(down);
+        left.setMask(left);
+        right.setMask(right);
+    }
+    
+    p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
+    if(w > 8){
+        x = x + (w-8)/2;
+        y = y + (h-8)/2;
+    }
+    switch(type){
+    case Qt::UpArrow:
+        p->drawPixmap(x, y, up);
+        break;
+    case Qt::DownArrow:
+        p->drawPixmap(x, y, down);
+        break;
+    case Qt::LeftArrow:
+        p->drawPixmap(x, y, left);
+        break;
+    default:
+        p->drawPixmap(x, y, right);
+        break;
+    }
+
 }
 
 void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
@@ -664,36 +709,38 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QString& btext, const QPixmap *pixmap,
                                     QFont *font)
 {
-    //int x2 = x+w-1;
-    //int y2 = y+h-1;
     int dx, dy;
 
     QFontMetrics fm(*font);
 
-    /*
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
-    p->setPen(g.dark());
-    p->drawLine(x+1, y+1, x2-2, y+1);
-    p->drawLine(x, y+2, x, y2-3);
-    p->drawLine(x2-1, y+2, x2-1, y2-3);
-    p->drawLine(x+1, y2-2, x2-2, y2-2);
+    if(raised)
+    {
+        int x2 = x+w;
+        int y2 = y+h;
 
-    p->setPen(sunken ? g.mid() : g.light());
-    p->drawLine(x+1, y+2, x2-2, y+2);
-    p->drawLine(x+1, y+2, x+1, y2-3);
-    p->setPen(g.light());
-    p->drawLine(x+1, y2-1, x2-2, y2-1);
-    p->drawLine(x2, y+2, x2, y2-3);
-
-    p->drawPoint(x2-1, y2-2);
-    if(sunken)
-        p->fillRect(x+2, y+3, w-4, h-6, g.brush(QColorGroup::Midlight));
-    */
-    if(sunken)
-        qDrawShadePanel(p, x, y, w, h, g, true, 1,
-                        &g.brush(QColorGroup::Midlight));
-    else
         p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+
+        p->setPen(g.dark());
+        p->drawLine(x+1, y+1, x2-2, y+1);
+        p->drawLine(x, y+2, x, y2-3);
+        p->drawLine(x2-1, y+2, x2-1, y2-3);
+        p->drawLine(x+1, y2-2, x2-2, y2-2);
+
+        p->setPen(g.light());
+        p->drawLine(x+1, y+2, x2-2, y+2);
+        p->drawLine(x+1, y+2, x+1, y2-3);
+        p->setPen(g.mid());
+        p->drawLine(x2-2, y+3, x2-2, y2-3);
+        p->drawLine(x+2, y2-3, x2-2, y2-3);
+    }
+    else
+    {
+        if(sunken)
+            qDrawShadePanel(p, x, y, w, h, g, true, 1,
+                            &g.brush(QColorGroup::Midlight));
+        else
+            p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+    }
     p->setPen(g.text());
 
     if (icontext == Icon){ // icon only
@@ -732,7 +779,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (font)
                 p->setFont(*font);
             if(raised)
-                p->setPen(Qt::blue);
+                p->setPen(KGlobalSettings::toolBarHighlightColor());
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
@@ -788,6 +835,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                         0, 0, g, false);
     }
 }
+
 
 void B2Style::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool active, QMenuItem *mi,
