@@ -23,7 +23,7 @@
 
 #include "kdiskfreesp.h"
 #include <qfile.h>
-#include <qtstream.h>
+#include <qtextstream.h>
 
 #include <kdebug.h>
 #include <kprocess.h>
