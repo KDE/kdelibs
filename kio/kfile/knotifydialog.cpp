@@ -51,6 +51,17 @@
 
 using namespace KNotify;
 
+enum
+{
+    COL_EXECUTE = 0,
+    COL_STDERR  = 1,
+    COL_MESSAGE = 2,
+    COL_LOGFILE = 3,
+    COL_SOUND   = 4,
+    COL_TASKBAR = 5,
+    COL_EVENT   = 6
+};
+
 //
 // I don't feel like subclassing KComboBox and find ways to insert that into
 // the .ui file...
@@ -97,6 +108,43 @@ namespace KNotify
             return KNotifyClient::None;
         }
     };
+    
+    // Needed for displaying tooltips in the listview's QHeader
+    class KNotifyToolTip : public QToolTip
+    {
+    public:
+        KNotifyToolTip( QHeader *header )
+            : QToolTip( header )
+        {
+            m_tips[COL_EXECUTE] = i18n("Execute a program");
+            m_tips[COL_STDERR]  = i18n("Print to Standard error output");
+            m_tips[COL_MESSAGE] = i18n("Display a messagebox");
+            m_tips[COL_LOGFILE] = i18n("Log to a file");
+            m_tips[COL_SOUND]   = i18n("Play a sound");
+            m_tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
+        }
+
+    protected:
+        virtual void maybeTip ( const QPoint& p )
+        {
+            QHeader *header = static_cast<QHeader*>( parentWidget() );
+            int section = 0;
+
+            if ( header->orientation() == Horizontal )
+                section= header->sectionAt( p.x() );
+            else
+                section= header->sectionAt( p.y() );
+
+            if ( section >= (sizeof(m_tips) / sizeof(QString)) )
+                return;
+            
+            tip( header->sectionRect( section ), m_tips[section] );
+        }
+        
+    private:
+        QString m_tips[6];
+    };
+
 }
 
 
@@ -158,21 +206,11 @@ void KNotifyDialog::slotDefault()
 //////////////////////////////////////////////////////////////////////
 
 
-enum
-    {
-    COL_EXECUTE = 0,
-    COL_STDERR  = 1,
-    COL_MESSAGE = 2,
-    COL_LOGFILE = 3,
-    COL_SOUND   = 4,
-    COL_TASKBAR = 5,
-    COL_EVENT   = 6
-    };
-
 class KNotifyWidget::Private
 {
 public:
     QPixmap pixmaps[6];
+    KNotifyToolTip *toolTip;
 };
 
 // simple access to all knotify-handled applications
@@ -223,6 +261,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     header->setLabel( COL_SOUND,   psound,   QString::null, w );
     header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
 
+    d->toolTip = new KNotifyToolTip( header );
+    
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -273,6 +313,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
 KNotifyWidget::~KNotifyWidget()
 {
+    delete d->toolTip;
     delete d;
 }
 
@@ -671,7 +712,7 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
         return; // very unlikely, but safety first
 
     bool doShowAdvanced = false;
-    
+
     switch( col )
     {
         case COL_EXECUTE:
@@ -700,7 +741,7 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
         default: // do nothing
             break;
     }
-    
+
     if ( doShowAdvanced && !m_logToFile->isVisible() )
     {
         showAdvanced( true );
