@@ -1,32 +1,39 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[hu]=Automatikus proxybeállítás
 Comment[pt_BR]=Configuração Automática do Proxy
 Comment[sv]=Automatisk proxyinställning
 
 [script-error]
 Name=Invalid proxy script
+Name[hu]=Érvénytelen proxy-szkript
 Name[pt_BR]=Script de proxy inválido
 Name[sv]=Ogiltigt proxy-skript
 Comment=The downloaded proxy configuration script is invalid
+Comment[hu]=A letöltött proxybeállító szkript érvénytelen
 Comment[pt_BR]=O script de configuração do proxy baixado é inválido
 Comment[sv]=Det nerladdade proxyinställningsskriptet är ogiltigt
 default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[hu]=Szkriptletöltési hiba
 Name[pt_BR]=Erro de download de script
 Name[sv]=Nerladdningsfel för skript
 Comment=The proxy configuration script could not be downloaded
+Comment[hu]=A proxybeállító szkript letöltése nem sikerült
 Comment[pt_BR]=O script de configuração do proxy não pode ser carregado
 Comment[sv]=Proxyinställningsskriptet kunde inte laddas ner
 default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[hu]=Szkriptkiértékelési hiba
 Name[pt_BR]=Erro de avaliação de script
 Name[sv]=Utvärderingsfel för skript
 Comment=There was an error executing the proxy configuration script
+Comment[hu]=Hiba történt a proxybeállító szkript végrehajtása közben
 Comment[pt_BR]=Ocorreu um erro ao executar o script de configuração do proxy.
 Comment[sv]=Ett fel uppstod vid körning av proxyinställningsskriptet
 default_presentation=0
