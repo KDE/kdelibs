@@ -25,8 +25,8 @@ public:
 		mys=c;
 		strMode=true;
 	}
-	inline operator=(const std::string& s) {mys=s;}
-	inline operator=(const char*c) {mys=c;}
+	inline Reference& operator=(const std::string& s) {mys=s; return *this;}
+	inline Reference& operator=(const char*c) {mys=c; return *this;}
 	inline bool isString() const {return strMode;}
 //	inline operator const std::string() const {return mys;}
 	inline const std::string& string() const {return mys;}
@@ -42,8 +42,8 @@ public:
 
 	inline SubClass(const std::string& s) : mys(s) {}
 	inline SubClass(const char* c) : mys(c) {}
-	inline operator=(const std::string& s) {mys=s;}
-	inline operator=(const char*c) {mys=c;}
+	inline SubClass& operator=(const std::string& s) {mys=s; return *this;}
+	inline SubClass& operator=(const char*c) {mys=c; return *this}
 //	inline operator const std::string() const {return mys;}
 	inline const std::string& string() const {return mys;}
 };
