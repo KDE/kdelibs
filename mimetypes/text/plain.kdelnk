@@ -25,4 +25,4 @@ Comment[sv]=Ren text
 DefaultApp=KEdit
 Icon=txt.xpm
 Type=MimeType
-Patterns=README*;INSTALL*;CHANGE*;*.txt;Readme*;
+Patterns=*.txt;

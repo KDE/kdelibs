@@ -25,4 +25,4 @@ Comment[sv]=Engelsk text
 DefaultApp=KEdit
 Icon=txt.xpm
 Type=MimeType
-Patterns=README*;INSTALL*;CHANGE*;*.txt;Readme*;
+Patterns=README;
