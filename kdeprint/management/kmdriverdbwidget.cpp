@@ -205,14 +205,19 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 {
 	if (on)
 	{
-		QListBoxItem	*item = m_manu->findItem("POSTSCRIPT");
+		QListBoxItem	*item = m_manu->findItem("GENERIC");
 		if (item)
-			m_manu->setCurrentItem(item);
-		else
 		{
-			KMessageBox::error(this,i18n("Unable to find the PostScript driver."));
-			m_postscript->setChecked(false);
+			m_manu->setCurrentItem(item);
+			item = m_model->findItem( "POSTSCRIPT PRINTER" );
+			if ( item )
+			{
+				m_model->setCurrentItem( item );
+				return;
+			}
 		}
+		KMessageBox::error(this,i18n("Unable to find the PostScript driver."));
+		m_postscript->setChecked(false);
 	}
 }
 
