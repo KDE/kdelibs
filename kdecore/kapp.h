@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.26  1997/10/05 12:52:41  kalle
+// Three new methods from Mark Donohoe
+//
 // Revision 1.19  1997/09/10 15:26:35  kdecvs
 // Coolo: moved the define of klocale back to kapp, because a define in klocale.h
 // 	would break KParts (I didn't thought about this, sorry)
@@ -473,6 +476,7 @@ private:
   QString aDummyString3; // do not touch
   QString aDummyString4; // do not touch
   bool bLocaleConstructed; // has the KLocale object already been constructed
+  bool bIsRestored; // is the application restored from the session manager?
   bool bSessionManagement; 
   bool bSessionManagementUserDefined;
   QPixmap aIconPixmap;

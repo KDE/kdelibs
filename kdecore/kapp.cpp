@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.29  1997/09/13 05:51:40  kalle
+// new features in KDebug
+// - asserts
+// - varargs
+// - output to syslog
+// - areas implemented
+//
 // Revision 1.28  1997/09/11 19:44:53  kalle
 // New debugging scheme for KDE (binary incompatible!)
 //
@@ -840,6 +847,12 @@ void KApplication::buildSearchPaths()
 		windowTextColor.setNamedColor( str );
 	else
 		windowTextColor = black;
+		
+	str = config.readEntry( "Contrast" );
+	if ( !str.isNull() )
+		contrast = atoi( str );
+	else
+		contrast = 7;
 	
     }
 
@@ -889,16 +902,23 @@ void KApplication::appendSearchPath( const char *path )
 		if( str == "Windows 95" )
 			applicationStyle=WindowsStyle;
 		else
+			applicationStyle=MotifStyle;
+	// this default is Qt darkBlue
+			applicationStyle=MotifStyle;	
+  selectColor.setNamedColor( str );
+
+	printf("contrast = %d\n", contrast);
+  str = config->readEntry( "SelectTextColor", "#FFFFFF" );
   selectTextColor.setNamedColor( str );
 	// WARNING : QApplication::setPalette() produces inconsistent results.
-    							backgroundColor.light(150),
-    							backgroundColor.dark(), 
+	// There are 3 problems :-
+	// 1) You can't change select colors
 	// 2) You need different palettes to apply the same color scheme to
 	//		different widgets !!
 	// 3) Motif style needs a different palette to Windows style.
   str = config->readEntry( "Charset","iso-8859-1" );
-    							backgroundColor.light(150),
-    							backgroundColor.dark(), 
+	int highlightVal, lowlightVal;
+
 	highlightVal=100+(2*contrast+4)*16/10;
 	lowlightVal=100+(2*contrast+4)*10;
 	//	Read the font specification from config.
