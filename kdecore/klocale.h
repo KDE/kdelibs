@@ -980,7 +980,7 @@ private:
    * @deprecated
    * @see encoding
    */
-  QString charset() const { return "UTF-8"; }
+  QString charset() const { return QString::fromLatin1("UTF-8"); }
 
 protected:
   /**
