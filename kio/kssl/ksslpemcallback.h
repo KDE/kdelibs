@@ -21,6 +21,8 @@
 #ifndef _kde_ksslpemcallback_h
 #define _kde_ksslpemcallback_h
 
+#include <kdelibs_export.h>
+
 int KIO_EXPORT KSSLPemCallback(char *buf, int size, int rwflag, void *userdata);
 
 #endif
