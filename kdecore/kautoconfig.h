@@ -128,6 +128,12 @@ public:
    **/ 
   void ignoreSubWidget(QWidget *widget);
 
+  /**
+   * Traverse the specified widgets to see if anything has changed.
+   * @ref retrieveSettings() must be called before this function to build
+   * the list of known widgets and defaultValues.
+   * @return bool - true if any settings were changed.
+   */
   bool hasChanged() const;
 
 public slots:
