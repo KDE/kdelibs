@@ -56,6 +56,12 @@ KSycocaDict::KSycocaDict(QDataStream *str, int offset)
    (*str) >> mHashTableSize;
    (*str) >> mHashList;
    mOffset = str->device()->at(); // Start of hashtable
+   if (mHashTableSize == 0)
+   {
+      kdebug(KDEBUG_ERROR, 7011, QString("KSycocaDict : mHashTableSize is 0 ! Re-run kded"));
+      kdebug(KDEBUG_ERROR, 7011, QString("and please report to faure@kde.org"));
+      exit(1);
+   }
 }
 
 KSycocaDict::~KSycocaDict()
