@@ -95,6 +95,11 @@ public:
     	return href;
     }
 
+    virtual DOMString targetRef() const
+    {
+      return target;
+    }
+
     virtual tagStatus startTag() { return AREAStartTag; }
     virtual tagStatus endTag() { return AREAEndTag; }
 

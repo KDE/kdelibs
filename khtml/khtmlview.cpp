@@ -988,7 +988,7 @@ bool KHTMLView::dndEnabled() const
   return d->m_bDnd;
 }
 
- 
+
 void KHTMLView::toggleActLink(bool actState)
 {
   if ( d->currentNode )
@@ -1008,8 +1008,7 @@ void KHTMLView::toggleActLink(bool actState)
 	      //retrieve url
 	      HTMLAnchorElementImpl *actLink = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
 	      d->currentNode=0;
-	      KURL href = KURL(m_part->url(),actLink->areaHref().string());
-	      m_part->openURL(href);
+	      m_part->urlSelected( actLink->areaHref().string(), LeftButton, 0, actLink->targetRef().string() );
 	    }
 	  d->originalNode=0;
 	}
