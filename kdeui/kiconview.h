@@ -195,6 +195,8 @@ protected:
     virtual void paintItem( QPainter *p, const QColorGroup &c );
 private:
     KWordWrap* m_wordWrap;
+    class KIconViewItemPrivate;
+    KIconViewItemPrivate *d;
 };
 
 #endif
