@@ -327,6 +327,9 @@ public:
      *
      * @param groupName a name that identifies this "type of window".
      * You can have several types of window in the same application.
+     * If you have only one type of main window, it is recommended to pass
+     * an empty group, so that the settings are the app-global ones.
+     *
      * @param saveWindowSize set it to true to include the window size
      * when saving.
      *
@@ -559,7 +562,7 @@ protected slots:
     * }
     * </pre>
     */
-    void showAboutApplication( void );
+    void showAboutApplication( void ); //### shouldn't it be virtual, then ???
 
 private slots:
    /**

@@ -997,10 +997,13 @@ protected:
     void showEvent( QShowEvent *e );
     void resizeEvent( QResizeEvent *e );
     bool event( QEvent *e );
+    void applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal = false);
+    QString settingsGroup() const;
 
 private slots:
     void rebuildLayout();
     void slotReadConfig ();
+    void slotAppearanceChanged();
     void slotIconChanged(int);
     void slotRepaint();
     void toolBarPosChanged( QToolBar *tb );

@@ -193,18 +193,18 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     connect( layoutTimer, SIGNAL( timeout() ),
              this, SLOT( rebuildLayout() ) );
 
-  connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
-  // request notification of changes in icon style
-  kapp->addKipcEventMask(KIPC::IconChanged);
-  connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
+    connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
+    // request notification of changes in icon style
+    kapp->addKipcEventMask(KIPC::IconChanged);
+    connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
 
-  // finally, read in our configurable settings
-  if ( readConfig )
-    slotReadConfig();
+    // finally, read in our configurable settings
+    if ( readConfig )
+        slotReadConfig();
 
-  if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
-      connect( (QMainWindow*)parentWidget(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
-               this, SLOT( toolBarPosChanged( QToolBar * ) ) );
+    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
+        connect( (QMainWindow*)parentWidget(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
+                 this, SLOT( toolBarPosChanged( QToolBar * ) ) );
 }
 
 int KToolBar::insertButton(const QString& icon, int id, bool enabled,
@@ -1080,25 +1080,32 @@ void KToolBar::saveState()
     config->sync();
 }
 
+QString KToolBar::settingsGroup() const
+{
+    QString configGroup;
+    if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+        configGroup = "Toolbar style";
+    else
+        configGroup = QString(name()) + " Toolbar style";
+    if (parentWidget())
+    {
+        configGroup.prepend(" ");
+        configGroup.prepend(parentWidget()->name());
+    }
+    return configGroup;
+}
+
 void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 {
-    //kdDebug(220) << "KToolBar::saveSettings" << endl;;
     QString configGroup = _configGroup;
     if (configGroup.isEmpty())
-    {
-       if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
-           configGroup = "Toolbar style";
-       else
-           configGroup = QString(name()) + " Toolbar style";
-       if (parentWidget())
-       {
-           configGroup.prepend(" ");
-           configGroup.prepend(parentWidget()->name());
-       }
-    }
+        configGroup = settingsGroup();
+    //kdDebug(220) << "KToolBar::saveSettings group=" << _configGroup << " -> " << configGroup << endl;
 
     QString position, icontext, index, offset, newLine;
     getAttributes( position, icontext, index, offset, newLine );
+
+    //kdDebug(220) << "KToolBar::saveSettings " << name() << " newLine=" << newLine << endl;
 
     KConfigGroupSaver saver(config, configGroup);
 
@@ -1461,9 +1468,20 @@ void KToolBar::slotIconChanged(int group)
 
 void KToolBar::slotReadConfig()
 {
-    // Use global file.
-    KConfig *config = KGlobal::config();
-    applySettings(config, QString::null);
+    //kdDebug(220) << "KToolBar::slotReadConfig" << endl;
+    // Read appearance settings (hmm, we used to do both here,
+    // but a well behaved application will call applyMainWindowSettings
+    // anyway, right ?)
+    applyAppearanceSettings(KGlobal::config(), QString::null );
+}
+
+void KToolBar::slotAppearanceChanged()
+{
+    // Read appearance settings from global file.
+    applyAppearanceSettings(KGlobal::config(), QString::null, true /* lose local settings */ );
+    // And remember to save the new look later
+    if ( parentWidget()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
 }
 
 //static
@@ -1498,39 +1516,9 @@ KToolBar::IconText KToolBar::iconTextSetting()
         return IconOnly;
 }
 
-void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
+void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
 {
-    QString configGroup = _configGroup;
-    if (configGroup.isEmpty())
-    {
-        if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
-            configGroup = "Toolbar style";
-        else
-            configGroup = QString(name()) + " Toolbar style";
-        if (parentWidget())
-        {
-            configGroup.prepend(" ");
-            configGroup.prepend(parentWidget()->name());
-        }
-    }
-    // We have application-specific settings in the XML file,
-    // and nothing in the application's config file
-    // -> don't apply the global defaults, the XML ones are preferred
-    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
-           !config->hasGroup(configGroup) )
-        return;
-
-    /*
-      Let's explain this a bit more in details.
-      The order in which we apply settings is :
-       Global config / <appnamerc> user settings                        if no XMLGUI is used
-       Global config / App-XML attributes / <appnamerc> user settings   if XMLGUI is used
-
-      So in the first case, we simply read everything from KConfig as below,
-      but in the second case we don't do anything here if there is no app-specific config,
-      and the XMLGUI uses the static methods of this class to get the global defaults.
-    */
-
+    QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
     KConfig *gconfig = KGlobal::config();
 
     static const QString &grpKDE     = KGlobal::staticQString("KDE");
@@ -1540,22 +1528,14 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     static const QString &attrTrans     = KGlobal::staticQString("TransparentMoving");
     static const QString &attrIconStyle = KGlobal::staticQString("KDEIconStyle");
     static const QString &attrSize      = KGlobal::staticQString("IconSize");
-    static const QString &attrPosition  = KGlobal::staticQString("Position");
-    static const QString &attrIndex  = KGlobal::staticQString("Index");
-    static const QString &attrOffset  = KGlobal::staticQString("Offset");
-    static const QString &attrNewLine  = KGlobal::staticQString("NewLine");
-    static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
-    // we actually do this in two steps.  first, we read in the global
-    // styles [Toolbar style].  then, if the toolbar is NOT
-    // 'mainToolBar', we will also try to read in [barname Toolbar style]
+    // we actually do this in two steps.
+    // First, we read in the global styles [Toolbar style] (from the KControl module).
+    // Then, if the toolbar is NOT 'mainToolBar', we will also try to read in [barname Toolbar style]
     bool highlight;
-    bool hidden;
     int transparent;
     QString icontext;
     int iconsize = 0;
-    QString position;
-    QString index( "0" ), offset( "-1" ), nl( "false" );
 
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
@@ -1565,7 +1545,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         // first, get the generic settings
         highlight   = gconfig->readBoolEntry(attrHighlight, true);
         transparent = gconfig->readBoolEntry(attrTrans, true);
-        hidden = gconfig->readBoolEntry(attrHidden, false);
 
         // we read in the IconText property *only* if we intend on actually
         // honoring it
@@ -1577,31 +1556,18 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         // Use the default icon size for toolbar icons.
         iconsize = gconfig->readNumEntry(attrSize, 0);
 
-        position = gconfig->readEntry(attrPosition, "Top");
-        index = gconfig->readEntry(attrIndex, index );
-        offset = gconfig->readEntry(attrOffset, offset );
-        nl = gconfig->readEntry(attrNewLine, nl ); // always false, not very useful
-
-        if ( config->hasGroup(configGroup) )
+        if ( !forceGlobal && config->hasGroup(configGroup) )
         {
             config->setGroup(configGroup);
 
             // first, get the generic settings
             highlight   = config->readBoolEntry(attrHighlight, highlight);
             transparent = config->readBoolEntry(attrTrans, transparent);
-            hidden = config->readBoolEntry(attrHidden, hidden);
             // now we always read in the IconText property
-            icontext = config->readEntry(attrIconText, "icontext");
+            icontext = config->readEntry(attrIconText, icontext);
 
             // now get the size
             iconsize = config->readNumEntry(attrSize, iconsize);
-
-            // finally, get the position
-            position = config->readEntry(attrPosition, position);
-            position = config->readEntry(attrPosition, "Top");
-            index = config->readEntry(attrIndex, index );
-            offset = config->readEntry(attrOffset, offset );
-            nl = config->readEntry(attrNewLine, nl );
         }
         // revert back to the old group
     } // end block for KConfigGroupSaver
@@ -1645,48 +1611,98 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         mw->setOpaqueMoving( !transparent );
     }
 
-    // ...and now the position stuff
-    BarPosition pos(Top);
-    int offs = offset.toInt();
-    int idx = index.toInt();
-    bool newLine = nl.lower() == "true" ? TRUE : FALSE;
-    if ( position == "Top" )
-        pos = Top;
-    else if ( position == "Bottom" )
-        pos = Bottom;
-    else if ( position == "Left" )
-        pos = Left;
-    else if ( position == "Right" )
-        pos = Right;
-    else if ( position == "Floating" )
-        pos = Floating;
-    else if ( position == "Flat" )
-        pos = Flat;
-
-    //kdDebug(220) << "KToolBar::applySettings hidden=" << hidden << endl;
-    if (hidden)
-        hide();
-    else
-        show();
-
-    if ( mw ) {
-
-        //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
-        d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, idx, newLine, offs );
-
-        mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
-        //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << idx << " offs=" << offs << endl;
-        // Yeah, we just did it... I guess it's for saving the "realpos" again ?
-        // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
-        if ( testWState( WState_ForceHide ) )
-            hide();
-    }
-
     if (doUpdate)
         emit modechange(); // tell buttons what happened
     if (isVisible ())
         updateGeometry();
+}
 
+void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
+{
+    //kdDebug(220) << "KToolBar::applySettings group=" << _configGroup << endl;
+
+    QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
+
+    // We have application-specific settings in the XML file,
+    // and nothing in the application's config file
+    // -> don't apply the global defaults, the XML ones are preferred
+    /*
+      Let's see if we still need this
+    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
+           !config->hasGroup(configGroup) )
+        return;
+    */
+
+    /*
+      Let's explain this a bit more in details.
+      The order in which we apply settings is :
+       Global config / <appnamerc> user settings                        if no XMLGUI is used
+       Global config / App-XML attributes / <appnamerc> user settings   if XMLGUI is used
+
+      So in the first case, we simply read everything from KConfig as below,
+      but in the second case we don't do anything here if there is no app-specific config,
+      and the XMLGUI uses the static methods of this class to get the global defaults.
+
+      Global config doesn't include position (index, offset, newline and hidden/shown).
+    */
+
+    // First the appearance stuff - the one which has a global config
+    applyAppearanceSettings( config, _configGroup );
+
+    // ...and now the position stuff
+    if ( config->hasGroup(configGroup) )
+    {
+        KConfigGroupSaver cgs(config, configGroup);
+
+        static const QString &attrPosition  = KGlobal::staticQString("Position");
+        static const QString &attrIndex  = KGlobal::staticQString("Index");
+        static const QString &attrOffset  = KGlobal::staticQString("Offset");
+        static const QString &attrNewLine  = KGlobal::staticQString("NewLine");
+        static const QString &attrHidden  = KGlobal::staticQString("Hidden");
+
+        QString position = config->readEntry(attrPosition, "Top");
+        int index = config->readNumEntry(attrIndex, 0 );
+        int offset = config->readNumEntry(attrOffset, -1 );
+        bool newLine = config->readEntry(attrNewLine).lower() == "true"; // someone used "TRUE" we can't use readBoolEntry :(
+        bool hidden = config->readBoolEntry(attrHidden, false);
+
+        BarPosition pos(Top);
+        if ( position == "Top" )
+            pos = Top;
+        else if ( position == "Bottom" )
+            pos = Bottom;
+        else if ( position == "Left" )
+            pos = Left;
+        else if ( position == "Right" )
+            pos = Right;
+        else if ( position == "Floating" )
+            pos = Floating;
+        else if ( position == "Flat" )
+            pos = Flat;
+
+        //kdDebug(220) << "KToolBar::applySettings hidden=" << hidden << endl;
+        if (hidden)
+            hide();
+        else
+            show();
+
+        if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
+        {
+            QMainWindow *mw = (QMainWindow*)parentWidget();
+
+            //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
+            d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, index, newLine, offset );
+
+            mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, index, offset );
+            //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
+            // Yeah, we just did it... I guess it's for saving the "realpos" again ?
+            // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
+            if ( testWState( WState_ForceHide ) )
+                hide();
+        }
+        if (isVisible ())
+            updateGeometry();
+    }
 }
 
 bool KToolBar::event( QEvent *e )
@@ -1839,7 +1855,7 @@ void KToolBar::getAttributes( QString &position, QString &icontext, QString &ind
         ( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
         index = QString::number( index_ );
         offset = QString::number( offset_ );
-        newLine = nl ? "TRUE" : "FALSE";
+        newLine = nl ? "true" : "false";
     }
 
     switch (d->m_iconText) {

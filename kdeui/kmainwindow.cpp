@@ -45,6 +45,7 @@ class KMainWindowPrivate {
 public:
     bool showHelpMenu:1;
 
+    bool autoSaveSettings:1;
     bool settingsDirty:1;
     bool autoSaveWindowSize:1;
     QString autoSaveGroup;
@@ -133,6 +134,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
     d->settingsDirty = false;
+    d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
 
     setCaption( kapp->caption() );
@@ -345,11 +347,10 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         e->accept();
 
         // Save settings if auto-save is enabled, and settings have changed
-        if (d->settingsDirty && !d->autoSaveGroup.isEmpty())
+        if (d->settingsDirty && d->autoSaveSettings)
         {
-            kdDebug(200) << "KMainWindow::closeEvent -> saving settings" << endl;
-            KConfigGroupSaver cgs( KGlobal::config(), d->autoSaveGroup );
-            saveMainWindowSettings( KGlobal::config() );
+            //kdDebug(200) << "KMainWindow::closeEvent -> saving settings" << endl;
+            saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
             KGlobal::config()->sync();
             d->settingsDirty = false;
         }
@@ -491,6 +492,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup)
 {
+    kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
     QString entry;
     QStrList entryList;
     int i = 0; // Number of entries in list
@@ -574,6 +576,7 @@ void KMainWindow::setSettingsDirty()
 
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
+    d->autoSaveSettings = true;
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
     // Get notified when the user moves a toolbar around
