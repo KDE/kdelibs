@@ -158,7 +158,7 @@ void KIconDialog::init()
     grid->addRowSpacing(0, 15);
     mpRb1 = new QRadioButton(i18n("System icons:"), bgroup);
     grid->addWidget(mpRb1, 1, 0);
-    mpCombo = new QComboBox(main);
+    mpCombo = new QComboBox(bgroup);
     connect(mpCombo, SIGNAL(activated(int)), SLOT(slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
     mpRb2 = new QRadioButton(i18n("Other icons:"), bgroup);
@@ -301,7 +301,7 @@ KIconButton::KIconButton(QWidget *parent, const char *name)
     mContext = KIcon::Application;
 
     mpLoader = KGlobal::iconLoader();
-    mpDialog = new KIconDialog(this);
+    mpDialog = 0L;
     connect(this, SIGNAL(clicked()), SLOT(slotChangeIcon()));
 }
 
@@ -313,7 +313,7 @@ KIconButton::KIconButton(KIconLoader *loader,
     mContext = KIcon::Application;
 
     mpLoader = loader;
-    mpDialog = new KIconDialog(mpLoader, this);
+    mpDialog = 0L;
     connect(this, SIGNAL(clicked()), SLOT(slotChangeIcon()));
 }
 
@@ -337,6 +337,8 @@ void KIconButton::setIcon(QString icon)
 
 void KIconButton::slotChangeIcon()
 {
+    if (!mpDialog)
+      mpDialog = new KIconDialog(mpLoader, this);
     QString name = mpDialog->selectIcon(mGroup, mContext, mbUser);
     if (name.isNull())
 	return;
