@@ -50,7 +50,7 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     dirs->setArrangement( QIconView::LeftToRight );
     dirs->setParentView( this );
     left = dirs;
-    
+
     m_lastViewForNextItem = 0L;
     m_lastViewForPrevItem = 0L;
 
@@ -254,11 +254,11 @@ KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
         // with the next view's first item!
         if ( m_lastViewForNextItem != otherView )
             fileItem = otherView->firstFileItem();
-            
+
         item = otherView->nextItem( fileItem );
         m_lastViewForNextItem = otherView;
     }
-    
+
     return item;
 }
 
@@ -272,13 +272,15 @@ KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
     KFileItem *item = preferredView->prevItem( fileItem );
     if ( item )
         m_lastViewForPrevItem = preferredView;
-    
+
     else { // no item, check other view
         // when changing from one to another view, we need to continue
         // with the next view's first item!
-        if ( m_lastViewForPrevItem != otherView )
-            fileItem = otherView->firstFileItem();
-        
+        if ( m_lastViewForPrevItem != otherView ) {
+            m_lastViewForPrevItem = otherView;
+            return otherView->firstFileItem();
+        }
+
         item = otherView->prevItem( fileItem );
         m_lastViewForPrevItem = otherView;
     }
