@@ -104,8 +104,13 @@ P { text-align: justify; }
 DIV.navbar P { text-align: right; }
 
 /* Temporary patch: browsers break on bad HTML */
-P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
+/* P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
+    } */
+
+P, H1, H2, H3, H4, H5, TD, TH { font-family: sans-serif;
     }
+
+
 
 /* Visual cues for GUI elements etc in the text */
 
