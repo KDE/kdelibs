@@ -31,6 +31,7 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
   : QFrame(parent, name)
   , _type(type)
   , _config(0)
+  , _orient( Horizontal )
   , _actions(actions)
 {
   setFrameStyle(NoFrame);
