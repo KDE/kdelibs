@@ -68,6 +68,8 @@ public:
   virtual void copySelection() = 0;
   virtual void pasteSelection( bool move = false ) = 0;
   virtual void moveSelection( const QString &destinationURL = QString::null ) = 0;
+  // reimplement if the view deals with urls (currently only used by slotDelete)
+  virtual QStringList selectedUrls() { return QStringList(); }
 
 signals:
   void selectionChanged();
