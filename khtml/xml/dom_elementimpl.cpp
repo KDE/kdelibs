@@ -325,7 +325,7 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
     DOMString prefix, localName;
     splitPrefixLocalName(qualifiedName.implementation(), prefix, localName, colonPos);
     NodeImpl::Id id = getDocument()->getId(AttributeId, namespaceURI.implementation(),
-                            prefix.implementation(), localName.implementation(), false, false /*lookupHTML*/);
+                            prefix.implementation(), localName.implementation(), false, true /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
                            localName.implementation());
 }
