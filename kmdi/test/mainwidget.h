@@ -32,7 +32,7 @@ public:
    void initMenu();
 
 protected: // Protected methods
-   virtual void resizeEvent( QResizeEvent *pRSE);
+  virtual void resizeEvent( QResizeEvent *pRSE);
 };
 
 #endif

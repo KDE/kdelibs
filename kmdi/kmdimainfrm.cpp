@@ -58,6 +58,7 @@
 #include "kmdichildfrm.h"
 #include "kmdichildarea.h"
 #include "kmdichildview.h"
+#include "kmdidockcontainer.h"
 
 #include "win_undockbutton.xpm"
 #include "win_minbutton.xpm"
@@ -104,7 +105,7 @@ KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
 
 //============ constructor ============//
  KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, WFlags flags)
-: KParts::DockMainWindow( parentWidget, name, flags)
+: KMdiDockMainWindow( parentWidget, name, flags)
    ,m_pMdi(0L)
    ,m_pTaskBar(0L)
    ,m_pWinList(0L)
@@ -151,7 +152,7 @@ KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
 
    // cover KMdi's childarea by a dockwidget
    m_pDockbaseAreaOfDocumentViews = createDockWidget( "mdiAreaCover", QPixmap(), 0L, "mdi_area_cover");
-      m_pDockbaseAreaOfDocumentViews->setDockWindowTransient(this,true);
+   m_pDockbaseAreaOfDocumentViews->setDockWindowTransient(this,true);
    m_pDockbaseAreaOfDocumentViews->setEnableDocking(KDockWidget::DockNone);
    m_pDockbaseAreaOfDocumentViews->setDockSite(KDockWidget::DockCorner);
    m_pDockbaseAreaOfDocumentViews->setWidget(m_pMdi);
@@ -353,7 +354,7 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
          else {
            m_pDockbaseOfTabPage->setDockSite(KDockWidget::DockCorner);
          }
-         m_pDockbaseOfTabPage = pCover;
+         m_pDockbaseOfTabPage = (KMdiDockWidget*) pCover;
       }
       if (!(flags & KMdi::Hide)) {
          pCover->show();
@@ -368,7 +369,7 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
          detachWindow( pWnd, !(flags & KMdi::Hide));
          emit childViewIsDetachedNow(pWnd); // fake it because detach won't call it in this case of addWindow-to-MDI
       } else {
-         attachWindow( pWnd, !(flags & KMdi::Hide), flags & KMdi::UseQextMDISizeHint);
+         attachWindow( pWnd, !(flags & KMdi::Hide), flags & KMdi::UseKMdiSizeHint);
       }
 
       if ((m_bMaximizedChildFrmMode && !(m_bSDIApplication && (flags & KMdi::Detach)) && (m_mdiMode != KMdi::ToplevelMode))
@@ -637,9 +638,9 @@ void KMdiMainFrm::removeWindowFromMdi(KMdiChildView *pWnd)
       if (pDockW == m_pDockbaseOfTabPage) {
          QTabWidget* pTab = (QTabWidget*) pDockW->parentWidget()->parentWidget();
          int cnt = pTab->count();
-         m_pDockbaseOfTabPage = (KDockWidget*) pTab->page(cnt - 2);
+         m_pDockbaseOfTabPage = (KMdiDockWidget*) pTab->page(cnt - 2);
          if (pDockW == m_pDockbaseOfTabPage) {
-            m_pDockbaseOfTabPage = (KDockWidget*) pTab->page(cnt - 1); // different to the one deleted next
+            m_pDockbaseOfTabPage = (KMdiDockWidget*) pTab->page(cnt - 1); // different to the one deleted next
          }
       }
       delete pDockW;
@@ -707,9 +708,9 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
       if (pDockW == m_pDockbaseOfTabPage) {
          QTabWidget* pTab = (QTabWidget*) pDockW->parentWidget()->parentWidget();
          int cnt = pTab->count();
-         m_pDockbaseOfTabPage = (KDockWidget*) pTab->page(cnt - 2);
+         m_pDockbaseOfTabPage = (KMdiDockWidget*) pTab->page(cnt - 2);
          if (pDockW == m_pDockbaseOfTabPage) {
-            m_pDockbaseOfTabPage = (KDockWidget*) pTab->page(cnt - 1); // different to the one deleted next
+            m_pDockbaseOfTabPage = (KMdiDockWidget*) pTab->page(cnt - 1); // different to the one deleted next
          }
       }
       delete pDockW;
@@ -817,7 +818,7 @@ void KMdiMainFrm::activateView(KMdiChildView* pWnd)
 
    if (m_mdiMode == KMdi::TabPageMode) {
       makeWidgetDockVisible(pWnd);
-      m_pDockbaseOfTabPage = (KDockWidget*) pWnd->parentWidget();
+      m_pDockbaseOfTabPage = (KMdiDockWidget*) pWnd->parentWidget();
    }
    else {
       if (pWnd->isAttached()) {
@@ -991,7 +992,7 @@ void KMdiMainFrm::closeActiveView()
 }
 
 /** find the root dockwidgets and store their geometry */
-void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList)
+void KMdiMainFrm::findRootDockWidgets(QPtrList<KMdiDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList)
 {
    if (!pRootDockWidgetList) return;
    if (!pPositionList) return;
@@ -1022,7 +1023,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
       if (pRootDockW) {
          // if that oldest ancestor is not already in the list, append it
          bool found = FALSE;
-         QPtrListIterator<KDockWidget> it2( *pRootDockWidgetList);
+         QPtrListIterator<KMdiDockWidget> it2( *pRootDockWidgetList);
          if (!pRootDockWidgetList->isEmpty()) {
             for ( ; it2.current() && !found; ++it2 ) {
                KDockWidget* pDockW = it2.current();
@@ -1030,7 +1031,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
                   found = TRUE;
             }
             if (!found) {
-               pRootDockWidgetList->append( pDockW);
+               pRootDockWidgetList->append( (KMdiDockWidget*)pDockW);
                QPoint p = pDockW->mapToGlobal( pDockW->pos())-pDockW->pos();
                QRect r( p.x(),
                         p.y()+m_undockPositioningOffset.y(),
@@ -1040,7 +1041,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
             }
          }
          else {
-            pRootDockWidgetList->append( pRootDockW);
+            pRootDockWidgetList->append( (KMdiDockWidget*)pRootDockW);
             QPoint p = pRootDockW->mapToGlobal( pRootDockW->pos())-pRootDockW->pos();
             QRect r( p.x(),
                      p.y()+m_undockPositioningOffset.y(),
@@ -1067,7 +1068,7 @@ void KMdiMainFrm::switchToToplevelMode()
    setUndockPositioningOffset( QPoint( 0, (m_pTaskBar ? m_pTaskBar->height() : 0) + frameBorderWidth));
 
    // 1.) select the dockwidgets to be undocked and store their geometry
-   QPtrList<KDockWidget> rootDockWidgetList;
+   QPtrList<KMdiDockWidget> rootDockWidgetList;
    QValueList<QRect> positionList;
    if (oldMdiMode!=KMdi::IDEAlMode)
 	   findRootDockWidgets(&rootDockWidgetList, &positionList);
@@ -1086,7 +1087,7 @@ void KMdiMainFrm::switchToToplevelMode()
 //   if (hasMenuBar()) menuBar()->setTopLevelMenu(false);
 
    // 3.) undock all these found oldest ancestors (being KDockWidgets)
-   QPtrListIterator<KDockWidget> it3( rootDockWidgetList);
+   QPtrListIterator<KMdiDockWidget> it3( rootDockWidgetList);
    for (; it3.current(); ++it3 ) {
        KDockWidget* pDockW = it3.current();
        pDockW->undock();
@@ -1157,14 +1158,14 @@ void KMdiMainFrm::switchToChildframeMode()
    if (m_mdiMode == KMdi::ChildframeMode)
       return;
 
-   QPtrList<KDockWidget> rootDockWidgetList;
+   QPtrList<KMdiDockWidget> rootDockWidgetList;
    if (m_mdiMode == KMdi::TabPageMode) {
       // select the dockwidgets to be undocked and store their geometry
       QValueList<QRect> positionList;
       findRootDockWidgets(&rootDockWidgetList, &positionList);
 
       // undock all these found oldest ancestors (being KDockWidgets)
-      QPtrListIterator<KDockWidget> it3( rootDockWidgetList);
+      QPtrListIterator<KMdiDockWidget> it3( rootDockWidgetList);
       for (; it3.current(); ++it3 ) {
           KDockWidget* pDockW = it3.current();
           pDockW->undock();
@@ -1183,7 +1184,7 @@ void KMdiMainFrm::switchToChildframeMode()
 
       // undock all these found oldest ancestors (being KDockWidgets)
 
-      QPtrListIterator<KDockWidget> it3( rootDockWidgetList);
+      QPtrListIterator<KMdiDockWidget> it3( rootDockWidgetList);
       for (; it3.current(); ++it3 ) {
           KDockWidget* pDockW = it3.current();
           pDockW->undock();
@@ -1211,7 +1212,7 @@ void KMdiMainFrm::switchToChildframeMode()
    }
    m_pDockbaseAreaOfDocumentViews->show();
    if ( (m_mdiMode == KMdi::TabPageMode) || (m_mdiMode == KMdi::IDEAlMode)) {
-      QPtrListIterator<KDockWidget> it4( rootDockWidgetList);
+      QPtrListIterator<KMdiDockWidget> it4( rootDockWidgetList);
       for (; it4.current(); ++it4 ) {
          KDockWidget* pDockW = it4.current();
          pDockW->dockBack();
@@ -1348,7 +1349,7 @@ void KMdiMainFrm::switchToTabPageMode()
       else {
          m_pDockbaseOfTabPage->setDockSite(KDockWidget::DockCorner);
       }
-      m_pDockbaseOfTabPage = pCover;
+      m_pDockbaseOfTabPage = (KMdiDockWidget*) pCover;
       setMainDockWidget(pCover);
    }
    if (pCover) {
@@ -1482,7 +1483,7 @@ void KMdiMainFrm::switchToIDEAlMode()
       else {
          m_pDockbaseOfTabPage->setDockSite(KDockWidget::DockCorner);
       }
-      m_pDockbaseOfTabPage = pCover;
+      m_pDockbaseOfTabPage = (KMdiDockWidget*) pCover;
       setMainDockWidget(pCover);
    }
    if (pCover) {
@@ -1496,7 +1497,7 @@ void KMdiMainFrm::switchToIDEAlMode()
    }
 
   
-  setupToolViewsForIDEALMode();
+   setupToolViewsForIDEALMode();
    
 
    m_pTaskBar->switchOn(FALSE);
@@ -1509,38 +1510,37 @@ void KMdiMainFrm::switchToIDEAlMode()
 }
 
 
-void KMdiMainFrm::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container) {
-	for ( KDockWidget *dw = widgetsToReparent.first(); dw;
+void KMdiMainFrm::dockToolViewsIntoContainers(QPtrList<KMdiDockWidget>& widgetsToReparent,KMdiDockWidget *container) {
+	for ( KMdiDockWidget *dw = widgetsToReparent.first(); dw;
 				dw=widgetsToReparent.next()){
 		dw->manualDock(container,KDockWidget::DockCenter,20);
 		dw->loseFormerBrotherDockWidget();
 	}
 }
 
-void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw) {
+void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KMdiDockWidget>* list,KMdiDockWidget::DockPosition dprtmw) {
     KDockWidget *mainDock=getMainDockWidget();
     if (mainDockWidget->parentDockTabGroup()) {
-	mainDockWidget=static_cast<KDockWidget*>(mainDockWidget->parentDockTabGroup()->
-		parent()->qt_cast("KDockWidget"));
+	mainDockWidget=dynamic_cast<KDockWidget*>(mainDockWidget->parentDockTabGroup()->parent());
     }
 
     KDockWidget* widget=mainDockWidget->findNearestDockWidget(dprtmw);    
     if (widget) {
 		if (widget->parentDockTabGroup()) {
 			widget=static_cast<KDockWidget*>(widget->parentDockTabGroup()->
-				parent()->qt_cast("KDockWidget"));
+				parent());
 		}
 
 		if (widget) {
 			KDockTabGroup *tg=static_cast<KDockTabGroup*>(widget->
-				getWidget()->qt_cast("KDockTabGroup"));
+				getWidget());
 			if (tg) {
 				kdDebug()<<"KDockTabGroup found"<<endl;
 				for (int i=0;i<tg->count();i++)
-					list->append(static_cast<KDockWidget*>(
-						tg->page(i)->qt_cast("KDockWidget")));
+					list->append((KMdiDockWidget*)static_cast<KDockWidget*>(
+						tg->page(i)));
 			} else
-				list->append(widget);
+				list->append((KMdiDockWidget*)widget);
 	}
 	else
 		kdDebug()<<"setupToolViewsForIDEALMode: no  widget found"<<endl;
@@ -1553,7 +1553,8 @@ void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWid
 }
 
 
-void KMdiMainFrm::setupToolViewsForIDEALMode() {
+void KMdiMainFrm::setupToolViewsForIDEALMode() 
+{
     m_leftContainer = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
     m_rightContainer = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
     m_topContainer = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
@@ -1562,16 +1563,16 @@ void KMdiMainFrm::setupToolViewsForIDEALMode() {
     KDockWidget *mainDock=getMainDockWidget();
     KDockWidget *w=mainDock;
     if (mainDockWidget->parentDockTabGroup()) {
-	w=static_cast<KDockWidget*>(mainDockWidget->parentDockTabGroup()->parent()->qt_cast("KDockWidget"));
+	w=static_cast<KDockWidget*>(mainDockWidget->parentDockTabGroup()->parent());
     }
 
-    QPtrList<KDockWidget> leftReparentWidgets;
-    QPtrList<KDockWidget> rightReparentWidgets;
-    QPtrList<KDockWidget> bottomReparentWidgets;
-    QPtrList<KDockWidget> topReparentWidgets;
+    QPtrList<KMdiDockWidget> leftReparentWidgets;
+    QPtrList<KMdiDockWidget> rightReparentWidgets;
+    QPtrList<KMdiDockWidget> bottomReparentWidgets;
+    QPtrList<KMdiDockWidget> topReparentWidgets;
 
     if (mainDock->parentDockTabGroup()) {
-	mainDock=static_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent()->qt_cast("KDockWidget"));
+	mainDock=static_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent());
     }
 
     findToolViewsDockedToMain(&leftReparentWidgets,KDockWidget::DockLeft);
@@ -1692,11 +1693,11 @@ void KMdiMainFrm::finishIDEAlMode(bool full)
 
 }
 
-QStringList KMdiMainFrm::prepareIdealToTabs(KDockWidget* container) {
-   QStringList widgetNames=static_cast<KDockContainer*>(container->getWidget()->
-	qt_cast("KDockContainer"))->containedWidgets();
+QStringList KMdiMainFrm::prepareIdealToTabs(KMdiDockWidget* container) {
+   KDockContainer* pDW = dynamic_cast<KDockContainer*>(container->getWidget());
+   QStringList widgetNames=((KMdiDockContainer*)pDW)->containedWidgets();
    for (QStringList::iterator it=widgetNames.begin();it!=widgetNames.end();++it) {
-	KDockWidget *dw=manager()->getDockWidgetFromName(*it);
+	KMdiDockWidget* dw = (KMdiDockWidget*) manager()->getDockWidgetFromName(*it);
 	dw->undock();
 	dw->setLatestKDockContainer(0);
 	dw->loseFormerBrotherDockWidget();
@@ -1710,7 +1711,7 @@ void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidg
     KDockWidget *mainDock=getMainDockWidget();
     if (mainDockWidget->parentDockTabGroup()) {
         mainDockWidget=static_cast<KDockWidget*>(mainDockWidget->parentDockTabGroup()->
-                parent()->qt_cast("KDockWidget"));
+                parent());
     }
 
    if(widgetNames.count()>0) {

@@ -65,7 +65,8 @@ void MainWidget::initMenu()
 /** additionally fit the system menu button position to the menu position */
 void MainWidget::resizeEvent( QResizeEvent *pRSE)
 {
-   DockMainWindow::resizeEvent( pRSE);
+   KMdiMainFrm::resizeEvent( pRSE);
    setSysButtonsAtMenuPosition();
 }
 
+void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
