@@ -133,7 +133,8 @@ class KDialogBaseTile;
  * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the
  * extended @ref KDialog::setCaption() method. NOTE: The main widget you
  * use will be positioned inside the dialog using a margin (or border)
- * equal to @ref KDialog::marginHint(). You should not add a margin yourself.
+ * equal to @ref KDialog::marginHint(). You should not add a margin yourself,
+ * since one will be added automatically.
  * The example below (from kedit) shows how you use the top level widget
  * and its layout. The second argument (the border) to @ref QVBoxLayout
  * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
