@@ -9,7 +9,6 @@
  * This file is published under the GNU General Library Public License.
  * See COPYING.LIB for details.
  *
- * $Id: $
  */
 
 #ifndef __KBUTTONBOX__H__
@@ -27,6 +26,8 @@ class KButtonBoxItem {
 public:
   QPushButton *button;
   bool noexpand;
+  int stretch;
+  int actual_size;
 };
 
 
@@ -41,7 +42,8 @@ public:
     * are layouted from top to bottom, otherwise they are layouted 
     * from left to right.
     */
-  KButtonBox(QWidget *parent, int _orientation = HORIZONTAL, int border = 10);
+  KButtonBox(QWidget *parent, int _orientation = HORIZONTAL, 
+	     int border = 4, int _autoborder = 10);
 
   /**
     * The destructor is needed, otherwise gcc 2.7.2.1 may report an 
@@ -54,6 +56,8 @@ public:
     * calculated by the with/height of all buttons plus border/autoborder
     */
   virtual QSize sizeHint();
+
+  virtual void resizeEvent(QResizeEvent *);
 
   /**
     * adds a new @see QPushButton and @return a pointer to the newly 
@@ -85,9 +89,10 @@ protected:
     * the maximum width/height.
     */
   QSize bestButtonSize();
+  void  placeButtons();
 
 protected:
-  int _border;
+  int _border, _autoborder;
   int orientation;
   bool activated;
   QBoxLayout *tl_layout;
