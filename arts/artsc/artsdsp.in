@@ -1,0 +1,73 @@
+#!/bin/sh
+# artsdsp - wrapper script to allow *some* binary only programs to use artsd
+# based on the esddsp script
+
+# default values for script variables
+verbose=0
+set_name=0
+
+# check for esddsp options
+while test $# -gt 0; do
+
+    case "$1" in
+
+	-h|--help)
+	    echo "artsdsp - attempt to reroute audio device to artsd"
+	    echo " "
+	    echo "artsdsp [options] player arguments"
+	    echo " "
+	    echo "options:"
+	    echo "-h, --help                show brief help"
+	    echo "-n, --name=NAME           use name to identify player to esd"
+	    echo "-v, --verbose             show parameters"
+	    exit 0
+	    ;;
+
+	-n)
+	    shift
+	    if test $# -gt 0; then
+		export ARTSDSP_NAME=$1
+	    else
+		echo "no player name specified"
+		exit 1
+	    fi
+	    shift
+	    set_name=1
+	    ;;
+
+	--name*)
+	    export ARTSDSP_NAME=`echo $1 | sed -e 's/^[^=]*=//g'`
+	    set_name=1
+	    shift
+	    ;;
+
+	-v|--verbose)
+	    verbose=1
+	    shift
+	    ;;
+
+	*)
+	    # no more esddsp options, get on with life
+	    break
+	    ;;
+    esac
+done
+
+# echo options if verbose specified
+if test "$verbose" = 1; then
+    ARTSDSP_VERBOSE=1
+    export ARTSDSP_VERBOSE
+    echo "name:          $ARTSDSP_NAME"
+    echo "command line:  $@"
+fi
+
+# setup esd to hijack calls made to /dev/dsp
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+
+LD_PRELOAD=${libdir}/libartsdsp.so:${libdir}/libartsc.so:/lib/libdl.so.2
+export LD_PRELOAD
+
+# invoke the program with the args given
+exec "$@"

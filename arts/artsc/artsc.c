@@ -31,8 +31,8 @@ static struct arts_backend {
 
 	int (*init)();
 	void (*free)();
-	arts_stream_t (*play_stream)(int,int,int,char*);
-	arts_stream_t (*record_stream)(int,int,int,char*);
+	arts_stream_t (*play_stream)(int,int,int,const char*);
+	arts_stream_t (*record_stream)(int,int,int,const char*);
 	void (*close_stream)(arts_stream_t);
 	int (*read)(arts_stream_t,void*,int);
 	int (*write)(arts_stream_t,void *,int);
@@ -117,7 +117,7 @@ void arts_free()
 	}
 }
 
-arts_stream_t arts_play_stream(int rate, int bits, int channels, char *name)
+arts_stream_t arts_play_stream(int rate, int bits, int channels, const char *name)
 {
 	arts_stream_t rc = 0;
 
@@ -125,7 +125,7 @@ arts_stream_t arts_play_stream(int rate, int bits, int channels, char *name)
 	return rc;
 }
 
-arts_stream_t arts_record_stream(int rate, int bits, int channels, char *name)
+arts_stream_t arts_record_stream(int rate, int bits, int channels, const char *name)
 {
 	arts_stream_t rc = 0;
 
@@ -146,7 +146,7 @@ int arts_read(arts_stream_t stream, void *buffer, int count)
 	return rc;
 }
 
-int arts_write(arts_stream_t stream, void *buffer, int count)
+int arts_write(arts_stream_t stream, const void *buffer, int count)
 {
 	int rc = ARTS_E_NOBACKEND;
 

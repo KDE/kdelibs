@@ -345,7 +345,7 @@ public:
 		// nothing to do
 	}
 
-	arts_stream_t play_stream(int rate, int bits, int channels, char *name)
+	arts_stream_t play_stream(int rate, int bits, int channels, const char *name)
 	{
 		if(server.isNull())
 			return 0;
@@ -449,7 +449,7 @@ extern "C" void arts_backend_free()
 	ArtsCApi::release();
 }
 
-extern "C" arts_stream_t arts_backend_play_stream(int rate, int bits, int channels, char *name)
+extern "C" arts_stream_t arts_backend_play_stream(int rate, int bits, int channels, const char *name)
 {
 	if(!ArtsCApi::the()) return 0;
 
@@ -457,7 +457,7 @@ extern "C" arts_stream_t arts_backend_play_stream(int rate, int bits, int channe
 	return ArtsCApi::the()->play_stream(rate,bits,channels,name);
 }
 
-extern "C"arts_stream_t arts_backend_record_stream(int, int, int, char *)
+extern "C"arts_stream_t arts_backend_record_stream(int, int, int, const char *)
 {
 	if(!ArtsCApi::the()) return 0;
 

@@ -136,7 +136,7 @@ const char *arts_error_text(int errorcode);
  *
  * @return a stream
  */
-arts_stream_t arts_play_stream(int rate, int bits, int channels, char *name);
+arts_stream_t arts_play_stream(int rate, int bits, int channels, const char *name);
 
 /**
  * open a stream for recording
@@ -149,7 +149,7 @@ arts_stream_t arts_play_stream(int rate, int bits, int channels, char *name);
  *
  * @return a stream
  */
-arts_stream_t arts_record_stream(int rate, int bits, int channels, char *name);
+arts_stream_t arts_record_stream(int rate, int bits, int channels, const char *name);
 
 /**
  * close a stream
@@ -176,7 +176,7 @@ int arts_read(arts_stream_t stream, void *buffer, int count);
  *
  * @returns number of written bytes on success or error code
  */
-int arts_write(arts_stream_t stream, void *buffer, int count);
+int arts_write(arts_stream_t stream, const void *buffer, int count);
 
 /**
  * configure a parameter of a stream
