@@ -173,8 +173,8 @@ public:
 
   /**
 	* Return a standard help menu
-	*
-	* @param bAboutQtMenu If true, there is a menu entry for About Qt
+	* @param bAboutQtMenu not used anymore
+	* @param appAboutText a little text about the application
 	* @return a standard help menu
 	*/
   QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
@@ -715,6 +715,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.61  1999/02/06 16:27:11  kulow
+// make KDE "1.1" and 1 - 1 - 3 (pre1 and 2 was 1 - 1 - 1). Then again
+// 1.1.1 has to be 1 - 1 - 4. Would be strange, not? I see no other way around.
+//
 // Revision 1.60  1998/12/06 08:56:10  garbanzo
 // Typo police.
 //
