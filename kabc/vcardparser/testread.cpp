@@ -76,9 +76,9 @@ int main( int argc, char **argv )
   KABC::Addressee::List list = converter.parseVCards( text );
 
   if ( args->isSet( "vcard21" ) ) {
-    text = tool.createVCards( list, KABC::VCard::v2_1 ); // uses version 2.1
+    text = converter.createVCards( list, KABC::VCardConverter::v2_1 ); // uses version 2.1
   } else {
-    text = tool.createVCards( list ); // uses version 3.0
+    text = converter.createVCards( list ); // uses version 3.0
   }
 
   std::cout << text.utf8();
