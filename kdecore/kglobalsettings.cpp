@@ -18,13 +18,27 @@
 
 #include "kglobalsettings.h"
 
-#include <kglobal.h>
+#include <qdir.h>
+
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <kapp.h>
 #include <kconfig.h>
+#include <kglobal.h>
 
 // kdebase/kcontrol/input/mousedefaults.h
 #define DEFAULT_SINGLECLICK true
 #define DEFAULT_AUTOSELECTDELAY -1
 #define DEFAULT_CHANGECURSOR true
+
+QString* KGlobalSettings::s_desktopPath = 0;
+QString* KGlobalSettings::s_templatesPath = 0;
+QString* KGlobalSettings::s_autostartPath = 0;
+QString* KGlobalSettings::s_trashPath = 0;
 
 int KGlobalSettings::dndEventDelay()
 {
@@ -75,3 +89,44 @@ bool KGlobalSettings::honorGnome()
     return c->readBoolEntry("honorGnome", false);
 }
 
+void KGlobalSettings::initStatic()
+{
+    if ( s_desktopPath != 0 )
+	return;
+
+    s_desktopPath = new QString();
+    s_templatesPath = new QString();
+    s_autostartPath = new QString();
+    s_trashPath = new QString();
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cgs( config, "Paths" );
+
+    // Desktop Path
+    *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
+    *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
+    *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
+    if ( s_desktopPath->right(1) != "/")
+	*s_desktopPath += "/";
+
+    // Templates Path
+    *s_templatesPath = *s_desktopPath + "Templates/";
+    *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
+    *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
+    if ( s_templatesPath->right(1) != "/")
+	*s_templatesPath += "/";
+
+    // Autostart Path
+    *s_autostartPath = *s_desktopPath + "Autostart/";
+    *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
+    *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
+    if ( s_autostartPath->right(1) != "/")
+	*s_autostartPath += "/";
+
+    // Trash Path
+    *s_trashPath = *s_desktopPath + "Trash/";
+    *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
+    *s_trashPath = QDir::cleanDirPath( *s_trashPath );
+    if ( s_trashPath->right(1) != "/")
+	*s_trashPath += "/";
+}

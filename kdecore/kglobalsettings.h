@@ -18,6 +18,8 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
+#include <qstring.h>
+
 /**
  * Access the KDE global configuration.
  *
@@ -120,6 +122,39 @@ class KGlobalSettings
      * @return Whether or not KDE should use certain GNOME resources
      */
     static bool honorGnome();
+
+    /**
+     * The path to the desktop directory of the current user.
+     */
+    static QString desktopPath() { initStatic(); return *s_desktopPath; }
+
+    /**
+     * The path to the templates directory of the current user.
+     */
+    static QString templatesPath() { initStatic(); return *s_templatesPath; }
+
+    /**
+     * The path to the autostart directory of the current user.
+     */
+    static QString autostartPath() { initStatic(); return *s_autostartPath; }
+
+    /**
+     * The path to the trash directory of the current user.
+     */
+    static QString trashPath() { initStatic(); return *s_trashPath; }
+
+
+private:
+    /**
+     * reads in all paths from kdeglobals
+     */
+    static void initStatic();
+
+    static QString* s_desktopPath;
+    static QString* s_templatesPath;
+    static QString* s_autostartPath;
+    static QString* s_trashPath;
+
 };
 
 #endif
