@@ -1,6 +1,6 @@
-#include "test3.h"
+#include "test4.h"
 
 int main( int, char )
 {
-  TestNameSpace::Test3 t();
+  Test4 t();
 }
