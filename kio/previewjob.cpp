@@ -43,9 +43,10 @@
 
 #include "previewjob.moc"
 
+namespace KIO { struct PreviewItem; }
 using namespace KIO;
 
-struct PreviewItem
+struct KIO::PreviewItem
 {
     KURL url;
     QString mimeType;
