@@ -106,7 +106,7 @@ public:
    * Constructor
    *
    * @param parent the KParts::ReadOnlyPart that this extension ... "extends" :)
-   * @param name an optionnal name for the extension
+   * @param name an optional name for the extension
    */
   BrowserExtension( KParts::ReadOnlyPart *parent,
                     const char *name = 0L );
