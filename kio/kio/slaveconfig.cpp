@@ -39,7 +39,7 @@ class SlaveConfigProtocol
 {
 public:
   SlaveConfigProtocol() { host.setAutoDelete(true); }
-  ~SlaveConfigProtocol() 
+  ~SlaveConfigProtocol()
   {
      delete configFile;
   }
@@ -73,7 +73,8 @@ void SlaveConfigPrivate::readGlobalConfig()
    // Read stuff...
    KConfig *config = KProtocolManager::config();
    readConfig(KGlobal::config(), "Socks", &global); // Socks settings.
-   readConfig(config, "<default>", &global);
+   if ( config )
+       readConfig(config, "<default>", &global);
 }
 
 SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_protocol)
@@ -152,12 +153,12 @@ SlaveConfig::SlaveConfig()
 SlaveConfig::~SlaveConfig()
 {
    delete d; d = 0;
-   _self = 0; 
+   _self = 0;
 }
 
-void SlaveConfig::setConfigData(const QString &protocol, 
-                                const QString &host, 
-                                const QString &key, 
+void SlaveConfig::setConfigData(const QString &protocol,
+                                const QString &host,
+                                const QString &key,
                                 const QString &value )
 {
    MetaData config;
