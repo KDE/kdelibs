@@ -40,6 +40,7 @@ public:
     void slotStartSPR ();
     void slotStartAPR ();
     void slotFinishAPR ();
+    void slotQuit();
 
 protected:
     SPRExample *spr;

@@ -63,7 +63,7 @@ void Main::processAPR ()
     ThreadWeaver::debug (0, "Main::processSPR[Main Thread]: performing "
 			 "APR code in the main thread.\n");
     pbFinishAPR->setEnabled (true);
-    // ... 
+    // ...
 }
 
 void Main::slotFinishAPR ()
@@ -76,6 +76,15 @@ void Main::slotFinishAPR ()
 
     pbFinishAPR->setEnabled (false);
     apr->wakeAPR ();
+}
+
+void Main::slotQuit ()
+{
+    if (pbFinishAPR->isEnabled())
+    {
+        slotFinishAPR();
+        close();
+    }
 }
 
 void Main::aprDone ()
