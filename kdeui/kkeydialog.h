@@ -108,6 +108,7 @@ protected:
 
     void keyPressEvent( QKeyEvent* _event );
     void fontChange( const QFont& _font );
+    void readKeysInternal( QDict< int >* dict, const QString& group );
 
 protected:
 
@@ -116,7 +117,7 @@ protected:
     QDict<int>* globalDict(); // for accessing d->globalDict ( kdebase/kcontrol/keys )
     QDict<int>* stdDict(); // for accessing d->stdDict
 
-    KKeyChooserPrivate *d;
+    KKeyChooserPrivate *d; // this has to be private, not protected
 };
 
 /**

@@ -266,37 +266,24 @@ KKeyEntryMap KGlobalAccel::keyDict() const
 
 void KGlobalAccel::readSettings()
 {
-	QString s;
-	KConfig *pConfig = KGlobal::config();
-
-        KConfigGroupSaver cs(pConfig, aGroup);
-
         for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
              aKeyIt != aKeyMap.end(); ++aKeyIt) {
-          s = pConfig->readEntry( aKeyIt.key() );
           if ( (*aKeyIt).bEnabled ) {
             uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
             uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
             ungrabKey( keysym, mod );
           }
-
 	}
-        for (KKeyEntryMap::Iterator aKeyIt = aKeyMap.begin();
+        
+        KAccel::readKeyMap( aKeyMap, aGroup, NULL );
+        
+        for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
              aKeyIt != aKeyMap.end(); ++aKeyIt) {
-          s = pConfig->readEntry( aKeyIt.key() );
-          if ( s.isNull() )
-            (*aKeyIt).aConfigKeyCode =  (*aKeyIt).aDefaultKeyCode;
-          else
-            (*aKeyIt).aConfigKeyCode = KAccel::stringToKey( s );
-
-          (*aKeyIt).aCurrentKeyCode =  (*aKeyIt).aConfigKeyCode;
-
           if (  (*aKeyIt).bEnabled ) {
             uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
             uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
             grabKey( keysym, mod );
           }
-
 	}
 }
 	
@@ -439,20 +426,7 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 
 void KGlobalAccel::writeSettings() const
 {
-    KConfig *pConfig = KGlobal::config();
-
-    KConfigGroupSaver cs(pConfig, aGroup);
-
-    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
-         it != aKeyMap.end(); ++it) {
-        if ( (*it).bConfigurable ){
-            pConfig->writeEntry( it.key(),
-                                 KAccel::keyToString( (*it).aCurrentKeyCode,
-						      false),
-                                 true, true);
-        }
-    }
-    pConfig->sync();
+    KAccel::writeKeyMap( aKeyMap, aGroup, NULL );
 }
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {

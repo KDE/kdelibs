@@ -296,18 +296,18 @@ void KAccel::readSettings( KConfig* config )
 
 }
 
-void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfig *config )
+void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfigBase *config )
 {
     QString s;
 
-    KConfig *pConfig = config ? config : KGlobal::config();
+    KConfigBase *pConfig = config ? config : KGlobal::config();
     KConfigGroupSaver cgs(pConfig, group);
 
     for (KKeyEntryMap::Iterator it = map.begin();
          it != map.end(); ++it) {
         s = pConfig->readEntry(it.key());
 
-        if ( s.isNull() || s == "default" )
+        if ( s.isNull() || s.startsWith( "default" ))
             (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
         else
             (*it).aConfigKeyCode = stringToKey( s );
@@ -412,7 +412,8 @@ bool KAccel::configGlobal() const
 	return bGlobal;
 }
 
-void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig *config )
+void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig *config,
+    bool global )
 {
     KConfig *pConfig = config ? config : KGlobal::config();
     KConfigGroupSaver cs(pConfig, group);
@@ -428,12 +429,14 @@ void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig
             if ( ( *it ).aConfigKeyCode != ( *it ).aDefaultKeyCode )
             {
                 pConfig->writeEntry( it.key(),
-                                     KAccel::keyToString( (*it).aConfigKeyCode, false) );
-
-            } else {
-                if ( !pConfig->readEntry( it.key() ).isNull() )
-                    pConfig->writeEntry( it.key(),
-                                         "default" );
+                                     KAccel::keyToString( (*it).aConfigKeyCode, false),
+                                     true, global );
+            }
+            else
+            { // global ones must be written
+            if ( global || !pConfig->readEntry( it.key() ).isNull() )
+                pConfig->writeEntry( it.key(), QString( "default(%1)" )
+                    .arg( KAccel::keyToString( (*it).aDefaultKeyCode, false )), true, global );
             }
         }
     }
@@ -442,7 +445,7 @@ void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig
 
 void KAccel::writeSettings(KConfig* config) const
 {
-    writeKeyMap( aKeyMap, aGroup, config );
+    writeKeyMap( aKeyMap, aGroup, config, bGlobal );
 }
 
 bool KAccel::configurable( const QString &action ) const

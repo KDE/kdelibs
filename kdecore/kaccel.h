@@ -29,6 +29,7 @@
 
 class QPopupMenu;
 class KConfig;
+class KConfigBase;
 class QObject;
 class QWidget;
 class KAccelPrivate;
@@ -412,7 +413,7 @@ class KAccel : public QAccel
 
         /// @internal
         static void readKeyMap( KKeyEntryMap &aKeyMap, const QString &group,
-                                KConfig *config = 0 );
+                                KConfigBase *config = 0 );
 
 	/**
 	 * Write the current configurable associations to @p config,
@@ -426,7 +427,8 @@ class KAccel : public QAccel
          * own key map. ( writeSettings calls this function internally )
          * @internal
          **/
-        static void writeKeyMap( const KKeyEntryMap &aKeyMap, const QString& group, KConfig *config = 0);
+        static void writeKeyMap( const KKeyEntryMap &aKeyMap, const QString& group,
+            KConfig *config = 0, bool global = false );
 
 	/**
 	 * Set the group in the configuration file in which the

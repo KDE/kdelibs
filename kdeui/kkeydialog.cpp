@@ -524,23 +524,36 @@ void KKeyChooser::updateAction( QListViewItem *item )
     }
 }
 
+void KKeyChooser::readKeysInternal( QDict< int >* dict, const QString& group )
+{
+  dict->clear();
+
+  // Insert all keys into dict
+  int *keyCode;
+  KConfig pConfig;
+  QMap<QString, QString> tmpMap = pConfig.entryMap( group );
+  QMap<QString, QString>::Iterator gIt(tmpMap.begin());
+  for (; gIt != tmpMap.end(); ++gIt) {
+    if ( (*gIt).isEmpty() || *gIt == "default" )  // old code used to write just "default"
+        continue;                                //  which is not enough
+    kdDebug( 125 ) << gIt.key() << " " << *gIt << endl;
+    QString tmp = *gIt;
+    if( tmp.startsWith( "default(" ))
+        {
+        unsigned int pos = tmp.findRev( ')' );
+        if( pos >= 0 ) // this should be really done with regexp
+            tmp = tmp.mid( 8, pos - 8 );
+        }
+    keyCode = new int;
+    *keyCode = KAccel::stringToKey( tmp );
+    dict->insert( gIt.key(), keyCode);
+  }
+}
+
 void KKeyChooser::readGlobalKeys()
 {
   //debug("KKeyChooser::readGlobalKeys()");
-
-  d->globalDict->clear();
-
-
-  // Insert all global keys into d->globalDict
-  int *keyCode;
-  KConfig pConfig;
-  QMap<QString, QString> tmpMap = pConfig.entryMap(QString::fromLatin1("Global Keys"));
-  QMap<QString, QString>::Iterator gIt(tmpMap.begin());
-  for (; gIt != tmpMap.end(); ++gIt) {
-    keyCode = new int;
-    *keyCode = KAccel::stringToKey( *gIt );
-    d->globalDict->insert( gIt.key(), keyCode);
-  }
+  readKeysInternal( d->globalDict, QString::fromLatin1("Global Keys"));
 
 // insert all global keys, even if they appear in dictionary to be configured
 }
@@ -549,20 +562,7 @@ void KKeyChooser::readStdKeys()
 {
   // debug("KKeyChooser::readStdKeys()");
 
-  d->stdDict->clear();
-
-
-  // Insert all standard keys into d->globalDict
-  int *keyCode;
-  KConfig pConfig;
-  QMap<QString, QString> tmpMap = pConfig.entryMap(QString::fromLatin1("Keys"));
-  QMap<QString, QString>::Iterator sIt(tmpMap.begin());
-  for (; sIt != tmpMap.end(); ++sIt) {
-    keyCode = new int;
-    *keyCode = KAccel::stringToKey( *sIt );
-    d->stdDict->insert( sIt.key(), keyCode);
-  }
-
+  readKeysInternal( d->stdDict, QString::fromLatin1("Keys"));
   // Only insert std keys which don't appear in the dictionary to be configured
   for (KKeyEntryMap::ConstIterator it = d->map->begin();
        it != d->map->end(); ++it)
@@ -961,7 +961,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             if (!warnuser)
                 return true;
 
-            QString actionName( (*d->map)[gIt.currentKey()].descr );
+            QString actionName = gIt.currentKey();
             actionName.stripWhiteSpace();
 
             QString keyName = KAccel::keyToString( *gIt.current(), true );
