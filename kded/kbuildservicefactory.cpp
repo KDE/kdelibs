@@ -157,7 +157,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          KServiceType::Ptr serviceType = KServiceType::serviceType(*it);
          if (!serviceType)
          {
-           kdWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
+           kdDebug() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
            continue;
          }
          serviceTypes.append(serviceType);
