@@ -22,7 +22,7 @@
 */
 
 #include <qwidget.h>
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
 #include "kwinmodule.h"
 #include "kwin.h"
 #include <X11/Xatom.h>

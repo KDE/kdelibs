@@ -62,7 +62,7 @@
 #include "ltdl.h"
 #include "klauncher_cmds.h"
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #endif
@@ -84,7 +84,7 @@
 extern char **environ;
 
 extern int lt_dlopen_flag;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 static int X11fd = -1;
 static Display *X11display = 0;
 static int X11_startup_notify_fd = -1;
@@ -95,9 +95,9 @@ static const KInstance *s_instance = 0;
 static char sock_file[MAX_SOCK_FILE];
 static Atom net_current_desktop;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
-#elif defined(_WS_QWS_)
+#elif defined(Q_WS_QWS)
 #define DISPLAY "QWS_DISPLAY"
 #else
 #error Use QT/X11 or QT/Embedded
@@ -154,7 +154,7 @@ static void close_fds()
       close(d.wrapper);
       d.wrapper = 0;
    }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
    if (X11fd >= 0)
    {
       close(X11fd);
@@ -211,7 +211,7 @@ static void setup_tty( const char* tty )
 // from kdecore/netwm.cpp
 static int get_current_desktop( Display* disp )
 {
-#ifdef _WS_X11_ // Only X11 supports multiple desktops
+#ifdef Q_WS_X11 // Only X11 supports multiple desktops
     Atom type_ret;
     int format_ret;
     unsigned char *data_ret;
@@ -245,7 +245,7 @@ const char* get_env_var( const char* var, int envc, const char* envs )
     return NULL;
 }
 
-#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
+#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
 static void init_startup_info( KStartupInfoId& id, const char* bin,
     int envc, const char* envs )
 {
@@ -361,7 +361,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
     argc = 1;
   }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
@@ -415,7 +415,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         envs++;
      }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
       if( startup_id.none())
           KStartupInfo::resetStartupEnv();
       else
@@ -613,7 +613,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   if( !startup_id.none())
       complete_startup_info( startup_id, d.fork );
 #endif
@@ -1124,7 +1124,7 @@ static void handle_requests(pid_t waitForPid)
       }
       FD_SET(d.wrapper, &rd_set);
       FD_SET(d.deadpipe[0], &rd_set);
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
 #endif
 
@@ -1154,7 +1154,7 @@ static void handle_requests(pid_t waitForPid)
          handle_launcher_request();
       }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
       /* Look for incoming X11 events */
       if((result > 0) && (X11fd >= 0))
       {
@@ -1285,7 +1285,7 @@ int kdeinit_xio_errhandler( Display * )
     return 0;
 }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
 static int initXconnection()
 {
@@ -1422,7 +1422,7 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid);
    }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
    X11fd = initXconnection();
 #endif
 

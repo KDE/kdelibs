@@ -28,7 +28,7 @@
 
 class KGlobalAccelPrivate;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 /**
  * Returns the X key modifier for the key code keyCode.
  */	
@@ -294,7 +294,7 @@ protected:
 	//  also grabbed.
 	bool grabKey( const QString& action, bool bGrab );
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function

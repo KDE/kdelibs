@@ -24,7 +24,7 @@
 #define DCOPGLOBAL_H "$Id$"
 
 #define INT32 QINT32
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 #endif

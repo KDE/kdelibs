@@ -43,7 +43,7 @@
 #include <kapp.h>
 #include <dcopclient.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -128,12 +128,12 @@ KCrash::defaultCrashHandler (int signal)
 
         // start up on the correct display
         argv[i++] = qstrdup("-display");
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
         if ( qt_xdisplay() )
           argv[i++] = XDisplayString(qt_xdisplay());
         else
           argv[i++] = getenv("DISPLAY");
-#elif defined(_WS_QWS_)
+#elif defined(Q_WS_QWS)
 	argv[i++] = getenv("QWS_DISPLAY");
 #endif
 

@@ -32,7 +32,7 @@
 #include <qwhatsthis.h>
 #include <qcstring.h>
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 #include "kwin.h"
 #include "kapp.h"
 

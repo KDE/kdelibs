@@ -25,7 +25,7 @@
 #include <qwidget.h>
 #include <qvaluelist.h>
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 
 /*
   Documentation for this class is in the cpp-file!

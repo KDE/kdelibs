@@ -166,7 +166,7 @@ public:
     m_activeFrame = 0L;
     m_findDialog = 0;
     m_ssl_in_use = false;
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
     m_javaContext = 0;
 #endif
     m_cacheId = 0;
@@ -217,7 +217,7 @@ public:
     delete m_jscript;
     if ( m_kjs_lib && !--kjs_lib_count )
       delete m_kjs_lib;
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
     delete m_javaContext;
 #endif
   }
@@ -250,7 +250,7 @@ public:
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   int m_frameNameId;
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   KJavaAppletContext *m_javaContext;
 #endif
 
@@ -906,7 +906,7 @@ void KHTMLPart::setJavaEnabled( bool enable )
 
 bool KHTMLPart::javaEnabled() const
 {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   if( d->m_bJavaOverride )
       return d->m_bJavaForce;
   return d->m_bJavaEnabled;
@@ -917,7 +917,7 @@ bool KHTMLPart::javaEnabled() const
 
 KJavaAppletContext *KHTMLPart::javaContext()
 {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   return d->m_javaContext;
 #else
   return 0;
@@ -926,7 +926,7 @@ KJavaAppletContext *KHTMLPart::javaContext()
 
 KJavaAppletContext *KHTMLPart::createJavaContext()
 {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   if ( !d->m_javaContext ) {
       d->m_javaContext = new KJavaAppletContext();
       connect( d->m_javaContext, SIGNAL(showStatus(const QString&)),
@@ -1134,7 +1134,7 @@ void KHTMLPart::clear()
   d->m_frames.clear();
   d->m_objects.clear();
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   delete d->m_javaContext;
   d->m_javaContext = 0;
 #endif

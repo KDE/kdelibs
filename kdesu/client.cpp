@@ -49,7 +49,7 @@ public:
 KDEsuClient::KDEsuClient()
 {
     sockfd = -1;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     QCString display(getenv("DISPLAY"));
     if (display.isEmpty())
     {

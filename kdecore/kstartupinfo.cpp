@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include <qwidget.h>
-#ifdef _WS_X11_ // FIXME(E): Re-implement in a less X11 specific way
+#ifdef Q_WS_X11 // FIXME(E): Re-implement in a less X11 specific way
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

@@ -659,7 +659,7 @@ void UIServer::killJob( QCString observerAppId, int progressId )
 
 
 void UIServer::closeEvent( QCloseEvent * ){
-#ifndef _WS_QWS_ //FIXME(E): Implement for QT Embedded
+#ifndef Q_WS_QWS //FIXME(E): Implement for QT Embedded
    KWin::iconifyWindow(winId());
 #endif
 }

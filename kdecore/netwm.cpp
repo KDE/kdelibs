@@ -25,7 +25,7 @@
 // #define NETWMDEBUG
 
 #include <qwidget.h>
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
 
 #include "netwm.h"
 

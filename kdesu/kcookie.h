@@ -32,7 +32,7 @@ public:
     /** Returns the X11 display. */
     QCString display() { return m_Display; }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     /** Returns the X11 magic cookie, if available. */
     QCString displayAuth() { return m_DisplayAuth; }
 #endif
@@ -58,7 +58,7 @@ private:
     void unblockSigChild();
 
     QCString m_Display;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     QCString m_DisplayAuth;
 #endif
     QCStringList m_DCOPSrv, m_DCOPAuth, m_ICEAuth;

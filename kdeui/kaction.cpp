@@ -307,7 +307,7 @@ void KAction::setAccel( int a )
   //  using the right modifier combination by converting to it's X equivalent
   //  and back. Neccessary for punctuation keys on varying layouts.
   uint keySymX, keyModX;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   KAccel::keyQtToKeyX( a, 0, &keySymX, &keyModX );
   a = KAccel::keySymXToKeyQt( keySymX, keyModX );
 #endif

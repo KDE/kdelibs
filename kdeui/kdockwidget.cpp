@@ -26,7 +26,7 @@
 #include <qcursor.h>
 
 #ifndef NO_KDE2
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #endif
@@ -433,7 +433,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     move(p);
 
 #ifndef NO_KDE2
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 

@@ -61,7 +61,7 @@
 #include "kstaticdeleter.h"
 #include <config.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 
 // defined in qapplication_x11.cpp

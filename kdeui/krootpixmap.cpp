@@ -21,7 +21,7 @@
 #include <qpixmap.h>
 #include <qcstring.h>
 
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
 #include <kapp.h>
 #include <klocale.h>
 #include <kwin.h>

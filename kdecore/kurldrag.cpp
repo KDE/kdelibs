@@ -43,7 +43,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     return ret;
 }
 
-#ifdef _WS_QWS_
+#ifdef Q_WS_QWS
 bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
 {
     for(QStringList::ConstIterator it=e.begin(); it!=e.end(); it++)

@@ -20,7 +20,7 @@
 #endif
 #endif
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 /* We really don't want to require X11 headers...  */
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -641,9 +641,9 @@ dcop_connect()
   if (NULL == homeDir)
     return False;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   display = getenv("DISPLAY");
-#elif _WS_QWS_
+#elif Q_WS_QWS
 	display = getenv("QWS_DISPLAY");
 #else
 #error Use QT/X11 or QT/Embedded

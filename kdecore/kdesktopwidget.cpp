@@ -26,7 +26,7 @@
 #include "kdesktopwidget.h"
 #include <qapp.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 #ifdef HAVE_XINERAMA
@@ -70,7 +70,7 @@ KDesktopWidgetPrivate::KDesktopWidgetPrivate()
 	defaultScreen = 0;
     } else
 #endif
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     {
 	defaultScreen = DefaultScreen(QPaintDevice::x11AppDisplay());
 	screenCount = ScreenCount(QPaintDevice::x11AppDisplay());
@@ -97,7 +97,7 @@ KDesktopWidgetPrivate::KDesktopWidgetPrivate()
 	    {
 		x = 0;
 		y = 0;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 		w = WidthOfScreen(ScreenOfDisplay(qt_xdisplay(), i));
 		h = HeightOfScreen(ScreenOfDisplay(qt_xdisplay(), i));
 #else

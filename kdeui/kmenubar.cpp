@@ -38,7 +38,7 @@
 #include <kwinmodule.h>
 #include <kglobal.h>
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -84,7 +84,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
       hide(); // worakround for a qt < 2.2.2  bug
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       KWin::setState( winId(), NET::StaysOnTop );
@@ -223,7 +223,7 @@ void KMenuBar::showEvent( QShowEvent* )
     if ( d->topLevel ) {
         QRect area = QApplication::desktop()->geometry();
         setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
         KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
 #endif
     }

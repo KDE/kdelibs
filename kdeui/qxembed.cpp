@@ -26,7 +26,7 @@
 #include <qguardedptr.h>
 #include <qwhatsthis.h>
 #include <qfocusdata.h>
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

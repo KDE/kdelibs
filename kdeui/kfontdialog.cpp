@@ -51,7 +51,7 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -485,7 +485,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
 
 void KFontChooser::getFontList( QStringList &list, const char *pattern )
 {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   int num;
   char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
 
@@ -601,6 +601,23 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.67  2001/08/26 20:14:19  lunakl
+* Ok, watch closely :
+* const is your friend !
+*
+* static int blah[] = { 1, 2, .... }
+* should be
+* static const int blah[] = { 1, 2, ... }
+*
+* static const char* txt[] = { "blah", "foo", ... }
+* should be
+* static const char* const txt[] = { "blah", "foo", ... }
+*
+* And just in case you wonder about those const_cast< const char** >, that's
+* because QPixmap( const char** xpm ) and QImage( const char** xpm ) got it
+* wrong too. Everybody guessing correctly where the const is missing wins
+* a free cvs update.
+*
 * Revision 1.66  2001/08/26 10:03:47  bero
 * Allow to build with Qt/Embedded
 *

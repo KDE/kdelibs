@@ -359,7 +359,7 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
   QString bin = binaryName( binName, false );
   QString execName = execName_P;
   QString iconName = iconName_P;
-#ifdef _WS_X11_ // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
+#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   KStartupInfoId id;
   // Find service, if any
   KService::Ptr service = 0;
@@ -369,7 +369,7 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
       service = KService::serviceByDesktopName( bin );
 #endif
   bool startup_notify = false;
-#ifdef _WS_X11_ // Startup notification doesn't work yet on Qt Embedded
+#ifdef Q_WS_X11 // Startup notification doesn't work yet on Qt Embedded
   QCString wmclass;
   if( service != NULL )
   {
@@ -833,7 +833,7 @@ KProcessRunner::run(KProcess * p, const QString & binName)
   return (new KProcessRunner(p, binName))->pid();
 }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 pid_t
 KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
 {
@@ -853,7 +853,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
   process_->start();
 }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
   : QObject(),
     process_(p),
@@ -900,7 +900,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
       kapp->deref();
     }
   }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   if( !id_.none())
   {
       KStartupInfoData data;

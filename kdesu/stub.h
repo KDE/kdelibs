@@ -76,7 +76,7 @@ protected:
      * desired. By default, it returns the value returned by @ref #KCookie.
      */
     virtual QCString display() { return m_pCookie->display(); }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     /** See @ref #display. */
     virtual QCString displayAuth() { return m_pCookie->displayAuth(); }
 #endif

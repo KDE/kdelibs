@@ -199,7 +199,7 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
         it != list.end();
         ++it)
    {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
       KServiceType *newServiceType = dynamic_cast<KServiceType *>((*it).data());
 #else //FIXME
       KServiceType *newServiceType = (KServiceType*)(*it).data();

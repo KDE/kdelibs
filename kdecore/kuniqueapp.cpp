@@ -42,7 +42,7 @@
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapp.h"
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #define DISPLAY "DISPLAY"
 #else
@@ -180,7 +180,7 @@ KUniqueApplication::start()
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
            // say we're up and running ( probably no new window will appear )
            KStartupInfoId id;
            if( kapp != NULL ) // KApplication constructor unsets the env. variable
@@ -203,7 +203,7 @@ KUniqueApplication::start()
      }
 
      {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -407,7 +407,7 @@ int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
-#ifndef _WS_QWS_ // FIXME(E): Implement for Qt/Embedded
+#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
      if ( mainWidget() )
         KWin::setActiveWindow(mainWidget()->winId());
 #endif

@@ -31,7 +31,7 @@
 #include <klocale.h>
 #include <qfontinfo.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 //#include <X11/X.h>
 #include <X11/Xlib.h>
 //#include <X11/Xutil.h>
@@ -507,7 +507,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             s.handed = KMouseSettings::LeftHanded;
         else
         {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !

@@ -46,7 +46,7 @@ public slots:
   void captureKey();
 
 protected:
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   virtual bool x11Event( XEvent *pEvent );
   void keyPressEventX( XEvent *pEvent );
 #endif

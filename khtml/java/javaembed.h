@@ -28,7 +28,7 @@
 
 #include <qwidget.h>
 
-#ifndef _WS_QWS_ // FIXME(E)? I don't think this is possible with Qt Embedded.
+#ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded.
 class KJavaEmbedPrivate;
 class KJavaEmbed : public QWidget
 {

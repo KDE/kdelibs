@@ -94,7 +94,7 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "display") {
 	    writeLine(display());
 	} else if (line == "display_auth") {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	    writeLine(displayAuth());
 #else
 	    writeLine("");

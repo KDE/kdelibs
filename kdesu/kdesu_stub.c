@@ -182,7 +182,7 @@ char **xstrsep(char *str)
 int main()
 {
     char buf[BUFSIZE+1];
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     char xauthority[200];
 #endif
     char iceauthority[200];
@@ -278,7 +278,7 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 
     if (strcmp(params[P_DISPLAY].value, "no")) 
     {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	xsetenv("DISPLAY", params[P_DISPLAY].value);
 	if (params[P_DISPLAY_AUTH].value[0]) 
 	{
@@ -396,7 +396,7 @@ fprintf(stderr," before forking\n");
 		xit = WEXITSTATUS(state);
 	}
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	unlink(xauthority);
 #endif
 	unlink(iceauthority);

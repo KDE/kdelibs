@@ -57,7 +57,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopref.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xmd.h>
 #endif
 extern "C" {
@@ -190,16 +190,16 @@ QCString DCOPClient::dcopServerFile()
       fprintf(stderr, "Aborting. $HOME is not set.\n");
       exit(1);
    }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
    QCString disp = getenv("DISPLAY");
-#elif defined(_WS_QWS_)
+#elif defined(Q_WS_QWS)
    QCString disp = getenv("QWS_DISPLAY");
 #endif
    if (disp.isEmpty())
    {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
       fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
-#elif defined(_WS_QWS_)
+#elif defined(Q_WS_QWS)
       fprintf(stderr, "Aborting. $QWS_DISPLAY is not set.\n");
 #endif
       exit(1);

@@ -40,7 +40,7 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -785,7 +785,7 @@ QCString
 KLauncher::send_service_startup_info( KService::Ptr service, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
-#ifdef _WS_X11_ // KStartup* isn't implemented for Qt/Embedded yet
+#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
     if( startup_id == "0" )
         return "0";
     QCString wmclass;

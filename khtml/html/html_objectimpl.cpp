@@ -123,7 +123,7 @@ void HTMLAppletElementImpl::attach()
   if(r && m_style->display() != NONE) {
       view = ownerDocument()->view();
 
-#ifndef _WS_QWS_ // FIXME(E)? I don't think this is possible with Qt Embedded...
+#ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
       if( view->part()->javaEnabled() )
       {
           QMap<QString, QString> args;

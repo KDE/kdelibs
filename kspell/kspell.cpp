@@ -375,7 +375,7 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
 		SLOT (slotStopCancel (int)) );
   connect (this, SIGNAL ( progress (unsigned int) ),
 	   ksdlg, SLOT ( slotProgress (unsigned int) ));
-#ifdef _WS_X11_ // FIXME(E): Implement for Qt/Embedded
+#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
   KWin::setIcons (ksdlg->winId(), kapp->icon(), kapp->miniIcon());
 #endif
   if ( modaldlg )

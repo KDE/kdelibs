@@ -37,7 +37,7 @@ class DCOPClient;
 class DCOPObject;
 
 typedef unsigned long Atom;
-#ifdef _WS_QWS_
+#ifdef Q_WS_QWS
 typedef void Display;
 #endif
 
@@ -100,7 +100,7 @@ public:
    */
   KApplication( bool allowStyles=true, bool GUIenabled=true);
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   /**
    * Constructor. Parses command-line arguments. Use this constructor to use KApplication
    * in a Motif or Xt program.
@@ -487,7 +487,7 @@ public:
    */
   QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   /**
    * Get the X11 display
    */
@@ -591,7 +591,7 @@ public slots:
   QString geometryArgument() const;
 
 protected:
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   /**
    * Used to catch X11 events
    */
@@ -845,6 +845,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.232  2001/08/26 11:35:23  faure
+// Never heard that a public header file should never include config.h ?
+// I can't see why you included it, in addition. _WS_blah_ are all defined in Qt,
+// not in config.h
+//
 // Revision 1.231  2001/08/26 10:03:46  bero
 // Allow to build with Qt/Embedded
 //

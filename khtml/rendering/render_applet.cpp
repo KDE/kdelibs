@@ -32,7 +32,7 @@
 #include <qlabel.h>
 #include <qscrollview.h>
 
-#ifndef _WS_QWS_ // We don't have Java in Qt Embedded
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
 
 #include <java/kjavaappletwidget.h>
 #include <misc/htmltags.h>

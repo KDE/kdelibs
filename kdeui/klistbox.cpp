@@ -25,7 +25,7 @@
 
 #include "klistbox.h"
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -116,7 +116,7 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -129,14 +129,14 @@ void KListBox::slotAutoSelect()
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
 #endif
       bool block = signalsBlocked();
       blockSignals( true );
 
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
       //No Ctrl? Then clear before!
       if( !(keybstate & ControlMask) )  
 	clearSelection(); 
@@ -169,7 +169,7 @@ void KListBox::slotAutoSelect()
       if( selectionMode() == QListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->selected() );
 #endif
@@ -184,7 +184,7 @@ void KListBox::slotAutoSelect()
 
       setSelected( m_pCurrentItem, true );
     }
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
@@ -193,7 +193,7 @@ void KListBox::slotAutoSelect()
 
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -204,13 +204,13 @@ void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
     
   m_pAutoSelect->stop();
   
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
 #endif
     emit executed( item );
     emit executed( item, pos );
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
   }
 #endif
 }

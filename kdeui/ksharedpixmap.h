@@ -18,7 +18,7 @@
 #include <qstringlist.h>
 #include <qpixmap.h>
 
-#ifndef _WS_QWS_ // FIXME: Implement for Qt Embedded
+#ifndef Q_WS_QWS // FIXME: Implement for Qt Embedded
 #include <kpixmap.h>
 
 class KSharedPixmapPrivate;

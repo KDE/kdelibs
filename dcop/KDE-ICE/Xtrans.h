@@ -50,7 +50,7 @@ from The Open Group.
 #ifndef _XTRANS_H_
 #define _XTRANS_H_
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xfuncproto.h>
 #include <X11/Xos.h>
 #else

@@ -104,7 +104,7 @@ void KDialog::polish()
 void KDialog::setCaption( const QString &caption )
 {
   QDialog::setCaption( kapp->makeStdCaption( caption ) );
-#ifdef _WS_X11_ //FIXME(E) Implement for Qt/E
+#ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
   NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
   info.setName( caption.utf8().data() );
 #endif

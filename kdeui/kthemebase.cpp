@@ -250,7 +250,7 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
         for(; i < INHERIT_ITEMS*2; ++i){
             if(config.hasGroup(widgetEntries[i]))
                 applyResourceGroup(&config, i);
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
             else{
                 KRootProp copyProp(widgetEntries[i]);
                 copyProp.writeEntry("CopyWidget",
@@ -364,7 +364,7 @@ void KThemeBase::applyConfigFile(const QString &file)
     globalConfig->sync();
 
     // delete all properties;
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     for(input=0; input < WIDGETS; ++input){
         KRootProp prop(widgetEntries[input]);
         prop.destroy();
@@ -812,7 +812,7 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
 
 void KThemeBase::applyMiscResourceGroup(KConfig *config)
 {
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     KRootProp *tmpProp = new KRootProp("Misc"); // clear the old property
     tmpProp->destroy();
     delete tmpProp;
@@ -860,7 +860,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
 
 void KThemeBase::readMiscResourceGroup()
 {
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     KRootProp prop("Misc");
 
     sbPlacement = (SButton)prop.readNumEntry("SButtonPosition",
@@ -876,7 +876,7 @@ void KThemeBase::readMiscResourceGroup()
 
 void KThemeBase::applyResourceGroup(KConfig *config, int i)
 {
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     QString tmpStr;
     int tmpVal;
 
@@ -1027,7 +1027,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
 void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
                                    bool *loadArray)
 {
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
     if(loadArray[i] == true){
         return; // already been preloaded.
     }

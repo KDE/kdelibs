@@ -42,7 +42,7 @@ public:
 	KKey()					{ m_keyCombQt = 0; }
 	KKey( const KKey& k )			{ m_keyCombQt = k.m_keyCombQt; }
 	KKey( uint keyCombQt )			{ m_keyCombQt = keyCombQt; }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	KKey( const XEvent * );
 #endif
 	KKey( const QKeyEvent * );
@@ -583,12 +583,12 @@ class KAccel : public QAccel
 		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
 		MOD_KEYS
 	};
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	static void readModifierMapping();
 #endif
 	static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 	static uint keyCodeXToKeySymX( uchar keyCodeX, uint keyModX );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	static void keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 	static uint keyEventXToKeyQt( const XEvent *pEvent );
 	static int keySymXIndex( uint keySym );
@@ -598,7 +598,7 @@ class KAccel : public QAccel
 	static void keyQtToKeyX( uint keyCombQt, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 #endif
 	static uint keyEventQtToKeyQt( const QKeyEvent* );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	static QString keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n );
 	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
 
@@ -616,7 +616,7 @@ class KAccel : public QAccel
 	// Return the keyMod mask containing the bits set for the modifiers
 	//  which may be used in accelerator shortcuts.
 	static uint accelModMaskQt();		// Normally Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1)
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
 #endif
 

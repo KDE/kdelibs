@@ -21,7 +21,7 @@
 #include <qwindowdefs.h>
 #include <qwidget.h>
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 
 #include <kapp.h>
 #include <krootprop.h>

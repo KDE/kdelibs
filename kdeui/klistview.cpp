@@ -40,7 +40,7 @@
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -405,7 +405,7 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   // FIXME(E): Implement for Qt Embedded
   Window root;
   Window child;
@@ -418,7 +418,7 @@ void KListView::slotAutoSelect()
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
   // FIXME(E): Implement for Qt Embedded
   if( d->pCurrentItem ) {
     //Shift pressed?
@@ -488,7 +488,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 	    // FIXME(E): Implement for Qt Embedded
             Window root;
             Window child;

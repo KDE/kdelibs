@@ -27,7 +27,7 @@
 
 #include "ltdl.h"
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #endif
@@ -533,7 +533,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
 //    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
          WABA: *HACK*

@@ -26,7 +26,7 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICEPROTO_H_
 #define _ICEPROTO_H_
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xmd.h>
 #else
 #if defined(__alpha__) || defined(__ia64__) || defined(__s390x__)

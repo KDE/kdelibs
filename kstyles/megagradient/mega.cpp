@@ -54,7 +54,7 @@
 #include <unistd.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -64,7 +64,7 @@ bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
 {
     QPopupMenu *p = (QPopupMenu *)obj;
     if(ev->type() == QEvent::Show){
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
         QApplication::syncX();
         KPixmap pix = QPixmap::grabWindow(qt_xrootwin(),
                                           p->x(), p->y(), p->width(), p->height());

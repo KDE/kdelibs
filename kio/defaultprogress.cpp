@@ -47,7 +47,7 @@ DefaultProgress::DefaultProgress( bool showNow )
 {
   d = new DefaultProgressPrivate;
 
-#ifdef _WS_X11_ //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
+#ifdef Q_WS_X11 //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
   // Set a useful icon for this window!
   KWin::setIcons( winId(),
           KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 32 ),

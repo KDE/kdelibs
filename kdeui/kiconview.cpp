@@ -26,7 +26,7 @@
 #include <kipc.h>
 #include <kcursor.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
 
@@ -166,7 +166,7 @@ void KIconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
   //FIXME(E): Implement for Qt Embedded
   Window root;
   Window child;
@@ -181,7 +181,7 @@ void KIconView::slotAutoSelect()
 
   if( m_pCurrentItem ) {
     //Shift pressed?
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
     if( (keybstate & ShiftMask) ) {
       //Temporary implementaion of the selection until QIconView supports it
       bool block = signalsBlocked();
@@ -241,7 +241,7 @@ void KIconView::slotAutoSelect()
 #endif
       setSelected( m_pCurrentItem, true );
   }
-#ifndef _WS_QWS_ //FIXME: Remove #if as soon as the stuff above is implemented
+#ifndef Q_WS_QWS //FIXME: Remove #if as soon as the stuff above is implemented
   else
     kdDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
 #endif
@@ -255,7 +255,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
     return;
   }
 
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -267,7 +267,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-#ifdef _WS_X11_ //FIXME
+#ifdef Q_WS_X11 //FIXME
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
     setSelected( item, false );
     emit executed( item );

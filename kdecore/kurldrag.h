@@ -53,7 +53,7 @@ public:
    */
   static bool decode( const QMimeSource *e, KURL::List &urls );
 
-#ifdef _WS_QWS_
+#ifdef Q_WS_QWS
   /**
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs for Qt versions without a MIME clipboard.

@@ -18,7 +18,7 @@
 */
 
 #include <qwidget.h>
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 #include "krootprop.h"
 #include "kglobal.h"
 #include "klocale.h"

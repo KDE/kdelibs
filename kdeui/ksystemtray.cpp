@@ -25,7 +25,7 @@
 #include <kiconloader.h>
 
 #include <qapplication.h>
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
 #include <X11/Xlib.h>
 #ifndef KDE_USE_FINAL
 const int XFocusOut = FocusOut;
@@ -42,7 +42,7 @@ extern Time qt_x_time;
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
     // FIXME(E): Talk with QWS
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
     setBackgroundMode(X11ParentRelative);
@@ -77,7 +77,7 @@ void KSystemTray::showEvent( QShowEvent * )
 
 void KSystemTray::enterEvent( QEvent* )
 {
-#ifndef _WS_QWS_
+#ifndef Q_WS_QWS
     // FIXME(E): Implement for Qt Embedded
     if ( !qApp->focusWidget() ) {
 	XEvent ev;
@@ -146,12 +146,12 @@ void KSystemTray::toggleMinimizeRestore()
 	return;
     if ( !parentWidget()->isVisible() ) {
 	parentWidget()->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
 	KWin::Info info = KWin::info( parentWidget()->winId() );
 	parentWidget()->move( info.geometry.topLeft() );
 #endif
 	parentWidget()->show();
-#ifndef _WS_QWS_ //FIXME
+#ifndef Q_WS_QWS //FIXME
 	KWin::setActiveWindow( parentWidget()->winId() );
 #endif
     } else {

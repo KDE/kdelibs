@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <sys/types.h>
 #include <qobject.h>
-#ifdef _WS_X11_ // FIXME(E): Redo in a less X11-specific way
+#ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
 #include <qcstring.h>
 #include <qstring.h>
 #include <qvaluelist.h>
@@ -82,7 +82,7 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	/**
 	 * Like @ref sendStartup , uses dpy instead of qt_x11display() for sending the info.
 	 */
@@ -97,7 +97,7 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	/**
 	 * Like @ref sendChange , uses dpy instead of qt_x11display() for sending the info.
 	 */
@@ -108,7 +108,7 @@ class KStartupInfo
 	 * Ends startup notification with the given identification.
 	 */
         static bool sendFinish( const KStartupInfoId& id );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */
@@ -119,7 +119,7 @@ class KStartupInfo
 	 * PIDs of processes for this startup notification that exited ).
 	 */
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */

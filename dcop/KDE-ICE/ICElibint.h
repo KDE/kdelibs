@@ -26,7 +26,7 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICELIBINT_H_
 #define _ICELIBINT_H_
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 #include <X11/Xos.h>
 #include <X11/Xfuncs.h>
 #include <X11/Xmd.h>

@@ -34,7 +34,7 @@
 #include <kdebug.h>
 #include <kckey.h>
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 // For the X11-related static functions
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
@@ -61,7 +61,7 @@ public:
 
 //-------------------------------------------------------------------
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 KKey::KKey( const XEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventXToKeyQt( pEvent ); }
 #endif
 KKey::KKey( const QKeyEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventQtToKeyQt( pEvent ); }
@@ -226,7 +226,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 
     KKeyEntry entry;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
     // If this is an application shortcut, make sure that we are really
     //  using the right modifier combination by converting to it's X equivalent
     //  and back. Neccessary for punctuation keys on varying layouts.
@@ -645,7 +645,7 @@ struct ModKeyXQt
 };
 bool ModKeyXQt::bInitialized = false;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 struct TransKey {
 	uint keySymQt;
 	uint	keySymX;
@@ -715,7 +715,7 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 	uint keySymQt = keyCombQt & 0xffff;
 	uint keyModQt = keyCombQt & ~0xffff;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	unsigned char keyCodeX;
 	uint keySymX;
 	uint keyModX;
@@ -795,7 +795,7 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 				}
 			}
 		}
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	}
 #endif
 
@@ -837,7 +837,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	if( keyStr.isNull() || keyStr.isEmpty() )
 		return 0;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	if( !ModKeyXQt::bInitialized )
 		KAccel::readModifierMapping();
 #endif
@@ -857,7 +857,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		sKeySym = keyStr.mid( iOffset, iOffsetToken - iOffset ).stripWhiteSpace();
 		iOffset = iOffsetToken + 1;
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
 		for( i = 0; i < MOD_KEYS; i++ ) {
 			if( g_aModKeys[i].keyModMaskQt && qstricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
@@ -904,7 +904,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 				for( i = 0; i < NB_KEYS; i++ ) {
 					if( qstricmp( sKeySym.ascii(), KKEYS[i].name ) == 0 ) {
 						keyCombQt |= KKEYS[i].code;
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 						keyQtToKeyX( KKEYS[i].code, 0, &keySymX, 0 );
 #endif
 						if( KKEYS[i].code < 0x1000 && QChar(KKEYS[i].code).isLetter() )
@@ -924,7 +924,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	} while( (uint)iOffsetToken < keyStr.length() );
 
 	if( !c.isNull() ) {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 		if( c.isLetter() && !(keyModX & ShiftMask) )
 			c = c.lower();
 		keySymX = c.unicode();
@@ -938,7 +938,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		keyCombQt |= c.unicode();
 	}
 
-#ifdef _WS_X11_ //FIXME(E): We need something similar for Qt/Embedded
+#ifdef Q_WS_X11 //FIXME(E): We need something similar for Qt/Embedded
 	if( keySymX ) {
 		// Find X key code (code of key sent from keyboard)
 		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
@@ -1002,7 +1002,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	return keyCombQt;
 }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 uint KAccel::keyCodeXToKeySymX( uchar keyCodeX, uint keyModX )
 {
 	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 0 );
@@ -1273,7 +1273,7 @@ uint KAccel::keyEventQtToKeyQt( const QKeyEvent* pke )
 	return keyCombQt;
 }
 
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 QString KAccel::keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n )
 	{ return keyToString( keyCodeXToKeyQt( keyCodeX, keyModX ), bi18n ); }
 QString KAccel::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
@@ -1320,13 +1320,13 @@ uint KAccel::keyModXScrollLock()
 #endif
 
 uint KAccel::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 uint KAccel::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
 #endif
 
 bool KAccel::keyboardHasMetaKey()
 {
-#ifdef _WS_X11_
+#ifdef Q_WS_X11
 	if( !ModKeyXQt::bInitialized )
 		KAccel::readModifierMapping();
 	return keyModXMeta() != 0;
