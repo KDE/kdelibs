@@ -1274,8 +1274,14 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // would be restored properly though)
   d->m_fontBase = 0;
 
-  if(url.isValid())
-      KHTMLFactory::vLinks()->insert( url.url() );
+  if(url.isValid()) {
+      QString urlString = url.url();
+      KHTMLFactory::vLinks()->insert( urlString );
+      QString urlString2 = url.prettyURL();
+      if ( urlString != urlString2 ) {
+          KHTMLFactory::vLinks()->insert( urlString2 );
+      }
+  }
 
   // ###
   //stopParser();
@@ -2547,7 +2553,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
-  //kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::processObjectRequest trying to create part for " << mimetype << endl;
 
   // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
   // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
@@ -3213,7 +3219,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
-  KURL::List visitedLinks;
   Q_INT32 charset;
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
