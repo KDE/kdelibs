@@ -198,7 +198,7 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 }
 
 bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
-	{ d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
+	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 
 KAccelBase* KAccel::basePtr()
 	{ return d; }
