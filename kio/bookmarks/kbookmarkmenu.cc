@@ -258,7 +258,6 @@ void KBookmarkMenu::slotRMBActionEditAt( int val )
 }
 
 QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
-   // DUPLICATED HEAVILY FROM KIO/BOOKMARKS
    QDomNode subnode = bk.internalElement().namedItem(m_nodename);
    if (subnode.isNull()) {
       subnode = bk.internalElement().ownerDocument().createElement(m_nodename);
@@ -286,8 +285,9 @@ void KBookmarkMenu::slotRMBActionProperties( int val )
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
-  KBookmarkEditDialog dlg( bookmark.fullText(), bookmark.url().url(), 
-                           m_pManager, KBookmarkEditDialog::InsertionMode );
+  QString folder = bookmark.isGroup() ? QString::null : bookmark.url().url();
+  KBookmarkEditDialog dlg( bookmark.fullText(), folder, 
+                           m_pManager, KBookmarkEditDialog::ModifyMode );
   if ( dlg.exec() != KDialogBase::Accepted )
     return;
 
@@ -643,27 +643,27 @@ void KBookmarkMenu::fillBookmarkMenu()
 
 void KBookmarkMenu::slotAddBookmarksList()
 {
-    KExtendedBookmarkOwner *extOwner = dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
-    if (!extOwner)
-    {
-        kdWarning() << "erm, sorry ;-)" << endl;
-        return;
-    }
+  KExtendedBookmarkOwner *extOwner = dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
+  if (!extOwner)
+  {
+    kdWarning() << "erm, sorry ;-)" << endl;
+    return;
+  }
 
-    KExtendedBookmarkOwner::QStringPairList list;
-    extOwner->fillBookmarksList( list );
+  KExtendedBookmarkOwner::QStringPairList list;
+  extOwner->fillBookmarksList( list );
 
-    KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-    Q_ASSERT(!parentBookmark.isNull());
-    KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
-    if ( group.isNull() )
-        return; // user canceled i guess
+  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+  KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
+  if ( group.isNull() )
+    return; // user canceled i guess
 
-    KExtendedBookmarkOwner::QStringPairList::const_iterator it;
-    for ( it = list.begin(); it != list.end(); ++it ) 
-        group.addBookmark( m_pManager, (*it).first, KURL((*it).second) );
+  KExtendedBookmarkOwner::QStringPairList::const_iterator it;
+  for ( it = list.begin(); it != list.end(); ++it ) 
+    group.addBookmark( m_pManager, (*it).first, KURL((*it).second) );
 
-    m_pManager->emitChanged( parentBookmark );
+  m_pManager->emitChanged( parentBookmark );
 }
 
 
@@ -697,7 +697,7 @@ void KBookmarkMenu::slotBookmarkSelected()
 
 KExtendedBookmarkOwner* KBookmarkMenu::extOwner()
 {
-    return dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
+  return dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
 }
 
 // -----------------------------------------------------------------------------
@@ -714,46 +714,63 @@ void KBookmarkMenu::slotNSLoad()
 
 // -----------------------------------------------------------------------------
 
-BLAH::BLAH(QWidget *main, QBoxLayout *vbox)
+KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet fieldsSet)
 {
-  QGridLayout *grid = new QGridLayout( vbox, 2, 2 );
+  bool isF = (fieldsSet != FolderFieldsSet);
+
+  QGridLayout *grid = new QGridLayout( vbox, 2, isF ? 2 : 1 );
 
   m_title = new KLineEdit( main );
   grid->addWidget( m_title, 0, 1 );
   grid->addWidget( new QLabel( m_title, i18n( "Name:" ), main ), 0, 0 );
 
-  m_url = new KLineEdit( main );
-  grid->addWidget( m_url, 1, 1 );
-  grid->addWidget( new QLabel( m_url, i18n( "Location:" ), main ), 1, 0 );
+  if (isF) 
+  {
+    m_url = new KLineEdit( main );
+    grid->addWidget( m_url, 1, 1 );
+    grid->addWidget( new QLabel( m_url, i18n( "Location:" ), main ), 1, 0 );
+  }
+  else 
+  {
+    m_url = 0;
+  }
 }
 
-void BLAH::setName(const QString &str)
-  { m_title->setText(str); }
-void BLAH::setLocation(const QString &str) 
-  { m_url->setText(str); }
+void KBookmarkEditFields::setName(const QString &str)
+{ 
+  m_title->setText(str); 
+}
+
+void KBookmarkEditFields::setLocation(const QString &str) 
+{ 
+  m_url->setText(str); 
+}
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
                                          QWidget * parent, const char * name, const QString& caption)
-  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder..."))), m_mgr(mgr)
+  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem()), m_mgr(mgr), m_editType(editType)
 {
   setButtonOKText( (editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" ) );
+  setButtonText( User1, (editType == InsertionMode) ? i18n( "New Folder..." ) : i18n( "Move to Folder" ) );
 
   m_main = new QWidget( this );
   setMainWidget( m_main );
 
   QBoxLayout *vbox = new QVBoxLayout( m_main, spacingHint() );
-  m_blah = new BLAH(m_main, vbox);
-  m_blah->setName(title);
-  m_blah->setLocation(url);
+  KBookmarkEditFields::FieldsSet fs = 
+    url.isNull() ? KBookmarkEditFields::FolderFieldsSet 
+                 : KBookmarkEditFields::BookmarkFieldsSet;
+  m_fields = new KBookmarkEditFields(m_main, vbox, fs);
+  m_fields->setName(title);
+  if (!url.isNull())
+    m_fields->setLocation(url);
 
-  if (editType == InsertionMode) {
-    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
-    connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
-             this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
-    vbox->addWidget( m_folderTree );
-  }
+  m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+  connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
+           this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
+  vbox->addWidget( m_folderTree );
 
-  connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
+  connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
 }
 
 void KBookmarkEditDialog::slotDoubleClicked(QListViewItem* item)
@@ -779,26 +796,35 @@ QString KBookmarkEditDialog::finalAddress() const
 
 QString KBookmarkEditDialog::finalUrl() const
 { 
-  return m_blah->m_url->text(); 
+  return m_fields->m_url->text(); 
 }
 
 QString KBookmarkEditDialog::finalTitle() const
 { 
-  return m_blah->m_title->text(); 
+  return m_fields->m_title->text(); 
 }
 
-void KBookmarkEditDialog::slotInsertFolder()
+void KBookmarkEditDialog::slotUser1()
 {
-  // kdDebug(7043) << "KBookmarkEditDialog::slotInsertFolder" << endl;
+  // kdDebug(7043) << "KBookmarkEditDialog::slotUser1" << endl;
   QString address = KBookmarkFolderTree::selectedAddress( m_folderTree ); 
   if ( address.isNull() ) return;
-  KBookmarkGroup parentBookmark = m_mgr->findByAddress( address ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkGroup group = parentBookmark.createNewFolder( m_mgr );
-  if ( !group.isNull() )
+  KBookmarkGroup bm = m_mgr->findByAddress( address ).toGroup();
+  Q_ASSERT(!bm.isNull());
+
+  if (m_editType == InsertionMode)
   {
-    KBookmarkGroup parentGroup = group.parentGroup();
-    m_mgr->emitChanged( parentGroup );
+    KBookmarkGroup group = bm.createNewFolder( m_mgr );
+    if ( !group.isNull() )
+    {
+      KBookmarkGroup parentGroup = group.parentGroup();
+      m_mgr->emitChanged( parentGroup );
+    }
+  }
+  else
+  {
+    KBookmarkFolderTree::fillTree( m_folderTree, m_mgr );
+    // move the folder or the bookmark...
   }
   KBookmarkFolderTree::fillTree( m_folderTree, m_mgr );
 }
@@ -958,88 +984,88 @@ void KBookmarkMenuNSImporter::endFolder()
 
 KBookmarkMenu::DynMenuInfo KBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
-   KConfig config("kbookmarkrc", false, false);
-   config.setGroup("Bookmarks");
+  KConfig config("kbookmarkrc", false, false);
+  config.setGroup("Bookmarks");
 
-   DynMenuInfo info;
-   info.show = false;
+  DynMenuInfo info;
+  info.show = false;
 
-   if (!config.hasKey("DynamicMenus")) {
-      // upgrade path
-      if (id == "netscape") {
-         KBookmarkManager *manager = KBookmarkManager::userBookmarksManager();
-         info.show = manager->root().internalElement().attribute("hide_nsbk") != "yes";
-         info.location = KNSBookmarkImporter::netscapeBookmarksFile();
-         info.type = "netscape";
-         info.name = i18n("Netscape Bookmarks");
-      } // else, no show
+  if (!config.hasKey("DynamicMenus")) {
+    // upgrade path
+    if (id == "netscape") {
+      KBookmarkManager *manager = KBookmarkManager::userBookmarksManager();
+      info.show = manager->root().internalElement().attribute("hide_nsbk") != "yes";
+      info.location = KNSBookmarkImporter::netscapeBookmarksFile();
+      info.type = "netscape";
+      info.name = i18n("Netscape Bookmarks");
+    } // else, no show
 
-   } else {
-      // have new version config
-      if (config.hasGroup("DynamicMenu-" + id)) {
-         config.setGroup("DynamicMenu-" + id);
-         info.show = config.readBoolEntry("Show");
-         info.location = config.readPathEntry("Location");
-         info.type = config.readEntry("Type");
-         info.name = config.readEntry("Name");
-      } // else, no show
-   }
+  } else {
+    // have new version config
+    if (config.hasGroup("DynamicMenu-" + id)) {
+      config.setGroup("DynamicMenu-" + id);
+      info.show = config.readBoolEntry("Show");
+      info.location = config.readPathEntry("Location");
+      info.type = config.readEntry("Type");
+      info.name = config.readEntry("Name");
+    } // else, no show
+  }
 
-   return info;
+  return info;
 }
 
 QStringList KBookmarkMenu::dynamicBookmarksList()
 {
-   KConfig config("kbookmarkrc", false, false);
-   config.setGroup("Bookmarks");
+  KConfig config("kbookmarkrc", false, false);
+  config.setGroup("Bookmarks");
 
-   QStringList mlist;
-   if (config.hasKey("DynamicMenus"))
-      mlist = config.readListEntry("DynamicMenus");
-   else 
-      mlist << "netscape";
+  QStringList mlist;
+  if (config.hasKey("DynamicMenus"))
+    mlist = config.readListEntry("DynamicMenus");
+  else 
+    mlist << "netscape";
 
-   return mlist;
+  return mlist;
 }
 
 void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu) 
 {
-   KConfig config("kbookmarkrc", false, false);
+  KConfig config("kbookmarkrc", false, false);
 
-   // add group unconditionally
-   config.setGroup("DynamicMenu-" + id);
-   config.writeEntry("Show", newMenu.show);
-   config.writePathEntry("Location", newMenu.location);
-   config.writeEntry("Type", newMenu.type);
-   config.writeEntry("Name", newMenu.name);
+  // add group unconditionally
+  config.setGroup("DynamicMenu-" + id);
+  config.writeEntry("Show", newMenu.show);
+  config.writePathEntry("Location", newMenu.location);
+  config.writeEntry("Type", newMenu.type);
+  config.writeEntry("Name", newMenu.name);
 
-   QStringList elist;
+  QStringList elist;
 
-   config.setGroup("Bookmarks");
-   if (!config.hasKey("DynamicMenus")) {
-      if (newMenu.type != "netscape") {
-         // update from old xbel method to new rc method
-         // though only if not writing the netscape setting
-         config.setGroup("DynamicMenu-" "netscape");
-         DynMenuInfo xbelSetting;
-         xbelSetting = showDynamicBookmarks("netscape");
-         config.writeEntry("Show", xbelSetting.show);
-         config.writePathEntry("Location", xbelSetting.location);
-         config.writeEntry("Type", xbelSetting.type);
-         config.writeEntry("Name", xbelSetting.name);
-      }
-   } else {
-      elist = config.readListEntry("DynamicMenus");
-   }
+  config.setGroup("Bookmarks");
+  if (!config.hasKey("DynamicMenus")) {
+    if (newMenu.type != "netscape") {
+      // update from old xbel method to new rc method
+      // though only if not writing the netscape setting
+      config.setGroup("DynamicMenu-" "netscape");
+      DynMenuInfo xbelSetting;
+      xbelSetting = showDynamicBookmarks("netscape");
+      config.writeEntry("Show", xbelSetting.show);
+      config.writePathEntry("Location", xbelSetting.location);
+      config.writeEntry("Type", xbelSetting.type);
+      config.writeEntry("Name", xbelSetting.name);
+    }
+  } else {
+    elist = config.readListEntry("DynamicMenus");
+  }
 
-   // make sure list includes type
-   config.setGroup("Bookmarks");
-   if (elist.contains(id) < 1) {
-      elist << id;
-      config.writeEntry("DynamicMenus", elist);
-   }
+  // make sure list includes type
+  config.setGroup("Bookmarks");
+  if (elist.contains(id) < 1) {
+    elist << id;
+    config.writeEntry("DynamicMenus", elist);
+  }
 
-   config.sync();
+  config.sync();
 }
 
 #include "kbookmarkmenu.moc"

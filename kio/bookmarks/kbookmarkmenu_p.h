@@ -117,11 +117,12 @@ public:
   }
 };
 
-class BLAH {
+class KBookmarkEditFields {
 public:
+  typedef enum { FolderFieldsSet, BookmarkFieldsSet } FieldsSet;
   KLineEdit * m_url;
   KLineEdit * m_title;
-  BLAH(QWidget *main, QBoxLayout *vbox);
+  KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet isFolder);
   void setName(const QString &str);
   void setLocation(const QString &str);
 };
@@ -131,7 +132,7 @@ class KBookmarkEditDialog : public KDialogBase
   Q_OBJECT
 
 public:
-  typedef enum { InsertionMode } BookmarkEditType;
+  typedef enum { ModifyMode, InsertionMode } BookmarkEditType;
 
   KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType,
                        QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
@@ -142,15 +143,16 @@ public:
 protected slots:
   void slotOk();
   void slotCancel();
-  void slotInsertFolder();
+  void slotUser1();
   void slotDoubleClicked(QListViewItem* item);
 
 private:
   QWidget * m_main;
-  BLAH * m_blah;
+  KBookmarkEditFields * m_fields;
   QListView * m_folderTree;
   QPushButton * m_button;
   KBookmarkManager * m_mgr;
+  BookmarkEditType m_editType;
 };
 
 class KBookmarkFolderTreeItem : public QListViewItem
@@ -175,11 +177,11 @@ public:
 class KBookmarkSettings 
 {
 public:
-    bool m_advanced;
-    bool m_filteredtoolbar;
-    static KBookmarkSettings *s_self;
-    static void readSettings();
-    static KBookmarkSettings *self();
+  bool m_advanced;
+  bool m_filteredtoolbar;
+  static KBookmarkSettings *s_self;
+  static void readSettings();
+  static KBookmarkSettings *self();
 };
 
 #endif
