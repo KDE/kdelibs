@@ -1053,7 +1053,7 @@ int Ftp::ftpAcceptConnect()
 }
 
 bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mode,
-                          int errorcode, unsigned long _offset )
+                          int errorcode, KIO::fileoffset_t _offset )
 {
   QCString buf = "type ";
   buf += _mode;
@@ -1072,7 +1072,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   if ( _offset > 0 ) {
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
-    sprintf(buf, "rest %ld", _offset);
+    sprintf(buf, "rest %lld", _offset);
     if ( !ftpSendCmd( buf ) )
        return false;
     if ( rspbuf[0] != '3' ) {
@@ -2006,12 +2006,12 @@ void Ftp::get( const KURL & url )
       return;
   }
 
-  unsigned long offset = 0;
+  KIO::fileoffset_t offset = 0;
   QString resumeOffset = metaData(QString::fromLatin1("resume"));
   if ( !resumeOffset.isEmpty() )
   {
-      offset = resumeOffset.toInt();
-      kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
+      offset = resumeOffset.toLongLong();
+      kdDebug(7102) << "Ftp::get got offset from medata : " << (long unsigned int) offset << endl;
   }
 
   if ( !ftpOpenCommand( "retr", url.path(), textMode ? 'A' : 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
@@ -2029,7 +2029,7 @@ void Ftp::get( const KURL & url )
   if ( m_size != UnknownSize )
     bytesLeft = m_size - offset;
 
-  kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
+  kdDebug(7102) << "Ftp::get starting with offset=" << (long unsigned int) offset << endl;
   KIO::fileoffset_t processed_size = offset;
 
   char buffer[ 2048 ];
@@ -2245,12 +2245,12 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   } else
     dest = dest_orig;
 
-  unsigned long offset = 0;
+  KIO::fileoffset_t offset = 0;
 
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kdDebug(7102) << "Offset = " << (unsigned int) offset << "d" << endl;
+    kdDebug(7102) << "Offset = " << (long unsigned int) offset << "d" << endl;
   }
 
   if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
