@@ -853,7 +853,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
 	int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
-        if( ( *it ).age >= timeout )
+        if( ( *it ).age >= tout )
             {
             const KStartupInfoId& key = it.key();
             ++it;
@@ -872,7 +872,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
 	int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
-        if( ( *it ).age >= timeout )
+        if( ( *it ).age >= tout )
             {
             const KStartupInfoId& key = it.key();
             ++it;
@@ -891,7 +891,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
 	int tout = timeout;
 	if( ( *it ).silent() == Data::Yes ) // TODO
 	    tout *= 20;
-        if( ( *it ).age >= timeout )
+        if( ( *it ).age >= tout )
             {
             const KStartupInfoId& key = it.key();
             ++it;
