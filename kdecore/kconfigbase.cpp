@@ -937,7 +937,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
   if( rFont.charSet() != QFont::AnyCharSet )
       aCharset.setNum( rFont.charSet() );
   
-  QTextIStream ts( &aValue );
+  QTextOStream ts( &aValue );
   ts << rFont.family() << "," << rFont.pointSize() << "," 
      << rFont.styleHint() << "," << aCharset << "," << rFont.weight() << "," 
      << nFontBits;
