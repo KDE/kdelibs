@@ -278,25 +278,6 @@ public:
     static void setCurrentDesktop( int desktop );
 
     /**
-     * Minimizes a window. Compatible to XIconifyWindow but has an
-     * additional parameter @p animation.
-     *
-     * @param win the id of the window
-     * @param animation true to show an animation
-     * @see deIconifyWindow()
-     */
-    static void minimizeWindow( WId win, bool animation = true );
-    /**
-     * Unminimizes a window. Compatible to XMapWindow but has an
-     * additional parameter @p animation.
-     *
-     * @param win the id of the window
-     * @param animation true to show an animation
-     * @see iconifyWindow()
-     */
-    static void unminimizeWindow( WId win, bool animation = true );
-
-    /**
      * Iconifies a window. Compatible to XIconifyWindow but has an
      * additional parameter @p animation.
      *
