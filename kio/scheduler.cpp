@@ -166,7 +166,7 @@ Scheduler::~Scheduler()
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
-    delete coIdleSlaves; idleSlaves = 0;
+    delete coIdleSlaves; coIdleSlaves = 0;
     slaveList->setAutoDelete(true);
     delete slaveList; slaveList = 0;
     delete extraJobData; extraJobData = 0;
@@ -533,6 +533,7 @@ if (!jobData)
        JobList *list = coSlaves.find(slave);
        if (list)
        {
+          assert(slave->isConnected());
           coIdleSlaves->append(slave);
           if (!list->isEmpty())
              coSlaveTimer.start(0, true);
@@ -540,6 +541,7 @@ if (!jobData)
        }
        else
        {
+          assert(!slave->isConnected());
           idleSlaves->append(slave);
           slave->setIdle();
           _scheduleCleanup();
@@ -771,7 +773,7 @@ Scheduler::slotScheduleCoSlave()
     {
         nextSlave = coIdleSlaves->next();
         JobList *list = coSlaves.find(slave);
-        //assert(list);
+        assert(list);
         if (list && !list->isEmpty())
         {
            SimpleJob *job = list->take(0);
@@ -830,6 +832,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
         ||     
         (!newJobs.removeRef(job)))
     {
+        kdDebug(7006) << "ERROR, nonmatching or unknown job." << endl;
         job->kill();
         return false;
     }
@@ -838,6 +841,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
     assert(list);
     if (!list)
     {
+        kdDebug(7006) << "ERROR, unknown slave." << endl;
         job->kill();
         return false;
     }
@@ -851,8 +855,9 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 bool 
 Scheduler::_disconnectSlave(KIO::Slave *slave)
 {
+    kdDebug(7006) << "_disconnectSlave( " << slave << ")" << endl;
     JobList *list = coSlaves.take(slave);
-    //assert(list);
+    assert(list);
     if (!list)
        return false;
     // Kill jobs still in queue.
