@@ -411,15 +411,15 @@ void XMLTokenizer::begin()
     m_reader.parse( &m_source, true );
 }
 
-void XMLTokenizer::write( const QString &str, bool appendData )
+void XMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
     if ( !m_noErrors && appendData )
         return;
     if ( appendData ) {
-        m_source.appendXML( str );
+        m_source.appendXML( str.toString() );
 
     } else {
-        m_source.setData( str );
+        m_source.setData( str.toString() );
     }
     m_noErrors = m_reader.parseContinue();
 }

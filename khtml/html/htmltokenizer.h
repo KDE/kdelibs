@@ -127,7 +127,7 @@ public:
     virtual ~HTMLTokenizer();
 
     void begin();
-    void write( const QString &str, bool appendData );
+    void write( const khtml::TokenizerString &str, bool appendData );
     void end();
     void finish();
     virtual void setOnHold(bool _onHold);
@@ -136,19 +136,19 @@ protected:
     void reset();
     void addPending();
     void processToken();
-    void processListing(khtml::DOMStringIt list);
+    void processListing(khtml::TokenizerString list);
 
-    void parseComment(khtml::DOMStringIt &str);
-    void parseServer(khtml::DOMStringIt &str);
-    void parseText(khtml::DOMStringIt &str);
-    void parseListing(khtml::DOMStringIt &str);
-    void parseSpecial(khtml::DOMStringIt &str);
-    void parseTag(khtml::DOMStringIt &str);
-    void parseEntity(khtml::DOMStringIt &str, QChar *&dest, bool start = false);
-    void parseProcessingInstruction(khtml::DOMStringIt &str);
+    void parseComment(khtml::TokenizerString &str);
+    void parseServer(khtml::TokenizerString &str);
+    void parseText(khtml::TokenizerString &str);
+    void parseListing(khtml::TokenizerString &str);
+    void parseSpecial(khtml::TokenizerString &str);
+    void parseTag(khtml::TokenizerString &str);
+    void parseEntity(khtml::TokenizerString &str, QChar *&dest, bool start = false);
+    void parseProcessingInstruction(khtml::TokenizerString &str);
     void scriptHandler();
     void scriptExecution(const QString& script, const QString& scriptURL = QString::null, int baseLine = 0);
-    void setSrc(const QString& source);
+    void setSrc(const TokenizerString& source);
 
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -316,7 +316,7 @@ protected:
     QString scriptSrcCharset;
     bool javascript;
     // the HTML code we will parse after the external script we are waiting for has loaded
-    QString pendingSrc;
+    TokenizerString pendingSrc;
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
     int m_executingScript;
@@ -337,8 +337,7 @@ protected:
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
 
-    QString _src;
-    khtml::DOMStringIt src;
+    khtml::TokenizerString src;
 
     KCharsets *charsets;
     KHTMLParser *parser;

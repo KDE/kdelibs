@@ -28,6 +28,7 @@
 #include <qptrstack.h>
 #include <qobject.h>
 #include "misc/loader_client.h"
+#include "misc/stringit.h"
 
 class KHTMLView;
 
@@ -116,7 +117,7 @@ public:
     // received during executing a script must be appended, hence the
     // extra bool to be able to distinguish between both cases. document.write()
     // always uses false, while khtmlpart uses true
-    virtual void write( const QString &str, bool appendData) = 0;
+    virtual void write( const TokenizerString &str, bool appendData) = 0;
     virtual void end() = 0;
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
@@ -153,7 +154,7 @@ public:
     XMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
     virtual ~XMLTokenizer();
     virtual void begin();
-    virtual void write( const QString &str, bool );
+    virtual void write( const TokenizerString &str, bool );
     virtual void end();
     virtual void finish();
 

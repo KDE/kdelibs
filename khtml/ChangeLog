@@ -1,3 +1,11 @@
+2004-11-26  Germain Garand  <germain@ebooksfrance.org>
+
+        merge zero deep-copy TokenizerString class from WebCore
+
+        * html/htmltokenizer.{cpp,h}
+        * misc/stringit.{cpp,h}
+        * xml/xml_tokenizer.{cpp,h}
+
 2004-11-23  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement the structual pseudo-selectors of CSS3.
