@@ -1913,7 +1913,7 @@ void NETWinInfo::setKDESystemTrayWinFor(Window window) {
 
     p->kde_system_tray_win_for = window;
     XChangeProperty(p->display, p->window, net_wm_kde_system_tray_window_for,
-		    XA_CARDINAL, 32, PropModeReplace,
+		    XA_WINDOW, 32, PropModeReplace,
 		    (unsigned char *) &(p->kde_system_tray_win_for), 1);
 }
 
