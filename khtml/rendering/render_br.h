@@ -45,20 +45,15 @@ public:
     // from BiDiObject
     //virtual unsigned int length() const { return 1; }
     virtual void position(int, int, int, int, int, bool, bool) {}
+    virtual unsigned int width(unsigned int, unsigned int, QFontMetrics *) const { return 0; }
     virtual unsigned int width( unsigned int, unsigned int, bool) const { return 0; }
 
     virtual int height() const { return 0; }
-
-    // height of the contents (without paddings, margins and borders)
-    virtual int lineHeight() const;
-    virtual short baselinePosition() const;
 
     // overrides
     virtual void calcMinMaxWidth() {}
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
-
-    virtual short verticalPositionHint() const;
 
     virtual bool isBR() const { return true; }
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);

@@ -830,13 +830,9 @@ void RenderFlow::layoutInlineChildren()
             if( start.atEnd() ) break;
 
             end = findNextLineBreak(start);
-            if(end == start && start.obj && start.obj->isText()  && start.current() == '\n') {
-                // empty line, somthing like <br><br>
-                m_height += start.obj->style()->font().pointSize();
-            } else
-                embed = bidiReorderLine(status, start, end, embed);
+	    embed = bidiReorderLine(status, start, end, embed);
 
-            if( end == start )
+            if( end == start || (end.obj && end.obj->isBR() ) )
                 ++end;
 
             newLine();
@@ -932,7 +928,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		if( isBreakable( str, pos, strlen ) ) {
 		    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
 #ifdef DEBUG_LINEBREAKS
-		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, pos - lastSpace).string() << "'" << endl;
+		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w << endl;
 #endif
 		    if ( w + tmpW > width )
 			goto end;
