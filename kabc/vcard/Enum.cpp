@@ -425,7 +425,7 @@ static signed char b64dec[] = {
 	char *
 VCARD::decodeBase64(const char * s, unsigned long srcl, unsigned long & len)
 {
-	register char c;
+	register unsigned char c;
 	register unsigned long e(0);
 	len = 0;
 	unsigned const char * src = (unsigned const char *)s;
