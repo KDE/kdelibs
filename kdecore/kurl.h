@@ -389,11 +389,13 @@ public:
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
-   * This function should be used if you want to ignore trailing '/' characters.
-   *
-   * @see path()
+   * Compare this url with @p u
+   * @param ignore_trailing set to true to ignore trailing '/' characters.
+   * @return true if both urls are the same
+   * @see operator==. This function should be used if you want to
+   * ignore trailing '/' characters.
    */
-  bool cmp( const KURL &_u, bool _ignore_trailing = false );
+  bool cmp( const KURL &u, bool ignore_trailing = false ) const;
 
   /**
    * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.

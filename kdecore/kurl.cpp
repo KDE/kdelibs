@@ -469,7 +469,7 @@ bool KURL::operator==( const QString& _u ) const
   return ( *this == u );
 }
 
-bool KURL::cmp( const KURL &_u, bool _ignore_trailing )
+bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
 {
   if ( _ignore_trailing )
   {
