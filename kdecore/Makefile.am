@@ -37,6 +37,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	krandomsequence.h knana.h kstringhandler.h kcompletion.h \
 	kcompletion_private.h kcmdlineargs.h kaboutdata.h
 
+KDE_CXXFLAGS = $(REPO)
+
 noinst_HEADERS = kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
@@ -87,3 +89,14 @@ EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
+
+
+#
+# -frepo closure (experimental)
+#
+closure: $(libkdecore_la_OBJECTS)
+	@echo "int main() {}" > closure.cc
+	$(LTCXXCOMPILE) -c closure.cc
+	$(CXXLINK) $(LDFLAGS) -o closure $(libkdecore_la_OBJECTS) $(libkdecore_la_LIBADD) closure.lo
+	@rm -f closure.*
+	@echo "timestamp" > closure
