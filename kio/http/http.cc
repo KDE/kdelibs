@@ -844,10 +844,6 @@ bool HTTPProtocol::http_open()
      // HTTP uses "Referer" although the correct spelling is "referrer"
      header += "Referer: "+referrer+"\r\n";
   }
-  else
-  {
-     header += "Referer: " + m_request.url.url() + "\r\n"; // Test
-  }
 
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
