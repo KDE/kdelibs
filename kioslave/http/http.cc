@@ -2718,8 +2718,8 @@ bool HTTPProtocol::readHeader()
       p3pstr = p3pstr.mid(4).simplifyWhiteSpace();
       QStringList policyrefs, compact;
       QStringList policyfields = QStringList::split(QRegExp(",[ ]*"), p3pstr);
-      for (QStringList::Iterator it = policyfields.begin(); 
-                                  it != policyfields.end(); 
+      for (QStringList::Iterator it = policyfields.begin();
+                                  it != policyfields.end();
                                                       ++it) {
          QStringList policy = QStringList::split("=", *it);
 
@@ -2731,7 +2731,7 @@ bool HTTPProtocol::readHeader()
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
                // efficient but I'm going for correctness right now.
-               QStringList cps = QStringList::split(" ", 
+               QStringList cps = QStringList::split(" ",
                                         policy[1].replace(QRegExp("[\"\']"), "")
                                                  .simplifyWhiteSpace());
 
@@ -3645,7 +3645,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        totalSize ( 0 );
   }
   else
-    infoMessage( i18n( "Reading from %1 ..." ).arg( m_request.hostname ) );
+    infoMessage( i18n( "Retrieving from %1 ..." ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {
