@@ -751,8 +751,8 @@ KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
                                        QObject *parent, const char *name )
 {
     KToggleAction *ret;
-    ret = new KToggleAction(i18n("Show &Menubar"), 0, recvr, slot, parent,
-                            name ? name : stdName(ShowMenubar));
+    ret = new KToggleAction(i18n("Show &Menubar"), "showmenu", 0, recvr, slot,
+                            parent, name ? name : stdName(ShowMenubar));
     ret->setChecked(true);
     return ret;
 }
