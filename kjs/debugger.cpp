@@ -25,7 +25,8 @@
 using namespace KJS;
 
 Debugger::Debugger(KJScript *engine)
-  : eng(0L)
+  : eng(0L),
+    sid(-1)
 {
   attach(engine);
 }
@@ -46,6 +47,7 @@ void Debugger::attach(KJScript *e)
   } else {
     eng = 0L;
   }
+  reset();
 }
 
 KJScript *Debugger::engine() const
@@ -55,6 +57,7 @@ KJScript *Debugger::engine() const
 
 void Debugger::detach()
 {
+  reset();
   if (!eng)
     return;
   eng->rep->attachDebugger(0L);
@@ -72,18 +75,29 @@ Debugger::Mode Debugger::mode() const
 }
 
 // supposed to be overriden by the user
-bool Debugger::stopEvent(int)
+bool Debugger::stopEvent()
 {
   return true;
+}
+
+void Debugger::reset()
+{
+    l = -1;
+}
+
+int Debugger::freeSourceId() const
+{
+    return eng ? eng->rep->sourceId()+1 : -1;
 }
 
 // called from the scripting engine each time a statement node is hit.
 bool Debugger::hit(int line)
 {
+  l = line;
   if (!eng || mode() == Continue || mode() == Disabled)
       return true;
 
-  return stopEvent(line);
+  return stopEvent();
 }
 
 #endif

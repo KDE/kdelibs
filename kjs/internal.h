@@ -283,6 +283,7 @@ namespace KJS {
      */
     void attachDebugger(Debugger *d);
     Debugger *debugger() const { return dbg; }
+    int sourceId() const { return sid; }
 #endif
   private:
     /**
@@ -306,6 +307,7 @@ namespace KJS {
     UString errMsg;
 #ifdef KJS_DEBUGGER
     Debugger *dbg;
+    int sid;
 #endif
     Imp *exVal;
     Imp *retVal;

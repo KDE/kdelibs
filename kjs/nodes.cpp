@@ -88,6 +88,13 @@ KJSO Node::throwError(ErrorType e, const char *msg)
 }
 
 #ifdef KJS_DEBUGGER
+void StatementNode::setLoc(int line0, int line1)
+{
+    l0 = line0;
+    l1 = line1;
+    sid = KJScriptImp::current()->sourceId();
+}
+
 bool StatementNode::hitStatement()
 {
   if (KJScriptImp::current()->debugger())

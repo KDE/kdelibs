@@ -85,10 +85,11 @@ namespace KJS {
   class StatementNode : public Node {
   public:
 #ifdef KJS_DEBUGGER
-    StatementNode() : l0(-1), l1(-1) { }
-    void setLoc(int line0, int line1) { l0 = line0; l1 = line1; }
+    StatementNode() : l0(-1), l1(-1), sid(-1) { }
+    void setLoc(int line0, int line1);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
+    int sourceId() const { return sid; }
     bool hitStatement();
 #endif
     virtual Completion execute() = 0;
@@ -101,6 +102,7 @@ namespace KJS {
     KJSO evaluate() { return Undefined(); }
 #ifdef KJS_DEBUGGER
     int l0, l1;
+    int sid;
 #endif
   };
 

@@ -34,6 +34,7 @@ namespace KJS {
   class Debugger {
     friend class KJScriptImp;
     friend class StatementNode;
+    friend class DeclaredFunctionImp;
   public:
     /**
      * Available modes of the debugger.
@@ -70,6 +71,16 @@ namespace KJS {
      * Returns the current operation mode.
      */
     Mode mode() const;
+    /**
+     * Returns the line number the debugger currently has stopped at.
+     * -1 if the debugger is not in a break status.
+     */
+    int line() const { return l; }
+    /**
+     * Returns the source id the debugger currently has stopped at.
+     * -1 if the debugger is not in a break status.
+     */
+    int sourceId() const { return sid; }
 
   protected:
     /**
@@ -80,13 +91,28 @@ namespace KJS {
      * The default implementation does nothing. Overload this method if
      * you want to process this event.
      */
-    virtual bool stopEvent(int line);
+    virtual bool stopEvent();
+    /**
+     * Returns an integer that will be assigned to the code passed
+     * next to one of the KJScript::evaluate() methods. It's basically
+     * a counter to will only be reset to 0 on KJScript::clear().
+     *
+     * This information is useful in case you evaluate multiple blocks of
+     * code containing some function declarations. Keep a map of source id/
+     * code pairs, query sourceId() in case of a stopEvent() and update
+     * your debugger window with the matching source code.
+     */
+    int freeSourceId() const;
 
   private:
+    void reset();
     bool hit(int line);
+    void setSourceId(int i) { sid = i; }
 
     KJScript *eng;
     Mode dmode;
+    int l;
+    int sid;
   };
 #endif
 

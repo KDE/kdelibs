@@ -363,7 +363,25 @@ DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b)
 Completion DeclaredFunctionImp::execute(const List &)
 {
  /* TODO */
-  return block->execute();
+
+#ifdef KJS_DEBUGGER
+  Debugger *dbg = KJScriptImp::current()->debugger();
+  int oldSourceId = -1;
+  if (dbg) {
+    oldSourceId = dbg->sourceId();
+    dbg->setSourceId(block->sourceId());
+  }
+#endif
+
+  Completion result = block->execute();
+
+#ifdef KJS_DEBUGGER
+  if (dbg) {
+    dbg->setSourceId(oldSourceId);
+  }
+#endif
+
+  return result;
 }
 
 Object DeclaredFunctionImp::construct(const List &args)
@@ -493,6 +511,9 @@ void KJScriptImp::init()
     recursion = 0;
     errMsg = "";
     initialized = true;
+#ifdef KJS_DEBUGGER
+    sid = -1;
+#endif
   }
 }
 
@@ -515,6 +536,9 @@ void KJScriptImp::clear()
       hook = 0L;
 
     Collector::collect();
+#ifdef KJS_DEBUGGER
+    sid = -1;
+#endif
 
     initialized = false;
   }
@@ -525,6 +549,11 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 {
   init();
 
+#ifdef KJS_DEBUGGER
+  sid++;
+  if (debugger())
+    debugger()->setSourceId(sid);
+#endif
   if (recursion > 0) {
 #ifndef NDEBUG
     fprintf(stderr, "Blocking recursive JS call.\n");
