@@ -85,7 +85,7 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
 
 void KURLRequesterDlg::slotTextChanged(const QString & text)
 {
-    bool state = !text.isEmpty();
+    bool state = !text.stripWhiteSpace().isEmpty();
     enableButtonOK( state );
     enableButton( KDialogBase::User1, state );
 }
