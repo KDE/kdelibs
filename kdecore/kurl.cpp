@@ -76,39 +76,46 @@ KURL::KURL( const KURL& _u )
 
 KURL::KURL( const KURL& _u, const QString& _rel_url )
 {
-  if ( _rel_url[0] == '/' )
-  {
-    *this = _u;
-    setEncodedPathAndQuery( _rel_url );
-  }
-  else if ( _rel_url[0] == '#' )
+  if ( _rel_url[0] == '#' )
   {
     *this = _u;
     QString tmp = _rel_url.mid(1);
     decode( tmp );
     setHTMLRef( tmp );
   }
-  else if ( !isRelativeURL(_rel_url))
+  else if ( isRelativeURL(_rel_url))
   {
-    *this = _rel_url;
+    *this = _u;
+    m_strQuery_encoded = QString::null;
+    m_strRef_encoded = QString::null;
+    if (_rel_url[0] == '/')
+    {
+        m_strPath = QString::null;
+    }
+    else 
+    {
+       int pos = m_strPath.findRev( '/' );
+       if (pos >= 0)
+          m_strPath.truncate(pos);
+       m_strPath += '/';
+    }
+    *this = url() + _rel_url;
+    cleanPath();
   }
   else
   {
-    *this = _u;
-    *this = url() + _rel_url;
-    cleanPath();
+    *this = _rel_url;
   }
 }
 
 void KURL::reset()
 {
   m_strProtocol = "file";
-  m_strUser = "";
-  m_strPass = "";
-  m_strHost = "";
-  m_strPath = "";
-  m_strQuery_encoded = "";
-  m_strRef_encoded = "";
+  m_strUser = QString::null;
+  m_strPass = QString::null;
+  m_strHost = QString::null;
+  m_strPath = QString::null;
+  m_strRef_encoded = QString::null;
   m_bIsMalformed = false;
   m_iPort = 0;
 }
@@ -218,7 +225,7 @@ void KURL::parse( const QString& _url )
     {
       // Ok the : was used to separate host and port
       m_strHost = m_strUser;
-      m_strUser = "";
+      m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
       char *endptr;
       m_iPort = (unsigned short int)strtol(tmp.ascii(), &endptr, 10);
@@ -314,7 +321,7 @@ void KURL::parse( const QString& _url )
       // File-protocol has a host name..... hmm?
       if (m_strHost.lower() == "localhost")
       {
-        m_strHost = ""; // We can ignore localhost
+        m_strHost = QString::null; // We can ignore localhost
       }
       else {
         // What to do with a remote file?
@@ -324,7 +331,7 @@ void KURL::parse( const QString& _url )
            // Pass the hostname as part of the path. Perhaps system calls
            // just handle it.
            m_strPath = "//"+m_strHost+m_strPath;
-           m_strHost = "";
+           m_strHost = QString::null;
         }
         else
         {
@@ -492,14 +499,16 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   if ( pos == -1 )
   {
     m_strPath = _txt;
-    m_strQuery_encoded = "";
+    m_strQuery_encoded = QString::null;
   }
   else
   {
     m_strPath = _txt.left( pos );
     m_strQuery_encoded = _txt.right(_txt.length() - pos - 1);
+    // WABA: Make sure to distinguish between an empty query and no query!
+    if (m_strQuery_encoded.isNull())
+       m_strQuery_encoded = "";
   }
-
   decode( m_strPath );
 }
 
@@ -513,7 +522,7 @@ QString KURL::path( int _trailing ) const
   {
     int len = result.length();
     if ( len == 0 )
-      result = "";
+      result = QString::null;
     else if ( result[ len - 1 ] != '/' )
       result += "/";
     return result;
@@ -582,7 +591,10 @@ QString KURL::url( int _trailing ) const
   encode( tmp );
   u += tmp;
 
-  if ( !m_strQuery_encoded.isEmpty() )
+  // !!WABA!! There is a small but subtle difference between not
+  // having a query-string and having an empty query string!
+  // Therefor we check against isNull() and not against isEmpty()!
+  if ( !m_strQuery_encoded.isNull() ) 
   {
     u += "?";
     u += m_strQuery_encoded;
@@ -619,14 +631,14 @@ KURL::List KURL::split( const QString& _url )
     {
       debug("Has SUB URL %s", u.ref().local8Bit().data() );
       tmp = u.ref();
-      u.setRef( "" );
+      u.setRef( QString::null );
       lst.append( u );
     }
     // A HTML style reference finally ?
     else if ( u.hasRef() )
     {
       tmp = u.ref();
-      u.setRef( "" );
+      u.setRef( QString::null );
       lst.append( u );
       // Append the HTML style reference to the
       // first URL.
@@ -647,7 +659,7 @@ KURL::List KURL::split( const QString& _url )
 
 QString KURL::join( const KURL::List & lst )
 {
-  QString dest = "";
+  QString dest = QString::null;
   QString ref;
 
   KURL::List::ConstIterator it;
@@ -1022,8 +1034,8 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 
   if ( _ignore_ref )
   {
-    (*list1.begin()).setRef("");
-    (*list2.begin()).setRef("");
+    (*list1.begin()).setRef(QString::null);
+    (*list2.begin()).setRef(QString::null);
   }
 
   KURL::List::Iterator it1 = list1.begin();
