@@ -120,6 +120,9 @@ static void setQRectProperty(Window w, Atom a, const QRect &rect){
 		  PropModeReplace, (unsigned char *)&data, 4);
 }
 
+
+/*
+  old function in KDE-1.0 and KDE-1.1
 static bool getQStringProperty(Window w, Atom a, QString &str){
   unsigned char *p = 0;
 
@@ -132,6 +135,37 @@ static bool getQStringProperty(Window w, Atom a, QString &str){
   kwm_error = FALSE;
   return TRUE;
 }
+
+
+*/
+
+// new version in KDE-1.1+, handles compound text as well.
+static bool getQStringProperty (Window w, Atom a, QString& str)
+{
+    XTextProperty tp;
+    char **text;
+    int count;
+    if (XGetTextProperty (qt_xdisplay(), w, &tp, a) == 0 || tp.value == NULL) {
+	kwm_error = TRUE;
+	return FALSE;
+    }
+    if (tp.encoding == XA_STRING) { 
+	str = (const char*) tp.value;
+    }
+    else {
+	// assume compound text
+	if (XmbTextPropertyToTextList (qt_xdisplay(), &tp, &text, &count) == Success && text != NULL) {
+	    if (count > 0) {
+		str = (const char*) text[0];
+	    }
+	    XFreeStringList (text);
+	}
+    } 
+    /* Free the data returned by XGetTextProperty */
+    XFree (tp.value);	
+    return TRUE;
+}
+
 
 static void sendClientMessage(Window w, Atom a, long x){
   XEvent ev;
