@@ -24,9 +24,9 @@
                 <string>Unknown word:</string>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>&lt;qt&gt;&lt;p&gt;This word was considered an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
-&lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to let it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
-&lt;p&gt;But if the word is misspelled, you can try to find the correct replacement on the list below. If you can't find a replacement there, you may type it on the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
+                <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
+&lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
+&lt;p&gt;However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -41,9 +41,9 @@
                 <string>Unknown word</string>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>&lt;qt&gt;&lt;p&gt;This word was considered an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
-&lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to let it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
-&lt;p&gt;But if the word is misspelled, you can try to find the correct replacement on the list below. If you can't find a replacement there, you may type it on the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
+                <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
+&lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
+&lt;p&gt;However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -59,7 +59,7 @@
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;Select here the language of the document you are proofing.&lt;/p&gt;
+&lt;p&gt;Select the language of the document you are proofing here.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -128,7 +128,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;Click here to replace this all occurrences of the unknown text with the text on the edit box above (to the left).&lt;/p&gt;
+&lt;p&gt;Click here to replace all occurrences of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -155,7 +155,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;If the unknown word is misspelled, you should check if the correction for the unknown word is available and if yes, click on it. If none of the words in this list is a good replacement you may type the correct word in the edit box above&lt;/p&gt;
+&lt;p&gt;If the unknown word is misspelled, you should check if the correction for it is available and if it is, click on it. If none of the words in this list is a good replacement you may type the correct word in the edit box above.&lt;/p&gt;
 &lt;p&gt;To correct this word click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
@@ -172,7 +172,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;Click here to replace this occurrence of the unknown text with the text on the edit box above (to the left).&lt;/p&gt;
+&lt;p&gt;Click here to replace this occurrence of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -188,8 +188,8 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;If the unknown word is misspelled, you should type here the correction for your misspelled word or select it in the list below.&lt;/p&gt;
-&lt;p&gt;Then, you can click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of this word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
+&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
+&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -233,8 +233,8 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;If the unknown word is misspelled, you should type here the correction for your misspelled word or select it in the list below.&lt;/p&gt;
-&lt;p&gt;Then, you can click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of this word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
+&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
+&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
@@ -263,7 +263,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
             </property>
             <property name="whatsThis" stdset="0">
                 <string>&lt;qt&gt;
-&lt;p&gt;Select here the language of the document you are proofing.&lt;/p&gt;
+&lt;p&gt;Select the language of the document you are proofing here.&lt;/p&gt;
 &lt;/qt&gt;</string>
             </property>
         </widget>
