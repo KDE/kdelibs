@@ -1,11 +1,19 @@
 2003-10-09  Leo Savernik  <l.savernik@aon.at>
 
-	* fixed text-decoration issues by merging RenderObject::getTextDecorationColor
+	* rendering/render_object.{cpp,h} (getTextDecorationColors),
+	rendering/render_text.{cpp,h} (InlineTextBox::paintDecoration, RenderText::paintObject),
+	rendering/render_style.{cpp,h},
+	css/cssstyleselector.cpp (styleForElement):
+	fixed text-decoration issues by merging RenderObject::getTextDecorationColor
 	from Safari, changed CSSStyleSelector appropriately
 
-	* fixed drawing of text decoration within selected text
+	* rendering/render_text.{cpp,h} (InlineTextBox::paintDecoration),
+	rendering/font.{cpp,h} (drawText, drawDecoration):
+	fixed drawing of text decoration within selected text
 
-	* fixed overspilling of selection with unusual line-height configurations
+	* rendering/render_text.cpp (paintObject),
+	rendering/font.{cpp,h} (drawText):
+	 fixed overspilling of selection with unusual line-height configurations
 
 2003-10-07 Germain Garand <germain@ebooksfrance.org>
 
