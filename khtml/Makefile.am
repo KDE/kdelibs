@@ -89,3 +89,6 @@ testrender_SOURCES = testrender.cpp
 testrender_LDADD = libkhtml.la
 test_regression_SOURCES = test_regression.cpp
 test_regression_LDADD = libkhtml.la ecma/kjs_html.la $(top_builddir)/kjs/libkjs.la
+
+DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
+DOXYGEN_EXCLUDE =  test*.*

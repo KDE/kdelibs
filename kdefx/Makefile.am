@@ -33,3 +33,5 @@ libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
 		kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp
 
 METASOURCES = AUTO
+
+DOXYGEN_REFERENCES = kdecore

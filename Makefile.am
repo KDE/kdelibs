@@ -99,3 +99,4 @@ qtmessages:
 	mv $$top_srcdir/../qt-copy/src/messages.po $$top_srcdir
 	echo "remove the header from messages.po and move to qt-messages.pot"
 
+KDE_OPTIONS = doxygen

@@ -65,3 +65,6 @@ EXTRA_DIST = HOWTO ICE
 
 dummy.cpp:
 	echo > dummy.cpp
+
+DOXYGEN_REFERENCES = kdecore
+DOXYGEN_EXCLUDE = KDE-ICE/*

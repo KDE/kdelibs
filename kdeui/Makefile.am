@@ -123,3 +123,4 @@ kdepackages:
 		echo "0 };" >>  $(srcdir)/kdepackages.h ; \
 	fi
 
+DOXYGEN_REFERENCES = kdecore kdefx dcop

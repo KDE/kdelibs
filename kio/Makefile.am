@@ -48,3 +48,6 @@ servicetypedir = $(kde_servicetypesdir)
 
 dummy.cpp:
 	echo >dummy.cpp
+
+DOXYGEN_REFERENCES = kdecore kdefx dcop kdeui
+DOXYGEN_EXCLUDE = kssl/kssl/*

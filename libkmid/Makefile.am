@@ -15,3 +15,5 @@ libkmid_la_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \
 
 libkmid_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 0:95  -no-undefined
 libkmid_la_LIBADD = $(LIBASOUND) $(LIB_KDECORE)
+
+DOXYGEN_REFERENCES = kdecore

@@ -34,3 +34,6 @@ libkspell_la_METASOURCES = AUTO
 check_PROGRAMS = kspelltest
 kspelltest_SOURCES = kspelltest.cpp
 kspelltest_LDADD = libkspell.la
+
+DOXYGEN_REFERENCES = kdecore kdefx kdeui
+DOXYGEN_EXCLUDE = *test.*

@@ -1,4 +1,4 @@
-INCLUDES= $(all_includes) 
+INCLUDES= $(all_includes)
 
 noinst_LTLIBRARIES = libkab.la
 KABVERSION=	4.0.0

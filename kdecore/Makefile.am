@@ -121,3 +121,7 @@ kde_config_LDADD = ./libkdecore.la
 kde_config_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 
 DISTCLEANFILES = kde-config.cpp
+
+DOXYGEN_REFERENCES = dcop kdeui
+DOXYGEN_EXCLUDE = malloc/*
+
