@@ -1,7 +1,7 @@
 
 #include "kcolortest.h"
 #include <kapp.h>
-#include <kpixmapeffect.h>
+#include <kimageeffect.h>
 #include <stdio.h>
 #include <qdatetime.h>
 
@@ -43,7 +43,7 @@ void KColorWidget::doIntensityLoop()
       start = t.elapsed();
       for(count=0; count < 10; ++count){
 	if (orig)
-	  KPixmapEffect::intensity(image, .03*count, false);
+	  KImageEffect::intensity(image, -.03*count);
 	else {
 	  uint *qptr=(uint *)image.bits();
 	  QRgb qrgb;
@@ -62,71 +62,65 @@ void KColorWidget::doIntensityLoop()
 	       Qt::CopyROP, true);
       }
       stop = t.elapsed();
-      warning ("Total fullscreen %s dim time for %d steps : %f s", 
+      warning ("Total fullscreen %s dim time for %d steps : %f s",
 	       orig?"":"(antonio)", count, (stop - start)*1e-3);
     }
-    
+
     else {
       for(count=0; count < 20; ++count){
-        KPixmapEffect::intensity(image, .05, true);
+        KImageEffect::intensity(image, .05);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       for(count=0; count < 20; ++count){
-        KPixmapEffect::intensity(image, .05, false);
+        KImageEffect::intensity(image, -.05);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original;
       warning("Red channel intensity test");
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Red,
-                                        true);
+        KImageEffect::channelIntensity(image, .05, KImageEffect::Red);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Red,
-                                        false);
+        KImageEffect::channelIntensity(image, -.05, KImageEffect::Red);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original;
       warning("Green channel intensity test");
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Green,
-                                        true);
+        KImageEffect::channelIntensity(image, .05, KImageEffect::Green);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Green,
-                                        false);
+        KImageEffect::channelIntensity(image, -.05, KImageEffect::Green);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original;
       warning("Blue channel intensity test");
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Blue,
-                                        true);
+        KImageEffect::channelIntensity(image, .05, KImageEffect::Blue);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
       for(count=0; count < 20; ++count){
-        KPixmapEffect::channelIntensity(image, .05, KPixmapEffect::Blue,
-                                        false);
+        KImageEffect::channelIntensity(image, -.05, KImageEffect::Blue);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);

@@ -31,12 +31,12 @@ class KNewPixmapEffect
 public:
     enum GradientType { VerticalGradient, HorizontalGradient,
 			DiagonalGradient, CrossDiagonalGradient,
-			PyramidGradient, RectangleGradient, 
+			PyramidGradient, RectangleGradient,
 			PipeCrossGradient, EllipticGradient };
     enum RGBComponent { Red, Green, Blue };
 
-    enum Lighting {NorthLite, NWLite, WestLite, SWLite, 
-		   SouthLite, SELite, EastLite, NELite}; 
+    enum Lighting {NorthLite, NWLite, WestLite, SWLite,
+		   SouthLite, SELite, EastLite, NELite};
 
     /**
      * Create a gradient from color a to color b of the specified type.
@@ -49,7 +49,7 @@ public:
      * truecolor display. The gradient will be dithered to this number of
      * colors. Pass 0 to prevent dithering.
      */
-    static QImage gradient(const QSize &size, const QColor &ca, 
+    static QImage gradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int ncols=3);
 
     /**
@@ -61,7 +61,7 @@ public:
 
     /**
      * Create an unbalanced gradient.
-     * An unbalanced gradient is a gradient where the transition from 
+     * An unbalanced gradient is a gradient where the transition from
      * color a to color b is not linear, but in this case, exponential.
      *
      * @param size The desired size of the gradient.
@@ -72,15 +72,15 @@ public:
      * @param yfactor The y decay length.
      * @param ncols The number of colors. See KNewPixmapEffect:gradient.
      */
-    static QImage unbalancedGradient(const QSize &size, const QColor &ca, 
+    static QImage unbalancedGradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int xfactor = 100,
 	    int yfactor = 100, int ncols = 3);
 
     /**
      * Same as above, only this works on a KPixmap.
      */
-    static void unbalancedGradient(KPixmap &pixmap, const QColor &ca, 
-	    const QColor &cb, GradientType type, int xfactor = 100, 
+    static void unbalancedGradient(KPixmap &pixmap, const QColor &ca,
+	    const QColor &cb, GradientType type, int xfactor = 100,
 	    int yfactor = 100, int ncols=3);
 
     /**
@@ -108,27 +108,27 @@ public:
     inline static void channelIntensity(KPixmap &pixmap, float percent,
                                         RGBComponent channel,
                                         bool brighten = true);
-    
+
     /**
      * Blends the provided image into a background of the indicated color
-     * @param initial_intensity this parameter takes values from -1 to 1: 
-     *              a) if positive: how much to fade the image in its 
+     * @param initial_intensity this parameter takes values from -1 to 1:
+     *              a) if positive: how much to fade the image in its
      *                              less affected spot
-     *              b) if negative: roughly indicates how much of the image 
+     *              b) if negative: roughly indicates how much of the image
      *                              remains unaffected
      * @param bgnd indicates the color of the background to blend in
      * @param eff lets you choose what kind of blending you like
      * @param anti_dir blend in the opposite direction (makes no much sense
      *                  with concentric blending effects)
      */
-    static void blend(QImage &image, float initial_intensity, 
+    static void blend(QImage &image, float initial_intensity,
 		    const QColor &bgnd, GradientType eff,
 		    bool anti_dir=false);
 
     /**
      * Blends the provided pixmap (see the other method prototype)
      */
-    static void blend(KPixmap &pixmap, float initial_intensity, 
+    static void blend(KPixmap &pixmap, float initial_intensity,
 		    const QColor &bgnd, GradientType eff,
 		    bool anti_dir=false, int ncols=3);
 
@@ -137,18 +137,18 @@ public:
      * @param lite - the hash faces the indicated lighting (cardinal poles)
      * @param spacing - how many unmodified pixels inbetween hashes
      */
-    static void hash(QImage &image, Lighting lite=NorthLite, 
+    static void hash(QImage &image, Lighting lite=NorthLite,
 		   unsigned int spacing=0);
 
     /**
      * As above, on a KPixmap
      */
-    static void hash(KPixmap &pixmap, Lighting lite=NorthLite, 
+    static void hash(KPixmap &pixmap, Lighting lite=NorthLite,
 		       unsigned int spacing=0, int ncols=3);
 
 
     /**
-     * Create an image with a pattern. The pattern is an 8x8 bitmap, 
+     * Create an image with a pattern. The pattern is an 8x8 bitmap,
      * specified by an array of 8 integers.
      *
      * @param size The desired size.
@@ -183,9 +183,9 @@ public:
      */
     static void pattern(KPixmap &pixmap, const QColor &ca,
 	    const QColor &cb, QImage img, int ncols=8);
-    
+
     /**
-     * This recolors an image. The most dark color will become color a, 
+     * This recolors an image. The most dark color will become color a,
      * the most bright one color b, and in between.
      *
      * @param image A QImage to process.
@@ -194,7 +194,7 @@ public:
      * @param ncols The number of colors to use. Pass zero to prevent
      * dithering.
      */
-    static void flatten(QImage &image, const QColor &ca, 
+    static void flatten(QImage &image, const QColor &ca,
 	    const QColor &cb, int ncols=0);
 };
 
@@ -245,19 +245,19 @@ unsigned int uHash(unsigned int c);
 #include <dither.h>
 #include <kstddirs.h>
 #include <kpixmapeffect.h>
-    
+
 void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 	const QColor &cb, GradientType eff, int ncols)
 {
     if(eff == VerticalGradient ||
         eff == HorizontalGradient ||
         eff == DiagonalGradient) {
-        
+
         int rDiff, gDiff, bDiff;
         int rca, gca, bca, rcb, gcb, bcb;
-        
+
         register int x, y;
-        
+
         rDiff = (rcb = cb.red())   - (rca = ca.red());
         gDiff = (gcb = cb.green()) - (gca = ca.green());
         bDiff = (bcb = cb.blue())  - (bca = ca.blue());
@@ -269,7 +269,7 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
         int rcdelta = ((1<<16) / (eff == VerticalGradient ? pixmap.height() : pixmap.width())) * rDiff;
         int gcdelta = ((1<<16) / (eff == VerticalGradient ? pixmap.height() : pixmap.width())) * gDiff;
         int bcdelta = ((1<<16) / (eff == VerticalGradient ? pixmap.height() : pixmap.width())) * bDiff;
-        
+
         QPainter p;
 
         p.begin(&pixmap);
@@ -292,7 +292,7 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                 rl += rcdelta;
                 gl += gcdelta;
                 bl += bcdelta;
-                
+
                 //debug("rl: %d, gl: %d, bl: %d", rl>>16, gl>>16, bl>>16);
                 p.setPen(QColor(rl>>16, gl>>16, bl>>16));
                 p.drawLine(x, 0, x, pixmap.height()-1);
@@ -304,7 +304,7 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                     rl += rcdelta;
                     gl += gcdelta;
                     bl += bcdelta;
-                    
+
                     p.setPen(QPen(QColor((rl>>16), (gl>>16), (bl>>16))));
                     p.drawLine(QMIN(x, pixmap.width()), QMIN(0, x-pixmap.width()),
                                0, QMIN(x, pixmap.height()));
@@ -314,14 +314,14 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                 //
             }
 
-                    
+
         break;
         default:
         break; // never happens
         }
-        
+
         p.end();
-        
+
     }
     else {
         QImage image = gradient(pixmap.size(), ca, cb, eff, ncols);
@@ -329,54 +329,54 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
     }
 }
 
-    
-QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca, 
+
+QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
 	const QColor &cb, GradientType eff, int ncols)
 {
     int rDiff, gDiff, bDiff;
     int rca, gca, bca, rcb, gcb, bcb;
-    
+
     QImage image(size, 32);
-    
+
     register int x, y;
-    
+
     rDiff = (rcb = cb.red())   - (rca = ca.red());
     gDiff = (gcb = cb.green()) - (gca = ca.green());
     bDiff = (bcb = cb.blue())  - (bca = ca.blue());
-    
+
     if( eff == VerticalGradient || eff == HorizontalGradient ){
-        
+
         uint *p;
         uint rgb;
 
         register int rl = rca << 16;
         register int gl = gca << 16;
         register int bl = bca << 16;
-        
+
         if( eff == VerticalGradient ) {
 
             int rcdelta = ((1<<16) / size.height()) * rDiff;
             int gcdelta = ((1<<16) / size.height()) * gDiff;
             int bcdelta = ((1<<16) / size.height()) * bDiff;
-            
+
             for ( y = 0; y < size.height(); y++ ) {
                 p = (uint *) image.scanLine(y);
-                
+
                 rl += rcdelta;
                 gl += gcdelta;
                 bl += bcdelta;
-                
+
                 rgb = qRgb( (rl>>16), (gl>>16), (bl>>16) );
-                
+
                 for( x = 0; x < size.width(); x++ ) {
                     *p = rgb;
                     p++;
                 }
             }
-            
+
         }
         else {                  // must be HorizontalGradient
-            
+
             unsigned int *o_src = (unsigned int *)image.scanLine(0);
             unsigned int *src = o_src;
 
@@ -385,22 +385,22 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
             int bcdelta = ((1<<16) / size.width()) * bDiff;
 
             for( x = 0; x < size.width(); x++) {
-                
+
                 rl += rcdelta;
                 gl += gcdelta;
                 bl += bcdelta;
-                
+
                 *src++ = qRgb( (rl>>16), (gl>>16), (bl>>16));
             }
-            
+
             src = o_src;
-            
+
             // Believe it or not, manually copying in a for loop is faster
             // than calling memcpy for each scanline (on the order of ms...).
             // I think this is due to the function call overhead (mosfet).
-            
+
             for (y = 1; y < size.height(); ++y) {
-                
+
                 p = (unsigned int *)image.scanLine(y);
                 src = o_src;
                 for(x=0; x < size.width(); ++x)
@@ -408,9 +408,9 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
             }
         }
     }
-    
+
     else {
-        
+
         float rfd, gfd, bfd;
         float rd = rca, gd = gca, bd = bca;
 
@@ -434,7 +434,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
             rfd = (float)rDiff/w;
             gfd = (float)gDiff/w;
             bfd = (float)bDiff/w;
-            
+
             int dir;
             for (x = 0; x < size.width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
                 dir = eff == DiagonalGradient? x : size.width() - x - 1;
@@ -451,7 +451,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                 ytable[1][y] = (unsigned char) gd;
                 ytable[2][y] = (unsigned char) bd;
             }
-            
+
             for (y = 0; y < size.height(); y++) {
                 unsigned int *scanline = (unsigned int *)image.scanLine(y);
                 for (x = 0; x < size.width(); x++) {
@@ -461,8 +461,8 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                 }
             }
         }
-        
-        else if (eff == RectangleGradient || 
+
+        else if (eff == RectangleGradient ||
                  eff == PyramidGradient ||
                  eff == PipeCrossGradient ||
                  eff == EllipticGradient)
@@ -470,31 +470,31 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
             int rSign = rDiff>0? 1: -1;
             int gSign = gDiff>0? 1: -1;
             int bSign = bDiff>0? 1: -1;
-            
+
             rfd = (float)rDiff / size.width();
             gfd = (float)gDiff / size.width();
             bfd = (float)bDiff / size.width();
-            
+
             rd = (float)rDiff/2;
             gd = (float)gDiff/2;
             bd = (float)bDiff/2;
-            
-            for (x = 0; x < size.width(); x++, rd-=rfd, gd-=gfd, bd-=bfd) 
+
+            for (x = 0; x < size.width(); x++, rd-=rfd, gd-=gfd, bd-=bfd)
             {
                 xtable[0][x] = (unsigned char) abs((int)rd);
                 xtable[1][x] = (unsigned char) abs((int)gd);
                 xtable[2][x] = (unsigned char) abs((int)bd);
             }
-            
+
             rfd = (float)rDiff/size.height();
             gfd = (float)gDiff/size.height();
             bfd = (float)bDiff/size.height();
-            
+
             rd = (float)rDiff/2;
             gd = (float)gDiff/2;
             bd = (float)bDiff/2;
-            
-            for (y = 0; y < size.height(); y++, rd-=rfd, gd-=gfd, bd-=bfd) 
+
+            for (y = 0; y < size.height(); y++, rd-=rfd, gd-=gfd, bd-=bfd)
             {
                 ytable[0][y] = (unsigned char) abs((int)rd);
                 ytable[1][y] = (unsigned char) abs((int)gd);
@@ -505,10 +505,10 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
             for (y = 0; y < h; y++) {
                 unsigned int *sl1 = (unsigned int *)image.scanLine(y);
                 unsigned int *sl2 = (unsigned int *)image.scanLine(QMAX(size.height()-y-1, y));
-                
+
                 int w = (size.width()+1)>>1;
                 int x2 = size.width()-1;
-                    
+
                 for (x = 0; x < w; x++, x2--) {
 		    rgb = 0;
                     if (eff == PyramidGradient) {
@@ -517,7 +517,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                                    bcb-bSign*(xtable[2][x]+ytable[2][y]));
                     }
                     if (eff == RectangleGradient) {
-                        rgb = qRgb(rcb - rSign * 
+                        rgb = qRgb(rcb - rSign *
                                    QMAX(xtable[0][x], ytable[0][y]) * 2,
                                    gcb - gSign *
                                    QMAX(xtable[1][x], ytable[1][y]) * 2,
@@ -525,7 +525,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                                    QMAX(xtable[2][x], ytable[2][y]) * 2);
                     }
                     if (eff == PipeCrossGradient) {
-                        rgb = qRgb(rcb - rSign * 
+                        rgb = qRgb(rcb - rSign *
                                    QMIN(xtable[0][x], ytable[0][y]) * 2,
                                    gcb - gSign *
                                    QMIN(xtable[1][x], ytable[1][y]) * 2,
@@ -533,7 +533,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                                    QMIN(xtable[2][x], ytable[2][y]) * 2);
                     }
                     if (eff == EllipticGradient) {
-                        rgb = qRgb(rcb - rSign * 
+                        rgb = qRgb(rcb - rSign *
                                    (int)sqrt((xtable[0][x]*xtable[0][x] +
                                               ytable[0][y]*ytable[0][y])*2),
                                    gcb - gSign *
@@ -543,13 +543,13 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
                                    (int)sqrt((xtable[2][x]*xtable[2][x] +
                                               ytable[2][y]*ytable[2][y])*2));
                     }
-                    
+
                     sl1[x] = sl2[x] = rgb;
                     sl1[x2] = sl2[x2] = rgb;
                 }
             }
         }
-        
+
         delete [] xtable[0];
         delete [] xtable[1];
         delete [] xtable[2];
@@ -558,7 +558,7 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
         delete [] ytable[2];
     }
 
-#if 0    
+#if 0
     // dither if necessary
     if (ncols && (QPixmap::defaultDepth() < 15 )) {
         if ( ncols < 2 || ncols > 256 )
@@ -573,13 +573,13 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
         image = dither.dither(image);
         delete [] dPal;
     }
-#endif    
+#endif
 
     return image;
 }
 
 
-//CT this was (before Dirk A. Mueller's speedup changes) 
+//CT this was (before Dirk A. Mueller's speedup changes)
 //   merely the same code as in the above method, but it's supposedly
 //   way less performant since it introduces a lot of supplementary tests
 //   and simple math operations for the calculus of the balance.
@@ -589,16 +589,16 @@ QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
 //   source code and byte code size economy.
 
 void KNewPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
-	const QColor &cb, GradientType eff, int xfactor, int yfactor, 
+	const QColor &cb, GradientType eff, int xfactor, int yfactor,
 	int ncols)
 {
-    QImage img = unbalancedGradient(pixmap.size(), ca, cb,  eff, xfactor, 
+    QImage img = unbalancedGradient(pixmap.size(), ca, cb,  eff, xfactor,
 	    yfactor, ncols);
     pixmap.convertFromImage(img);
 }
 
-QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca, 
-	const QColor &cb, GradientType eff, int xfactor, int yfactor, 
+QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
+	const QColor &cb, GradientType eff, int xfactor, int yfactor,
 	int ncols)
 {
     int dir; // general parameter used for direction switches
@@ -608,7 +608,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
     if (xfactor < 0) _xanti = true; // negative on X direction
     if (yfactor < 0) _yanti = true; // negative on Y direction
 
-    xfactor = abs(xfactor); 
+    xfactor = abs(xfactor);
     yfactor = abs(yfactor);
 
     if (!xfactor) xfactor = 1;
@@ -640,18 +640,18 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
         uint *p;
         uint rgbRow;
 
-	if( eff == VerticalGradient) { 
+	if( eff == VerticalGradient) {
 	  for ( y = 0; y < size.height(); y++ ) {
 	    dir = _yanti ? y : size.height() - 1 - y;
             p = (uint *) image.scanLine(dir);
             rat =  1 - exp( - (double)y  * ybal );
-	    
+	
             cRow.setRgb( rcb - (int) ( rDiff * rat ),
                          gcb - (int) ( gDiff * rat ),
                          bcb - (int) ( bDiff * rat ) );
-	    
+	
             rgbRow = cRow.rgb();
-	    
+	
             for( x = 0; x < size.width(); x++ ) {
 	      *p = rgbRow;
 	      p++;
@@ -661,20 +661,20 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 	else {
 
 	  unsigned int *src = (unsigned int *)image.scanLine(0);
-	  for(x = 0; x < size.width(); x++ ) 
+	  for(x = 0; x < size.width(); x++ )
 	    {
 	      dir = _xanti ? x : size.width() - 1 - x;
 	      rat = 1 - exp( - (double)x  * xbal );
-	      
+	
 	      src[dir] = qRgb(rcb - (int) ( rDiff * rat ),
 			    gcb - (int) ( gDiff * rat ),
 			    bcb - (int) ( bDiff * rat ));
 	    }
-	  
+	
 	  // Believe it or not, manually copying in a for loop is faster
 	  // than calling memcpy for each scanline (on the order of ms...).
 	  // I think this is due to the function call overhead (mosfet).
-	  
+	
 	  for(y = 1; y < size.height(); ++y)
 	    {
 	      scanline = (unsigned int *)image.scanLine(y);
@@ -683,7 +683,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 	    }
 	}
     }
-    
+
     else {
       int w=size.width(), h=size.height();
 
@@ -695,8 +695,8 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
       ytable[0] = new unsigned char[h];
       ytable[1] = new unsigned char[h];
       ytable[2] = new unsigned char[h];
-      
-      if ( eff == DiagonalGradient || eff == CrossDiagonalGradient) 
+
+      if ( eff == DiagonalGradient || eff == CrossDiagonalGradient)
 	{
 	  for (x = 0; x < w; x++) {
               dir = _xanti ? x : w - 1 - x;
@@ -706,7 +706,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
               xtable[1][dir] = (unsigned char) ( gDiff/2 * rat );
               xtable[2][dir] = (unsigned char) ( bDiff/2 * rat );
           }
-	  
+	
 	  for (y = 0; y < h; y++) {
               dir = _yanti ? y : h - 1 - y;
               rat =  1 - exp( - (double)y  * ybal );
@@ -715,7 +715,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
               ytable[1][dir] = (unsigned char) ( gDiff/2 * rat );
               ytable[2][dir] = (unsigned char) ( bDiff/2 * rat );
           }
-	  
+	
 	  for (y = 0; y < h; y++) {
               unsigned int *scanline = (unsigned int *)image.scanLine(y);
               for (x = 0; x < w; x++) {
@@ -726,7 +726,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
           }
         }
 
-      else if (eff == RectangleGradient || 
+      else if (eff == RectangleGradient ||
                eff == PyramidGradient ||
                eff == PipeCrossGradient ||
                eff == EllipticGradient)
@@ -824,7 +824,7 @@ QImage KNewPixmapEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
     return image;
 }
-    
+
 //======================================================================
 //
 // Intensity effects
@@ -974,7 +974,7 @@ void KNewPixmapEffect::channelIntensity(QImage &image, float percent,
 // Blend effects
 //
 //======================================================================
-void KNewPixmapEffect::blend(QImage &image, float initial_intensity, 
+void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 			  const QColor &bgnd, GradientType eff,
 			  bool anti_dir)
 {
@@ -983,7 +983,7 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
     int ind;
 
     unsigned int xi, xf, yi, yf;
-    unsigned int a; // used for saving alpha channel info, 
+    unsigned int a; // used for saving alpha channel info,
                     //    as proposed by Brian Rolfe <brianr@corel.ca>
 
     // check the boundaries of the initial intesity param
@@ -994,7 +994,7 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
       unaffected = 1. + initial_intensity;
       initial_intensity = 0;
     }
-    
+
 
     float intensity = initial_intensity;
     float var = 1. - initial_intensity;
@@ -1002,9 +1002,9 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
     if (anti_dir) { initial_intensity = intensity = 1.; var = -var;}
 
     register int x, y;
-    
+
     unsigned int *data =  (unsigned int *)image.bits();
-    
+
     if( eff == VerticalGradient || eff == HorizontalGradient ) {
 
       // set the image domain to apply the effect to
@@ -1022,16 +1022,16 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
       var /= (eff == VerticalGradient?yf-yi:xf-xi);
 
       for (y = yi; y < (int)yf; y++) {
-	intensity = eff == VerticalGradient? intensity + var : 
+	intensity = eff == VerticalGradient? intensity + var :
 	                                     initial_intensity;
 	for (x = xi; x < (int)xf ; x++) {
 	  if (eff == HorizontalGradient) intensity += var;
 	  ind = x + image.width()  * y ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1062,11 +1062,11 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 	for (y = 0; y < image.height() ; y++) {
 	  intensity = initial_intensity + tmp + yvar * y;
 	  ind = x + image.width()  * y ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1088,18 +1088,18 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 
 	  if (eff == RectangleGradient)
 	    intensity = initial_intensity + QMAX(xvar, yvar);
-	  else 
+	  else
 	    intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
 	  if (intensity > 1) intensity = 1;
 	  if (intensity < 0) intensity = 0;
 
 	  //NW
 	  ind = x + image.width()  * y ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1109,11 +1109,11 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 
 	  //NE
 	  ind = image.width() - x - 1 + image.width()  * y ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1123,7 +1123,7 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 	}
       }
 
-      //CT  loop is doubled because of stupid central row/column issue. 
+      //CT  loop is doubled because of stupid central row/column issue.
       //    other solution?
       for (x = 0; x < image.width() / 2; x++) {
 	xvar = var / image.width()  * (image.width() - x*2/unaffected-1);
@@ -1132,18 +1132,18 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 
 	  if (eff == RectangleGradient)
 	    intensity = initial_intensity + QMAX(xvar, yvar);
-	  else 
+	  else
 	    intensity = initial_intensity + sqrt(xvar * xvar + yvar * yvar);
 	  if (intensity > 1) intensity = 1;
 	  if (intensity < 0) intensity = 0;
 
 	  //SW
 	  ind = x + image.width()  * (image.height() - y -1) ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1153,11 +1153,11 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 
 	  //SE
 	  ind = image.width()-x-1 + image.width() * (image.height() - y - 1) ;
-	  r = qRed  (data[ind]) + (int)(intensity * 
-					(r_bgnd - qRed  (data[ind]))); 
-	  g = qGreen(data[ind]) + (int)(intensity * 
-					(g_bgnd - qGreen(data[ind]))); 
-	  b = qBlue (data[ind]) + (int)(intensity * 
+	  r = qRed  (data[ind]) + (int)(intensity *
+					(r_bgnd - qRed  (data[ind])));
+	  g = qGreen(data[ind]) + (int)(intensity *
+					(g_bgnd - qGreen(data[ind])));
+	  b = qBlue (data[ind]) + (int)(intensity *
 					(b_bgnd - qBlue (data[ind])));
 	  if (r > 255) r = 255; if (r < 0 ) r = 0;
 	  if (g > 255) g = 255; if (g < 0 ) g = 0;
@@ -1167,13 +1167,13 @@ void KNewPixmapEffect::blend(QImage &image, float initial_intensity,
 	}
       }
     }
-      
+
     else debug("not implemented");
 }
 
-    
+
 void KNewPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
-			  const QColor &bgnd, GradientType eff, 
+			  const QColor &bgnd, GradientType eff,
 			  bool anti_dir, int ncols)
 {
   QImage image = pixmap.convertToImage();
@@ -1205,18 +1205,18 @@ unsigned int lHash(unsigned int c)
   nr =(r >> 1) + (r >> 2); nr = nr > r ? 0 : nr;
   ng =(g >> 1) + (g >> 2); ng = ng > g ? 0 : ng;
   nb =(b >> 1) + (b >> 2); nb = nb > b ? 0 : nb;
-  
+
   return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
 }
 
-inline unsigned int uHash(unsigned int c) 
+inline unsigned int uHash(unsigned int c)
 {
   unsigned char r = qRed(c), g = qGreen(c), b = qBlue(c), a = qAlpha(c);
   unsigned char nr, ng, nb;
   nr = r + (r >> 3); nr = nr < r ? ~0 : nr;
   ng = g + (g >> 3); ng = ng < g ? ~0 : ng;
   nb = b + (b >> 3); nb = nb < b ? ~0 : nb;
-  
+
   return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
 }
 
@@ -1257,7 +1257,7 @@ void KNewPixmapEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
       }
     }
   }
-    
+
   else if (lite == NWLite || lite == SELite) {
     for (y = 0 ; y < image.height(); y++) {
       for (x = 0;
@@ -1283,10 +1283,10 @@ void KNewPixmapEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
       }
     }
   }
-  
+
 }
 
-void KNewPixmapEffect::hash(KPixmap &pixmap, Lighting lite, 
+void KNewPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
 			 unsigned int spacing, int ncols)
 {
   QImage image = pixmap.convertToImage();
@@ -1312,7 +1312,7 @@ void KNewPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
 }
 
 
-QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca, 
+QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca,
 	const QColor &cb, unsigned pat[8])
 {
     int x, y;
@@ -1330,12 +1330,12 @@ QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca,
     if (size.height() > 8)
 	for (y=8; y<size.height(); y++)
 	    memcpy(img.scanLine(y), img.scanLine(y&7), img.bytesPerLine());
-    
+
     return img;
 }
 
 
-void KNewPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca, 
+void KNewPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
 	const QColor &cb, unsigned pat[8])
 {
     QImage img = pattern(pixmap.size(), ca, cb, pat);
@@ -1343,7 +1343,7 @@ void KNewPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
 }
 
 
-QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca, 
+QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca,
 	const QColor &cb, QImage img, int ncols)
 {
     flatten(img, ca, cb, ncols);
@@ -1364,10 +1364,10 @@ QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca,
 	    for (x=0; x < img2.width(); x++)
 		img2.setPixel(x, y, img.pixel(x % img.width(), y));
     }
-    
+
     if (img2.height() > img.height())
 	for (y=8; y < img2.height(); y++) {
-	    memcpy(img2.scanLine(y), img2.scanLine(y % img.height()), 
+	    memcpy(img2.scanLine(y), img2.scanLine(y % img.height()),
 		    img2.bytesPerLine());
 	}
 
@@ -1375,20 +1375,7 @@ QImage KNewPixmapEffect::pattern(const QSize &size, const QColor &ca,
 }
 
 	
-void KNewPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca, 
-	const QColor &cb, QImage img, int ncols)
-{
-    if (pixmap.depth() >= 15)
-	ncols = 0;
-    flatten(img, ca, cb, ncols);
-
-    KPixmap pmtile;
-    pmtile.convertFromImage(img);
-    pixmap.tile(pmtile);
-}
-
-
-void KNewPixmapEffect::flatten(QImage &img, const QColor &ca, 
+void KNewPixmapEffect::flatten(QImage &img, const QColor &ca,
 	const QColor &cb, int ncols)
 {
     // a bitmap is easy...
@@ -1431,7 +1418,7 @@ void KNewPixmapEffect::flatten(QImage &img, const QColor &ca,
     double sr = ((double) r2 - r1) / (max - min);
     double sg = ((double) g2 - g1) / (max - min);
     double sb = ((double) b2 - b1) / (max - min);
-    
+
 
     // Repaint the image
     if (img.numColors()) {
@@ -1457,7 +1444,7 @@ void KNewPixmapEffect::flatten(QImage &img, const QColor &ca,
 
 
     // Dither if necessary
-    if ( (ncols <= 0) || 
+    if ( (ncols <= 0) ||
 	 ((img.numColors() != 0) && (img.numColors() <= ncols))
        )
 	return;
@@ -1479,7 +1466,7 @@ void KNewPixmapEffect::flatten(QImage &img, const QColor &ca,
     delete[] pal;
 }
 
-    
+
 
 // -----------------------------------------------------------------------------
 
@@ -1517,7 +1504,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
-#if 0    
+#if 0
     // elliptic
     it = time.elapsed();
     KNewPixmapEffect::gradient(pix, ca, cb, KNewPixmapEffect::EllipticGradient);
@@ -1525,12 +1512,12 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
-#endif    
+#endif
 
     y++; // next row
     x = 0; // reset the columns
 
-#if 0    
+#if 0
     // diagonal
     it = time.elapsed();
     KNewPixmapEffect::gradient(pix,ca, cb, KNewPixmapEffect::DiagonalGradient);
@@ -1546,7 +1533,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
-#endif    
+#endif
 
     y++; // next row
     x = 0; // reset the columns
@@ -1575,7 +1562,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     say.setNum( ft - it); say += " ms, PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
-#endif    
+#endif
 
 }
 
@@ -1588,4 +1575,4 @@ int main(int argc, char **argv)
     w.show();
     return(app->exec());
 }
-    
+

@@ -19,7 +19,7 @@
 #include <qmessagebox.h>
 #include <qtabbar.h>
 #include <qpalette.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 
 #include <stdio.h>
 #include <stdlib.h>

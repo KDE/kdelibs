@@ -5,7 +5,7 @@
 #include <qstring.h>
 #include <qlayout.h>
 
-int cols = 3, rows = 3; // how many 
+int cols = 3, rows = 3; // how many
 
 
 KGradientWidget::KGradientWidget(QWidget *parent, const char *name)
@@ -15,7 +15,7 @@ KGradientWidget::KGradientWidget(QWidget *parent, const char *name)
   setMinimumSize(250 * cols, 250 * rows);
 }
 
-void KGradientWidget::paintEvent(QPaintEvent *ev)
+void KGradientWidget::paintEvent(QPaintEvent *)
 {
     int it, ft;
     QString say;
@@ -29,38 +29,38 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     p.setPen(Qt::white);
 
     // draw once, so that the benchmarking be fair :-)
-    KPixmapEffect::unbalancedGradient(pix,ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix,ca, cb,
 				      KPixmapEffect::VerticalGradient,
 				      xbalance, ybalance);
 
     // vertical
     time.start();
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix,ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix,ca, cb,
 				      KPixmapEffect::VerticalGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, Vertical";
+    say.setNum( ft - it); say = "Vertical";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5 + (x++)*width()/cols, 15+y*height()/rows, say); // augment x
 
     // horizontal
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix,ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix,ca, cb,
 				      KPixmapEffect::HorizontalGradient,
 				      xbalance, ybalance);
     ft = time.elapsed() ;
-    say.setNum( ft - it); say += " ms, Horizontal";
+    say.setNum( ft - it); say = "Horizontal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
     // elliptic
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix, ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix, ca, cb,
 				      KPixmapEffect::EllipticGradient,
 				      xbalance, ybalance);
     ft = time.elapsed() ;
-    say.setNum( ft - it); say += " ms, Elliptic";
+    say.setNum( ft - it); say = "Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -69,11 +69,11 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // diagonal
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix,ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix,ca, cb,
 				      KPixmapEffect::DiagonalGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, Diagonal";
+    say.setNum( ft - it); say = "Diagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -83,44 +83,42 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 				      KPixmapEffect::CrossDiagonalGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, CrossDiagonal";
+    say.setNum( ft - it); say = "CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
-
 
     y++; // next row
     x = 0; // reset the columns
 
     // pyramidal
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix, ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix, ca, cb,
 				      KPixmapEffect::PyramidGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, Pyramid";
+    say.setNum( ft - it); say = "Pyramid";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
     // rectangular
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix, ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix, ca, cb,
 				      KPixmapEffect::RectangleGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, Rectangle";
+    say.setNum( ft - it); say = "Rectangle";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
 
     // crosspipe
     it = time.elapsed();
-    KPixmapEffect::unbalancedGradient(pix, ca, cb, 
+    KPixmapEffect::unbalancedGradient(pix, ca, cb,
 				      KPixmapEffect::PipeCrossGradient,
 				      xbalance, ybalance);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms, PipeCross";
+    say.setNum( ft - it); say = "PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
-
 }
 
 myTopWidget::myTopWidget (QWidget *parent, const char *name)
@@ -153,7 +151,7 @@ void myTopWidget::rebalance()
 {
   otime = time.elapsed();
 
-  QString val; val.sprintf("Balance: X = %3d; Y = %3d", 
+  QString val; val.sprintf("Balance: X = %3d; Y = %3d",
 			   xSlider->value(), ySlider->value());
 
   bLabel->setText(val);
@@ -174,5 +172,5 @@ int main(int argc, char **argv)
     w.show();
     return(app->exec());
 }
-    
+
 #include "kunbalancedgrdtest.moc"

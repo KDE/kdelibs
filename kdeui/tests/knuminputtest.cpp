@@ -61,7 +61,7 @@ int main( int argc, char ** argv )
 {
     a = new KApplication ( argc, argv, "KNuminputTest" );
 
-    TopLevel *toplevel = new TopLevel(0, "_ktabctl_test");
+    TopLevel *toplevel = new TopLevel(0, "knuminputtest");
 
     toplevel->show();
     a->setMainWidget(toplevel);

@@ -1,11 +1,12 @@
 #include "khashtest.h"
 #include <kapp.h>
 #include <kpixmapeffect.h>
+#include <kimageeffect.h>
 #include <qpainter.h>
 #include <qdatetime.h>
 #include <qstring.h>
 
-int cols = 3, rows = 3; // how many 
+int cols = 3, rows = 3; // how many
 
 void KHashWidget::paintEvent(QPaintEvent */*ev*/)
 {
@@ -71,13 +72,13 @@ void KHashWidget::paintEvent(QPaintEvent */*ev*/)
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
-    
+
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
 
     QImage image = QImage("testimage.png");
     it = time.elapsed();
-    KPixmapEffect::hash(image,KPixmapEffect::WestLite, 2);
+    KImageEffect::hash(image, KImageEffect::WestLite, 2);
     ft = time.elapsed();
     pix.resize(image.width(), image.height());
     pix.convertFromImage(image);
@@ -131,5 +132,5 @@ int main(int argc, char **argv)
     w.show();
     return(app->exec());
 }
-    
+
 #include <khashtest.moc>
