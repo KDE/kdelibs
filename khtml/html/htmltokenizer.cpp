@@ -88,6 +88,7 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
                 case 0x97: (x) = '-'; break; \
                 case 0x98: (x) = '~'; break; \
                 case 0xb7: (x) = '*'; break; \
+                case 0x2019: (x) = '\''; break; \
                 default: break; \
                 } \
             }
@@ -1149,7 +1150,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 select = beginTag;
             }
 
-            if ( pending ) {
+            if ( pending && !pre ) {
                 if ( !parser->noSpaces() ) addPending();
                 discard = AllDiscard;
                 pending = NonePending;
@@ -1343,6 +1344,9 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             }; // end case
 
             processToken();
+
+            if ( pre && pending )
+                addPending();
 
             cBufferPos = 0;
             tag = TagName;
