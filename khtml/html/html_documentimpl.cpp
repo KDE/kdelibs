@@ -30,6 +30,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtmlpart_p.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
 #include "misc/htmlhashes.h"
@@ -298,6 +299,9 @@ void HTMLDocumentImpl::close()
         if (b && b->id() == ID_FRAMESET)
             getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
+        // don't update rendering if we're going to redirect anyway
+        if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
+                         view()->part()->d->m_delayRedirect > 1 ) )
         updateRendering();
     }
 }
