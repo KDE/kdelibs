@@ -47,7 +47,8 @@ public:
    * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
    *       should be determined immediately or on demand
    */
-  KFileItem( const KIO::UDSEntry& _entry, KURL& _url, bool _determineMimeTypeOnDemand = false );
+  KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
+	     bool _determineMimeTypeOnDemand = false );
 
   /**
    * Create an item representing a file, from all the necessary info for it
@@ -76,7 +77,7 @@ public:
   /**
    * Destructor
    */
-  ~KFileItem() { }
+  virtual ~KFileItem() { }
 
   /**
    * Re-read information (currently only permissions and mimetype)
@@ -116,11 +117,16 @@ public:
   QString group() const { return m_group; }
 
   /**
-   * @return true if this icons represents a link in the UNIX sense of
+   * @returns true if this item represents a link in the UNIX sense of
    * a link. If yes, then we have to draw the label with an italic font.
    */
   bool isLink() const { return m_bLink; }
 
+  /**
+   * @returns true if this item represents a directory
+   */
+  bool isDir() const { return (S_IFDIR & m_fileMode); }
+    
   /**
    * @return the link destination if isLink() == true
    */
@@ -175,6 +181,46 @@ public:
    *         this mime type.
    */
   QString iconName();
+
+  /**
+   * Returns a pixmap representing the file
+   * @param size KDE-size for the pixmap
+   * @return the pixmap
+   */
+  QPixmap pixmap( int _size ) const;
+
+  /**
+   * @return the string to be displayed in the statusbar e.g. when the mouse
+   *         is over this item
+   */
+  QString getStatusBarInfo();
+
+  /**
+   * @return true if files can be dropped over this item
+   * Contrary to popular belief, not only dirs will return true :)
+   * Executables, .desktop files, will do so as well.
+   */
+  bool acceptsDrops( );
+
+  /**
+   * Let's "KRun" this file !
+   * (e.g. when file is clicked or double-clicked or return is pressed)
+   */
+  void run();
+
+  /**
+   * Give the file a "hidden" flag, so that a view doesn't show it.
+   * E.g. a filefilter sets this flag if this item matches *.cpp or not.
+   * @see #isHidden
+   */
+    //  void setHidden( bool b ) { m_bHidden = b; }
+
+  /**
+   * @returns this item's hidden flag. True if a view shall not show it, false
+   * otherwise.
+   * @see #setHidden
+   */
+    //  bool isHidden() const { return m_bHidden; }
 
   /**
    * @return the UDS entry. Used by the tree view to access all details
@@ -241,6 +287,11 @@ private:
    * Marked : see @ref #mark()
    */
   bool m_bMarked;
+
+  /**
+   * Hidden : see @ref #setHidden(), @ref #isHidden()
+   */
+  // bool m_bHidden;
 };
 
 /**

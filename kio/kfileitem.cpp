@@ -34,7 +34,8 @@
 #include <kmimetype.h>
 #include <krun.h>
 
-KFileItem::KFileItem( const KIO::UDSEntry& _entry, KURL& _url, bool _determineMimeTypeOnDemand ) :
+KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
+		      bool _determineMimeTypeOnDemand ) :
   m_entry( _entry ),
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
@@ -254,3 +255,98 @@ QString KFileItem::iconName()
   return determineMimeType()->icon(m_url, false);
 }
 
+
+// new stuff from KonqFileItem
+QPixmap KFileItem::pixmap( int _size ) const
+{
+  if ( !m_pMimeType )
+  {
+    if ( S_ISDIR( m_fileMode ) )
+     return DesktopIcon( "folder", _size );
+
+    return DesktopIcon( "unknown", _size );
+  }
+
+  QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size );
+  if (p.isNull())
+    warning("Pixmap not found for mimetype %s",m_pMimeType->name().latin1());
+  return p;
+}
+
+
+bool KFileItem::acceptsDrops()
+{
+  // Any directory : yes
+  if ( S_ISDIR( mode() ) )
+    return true;
+
+  // But only local .desktop files and executables
+  if ( !m_bIsLocalURL )
+    return false;
+
+  if ( m_pMimeType && mimetype() == "application/x-desktop")
+    return true;
+
+  // Executable, shell script ... ?
+  if ( access( m_url.path(), X_OK ) == 0 )
+    return true;
+
+  return false;
+}
+
+QString KFileItem::getStatusBarInfo()
+{
+  QString comment = determineMimeType()->comment( m_url, false );
+  QString text = m_strText;
+  // Extract from the KIO::UDSEntry the additional info we didn't get previously
+  QString myLinkDest = linkDest();
+  long mySize = size();
+
+  QString text2 = text.copy();
+
+  if ( m_bLink )
+  {
+      QString tmp;
+      if ( comment.isEmpty() )
+	tmp = i18n ( "Symbolic Link" );
+      else
+        tmp = i18n("%1 (Link)").arg(comment);
+      text += "->";
+      text += myLinkDest;
+      text += "  ";
+      text += tmp;
+  }
+  else if ( S_ISREG( m_fileMode ) )
+  {
+      text = QString("%1 (%2)").arg(text2).arg( KIO::convertSize( mySize ) );
+      text += "  ";
+      text += comment;
+  }
+  else if ( S_ISDIR ( m_fileMode ) )
+  {
+      text += "/  ";
+      text += comment;
+    }
+    else
+    {
+      text += "  ";
+      text += comment;
+    }	
+    return text;
+}
+
+void KFileItem::run()
+{
+  (void) new KRun( m_url, m_fileMode, m_bIsLocalURL );
+}
+
+
+/* Doesn't deserve a method
+QString KFileItem::makeTimeString( time_t _time )
+{
+  QDateTime dt;
+  dt.setTime_t(_time);
+
+  return KGlobal::locale()->formatDateTime(dt);
+}
+*/
