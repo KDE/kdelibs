@@ -42,6 +42,8 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
+#include <qxembed.h>
+
 class KHelpMenuPrivate
 {
 public:
@@ -152,7 +154,7 @@ QPopupMenu* KHelpMenu::menu()
     mMenu->insertSeparator();
 
     mMenu->insertItem( kapp->miniIcon(),
-      i18n( "&About" ) + ' ' + QString::fromLatin1(kapp->name()) + 
+      i18n( "&About" ) + ' ' + QString::fromLatin1(kapp->name()) +
       QString::fromLatin1("..."), menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
@@ -177,7 +179,7 @@ void KHelpMenu::aboutApplication()
   {
     if( mAboutApp == 0 )
     {
-      mAboutApp = new KAboutApplication( mParent, "about", false ); 
+      mAboutApp = new KAboutApplication( mParent, "about", false );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     mAboutApp->show();
@@ -195,7 +197,7 @@ void KHelpMenu::aboutApplication()
 				   KDialogBase::Yes, mParent, "about",
 				   false, true, i18n("&OK") );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
-      
+
       QHBox *hbox = new QHBox( mAboutApp );
       mAboutApp->setMainWidget( hbox );
       hbox->setSpacing(KDialog::spacingHint()*3);
@@ -221,7 +223,7 @@ void KHelpMenu::aboutKDE()
   {
     mAboutKDE = new KAboutKDE( mParent, "aboutkde", false );
     connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
-  }    
+  }
   mAboutKDE->show();
 }
 
@@ -271,6 +273,11 @@ void KHelpMenu::menuDestroyed()
 void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
+  QWidget* w = QApplication::widgetAt( QCursor::pos(), TRUE );
+  while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
+      w = w->parentWidget();
+   if ( w && w->inherits("QXEmbed") )
+	  (( QXEmbed*) w )->enterWhatsThisMode();
 }
 
 

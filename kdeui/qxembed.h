@@ -54,9 +54,12 @@ public:
     QSizePolicy sizePolicy() const;
 
     bool eventFilter( QObject *, QEvent * );
-    
+
     void setAutoDelete( bool );
     bool autoDelete() const;
+
+    bool customWhatsThis() const;
+    void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
 
 signals:
     void embeddedWindowDestroyed();

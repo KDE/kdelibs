@@ -24,6 +24,7 @@
 #include <qlist.h>
 #include <qptrdict.h>
 #include <qguardedptr.h>
+#include <qwhatsthis.h>
 #include <qfocusdata.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -47,6 +48,7 @@ extern Atom qt_wm_delete_window;
 extern Time qt_x_time;
 
 static Atom xembed = 0;
+static Atom context_help = 0;
 
 // xembed messages
 #define XEMBED_EMBEDDED_NOTIFY 	0
@@ -73,7 +75,7 @@ class QXEmbedData
 public:
     QXEmbedData(){ autoDelete = TRUE; }
     ~QXEmbedData(){};
-    
+
     bool autoDelete;
 };
 
@@ -121,6 +123,18 @@ static void send_xembed_message( WId window, long message, long detail = 0,
     ev.xclient.data.l[3] = data1;
     ev.xclient.data.l[4] = data2;
     XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+}
+
+static void sendClientMessage(Window window, Atom a, long x){
+  XEvent ev;
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = window;
+  ev.xclient.message_type = a;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = x;
+  ev.xclient.data.l[1] = qt_x_time;
+  XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
 }
 
 
@@ -632,10 +646,24 @@ bool QXEmbed::x11Event( XEvent* e)
 		break;
 	    }
 	}
+    case EnterNotify:
+	if ( QWhatsThis::inWhatsThisMode() ) 
+	    enterWhatsThisMode();
+	break;
     default:
 	break;
     }
     return FALSE;
+}
+
+ // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
+void QXEmbed::enterWhatsThisMode()
+{
+    qDebug("QXEmbed::enterWhatsThisMode");
+    QWhatsThis::leaveWhatsThisMode();
+    if ( !context_help )
+	context_help = XInternAtom( x11Display(), "_NET_WM_CONTEXT_HELP", FALSE );
+    sendClientMessage(window , qt_wm_protocols, context_help );
 }
 
 
@@ -756,7 +784,7 @@ QSize QXEmbed::minimumSizeHint() const
     return QSize( minw, minh );
 }
 
-void QXEmbed::setAutoDelete( bool b) 
+void QXEmbed::setAutoDelete( bool b)
 {
     d->autoDelete = b;
 }
@@ -764,6 +792,13 @@ void QXEmbed::setAutoDelete( bool b)
 bool QXEmbed::autoDelete() const
 {
     return d->autoDelete;
+}
+
+/*!\reimp
+ */
+bool QXEmbed::customWhatsThis() const
+{
+    return TRUE;
 }
 
 

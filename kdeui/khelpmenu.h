@@ -82,8 +82,8 @@ class KHelpMenuPrivate;
  * The standard "about application" dialog box is quite simple. If you
  * need a dialog box with more functionality you must design that one
  * yourself. When you want to display the dialog you can choose one of
- * two methods. Common for both is that you must make a help menu object 
- * with no text argument If the text is missing the default dialog box 
+ * two methods. Common for both is that you must make a help menu object
+ * with no text argument If the text is missing the default dialog box
  * will not be displayed:
  *
  * Example 1 Using @ref showAboutApplication signal (preferred)
@@ -93,7 +93,7 @@ class KHelpMenuPrivate;
  * {
  *   ..
  *   KHelpMenu *helpMenu = new KHelpMenu( this );
- *   connect( helpMenu, SIGNAL(showAboutApplication()), 
+ *   connect( helpMenu, SIGNAL(showAboutApplication()),
  *          this, SLOT(myDialogSlot()));
  *   ..
  * }
@@ -151,7 +151,7 @@ class KHelpMenu : public QObject
      *        @ref showAboutApplication() for more information.
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
-     * 
+     *
      */
     KHelpMenu( QWidget *parent=0, const QString &aboutAppText=QString::null,
 	       bool showWhatsThis=true );
@@ -164,7 +164,7 @@ class KHelpMenu : public QObject
      * @param aboutData User and app data used in the About app dialog
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
-     * 
+     *
      */
     KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 	       bool showWhatsThis=true, KActionCollection *actions = 0 );
@@ -200,7 +200,7 @@ class KHelpMenu : public QObject
 
     /**
      * Opens an application specific dialog box. The dialog box will display
-     * the string that was defined in the constructor. If that string was 
+     * the string that was defined in the constructor. If that string was
      * empty the @ref showAboutApplication() is emitted instead.
      */
     void aboutApplication();
@@ -214,7 +214,7 @@ class KHelpMenu : public QObject
      * Opens the standard "Report Bugs" dialog box.
      */
     void reportBug();
-    
+
   private slots:
     /**
      * Connected to the menu pointer (if created) to detect a delete
@@ -222,9 +222,9 @@ class KHelpMenu : public QObject
      * code yourself. Let the KHelpMenu destructor do the job.
      */
     void menuDestroyed();
-    
+
     /**
-     * Connected to the dialogs (about kde and bug report) to detect 
+     * Connected to the dialogs (about kde and bug report) to detect
      * when they are finished.
      */
     void dialogFinished();
@@ -238,14 +238,14 @@ class KHelpMenu : public QObject
 
   signals:
     /**
-     * This signal is emitted from @ref aboutApplication() if no 
-     * "about application" string has been defined. The standard 
-     * application specific dialog box that is normally activated in 
-     * @ref aboutApplication() will not be displayed when this signal 
+     * This signal is emitted from @ref aboutApplication() if no
+     * "about application" string has been defined. The standard
+     * application specific dialog box that is normally activated in
+     * @ref aboutApplication() will not be displayed when this signal
      * is emitted.
      */
     void showAboutApplication();
-
+    
   private:
     QPopupMenu   *mMenu;
     KDialogBase  *mAboutApp;
