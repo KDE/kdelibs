@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_srcdir)/kdeprint $(all_includes)
 
-noinst_PROGRAMS = helpviewer drawdemo
+check_PROGRAMS = helpviewer drawdemo
 
 helpviewer_SOURCES = helpwindow.cpp main.cpp richpage.cpp
 helpviewer_METASOURCES = helpwindow.moc
