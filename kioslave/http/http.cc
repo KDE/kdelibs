@@ -330,22 +330,6 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_HTTPrev = HTTP_Unknown;
 }
 
-bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port)
-{
-  struct hostent *hostinfo;
-  server_name->sin_family = AF_INET;
-  server_name->sin_port = htons( port );
-
-  hostinfo = gethostbyname( hostname );
-
-  if ( hostinfo == 0L )
-    return false;
-
-  server_name->sin_addr = *(struct in_addr*) hostinfo->h_addr;
-  return true;
-}
-
-
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
   if (m_bUseSSL) {
@@ -801,7 +785,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.040899");
+  QString user_agent("Konqueror/1.9.041099");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
