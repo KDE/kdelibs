@@ -48,13 +48,14 @@
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kinstance.h"
+#include "kglobalsettings.h"
 
 template class QDict<QStringList>;
 
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "cgi", "config", "exe",
-			      "toolbar", "wallpaper", "lib", 0};
+			      "toolbar", "wallpaper", "lib", "pixmap", 0};
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -68,6 +69,14 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
 
 KStandardDirs::~KStandardDirs()
 {
+}
+
+QStringList KStandardDirs::allTypes() const
+{
+    QStringList list;
+    for (int i = 0; types[i] != 0; ++i)
+        list.append(QString::fromLatin1(types[i]));
+    return list;
 }
 
 void KStandardDirs::addPrefix( const QString& _dir )
@@ -546,6 +555,8 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "share/config/";
     if (!strcmp(type, "toolbar"))
 	return "share/toolbar/";
+    if (!strcmp(type, "pixmap"))
+	return "share/pixmaps/";
     if (!strcmp(type, "apps"))
 	return "share/applnk/";
     if (!strcmp(type, "sound"))
@@ -666,6 +677,15 @@ void KStandardDirs::addKDEDefaults()
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
+
+    // should we honor GNOME paths?
+    if (KGlobalSettings::honorGnome()) {
+        QString gnomedir(getenv("GNOMEDIR"));
+        if (!gnomedir.isEmpty()) {
+            addPrefix(gnomedir);
+            addResourceDir("apps", gnomedir + "/share/gnome/apps");
+        }
+    }
 
     uint index = 0;
     while (types[index] != 0) {

@@ -350,6 +350,14 @@ public:
 	 */
 	QStringList resourceDirs(const char *type) const;
 
+    /**
+     * This function will return a list of all the types that KStandardDirs
+     * supports.
+     *
+     * @return All types that KDE supports
+     */
+    QStringList allTypes() const;
+
 	/**
 	 * Find a location to save files into for the given type
 	 * in the user's home directory.
