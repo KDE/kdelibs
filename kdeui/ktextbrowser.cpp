@@ -21,6 +21,12 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.6  2000/01/03 18:48:57  espen
+* The widget will ignore a key sequence
+* containing F1. Since this widget is used
+* in dialogs (eg KDialogBase), F1 and Shift+F1
+* can be used to start the help operation.
+*
 *
 ****************************************************************************
 */
@@ -28,6 +34,7 @@
 
 #include <kapp.h>
 #include <ktextbrowser.h>
+#include <kcursor.h>
 
 KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
@@ -98,9 +105,14 @@ void KTextBrowser::keyPressEvent(QKeyEvent *e)
   }
 }
 
+void KTextBrowser::viewportMouseMoveEvent( QMouseEvent* e)
+{
+  // do this first so we get the right type of cursor
+  QTextBrowser::viewportMouseMoveEvent(e);
 
-
-
+  if ( viewport()->cursor().shape() == PointingHandCursor )
+    viewport()->setCursor( KCursor::handCursor() );
+}
 
 #include "ktextbrowser.moc"
 

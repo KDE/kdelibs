@@ -76,6 +76,10 @@ class KTextBrowser : public QTextBrowser
      */
     virtual void keyPressEvent(QKeyEvent *e);
 
+    /**
+     * Make sure we use our own hand cursor
+     */
+    virtual void viewportMouseMoveEvent( QMouseEvent* e);
 
   signals:
     /**
