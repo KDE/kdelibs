@@ -628,8 +628,8 @@ public:
      * \endcode
      *
      * \note You should consider using checkCachedAuthentication() to
-     * see if the password is available either in the slave's process or
-     * KWallet before calling this function.
+     * see if the password is available in kpasswdserver before calling
+     * this function.
      *
      * \note A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
