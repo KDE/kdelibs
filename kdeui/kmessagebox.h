@@ -364,6 +364,20 @@ public:
                     const QString &details,
                     const QString &caption = QString::null, bool notify=true);
 
+  /**
+   * Like @ref detailedError
+   * 
+   * This function will return immediately, the messagebox will be shown
+   * once the application enters an event loop and no other messagebox
+   * is being shown.
+   *
+   * Note that if the parent gets deleted, the messagebox will not be
+   * shown.
+   */
+  static void queuedDetailedError( QWidget *parent,
+                    const QString &text,
+                    const QString &details,
+                    const QString &caption = QString::null);
 
  /**
   * Display an "Sorry" dialog.

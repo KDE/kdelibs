@@ -575,6 +575,17 @@ KMessageBox::detailedError(QWidget *parent,  const QString &text,
 }
 
 void
+KMessageBox::queuedDetailedError(QWidget *parent,  const QString &text,
+                   const QString &details,
+                   const QString &caption)
+{
+   KMessageBox_queue = true;
+   (void) detailedError(parent, text, details, caption);
+   KMessageBox_queue = false;
+}
+
+
+void
 KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption, bool /*notify*/)
 {
