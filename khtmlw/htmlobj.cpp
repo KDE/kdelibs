@@ -33,6 +33,7 @@
 #include <string.h>
 #include <strings.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include <qfile.h>
 #include <qimage.h>
@@ -746,7 +747,21 @@ void HTMLImage::fileLoaded( const char *_filename )
     
     if ( strcmp( buffer, "GIF" ) == 0 )
     {
-      movie = new QMovie( _filename, 8192 );
+      // Workaround for bug in QMovie
+      // Load the image in memory to avoid vasting file handles
+      struct stat buff;
+      stat( _filename, &buff );
+      int size = buff.st_size;
+      char *p = new char[ size ];
+      FILE *f = fopen( _filename, "rb" );
+      fread( p, 1, size, f );
+      fclose( f );
+      QByteArray arr;
+      arr.duplicate( p, size );
+      delete p;
+      movie = new QMovie( arr, 8192 );
+      // End Workaround
+	// movie = new QMovie( _filename, 8192 );
       movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
     }
     else
