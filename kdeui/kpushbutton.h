@@ -103,7 +103,16 @@ private:
     bool m_dragEnabled;
     QPoint startPos;
 
+private slots:
+    void slotSettingsChanged( int category );
+    
 private:
+    /**
+     * Internal.
+     * Initialize the KPushButton instance
+     */
+    void init( const KGuiItem &item );
+    
     class KPushButtonPrivate;
     KPushButtonPrivate *d;
 

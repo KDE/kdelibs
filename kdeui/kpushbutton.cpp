@@ -21,20 +21,30 @@
 #include <qdragobject.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kipc.h>
+#include <kapp.h>
 
 #include "kpushbutton.h"
+
+class KPushButton::KPushButtonPrivate
+{
+public:
+    KGuiItem item;
+};
 
 KPushButton::KPushButton( QWidget *parent, const char *name )
     : QPushButton( parent, name ),
       m_dragEnabled( false )
 {
+    init( KGuiItem( "" ) );
 }
 
 KPushButton::KPushButton( const QString &text, QWidget *parent,
 				  const char *name)
-    : QPushButton( text, parent, name ),
+    : QPushButton( parent, name ),
       m_dragEnabled( false )
 {
+    init( KGuiItem( text ) );
 }
 
 KPushButton::KPushButton( const QIconSet &icon, const QString &text,
@@ -42,28 +52,52 @@ KPushButton::KPushButton( const QIconSet &icon, const QString &text,
     : QPushButton( text, parent, name ),
       m_dragEnabled( false )
 {
-    KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( cg.readBoolEntry( "ShowIconsOnPushButtons", false ) )
-        setIconSet( icon );
+    init( KGuiItem( text, icon ) );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
                           const char *name )
-    : QPushButton( item.text(), parent, name ),
+    : QPushButton( parent, name ),
       m_dragEnabled( false )
 {
-    KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( item.hasIconSet() &&
-                        cg.readBoolEntry( "ShowIconsOnPushButtons", false ) )
-    {
-        setIconSet( item.iconSet() );
-    }
+    init( item );
 }
 
 KPushButton::~KPushButton()
 {
+    if( d )
+    {
+        delete d;
+        d = 0L;
+    }
 }
 
+void KPushButton::init( const KGuiItem &item )
+{
+    d = new KPushButtonPrivate;
+    d->item = item;
+    setText( item.text() );
+    slotSettingsChanged( 0 );
+    
+    connect( kapp, SIGNAL( settingsChanged(int) ),
+             SLOT( slotSettingsChanged(int) ) );
+    kapp->addKipcEventMask( KIPC::SettingsChanged );
+}
+
+void KPushButton::slotSettingsChanged( int category )
+{
+//    kdDebug() << "settings changed: " << category << endl;
+    
+    KGlobal::config()->reparseConfiguration();
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    if( d->item.hasIconSet() &&
+                        cg.readBoolEntry( "ShowIconsOnPushButtons", false ) )
+    {
+        setIconSet( d->item.iconSet() );
+    }
+    else
+        setIconSet( QIconSet() );
+}
 
 void KPushButton::setDragEnabled( bool enable )
 {
