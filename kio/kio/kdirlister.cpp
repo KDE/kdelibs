@@ -743,14 +743,14 @@ void KDirListerCache::slotFileDirty( const QString& _file )
   KURL u;
   u.setPath( _file );
   KFileItem *item = findByURL( 0, u ); // search all items
-  if ( item && !item->isDir() )
+  if ( item )
   {
     // we need to refresh the item, because e.g. the permissions can have changed.
     item->refresh();
     emitRefreshItem( item );
   }
   else
-    slotURLDirty( u );
+    updateDirectory( u );
 }
 
 void KDirListerCache::slotFileCreated( const QString& _file )
@@ -767,14 +767,6 @@ void KDirListerCache::slotFileDeleted( const QString& _file )
   KURL u;
   u.setPath( _file );
   FilesRemoved( u );
-}
-
-void KDirListerCache::slotURLDirty( const KURL& _dir )
-{
-  //kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
-
-  // this already checks for _dir being used
-  updateDirectory( _dir );
 }
 
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )
