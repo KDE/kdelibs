@@ -4,6 +4,7 @@ input=stream
 output=none
 reading=true
 Icon=www
+Class=:internet
 Description=A kioslave for data URIs (rfc2397)
 Description[de]=Ein Protokoll für data URIs (rfc2397)
 DocPath=kioslave/data.html
