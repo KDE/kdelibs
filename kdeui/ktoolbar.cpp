@@ -460,31 +460,12 @@ void KToolBar::slotReadConfig()
   int icontext;
   
   KConfig *config = kapp->getConfig();
+  QString group = config->group();
   config->setGroup("Toolbar style");
-
-  icontext=config->readNumEntry("IconText", -1);
-  if (icontext==-1)
-  {
-    config->writeEntry("IconText", 0 , true, true);
-    config->sync();
-    icontext=0;
-  }
-  
-  tsize=config->readNumEntry("Size", -1);
-  if (tsize==-1)
-  {
-    config->writeEntry("Size", item_size, true, true);
-    config->sync();
-    tsize=26;
-  }
-
-  _highlight =config->readNumEntry("Highlighting", -1);
-  if (_highlight==-1)
-  {
-    config->writeEntry("Highlighting", 1, true, true);
-    config->sync();
-    _highlight=1;
-  }
+  icontext=config->readNumEntry("IconText", 0);
+  tsize=config->readNumEntry("Size", 26);
+  _highlight =config->readNumEntry("Highlighting", 1);
+  config->setGroup(group);
 
   bool doUpdate=false;
  /********************\
