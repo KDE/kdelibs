@@ -8,8 +8,12 @@ all:
 	autoconf
 
 dist:
-	aclocal 
-	autoheader
-	automake --foreign --include-deps
-	autoconf
-
+	@aclocal ;\
+	autoheader ;\
+	automake --foreign --include-deps ;\
+	autoconf ;\
+	LIST=`find ./po -name "*.po"`; \
+	for i in $$LIST; do \
+	 file2=`echo $$i | sed -e "s#\.po#\.gmo#"`; \
+	 msgfmt -o $$file2 $$i; \
+	done
