@@ -21,7 +21,7 @@ bool KAlphaIcon::draw(QPainter *p, const QImage &icon, const QImage &bg, int x, 
   if (!icon.hasAlphaBuffer() || icon.depth()!=32)
   {
     p->drawImage(x,y,icon);
-    return;
+    return false;
   }
 
   QImage output;
@@ -38,7 +38,7 @@ bool KAlphaIcon::draw(QPainter *p, const QImage &icon, const QPixmap &bg, int x,
   if (!icon.hasAlphaBuffer() || icon.depth()!=32)
   {
     p->drawImage(x,y,icon);
-    return;
+    return false;
   }
 
   QImage bgImg(bg.convertToImage());
