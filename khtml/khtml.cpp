@@ -22,6 +22,7 @@
 #include "khtml.moc"
 
 #include <qstack.h>
+#include <qdragobject.h>
 
 #include <kio_job.h>
 #include <kio_cache.h>
@@ -39,6 +40,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kimgio.h>
+#include <kstddirs.h>
 
 #include "khtmldecoder.h"
 #include "html_documentimpl.h"
@@ -172,11 +174,6 @@ void KHTMLWidget::init()
   findNode = 0;
 
   resizeContents(clipper()->width(), clipper()->height());
-  QPainter p(viewport());
-  QBrush b(defaultSettings->bgColor);
-  p.fillRect(0, 0, viewport()->width(), viewport()->height(), b);
-
-
 }
 
 void KHTMLWidget::clear()
@@ -211,10 +208,6 @@ void KHTMLWidget::clear()
     findNode = 0;
 
     resizeContents(clipper()->width(), clipper()->height());
-    QPainter p(viewport());
-    QBrush b(defaultSettings->bgColor);
-    p.fillRect(0, 0, viewport()->width(), viewport()->height(), b);
-
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
@@ -850,6 +843,7 @@ void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _lin
 
 void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 {
+  printf("setting default bgColor\n");
     defaultSettings->bgColor = bgcolor;
 
     Child *c;
@@ -1014,10 +1008,12 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
     {
 	QPainter p(viewport());
 
-	if(defaultSettings) 
+	if(_settings) 
+	    p.fillRect(r.x(), r.y(), ew, eh, _settings->bgColor);
+	else if(defaultSettings)
 	    p.fillRect(r.x(), r.y(), ew, eh, defaultSettings->bgColor);
 	else
-	    p.fillRect(r.x(), r.y(), ew, eh, Qt::white);
+	    p.fillRect(r.x(), r.y(), ew, eh, Qt::lightGray);
 	return;
     }
     //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
@@ -1150,10 +1146,11 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
     else
 	m_strSelectedURL = QString::null;
 
-#if 0
     if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
     	pressed = TRUE;
+    }
+#if 0
 	// deselect all currently selected text
 	if ( bIsTextSelected )
 	{
@@ -1234,6 +1231,20 @@ void KHTMLWidget::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if(!document) return;
+
+    // drag of URL
+    if(pressed && !m_strSelectedURL.isEmpty())
+    {
+	QStrList uris;
+	KURL u(completeURL(m_strSelectedURL));
+	uris.append(u.url().ascii());
+	QDragObject *d = new QUriDrag(uris, this);
+	printf("filename = %s\n", locate( "data", "khtml/pics/khtml_dnd.png").ascii());
+	QPixmap p(locate( "data", "khtml/pics/khtml_dnd.png"));
+	if(p.isNull()) printf("null pixmap\n");
+	d->setPixmap(p);
+	d->dragCopy();
+    }
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -1358,7 +1369,7 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	// in case we started an autoscroll in MouseMove event
 	// ###
 	//stopAutoScrollY();
-	disconnect( this, SLOT( slotUpdateSelectText(int) ) );
+	//disconnect( this, SLOT( slotUpdateSelectText(int) ) );
     }
 
     // Used to prevent mouseMoveEvent from initiating a drag before
