@@ -1113,6 +1113,8 @@ bool TCPSlaveBase::isConnectionValid()
     int retval;
     do {
        retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
+       if (wasKilled())
+          return false; // Beam us out of here
     } while ((retval == -1) && (errno == EAGAIN));
     // retval == -1 ==> Error
     // retval ==  0 ==> Connection Idle
@@ -1163,6 +1165,8 @@ bool TCPSlaveBase::waitForResponse( int t )
 reSelect:
   startTime = time(NULL);
   rc = KSocks::self()->select(m_iSock+1, &rd, NULL, NULL, &timeout);
+  if (wasKilled())
+    return false; // We're dead.
 
   if (rc == -1)
     return false;
