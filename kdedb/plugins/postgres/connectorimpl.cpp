@@ -277,10 +277,31 @@ KDB::Handler *ConnectorImpl::query(const QString &SQL)
 	return new HandlerImpl(res, this);
 }
 
-KDB::DataType ConnectorImpl::nativeToKDB(const QString &/*type*/)
+KDB::DataType ConnectorImpl::nativeToKDB(const QString &t)
 {
-	KDB::DataType ret = KDB::CHAR; 
-	return ret;
+	if (t == "CHAR")
+		return KDB::CHAR;
+	if (t == "VARCHAR")
+		return KDB::VARCHAR;
+	if (t == "INT2")
+		return KDB::SMALLINT;
+	if (t == "INT4")
+		return KDB::INT;
+	if (t == "INT8")
+		return KDB::BIGINT;
+	if (t == "FLOAT4")
+		return KDB::FLOAT;
+	if (t == "FLOAT8")
+		return KDB::DOUBLE;
+	if (t == "DATE")
+		return KDB::DATE;
+	if (t == "TIME")
+		return KDB::TIME;
+	if (t == "TIMESTAMP")
+		return KDB::TIMESTAMP;
+
+	// Everything else.. we need a KDB::ERROR type.
+	return KDB::CHAR;
 }
 
 QString ConnectorImpl::KDBToNative(KDB::DataType type)
