@@ -1,3 +1,25 @@
+2003-11-02  Dirk Mueller  <mueller@kde.org>
+
+	* khtmlview.cpp (viewportWheelEvent): toggle Font zooming orientation (#61862).
+
+	* rendering/render_box.cpp (paintBackgroundExtended): implement. needed
+	for inline elements background drawing somewhen. 
+
+	* rendering/render_object.cpp (nodeAtPoint): merge from Safari. Still
+	does not work, but at least its the same now. 
+	(lineHeight): handle replaced elements here. They don't necessarily
+	inherit RenderReplaced anymore. 
+	(baselinePosition): handle replaced elements.
+
+	* rendering/render_replaced.cpp: remove baselinePosition/lineHeight. its in
+	RenderObject now.
+
+	* rendering/render_block.cpp (isSelfCollapsingBlock): collapse away trailing whitespace
+	at the end of the block.
+	(setStyle): set "isReplaced" for display: inline-block.
+	(addChildToFlow): Make sure we don't append things after :after generated content.
+	(calcInlineMinMaxWidth): respect text-indent (taken from WebCore 106).
+
 2003-11-02  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_form.cpp (updateFromElement): invalidate the size hint

@@ -1892,7 +1892,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
     if ( ( e->state() & ShiftButton ) == ShiftButton )
     {
-        emit zoomView( e->delta() );
+        emit zoomView( - e->delta() );
         e->accept();
     }
     else if ( ( (d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
