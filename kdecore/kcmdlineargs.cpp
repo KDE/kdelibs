@@ -744,7 +744,7 @@ KCmdLineArgs::usage(const char *id)
    {
       if (args->name)
       {
-         usage = QString(i18n("[%1-options]")).arg(args->name)+" "+usage;
+         usage = i18n("[%1-options]").arg(args->name)+" "+usage;
       }
       args = argsList->prev();
    }
