@@ -92,7 +92,6 @@ static Display *X11_startup_notify_display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
-static Atom net_current_desktop;
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -231,6 +230,7 @@ static void get_current_desktop_and_timestamp( Display* disp,
     int& desktop, long& timestamp )
 {
 #ifdef Q_WS_X11 // Only X11 supports multiple desktops
+    Atom net_current_desktop = XInternAtom( disp, "_NET_CURRENT_DESKTOP", False );
     unsigned char data[ 1 ];
     XSelectInput( disp, DefaultRootWindow( disp ), PropertyChangeMask );
     // only touch the property to get PropertyNotify with timestamp
@@ -1387,7 +1387,6 @@ static int initXconnection()
 #ifndef NDEBUG
     fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
 #endif
-    net_current_desktop = XInternAtom( X11display, "_NET_CURRENT_DESKTOP", False );
     int fd = XConnectionNumber( X11display );
     int on = 1;
     (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &on, (int) sizeof(on));
