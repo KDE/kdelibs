@@ -21,6 +21,9 @@ class Test : public MyNamespace::MyParentClass, virtual public DCOPObject
     K_DCOP
 
 public:
+    struct Bar {
+      int i;
+    };
     Test();
     ~Test();
     int getPageOfObj( int obj );

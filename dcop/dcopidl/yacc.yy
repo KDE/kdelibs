@@ -360,6 +360,9 @@ typedef
 		if (dcop_area)
 		  yyerror("scoped template typedefs are not supported in dcop areas!");
 	  }
+	| T_STRUCT Identifier T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET  T_SEMICOLON
+	  {
+	  }
 
 const_qualifier
 	: /* empty */
