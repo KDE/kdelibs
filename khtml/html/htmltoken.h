@@ -173,7 +173,7 @@ protected:
 class Token
 {
 public:
-    Token() { id = 0; }
+    Token() { id = 0; complexText = false; }
     // contructor for a text token
     Token(QChar *text, uint len);
     // tag without attributes
@@ -184,6 +184,7 @@ public:
     ushort id;
     AttributeList attrs;
     DOMString text;
+    bool complexText;
 };
 
 

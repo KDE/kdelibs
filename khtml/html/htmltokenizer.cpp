@@ -1339,7 +1339,9 @@ void HTMLTokenizer::write( const QString &str )
             {
                 prePos++;
             }
-
+	    unsigned char row = src[0].row();
+	    if ( row > 0x05 && row < 0x10 || row > 0xfd ) // might be complex text...
+		currToken->complexText = true;
             *dest++ = src[0];
             ++src;
         }
@@ -1383,11 +1385,14 @@ void HTMLTokenizer::processToken()
         if(currToken->id && currToken->id != ID_COMMENT)
             kdDebug( 6036 ) << "Error in processToken!!!" << endl;
 #endif
-        // ### we do too much QString copying here, but better here than in RenderText...
-        // anyway have to find a better solution in the long run (lars)
-        QString s = QConstString(buffer, dest-buffer).string();
-        s.compose();
-        currToken->text = DOMString( s );
+	if ( currToken->complexText ) {
+	    // ### we do too much QString copying here, but better here than in RenderText...
+	    // anyway have to find a better solution in the long run (lars)
+	    QString s = QConstString(buffer, dest-buffer).string();
+	    s.compose();
+	    currToken->text = DOMString( s );
+	} else
+	    currToken->text = DOMString( buffer, dest - buffer );
         if (currToken->id != ID_COMMENT)
             currToken->id = ID_TEXT;
     }
