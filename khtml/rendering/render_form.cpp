@@ -283,6 +283,7 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
 {
     QPushButton* p = new QPushButton(view()->viewport());
     setQWidget(p);
+    p->setAutoMask(true);
     p->setMouseTracking(true);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
