@@ -112,12 +112,17 @@ static int tcp_connect(const char *url)
         return -1;
     }
 
+#ifdef TCP_NODELAY
 	// enable TCP sending without nagle algorithm - this sends out requests
 	// faster, because  they are not queued in the hope that more data will
 	// need to be sent soon
 	int on = 1;
-	if(setsockopt(my_socket, SOL_TCP, TCP_NODELAY, &on, sizeof(on)) == -1)
+	if(setsockopt(my_socket, IPPROTO_TCP, TCP_NODELAY, 
+	              (char *)&on, sizeof(on)) < 0)
+	{
 		arts_debug("couldn't set TCP_NODELAY on socket %d\n", my_socket);
+	}
+#endif
 
 	int rc;
 	rc=connect(my_socket,(struct sockaddr *)remote_addr, sizeof(*remote_addr));
