@@ -25,7 +25,7 @@
 #include "nodes.h"
 #include "lexer.h"
 
-extern int yyparse();
+extern int kjsyyparse();
 
 #ifdef KJS_DEBUG_MEM
 extern const char* typeName[];
@@ -62,7 +62,7 @@ bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
 {
   lexer = new KJSLexer(UString(code, length));
 
-  int parseError = yyparse();
+  int parseError = kjsyyparse();
 
   // we can safely get rid of the parser now
   delete lexer;

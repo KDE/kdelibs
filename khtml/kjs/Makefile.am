@@ -36,7 +36,7 @@ libkjs_la_LIBADD = $(LIB_KDECORE) -lm
 
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
-	$(YACC) -d grammar.y && mv grammar.tab.c grammar.cpp; \
+	$(YACC) -d -p kjsyy grammar.y && mv grammar.tab.c grammar.cpp; \
 	if test -f grammar.tab.h; then \
 	if cmp -s grammar.tab.h grammar.h; then rm -f grammar.tab.h; \
 	else mv grammar.tab.h grammar.h; fi \

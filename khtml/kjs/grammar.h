@@ -70,4 +70,4 @@ typedef union {
 #define	IDENT	307
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE kjsyylval;

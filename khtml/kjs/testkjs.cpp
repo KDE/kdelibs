@@ -26,7 +26,7 @@
 
 #include "kjs.h"
 
-extern int yyparse();
+extern int kjsyyparse();
 
 int main(int argc, char **argv)
 {

@@ -36,7 +36,7 @@ using namespace KJS;
 #include "grammar.h"
 #endif
 
-int yylex()
+int kjsyylex()
 {
   return KJSWorld::lexer->lex();
 }
@@ -340,16 +340,16 @@ int KJSLexer::lex()
     return token;
   case Identifier:
     if (!(token = lookupKeyword(buffer8))) {
-      yylval.cstr = new CString(buffer8);
+      kjsyylval.cstr = new CString(buffer8);
       return IDENT;
     }
     return token;
   case String:
-    yylval.ustr = new UString(buffer16, pos16); return STRING;
+    kjsyylval.ustr = new UString(buffer16, pos16); return STRING;
   case Int:
-    yylval.ival = i; return INTEGER;
+    kjsyylval.ival = i; return INTEGER;
   case Decimal:
-    yylval.dval = strtod(buffer8, 0L); return DOUBLE;
+    kjsyylval.dval = strtod(buffer8, 0L); return DOUBLE;
   default:
     assert(!"unhandled numeration value in switch");
   }

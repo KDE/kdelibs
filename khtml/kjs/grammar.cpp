@@ -5,6 +5,13 @@
 
 #define YYBISON 1  /* Identify Bison output.  */
 
+#define yyparse kjsyyparse
+#define yylex kjsyylex
+#define yyerror kjsyyerror
+#define yylval kjsyylval
+#define yychar kjsyychar
+#define yydebug kjsyydebug
+#define yynerrs kjsyynerrs
 #define	LF	258
 #define	NULLTOKEN	259
 #define	TRUETOKEN	260
