@@ -149,6 +149,16 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 
 	asCount = 0; // AutoSuspend
 	Dispatcher::the()->ioManager()->addTimer(200,this);
+
+	// load Arts::MidiManager when installed
+	TraderQuery query;
+	query.supports("InterfaceName","Arts::MidiManager");
+
+	vector<TraderOffer> *offers = query.query();
+	if(offers->size())
+		_addChild(Arts::SubClass("Arts::MidiManager"),
+					"Extension_Arts::MidiManager");
+	delete offers;
 }
 
 SimpleSoundServer_impl::~SimpleSoundServer_impl()
