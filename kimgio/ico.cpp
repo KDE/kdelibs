@@ -9,6 +9,7 @@
  */   
 
 #include <string.h>
+#include <stdlib.h>
 
 #include <qimage.h>
 #include <qbitmap.h>
@@ -16,6 +17,8 @@
 #include <qdatastream.h>
 #include <qglobal.h>
 #include <qcolor.h>
+#include <qapplication.h>
+#include <qpaintdevicemetrics.h>
 
 #include <kdebug.h>
 
@@ -118,26 +121,56 @@ void kimgio_ico_read(QImageIO *io)
     if (hdr.type != Icon || !hdr.count)
         return;
 
-    IconRec rec;
-    ico >> rec.width >> rec.height >> rec.colors
-        >> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
-
-    f.at(rec.dibOffset);
+	QPaintDeviceMetrics metrics(QApplication::desktop());
+	uchar prefSize = 32;
+	uchar prefHeight = 32;
+	uint prefDepth = metrics.depth() > 8 ? 0 : 16;
+	if (io->parameters())
+	{
+		QStringList params = QStringList::split(':', io->parameters());
+		if (params.count())
+			prefSize = params[0].toInt();
+		if (params.count() >= 2)
+			prefDepth = params[1].toInt();
+		kdDebug() << "Requested: " << prefSize << " x " << prefSize << " x " << prefDepth << endl;
+	}
+	else
+		kdDebug() << "Requested (defaults): " << prefSize << " x " << prefSize << " x " << prefDepth << endl;
+	QValueList<IconRec> iconList;
+	uint preferred = 0;
+	kdDebug() << "Icon table" << endl;
+	for (uint i = 0; i < hdr.count; ++i)
+	{
+		IconRec rec;
+		ico >> rec.width >> rec.height >> rec.colors
+			>> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
+		iconList.append(rec);
+		kdDebug() << i << ": " << rec.width << " x " << rec.height << " x " << rec.colors << endl;
+		if (abs(rec.width - prefSize) > abs(iconList[preferred].width - prefSize))
+			continue;
+		if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
+			preferred = i;
+		if (abs(rec.colors - prefDepth) < abs(iconList[preferred].colors - prefDepth))
+			preferred = i;
+	}
+	kdDebug() << "Using: " << preferred << endl;
+	IconRec header = iconList[preferred];
+    f.at(header.dibOffset);
     BMP_INFOHDR dibHeader;
     ico >> dibHeader;
-    QByteArray dibData(rec.dibSize - dibHeader.biSize + 40);
+    QByteArray dibData(header.dibSize - dibHeader.biSize + BMP_WIN);
     QDataStream dib(dibData, IO_ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
-    dibHeader.biSize = 40;
-    dibHeader.biHeight = rec.height;
+    dibHeader.biSize = BMP_WIN;
+    dibHeader.biHeight = header.height;
     dib << dibHeader;
-    f.readBlock(dibData.data() + 40, dibData.size() - 40);
+    f.readBlock(dibData.data() + BMP_WIN, dibData.size() - BMP_WIN);
     dib.device()->at(0);
     
     QImage icon;
     if (!qt_read_dib(dib, icon))
         return;
-    if (icon.width() != rec.width || icon.height() != rec.height)
+    if (icon.width() != header.width || icon.height() != header.height)
         return;
 
     QPixmap p;
@@ -154,7 +187,7 @@ void kimgio_ico_read(QImageIO *io)
     dib.device()->at(0);
     if (!qt_read_dib(dib, icon))
         return;
-    if (icon.width() != rec.width || icon.height() != rec.height)
+    if (icon.width() != header.width || icon.height() != header.height)
         return;
         
     QBitmap mask;
