@@ -30,9 +30,10 @@ namespace KJS {
 
   class KJSLexer {
   public:
-    KJSLexer(const UChar *c, unsigned int len);
+    KJSLexer();
     ~KJSLexer();
 
+    void setCode(const UChar *c, unsigned int len);
     int lex();
 
     int lineNo() const { return yylineno + 1; }

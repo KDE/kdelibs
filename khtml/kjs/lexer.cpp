@@ -42,27 +42,38 @@ int kjsyylex()
   return KJScript::lexer()->lex();
 }
 
-KJSLexer::KJSLexer(const UChar *c, unsigned int len)
+KJSLexer::KJSLexer()
   : yylineno(0),
     size8(128), size16(128),
-    pos8(0), pos16(0), stackToken(0), pos(0),
-    code(c), length(len)
+    stackToken(0), pos(0),
+    code(0), length(0),
+    current(0), next1(0), next2(0), next3(0)
 {
   // allocate space for read buffers
   buffer8 = new char[size8];
   buffer16 = new UChar[size16];
 
-  // read first characters
-  current = (length > 0) ? code[0].unicode() : 0;
-  next1 = (length > 1) ? code[1].unicode() : 0;
-  next2 = (length > 2) ? code[2].unicode() : 0;
-  next3 = (length > 3) ? code[3].unicode() : 0;
 }
 
 KJSLexer::~KJSLexer()
 {
   delete [] buffer8;
   delete [] buffer16;
+}
+
+void KJSLexer::setCode(const UChar *c, unsigned int len)
+{
+  yylineno = 0;
+  stackToken = 0;
+  pos = 0;
+  code = c;
+  length = len;
+
+  // read first characters
+  current = (length > 0) ? code[0].unicode() : 0;
+  next1 = (length > 1) ? code[1].unicode() : 0;
+  next2 = (length > 2) ? code[2].unicode() : 0;
+  next3 = (length > 3) ? code[3].unicode() : 0;
 }
 
 void KJSLexer::shift(unsigned int p)

@@ -44,9 +44,9 @@ class KJScriptLock {
 
 KJScript::KJScript()
 {
-  printf("KJScript::KJScript()\n");
-
   KJScriptLock lock(this);
+
+  setLexer(new KJSLexer());
   setGlobal(new KJSGlobal());
   setContext(new KJSContext());
 }
@@ -54,6 +54,9 @@ KJScript::KJScript()
 KJScript::~KJScript()
 {
   KJScriptLock lock(this);
+
+  delete lexer();
+  setLexer(0L);
 
   KJS::Node::deleteAllNodes();
 
@@ -88,13 +91,8 @@ bool KJScript::evaluate(const KJS::UChar *code, unsigned int length)
   // maintain lock on global "current" pointer while running
   KJScriptLock lock(this);
 
-  setLexer(new KJSLexer(code, length));
-
+  lexer()->setCode(code, length);
   int parseError = kjsyyparse();
-
-  // we can safely get rid of the parser now
-  delete lexer();
-  setLexer(0L);
 
   if (parseError) {
     fprintf(stderr, "JavaScript parse error.\n");
