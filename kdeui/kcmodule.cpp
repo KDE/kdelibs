@@ -39,7 +39,7 @@ class KCModulePrivate
 public:
     KCModulePrivate():
         _about( 0 ),
-        _useRootOnlyMsg( true ),
+        _useRootOnlyMsg( false ),
         _hasOwnInstance( true )
         { }
 
