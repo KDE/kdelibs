@@ -258,7 +258,7 @@ void RenderText::setStyle(RenderStyle *_style)
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
 
-        if (changedText && element())
+        if (changedText && element() && element()->string())
             setText(element()->string(), changedText);
     }
 }
@@ -721,8 +721,8 @@ void RenderText::setText(DOMStringImpl *text, bool force)
             case NONE:
             default:;
             }
+        str->ref();
     }
-    if(str) str->ref();
 
     // ### what should happen if we change the text of a
     // RenderBR object ?
