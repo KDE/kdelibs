@@ -155,7 +155,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   // close button
   close = new QPushButton( "Close", main_widget );
   close->setFixedSize( close->sizeHint() );
-  connect(close, SIGNAL(clicked()), kapp, SLOT(quit()));
+  connect(close, SIGNAL(clicked()), this, SLOT(slotQuit()));
 
   topLayout->addWidget( close, 5 );
 
@@ -169,14 +169,21 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
 
 void KioslaveTest::closeEvent( QCloseEvent * ){
+  slotQuit();
+}
+
+
+void KioslaveTest::slotQuit(){
+  if ( job ) {
+    job->kill( true );  // kill the job quietly
+  }
   kapp->quit();
 }
 
 
 void KioslaveTest::changeOperation( int id ) {
   // only two urls for copy and move
-  bool enab = rbCopy->isChecked() ||
-    rbMove->isChecked();
+  bool enab = rbCopy->isChecked() || rbMove->isChecked();
 
   le_dest->setEnabled( enab );
 

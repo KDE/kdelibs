@@ -88,6 +88,8 @@ protected slots:
   void slotData( KIO::Job *, const QByteArray &data );
   void slotDataReq( KIO::Job *, QByteArray &data );
 
+  void slotQuit();
+
 private:
   KIO::Job *job;
   QWidget *main_widget;
