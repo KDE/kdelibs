@@ -29,7 +29,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#define INT8 _X11INT8
+#define INT32 _X11INT32
 #include <X11/Xmd.h>
+#undef INT32
+#undef INT8
 
 #include "netwm_def.h"
 #include "netwm_p.h"
