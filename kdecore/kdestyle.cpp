@@ -1157,6 +1157,7 @@ static const int windowsRightBorder     = 12;
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
+                        dis ? &itemg.brush(QColorGroup::Background):
                         &itemg.brush(QColorGroup::Midlight));
 
         if ( mi->iconSet() ) {
@@ -1184,7 +1185,7 @@ static const int windowsRightBorder     = 12;
         p->setPen(itemg.buttonText());
         QColor discol;
         if (dis) {
-            discol = itemg.buttonText();
+            discol = itemg.midlight();
             p->setPen(discol);
         }
         int xm = motifItemFrame + checkcol + motifItemHMargin;
