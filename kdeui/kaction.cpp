@@ -501,7 +501,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if( d->m_connected && !d->m_cut.isNull() ) {
-      kdDebug() << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
+      kdDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
       b = kaccel->insert( name(), d->plainText(), QString::null,
           d->m_cut,
           this, SLOT(slotActivated()),
@@ -1871,7 +1871,7 @@ void KSelectAction::slotActivated( const QString &text )
 void KSelectAction::slotActivated()
 {
   KAction::slotActivated();
-  kdDebug() << "KSelectAction::slotActivated currentItem=" << currentItem() << " currentText=" << currentText() << endl;
+  kdDebug(129) << "KSelectAction::slotActivated currentItem=" << currentItem() << " currentText=" << currentText() << endl;
   emit activated( currentItem() );
   emit activated( currentText() );
 }
