@@ -25,6 +25,7 @@
 class KMPrinter;
 class QLineEdit;
 class QCheckBox;
+class QComboBox;
 class KIconButton;
 class KXmlCommandSelector;
 
@@ -42,11 +43,13 @@ protected:
 
 protected slots:
 	void slotOk();
-        void slotTextChanged(const QString &);
+	void slotTextChanged(const QString &);
 
 private:
 	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
+	QComboBox	*m_mimetype;
 	QCheckBox	*m_usefile;
+	QStringList	m_mimelist;
 	KIconButton	*m_icon;
 	KXmlCommandSelector	*m_command;
 };
