@@ -79,7 +79,7 @@ protected:
 protected slots:
   void ignore();
   void add();
-  void ignoreAll();
+  void ignoreAll();  
   void cancel();
   void replace();
   void replaceAll();

@@ -57,35 +57,34 @@ bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
 
   qlist.append (qs.ascii());
 
-  kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
+  //  kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
 
   if (writeready)
     {
-      kdebug(KDEBUG_INFO, 750, "really writing");
+      //kdebug(KDEBUG_INFO, 750, "really writing");
       writeready=FALSE;
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
-  kdebug(KDEBUG_INFO, 750, "NOT really writing");
+  //  kdebug(KDEBUG_INFO, 750, "NOT really writing");
   return TRUE;
 }
 
 void KProcIO::sent (KProcess *)
 {
-  if (qlist.first()) 
-    kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
+  //  if (qlist.first())     kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
 
   qlist.removeFirst();
 
   if (qlist.count()==0)
     {
-      kdebug(KDEBUG_INFO, 750, "Empty");
+      //      kdebug(KDEBUG_INFO, 750, "Empty");
       writeready=TRUE;
     }
   else
     {
-      kdebug(KDEBUG_INFO, 750, "Sending [%s]", qlist.first());
-	      KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
+      //kdebug(KDEBUG_INFO, 750, "Sending [%s]", qlist.first());
+      KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
     }
 
 }
@@ -96,7 +95,7 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 
   buffer [buflen]='\0';
 
-  kdebug(KDEBUG_INFO, 750, "KPIO: recv'd [%s]",buffer);
+  //kdebug(KDEBUG_INFO, 750, "KPIO: recv'd [%s]",buffer);
 
   for (i=0;i<buflen;i++)
     recvbuffer+=buffer [i];
@@ -113,15 +112,15 @@ void KProcIO::ackRead (void)
 
 void KProcIO::controlledEmission (void)
 {
-  //  if (readsignalon)
+  if (readsignalon)
     {
       needreadsignal=FALSE;
       readsignalon=FALSE; //will stay off until read is acknowledged
       emit readReady (this);
     }
-    //  else
-    //    needreadsignal=TRUE;
-
+  else
+    needreadsignal=TRUE;
+  
 }
 
 void KProcIO::enableReadSignals (bool enable)
@@ -143,7 +142,7 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  kdebug(KDEBUG_INFO, 750, "KPIO::readln\n");
+  //kdebug(KDEBUG_INFO, 750, "KPIO::readln\n");
 
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned int)rbi<recvbuffer.length())

@@ -15,8 +15,14 @@
 class QLabel;
 
 enum Encoding {
-	KS_E_LATIN1=0,
-	KS_E_ASCII=1
+	KS_E_ASCII=0,
+	KS_E_LATIN1=1,
+	KS_E_LATIN2=2
+};
+
+enum KSpellClients {
+  KS_CLIENT_ISPELL=0,
+  KS_CLIENT_ASPELL=1
 };
 
 /**
@@ -77,6 +83,7 @@ public:
   //  void setPersonalDict (const char *s);
   void setEncoding (int enctype);
   void setIgnoreList (QStrList _ignorelist);
+  void setClient (int client);
 
   /**
    * Options reading routines.
@@ -88,6 +95,7 @@ public:
   //QString personalDict (void) const;
   int encoding (void) const;
   QStrList ignoreList (void) const;
+  int client (void) const; //see enums at top of file
 
   /**
    * Call this method before this class is deleted  if you want the settings
@@ -109,14 +117,15 @@ protected:
   QStrList ignorelist;
   enum {rdictlist=3, rencoding=4, rhelp=6};
   KConfig *kc;			 
-			  
+  int iclient;            // defaults to ispell, may be aspell, too
+
   QCheckBox *cb1, *cb2;
   KLineEdit *kle1; //, *kle2;
   QGridLayout *layout;			  
   QButtonGroup *dictgroup;
   QRadioButton *dictlistbutton, *dicteditbutton;
   QLabel *dictlist;
-  QComboBox *dictcombo, *encodingcombo;
+  QComboBox *dictcombo, *encodingcombo, *clientcombo;
   QPushButton *browsebutton1;
 
   QStrList *langnames, *langfnames;
@@ -137,7 +146,7 @@ protected:
 		  QString &hname);
 protected slots:
   void sHelp();
-  void sBrowseDict();
+//void sBrowseDict();
   //void sBrowsePDict();
   void sNoAff(bool);
   void sRunTogether(bool);
@@ -145,6 +154,7 @@ protected slots:
   void sPathDictionary(bool);
   void sSetDictionary (int);
   void sChangeEncoding (int);
+  void sChangeClient (int);
   //void textChanged1 (const char *);
   //void textChanged2 (const char *);
 

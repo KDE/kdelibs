@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+ 
 #include <qobject.h>
 #include <qstrlist.h>
 
@@ -16,12 +16,15 @@
 #include "ksconfig.h"
 
 /**
- * KSpell offers easy access to International ISpell 3.1 as well as a
+ * KSpell offers easy access to International ISpell 3.1 as well as a 
  *  typical spell-checker GUI ("Add", "Replace", etc.).  You can use
  *  KSpell to automatically spell-check an ASCII file as well as to implement
  *  online spell-checking and to spell-check proprietary format and
  *  marked up (e.g. HTML, TeX) documents.  The relevant methods for these
  *  three procedures are check(), checkWord(), and checkList().
+ *
+ * KSpellConfig holds configuration information about KSpell as well
+ *  as acting as an options-setting dialog.
  *
  * KSpell usually works nonblocking. If you do not need that, you should
  * simply use @ref #modalCheck. It wont return until the passed string
@@ -29,14 +32,13 @@
  * your GUI is still repainted, but the user may only interact with the
  * KSpell Dialog.
  *
- * KSpellConfig holds configuration information about KSpell as well
- * as acting as an options-setting dialog.
- *
  * @short A KDE programmer's interface to International ISpell 3.1  (GPL 1997)
  * @author David Sweet dsweet@wheatcomputers.com
  * @version $Id$
  * @see KSpellConfig
  */
+
+
 class KSpell : public QObject
 {
   Q_OBJECT
@@ -73,10 +75,10 @@ public:
    **/
   virtual void cleanUp (void);
   /**
-   *  check() will spell check a buffer of many words in plain text
+   *  check() will spell check a buffer of many words in plain text 
    *  format
-   * The _buffer is not modified.  The signal done( const char *) will be
-   *  sent when check() is finished and the argument will be a
+   * The _buffer is not modified.  The signal done(char *) will be
+   *  sent when check() is finished and the argument will be a 
    *  spell-corrected version of _buffer.  (See done() for more information.)
    * The progress() signal is only sent when a misspelled word is found, so
    *  you may not get as fine a resolution as you requested; but you won't
@@ -86,7 +88,7 @@ public:
    *  in _buffer check() reached before stopping.
    */
 
-  virtual bool check( const QString _buffer);
+  virtual bool check (const QString _buffer);
 
   /**
    * Returns the position (for check())  or word number (for checkList()) of
@@ -118,12 +120,12 @@ public:
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  dlgResult() and replacement().  The possible dlgResult()
    *  values are (from kspelldlg.h):
-   *     KS_CANCEL      0
+   *     KS_CANCEL      0 
    *     KS_REPLACE     1
    *     KS_REPLACEALL  2
    *     KS_IGNORE      3
    *     KS_IGNOREALL   4
-   *     KS_ADD         5
+   *     KS_ADD         5     
    *     KS_STOP        7
    *
    *  The signal corrected() is emitted when the check is complete.  You can
@@ -196,7 +198,7 @@ public:
   /**
    * The destructor instructs ispell to write out the personal
    *  dictionary and then terminates ispell.
-   */
+   */ 
   virtual ~KSpell();
 
   /**
@@ -220,13 +222,13 @@ signals:
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-  void misspelling (QString originalword, QStrList *suggestions,
+  void misspelling (QString originalword, QStrList *suggestions, 
 		    unsigned pos);
 
   /**
-   * This is emitted after the dialog is closed, or if the word was
+   * This is emitted after the dialog is closed, or if the word was 
    * corrected without calling the dialog (i.e., the user previously chose
-   * "Replace All" for this word).
+   * "Replace All" for this word). 
    * Results from the dialog may be checked with dlgResult() and replacement()
    * (see notes for check() for more information).
    */
@@ -283,7 +285,7 @@ protected slots:
   void checkList4 ();
   void dialog2 (int dlgresult);
   void check3 ();
-		
+		   
   void slotStopCancel (int);
   void ispellExit (KProcess *);
   void ispellErrors (KProcess *, char *, int);
@@ -293,7 +295,7 @@ private slots:
    * Used for @ref #modalCheck.
    */
   void slotModalReady();
-  /**
+ /**
    * Used for @ref #modalCheck.
    */
   void slotModalDone( const char* );
@@ -313,7 +315,7 @@ protected:
   QStrList ignorelist;
   QStrList replacelist;
   QStrList sugg;
-
+  
   char *temp;
 
   bool cleaning;

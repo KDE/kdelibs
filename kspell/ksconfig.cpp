@@ -23,6 +23,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   //  setPersonalDict (_ksc.personalDict());
   setIgnoreList (_ksc.ignoreList());
   setEncoding (_ksc.encoding());
+  setClient (_ksc.client());
 
   nodialog=TRUE;
 }
@@ -49,6 +50,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
       //      setPersonalDict (_ksc->personalDict());
       setIgnoreList (_ksc->ignoreList());
       setEncoding (_ksc->encoding());
+      setClient (_ksc->client());
     }
 
   //  langnames=new QStrList ();
@@ -59,27 +61,82 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
     {
       //From dlgedit
 
-      layout = new QGridLayout (this, 9, 7, 10, 1);
-      //	    rpersdict = 6,
+      layout = new QGridLayout (this, 6, 3, 10, 1);
 
-        //rdictedit = 4,
-	cb1 = new QCheckBox( this, "CheckBox_1" );
-	cb1->setGeometry( 30, 40, 320, 30 );
-	connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
-	cb1->setText( i18n("Create Root/Affix combinations not in the dictionary") );
-	cb1->setAutoRepeat( FALSE );
-	cb1->setAutoResize( FALSE );
-	layout->addMultiCellWidget (cb1, 0, 0, 0, 5);
-	cb1->setMinimumSize (cb1->sizeHint());
+      cb1 = new QCheckBox(i18n("Create root/&affix combinations"
+			       " not in dictionary"), this);
+      connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
+      cb1->setMinimumSize (cb1->sizeHint());
+      layout->addMultiCellWidget (cb1, 0, 0, 0, 2);
 
-	cb2 = new QCheckBox( this, "CheckBox_3" );
-	cb2->setGeometry( 30, 80, 320, 30 );
-	connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
-	cb2->setText( i18n("Consider run-together words as spelling errors") );
-	cb2->setAutoRepeat( FALSE );
-	cb2->setAutoResize( FALSE );
-	layout->addMultiCellWidget (cb2, 1, 1, 0, 5);
-	cb2->setMinimumSize (cb2->sizeHint());
+      cb2 = new QCheckBox( i18n("Consider &run-together words"
+				" as spelling errors"), this );
+      connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
+      cb2->setMinimumSize (cb2->sizeHint());
+      layout->addMultiCellWidget (cb2, 1, 1, 0, 2);
+
+      dictcombo = new QComboBox (this);
+      dictcombo->setInsertionPolicy (QComboBox::NoInsertion);
+      dictcombo->setMinimumSize (dictcombo->sizeHint());
+      connect (dictcombo, SIGNAL (activated (int)),
+	       this, SLOT (sSetDictionary (int)));
+      layout->addMultiCellWidget (dictcombo, 2, 2, 1, 2);
+
+      dictlist=new QLabel (dictcombo, i18n("&Dictionary:"), this);
+      dictlist->setAlignment (AlignVCenter);
+      dictlist->setMinimumSize (dictlist->sizeHint());
+      layout->addWidget (dictlist, 2 ,0);
+
+      encodingcombo = new QComboBox (FALSE, this);
+      encodingcombo->insertItem (i18n("7-Bit/ASCII"));
+      encodingcombo->insertItem (i18n("Latin1"));
+      encodingcombo->insertItem (i18n("Latin2"));
+      encodingcombo->setMinimumSize (encodingcombo->sizeHint());
+      connect (encodingcombo, SIGNAL (activated(int)), this,
+	       SLOT (sChangeEncoding(int)));
+      layout->addMultiCellWidget (encodingcombo, 3, 3, 1, 2);
+
+
+      QLabel* tmpQLabel;
+      tmpQLabel = new QLabel( encodingcombo, i18n("&Encoding:"), this);
+      dictlist->setAlignment (AlignVCenter);
+      tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
+      layout->addWidget (tmpQLabel, 3, 0);
+
+      clientcombo = new QComboBox (FALSE, this);
+      clientcombo->insertItem (i18n("International Ispell"));
+      clientcombo->insertItem (i18n("Aspell"));
+      clientcombo->setMinimumSize (clientcombo->sizeHint());
+      connect (clientcombo, SIGNAL (activated(int)), this,
+	       SLOT (sChangeClient(int)));
+      layout->addMultiCellWidget (clientcombo, 4, 4, 1, 2);
+
+
+      tmpQLabel = new QLabel( clientcombo, i18n("Cl&ient:"), this);
+      dictlist->setAlignment (AlignVCenter);
+      tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
+      layout->addWidget (tmpQLabel, 4, 0);
+
+
+
+      QPushButton* tmpQPushButton;
+      tmpQPushButton = new QPushButton( this);
+      tmpQPushButton->setText ( i18n("&Help") );
+      connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sHelp()) );
+      tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
+      layout->addWidget (tmpQPushButton, 5, 2);
+
+
+
+      layout->activate();
+      
+      fillInDialog();	
+
+
+
+
+
+
 
 	/* not w/o alternate dict.
 	  dictgroup=new QButtonGroup ();
@@ -91,10 +148,6 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 		 this, SLOT (sDictionary(bool)));
 	layout->addWidget (dictlistbutton,rdictlist,0);
 	*/
-
-	dictlist=new QLabel (i18n("Dictionary"),this);
-	dictlist->setMinimumSize (dictlist->sizeHint());
-	layout->addWidget (dictlist,rdictlist,0);
 
 	/* No alternate now -- is this needed?
 	dicteditbutton=new QRadioButton (i18n("Alternate Dictionary"),this);
@@ -110,13 +163,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	dictgroup->insert (dicteditbutton);
 	*/
 
-	dictcombo = new QComboBox (this);
-	dictcombo->setInsertionPolicy (QComboBox::NoInsertion);
-	layout->addWidget (dictcombo,rdictlist,1);
-	connect (dictcombo, SIGNAL (activated (int)),
-				    this, SLOT (sSetDictionary (int)));
 
-	QLabel* tmpQLabel;
 	/*	
 	tmpQLabel = new QLabel( this, "Label_1" );
 	tmpQLabel->setGeometry( 20, 120, 120, 30 );
@@ -139,21 +186,6 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	tmpQLabel->setMinimumWidth (tmpQLabel->sizeHint().width());
 	*/
 
-	tmpQLabel = new QLabel( this, "Label_2" );
-	tmpQLabel->setText( i18n("Encoding:") );
-	tmpQLabel->setAlignment( AlignLeft );
-	tmpQLabel->setMargin( -1 );
-	layout->addWidget (tmpQLabel, rencoding, 0);
-	tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
-
-	encodingcombo = new QComboBox (FALSE, this);
-	encodingcombo->insertItem (i18n("Latin1"));
-	encodingcombo->insertItem (i18n("7-Bit/ASCII"));
-	encodingcombo->setMinimumSize (encodingcombo->sizeHint());
-	connect (encodingcombo, SIGNAL (activated(int)), this,
-		 SLOT (sChangeEncoding(int)));
-	layout->addMultiCellWidget (encodingcombo, 
-				    rencoding, rencoding, 1,4);
 
 	
 	/* for alternate dict
@@ -183,7 +215,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	browsebutton1->setMinimumWidth (30);
 	*/
 
-	QPushButton* tmpQPushButton;
+
 	/*
 	tmpQPushButton = new QPushButton( this, "PushButton_2" );
 	tmpQPushButton->setGeometry( 460, 160, 70, 30 );
@@ -209,26 +241,6 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	///	kle2->setMinimumSize (290,30);
 	*/
 
-	tmpQPushButton = new QPushButton( this, "PushButton_3" );
-	tmpQPushButton->setGeometry( 460, 210, 70, 30 );
-	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sHelp()) );
-	tmpQPushButton->setText( i18n("Help") );
-	tmpQPushButton->setAutoRepeat( FALSE );
-	tmpQPushButton->setAutoResize( FALSE );
-	////
-	  //tmpQPushButton->setEnabled (FALSE);
-	layout->addWidget (tmpQPushButton, rhelp, 6);
-	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
-
-	
-	layout->activate();
-	//	resize (sizeHint().width(),sizeHint().height());
-	//setMinimumSize (sizeHint());
-
-	////
-
-	fillInDialog();	
-	
     }
 }
 
@@ -241,12 +253,14 @@ KSpellConfig::~KSpellConfig ()
 }
 
 
-bool KSpellConfig::dictFromList (void) const
+bool
+KSpellConfig::dictFromList (void) const
 {
   return dictfromlist;
 }
 
-bool KSpellConfig::readGlobalSettings (void)
+bool
+KSpellConfig::readGlobalSettings (void)
 {
   kc->setGroup ("KSpell");
 
@@ -256,11 +270,13 @@ bool KSpellConfig::readGlobalSettings (void)
   setDictFromList  (kc->readNumEntry ("KSpell_DictFromList", FALSE));
   //  setPersonalDict  (kc->readEntry ("KSpell_PersonalDict", ""));
   setEncoding (kc->readNumEntry ("KSpell_Encoding", KS_E_ASCII));
+  setClient (kc->readNumEntry ("KSpell_Client", KS_CLIENT_ISPELL));
 
   return TRUE;
 }
 
-bool KSpellConfig::writeGlobalSettings (void)
+bool
+KSpellConfig::writeGlobalSettings (void)
 {
   kc->setGroup ("KSpell");
   kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix (), TRUE, TRUE);
@@ -269,6 +285,8 @@ bool KSpellConfig::writeGlobalSettings (void)
   kc->writeEntry ("KSpell_DictFromList",(int) dictFromList(), TRUE, TRUE);
   //  kc->writeEntry ("KSpell_PersonalDict", personalDict (), TRUE,  TRUE);
   kc->writeEntry ("KSpell_Encoding", (int) encoding(),
+		  TRUE, TRUE);
+  kc->writeEntry ("KSpell_Client", client(),
 		  TRUE, TRUE);
   kc->sync();
   return TRUE;
@@ -281,7 +299,14 @@ KSpellConfig::sChangeEncoding(int i)
   setEncoding (i);
 }
 
-bool KSpellConfig::interpret (QString &fname, QString &lname,
+void
+KSpellConfig::sChangeClient (int i)
+{
+  setClient (i);
+}
+
+bool
+KSpellConfig::interpret (QString &fname, QString &lname,
 			      QString &hname)
 
 {
@@ -336,7 +361,8 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
   return FALSE;
 }
 
-void KSpellConfig::fillInDialog (void)
+void
+KSpellConfig::fillInDialog (void)
 {
   if (nodialog)
     return;
@@ -346,6 +372,7 @@ void KSpellConfig::fillInDialog (void)
   cb1->setChecked (noRootAffix());
   cb2->setChecked (runTogether());
   encodingcombo->setCurrentItem (encoding());
+  clientcombo->setCurrentItem (client());
 
   //  kle1->setText (dictionary());
   //  kle2->setText (personalDict());
@@ -436,17 +463,27 @@ void KSpellConfig::fillInDialog (void)
 /*
  * Options setting routines.
  */
-void KSpellConfig::setNoRootAffix (bool b)
+
+void
+KSpellConfig::setClient (int c)
+{
+  iclient = c;
+}
+
+void
+KSpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
 }
 
-void KSpellConfig::setRunTogether(bool b)
+void
+KSpellConfig::setRunTogether(bool b)
 {
   bruntogether=b;
 }
 
-void KSpellConfig::setDictionary (const QString s)
+void
+KSpellConfig::setDictionary (const QString s)
 {
   qsdict=s; //.copy();
 
@@ -457,7 +494,8 @@ void KSpellConfig::setDictionary (const QString s)
   //  kdebug (KDEBUG_INFO, 750, "setdictionary: [%s]",qsdict.data());
 }
 
-void KSpellConfig::setDictFromList (bool dfl)
+void
+KSpellConfig::setDictFromList (bool dfl)
 {
   //  kdebug (KDEBUG_INFO, 750, "sdfl = %d", dfl);
   dictfromlist=dfl;
@@ -470,7 +508,8 @@ void KSpellConfig::setPersonalDict (const char *s)
 }
 */
 
-void KSpellConfig::setEncoding (int enctype)
+void
+KSpellConfig::setEncoding (int enctype)
 {
   enc=enctype;
 }
@@ -478,17 +517,27 @@ void KSpellConfig::setEncoding (int enctype)
 /*
   Options reading routines.
  */
-bool KSpellConfig::noRootAffix (void) const
+int
+KSpellConfig::client (void) const
+{
+  return iclient;
+}
+
+
+bool
+KSpellConfig::noRootAffix (void) const
 {
   return bnorootaffix;
 }
 
-bool KSpellConfig::runTogether(void) const
+bool
+KSpellConfig::runTogether(void) const
 {
   return bruntogether;
 }
 
-const QString KSpellConfig::dictionary (void) const
+const
+QString KSpellConfig::dictionary (void) const
 {
   return qsdict;
 }
@@ -500,22 +549,27 @@ const QString KSpellConfig::personalDict (void) const
 }
 */
 
-int KSpellConfig::encoding (void) const
+int
+KSpellConfig::encoding (void) const
 {
   return enc;
 }
 
-void KSpellConfig::sRunTogether(bool)
+void
+KSpellConfig::sRunTogether(bool)
 {
   setRunTogether (cb2->isChecked());
 }
 
-void KSpellConfig::sNoAff(bool)
+void
+KSpellConfig::sNoAff(bool)
 {
   setNoRootAffix (cb1->isChecked());
 }
 
-void KSpellConfig::sBrowseDict()
+/*
+void
+KSpellConfig::sBrowseDict()
 {
   return;
 
@@ -524,6 +578,8 @@ void KSpellConfig::sBrowseDict()
     kle1->setText (qs);
 
 }
+*/
+
 /*
 void KSpellConfig::sBrowsePDict()
 {
@@ -536,13 +592,15 @@ void KSpellConfig::sBrowsePDict()
 }
 */
 
-void KSpellConfig::sSetDictionary (int i)
+void
+KSpellConfig::sSetDictionary (int i)
 {
   setDictionary (langfnames->at(i));
   setDictFromList (TRUE);
 }
 
-void KSpellConfig::sDictionary(bool on)
+void
+KSpellConfig::sDictionary(bool on)
 {
   if (on)
     {
@@ -556,7 +614,8 @@ void KSpellConfig::sDictionary(bool on)
     }
 }
 
-void KSpellConfig::sPathDictionary(bool on)
+void
+KSpellConfig::sPathDictionary(bool on)
 {
   return; //enough for now
 
@@ -575,11 +634,13 @@ void KSpellConfig::sPathDictionary(bool on)
     }
 }
 
-void KSpellConfig::sHelp()
+void
+KSpellConfig::sHelp()
 {
-  QString file ("kspell/ksconfig.html"), label ("");
+  QString file ("kspell/index-2.html"), label ("");
   kapp->invokeHTMLHelp (file, label);
 }
+
 /*
 void KSpellConfig::textChanged1 (const char *s)
 {
@@ -592,7 +653,8 @@ void KSpellConfig::textChanged2 (const char *)
 }
 */
 
-void KSpellConfig::operator= (const KSpellConfig &ksc)
+void
+KSpellConfig::operator= (const KSpellConfig &ksc)
 {
   //We want to copy the data members, but not the
   //pointers to the child widgets
@@ -602,18 +664,24 @@ void KSpellConfig::operator= (const KSpellConfig &ksc)
   setDictFromList (ksc.dictFromList());
   //  setPersonalDict (ksc.personalDict());
   setEncoding (ksc.encoding());
+  setClient (ksc.client());
 
   fillInDialog();
 }
 
-void KSpellConfig::setIgnoreList (QStrList _ignorelist)
+void
+KSpellConfig::setIgnoreList (QStrList _ignorelist)
 {
   ignorelist=_ignorelist;
 }
 
-QStrList KSpellConfig::ignoreList (void) const
+QStrList
+KSpellConfig::ignoreList (void) const
 {
   return ignorelist;
 }
 
 #include "ksconfig.moc"
+
+
+

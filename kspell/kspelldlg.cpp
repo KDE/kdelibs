@@ -8,7 +8,8 @@
 
 KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 		      bool _progressbar, bool _modal ) :
-  QWidget (_parent, name, WStyle_DialogBorder | WType_TopLevel | ( _modal ? WType_Modal : 0 ) )
+  QWidget (_parent, name, WStyle_DialogBorder |
+	   WType_TopLevel | ( _modal ? WType_Modal : 0 ) )
 {
 
   progressbar = _progressbar;
@@ -25,7 +26,7 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 
 
   //Dlgedit
-
+  
   KLineEdit* tmpKLineEdit;
   tmpKLineEdit = new KLineEdit( this, "LineEdit_1" );
   tmpKLineEdit->setGeometry( 110, 50, 190, 30 );
@@ -35,109 +36,114 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   tmpKLineEdit->setFrame( TRUE );
 
   children->append (tmpKLineEdit);
+  tmpKLineEdit->setMinimumSize (tmpKLineEdit->sizeHint());
   layout->addWidget (tmpKLineEdit,1,1);
-  tmpKLineEdit->setMinimumWidth (tmpKLineEdit->sizeHint().width());
 	
 	
-  QPushButton *tmpQPushButtonRA =
+  QPushButton *tmpQPushButtonRA = 
     new QPushButton( this, "PushButton_7" );
   tmpQPushButtonRA->setGeometry( 430, 80, 100, 30 );
   connect( tmpQPushButtonRA, SIGNAL(clicked()), SLOT(replaceAll()) );
-  tmpQPushButtonRA->setText( i18n("Replace All") );
+  tmpQPushButtonRA->setText( i18n("R&eplace All") );
   tmpQPushButtonRA->setAutoRepeat( FALSE );
   tmpQPushButtonRA->setAutoResize( FALSE );
+  tmpQPushButtonRA->setMinimumSize (tmpQPushButtonRA->sizeHint());
   layout->addWidget (tmpQPushButtonRA, 1, 3);
-  tmpQPushButtonRA->setMinimumWidth (buttonwidth);
-
+  
 
   QListBox* tmpQListBox;
   tmpQListBox = new QListBox( this, "ListBox_1" );
   tmpQListBox->setFrameStyle( 51 );
   tmpQListBox->setLineWidth( 2 );
-
+  tmpQListBox->setMinimumSize (tmpQListBox->sizeHint());
   children->append (tmpQListBox);
   layout->addMultiCellWidget (tmpQListBox, 2, 5, 1, 1);
 
-
+  
   QLabel* tmpQLabel;
   tmpQLabel = new QLabel( this, "Label_1" );
   tmpQLabel->setGeometry( 10, 10, 100, 30 );
   tmpQLabel->setText( i18n("Misspelled Word:") );
   tmpQLabel->setAlignment( 290 );
   layout->addWidget (tmpQLabel,0,0);
-  tmpQLabel->setMinimumWidth (labelwidth);
-
-
+  tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
+  
+  
   tmpQLabel = new QLabel( this, "Label_2" );
   tmpQLabel->setGeometry( 10, 50, 100, 30 );
   tmpQLabel->setText( i18n("Replacement:") );
   tmpQLabel->setAlignment( 290 );
   layout->addWidget (tmpQLabel, 1, 0);
-  tmpQLabel->setMinimumWidth (labelwidth);
-
+  tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
+  
   tmpQLabel = new QLabel( this, "Label_3" );
   tmpQLabel->setGeometry( 10, 80, 100, 30 );
   tmpQLabel->setText( i18n("Suggestions:") );
   tmpQLabel->setAlignment( 290 );
   layout->addWidget (tmpQLabel, 2, 0);
   tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
-
+  
   QPushButton* tmpQPushButton;
   tmpQPushButton = new QPushButton( this, "PushButton_1" );
   tmpQPushButton->setGeometry( 320, 120, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(ignore()) );
-  tmpQPushButton->setText( i18n("Ignore") );
+  tmpQPushButton->setText( i18n("&Ignore") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   children->append (tmpQPushButton);
   layout->addWidget (tmpQPushButton, 2, 2);
-
+  
   tmpQPushButton = new QPushButton( this, "PushButton_2" );
   tmpQPushButton->setGeometry( 430, 120, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(ignoreAll()) );
-  tmpQPushButton->setText( i18n("Ignore All") );
+  tmpQPushButton->setText( i18n("I&gnore All") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   children->append (tmpQPushButton);
   layout->addWidget (tmpQPushButton, 2, 3);
-
+  
   QPushButton *tmpQPushButtonR = new QPushButton( this, "PushButton_3" );
   tmpQPushButtonR->setGeometry( 320, 80, 100, 30 );
   connect( tmpQPushButtonR, SIGNAL(clicked()), SLOT(replace()) );
-  tmpQPushButtonR->setText( i18n("Replace") );
+  tmpQPushButtonR->setText( i18n("&Replace") );
   tmpQPushButtonR->setAutoRepeat( FALSE );
   tmpQPushButtonR->setAutoResize( FALSE );
   tmpQPushButtonR->setDefault ( TRUE );
   layout->addWidget (tmpQPushButtonR, 1, 2);
-  tmpQPushButtonR->setMinimumWidth (buttonwidth);
-
+  tmpQPushButtonR->setMinimumSize (tmpQPushButtonR->sizeHint());
+  
   tmpQPushButton = new QPushButton( this, "PushButton_4" );
   tmpQPushButton->setGeometry( 320, 160, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(add()) );
-  tmpQPushButton->setText( i18n("Add") );
+  tmpQPushButton->setText( i18n("A&dd") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   children->append (tmpQPushButton);
   layout->addWidget (tmpQPushButton, 3, 2);
-
+  
   tmpQPushButton = new QPushButton( this, "PushButton_5" );
   tmpQPushButton->setGeometry( 430, 160, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(help()) );
-  tmpQPushButton->setText( i18n("Help") );
+  tmpQPushButton->setText( i18n("&Help") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   children->append (tmpQPushButton);
   layout->addWidget (tmpQPushButton, 3, 3);
-
+  
   tmpQPushButton = new QPushButton( this, "PushButton_6" );
   tmpQPushButton->setGeometry( 430, 200, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(cancel()) );
-  tmpQPushButton->setText( i18n("Cancel") );
+  tmpQPushButton->setText( i18n("&Cancel") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   layout->addWidget (tmpQPushButton, 4, 3);
-
-
+  
+  
   // Label for the misspelled word
   wordlabel = new QLabel( this, "Label_4" );
   wordlabel->setGeometry( 110, 10, 190, 30 );
@@ -147,15 +153,16 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
   wordlabel->setAlignment( 289 );
   children->append (wordlabel);
   layout->addWidget (wordlabel, 0, 1);
-  wordlabel->setMaximumHeight (wordlabel->sizeHint().height());
-
+  wordlabel->setMinimumSize (wordlabel->sizeHint());
+  
 
   tmpQPushButton = new QPushButton( this, "PushButton_8" );
   tmpQPushButton->setGeometry( 320, 200, 100, 30 );
   connect( tmpQPushButton, SIGNAL(clicked()), SLOT(stop()) );
-  tmpQPushButton->setText( i18n("Stop") );
+  tmpQPushButton->setText( i18n("&Stop") );
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
+  tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
   layout->addWidget (tmpQPushButton, 4, 2);
 
   if (progressbar)
@@ -163,38 +170,39 @@ KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
       progbar = new KProgress (0, 100, 0, KProgress::Horizontal, this);
       progbar->setBarStyle (KProgress::Blocked);
       progbar->setMinimumHeight (progbar->sizeHint().height());
-      progbar->setMaximumHeight (progbar->sizeHint().height());
+      //      progbar->setMaximumHeight (progbar->sizeHint().height());
       layout->addMultiCellWidget (progbar, rprogbar, rprogbar,
 				  cprogbara, cprogbarb);
     }
 
-  resize(478, 222);
+  layout->freeze();
+  //  resize(478, 222);
 
-
+  
    //end Dlgedit
 
   //done once per session
   wordlabel->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
-
+  
   qpbrep=tmpQPushButtonR;
   qpbrepa=tmpQPushButtonRA;
   editbox=tmpKLineEdit;
   listbox=tmpQListBox;
-
-
-
+  
+  
+  
   connect (editbox,SIGNAL (textChanged (const QString &)),
 	   this, SLOT (textChanged (const QString &)));
   connect (editbox,SIGNAL (returnPressed ()),
 	   this, SLOT (replace ()));
-
+  
   listbox->setAutoScrollBar (TRUE);
   connect (listbox,SIGNAL (selected(int)),this, SLOT (selected (int)));
   connect (listbox,SIGNAL (highlighted(int)),
 	   this, SLOT (highlighted (int)));
-
-
-
+  
+  
+  
   layout->activate();
   standby();
 }
@@ -232,7 +240,7 @@ KSpellDlg::init (const QString& _word, QStrList *_sugg)
       qpbrepa->setEnabled (FALSE);
       editbox->setText (_word);
     }
-
+  
 
 
 }
