@@ -219,6 +219,7 @@ KSpell::startIspell()
       kdDebug(750) << "Using aspell" << endl;
       break;
     }
+  // TODO: add option -h to ignore HTML (XML) code
   *proc << "-a" << "-S";
   if (ksconfig->noRootAffix())
     {
