@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.13  1997/07/25 19:46:42  kalle
+// SGI changes
+//
 // Revision 1.12  1997/07/18 05:49:16  ssk
 // Taj: All kdecore doc now in javadoc format (hopefully).
 //
@@ -390,6 +393,8 @@ private:
   QString aAppName; // logical application name
   QString aCaption; // the name for the window title
   QString aWmCommand; // for userdefined session management
+  ConfigState eConfigState;
+  static QStrList* pSearchPaths;
   KIconLoader* pIconLoader; // the application's own icon loader
   KLocale* pLocale;  
   static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compability 
