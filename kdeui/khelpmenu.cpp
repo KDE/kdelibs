@@ -22,9 +22,11 @@
 
 #include <qmessagebox.h>
 #include <qpopupmenu.h>
+#include <qtimer.h>
+#include <qtoolbutton.h>
 #include <qwidget.h>
 #include <qwhatsthis.h>
-#include <qtoolbutton.h>
+
 
 #include <kaboutdialog.h>
 #include <kapp.h>
@@ -39,7 +41,7 @@
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
 		      bool showWhatsThis )
-  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0)
+  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0)
 {
   mParent = parent;
   mAboutAppText = aboutAppText;
@@ -52,6 +54,7 @@ KHelpMenu::~KHelpMenu( void )
   delete mMenu;
   delete mAboutApp;
   delete mAboutKDE;
+  delete mBugReport;
 }
 
 
@@ -151,6 +154,7 @@ void KHelpMenu::aboutKDE( void )
     mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, "KDE",
       KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent,
       "aboutkde", false );
+    connect( mAboutKDE, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
 
     const QString text1 = i18n(""
       "The <b>K Desktop Environment</b> is written and maintained by the "
@@ -202,8 +206,32 @@ void KHelpMenu::aboutKDE( void )
 
 void KHelpMenu::reportBug( void )
 {
-  KBugReport bugReport( 0L );
-  bugReport.exec();
+  if( mBugReport == 0 )
+  {
+    mBugReport = new KBugReport( mParent, false );
+    connect( mBugReport, SIGNAL(hidden()),this,SLOT( dialogHidden()) );
+  }
+  mBugReport->show();
+}
+
+
+void KHelpMenu::dialogHidden( void )
+{
+  QTimer::singleShot( 0, this, SLOT(timerExpired()) );
+}
+
+
+void KHelpMenu::timerExpired( void )
+{
+  if( mAboutKDE != 0 && mAboutKDE->isVisible() == false )
+  {
+    delete mAboutKDE; mAboutKDE = 0;
+  }
+
+  if( mBugReport != 0 && mBugReport->isVisible() == false )
+  {
+    delete mBugReport; mBugReport = 0;
+  }
 }
 
 

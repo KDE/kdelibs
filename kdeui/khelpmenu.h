@@ -29,6 +29,7 @@ class QMessageBox;
 class QPopupMenu;
 class QWidget;
 class KAboutDialog;
+class KBugReport;
 
 
 /**
@@ -196,6 +197,19 @@ class KHelpMenu : public QObject
      * code yourself. Let the KHelpMenu destructor do the job.
      */
     void menuDestroyed( void );
+    
+    /**
+     * Connected to the dialogs (about kde and bug report) to detect 
+     * when they are closed (becomes hidden).
+     */
+    void dialogHidden( void );
+
+    /**
+     * This slot will delete a dialog (about kde or bug report) if the
+     * dialog pointer is not zero and the the dialog is not visible. This
+     * slot is activated by a one shot timer started in @ref dialogHidden
+     */
+    void timerExpired( void );
 
   signals:
     /**
@@ -210,6 +224,7 @@ class KHelpMenu : public QObject
     QPopupMenu   *mMenu;
     QMessageBox  *mAboutApp;
     KAboutDialog *mAboutKDE;
+    KBugReport   *mBugReport;
 
     QString      mAboutAppText;
     QWidget      *mParent;
