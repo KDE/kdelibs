@@ -376,7 +376,9 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   u.addPath( ".directory" );
 
   QString icon;
-  if ( QFile::exists( u.path() ) )
+  // using KStandardDirs as this one checks for path beeing
+  // a file instead of a directory 
+  if ( KStandardDirs::exists( u.path() ) )
   {
     KSimpleConfig cfg( u.path(), true );
     cfg.setDesktopGroup();
