@@ -277,8 +277,7 @@ bool KHTMLWidget::jScriptEnabled() const
 void KHTMLWidget::executeScript(const QString &c)
 {
     if(!_jScriptEnabled) return;
-    if(!_jscript) _jscript = new KJScript(this);
-    _jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
+    jScript()->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
 }
 
 
@@ -1627,7 +1626,14 @@ void KHTMLWidget::setBaseUrl(const QString &base)
 KJScript *KHTMLWidget::jScript()
 {
     if(!_jScriptEnabled) return 0;
-    if(!_jscript) _jscript = new KJScript(this);
+    if(!_jscript)
+    {
+	_jscript = new KJScript();
+	QString module = KGlobal::dirs()->findResource("lib", "kjs_html.la");
+	if(!module.isNull())
+	    _jscript->useModule(module.ascii(), this);
+	// TODO: handle errors
+    }
     return _jscript;
 }
 
