@@ -73,6 +73,13 @@ public:
    KPalette& operator=( const KPalette &);
 
    /**
+    * Save the palette
+    *
+    * @return 'true' if successfull
+    **/
+   bool save();
+
+   /**
     * Get the description of the palette.
     **/
    QString description()

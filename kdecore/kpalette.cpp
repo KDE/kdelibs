@@ -22,8 +22,11 @@
 #include "kpalette.h"
 
 #include <qfile.h>
+#include <qtextstream.h>
 #include <kstddirs.h>
 #include <kglobal.h>
+#include <ksavefile.h>
+#include <kstringhandler.h>
 
 template class QList<KPalette::kolor>;
 
@@ -47,7 +50,6 @@ KPalette::getPaletteList()
 KPalette::KPalette(const QString &name)
  : mName(name)
 {
-printf("Palette = %s\n", mName.ascii());
   mKolorList.setAutoDelete(true);
   if (mName.isEmpty()) return;
 
@@ -124,6 +126,32 @@ KPalette::~KPalette()
 {
   // Need auto-save?
 }
+
+bool
+KPalette::save()
+{
+   QString filename = locateLocal("config", "colors/"+mName);
+   KSaveFile sf(filename);
+   if (sf.status() != 0) return false;
+
+   QTextStream *str = sf.textStream();
+
+   QString description = mDesc.stripWhiteSpace();
+   description = "#"+KStringHandler::join( KStringHandler::split(description, "\n"), "\n#");
+
+   (*str) << "KDE RGB Palette\n";   
+   (*str) << description << "\n";
+   // We can't iterate a const list :(
+   QList<kolor> *nonConstList = (QList<kolor> *) (&mKolorList);
+   for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
+   {
+       int r,g,b;
+       node->color.rgb(&r, &g, &b);
+       (*str) << r << " " << g << " " << b << " " << node->name << "\n";
+   }
+   return sf.close();
+}
+
 
 KPalette&
 KPalette::operator=( const KPalette &p)
@@ -208,9 +236,3 @@ KPalette::changeColor(int index,
   node->name = newColorName;
   return index;
 }
-
-
-
-
-
-
