@@ -23,45 +23,43 @@ SUBDIRS = . klauncher kded file tests
 lib_LTLIBRARIES = libkio.la #libkioslave.la
 #libkioslave_la_LDFLAGS = -version-info 3:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
-#libkioslave_la_SOURCES = slavebase.cpp kio_connection.cpp kio_pass_dlg.cpp
+#libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
 
 libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
-	kio_openwith.cpp ktraderparsetree.cpp \
+	openwith.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
 	kservice.cpp kservicefactory.cpp \
 	kautomount.cpp kdirwatch.cpp scheduler.cpp \
-	kio_connection.cpp kio_filter.cpp \
-	slaveinterface.cpp kio_job.cpp  \
-	global.cpp kio_rename_dlg.cpp \
-	kio_skip_dlg.cpp ktar.cpp krun.cpp \
+	connection.cpp filter.cpp \
+	slaveinterface.cpp job.cpp  \
+	global.cpp renamedlg.cpp \
+	skipdlg.cpp ktar.cpp krun.cpp \
 	kuserpaths.cpp kuserprofile.cpp slave.cpp \
-	kio_netaccess.cpp ktrader.cpp ktraderparse.cpp \
-	kio_paste.cpp \
-        slavebase.cpp kio_pass_dlg.cpp \
+	netaccess.cpp ktrader.cpp ktraderparse.cpp \
+	paste.cpp \
+        slavebase.cpp passdlg.cpp \
 	yacc.c lex.c
-# kio_progressbase.cpp kio_simpleprogress_dlg.cpp
-# kio_littleprogress_dlg.cpp kio_listprogress_dlg.cpp
+# progressbase.cpp simpleprogress_dlg.cpp
+# littleprogress_dlg.cpp listprogress_dlg.cpp
 
 METASOURCES = AUTO
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-        krun.h kdirwatch.h kio_connection.h kio_rename_dlg.h \
-        kio_filter.h kio_skip_dlg.h slaveinterface.h \
-        global.h kio_pass_dlg.h kautomount.h \
-        kio_netaccess.h kuserprofile.h \
-        kio_job.h \
-        kio_paste.h kio_openwith.h kuserpaths.h \
-	slavebase.h \
+        krun.h kdirwatch.h connection.h renamedlg.h \
+        filter.h skipdlg.h slaveinterface.h \
+        global.h passdlg.h kautomount.h \
+        netaccess.h kuserprofile.h job.h \
+        paste.h openwith.h kuserpaths.h slavebase.h \
         ktar.h ktrader.h
-# kio_progressbase.h kio_simpleprogress_dlg.h
-# kio_littleprogress_dlg.h kio_listprogress_dlg.h
+# progressbase.h simpleprogressdlg.h
+# littleprogress_dlg.h listprogressdlg.h
 
 
 # Internal
