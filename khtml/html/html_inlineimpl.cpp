@@ -138,7 +138,7 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_CLEAR:
     {
 	DOMString str = attr->value();
-	if( str == "all" ) str = "both";
+	if( str == "all" || str.isEmpty() ) str = "both";
 	addCSSProperty(CSS_PROP_CLEAR, str);
 	break;
     }
