@@ -163,6 +163,7 @@
 <!ENTITY Simon.Hausmann '<personname><firstname>Simon</firstname><surname>Hausmann</surname></personname>'>
 <!ENTITY Simon.Hausmann.mail '<email>hausmann@kde.org</email>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel '<personname><firstname>Matthias</firstname><surname>H&ouml;lzer-Kl&uuml;pfel</surname></personname>'>
+<!ENTITY Matthias.Hoelzer-Kluepfel.mail '<email>hoelzer@kde.org</email>'>
 <!ENTITY Rik.Hemsley '<personname><firstname>Rik</firstname><surname>Hemsley</surname></personname>'>
 <!ENTITY Rik.Hemsley.mail '<email>rik@kde.org</email>'>
 <!ENTITY Martin.Heni '<personname><firstname>Martin</firstname><surname>Heni</surname></personname>'>
@@ -171,7 +172,6 @@
 <!ENTITY Hauke.Hildebrandt.mail '<email>hauke.hildebrandt@iup.uni-heidelberg.de</email>'>
 <!ENTITY Jens.Hoefkens '<personname><firstname>Jens</firstname><surname>Hoefkens</surname></personname>'>
 <!ENTITY Jens.Hoefkens.mail '<email>jens@hoefkens.com</email>'>
-<!ENTITY Matthias.Hoelzer-Kluepfel.mail '<email>hoelzer@kde.org</email>'>
 <!ENTITY Mark.Holloman '<personname><firstname>Mark</firstname><surname>Holloman</surname></personname>'>
 <!ENTITY Mark.Holloman.mail '<email>mhh@mindspring.com</email>'>
 <!ENTITY Greg.M.Holmes '<personname><firstname>Greg</firstname><othername>M.</othername><surname>Holmes</surname></personname>'>
