@@ -225,6 +225,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    pseudoProps->append( ordprop );
     }
 
+    if ( style->display() != INLINE ) {
     for(int i = 0; i < (int)pseudoProps->count(); i++) {
 	CSSOrderedProperty* ordprop = pseudoProps->at(i);
 	RenderStyle *pseudoStyle;
@@ -232,7 +233,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	if ( pseudoStyle )
 	    applyRule(pseudoStyle, ordprop->prop, e);
     }
-
+    }
+    
     delete pseudoProps;
     }
     delete propsToApply;
