@@ -35,6 +35,12 @@
 #  include <iostream.h>
 #endif
 
+#if !defined(DATAKIOSLAVE) && !defined(TESTKIO)
+#  define DISPATCH(f) dispatch_##f
+#else
+#  define DISPATCH(f) f
+#endif
+
 using namespace KIO;
 #ifdef DATAKIOSLAVE
 extern "C" {
@@ -251,7 +257,8 @@ DataProtocol::~DataProtocol() {
 /* --------------------------------------------------------------------- */
 
 void DataProtocol::get(const KURL& url) {
-  kdDebug() << "kio_data::get(const KURL& url)" << endl ;
+  kdDebug() << "===============================================================================================================================================================================" << endl;
+  kdDebug() << "kio_data@"<<this<<"::get(const KURL& url)" << endl ;
 
   DataHeader hdr;
   parseDataHeader(url,hdr);
@@ -282,9 +289,15 @@ void DataProtocol::get(const KURL& url) {
     }/*end if*/
   }/*end if*/
 
+  kdDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  kdDebug() << "emit mimeType@"<<this << endl ;
   mimeType(hdr.mime_type);
+  kdDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  kdDebug() << "emit totalSize@"<<this << endl ;
   totalSize(outData.size());
 
+  kdDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  kdDebug() << "emit setMetaData@"<<this << endl ;
 #if defined(TESTKIO) || defined(DATAKIOSLAVE)
   MetaData::ConstIterator it;
   for (it = hdr.attributes.begin(); it != hdr.attributes.end(); ++it) {
@@ -294,10 +307,18 @@ void DataProtocol::get(const KURL& url) {
   setAllMetaData(hdr.attributes);
 #endif
 
+  kdDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  kdDebug() << "emit sendMetaData@"<<this << endl ;
   sendMetaData();
-  data(outData);
-  data(QByteArray());
-  finished();
+  kdDebug() << "^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C" << endl;
+  kdDebug() << "queue size " << dispatchQueue.size() << endl;
+  // empiric studies have shown that this shouldn't be queued & dispatched
+  /*DISPATCH*/(data(outData));
+  kdDebug() << "queue size " << dispatchQueue.size() << endl;
+  DISPATCH(data(QByteArray()));
+  kdDebug() << "queue size " << dispatchQueue.size() << endl;
+  DISPATCH(finished());
+  kdDebug() << "queue size " << dispatchQueue.size() << endl;
 }
 
 /* --------------------------------------------------------------------- */

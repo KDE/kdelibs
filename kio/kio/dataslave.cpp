@@ -23,15 +23,24 @@
 #include <config.h>
 
 #include "dataslave.h"
+#include "dataprotocol.h"
 
 #include <klocale.h>
+#include <kdebug.h>
+
+#include <qtimer.h>
 
 using namespace KIO;
+
+#define KIO_DATA_POLL_INTERVAL 0
 
 DataSlave::DataSlave() :
 	Slave(true, 0, QString::null, QString::null)
 {
   _suspended = false;
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), SLOT(dispatchNext()));
+  timer->start(KIO_DATA_POLL_INTERVAL);
 }
 
 DataSlave::~DataSlave() {
@@ -42,13 +51,57 @@ void DataSlave::hold(const KURL &/*url*/) {
 }
 
 void DataSlave::suspend() {
-  // placebo implementation
   _suspended = true;
+  timer->stop();
 }
 
 void DataSlave::resume() {
-  // placebo implementation
   _suspended = false;
+  kdDebug() << this << k_funcinfo << endl;
+  // aarrrgh! This makes the once hyper fast and efficient data protocol
+  // implementation slow as molasses. But it wouldn't work otherwise,
+  // and I don't want to start messing around with threads
+  timer->start(KIO_DATA_POLL_INTERVAL);
+#if 0
+  QueueStruct qs((QueueType)0);
+  const QueueStruct *q = &qs;
+    if (!dispatchQueue.empty()) {
+      q = &dispatchQueue.front();
+    }/*end if*/
+  // always dispatch one function at a time. This should be good enough an
+  // emulation for the "real" resume. Use a timer to prevent unwanted
+  // side-effects by recursion.
+  if (resume_recursion == 1) {
+      kdDebug() << "calling directly " << q->type << endl;
+    dispatchNext();
+  } else {
+      kdDebug() << "preparing to dispatch " << q->type << endl;
+    QTimer::singleShot(0, this, SLOT(dispatchNext()));
+  }/*end if*/
+  resume_recursion--;
+#endif
+}
+
+void DataSlave::dispatchNext() {
+  if (dispatchQueue.empty()) return;
+
+  const QueueStruct &q = dispatchQueue.front();
+  kdDebug() << this << k_funcinfo << "dispatching " << q.type << " " << dispatchQueue.size() << " left" << endl;
+  switch (q.type) {
+    case QueueMimeType:		mimeType(q.s); break;
+    case QueueTotalSize:	totalSize(q.size); break;
+    case QueueSendMetaData:	sendMetaData(); break;
+    case QueueData:		data(q.ba); break;
+    case QueueFinished:
+      finished();
+//      dispatchQueue.pop_front();
+      kill();			// commit suicide, we don't want to be reused
+      emit slaveDied(this);
+      //delete this;
+      return;
+  }/*end switch*/
+
+  dispatchQueue.pop_front();
 }
 
 void DataSlave::send(int cmd, const QByteArray &arr) {

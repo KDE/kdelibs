@@ -155,17 +155,16 @@ namespace KIO {
 	// methods in connection()
 	/**
 	 * Suspends the operation of the attached kioslave.
-	 * @since 3.1?
 	 */
         void suspend();		// TODO(BIC): make virtual
 	/**
 	 * Resumes the operation of the attached kioslave.
-	 * @since 3.1?
 	 */
         void resume();		// TODO(BIC): make virtual
 	/**
 	 * Tells wether the kioslave is suspended.
 	 * @return true if the kioslave is suspended.
+	 * @since 3.2
 	 */
         bool suspended();	// TODO(BIC): make virtual
 	/**
@@ -199,11 +198,11 @@ namespace KIO {
         bool isConnected() { return contacted; }
         void setConnected(bool c) { contacted = c; }
 
-	/** @obsolete This method is obsolete, use the accessor methods
+	/** @deprecated This method is obsolete, use the accessor methods
 	  * within KIO::Slave instead. Old code directly accessing connection()
 	  * will not be able to access special protocols.
 	  */
-        Connection *connection() { return &slaveconn; }	// TODO(BIC): remove before KDE 4
+        KDE_DEPRECATED Connection *connection() { return &slaveconn; }	// TODO(BIC): remove before KDE 4
 
         void ref() { m_refCount++; }
         void deref() { m_refCount--; if (!m_refCount) delete this; }

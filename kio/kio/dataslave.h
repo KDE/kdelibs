@@ -27,6 +27,8 @@
 #include <kio/global.h>
 #include <kio/slave.h>
 
+class QTimer;
+
 namespace KIO {
 
     /**
@@ -71,11 +73,80 @@ namespace KIO {
 	 * @internal
 	 */
 	void sendMetaData();
+
+	// queueing methods
+	/** identifiers of functions to be queued */
+	enum QueueType { QueueMimeType = 1, QueueTotalSize, QueueSendMetaData,
+		QueueData, QueueFinished };
+	/** structure for queueing. It is very primitive, it doesn't
+	 * even try to conserve memory.
+	 */
+	struct QueueStruct {
+	  QueueType type;
+	  QString s;
+	  KIO::filesize_t size;
+	  QByteArray ba;
+
+	  QueueStruct() {}
+	  QueueStruct(QueueType type) : type(type) {}
+	};
+        typedef QValueList<QueueStruct> DispatchQueue;
+	DispatchQueue dispatchQueue;
+
+	void dispatch_mimeType(const QString &s) {
+	  if (_suspended) {
+	    QueueStruct q(QueueMimeType);
+	    q.s = s;
+	    dispatchQueue.push_back(q);
+	  } else
+	    mimeType(s);
+	}
+	void dispatch_totalSize(KIO::filesize_t size) {
+	  if (_suspended) {
+	    QueueStruct q(QueueTotalSize);
+	    q.size = size;
+	    dispatchQueue.push_back(q);
+	  } else
+	    totalSize(size);
+	}
+	void dispatch_sendMetaData() {
+	  if (_suspended) {
+	    QueueStruct q(QueueSendMetaData);
+	    dispatchQueue.push_back(q);
+	  } else
+	    sendMetaData();
+	}
+	void dispatch_data(const QByteArray &ba) {
+	  if (_suspended) {
+	    QueueStruct q(QueueData);
+	    q.ba = ba;
+	    dispatchQueue.push_back(q);
+	  } else
+	    data(ba);
+	}
+	void dispatch_finished() {
+	  if (_suspended) {
+	    QueueStruct q(QueueFinished);
+	    dispatchQueue.push_back(q);
+	  } else {
+	    finished();
+	    kill();	// commit suicide, we don't want to be reused
+            emit slaveDied(this);
+	    //delete this;
+	  }
+	}
+
+    protected slots:
+	/** dispatches next queued method. Does nothing if there are no
+	 * queued methods.
+	 */
+	void dispatchNext();
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
 	MetaData meta_data;
 	bool _suspended;
+	QTimer *timer;
     };
 
 }

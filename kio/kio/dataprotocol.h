@@ -18,7 +18,7 @@
 
 #ifndef __dataprotocol_h__
 #define __dataprotocol_h__
-           
+
 // dataprotocol.* interprets the following defines
 // DATAKIOSLAVE: define if you want to compile this into a stand-alone
 //		kioslave
