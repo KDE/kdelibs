@@ -267,7 +267,7 @@ KLocale::KLocale( QString catalogue ) : lang(0)
 	QString stmp;
         for(int i=0;_categories[i]!=0;i++) {
 	  stmp = QString(_categories[i])+ "=" + getLocale(_categories[i]);
- 	  putenv( stmp.data() );
+ 	  putenv( stmp.ascii() );
 	}
     }
     // we should use LC_CTYPE, not LC_MESSAGES for charset

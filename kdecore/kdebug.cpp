@@ -223,7 +223,7 @@ void kdebug( ushort nLevel, ushort nArea,
                         break;
                   };
                 char buf[4096];
-                int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+                int nPrefix = sprintf( buf, "%s: ", aAppName.ascii() );
                 va_start( arguments, pFormat );
 #ifdef HAVE_VSNPRINTF
                 // use the more secure version if we have it
@@ -258,7 +258,7 @@ void kdebug( ushort nLevel, ushort nArea,
         case 2: // Shell
           {
                 va_start( arguments, pFormat );
-                fprintf( stderr, "%s: ", aAppName.data() );
+                fprintf( stderr, "%s: ", aAppName.ascii() );
                 vfprintf( stderr, pFormat, arguments );
                 fprintf( stderr, "\n" );
                 va_end( arguments );
@@ -267,7 +267,7 @@ void kdebug( ushort nLevel, ushort nArea,
         case 3: // syslog
           {
                 char buf[4096];
-                int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+                int nPrefix = sprintf( buf, "%s: ", aAppName.ascii() );
                 va_start( arguments, pFormat );
                 int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
                 if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.29  1999/05/22 22:58:53  dmuell
+ * well, making warnings less offensive
+ *
  * Revision 1.28  1999/05/21 19:24:16  dmuell
  * Adding obsolete warnings to KDND* classes (both at compile & run time)
  *
@@ -207,11 +210,11 @@ void KDNDDropZone::parseURLList()
     while ( ( i = s.find( "\n" ) ) != -1 )
     {
 	QString t = s.left( i );
-	urlList.append( t.data() );
+	urlList.append( t.ascii() );
 	s = s.mid( i + 1, s.length() );
     }
 
-    urlList.append( s.data() );
+    urlList.append( s.ascii() );
 }
 
 void KDNDDropZone::drop( char *_data, int _size, int _type, int _x, int _y )

@@ -577,7 +577,7 @@ uint keyToXSym( uint keyCode )
 		   keyFound = TRUE;
 		   QString l = toks[i];
 		   l = l.lower();
-		   keysym = XStringToKeysym(l.data());
+		   keysym = XStringToKeysym(l.ascii());
 		   if (keysym == NoSymbol){
 		     keysym = XStringToKeysym( toks[i] );
 		   }
