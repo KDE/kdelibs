@@ -132,6 +132,7 @@ namespace KJS {
 
   protected:
     virtual void contentsMousePressEvent(QMouseEvent *e);
+    virtual void showEvent(QShowEvent *);
     virtual void drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph);
 
     QString m_source;

@@ -90,7 +90,7 @@ SourceDisplay::~SourceDisplay()
 void SourceDisplay::setSource(SourceFile *sourceFile)
 {
   m_sourceFile = sourceFile;
-  if (!m_sourceFile)
+  if (!m_sourceFile || !m_debugWin->isVisible())
     return;
   QString code = sourceFile->getCode();
   const QChar *chars = code.unicode();
@@ -157,6 +157,11 @@ void SourceDisplay::contentsMousePressEvent(QMouseEvent *e)
   QFontMetrics metrics(m_font);
   int lineno = e->y()/metrics.height();
   emit lineDoubleClicked(lineno+1); // line numbers start from 1
+}
+
+void SourceDisplay::showEvent(QShowEvent *)
+{
+    setSource(m_sourceFile);
 }
 
 void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph)
