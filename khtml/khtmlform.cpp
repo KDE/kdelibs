@@ -99,6 +99,7 @@ HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f = 0 )
     w = 0; 
     p = 0;
     font = f;
+    showAsWidget = false;
 }
 
 HTMLWidgetElement::~HTMLWidgetElement()
@@ -117,15 +118,17 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
         _relX = absX() - _x;
 	_relY = absY() - _y;
 
-	return;
+	if (!showAsWidget) 
+	  return;
+	  
 	if ( _y > absY() + ascent + descent || _y + _height < absY() )
 	{
-//		w->hide();
+		w->hide();
 	}
 	else
 	{
 		w->move( absX() - _x, absY() - _y );
-		//w->show();
+		w->show();
 	}
 }
 
@@ -181,14 +184,14 @@ void HTMLWidgetElement::paintWidget( QWidget *widget )
 
 HTMLObject *HTMLWidgetElement::mouseEvent( int _x, int _y, int button, int state )
 {
-  printf("HTMLObject *HTMLWidgetElement::mouseEvent( ... )\n");
   if (!w->isVisible())
      {
        w->move( _relX, _relY );
        w->show();
+       showAsWidget = true;
      }
-  else w->hide();  
-//  w->grabKeyboard();
+//  else w->hide();
+  
   return 0L;
 }
 
@@ -388,7 +391,8 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
 
 printf("New HTMLTextArea element! Text = \"%s\"\n", n);
 
-	w = new QMultiLineEdit( parent );
+//	w = new QMultiLineEdit( parent );
+        w = new HTMLMultiLineEdit( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -916,6 +920,27 @@ HTMLForm::~HTMLForm()
     {
 	e->setForm( 0 );
     }
+}
+
+//----------------------------------------------------------------------------
+
+HTMLMultiLineEdit::HTMLMultiLineEdit( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name )
+: QMultiLineEdit( parent, name )
+{
+  widgetElement = htmlParent;
+}
+
+HTMLMultiLineEdit::~HTMLMultiLineEdit()
+{
+}
+
+void HTMLMultiLineEdit::focusOutEvent( QFocusEvent *ev )
+{
+  printf("void HTMLMultiLineEdit::focusOutEvent( QFocusEvent *ev )\n");
+
+  widgetElement->setPixmapMode( false );
+
+  QWidget::focusOutEvent( ev );
 }
 
 #include "khtmlform.moc"

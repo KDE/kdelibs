@@ -129,6 +129,9 @@ public:
     void setWidget( QWidget *_w );
     QWidget *widget() { return w; }
 
+    bool isInPixmapMode() { return !showAsWidget; }
+    void setPixmapMode( bool flag ) { showAsWidget = !flag; w->hide(); }
+
 private:
 	QWidget *w;
 	// holds the widgets information...
@@ -141,6 +144,10 @@ private:
 	// relative position of this element in the page
 	int _relX;
 	int _relY;
+	
+	// true if widget is displayed "as is", false if widget is painted
+	// into a qpixmap
+	bool showAsWidget;
 };
 
 //---------------------------------------------------------------------------
@@ -434,6 +441,22 @@ protected slots:
 protected:
     KHTMLWidget *view;
     QList<JSEventHandler> *eventHandlers;
+};
+
+//---------------------------------------------------------------------------
+
+class HTMLMultiLineEdit : public QMultiLineEdit
+{
+    Q_OBJECT
+public:
+    HTMLMultiLineEdit( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
+   ~HTMLMultiLineEdit();
+
+protected:
+    virtual void focusOutEvent( QFocusEvent *ev );   
+       
+private:
+    HTMLWidgetElement *widgetElement;
 };
 
 #endif
