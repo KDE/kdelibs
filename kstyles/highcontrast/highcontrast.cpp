@@ -80,6 +80,31 @@ static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
 
 
+void addOffset (QRect* r, int offset, int lineWidth = 0)
+{
+	int offset1 = offset;
+	int offset2 = offset;
+
+	*r = r->normalize();
+
+	if (lineWidth > 0)
+	{
+		offset1 += lineWidth/2;
+		offset2 += lineWidth - lineWidth/2 - 1;
+	}
+
+	if (offset1 + offset2 > r->width())
+		r->addCoords (r->width()/2, 0, - (r->width() - r->width()/2), 0);
+	else
+		r->addCoords (offset1, 0, -offset2, 0);
+
+	if (offset1 + offset2 > r->height())
+		r->addCoords (0, r->height()/2, 0, - (r->height() - r->height()/2));
+	else
+		r->addCoords (0, offset1, 0, -offset2);
+}
+
+
 // ---------------------------------------------------------------------------
 
 HighContrastStyle::HighContrastStyle()
@@ -171,7 +196,7 @@ void HighContrastStyle::setColorsByState (QPainter* p, const QColorGroup& cg, co
 	font.setStrikeOut (! (flags & Style_Enabled));
 	p->setFont (font);
 
-	if (flags & highlight)
+	if ((flags & Style_Enabled) && (flags & highlight))
 	{
 		p->setPen  (QPen (cg.highlightedText(), basicLineWidth, flags & Style_Enabled ? Qt::SolidLine : Qt::DotLine));
 		p->setBackgroundColor (cg.highlight());
@@ -187,10 +212,7 @@ void HighContrastStyle::setColorsByState (QPainter* p, const QColorGroup& cg, co
 
 void HighContrastStyle::drawRect (QPainter* p, QRect r, int offset, bool filled) const
 {
-	int lineWidth = p->pen().width();
-	int offset1 = offset + lineWidth/2;
-	int offset2 = offset + lineWidth - lineWidth/2 - 1;
-	r.addCoords (offset1, offset1, -offset2, -offset2);
+	addOffset (&r, offset, p->pen().width());
 	if (filled)
 		p->fillRect (r, p->backgroundColor());
 
@@ -202,14 +224,13 @@ void HighContrastStyle::drawRoundRect (QPainter* p, QRect r, int offset, bool fi
 	int lineWidth = p->pen().width();
 	if ((r.width() >= 5*lineWidth + 2*offset) && (r.height() >= 5*lineWidth + 2*offset))
 	{
-		int offset1 = offset + lineWidth/2;
-		int offset2 = offset + lineWidth - lineWidth/2 - 1;
 		QRect r2 (r);
-		r2.addCoords (offset1, offset1, -offset2, -offset2);
-		r.addCoords (offset, offset, -offset, -offset);
-	
+		addOffset (&r2, offset, lineWidth);
+
+		addOffset (&r, offset);	
 		QRect r3 (r);
-		r3.addCoords (lineWidth, lineWidth, -lineWidth, -lineWidth); 
+		addOffset (&r3, lineWidth);
+
 		p->save();
 		p->setPen (Qt::NoPen);
 		if (filled)
@@ -232,10 +253,7 @@ void HighContrastStyle::drawRoundRect (QPainter* p, QRect r, int offset, bool fi
 
 void HighContrastStyle::drawEllipse (QPainter* p, QRect r, int offset, bool filled) const
 {
-	int lineWidth = p->pen().width();
-	int offset1 = offset + lineWidth/2;
-	int offset2 = offset + lineWidth - lineWidth/2 - 1;
-	r.addCoords (offset1, offset1, -offset2, -offset2);
+	addOffset (&r, offset, p->pen().width());
 
 	if (filled) {
 		p->save();
@@ -250,8 +268,7 @@ void HighContrastStyle::drawEllipse (QPainter* p, QRect r, int offset, bool fill
 void HighContrastStyle::drawArrow (QPainter* p, QRect r, PrimitiveElement arrow, int offset) const
 {
 	p->save();
-	if (offset != 0)
-		r.addCoords (offset, offset, -offset, -offset);
+	addOffset (&r, offset);
 
 	QPoint center = r.center();
 	if (r.height() < r.width())
@@ -447,7 +464,7 @@ void HighContrastStyle::drawPrimitive (PrimitiveElement pe,
 			if (!(flags & Style_Off))
 			{
 				QRect r2 (r);
-				r2.addCoords (basicLineWidth, basicLineWidth, -basicLineWidth, -basicLineWidth);
+				addOffset (&r2, basicLineWidth);
 				if (flags & Style_On)
 				{
 					p->drawLine (r2.topLeft(), r2.bottomRight());
@@ -729,7 +746,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			if (( btnDefault || button->autoDefault() ) && (button->isEnabled())) {
 				// Compensate for default indicator
 				static int di = pixelMetric( PM_ButtonDefaultIndicator );
-				br.addCoords( di, di, -di, -di );
+				addOffset (&br, di);
 			}
 
 			if ( btnDefault && (button->isEnabled()))
@@ -977,7 +994,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 				int cx = reverse ? x+w - checkcol : x;
 
 				QRect rc (cx, y, checkcol, h);
-				rc.addCoords (2*basicLineWidth, 2*basicLineWidth, -2*basicLineWidth, -2*basicLineWidth);
+				addOffset (&rc, 2*basicLineWidth);
 				QPoint center = rc.center();
 				if (rc.width() > rc.height())
 					rc.setWidth (rc.height());
@@ -1218,7 +1235,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 
 			if (toolbutton->hasFocus() && !toolbutton->focusProxy()) {
 				QRect fr = toolbutton->rect();
-				fr.addCoords(3, 3, -3, -3);
+				addOffset (&fr, 3);
 				drawPrimitive(PE_FocusRect, p, fr, cg, flags, QStyleOption (p->backgroundColor()));
 			}
 
@@ -1551,7 +1568,7 @@ bool HighContrastStyle::eventFilter (QObject *object, QEvent *event)
 	if (widget)
 	{
 		// Handle hover effects.
-		if (event->type() == QEvent::Enter && widget->isEnabled()
+		if (event->type() == QEvent::Enter
 				&& (widget->inherits ("QButton")
 					|| widget->inherits ("QComboBox")
 					|| widget->inherits ("QSpinWidget")))
@@ -1559,7 +1576,7 @@ bool HighContrastStyle::eventFilter (QObject *object, QEvent *event)
 			hoverWidget = widget;
 			widget->repaint (false);
 		}
-		else if (event->type() == QEvent::Leave && widget->isEnabled()
+		else if (event->type() == QEvent::Leave
 					&& (widget->inherits ("QButton")
 						|| widget->inherits ("QComboBox")
 						|| widget->inherits ("QSpinWidget")))
