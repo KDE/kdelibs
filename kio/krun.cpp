@@ -106,7 +106,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     else
       exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
   } else if (_service.terminal())
-     // Keep in mind that exec could include spaces. No quotes around %3, then.
+     // Keep in mind that exec could include spaces. No quotes around %2, then.
      exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec);
   else
   {
@@ -331,10 +331,9 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   return retval;
 }
 
-
+// KDE 3.0 : make one single public method, instead of a public and a protected
 pid_t KRun::runCommand( QString cmd )
 {
-  shellQuote( cmd );
   return KRun::run( cmd );
 }
 
