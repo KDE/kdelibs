@@ -82,6 +82,8 @@ void RenderRoot::calcMinMaxWidth()
     if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
 }
 
+//#define SPEED_DEBUG
+
 void RenderRoot::layout()
 {
     //kdDebug(6040) << "RenderRoot::layout()" << endl;

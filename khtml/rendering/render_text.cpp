@@ -290,10 +290,10 @@ RenderText::RenderText(DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     RenderObject::setStyle(_style);
-    m_contentHeight = style()->lineHeight().width(metrics().height());
     hasFirstLine = (style()->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
     if ( fm ) delete fm;
     fm = new QFontMetrics( style()->font() );
+    m_contentHeight = style()->lineHeight().width(metrics().height());
 }
 
 RenderText::~RenderText()
@@ -808,7 +808,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
 
     if ( from + len > str->l ) len = str->l - from;
 
-    if ( khtml::printpainter || firstLine ) {
+    if ( khtml::printpainter || ( firstLine && hasFirstLine ) ) {
 	QFontMetrics _fm = metrics( firstLine );
 	return width( from, len, &_fm );
     }
@@ -889,7 +889,9 @@ QFontMetrics RenderText::metrics(bool firstLine) const
 	if ( pseudoStyle )
 	    return fontMetrics ( pseudoStyle->font() );
     }
-    return fontMetrics(style()->font());
+    if ( khtml::printpainter )
+	return fontMetrics(style()->font());
+    return *fm;
 }
 
 #undef BIDI_DEBUG

@@ -695,6 +695,7 @@ void RenderObject::setStyle(RenderStyle *style)
     //m_inline = true;
     m_visible = true;
 
+    if ( m_style != style ) {
     RenderStyle *oldStyle = m_style;
     m_style = style;
     if (m_style)
@@ -718,6 +719,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
     setMinMaxKnown(false);
     setLayouted(false);
+    }
 }
 
 void RenderObject::setContainsPositioned(bool p)
