@@ -70,6 +70,54 @@
 
 namespace KNotifyClient
 {
+    struct InstancePrivate;
+
+    /**
+     * Makes it possible to use @ref KNotifyClient with a @ref KInstance
+     * that is not the application.
+     *
+     * Use like this:
+     * <pre>
+     * KNotifyClient::Instance(myInstance);
+     * KNotifyClient::event("MyEvent");
+     *
+     * @short Enables @ref KNotifyClient to use a different @ref KInstance
+     */
+    class Instance
+    {
+    public:
+        /**
+         * Constructs a KNotifyClient::Instance to make @ref KNotifyClient use
+         * the specified @ref KInstance for the event configuration
+         */
+        Instance(KInstance *);
+        /**
+         * Destructs the KNotifyClient::Instance and resets @ref KNotifyClient
+         * to the previously used @ref KInstance
+         */
+        ~Instance();
+	/**
+	 * @returns true if this instance should use the System bell instead
+	 * of KNotify.
+	 */
+	bool useSystemBell() const;
+        /**
+         * Returns the currently active @ref KInstance
+         */
+        static KInstance *current();
+
+	/**
+	 * Returns the current KNotifyClient::Instance (not the KInstance)
+	 */
+	static Instance *currentInstance();
+	
+    private:
+        InstancePrivate *d;
+        static QStack<Instance> s_instances;
+	static Instance *defaultInstance;
+    };
+
+
 	enum {
 		Default=-1,
 		None=0,
@@ -171,42 +219,11 @@ namespace KNotifyClient
 	 */
 	QString getDefaultFile(const QString &eventname, int present);
 
-    struct InstancePrivate;
-
-    /**
-     * Makes it possible to use @ref KNotifyClient with a @ref KInstance
-     * that is not the application.
-     *
-     * Use like this:
-     * <pre>
-     * KNotify(myInstance);
-     * KNotifyClient::event("MyEvent");
-     *
-     * @short Enables @ref KNotifyClient to use a different @ref KInstance
-     */
-    class Instance
-    {
-    public:
-        /**
-         * Constructs a KNotifyClient::Instance to make @ref KNotifyClient use
-         * the specified @ref KInstance for the event configuration
-         */
-        Instance(KInstance *);
-        /**
-         * Destructs the KNotifyClient::Instance and resets @ref KNotifyClient
-         * to the previously used @ref KInstance
-         */
-        ~Instance();
-        /**
-         * Returns the currently active @ref KInstance
-         */
-        static KInstance *current();
-
-    private:
-        InstancePrivate *d;
-        static QStack<Instance> s_instances;
-    };
-
+	/**
+	 * Shortcut to KNotifyClient::Instance::current() :)
+	 * @returns the current KInstance.
+	 */
+	KInstance * instance();
 };
 
 #endif

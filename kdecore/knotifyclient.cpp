@@ -1,5 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Charles Samuels <charles@altair.dhs.org>
+                 2000 Malte Starostik <starosti@zedat.fu-berlin.de>
+		 2000 Carsten Pfeiffer <pfeiffer@kde.org>   
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,6 +26,7 @@
 #include <kconfig.h>
 #include <dcopclient.h>
 #include <kdebug.h>
+#include <kstaticdeleter.h>
 
 static const char *daemonName="knotify";
 
@@ -41,7 +44,7 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
 
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
-  QString appname = KNotifyClient::Instance::current()->instanceName();
+  QString appname = KNotifyClient::instance()->instanceName();
   ds << message << appname << text << sound << file << present << level;
 
   if ( !KNotifyClient::startDaemon() )
@@ -92,7 +95,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 	
-	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
+	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("presentation", -1);
@@ -104,7 +107,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
+	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
 	eventsfile.setGroup(eventname);
 
 	switch (present)
@@ -123,7 +126,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 		
-	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
+	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("default_presentation", -1);
@@ -135,7 +138,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("data", KNotifyClient::Instance::current()->instanceName() + "/eventsrc"));
+	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
 	eventsfile.setGroup(eventname);
 
 	switch (present)
@@ -159,25 +162,39 @@ bool KNotifyClient::startDaemon()
 
 void KNotifyClient::beep(const QString& reason)
 {
+  if ( KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
+    QApplication::beep();
+    return;
+  }
+    
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
   {
     client->attach();
     if (!client->isAttached() || !client->isApplicationRegistered(daemonName))
-      {
-        QApplication::beep();
-        return;
-      }
+    {
+      QApplication::beep();
+      return;
+    }
   }
 
   KNotifyClient::event(KNotifyClient::notification, reason);
 }
 
+
+KInstance * KNotifyClient::instance() {
+    return KNotifyClient::Instance::current();
+}
+
+
 QStack<KNotifyClient::Instance> KNotifyClient::Instance::s_instances;
+KNotifyClient::Instance * KNotifyClient::Instance::defaultInstance = 0L;
+static KStaticDeleter<KNotifyClient::Instance> sd;
 
 struct KNotifyClient::InstancePrivate
 {
     KInstance *instance;
+    bool useSystemBell;
 };
 
 KNotifyClient::Instance::Instance(KInstance *instance)
@@ -185,13 +202,17 @@ KNotifyClient::Instance::Instance(KInstance *instance)
     d = new InstancePrivate;
     d->instance = instance;
     s_instances.push(this);
+
+    KConfig *config = instance->config();
+    KConfigGroupSaver cs( config, "General" );
+    d->useSystemBell = config->readBoolEntry( "UseSystemBell", false );
 }
 
 KNotifyClient::Instance::~Instance()
 {
     if (s_instances.top() == this)
         s_instances.pop();
-    else if (s_instances.count())
+    else if (!s_instances.isEmpty())
     {
         kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
         kdWarning(160) << "Resetting to the main KApplication." << endl;
@@ -205,8 +226,34 @@ KNotifyClient::Instance::~Instance()
     delete d;
 }
 
-KInstance *KNotifyClient::Instance::current()
+
+bool KNotifyClient::Instance::useSystemBell() const
 {
-    return s_instances.top() ? s_instances.top()->d->instance : kapp;
+    return d->useSystemBell;
 }
 
+
+// static methods
+
+// We always return a valid KNotifyClient::Instance here. If no special one
+// is available, we have a default-instance with kapp as KInstance.
+// We make sure to always have that default-instance in the stack, because
+// the stack might have gotten cleared in the destructor.
+// We can't use QStack::setAutoDelete( true ), because no instance besides
+// our default instance is owned by us.
+KNotifyClient::Instance * KNotifyClient::Instance::currentInstance()
+{
+    if ( s_instances.isEmpty() ) {
+	if ( !defaultInstance )
+	    defaultInstance = sd.setObject( new Instance( kapp ));
+	else
+	    s_instances.push( defaultInstance );
+    }
+
+    return s_instances.top();
+}
+
+KInstance *KNotifyClient::Instance::current()
+{
+    return currentInstance()->d->instance;
+}
