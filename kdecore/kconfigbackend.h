@@ -24,6 +24,7 @@
 
 #include "kconfigdata.h"
 #include <kconfigbase.h>
+#include <klockfile.h>
 #include "kdemacros.h"
 
 class QFile;
@@ -153,6 +154,12 @@ private:
    */
   KDE_DEPRECATED QString filename() const { return mfileName; }
 
+  /**
+   * Returns a lock file object for the configuration file
+   * @param bGlobal If true, returns a lock file object for kdeglobals
+   * @since 3.3
+   */
+  KLockFile::Ptr lockFile( bool bGlobal = false );
 
 protected:
   KConfigBase *pConfig;
@@ -174,7 +181,6 @@ protected:
   KConfigBackEndPrivate *d;
 };
 
-class KConfigINIBackEndPrivate;
 
 /**
  * Class for KDE INI-style configuration file loading/saving.
@@ -282,6 +288,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  class KConfigINIBackEndPrivate;
   KConfigINIBackEndPrivate *not_d;
 };
 

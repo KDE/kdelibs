@@ -28,8 +28,8 @@ class QTimer;
 
 #include <qvaluelist.h>
 
-#include "ksharedptr.h"
 #include "kconfigbase.h"
+#include "klockfile.h"
 
 class KConfigPrivate;
 
@@ -166,6 +166,20 @@ public:
    * @since 3.2
    */
   KConfig* copyTo(const QString &file, KConfig *config=0) const;
+
+  /**
+   * Returns a lock file object for the configuration file or 0 if
+   * the backend does not support locking.
+   * @param bGlobal if true, return the lock file for the global config file
+   *
+   * NOTE: KConfig::sync() requires a lock on both the normal and global
+   * config file. When calling KConfig::sync() while having a lock on the
+   * global config file, the normal config file MUST be locked AS WELL and the 
+   * normal config file MUST be locked BEFORE the global config file!
+   * Otherwise there is a risk of deadlock.
+   * @since 3.3
+   */
+  KLockFile::Ptr lockFile( bool bGlobal=false );
 
 protected:
 

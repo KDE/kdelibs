@@ -276,6 +276,13 @@ void KConfig::setFileWriteMode(int mode)
   backEnd->setFileWriteMode(mode);
 }
 
+KLockFile::Ptr KConfig::lockFile(bool bGlobal)
+{
+  KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
+  if (!aBackEnd) return 0;
+  return aBackEnd->lockFile(bGlobal);
+}
+
 void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
   QString oldGroup = group();

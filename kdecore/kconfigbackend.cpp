@@ -215,6 +215,8 @@ class KConfigBackEnd::KConfigBackEndPrivate
 public:
    QDateTime localLastModified;
    uint      localLastSize;
+   KLockFile::Ptr localLockFile;
+   KLockFile::Ptr globalLockFile;
 };
 
 void KConfigBackEnd::changeFileName(const QString &_fileName,
@@ -239,6 +241,35 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
 
    d->localLastModified = QDateTime();
    d->localLastSize = 0;
+   d->localLockFile = 0;
+   d->globalLockFile = 0;
+}
+
+KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
+{
+   if (bGlobal)
+   {
+      if (d->globalLockFile)
+         return d->globalLockFile;
+      
+      if (!mGlobalFileName.isEmpty())
+      {
+         d->globalLockFile = new KLockFile(mGlobalFileName+".lock");
+         return d->globalLockFile;
+      }
+   }
+   else
+   {
+      if (d->localLockFile)
+         return d->localLockFile;
+      
+      if (!mLocalFileName.isEmpty())
+      {
+         d->localLockFile = new KLockFile(mLocalFileName+".lock");
+         return d->localLockFile;
+      }
+   }
+   return 0;
 }
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
@@ -702,11 +733,22 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // it wasn't SUID.
     if (checkAccess(mLocalFileName, W_OK)) {
       // File is writable
+      KLockFile::Ptr lf;
 
       bool mergeLocalFile = bMerge;
       // Check if the file has been updated since.
       if (mergeLocalFile)
       {
+         lf = lockFile(false); // Lock file for local file
+         if (lf && lf->isLocked())
+            lf = 0; // Already locked, we don't need to lock/unlock again
+
+         if (lf) 
+         {
+            lf->lock( KLockFile::LockForce );
+            // But what if the locking failed? Ignore it for now...
+         }
+         
          QFileInfo info(mLocalFileName);
          if ((d->localLastSize == info.size()) &&
              (d->localLastModified == info.lastModified()))
@@ -738,6 +780,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
          d->localLastModified = info.lastModified();
          d->localLastSize = info.size();
       }
+      if (lf) lf->unlock();
     }
   }
 
@@ -748,7 +791,17 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
     // can we allow the write? (see above)
     if (checkAccess ( mGlobalFileName, W_OK )) {
+      KLockFile::Ptr lf = lockFile(true); // Lock file for global file
+      if (lf && lf->isLocked())
+         lf = 0; // Already locked, we don't need to lock/unlock again
+
+      if (lf) 
+      {
+         lf->lock( KLockFile::LockForce );
+         // But what if the locking failed? Ignore it for now...
+      }
       writeConfigFile( mGlobalFileName, true, bMerge ); // Always merge
+      if (lf) lf->unlock();
     }
   }
 
@@ -908,7 +961,8 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   QFile *mergeFile = (bMerge ? new QFile(filename) : 0);
   bool bEntriesLeft = getEntryMap(aTempMap, bGlobal, mergeFile);
   delete mergeFile;
-  if (bFileImmutable) return true; // pretend we wrote it
+  if (bFileImmutable)
+    return true; // pretend we wrote it
 
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
@@ -971,7 +1025,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
      // We use open() to ensure that we call without O_CREAT.
      int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC);
      if (fd < 0)
+     {
         return bEntriesLeft;
+     }
      pStream = fdopen( fd, "w");
      if (!pStream)
      {
