@@ -154,12 +154,12 @@ Node &Node::operator = (const Node &other)
     return *this;
 }
 
-bool Node::operator == (const Node &other)
+bool Node::operator == (const Node &other) const
 {
     return (impl == other.impl);
 }
 
-bool Node::operator != (const Node &other)
+bool Node::operator != (const Node &other) const
 {
     return !(impl == other.impl);
 }
