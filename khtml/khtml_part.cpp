@@ -309,6 +309,7 @@ public:
   DOM::NodeImpl *m_findNode;
 
   QString m_strSelectedURL;
+  QString m_referrer;
 
   struct SubmitForm
   {
@@ -1311,7 +1312,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   args.yOffset = yOffset;
   d->m_extension->setURLArgs( args );
 
+  d->m_referrer = url.url();
   m_url = url;
+
   if ( !m_url.isEmpty() )
   {
     KURL::List lst = KURL::split( m_url );
@@ -2280,7 +2283,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
     if ( frame )
     {
-        args.metaData()["referrer"]=m_url.url();
+      args.metaData()["referrer"] = d->m_referrer;
       requestObject( frame, cURL, args );
       return;
     }
@@ -2289,8 +2292,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !d->m_bComplete && !hasTarget )
     closeURL();
 
-  if (!m_url.url().isEmpty())
-      args.metaData()["referrer"]=m_url.url();
+  if (!d->m_referrer.isEmpty())
+    args.metaData()["referrer"] = d->m_referrer;
 
   if ( button == MidButton && (state & ShiftButton) )
   {
@@ -2549,8 +2552,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   child->m_args = args;
   child->m_serviceName = QString::null;
-  if (!m_url.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
-    child->m_args.metaData()["referrer"] = m_url.url();
+  if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
+    child->m_args.metaData()["referrer"] = d->m_referrer;
 
   // Support for <frame url="">
   if (url.isEmpty() && args.serviceType.isEmpty())
@@ -2674,6 +2677,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   }
 
   child->m_args.reload = d->m_bReloading;
+
   // make sure the part has a way to find out about the mimetype.
   // we actually set it in child->m_args in requestObject already,
   // but it's useless if we had to use a KHTMLRun instance, as the
@@ -2799,8 +2803,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   KParts::URLArgs args;
 
-  if (!m_url.isEmpty())
-     args.metaData()["referrer"] = m_url.url();
+  if (!d->m_referrer.isEmpty())
+     args.metaData()["referrer"] = d->m_referrer;
   if ( strcmp( action, "get" ) == 0 )
   {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
@@ -3764,7 +3768,12 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QString url = cb->text(plain);
     KURL u(url);
     if (u.isValid())
+    {
+      QString savedReferrer = d->m_referrer;
+      d->m_referrer = QString::null; // Disable referrer.
       urlSelected(url, 0,0, "_top");
+      d->m_referrer = savedReferrer; // Restore original referrer.
+    }
   }
 #endif
 
