@@ -238,7 +238,7 @@ bool KHTMLPart::openURL( const KURL &url )
 {
   static QString http_protocol = QString::fromLatin1( "http" );
 
-  KParts::URLArgs args = d->m_extension->urlArgs();
+  KParts::URLArgs args( d->m_extension->urlArgs() );
 
   if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
