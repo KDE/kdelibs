@@ -1588,7 +1588,7 @@ void ScheduledAction::execute(Window *window)
     }
   }
   else {
-    window->m_part->executeScript(code);
+    window->m_part->executeScript(DOM::Node(), code);
   }
 
   interpreter->setProcessingTimerCallback(false);
