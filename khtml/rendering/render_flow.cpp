@@ -1430,11 +1430,9 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     if (specialObjects) {
         SpecialObject* o;
         QPtrListIterator<SpecialObject> it(*specialObjects);
-        for (it.toLast(); (o = it.current()); --it) {
-            if (o->node->containingBlock() == this &&
-                (inBox = o->node->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos())))
-                break;
-        }
+        for (it.toLast(); (o = it.current()); --it)
+            if (o->node->containingBlock() == this)
+                inBox |= o->node->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos());
     }
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);

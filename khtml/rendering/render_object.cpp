@@ -538,6 +538,7 @@ QString RenderObject::information() const
     if (layouted()) ts << "lt ";
     if (m_recalcMinMax) ts << "rmm ";
     if (mouseInside()) ts << "mi";
+    if (element() && element()->active()) ts << "act";
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 	<< (isTableCell() ?
@@ -797,10 +798,15 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     bool inside = style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
                   (_x >= tx) && (_x < tx + width()));
+    bool inner = !info.innerNode();
 
-    for (RenderObject* child = firstChild(); child; child = child->nextSibling())
-        if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
-            inside = true;
+    // ### table should have its own, more performant method
+    if (isInline() || isTableRow() || isTableSection() ||
+        inside || mouseInside()) {
+        for (RenderObject* child = lastChild(); child; child = child->previousSibling())
+            if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
+                inside = true;
+    }
 
     if (inside && element()) {
         if (!info.innerNode())
@@ -812,7 +818,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     if (!info.readonly()) {
         // lets see if we need a new style
         bool oldinside = mouseInside();
-        setMouseInside(inside);
+        setMouseInside(inside && inner);
         if (element()) {
             bool oldactive = element()->active();
             if (oldactive != (inside && info.active() && element() == info.innerNode()))

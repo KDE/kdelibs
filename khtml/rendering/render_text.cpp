@@ -614,9 +614,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
                 QColor c2 = QColor("#0000ff");
                 drawBorder(p, tx, ty, tx+1, ty + h,
-                              RenderObject::BSLeft, c2, c2, SOLID, false, false, 0, 0);
-                drawBorder(p, tx + s->m_width, ty, tx + s->m_width + 1, ty + h, 1,
-                              RenderObject::BSRight, c2, c2, SOLID, false, false, 0, 0);
+                              RenderObject::BSLeft, c2, c2, SOLID, 1, 1);
+                drawBorder(p, tx + s->m_width, ty, tx + s->m_width + 1, ty + h,
+                              RenderObject::BSRight, c2, c2, SOLID, 1, 1);
             }
 #endif
 
