@@ -67,7 +67,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Deselect,      KStdAccel::Deselect, "edit_deselect", I18N_NOOP("Dese&lect"), 0, 0 },
 	{ Find,          KStdAccel::Find, "edit_find", I18N_NOOP("&Find..."), 0, "find" },
 	{ FindNext,      KStdAccel::FindNext, "edit_find_next", I18N_NOOP("Find &Next"), 0, "next" },
-	{ FindPrev,      KStdAccel::FindPrev, "edit_find_last", I18N_NOOP("Find &Previous"), 0, "previous" },
+	{ FindPrev,      KStdAccel::FindPrev, "edit_find_last", I18N_NOOP("Find Pre&vious"), 0, "previous" },
 	{ Replace,       KStdAccel::Replace, "edit_replace", I18N_NOOP("&Replace..."), 0, 0 },
 
 	{ ActualSize,    KStdAccel::AccelNone, "view_actual_size", I18N_NOOP("&Actual Size"), 0, 0 },
