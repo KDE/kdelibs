@@ -26,7 +26,7 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
   startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
   unixserver.h  referenceclean.h datapacket.h asyncstream.h notification.h \
   extensionloader.h mcopconfig.h connect.h reference.h weakreference.h \
-  dynamicrequest.h anyref.h debug.h
+  dynamicrequest.h anyref.h debug.h core.idl
 
 core: $(srcdir)/core.idl $(MCOPIDL)
 	$(MCOPIDL) -e Arts::Object -I$(srcdir) $(srcdir)/core.idl
