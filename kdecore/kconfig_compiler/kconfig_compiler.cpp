@@ -23,6 +23,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdom.h>
+#include <qregexp.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -212,11 +213,15 @@ static void preProcessDefault(QString &defaultValue, const QString &name, const 
       }
       defaultValue = "default" + name;
 
-    } else if ( type == "QColor" ) {
-      if (!defaultValue.isEmpty())
+    } else if ( type == "QColor" && !defaultValue.isEmpty() ) {
+      QRegExp colorRe("\\d*,\\d*,\\d*");
+      if (colorRe.exactMatch(defaultValue))
       {
-        addQuotes( defaultValue );
         defaultValue = "QColor( " + defaultValue + " )";
+      }
+      else
+      {
+        defaultValue = "QColor( \"" + defaultValue + "\" )";
       }
 
     } else if ( type == "Enum" ) {
