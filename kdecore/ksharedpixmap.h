@@ -143,7 +143,7 @@ public:
      * @param keep Set to true to keep resources, false to delete them when
      * the display is closed.
      */
-    void setKeepResources(bool keep=true);
+    static void setKeepResources(bool keep=true);
 
     /**
      * Query wether a shared pixmap exists.
