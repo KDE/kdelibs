@@ -29,6 +29,7 @@ class QDate;
 class QTime;
 class QDateTime;
 class KConfig;
+class KLocalePrivate;
 
 #ifndef I18N_NOOP
 #define I18N_NOOP(x) (x)
@@ -452,6 +453,8 @@ private:
     KLocale& operator= ( const KLocale& );
 
     static void initInstance();
+
+    KLocalePrivate *d;
 };
 
 QString i18n(const char *text);

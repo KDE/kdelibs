@@ -23,6 +23,8 @@
 
 #include "kconfig.h"
 
+class KDesktopFilePrivate;
+
 /** 
  * KDE Desktop File Management.
  *
@@ -156,6 +158,7 @@ private:
   KDesktopFile( const KDesktopFile& );
   KDesktopFile& operator= ( const KDesktopFile& );
 
+  KDesktopFilePrivate *d;
 };
 
   

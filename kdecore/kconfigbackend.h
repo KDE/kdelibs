@@ -26,6 +26,7 @@
 #include <kconfigbase.h>
 
 class QFile;
+class KConfigBackEndPrivate;
 
 /**
  * Abstract base class for KDE configuration file loading/saving.
@@ -128,7 +129,11 @@ protected:
   QString fileName;
   QString resType;
   bool useKDEGlobals;
+
+  KConfigBackEndPrivate *d;
 };
+
+class KConfigINIBackEndPrivate;
 
 /**
  * Class for KDE INI-style configuration file loading/saving.
@@ -216,6 +221,9 @@ protected:
    * @see KConfig::getConfigState
    */
   virtual KConfigBase::ConfigState getConfigState() const;
+
+private:
+  KConfigINIBackEndPrivate *d;
 };
 
 #endif

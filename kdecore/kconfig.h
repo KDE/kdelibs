@@ -29,6 +29,8 @@ class QTimer;
 #include "kconfigbase.h"
 #include <qdatetime.h>
 
+class KConfigPrivate;
+
 /**
 * Access KDE Configuration entries.
 *
@@ -235,6 +237,8 @@ private slots:
    */
   void flushCache();
 
+private:
+  KConfigPrivate *d;
 };
 
 inline bool KConfig::hasGroup(const QString &_pGroup) const

@@ -180,7 +180,7 @@ KLocale::KLocale( const QString& _catalogue )
     */
     setlocale (LC_MESSAGES, "");
 #endif
-    KConfig *config = KGlobal::instance()->_config;
+    KConfig *config = KGlobal::instance()->config();
     if (config)
     {
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
@@ -427,7 +427,7 @@ void KLocale::setCountry(const QString &number, const QString &money, const QStr
   if (!money.isNull()) _money = money;
   if (!time.isNull()) _time = time;
 
-  initFormat(KGlobal::instance()->_config);
+  initFormat(KGlobal::instance()->config());
 }
 
 void KLocale::setCountry(const QString &country)

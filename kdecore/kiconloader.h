@@ -36,6 +36,8 @@ class KInstance;
 #include <qstring.h>
 #include <kglobal.h>
 
+class KIconLoaderPrivate;
+
 /**
    Icon loader with caching.
 
@@ -175,6 +177,8 @@ private:
   KIconLoader& operator= ( const KIconLoader& );
 
   Size defaultSize;
+
+  KIconLoaderPrivate *d;
 };
 
 /**

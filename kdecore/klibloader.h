@@ -1,3 +1,20 @@
+/* This file is part of the KDE libraries
+   Copyright (C) 1999 Torben Weis <weis@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifndef KLIBLOADER_H
 #define KLIBLOADER_H
 
@@ -11,6 +28,9 @@
 
 class KInstance;
 class QTimer;
+class KLibFactoryPrivate;
+class KLibLoaderPrivate;
+class KLibraryPrivate;
 
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
@@ -76,6 +96,7 @@ public:
 signals:
     void objectCreated( QObject *obj );
 
+    KLibFactoryPrivate *d;
 };
 
 /**
@@ -123,6 +144,7 @@ private:
     lt_dlhandle m_handle;
     QList<QObject> m_objs;
     QTimer *m_timer;
+    KLibraryPrivate *d;
 };
 
 /**
@@ -186,6 +208,8 @@ private:
     QAsciiDict<KLibrary> m_libs;
 
     static KLibLoader* s_self;
+
+    KLibLoaderPrivate *d;
 };
 
 #endif

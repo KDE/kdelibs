@@ -20,83 +20,6 @@
 */
 
 // $Id$
-//
-// $Log$
-// Revision 1.39  2000/01/12 02:52:19  dsweet
-// doc cleaning
-//
-// Revision 1.38  2000/01/09 19:18:31  dsweet
-// Spiffed up documentation.
-//
-// Revision 1.37  1999/11/19 23:30:53  kulow
-// using explicit QString::fromLatin1 calls
-//
-// Revision 1.36  1999/11/15 20:37:59  koss
-// Added readDateTimeEntry() and writeEntry() for QDateTime type.
-// Not thoroughly checked yet. At least API is here.
-//
-// Revision 1.35  1999/11/05 19:48:58  ettrich
-// "Keys", not "Standard Keys", otherwise confiugrable keybindings in
-// KAccel are broken (it relies on KConfig's inheritance).
-//
-// KStdAccel is a namespace now, constructor remains for compatibility.
-//
-// Revision 1.34  1999/10/10 08:18:56  bero
-// Code cleanup ((void) stuff)
-//
-// Revision 1.33  1999/07/25 20:51:42  reggie
-// fixing problems helps more than adding #error :-)
-//
-// Revision 1.32  1999/07/25 10:55:46  kulow
-// adding #errors in case Bool is defined
-//
-// Revision 1.31  1999/07/25 10:42:44  kulow
-// taking over qvariant from koffice and porting kdelibs to QVariant.
-// I mainly s/QProperty/QVariant and sorted header files to make it
-// compile (qvariant.h uses Bool and askes for trouble with kwm.h or
-// krootprop.h which include X11.h ;(
-// If QVariant differs from QProperty more than in the name, someone
-// else has to port it as I have no good way to find out differences
-//
-// Revision 1.30  1999/06/19 20:15:39  kulow
-// implemented KConfigBase::getConfigState. I changed the elements
-// to NoAccess, ReadOnly, ReadWrite.
-//
-// BTW: Currently KConfigBackend contains only virtual functions and
-// everything else is in KConfigINIBackend. Shouldn't the code to collect
-// the filenames in a bit upper class and only the actual parsing put
-// into the INIBackend?
-//
-// Revision 1.29  1999/06/18 16:16:32  porten
-// made the ';' vs. ',' choice at consistent at least until we have a final solution.
-//
-// Revision 1.28  1999/06/08 22:03:55  pbrown
-// I'm now using the handy configuration checks HAVE_STRFMON and
-// HAVE_MONETARY_H to insure no compilation problems.
-//
-// Revision 1.27  1999/05/31 17:59:07  porten
-// ';' -> ',' as default for lists in order not to break everything
-//
-// Revision 1.26  1999/05/30 13:22:27  porten
-// switched back to old list delimiter ','
-//
-// Revision 1.25  1999/05/25 20:38:26  kulow
-// sorted some headers - no need to include kconfigbackend in kconfig.h.
-// Just makes parsing slower
-//
-// Revision 1.24  1999/05/23 21:59:06  pbrown
-// new kconfig system is in.  External API remains the same, but the in-memory
-// and on-disk formats have been abstracted.  KConfigBase now is an ADT with
-// pure virtual functions.  KConfig implements KConfigBase with a QMap-based
-// system, and a coarse cache which will kick the whole lot out of memory
-// after a scaled amount of inactivity.  The only backend that is implemented
-// right now is the INI-style backend we have had forever, but with this new
-// system, it will not be difficult to plug in a XML backend, a database
-// backend, or whatever we please, in the future.
-//
-// I have worked hard to fully document _everything_ in the API. KDoc should
-// provide nice documentation if you are interested.
-//
 
 #ifndef _KCONFIGBASE_H
 #define _KCONFIGBASE_H
@@ -111,6 +34,8 @@
 #include <qmap.h>
 
 #include "kconfigdata.h"
+
+class KConfigBasePrivate;
 
 /**
  * Abstract base class for KDE configuration entries.
@@ -1028,6 +953,8 @@ private:
   bool bLocaleInitialized;
   bool bReadOnly;           // currently only used by KSimpleConfig
   bool bExpand;             // whether dollar expansion is used
+
+  KConfigBasePrivate *d;
 };
 
 // we put this here instead of in the declaration above to
@@ -1036,6 +963,8 @@ inline void KConfigBase::rollback( bool /*bDeep = true*/ )
 {
   bDirty = false;
 }
+
+class KConfigGroupSaverPrivate;
 
 /**
   * Helper class to facilitate working with KConfig/KSimpleConfig groups.
@@ -1094,6 +1023,8 @@ private:
 
   KConfigGroupSaver(const KConfigGroupSaver&);
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
+
+  KConfigGroupSaverPrivate *d;
 };
 
 #endif
