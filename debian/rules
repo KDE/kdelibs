@@ -50,6 +50,7 @@ alsa-stamp:
 	-$(MAKE) -C arts/ clean
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
+	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
