@@ -25,6 +25,7 @@
 #include <qdrawutil.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
+#include "kcolordrag.h"
 
 #include "kcolorbtn.h"
 
@@ -32,6 +33,7 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
 	: QPushButton( parent, name )
 {
 	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
+	setAcceptDrops( true);
 }
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent, const char *name )
@@ -39,6 +41,7 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent, const char *name )
 {
 	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
 	col = c;
+	setAcceptDrops( true);
 }
 
 void KColorButton::setColor( const QColor &c )
@@ -79,6 +82,20 @@ void KColorButton::drawButtonLabel( QPainter *painter )
 		painter->fillRect( w/2, w/2, width() - w, height() - w, fillCol );
 	}
 		
+}
+
+void KColorButton::dragEnterEvent( QDragEnterEvent *event)
+{
+        event->accept( KColorDrag::canDecode( event));
+}
+
+void KColorButton::dropEvent( QDropEvent *event)
+{
+        QColor c;
+        if( KColorDrag::decode( event, c)) {
+            setColor(c);
+	    emit changed( c);
+        }
 }
 
 #include "kcolorbtn.moc"

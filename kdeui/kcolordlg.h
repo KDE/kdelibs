@@ -117,6 +117,9 @@ protected:
   virtual void paintCell( QPainter *painter, int row, int col );
   virtual void resizeEvent( QResizeEvent * );
   virtual void mouseReleaseEvent( QMouseEvent * );
+  virtual void mouseMoveEvent( QMouseEvent * );
+  virtual void dragEnterEvent( QDragEnterEvent *);
+  virtual void dropEvent( QDropEvent *);
 
   QColor *colors;
   int	selected;
@@ -134,8 +137,15 @@ public:
 
   void setColor( const QColor &col );
 
+signals:
+  void colorChanged( const QColor&);
+
 protected:
   virtual void drawContents( QPainter *painter );
+
+  virtual void mouseMoveEvent( QMouseEvent * );
+  virtual void dragEnterEvent( QDragEnterEvent *);
+  virtual void dropEvent( QDropEvent *);
 
 private:
   QColor color;
@@ -169,9 +179,6 @@ public:
   KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 				bool modal = FALSE );
 
-  /** Preselect a color */
-  void setColor( const QColor &col );
-
   /** Retrieve the currently selected color. */
   QColor color()	{	return selColor; }
   
@@ -183,8 +190,10 @@ public:
   static int getColor( QColor &theColor );
 
 public slots:
+  /** Preselect a color */
+  void setColor( const QColor &col );
 
- void slotOkPressed();
+  void slotOkPressed();
 
 signals:
 

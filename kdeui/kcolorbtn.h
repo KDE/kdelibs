@@ -77,7 +77,8 @@ protected:
 	/**
 	*/
 	virtual void drawButtonLabel( QPainter *p );
-
+	virtual void dragEnterEvent( QDragEnterEvent *);
+	virtual void dropEvent( QDropEvent *);
 private:
 	QColor col;
 };

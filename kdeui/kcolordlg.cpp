@@ -32,6 +32,7 @@
 #include <kconfig.h>
 #include "kcolordlg.h"
 #include "kcolordlg.h"
+#include "kcolordrag.h"
 
 #include <dither.h>
 #include <klocale.h>
@@ -182,6 +183,9 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 		colors[i] = backgroundColor();
 
 	selected = 0;
+
+	// Drag'n'Drop
+	setAcceptDrops( true);
 }
 
 KColorCells::~KColorCells()
@@ -213,6 +217,32 @@ void KColorCells::resizeEvent( QResizeEvent * )
 	setCellWidth( width() / numCols() );
 	setCellHeight( height() / numRows() );
 }
+void KColorCells::mouseMoveEvent( QMouseEvent *e )
+{
+        // Drag color object
+        if( !(e->state() && LeftButton)) return;
+	int row = e->pos().y() / cellHeight();
+	int col = e->pos().x() / cellWidth();
+	int cell = row * numCols() + col;
+	KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
+	d->dragCopy();
+}
+
+void KColorCells::dragEnterEvent( QDragEnterEvent *event)
+{
+     event->accept( KColorDrag::canDecode( event));
+}
+
+void KColorCells::dropEvent( QDropEvent *event)
+{
+     QColor c;
+     if( KColorDrag::decode( event, c)) {
+	  int row = event->pos().y() / cellHeight();
+	  int col = event->pos().x() / cellWidth();
+	  int cell = row * numCols() + col;
+	  setColor(cell,c);
+     }
+}
 
 void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 {
@@ -237,6 +267,7 @@ KColorPatch::KColorPatch( QWidget *parent ) : QFrame( parent )
 {
 	setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	colContext = 0;
+	setAcceptDrops( true);
 }
 
 KColorPatch::~KColorPatch()
@@ -267,6 +298,29 @@ void KColorPatch::drawContents( QPainter *painter )
 	painter->setBrush( QBrush( color ) );
 	painter->drawRect( contentsRect() );
 }
+
+void KColorPatch::mouseMoveEvent( QMouseEvent *e )
+{
+        // Drag color object
+        if( !(e->state() && LeftButton)) return;
+	KColorDrag *d = KColorDrag::makeDrag( color, this);
+	d->dragCopy();
+}
+
+void KColorPatch::dragEnterEvent( QDragEnterEvent *event)
+{
+     event->accept( KColorDrag::canDecode( event));
+}
+
+void KColorPatch::dropEvent( QDropEvent *event)
+{
+     QColor c;
+     if( KColorDrag::decode( event, c)) {
+	  setColor( c);
+	  emit colorChanged( c);
+     }
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -376,6 +430,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	l_rbot->addMultiCellWidget(patch, 0, 2, 0, 0, AlignVCenter|AlignLeft);
 	patch->setFixedSize(48, 48);
 	patch->setColor( selColor );
+	connect( patch, SIGNAL( colorChanged( const QColor&)),
+		 SLOT( setColor( const QColor&)));
 	
 	// add the HSV fields
 	label = new QLabel( "H:", this );
