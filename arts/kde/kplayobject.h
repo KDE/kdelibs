@@ -102,7 +102,7 @@ public:
 	/**
 	 * Reimplemented (Arts::PlayObject Wrapper)
 	 */
-	QString mediaName() const;
+	QString mediaName();
 	
 	/**
 	 * Reimplemented (Arts::PlayObject Wrapper)

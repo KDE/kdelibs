@@ -42,10 +42,7 @@ KPlayObject::~KPlayObject()
 
 void KPlayObject::play()
 {
-	if(!m_isStream)
-		object().play();
-	else
-		object().play();
+	object().play();
 }
 
 void KPlayObject::seek(Arts::poTime newTime)
@@ -58,18 +55,12 @@ void KPlayObject::seek(Arts::poTime newTime)
 
 void KPlayObject::pause()
 {
-	if(!m_isStream)
-		object().pause();
-	else
-		object().pause();
+	object().pause();
 }
 
 void KPlayObject::halt()
 {
-	if(!m_isStream)
-		object().halt();
-	else
-		object().halt();
+	object().halt();
 }
 
 QString KPlayObject::description()
