@@ -219,7 +219,12 @@ public:
     void deleteRule ( unsigned long index );
     
 protected:
+#if QT_VERSION < 300
     QList<CSSRuleImpl> m_lstCSSRules;
+#else
+    QPtrList<CSSRuleImpl> m_lstCSSRules;
+#endif
+
 };
 
 }; // namespace
