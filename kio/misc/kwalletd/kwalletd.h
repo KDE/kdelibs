@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 class KDirWatch;
+class KTimeout;
 
 class KWalletD : public KDEDModule {
 	Q_OBJECT
@@ -128,6 +129,7 @@ class KWalletD : public KDEDModule {
 	private slots:
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();
+		void timedOut(int);
 
 	private:
 		// This also validates the handle.  May return NULL.
@@ -154,6 +156,7 @@ class KWalletD : public KDEDModule {
 		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt;
 		int _idleTime;
 		QMap<QString,QStringList> _implicitAllowMap;
+		KTimeout *_timeouts;
 };
 
 

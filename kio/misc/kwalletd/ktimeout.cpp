@@ -29,6 +29,11 @@ KTimeout::KTimeout(int size)
 
 
 KTimeout::~KTimeout() {
+	clear();
+}
+
+
+void KTimeout::clear() {
 	_timers.clear();
 }
 
@@ -36,8 +41,7 @@ KTimeout::~KTimeout() {
 void KTimeout::removeTimer(int id) {
 	QTimer *t = _timers.find(id);
 	if (t != 0L) {
-		delete t;
-		_timers.remove(id);
+		_timers.remove(id); // autodeletes
 	}
 }
 

@@ -37,9 +37,10 @@ class KTimeout : public QObject {
 		void timedOut(int id);
 
 	public slots:
-		void resetTimer(int id, int timeout = -1);
+		void resetTimer(int id, int timeout);
 		void addTimer(int id, int timeout);
 		void removeTimer(int id);
+		void clear();
 
 	private slots:
 		void timeout();

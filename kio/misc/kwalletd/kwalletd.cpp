@@ -21,6 +21,7 @@
 */
 
 #include "kwalletd.h"
+#include "ktimeout.h"
 
 #include <dcopclient.h>
 #include <dcopref.h>
@@ -53,6 +54,10 @@ extern "C" {
 KWalletD::KWalletD(const QCString &name)
 : KDEDModule(name), _failed(0) {
 	srand(time(0));
+	_timeouts = new KTimeout(17);
+	_closeIdle = false;
+	_idleTime = 0;
+	connect(_timeouts, SIGNAL(timedOut(int)), this, SLOT(timedOut(int)));
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	KApplication::dcopClient()->setNotifications(true);
@@ -68,6 +73,9 @@ KWalletD::KWalletD(const QCString &name)
   
 
 KWalletD::~KWalletD() {
+	delete _timeouts;
+	_timeouts = 0;
+
 	// Open wallets get closed without being saved of course.
 	for (QIntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
@@ -179,6 +187,9 @@ int KWalletD::open(const QString& wallet) {
 		}
 
 		b->ref();
+		if (_closeIdle) {
+			_timeouts->addTimer(rc, _idleTime);
+		}
 		delete kpd;
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
@@ -319,6 +330,9 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 		const QString& wallet = w->walletName();
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
+			if (_closeIdle) {
+				_timeouts->removeTimer(handle);
+			}
 			_wallets.remove(handle);
 			if (_passwords.contains(wallet)) {
 				w->close(QByteArray().duplicate(_passwords[wallet].data(), _passwords[wallet].length()));
@@ -355,6 +369,9 @@ bool contains = false;
 
 		// watch the side effect of the deref()
 		if ((contains && w->deref() == 0 && !_leaveOpen) || force) {
+			if (_closeIdle) {
+				_timeouts->removeTimer(handle);
+			}
 			_wallets.remove(handle);
 			if (force) {
 				invalidateHandle(handle);
@@ -701,6 +718,9 @@ KWallet::Backend *w = _wallets.find(handle);
 			if (_handles[appid].contains(handle)) {
 				// the app owns this handle
 				_failed = 0;
+				if (_closeIdle) {
+					_timeouts->resetTimer(handle, _idleTime);
+				}
 				return w;
 			}
 		}
@@ -817,10 +837,33 @@ void KWalletD::reconfigure() {
 	_enabled = cfg.readBoolEntry("Enabled", true);
 	_launchManager = cfg.readBoolEntry("Launch Manager", true);
 	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
+	bool idleSave = _closeIdle;
 	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
 	_openPrompt = cfg.readBoolEntry("Prompt on Open", true);
-	_idleTime = cfg.readNumEntry("Idle Timeout", 10);
+	int timeSave = _idleTime;
+	// in minutes!
+	_idleTime = cfg.readNumEntry("Idle Timeout", 10) * 60 * 1000;
 
+	// Handle idle changes
+	if (_closeIdle) {
+		if (_idleTime != timeSave) { // Timer length changed
+			QIntDictIterator<KWallet::Backend> it(_wallets);
+			for (; it.current(); ++it) {
+				_timeouts->resetTimer(it.currentKey(), _idleTime);
+			}
+		}
+
+		if (!idleSave) { // add timers for all the wallets
+			QIntDictIterator<KWallet::Backend> it(_wallets);
+			for (; it.current(); ++it) {
+				_timeouts->addTimer(it.currentKey(), _idleTime);
+			}
+		}
+	} else {
+		_timeouts->clear();
+	}
+
+	// Update the implicit allow stuff
 	_implicitAllowMap.clear();
 	cfg.setGroup("Auto Allow");
 	QStringList entries = cfg.entryMap("Auto Allow").keys();
@@ -828,7 +871,7 @@ void KWalletD::reconfigure() {
 		_implicitAllowMap[*i] = cfg.readListEntry(*i);
 	}
 
-
+	// Update if wallet was enabled/disabled
 	if (!_enabled) { // close all wallets
 		while (!_wallets.isEmpty()) { 
 			QIntDictIterator<KWallet::Backend> it(_wallets);
@@ -893,6 +936,13 @@ QCString KWalletD::friendlyDCOPPeerName() {
 	return dc->senderId().replace(QRegExp("-[0-9]+$"), "");
 }
 
+
+void KWalletD::timedOut(int id) {
+	KWallet::Backend *w = _wallets.find(id);
+	if (w) {
+		closeWallet(w, id, true);
+	}
+}
 
 
 #include "kwalletd.moc"
