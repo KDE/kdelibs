@@ -40,6 +40,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.37  1998/11/06 12:55:53  radej
+// sven: handle changed again (still not perfect)
+//
 // Revision 1.36  1998/11/05 18:23:32  radej
 // sven: new look for *Bar handles (unfinished)
 //
@@ -415,16 +418,16 @@ void KMenuBar::leaveEvent (QEvent *e){
         paint.setClipRect(0, 2, w, h-4);
 
         paint.setPen( g.light() );
-          //paint.drawLine(0, h-a+1, h, 0-a+1);
-          a +=4;
+        int a=0-w;
+        while (a <= h+5)
         {
           paint.drawLine(0, h-a, h, 0-a);
           paint.drawLine(0, h-a+1, h, 0-a+1);
           a +=6;
         }
         a=0-w;
-          //paint.drawLine(0, h-a+3, h, 0-a+3);
-          a +=4;
+        paint.setPen( g.dark() );
+        while (a <= h+5)
         {
 
 
