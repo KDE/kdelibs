@@ -1276,17 +1276,21 @@ void KApplication::kdisplaySetStyle()
 void KApplication::propagateSettings(SettingsCategory arg)
 {
     KConfigBase* config = KGlobal::config();
-    KConfigGroupSaver saver( config, "General" );
+    KConfigGroupSaver saver( config, "KDE" );
 
-    int num = config->readNumEntry("cursorBlinkRate", QApplication::cursorFlashTime());
+    int num = config->readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if (num < 200)
 	num = 200;
     if (num > 2000)
 	num = 2000;
     QApplication::setCursorFlashTime(num);
-    num = config->readNumEntry("doubleClickInterval", QApplication::doubleClickInterval());
+    num = config->readNumEntry("DoubleClickInterval", QApplication::doubleClickInterval());
     QApplication::setDoubleClickInterval(num);
-    num = config->readNumEntry("wheelScrollLines", QApplication::wheelScrollLines());
+    num = config->readNumEntry("StartDragTime", QApplication::startDragTime());
+    QApplication::setStartDragTime(num);
+    num = config->readNumEntry("StartDragDist", QApplication::startDragDistance());
+    QApplication::setStartDragDistance(num);
+    num = config->readNumEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
     emit settingsChanged(arg);
