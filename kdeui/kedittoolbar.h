@@ -284,7 +284,7 @@ public:
    *
    * @return Your application's collection of actions
    */
-  virtual KActionCollection *actionCollection() const;
+  //virtual KActionCollection *actionCollection() const;
 
   /**
    * Save any changes the user made.  The file will be in the user's

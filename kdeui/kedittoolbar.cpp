@@ -99,6 +99,7 @@ class KEditToolbarWidgetPrivate
 {
 public:
   KEditToolbarWidgetPrivate(KInstance *instance)
+  //: m_collection( parent, "KEditToolbarWidgetPrivate::m_collection" )
   {
     m_instance = instance;
     m_isPart   = false;
@@ -151,8 +152,8 @@ public:
     return list;
   }
 
-
-  KActionCollection m_collection;
+  QValueList<KAction*> m_actionList;
+  //KActionCollection m_collection;
   KInstance         *m_instance;
 
   XmlData     m_currentXmlData;
@@ -250,7 +251,8 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
     d(new KEditToolbarWidgetPrivate(instance()))
 {
   // let's not forget the stuff that's not xml specific
-  d->m_collection = *collection;
+  //d->m_collection = *collection;
+  d->m_actionList = collection->actions();
 
   // handle the merging
   if (global)
@@ -318,7 +320,7 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
     data.m_barList = d->findToolbars(elem);
     d->m_xmlFiles.append(data);
 
-    d->m_collection += *client->actionCollection();
+    d->m_actionList += client->actionCollection()->actions();
   }
 
   // okay, that done, we concern ourselves with the GUI aspects
@@ -535,7 +537,6 @@ void KEditToolbarWidget::loadToolbarCombo()
     }
   }
 
-
   // we want to the first item selected and its actions loaded
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
@@ -593,9 +594,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     }
 
     // iterate through all of our actions
-    for (unsigned int i = 0;  i < d->m_collection.count(); i++)
+    for (unsigned int i = 0;  i < d->m_actionList.count(); i++)
     {
-      KAction *action = d->m_collection.action(i);
+      KAction *action = d->m_actionList[i];
 
       // do we have a match?
       if (it.attribute( attrName ) == action->name())
@@ -613,9 +614,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  for (int i = d->m_collection.count() - 1; i > -1; --i)
+  for (int i = d->m_actionList.count() - 1; i > -1; --i)
   {
-    KAction *action = d->m_collection.action(i);
+    KAction *action = d->m_actionList[i];
 
     // skip our active ones
     if (active_list.contains(action->name()))
@@ -640,10 +641,10 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   act->setText(1, "-----");
 }
 
-KActionCollection *KEditToolbarWidget::actionCollection() const
+/*KActionCollection *KEditToolbarWidget::actionCollection() const
 {
   return &d->m_collection;
-}
+}*/
 
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {
