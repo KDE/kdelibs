@@ -86,8 +86,6 @@ class KSocket : public QObject
 {
     Q_OBJECT
 public:
-    friend class KServerSocket;
-
     /**
      * Constructs a KSocket with the provided file descriptor.
      * @param _sock	The file descriptor to use.
@@ -222,10 +220,8 @@ protected:
 private:
     KSocket(const KSocket&);
     KSocket& operator=(const KSocket&);
-    static void blockSigpipe();
 
     KSocketPrivate *d;
-    static bool sigpipeBlocked;
 
 };
 
