@@ -32,9 +32,9 @@
 
 class KHTMLWidget;
 class QWidget;
-class QPixmap;
 class QMultiLineEdit;
 #include <qobject.h>
+#include <qpixmap.h>
 #include <qlist.h>
 
 namespace DOM {
@@ -85,7 +85,9 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLGenericFormElementImpl : public HTMLPositionedElementImpl
+// we need to inherit from HTMLBlockElement, since fieldset is a block element,
+// and button can have block level contents   
+class HTMLGenericFormElementImpl : public HTMLBlockElementImpl
 {
     friend class HTMLFormElementImpl;
 
@@ -97,6 +99,13 @@ public:
     HTMLFormElementImpl *form() { return _form; }
 
     virtual bool isRendered() { return true; }
+
+    // overriding all functions defined in HTMLBlockElement to the Psoitioned Element ones.
+    virtual bool isInline() { return true; }
+    //virtual void printObject( QPainter *, int x, int y, int w, int h,
+    //			int tx, int ty);
+    virtual void layout( bool deep = false ) { HTMLPositionedElementImpl::layout(deep); }
+    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLPositionedElementImpl::addChild(newChild); }
 
     /*
      * override in derived classes to get the encoded name=value pair
@@ -172,6 +181,8 @@ public:
     virtual void calcMinMaxWidth();
 
     virtual void reset();
+    virtual void print(QPainter *, int, int, int, int, int, int);
+    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLBlockElementImpl::addChild(newChild); }
 
 public slots:
     void slotSubmit();
@@ -181,6 +192,8 @@ protected:
     bool _clicked;
     typeEnum _type;
     QString currValue;
+    QPixmap pixmap;
+    bool dirty;
 };
 
 // -------------------------------------------------------------------------

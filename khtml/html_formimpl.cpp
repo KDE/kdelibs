@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org) 
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -209,7 +209,7 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 // -------------------------------------------------------------------------
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
-    : HTMLPositionedElementImpl(doc)
+    : HTMLBlockElementImpl(doc)
 {
     _form = f;
     if(_form) _form->registerFormElement(this);
@@ -222,7 +222,7 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
 }
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
-    : HTMLPositionedElementImpl(doc)
+    : HTMLBlockElementImpl(doc)
 {
     _form = getForm();
     if(_form) _form->registerFormElement(this);
@@ -411,6 +411,7 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementI
     _clicked = false;
     _type = SUBMIT;
     setBlocking();
+    dirty = true;
 }
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
@@ -419,6 +420,7 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     _clicked = false;
     _type = SUBMIT;
     setBlocking();
+    dirty = true;
 }
 
 HTMLButtonElementImpl::~HTMLButtonElementImpl()
@@ -523,20 +525,23 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
 }
 
 // ### honour the deep flag, and layout contents into the button
-void HTMLButtonElementImpl::layout( bool /*deep*/ )
+void HTMLButtonElementImpl::layout( bool deep )
 {
     if(!w) return;
 
-    if(_first)
-    {
-	// ### render contents into button
+    int oldW = width;
+    int oldH = getHeight();
+    // make it as small as possible. One could think of better strategies though...
+    availableWidth = minWidth;
+    HTMLBlockElementImpl::layout(deep);
+
+    if(width != oldW && getHeight() != oldH)
+    { 	   
+	pixmap = QPixmap(width, getHeight());
+	QPainter p(&pixmap);
+	p.eraseRect(0, 0, width, getHeight());
+	dirty = true;
     }
-
-    w->resize(w->sizeHint());
-    descent = 5;
-    ascent = w->height() - 5;
-    width = w->width();
-
     setLayouted();
     setBlocking(false);
 }
@@ -556,10 +561,7 @@ QString HTMLButtonElementImpl::encoding()
 
 void HTMLButtonElementImpl::calcMinMaxWidth()
 {
-    layout();
-
-    minWidth = width;
-    maxWidth = width;
+    HTMLBlockElementImpl::calcMinMaxWidth();
 }
 
 void HTMLButtonElementImpl::reset()
@@ -571,6 +573,29 @@ void HTMLButtonElementImpl::slotSubmit()
 {
     _clicked = true;
     if(form()) _form->slotSubmit();
+}
+
+void HTMLButtonElementImpl::print(QPainter *, int _x, int _y, int _w, int _h, int tx, int ty)
+{
+    if(!w) return;
+    QPainter *p = new QPainter;
+    p->begin(&pixmap);
+    p->translate(-tx-x, -ty-y);
+    HTMLBlockElementImpl::print(p, tx+x, ty+y, width, getHeight(), tx, ty);
+    p->end();
+    delete p;
+    static_cast<QPushButton *>(w)->setPixmap(pixmap);
+    w->resize(w->sizeHint());
+    if(view && w)
+    {
+	tx += x;
+	ty += y - ascent;
+	view->addChild(w, tx, ty);
+	// ### we have to set the background somehow...
+	w->show();
+	badPos = false;
+    }
+    dirty = false;
 }
 
 // -------------------------------------------------------------------------
