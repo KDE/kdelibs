@@ -236,9 +236,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case DASHED:
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
-        {
-            switch(s)
-            {
+
+        if (width > 0)
+            switch(s) {
             case BSBottom:
             case BSTop:
                 p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
@@ -246,9 +246,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             case BSLeft:
                 p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
             }
-        }
-        break;
 
+        break;
     case DOUBLE:
     {
         int third = (width+1)/3;
