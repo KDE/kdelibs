@@ -237,6 +237,16 @@ public:
                         const QString& defaultType = QString::null );
 
     /**
+     * The mimetype for the desired output format.
+     *
+     * This is only valid if @ref setMimeFilter() has been called
+     * previously.
+     *
+     * @see setMimeFilter()
+     */
+    QString currentMimeFilter() const;
+
+    /**
      *  Clears any mime- or namefilter. Does not reload the directory.
      */
     void clearFilter();

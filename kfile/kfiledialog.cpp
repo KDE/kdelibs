@@ -421,14 +421,19 @@ void KFileDialog::clearFilter()
     ops->fileReader()->clearMimeFilter();
     ops->fileReader()->setNameFilter( QString::null );
 }
-    
-KMimeType::Ptr KFileDialog::currentFilterMimeType()
+
+QString KFileDialog::currentMimeFilter() const
 {
     int i = filterWidget->currentItem()-1;
 
     if ((i >= 0) && (i < (int) d->mimetypes.count()))
-        return KMimeType::mimeType( d->mimetypes[i] );
-    return KMimeType::mimeType( d->defaultType );
+        return d->mimetypes[i];
+    return d->defaultType;
+}
+
+KMimeType::Ptr KFileDialog::currentFilterMimeType()
+{
+    return KMimeType::mimeType( currentMimeFilter() );
 }
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
