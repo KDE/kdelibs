@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-pkcs12
+Icon=lock
+Patterns=*.p12;*.P12
+Comment=PKCS#12 Certificate Bundle
+X-KDE-AutoEmbed=true
+
