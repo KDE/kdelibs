@@ -1,3 +1,9 @@
+kdelibs (2:990301-pre2.0-1) unstable; urgency=low
+
+  * new upstream version 1.0
+
+ -- Russell Coker <russell@coker.com.au>  Mon, 1 Mar 1999 11:45:00 +0000
+
 kdelibs (2:980710-1.0-1) unstable; urgency=low
 
   * new upstream version 1.0
