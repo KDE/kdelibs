@@ -4590,6 +4590,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 {
   KURL popupURL;
   KURL linkKURL;
+  KParts::URLArgs args;
   QString referrer;
   KParts::BrowserExtension::PopupFlags itemflags=KParts::BrowserExtension::ShowBookmark | KParts::BrowserExtension::ShowReload;
 
@@ -4609,6 +4610,19 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;
     referrer = this->referrer();
+    
+    if (!(d->m_strSelectedURLTarget).isEmpty() &&
+           (d->m_strSelectedURLTarget.lower() != "_top") &&
+           (d->m_strSelectedURLTarget.lower() != "_self") && 
+	   (d->m_strSelectedURLTarget.lower() != "_parent")) {
+      if (d->m_strSelectedURLTarget.lower() == "_blank")
+        args.setForcesNewWindow(true);
+      else {     
+        KHTMLPart *destpart = findFrame(d->m_strSelectedURLTarget);
+        if (!destpart)
+          args.setForcesNewWindow(true);
+      }
+    }
   }
 
   // Danger, Will Robinson. The Popup might stay around for a much
@@ -4616,7 +4630,6 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
   QGuardedPtr<QObject> guard( client );
 
-  KParts::URLArgs args;
   args.serviceType = QString::fromLatin1( "text/html" );
   args.metaData()["referrer"] = referrer;
 
