@@ -36,7 +36,7 @@ namespace KJS {
 
   class HTMLDocument : public DOMDocument {
   public:
-    HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
+    HTMLDocument(ExecState *exec, DOM::HTMLDocument d);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     void putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/);

@@ -191,6 +191,10 @@ void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
     }
 }
 
+KJS::HTMLDocument::HTMLDocument(ExecState *exec, DOM::HTMLDocument d)
+  /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
+  : DOMDocument(exec, d) { }
+
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
@@ -1383,7 +1387,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputMaxLength:       return Number(input.maxLength());
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
-    case InputSize:            return getString(input.size());
+    case InputSize:            return Number(input.getSize());
     case InputSrc:             return getString(input.src());
     case InputTabIndex:        return Number(input.tabIndex());
     case InputType:            return getString(input.type());
@@ -1550,7 +1554,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case BaseFontColor:           return getString(baseFont.color());
     case BaseFontFace:            return getString(baseFont.face());
-    case BaseFontSize:            return getString(baseFont.size());
+    case BaseFontSize:            return Number(baseFont.getSize());
     }
   }
   break;
@@ -1621,7 +1625,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
-    case ImageBorder:          return Number(image.border());
+    case ImageBorder:          return String(image.getBorder());
     case ImageComplete:        return Boolean(static_cast<DOM::HTMLImageElementImpl*>( image.handle() )->complete());
     case ImageHeight:          return Number(image.height());
     case ImageHspace:          return Number(image.hspace());
@@ -1648,13 +1652,13 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ObjectData:            return getString(object.data());
     case ObjectDeclare:         return Boolean(object.declare());
     case ObjectHeight:          return getString(object.height());
-    case ObjectHspace:          return getString(object.hspace());
+    case ObjectHspace:          return Number(object.getHspace());
     case ObjectName:            return getString(object.name());
     case ObjectStandby:         return getString(object.standby());
     case ObjectTabIndex:        return Number(object.tabIndex());
     case ObjectType:            return getString(object.type());
     case ObjectUseMap:          return getString(object.useMap());
-    case ObjectVspace:          return getString(object.vspace());
+    case ObjectVspace:          return Number(object.getVspace());
     case ObjectWidth:           return getString(object.width());
     }
   }
@@ -1678,10 +1682,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AppletCode:            return getString(applet.code());
     case AppletCodeBase:        return getString(applet.codeBase());
     case AppletHeight:          return getString(applet.height());
-    case AppletHspace:          return getString(applet.hspace());
+    case AppletHspace:          return Number(applet.getHspace());
     case AppletName:            return getString(applet.name());
     case AppletObject:          return getString(applet.object());
-    case AppletVspace:          return getString(applet.vspace());
+    case AppletVspace:          return Number(applet.getVspace());
     case AppletWidth:           return getString(applet.width());
     }
   }
@@ -2393,7 +2397,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case InputMaxLength:       { input.setMaxLength(value.toInteger(exec)); return; }
       case InputName:            { input.setName(str); return; }
       case InputReadOnly:        { input.setReadOnly(value.toBoolean(exec)); return; }
-      case InputSize:            { input.setSize(str); return; }
+      case InputSize:            { input.setSize(value.toInteger(exec)); return; }
       case InputSrc:             { input.setSrc(str); return; }
       case InputTabIndex:        { input.setTabIndex(value.toInteger(exec)); return; }
       case InputType:            { input.setType(str); return; }
@@ -2560,7 +2564,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       switch (token) {
       case BaseFontColor:           { baseFont.setColor(str); return; }
       case BaseFontFace:            { baseFont.setFace(str); return; }
-      case BaseFontSize:            { baseFont.setSize(str); return; }
+      case BaseFontSize:            { baseFont.setSize(value.toInteger(exec)); return; }
       }
     }
     break;
@@ -2616,7 +2620,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ImageName:            { image.setName(str); return; }
       case ImageAlign:           { image.setAlign(str); return; }
       case ImageAlt:             { image.setAlt(str); return; }
-      case ImageBorder:          { image.setBorder(value.toInteger(exec)); return; }
+      case ImageBorder:          { image.setBorder(str); return; }
       case ImageHeight:          { image.setHeight(value.toInteger(exec)); return; }
       case ImageHspace:          { image.setHspace(value.toInteger(exec)); return; }
       case ImageIsMap:           { image.setIsMap(value.toBoolean(exec)); return; }
@@ -2642,13 +2646,13 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ObjectData:            { object.setData(str); return; }
       case ObjectDeclare:         { object.setDeclare(value.toBoolean(exec)); return; }
       case ObjectHeight:          { object.setHeight(str); return; }
-      case ObjectHspace:          { object.setHspace(str); return; }
+      case ObjectHspace:          { object.setHspace(value.toInteger(exec)); return; }
       case ObjectName:            { object.setName(str); return; }
       case ObjectStandby:         { object.setStandby(str); return; }
       case ObjectTabIndex:        { object.setTabIndex(value.toInteger(exec)); return; }
       case ObjectType:            { object.setType(str); return; }
       case ObjectUseMap:          { object.setUseMap(str); return; }
-      case ObjectVspace:          { object.setVspace(str); return; }
+      case ObjectVspace:          { object.setVspace(value.toInteger(exec)); return; }
       case ObjectWidth:           { object.setWidth(str); return; }
       }
     }
@@ -2672,10 +2676,10 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AppletCode:            { applet.setCode(str); return; }
       case AppletCodeBase:        { applet.setCodeBase(str); return; }
       case AppletHeight:          { applet.setHeight(str); return; }
-      case AppletHspace:          { applet.setHspace(str); return; }
+      case AppletHspace:          { applet.setHspace(value.toInteger(exec)); return; }
       case AppletName:            { applet.setName(str); return; }
       case AppletObject:          { applet.setObject(str); return; }
-      case AppletVspace:          { applet.setVspace(str); return; }
+      case AppletVspace:          { applet.setVspace(value.toInteger(exec)); return; }
       case AppletWidth:           { applet.setWidth(str); return; }
       }
     }
