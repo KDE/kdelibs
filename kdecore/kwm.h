@@ -14,21 +14,26 @@
 #include <X11/Xlib.h>
 
 
-/* The class KWM allows usual X11 clients to get or modify window
+/** 
+ * The class KWM allows usual X11 clients to get or modify window
  * properties and to interact with the windowmanager. It also offers
  * some high level functions to support the easy implementation of
  * session managment.  
-*/
+ * @short class for interaction with the window- and sessionmanager
+ * @author Matthias Ettrich (ettrich@kde.org)
+ */
 class KWM {
 
 public:
   
-  /* Return all window properties needed to restore a window in 
+  /**
+   * Return all window properties needed to restore a window in 
    * a string. The string can be used as a command line argument
    * for the session management (See setWmCommand below).  */
   static QString getProperties(Window w);
 
-  /* Apply properties from a property string to a window. This will
+  /** 
+   * Apply properties from a property string to a window. This will
    * have an immediate effect if the window is already managed by the
    * window manager (that means it is either in Normal- or in
    * IconicState). If the window is still WithDrawn, the windowmanager
@@ -44,7 +49,8 @@ public:
   static void setProperties(Window w, const QString &props);
 
 
-  /* This will tell the windowmanager that your client is able to do
+  /**
+   * This will tell the windowmanager that your client is able to do
    * session management. If you do this, your client MUST react on
    * WM_SAVE_YOURSELF client messages by setting the XA_WM_COMMAND
    * property. This can be easily done with a call to setWmCommand
@@ -105,12 +111,13 @@ public:
    * nevertheless. The same as usual: If you do not want the session
    * manager to restart your application, since it is already started
    * by the usual startup script (True for kfm), set the command to an
-   * empty string (setWmCommand(<your window>, QString(""));)
+   * empty string (setWmCommand(<your window>, "");)
    */
   static void enableSessionManagement(Window w);
 
 
-  /* Store a shell command that can be used to restore the client.
+  /** 
+   * Store a shell command that can be used to restore the client.
    * This should be done as reaction on a WM_SAVE_YOURSELF client
    * message. setWmCommand also sets the WM_CLIENT_MACHINE property to
    * allow a session management to restart your application even on
@@ -136,7 +143,8 @@ public:
    */
   static void setUnsavedDataHint(Window w, bool value);
 
-  /* Set a mini icon for your application window. This icon may appear
+  /** 
+   * Set a mini icon for your application window. This icon may appear
    * in the window decoration as well as on taskbar buttons. Therefore
    * it should be very small (kwm for example will scale it to 14x14,
    * so 14x14 may be the size of choice).
@@ -153,13 +161,15 @@ public:
    * Note 2: May have no effekt with other windowmanagers */
   static void setMiniIcon(Window w, const QPixmap &pm);
 
-  /* Set a standard (large) icon for the application window. If you
+  /**
+   * Set a standard (large) icon for the application window. If you
    * are using Qt this should be almost aequivalent to a call to
    * QWidget::setIcon(..)  
    */
   static void setIcon(Window w, const QPixmap &pm);
 
-  /* This declares a toplevel window to be a docking window. If a KWMDockModule
+  /**
+   * This declares a toplevel window to be a docking window. If a KWMDockModule
    * is running (for example kpanel), it will swallow the window on
    * its docking area when it is mapped.
    *
@@ -174,7 +184,8 @@ public:
    */
   static void setDockWindow(Window w);
 
-  /* Some windows do not want to be decorated at all but should not be
+  /** 
+   *Some windows do not want to be decorated at all but should not be
    * override_redirect (for example toolbars which are dragged out of
    * their main window). This can be achieved with a simple call to
    * setDecoration() even if the window is already mapped.
@@ -185,13 +196,15 @@ public:
    */
   static void setDecoration(Window w, bool value);
 
-  /* Invokes the logout process (session management, logout dialog, ...)
+  /** 
+   * Invokes the logout process (session management, logout dialog, ...)
    *
    * Note: May have no effect with other window mangers
    */
   static void logout();
 
-  /* Clients who draw over other windows should call refreshScreen()
+  /** 
+   * Clients who draw over other windows should call refreshScreen()
    * afterwards to force an ExposureEvent on all visible windows.
    * Also necessary after darkenScreen();
    *
@@ -199,7 +212,8 @@ public:
    */
   static void refreshScreen();
 
-  /* Draw a black matrix over the entire screen to make it look darker.
+  /**
+   * Draw a black matrix over the entire screen to make it look darker.
    * Clients who use this should grab the X server afterwards and also
    * call refreshScreen() after releasing the X server.
    *
@@ -207,7 +221,8 @@ public:
    */
   static void darkenScreen();
   
-  /* Clients who manipulated the config file of the windowmanager
+  /**
+   * Clients who manipulated the config file of the windowmanager
    * should call this afterwards
    *
    * Note: May have no effect with other window mangers
@@ -215,7 +230,7 @@ public:
   static void configureWm();
 
 
-  /*
+  /**
    * The current virtual desktop. This is usefull if your program behaves
    * different on different desktops (for example a background drawing
    * program) but does not itself need to be a window manager module
@@ -224,7 +239,8 @@ public:
   static int currentDesktop();
 
 
-  /* **********************************************************************
+  /**
+   *************************************************************************
    *
    * Functions below are probably only important for window manager modules 
    *
@@ -233,7 +249,8 @@ public:
    ************************************************************************* 
    */
 
-  /* Declare a toplevel window to be used for module
+  /**
+   * Declare a toplevel window to be used for module
    * communication. This window does not need to be mapped, although
    * it can be mapped of course.  Module windows MUST be toplevel
    * windows. If you create them with Qt (new QWidget()->winId()) be
@@ -257,7 +274,8 @@ public:
   static void setKWMModule(Window w);
   static bool isKWMModule(Window w);
 
-  /* Note that there can only be one single KWMDockModule at the same
+  /**
+   * Note that there can only be one single KWMDockModule at the same
    * time.  The first one to come wins. The later can check the result
    * with isKWMDockModule.  
    *
@@ -271,7 +289,8 @@ public:
   static Window activeWindow();
   static void switchToDesktop(int desk);
 
-  /* Window region define the rectangle where windows can appear. A
+  /** 
+   *Window region define the rectangle where windows can appear. A
    * window which can be fully maximized will exactly fill this
    * region. The regions are settable withing kwm to allow desktop
    * panels like kpanel to stay visible even if a window becomes maximized.
@@ -280,7 +299,8 @@ public:
   static void setWindowRegion(int desk, const QRect &region);
   static QRect getWindowRegion(int desk);
 
-  /* At present the maximium number of desktops is limited to 8
+  /** 
+   * At present the maximium number of desktops is limited to 8
    *
    * As with the window regions, kwm will store these properties in
    * the kwmrc when exiting
@@ -290,7 +310,8 @@ public:
   static void setDesktopName(int desk, const QString &name);
   static QString getDesktopName(int desk);
 
-  /* low level kwm communication. This can also be used for a one-way
+  /**
+   * low level kwm communication. This can also be used for a one-way
    * communication with modules, since kwm sends messages, which it
    * does not understand, to all modules. You module should declare a
    * short unque praefix for this task.
@@ -300,17 +321,20 @@ public:
    */
   static void sendKWMCommand(const QString &command);
 
-  /* The standard window title. If kwm runs, title() will return the
+  /**
+   * The standard window title. If kwm runs, title() will return the
    * title kwm uses. These titles are always unique.  
    */
   static QString title(Window w);
 
-  /* titleWithState is aequivalent to title(), but inside round brackets
+  /** 
+   *titleWithState is aequivalent to title(), but inside round brackets
    * for iconified window 
    */
   static QString titleWithState(Window w);
 
-  /* if no miniicon is set, miniIcon() will return the standard
+  /** 
+   * if no miniicon is set, miniIcon() will return the standard
    * icon. The result will be scaled to (width, height) if it is
    * larger. Otherwise it will not be modified. If you do not specify
    * width or height, the result will be returned in its native
@@ -321,13 +345,15 @@ public:
   static QPixmap icon(Window w, int width=0, int height=0);
 
 
-  /* ***** GET WINDOW PROPERTIES *****
+  /**
+   ***** GET WINDOW PROPERTIES *****
    */
 
   static int desktop(Window w);
   static QRect geometry(Window w);
 
-  /* geometry restore is only defined for maximized window. It is the
+  /**
+   * geometry restore is only defined for maximized window. It is the
    * geometry a window will get when it is unmaximized.  
    */
   static QRect geometryRestore(Window w);
@@ -341,7 +367,8 @@ public:
   static bool isActive(Window w);
   
 
-  /* ***** SET WINDOW PROPERTIES *****
+  /**
+   * ***** SET WINDOW PROPERTIES *****
    *
    * Note: The functions for some general properties (decoration,
    * icons) are in the general section at the beginning of this
@@ -356,29 +383,34 @@ public:
   static void setIconify(Window w, bool value);
   static void setSticky(Window w, bool value);
 
-  /* close will send a WM_DELETE_WINDOW message to the window, if this window
+  /**
+   * close will send a WM_DELETE_WINDOW message to the window, if this window
    * requested for this protocol. Otherwise it will simply be destroyed.
    */
   static void close(Window w);
 
-  /* activate will deiconify the window, if is is iconified, or switch to
+  /** 
+   *activate will deiconify the window, if is is iconified, or switch to
    * another desktop, if the window is there. Then the window is raised
    * and activated with activateInteral (see below)
    */
   static void activate(Window w);
 
-  /* activateInternal will simply activate the window. Be carefull: you might 
+  /** 
+   * activateInternal will simply activate the window. Be carefull: you might 
    * run into trouble if the window is iconified or on another desktop!
    * You probably prefer activate (see above).
    */
   static void activateInternal(Window w);
 
-  /* raise or lower a window. Should work with any windowmanager
+  /**
+   * raise or lower a window. Should work with any windowmanager
    */
   static void raise(Window w);
   static void lower(Window w);
 
-  /* if you like to swallow a window ( == XReparentWindow) you MUST call 
+  /**
+   * if you like to swallow a window ( == XReparentWindow) you MUST call 
    * prepareForSwallowing before. This will set the window to WithDrawnState
    * (and also wait until the window achieved this state), what usually let
    * the windowmanager remove all its decorations and re-reparent the window
@@ -391,7 +423,8 @@ public:
   static void prepareForSwallowing(Window w);
 
 
-  /* ***** CURRENT NAMES OF WINDOW OPERATION COMMANDS *****
+  /**
+   * ***** CURRENT NAMES OF WINDOW OPERATION COMMANDS *****
    *
    * For 100% consitancy of the desktop, clients which do window operations 
    * should use these strings.
@@ -409,7 +442,8 @@ public:
   static QString getOntoCurrentDesktopString();
 
 
-  /* ***** MORE OR LESS ONLY USEFULL FOR INTERNAL PURPOSES OR THE
+  /**
+   * ***** MORE OR LESS ONLY USEFULL FOR INTERNAL PURPOSES OR THE
    *       WINDOWMANAGER ITSELF *****
    */
 
