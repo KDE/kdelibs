@@ -80,10 +80,19 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
         else
 	   lastDirectory = new QString(dirName);
 
-	KFileInfoContents::folder_pixmap = new QPixmap(locate("mini", "folder.png"));
-	KFileInfoContents::locked_folder = new QPixmap(locate("mini", "lockedfolder.png"));
-	KFileInfoContents::file_pixmap = new QPixmap(locate("mini", "unknown.png"));
-	KFileInfoContents::locked_file = new QPixmap(locate("mini", "locked.png"));
+	KFileInfoContents::folder_pixmap = 
+	  new QPixmap(KGlobal::iconLoader()->
+		      loadApplicationIcon("folder", KIconLoader::Small));
+	KFileInfoContents::locked_folder = 
+	  new QPixmap(KGlobal::iconLoader()->
+		      loadApplicationIcon("lockedfolder", KIconLoader::Small));
+	KFileInfoContents::file_pixmap = 
+	  new QPixmap(KGlobal::iconLoader()->
+		      loadApplicationIcon("unknown", KIconLoader::Small));
+	KFileInfoContents::locked_file = 
+	  new QPixmap(KGlobal::iconLoader()->
+		      loadApplicationIcon("locked", KIconLoader::Small));
+
     }
 
     // we remember the selected name for init()
