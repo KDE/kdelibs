@@ -465,10 +465,10 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
     filename_ = QString::null;
     QString pathstr = _pathstr;
 
-    if (pathstr.length() == 0 || pathstr.right(1)[0] != '/')
+    if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
 	pathstr += "/";
 
-    if (pathstr.left(1)[0] == '/')
+    if (pathstr.at(0) == '/')
 	pathstr.insert(0, "file:");
 
     if (dir->url() == pathstr) { // already set
@@ -630,8 +630,8 @@ void KFileBaseDialog::pathChanged()
 	else
 	    url = dir->path();
 
-	if ((url.isEmpty()) || (url.right(1)[0] != '/'))
-	    url += "/";
+	if ((url.isEmpty()) || (url.at(url.length() - 1) != '/'))
+	    url += '/';
 
 	// add item to visitedDirs.
 	if( !(visitedDirs->contains(url)) ){

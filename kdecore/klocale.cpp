@@ -106,7 +106,7 @@ void KLocale::splitLocale(const QString& aStr,
     // just in case, there is another language appended
     int f = str.find(':');
     if (f >= 0) {
-	str = str.left(f);
+	str.truncate(f);
     }
 
     country=QString::null;
@@ -116,13 +116,13 @@ void KLocale::splitLocale(const QString& aStr,
     f = str.find('.');
     if (f >= 0) {
 	chset = str.right(str.length() - f - 1);
-	str = str.left(f);
+	str.truncate(f);
     }
     
     f = str.find('_');
     if (f >= 0) { 
 	country = str.right(str.length() - f - 1);
-	str = str.left(f);
+	str.truncate(f);
     }
     
     lang = str;
@@ -233,8 +233,7 @@ KLocale::KLocale( QString catalogue )
       int f = languages.find(':');
 	if (f > 0) {
 	    _lang = languages.left(f);
-	    languages = languages.right(languages.length() - 
-					_lang.length() - 1);
+	    languages.remove(0, _lang.length() - 1);
 	} else {
 	    _lang = languages;
 	    languages = "";

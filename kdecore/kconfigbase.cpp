@@ -572,7 +572,7 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
   QString aValue = readEntry( pKey );
   if( !aValue.isEmpty() )
     {
-      if ( aValue.left(1) == "#" ) 
+      if ( aValue.at(0) == '#' ) 
         {
 	  aRetColor.setNamedColor(aValue);
 	} 
@@ -756,7 +756,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
 	}
       str_list += sep;
     }
-  if( str_list.right(1).at(0) == sep )
+  if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }
@@ -784,7 +784,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
 	}
       str_list += sep;
     }
-  if( str_list.right(1).at(0) == sep )
+  if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }

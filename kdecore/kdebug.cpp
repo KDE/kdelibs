@@ -84,7 +84,7 @@ static QString getDescrFromNum(unsigned short _num)
   while (!ts->eof()) {
     data=ts->readLine().stripWhiteSpace().copy();
 
-    if (data.left(1) == "#")
+    if (data.at(0) == '#')
       continue; // It's a comment
 
     if (data.find("#") != -1) {

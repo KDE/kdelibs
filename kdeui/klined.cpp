@@ -82,7 +82,7 @@ void KLineEdit::mousePressEvent( QMouseEvent *e )
     return;
   }
 
-  int n = strlen(text());
+  int n = text().length();
   pop->setItemEnabled( pmid[0], hasMarkedText() );
   pop->setItemEnabled( pmid[1], hasMarkedText() );
   pop->setItemEnabled( pmid[3], (n > 0) ? true : false );

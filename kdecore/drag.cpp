@@ -20,6 +20,17 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.31  1999/06/20 09:41:46  kulow
+ * big patch:
+ * removed const QString as return values
+ * marked some const functions const
+ * made FALSE and TRUE consistent with the rest (besides that I still
+ *   believe that passing TRUE is an implicit cast - it may be optimized
+ *   away, but it's still there somehow ;)
+ * removing some more functions from kapp.h (registerTopWidget, etc)
+ *
+ * BTW: What applications use kclipboard?
+ *
  * Revision 1.30  1999/05/30 16:38:54  kulow
  * trying to get rid of QString::data to find wrong uses. But there are soo many
  * calls to it ;(
@@ -215,7 +226,7 @@ void KDNDDropZone::parseURLList()
     {
 	QString t = s.left( i );
 	urlList.append( t.ascii() );
-	s = s.mid( i + 1, s.length() );
+	s.remove(0, i + 1);
     }
 
     urlList.append( s.ascii() );

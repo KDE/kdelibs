@@ -128,7 +128,7 @@ void KURLCompletion::GetList (QString dir, QString & match)
 	qual_dir = dir;
 	int pos = dir.findRev ("/");
 	qual_dir = dir.left (pos);
-	if (qual_dir == "")
+	if (qual_dir.isEmpty())
 		qual_dir = "/";
 	guess = dir.right (dir.length() - pos - 1);
 
@@ -178,8 +178,8 @@ void KURLCompletion::GetList (QString dir, QString & match)
 	
 	(void) closedir( dp );
 
-	if (qual_dir.right(1) != "/")
-		qual_dir += "/";
+	if (qual_dir.at(qual_dir.length() - 1) != '/')
+		qual_dir += '/';
 
 	if (anymatch)
 		match = qual_dir + max;
@@ -198,7 +198,7 @@ bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 	// ambigous if there is no file: or / at the beginning
 	// (consider 'home' -> okey but 'http' -> file or protocol?)
 	ambigous_beginning = (!starts_with_file && 
-			      (url.left(1) != "/"));
+			      (url.at(0) != '/'));
 
         if ( starts_with_file )
 		url.remove(0, 5); // remove "file:" from url
@@ -207,8 +207,8 @@ bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 	if ( url.at( 0 ) != '/' )
 	{
 		QString dir = directory;
-		if ( dir.right(1) != "/" )
-			dir += "/";
+		if ( dir.at(dir.length() - 1) != '/' )
+			dir += '/';
 		url.prepend (dir);
 	}
 	return true;
@@ -220,8 +220,8 @@ bool KURLCompletion::CompleteDir (QString &dir)
 	struct stat sbuff;
 	if (stat ( dir.ascii(), &sbuff) == 0 &&
 	    S_ISDIR (sbuff.st_mode)) {
-		if (dir.right(1) != "/")
-			dir += "/";
+		if (dir.at(dir.length() - 1) != '/')
+			dir += '/';
 		return true;
 	}
 	return false;

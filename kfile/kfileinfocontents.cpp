@@ -314,7 +314,7 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
     // if the namelist already exist, we can use inSort. In general 
     // this is too slow
     if (nameList)
-	nameList->inSort(i->fileName());
+	nameList->inSort(i->fileName().ascii());
 
     insertSortedItem(i, pos); 
     return insertItem(i, pos);
@@ -366,7 +366,7 @@ void KFileInfoContents::setCurrentItem(const QString &item,
     uint i;
     if (item != 0) {
 	for (i = 0; i < sorted_length; i++)
-	    if (!strcmp(sortedArray[i]->fileName(),item)) {
+	    if (sortedArray[i]->fileName() == item) {
 		highlightItem(i);
 		highlight(i);
 		return;
@@ -394,7 +394,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 	const char **nameArray = new const char*[sorted_length];
 	// fill it
 	for (i = 0; i < sorted_length; i++)
-	    nameArray[i] = sortedArray[i]->fileName();
+	    nameArray[i] = sortedArray[i]->fileName().ascii();
 	
 	qsort(nameArray, sorted_length, sizeof(const char*), (int (*)(const void *, const void *)) stricmp);
 	

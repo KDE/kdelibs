@@ -315,7 +315,7 @@ void KHTMLWidget::slotFileLoaded( QString _url, QString _filename )
     if ( !bgPixmapURL.isEmpty() )
     {
 	// Did the background image arrive ?
-	if ( strcmp( bgPixmapURL, _url ) == 0 )
+	if ( bgPixmapURL == _url )
 	{
 	    bgPixmap.load( _filename );					
 	    bgPixmapURL = QString::null;
@@ -1472,7 +1472,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	for ( w = frameList.first(); w != 0; w = frameList.next() )
 	{
 	    v = w->getView();
-	    if ( v->getCookie() )
+	    if ( !v->getCookie().isNull() )
 		v->openURL( v->getCookie() );
 	    v->show();
 	}
@@ -2109,7 +2109,7 @@ void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, QString _name,
                             QString _src)
 {
     // Create the frame,
-    KHTMLView *frame = htmlView->newView( _frameSet, _name );
+    KHTMLView *frame = htmlView->newView( _frameSet, _name.ascii() );
     frame->setIsFrame( TRUE );
     frame->setScrolling( _scrolling );
     frame->setAllowResize( _resize );
@@ -2172,7 +2172,7 @@ void KHTMLWidget::setBGImage( QString _url)
 {
     KURL kurl( baseURL, _url );
 
-    if ( strcmp( kurl.protocol(), "file" ) == 0 )
+    if ( kurl.protocol() == "file" )
     {
         bgPixmap.load( kurl.path() );
         scheduleUpdate( true );
