@@ -58,6 +58,9 @@ KProcIO::resetAll ()
   disconnect (this, SIGNAL (receivedStdout (KProcess *, char *, int)),
 	   this, SLOT (received (KProcess *, char *, int)));
 
+  disconnect (this, SIGNAL (receivedStderr (KProcess *, char *, int)),
+	   this, SLOT (received (KProcess *, char *, int)));
+
   disconnect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
 
@@ -65,10 +68,16 @@ KProcIO::resetAll ()
 
 }
 
-bool KProcIO::start (RunMode runmode)
+bool KProcIO::start (RunMode runmode, bool includeStderr)
 {
   connect (this, SIGNAL (receivedStdout (KProcess *, char *, int)),
 	   this, SLOT (received (KProcess *, char *, int)));
+  
+  if (includeStderr)
+  {
+     connect (this, SIGNAL (receivedStderr (KProcess *, char *, int)),
+              this, SLOT (received (KProcess *, char *, int)));
+  }
 
   connect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
@@ -126,10 +135,6 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 {
   int i;
 
-  buffer [buflen]='\0';
-
-  kdDebug(750) << "KPIO: recv'd [" << buffer << "]" << endl;
-
   for (i=0;i<buflen;i++)
     recvbuffer+=buffer [i];
 
@@ -164,7 +169,7 @@ void KProcIO::enableReadSignals (bool enable)
 	emit readReady (this);
 }
 
-int KProcIO::readln (QString &line, bool autoAck)
+int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 {
   int len;
 
@@ -178,10 +183,19 @@ int KProcIO::readln (QString &line, bool autoAck)
   kdDebug(750) << "KPIO::readln\n" << endl;
 
   //in case there's no '\n' at the end of the buffer
-  if (len<0 && (unsigned int)rbi<recvbuffer.length())
+  if ((len<0) && 
+      ((unsigned int)rbi<recvbuffer.length()))
     {
       recvbuffer=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
       rbi=0;
+      if (partial)
+      {
+         len = recvbuffer.length();
+         line = recvbuffer;
+         recvbuffer = "";
+         *partial = true;
+         return len;
+      }
       return -1;
     }
 
@@ -189,6 +203,8 @@ int KProcIO::readln (QString &line, bool autoAck)
     {
       line = codec->toUnicode(recvbuffer.mid(rbi,len), len);
       rbi += len+1;
+      if (partial)
+         *partial = false;
       return len;
     }
 

@@ -55,7 +55,7 @@ class KProcIO : public KProcess
 public:
   KProcIO ( QTextCodec *codec = 0 );
   
-  bool start (RunMode  runmode = NotifyOnExit);
+  bool start (RunMode  runmode = NotifyOnExit, bool includeStderr = false);
 
   /**
    * The buffer is zero terminated.
@@ -86,10 +86,15 @@ public:
    * readln() never blocks.
    *
    * autoAck==TRUE makes these functions call ackRead() for you.
+   * @param line is used to store the line that was read.
+   * @param autoAck when true, ackRead() is called for you.
+   * @param partial when provided the line is returned 
+   * even if it does not contain a '\n'. *partial will be set to
+   * false if the line contains a '\n' and false otherwise.
    **/
-  virtual int readln (QString &line, bool autoAck=FALSE);
+  virtual int readln (QString &line, bool autoAck=true, bool *partial=0);
 
-  int fgets (QString &line, bool autoAck=FALSE)
+  int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }
 
   /**
