@@ -989,10 +989,11 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
         if ( cache && cache->plugin ) {
             return cache->plugin;
         }
-
-        KFilePlugin* plugin = loadAndRegisterPlugin( QString::null, protocol );
-        if ( plugin )
-            return plugin;
+        if ( !cache ) {
+            KFilePlugin* plugin = loadAndRegisterPlugin( QString::null, protocol );
+            if ( plugin )
+                return plugin;
+        }
     }
 
     CachedPluginInfo *cache = m_plugins.find( mimeType );
@@ -1058,10 +1059,12 @@ const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mi
             return cache->mimeTypeInfo;
         }
 
-        loadAndRegisterPlugin( QString::null, protocol );
-        cache = m_plugins.find( protocol );
-        if ( cache && cache->mimeTypeInfo ) {
-            return cache->mimeTypeInfo;
+        if ( !cache ) {
+            loadAndRegisterPlugin( QString::null, protocol );
+            cache = m_plugins.find( protocol );
+            if ( cache && cache->mimeTypeInfo ) {
+                return cache->mimeTypeInfo;
+            }
         }
     }
 
