@@ -906,7 +906,7 @@ void KHTMLParser::parseTagA(void)
 	    if ( p->value()[0] == '#' )
 	    {// reference
 		KURL u( HTMLWidget->getDocumentURL() );
-		u.setRef( p->value() );
+		u.setRef( p->value()+1 );
 	        tmpurl = u.url();
 	    }
 	    else
@@ -1004,7 +1004,7 @@ void KHTMLParser::parseTagArea(void)
 	    if ( p->value()[0] == '#' )
 	    {// reference
 	        KURL u( HTMLWidget->getDocumentURL() );
-	        u.setRef( p->value() );
+	        u.setRef( p->value()+1 );
 	        href = NEWSTRING( u.url() );
             }
             else 
@@ -1834,7 +1834,7 @@ void KHTMLParser::parseTagImg(void)
         }
 	else if ( token->id == ATTR_USEMAP )
 	{
-	    if ( *token->value().unicode() == '#' )
+	    if ( token->value()[0] == '#' )
 	    {
 	        // Local map. Format: "#name"
                 usemap = token->value();
@@ -2338,7 +2338,7 @@ void KHTMLParser::parseTagOl(void)
     {
 	if ( token->id == ATTR_TYPE )
 	{
-	    switch ( *(token->value().unicode()) )
+	    switch ( token->value()[0] )
 	    {
 		case 'i':
 			listNumType = LowRoman;
