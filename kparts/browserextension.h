@@ -173,15 +173,18 @@ signals:
   void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * Tell the hosting browser that the part opened a new URL (which can be queried via KParts::Part::url() .
+   * Tell the hosting browser that the part opened a new URL (which can be
+   * queried via KParts::Part::url().
    * This helps the browser to update/create an entry in the history.
-   * The part may *not* emit this signal together with @ref openURLRequest . Emit openURLRequest if you want the
-   * browser to handle an URL the user asked to open (from within your part/document) . This signal however is useful
-   * if you want to handle URLs all yourself internally, while still telling the hosting browser about new opened URLs,
-   * in order to provide a proper history functionality to the user.
-   * An example of useage is a html rendering component which wants to emit this signal when a child frame document
-   * changed its URL.
-   * (so most browsing components will want to use openURLRequest instead to open up a new URL)
+   * The part may *not* emit this signal together with @ref openURLRequest.
+   * Emit openURLRequest if you want the browser to handle an URL the user
+   * asked to open (from within your part/document). This signal however is
+   * useful if you want to handle URLs all yourself internally, while still
+   * telling the hosting browser about new opened URLs, in order to provide
+   * a proper history functionality to the user.
+   * An example of usage is a html rendering component which wants to emit
+   * this signal when a child frame document changed its URL.
+   * Conclusion: you probably want to use @ref openURLRequest instead
    */
   void openURLNotify();
 
@@ -190,6 +193,11 @@ signals:
    */
   void setLocationBarURL( const QString &url );
 
+  /**
+   * Ask the hosting browser to open a new window for the given @url.
+   * The @p args argument is optional additionnal information for the
+   * browser, @see KParts::URLArgs
+   */
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
@@ -211,7 +219,14 @@ signals:
    */
   void popupMenu( const QPoint &global, const KonqFileItemList &items );
 
-  void popupMenu( const QPoint &global, const KURL &url, const QString &mimeType, mode_t mode = -1 );
+  /**
+   * Emit this to make the browser show a standard popup menu
+   * at the point @p global for the given @p url. Give as much information
+   * about this URL as possible, like the @p mimeType and the file type
+   * (@p mode: S_IFREG, S_IFDIR...)
+   */
+  void popupMenu( const QPoint &global, const KURL &url,
+                  const QString &mimeType, mode_t mode = -1 );
 
   void selectionInfo( const KonqFileItemList &items );
   void selectionInfo( const QString &text );
