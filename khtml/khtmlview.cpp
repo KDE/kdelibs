@@ -279,21 +279,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 #endif
 
     init();
-    viewport()->installEventFilter( this );
-    installEventFilter( this );
-    KCursor::setAutoHideCursor( this, true, true );
+
     viewport()->show();
-}
-
-
-bool KHTMLView::eventFilter( QObject *o, QEvent *e )
-{
-    if ( !o || !e )
-        return TRUE;
-    if ( o == this || o == viewport() ) {
-        KCursor::autoHideEventFilter( o, e );
-    }
-    return QScrollView::eventFilter( o, e );
 }
 
 KHTMLView::~KHTMLView()

@@ -154,8 +154,6 @@ public:
      */
     void layout();
 
-    bool eventFilter( QObject *o, QEvent *e );
-
 signals:
     void cleared();
     void zoomView( int );
