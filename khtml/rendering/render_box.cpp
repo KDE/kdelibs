@@ -669,13 +669,17 @@ void RenderBox::calcHeight()
             {
                 RenderObject* cb = containingBlock();
                 if(cb->isBody())
+                {
                     while(cb && !cb->isRoot())
                         cb = cb->parent();
 
-                if(cb && cb->isRoot())
-                    h = Length(h.width(static_cast<RenderRoot*>(cb)->view()->visibleHeight()), Fixed);
+                    if(cb)
+                        h = Length(h.width(static_cast<RenderRoot*>(cb)->view()->visibleHeight()), Fixed);
+                    else
+                        h = Length(intrinsicHeight(), Fixed);
+                }
                 else
-                    h = Length(intrinsicHeight(), Fixed);
+                    h = Length(h.width(cb->contentHeight()), Fixed);
             }
         }
 
