@@ -5,6 +5,7 @@ Name=PhotoShop Document
 Name[bg]=Документ PhotoShop
 Name[br]=Teul PhotoShop
 Name[ga]=Cáipéis PhotoShop
+Name[nl]=PhotoShop-document
 Name[sv]=Photoshop-dokument
 Read=true
 Write=false
