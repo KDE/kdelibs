@@ -29,6 +29,7 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kglobal.h>
 
 enum Fields { B_STATUSLINE=10, B_FILTER, B_SINGLECLICK, B_HIDDEN, 
 	       B_LISTLABELS, B_SHORTVIEW, B_DETAILVIEW, B_MIX, B_KEEPDIR };

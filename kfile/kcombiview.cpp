@@ -34,6 +34,7 @@
 
 #include <kapp.h>
 #include <kconfig.h>
+#include <kglobal.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
