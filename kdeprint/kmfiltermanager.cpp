@@ -25,9 +25,22 @@
 #include <kstddirs.h>
 #include <ksimpleconfig.h>
 
+struct KMFilterManager::FilterInfo
+{
+	QString	name;
+	QString	desc;
+	QStringList	mimeSrc;
+	QString		mimeDest;
+	QStringList	requirements;
+};
+
+//-------------------------------------------------------------------------------------------
+
 KMFilterManager::KMFilterManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
+	m_filters.setAutoDelete(true);
+	m_filterdict.setAutoDelete(true);
 }
 
 KMFilterManager::~KMFilterManager()
@@ -41,29 +54,66 @@ KPrintFilter* KMFilterManager::filter(const QString& idname)
 
 QStringList KMFilterManager::filterList()
 {
-	if (m_flist.count() == 0)
+	loadFilters();
+	return m_flist;
+}
+
+KMFilterManager::FilterInfo* KMFilterManager::load(const QString& filename)
+{
+	KSimpleConfig	conf(filename);
+	conf.setGroup("KDE Print Filter Entry");
+	if (KdeprintChecker::check(&conf))
+	{
+		FilterInfo	*fi = new FilterInfo;
+		fi->name = conf.readEntry("Name");
+		fi->desc = conf.readEntry("Comment");
+		fi->requirements = conf.readEntry("Requires");
+		fi->mimeSrc = conf.readListEntry("MimeTypeIn");
+		fi->mimeDest = conf.readEntry("MimeTypeOut");
+
+		if (fi->desc.isEmpty())
+			fi->desc = fi->name;
+		if (fi->name.isEmpty())
+		{
+			delete fi;
+			fi = NULL;
+		}
+		return fi;
+	}
+	return NULL;
+}
+
+void KMFilterManager::loadFilters()
+{
+	if (m_filters.count() == 0)
 	{
 		QDir	d(locate("data","kdeprint/filters/"));
 		QStringList	files = d.entryList("*.desktop",QDir::Files,QDir::Unsorted);
 		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		{
-			KSimpleConfig	conf(d.absFilePath(*it));
-			conf.setGroup("KDE Print Filter Entry");
-			if (KdeprintChecker::check(&conf))
+			FilterInfo	*fi = load(d.absFilePath(*it));
+			if (fi)
 			{
-				QString	value = conf.readEntry("Name",QString::null);
-				if (!value.isEmpty())
-				{
-					m_flist.append(value);
-					value = conf.readEntry("Comment",QString::null);
-					if (value.isEmpty())
-						value = m_flist.last();	// use idname by default
-					m_flist.append(value);
-				}
+				m_filters.append(fi);
+				for (QStringList::ConstIterator mit=fi->mimeSrc.begin(); mit!=fi->mimeSrc.end(); ++mit)
+					insertToDict(fi, *mit);
+				m_flist << fi->name << fi->desc;
 			}
 		}
+
 	}
-	return m_flist;
+}
+
+void KMFilterManager::insertToDict(FilterInfo *fi, const QString& mime)
+{
+	QList<FilterInfo>	*l = m_filterdict.find(mime);
+	if (!l)
+	{
+		l = new QList<FilterInfo>;
+		l->setAutoDelete(false);
+		m_filterdict.insert(mime, l);
+	}
+	l->append(fi);
 }
 
 bool KMFilterManager::checkFilter(const QString& filtername)
@@ -116,4 +166,49 @@ int KMFilterManager::insertFilter(QStringList& list, const QString& filtername, 
 	delete f1;
 	delete f2;
 	return pos;
+}
+
+QStringList KMFilterManager::autoFilter(const QString& mimesrc, const QString& mimedest)
+{
+	QStringList	chain;
+	int		score(0);
+
+	if (m_filters.count() == 0)
+		loadFilters();
+
+	QList<FilterInfo>	*l = m_filterdict.find(mimesrc);
+	if (l)
+	{
+		for (l->first(); l->current(); l->next())
+		{
+			// direct filter: shortest path => return immediately
+			if (l->current()->mimeDest == mimedest)
+			{
+				chain = QStringList(l->current()->name);
+				break;
+			}
+			// non direct filter: find the shortest way between
+			// its output and mimedest (do not consider cyling filters)
+			else if (l->current()->mimeDest != mimesrc)
+			{
+				QStringList	subchain = autoFilter(l->current()->mimeDest, mimedest);
+				// If chain length is 0, then there's no possible filter between those 2
+				// mime types. Just discard it. If the subchain contains also the current
+				// considered filter, then discard it: it denotes of a cycle in filter
+				// chain.
+				if (subchain.count() > 0 && subchain.findIndex(l->current()->name) == -1)
+				{
+					subchain.prepend(l->current()->name);
+					if (subchain.count() < score || score == 0)
+					{
+						chain = subchain;
+						score = subchain.count();
+					}
+				}
+			}
+		}
+	}
+	// At this point, either we have the shortest path, or empty
+	// list if nothing could be found
+	return chain;
 }

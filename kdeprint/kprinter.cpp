@@ -151,9 +151,9 @@ void KPrinter::saveSettings()
 	conf->writeEntry("PrintCommand",option("kde-printcommand"));
 }
 
-bool KPrinter::setup(QWidget *parent)
+bool KPrinter::setup(QWidget *parent, const QString& caption)
 {
-	bool	state = KPrintDialog::printerSetup(this, parent);
+	bool	state = KPrintDialog::printerSetup(this, parent, caption);
 	return state;
 }
 
@@ -240,8 +240,18 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	else if (fresult == 1)
 		flag = true;
 
+	// Automatic conversion to format supported by print system
+	fresult = d->m_impl->autoConvertFiles(this, files, flag);
+	if (fresult == -1)
+	{
+		reportError(this);
+		status = false;
+	}
+	else if (fresult == 1)
+		flag = true;
+
 	// Continue if status is OK (filtering succeeded) and no output-to-file
-	if (status)
+	if (status && files.count() > 0)
 	{
 		// Show preview if needed (only possible for a single file !), and stop
 		// if the user requested it. Force preview if preview-only mode has been set: it

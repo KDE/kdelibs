@@ -43,6 +43,8 @@ struct PluginInfo
 	QString		comment;
 	QStringList	detectUris;
 	int		detectPrecedence;
+	QStringList	mimeTypes;
+	QString		primaryMimeType;
 };
 
 class KMFactory
@@ -63,6 +65,7 @@ public:
 	KConfig* printConfig();
 	QString printSystem();
 	QValueList<PluginInfo> pluginList();
+	PluginInfo pluginInfo(const QString& name);
 
 	void reload(const QString& syst, bool saveSyst = true);
 	void registerObject(KPReloadObject*);

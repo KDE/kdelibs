@@ -258,21 +258,35 @@ QValueList<PluginInfo> KMFactory::pluginList()
 	QValueList<PluginInfo>	list;
 	for (int i=0; i<d.count(); i++)
 	{
-		PluginInfo	info;
-		KSimpleConfig	conf(d.absFilePath(d[i]));
-
-		conf.setGroup("KDE Print Entry");
-		info.name = conf.readEntry("PrintSystem");
-		info.comment = conf.readEntry("Comment");
+		PluginInfo	info(pluginInfo(d.absFilePath(d[i])));
 		if (info.name.isEmpty())
 			continue;
-		if (info.comment.isEmpty())
-			info.comment = info.name;
-		info.detectUris = conf.readListEntry("DetectUris");
-		info.detectPrecedence = conf.readNumEntry("DetectPrecedence", 0);
 		list.append(info);
 	}
 	return list;
+}
+
+PluginInfo KMFactory::pluginInfo(const QString& name)
+{
+	QString	path(name);
+	if (path[0] != '/')
+		path = locate("data", QString::fromLatin1("kdeprint/plugins/%1.print").arg(name));
+	KSimpleConfig	conf(path);
+	PluginInfo	info;
+
+	conf.setGroup("KDE Print Entry");
+	info.name = conf.readEntry("PrintSystem");
+	info.comment = conf.readEntry("Comment");
+	if (info.comment.isEmpty())
+		info.comment = info.name;
+	info.detectUris = conf.readListEntry("DetectUris");
+	info.detectPrecedence = conf.readNumEntry("DetectPrecedence", 0);
+	info.mimeTypes = conf.readListEntry("MimeTypes");
+	if (info.mimeTypes.isEmpty())
+		info.mimeTypes << "application/postscript";
+	info.primaryMimeType = conf.readEntry("PrimaryMimeType", info.mimeTypes[0]);
+
+	return info;
 }
 
 void KMFactory::registerObject(KPReloadObject *obj)

@@ -37,6 +37,8 @@
 #include <kstddirs.h>
 #include <kdatastream.h>
 #include <kdebug.h>
+#include <kmimemagic.h>
+#include <kmessagebox.h>
 
 #include <stdlib.h>
 
@@ -228,6 +230,11 @@ int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 			opts["_kde-psselect-set"] = (printer->pageSet() == KPrinter::OddPages ? "-o" : "-e");
 	}
 
+	return doFilterFiles(printer, files, flist, opts, flag);
+}
+
+int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QStringList& flist, const QMap<QString,QString>& opts, bool flag)
+{
 	// nothing to do
 	if (flist.count() == 0)
 		return 0;
@@ -270,6 +277,69 @@ int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 		*it = tmpfile;
 	}
 	return 1;
+}
+
+int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool flag)
+{
+	PluginInfo	info = KMFactory::self()->pluginInfo(KMFactory::self()->printSystem());
+	int		status(0), result;
+	for (QStringList::Iterator it=files.begin(); it!=files.end(); )
+	{
+		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
+		if (info.mimeTypes.findIndex(mime) == -1)
+		{
+			if ((result=KMessageBox::warningYesNoCancel(NULL,
+					       i18n("The file format <b>%1</b> is not directly supported by the current print system. "
+					            "KDE can try to convert automatically this file to a supported format. But you can "
+						    "still try to send the file to the printer without any conversion. Do you want KDE "
+						    "to try to convert this file to <b>%2</b>?").arg(mime).arg(info.primaryMimeType),
+					       QString::null,
+					       i18n("Convert"),
+					       i18n("Keep"),
+					       QString::fromLatin1("kdeprintAutoConvert"))) == KMessageBox::Yes)
+			{
+				// find the filter chain
+				QStringList	flist = KMFactory::self()->filterManager()->autoFilter(mime, info.primaryMimeType);
+				if (flist.count() == 0)
+				{
+					if (KMessageBox::warningYesNo(NULL,
+								      i18n("No appropriate filter was found to convert the file "
+								           "format <b>%1</b> into <b>%2</b>. Do you want to print the "
+									   "file using its original format?").arg(mime).arg(info.primaryMimeType),
+								      QString::null,
+								      i18n("Print"),
+								      i18n("Skip")) == KMessageBox::No)
+					{
+						if (flag)
+							QFile::remove(*it);
+						it = files.remove(it);
+					}
+					else
+						++it;
+					continue;
+				}
+				QStringList	l(*it);
+				switch (doFilterFiles(printer, l, flist, QMap<QString,QString>(), flag))
+				{
+					case -1:
+						return -1;
+					case 0:
+						break;
+					case 1:
+						status = 1;
+						*it = l[0];
+						break;
+				}
+			}
+			else if (result == KMessageBox::Cancel)
+			{
+				files.clear();
+				return 0;
+			}
+		}
+		++it;
+	}
+	return status;
 }
 
 bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringList& files)

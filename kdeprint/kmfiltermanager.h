@@ -22,6 +22,8 @@
 
 #include <qobject.h>
 #include <qstringlist.h>
+#include <qlist.h>
+#include <qdict.h>
 
 class KPrintFilter;
 
@@ -35,9 +37,21 @@ public:
 	QStringList filterList();
 	int insertFilter(QStringList& list, const QString& filter, bool defaultToStart = true);
 	bool checkFilter(const QString& filtername);
+	QStringList autoFilter(const QString& mimesrc, const QString& mimedest);
 
 private:
-	QStringList	m_flist;
+	struct FilterInfo;
+
+protected:
+	void loadFilters();
+	FilterInfo* load(const QString& filename);
+	void insertToDict(FilterInfo *fi, const QString& mime);
+
+private:
+	struct FilterInfo;
+	QStringList		m_flist;
+	QList<FilterInfo>	m_filters;
+	QDict< QList<FilterInfo> >	m_filterdict;
 };
 
 #endif
