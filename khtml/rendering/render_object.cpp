@@ -732,7 +732,7 @@ short RenderObject::verticalPositionHint() const
     // vertical align for table cells has a different meaning
     if ( isTableCell() )
 	return 0;
-    
+
     EVerticalAlign va = style()->verticalAlign();
     if ( va == TOP )
 	return PositionTop;
@@ -741,7 +741,7 @@ short RenderObject::verticalPositionHint() const
     if ( va == LENGTH ) {
 	return -style()->verticalAlignLength().width( lineHeight() );
     }
-    if ( !parent()->childrenInline() )
+    if ( !parent() || !parent()->childrenInline() )
 	return 0;
     int vpos = parent()->verticalPositionHint();
     // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
@@ -763,7 +763,7 @@ short RenderObject::verticalPositionHint() const
 	if ( parent()->isInline() )
 	    vpos += parent()->contentHeight() - parent()->baselinePosition();
 	vpos += contentHeight() - baselinePosition();
-    } else if ( va == BASELINE_MIDDLE ) 
+    } else if ( va == BASELINE_MIDDLE )
 	vpos += - contentHeight()/2 + baselinePosition();
     return vpos;
 }
