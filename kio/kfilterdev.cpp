@@ -116,7 +116,7 @@ bool KFilterDev::open( int mode )
     d->result = KFilterBase::OK;
 
     if ( !ret )
-        kdWarning(7005) << "Couldn't open underlying device" << endl;
+        kdWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
     ioIndex = 0;
     return ret;
 }
