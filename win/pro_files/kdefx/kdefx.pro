@@ -16,6 +16,7 @@ kpixmapeffect.cpp \
 kpixmapsplitter.cpp \
 kpixmap.cpp \
 kstyle.cpp \
-kdrawutil.cpp
+kdrawutil.cpp \
+kcpuinfo.cpp
 
 HEADERS		=

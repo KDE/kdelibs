@@ -1,4 +1,4 @@
-include( ../common.pri )
+include( ../common.pro )
 
 INCLUDEPATH += $(KDELIBS)/win/3rdparty/bzip2
 
