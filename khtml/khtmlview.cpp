@@ -1045,7 +1045,7 @@ void KHTMLView::print()
                                                   "    background-color: white !important;"
                                                   "    color: black !important; }"
 						  "body { margin: 0px !important; }"
-						  "html { margin: 0px !important; }" : 
+						  "html { margin: 0px !important; }" :
 						  "body { margin: 0px !important; }"
 						  "html { margin: 0px !important; }"
 						  );
@@ -1096,9 +1096,9 @@ void KHTMLView::print()
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
         p->setClipRect(0,0, pageWidth, pageHeight);
-        
+
         pageHeight -= headerHeight;
-        
+
         bool scalePage = false;
         double scale = 0.0;
 #ifndef QT_NO_TRANSFORMATIONS
@@ -1115,8 +1115,8 @@ void KHTMLView::print()
 
         // Squeeze header to make it it on the page.
         if (printHeader)
-        {                      
-            int available_width = metrics.width() - 10 - 
+        {
+            int available_width = metrics.width() - 10 -
                 2 * QMAX(p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
                          p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
             if (available_width < 150)
@@ -1129,7 +1129,7 @@ void KHTMLView::print()
                 squeeze -= 10;
             } while (mid_width > available_width);
         }
-                      
+
         int top = 0;
         int page = 1;
         while(top < root->docHeight()) {
@@ -1141,18 +1141,18 @@ void KHTMLView::print()
                 p->setFont(headerFont);
 
                 headerRight = QString("#%1").arg(page);
-                                 
+
                 p->drawText(0, 0, metrics.width(), dy, Qt::AlignLeft, headerLeft);
                 p->drawText(0, 0, metrics.width(), dy, Qt::AlignHCenter, headerMid);
                 p->drawText(0, 0, metrics.width(), dy, Qt::AlignRight, headerRight);
             }
-            
+
 #ifndef QT_NO_TRANSFORMATIONS
             if (scalePage)
                 p->scale(scale, scale);
 #endif
             p->translate(0, headerHeight-top);
-        
+
             root->setTruncatedAt(top+pageHeight);
 
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
@@ -1309,8 +1309,13 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	d->underMouse->ref();
 
     int exceptioncode = 0;
-    int clientX, clientY;
-    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
+    int mx, my;
+    viewportToContents(_mouse->x(), _mouse->y(), mx, my);
+    // clientX and clientY are in viewport coordinates
+    // At least the JS code wants event.[xy]/event.client[XY] to be in viewport coords.
+    // [that's not the same as _mouse->[xy](), since we use the clipper]
+    int clientX = mx - contentsX();
+    int clientY = my - contentsY();
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
     int button = -1;
@@ -1333,7 +1338,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
-    if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
+    if (setUnder && (d->prevMouseX != mx || d->prevMouseY != my)) {
 
         // ### this code sucks. we should save the oldUnder instead of calculating
         // it again. calculating is expensive! (Dirk)
