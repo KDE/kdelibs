@@ -36,6 +36,12 @@ int main(int argc, char *argv[])
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
+  
+  emptyURL = "";
+  check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
+  check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
+  check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
+  
   KURL baseURL ("http://www.foo.bar:80" );
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
   KURL url1 ( baseURL, "//www1.foo.bar" );
@@ -119,6 +125,8 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
+#if 0
+// This URL is broken, '#' should be escaped.
   u1 = "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
@@ -127,6 +135,7 @@ int main(int argc, char *argv[])
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   check("KURL::prettyURL()", url1.upURL().url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
+#endif
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
@@ -280,6 +289,12 @@ int main(int argc, char *argv[])
   {
      KURL waba2( waba1, "relative.html?query=test&name=harry");
      check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
+     waba2.removeQueryItem("query");
+     check("http: Removing query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry");
+     waba2.addQueryItem("age", "18");
+     check("http: Adding query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry&age=18");
+     waba2.addQueryItem("age", "21");
+     check("http: Adding query item", waba2.url(), "http://www.website.com/directory/relative.html?name=harry&age=18&age=21");
   }
   {
      KURL waba2( waba1, "?query=test&name=harry");
