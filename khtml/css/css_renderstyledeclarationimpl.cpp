@@ -94,7 +94,71 @@ static DOMString stringForTextAlign(ETextAlign align)
     return "";
 }
 
-
+static DOMString stringForListStyleType(EListStyleType type)
+{
+    switch (type) {
+        case khtml::LDISC:
+            return "disc";
+        case khtml::LCIRCLE:
+            return "circle";
+        case khtml::LSQUARE:
+            return "square";
+        case khtml::LBOX:
+            return "box";
+        case khtml::LDIAMOND:
+            return "-khtml-diamond";
+        case khtml::LDECIMAL:
+            return "decimal";
+        case khtml::DECIMAL_LEADING_ZERO:
+            return "decimal-leading-zero";
+        case khtml::ARABIC_INDIC:
+            return "-khtml-arabic-indic";
+        case khtml::PERSIAN:
+            return "-khtml-persian";
+        case khtml::URDU:
+            return "-khtml-urdu";
+        case khtml::LOWER_ROMAN:
+            return "lower-roman";
+        case khtml::UPPER_ROMAN:
+            return "upper-roman";
+        case khtml::HEBREW:
+            return "hebrew";
+        case khtml::ARMENIAN:
+            return "armenian";
+        case khtml::GEORGIAN:
+            return "georgian";
+        case khtml::CJK_IDEOGRAPHIC:
+            return "cjk-ideographic";
+        case khtml::LOWER_GREEK:
+            return "lower-greek";
+        case khtml::UPPER_GREEK:
+            return "-khtml-upper-greek";
+        case khtml::LOWER_ALPHA:
+            return "lower-alpha";
+        case khtml::UPPER_ALPHA:
+            return "upper-alpha";
+        case khtml::LOWER_LATIN:
+            return "lower-latin";
+        case khtml::UPPER_LATIN:
+            return "upper-latin";
+        case khtml::HIRAGANA:
+            return "hiragana";
+        case khtml::KATAKANA:
+            return "katakana";
+        case khtml::HIRAGANA_IROHA:
+            return "hiragana-iroha";
+        case khtml::KATAKANA_IROHA:
+            return "katakana_iroha";
+        case khtml::OPEN_QUOTE:
+            return "-khtml-open-quote";
+        case khtml::CLOSE_QUOTE:
+            return "-khtml-close-quote";
+        case khtml::LNONE:
+            return "none";
+    }
+    Q_ASSERT( 0 );
+    return "";
+}
 
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl( 0 )
@@ -278,6 +342,12 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             Q_ASSERT( 0 );
         }
     case CSS_PROP_EMPTY_CELLS:
+        switch (m_renderer->style()->emptyCells()) {
+            case khtml::SHOW:
+                return new CSSPrimitiveValueImpl("show", CSSPrimitiveValue::CSS_STRING);
+            case khtml::HIDE:
+                return new CSSPrimitiveValueImpl("hide", CSSPrimitiveValue::CSS_STRING);
+        }
         break;
     case CSS_PROP_FLOAT:
     {
@@ -350,9 +420,16 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_LIST_STYLE_IMAGE:
         break;
     case CSS_PROP_LIST_STYLE_POSITION:
+        switch (m_renderer->style()->listStylePosition()) {
+        case OUTSIDE:
+            return new CSSPrimitiveValueImpl("outside", CSSPrimitiveValue::CSS_STRING);
+        case INSIDE:
+            return new CSSPrimitiveValueImpl("inside", CSSPrimitiveValue::CSS_STRING);
+        }
+        Q_ASSERT( 0 );
         break;
     case CSS_PROP_LIST_STYLE_TYPE:
-        break;
+        return new CSSPrimitiveValueImpl(stringForListStyleType(m_renderer->style()->listStyleType()), CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_MARGIN_TOP:
         return valueForLength(m_renderer->style()->marginTop(), m_renderer->contentHeight());
     case CSS_PROP_MARGIN_RIGHT:
@@ -377,9 +454,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl( m_renderer->minWidth(),
                                           CSSPrimitiveValue::CSS_PX );
         break;
+    case CSS_PROP_OPACITY:
+        break;
     case CSS_PROP_ORPHANS:
         break;
     case CSS_PROP_OUTLINE_COLOR:
+        break;
+    case CSS_PROP_OUTLINE_OFFSET:
         break;
     case CSS_PROP_OUTLINE_STYLE:
         break;
@@ -484,19 +565,32 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         }
     }
     case CSS_PROP_VISIBILITY:
+        switch (m_renderer->style()->visibility()) {
+            case khtml::VISIBLE:
+                return new CSSPrimitiveValueImpl("visible", CSSPrimitiveValue::CSS_STRING);
+            case khtml::HIDDEN:
+                return new CSSPrimitiveValueImpl("hidden", CSSPrimitiveValue::CSS_STRING);
+            case khtml::COLLAPSE:
+                return new CSSPrimitiveValueImpl("collapse", CSSPrimitiveValue::CSS_STRING);
+        }
         break;
     case CSS_PROP_WHITE_SPACE:
     {
         switch (m_renderer->style()->whiteSpace()) {
             case khtml::NORMAL:
                 return new CSSPrimitiveValueImpl("normal", CSSPrimitiveValue::CSS_STRING);
-            case khtml::PRE:
-                return new CSSPrimitiveValueImpl("pre", CSSPrimitiveValue::CSS_STRING);
             case khtml::NOWRAP:
                 return new CSSPrimitiveValueImpl("nowrap", CSSPrimitiveValue::CSS_STRING);
+            case khtml::PRE:
+                return new CSSPrimitiveValueImpl("pre", CSSPrimitiveValue::CSS_STRING);
+            case khtml::PRE_WRAP:
+                return new CSSPrimitiveValueImpl("pre-wrap", CSSPrimitiveValue::CSS_STRING);
+            case khtml::PRE_LINE:
+                return new CSSPrimitiveValueImpl("pre-line", CSSPrimitiveValue::CSS_STRING);
             case khtml::KHTML_NOWRAP:
                 return new CSSPrimitiveValueImpl("-khtml-nowrap", CSSPrimitiveValue::CSS_STRING);
         }
+        break;
     }
     case CSS_PROP_WIDOWS:
         break;
