@@ -67,7 +67,7 @@ KServiceType::init( KDesktopFile *config)
   QString sDerived = config->readEntry( "X-KDE-Derived" );
   m_bDerived = !sDerived.isEmpty();
   if ( m_bDerived )
-    m_mapProps.insert( "X-KDE-Derived", sDerived ); 
+    m_mapProps.insert( "X-KDE-Derived", sDerived );
 
   QStringList tmpList = config->groupList();
   QStringList::Iterator gIt = tmpList.begin();
@@ -217,7 +217,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
   if ( serv )
     lst += KServiceFactory::self()->offers( serv->offset() );
   else
-    kdWarning(7009) << "KServiceType::strictOffers : servicetype " << _servicetype << " not found" << endl;
+    kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
   bool isAMimeType = serv ? serv->isType( KST_KMimeType ) : false;
   delete serv;
 
