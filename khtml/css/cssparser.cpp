@@ -2386,7 +2386,8 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
             // string
             int l = str.length();
             QString strstr;
-            for (int i = 0; i < l; ++i) {
+            // skip first character (which is ' or " !)
+            for (int i = 1; i < l; ++i) {
                 if (i < l - 1 && str[i] == '\\') {
                     if (str[i+1] == 'a')
                         strstr += '\n';
