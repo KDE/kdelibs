@@ -1259,7 +1259,7 @@ bool HTTPProtocol::readHeader()
            m_strCharset = m_strMimeType.mid( pos );
            //kdDebug(7103) << "Found charset: " << m_strCharset << endl;
          }
-         m_strMimeType = m_strMimeType.left( semicolonPos );
+         m_strMimeType.truncate( semicolonPos );
        }
        //kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
     }
@@ -2575,11 +2575,9 @@ bool HTTPProtocol::readBody( )
 
   // Main incoming loop...  Gather everything while we can...
   KMD5 context;
-  int totRxBytes = 0;
   bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
   big_buffer.resize(0);
-
   while (!eof())
   {
     int bytesReceived;
@@ -2608,22 +2606,22 @@ bool HTTPProtocol::readBody( )
       // with the content itself.
       if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 && m_responseCode <=399) )
       {
-        totRxBytes += bytesReceived;
         kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
-        if ( m_iBytesLeft > 0 && totRxBytes < 1024 )
+        int old_size = mimeTypeBuffer.size();
+        mimeTypeBuffer.resize( old_size + bytesReceived );
+        memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(), bytesReceived );
+        if ( m_iBytesLeft > 0 && mimeTypeBuffer.size() < 1024 )
         {
-          int old_size = mimeTypeBuffer.size();
-          mimeTypeBuffer.resize( old_size + totRxBytes );
-          memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(), totRxBytes );
           cpMimeBuffer = true;
           continue;   // Do not send up the data since we do not yet know its mimetype!
         }
-
+        
+	kdDebug(7113) << "Mimetype buffer size: " << mimeTypeBuffer.size() << endl;
         KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
         if( result )
         {
           m_strMimeType = result->mimeType();
-          kdDebug(7113) << "Mimetype from content:  " <<  m_strMimeType << endl;
+          kdDebug(7113) << "Mimetype from content: " << m_strMimeType << endl;
         }
 
         if ( m_strMimeType.isEmpty() )
