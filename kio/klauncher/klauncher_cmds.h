@@ -43,7 +43,7 @@ typedef struct
 /*
  * LAUNCHER_SETENV
  *
- * Change environment of future processes launched via kinit.
+ * Change environment of future processes launched via kdeinit.
  *
  * char *env_name;
  * char *env_value;
@@ -53,7 +53,7 @@ typedef struct
 /*
  * LAUNCHER_DIED
  *
- * Notification A child of kinit died.
+ * Notification A child of kdeinit died.
  *
  * long pid;
  * long exit_code;

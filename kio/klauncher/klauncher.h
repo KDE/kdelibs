@@ -53,7 +53,7 @@ class KLauncher : public KUniqueApplication
    Q_OBJECT
 
 public:
-   KLauncher(int _kinitSocket);
+   KLauncher(int _kdeinitSocket);
 
 protected:
    bool process(const QCString &fun, const QByteArray &data,
@@ -84,8 +84,8 @@ public slots:
 
 protected:
    QList<KLaunchRequest> requestList;
-   int kinitSocket;
-   QSocketNotifier *kinitNotifier;
+   int kdeinitSocket;
+   QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
 };

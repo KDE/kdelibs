@@ -30,7 +30,7 @@ int
 start_launcher(int socket)
 {
    const char *name = "klauncher";
-   // Started via kinit.
+   // Started via kdeinit.
    KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.", 
                        "v0.1");
    KLauncher::addCmdLineOptions();

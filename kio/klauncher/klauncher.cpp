@@ -32,19 +32,19 @@
 
 template class QList<KLaunchRequest>;
 
-KLauncher::KLauncher(int _kinitSocket)
+KLauncher::KLauncher(int _kdeinitSocket)
   : KUniqueApplication( false, false ), // No Styles, No GUI
-    kinitSocket(_kinitSocket)
+    kdeinitSocket(_kdeinitSocket)
 {
    requestList.setAutoDelete(true);
    dcopClient()->setNotifications( true );
    connect(dcopClient(), SIGNAL( applicationRegistered( const QCString &)),
            this, SLOT( slotAppRegistered( const QCString &)));
 
-   kinitNotifier = new QSocketNotifier(kinitSocket, QSocketNotifier::Read);
-   connect(kinitNotifier, SIGNAL( activated( int )),
+   kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
+   connect(kdeinitNotifier, SIGNAL( activated( int )),
            this, SLOT( slotKInitData( int )));
-   kinitNotifier->setEnabled( true );
+   kdeinitNotifier->setEnabled( true );
    lastRequest = 0;
 }
 
@@ -139,7 +139,7 @@ KLauncher::slotKInitData(int)
    klauncher_header request_header;
    QByteArray requestData;
    fprintf(stderr, "KLauncher: Data from KInit!\n");
-   int result = read_socket(kinitSocket, (char *) &request_header, 
+   int result = read_socket(kdeinitSocket, (char *) &request_header, 
                             sizeof( request_header));
    if (result == -1)
    {
@@ -147,7 +147,7 @@ KLauncher::slotKInitData(int)
       ::exit(255);
    }
    requestData.resize(request_header.arg_length);
-   result = read_socket(kinitSocket, (char *) requestData.data(), 
+   result = read_socket(kdeinitSocket, (char *) requestData.data(), 
                         request_header.arg_length);
 
    fprintf(stderr, "KLauncher: Got notification (%ld) from KInit\n", 
@@ -270,7 +270,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    fprintf(stderr, "KLauncher: Request start [ name = '%s' ]\n",
  	   request->name.data());
    requestList.append( request );
-   // Send request to kinit.
+   // Send request to kdeinit.
    klauncher_header request_header;
    QByteArray requestData;
    int length = 0;
@@ -300,13 +300,13 @@ fprintf(stderr, "args = %d arg_length = %d\n", request->arg_list.count()+1, leng
    
    request_header.cmd = LAUNCHER_EXEC;
    request_header.arg_length = length;
-   write(kinitSocket, &request_header, sizeof(request_header));
-   write(kinitSocket, requestData.data(), request_header.arg_length);
+   write(kdeinitSocket, &request_header, sizeof(request_header));
+   write(kdeinitSocket, requestData.data(), request_header.arg_length);
 
    // Wait for pid to return.
    lastRequest = request;
    do {
-      slotKInitData( kinitSocket );
+      slotKInitData( kdeinitSocket );
    } 
    while (lastRequest != 0);
 }
