@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name = ShellScript
+Type = Service
+X-KDE-Library = libshellscript
+ServiceTypes = ScriptRunner/ScriptRunner, ShellScript/ShellScript
+Comment = Runs bash shell scripts from inside the application.

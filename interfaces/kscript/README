@@ -1,0 +1,14 @@
+Script interface
+----------------
+Overview:
+scriptloader - used to load script engines and scripts from the GUI
+scriptinterface - the base of all script engines
+
+Script Engines:
+	
+TODO
+
+Script Loader:
+
+TODO
+
