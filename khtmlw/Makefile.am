@@ -19,7 +19,7 @@
 
 
 lib_LTLIBRARIES = libkhtmlw.la
-libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp
+libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp jpeg.cpp formats.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp
 libkhtmlw_la_LIBADD = $(all_libraries) -lqt -lX11 $(LIBJPEG)
 
 BUILT_SOURCES = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
@@ -30,7 +30,7 @@ htmlframe.cpp: htmlframe.moc
 htmlview.cpp: htmlview.moc
 
 DISTCLEANFILES = $(BUILT_SOURCES)
-include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h
+include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h
 libkhtmlw_la_LDFLAGS = -version-info 0:91 -allow-undefined
 
 data_DATA = khtmlw_dnd.xpm
