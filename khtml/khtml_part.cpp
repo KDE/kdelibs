@@ -3727,7 +3727,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
             drag = new QImageDrag( i->currentImage() , d->m_view->viewport() );
-            p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
+            p = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
           }
       }
 
