@@ -22,13 +22,16 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
-#define KDE_VERSION 0x030100
 #define KDE_VERSION_STRING "3.1.0 (RC6)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
+#define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
-#define KDE_IS_VERSION(a,b,c) (((a) << 16) | ((b) << 8) | (c))
+#define KDE_VERSION \
+  KDE_MAKE_VERSION(KDE_VERSION_MAJOR,KDE_VERSION_MINOR,KDE_VERSION_RELEASE)
+
+#define KDE_IS_VERSION(a,b,c) ( KDE_VERSION >= KDE_MAKE_VERSION(a,b,c) )
 
 /**
  * Namespace for general KDE functions.
