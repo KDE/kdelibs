@@ -178,7 +178,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   QTextCodec *textCodec = 0;
   if (encoding_hint)
       textCodec = codecForHint( encoding_hint );
-  
+
   if (!textCodec)
       textCodec = QTextCodec::codecForLocale();
 
@@ -234,7 +234,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
       c += (c > 9) ? ('A' - 10) : '0';
       new_usegment[ new_length2++ ] = c;
     }
-    
+
     new_segment [ new_length++ ] = character;
   }
   new_segment [ new_length ] = 0;
@@ -263,18 +263,16 @@ static QString decode(const QString &segment, int encoding_hint = 0)
 {
   QString result;
   QString tmp;
-  decode(segment, result, tmp, encoding_hint);  
+  decode(segment, result, tmp, encoding_hint);
   return result;
 }
 
 static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 {
   if (path.isEmpty()) return QString::null;
-  // Did we have a trailing '/'
   int len = path.length();
-  bool slash = false;
-  if ( len > 0 && path.right(1)[0] == '/' )
-    slash = true;
+  bool slash = (len && path[len-1] == '/') ||
+               (len > 1 && path[len-2] == '/' && path[len-1] == '.');
 
   // The following code cleans up directory path much like
   // QDir::cleanDirPath() except it can be made to ignore multiple
@@ -294,14 +292,15 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
       cdUp++;
     else
     {
-      // Ignore any occurances of '.' This includes entries
-      // that simply do not make sense like /..../
-      if ( (len!=0 || !cleanDirSeparator) && (len != 1 || path[pos+1] != '.') )
+      // Ignore any occurances of '.'
+      // This includes entries that simply do not make sense like /..../
+      if ( (len || !cleanDirSeparator) &&
+           (len != 1 || path[pos+1] != '.' ) )
       {
-        if ( !cdUp )
-          result = path.mid(pos, len+1) + result;
-        else
-          cdUp--;
+          if ( !cdUp )
+              result.prepend(path.mid(pos, len+1));
+          else
+              cdUp--;
       }
     }
     orig_pos = pos;
@@ -309,11 +308,9 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 
   if ( result.isEmpty() )
     result = "/";
+  else if ( slash && result[result.length()-1] != '/' )
+       result.append('/');
 
-  // Restore the trailing '/'
-  len = result.length();
-  if ( len > 0 && result.right(1)[0] != '/' && slash )
-    result += "/";
   return result;
 }
 
@@ -602,7 +599,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   // Terminate on / or @ or ? or # or " or ; or <
   x = buf[pos];
   while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
-  {  
+  {
      if ((x == '\"') || (x == ';') || (x == '<'))
         badHostName = true;
      x = buf[++pos];
@@ -611,7 +608,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     {
       if (badHostName)
          goto NodeErr;
-         
+
       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
       goto NodeOk;
     }
@@ -689,7 +686,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     badHostName = false;
     x = buf[pos];
     while( (x != ']') &&  (pos < len) )
-    {  
+    {
        if ((x == '\"') || (x == ';') || (x == '<'))
           badHostName = true;
        x = buf[++pos];
@@ -710,7 +707,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     badHostName = false;
     x = buf[pos];
     while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
-    {  
+    {
        if ((x == '\"') || (x == ';') || (x == '<'))
           badHostName = true;
        x = buf[++pos];
@@ -897,7 +894,7 @@ bool KURL::operator==( const QString& _u ) const
   return ( *this == u );
 }
 
-bool KURL::cmp( const KURL &u, bool ignore_trailing ) const 
+bool KURL::cmp( const KURL &u, bool ignore_trailing ) const
 {
   return equals( u, ignore_trailing );
 }
@@ -1656,7 +1653,7 @@ void KURL::setQuery( const QString &_txt, int encoding_hint)
       while(i < l)
       {
          char c = m_strQuery_encoded[i].latin1();
-         if ((c == '&') || (c == ':') || (c == ';') || 
+         if ((c == '&') || (c == ':') || (c == ';') ||
              (c == '=') || (c == '/') || (c == '?'))
             break;
          i++;
