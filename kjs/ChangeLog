@@ -1,3 +1,8 @@
+2003-10-20  Harri Porten  <harri@froglogic.com>
+
+	* number_object.cpp: rewrote Number.toString(radix) to work with negative
+	numbers, floating point and very large numbers.
+
 2003-10-19  Harri Porten  <porten@froglogic.com>
 
 	* grammar.y: fixed bitwise XOR and OR expressions
@@ -9,7 +14,7 @@
 	chosen
 
 ================= long break again ================================
-	
+
 2003-02-02  Harri Porten  <porten@kde.org>
 
 	* internal.h: added NumberImp::staticNaN
@@ -23,7 +28,7 @@
 	* nodes.cpp (evaluateReference): added to allow (i) = 0;
 
 ================= long unlogged time span ================================
-	
+
 2002-06-15  Harri Porten  <porten@kde.org>
 
 	* regexp_object.cpp: made RegExp.prototype visible
