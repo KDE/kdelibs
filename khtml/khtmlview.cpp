@@ -63,7 +63,6 @@
 #include <kapplication.h>
 
 #include <kimageio.h>
-#include <assert.h>
 #include <kdebug.h>
 #include <kurldrag.h>
 #include <qobjectlist.h>
@@ -1380,7 +1379,6 @@ QString KHTMLView::mediaType() const
 void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
 {
     if (vis) {
-        assert(w->widget());
         d->visibleWidgets.replace(w, w->widget());
     }
     else
