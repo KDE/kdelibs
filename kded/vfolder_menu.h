@@ -229,8 +229,6 @@ private:
   void processCondition(QDomElement &docElem, QDict<KService> *items);
 
   void initDirs();
-  QStringList allDataLocations(const QString &fileName);
-  QStringList allConfLocations(const QString &fileName);
   
   void pushDocInfo(const QString &fileName);
   void popDocInfo();

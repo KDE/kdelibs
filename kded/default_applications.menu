@@ -261,6 +261,7 @@
 			</Include>
 		</Menu>
 	</Menu>
+        <!-- The following menus are hidden by default -->
 	<Menu>
 		<Name>Settings</Name>
 		<Directory>kde-settings.directory</Directory>
@@ -274,5 +275,13 @@
         <Move>
            <Old>Settings/Information</Old><New>Information</New>
         </Move>
+	<Menu>
+		<Name>System</Name>
+		<Menu>
+			<Name>ScreenSavers</Name>
+			<Directory>kde-system-screensavers.directory</Directory>
+	                <MergeFile>kde-screensavers.menu</MergeFile>
+		</Menu>
+	</Menu>
 	<DefaultMergeDirs/>
 </Menu>

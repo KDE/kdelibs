@@ -631,85 +631,6 @@ VFolderMenu::popDocInfo()
    m_docInfo = m_docInfoStack.pop();
 }
 
-QStringList
-VFolderMenu::allConfLocations(const QString &fileName)
-{
-   QStringList locations;
-   QString tmp;
-
-   tmp = KStandardDirs::realPath(m_desktopUserDir+fileName);
-   if (!locations.contains(tmp)) 
-   {
-      registerFile(tmp);
-      locations.append(tmp);
-   }
-
-   for(QStringList::ConstIterator it = m_desktopSystemDirs.begin();
-       it != m_desktopSystemDirs.end();
-       ++it)
-   {
-      tmp = KStandardDirs::realPath((*it) + "etc/"+fileName);
-      if (!locations.contains(tmp)) 
-      {
-         registerFile(tmp);
-         locations.append(tmp);
-      }
-   }
-
-   // TODO: The spec refers to "sysconfdir" here
-   for(QStringList::ConstIterator it = m_defaultDataDirs.begin();
-       it != m_defaultDataDirs.end();
-       ++it)
-   {
-      tmp = KStandardDirs::realPath((*it) + "share/" + fileName);
-      if (!locations.contains(tmp)) 
-      {
-         registerFile(tmp);
-         locations.append(tmp);
-      }
-   }
-   
-   tmp = KStandardDirs::realPath("/etc/desktop/" + fileName);
-   if (!locations.contains(tmp))
-   {
-      registerFile(tmp);
-      locations.append(tmp);
-   }
-
-   return locations;
-}
-
-QStringList
-VFolderMenu::allDataLocations(const QString &fileName)
-{
-   QStringList locations;
-   QString tmp;
-
-   tmp = KStandardDirs::realPath(m_desktopUserDir+fileName);
-   if (!locations.contains(tmp)) locations.append(tmp);
-   
-   for(QStringList::ConstIterator it = m_desktopSystemDirs.begin();
-       it != m_desktopSystemDirs.end();
-       ++it)
-   {
-      tmp = KStandardDirs::realPath((*it) + "share/" + fileName);
-      if (!locations.contains(tmp)) locations.append(tmp);
-   }
-
-   for(QStringList::ConstIterator it = m_defaultDataDirs.begin();
-       it != m_defaultDataDirs.end();
-       ++it)
-   {
-      tmp = KStandardDirs::realPath((*it) + "share/" + fileName);
-      if (!locations.contains(tmp)) locations.append(tmp);
-   }
-
-   tmp = KStandardDirs::realPath("/usr/share/desktop/" + fileName);
-   if (!locations.contains(tmp)) locations.append(tmp);
-
-   return locations;
-}
-
 QString
 VFolderMenu::locateMenuFile(const QString &fileName)
 {
@@ -721,10 +642,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
    }
 
    QString baseName = m_docInfo.baseDir + fileName;
-   QStringList locations = allConfLocations("menus/"+baseName);
-   // First location in the list wins
-    
-   QString result = locateFile(locations);
+   QString result = locate("xdgconf-menu", baseName);
 
    if (result.isEmpty() && !m_docInfo.baseDir.startsWith("/"))
    {
@@ -738,7 +656,7 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
 {
    if (fileName.isEmpty())
       return QString::null;
-      
+
    if (fileName.startsWith("/"))
    {
       if (KStandardDirs::exists(fileName))
@@ -785,8 +703,8 @@ VFolderMenu::initDirs()
    QString localDir = m_defaultDataDirs.first();
    m_defaultDataDirs.remove(localDir); // Remove local dir
    
-   m_defaultAppDirs = allDataLocations("applications/");
-   m_defaultDirectoryDirs = allDataLocations("desktop-directories/");
+   m_defaultAppDirs = KGlobal::dirs()->findDirs("xdgdata-apps", QString::null);
+   m_defaultDirectoryDirs = KGlobal::dirs()->findDirs("xdgdata-dirs", QString::null);
    m_defaultLegacyDirs = KGlobal::dirs()->resourceDirs("apps");
 }
 
@@ -799,7 +717,7 @@ VFolderMenu::loadMenu(const QString &fileName)
       return;
 
    pushDocInfo(fileName);
-   m_defaultMergeDirs = allConfLocations("menus/"+m_docInfo.baseName+"-merged/");
+   m_defaultMergeDirs = KGlobal::dirs()->findDirs("xdgconf-menus", m_docInfo.baseName+"-merged/");
    m_doc = loadDoc(m_docInfo.path);
    popDocInfo();
 

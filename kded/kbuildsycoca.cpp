@@ -413,7 +413,7 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
         if (timeStamp && (timeStamp == oldTimestamp))
         {
             entry = dynamic_cast<KServiceGroup *> (g_serviceGroupEntryDict->find(subName));
-            if (entry->directoryEntryPath() != directoryFile)
+            if (entry && (entry->directoryEntryPath() != directoryFile))
                 entry = 0; // Can't reuse this one!
         }
      }
