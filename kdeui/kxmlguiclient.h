@@ -87,7 +87,7 @@ public:
   virtual KActionCollection* actionCollection() const;
 
   /**
-   * @return The instance ( KInstance) for this part.
+   * @return The instance ( KInstance ) for this GUI client.
    */
   virtual KInstance *instance() const;
 
