@@ -215,7 +215,7 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
 //            printf("\ni: %d\n", i);
             increaseStringLength( htmlText, currentLength, offset, stdInc);
         }
-        
+
         memcpy(htmlText+offset, me.stringPtr(), i*2);
         offset += i;
     }
@@ -231,7 +231,7 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
         }
         memcpy(htmlText+offset, &LT, 2);             // prints "<"
         memcpy(htmlText+offset+1, me.stringPtr(), i*2);     // prints tagname
-      
+
         // insert attributes here
         /*                  if( nodeType() == Node::ELEMENT_NODE )
                             {
@@ -256,7 +256,7 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
                             }
                             }*/
         // end attr stuff
-            
+
         if( firstChild() == 0 )     // if element has no endtag
         {
 //printf("recursive 4: %s\n", nodeName().string().ascii() );
@@ -273,13 +273,13 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
         }
     }
 //printf("recursive 5b: %s\n", nodeName().string().ascii() );
-    
+
     if( firstChild() != 0 )
     {
 //printf("recursive 6: %s\n", nodeName().string().ascii() );
         // print firstChild
         firstChild()->recursive( htmlText, currentLength, offset, stdInc);
-        
+
         // Print my ending tag
         if ( nodeType() != Node::TEXT_NODE )
         {
@@ -292,7 +292,7 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
             memcpy(htmlText+offset+2, me.stringPtr(), i*2);    // prints tagname
             memcpy(htmlText+offset+i+2, &MT, 2);               // prints ">"
             offset += i+3;
-        } 
+        }
     }
     // print next sibling
     if( nextSibling() )
@@ -318,12 +318,12 @@ int NodeImpl::increaseStringLength( QChar *htmlText, long &currentLength, long o
 
 void NodeImpl::applyChanges()
 {
-    m_render->styleChanged();
+    if(m_render) m_render->styleChanged();
 }
 
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 {
-    m_render->cursorPos(offset, _x, _y, height);
+    if(m_render) m_render->cursorPos(offset, _x, _y, height);
 }
 
 
