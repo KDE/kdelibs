@@ -37,6 +37,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qstringlist.h>
+#include <qregexp.h>
 
 #include <sys/types.h>
 #include <utime.h>
@@ -73,6 +74,7 @@ void KRecentDocument::add(const KURL& url)
 void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
 {
     QString openStr = url.url();
+    openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
     kdDebug(250) << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
