@@ -437,7 +437,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     }
     --it;
 
-    if (evt->bubbles()) {
+    if (evt->bubbles() && !evt->propagationStopped()) {
         evt->stopPropagation(false);
         NodeImpl* propagationSentinel = 0;
 
