@@ -2169,7 +2169,14 @@ bool HTTPProtocol::httpOpen()
 
     if (!cookieStr.isEmpty())
       header += cookieStr + "\r\n";
-
+    
+    QString customHeader = metaData( "customHTTPHeader" );
+    if (!customHeader.isEmpty()) 
+    {
+      header += customHeader;
+      header += "\r\n";
+    } 
+    
     if (m_request.method == HTTP_POST)
     {
       header += metaData("content-type");
