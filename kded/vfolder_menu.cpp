@@ -612,7 +612,17 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
             registerDirectory(*it);
          }
 
-         QStringList fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, false);
+         QStringList fileList;
+         if (dir.startsWith("/"))
+         {
+            // Absolute
+            fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, false);
+         }
+         else
+         {
+            // Relative
+            (void) KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, true, fileList);
+         }
 
          for(QStringList::ConstIterator it=fileList.begin();
              it != fileList.end(); ++it)
@@ -696,7 +706,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
       return QString::null;
    }
 
-   QString baseName = m_docInfo.baseDir + fileName;
+   QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
    QString result = locate("xdgconf-menu", baseName);
 
    return result;
