@@ -107,12 +107,25 @@ bool KMSpecialManager::loadPrinters()
 	bool	result(true);
 	QString	localDir = KGlobal::dirs()->localkdedir();
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/specials.desktop");
-	for (QStringList::ConstIterator it=files.begin(); it!=files.end() && result; ++it)
+	// local files should processed last, so we need to reorder the list
+	// and put local files at the end
+	QStringList	orderedFiles;
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+	{
+		if ((*it).startsWith(localDir))
+			orderedFiles.append(*it);
+		else
+			orderedFiles.prepend(*it);
+	}
+	// then parse the ordered list
+	for (QStringList::ConstIterator it=orderedFiles.begin(); it!=orderedFiles.end() && result; ++it)
+	{
 		// skip the local file for root
 		if (getuid() == 0 && (*it).startsWith(localDir))
-			continue;
+			break;
 		else
 			result = loadDesktopFile(*it);
+	}
 
 	return result;
 }
