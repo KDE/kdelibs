@@ -20,9 +20,9 @@
 #ifndef __klineeditdlg_h__
 #define __klineeditdlg_h__
 
-#include <qdialog.h>
 #include <qlineedit.h>
 
+#include <kdialogbase.h>
 #include "kurlcompletion.h"
 
 /**
@@ -32,7 +32,8 @@
  * @version $Id$
  * @author David Faure <faure@kde.org>, layout management by Preston Brown <pbrown@kde.org>
  */
-class KLineEditDlg : public QDialog
+
+class KLineEditDlg : public KDialogBase
 {
   Q_OBJECT
 public:

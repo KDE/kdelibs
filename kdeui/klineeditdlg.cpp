@@ -15,6 +15,62 @@
 #include "klined.h"
 #include "klineeditdlg.h"
 
+
+/*
+****************************************************************************
+*
+* $Log$
+* 
+*
+****************************************************************************
+*/
+
+KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value, 
+			    QWidget *parent, bool _file_mode )
+  : KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, 0L, true,
+		 true, i18n("C&lear") ), completion(0L)
+{
+  QVBoxLayout *topLayout = new QVBoxLayout( plainPage(), 0, spacingHint() );
+  QLabel *label = new QLabel(_text, plainPage() );
+  topLayout->addWidget( label, 1 );
+
+  QHBoxLayout *hbox = new QHBoxLayout();
+  topLayout->addLayout( hbox );
+  topLayout->addStretch(1);
+
+  edit = new KLineEdit( plainPage(), 0L );
+  edit->setMinimumWidth(edit->sizeHint().width() * 3);
+  connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
+  hbox->addWidget( edit, 1 );
+  
+
+  if( _file_mode == true ) 
+  {
+    completion = new KURLCompletion();
+    connect(edit, SIGNAL (completion()),
+	     completion, SLOT (make_completion()));
+    connect(edit, SIGNAL (rotation()),
+	     completion, SLOT (make_rotation()));
+    connect(edit, SIGNAL (textChanged(const QString&)),
+	     completion, SLOT (edited(const QString&)));
+    connect(completion, SIGNAL (setText (const QString&)),
+	     edit, SLOT (setText (const QString&)));
+
+    QPushButton *browse = new QPushButton(i18n("&Browse..."), plainPage() );
+    hbox->addWidget( browse );
+    connect( browse, SIGNAL(clicked()), this, SLOT(slotBrowse()) );
+  } 
+  
+  connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
+  edit->setText( _value );
+  edit->setFocus();
+
+  topLayout->activate();
+}
+
+
+
+#if 0
 KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value, 
 			    QWidget *parent, bool _file_mode )
     : QDialog( parent, 0L, true )
@@ -79,6 +135,8 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   edit->setText( _value );
   edit->setFocus();
 }
+#endif
+
 
 KLineEditDlg::~KLineEditDlg()
 {
@@ -99,3 +157,5 @@ void KLineEditDlg::slotBrowse()
 }
 
 #include "klineeditdlg.moc"
+
+
