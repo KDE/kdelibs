@@ -93,7 +93,7 @@ static QString getDescrFromNum(unsigned short _num)
     return "";
   }
 
-  unsigned long number;
+  unsigned long number = 0;
   bool longOK;
 
   QTextStream *ts = new QTextStream(&file);

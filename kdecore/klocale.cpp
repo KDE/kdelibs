@@ -842,7 +842,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 
     unsigned int index = 0;
     bool escape = false;
-    int number;
+    int number = 0;
 
     for ( uint format_index = 0; format_index < rst.length(); format_index++ )
     {
@@ -1234,7 +1234,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
     uint index = 0;
     bool escape = false;
-    int number;
+    int number = 0;
 
     for ( uint format_index = 0; format_index < rst.length(); format_index++ )
     {
