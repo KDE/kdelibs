@@ -392,11 +392,7 @@ KSpellConfig::fillInDialog ()
   int whichelement=-1;
 
   if ( dictFromList() )
-    for (unsigned int i=0; i < langfnames.count(); i++)
-    {
-      if ( langfnames[i] == dictionary() )
-        whichelement = i;
-    }
+    whichelement = langfnames.findIndex(dictionary());
 
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
@@ -408,7 +404,7 @@ KSpellConfig::fillInDialog ()
   }
   else
     // Current dictionary vanished, present the user with a default if possible.
-    if ( langfnames.count() >= 1 )
+    if ( !langfnames.empty() )
     {
       setDictFromList( true );
       dictcombo->setCurrentItem(0);
@@ -447,21 +443,25 @@ void KSpellConfig::getAvailDictsIspell () {
   kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
-  QDir thedir (dir.filePath(),"*.hash");
+  const QDir thedir (dir.filePath(),"*.hash");
+  const QStringList entryList = thedir.entryList();
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
   kdDebug(750) << "entryList().count()="
-	       << thedir.entryList().count() << endl;
+	       << entryList.count() << endl;
 
-  for (unsigned int i=0;i<thedir.entryList().count();i++)
+  QStringList::const_iterator entryListItr = entryList.constBegin();
+  const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+  for ( ; entryListItr != entryListEnd; ++entryListItr)
   {
     QString fname, lname, hname;
-    fname = thedir [i];
+    fname = *entryListItr;
 
     // remove .hash
     if (fname.endsWith(".hash")) fname.remove (fname.length()-5,5);
 
-    if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+    if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
     { // This one is the KDE default language
       // so place it first in the lists (overwrite "Default")
 
@@ -505,16 +505,20 @@ void KSpellConfig::getAvailDictsAspell () {
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
-  QDir thedir (dir.filePath(),"*");
+  const QDir thedir (dir.filePath(),"*");
+  const QStringList entryList = thedir.entryList();
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
   kdDebug(750) << "entryList().count()="
-	       << thedir.entryList().count() << endl;
+	       << entryList.count() << endl;
 
-  for (unsigned int i=0; i<thedir.entryList().count(); i++)
+  QStringList::const_iterator entryListItr = entryList.constBegin();
+  const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+  for ( ; entryListItr != entryListEnd; ++entryListItr)
   {
     QString fname, lname, hname;
-    fname = thedir [i];
+    fname = *entryListItr;
 
     // consider only simple dicts without '-' in the name
     // FIXME: may be this is wrong an the list should contain
@@ -525,7 +529,7 @@ void KSpellConfig::getAvailDictsAspell () {
       // remove .multi
       if (fname.endsWith(".multi")) fname.remove (fname.length()-6,6);
 
-      if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+      if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
       { // This one is the KDE default language
         // so place it first in the lists (overwrite "Default")
 
@@ -574,21 +578,25 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
                    << dir.filePath() << " " << dir.dirPath() << endl;
 
-      QDir thedir (dir.filePath(),"*.hash");
+      const QDir thedir (dir.filePath(),"*.hash");
+      const QStringList entryList = thedir.entryList();
 
       kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
       kdDebug(750) << "entryList().count()="
-                   << thedir.entryList().count() << endl;
+                   << entryList.count() << endl;
 
-      for (unsigned int i=0;i<thedir.entryList().count();i++)
+      QStringList::const_iterator entryListItr = entryList.constBegin();
+      const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+      for ( ; entryListItr != entryListEnd; ++entryListItr)
       {
         QString fname, lname, hname;
-        fname = thedir [i];
+        fname = *entryListItr;
 
         // remove .hash
         if (fname.endsWith(".hash")) fname.remove (fname.length()-5,5);
 
-        if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+        if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
         { // This one is the KDE default language
           // so place it first in the lists (overwrite "Default")
 
@@ -633,16 +641,20 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
                    << dir.filePath() << " " << dir.dirPath() << endl;
 
-      QDir thedir (dir.filePath(),"*");
+      const QDir thedir (dir.filePath(),"*");
+      const QStringList entryList = thedir.entryList();
 
       kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
       kdDebug(750) << "entryList().count()="
-                   << thedir.entryList().count() << endl;
+                   << entryList.count() << endl;
 
-      for (unsigned int i=0; i<thedir.entryList().count(); i++)
+      QStringList::const_iterator entryListItr = entryList.constBegin();
+      const QStringList::const_iterator entryListEnd = entryList.constEnd();
+
+      for ( ; entryListItr != entryListEnd; ++entryListItr)
       {
         QString fname, lname, hname;
-        fname = thedir [i];
+        fname = *entryListItr;
 
         // consider only simple dicts without '-' in the name
         // FIXME: may be this is wrong an the list should contain
@@ -653,7 +665,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           // remove .multi
           if (fname.endsWith(".multi")) fname.remove (fname.length()-6,6);
 
-          if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+          if (interpret (fname, lname, hname) && langfnames.first().isEmpty())
           { // This one is the KDE default language
             // so place it first in the lists (overwrite "Default")
 
@@ -673,11 +685,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         }
       }
     }
-    int whichelement = -1;
-    for ( unsigned int i = 0; i < langfnames.count(); ++i ) {
-      if ( langfnames[i] == qsdict )
-        whichelement = i;
-    }
+    int whichelement = langfnames.findIndex(qsdict);
     if ( whichelement >= 0 ) {
       box->setCurrentItem( whichelement );
     }
@@ -732,11 +740,7 @@ KSpellConfig::setDictionary (const QString s)
     int whichelement=-1;
     if (dictFromList())
     {
-      for (unsigned int i=0;i<langfnames.count();i++)
-      {
-         if (langfnames[i] == s)
-           whichelement=i;
-      }
+      whichelement = langfnames.findIndex(s);
 
       if(whichelement >= 0)
       {
