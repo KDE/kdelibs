@@ -46,8 +46,7 @@ static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
     QTextCodec * textCodec = KGlobal::charsets()->codecForName( charsetName, ok );
     return ok ? textCodec : 0L;
 #else
-#warning FIXME!!
-    return 0;
+    return QTextCodec::codecForMib( encoding_hint );
 #endif
 }
 
