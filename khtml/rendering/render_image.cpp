@@ -49,6 +49,8 @@
 #include "khtml_part.h"
 #include <math.h>
 
+#include "loading_icon.cpp"
+
 using namespace DOM;
 using namespace khtml;
 
@@ -238,9 +240,18 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     // paint frame around image as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
+        static QPixmap *loadingIcon;
 	paintInfo.p->setPen(QPen(Qt::gray, 1));
 	paintInfo.p->setBrush( Qt::NoBrush );
 	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
+        if (!(m_width <= 5 || m_height <= 5)) {
+            if (!loadingIcon) {
+                loadingIcon = new QPixmap();
+                loadingIcon->loadFromData(loading_icon_data, loading_icon_len);
+            }
+            paintInfo.p->drawPixmap(_tx + 4, _ty + 4, *loadingIcon, 0, 0, m_width - 5, m_height - 5);
+        }
+        
     }
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;

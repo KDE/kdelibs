@@ -49,4 +49,7 @@ srcdoc:
 	$(mkinstalldirs) $(SRCDOC_DEST)
 	kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
 
+## maintainer: regen loading icon
+loading-icon:
+	bin2c -sploading_icon $(srcdir)/../pics/img-loading.png > $(srcdir)/loading_icon.cpp
 
