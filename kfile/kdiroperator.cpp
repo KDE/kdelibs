@@ -856,7 +856,7 @@ void KDirOperator::setupActions()
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), this, "mkdir");
-    mkdirAction->setIcon( QString::fromLatin1("filenew") );
+    mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     // FIXME, find a better icon than filenew
     reloadAction->setText( i18n("Reload") );
 

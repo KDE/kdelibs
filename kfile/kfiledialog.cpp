@@ -236,7 +236,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     if (!bmFile.isNull())
         bookmarks->read(bmFile);
 
-    toolbar->insertButton(QString::fromLatin1("flag"),
+    toolbar->insertButton(QString::fromLatin1("bookmark"),
                           (int)HOTLIST_BUTTON, true,
                           i18n("Bookmarks"));
     /*
