@@ -315,10 +315,9 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileIconViewItem *item =
-        new KFileIconViewItem( (QIconView*)this, i->text(),
-                               i->pixmap( iconSizeFor( i ) ), i);
-    initItem( item, i, false );
+    KIconView* kview = static_cast<KIconView*>( this );
+    KFileIconViewItem *item = new KFileIconViewItem( kview, i );
+    initItem( item, i, true );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
@@ -415,21 +414,12 @@ void KFileIconView::updateView( bool b )
 
     KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
     if ( item ) {
-        if ( d->previews->isChecked() ) {
-            do {
-                int size = canPreview( item->fileInfo() ) ?
-                           d->previewIconSize : myIconSize;
-                item ->setPixmap( (item->fileInfo())->pixmap( size ) );
-                item = static_cast<KFileIconViewItem *>(item->nextItem());
-            } while ( item != 0L );
-        }
-
-        else {
-            do {
-                item ->setPixmap( (item->fileInfo())->pixmap( myIconSize));
-                item = static_cast<KFileIconViewItem *>(item->nextItem());
-            } while ( item != 0L );
-        }
+        do {
+            if ( d->previews->isChecked() && canPreview( item->fileInfo() ) )
+                item->setPixmapSize( QSize( d->previewIconSize, d->previewIconSize ) );
+            item->setPixmap( (item->fileInfo())->pixmap( myIconSize ) );
+            item = static_cast<KFileIconViewItem *>(item->nextItem());
+        } while ( item != 0L );
     }
 }
 
@@ -725,13 +715,16 @@ void KFileIconView::showEvent( QShowEvent *e )
 void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
                               bool updateTextAndPixmap )
 {
+    if ( d->previews->isChecked() && canPreview( i ) )
+        item->setPixmapSize( QSize( d->previewIconSize, d->previewIconSize ) );
+
     if ( updateTextAndPixmap )
     {
         // this causes a repaint of the item, which we want to avoid during
         // directory listing, when all items are created. We want to paint all
         // items at once, not every single item in that case.
         item->setText( i->text() , false, false );
-        item->setPixmap( i->pixmap( iconSizeFor( i ) ) );
+        item->setPixmap( i->pixmap( myIconSize ) );
     }
 
     // see also setSorting()
@@ -759,13 +752,6 @@ void KFileIconView::arrangeItemsInGrid( bool update )
         return;
 
     KIconView::arrangeItemsInGrid( update );
-}
-
-int KFileIconView::iconSizeFor( const KFileItem *item ) const
-{
-    if ( d->previews->isChecked() && canPreview( item ) )
-        return d->previewIconSize;
-    return myIconSize;
 }
 
 void KFileIconView::zoomIn()
