@@ -98,9 +98,6 @@ Here is an alphabetical list:
 * kparts
     KDE component model.
 
-* ksmartcard
-    Library for smartcard-support.
-
 * kstyles
     The theme engine lies within. It handles nearly anything relating to
     customizing the appearance of widgets.
