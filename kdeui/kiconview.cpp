@@ -27,9 +27,20 @@
 
 #include <X11/Xlib.h>
 
+class KIconView::KIconViewPrivate
+{
+public:
+    KIconViewPrivate() {
+	mode = KIconView::Execute;
+    }
+    KIconView::Mode mode;
+};
+
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
+    d = new KIconViewPrivate;
+
     oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
@@ -45,6 +56,23 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     connect( m_pAutoSelect, SIGNAL( timeout() ),
     	     this, SLOT( slotAutoSelect() ) );
 }
+
+KIconView::~KIconView()
+{
+    delete d;
+}
+
+
+void KIconView::setMode( KIconView::Mode mode )
+{
+    d->mode = mode;
+}
+
+KIconView::Mode KIconView::mode() const
+{
+    return d->mode;
+}
+
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
@@ -183,6 +211,9 @@ void KIconView::slotAutoSelect()
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 {
+  if ( d->mode != Execute )
+    return;
+    
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;

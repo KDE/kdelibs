@@ -41,9 +41,38 @@
 class KIconView : public QIconView
 {
   Q_OBJECT
+  Q_PROPERTY( Mode mode READ mode WRITE setMode )
 
 public:
   KIconView( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+
+  ~KIconView();
+
+  /**
+   * KIconView has two different operating modes. Execute mode is depending
+   * on the configuration of single-click or double-click where the signal
+   * executed() will be emitted upon click/double-click.
+   * In Select mode, this signal will not be emitted.
+   *
+   * Default is Execute mode.
+   */
+  enum Mode { Execute, Select };
+    
+  /**
+   * Sets the mode to Execute or Select. 
+   * @li In Execute mode, the signal executed()
+   * will be emitted when the user clicks/double-clicks an item. 
+   * @li Select mode is
+   * the normal QIconView mode.
+   *
+   * Default is Execute.
+   */
+  void setMode( Mode m );
+
+  /**
+   * @returns the current Mode, either Execute or Select.
+   */
+  Mode mode() const;
 
 signals:
 
