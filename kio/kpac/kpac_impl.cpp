@@ -142,7 +142,6 @@ bool KPACImpl::init(const KURL &url)
         }
         free(code);
         f.close();
-        return false;
     }
     else
         kdError(7025) << "KPACImpl::init(): can't read config file, very strange" << endl;
