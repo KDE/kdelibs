@@ -274,7 +274,7 @@ CSSStyleSheet::parseToChar(const char *curP, const char *endP, int c, bool chkws
 const char *
 CSSStyleSheet::parseAt(const char *curP, const char *endP)
 {
-    const char *startP = curP;
+//    const char *startP = curP;
     while (curP < endP)
     {
         if (*curP == '{')
