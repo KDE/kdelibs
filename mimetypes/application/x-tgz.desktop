@@ -33,4 +33,5 @@ Comment[uk]=Архів tar стиснутий gzip
 MimeType=application/x-tgz
 Icon=tgz
 Type=MimeType
-Patterns=*.tgz;
+Patterns=*.tar.gz;*.tgz;
+
