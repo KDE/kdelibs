@@ -322,6 +322,20 @@ private:
     QString lc_time;
     bool numeric_enabled;
     QString langs;
+    
+    // Numbers and money
+    QString _decimalSymbol;
+    QString _thousandsSeparator;
+    QString _currencySymbol;
+    QString _monetaryDecimalSymbol;
+    QString _monetaryThousandsSeparator;
+    QString _positiveSign;
+    QString _negativeSign;
+    int _fracDigits;
+    bool _positivePrefixCurrencySymbol;
+    bool _negativePrefixCurrencySymbol;
+    SignPosition _positiveMonetarySignPosition;
+    SignPosition _negativeMonetarySignPosition;
 
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );

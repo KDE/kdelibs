@@ -30,10 +30,6 @@
 #include <locale.h>
 #endif
 
-#ifdef HAVE_MONETARY_H
-#include <monetary.h>
-#endif
-
 #include <stdlib.h>
 
 #include <qdir.h>
@@ -41,6 +37,7 @@
 
 #include "kglobal.h"
 #include "kstddirs.h"
+#include "ksimpleconfig.h"
 
 /**
   * Stephan: I don't want to put this in an extra header file, since
@@ -177,10 +174,11 @@ KLocale::KLocale( QString catalogue )
     
     bool set_locale_vars=false;
 
+    KConfig* config = KGlobal::config();
+    config->setGroup("Locale");
+
     if (kapp) {
 	QString setting;
-	KConfig* config = KGlobal::config();
-	config->setGroup("Locale");
 	if (!g_lang) 
 	    languages = config->readEntry("Language", "default");
 #ifdef HAVE_SETLOCALE
@@ -308,6 +306,62 @@ KLocale::KLocale( QString catalogue )
 	chset="us-ascii";
 
     aliases.setAutoDelete(true);
+
+    // init some stuff for format*()
+    QString str = config->readEntry("Numeric", lang);
+    KSimpleConfig numentry(locate("locale", str + "/entry.desktop"), true);
+    numentry.setGroup("KCM Locale");
+
+    _decimalSymbol = config->readEntry("DecimalSymbol");
+    if (_decimalSymbol.isNull())
+        _decimalSymbol = numentry.readEntry("DecimalSymbol", ".");
+
+    _thousandsSeparator = config->readEntry("ThousandsSeparator");
+    if (_thousandsSeparator.isNull())
+        _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
+
+    str = config->readEntry("Monetary", lang);
+    KSimpleConfig monentry(locate("locale", str + "/entry.desktop"), true);
+    monentry.setGroup("KCM Locale");
+
+    _currencySymbol = config->readEntry("CurrencySymbol");
+    if (_currencySymbol.isNull())
+        _currencySymbol = monentry.readEntry("CurrencySymbol", "$");
+
+    _monetaryDecimalSymbol = config->readEntry("MonetaryDecimalSymbol");
+    if (_monetaryDecimalSymbol.isNull())
+        _monetaryDecimalSymbol = monentry.readEntry("MonetaryDecimalSymbol", ".");
+
+    _monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
+    if (_monetaryThousandsSeparator.isNull())
+        _monetaryThousandsSeparator = monentry.readEntry("MonetaryThousandsSeparator", ",");
+
+    _positiveSign = config->readEntry("PositiveSign");
+    if (_positiveSign.isNull())
+        _positiveSign = monentry.readEntry("PositiveSign", "+");
+
+    config->readEntry("NegativeSign");
+    _negativeSign = config->readEntry("NegativeSign");
+    if (_negativeSign.isNull())
+        _negativeSign = monentry.readEntry("NegativeSign", "-");
+
+    _fracDigits = config->readNumEntry("FractDigits", -1);
+    if (_fracDigits == -1)
+        _fracDigits = monentry.readNumEntry("FractDigits", 2);
+
+    _positivePrefixCurrencySymbol = monentry.readBoolEntry("PositivePrefixCurrencySymbol", true);
+    _positivePrefixCurrencySymbol = config->readNumEntry("PositivePrefixCurrencySymbol", _positivePrefixCurrencySymbol);
+
+    _negativePrefixCurrencySymbol = monentry.readBoolEntry("NegativePrefixCurrencySymbol", true);
+    _negativePrefixCurrencySymbol = config->readNumEntry("NegativePrefixCurrencySymbol", _negativePrefixCurrencySymbol);
+
+    _positiveMonetarySignPosition = (SignPosition)config->readNumEntry("PositiveMonetarySignPosition", -1);
+    if (_positiveMonetarySignPosition == -1)
+        _positiveMonetarySignPosition = (SignPosition)monentry.readNumEntry("PositiveMonetarySignPosition", BeforeQuantityMoney);
+
+    _negativeMonetarySignPosition = (SignPosition)config->readNumEntry("NegativeMonetarySignPosition", -1);
+    if (_negativeMonetarySignPosition == -1)
+        _negativeMonetarySignPosition = (SignPosition)monentry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
 }
 
 void KLocale::insertCatalogue( const QString& catalogue )
@@ -340,117 +394,102 @@ QString KLocale::translate(const char* msgid) const
 }
 
 QString KLocale::decimalSymbol() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->decimal_point);
-#else
-  return QString(".");
-#endif
+    return _decimalSymbol;
 }
 
 QString KLocale::thousandsSeparator() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->thousands_sep);
-#else
-  return QString(",");
-#endif
+    return _thousandsSeparator;
 }
 
 QString KLocale::currencySymbol() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->currency_symbol);
-#else
-  return QString("$");
-#endif
+  return _currencySymbol;
 }
 
 QString KLocale::monetaryDecimalSymbol() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->mon_decimal_point);
-#else
-  return QString(".");
-#endif
+  return _monetaryDecimalSymbol;
 }
 
 QString KLocale::monetaryThousandsSeparator() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->mon_thousands_sep);
-#else
-  return QString(",");
-#endif
+  return _monetaryThousandsSeparator;
 }
 
 QString KLocale::positiveSign() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->positive_sign);
-#else
-  return QString("+");
-#endif
+  return _positiveSign;
 }
 
 QString KLocale::negativeSign() const {
-#ifdef HAVE_SETLOCALE
-  return QString(localeconv()->negative_sign);
-#else
-  return QString("-");
-#endif
+  return _negativeSign;
 }
 
 int KLocale::fracDigits() const {
-#ifdef HAVE_SETLOCALE
-  return (int) localeconv()->int_frac_digits;
-#else
-  return 2;
-#endif
+  return _fracDigits;
 }
 
 bool KLocale::positivePrefixCurrencySymbol() const {
-#ifdef HAVE_SETLOCALE
-  return (bool) localeconv()->p_cs_precedes;
-#else
-  return true;
-#endif
+  return _positivePrefixCurrencySymbol;
 }
 
 bool KLocale::negativePrefixCurrencySymbol() const {
-#ifdef HAVE_SETLOCALE
-  return (bool) localeconv()->n_cs_precedes;
-#else
-  return true;
-#endif
+  return _negativePrefixCurrencySymbol;
 }
 
 KLocale::SignPosition KLocale::positiveMonetarySignPosition() const
 {
-#ifdef HAVE_SETLOCALE
-  return (SignPosition) localeconv()->p_sign_posn;
-#else
-  return BeforeQuantityMoney;
-#endif
+  return _positiveMonetarySignPosition;
 }
 
 KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
 {
-#ifdef HAVE_SETLOCALE
-  return (SignPosition) localeconv()->n_sign_posn;
-#else
-  return ParensAround;
-#endif
+  return _negativeMonetarySignPosition;
 }
 
 QString KLocale::formatMoney(double num) const
 {
-#if defined(HAVE_SETLOCALE) && defined(HAVE_STRFMON)
-  if (numeric_enabled) {
-    char s[256];
-    
-    if (strfmon(s, 255, "%(n", num) != -1) {
-      return QString(s);
-    } else {
-      return QString().setNum(num);
+    // the number itself
+    bool neg = num < 0;
+    QString res = QString::number(neg?-num:num, 'f', fracDigits());
+    int pos = res.find('.');
+    if (pos == -1) pos = res.length();
+    else res.replace(pos, 1, monetaryDecimalSymbol());
+    while (0 < (pos -= 3))
+        res.insert(pos, monetaryThousandsSeparator()); // thousend sep
+
+    // set some variables we need later
+    int signpos = neg?negativeMonetarySignPosition():positiveMonetarySignPosition();
+    QString sign = neg?negativeSign():positiveSign();
+    QString currency = currencySymbol();
+
+    switch (signpos)
+    {
+    case KLocale::ParensAround:
+        res.prepend('(');
+        res.append (')');
+        break;
+    case KLocale::BeforeQuantityMoney:
+        res.prepend(sign);
+        break;
+    case KLocale::AfterQuantityMoney:
+        res.append(sign);
+        break;
+    case KLocale::BeforeMoney:
+        currency.prepend(sign);
+        break;
+    case KLocale::AfterMoney:
+        currency.append(sign);
+        break;
     }
-  } else 
-#endif
-    return QString().setNum(num);
+
+    if(neg?negativePrefixCurrencySymbol():
+            positivePrefixCurrencySymbol())
+    {
+        res.prepend(' ');
+        res.prepend(currency);
+    } else {
+        res.append (' ');
+        res.append (currency);
+    }
+
+    return res;
 }
 
 QString KLocale::formatMoney(const QString &numStr) const
@@ -460,10 +499,19 @@ QString KLocale::formatMoney(const QString &numStr) const
 
 QString KLocale::formatNumber(double num) const
 {
-#ifdef HAVE_SETLOCALE
-  return QString().sprintf("%.2f", num);
-#endif
-  return QString().setNum(num);
+    bool neg = num < 0;
+    QString res = QString::number(neg?-num:num, 'f', fracDigits());
+    int pos = res.find('.');
+    if (pos == -1) pos = res.length();
+    else res.replace(pos, 1, decimalSymbol());
+
+    while (0 < (pos -= 3))
+        res.insert(pos, thousandsSeparator()); // thousend sep
+
+    // How can we know where we should put the sign?
+    res.prepend(neg?negativeSign():positiveSign());
+
+    return res;
 }
 
 QString KLocale::formatNumber(const QString &numStr) const
