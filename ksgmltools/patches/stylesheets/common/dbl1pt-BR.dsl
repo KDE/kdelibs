@@ -1,12 +1,12 @@
 <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-<!ENTITY % ptbr.words
+<!ENTITY % pt-BR.words
   PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//PTBR"
-         "dbl1ptbr.ent">
-%ptbr.words;
+         "dbl1pt-BR.ent">
+%pt-BR.words;
 ]>
 
 <style-sheet>
-<style-specification id="docbook-l10n-ptbr">
+<style-specification id="docbook-l10n-pt-br">
 <style-specification-body>
 
 ;; $Id$
@@ -25,13 +25,13 @@
 ;; keywords.
 ;;
 
-(define (ptbr-xref-strings)
+(define (pt-BR-xref-strings)
   (list (list (normalize "appendix")    (if %chapter-autolabel%
 					    "&Appendix; %n"
 					    "o &appendix; %t"))
-	(list (normalize "article")     (string-append %gentext-ptbr-start-quote%
+	(list (normalize "article")     (string-append %gentext-pt-BR-start-quote%
 						       "%t"
-						       %gentext-ptbr-end-quote%))
+						       %gentext-pt-BR-end-quote%))
 	(list (normalize "bibliography") "%t")
 	(list (normalize "book")        "%t")
 	(list (normalize "chapter")     (if %chapter-autolabel%
@@ -72,10 +72,10 @@
 	(list (normalize "step")        "&step; %n")
 	(list (normalize "table")       "&Table; %n")))
 
-(define (gentext-ptbr-xref-strings gind)
+(define (gentext-pt-BR-xref-strings gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (xref   (assoc name (ptbr-xref-strings))))
+	 (xref   (assoc name (pt-BR-xref-strings))))
     (if xref
 	(car (cdr xref))
 	(let* ((msg    (string-append "[&xrefto; "
@@ -84,18 +84,18 @@
 	       (err    (node-list-error msg (current-node))))
 	  msg))))
 
-(define (ptbr-auto-xref-indirect-connector before) 
+(define (pt-BR-auto-xref-indirect-connector before) 
   (literal " &in; "))
 
 ;; Should the TOC come first or last?
 ;;
-(define %generate-ptbr-toc-in-front% #t)
+(define %generate-pt-BR-toc-in-front% #t)
 
 ;; gentext-element-name returns the generated text that should be 
 ;; used to make reference to the selected element.
 ;;
 
-(define (ptbr-element-name)
+(define (pt-BR-element-name)
   (list
    (list (normalize "abstract")		"&Abstract;")
    (list (normalize "answer")		"&Answer;")
@@ -157,14 +157,14 @@
    (list (normalize "warning")		"&Warning;")
    ))
 
-(define (gentext-ptbr-element-name gind)
+(define (gentext-pt-BR-element-name gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (pname  (assoc name (ptbr-element-name))))
+	 (pname  (assoc name (pt-BR-element-name))))
     (if pname
 	(car (cdr pname))
 	(let* ((msg (string-append 
-		     "gentext-ptbr-element-name: &unexpectedelementname;: "
+		     "gentext-pt-BR-element-name: &unexpectedelementname;: "
 		     name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
@@ -172,7 +172,7 @@
 ;; gentext-element-name-space returns gentext-element-name with a 
 ;; trailing space, if gentext-element-name isn't "".
 ;;
-(define (gentext-ptbr-element-name-space giname)
+(define (gentext-pt-BR-element-name-space giname)
   (string-with-space (gentext-element-name giname)))
 
 ;; gentext-intra-label-sep returns the seperator to be inserted
@@ -182,7 +182,7 @@
 ;; (e.g. REFNAME) with a little abuse.
 ;;
 
-(define (ptbr-intra-label-sep)
+(define (pt-BR-intra-label-sep)
   (list
    (list (normalize "equation")		"-")
    (list (normalize "informalequation")	"-")
@@ -208,10 +208,10 @@
    (list (normalize "_pagenumber")	"-")
    ))
 
-(define (gentext-ptbr-intra-label-sep gind)
+(define (gentext-pt-BR-intra-label-sep gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (sep    (assoc name (ptbr-intra-label-sep))))
+	 (sep    (assoc name (pt-BR-intra-label-sep))))
     (if sep
 	(car (cdr sep))
 	"")))
@@ -224,7 +224,7 @@
 ;; abuse.
 ;;
 
-(define (ptbr-label-title-sep)
+(define (pt-BR-label-title-sep)
   (list
    (list (normalize "abstract")		": ")
    (list (normalize "answer")		" ")
@@ -264,15 +264,15 @@
    (list (normalize "warning")		"")
    ))
 
-(define (gentext-ptbr-label-title-sep gind)
+(define (gentext-pt-BR-label-title-sep gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (sep    (assoc name (ptbr-label-title-sep))))
+	 (sep    (assoc name (pt-BR-label-title-sep))))
     (if sep
 	(car (cdr sep))
 	"")))
 
-(define (ptbr-label-number-format-list)
+(define (pt-BR-label-number-format-list)
   (list
    (list (normalize "set")		"1")
    (list (normalize "book")		"1")
@@ -297,15 +297,15 @@
    (list (normalize "section")		"1")
    ))
 
-(define (ptbr-label-number-format gind)
+(define (pt-BR-label-number-format gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (format (assoc name (ptbr-label-number-format-list))))
+	 (format (assoc name (pt-BR-label-number-format-list))))
     (if format
 	(car (cdr format))
 	"1")))
 
-(define (ptbr-lot-title)
+(define (pt-BR-lot-title)
   (list
    (list (normalize "table")		"&ListofTables;")
    (list (normalize "example")		"&ListofExamples;")
@@ -313,64 +313,64 @@
    (list (normalize "equation")		"&ListofEquations;")
    ))
 
-(define ($lot-title-ptbr$ gind)
+(define ($lot-title-pt-BR$ gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (title  (assoc name (ptbr-lot-title))))
+	 (title  (assoc name (pt-BR-lot-title))))
     (if title
 	(car (cdr title))
 	(let* ((msg (string-append "&ListofUnknown;: " name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
 
-(define %gentext-ptbr-start-quote% (dingbat "ldquo"))
+(define %gentext-pt-BR-start-quote% (dingbat "ldquo"))
 
-(define %gentext-ptbr-end-quote% (dingbat "rdquo"))
+(define %gentext-pt-BR-end-quote% (dingbat "rdquo"))
 
-(define %gentext-ptbr-start-nested-quote% (dingbat "lsquo"))
+(define %gentext-pt-BR-start-nested-quote% (dingbat "lsquo"))
 
-(define %gentext-ptbr-end-nested-quote% (dingbat "rsquo"))
+(define %gentext-pt-BR-end-nested-quote% (dingbat "rsquo"))
 
-(define %gentext-ptbr-by% "&by;") ;; e.g. Copyright 1997 "by" A. Nonymous
+(define %gentext-pt-BR-by% "&by;") ;; e.g. Copyright 1997 "by" A. Nonymous
                            ;; Authored "by" Jane Doe
 
-(define %gentext-ptbr-edited-by% "&Editedby;")
+(define %gentext-pt-BR-edited-by% "&Editedby;")
                            ;; "Edited by" Jane Doe
 
-(define %gentext-ptbr-revised-by% "&Revisedby;")
+(define %gentext-pt-BR-revised-by% "&Revisedby;")
                            ;; "Revised by" Jane Doe
 
-(define %gentext-ptbr-page% "")
+(define %gentext-pt-BR-page% "")
 
-(define %gentext-ptbr-and% "&and;")
+(define %gentext-pt-BR-and% "&and;")
 
-(define %gentext-ptbr-bibl-pages% "&Pgs;")
+(define %gentext-pt-BR-bibl-pages% "&Pgs;")
 
-(define %gentext-ptbr-endnotes% "&Notes;")
+(define %gentext-pt-BR-endnotes% "&Notes;")
 
-(define %gentext-ptbr-table-endnotes% "&TableNotes;:")
+(define %gentext-pt-BR-table-endnotes% "&TableNotes;:")
 
-(define %gentext-ptbr-index-see% "&See;")
+(define %gentext-pt-BR-index-see% "&See;")
 
-(define %gentext-ptbr-index-seealso% "&SeeAlso;")
+(define %gentext-pt-BR-index-seealso% "&SeeAlso;")
 
 
-(define (gentext-ptbr-nav-prev prev) 
+(define (gentext-pt-BR-nav-prev prev) 
   (make sequence (literal "&nav-prev;")))
 
-(define (gentext-ptbr-nav-prev-sibling prevsib) 
+(define (gentext-pt-BR-nav-prev-sibling prevsib) 
   (make sequence (literal "&nav-prev-sibling;")))
 
-(define (gentext-ptbr-nav-next-sibling nextsib)
+(define (gentext-pt-BR-nav-next-sibling nextsib)
   (make sequence (literal "&nav-next-sibling;")))
 
-(define (gentext-ptbr-nav-next next)
+(define (gentext-pt-BR-nav-next next)
   (make sequence (literal "&nav-next;")))
 
-(define (gentext-ptbr-nav-up up)
+(define (gentext-pt-BR-nav-up up)
   (make sequence (literal "&nav-up;")))
 
-(define (gentext-ptbr-nav-home home)
+(define (gentext-pt-BR-nav-home home)
   (make sequence (literal "&nav-home;")))
 
 

@@ -1,6 +1,8 @@
 <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
+<!ENTITY % lat2 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 2//EN">
+%lat2;
 <!ENTITY % sl.words
-  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//EN"
+  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//SL"
          "dbl1sl.ent">
 %sl.words;
 ]>

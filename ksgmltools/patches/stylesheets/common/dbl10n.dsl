@@ -69,12 +69,12 @@
 
 (define (lang-fix language)
   ;; Lowercase the language
-  ;; Translate 'xx-yy' to 'xx_yy'
+  ;; Translate 'xx_yy' to 'xx-yy'
   (let ((fixed-lang (if (> (string-index language "-") 0)
 			(let ((pos (string-index language "-")))
 			  (string-append
 			   (substring language 0 pos)
-			   "_"
+			   "-"
 			   (substring language (+ pos 1)
 				      (string-length language))))
 			language)))

@@ -1,12 +1,12 @@
 <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-<!ENTITY % en.words
-  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//EN"
-         "dbl1en.ent">
-%en.words;
+<!ENTITY % zh-CN.words
+  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//ZHCN"
+         "dbl1zh-CN.ent">
+%zh-CN.words;
 ]>
 
 <style-sheet>
-<style-specification id="docbook-l10n-en">
+<style-specification id="docbook-l10n-zh-cn">
 <style-specification-body>
 
 ;; $Id$
@@ -25,13 +25,13 @@
 ;; keywords.
 ;;
 
-(define (en-xref-strings)
+(define (zh-CN-xref-strings)
   (list (list (normalize "appendix")    (if %chapter-autolabel%
 					    "&Appendix; %n"
 					    "the &appendix; called %t"))
-	(list (normalize "article")     (string-append %gentext-en-start-quote%
+	(list (normalize "article")     (string-append %gentext-zh-CN-start-quote%
 						       "%t"
-						       %gentext-en-end-quote%))
+						       %gentext-zh-CN-end-quote%))
 	(list (normalize "bibliography") "%t")
 	(list (normalize "book")        "%t")
 	(list (normalize "chapter")     (if %chapter-autolabel%
@@ -72,10 +72,10 @@
 	(list (normalize "step")        "&step; %n")
 	(list (normalize "table")       "&Table; %n")))
 
-(define (gentext-en-xref-strings gind)
+(define (gentext-zh-CN-xref-strings gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (xref   (assoc name (en-xref-strings))))
+	 (xref   (assoc name (zh-CN-xref-strings))))
     (if xref
 	(car (cdr xref))
 	(let* ((msg    (string-append "[&xrefto; "
@@ -84,7 +84,7 @@
 	       (err    (node-list-error msg (current-node))))
 	  msg))))
 
-(define (en-auto-xref-indirect-connector before) 
+(define (zh-CN-auto-xref-indirect-connector before) 
   ;; In English, the (cond) is unnecessary since the word is always the
   ;; same, but in other languages, that's not the case.  I've set this
   ;; one up with the (cond) so it stands as an example.
@@ -100,13 +100,13 @@
 
 ;; Should the TOC come first or last?
 ;;
-(define %generate-en-toc-in-front% #t)
+(define %generate-zh-CN-toc-in-front% #t)
 
 ;; gentext-element-name returns the generated text that should be 
 ;; used to make reference to the selected element.
 ;;
 
-(define (en-element-name)
+(define (zh-CN-element-name)
   (list
    (list (normalize "abstract")		"&Abstract;")
    (list (normalize "answer")		"&Answer;")
@@ -168,14 +168,14 @@
    (list (normalize "warning")		"&Warning;")
    ))
 
-(define (gentext-en-element-name gind)
+(define (gentext-zh-CN-element-name gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (pname  (assoc name (en-element-name))))
+	 (pname  (assoc name (zh-CN-element-name))))
     (if pname
 	(car (cdr pname))
 	(let* ((msg (string-append 
-		     "gentext-en-element-name: &unexpectedelementname;: "
+		     "gentext-zh-CN-element-name: &unexpectedelementname;: "
 		     name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
@@ -183,7 +183,7 @@
 ;; gentext-element-name-space returns gentext-element-name with a 
 ;; trailing space, if gentext-element-name isn't "".
 ;;
-(define (gentext-en-element-name-space giname)
+(define (gentext-zh-CN-element-name-space giname)
   (string-with-space (gentext-element-name giname)))
 
 ;; gentext-intra-label-sep returns the seperator to be inserted
@@ -193,7 +193,7 @@
 ;; (e.g. REFNAME) with a little abuse.
 ;;
 
-(define (en-intra-label-sep)
+(define (zh-CN-intra-label-sep)
   (list
    (list (normalize "equation")		"-")
    (list (normalize "informalequation")	"-")
@@ -219,10 +219,10 @@
    (list (normalize "_pagenumber")	"-")
    ))
 
-(define (gentext-en-intra-label-sep gind)
+(define (gentext-zh-CN-intra-label-sep gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (sep    (assoc name (en-intra-label-sep))))
+	 (sep    (assoc name (zh-CN-intra-label-sep))))
     (if sep
 	(car (cdr sep))
 	"")))
@@ -235,7 +235,7 @@
 ;; abuse.
 ;;
 
-(define (en-label-title-sep)
+(define (zh-CN-label-title-sep)
   (list
    (list (normalize "abstract")		": ")
    (list (normalize "answer")		" ")
@@ -275,15 +275,15 @@
    (list (normalize "warning")		"")
    ))
 
-(define (gentext-en-label-title-sep gind)
+(define (gentext-zh-CN-label-title-sep gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (sep    (assoc name (en-label-title-sep))))
+	 (sep    (assoc name (zh-CN-label-title-sep))))
     (if sep
 	(car (cdr sep))
 	"")))
 
-(define (en-label-number-format-list)
+(define (zh-CN-label-number-format-list)
   (list
    (list (normalize "set")		"1")
    (list (normalize "book")		"1")
@@ -308,15 +308,15 @@
    (list (normalize "section")		"1")
    ))
 
-(define (en-label-number-format gind)
+(define (zh-CN-label-number-format gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (format (assoc name (en-label-number-format-list))))
+	 (format (assoc name (zh-CN-label-number-format-list))))
     (if format
 	(car (cdr format))
 	"1")))
 
-(define (en-lot-title)
+(define (zh-CN-lot-title)
   (list
    (list (normalize "table")		"&ListofTables;")
    (list (normalize "example")		"&ListofExamples;")
@@ -324,64 +324,64 @@
    (list (normalize "equation")		"&ListofEquations;")
    ))
 
-(define ($lot-title-en$ gind)
+(define ($lot-title-zh-CN$ gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (title  (assoc name (en-lot-title))))
+	 (title  (assoc name (zh-CN-lot-title))))
     (if title
 	(car (cdr title))
 	(let* ((msg (string-append "&ListofUnknown;: " name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
 
-(define %gentext-en-start-quote% (dingbat "ldquo"))
+(define %gentext-zh-CN-start-quote% (dingbat "ldquo"))
 
-(define %gentext-en-end-quote% (dingbat "rdquo"))
+(define %gentext-zh-CN-end-quote% (dingbat "rdquo"))
 
-(define %gentext-en-start-nested-quote% (dingbat "lsquo"))
+(define %gentext-zh-CN-start-nested-quote% (dingbat "lsquo"))
 
-(define %gentext-en-end-nested-quote% (dingbat "rsquo"))
+(define %gentext-zh-CN-end-nested-quote% (dingbat "rsquo"))
 
-(define %gentext-en-by% "&by;") ;; e.g. Copyright 1997 "by" A. Nonymous
+(define %gentext-zh-CN-by% "&by;") ;; e.g. Copyright 1997 "by" A. Nonymous
                            ;; Authored "by" Jane Doe
 
-(define %gentext-en-edited-by% "&Editedby;")
+(define %gentext-zh-CN-edited-by% "&Editedby;")
                            ;; "Edited by" Jane Doe
 
-(define %gentext-en-revised-by% "&Revisedby;")
+(define %gentext-zh-CN-revised-by% "&Revisedby;")
                            ;; "Revised by" Jane Doe
 
-(define %gentext-en-page% "")
+(define %gentext-zh-CN-page% "")
 
-(define %gentext-en-and% "&and;")
+(define %gentext-zh-CN-and% "&and;")
 
-(define %gentext-en-bibl-pages% "&Pgs;")
+(define %gentext-zh-CN-bibl-pages% "&Pgs;")
 
-(define %gentext-en-endnotes% "&Notes;")
+(define %gentext-zh-CN-endnotes% "&Notes;")
 
-(define %gentext-en-table-endnotes% "&TableNotes;:")
+(define %gentext-zh-CN-table-endnotes% "&TableNotes;:")
 
-(define %gentext-en-index-see% "&See;")
+(define %gentext-zh-CN-index-see% "&See;")
 
-(define %gentext-en-index-seealso% "&SeeAlso;")
+(define %gentext-zh-CN-index-seealso% "&SeeAlso;")
 
 
-(define (gentext-en-nav-prev prev) 
+(define (gentext-zh-CN-nav-prev prev) 
   (make sequence (literal "&nav-prev;")))
 
-(define (gentext-en-nav-prev-sibling prevsib) 
+(define (gentext-zh-CN-nav-prev-sibling prevsib) 
   (make sequence (literal "&nav-prev-sibling;")))
 
-(define (gentext-en-nav-next-sibling nextsib)
+(define (gentext-zh-CN-nav-next-sibling nextsib)
   (make sequence (literal "&nav-next-sibling;")))
 
-(define (gentext-en-nav-next next)
+(define (gentext-zh-CN-nav-next next)
   (make sequence (literal "&nav-next;")))
 
-(define (gentext-en-nav-up up)
+(define (gentext-zh-CN-nav-up up)
   (make sequence (literal "&nav-up;")))
 
-(define (gentext-en-nav-home home)
+(define (gentext-zh-CN-nav-home home)
   (make sequence (literal "&nav-home;")))
 
 

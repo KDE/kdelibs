@@ -1,6 +1,6 @@
 <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
 <!ENTITY % et.words
-  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//EN"
+  PUBLIC "-//Norman Walsh//ENTITIES DocBook Stylesheet Localization//ET"
          "dbl1et.ent">
 %et.words;
 ]>
