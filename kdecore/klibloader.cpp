@@ -326,7 +326,7 @@ QString KLibLoader::findLibrary( const char * name )
       {
         libfile = KGlobal::dirs()->findResource( "lib", libname );
 #ifndef NDEBUG
-        if ( !libfile.isEmpty() )
+        if ( !libfile.isEmpty() && libname.left(3) == "lib" ) // don't warn for kdeinit modules
           kdDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
 #endif
       }
