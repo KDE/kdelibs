@@ -1955,7 +1955,6 @@ bool HTTPProtocol::sendBody()
       result = readData( buffer );
       if ( result > 0 )
       {
-        kdDebug(7113) << "POST data read: " << QString(buffer) << endl;
         length += result;
         old_size = m_bufPOST.size();
         m_bufPOST.resize( old_size+result );
@@ -1974,9 +1973,6 @@ bool HTTPProtocol::sendBody()
   char c_buffer[64];
   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
   kdDebug( 7113 ) << c_buffer << endl;
-
-  // Debugging code...
-  kdDebug( 7113 ) << "POST'ing Data: " << QString(m_bufPOST ) << endl;
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
