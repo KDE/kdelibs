@@ -172,7 +172,7 @@ public:
     /**
      * @deprecated
      */
-    void setHspace( const DOMString & ) KDE_DEPRECATED;
+    void setHspace( const DOMString &value ) KDE_DEPRECATED;
 
     /**
      * The name of the applet. See the <a
