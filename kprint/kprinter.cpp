@@ -20,25 +20,38 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "aps.h"
-
 #include "kprinter.h"
+#include "aps.h"
 
 #include <stdio.h>
 
 class KPrinterPrivate
 {
 public:
-   KPrinterPrivate() { }
-   ~KPrinterPrivate() { }
-   KPrinterPrivate & operator=(const KPrinterPrivate &d) 
+   KPrinterPrivate() 
+	: valid(false) 
+	{ }
+
+   ~KPrinterPrivate() 
    { 
-     return *this;
+     if (valid)
+     {
+        Aps_ReleaseHandle(aps_printer);
+     } 
+   }
+
+   KPrinterPrivate(const KPrinterPrivate &d) 
+   { 
+     valid = d.valid;
+     aps_printer = d.aps_printer;
+     if (valid)
+     {
+        Aps_AddRef(aps_printer);
+     }
    };
+
+   bool valid;
+   Aps_PrinterHandle aps_printer;
 };
 
 QStringList
@@ -64,15 +77,28 @@ fprintf(stderr, "Printer: '%s'\n", names[i]);
    return list;
 }
 
+KPrinter::KPrinter()
+{
+  d = new KPrinterPrivate;
+  if (Aps_OpenDefaultPrinter(&d->aps_printer) == APS_SUCCESS)
+  {
+     d->valid = true;
+  }
+}
+
 KPrinter::KPrinter(const QString &name)
 {
   d = new KPrinterPrivate;
+  if (Aps_OpenPrinter(name.utf8(), &d->aps_printer) == APS_SUCCESS)
+  {
+     d->valid = true;
+  }
 }
 
 KPrinter::KPrinter(const KPrinter &printer)
+ : KShared(printer)
 {
-  d = new KPrinterPrivate;
-  *d = *(printer.d);
+  d = new KPrinterPrivate(*printer.d);
 }
 
 KPrinter::~KPrinter()
@@ -80,10 +106,9 @@ KPrinter::~KPrinter()
    delete d; d = 0;
 }
 
-KPrinter &
-KPrinter::operator=(const KPrinter &printer)
+bool
+KPrinter::isValid()
 {
-   *d = *(printer.d);
-   return *this;
+   return d->valid;
 }
 

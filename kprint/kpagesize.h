@@ -17,53 +17,49 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KPRINTER_H_
-#define _KPRINTER_H_
+#ifndef _KPAGESIZE_H_
+#define _KPAGESIZE_H_
 
+#include <qvaluelist.h>
 #include <ksharedptr.h>
 
-#include <qstring.h>
-#include <qstringlist.h>
+class KPrinter;
+class KPageSizePrivate;
 
-class KPrinterPrivate;
-
-class KPrinter : public KShared
+class KPageSize : public KShared
 {
-   typedef KSharedPtr<KPrinter> Ptr;
-   friend Ptr;
 public:   
-   /**
-    * Create a default printer
-    */
-   KPrinter();
+   typedef KSharedPtr<KPageSize> Ptr;
+   typedef QValueList<Ptr> List;
+   friend Ptr;
 
    /**
-    * Create the printer named @p name
+    * Default constructor.
     */
-   KPrinter(const QString &name);
+   KPageSize();
+
+   /**
+    * The name of this page size.
+    */
+   QString name() const;
    
    /**
-    * Copy constructor
+    * The default page-size for printer.
     */
-   KPrinter(const KPrinter &printer);
+   static KPageSize *defaultPageSize(KPrinter *printer);
 
    /**
-    * Returns whether this is a valid printer.
+    * All possible page sizes for printer. 
     */
-   bool isValid();
-
-   /**
-    * Return a list of all available printers.
-    */
-   static QStringList allPrinters();
+   static List allPageSizes(KPrinter *printer);
    
 private:
    /**
     * Destructor
     */
-   ~KPrinter();
+   ~KPageSize();
 
-   KPrinterPrivate *d;   
+   KPageSizePrivate *d;   
 };
 
 #endif
