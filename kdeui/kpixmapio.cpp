@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>.
@@ -11,7 +11,6 @@
  * kpixmapio.cpp: Fast pixmap <-> image conversion.
  */
 
-#include <inttypes.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
@@ -387,10 +386,10 @@ QImage KPixmapIO::convertFromXImage()
     case bo16_RGB_565: 
     case bo16_BGR_565:
     {
-	uint32_t pixel, *src;
+	Q_INT32 pixel, *src;
 	QRgb *dst, val;
 	for (y=0; y<height; y++) {
-	    src = (uint32_t *) (data + y*bpl);
+	    src = (Q_INT32 *) (data + y*bpl);
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<width/2; x++) {
 		pixel = *src++;
@@ -415,10 +414,10 @@ QImage KPixmapIO::convertFromXImage()
     case bo16_RGB_555: 
     case bo16_BGR_555:
     {
-	uint32_t pixel, *src;
+	Q_INT32 pixel, *src;
 	QRgb *dst, val;
 	for (y=0; y<height; y++) {
-	    src = (uint32_t *) (data + y*bpl);
+	    src = (Q_INT32 *) (data + y*bpl);
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<width/2; x++) {
 		pixel = *src++;
@@ -445,14 +444,14 @@ QImage KPixmapIO::convertFromXImage()
 	char *src;
 	QRgb *dst;
 	int w1 = width/4;
-	uint32_t d1, d2, d3;
+	Q_INT32 d1, d2, d3;
 	for (y=0; y<height; y++) {
 	    src = data + y*bpl;
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<w1; x++) {
-		d1 = *((uint32_t *)src);
-		d2 = *((uint32_t *)src + 1);
-		d3 = *((uint32_t *)src + 2);
+		d1 = *((Q_INT32 *)src);
+		d2 = *((Q_INT32 *)src + 1);
+		d3 = *((Q_INT32 *)src + 2);
 		src += 12;
 		*dst++ = d1;
 		*dst++ = (d1 >> 24) | (d2 << 8);
@@ -474,14 +473,14 @@ QImage KPixmapIO::convertFromXImage()
 	char *src;
 	QRgb *dst;
 	int w1 = width/4;
-	uint32_t d1, d2, d3;
+	Q_INT32 d1, d2, d3;
 	for (y=0; y<height; y++) {
 	    src = data + y*bpl;
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<w1; x++) {
-		d1 = *((uint32_t *)src);
-		d2 = *((uint32_t *)src + 1);
-		d3 = *((uint32_t *)src + 2);
+		d1 = *((Q_INT32 *)src);
+		d2 = *((Q_INT32 *)src + 1);
+		d3 = *((Q_INT32 *)src + 2);
 		src += 12;
 		*dst++ = d1;
 		*dst++ = (d1 >> 24) | (d2 << 8);
@@ -526,10 +525,10 @@ void KPixmapIO::convertToXImage(const QImage &img)
 
 	if (img.depth() == 32) {
 	    QRgb *src, pixel;
-	    uint32_t *dst, val;
+	    Q_INT32 *dst, val;
 	    for (y=0; y<height; y++) {
 		src = (QRgb *) img.scanLine(y);
-		dst = (uint32_t *) (data + y*bpl);
+		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++) {
 		    pixel = *src++;
 		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
@@ -541,17 +540,17 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		}
 		if (width%2) {
 		    pixel = *src++;
-		    *((uint16_t *)dst) = ((pixel & 0xf80000) >> 9) | 
+		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) | 
 			    ((pixel & 0xf800) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	} else {
 	    uchar *src;
-	    uint32_t val, *dst;
+	    Q_INT32 val, *dst;
 	    QRgb pixel, *clut = img.colorTable();
 	    for (y=0; y<height; y++) {
 		src = img.scanLine(y);
-		dst = (uint32_t *) (data + y*bpl);
+		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++) {
 		    pixel = clut[*src++];
 		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
@@ -563,7 +562,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		}
 		if (width%2) {
 		    pixel = clut[*src++];
-		    *((uint16_t *)dst) = ((pixel & 0xf80000) >> 9) | 
+		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) | 
 			    ((pixel & 0xf800) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
@@ -575,10 +574,10 @@ void KPixmapIO::convertToXImage(const QImage &img)
 
 	if (img.depth() == 32) {
 	    QRgb *src, pixel;
-	    uint32_t *dst, val;
+	    Q_INT32 *dst, val;
 	    for (y=0; y<height; y++) {
 		src = (QRgb *) img.scanLine(y);
-		dst = (uint32_t *) (data + y*bpl);
+		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++) {
 		    pixel = *src++;
 		    val = ((pixel & 0xf80000) >> 8) | ((pixel & 0xfc00) >> 5) |
@@ -590,17 +589,17 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		}
 		if (width%2) {
 		    pixel = *src++;
-		    *((uint16_t *)dst) = ((pixel & 0xf80000) >> 8) | 
+		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 8) | 
 			    ((pixel & 0xfc00) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	} else {
 	    uchar *src;
-	    uint32_t val, *dst;
+	    Q_INT32 val, *dst;
 	    QRgb pixel, *clut = img.colorTable();
 	    for (y=0; y<height; y++) {
 		src = img.scanLine(y);
-		dst = (uint32_t *) (data + y*bpl);
+		dst = (Q_INT32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++) {
 		    pixel = clut[*src++];
 		    val = ((pixel & 0xf80000) >> 8) | ((pixel & 0xfc00) >> 5) |
@@ -612,7 +611,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		}
 		if (width%2) {
 		    pixel = clut[*src++];
-		    *((uint16_t *)dst) = ((pixel & 0xf80000) >> 8) | 
+		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 8) | 
 			    ((pixel & 0xfc00) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
@@ -633,9 +632,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (*src++ & 0xffffff);
 		    d3 = (*src++ & 0xffffff); 
 		    d4 = (*src++ & 0xffffff);
-		    *((uint32_t *)dst) = d1 | (d2 << 24);
-		    *((uint32_t *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((uint32_t *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
+		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++) {
@@ -657,9 +656,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (clut[*src++] & 0xffffff);
 		    d3 = (clut[*src++] & 0xffffff);
 		    d4 = (clut[*src++] & 0xffffff);
-		    *((uint32_t *)dst) = d1 | (d2 << 24);
-		    *((uint32_t *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((uint32_t *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
+		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++) {
@@ -686,9 +685,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (*src++ & 0xffffff);
 		    d3 = (*src++ & 0xffffff); 
 		    d4 = (*src++ & 0xffffff);
-		    *((uint32_t *)dst) = d1 | (d2 << 24);
-		    *((uint32_t *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((uint32_t *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
+		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++) {
@@ -710,9 +709,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (clut[*src++] & 0xffffff);
 		    d3 = (clut[*src++] & 0xffffff);
 		    d4 = (clut[*src++] & 0xffffff);
-		    *((uint32_t *)dst) = d1 | (d2 << 24);
-		    *((uint32_t *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((uint32_t *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
+		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++) {
