@@ -205,10 +205,52 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
   QString _res_name = _bin_name;
 
-  bool appStartNotify = true;
+  bool _appStartNotify = true;
 
-  // TODO: Read relevant desktop file if it exists, check if NoAppStartNotify
-  // is set and read XClassHintResName to _res_name if it's set.
+  QString _dot_desktop;
+
+  // Were we passed the name of the desktop file ?
+  if (!_desktop_file.isNull()) {
+    qDebug("I was given the name of the desktop file, `%s'", _dot_desktop.ascii());
+    _dot_desktop = _desktop_file;
+  }
+
+  else {
+  
+    KService::Ptr service = KService::serviceByDesktopName(_bin_name);
+
+    if (0 != service) {
+      _dot_desktop = service->desktopEntryPath();
+      _dot_desktop = locate("apps", service->desktopEntryPath());
+    
+      qDebug("I found the desktop file, `%s' myself", _dot_desktop.ascii());
+    }
+
+    else qDebug("Couldn't find the desktop file");
+
+  }
+
+  // Have we got a desktop file path now ?
+  if (!_dot_desktop.isNull()) {
+
+  
+    qDebug("Reading the config from `%s'", _dot_desktop.ascii());
+    KConfig c(_dot_desktop, true);
+    c.setDesktopGroup();
+    
+    // Find out if the app is buggy and doesn't set res_name at all.
+    _appStartNotify = c.readBoolEntry("NoAppStartNotify", true);
+    qDebug("_appStartNotify == `%s'", _appStartNotify ? "true" : "false");
+    
+    // Find out if we can fake it by knowing the res_name in advance.
+    _res_name = c.readEntry("XClassHintResName", _bin_name);
+    qDebug("XClassHintResName == `%s'", _res_name.ascii());
+
+  } else {
+    qDebug("No desktop file at all :(");
+  }
+  
+  qDebug("res_name == `%s'", _res_name.ascii());
 
   // End app starting notification stuff.
 
@@ -254,7 +296,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
     if (pid != -1) {
 
-      if (appStartNotify)
+      if (_appStartNotify)
         clientStarted(_bin_name, mini_icon, _res_name, pid);
 
       return true;
@@ -291,7 +333,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
     if (pid != -1) {
 
-      if (appStartNotify)
+      if (_appStartNotify)
         clientStarted(_bin_name, mini_icon, _res_name, pid);
 
       return true;
