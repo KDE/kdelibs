@@ -34,15 +34,16 @@
 #include <qmap.h>
 #include <qstylesheet.h>
 
-#include <klargefile.h>
-#include <kiconloader.h>
-#include <kglobal.h>
 #include <kdebug.h>
+#include <kfilemetainfo.h>
+#include <kfileshare.h>
+#include <kglobal.h>
+#include <kglobalsettings.h>
+#include <kiconloader.h>
+#include <klargefile.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <krun.h>
-#include <kfilemetainfo.h>
-#include <kfileshare.h>
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
@@ -771,7 +772,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
     if ( autoget && !m_metaInfo.isValid() &&
-         KConfigGroup( KGlobal::config(), "PreviewSettings" ).readBoolEntry( m_url.protocol(), true ) )
+         KGlobalSettings::showFilePreview(m_url) )
     {
         m_metaInfo = KFileMetaInfo( m_url, mimetype() );
     }

@@ -20,11 +20,13 @@
 
 #include "kmetaprops.h"
 
-#include <kfilemetainfo.h>
-#include <kglobal.h>
-#include <klocale.h>
 #include <kdebug.h>
 #include <kfilemetainfowidget.h>
+#include <kfilemetainfo.h>
+#include <kglobal.h>
+#include <kglobalsettings.h>
+#include <klocale.h>
+#include <kprotocolinfo.h>
 
 #include <qvalidator.h>
 #include <qlayout.h>
@@ -245,8 +247,8 @@ bool KFileMetaPropsPlugin::supports( KFileItemList _items )
 #endif
   if (KExecPropsPlugin::supports(_items))
      return false; // Having both is redundant.
-  KConfigGroup g(KGlobal::config(), "PreviewSettings");
-  bool metaDataEnabled = g.readBoolEntry(_items.first()->url().protocol(), true);
+
+  bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
   return _items.count() == 1 && metaDataEnabled;
 }
 
