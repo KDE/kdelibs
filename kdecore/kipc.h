@@ -24,10 +24,12 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#undef Bool
 #undef None // X11 headers... 
 #undef Unsorted
 #undef INT8
 #undef INT32
+#undef Status
 
 /**
  * This class implements a very simple IPC mechanism for KDE. You can send 
