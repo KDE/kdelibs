@@ -15,4 +15,4 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/kio/
 data_DATA = kjava-classes.zip KJAS_GRAMMAR.txt kjava.policy
 datadir = $(kde_datadir)/kjava/
 
-SUBDIRS = 
+SUBDIRS = tests
