@@ -23,8 +23,8 @@
 #define _KCONFIGBACKEND_H
 
 #include "kconfigdata.h"
+#include <kconfigbase.h>
 
-class KConfigBase;
 class QFile;
 
 /**
@@ -100,7 +100,7 @@ public:
    *
    * @see KConfig::getConfigState
    */
-  virtual KConfigBase::ConfigState getConfigState() const { return KConfig::NoAccess; }
+  virtual KConfigBase::ConfigState getConfigState() const { return KConfigBase::NoAccess; }
 
 protected:
   KConfigBase *pConfig;

@@ -20,6 +20,11 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.54  1999/06/18 20:23:08  kulow
+   some more cleanups of KApplication. the KConfig instance is controlled
+   by KGlobal to make it independent from KApplication.
+   KApplication::getConfig() just calls KGlobal::config()
+
    Revision 1.53  1999/06/18 18:44:56  dmuell
    CVS_SILENT coolo is to fast for me ;)
    Indentation fix.
@@ -161,30 +166,31 @@ void KIconLoader::initPath()
     // FIXME: This is not a very nice hack at all. The app should be
     // able to specify its own key. (Taj)
 
-  if (config) {
-    config->setGroup(appname);
-    QStringList list = config->readListEntry( varname, ':' );
+    KConfig* init_config = 0;
     
-    QStringList::Iterator it = list.begin();
+    if (config) {
+	config->setGroup(appname);
+	QStringList list = config->readListEntry( varname, ':' );
+	
+	QStringList::Iterator it = list.begin();
+	
+	for ( ; it != list.end(); ++it ) {
+	    addPath( *it );
+	}
+
+	init_config = config;
+    } else
+	init_config = new KConfig();
     
-    for ( ; it != list.end(); ++it ) {
-      addPath( *it );
-    }
-  }
-  
-  
   QString key = "KDE";
   if (appname == "kpanel")
     key = "kpanel";
   if (appname == "kfm")
     key = "kfm";
   
-  KConfig config; // with no filenames given, it will read only global config 
-  config.setGroup("KDE");
-  QString setting = config.readEntry( key + "IconStyle", "Normal" );
-  //debug("App is %s - setting is %s", appname, setting.data());
-  // DF
-  
+  KConfigGroupSaver(init_config, "KDE");
+  QString setting = init_config->readEntry( key + "IconStyle", "Normal" );
+
   // order is important! -- Bernd
   // higher priority at the end
   
