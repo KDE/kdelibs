@@ -473,8 +473,17 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
         return;
     for( QStringList::ConstIterator it = adrs.begin();
 	 it != adrs.end();
-	 ++it )
-	addAddress( *it );
+	 ++it ) {
+	QString name(*it);
+	int pos = name.find( " <" );
+	int pos_comma = name.find( ',' );
+	// put name in quotes, if we have a comma in the name
+	if (pos>0 && pos_comma>0 && pos_comma<pos) {
+		name.insert(pos, '\"');
+		name.prepend('\"');
+	}
+	addAddress( name );
+    }
     if( hasFocus() || completionBox()->hasFocus())
     {
         if( completionMode() != KGlobalSettings::CompletionNone )
@@ -544,9 +553,9 @@ QStringList AddressLineEdit::addresses()
   QApplication::setOverrideCursor( KCursor::waitCursor() ); // loading might take a while
 
   QStringList result;
-  QString space = QChar(' ');
+  QString space(" ");
   QRegExp needQuotes("[^ 0-9A-Za-z\\x0080-\\xFFFF]");
-  QString endQuote = "\" ";
+  QString endQuote("\" ");
   QString addr, email;
 
   KABC::AddressBook *addressBook = KABC::StdAddressBook::self();
