@@ -429,10 +429,21 @@ int CSSPrimitiveValueImpl::getIdent()
 
 // -----------------------------------------------------------------
 
-CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &baseurl)
+CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &baseurl, StyleBaseImpl *style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
-    m_image = khtml::Cache::requestImage(url, baseurl);
+    khtml::DocLoader *docLoader = 0;
+    StyleBaseImpl *root = style;
+    while (root->parent())
+	root = root->parent();
+    if (root->isCSSStyleSheet())
+	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
+
+    if (docLoader)
+	m_image = docLoader->requestImage(url, baseurl);
+    else
+	m_image = khtml::Cache::requestImage(url, baseurl);
+
     if(m_image) m_image->ref(this);
 }
 

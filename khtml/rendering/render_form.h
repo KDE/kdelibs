@@ -49,6 +49,8 @@ namespace DOM {
 
 namespace khtml {
 
+class DocLoader;
+
 // -------------------------------------------------------------------------
 
 class RenderFormElement : public khtml::RenderWidget
@@ -239,7 +241,7 @@ public:
     virtual void setValue(const DOMString &value)
         { RenderButton::setValue(value); }
 
-    void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
+    void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0 );
 
     CachedObject *image;

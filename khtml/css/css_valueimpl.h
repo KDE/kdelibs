@@ -176,7 +176,7 @@ protected:
 class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient
 {
 public:
-    CSSImageValueImpl(const DOMString &url, const DOMString &baseurl);
+    CSSImageValueImpl(const DOMString &url, const DOMString &baseurl, StyleBaseImpl *style);
     CSSImageValueImpl();
     virtual ~CSSImageValueImpl();
 

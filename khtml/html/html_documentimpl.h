@@ -109,6 +109,9 @@ public:
 
     CSSStyleSheetImpl* elementSheet();
 
+    khtml::DocLoader *docLoader() { return m_docLoader; }
+    void setReloading() { m_docLoader->reloading = true; }
+
 signals:
     void finishedParsing();
 
@@ -129,6 +132,7 @@ protected:
     bool m_loadingSheet;
 
     CSSStyleSheetImpl *m_elemSheet;
+    khtml::DocLoader *m_docLoader;
 };
 
 }; //namespace

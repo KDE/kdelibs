@@ -102,6 +102,9 @@ public:
 
     bool isLoading();
     virtual void checkLoaded();
+    khtml::DocLoader *docLoader() { return m_docLoader; }
+protected:
+    khtml::DocLoader *m_docLoader;
 };
 
 // ----------------------------------------------------------------------------

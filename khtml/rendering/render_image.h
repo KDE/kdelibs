@@ -34,6 +34,7 @@
 
 namespace khtml {
 
+class DocLoader;
 
 class RenderImage : public RenderReplaced
 {
@@ -55,7 +56,7 @@ public:
 
     virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0);
 
-    void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
+    void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
     virtual short baselineOffset() const;

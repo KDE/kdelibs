@@ -49,6 +49,7 @@ namespace DOM
 namespace khtml
 {
     class CachedObject;
+    class Request;
 
     /**
      * @internal
@@ -91,13 +92,14 @@ namespace khtml
 	    Uncacheable   // to big to be cached,
 	};  	          // will be destroyed as soon as possible
 
-	CachedObject(const DOM::DOMString &url, Type type)
+	CachedObject(const DOM::DOMString &url, Type type, bool _reload)
 	{
 	    m_url = url;
 	    m_type = type;
 	    m_status = Pending;
 	    m_size = 0;
 	    m_free = false;
+	    m_reload = _reload;
 	}
 	virtual ~CachedObject() {}
 
@@ -130,6 +132,12 @@ namespace khtml
          */
         void setFree( bool b ) { m_free = b; }
 
+        bool reload() { return m_reload; }
+
+        void setRequest(Request *_request);
+
+        bool canDelete();
+
     protected:
 	DOM::DOMString m_url;
 	Type m_type;
@@ -137,6 +145,8 @@ namespace khtml
 	QList<CachedObjectClient> m_clients;
 	int m_size;
         bool m_free;
+        bool m_reload;
+        Request *m_request;
     };
 
 
@@ -146,7 +156,7 @@ namespace khtml
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL);
+	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedCSSStyleSheet();
 	
 	const DOM::DOMString &sheet() const { return m_sheet; }
@@ -170,7 +180,7 @@ namespace khtml
     class CachedScript : public CachedObject
     {
     public:
-	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL);
+	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedScript();
 	
 	const DOM::DOMString &script() const { return m_script; }
@@ -197,7 +207,7 @@ namespace khtml
     {
 	Q_OBJECT
     public:
-	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL);
+	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
 	virtual ~CachedImage();
 	
 	const QPixmap &pixmap() const;
@@ -247,6 +257,39 @@ namespace khtml
 
 	DOM::DOMString m_baseURL;
     };
+
+    /**
+     * @internal
+     *
+     * Manages the loading of scripts/images/stylesheets for a particular document
+     */
+    class DocLoader
+    {
+    public:
+ 	DocLoader();
+ 	~DocLoader();
+ 	
+	CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	bool reloading;
+	QStringList reloadedURLs;
+    };
+
+    /**
+     * @internal
+     */
+    class Request
+    {
+    public:
+	Request(CachedObject *_object, const DOM::DOMString &baseURL, bool _incremental);
+	~Request();
+	bool incremental;
+	QBuffer m_buffer;
+	CachedObject *object;
+	DOM::DOMString m_baseURL;
+    };
+
 	
 	
     /**
@@ -277,20 +320,6 @@ namespace khtml
     protected:
 	void servePendingRequests();
 	
-	class Request
-	{
-	public:
-	    Request(CachedObject *_object, const DOM::DOMString &baseURL, bool _incremental)
-	    {
-		object = _object;
-		incremental = _incremental;
-		m_baseURL = baseURL;
-	    }
-	    bool incremental;
-	    QBuffer m_buffer;
-	    CachedObject *object;
-	    DOM::DOMString m_baseURL;
-	};
 	QList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
     };
@@ -300,10 +329,11 @@ namespace khtml
      * @internal
      *
      * Provides a cache/loader for objects needed for displaying the html page.
-     * At the moment these are stylesheets and images
+     * At the moment these are stylesheets, scripts and images
      */
     class Cache
     {
+	friend class DocLoader;
     public:
 
         static void ref();
@@ -319,19 +349,19 @@ namespace khtml
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	static CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
 	
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some

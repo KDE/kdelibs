@@ -294,10 +294,10 @@ void RenderImage::layout(bool)
     setLayouted();
 }
 
-void RenderImage::setImageUrl(DOMString url, DOMString baseUrl)
+void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     if(image) image->deref(this);
-    image = Cache::requestImage(url, baseUrl);
+    image = docLoader->requestImage(url, baseUrl);
     image->ref(this);
 }
 

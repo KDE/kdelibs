@@ -54,6 +54,10 @@ class HTMLTokenizer;
 class KHTMLParser;
 class KHTMLView;
 
+namespace khtml {
+    class CachedScript;
+}
+
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 

@@ -34,6 +34,7 @@
 #include "dom_string.h"
 #include "dom_exception.h"
 #include "dom_nodeimpl.h"
+#include "html_documentimpl.h"
 
 #include <kdebug.h>
 
@@ -136,24 +137,31 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     : StyleSheetImpl(parentSheet, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
+    m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
+    if (parentNode->ownerDocument()->isHTMLDocument())
+	m_docLoader = static_cast<HTMLDocumentImpl*>(parentNode->ownerDocument())->docLoader();
+    else
+	m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
+    m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CachedCSSStyleSheet *cached, DOM::DOMString href)
     : StyleSheetImpl(cached, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
+    m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -166,6 +174,10 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
 	m_lstChildren->append(rule);
 	rule->ref();
     }
+    if (parentNode->ownerDocument()->isHTMLDocument())
+	m_docLoader = static_cast<HTMLDocumentImpl*>(parentNode->ownerDocument())->docLoader();
+    else
+	m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -178,11 +190,14 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
 	m_lstChildren->append(rule);
 	rule->ref();
     }
+    m_docLoader = 0;
 }
 
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
 {
     // m_lstChildren is deleted in StyleListImpl
+    if (m_docLoader)
+	delete m_docLoader;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const

@@ -119,6 +119,7 @@ public:
     m_job = 0L;
     m_bComplete = true;
     m_bParsing = false;
+    m_bReloading = false;
     m_manager = 0L;
     m_settings = new khtml::Settings();
     m_bClearing = false;
@@ -161,6 +162,7 @@ public:
 
   bool m_bComplete;
   bool m_bParsing;
+  bool m_bReloading;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -233,10 +235,13 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-	PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url)
+	PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader *docLoader)
 	{
 	    m_part = part;
-	    Cache::requestStyleSheet(url, DOMString());
+	    if (docLoader)
+		docLoader->requestStyleSheet(url, DOMString());
+	    else
+		Cache::requestStyleSheet(url, DOMString(),false);
 	}
 
 	virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
@@ -404,6 +409,7 @@ bool KHTMLPart::openURL( const KURL &url )
   if ( !closeURL() )
     return false;
 
+  d->m_bReloading = args.reload;
   if ( args.postData.size() > 0 && url.protocol() == http_protocol )
       d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
   else
@@ -440,6 +446,7 @@ bool KHTMLPart::closeURL()
   }
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
+  d->m_bReloading = false;
 
   if ( d->m_bParsing )
   {
@@ -641,6 +648,9 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+
+    if (d->m_bReloading)
+	d->m_doc->setReloading();
 
     d->m_workingURL = KURL();
   }
@@ -974,7 +984,7 @@ void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
     d->m_userSheetUrl = DOMString();
     d->m_userSheet = DOMString();
-    new khtml::PartStyleSheetLoader(d, url.url());
+    new khtml::PartStyleSheetLoader(d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)

@@ -65,6 +65,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     m_loadingSheet = false;
 
     m_elemSheet=0;
+    m_docLoader = new DocLoader();
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -81,11 +82,13 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     m_loadingSheet = false;
 
     m_elemSheet=0;
+    m_docLoader = new DocLoader();
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl destructor this = " << this << endl;
+    delete m_docLoader;
 }
 
 DOMString HTMLDocumentImpl::referrer() const

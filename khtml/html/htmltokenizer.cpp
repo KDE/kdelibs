@@ -237,7 +237,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    {
 		if (scriptSrc != "") {
 		    // forget what we just got; load from src url instead
-		    cachedScript = Cache::requestScript(scriptSrc, parser->doc()->baseURL());
+		    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL());
 		    loadingExtScript = true;
 		    pendingSrc = QString(src.current(), src.length());
 		    _src = "";

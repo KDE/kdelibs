@@ -424,11 +424,11 @@ RenderImageButton::~RenderImageButton()
     if(image) image->deref(this);
 }
 
-void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl)
+void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     kdDebug( 6060 ) << "RenderImageButton::setImageURL" << endl;
     if(image) image->deref(this);
-    image = Cache::requestImage(url, baseUrl);
+    image = docLoader->requestImage(url, baseUrl);
     image->ref(this);
 }
 

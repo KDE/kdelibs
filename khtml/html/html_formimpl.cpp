@@ -669,7 +669,8 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	case IMAGE:
 	{
 	    RenderImageButton *i = new RenderImageButton(view, _form, this);
-	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL());
+	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL(),
+	                   static_cast<HTMLDocumentImpl *>(document)->docLoader());
 	    f = i;
 	    break;
 	}

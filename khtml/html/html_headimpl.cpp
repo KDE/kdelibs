@@ -167,11 +167,15 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
     {
 	QString str = m_media.string().lower();
 	// no need to load style sheets which aren't for the screen output
+	// ### there may be in some situations e.g. for an editor or script to manipulate
 	if(m_media.isNull() || str.contains("screen") || str.contains("all"))
 	{
 	    m_loading = true;
 	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	    m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
+	    if (doc->docLoader())
+		m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
+	    else
+		m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
 	    m_cachedSheet->ref(this);
 	}
     }
