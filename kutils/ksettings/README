@@ -68,7 +68,7 @@ MyAppConfig::MyAppConfig( QWidget *parent, const char *, const QStringList &args
 3. The .desktop file for the page
 ---------------------------------
 
-The .desktop file holds all the information for the KCD to find the page and
+The .desktop file holds all the information for the dialog to find the page and
 insert it at the right place (with the right icon, name and comment).
 
 An example file:
@@ -83,6 +83,7 @@ X-KDE-Library=myappconfig
 X-KDE-FactoryName=MyAppConfigFactory
 X-KDE-ParentApp=myapp
 X-KDE-ParentComponents=myapp
+X-KDE-Weight=10
 
 Name=General
 Comment=General configuration of my app
@@ -120,7 +121,33 @@ Some explanation for those keys:
 - Comment is the string that is shown on top of the config page for a short
   description what you can do on this page.
 
-4. The Pluginselector
+
+4. The .setdlg file for hierarchical (TreeList) page layouts
+------------------------------------------------------------
+
+If your config dialog should show a tree of pages in the config dialog you need
+to define that hierarchy with a .setdlg file.
+
+The file should be installed in apps/<appname>/<appname>.setdlg. If third party
+plugins need to merge in they will install their file to
+apps/<appname>/ksettingsdialog/<pluginname>.setdlg.
+
+A .setdlg file contains one or more blocks like the following:
+
+[id]
+Name=
+Comment=
+Icon=
+Weight=
+Parent=
+
+- The group name (id) is the name you use in the .desktop file of the page:
+  If your page's .desktop file says "X-KDE-CfgDlgHierarchy=id" then it will be
+  inserted as a child of this entry.
+- The Name
+
+
+5. The Pluginselector
 ---------------------
 
 There are two ways to use the KPluginSelector widget. One is to use the class
@@ -150,7 +177,7 @@ There are three addPlugins methods available, two for adding KParts plugins and
 one for the rest.
 
 
-5. The .desktop files of plugin config pages
+6. The .desktop files of plugin config pages
 --------------------------------------------
 
 this is the entry for the Makefile.am:
@@ -166,18 +193,5 @@ And this is what the .desktop file looks like:
 .
 .
 
-
-6. The .setdlg file for hierarchical (TreeList) page layouts
-------------------------------------------------------------
-
-The file should be installed in apps/<appname>/<appname>.setdlg. If third party
-plugins need to merge in they will install the file to
-apps/<appname>/ksettingsdialog/<pluginname>.setdlg.
-
-[id]
-Name=
-Comment=
-Weight=
-Parent=
 
 # vim: tw=80

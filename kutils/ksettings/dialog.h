@@ -167,7 +167,18 @@ class Dialog : public QObject
         void updateTreeList();
 
     private:
+        /**
+         * @internal
+         * Set the icons from the .setdlg file.
+         */
+        void setGroupIcons();
+
+        /**
+         * @internal
+         * Check whether the plugin associated with this KCM is enabled.
+         */
         bool isPluginForKCMEnabled( KCModuleInfo * ) const;
+
         QValueList<KService::Ptr> instanceServices() const;
         QValueList<KService::Ptr> parentComponentsServices(
                 const QStringList & ) const;

@@ -30,6 +30,7 @@
 #include "ksettings/componentsdialog.h"
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kiconloader.h>
 
 namespace KSettings
 {
@@ -80,6 +81,7 @@ class Dialog::DialogPrivate
 		{
 			QString name;
 			QString comment;
+			QString icon;
 			int weight;
 			QString parent;
 		};
@@ -197,6 +199,30 @@ QValueList<KService::Ptr> Dialog::parentComponentsServices(
 	return KTrader::self()->query( "KCModule", constraint );
 }
 
+void Dialog::setGroupIcons()
+{
+	// iterate over the groups and set the icons
+	for( QMap<QString, DialogPrivate::GroupInfo>::ConstIterator it
+			= d->groupmap.begin(); it != d->groupmap.end(); ++it )
+	{
+		if( ( *it ).icon.isNull() )
+			continue;
+
+		const DialogPrivate::GroupInfo * info = &( *it );
+		QStringList path = info->name;
+		while( ! info->parent.isNull() &&
+				d->groupmap.contains( info->parent ) )
+		{
+			info = &d->groupmap[ info->parent ];
+			path.prepend( info->name );
+		}
+		kdDebug( 700 ) << "set icon for group: " << path << ( *it ).icon
+			<< endl;
+		d->dlg->setFolderIcon( path,
+				SmallIcon( ( *it ).icon, IconSize( KIcon::Small ) ) );
+	}
+}
+
 bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 {
 	// and if the user of this class requested to hide disabled modules
@@ -245,6 +271,7 @@ void Dialog::parseGroupFile( const QString & filename )
 		group.comment = file.readEntry( "Comment" );
 		group.weight = file.readNumEntry( "Weight", 100 );
 		group.parent = file.readEntry( "Parent" );
+		group.icon = file.readEntry( "Icon" );
 		d->groupmap[ id ] = group;
 	}
 }
@@ -284,6 +311,9 @@ void Dialog::createDialogFromServices()
 		d->dlg = new KCMultiDialog( KJanusWidget::TreeList,
 				i18n( "Preferences" ) );
 		d->dlg->setShowIconsInTreeList( true );
+
+		setGroupIcons();
+
 		for( KCModuleInfo * info = d->moduleinfos.first(); info;
 				info = d->moduleinfos.next() )
 		{
