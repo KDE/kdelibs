@@ -41,7 +41,7 @@ KImageIOFormat::KImageIOFormat( const QString &path)
 
    config.setGroup("Image Format");
    mType = config.readEntry("Type");
-   mHeader = KURL::decode_string(config.readEntry("Header"));
+   mHeader = KURL::decode_string(config.readEntry("Header"), 4); // Latin1
    mFlags = config.readEntry("Flags");
    bRead = config.readBoolEntry("Read");
    bWrite = config.readBoolEntry("Write");
