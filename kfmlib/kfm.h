@@ -13,6 +13,12 @@ class KFM : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * This will not restart KFM if it is not running.
+     * You have to call @ref #allowKFMRestart before
+     * calling any other function. This will allow to
+     * restart KFM on demand.
+     */
     KFM();
     ~KFM();
     
@@ -29,6 +35,15 @@ public:
     // For KWM only
     void selectRootIcons( int _x, int _y, int _w, int _h, bool _add );
   
+    /**
+     * Allows this class to restart KFM if it is not running.
+     */
+    void allowKFMRestart( bool );
+    /**
+     * Tells wether a KFM is running.
+     */
+    bool isKFMRunning();
+    
 signals:    
     void finished();
     
@@ -37,10 +52,12 @@ public slots:
     
 protected:
     void init();
+    bool test();
     
     char flag;
     bool ok;
-
+    bool allowRestart;
+    
     KfmIpc *ipc;
 };
 

@@ -1,6 +1,10 @@
 #ifndef ipc_h
 #define ipc_h
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 struct stringList
 {
     int elements;

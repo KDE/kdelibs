@@ -6,6 +6,7 @@
 #include <qdir.h>
 #include <qstring.h>
 #include <qmsgbox.h>
+#include <qapp.h>
 
 #include "kfm.h"
 
@@ -14,6 +15,7 @@ KFM::KFM()
     flag = 0;
     ok = FALSE;
     ipc = 0L;
+    allowRestart = FALSE;
     
     init();
 }
@@ -34,7 +36,7 @@ void KFM::init()
     if ( f == 0L )
     {
 	// Did we already try to start a new kfm ?
-	if ( flag == 0 )
+	if ( flag == 0 && allowRestart )
 	{
 	    // Try to start a new kfm
 	    system( "kfm -d &" );
@@ -65,12 +67,12 @@ void KFM::init()
     if ( kill( pid, 0 ) != 0 )
     {
 	// Did we already try to start a new kfm ?
-	if ( flag == 0 )
+	if ( flag == 0 && allowRestart )
 	{
 	    flag = 1;
 	    // Try to start a new kfm
 	    system( "kfm -d &" );
-	    sleep( 5 );
+	    sleep( 10 );
 	    fclose( f );
 	    init();
 	    return;
@@ -123,47 +125,76 @@ void KFM::init()
 
 void KFM::refreshDesktop()
 {
+    if ( !test() )
+	return;
+    
     ipc->refreshDesktop();
 }
 
 void KFM::openURL()
 {
+    if ( !test() )
+	return;
+    
     ipc->openURL( "" );
 }
 
 void KFM::openURL( const char *_url )
 {
+    if ( !test() )
+	return;
+    
     ipc->openURL( _url );
 }
 
 void KFM::refreshDirectory( const char *_url )
 {
+    if ( !test() )
+	return;
+    
     ipc->refreshDirectory( _url );
 }
 
 void KFM::openProperties( const char *_url )
 {
+    if ( !test() )
+	return;
+    
     ipc->openProperties( _url );
 }
 
 void KFM::exec( const char *_url, const char *_binding )
 {
+    if ( !test() )
+	return;
+    
     ipc->exec( _url, _binding );
 }
 
 void KFM::copy( const char *_src, const char *_dest )
 {
+    if ( !test() )
+	return;
+    
     ipc->copy( _src, _dest );
 }
 
 void KFM::move( const char *_src, const char *_dest )
 {
+    if ( !test() )
+	return;
+    
     ipc->move( _src, _dest );
 }
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-  ipc->selectRootIcons( _x, _y, _w, _h, _add );
+    warning( "KFM call: selectRootIcons\n");
+    if ( !test() )
+	return;
+    warning( "KFM doing call\n");
+    
+    ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
 
 void KFM::slotFinished()
@@ -171,6 +202,41 @@ void KFM::slotFinished()
     emit finished();
 }
 
+bool KFM::test()
+{
+    if ( ( ipc == 0L || !ipc->isConnected() ) && allowRestart )
+    {
+	warning( "*********** KFM crashed **************\n" );
+	if ( ipc )
+	    delete ipc;
+	
+	ipc = 0L;
+	flag = 0;
+	ok = FALSE;
+
+	warning( "KFM recovery\n" );
+	init();
+	warning( "KFM recovery done\n" );
+    }
+
+    if ( ipc == 0L )
+	warning( "KFM NOT READY\n");
+    
+    return ( ipc==0L?false:true );
+}
+
+void KFM::allowKFMRestart( bool _allow )
+{
+    allowRestart = _allow;
+}
+
+bool KFM::isKFMRunning()
+{
+    if ( ipc == 0L ) return FALSE;
+    if ( ipc->isConnected() )
+	return TRUE;
+    return FALSE;
+}
 
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )

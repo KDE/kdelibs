@@ -141,10 +141,8 @@ void KfmIpc::selectRootIcons(int _x, int _y, int _w, int _h, bool _add)
 	write_bool( sock->socket(), _add );
 }
 
-void KfmIpc::parse_finished( char *_data, int _len )
+void KfmIpc::parse_finished( char *, int )
 {
-	int pos = 0;
-
 	// Calling function
 	emit finished(  );
 }

@@ -29,12 +29,12 @@ bool KfmIpc::isConnected()
     return connected;
 }
 
-void KfmIpc::closeEvent( KSocket * _sock )
+void KfmIpc::closeEvent( KSocket * )
 {
     connected = FALSE;
 }
 
-void KfmIpc::readEvent( KSocket *_sock )
+void KfmIpc::readEvent( KSocket * )
 {
     if ( bHeader )
     {
