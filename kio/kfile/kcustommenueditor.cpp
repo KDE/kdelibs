@@ -100,7 +100,7 @@ KCustomMenuEditor::load(KConfigBase *cfg)
    QListViewItem *last = 0;
    for(int i = 0; i < count; i++)
    {
-      QString entry = cfg->readEntry(QString("Item%1").arg(i+1));
+      QString entry = cfg->readPathEntry(QString("Item%1").arg(i+1));
       if (entry.isEmpty())
          continue;
 
@@ -140,7 +140,7 @@ KCustomMenuEditor::save(KConfigBase *cfg)
       QString path = item->s->desktopEntryPath();
       if (!path.startsWith("/") || !KGlobal::dirs()->relativeLocation("xdgdata-apps", path).startsWith("/"))
          path = item->s->desktopEntryName();
-      cfg->writeEntry(QString("Item%1").arg(i), path);
+      cfg->writePathEntry(QString("Item%1").arg(i), path);
       item = (Item *) item->nextSibling();
    }
    cfg->writeEntry("NrOfItems", i);
