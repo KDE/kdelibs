@@ -33,7 +33,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
 
 METASOURCES = AUTO
 
-bin_PROGRAMS = kab2kabc splitformat
+bin_PROGRAMS = kab2kabc 
 
 kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
