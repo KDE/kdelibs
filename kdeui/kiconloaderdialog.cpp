@@ -345,7 +345,30 @@ KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader,
 void KIconLoaderButton::setIconType(const QString& _resType)
 {
   resType = _resType;
-  loaderDialog->changeDirs(KGlobal::dirs()->resourceDirs(resType));
+  QStringList icon_dirs;
+  QStringList list(KGlobal::dirs()->resourceDirs(resType));
+  if (_resType == "icon")
+  {
+    QStringList::Iterator iit = list.begin();
+    for ( ; iit != list.end(); ++iit)
+    {
+      icon_dirs.append((*iit) + "large/hicolor/apps");
+      icon_dirs.append((*iit) + "large/locolor/apps");
+      icon_dirs.append((*iit) + "medium/hicolor/apps");
+      icon_dirs.append((*iit) + "medium/locolor/apps");
+    }
+  }
+  else
+    icon_dirs = KGlobal::dirs()->resourceDirs(resType);
+
+  // strip off all directories that don't exist
+  list = icon_dirs;
+  QStringList::Iterator it = list.begin();
+  for ( ; it != list.end(); ++it)
+    if (QFile::exists(*it) == false)
+        icon_dirs.remove(*it);
+
+  loaderDialog->changeDirs(icon_dirs);
 
   // Reload icon (might differ in new resource type)
   if(!iconStr.isEmpty())
