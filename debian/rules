@@ -72,6 +72,7 @@ binary-arch:  build
 	dh_installdirs
 	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
+	install -d debian/tmp/etc/kde2
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp/ install
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
@@ -80,7 +81,7 @@ binary-arch:  build
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_apps=/usr/share/applnk" >> $$debianrc 
 	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
-	perl -w admin/debianrules kdelibs3
+	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
 	for i in `find debian/tmp/usr/bin | sed -e 's#^debian/tmp/usr/bin/##'  | grep -v "debian/tmp"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
