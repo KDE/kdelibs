@@ -383,6 +383,8 @@ extern "C" {
 #endif
 #endif
 
+extern bool kde_kiosk_exception;
+
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					      KEntryMap *pWriteBackMap,
 					      bool bGlobal, bool bDefault)
@@ -492,7 +494,8 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
              (startLine[1] == '$') &&
              (startLine[2] == 'i'))
          {
-            fileOptionImmutable = true;
+            if (!kde_kiosk_exception)
+               fileOptionImmutable = true;
             continue;
          }
 
@@ -508,7 +511,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
          e++;
          if ((e+2 < eof) && (*e++ == '[') && (*e++ == '$')) // Option follows
          {
-            if (*e == 'i')
+            if ((*e == 'i') && !kde_kiosk_exception)
             {
                groupOptionImmutable = true;
             }
@@ -579,7 +582,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
               while (option < eoption)
               {
                  option++;
-                 if (*option == 'i')
+                 if ((*option == 'i') && !kde_kiosk_exception)
                     optionImmutable = true;
                  else if (*option == 'e')
                     optionExpand = true;
