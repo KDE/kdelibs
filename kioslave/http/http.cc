@@ -3921,16 +3921,72 @@ int HTTPProtocol::readUnlimited()
   return 0;
 }
 
-void HTTPProtocol::slotData(const QByteArray &d)
+void HTTPProtocol::slotData(const QByteArray &_d)
 {
-   if (!d.size())
+   if (!_d.size())
    {
       m_bEOD = true;
       return;
    }
 
+   QByteArray d = _d;
    if ( !m_dataInternal )
    {
+      // If a broken server does not send the mime-type,
+      // we try to id it from the content before dealing
+      // with the content itself.
+      if ( m_strMimeType.isEmpty() && !m_bRedirect &&
+           !( m_responseCode >= 300 && m_responseCode <=399) )
+      {
+        kdDebug(7113) << "(" << m_pid << ") Determining mime-type from content..." << endl;
+        int old_size = m_mimeTypeBuffer.size();
+        m_mimeTypeBuffer.resize( old_size + d.size() );
+        memcpy( m_mimeTypeBuffer.data() + old_size, d.data(), d.size() );
+        if ( (m_iBytesLeft != NO_SIZE) && (m_iBytesLeft > 0)
+             && (m_mimeTypeBuffer.size() < 1024) )
+        {
+          m_cpMimeBuffer = true;
+          return;   // Do not send up the data since we do not yet know its mimetype!
+        }
+
+        kdDebug(7113) << "(" << m_pid << ") Mimetype buffer size: " << m_mimeTypeBuffer.size()
+                      << endl;
+
+        KMimeMagicResult *result;
+        result = KMimeMagic::self()->findBufferFileType( m_mimeTypeBuffer,
+                                                         m_request.url.fileName() );
+        if( result )
+        {
+          m_strMimeType = result->mimeType();
+          kdDebug(7113) << "(" << m_pid << ") Mimetype from content: "
+                        << m_strMimeType << endl;
+        }
+
+        if ( m_strMimeType.isEmpty() )
+        {
+          m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
+          kdDebug(7113) << "(" << m_pid << ") Using default mimetype: "
+                        <<  m_strMimeType << endl;
+        }
+
+        if ( m_request.bCachedWrite )
+        {
+          createCacheEntry( m_strMimeType, m_request.expireDate );
+          if (!m_request.fcache)
+            m_request.bCachedWrite = false;
+        }
+
+        if ( m_cpMimeBuffer )
+        {
+          d.resize(0);
+          d.resize(m_mimeTypeBuffer.size());
+          memcpy( d.data(), m_mimeTypeBuffer.data(),
+                  d.size() );
+        }
+        mimeType(m_strMimeType);
+        m_mimeTypeBuffer.resize(0);
+      }
+
       data( d );
       if (m_request.bCachedWrite && m_request.fcache)
          writeCacheEntry(d.data(), d.size());
@@ -4037,8 +4093,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
 
   // Main incoming loop...  Gather everything while we can...
-  bool cpMimeBuffer = false;
-  QByteArray mimeTypeBuffer;
+  m_cpMimeBuffer = false;
+  m_mimeTypeBuffer.resize(0);
   struct timeval last_tv;
   gettimeofday( &last_tv, 0L );
 
@@ -4120,68 +4176,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     // won't work with it!
     if (bytesReceived > 0)
     {
-      // internal functions don't worry abount mimetypes
-      if ( !dataInternal )
-      {
-        // If a broken server does not send the mime-type,
-        // we try to id it from the content before dealing
-        // with the content itself.
-        if ( m_strMimeType.isEmpty() && !m_bRedirect &&
-             !( m_responseCode >= 300 && m_responseCode <=399) )
-        {
-          kdDebug(7113) << "(" << m_pid << ") Determining mime-type from content..." << endl;
-          int old_size = mimeTypeBuffer.size();
-          mimeTypeBuffer.resize( old_size + bytesReceived );
-          memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(),
-                  bytesReceived );
-          if ( (m_iBytesLeft != NO_SIZE) && (m_iBytesLeft > 0)
-               && (mimeTypeBuffer.size() < 1024) )
-          {
-            cpMimeBuffer = true;
-            continue;   // Do not send up the data since we do not yet know its mimetype!
-          }
-
-          kdDebug(7113) << "(" << m_pid << ") Mimetype buffer size: " << mimeTypeBuffer.size()
-                        << endl;
-
-          KMimeMagicResult *result;
-
-          result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer,
-                                                           m_request.url.fileName() );
-          if( result )
-          {
-            m_strMimeType = result->mimeType();
-            kdDebug(7113) << "(" << m_pid << ") Mimetype from content: "
-                          << m_strMimeType << endl;
-          }
-
-          if ( m_strMimeType.isEmpty() )
-          {
-            m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
-            kdDebug(7113) << "(" << m_pid << ") Using default mimetype: "
-                          <<  m_strMimeType << endl;
-          }
-
-          if ( m_request.bCachedWrite )
-          {
-            createCacheEntry( m_strMimeType, m_request.expireDate );
-            if (!m_request.fcache)
-              m_request.bCachedWrite = false;
-          }
-
-          if ( cpMimeBuffer )
-          {
-            bytesReceived = mimeTypeBuffer.size();
-            m_bufReceive.resize(0);
-            m_bufReceive.resize(bytesReceived);
-            memcpy( m_bufReceive.data(), mimeTypeBuffer.data(),
-                    bytesReceived );
-          }
-          mimeType(m_strMimeType);
-          mimeTypeBuffer.resize(0);
-        }
-      }
-
       // Important: truncate the buffer to the actual size received!
       // Otherwise garbage will be passed to the app
       m_bufReceive.truncate( bytesReceived );

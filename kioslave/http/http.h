@@ -476,6 +476,10 @@ protected:
   char *m_linePtrUnget;
   size_t m_lineCountUnget;
 
+  // Mimetype determination
+  bool m_cpMimeBuffer;
+  QByteArray m_mimeTypeBuffer;
+
   // Language/Encoding related
   QStringList m_qTransferEncodings;
   QStringList m_qContentEncodings;
