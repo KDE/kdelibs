@@ -59,6 +59,7 @@ close READ;
 
 if ( $error > 0 ) {
   print "\n  FAILED: $error errors found.\n";
+  system "touch FAILED";
   exit 1;
 } else {
   print "  OK\n";

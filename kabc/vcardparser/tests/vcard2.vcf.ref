@@ -1,6 +1,6 @@
 BEGIN:VCARD
 ADR;TYPE=work:;;501 E. Middlefield Rd.;Mountain View;CA; 94043;U.S.A.
-EMAIL;TYPE=INTERNET:howes@netscape.com
+EMAIL:howes@netscape.com
 FN:Tim Howes
 N:;;;;
 ORG:Netscape Communications Corp.
