@@ -397,7 +397,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
+        bool noModifier = (e->state() == NoButton || e->state() == ShiftButton
+                           || e->state() == Keypad);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionPopupAuto ||
