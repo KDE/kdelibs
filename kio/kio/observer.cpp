@@ -378,14 +378,15 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
   if (job)
     kdDebug(KDEBUG_OBSERVER) << "                        progressId=" << job->progressId() << endl;
   // Hide existing dialog box if any
-  if (job)
+  if (job && job->progressId())
     m_uiserver->setJobVisible( job->progressId(), false );
-  // We now do it in process.
-  RenameDlg_Result res =  KIO::open_RenameDlg( caption, src, dest, mode,
+  // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
+  // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
+  RenameDlg_Result res = KIO::open_RenameDlg( caption, src, dest, mode,
                                                newDest, sizeSrc, sizeDest,
                                                ctimeSrc, ctimeDest, mtimeSrc,
                                                mtimeDest );
-  if (job)
+  if (job && job->progressId())
     m_uiserver->setJobVisible( job->progressId(), true );
   return res;
 }
@@ -396,10 +397,12 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
 {
   kdDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg job=" << job << " progressId=" << job->progressId() << endl;
   // Hide existing dialog box if any
-  m_uiserver->setJobVisible( job->progressId(), false );
+  if (job && job->progressId())
+      m_uiserver->setJobVisible( job->progressId(), false );
   // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
   SkipDlg_Result res = KIO::open_SkipDlg( _multi, _error_text );
-  m_uiserver->setJobVisible( job->progressId(), true );
+  if (job && job->progressId())
+      m_uiserver->setJobVisible( job->progressId(), true );
   return res;
 }
 
