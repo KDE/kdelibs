@@ -368,6 +368,10 @@ public:
      */
     void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
 
+    // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
+    virtual void finalizeGUI( KXMLGUIClient *client )
+    { return KXMLGUIBuilder::finalizeGUI( client ); }
+
     /**
      * @internal
      */
