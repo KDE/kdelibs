@@ -1471,7 +1471,6 @@ void KeramikStyle::drawControl( ControlElement element,
 			break;
 		}
 		case CE_ProgressBarContents: {
-			// ### Take into account totalSteps() for busy indicator
 			const QProgressBar* pb = (const QProgressBar*)widget;
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
@@ -1485,6 +1484,8 @@ void KeramikStyle::drawControl( ControlElement element,
 			if (progress > 0 || steps == 0) {
 				double pg = (steps == 0) ? 0.1 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
+				if (steps == 0)
+					width = QMIN(width,20); //Don't cross squares
 
 				if (steps == 0) { //Busy indicator
 
