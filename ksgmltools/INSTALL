@@ -174,7 +174,7 @@ Now the Cygnus distribution is installed, you must add the KDE specific stuff.
 You will find the necessary files in the kdelibs package.
 
 If you have installed RPM packages, go to the directory where you
-have downloaded the kdelibs package, enter the "ksgmltools"
+have downloaded the kdelibs package, enter the "kdelibs"
 subdirectory and type (as normal user) the commands :
 
 	make -f Makefile.cvs
@@ -255,6 +255,7 @@ The DocBook Reference Manual is NOT included in the Cygnus distribution.
 It can be found at:
 
 	http://www.oasis-open.org/docbook/
+
 (Or the locations listed in the crash course).
 
 
