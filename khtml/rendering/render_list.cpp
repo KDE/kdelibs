@@ -80,6 +80,40 @@ static QString toLetter( int number, int base ) {
     return letter;
 }
 
+static QString toHebrew( int number ) {
+    const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
+
+    QString letter;
+    //I will adress numbers past 1000 tomorrow
+    number = number % 1000;
+    
+    int hunderts = (number/400);
+    if (hunderts > 0) {
+	for(int i=0; i<hunderts; i++) {
+	    letter += QChar(1511 + 3);
+	}
+    }
+    number = number % 400;
+    if ((number / 100) != 0) {
+        letter += QChar (1511 + (number / 100) -1);
+    }
+    number = number % 100;
+    int tens = number/10;
+    if (tens > 0 && !(number == 15 || number == 16)) {
+	letter += tenDigit[tens-1];
+    }
+    if (number == 15 || number == 16) { // special because of religious
+	letter += QChar(1487 + 9);       // reasons
+    	letter += QChar(1487 + number - 9); 
+    } else {
+        number = number % 10;
+        if (number != 0) {
+            letter += QChar (1487 + number);
+        }
+    }
+    return letter;
+}
+
 // -------------------------------------------------------------------------
 
 RenderListItem::RenderListItem()
@@ -384,7 +418,6 @@ void RenderListMarker::calcMinMaxWidth()
         m_height = fm.ascent();
     }
     goto end;
-    case HEBREW:
     case ARMENIAN:
     case GEORGIAN:
     case CJK_IDEOGRAPHIC:
@@ -416,6 +449,9 @@ void RenderListMarker::calcMinMaxWidth()
     	}
 	break;
      }
+    case HEBREW:
+     	item = toHebrew( val );
+	break;
     case LOWER_ALPHA:
     case LOWER_LATIN:
         item = toLetter( val, 'a' );
