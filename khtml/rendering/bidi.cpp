@@ -619,11 +619,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "reached end of line current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
-    if(current.atEnd())
-	eor = last;
-    else
-	eor = current;
-    if(!(current < sor))
+    eor = last;
+
+    if(!(eor < sor))
 #else
     eor = end;
 #endif
@@ -868,6 +866,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 #endif
 
     RenderObject *o = current.obj;
+    RenderObject *last = o;
     int pos = current.pos;
     
     while( o ) {
@@ -924,15 +923,16 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		}
 	    } else {
 		// proportional font, needs a bit more work.
-		QChar *last = ch;
+		QChar *lastSpace = ch;
 		while(len) {
 		    if( ch->direction() == QChar::DirWS || *ch == '\n' ) {
-			tmpW += fm->width(QConstString(last, ch - last).string());
-			//kdDebug(6041) << "found space adding " << tmpW << " new width = " << w << endl;
+			tmpW += fm->width(QConstString(lastSpace, ch - lastSpace).string());
+			kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, ch - lastSpace).string() << "'" << endl;
 			if ( w + tmpW > width )
 			    goto end;
 			lBreak.obj = o;
 			lBreak.pos = pos;
+
 			if( *ch == '\n' ) { 
 #ifdef DEBUG_LINEBREAKS
 			    kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
@@ -941,13 +941,13 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 			}
 			w += tmpW;
 			tmpW = 0;
-			last = ch;
+			lastSpace = ch;
 		    }
 		    ch++;
 		    pos++;
 		    len--;
 		}
-		tmpW += fm->width(QConstString(last, ch - last).string());
+		tmpW += fm->width(QConstString(lastSpace, ch - lastSpace).string());
 	    }		    
 	} else 
 	    assert( false );
@@ -980,8 +980,13 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     if( lBreak == start ) {
 	// we just add as much as possible
 	if ( m_pre ) {
-	    lBreak.obj = o;
-	    lBreak.pos =pos;
+	    if(pos != 0) {
+		lBreak.obj = o;
+		lBreak.pos = pos - 1;
+	    } else {
+		lBreak.obj = last;
+		lBreak.pos = last->length();
+	    }	    
 	} else if( weakBreak != start )
 	    return weakBreak;
     } else if( !o && w + tmpW < width ) {
