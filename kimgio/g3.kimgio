@@ -1,0 +1,9 @@
+[Image Format]
+Type=G3
+Header=II
+Pattern=g3 fax files
+Read=true
+Write=false
+Suffices=g3,G3,
+Mimetype=image/fax-g3
+Library=kimg_g3.la
