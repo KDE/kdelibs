@@ -398,6 +398,7 @@ private:
     // Date and time
     QString _timefmt;
     QString _datefmt;
+    QString _datefmtshort;
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );

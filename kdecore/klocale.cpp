@@ -409,6 +409,10 @@ void KLocale::initFormat()
   _datefmt = config->readEntry("DateFormat");
   if (_datefmt.isNull())
     _datefmt = timentry.readEntry("DateFormat", "%m/%d/%y");
+
+  _datefmtshort = config->readEntry("DateFormatShort");
+  if (_datefmtshort.isNull())
+    _datefmtshort = timentry.readEntry("DateFormatShort", "%m/%d/%y");
 }
 
 void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
@@ -678,7 +682,7 @@ double KLocale::readNumber(const QString &str, bool * ok) const
 
 QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
-    QString rst(_datefmt);
+    QString rst = shortfmt?_datefmtshort:_datefmt;
     QString tmp;
 
     int i = -1;
@@ -737,6 +741,8 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 		continue;
         }
 
+    // return _nothing_ if length > 10...
+    if (shortfmt && rst.length() > 10) return QString::null;
     return rst;
 }
 
