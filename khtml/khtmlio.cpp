@@ -63,11 +63,22 @@ HTMLURLRequest::HTMLURLRequest( QString _url, HTMLURLRequester *_obj )
  *
  ********************************************************************/
 
-HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser)
+HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, bool _reload)
 {
   m_pBrowser = _browser;
-  m_jobId = 0;
+  m_req = r;
 
+  KIOCachedJob* job = new KIOCachedJob;
+  job->setGUImode( KIOJob::NONE );
+
+  kdebug(0,1202,"BROWSER JOB %s", m_req->m_strURL.ascii());
+
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
+
+  m_jobId = job->id();
+  job->get( m_req->m_strURL, _reload );
 }
 
 HTMLURLRequestJob::~HTMLURLRequestJob()
@@ -83,47 +94,29 @@ HTMLURLRequestJob::~HTMLURLRequestJob()
   kdebug(0,1202,"Destructor 2");
 }
 
-void HTMLURLRequestJob::run( const QString &_url, const QString &_simple_url, bool _reload )
-{
-  m_strSimpleURL = _simple_url;
-  m_strURL = _url;
-  m_bReload = _reload;
-
-  kdebug(0,1202,"$$$$$$$$$ BrowserJob for %s", _url.latin1());
-
-  KIOCachedJob* job = new KIOCachedJob;
-  job->setGUImode( KIOJob::NONE );
-
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
-
-  m_jobId = job->id();
-  job->get( m_strURL, m_bReload );
-}
-
 void HTMLURLRequestJob::slotFinished( int /*_id*/ )
 {
   m_jobId = 0;
 
-  kdebug(0,1202,"BROWSER JOB FINISHED %s %s", m_strURL.ascii(), m_strSimpleURL.ascii());
-  m_pBrowser->data( m_strSimpleURL, "", 0, true );
+  kdebug(0,1202,"BROWSER JOB FINISHED %s", m_req->m_strURL.ascii());
+  m_pBrowser->data( this, "", 0, true );
   m_pBrowser->urlRequestFinished( this );
   kdebug(0,1202,"Back");
 }
 
 void HTMLURLRequestJob::slotData( int /*_id*/, const char* _data, int _len )
 {
-  m_pBrowser->data( m_strSimpleURL, _data, _len, false );
+    //m_pBrowser->data( m_strSimpleURL, _data, _len, false );
+  m_pBrowser->data( this, _data, _len, false );
 }
 
 void HTMLURLRequestJob::slotError( int /*_id*/, int _err, const char *_text )
 {
   m_jobId = 0;
 
-  emit error( m_strURL, _err, _text );
+  emit error( m_req->m_strURL, _err, _text );
 
-  m_pBrowser->data( m_strSimpleURL, "", 0, true );
+  m_pBrowser->data( this, "", 0, true );
   m_pBrowser->urlRequestFinished( this );
 }
 

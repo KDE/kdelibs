@@ -28,7 +28,7 @@
 #define AUTOSCROLL_DELAY 150
 #define AUTOSCROLL_STEP 20
 
-#define MAX_REQUEST_JOBS 2
+#define MAX_REQUEST_JOBS 4
 
 #include <qscrollview.h>
 #include <qstring.h>
@@ -457,7 +457,7 @@ signals:
 
 protected slots:
     void slotData( int _id, const char* data, int _len );
-    void data( QString _url, const char *_data, int _len, bool _eof );
+    void data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof );
     void slotFinished( int _id );
     void slotError( int _id, int _err, const QString &_text );
     void slotRedirection( int _id, const QString &_url );

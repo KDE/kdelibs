@@ -412,24 +412,29 @@ void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
   write( _p );
 }
 
-void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
+void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof )
 {
-  HTMLURLRequest *p = m_lstPendingURLRequests[ _url ];
-  if ( !p )
-    return;
 
-  if ( !p->m_buffer.isOpen() )
-    p->m_buffer.open( IO_WriteOnly );
-  p->m_buffer.writeBlock( _data, _len );
+    printf("HTMLWidget::data()\n");
+    HTMLURLRequest *p = job->m_req;
+    if ( !p )
+    {	
+	printf("no such request!!!!!\n");
+	return;
+    }
+
+    if ( !p->m_buffer.isOpen() )
+	p->m_buffer.open( IO_WriteOnly );
+    p->m_buffer.writeBlock( _data, _len );
 
   HTMLURLRequester* o;
   for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
-    o->fileLoaded( _url, p->m_buffer, _eof );
+    o->fileLoaded( p->m_strURL, p->m_buffer, _eof );
 
   if ( _eof )
     {
 	p->m_buffer.close();
-	//m_lstURLRequestJobs.remove( _url );
+	m_lstURLRequestJobs.remove( job );
     }
   else
     return;
@@ -509,23 +514,19 @@ void KHTMLWidget::servePendingURLRequests()
   if ( m_lstURLRequestJobs.count() == MAX_REQUEST_JOBS )
     return;
   if ( m_lstPendingURLRequests.count() == 0 )
-    return;
+      return;
 
-  HTMLURLRequestJob* j = new HTMLURLRequestJob( this );
-  m_lstURLRequestJobs.append( j );
+  printf("starting URLRequestJob\n");
   QDictIterator<HTMLURLRequest> it( m_lstPendingURLRequests );
   HTMLURLRequest *req = it.current();
-  QString tmp = completeURL( req->m_strURL );
-  QString url = completeURL(req->m_strURL);
-
+  HTMLURLRequestJob* j = new HTMLURLRequestJob( this, req, m_bReload );
+  m_lstURLRequestJobs.append( j );
   m_lstPendingURLRequests.remove(req->m_strURL);
-
-  j->run( tmp, url, m_bReload );
 }
 
 void KHTMLWidget::urlRequestFinished( HTMLURLRequestJob* _request )
 {
-    //m_lstURLRequestJobs.remove( _request->m_strURL );
+    m_lstURLRequestJobs.remove( _request );
     servePendingURLRequests();
 }
 

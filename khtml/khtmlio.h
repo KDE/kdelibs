@@ -89,10 +89,8 @@ class HTMLURLRequestJob : QObject
 
   friend class KHTMLWidget;
 public:
-  HTMLURLRequestJob( KHTMLWidget* _browser );
+  HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, bool _reload );
   ~HTMLURLRequestJob();
-
-  void run( const QString &_url, const QString &_simple_url, bool _reload );
 
 signals:
   void error( const QString &_url, int _err, const char* _errtext );
@@ -103,11 +101,9 @@ protected slots:
   void slotError( int _id, int _err, const char *_text );
 
 protected:
-  int m_jobId;
-  KHTMLWidget *m_pBrowser;
-  QString m_strURL;
-  QString m_strSimpleURL;
-    bool m_bReload;
+    int m_jobId;
+    KHTMLWidget *m_pBrowser;
+    HTMLURLRequest *m_req;
 };
 
 
