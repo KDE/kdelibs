@@ -56,7 +56,7 @@
 using namespace khtml;
 using namespace DOM;
 
-void CachedObject::computeStatus()
+void CachedObject::finish()
 {
     if( m_size > MAXCACHEABLE )
     {
@@ -65,6 +65,27 @@ void CachedObject::computeStatus()
     }
     else
         m_status = Cached;
+    KURL url(m_url.string());
+    if (m_expireDate && url.protocol().startsWith("http"))
+    {
+	KIO::http_update_cache(url, false, m_expireDate);
+#ifdef CACHE_DEBUG
+	kdDebug(6060) << " Setting expire date for image "<<m_url.string()<<" to " << m_expireDate << endl;
+#endif
+    }
+#ifdef CACHE_DEBUG
+    else kdDebug(6060) << " No expire date for image "<<m_url.string()<<endl;
+#endif
+}
+
+void CachedObject::setExpireDate(int _expireDate)
+{
+    // assert(_expireDate);
+    if ( _expireDate != m_expireDate && (m_status == Uncacheable || m_status == Cached))
+    {
+	finish();
+    }
+    m_expireDate = _expireDate;
 }
 
 void CachedObject::setRequest(Request *_request)
@@ -76,8 +97,8 @@ void CachedObject::setRequest(Request *_request)
 
 // -------------------------------------------------------------------------------------------
 
-CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &baseURL, bool reload)
-    : CachedObject(url, CSSStyleSheet, reload)
+CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &baseURL, bool reload, int _expireDate)
+    : CachedObject(url, CSSStyleSheet, reload, _expireDate)
 {
     // It's css we want.
     setAccept( QString::fromLatin1("text/css") );
@@ -144,8 +165,8 @@ void CachedCSSStyleSheet::error( int /*err*/, const char */*text*/ )
 
 // -------------------------------------------------------------------------------------------
 
-CachedScript::CachedScript(const DOMString &url, const DOMString &baseURL, bool reload)
-    : CachedObject(url, Script, reload)
+CachedScript::CachedScript(const DOMString &url, const DOMString &baseURL, bool reload, int _expireDate)
+    : CachedObject(url, Script, reload, _expireDate)
 {
     // It's javascript we want.
     setAccept( QString::fromLatin1("application/x-javascript") );
@@ -363,8 +384,8 @@ static QString buildAcceptHeader()
 
 // -------------------------------------------------------------------------------------
 
-CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool reload)
-    : QObject(), CachedObject(url, Image, reload)
+CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool reload, int _expireDate)
+    : QObject(), CachedObject(url, Image, reload, _expireDate)
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
 
@@ -393,9 +414,7 @@ CachedImage::~CachedImage()
 
 void CachedImage::ref( CachedObjectClient *c )
 {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
-#endif
+    //    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
 
     // make sure we don't get it twice...
     m_clients.remove(c);
@@ -676,7 +695,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
         QSize s = pixmap_size();
         m_size = s.width() * s.height() * 2;
-        computeStatus();
     }
 }
 
@@ -719,11 +737,17 @@ Request::~Request()
 DocLoader::DocLoader()
 {
   reloading = false;
+  m_expireDate = 0;
 }
 
 DocLoader::~DocLoader()
 {
 
+}
+
+void DocLoader::setExpireDate(int _expireDate)
+{
+    m_expireDate = _expireDate;
 }
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
@@ -735,11 +759,11 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
             if (existing)
                 Cache::removeCacheEntry(existing);
 	    reloadedURLs.append(fullURL);
-            return Cache::requestImage(url,baseUrl,true);
+            return Cache::requestImage(url,baseUrl,true,m_expireDate);
         }
     }
 
-    return Cache::requestImage(url,baseUrl,false);
+    return Cache::requestImage(url,baseUrl,false, m_expireDate);
 }
 
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
@@ -751,11 +775,11 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
             if (existing)
                 Cache::removeCacheEntry(existing);
 	    reloadedURLs.append(fullURL);
-            return Cache::requestStyleSheet(url,baseUrl,true);
+            return Cache::requestStyleSheet(url,baseUrl,true,m_expireDate);
         }
     }
 
-    return Cache::requestStyleSheet(url,baseUrl,false);
+    return Cache::requestStyleSheet(url,baseUrl,false,m_expireDate);
 }
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
@@ -767,11 +791,11 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DO
             if (existing)
                 Cache::removeCacheEntry(existing);
 	    reloadedURLs.append(fullURL);
-            return Cache::requestScript(url,baseUrl,true);
+            return Cache::requestScript(url,baseUrl,true,m_expireDate);
         }
     }
 
-    return Cache::requestScript(url,baseUrl,false);
+    return Cache::requestScript(url,baseUrl,false,m_expireDate);
 }
 
 
@@ -840,6 +864,8 @@ void Loader::slotFinished( KIO::Job* job )
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_baseURL, r->object );
   }
+
+  r->object->finish();
 
 #ifdef CACHE_DEBUG
   kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
@@ -998,7 +1024,7 @@ void Cache::clear()
     delete m_loader;   m_loader = 0;
 }
 
-CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUrl, bool reload )
+CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUrl, bool reload, int _expireDate )
 {
     // this brings the _url to a standard form...
     KURL kurl = completeURL( url, baseUrl );
@@ -1018,12 +1044,14 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload );
+        CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload, _expireDate);
         cache->insert( kurl.url(), im );
         lru->append( kurl.url() );
         flush();
         return im;
     }
+
+    o->setExpireDate(_expireDate);
 
     if(!o->type() == CachedObject::Image)
     {
@@ -1044,7 +1072,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     return static_cast<CachedImage *>(o);
 }
 
-CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMString &baseUrl, bool reload)
+CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMString &baseUrl, bool reload, int _expireDate)
 {
     // this brings the _url to a standard form...
     KURL kurl = completeURL( url, baseUrl );
@@ -1060,12 +1088,14 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl, reload);
+        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl, reload, _expireDate);
         cache->insert( kurl.url(), sheet );
         lru->append( kurl.url() );
         flush();
         return sheet;
     }
+
+    o->setExpireDate(_expireDate);
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
@@ -1086,7 +1116,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     return static_cast<CachedCSSStyleSheet *>(o);
 }
 
-CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload)
+CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload, int _expireDate)
 {
     // this brings the _url to a standard form...
     KURL kurl = completeURL( url, baseUrl );
@@ -1102,12 +1132,14 @@ CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMStr
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedScript *script = new CachedScript(kurl.url(), baseUrl, reload);
+        CachedScript *script = new CachedScript(kurl.url(), baseUrl, reload, _expireDate);
         cache->insert( kurl.url(), script );
         lru->append( kurl.url() );
         flush();
         return script;
     }
+
+    o->setExpireDate(_expireDate);
 
     if(!o->type() == CachedObject::Script)
     {

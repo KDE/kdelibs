@@ -89,7 +89,7 @@ namespace khtml
 	    Uncacheable   // to big to be cached,
 	};  	          // will be destroyed as soon as possible
 
-	CachedObject(const DOM::DOMString &url, Type type, bool _reload)
+	CachedObject(const DOM::DOMString &url, Type type, bool _reload, int _expireDate)
 	{
 	    m_url = url;
 	    m_type = type;
@@ -98,6 +98,7 @@ namespace khtml
 	    m_free = false;
 	    m_reload = _reload;
 	    m_request = 0;
+	    m_expireDate = _expireDate;
 	}
 	virtual ~CachedObject() {}
 
@@ -120,8 +121,9 @@ namespace khtml
 	/*
 	 * computes the status of an object after loading.
 	 * the result depends on the objects size and the size of the cache
+	 * also updates the expire date on the cache entry file
 	 */
-	void computeStatus();
+	void finish();
 
         /*
          * Called by the cache if the object has been removed from the cache dict
@@ -135,6 +137,8 @@ namespace khtml
         void setRequest(Request *_request);
 
         bool canDelete() const { return (m_clients.count() == 0 && !m_request); }
+
+	void setExpireDate(int _expireDate);
 
         /*
          * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
@@ -153,6 +157,7 @@ namespace khtml
         bool m_reload;
         Request *m_request;
         QString m_accept;
+	int m_expireDate;
     };
 
 
@@ -162,7 +167,7 @@ namespace khtml
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
+	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate);
 	virtual ~CachedCSSStyleSheet();
 
 	const DOM::DOMString &sheet() const { return m_sheet; }
@@ -186,7 +191,7 @@ namespace khtml
     class CachedScript : public CachedObject
     {
     public:
-	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
+	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate);
 	virtual ~CachedScript();
 
 	const DOM::DOMString &script() const { return m_script; }
@@ -213,7 +218,7 @@ namespace khtml
     {
 	Q_OBJECT
     public:
-	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload);
+	CachedImage(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate);
 	virtual ~CachedImage();
 
 	const QPixmap &pixmap() const;
@@ -281,8 +286,12 @@ namespace khtml
 	CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+
+	void setExpireDate(int);
+
 	bool reloading;
 	QStringList reloadedURLs;
+	int m_expireDate;
     };
 
     /**
@@ -361,19 +370,19 @@ namespace khtml
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
+	static CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
+	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload = false);
+	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
 
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some

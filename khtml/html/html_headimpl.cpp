@@ -267,7 +267,10 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         KURL url = v->part()->url();
         if (url.protocol().startsWith("http"))
         {
-           KIO::http_update_cache(url, false, expire_date);
+	    // KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expire_date);
+	    // moved to khtml_part.cpp::slotFinished(KIO::Job *) (Tobias)
+	    if (document->docLoader())
+		document->docLoader()->setExpireDate(expire_date);
         }
     }
     else if(strcasecmp(_equiv, "pragma") == 0 && !_content.isNull())

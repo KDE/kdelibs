@@ -360,13 +360,16 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader * /*docLoader*/)
+        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader *docLoader)
         {
 	    m_part = part;
             m_priv = priv;
-	    // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
-	    m_cachedSheet = Cache::requestStyleSheet(url, DOMString("foo"),false);
-	    m_cachedSheet->ref( this );
+            // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
+            if (!docLoader)
+                m_cachedSheet = Cache::requestStyleSheet(url, DOMString("foo"),false);
+            else
+                m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"));
+            m_cachedSheet->ref( this );
         }
 	virtual ~PartStyleSheetLoader()
 	{
@@ -1246,6 +1249,11 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   //kdDebug( 6050 ) << "slotFinished" << endl;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
+
+  if (d->m_doc && d->m_doc->docLoader() && d->m_doc->docLoader()->m_expireDate)
+  {
+      KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->m_expireDate);
+  }
 
   d->m_workingURL = KURL();
 
