@@ -1,9 +1,9 @@
-kdelibs (4:2.0-20000901-0.1) unstable; urgency=low
+kdelibs (4:2.0-20000905-0) unstable; urgency=low
 
   * More Upstream fixes
   * Adding in a version number for libqt2.2 dependency
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 01 Sep 2000 17:30:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 05 Sep 2000 00:30:00 -0700
 
 kdelibs (4:2.0-20000901-0) unstable; urgency=low
 

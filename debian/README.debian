@@ -38,6 +38,9 @@ or download them from kde.tdyc.com.
 Anyways, I have verified all the binaries in kdelibs and all meet the
 DFSG.
 
+(update) Troll has decided to release QT 2.2 under both the QPL and
+the GPL so there will no longer be a confliction.
+
 Ivan  <rkrusty@debian.org>
 
 ===================
