@@ -103,7 +103,7 @@ public:
     /**
      * Draw a bevel button.
      *
-     * This calls @rerf drawBaseButton() with Bevel as the
+     * This calls @ref drawBaseButton() with Bevel as the
      * widget type.
      */
     virtual void drawBevelButton(QPainter *p, int x, int y, int w, int h,

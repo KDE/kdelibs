@@ -211,7 +211,7 @@ public:
     /**
      * Set the modification status of the document.
      *
-     *  @true = Modified, @false = UNMODIFIED.
+     *  @p true = Modified, @p false = UNMODIFIED.
      *  This can be used to test whether the document needs to be saved.
      **/
     void 	setModified( bool = true);

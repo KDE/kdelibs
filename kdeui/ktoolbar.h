@@ -767,7 +767,8 @@ public:
    * this, the icon size is taken care of by KIconLoader
    * and globally configured.
    * By default, the toolbar will load icons of size 32 for main
-   * toolbars and 22 for other toolbars (@see KIconLoader).
+   * toolbars and 22 for other toolbars 
+   * @see KIconLoader.
    *
    * @param size The size to use
    */

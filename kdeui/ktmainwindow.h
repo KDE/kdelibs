@@ -121,18 +121,18 @@ public:
      */
     int addToolBar( KToolBar *toolbar, int index = -1 );
     /**
-     * @obsolete
+     * @deprecated
      */
     void setMenu (KMenuBar * ) {}
     /**
-     * @obsolete
+     * @deprecated
      */
     void setStatusBar ( KStatusBar * ) {};
     
 
 protected slots:
     /**
-     * @obsolete
+     * @deprecated
      */
     virtual void updateRects();
 };

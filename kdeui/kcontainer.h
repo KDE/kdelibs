@@ -83,7 +83,9 @@ enum { Horizontal = 0, Vertical };
     void setOrientation(int i);
     /**
      * Sets the container to use the same size to each widget he contains (TRUE) or not (FALSE)
-     * When homogeneous is true all widgets will be packed as if they had the Expand set to TRUE @see KContainerLayout#packStart @see KContainer#packEnd
+     * When homogeneous is true all widgets will be packed as if they had the Expand set to TRUE
+     * @see KContainerLayout#packStart
+     * @see KContainer#packEnd
      */
     void setHomogeneos(bool b);
     /*
@@ -91,34 +93,38 @@ enum { Horizontal = 0, Vertical };
      */
     void setSpacing(int i);
     /**
-     * Sets the starting offset for this container @see _startOffset
+     * Sets the starting offset for this container 
+     * @see _startOffset
      */
     void setStartOffset(int i);
     /**
-     * Sets the ending offset for this container @see _endOffset
+     * Sets the ending offset for this container 
+     * @see _endOffset
      */
     void setEndOffset(int i);
     /**
-     * Returns the current orientation of the container @see
-     * KContainerLayout#setOrientation
+     * Returns the current orientation of the container 
+     * @see KContainerLayout#setOrientation
      */
     const int orientation() const	{ return _orientation; }
     /**
-     * Returns the current homogeneous state of the container @see
-     * KContainerLayout#setHomogeneous
+     * Returns the current homogeneous state of the container 
+     * @see KContainerLayout#setHomogeneous
      */
     const bool homogeneos() const	{ return _homogeneos; }
     /**
-     * Returns the current spacing of the container @see
-     * KContainerLayout#setSpacing
+     * Returns the current spacing of the container
+     * @see KContainerLayout#setSpacing
      */
     const int spacing() const		{ return _spacing; }
     /**
-     * Returns the starting offset for this container @see _startOffset
+     * Returns the starting offset for this container 
+     * @see _startOffset
      */
     const int startOffset() const	{ return _startOffset; }
     /**
-     * Returns the ending offset for this container @see _endOffset
+     * Returns the ending offset for this container
+     * @see _endOffset
      */
     const int endOffset() const		{ return _endOffset; }
     /**
@@ -200,7 +206,9 @@ protected:
      * Calculate our size hint based on the sizeHint() of all out
      * widgets, on our properties - expand and homogeneous, and on the
      * KContainerLayoutItem properties.
-     * @see KContainerLayoutItem @see packStart @see packEnd
+     * @see KContainerLayoutItem
+     * @see packStart 
+     * @see packEnd
      */
     void calculateSizeHint();
     /**

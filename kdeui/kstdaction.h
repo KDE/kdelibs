@@ -31,7 +31,7 @@ class KStdActionPrivate;
  * These actions should be used instead of hardcoding menubar and
  * toolbar items.  Using these actions helps your application easily
  * conform to the KDE UI Style Guide
- * ( @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html ).
+ * @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html .
  *
  * All of the documentation for @ref KAction holds for @ref KStdAction
  * also.  When in doubt on how things work, check the @ref KAction

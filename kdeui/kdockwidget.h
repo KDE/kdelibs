@@ -130,7 +130,9 @@ public:
    */
   virtual ~KDockWidgetAbstractHeaderDrag(){};
 
-  /** @return the dockwidget where this belongs to */
+  /**
+   * @return the dockwidget where this belongs to
+   */
   KDockWidget* dockWidget(){ return dw; }
 
 private:
@@ -489,7 +491,9 @@ public:
    */
   const QString& toolTipString() { return toolTipStr; };
 
-  /** @return @p true, if a dockback is possible, otherwise @p false. */
+  /** 
+   * @return result @p true, if a dockback is possible, otherwise @p false.
+   */
   bool isDockBackPossible();
 
   /** Set a string that is used for the label of the tab page when in tab page mode 

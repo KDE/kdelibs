@@ -169,7 +169,7 @@ protected:
 
     /** Virtual function that can be overridden to provide password
      * checking in derived classes. It should return @p if the
-     * password is valid, @false otherwise. */
+     * password is valid, @p false otherwise. */
     virtual bool checkPassword(const char *) { return true; }
 
 private:

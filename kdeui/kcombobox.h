@@ -299,7 +299,7 @@ signals:
     * The argument indicates which key-binding was pressed.
     * In this case this can be either one of four values:
     * @p PrevCompletionMatch, @p NextCompletionMatch, @p RotateUp or
-    * @Tt RotateDown. See @ref KCompletionBase::setKeyBinding() for
+    * @p RotateDown. See @ref KCompletionBase::setKeyBinding() for
     * details.
     *
     * Note that this signal is @em NOT emitted if the completion

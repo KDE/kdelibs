@@ -80,9 +80,9 @@ public:
    *
    * @param url is the URL emitted when the label is clicked.
    * @param text is the displayed string. If it's equal to QString::null
-   * the @arg url will be used instead.
+   * the @p url will be used instead.
    *
-   * @arg parent and @arg name are passed to @ref QLabel.
+   * @p parent and @p name are passed to @ref QLabel.
    */
   KURLLabel (const QString& url, const QString& text = QString::null,
               QWidget* parent = 0L, const char* name = 0L);

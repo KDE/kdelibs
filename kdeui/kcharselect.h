@@ -136,7 +136,7 @@ class KCharSelect : public QVBox
 public:
     /**
      * Constructor. @p font specifies which font should be displayed, @p
-     * chr which character should be selected and @tableNum specifies
+     * chr which character should be selected and @p tableNum specifies
      * the number of the table which should be displayed.
      */
     KCharSelect( QWidget *parent, const char *name,

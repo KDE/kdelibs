@@ -334,7 +334,7 @@ signals:
 
   /**
    * This signal is emitted after all the items have been moved. It reports info for
-   * each and every item moved, in order.  The first element in @param items associates
+   * each and every item moved, in order.  The first element in @p items associates
    * with the first of afterFirst and afterNow.
    **/
   void moved(QList<QListViewItem> &items, QList<QListViewItem> &afterFirst, QList<QListViewItem> &afterNow);
