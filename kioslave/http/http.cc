@@ -2024,7 +2024,7 @@ bool HTTPProtocol::httpOpen()
           if ( timeout == 0 )
             davHeader += "Infinite";
           else
-            davHeader += "Seconds-" + timeout;
+            davHeader += QString("Seconds-%1").arg(timeout);
         }
         davHeader += "\r\n";
         m_request.bCachedWrite = false; // Do not put any result in the cache
