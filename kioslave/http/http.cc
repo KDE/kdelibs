@@ -876,7 +876,7 @@ void HTTPProtocol::decodeGzip()
   // eek. This is no fun for progress indicators.
   QByteArray ar;
 
-  char tmp_buf[1024], *filename=strdup("/tmp/XXXkio_httpXXX");
+  char tmp_buf[1024], *filename=strdup("/tmp/kio_http.XXXXXX");
   unsigned long len;
   int fd;
 
