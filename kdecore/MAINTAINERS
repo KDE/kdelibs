@@ -10,27 +10,27 @@ kaboutdata.cpp
 kaccel.cpp
 kaccelaction.cpp
 kaccelbase.cpp
-kallocator.cpp
+kallocator.cpp		Waldo Bastian <bastian@kde.org>
 kappdcopiface.cpp
-kapplication.cpp
+kapplication.cpp	Waldo Bastian <bastian@kde.org>
 kaudioplayer.cpp
 kbufferedio.cpp
 kcatalogue.cpp
 kcharsets.cpp
 kckey.cpp
-kcmdlineargs.cpp
+kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>
 kcompletion.cpp
 kcompletionbase.cpp
-kconfig.cpp
-kconfigbackend.cpp
-kconfigbase.cpp
-kcrash.cpp
+kconfig.cpp		Waldo Bastian <bastian@kde.org>
+kconfigbackend.cpp	Waldo Bastian <bastian@kde.org>
+kconfigbase.cpp		Waldo Bastian <bastian@kde.org>
+kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
 kdebug.cpp
-kdesktopfile.cpp
+kdesktopfile.cpp	
 kdestyle.cpp
 kextsock.cpp
-kglobal.cpp
+kglobal.cpp		
 kglobalaccel.cpp
 kglobalaccel_x11.cpp
 kglobalsettings.cpp
@@ -50,32 +50,32 @@ kmdcodec.cpp
 kmimesourcefactory.cpp
 kmultipledrag.cpp
 knotifyclient.cpp
-kpalette.cpp
+kpalette.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapprovider.cpp
-kprocctrl.cpp
-kprocess.cpp
-kprocio.cpp
-krandomsequence.cpp
+kprocctrl.cpp		Waldo Bastian <bastian@kde.org>
+kprocess.cpp		Waldo Bastian <bastian@kde.org>
+kprocio.cpp		Waldo Bastian <bastian@kde.org>
+krandomsequence.cpp	Waldo Bastian <bastian@kde.org>
 kregexp.cpp
-krfcdate.cpp
+krfcdate.cpp		Waldo Bastian <bastian@kde.org>
 krootprop.cpp
-ksavefile.cpp
+ksavefile.cpp		Waldo Bastian <bastian@kde.org>
 kshortcut.cpp
-ksimpleconfig.cpp
+ksimpleconfig.cpp	Waldo Bastian <bastian@kde.org>
 ksock.cpp
 ksockaddr.cpp
 ksocks.cpp
-kstandarddirs.cpp
+kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
 kstartupinfo.cpp
 kstaticdeleter.cpp
 kstdaccel.cpp
 kstringhandler.cpp
-ksycoca.cpp
-ksycocadict.cpp
-ksycocafactory.cpp
-ktempfile.cpp
-kuniqueapplication.cpp
-kurl.cpp
+ksycoca.cpp		Waldo Bastian <bastian@kde.org>
+ksycocadict.cpp		Waldo Bastian <bastian@kde.org>
+ksycocafactory.cpp	Waldo Bastian <bastian@kde.org>
+ktempfile.cpp		Waldo Bastian <bastian@kde.org>
+kuniqueapplication.cpp	Waldo Bastian <bastian@kde.org>
+kurl.cpp		Waldo Bastian <bastian@kde.org>
 kurldrag.cpp
 kwin.cpp
 kwinmodule.cpp
