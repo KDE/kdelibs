@@ -76,7 +76,7 @@ public:
 *
 * @param rKey	The key to search for.
 * @param pDefault A default value returned if the key was not found.
-* @return The value for this key or an empty string if no value
+* @return The value for this key or the default if no value
 *	  was found.
 */	
   QString readEntry( const QString& rKey, 
@@ -90,7 +90,7 @@ public:
 *
 * @param rKey The key to search for.
 * @param nDefault A default value returned if the key was not found.
-* @return The value for this key or 0 if no value was found.
+* @return The value for this key or the default if no value was found.
 */
   int readNumEntry( const QString& rKey, int nDefault = 0 ) const;
   
