@@ -991,7 +991,7 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 
 	for (QIntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
 		if (it.current()->walletName() == wallet) {
-			return it.current()->folderDoesNotExist(folder);
+			return it.current()->entryDoesNotExist(folder, key);
 		}
 	}
 
