@@ -180,9 +180,9 @@ void KLineEdit::setReadOnly(bool readOnly)
     // Do not do anything if nothing changed...
     if (readOnly == isReadOnly ())
       return;
-      
-    QLineEdit::setReadOnly (readOnly); 
-    
+
+    QLineEdit::setReadOnly (readOnly);
+
     if (readOnly)
     {
         d->bgMode = backgroundMode ();
@@ -702,7 +702,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 // Eat the event if the user asked for it, or if a completionbox was visible
                 return d->grabReturnKeyEvents || trap;
             }
-        }       
+        }
     }
     return QLineEdit::eventFilter( o, ev );
 }
@@ -742,7 +742,7 @@ void KLineEdit::makeCompletionBox()
     if ( handleSignals() )
     {
         connect( d->completionBox, SIGNAL(highlighted( const QString& )),
-                 SLOT(setText( const QString& )) );
+                 SLOT(setTextWorkaround( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL( activated( const QString& )),
@@ -859,6 +859,11 @@ void KLineEdit::clear()
     setText( QString::null );
 }
 
+void KLineEdit::setTextWorkaround( const QString& text )
+{
+    setText( text );
+    end( false ); // force cursor at end
+}
+
 void KLineEdit::virtual_hook( int id, void* data )
 { KCompletionBase::virtual_hook( id, data ); }
-

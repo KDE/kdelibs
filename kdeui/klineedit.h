@@ -248,7 +248,7 @@ public:
      * @see setTrapReturnKey ()
      */
     bool trapReturnKey() const;
-    
+
     /**
      * Re-implemented for internal reasons.  API not affected.
      *
@@ -375,9 +375,9 @@ public slots:
      * (changing the clipboard to the text we just had in the lineedit)
      */
     virtual void clear();
-    
+
     /**
-     * Squeezes @p text into the line edit. 
+     * Squeezes @p text into the line edit.
      * This can only be used with read-only line-edits.
      * @since 3.1
      */
@@ -464,6 +464,7 @@ protected:
 private slots:
     void completionMenuActivated( int id );
     void tripleClickTimeout();  // resets possibleTripleClick
+    void setTextWorkaround( const QString& text );
 
 private:
     // Constants that represent the ID's of the popup menu.
