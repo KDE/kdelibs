@@ -67,12 +67,12 @@ return _pcsc->listReaders(NULL);
 bool KardSvc::isCardPresent(QString slot) {
 KCardReader *_card = _pcsc->getReader(slot);
 
-   if (!_card) {
-	   return false;
-   }
+	if (!_card) {
+		return false;
+	}
 
-   bool rc = _card->isCardPresent();
-   delete _card;
+	bool rc = _card->isCardPresent();
+	delete _card;
 
 return rc;
 }
@@ -82,13 +82,25 @@ void KardSvc::poll() {
 int err;
 QStringList newReaders = _pcsc->listReaders(&err);
 
+	// Update the list of readers
 	if (_readers != newReaders) {
-		if (err != 0) {
+		if (err == 0) {
 			kdDebug() << "kardsvc: reader list changed." << endl;
+			for (QStringList::Iterator s = _readers.begin();
+			     s != _readers.end();
+			     ++s) {
+				if (!newReaders.contains(*s) && 
+						_states[*s] != 0) {
+					_states[*s] = 0;
+					kdDebug() << "kardsvc: card removed from slot " 
+						  << *s << endl;
+				}
+			}
 			_readers = newReaders;
 		} else return;
 	}
 
+	// Check each slot for a card insertion/removal
 	for (QStringList::Iterator s = _readers.begin();
 	     s != _readers.end();
 	     ++s) {
