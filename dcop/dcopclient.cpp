@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <config.h>
 #include <dcopref.h>
 
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -74,11 +75,8 @@ extern "C" {
 #include <KDE-ICE/ICEmsg.h>
 #include <KDE-ICE/ICEproto.h>
 #endif
-
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 }
+
 
 extern QMap<QCString, DCOPObject *> * kde_dcopObjMap; // defined in dcopobject.cpp
 
