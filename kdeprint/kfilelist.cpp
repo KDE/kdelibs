@@ -22,11 +22,11 @@
 #include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qdragobject.h>
 #include <qtooltip.h>
 #include <qheader.h>
 
 #include <kio/netaccess.h>
+#include <kurldrag.h>
 #include <kfiledialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -104,19 +104,19 @@ KFileList::~KFileList()
 
 void KFileList::dragEnterEvent(QDragEnterEvent *e)
 {
-	e->accept(QUriDrag::canDecode(e));
+	e->accept(KURLDrag::canDecode(e));
 }
 
 void KFileList::dropEvent(QDropEvent *e)
 {
-	QStringList	files;
-	if (QUriDrag::decodeToUnicodeUris(e, files))
+	KURL::List	files;
+	if (KURLDrag::decode(e, files))
 	{
 		addFiles(files);
 	}
 }
 
-void KFileList::addFiles(const QStringList& files)
+void KFileList::addFiles(const KURL::List& files)
 {
 	if (files.count() > 0)
 	{
@@ -127,8 +127,8 @@ void KFileList::addFiles(const QStringList& files)
 
 		// for each file, download it (if necessary) and add it
 		QString	downloaded;
-		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (KIO::NetAccess::download(KURL(*it), downloaded))
+		for (KURL::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
+			if (KIO::NetAccess::download(*it, downloaded))
 			{
 				KURL	url;
 				url.setPath(downloaded);
@@ -153,7 +153,16 @@ void KFileList::addFiles(const QStringList& files)
 void KFileList::setFileList(const QStringList& files)
 {
 	m_files->clear();
-	addFiles(files);
+	QListViewItem *item = 0;
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+	{
+		KURL	url;
+		url.setPath(*it);
+		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
+		item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
+		item->setPixmap(0, mime->pixmap(url, KIcon::Small));
+	}
+	slotSelectionChanged();
 }
 
 QStringList KFileList::fileList() const
@@ -162,7 +171,7 @@ QStringList KFileList::fileList() const
 	QListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
-		l << KURL::encode_string( item->text(2) );
+		l << item->text(2);
 		item = item->nextSibling();
 	}
 	return l;
@@ -170,9 +179,9 @@ QStringList KFileList::fileList() const
 
 void KFileList::slotAddFile()
 {
-	QString	fname = KFileDialog::getOpenFileName(QString::null, QString::null, this);
+	KURL	fname = KFileDialog::getOpenURL(QString::null, QString::null, this);
 	if (!fname.isEmpty())
-		addFiles(QStringList(fname));
+		addFiles(KURL::List(fname));
 }
 
 void KFileList::slotRemoveFile()
@@ -191,7 +200,9 @@ void KFileList::slotOpenFile()
 	QListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
-		new KRun(KURL(item->text(2)));
+		KURL url;
+		url.setPath(item->text(2));
+		new KRun(url);
 	}
 }
 

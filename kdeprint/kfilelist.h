@@ -22,6 +22,7 @@
 
 #include <qwidget.h>
 #include <qptrlist.h>
+#include <kurl.h>
 
 class KListView;
 class QToolButton;
@@ -49,7 +50,7 @@ protected slots:
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
-	void addFiles(const QStringList&);
+	void addFiles(const KURL::List&);
 	void selection(QPtrList<QListViewItem>&);
 
 private:

@@ -252,6 +252,7 @@ void HelpWindow::print()
     printer.setDocFileName("my_document");
 #ifdef KDE_PRINT
     printer.addDialogPage(new RichPage());
+    printer.addStandardPage(KPrinter::FilesPage);
 #endif
     if ( printer.setup(this) ) {
 	QPainter p( &printer );
