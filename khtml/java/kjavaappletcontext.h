@@ -69,7 +69,7 @@ public:
     /**
      * Sends a message to create the applet.
      */
-    void create( KJavaApplet* );
+    bool create( KJavaApplet* );
 
     /**
      * Sends a message to destroy the applet.

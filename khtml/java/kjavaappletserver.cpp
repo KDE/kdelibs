@@ -85,6 +85,7 @@ private:
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
    JSStackNode *jsstack;
+   bool javaProcessFailed;
 };
 
 static KJavaAppletServer* self = 0;
@@ -100,11 +101,14 @@ KJavaAppletServer::KJavaAppletServer()
 
     setupJava( process );
 
-    if( process->startJava() )
+    if( process->startJava() ) {
         d->appletLabel = i18n( "Loading Applet" );
-    else
+        d->javaProcessFailed = false;
+    }
+    else {
         d->appletLabel = i18n( "Error: java executable not found" );
-
+        d->javaProcessFailed = true;
+    }
 }
 
 KJavaAppletServer::~KJavaAppletServer()
@@ -265,6 +269,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* context )
 {
 //    kdDebug(6100) << "createContext: " << contextId << endl;
+    if ( d->javaProcessFailed ) return;
+
     d->contexts.insert( contextId, context );
 
     QStringList args;
@@ -275,6 +281,7 @@ void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* contex
 void KJavaAppletServer::destroyContext( int contextId )
 {
 //    kdDebug(6100) << "destroyContext: " << contextId << endl;
+    if ( d->javaProcessFailed ) return;
     d->contexts.remove( contextId );
 
     QStringList args;
@@ -282,7 +289,7 @@ void KJavaAppletServer::destroyContext( int contextId )
     process->send( KJAS_DESTROY_CONTEXT, args );
 }
 
-void KJavaAppletServer::createApplet( int contextId, int appletId,
+bool KJavaAppletServer::createApplet( int contextId, int appletId,
                                       const QString name, const QString clazzName,
                                       const QString baseURL, const QString codeBase,
                                       const QString jarFile, QSize size,
@@ -298,6 +305,8 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 //              << "              jarFile   = " << jarFile       << endl
 //              << "              width     = " << size.width()  << endl
 //              << "              height    = " << size.height() << endl;
+
+    if ( d->javaProcessFailed ) return false;
 
     QStringList args;
     args.append( QString::number( contextId ) );
@@ -333,15 +342,19 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 
 void KJavaAppletServer::initApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number( contextId ) );
     args.append( QString::number( appletId ) );
 
     process->send( KJAS_INIT_APPLET, args );
+
+    return true;
 }
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -351,6 +364,7 @@ void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 
 void KJavaAppletServer::startApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -360,6 +374,7 @@ void KJavaAppletServer::startApplet( int contextId, int appletId )
 
 void KJavaAppletServer::stopApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );

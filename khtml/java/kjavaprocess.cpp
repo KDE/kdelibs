@@ -377,6 +377,8 @@ bool KJavaProcess::invokeJVM()
     bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
     if( rval )
         javaProcess->resume(); //start processing stdout on the java process
+    else
+        killJVM();
 
     return rval;
 }

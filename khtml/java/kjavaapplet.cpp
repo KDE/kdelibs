@@ -173,7 +173,8 @@ QString& KJavaApplet::appletName()
 
 void KJavaApplet::create( )
 {
-    context->create( this );
+    if (  !context->create( this ) )
+        setFailed();
     d->reallyExists = true;
 }
 

@@ -85,7 +85,7 @@ public:
      * Create an applet in the specified context with the specified id. The applet
      * name, class etc. are specified in the same way as in the HTML APPLET tag.
      */
-    void createApplet( int contextId, int appletId,
+    bool createApplet( int contextId, int appletId,
                        const QString name, const QString clazzName,
                        const QString baseURL, const QString codeBase,
                        const QString jarFile, QSize size,

@@ -85,17 +85,18 @@ void KJavaAppletContext::registerApplet( KJavaApplet* applet )
     d->applets.insert( appletId, applet );
 }
 
-void KJavaAppletContext::create( KJavaApplet* applet )
+bool KJavaAppletContext::create( KJavaApplet* applet )
 {
-    server->createApplet( id, applet->appletId(),
-                          applet->appletName(),
-                          applet->appletClass(),
-                          applet->baseURL(),
-                          applet->codeBase(),
-                          applet->archives(),
-                          applet->size(),
-                          applet->getParams(),
-                          applet->getWindowName() );
+    return server->createApplet( id, applet->appletId(),
+                                applet->appletName(),
+                                applet->appletClass(),
+                                applet->baseURL(),
+                                applet->codeBase(),
+                                applet->archives(),
+                                applet->size(),
+                                applet->getParams(),
+                                applet->getWindowName() );
+
 
 }
 
