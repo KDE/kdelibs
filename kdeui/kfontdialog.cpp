@@ -22,6 +22,13 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+
+    Revision 1.8  1997/10/16 11:15:21  torben
+    Kalle: Copyright headers
+    kdoctoolbar removed
+
+    Revision 1.7  1997/08/31 19:18:37  kdecvs
+    Kalle:
     new usage of KLocale
     default string for KConfig::readEntry to const char*
 
@@ -42,7 +49,7 @@
     Kalle: You may now override how KApplication reacts to external changes
     KButton uses the widget default palette
 
-#include "kfontdialog.h"
+    Revision 1.4  1997/04/29 02:44:24  wuebben
     *** empty log message ***
 
     Revision 1.3  1997/04/27 01:50:49  wuebben

@@ -274,7 +274,7 @@ AC_DEFUN(AC_CHECK_SETENV,
 [AC_MSG_CHECKING([for setenv])
 AC_CACHE_VAL(ac_cv_func_setenv,
 [AC_LANG_C
-AC_TRY_COMPILE(
+AC_TRY_LINK(
 dnl Don't include <ctype.h> because on OSF/1 3.0 it includes <sys/types.h>
 dnl which includes <sys/select.h> which contains a prototype for
 dnl select.  Similarly for bzero.
