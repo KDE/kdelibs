@@ -69,7 +69,7 @@ namespace KMDI
 class DockContainer;
 class TabWidget;
 
-class MainWindow : public KParts::DockMainWindow
+class KMDI_EXPORT MainWindow : public KParts::DockMainWindow
 {
   Q_OBJECT
 

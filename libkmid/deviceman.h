@@ -24,6 +24,7 @@
 #define DEVICEMAN_H
 
 #include <libkmid/dattypes.h>
+#include <kdelibs_export.h>
 
 class MidiOut;
 class MidiMapper;
@@ -43,7 +44,7 @@ class MidiMapper;
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
-class DeviceManager
+class KMID_EXPORT DeviceManager
 {
   protected:
 

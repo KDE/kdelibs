@@ -38,7 +38,7 @@ class KPrintDialogPage;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KPrintDialog : public KDialog, public KPReloadObject
+class KDEPRINT_EXPORT KPrintDialog : public KDialog, public KPReloadObject
 {
 	Q_OBJECT
 public:

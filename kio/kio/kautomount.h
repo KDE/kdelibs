@@ -22,6 +22,8 @@
 #include <qobject.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 #ifdef Q_OS_UNIX
 
 namespace KIO {
@@ -36,7 +38,7 @@ class Job;
  *
  * @short This class implements synchronous mounting of devices.
  */
-class KAutoMount : public QObject
+class KIO_EXPORT KAutoMount : public QObject
 {
   Q_OBJECT
   friend class gcc_gives_a_warning_without_this;

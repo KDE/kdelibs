@@ -299,17 +299,6 @@ public:
 	KSSLCertificate(const KSSLCertificate& x); // copy constructor
 
 	/**
-	 *  Compare two certificate to determine if they are the same.
-	 */
-	friend int operator==(KSSLCertificate& x, KSSLCertificate& y);
-
-	/**
-	 *  Compare two certificate to determine if they are not the same.
-	 */
-	inline friend int operator!=(KSSLCertificate& x, KSSLCertificate& y) 
-                                                       { return !(x == y); }
-
-	/**
 	 *  Re-set the certificate from a base64 string.
 	 *  @param cert the certificate to set to
 	 *  @return true on success
@@ -347,6 +336,9 @@ public:
 	static QString getMD5DigestFromKDEKey(const QString& k);
 
 private:
+	friend int operator!=(KSSLCertificate& x, KSSLCertificate& y); 
+	friend int operator==(KSSLCertificate& x, KSSLCertificate& y); 
+
 	KSSLCertificatePrivate *d;
 	int purposeToOpenSSL(KSSLPurpose p) const; 
 
@@ -359,9 +351,12 @@ protected:
 	KSSLValidation processError(int ec);
 };
 
-
 KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r);
 KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertificate& r);
+
+KIO_EXPORT int operator==(KSSLCertificate& x, KSSLCertificate& y);
+KIO_EXPORT inline int operator!=(KSSLCertificate& x, KSSLCertificate& y) 
+{ return !(x == y); }
 
 #endif
 

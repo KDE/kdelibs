@@ -27,13 +27,15 @@ class KConfig;
 #include <qfont.h>
 #include <qmap.h>
 
+#include <kdelibs_export.h>
+
 struct KPerDomainSettings;
 class KHTMLSettingsPrivate;
 
 /**
  * Settings for the HTML view.
  */
-class KHTMLSettings
+class KHTML_EXPORT KHTMLSettings
 {
 public:
 

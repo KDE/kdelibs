@@ -49,7 +49,7 @@ class KSharedPixmapPrivate;
  * @version $Id$
  *
  */
-class KSharedPixmap: 
+class KDEUI_EXPORT KSharedPixmap: 
     public QWidget,
     public KPixmap
 {

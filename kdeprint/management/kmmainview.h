@@ -50,7 +50,7 @@ class QMenuBar;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMMainView : public QWidget, public KPReloadObject
+class KDEPRINT_EXPORT KMMainView : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:

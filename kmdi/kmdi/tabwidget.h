@@ -53,7 +53,7 @@ namespace KMDIPrivate
 namespace KMDI
 {
 
-class TabWidget : public KTabWidget
+class KMDI_EXPORT TabWidget : public KTabWidget
 {
   Q_OBJECT
 

@@ -25,6 +25,7 @@
 #endif
 
 #include <qtimer.h>
+#include <kdelibs_export.h>
 
 /**
  * @internal
@@ -33,7 +34,7 @@
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMTimer : public QTimer
+class KDEPRINT_EXPORT KMTimer : public QTimer
 {
 	Q_OBJECT
 public:

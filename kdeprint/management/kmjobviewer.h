@@ -46,7 +46,7 @@ class QCheckBox;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
+class KDEPRINT_EXPORT KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
 {
 	Q_OBJECT
 public:
