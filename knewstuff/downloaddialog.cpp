@@ -109,6 +109,11 @@ void DownloadDialog::load()
   m_loader->load(m_filter, m_providerlist);
 }
 
+void DownloadDialog::load(QString providerList)
+{
+  m_loader->load(m_filter, providerList);
+}
+
 void DownloadDialog::clear()
 {
   QMap<QWidget*, QValueList<KListView*>* >::Iterator it;

@@ -8,7 +8,7 @@ libknewstuff_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -version-info 1:0
 libknewstuff_la_LIBADD  = $(LIB_KIO)
 libknewstuff_la_SOURCES = engine.cpp entry.cpp downloaddialog.cpp \
   uploaddialog.cpp providerdialog.cpp provider.cpp knewstuff.cpp \
-  knewstuffgeneric.cpp
+  knewstuffgeneric.cpp knewstuffbutton.cpp
 
 bin_PROGRAMS = khotnewstuff
 
@@ -32,7 +32,7 @@ knewstuff_DATA = types
 kde_conf_DATA = khotnewstuffrc
 
 knsdir = $(includedir)/knewstuff
-kns_HEADERS = downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h
+kns_HEADERS = downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h
 noinst_HEADERS = testnewstuff.h ghns.h
 
 KDE_ICON=AUTO

@@ -23,10 +23,18 @@
 #include <qstring.h>
 
 class QWidget;
+class KAction;
+class KActionCollection;
 
 namespace KNS {
 class Engine;
 class Entry;
+
+KAction* standardAction(const QString& what,
+                        const QObject *recvr,
+                        const char *slot,
+                        KActionCollection* parent,
+                        const char *name = 0);
 }
 
 /**

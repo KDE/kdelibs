@@ -18,6 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kaction.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -29,9 +30,18 @@
 
 using namespace KNS;
 
+KAction* KNS::standardAction(const QString& what,
+                             const QObject *recvr,
+                             const char *slot, KActionCollection* parent,
+                             const char *name)
+{
+    return new KAction(i18n("Download New %1").arg(what), "knewstuff",
+                       0, recvr, slot, parent, name);
+}
+
 KNewStuff::KNewStuff( const QString &type, QWidget *parentWidget )
 {
-  mEngine = new Engine( this, type, parentWidget );
+    mEngine = new Engine( this, type, parentWidget );
 }
 
 KNewStuff::KNewStuff( const QString &type, const QString &providerList, QWidget *parentWidget )

@@ -107,6 +107,16 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void setProviderList(const QString& providerList);
 
     /**
+      Fetches descriptions of all available data, optionally considering
+      a previously set type.
+
+      @param providerList the URl to the list of providers; if empty
+             we first try the ProvidersUrl from KGlobal::config, then we
+             fall back to a hardcoded value.
+    */
+    void load(QString providerList); // KDE4: merge with load() above
+
+    /**
       Adds another provider to the download dialog.
       This is normally done internally.
 
