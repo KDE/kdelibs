@@ -19,7 +19,7 @@
  * 02111-1307  USA
  */
 #include "dialog.h"
-#include "kspellui.h"
+#include "kspell2ui.h"
 
 #include "backgroundchecker.h"
 #include "broker.h"
@@ -48,7 +48,7 @@ namespace KSpell2
 class Dialog::Private
 {
 public:
-    KSpellUI *ui;
+    KSpell2UI *ui;
     QString   originalBuffer;
     BackgroundChecker *checker;
 
@@ -105,7 +105,7 @@ void Dialog::initConnections()
 
 void Dialog::initGui()
 {
-    d->ui = new KSpellUI( this );
+    d->ui = new KSpell2UI( this );
     d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui->m_language->clear();
     d->ui->m_language->insertStringList( d->checker->broker()->languages() );

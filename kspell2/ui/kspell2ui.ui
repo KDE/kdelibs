@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.2" stdsetdef="1">
-<class>KSpellUI</class>
+<class>KSpell2UI</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>KSpellUI</cstring>
+        <cstring>KSpell2UI</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -21,7 +21,7 @@
         </sizepolicy>
     </property>
     <property name="caption">
-        <string>KSpellUI</string>
+        <string>KSpell2UI</string>
     </property>
     <grid>
         <property name="name">
