@@ -20,6 +20,7 @@
 #include <ksharedptr.h>
 #include <kdebug.h>
 #include <kapplication.h>
+#include <klocale.h>
 
 #include "phonenumber.h"
 
@@ -113,6 +114,11 @@ QString Addressee::uid() const
   return mData->uid;
 }
 
+QString Addressee::uidLabel() const
+{
+  return i18n("Unique Identifier");
+}
+
 
 void Addressee::setName( const QString &name )
 {
@@ -125,6 +131,11 @@ void Addressee::setName( const QString &name )
 QString Addressee::name() const
 {
   return mData->name;
+}
+
+QString Addressee::nameLabel() const
+{
+  return i18n("Name");
 }
 
 
@@ -141,6 +152,11 @@ QString Addressee::formattedName() const
   return mData->formattedName;
 }
 
+QString Addressee::formattedNameLabel() const
+{
+  return i18n("Formatted Name");
+}
+
 
 void Addressee::setFamilyName( const QString &familyName )
 {
@@ -153,6 +169,11 @@ void Addressee::setFamilyName( const QString &familyName )
 QString Addressee::familyName() const
 {
   return mData->familyName;
+}
+
+QString Addressee::familyNameLabel() const
+{
+  return i18n("Family Name");
 }
 
 
@@ -169,6 +190,11 @@ QString Addressee::givenName() const
   return mData->givenName;
 }
 
+QString Addressee::givenNameLabel() const
+{
+  return i18n("Given Name");
+}
+
 
 void Addressee::setAdditionalName( const QString &additionalName )
 {
@@ -181,6 +207,11 @@ void Addressee::setAdditionalName( const QString &additionalName )
 QString Addressee::additionalName() const
 {
   return mData->additionalName;
+}
+
+QString Addressee::additionalNameLabel() const
+{
+  return i18n("Additional Names");
 }
 
 
@@ -197,6 +228,11 @@ QString Addressee::prefix() const
   return mData->prefix;
 }
 
+QString Addressee::prefixLabel() const
+{
+  return i18n("Honorific Prefixes");
+}
+
 
 void Addressee::setSuffix( const QString &suffix )
 {
@@ -209,6 +245,11 @@ void Addressee::setSuffix( const QString &suffix )
 QString Addressee::suffix() const
 {
   return mData->suffix;
+}
+
+QString Addressee::suffixLabel() const
+{
+  return i18n("Honorific Suffixes");
 }
 
 
@@ -225,6 +266,11 @@ QString Addressee::nickName() const
   return mData->nickName;
 }
 
+QString Addressee::nickNameLabel() const
+{
+  return i18n("Nick Name");
+}
+
 
 void Addressee::setBirthday( const QDateTime &birthday )
 {
@@ -237,6 +283,11 @@ void Addressee::setBirthday( const QDateTime &birthday )
 QDateTime Addressee::birthday() const
 {
   return mData->birthday;
+}
+
+QString Addressee::birthdayLabel() const
+{
+  return i18n("Birthday");
 }
 
 
@@ -253,6 +304,11 @@ QString Addressee::mailer() const
   return mData->mailer;
 }
 
+QString Addressee::mailerLabel() const
+{
+  return i18n("Mail Client");
+}
+
 
 void Addressee::setTimeZone( const TimeZone &timeZone )
 {
@@ -265,6 +321,11 @@ void Addressee::setTimeZone( const TimeZone &timeZone )
 TimeZone Addressee::timeZone() const
 {
   return mData->timeZone;
+}
+
+QString Addressee::timeZoneLabel() const
+{
+  return i18n("Time Zone");
 }
 
 
@@ -281,6 +342,11 @@ Geo Addressee::geo() const
   return mData->geo;
 }
 
+QString Addressee::geoLabel() const
+{
+  return i18n("Geographic Position");
+}
+
 
 void Addressee::setTitle( const QString &title )
 {
@@ -293,6 +359,11 @@ void Addressee::setTitle( const QString &title )
 QString Addressee::title() const
 {
   return mData->title;
+}
+
+QString Addressee::titleLabel() const
+{
+  return i18n("Title");
 }
 
 
@@ -309,6 +380,11 @@ QString Addressee::role() const
   return mData->role;
 }
 
+QString Addressee::roleLabel() const
+{
+  return i18n("Role");
+}
+
 
 void Addressee::setOrganization( const QString &organization )
 {
@@ -321,6 +397,11 @@ void Addressee::setOrganization( const QString &organization )
 QString Addressee::organization() const
 {
   return mData->organization;
+}
+
+QString Addressee::organizationLabel() const
+{
+  return i18n("Organization");
 }
 
 
@@ -337,6 +418,11 @@ QString Addressee::note() const
   return mData->note;
 }
 
+QString Addressee::noteLabel() const
+{
+  return i18n("Note");
+}
+
 
 void Addressee::setProductId( const QString &productId )
 {
@@ -349,6 +435,11 @@ void Addressee::setProductId( const QString &productId )
 QString Addressee::productId() const
 {
   return mData->productId;
+}
+
+QString Addressee::productIdLabel() const
+{
+  return i18n("Product Identifier");
 }
 
 
@@ -365,6 +456,11 @@ QDateTime Addressee::revision() const
   return mData->revision;
 }
 
+QString Addressee::revisionLabel() const
+{
+  return i18n("Revision Date");
+}
+
 
 void Addressee::setSortString( const QString &sortString )
 {
@@ -379,6 +475,11 @@ QString Addressee::sortString() const
   return mData->sortString;
 }
 
+QString Addressee::sortStringLabel() const
+{
+  return i18n("Sort String");
+}
+
 
 void Addressee::setUrl( const KURL &url )
 {
@@ -391,6 +492,11 @@ void Addressee::setUrl( const KURL &url )
 KURL Addressee::url() const
 {
   return mData->url;
+}
+
+QString Addressee::urlLabel() const
+{
+  return i18n("URL");
 }
 
 

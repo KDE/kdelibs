@@ -43,6 +43,10 @@ namespace KABC {
   This class represents an entry in the address book.
   
   The data of this class is implicitly shared. You can pass this class by value.
+
+  If you need the name of a field for presenting it to the user you should use
+  the functions ending in Label(). They return a translated string which can be
+  used as label for the corresponding field.
 */
 class Addressee
 {
@@ -71,6 +75,10 @@ class Addressee
       Return unique identifier.
     */
     QString uid() const;
+    /*
+      Return translated label for uid field.
+    */
+    QString uidLabel() const;
 
     /*
       Set name.
@@ -80,6 +88,10 @@ class Addressee
       Return name.
     */
     QString name() const;
+    /*
+      Return translated label for name field.
+    */
+    QString nameLabel() const;
 
     /*
       Set formatted name.
@@ -89,6 +101,10 @@ class Addressee
       Return formatted name.
     */
     QString formattedName() const;
+    /*
+      Return translated label for formattedName field.
+    */
+    QString formattedNameLabel() const;
 
     /*
       Set family name.
@@ -98,6 +114,10 @@ class Addressee
       Return family name.
     */
     QString familyName() const;
+    /*
+      Return translated label for familyName field.
+    */
+    QString familyNameLabel() const;
 
     /*
       Set given name.
@@ -107,6 +127,10 @@ class Addressee
       Return given name.
     */
     QString givenName() const;
+    /*
+      Return translated label for givenName field.
+    */
+    QString givenNameLabel() const;
 
     /*
       Set additional names.
@@ -116,6 +140,10 @@ class Addressee
       Return additional names.
     */
     QString additionalName() const;
+    /*
+      Return translated label for additionalName field.
+    */
+    QString additionalNameLabel() const;
 
     /*
       Set honorific prefixes.
@@ -125,6 +153,10 @@ class Addressee
       Return honorific prefixes.
     */
     QString prefix() const;
+    /*
+      Return translated label for prefix field.
+    */
+    QString prefixLabel() const;
 
     /*
       Set honorific suffixes.
@@ -134,6 +166,10 @@ class Addressee
       Return honorific suffixes.
     */
     QString suffix() const;
+    /*
+      Return translated label for suffix field.
+    */
+    QString suffixLabel() const;
 
     /*
       Set nick name.
@@ -143,6 +179,10 @@ class Addressee
       Return nick name.
     */
     QString nickName() const;
+    /*
+      Return translated label for nickName field.
+    */
+    QString nickNameLabel() const;
 
     /*
       Set birthday.
@@ -152,6 +192,10 @@ class Addressee
       Return birthday.
     */
     QDateTime birthday() const;
+    /*
+      Return translated label for birthday field.
+    */
+    QString birthdayLabel() const;
 
     /*
       Set mail client.
@@ -161,6 +205,10 @@ class Addressee
       Return mail client.
     */
     QString mailer() const;
+    /*
+      Return translated label for mailer field.
+    */
+    QString mailerLabel() const;
 
     /*
       Set time zone.
@@ -170,6 +218,10 @@ class Addressee
       Return time zone.
     */
     TimeZone timeZone() const;
+    /*
+      Return translated label for timeZone field.
+    */
+    QString timeZoneLabel() const;
 
     /*
       Set geographic position.
@@ -179,6 +231,10 @@ class Addressee
       Return geographic position.
     */
     Geo geo() const;
+    /*
+      Return translated label for geo field.
+    */
+    QString geoLabel() const;
 
     /*
       Set title.
@@ -188,6 +244,10 @@ class Addressee
       Return title.
     */
     QString title() const;
+    /*
+      Return translated label for title field.
+    */
+    QString titleLabel() const;
 
     /*
       Set role.
@@ -197,6 +257,10 @@ class Addressee
       Return role.
     */
     QString role() const;
+    /*
+      Return translated label for role field.
+    */
+    QString roleLabel() const;
 
     /*
       Set organization.
@@ -206,6 +270,10 @@ class Addressee
       Return organization.
     */
     QString organization() const;
+    /*
+      Return translated label for organization field.
+    */
+    QString organizationLabel() const;
 
     /*
       Set note.
@@ -215,6 +283,10 @@ class Addressee
       Return note.
     */
     QString note() const;
+    /*
+      Return translated label for note field.
+    */
+    QString noteLabel() const;
 
     /*
       Set product identifier.
@@ -224,6 +296,10 @@ class Addressee
       Return product identifier.
     */
     QString productId() const;
+    /*
+      Return translated label for productId field.
+    */
+    QString productIdLabel() const;
 
     /*
       Set revision date.
@@ -233,6 +309,10 @@ class Addressee
       Return revision date.
     */
     QDateTime revision() const;
+    /*
+      Return translated label for revision field.
+    */
+    QString revisionLabel() const;
 
     /*
       Set sort string.
@@ -242,6 +322,10 @@ class Addressee
       Return sort string.
     */
     QString sortString() const;
+    /*
+      Return translated label for sortString field.
+    */
+    QString sortStringLabel() const;
 
     /*
       Set URL.
@@ -251,6 +335,10 @@ class Addressee
       Return URL.
     */
     KURL url() const;
+    /*
+      Return translated label for url field.
+    */
+    QString urlLabel() const;
 
     /**
       Set name fields by parsing the given string and trying to associate the
@@ -395,8 +483,7 @@ class Addressee
   private:
     Addressee copy();
     void detach();
-
-    struct AddresseeData;  
+  
     KSharedPtr<AddresseeData> mData;
 };
 

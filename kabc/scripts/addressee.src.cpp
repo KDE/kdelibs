@@ -20,6 +20,7 @@
 #include <ksharedptr.h>
 #include <kdebug.h>
 #include <kapplication.h>
+#include <klocale.h>
 
 #include "phonenumber.h"
 
@@ -27,6 +28,18 @@
 
 using namespace KABC;
 
+struct Addressee::AddresseeData : public KShared
+{
+  --VARIABLES--
+
+  PhoneNumber::List phoneNumbers;
+  Address::List addresses;
+  QStringList emails;
+  QStringList categories;
+  QStringList custom;
+
+  bool empty;
+};
 
 Addressee::Addressee()
 {

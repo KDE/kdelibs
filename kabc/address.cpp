@@ -20,6 +20,7 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "address.h"
 
@@ -93,6 +94,11 @@ QString Address::postOfficeBox() const
   return mPostOfficeBox;
 }
 
+QString Address::postOfficeBoxLabel() const
+{
+  return i18n("Post Office Box");
+}
+
 
 void Address::setExtended( const QString &s )
 {
@@ -104,6 +110,11 @@ void Address::setExtended( const QString &s )
 QString Address::extended() const
 {
   return mExtended;
+}
+
+QString Address::extendedLabel() const
+{
+  return i18n("Extended Address Information");
 }
 
 
@@ -119,6 +130,11 @@ QString Address::street() const
   return mStreet;
 }
 
+QString Address::streetLabel() const
+{
+  return i18n("Street");
+}
+
 
 void Address::setLocality( const QString &s )
 {
@@ -130,6 +146,11 @@ void Address::setLocality( const QString &s )
 QString Address::locality() const
 {
   return mLocality;
+}
+
+QString Address::localityLabel() const
+{
+  return i18n("Locality");
 }
 
 
@@ -145,6 +166,11 @@ QString Address::region() const
   return mRegion;
 }
 
+QString Address::regionLabel() const
+{
+  return i18n("Region");
+}
+
 
 void Address::setPostalCode( const QString &s )
 {
@@ -156,6 +182,11 @@ void Address::setPostalCode( const QString &s )
 QString Address::postalCode() const
 {
   return mPostalCode;
+}
+
+QString Address::postalCodeLabel() const
+{
+  return i18n("Postal Code");
 }
 
 
@@ -171,6 +202,11 @@ QString Address::country() const
   return mCountry;
 }
 
+QString Address::countryLabel() const
+{
+  return i18n("Country");
+}
+
 
 void Address::setLabel( const QString &s )
 {
@@ -183,6 +219,12 @@ QString Address::label() const
 {
   return mLabel;
 }
+
+QString Address::labelLabel() const
+{
+  return i18n("Delivery Label");
+}
+
 
 void Address::dump() const
 {

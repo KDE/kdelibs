@@ -36,25 +36,16 @@
 
 namespace KABC {
 
-struct AddresseeData : public KShared
-{
-  --VARIABLES--
-
-  PhoneNumber::List phoneNumbers;
-  Address::List addresses;
-  QStringList emails;
-  QStringList categories;
-  QStringList custom;
-
-  bool empty;
-};
-
 /**
   @short address book entry
   
   This class represents an entry in the address book.
   
   The data of this class is implicitly shared. You can pass this class by value.
+
+  If you need the name of a field for presenting it to the user you should use
+  the functions ending in Label(). They return a translated string which can be
+  used as label for the corresponding field.
 */
 class Addressee
 {
