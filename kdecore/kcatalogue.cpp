@@ -39,10 +39,7 @@ struct loaded_l10nfile
 
   const void *data;
 
-  struct loaded_l10nfile *next;
-  struct loaded_l10nfile *successor[1];
-
-  loaded_l10nfile() : filename(0), decided(0), data(0), next(0) {}
+  loaded_l10nfile() : filename(0), decided(0), data(0) {}
 };
 #endif
 
@@ -61,9 +58,8 @@ KCatalogue::KCatalogue(const QString & name)
 }
 
 KCatalogue::KCatalogue(const KCatalogue & rhs)
+  : d( new KCataloguePrivate )
 {
-  d = new KCataloguePrivate;
-
   *this = rhs;
 }
 

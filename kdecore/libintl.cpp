@@ -65,12 +65,6 @@ Cambridge, MA 02139, USA.  */
 # include <unistd.h>
 #endif
 
-#ifdef NULL
-#undef NULL
-#endif
-
-#define NULL 0
-
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP)
 # include <sys/mman.h>
 #endif
@@ -84,8 +78,10 @@ typedef u_int32_t nls_uint32;
 struct loaded_domain
 {
   const char *data;
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
   int use_mmap;
   size_t mmap_size;
+#endif
   int must_swap;
   nls_uint32 nstrings;
   struct string_desc *orig_tab;
@@ -101,10 +97,7 @@ struct loaded_l10nfile
 
   const void *data;
 
-  struct loaded_l10nfile *next;
-  struct loaded_l10nfile *successor[1];
-
-  loaded_l10nfile() : filename(0), decided(0), data(0), next(0) {}
+  loaded_l10nfile() : filename(0), decided(0), data(0) {}
 };
 
 void k_nl_load_domain(struct loaded_l10nfile *__domain);
@@ -376,8 +369,10 @@ k_nl_load_domain (struct loaded_l10nfile *domain_file)
 
   domain = (struct loaded_domain *) domain_file->data;
   domain->data = (char *) data;
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
   domain->use_mmap = use_mmap;
   domain->mmap_size = st.st_size;
+#endif
   domain->must_swap = data->magic != _MAGIC;
 
   /* Fill in the information about the available tables.  */
