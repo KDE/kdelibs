@@ -18,12 +18,11 @@
 #    Boston, MA 02111-1307, USA.
 
 
-MOC = @MOC@
-INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
+INCLUDES = -I../kdeui -I../kdecore $(QT_INCLUDES) $(X_INCLUDES)
 
-LDADD = ../kdecore/libkdecore.la ../kdeui/libkdeui.la @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
+LDADD = ../kdecore/libkdecore.la ../kdeui/libkdeui.la $(QT_LDFLAGS) -lqt $(X_LDFLAGS) -lX11 -lXext 
 
-DISTCLEANFILES = *.moc
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\

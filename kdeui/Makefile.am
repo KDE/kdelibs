@@ -18,8 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-MOC = @MOC@
-INCLUDES= @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
+INCLUDES= $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 DISTCLEANFILES = $(BUILT_SOURCES)
 

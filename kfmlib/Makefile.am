@@ -16,8 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-MOC = @MOC@
-INCLUDES = @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
+INCLUDES = $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
 DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkfm.la
@@ -35,15 +34,4 @@ kfm.moc: kfm.h
 
 kfmclient_ipc.moc: kfmclient_ipc.h
 	$(MOC) -o kfmclient_ipc.moc kfmclient_ipc.h
-
-
-
-
-
-
-
-
-
-
-
 

@@ -17,14 +17,11 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-MOC = @MOC@ 
-INCLUDES=@QT_INCLUDES@ @X_INCLUDES@
+INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
 DISTCLEANFILES = $(BUILT_SOURCES)
-VERSION = @VERSION@
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
-SUFFIXES = .moc
-CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
+DEFS += -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h\
@@ -40,7 +37,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	klocale.cpp libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp	\
 	kstdaccel.cpp kwm.cpp krootprop.cpp
 
-libkdecore_la_LDFLAGS = -version-info 0:11 @QT_LDFLAGS@ @X_LDFLAGS@ 
+libkdecore_la_LDFLAGS = -version-info 0:11 $(QT_LDFLAGS) $(X_LDFLAGS)
 libkdecore_la_LIBADD = -lqt -lX11 -lXext
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\

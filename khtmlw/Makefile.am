@@ -20,7 +20,7 @@
 
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp
-libkhtmlw_la_LIBADD = @all_libraries@ -lqt -lX11 -lgif @LIBJPEG@
+libkhtmlw_la_LIBADD = $(all_libraries) -lqt -lX11 -lgif $(LIBJPEG)
 
 BUILT_SOURCES = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
@@ -36,8 +36,7 @@ libkhtmlw_la_LDFLAGS = -version-info 0:11 -allow-undefined
 data_DATA = khtmlw_dnd.xpm
 datadir = $(kde_datadir)/khtmlw/pics
 
-MOC = @MOC@
-INCLUDES = -I../kdecore -I../kdeui -I../jscript @all_includes@ 
+INCLUDES = -I../kdecore -I../kdeui -I../jscript $(all_includes)
 
 html.moc: html.h
 	$(MOC) -o html.moc html.h 

@@ -665,7 +665,7 @@ AC_DEFUN(AM_KDE_WITH_NLS,
 	  XGETTEXT=":"
 	fi
       fi
-
+     AC_SUBST(XGETTEXT)
     fi
 
   ])

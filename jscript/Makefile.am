@@ -1,5 +1,6 @@
 #    This file is part of the KDE libraries
 #    Copyright (C) 1997 Torben Weis (weis@kde.org)
+#              (C) 1997 Stephan Kulow (coolo@kde.org)
 
 #    This library is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Library General Public
@@ -19,7 +20,7 @@
 
 ####### General stuff
 
-INCLUDES	= @QT_INCLUDES@ @X_INCLUDES@
+INCLUDES	= $(QT_INCLUDES) $(X_INCLUDES)
 lib_LTLIBRARIES = libjscript.la
 YACC		= bison -y
 LEX		= flex
@@ -31,7 +32,7 @@ SOMINOR 	= 0
 
 libjscript_la_SOURCES =	t1.c t2.c cpp2bison.cpp jstree.cpp jsexec.cpp builtin.cpp
 libjscript_la_LDFLAGS = -version-info $(SOMINOR):$(SOMAJOR) 
-libjscript_la_LIBADD = @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 
+libjscript_la_LIBADD = $(QT_LDFLAGS)  $(X_LDFLAGS) -lqt -lX11 
 
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
 
