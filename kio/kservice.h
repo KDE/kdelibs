@@ -166,8 +166,10 @@ public:
    *             with multiple instances in parallel. The service name of
    *             an instance is equal to the desktopEntryName + "-" +
    *             the PID of the process.
+   * @li Wait - This service has no DCOP support, the launcher will wait
+   *            till it is finished.
    */
-  enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi };
+  enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi, DCOP_Wait };
 
   /**
    * Returns The @ref DCOPServiceType supported by this service.

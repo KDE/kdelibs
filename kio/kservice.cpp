@@ -169,6 +169,8 @@ KService::init( KDesktopFile *config )
      m_DCOPServiceType = DCOP_Unique;
   else if (dcopServiceType == "multi")
      m_DCOPServiceType = DCOP_Multi;
+  else if (dcopServiceType == "wait")
+     m_DCOPServiceType = DCOP_Wait;
   else
      m_DCOPServiceType = DCOP_None;
 
