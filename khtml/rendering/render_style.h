@@ -565,6 +565,7 @@ protected:
     bool _hasHover : 1;
     bool _hasFocus : 1;
     bool _hasActive : 1;
+    bool _noLineBreak : 1;
 
 // non-inherited attributes
     DataRef<StyleBoxData> box;
@@ -816,6 +817,9 @@ public:
     void setListStyleType(EListStyleType v) {  _list_style_type = v; }
     void setListStyleImage(CachedImage *v) {  SET_VAR(inherited,style_image,v)}
     void setListStylePosition(EListStylePosition v) {  _list_style_position = v; }
+
+    bool noLineBreak() const { return _noLineBreak; }
+    void setNoLineBreak(bool b=true) { _noLineBreak = b; }
 
     void setMarginTop(Length v)     {  SET_VAR(surround,margin.top,v) }
     void setMarginBottom(Length v)  {  SET_VAR(surround,margin.bottom,v) }

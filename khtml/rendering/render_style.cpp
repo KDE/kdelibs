@@ -134,6 +134,7 @@ RenderStyle::setBitDefaults()
     _cursor_style = CURSOR_AUTO;
 
     _htmlHacks=false;
+    _noLineBreak=false;
     _flowAroundFloats=false;
 
     _hasHover = false;
@@ -205,6 +206,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _font_variant = other._font_variant;
 
     _htmlHacks = other._htmlHacks;
+    _noLineBreak = other._noLineBreak;
 
     _overflow = other._overflow;
     _vertical_align = other._vertical_align;
@@ -219,7 +221,6 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
     _styleType=NOPSEUDO;
 
-//    counter++;
     box = other.box;
     visual = other.visual;
     background = other.background;
@@ -316,14 +317,14 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
-    
+
     if (!(_styleType==NOPSEUDO))
         return 0;
-    
+
     RenderStyle *ps = pseudoStyle;
 
     while (ps) {
-        if (ps->_styleType==pid) 
+        if (ps->_styleType==pid)
             return ps;
 
         ps = ps->pseudoStyle;
@@ -382,18 +383,18 @@ void RenderStyle::cleanup()
 //    SharedData::counter = 0;
 }
 
-RenderPseudoElementStyle::RenderPseudoElementStyle() : RenderStyle() 
-{ 
-    _contentType = CONTENT_NONE; 
+RenderPseudoElementStyle::RenderPseudoElementStyle() : RenderStyle()
+{
+    _contentType = CONTENT_NONE;
 }
 
-RenderPseudoElementStyle::RenderPseudoElementStyle(bool b) : RenderStyle(b) 
-{ 
-    _contentType = CONTENT_NONE; 
+RenderPseudoElementStyle::RenderPseudoElementStyle(bool b) : RenderStyle(b)
+{
+    _contentType = CONTENT_NONE;
 }
-RenderPseudoElementStyle::RenderPseudoElementStyle(const RenderStyle& r) : RenderStyle(r) 
-{ 
-    _contentType = CONTENT_NONE; 
+RenderPseudoElementStyle::RenderPseudoElementStyle(const RenderStyle& r) : RenderStyle(r)
+{
+    _contentType = CONTENT_NONE;
 }
 
 RenderPseudoElementStyle::~RenderPseudoElementStyle() { clearContent(); }
@@ -404,7 +405,7 @@ void RenderPseudoElementStyle::setContent(CachedObject* o)
     clearContent();
 //    o->ref();
     _content.object = o;
-    _contentType = CONTENT_OBJECT;        
+    _contentType = CONTENT_OBJECT;
 }
 
 void RenderPseudoElementStyle::setContent(DOM::DOMStringImpl* s)
@@ -412,13 +413,13 @@ void RenderPseudoElementStyle::setContent(DOM::DOMStringImpl* s)
     clearContent();
     _content.text = s;
     _content.text->ref();
-    _contentType = CONTENT_TEXT;        
-}    
+    _contentType = CONTENT_TEXT;
+}
 
 DOM::DOMStringImpl* RenderPseudoElementStyle::contentText()
 {
     if (_contentType==CONTENT_TEXT)
-        return _content.text;   
+        return _content.text;
     else
         return 0;
 }
@@ -426,7 +427,7 @@ DOM::DOMStringImpl* RenderPseudoElementStyle::contentText()
 CachedObject* RenderPseudoElementStyle::contentObject()
 {
     if (_contentType==CONTENT_OBJECT)
-        return _content.object;   
+        return _content.object;
     else
         return 0;
 }
@@ -443,7 +444,7 @@ void RenderPseudoElementStyle::clearContent()
         case CONTENT_TEXT:
             _content.text->deref();
             _content.text = 0;
-        default: 
+        default:
             ;
     }
 
