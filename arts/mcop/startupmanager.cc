@@ -25,6 +25,8 @@
 
 #include "startupmanager.h"
 
+using namespace std;
+
 /*
  * StartupClass implementation
  */

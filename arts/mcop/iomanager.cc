@@ -25,6 +25,8 @@
 
 #include "iomanager.h"
 
+using namespace std;
+
 IOWatchFD::IOWatchFD(int fd, int types, IONotify *notify)
 {
 	_fd = fd;

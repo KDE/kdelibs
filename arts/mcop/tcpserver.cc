@@ -38,6 +38,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+using namespace std;
+
 bool TCPServer::running()
 {
 	return socketOk;

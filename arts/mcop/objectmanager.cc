@@ -28,6 +28,9 @@
 #include "dispatcher.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <iostream>
+
+using namespace std;
 
 Object_skel *ObjectManager::create(string name)
 {

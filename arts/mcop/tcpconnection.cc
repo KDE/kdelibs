@@ -33,6 +33,8 @@
 #include <sys/un.h>
 #include <errno.h>
 
+using namespace std;
+
 static struct sockaddr_in *parse_tcp_url(const char *url)
 {
 	static struct sockaddr_in addr;

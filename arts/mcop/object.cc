@@ -26,6 +26,9 @@
 #include "object.h"
 #include "dispatcher.h"
 #include <stdio.h>
+#include <iostream.h>
+
+using namespace std;
 
 struct Object_skel::MethodTableEntry {
 	DispatchFunction dispatcher;

@@ -41,6 +41,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+using namespace std;
+
 bool UnixServer::running()
 {
 	return socketOk;

@@ -25,6 +25,8 @@
 
 #include "referenceclean.h"
 
+using namespace std;
+
 ReferenceClean::ReferenceClean(Pool<Object_skel>& objectPool)
 	:objectPool(objectPool)
 {

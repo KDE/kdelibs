@@ -31,6 +31,8 @@
 #include <sys/un.h>
 #include <errno.h>
 
+using namespace std;
+
 static struct sockaddr_un *parse_unix_url(const char *url)
 {
 	static struct sockaddr_un addr;

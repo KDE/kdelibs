@@ -37,6 +37,9 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <iostream.h>
+
+using namespace std;
 
 Dispatcher *Dispatcher::_instance = 0;
 

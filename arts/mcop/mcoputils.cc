@@ -29,6 +29,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 	
+using namespace std;
+
 string MCOPUtils::createFilePath(string name)
 {
 	string logname = "unknown";

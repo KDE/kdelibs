@@ -25,6 +25,8 @@
 
 #include "ifacerepo_impl.h"
 
+using namespace std;
+
 InterfaceRepo_impl::InterfaceRepo_impl()
 {
 	nextModuleID = 1;
