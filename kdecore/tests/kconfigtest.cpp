@@ -146,10 +146,8 @@ void KConfigTestView::appConfigEditReturnPressed()
     pStream = 0L;
 
   // create a new config object
-  if( strlen( pAppFileEdit->text() ) )
-    {
+  if( !pAppFileEdit->text().isEmpty() )
 	  pConfig = new KConfig( pAppFileEdit->text() );
-    }
   
   pInfoLabel2->setText( "New config object created." ); 
 }

@@ -678,12 +678,12 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	QString key = it2.key();
 	if (key.left(4) == "dir_")
 	{
-	    if (addResourceDir(key.mid(4, key.length()), it2.data()))
+	    if (addResourceDir(key.mid(4, key.length()).ascii(), it2.data()))
 	      debug("adding custom dir %s of type %s", it2.data().ascii(),
-		    key.mid(4,key.length()).data());
+		    key.mid(4,key.length()).ascii());
 	    else
 	      debug("couldn't add custom dir %s of type %s", it2.data().ascii(),
-		    key.mid(4,key.length()).data());
+		    key.mid(4,key.length()).ascii());
 	}
     }
 

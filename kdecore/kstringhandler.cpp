@@ -53,24 +53,24 @@ QString KStringHandler::word( const QString &text , const char *range )
     if ( r.find(QRegExp("[0-9]+:[0-9]+")) != -1 )
     {
         at  = r.find(":");
-        pos = atoi( r.left(at) );
-        cnt = atoi( r.remove(0,at+1) );
+        pos = atoi( r.left(at).ascii() );
+        cnt = atoi( r.remove(0,at+1).ascii() );
     }
     else if ( r.find(QRegExp(":+[0-9]+")) != -1 )
     {
         at  = r.find(":");
         pos = 0;
-        cnt = atoi( r.remove(0,at+1) );
+        cnt = atoi( r.remove(0,at+1).ascii() );
     }
     else if ( r.find(QRegExp("[0-9]+:+")) != -1 )
     {
         at  = r.find(":");
-        pos = atoi( r.left(at) );
+        pos = atoi( r.left(at).ascii() );
         cnt = list.count(); // zero index
     }
     else if ( r.find(QRegExp("[0-9]+")) != -1 )
     {
-        pos = atoi( r );
+        pos = atoi( r.ascii() );
         cnt = pos;
     }
     else
@@ -166,25 +166,25 @@ QString KStringHandler::remrange( const QString &text , const char *range )
 
     if ( r.find(QRegExp("[0-9]+:[0-9]+")) != -1 )
     {
-        at  = r.find(":");
-        pos = atoi( r.left(at) );
-        cnt = atoi( r.remove(0,at+1) );
+        at  = r.find(':');
+        pos = atoi( r.left(at).ascii() );
+        cnt = atoi( r.remove(0,at+1).ascii() );
     }
     else if ( r.find(QRegExp(":+[0-9]+")) != -1 )
     {
-        at  = r.find(":");
+        at  = r.find(':');
         pos = 0;
-        cnt = atoi( r.remove(0,at+1) );
+        cnt = atoi( r.remove(0,at+1).ascii() );
     }
     else if ( r.find(QRegExp("[0-9]+:+")) != -1 )
     {
-        at  = r.find(":");
-        pos = atoi( r.left(at) );
+        at  = r.find(':');
+        pos = atoi( r.left(at).ascii() );
         cnt = list.count(); // zero index
     }
     else if ( r.find(QRegExp("[0-9]+")) != -1 )
     {
-        pos = atoi( r );
+        pos = atoi( r.ascii() );
         cnt = pos;
     }
     else

@@ -143,7 +143,7 @@ public:
    * Sets the @see KStandardDirs type of icons  loadIcon() will load. 
    * The default is "toolbar".
    **/
-  void setIconType(const QString &type) { iconType = type; }
+  void setIconType(const char *type) { iconType = type; }
 
 protected:
 
@@ -162,7 +162,7 @@ protected:
   QString appname;
 
   // the icon type to load in loadIcon - by default "toolbar"
-  QString iconType;
+  QCString iconType;
   
 private:
   // adds toolbar paths to the KStandardDirs object of the instance

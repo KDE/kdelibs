@@ -498,7 +498,7 @@ void KApplication::dcopFailure(const QString &msg)
   QString msgStr(i18n("There was some error setting up inter-process\n"
 		      "communications for KDE.  The message returned\n"
 		      "by the system was:\n\n"));
-  msgStr += +  msg;
+  msgStr += msg;
   msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
 
   QMessageBox::critical(kapp->mainWidget(),

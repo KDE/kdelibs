@@ -11,8 +11,7 @@ int main(int, char **)
   KConfig config; // to add custom entries - a bit tricky :/
 
   QString s = t.findResource("icon", "xv.xpm");
-  if (s)
-    debug(s);
+  if (!s.isNull()) debug(s.ascii());
 
   QStringList list = t.findAllResources("data", "kfind/toolbar", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {

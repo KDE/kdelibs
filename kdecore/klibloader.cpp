@@ -138,7 +138,7 @@ void KLibrary::slotTimeout()
   if ( m_objs.count() != 0 )
     return;
 
-  KLibLoader::self()->unloadLibrary( m_libname );
+  KLibLoader::self()->unloadLibrary( m_libname.latin1() );
 }
 
 // -------------------------------------------------
@@ -163,7 +163,7 @@ KLibLoader::~KLibLoader()
     m_libs.setAutoDelete( TRUE );
 }
 
-KLibrary* KLibLoader::library( const char* name )
+KLibrary* KLibLoader::library( const char *name )
 {
     QCString libname( name );
     libname += ".la";
@@ -179,7 +179,7 @@ KLibrary* KLibLoader::library( const char* name )
 	return 0;
     }
 
-    lt_dlhandle handle = lt_dlopen( libfile );
+    lt_dlhandle handle = lt_dlopen( libfile.latin1() );
     if ( !handle )
     {
 	qDebug("KLibLoader: library=%s: file=%s: %s", name, libfile.latin1(), lt_dlerror() );

@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
 
 
   KURL udir("/home/dfaure/file.txt");
-  printf("\n* URL is %s\n",udir.url().data());
+  printf("\n* URL is %s\n",udir.url().ascii());
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
   check("KURL::path()", udir.path(), "/home/dfaure/file.txt");
 
   KURL u2("/home/dfaure/");
-  printf("\n* URL is %s\n",u2.url().data());
+  printf("\n* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", u2.directory(true,false), "/home/dfaure");
@@ -64,13 +64,13 @@ int main(int argc, char *argv[])
   u2.cd("/opt/kde/bin/");
   check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:/opt/kde/bin/");
   u2 = "ftp://ftp.kde.org/";
-  printf("\n* URL is %s\n",u2.url().data());
+  printf("\n* URL is %s\n",u2.url().ascii());
   u2.cd("pub");
   check("KURL::cd(\"pub\")", u2.url(), "ftp://ftp.kde.org/pub");
   u2 = u2.upURL();
   check("KURL::upURL()", u2.url(), "ftp://ftp.kde.org/");
   u2 = u1;
-  printf("\n* URL is %s\n",u2.url().data());
+  printf("\n* URL is %s\n",u2.url().ascii());
   u2.cd("dir");
   check("KURL::cd(\"dir\")", u2.url(), "tar:/dir#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   u2 = u2.upURL();
