@@ -16,7 +16,7 @@ include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h
 
-noinstall_HEADERS = kdebugdialog.h
+noinst_HEADERS = kdebugdialog.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
@@ -25,7 +25,7 @@ libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 libkdecore_la_LDFLAGS = -version-info 0:11 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
-	kprocctrl.moc kiconloader.moc kdebug.moc
+	kprocctrl.moc kiconloader.moc kdebugdialog.moc
 
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc
@@ -65,3 +65,4 @@ kiconloader.moc: kiconloader.h
 
 kdebugdialog.moc: kdebugdialog.h
 	$(MOC) kdebugdialog.h -o kdebugdialog.moc
+

@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+* Revision 1.27  1997/09/11 19:44:52  kalle
+* New debugging scheme for KDE (binary incompatible!)
+*
  * Revision 1.26  1997/09/10 11:55:35  kdecvs
  * Kalle:
  * - new features in KConfig as announced on Monday
