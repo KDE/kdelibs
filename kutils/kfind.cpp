@@ -60,6 +60,7 @@ void KFind::init( const QString& pattern )
     m_pattern = pattern;
     m_dialog = 0;
     m_dialogClosed = false;
+    m_index = -1;
     if (m_options & KFindDialog::RegularExpression)
         m_regExp = new QRegExp(pattern, m_options & KFindDialog::CaseSensitive);
     else {
