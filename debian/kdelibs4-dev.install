@@ -75,8 +75,4 @@ debian/tmp/usr/lib/libkwalletbackend.la
 debian/tmp/usr/lib/libkwalletbackend.so
 debian/tmp/usr/lib/libshellscript.la
 debian/tmp/usr/lib/libshellscript.so
-debian/tmp/usr/lib/libvcard.la
-debian/tmp/usr/lib/libvcard.so
-debian/tmp/usr/lib/libvcards.la
-debian/tmp/usr/lib/libvcards.so
 

@@ -12,7 +12,6 @@ debian/tmp/usr/share/services
 debian/tmp/usr/share/servicetypes
 debian/tmp/usr/share/mimelnk/all
 debian/tmp/usr/share/mimelnk/application/illustrator.desktop
-debian/tmp/usr/share/mimelnk/application/mathml+xml.desktop
 debian/tmp/usr/share/mimelnk/application/msexcel2.desktop
 debian/tmp/usr/share/mimelnk/application/msexcel.desktop
 debian/tmp/usr/share/mimelnk/application/mspowerpoint.desktop
@@ -37,6 +36,7 @@ debian/tmp/usr/share/mimelnk/application/starwriter.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.mozilla.xul+xml.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.ms-asf.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.palm.desktop
+debian/tmp/usr/share/mimelnk/application/vnd.sun.xml.draw.desktop
 debian/tmp/usr/share/mimelnk/application/wordperfect.desktop
 debian/tmp/usr/share/mimelnk/application/x-abiword.desktop
 debian/tmp/usr/share/mimelnk/application/x-amipro.desktop
@@ -80,6 +80,7 @@ debian/tmp/usr/share/mimelnk/application/x-java.desktop
 debian/tmp/usr/share/mimelnk/application/x-karbon.desktop
 debian/tmp/usr/share/mimelnk/application/x-kchart.desktop
 debian/tmp/usr/share/mimelnk/application/x-kcsrc.desktop
+debian/tmp/usr/share/mimelnk/application/x-kde-wallet.desktop
 debian/tmp/usr/share/mimelnk/application/x-kformula.desktop
 debian/tmp/usr/share/mimelnk/application/x-kivio.desktop
 debian/tmp/usr/share/mimelnk/application/x-kontour.desktop

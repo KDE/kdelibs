@@ -35,8 +35,6 @@ debian/tmp/usr/lib/libkutils.so.*
 debian/tmp/usr/lib/libkwalletbackend.so.*
 debian/tmp/usr/lib/libkwalletclient.so.*
 debian/tmp/usr/lib/libshellscript.so.*
-debian/tmp/usr/lib/libvcard.so.*
-debian/tmp/usr/lib/libvcards.so.*
 debian/tmp/usr/lib/kde3/dcopserver.*
 debian/tmp/usr/lib/kde3/kabc_dir.*
 debian/tmp/usr/lib/kde3/kabc_file.*
