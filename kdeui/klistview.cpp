@@ -739,14 +739,28 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
 
   // Now, we know we want to go after "above". But as a child or as a sibling ?
   // We have to ask the "above" item if it accepts children.
-  if ( above->isExpandable() )
+  if (above->isExpandable())
   {
+      // The mouse is sufficiently on the right ?
       if (p.x() >= treeStepSize() * ( above->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin())
       {
           parent = above;
           after = 0L;
           return;
       }
+  }
+
+  // Ok, there's one more level of complexity. We may want to become a new
+  // sibling, but of an upper-level group, rather than the "above" item
+  QListViewItem * betterAbove = above;
+  while ( betterAbove &&
+          ( betterAbove->nextSibling() == 0 || p.y() < itemRect(betterAbove->nextSibling()).topLeft().y() ) )
+  {
+      if (p.x() < treeStepSize() * ( betterAbove->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin())
+          above = betterAbove; // store this one, but don't stop yet, there may be a better one
+      else
+          break; // not that much on the left, so stop
+      betterAbove = betterAbove->parent(); // up one level
   }
   // set as sibling
   after = above;
@@ -895,28 +909,29 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
 {
     QRect insertmarker;
 
-    if (after)
+    if (!after && !parent)
+        insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
+    else
     {
-        insertmarker = itemRect (after);
+        int level;
+        if (after)
+        {
+            QListViewItem* lastchild = after->firstChild();
+            if (lastchild)
+                for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling()) ;
 
-        insertmarker.setLeft (0);
+            insertmarker = itemRect (lastchild ? lastchild : after);
+            level = after->depth();
+        }
+        else if (parent)
+        {
+            insertmarker = itemRect (parent);
+            level = parent->depth() + 1;
+        }
+        insertmarker.setLeft( treeStepSize() * ( level + (rootIsDecorated() ? 1 : 0) ) + itemMargin() );
         insertmarker.setRight (viewport()->width());
         insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
         insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
-    }
-    else
-    {
-        if (parent)
-        {
-            insertmarker = itemRect (parent);
-
-            insertmarker.setLeft( treeStepSize() * ( parent->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin() );
-            insertmarker.setRight (viewport()->width());
-            insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
-            insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
-        }
-        else
-            insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
     }
 
     // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
