@@ -198,7 +198,6 @@ public:
     virtual void layout( bool deep = false );
 
     virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void setAvailableWidth(int w = -1);
 
 protected:
     NodeImpl *calcParagraph(NodeImpl *child, bool pre = false);

@@ -27,7 +27,7 @@
 
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
-#define TABLE_DEBUG
+#undef TABLE_DEBUG
 #define DEBUG_LAYOUT
 
 #include <qlist.h>
@@ -1314,6 +1314,9 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
     printf("%s(Table, this=0x%p)::setAvailableWidth(%d)\n", nodeName().string().ascii(), this, w);
 #endif
 
+    if (w != availableWidth)
+    	setLayouted(false);
+
     if(w != -1) availableWidth = w;
 
     if(blocking() && parsing())
@@ -1325,8 +1328,9 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
 	END_FOR_EACH
 	return;
     }
-    if(blocking())
-	calcColWidthII();
+    
+    calcColWidthII();
+	
     int indx;
     FOR_EACH_CELL( r, c, cell)
 	{
@@ -1334,7 +1338,6 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
 		indx = 0;
 	    int w = columnPos[c+1] - columnPos[ indx ] - spacing - 
 		padding;
-	    
 #ifdef TABLE_DEBUG
 	    printf("0x%p: setting width %d/%d-%d (0x%p): %d \n", this, r, indx, c, cell, w);
 #endif
@@ -1538,6 +1541,16 @@ void HTMLTableElementImpl::close()
 	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
 }
  
+void HTMLTableElementImpl::updateSize()
+{
+    calcMinMaxWidth(); 
+    if (incremental)
+    	calcColWidth();
+    else
+    	calcColWidthII();   
+    setLayouted(false);
+    if(_parent) _parent->updateSize(); 
+}
 
 // -------------------------------------------------------------------------
 
@@ -1824,9 +1837,9 @@ void HTMLTableCellElementImpl::calcMinMaxWidth()
     HTMLBlockElementImpl::calcMinMaxWidth();
     if(nWrap) minWidth = maxWidth;
     table->addColInfo(this);
-    printf("%d, %d\n",width,minWidth);    
-    if(availableWidth && minWidth > availableWidth)
-	if(_parent) _parent->updateSize();
+    printf("cell: calcminmaxwidth %d, %d\n",width,minWidth);    
+//    if(availableWidth && minWidth > availableWidth)
+//	if(_parent) _parent->updateSize();
 
 }
 

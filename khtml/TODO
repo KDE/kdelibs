@@ -94,7 +94,7 @@ hr		done
 html		done
 i		done
 iframe
-img		mostly (maps missing)
+img		mostly
 input		partly done
 ins
 isindex
@@ -104,7 +104,7 @@ legend
 li		done
 link
 listing
-map
+map 	    	non local and server side maps missing
 menu		see ul
 meta
 noframes
@@ -149,8 +149,7 @@ still missing...):
 
 URL1.html		ok
 URL2.html		ok
-align.html              ok (crashes because some non-alignment related
-                               list stuff, though:)
+align.html              ok 
 align2.html             ok
 anchor1.html		ok
 anchor2.html		ok
@@ -158,8 +157,8 @@ badpages.html		ok
 color.html
 forms.html
 image.gif
-image_map.html
-layout.html
+image_map.html	    	ok
+layout.html 	    	ok
 listing.html		mostly ok
 nbsp.html
 notitle.html
@@ -172,7 +171,7 @@ recursive_frames.html
 recursive_frames2.html
 supsub.html
 table1.html		ok
-table2.html		ok
+table2.html		slow
 table3.html		ok
 table4.html		ok
 table5.html		ok

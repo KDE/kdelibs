@@ -132,6 +132,8 @@ public:
     virtual void setAvailableWidth( int w = -1 );
     virtual void calcMinMaxWidth();
     virtual void close();
+    
+    virtual void updateSize();
 
 protected:
     /*
@@ -255,6 +257,7 @@ public:
     virtual void updateSize() 
     { 
     	calcMinMaxWidth();    
+	setLayouted(false);
 	if(_parent) _parent->updateSize(); 
     }
 

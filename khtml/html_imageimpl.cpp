@@ -315,6 +315,7 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	    // NO! Images don't scale unless told to. Ever.  -AKo 
 	    //if(availableWidth < width) width = availableWidth;
 	    minWidth = width;
+	    printf("IMG Width changed, width=%d\n",width);
 	}
     }
     maxWidth = minWidth;
