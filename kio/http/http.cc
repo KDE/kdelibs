@@ -1969,8 +1969,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   } else if ((encoding == "x-deflate") || (encoding == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
   } else {
-    kdDebug(7103) << "Unknown encoding encountered.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
-    abort();
+    kdWarning(7103) << "Unknown encoding encountered.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
   }
 }
 
@@ -2000,8 +1999,8 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     // WWW-Authentification: Basic\r\n
     return;
   } else {
-    kdDebug(7103) << "Invalid Authorization type requested" << endl;
-    kdDebug(7103) << "buffer: " << p << endl;
+    kdWarning(7103) << "Invalid Authorization type requested" << endl;
+    kdWarning(7103) << "buffer: " << p << endl;
     error(ERR_UNSUPPORTED_ACTION,
           QCString().sprintf("Unknown Authorization method: %s", p).data());
     return;
