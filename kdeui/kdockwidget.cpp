@@ -475,7 +475,7 @@ void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* )
   paint.begin( &drawBuffer );
   paint.fillRect( drawBuffer.rect(), QBrush(colorGroup().brush(QColorGroup::Background)) );
 
-  paint.setPen( white );
+  paint.setPen( colorGroup().light() );
   paint.drawLine( 1, 3, 1, 2 );
   paint.drawLine( 1, 2, width(), 2 );
 
@@ -483,7 +483,7 @@ void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* )
   paint.drawLine( 1, 4, width(), 4 );
   paint.drawLine( width(), 4, width(), 3 );
 
-  paint.setPen( white );
+  paint.setPen( colorGroup().light() );
   paint.drawLine( 1, 6, 1, 5 );
   paint.drawLine( 1, 5, width(), 5 );
 
@@ -1513,6 +1513,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent") == "___null___" ){
       QRect r = c->readRectEntry( oname + ":geometry" );
       obj = getDockWidgetFromName( oname );
+      obj->applyToWidget( 0L );
       obj->setGeometry(r);
 
       if ( c->readBoolEntry( oname + ":visible" ) ){

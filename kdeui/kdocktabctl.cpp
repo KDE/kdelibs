@@ -307,7 +307,7 @@ void KDockTabCtl::paintEvent(QPaintEvent *)
   QPainter paint;
   paint.begin( this );
 
-  paint.setPen( white );
+  paint.setPen( colorGroup().light() );
   //  top
   paint.moveTo( 0, 0 );
   paint.lineTo( 0, height() - 1 );
@@ -401,7 +401,7 @@ QString KDockTabCtl::pageCaption( QWidget* widget )
 const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
 {
   KDockTabCtl_Private* data = findData( widget );
-  if ( data == 0L ) return black;
+  if ( data == 0L ) return Qt::black;
   return tabs->textColor( data->id );
 }
 
@@ -437,7 +437,7 @@ void KDockTabBarPainter::paintEvent( QPaintEvent* )
   }
 }
 
-void KDockTabBarPainter::resizeEvent( QResizeEvent * )
+void KDockTabBarPainter::resizeEvent( QResizeEvent *e )
 {
   delete buffer;
   switch ( ((KDockTabBar*)parent())->tabPos )
@@ -453,9 +453,9 @@ void KDockTabBarPainter::resizeEvent( QResizeEvent * )
 
 void KDockTabBarPainter::drawBuffer()
 {
-  QColor c1 = white;
+  QColor c1 = colorGroup().light();
   QColor c2 = colorGroup().dark();
-  QColor c4 = white; // for paint top line;
+  QColor c4 = colorGroup().light(); // for paint top line;
 
   int W = 0;
   int H = 0;
@@ -469,7 +469,7 @@ void KDockTabBarPainter::drawBuffer()
     case KDockTabBar::TAB_RIGHT:{
       shadowX = -1;
       c1 = colorGroup().dark();
-      c2 = white;
+      c2 = colorGroup().light();
       H = width();
       W = height();
       break;
@@ -523,7 +523,10 @@ void KDockTabBarPainter::drawBuffer()
     paint.setFont( parentWidget()->font() );
 
     if ( mainData->at(k)->enabled ){
-      paint.setPen( mainData->at(k)->textColor );
+      if ( (int)k == curTab )
+        paint.setPen( colorGroup().buttonText() );
+      else
+        paint.setPen( mainData->at(k)->textColor );
       paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
     } else {
       paint.setPen( colorGroup().light() );
@@ -802,7 +805,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
   switch ( tabPos ){
     case TAB_TOP:
       paint.fillRect( 0, height()-1, width(), 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-      paint.setPen( white );
+      paint.setPen( colorGroup().light() );
       paint.moveTo( 0, height()-1 );
       paint.lineTo( curx, height()-1 );
       paint.moveTo( QMIN( curx + curWidth, width() - 50 ), height()-1 );
@@ -815,7 +818,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
       paint.drawPoint( width() - 1, height()-1 );
 
       paint.moveTo( width() - 1, height()-2 );
-      paint.setPen( white );
+      paint.setPen( colorGroup().light() );
       if ( curx != height() ) paint.lineTo( width() - 1, curx );
       paint.moveTo( width() - 1, QMAX( curx - curWidth, 50 ) );
       paint.lineTo( width() - 1, 0 );
@@ -833,6 +836,7 @@ int KDockTabBar::insertTab( const QString &label, int id )
       if ( mainData->at(k)->id > id ) id = mainData->at(k)->id;
   }
   KDockTabBar_Private* data = new KDockTabBar_Private( id, label );
+  data->textColor = colorGroup().text();
 
   data->width = 4 + fontMetrics().width( label ) + 14;
   mainData->append( data );
@@ -905,6 +909,8 @@ void KDockTabBar::removeTab( int id )
       }
     }
     mainData->remove( data );
+    leftTab = QMIN( leftTab, (int)mainData->count() - 1 );
+
     resizeEvent(0);
     repaint( false );
   }
@@ -919,31 +925,40 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
       _currentTab = data->id;
       repaint( false );
 
-      int curx = 2;
+      int curx = 2; // _currentTab start here 
       for ( uint k = 0; k < mainData->count(); k++ ){
-        data = mainData->at(k);
-        if ( data->id == id ){
-          curx += 30;
+        KDockTabBar_Private* data  = mainData->at(k);
+        if ( data->id == _currentTab ){
           break;
         }
         curx += data->width;
       }
-
+      // curx : _currentTab start here 
+      
+      int count;
       switch ( tabPos ){
         case TAB_TOP:
-          while ( width() - 50 > 30 && ((-barPainter->delta + curx < 0) || (-barPainter->delta + curx > width() - 50)) ){
-            if ( -barPainter->delta + curx < 0 )
-              leftClicked();
-            else
-              rightClicked();
+          count = mainData->count();
+          while ( count > 0 && -barPainter->delta + curx < 0 ){
+            leftClicked();
+            count--;
+          }
+          count = mainData->count();
+          while ( count > 0 && -barPainter->delta + curx > width()- 100 ){
+            rightClicked();
+            count--;
           }
           break;
         case TAB_RIGHT:
-          while ( height() - 50 > 30 && ((-barPainter->delta + curx < 0) || (-barPainter->delta + curx > height() - 50)) ){
-            if ( -barPainter->delta + curx < 0 )
-              leftClicked();
-            else
-              rightClicked();
+          count = mainData->count();
+          while ( count > 0 && -barPainter->delta + curx < 0 ){
+            leftClicked();
+            count--;
+          }
+          count = mainData->count();
+          while ( count > 0 && -barPainter->delta + curx > height() - 100 ){
+            rightClicked();
+            count--;
           }
           break;
       }
@@ -1006,9 +1021,11 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
 {
   int maxAllowWidth = 0;
   int maxAllowHeight = 0;
+
+  /* reset bar position to 0 if it allowed or if _currentTab == -1 ( no current tab ) */
   switch ( tabPos ){
     case TAB_TOP:
-      if ( width() - 50 > tabsWidth() ){
+      if ( width() - 50 > tabsWidth() || _currentTab == -1 ){
         barPainter->delta = 0;
         leftTab = 0;
       }
@@ -1017,7 +1034,7 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
       barPainter->resize( QMIN(tabsWidth(),maxAllowWidth),  height() - 1 );
       break;
     case TAB_RIGHT:
-      if ( height() - 50 > tabsWidth() ){
+      if ( height() - 50 > tabsWidth() || _currentTab == -1 ){
         barPainter->delta = 0;
         leftTab = 0;
       }
