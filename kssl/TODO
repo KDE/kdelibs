@@ -25,5 +25,6 @@
 - X509v3 should use X509_PURPOSE instead of the bit checks.  This will be more
   reliable and is quite easy to implement, really.
 
+- Support RAND file
 
 
