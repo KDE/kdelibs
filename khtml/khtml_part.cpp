@@ -5797,7 +5797,9 @@ void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
 KWallet::Wallet* KHTMLPart::wallet()
 {
   // ### close wallet after a certain timeout period automatically
+  //      No - KWallet already does this based on user preferences. (GS)
   // ### close wallet after screensaver was enabled
+  //      No - KWalletD should do this, if anything. (GS)
 
   KHTMLPart* p;
 
