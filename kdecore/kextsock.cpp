@@ -147,8 +147,10 @@ static bool process_flags(int flags, addrinfo &hint)
      hint.ai_family = PF_LOCAL;
   else if ((flags & KExtendedSocket::ipv4Socket) == KExtendedSocket::ipv4Socket)
      hint.ai_family = PF_INET;
+#ifdef PF_INET6
   else if ((flags & KExtendedSocket::ipv6Socket) == KExtendedSocket::ipv6Socket)
      hint.ai_family = PF_INET6;
+#endif     
 
   /* check other flags */
   hint.ai_flags |= (flags & KExtendedSocket::passiveSocket ? AI_PASSIVE : 0) |
