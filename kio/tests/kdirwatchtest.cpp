@@ -10,11 +10,12 @@
  */
 
 #include "kdirwatchtest.h"
+#include <kdebug.h>
 
 int main (int argc, char **argv)
 {
   KApplication a(argc, argv, "DirWatchTest");
-  
+
   myTest testObject;
 
   printf( "You must create directory test in your home\n");
@@ -29,19 +30,19 @@ int main (int argc, char **argv)
   QString desk = getenv ("HOME");
   desk.append("/Desktop/");
   home.append("/");
-  printf( "Watching: \n%s\n%s\n", home.ascii(), desk.ascii());
-  dirwatch->addDir(home.data());
+  kdDebug() << "Watching: " << home << " " << desk << endl;
+  dirwatch->addDir(home);
   home.append("test/");
-  dirwatch->addDir(home.data());
-  dirwatch->addDir(desk.data());
-  printf( "Watching: (but skipped) \n%s\n", home.data());
+  dirwatch->addDir(home);
+  dirwatch->addDir(desk);
+  kdDebug() << "Watching: (but skipped) " << home << endl;
 
-  testObject.connect(dirwatch, SIGNAL( dirty( const QString &)), 
-	SLOT( dirty( const QString &)) );
-  
+  testObject.connect(dirwatch, SIGNAL( dirty( const QString &)),
+        SLOT( dirty( const QString &)) );
+
   dirwatch->startScan();
-  if (!dirwatch->stopDirScan(home.data()))
-    printf( "stopDirScan: error\n");
+  if (!dirwatch->stopDirScan(home))
+    kdDebug() << "stopDirScan: error" << endl;
 
   return a.exec();
 }
