@@ -30,7 +30,6 @@ xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
 	$(LN_S) $(srcdir)/xslt.cpp xslt_pure.cpp
 	$(CXXCOMPILE) -DSIMPLE_XSLT -c xslt_pure.cpp
-	-rm -f xslt_pure.cpp
 
 bin_SCRIPTS = xmlizer kdb2html checkXML
 
