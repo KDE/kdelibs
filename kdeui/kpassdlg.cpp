@@ -512,7 +512,7 @@ void KPasswordDialog::slotOk()
 	    return;
 	}
     }
-    if (d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) {
+    if ( (m_Type == NewPassword) && (d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) ) {
 	int retVal = KMessageBox::warningYesNo(this,
 		i18n(	"The password you have entered has a low strength. "
 			"To improve the strength of "
