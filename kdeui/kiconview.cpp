@@ -389,12 +389,6 @@ void KIconViewItem::calcRect( const QString& text_ )
         return;
     delete m_wordWrap;
     m_wordWrap = 0L;
-    // No word-wrap ? Call the default calcRect in that case.
-    if ( !iconView()->wordWrapIconText() )
-    {
-        QIconViewItem::calcRect( text_ );
-        return;
-    }
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !iconView()->inherits("KIconView") )
     {
@@ -431,26 +425,39 @@ void KIconViewItem::calcRect( const QString& text_ )
     //          << " " << itemIconRect.width() << "x" << itemIconRect.height() << endl;
 
     // When is text_ set ? Doesn't look like it's ever set.
-    QString t = text_.isEmpty() ? text() : text_;
-
+    QString t;
+    if ( iconView()->wordWrapIconText() )
+        t = text_.isEmpty() ? text() : text_;
+    else {
+        calcTmpText();
+        t = text_.isEmpty() ? tempText() : text_;
+    }
+    
     int tw = 0;
     int th = 0;
     QFontMetrics *fm = view->itemFontMetrics();
     QRect outerRect( 0, 0, view->maxItemWidth() -
                      ( view->itemTextPos() == QIconView::Bottom ? 0 :
                        pixmapRect().width() ), 0xFFFFFFFF );
-    // Calculate the word-wrap
-    m_wordWrap = KWordWrap::formatText( *fm, outerRect, AlignHCenter | WordBreak /*| BreakAnywhere*/, t );
-    QRect r = m_wordWrap->boundingRect();
-    r.setWidth( r.width() + 4 );
-    // [Non-word-wrap code removed]
+
+    QRect r;
+    
+    if ( iconView()->wordWrapIconText() )
+    {
+        // Calculate the word-wrap
+        m_wordWrap = KWordWrap::formatText( *fm, outerRect, AlignHCenter | WordBreak /*| BreakAnywhere*/, t );
+        r = m_wordWrap->boundingRect();
+    }
+    else
+        r = QRect( 0, 0, fm->width( t ), fm->height() );
 
     if ( r.width() > view->maxItemWidth() -
-         ( view->itemTextPos() == QIconView::Bottom ? 0 :
-           pixmapRect().width() ) )
+        ( view->itemTextPos() == QIconView::Bottom ? 0 :
+        pixmapRect().width() ) )
         r.setWidth( view->maxItemWidth() - ( view->itemTextPos() == QIconView::Bottom ? 0 :
-                                                   pixmapRect().width() ) );
-
+                                             pixmapRect().width() ) );
+    
+    r.setWidth( r.width() + 4 );
     tw = r.width();
     th = r.height();
     int minw = fm->width( "X" );
@@ -575,7 +582,7 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
 
 void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
 {
-    int textX = textRect( false ).x();
+    int textX = textRect( false ).x() + 2;
     int textY = textRect( false ).y();
 
     if ( isSelected() ) {
