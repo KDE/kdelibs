@@ -31,6 +31,6 @@ BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
 	./convert_key $(QTDIR)
-	cat ackey ckey >> ckey.h
+	cat ackey ckey > ckey.h
 	rm -f ackey ckey
 
