@@ -4253,6 +4253,8 @@ void KHTMLPart::slotAutoScroll()
 
 void KHTMLPart::selectAll()
 {
+  if (!d->m_doc) return;
+
   NodeImpl *first;
   if (d->m_doc->isHTMLDocument())
     first = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
