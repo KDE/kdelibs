@@ -1,10 +1,9 @@
 BUGS
 ----
 
-- backport LPR plugin problem with aliases to 2.2 branch
-
-- Toolbar of instance tab seems to be messed up. Only 1 button
-  shown.
+- log in as normal user, then su: IPP report cannot be printed
+  because the temp file created is not world-readable (the dir
+  where it is located is not readable)
 
 
 

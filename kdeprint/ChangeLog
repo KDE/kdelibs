@@ -349,3 +349,11 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	. make use of smb-url conversion functions in Foomatic handler
 	. fix problem with rmote lpd queues: force lp=<empty string> in
 	  printcap entry
+
+07/02/2002 Michael Goffioul <goffioul@imec.be>
+  * job viewer: fix crash when switching the print plugin elsewhere and
+    there's some jobs shown + fix refresh problem when switching plugin
+  * general: fix small bug when removing a filter in "Filters" page
+  * general: discard the toolbar use in the "Instances" page to avoid the
+    problem with non-docked vertical toolbars. Use plain QPushButton
+    instead, but this has some drawing problems in HighColor style.
