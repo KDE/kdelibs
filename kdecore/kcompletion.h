@@ -372,7 +372,7 @@ protected:
      * Default implementation does nothing.
      * @see #postProcessMatches
      */
-    virtual void postProcessMatch( QString *match ) {}
+    virtual void postProcessMatch( QString * /*match*/ ) {}
     
     /**
      * This method is called before a list of all available completions is
@@ -383,7 +383,7 @@ protected:
      * Default implementation does nothing.
      * @see #postProcessMatch
      */
-    virtual void postProcessMatches( QStringList *matches ) {}
+    virtual void postProcessMatches( QStringList * /*matches*/ ) {}
     
 private:
     void 		addItemInternal( const QString& );
