@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 //     dtv->show();
 
     toplevel->setCentralWidget( doc->widget() );
-    toplevel->resize( 640, 800);
+    toplevel->resize( 800, 600);
 
 //     dtv->resize(toplevel->width()/2, toplevel->height());
 
