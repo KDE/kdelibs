@@ -141,8 +141,7 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
           this, SLOT( slotReleased() ) );
   installEventFilter(this);
 
-  // let this function take care of loading the correct icon
-  setIcon( _icon );
+  d->m_iconName = _icon;
 
   // do our initial setup
   modeChange();
