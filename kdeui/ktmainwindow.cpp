@@ -1006,6 +1006,8 @@ void KTMainWindow::createGUI( const QString &xmlfile )
 
   guiFactory()->addServant( this );
 
+  conserveMemory();
+
   setUpdatesEnabled( true );
   updateRects();
 }

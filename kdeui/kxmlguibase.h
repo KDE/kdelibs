@@ -76,6 +76,13 @@ protected:
    **/
   virtual void setXML( const QString &document, bool merge = false );
 
+  /**
+   * This function will attempt to give up some memory after the GUI
+   * is built.  It should never be used in apps where the GUI may be
+   * rebuilt at some later time (components, for instance).
+   */
+  virtual void conserveMemory();
+
 private:
   bool mergeXML( QDomElement &base, const QDomElement &additive,
                  QActionCollection *actionCollection );

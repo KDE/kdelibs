@@ -41,14 +41,18 @@ public:
   KXMLGUIBasePrivate()
   {
     m_instance = KGlobal::instance();
+    m_doc = new QDomDocument;
   }
   ~KXMLGUIBasePrivate()
   {
+    if (m_doc)
+      delete m_doc;
+    m_doc = 0;
   }
 
   KInstance *m_instance;
 
-  QDomDocument m_doc;
+  QDomDocument* m_doc;
   QActionCollection m_actionCollection;
 };
 
@@ -85,7 +89,7 @@ KInstance *KXMLGUIBase::instance() const
 
 QDomDocument KXMLGUIBase::document() const
 {
-  return d->m_doc; 
+  return *(d->m_doc); 
 } 
 
 void KXMLGUIBase::setInstance( KInstance *instance )
@@ -113,7 +117,7 @@ void KXMLGUIBase::setXML( const QString &document, bool merge )
 {
   if ( merge )
   {
-    QDomElement base = d->m_doc.documentElement();
+    QDomElement base = d->m_doc->documentElement();
     QDomDocument doc;
 
     if ( !document.isNull() )
@@ -124,10 +128,10 @@ void KXMLGUIBase::setXML( const QString &document, bool merge )
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
-      d->m_doc.setContent( document );
+      d->m_doc->setContent( document );
   }
   else
-    d->m_doc.setContent( document );
+    d->m_doc->setContent( document );
 } 
 
 bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QActionCollection *actionCollection )
@@ -374,4 +378,11 @@ QDomElement KXMLGUIBase::findMatchingElement( const QDomElement &base, const QDo
 
   // nope, return a (now) null element
   return e;
+}
+
+void KXMLGUIBase::conserveMemory()
+{
+  if (d->m_doc)
+    delete d->m_doc;
+  d->m_doc = 0;
 }
