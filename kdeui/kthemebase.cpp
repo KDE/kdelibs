@@ -345,9 +345,9 @@ void KThemeBase::applyConfigFile(const QString &inFile)
     globalConfig->setGroup("KDE");
     inConfig.setGroup("KDE");
 
-    if(inConfig.hasKey("Contrast"))
-        globalConfig->writeEntry("Contrast",
-                                 inConfig.readEntry("Contrast", " "), true,
+    if(inConfig.hasKey("contrast"))
+        globalConfig->writeEntry("contrast",
+                                 inConfig.readEntry("contrast", " "), true,
                                  true);
     globalConfig->writeEntry("widgetStyle",
                              inConfig.readEntry("widgetStyle", " "), true,
@@ -361,11 +361,12 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
     if(shading == Motif){
         int highlightVal, lowlightVal;
         highlightVal=100+(2*kapp->contrast()+4)*16/10;
-        lowlightVal=100+(2*kapp->contrast()+4)*10;
+        lowlightVal=100+((2*kapp->contrast()+4)*10);
         return(new QColorGroup(fg, bg, bg.light(highlightVal),
                                bg.dark(lowlightVal), bg.dark(120),
                                fg, kapp->palette().normal().base()));
-    }else
+    }
+    else
         return(new QColorGroup( fg, bg, bg.light(150), bg.dark(),
                                 bg.dark(120), fg,
                                 kapp->palette().normal().base()));
