@@ -138,6 +138,7 @@ static const ushort tag_list_1[] = {
     ID_LABEL,
     ID_BUTTON,
     ID_COMMENT,
+    ID_LI,
     0
 };
 
@@ -174,6 +175,7 @@ static const ushort tag_list_3[] = {
     ID_FIELDSET,
     ID_ADDRESS,
     ID_COMMENT,
+    ID_LI,
     0
 };
 
@@ -244,6 +246,7 @@ static const ushort tag_list_4[] = {
     ID_LABEL,
     ID_BUTTON,
     ID_COMMENT,
+    ID_LI,
     0
 };
 

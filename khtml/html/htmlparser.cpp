@@ -892,10 +892,14 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLMenuElementImpl(document);
         break;
     case ID_LI:
+    {
         popBlock(ID_LI);
-        n = new HTMLLIElementImpl(document);
+	HTMLElementImpl *e = new HTMLLIElementImpl(document);
+        n = e;
+	if( current->id() != ID_UL && current->id() != ID_OL )
+		e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
         break;
-
+    }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
         n = new HTMLBlockquoteElementImpl(document);
