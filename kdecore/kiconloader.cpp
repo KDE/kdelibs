@@ -20,6 +20,11 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.65  1999/08/08 22:46:29  tibirna
+   CT: Sorry, Coolo. In the light of the last explanation (using "name" instead of "name.png" or "name.xpm" in the ICON macro) i reverted the code to your version and put an additional (fallback) check for cases of erroneous (or extraneous) calls, where developers will still include ".png" extensions or use any other (are ".bmp", ".xbm", ".pbm" ever used or supposed to be used?)
+
+   I apologize for this mess.
+
    Revision 1.64  1999/08/08 22:07:08  mosfet
    CT: Uh, you may want to wait to switch to unknown.png from unknown.xpm until
    unknown.png exists... Just because you are old doesn't mean you are right :P
@@ -332,19 +337,22 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
     QString full_path;
     if (!name.isEmpty()) {
       QString path = name;
-      if (path.right(4) == ".xpm") {
-	path.truncate(path.length() - 4); 
-	warning("stripping .xpm from icon %s", name.ascii());
-      }
-      full_path = locate(iconType, path + ".png");
-      if (full_path.isNull())
+      if (path.at(0) != '/') {
+	warning ("FIXME: Perhaps this check for '/' is just temporary. It's surely ugly");
+	if (path.right(4) == ".xpm") {
+	  path.truncate(path.length() - 4); 
+	  warning("stripping .xpm from icon %s", name.ascii());
+	}
+	full_path = locate(iconType, path + ".png");
+	if (full_path.isNull())
           full_path = locate(iconType, path + ".xpm" );
+      }
 
       if (full_path.isNull()) 
 	full_path = locate(iconType, path);
     }
     if (full_path.isNull() && always_valid)
-	full_path = locate(iconType, "unknown.xpm");
+      full_path = locate(iconType, "unknown.xpm");
     
     return full_path;
 }
