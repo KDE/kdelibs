@@ -364,17 +364,14 @@ AC_CACHE_VAL(ac_cv_lib_gif,
 [ac_save_LIBS="$LIBS"
 LIBS="$all_libraries -lgif -lX11 $LIBSOCKET"
 AC_TRY_LINK(dnl
-ifelse([main], [main], , dnl Avoid conflicting decl of main.
-[/* Override any gcc2 internal prototype to avoid an error.  */
-]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
-extern "C"
-#endif
-])dnl
-[/* We use char because int might match the return type of a gcc2
+[
+extern "C" {
+int GifLastError(void);
+}
+/* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char main();
-]),
-            [main()],
+],
+            [return GifLastError();],
             eval "ac_cv_lib_gif=yes",
             eval "ac_cv_lib_gif=no")
 LIBS="$ac_save_LIBS"
@@ -392,18 +389,19 @@ AC_DEFUN(AC_FIND_JPEG,
 AC_CACHE_VAL(ac_cv_lib_jpeg,
 [ac_save_LIBS="$LIBS"
 LIBS="$all_libraries -ljpeg -lm"
-AC_TRY_LINK(dnl
-ifelse([main], [main], , dnl Avoid conflicting decl of main.
+AC_TRY_LINK(
 [/* Override any gcc2 internal prototype to avoid an error.  */
-]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
-extern "C"
-#endif
-])dnl
-[/* We use char because int might match the return type of a gcc2
+struct jpeg_decompress_struct;
+typedef struct jpeg_decompress_struct * j_decompress_ptr;
+typedef int size_t;
+extern "C" {
+    void jpeg_CreateDecompress(j_decompress_ptr cinfo,
+                                    int version, size_t structsize);
+}
+/* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char main();
-]),
-            [main()],
+],
+            [jpeg_CreateDecompress(0L, 0, 0);],
             eval "ac_cv_lib_jpeg=yes",
             eval "ac_cv_lib_jpeg=no")
 LIBS="$ac_save_LIBS"

@@ -26,7 +26,12 @@ AC_PROG_CXX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+dnl libtool is only for C, so I must force him
+dnl to find the correct flags for C++
+ac_save_cc=$CC
+CC=$CXX
 AM_PROG_LIBTOOL dnl for libraries
+CC=$ac_save_cc
 
 dnl find out some variables (not supported yet)
 AC_AIX
