@@ -1,4 +1,4 @@
-ikdelibs (4:2.2.0-0beta1-3) unstable; urgency=low
+kdelibs (4:2.2.0-0beta1-3) unstable; urgency=low
  
   * Fix description (Closes: #103206)
   * Sync with upstream
