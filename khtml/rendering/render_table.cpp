@@ -855,6 +855,7 @@ void RenderTable::calcColMinMax()
 
     totalPercent=0;
     totalRelative=0;
+    int totalRest=0;
 
     hasPercent=false;
 
@@ -871,6 +872,10 @@ void RenderTable::calcColMinMax()
 
         switch(colType[i])
         {
+	case Fixed:
+	case Variable:
+	    totalRest += colMaxWidth[i];
+	    break;
         case Percent:
         {
             int percent = colValue[i];
@@ -884,11 +889,8 @@ void RenderTable::calcColMinMax()
 
             maxPercentColumn = KMAX(colValue[i],maxPercentColumn);
 
-            if (colValue[i] >= 100)
-                maxTentativePercentWidth = 32760;
-            else
-                maxTentativePercentWidth = KMAX(percent==0?0:colMaxWidth[i]*100/percent,
-                                                maxTentativePercentWidth);
+	    maxTentativePercentWidth = KMAX(percent==0?0:colMaxWidth[i]*100/percent,
+					    maxTentativePercentWidth);
         }
             break;
         case Relative:
@@ -899,8 +901,19 @@ void RenderTable::calcColMinMax()
 
     }
 
+    if (totalPercent && hasPercent && totalRest) {
+	if (totalPercent >= 100) {
+	    maxTentativePercentWidth = 32760;
+	} else {
+	    maxTentativePercentWidth = kMax((100 * totalRest) / (100 - totalPercent),
+					    (unsigned int)maxTentativePercentWidth);
+	    totalPercent = 100;
+	}
+    }
+
     if (widthType <= Relative && hasPercent)
-        m_maxWidth = (maxTentativePercentWidth*kMax(totalPercent, 100u))/100;
+	m_maxWidth = kMin((maxTentativePercentWidth*kMax(totalPercent, 100u))/100 +
+			  ((int)totalCols + 1) * spacing, 32760u);
 
     // PHASE 5, set table min and max to final values
 
@@ -1067,7 +1080,7 @@ void RenderTable::calcColWidth(void)
     /*
      * distribute the free width among the columns so that
      * they reach their max width.
-     * Order: fixed->percent->relative->variable
+     * Order: percent->fixed->relative->variable
      */
 
     if (totalPercent && hasPercent)
@@ -1086,10 +1099,10 @@ void RenderTable::calcColWidth(void)
     /*
      * Some width still left?
      */
-    if ( numPercent ) toAdd = distributeRest(toAdd,Percent,maxPercent);
-    if ( numFixed ) toAdd = distributeRest(toAdd,Fixed,maxFixed);
     if ( numRel ) toAdd = distributeRest(toAdd,Relative,maxRel);
     if ( numVar ) toAdd = distributeRest(toAdd,Variable,maxVar);
+    if ( numFixed ) toAdd = distributeRest(toAdd,Fixed,maxFixed);
+    if ( numPercent ) toAdd = distributeRest(toAdd,Percent,maxPercent);
 
 #ifdef TABLE_DEBUG
     for(int i = 0; i < (int)totalCols; i++)
@@ -1132,6 +1145,8 @@ int RenderTable::distributePercentWidth(int distrib)
 #endif
 
     int totPercent = 0;
+
+    distrib = (m_width - borderLeft() - borderRight() - ((int)totalCols + 1) * spacing);
 
     for (int c = 0; c < totalCols; ++c)
         if (colType[c]==Percent) {
