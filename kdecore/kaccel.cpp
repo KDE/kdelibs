@@ -42,6 +42,23 @@
 #include <X11/keysymdef.h>
 #include <ctype.h>
 
+//-------------------------------------------------------------------
+
+// BCI: KAccel doesn't have a destructor, so we need to delete it's 'd' another way.
+// So in this case, we'll make KAccelPrivate a child of QObject, and set it's QObject
+//  parent to KAccel.
+class KAccelPrivate : public QObject
+{
+public:
+	KKeyMapOrder aKeyMapOrder;	// A list preserving the original insertItem order.
+
+	KAccelPrivate( QObject *parent )
+		: QObject( parent )
+		{ };
+};
+
+//-------------------------------------------------------------------
+
 KKey::KKey( const XEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventXToKeyQt( pEvent ); }
 KKey::KKey( const QKeyEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventQtToKeyQt( pEvent ); }
 KKey::KKey( const QString& keyStr )	{ m_keyCombQt = KAccel::stringToKey( keyStr ); }
@@ -91,6 +108,7 @@ KAccel::KAccel( QWidget * parent, const char *name )
     bEnabled = true;
     aGroup = "Keys";
     bGlobal = false;
+    d = new KAccelPrivate( this ); // BCI: we'll need a destructor function too.
 }
 
 void KAccel::clear()
@@ -211,7 +229,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     entry.aDefaultKeyCode = defaultKeyCode3.key();
     entry.aDefaultKeyCode4 = defaultKeyCode4.key();
     entry.aCurrentKeyCode = entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
-    kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << "entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
+    kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << " entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
     entry.bConfigurable = configurable;
     entry.descr = descr;
     entry.menuId = id;
@@ -222,7 +240,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 
     // Hack to get ordering and labeling working in kcontrol -- this will be replaced as
     //  soon as the 2.2beta testing phase is over.
-    aKeyMapOrder[aKeyMapOrder.count()] = action;
+    d->aKeyMapOrder[d->aKeyMapOrder.count()] = action;
     // Program:XXX and Group:XXX labels should be disabled.
     if( action.contains( ':' ) )
     	entry.bEnabled = false;
@@ -314,6 +332,16 @@ bool KAccel::isItemEnabled( const QString& action ) const
 KKeyEntryMap KAccel::keyDict() const
 {
 	return aKeyMap;
+}
+
+const KKeyMapOrder& KAccel::keyInsertOrder() const
+{
+	return d->aKeyMapOrder;
+}
+
+KKeyMapOrder& KAccel::keyInsertOrder()
+{
+	return d->aKeyMapOrder;
 }
 
 void KAccel::readSettings( KConfig* config )

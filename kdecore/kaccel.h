@@ -436,8 +436,8 @@ class KAccel : public QAccel
 	 */
 	KKeyEntryMap keyDict() const;
 	// Hack: to be replaced after the 2.2beta testing phase. -- ellis
-	const KKeyMapOrder& keyInsertOrder() const { return aKeyMapOrder; }
-	KKeyMapOrder& keyInsertOrder() { return aKeyMapOrder; }
+	const KKeyMapOrder& keyInsertOrder() const;
+	KKeyMapOrder& keyInsertOrder();
 
 	/**
 	 * Read all key associations from @p config, or (if @p config
@@ -620,7 +620,6 @@ signals:
  protected:
 	int aAvailableId;
 	KKeyEntryMap aKeyMap;
-	KKeyMapOrder aKeyMapOrder;	// A list preserving the original insertItem order.
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
