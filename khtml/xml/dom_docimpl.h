@@ -167,6 +167,8 @@ public:
      */
     void updateStyleSelector();
 
+    void recalcStyleSelector();
+    
     QString nextState();
 
     // Query all registered elements for their state
@@ -417,6 +419,7 @@ protected:
     bool visuallyOrdered;
     bool m_bParsing;
     bool m_docChanged;
+    bool m_styleSelectorDirty;
 
     DOMString m_title;
 };

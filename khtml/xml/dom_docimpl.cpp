@@ -272,6 +272,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
     m_inDocument = true;
+    m_styleSelectorDirty = false;
 
     m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
@@ -861,7 +862,12 @@ void DocumentImpl::updateRendering()
     time.start();
     kdDebug() << "UPDATERENDERING: "<<endl;
 
-    recalcStyle( NoChange );
+    StyleChange change = NoChange;
+    if ( m_styleSelectorDirty ) {
+	recalcStyleSelector();
+	change = Force;
+    }
+    recalcStyle( change );
 
     kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
 }
@@ -1631,6 +1637,15 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::updateStyleSelector()
 {
+    m_styleSelectorDirty = true;
+    if ( renderer() ) {
+	renderer()->setLayouted( false );
+	renderer()->setMinMaxKnown( false );
+    }
+}
+
+void DocumentImpl::recalcStyleSelector()
+{
     if ( !m_render || !attached() ) return;
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
@@ -1702,7 +1717,7 @@ void DocumentImpl::updateStyleSelector()
     m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
 
-    recalcStyle( Force );
+    m_styleSelectorDirty = false;
 }
 
 void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
