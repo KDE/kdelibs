@@ -125,7 +125,7 @@ char		**Argv = NULL;		/* pointer to argument vector */
 char		*LastArgv = NULL;	/* end of argv */
 
 void
-kinit_initsetproctitle(int argc, char **argv, char **envp)
+kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 {
 	register int i, envpsize = 0;
 	extern char **environ;
@@ -191,8 +191,8 @@ setproctitle(const char *fmt, ...)
 
 	p = buf;
 
-	/* print kinit: heading for grep */
-	(void) strcpy(p, "kinit: ");
+	/* print kdeinit: heading for grep */
+	(void) strcpy(p, "kdeinit: ");
 	p += strlen(p);
 
 	/* print the argument string */
@@ -266,7 +266,7 @@ setproctitle(const char *fmt, ...)
 
 /*VARARGS2*/
 void
-kinit_setproctitle(const char *fmt, ...)
+kdeinit_setproctitle(const char *fmt, ...)
 {
 	char buf[SPT_BUFSIZE];
 

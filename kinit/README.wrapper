@@ -1,20 +1,20 @@
 README
 
-kinit_wrapper is a program that starts programs via kinit.
+kdeinit_wrapper is a program that starts programs via kdeinit.
 
 E.g. You can make a symbolic link from $KDEDIR/bin/konsole to 
-$KDEDIR/bin/kinit_wrapper. Typing 'konsole' on the command line 
-will then start 'libkonsole.la' through kinit instead.
+$KDEDIR/bin/kdeinit_wrapper. Typing 'konsole' on the command line 
+will then start 'libkonsole.la' through kdeinit instead.
 
 
 TODO
 ====
 
-* CWD (Current Working Directory) is not passed to kinit.
+* CWD (Current Working Directory) is not passed to kdeinit.
 * There is no portable way to read out the complete environment and
-  pass it to kinit.
+  pass it to kdeinit.
 * stdout/stderr of the started application goes to the console where
-  kinit was started.
+  kdeinit was started.
 
 
 HOW TO PROCEED

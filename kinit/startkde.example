@@ -3,12 +3,12 @@
 #  DEFAULT KDE STARTUP SCRIPT ( KDE-2.0 )
 #
 
-# kinit always starts a dcopserver. 
+# kdeinit always starts a dcopserver. 
 # It launches the services specfied on the cmdline as well.
-# When the service is preceded with a '+', kinit waits for
+# When the service is preceded with a '+', kdeinit waits for
 # the service to terminate before starting the next one.
 #
-LD_BIND_NOW=true kinit +kded +kcminit +kicker +kaudioserver +kdesktop kwrited kwin
+LD_BIND_NOW=true kdeinit +kded +kcminit +kicker +kaudioserver +kdesktop kwrited kwin
 # Let's run the DCOP server first; it forks itself
 #dcopserver
 

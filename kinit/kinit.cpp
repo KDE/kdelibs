@@ -111,7 +111,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
       */
      if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
      {
-        perror("kinit: scoketpair() failed!\n");
+        perror("kdeinit: scoketpair() failed!\n");
         exit(255);
      }
      launcher = 1;
@@ -136,14 +136,14 @@ static pid_t launch(int argc, const char *_name, const char *args)
 
   if (0 > pipe(d.fd))
   {
-     perror("kinit: pipe() failed!\n");
+     perror("kdeinit: pipe() failed!\n");
      exit(255);
   }
   
   d.fork = fork();
   switch(d.fork) {
   case -1:
-     perror("kinit: fork() failed!\n");
+     perror("kdeinit: fork() failed!\n");
      exit(255);
      break;
   case 0:
@@ -156,7 +156,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
 fprintf(stderr, "arg[0] = %s\n", name.data());
 
      /** Give the process a new name **/
-     kinit_setproctitle( "%s", name.data() );
+     kdeinit_setproctitle( "%s", name.data() );
          
      d.argv = (char **) malloc(sizeof(char *) * (argc+1));
      d.argv[0] = name.data();
@@ -261,7 +261,7 @@ fprintf(stderr, "Starting klauncher.\n");
           }
           else
           {
-             perror("kinit: Pipe closed unexpected.\n");
+             perror("kdeinit: Pipe closed unexpected.\n");
              exit(255);
           }
        }
@@ -272,7 +272,7 @@ fprintf(stderr, "Starting klauncher.\n");
        }
        if (errno != EINTR)
        {
-          perror("kinit: Error reading from pipe.\n");
+          perror("kdeinit: Error reading from pipe.\n");
           exit(255);
        }
      }
@@ -349,7 +349,7 @@ static void init_signals()
   sigaction( SIGPIPE, &act, 0L);
 }
 
-static void init_kinit_socket()
+static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
   ksize_t socklen;
@@ -373,7 +373,7 @@ static void init_kinit_socket()
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
   
-  strcat(sock_file, "/.kinit-");
+  strcat(sock_file, "/.kdeinit-");
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
@@ -476,7 +476,7 @@ static void kill_launcher()
 {
 /*   pid_t pid; */
    /* This is bad. Best thing we can do is to kill the launcher. */
-   fprintf(stderr, "kinit: Communication error with launcher. Killing launcher!\n");
+   fprintf(stderr, "kdeinit: Communication error with launcher. Killing launcher!\n");
    if (d.launcher_pid)
    {
      close(d.launcher[0]);
@@ -549,7 +549,7 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
          }   
          if ((arg_n - request_data) != request_header.arg_length)
          {
-           fprintf(stderr, "kinit: EXEC request has invalid format.\n"); 
+           fprintf(stderr, "kdeinit: EXEC request has invalid format.\n"); 
            free(request_data);
            return;
          }
@@ -586,7 +586,7 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
       if ( request_header.arg_length != 
           (int) (strlen(env_name) + strlen(env_value) + 2))
       {
-         fprintf(stderr, "kinit: SETENV request has invalid format.\n"); 
+         fprintf(stderr, "kdeinit: SETENV request has invalid format.\n"); 
          free(request_data);
          return;
       }
@@ -619,7 +619,7 @@ static void handle_requests()
         exit_pid = waitpid(-1, 0, WNOHANG);
         if (exit_pid > 0)
         {
-           fprintf(stderr, "kinit: PID %d terminated.\n", exit_pid);
+           fprintf(stderr, "kdeinit: PID %d terminated.\n", exit_pid);
            if (d.launcher_pid)
            {
               klauncher_header request_header;
@@ -678,11 +678,11 @@ static void handle_requests()
    }
 }
 
-static void kinit_library_path()
+static void kdeinit_library_path()
 {
    QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
    QCString ld_library_path = getenv("LD_LIBRARY_PATH");
-   KInstance instance( "kinit" );
+   KInstance instance( "kdeinit" );
    QStringList candidates = instance.dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end(); 
@@ -727,9 +727,9 @@ int main(int argc, char **argv, char **envp)
    }
    
    /** Prepare to change process name **/
-   kinit_initsetproctitle(argc, argv, envp);  
-   kinit_setproctitle("Starting up...");
-   kinit_library_path();
+   kdeinit_initsetproctitle(argc, argv, envp);  
+   kdeinit_setproctitle("Starting up...");
+   kdeinit_library_path();
    unsetenv("LD_BIND_NOW");
 
    d.maxname = strlen(argv[0]);
@@ -778,16 +778,16 @@ int main(int argc, char **argv, char **envp)
    }
    free (d.argv);
 
-   kinit_setproctitle("Running...");
+   kdeinit_setproctitle("Running...");
 
    if (!keep_running)
       exit(0);
 
    /*
-    * Create ~/.kinit-<hostname> socket for incoming wrapper
+    * Create ~/.kdeinit-<hostname> socket for incoming wrapper
     * requests.
     */
-   init_kinit_socket();
+   init_kdeinit_socket();
 
    if (fork() > 0) // Go into background
       exit(0);

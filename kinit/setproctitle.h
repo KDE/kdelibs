@@ -145,8 +145,8 @@
 #endif
 
 
-extern void kinit_initsetproctitle(int, char **, char **);
-extern void kinit_setproctitle(const char *, ...);
+extern void kdeinit_initsetproctitle(int, char **, char **);
+extern void kdeinit_setproctitle(const char *, ...);
 
 #endif
 

@@ -109,7 +109,7 @@ static int openSocket()
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
   
-  strcat(sock_file, "/.kinit-");
+  strcat(sock_file, "/.kdeinit-");
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");

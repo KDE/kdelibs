@@ -1,6 +1,6 @@
 README
 
-kinit is a process launcher somewhat similair to the 
+kdeinit is a process launcher somewhat similair to the 
 famous init used for booting UNIX.
 
 It launches processes by forking and then loading a
@@ -10,7 +10,7 @@ function.
 Executive summary
 =================
 
-Using kinit to launch KDE applications makes starting
+Using kdeinit to launch KDE applications makes starting
 a typical KDE applications 2.5 times faster (100ms 
 instead of 250ms on a P-III 500) It reduces memory 
 consumption by approx. 350Kb per application.
@@ -19,7 +19,7 @@ consumption by approx. 350Kb per application.
 How it works
 ============
 
-kinit is linked against all libraries a standard KDE
+kdeinit is linked against all libraries a standard KDE
 application needs. With this technique starting an
 application becomes much faster because now only
 the application itself needs to be linked whereas 
@@ -31,7 +31,7 @@ Startup Speed
 
 Starting an application linked against libqt, libkdecore and libkdeui
 in the conventional way takes approx. 150ms on a Pentium III - 500Mhz. 
-Starting the same application via kinit takes less than 10ms.
+Starting the same application via kdeinit takes less than 10ms.
 
 (application without KApplication constructor, the KApplication 
 constructor requires an extra 100ms in both cases)
@@ -42,24 +42,24 @@ Memory Usage
 An application linked against libqt, libkdecore and libkdeui started
 in the conventional way requires about 498Kb memory. 
 (average of 10 instances) If the same application is started via
-kinit it requires about 142Kb. A difference of 356Kb (application 
+kdeinit it requires about 142Kb. A difference of 356Kb (application 
 without KApplication constructor) 
 
 If we take the KApplication constructor into account, an application
 started in the conventional way takes about 679Kb memory while the same
-application started via kinit requires about 380Kb. Here the difference
+application started via kdeinit requires about 380Kb. Here the difference
 is somewhat less, 299Kb. This seems to be caused by the fact that the
 dynamic linker does "lazy linking". We can force the linker to link
-everything at startup by specifying "LD_BIND_NOW=true". When kinit is
-started with this option on, kinit is back to its full efficiency, an
+everything at startup by specifying "LD_BIND_NOW=true". When kdeinit is
+started with this option on, kdeinit is back to its full efficiency, an
 application with a KApplication constructor now uses 338Kb of memory.
 A difference of 341Kb with the normal case.
 
-Adapting programs to use kinit.
+Adapting programs to use kdeinit.
 ===============================
 
 The sourcecode of a program does not require any change to take advantage
-of kinit. Only the makefile requires an adaption, if the Makefile.am of 
+of kdeinit. Only the makefile requires an adaption, if the Makefile.am of 
 a normal program looks like this:
 
 bin_PROGRAMS = kicker   
@@ -67,7 +67,7 @@ kicker_LDADD = $(top_builddir)/libkonq/libkonq.la
 kicker_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 The following lines need to be added to make a library version useable 
-by kinit:
+by kdeinit:
 
 lib_LTLIBRARIES = libkicker.la
 libkicker_la_LIBADD = $(top_builddir)/libkonq/libkonq.la
@@ -76,7 +76,7 @@ libkicker_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module
 Disadvantages
 =============
 
-The process name of applications started via kinit is "kinit". This problem
+The process name of applications started via kdeinit is "kdeinit". This problem
 can be corrected to a degree by changing the application name as shown
-by 'ps'. However, applications like "killall" will only see "kinit" as 
+by 'ps'. However, applications like "killall" will only see "kdeinit" as 
 process name.
