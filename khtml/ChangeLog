@@ -1,5 +1,8 @@
 2004-01-18  Dirk Mueller  <mueller@kde.org>
 
+	* xml/dom_elementimpl.cpp (recalcStyle): fix tree corruption 
+	when recalcStyle() happens to be invoked in the wrong moment.
+
 	* html/html_baseimpl.cpp (setLocation): fix KURL() casting issue.
 
 2004-01-16  Dirk Mueller  <mueller@kde.org>
