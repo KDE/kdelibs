@@ -1496,3 +1496,4 @@ Section* AddressBook::configurationSection()
     }
 }
 
+#include "addressbook.moc"

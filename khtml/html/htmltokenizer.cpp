@@ -1429,3 +1429,4 @@ void HTMLTokenizer::addScriptOutput()
 	scriptOutput = "";
     }	
 }
+#include "htmltokenizer.moc"

@@ -488,3 +488,4 @@ void HTMLDocumentImpl::setReloading()
     m_docLoader->reloading = true;
 }
 
+#include "html_documentimpl.moc"

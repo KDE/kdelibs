@@ -248,3 +248,4 @@ bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs &
 {
   return false;
 }
+#include "browserextension.moc"

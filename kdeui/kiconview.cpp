@@ -247,3 +247,5 @@ void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoi
   if( (btn == LeftButton) && item )
     emitExecute( item, pos );
 }
+
+#include "kiconview.moc"

@@ -263,3 +263,5 @@ void KListBox::slotMouseButtonClicked( int btn, QListBoxItem *item, const QPoint
   if( (btn == LeftButton) && item )
     emitExecute( item, pos );
 }
+
+#include "klistbox.moc"

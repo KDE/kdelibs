@@ -172,3 +172,5 @@ void KAnimWidget::updateIcons()
   if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) )
     resize(d->pixmap.width()+2, d->pixmap.height()+2);
 }
+
+#include "kanimwidget.moc"

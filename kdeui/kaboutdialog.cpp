@@ -50,6 +50,7 @@ template class QList<KAboutContributor>;
 // ##############################################################
 // MOC OUTPUT FILES:
 #include "kaboutdialog.moc"
+#include "kaboutdialog_private.moc"
 // ##############################################################
 
 

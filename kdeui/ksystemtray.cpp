@@ -119,3 +119,6 @@ void KSystemTray::toggleMinimizeRestore()
 	parentWidget()->hide();
     }
 }
+
+#include "ksystemtray.moc"
+#include "kdockwindow.moc"

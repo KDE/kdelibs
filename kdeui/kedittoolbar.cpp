@@ -1116,3 +1116,5 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
     toolbar.appendChild(elem);
   }
 }
+
+#include "kedittoolbar.moc"

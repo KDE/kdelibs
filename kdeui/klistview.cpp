@@ -1195,4 +1195,5 @@ void KListView::setAcceptDrops (bool val)
 	viewport()->setAcceptDrops (val);
 }
 
+#include "klistview.moc"
 #include "klistviewlineedit.moc"

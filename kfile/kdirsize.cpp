@@ -90,3 +90,5 @@ void KDirSize::slotResult( KIO::Job * job )
         qApp->exit_loop();
     KIO::Job::slotResult( job );
 }
+
+#include "kdirsize.moc"

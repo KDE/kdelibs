@@ -127,3 +127,4 @@ void KContextMenuManager::widgetDestroyed()
 }
 
 #include "kcmenumngr.moc"
+#include "kcmodule.moc"

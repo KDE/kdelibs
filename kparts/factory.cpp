@@ -44,3 +44,4 @@ QObject *Factory::create( QObject *parent, const char *name, const char *classna
   assert( parent->isWidgetType() );
   return createPart( static_cast<QWidget *>( parent ), name, parent, name, classname, args );
 }
+#include "factory.moc"

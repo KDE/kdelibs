@@ -1395,3 +1395,5 @@ const QColor& KDockTabBar::textColor( int id )
   }
   return Qt::black;
 }
+
+#include "kdocktabctl.moc"
