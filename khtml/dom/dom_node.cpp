@@ -246,7 +246,7 @@ Document Node::ownerDocument() const
     // should return null if called on the document node
     // we don't do that in the *impl tree to avoid excessive if()'s
     // so we simply hack it here in one central place.
-    if (!impl || impl->getDocument() == impl) return Document();
+    if (!impl || impl->getDocument() == impl) return Document(false);
 
     return impl->getDocument();
 }
