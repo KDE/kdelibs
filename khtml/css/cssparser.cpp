@@ -455,8 +455,32 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                         cs->match = CSSSelector::Exact;
                     }
                 }
-                attr = attr.stripWhiteSpace();
-                cs->attr = khtml::getAttrID(attr.ascii(), attr.length());
+                {
+                    attr = attr.stripWhiteSpace();
+                    StyleBaseImpl *root = this;
+                    DocumentImpl *doc = 0;
+                    while (root->parent())
+                        root = root->parent();
+                    if (root->isCSSStyleSheet())
+                        doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
+
+                    if ( doc ) {
+                        if (doc->isHTMLDocument())
+                            attr = attr.lower();
+                        const DOMString dattr(attr);
+                        cs->attr = doc->attrId(0, dattr.implementation(), false);
+                    }
+                    else {
+                        cs->attr = khtml::getAttrID(attr.lower().ascii(), attr.length());
+                        // this case should never happen - only when loading
+                        // the default stylesheet - which must not contain unknown attributes
+                        assert(cs->attr);
+                    }
+                    if (!cs->attr) {
+                        delete cs;
+                        return 0;
+                    }
+                }
                 if(equal)
                 {
                     equal++;
@@ -505,7 +529,6 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         {
             tag = QString( startP, curP - startP );
         }
-	//qDebug("found tag %s", tag.latin1() );
         if(tag == "*")
         {
             //kdDebug( 6080 ) << "found '*' selector" << endl;
@@ -523,7 +546,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (doc->isHTMLDocument())
                     tag = tag.lower();
                 const DOMString dtag(tag);
-                cs->tag = doc->tagId(0, dtag.implementation(), true);
+                cs->tag = doc->tagId(0, dtag.implementation(), false);
             }
             else {
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
