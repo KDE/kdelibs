@@ -762,10 +762,10 @@ void RenderPartObject::updateWidget()
 
         KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-        params.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
-        params.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-	params.append( QString::fromLatin1("CLASSID=\"%1\"").arg( o->classId ) ); 
-	params.append( QString::fromLatin1("CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
+        params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+	params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
+	params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
         part->requestObject( this, url, serviceType, params );
      } else
@@ -783,10 +783,10 @@ void RenderPartObject::updateWidget()
 
         KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-        embed->param.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
-        embed->param.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-	embed->param.append( QString::fromLatin1("CLASSID=\"%1\"").arg( o->classId ) ); 
-	embed->param.append( QString::fromLatin1("CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        embed->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
+        embed->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+	embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
+	embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
         part->requestObject( this, url, serviceType, embed->param );
      }
@@ -805,8 +805,8 @@ void RenderPartObject::updateWidget()
 
      KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-     o->param.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
-     o->param.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+     o->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
+     o->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
      part->requestObject( this, url, serviceType, o->param );
 
