@@ -355,7 +355,7 @@ Window *Window::retrieveActive(ExecState *exec)
 Value Window::retrieve(KHTMLPart *p)
 {
   assert(p);
-  KJSProxy *proxy = KJSProxy::proxy( p );
+  KJSProxy *proxy = p->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "Window::retrieve part=" << p << " '" << p->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
@@ -1049,7 +1049,7 @@ void Window::clear( ExecState *exec )
   jsEventListeners.clear();
 
   if (!m_part.isNull()) {
-    KJSProxy* proxy = KJSProxy::proxy( m_part );
+    KJSProxy* proxy = m_part->jScript();
     if (proxy) // i.e. JS not disabled
     {
       winq = new WindowQObject(this);
@@ -1624,7 +1624,7 @@ ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, 
 
 void ScheduledAction::execute(Window *window)
 {
-  ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(KJSProxy::proxy(window->m_part)->interpreter());
+  ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(window->m_part->jScript()->interpreter());
 
   interpreter->setProcessingTimerCallback(true);
 
@@ -1635,7 +1635,7 @@ void ScheduledAction::execute(Window *window)
       Q_ASSERT( window->m_part );
       if ( window->m_part )
       {
-        KJS::Interpreter *interpreter = KJSProxy::proxy( window->m_part )->interpreter();
+        KJS::Interpreter *interpreter = window->m_part->jScript()->interpreter();
         ExecState *exec = interpreter->globalExec();
         Q_ASSERT( window == interpreter->globalObject().imp() );
         Object obj( window );

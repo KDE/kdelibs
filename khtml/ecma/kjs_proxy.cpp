@@ -42,6 +42,8 @@ extern "C" {
   KJSProxy *kjs_html_init(KHTMLPart *khtmlpart);
 }
 
+namespace KJS {
+
 class KJSProxyImpl : public KJSProxy {
 public:
   KJSProxyImpl(KHTMLPart *part);
@@ -68,6 +70,8 @@ private:
   static int s_count;
 #endif
 };
+
+} // namespace KJS
 
 #ifndef NDEBUG
 int KJSProxyImpl::s_count = 0;
@@ -360,13 +364,6 @@ void KJSProxyImpl::applyUserAgent()
       kdDebug() << "Setting NS compat mode" << endl;
 #endif
     }
-}
-
-// Helper method, so that all classes which need jScript() don't need to be added
-// as friend to KHTMLPart
-KJSProxy * KJSProxy::proxy( KHTMLPart *part )
-{
-    return part->jScript();
 }
 
 // initialize HTML module

@@ -29,6 +29,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
 #include "xml/dom2_eventsimpl.h"
+#include "khtml_part.h"
 
 #include <kdebug.h>
 
@@ -59,7 +60,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   KJSProxy *proxy = 0L;
   if (part)
-    proxy = KJSProxy::proxy( part );
+    proxy = part->jScript();
 
   Object listenerObj = Object::dynamicCast( listener );
   if (proxy && listenerObj.implementsCall()) {
