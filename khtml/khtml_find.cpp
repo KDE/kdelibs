@@ -28,7 +28,10 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qvbuttongroup.h>
-#include <kregexpdialog.h>
+#include <kregexpeditor.h>
+#include <kregexpdialoginterface.h>
+#include <qvariant.h>
+#include <assert.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   : KEdFind( parent, name, false ), m_editorDialog(0)
@@ -41,15 +44,24 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   m_part = part;
   m_found = false;
 
-  // Add regep search to the dialog
-  QHBox* row = new QHBox( group );
-  m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
-  m_editRegExp = new QPushButton( i18n("Edit"), row, "editRegExp" );
+  QWidget *w = KRegExpEditor::createDialog( 0 );
+  if ( w )
+  {
+      delete w;
+      // Add regep search to the dialog
+      QHBox* row = new QHBox( group );
+      m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
+      m_editRegExp = new QPushButton( i18n("Edit"), row, "editRegExp" );
   
-  connect( m_asRegExp, SIGNAL( toggled(bool) ), m_editRegExp, SLOT( setEnabled(bool) ) );
-  connect( m_editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
-  m_editRegExp->setEnabled( false );
-
+      connect( m_asRegExp, SIGNAL( toggled(bool) ), m_editRegExp, SLOT( setEnabled(bool) ) );
+      connect( m_editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
+      m_editRegExp->setEnabled( false );
+  }
+  else
+  {
+      m_asRegExp = 0;
+      m_editRegExp = 0;
+  }
 }
 
 KHTMLFind::~KHTMLFind()
@@ -71,7 +83,8 @@ void KHTMLFind::slotSearch()
 
   bool forward = !get_direction();
 
-  if ( m_part->findTextNext( getText(), forward, case_sensitive(), m_asRegExp->isChecked() ) )
+  if ( m_part->findTextNext( getText(), forward, case_sensitive(),
+	                     m_asRegExp ? m_asRegExp->isChecked() : false ) )
     m_found = true;
   else if ( m_found )
   {
@@ -113,13 +126,23 @@ void KHTMLFind::setNewSearch()
 void KHTMLFind::slotEditRegExp()
 {
   if ( m_editorDialog == 0 )
-    m_editorDialog = new KRegExpDialog( this );
+    m_editorDialog = KRegExpEditor::createDialog( this );
+
+  assert( m_editorDialog );
   
-  m_editorDialog->slotSetRegExp( getText() );
+// ARHL, for some odd reason this dynamic_cast fails?!?! (Simon)
+//  KRegExpDialogInterface *iface = dynamic_cast<KRegExpDialogInterface *>( m_editorDialog );
+  KRegExpDialogInterface *iface = static_cast<KRegExpDialogInterface *>( m_editorDialog->qt_cast( "KRegExpDialogInterface" ) );
+
+  assert( iface );
+
+  QWidget *editor = iface->regExpEditor();
+  assert( editor );
+
+  editor->setProperty( "regexp", getText() );
   bool ok = m_editorDialog->exec();
   if (ok) 
-    setText( m_editorDialog->regexp() );
-  
+    setText( editor->property( "regexp" ).toString() );
 }
 
 #include "khtml_find.moc"

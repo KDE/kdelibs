@@ -23,7 +23,7 @@
 #include <keditcl.h>
 
 class KHTMLPart;
-class KRegExpDialog;
+class QDialog;
 
 class KHTMLFind : public KEdFind
 {
@@ -47,7 +47,7 @@ private:
   KHTMLPart *m_part;
   QCheckBox* m_asRegExp;
   QPushButton*  m_editRegExp;
-  KRegExpDialog* m_editorDialog;
+  QDialog* m_editorDialog;
 };
 
 #endif
