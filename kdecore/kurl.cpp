@@ -67,10 +67,6 @@ KURL::KURL()
 KURL::KURL( const QString &_url )
 {
   reset();
-  /*The following two variables have already been
-    initialized by reset()! Why Re-initialize again ?? (Dawit A.)
-  m_strProtocol = "file";
-  m_iPort = 0; */
   parse( _url );
 }
 
@@ -158,7 +154,8 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
 
 void KURL::reset()
 {
-  m_strProtocol = "file";
+  // (David) protocol used to be set to "file", which broke isEmpty()
+  m_strProtocol = QString::null;
   m_strUser = QString::null;
   m_strPass = QString::null;
   m_strHost = QString::null;
@@ -365,6 +362,10 @@ void KURL::parse( const QString& _url )
 
  NodeOk:
   delete []orig;
+
+  if (m_strProtocol.isEmpty())
+    m_strProtocol = "file";
+
   //debug("Prot=%s\nUser=%s\nPass=%s\nHost=%s\nPath=%s\nQuery=%s\nRef=%s\nPort=%i\n",
   //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
   //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
@@ -1058,6 +1059,13 @@ bool KURL::hasHTMLRef() const
 
   List lst = split( *this );
   return (*lst.begin()).hasRef();
+}
+
+void KURL::setPath( const QString & path )
+{
+  if (m_strProtocol.isEmpty())
+    m_strProtocol = "file";
+  m_strPath = path;
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )

@@ -165,11 +165,11 @@ public:
   QString path( int _trailing ) const;
 
   /**
-   * _txt This is considered to be decoded. This means: %3f does not become decoded
+   * path This is considered to be decoded. This means: %3f does not become decoded
    *      and the ? does not indicate the start of the query part.
    *      The query is not changed by this function.
    */
-  void setPath( const QString& _txt ) { m_strPath = _txt; }
+  void setPath( const QString& path );
   /**
    * Test to see if this URL has a path is included in it.
    **/
