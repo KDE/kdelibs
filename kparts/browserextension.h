@@ -301,6 +301,11 @@ signals:
   void setLocationBarURL( const QString &url );
 
   /**
+   * URL of an icon for the currently displayed page
+   */
+  void setIconURL( const KURL &url );
+
+  /**
    * Ask the hosting browser to open a new window for the given @url.
    *
    * The @p args argument is optional additionnal information for the
