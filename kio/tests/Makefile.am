@@ -20,7 +20,7 @@ INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
 LDADD = $(top_builddir)/kio/libksycoca.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
+check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest
@@ -47,9 +47,12 @@ kurifiltertest_SOURCES = kurifiltertest.cpp
 ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp
-kopenwithtest_SOURCES = kopenwithtest.cpp
-kopenwithtest_LDADD = $(LIB_KFILE)
 kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
 ktradertest_SOURCES = ktradertest.cpp
 kmimemagictest_SOURCES = kmimemagictest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
+
+#Needs kfile, so commented out
+#kopenwithtest_SOURCES = kopenwithtest.cpp
+#kopenwithtest_LDADD = $(LIB_KFILE)
+
