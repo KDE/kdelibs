@@ -340,7 +340,13 @@ void ElementImpl::attach(KHTMLView *w)
 DOMString ElementImpl::toHTML(DOMString _string)
 {
     _string = _string + "<" + nodeName();
-    _string = attributeMap.toHTML(_string) + ">";
+    _string = attributeMap.toHTML(_string);
+    if(!firstChild())
+    {
+         _string += " />";
+         return _string;
+    }
+    _string += ">";
     _string = innerHTML(_string);
     _string = _string +  "</" + nodeName() + ">";
     return _string;
