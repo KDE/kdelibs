@@ -197,6 +197,9 @@ void Job::slotSpeedTimeout()
 
 void Job::showErrorDialog( QWidget * parent )
 {
+  // If we are displaying a progress dialog, remove it first.
+  if ( m_progressId )
+    Observer::self()->jobFinished( m_progressId );
   kapp->enableStyles();
   // Show a message box, except for "user canceled"
   if ( m_error != ERR_USER_CANCELED )
