@@ -27,7 +27,7 @@
 using namespace khtml;
 
 //#define BOX_DEBUG
-#define SPEED_DEBUG
+//#define SPEED_DEBUG
 
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
