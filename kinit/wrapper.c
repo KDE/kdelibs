@@ -221,6 +221,13 @@ int main(int argc, char **argv)
       wrapper = 1;
    else if (strcmp(start, "kdeinit_shell") == 0)
       ext_wrapper = 1;
+   else if (strcmp(start, "kdeinit_shutdown") == 0)
+   {
+      header.cmd = LAUNCHER_TERMINATE_KDE;
+      header.arg_length = 0;
+      write_socket(sock, (char *) &header, sizeof(header));
+      return 0;
+   }
 
    if (wrapper || ext_wrapper)
    {
