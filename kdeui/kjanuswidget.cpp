@@ -399,19 +399,23 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 {
   if( mFace == Tabbed )
   {
-    //
-    // 2000-06-10 Espen Sand: The tab widget does not have a margin so we 
-    // need to add one. I make a new widget width layout manager and reparent 
-    // the page widget to be a child of the new widget.
-    //
-    QString itemName = items.last();
-    QWidget *topWidget = new QWidget( mTabControl, "page" );
-    mTabControl->addTab( topWidget, itemName );
-    mPageList->append(topWidget);
+    page->setMargin (KDialog::marginHint());
 
-    page->reparent( topWidget, QPoint(0,0) );
-    QVBoxLayout *vbox = new QVBoxLayout( topWidget, KDialog::spacingHint(), 0);
-    vbox->addWidget( page, 1 );
+    mTabControl->addTab (page, items.last());
+    mPageList->append (page);
+//     //
+//     // 2000-06-10 Espen Sand: The tab widget does not have a margin so we 
+//     // need to add one. I make a new widget width layout manager and reparent 
+//     // the page widget to be a child of the new widget.
+//     //
+//     QString itemName = items.last();
+//     QWidget *topWidget = new QWidget( mTabControl, "page" );
+//     mTabControl->addTab( topWidget, itemName );
+//     mPageList->append(topWidget);
+
+//     page->reparent( topWidget, QPoint(0,0) );
+//     QVBoxLayout *vbox = new QVBoxLayout( topWidget, KDialog::spacingHint(), 0);
+//     vbox->addWidget( page, 1 );
   }
   else if( mFace == TreeList || mFace == IconList )
   {
