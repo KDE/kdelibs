@@ -155,7 +155,16 @@ void KFilePreview::selectDir(const KFileViewItem* item) {
 }
 
 void KFilePreview::highlightFile(const KFileViewItem* item) {
-    emit showPreview(item ? item->url() : KURL());
+    if ( item )
+        emit showPreview( item->url() );
+    else { // item = 0 -> multiselection mode
+        const KFileViewItemList *items = selectedItems();
+        if ( items->count() == 1 )
+            emit showPreview( items->getFirst()->url() );
+        else
+            emit showPreview( KURL() );
+    }
+        
 
     sig->highlightFile(item);
     // the preview widget appears and takes some space of the left view,
