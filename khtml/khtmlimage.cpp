@@ -211,7 +211,7 @@ void KHTMLImage::updateWindowCaption()
         caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
                   .arg( pix.width() ).arg( pix.height() );
     else
-        caption = i18n( "Image - %2x%3 Pixels" ).arg( pix.width() ).arg( pix.height() );
+        caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
 
     emit setWindowCaption( caption );
     emit completed();
