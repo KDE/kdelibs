@@ -512,7 +512,7 @@ QRect CachedImage::valid_rect() const
 
 void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
-    // do not chang the hack with the update list unless you know what you are doing.
+    // do not change the hack with the update list unless you know what you are doing.
     // When removing this hack, directory listings as eg produced by apache will
     // get *really* slow
     QList<CachedObjectClient> updateList;
@@ -523,7 +523,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
         kdDebug( 6060 ) << "found a client to update..." << endl;
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( p, r, this, &manualUpdate);
+        c->setPixmap( p, r, this, &manualUpdate, false /* DF: I added this to make it compile, please check*/ );
         if (manualUpdate)
             updateList.append(c);
     }
@@ -533,7 +533,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
             // This is a terrible hack which does the same.
             // updateSize() does not exist in CachecObjectClient only
             // in RenderBox()
-            c->setPixmap( p, r, this, &manualUpdate);
+            c->setPixmap( p, r, this, &manualUpdate, false /* DF: I added this to make it compile, please check*/ );
         }
 }
 
