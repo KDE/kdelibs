@@ -530,6 +530,7 @@
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
+<layoutfunctions/>
 <forwards>
     <forward>class KShortcut</forward>
 </forwards>
@@ -542,8 +543,6 @@
     <slot access="protected" specifier="pure virtual">slotClearAlternate()</slot>
     <slot access="protected" specifier="pure virtual">slotMultiKeyMode(bool bOn)</slot>
 </slots>
-<layoutdefaults spacing="6" margin="11"/>
-<layoutfunctions/>
 <includehints>
     <includehint>kdialog.h</includehint>
     <includehint>kpushbutton.h</includehint>
