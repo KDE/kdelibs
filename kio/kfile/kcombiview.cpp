@@ -236,11 +236,11 @@ KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
 {
     if ( !right )
         return left->nextItem( fileItem );
-    
+
     KFileView *preferredView = focusView( left );
     KFileView *otherView = (preferredView == left) ? right : left;
     KFileItem *item = preferredView->nextItem( fileItem );
-    
+
     if ( item )
         m_lastViewForNextItem = preferredView;
     else { // no item, check other view
@@ -297,8 +297,14 @@ KFileView *KCombiView::focusView( KFileView *preferred ) const
     return (preferred && w == preferred->widget()) ? preferred : other;
 }
 
+KActionCollection * KCombiView::actionCollection() const
+{
+    return focusView( right )->actionCollection();
+}
+
 void KCombiView::virtual_hook( int id, void* data )
 { KFileView::virtual_hook( id, data ); }
+
 
 #include "kcombiview.moc"
 

@@ -94,6 +94,8 @@ public:
 
     void ensureItemVisible( const KFileItem * );
 
+    virtual KActionCollection * actionCollection() const;
+    
 protected:
     KFileIconView *left;
     KFileView *right;
@@ -103,7 +105,7 @@ protected slots:
 
 private:
     KFileView *focusView( KFileView *preferred ) const;
-    
+
     // in nextItem() and prevItem(), we have to switch views, when the first
     // view returns 0L. So we need to remember which view was used in the
     // previous call to next/prevItem(). Yes, it's a hack, but it works for
