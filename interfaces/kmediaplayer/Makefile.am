@@ -1,4 +1,8 @@
-SUBDIRS = . kfileaudiopreview
+if include_ARTS
+kfileaudiopreview_subdir = kfileaudiopreview
+endif
+
+SUBDIRS = . $(kfileaudiopreview_subdir)
 INCLUDES = -I$(srcdir)/.. $(all_includes)
 
 lib_LTLIBRARIES = libkmediaplayer.la
