@@ -360,7 +360,7 @@ void KDockWidgetPrivate::slotFocusEmbeddedWidget(QWidget* w)
 {
    if (w) {
       QWidget* embeddedWdg = ((KDockWidget*)w)->getWidget();
-      if ((embeddedWdg->focusPolicy() == QWidget::ClickFocus) || (embeddedWdg->focusPolicy() == QWidget::StrongFocus)) {
+      if (embeddedWdg && ((embeddedWdg->focusPolicy() == QWidget::ClickFocus) || (embeddedWdg->focusPolicy() == QWidget::StrongFocus))) {
          embeddedWdg->setFocus();
       }
    }
