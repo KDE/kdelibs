@@ -13,6 +13,8 @@ class TestModule : public KDEDModule
 public:
    TestModule(const QCString &obj);
 
+   void idle();
+
 k_dcop:
    QString world();
    void registerMe(const QCString &app);

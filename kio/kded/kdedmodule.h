@@ -65,9 +65,19 @@ public:
   virtual ~KDEDModule();
   
   /**
-   * Called whenever the last referenced object gets dereferenced.
+   * Specifies the idle timeout in seconds. The default is 0. 
+   *
+   * This will call the idle slot @p secs seconds after the last 
+   * reference was removed.
    */
-  virtual void idle() { };
+  void setIdleTimeout(int secs);
+
+  /**
+   * Reset the idle timeout counter. 
+   *
+   * (re)starts the timeout counter if no objects are being referenced.
+   */
+  void resetIdle();
 
   /**
    * Insert @p obj indexed with @p app and @p key. The
@@ -95,6 +105,16 @@ public:
    * The objects will be deleted when they are no more referenced.
    */
   void removeAll(const QCString &app);
+
+public slots:
+  /**
+   * Called whenever the last referenced object gets dereferenced.
+   *
+   * See also @ref setIdleTimeout()
+   *
+   * You may delete the module from this slot.
+   */
+  virtual void idle() { };
 
 private:
   KDEDModulePrivate *d;

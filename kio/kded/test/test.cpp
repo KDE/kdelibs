@@ -14,11 +14,17 @@ protected:
 TestModule::TestModule(const QCString &obj) : KDEDModule(obj)
 {
   // Do stuff here
+  setIdleTimeout(15); // 15 seconds idle timeout.
 }
 
 QString TestModule::world()
 {
   return "Hello World!";  
+}
+
+void TestModule::idle()
+{
+   qWarning("TestModule is idle.");
 }
 
 void TestModule::registerMe(const QCString &app)

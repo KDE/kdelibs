@@ -20,6 +20,8 @@
 
 */
 
+#include <qtimer.h>
+
 #include "kdedmodule.h"
 #include "kconfigdata.h"
 
@@ -29,12 +31,16 @@ class KDEDModulePrivate
 {
 public:
   KDEDObjectMap *objMap;
+  int timeout;
+  QTimer timer;
 };
 
 KDEDModule::KDEDModule(const QCString &name) : QObject(), DCOPObject(name)
 {
    d = new KDEDModulePrivate;
    d->objMap = 0;
+   d->timeout = 0;
+   connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
 }
   
 KDEDModule::~KDEDModule()
@@ -42,6 +48,18 @@ KDEDModule::~KDEDModule()
    delete d; d = 0;
 }
   
+void KDEDModule::setIdleTimeout(int secs)
+{
+   d->timeout = secs*1000;
+}
+
+void KDEDModule::resetIdle()
+{
+   d->timer.stop();
+   if (!d->objMap || d->objMap->isEmpty())
+      d->timer.start(d->timeout, true);
+}
+
 void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
 {
    if (!d->objMap)
@@ -57,6 +75,7 @@ void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
    KSharedPtr<KShared> _obj = obj; 
 
    d->objMap->replace(indexKey, _obj);
+   resetIdle();
 }
 
 KShared * KDEDModule::find(const QCString &app, const QCString &key)
@@ -65,7 +84,6 @@ KShared * KDEDModule::find(const QCString &app, const QCString &key)
       return 0;
    KEntryKey indexKey(app, key);
 
-   // Prevent deletion in case the same object is inserted again.
    KDEDObjectMap::Iterator it = d->objMap->find(indexKey);
    if (it == d->objMap->end())
       return 0;
@@ -79,8 +97,8 @@ void KDEDModule::remove(const QCString &app, const QCString &key)
       return;
    KEntryKey indexKey(app, key);
 
-   // Prevent deletion in case the same object is inserted again.
    d->objMap->remove(indexKey);
+   resetIdle();
 }
 
 void KDEDModule::removeAll(const QCString &app)
@@ -99,6 +117,7 @@ void KDEDModule::removeAll(const QCString &app)
          break; // All keys for this app have been removed.
       d->objMap->remove(it2);  
    }
+   resetIdle();
 }
 
 #include "kdedmodule.moc"
