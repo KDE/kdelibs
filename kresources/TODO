@@ -3,3 +3,6 @@ This is a collection of changes which should eventually be done:
 - Emit resourceClosed(Resource*) signal in Resource::close(). For othogonality
 we should probably also emit resourceOpened(), resourceLoaded(), resourceSaved()
 signals.
+- Add function to Resource to return the translated label of the type
+- Find better solution than passing the family name as string to the Manager
+  constructor.
