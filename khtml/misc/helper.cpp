@@ -21,6 +21,7 @@
  * $Id$
  */
 #include "helper.h"
+#include <khtmllayout.h>
 #include <qmap.h>
 #include <qpainter.h>
 #include <dom/dom_string.h>
