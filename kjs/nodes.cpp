@@ -2537,7 +2537,6 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input)
   ClauseListNode *a = list1, *b = list2;
   CaseClauseNode *clause;
 
-  if (a) {
     while (a) {
       clause = a->clause();
       a = a->next();
@@ -2556,7 +2555,6 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, const Value& input)
 	break;
       }
     }
-  }
 
   while (b) {
     clause = b->clause();
