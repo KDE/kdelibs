@@ -268,16 +268,7 @@ unsigned short int TCPSlaveBase::port(unsigned short int _p)
 
     if (_p <= 0)
     {
-        struct servent *srv = getservbyname(m_sServiceName, "tcp");
-
-        if (srv)
-        {
-            p = ntohs(srv->s_port);
-        }
-        else
-        {
-            p = m_iDefaultPort;
-        }
+        p = m_iDefaultPort;
     }
 
     return p;

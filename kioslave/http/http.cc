@@ -180,20 +180,12 @@ void HTTPProtocol::reparseConfiguration()
   ProxyAuthentication = AUTH_None;
   m_bUseProxy = false;
 
-  struct servent *sent = getservbyname(m_protocol, "tcp");
-  if (!sent)
-  {
-    if (m_protocol == "https" || m_protocol == "webdavs")
-      m_iDefaultPort = DEFAULT_HTTPS_PORT;
-    else if (m_protocol == "ftp")
-      m_iDefaultPort = DEFAULT_FTP_PORT;
-    else
-      m_iDefaultPort = DEFAULT_HTTP_PORT;
-  }
+  if (m_protocol == "https" || m_protocol == "webdavs")
+    m_iDefaultPort = DEFAULT_HTTPS_PORT;
+  else if (m_protocol == "ftp")
+    m_iDefaultPort = DEFAULT_FTP_PORT;
   else
-  {
-    m_iDefaultPort = ntohs(sent->s_port);
-  }
+    m_iDefaultPort = DEFAULT_HTTP_PORT;
 }
 
 void HTTPProtocol::resetSessionSettings()
