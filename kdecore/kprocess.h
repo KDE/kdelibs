@@ -474,6 +474,8 @@ signals:
    *
    * You should copy the information contained in @p buffer to your private
    * data structures before returning from this slot.
+   * Example:
+   *     QString myBuf = QString::fromLatin1(buffer, buflen);
    **/
   void receivedStdout(KProcess *proc, char *buffer, int buflen);
 

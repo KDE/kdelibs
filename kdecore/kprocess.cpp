@@ -589,12 +589,13 @@ int KProcess::childOutput(int fdno)
   }
   else
   {
-     char buffer[1024];
+     char buffer[1025];
      int len;
 
      len = ::read(fdno, buffer, 1024);
-
+     
      if ( 0 < len) {
+        buffer[len] = 0; // Just in case.
         emit receivedStdout(this, buffer, len);
      }
      return len;
