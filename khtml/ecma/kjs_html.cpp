@@ -325,6 +325,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
+      unsigned long u;
       if      (p == "type")            return getString(select.type());
       else if (p == "selectedIndex")   return Number(select.selectedIndex());
       else if (p == "value")           return getString(select.value());
@@ -341,6 +342,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "remove")          return new HTMLElementFunction(element,HTMLElementFunction::Remove);
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
+      else if (sscanf(p.cstring().c_str(), "%lu", &u)) return getDOMNode(select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
     break;
     case ID_OPTGROUP: {

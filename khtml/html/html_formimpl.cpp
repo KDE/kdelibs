@@ -1250,7 +1250,7 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
         if (m_listItems[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             if (option->selected()) {
-                if (option->value().isNull() || option->value() == "")
+                if (option->value().isNull())
                     encoded_values += option->text().string().stripWhiteSpace().local8Bit();
                 else
                     encoded_values += option->value().string().local8Bit();

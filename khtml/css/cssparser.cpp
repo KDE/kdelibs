@@ -1770,8 +1770,6 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 
     plist = parseProperties(startP, curP );
 
-    curP++; // need to get past the '}' from above
-
     if (!plist || !slist)
     {
         // Useless rule
