@@ -34,6 +34,8 @@
 
 class KSSLPeerInfoPrivate {
 public:
+  KSSLPeerInfoPrivate() : host(NULL) {}
+  ~KSSLPeerInfoPrivate() { if (host) delete host; }
   KInetSocketAddress *host;
 };
 
@@ -41,7 +43,6 @@ public:
 
 KSSLPeerInfo::KSSLPeerInfo() {
   d = new KSSLPeerInfoPrivate;
-  d->host = NULL;
 }
 
 KSSLPeerInfo::~KSSLPeerInfo() {
