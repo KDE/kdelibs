@@ -49,9 +49,7 @@
 
 #include "base64.h"
 
-#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
 
 #ifdef DO_GZIP
 #include <zlib.h>
