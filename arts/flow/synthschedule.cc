@@ -896,8 +896,10 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 	}
 }
 
-void StdFlowSystem::disconnectObject(Object sourceObject,
-		const string& sourcePort, Object destObject, const string& destPort)
+void StdFlowSystem::disconnectObject(Object /*sourceObject*/,
+				     const string& /*sourcePort*/, 
+				     Object /*destObject*/,
+				     const string& /*destPort*/)
 {
 	assert(false);
 }
@@ -957,7 +959,7 @@ void StdFlowSystem::schedule(unsigned long samples)
 		{
 			StdScheduleNode *node = *ni;
 
-            int outConnections = 0,c;
+            unsigned int outConnections = 0,c;
             for(c=0;c<node->outConnCount && !outConnections;c++)
                 outConnections += node->outConn[c]->destcount;                  
 
