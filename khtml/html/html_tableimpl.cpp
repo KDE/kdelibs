@@ -334,13 +334,13 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 #endif
 	break;
    case ATTR_CELLSPACING:
-	if (attr->val())
+	if (!attr->value().isEmpty())
 	    addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), false);
 	else
 	    removeCSSProperty(CSS_PROP_BORDER_SPACING);
 	break;
     case ATTR_CELLPADDING:
-	if (attr->val()) {
+	if (!attr->value().isEmpty()) {
 	    addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), false);
 	    addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), false);
 	    addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), false);
