@@ -124,7 +124,7 @@ void KAutoConfigDialog::show(bool track){
   if(!d->shown){
     kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track));
     d->shown = true;
-    if(track){
+    if(!track){
       kdialogbase->enableButton(KDialogBase::Apply, true);
       kdialogbase->enableButton(KDialogBase::Default, true);
     }
