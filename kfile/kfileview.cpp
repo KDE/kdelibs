@@ -500,7 +500,7 @@ void KFileView::invertSelection()
     const KFileViewItemList *list = items();
     KFileViewItemListIterator it ( *list );
     for ( ; (item = it.current()); ++it )
-	setSelected( item, isSelected( item ) );
+	setSelected( item, !isSelected( item ) );
 }
 
 
