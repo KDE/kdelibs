@@ -272,7 +272,7 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
   return m_bEnableJavaScript;
 }
 
-bool KHTMLSettings::isCSSEnabled( const QString& hostname = QString::null )
+bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 {
 #if 0
       // First check whether there is a Domain-specific entry.
