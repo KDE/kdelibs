@@ -1671,7 +1671,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		face = s->fixedFontName();
 	    f.setFamily(face);
 	    QFontInfo fi(f);
-	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
+	    //	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
+	    if ( fi.family() == face )
 	    {
 		//kdDebug( 6080 ) << "=====> setting font family to " << face << endl;
 		//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
