@@ -2,7 +2,7 @@ Here are the code maintainers for each part of this library.  Any problems or
 suggested patches for a class should be directed to the responsible person for
 that class.
 
-When adding yourself as a maintainer, on't be afraid to reorder the files to a
+When adding yourself as a maintainer, don't be afraid to reorder the files to a
 more logical grouping.
 
 kaboutapplication.cpp
@@ -21,8 +21,8 @@ kcolorbutton.cpp
 kcolorcombo.cpp
 kcolordialog.cpp	Waldo Bastian <bastian@kde.org>
 kcolordrag.cpp
-kcombobox.cpp   Dawit Alemayehu <adawit@kde.org>
-kcommand.cpp
+kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>
+kcommand.cpp		Werner Trobin <trobin@kde.org>
 kcompletionbox.cpp
 kcursor.cpp
 kdatepicker.cpp
@@ -47,7 +47,7 @@ kjanuswidget.cpp
 kkeybutton.cpp
 kkeydialog.cpp
 kled.cpp
-klineedit.cpp   Dawit Alemayehu <adawit@kde.org>
+klineedit.cpp   	Dawit Alemayehu <adawit@kde.org>
 klineeditdlg.cpp
 klistbox.cpp
 klistview.cpp
