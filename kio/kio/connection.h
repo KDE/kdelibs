@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <qptrlist.h>
+#include <qobject.h>
 
 class KSocket;
 class QSocketNotifier;
