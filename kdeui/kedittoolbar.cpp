@@ -333,6 +333,9 @@ bool KEditToolbarWidget::save()
     save((*it).m_document, (*it).m_xmlFile);
   }
 
+  if ( !factory() )
+    return true;
+
   QValueList<KXMLGUIClient*> clients(factory()->clients());
 
   // remove the elements starting from the last going to the first
