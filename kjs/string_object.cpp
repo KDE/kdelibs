@@ -280,9 +280,9 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (id == Search) {
       result = Number(pos);
     } else { // Match
-      if (mstr.isNull())
-        return Null(); // no match
-      if ((reg->flags() & RegExp::Global) == 0) {
+      if (mstr.isNull()) {
+        result = Null(); // no match
+      } else if ((reg->flags() & RegExp::Global) == 0) {
 	// case without 'g' flag is handled like RegExp.prototype.exec
 	regExpObj->setSubPatterns(reg->subPatterns());
 	result = regExpObj->arrayOfMatches(exec,mstr);
