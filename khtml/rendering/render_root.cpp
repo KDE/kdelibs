@@ -46,12 +46,13 @@ RenderRoot::RenderRoot(KHTMLView *view)
     selectionEnd = 0;
     selectionStartPos = -1;
     selectionEndPos = -1;
+    oldLayoutTime = 0;
+    timeout = 200;
     setParsing();
 }
 
 RenderRoot::~RenderRoot()
 {
-    kdDebug( 6090 ) << "renderRoot desctructor called" << endl;
 }
 
 void RenderRoot::calcWidth()
@@ -233,11 +234,9 @@ void RenderRoot::updateHeight()
 
     if (parsing())
     {
-        if (!updateTimer.isNull() &&
-            updateTimer.elapsed() <
-            (docHeight() < m_view->visibleHeight() ? 100 : 1000)) {
+        if (!updateTimer.isNull() && updateTimer.elapsed() < timeout)
             return;
-        } else
+        else
             updateTimer.start();
     }
 
@@ -257,8 +256,19 @@ void RenderRoot::updateHeight()
     }
     m_view->repaintContents( 0, 0, w, h, FALSE );       //sync repaint!
 
-    if(parsing())
+    if(parsing()) {
+        // This gets slower over time. Yes, its intended.
+        oldLayoutTime = updateTimer.elapsed();
+        timeout += oldLayoutTime / 2;
+        if ( 2*docHeight() > 3*m_view->visibleHeight() )
+            timeout = QMAX( 1200, timeout );
+
+        timeout = QMIN( 2000+8*oldLayoutTime, timeout );
+
         updateTimer.start();
+    }
+    else
+        oldLayoutTime = 0;
 }
 
 void RenderRoot::close()

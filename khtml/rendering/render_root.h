@@ -82,6 +82,9 @@ protected:
     RenderObject* selectionEnd;
     int selectionStartPos;
     int selectionEndPos;
+    int oldLayoutTime;
+    int oldVisibleHeight;
+    int timeout;
 
     // used to ignore viewport width when printing to the printer
     bool m_printingMode;
