@@ -101,7 +101,11 @@
   void wroteStdin(KProcess *proc);
   -- Indicates that all data that has been sent to the child process
   by a prior call to "writeStdin" has actually been transmitted to the
-  client 
+  client .
+
+* @author Christian Czezatke (e9025461@student.tuwien.ac.at)
+* @short Control child processes portably
+* @version
 */
 class KProcess : public QObject
 {
