@@ -159,7 +159,7 @@ public slots:
      * @reimp
      * Sets the caption of the file dialog.
      */
-    virtual void setCaption( const QString& caption );
+    void setCaption( const QString& caption );
 
     /**
      * Clears the lineedit/combobox.
