@@ -2946,7 +2946,7 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
+    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", match = \"" << match << "\" value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
     if ( tagHistory )
         tagHistory->print();
 }
@@ -3027,6 +3027,21 @@ DOMString CSSSelector::selectorText() const
             str = "*";
         else
             str = getTagName( cs->tag );
+        if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+        {
+            str += "#";
+            str += cs->value;
+        }
+        else if ( cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+        {
+            str += ".";
+            str += cs->value;
+        }
+        else if ( cs->match == CSSSelector::Pseudo )
+        {
+            str += ":";
+            str += cs->value;
+        }
         // optional attribute
         if ( cs->attr ) {
             DOMString attrName = getAttrName( cs->attr );
@@ -3069,7 +3084,7 @@ DOMString CSSSelector::selectorText() const
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;
         else if ( cs->relation == SubSelector )
-            str = tagHistoryText + ":" + str; // ### is this correct?
+            str += tagHistoryText; // the ":" is provided by selectorText()
         else // Descendant
             str = tagHistoryText + " " + str;
     }
