@@ -1178,6 +1178,8 @@ bool HTTPProtocol::readHeader()
      }
      m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
      setMetaData("charset", m_strCharset);
+     if (!m_lastModified.isEmpty())
+         setMetaData("modified", m_lastModified);
      return true;
   }
 
