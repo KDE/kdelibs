@@ -80,6 +80,7 @@ bool KAccelEventHandler::g_bAccelActivated = false;
 KAccelEventHandler::KAccelEventHandler()
 {
 #	ifdef Q_WS_X11
+	if ( kapp )
 		kapp->installX11EventFilter( this );
 #	endif
 }
