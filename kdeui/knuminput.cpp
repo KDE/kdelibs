@@ -770,9 +770,11 @@ void KDoubleNumInput::setValue(double val)
 {
     double prevVal = m_value;
     m_value = val;
-
-    if(m_value < m_lower) m_value = m_lower;
-    if(m_upper < m_value) m_value = m_upper;
+    
+    if(m_range) {
+      if(m_value < m_lower) m_value = m_lower;
+      if(m_upper < m_value) m_value = m_upper;
+    }
 
     if(m_slider) {
         int slvalue = int(m_slider->maxValue()
@@ -784,7 +786,7 @@ void KDoubleNumInput::setValue(double val)
 
     resetEditBox();
 
-    if ( fabs(prevVal - m_value) > m_step )
+    if ( m_range && fabs(prevVal - m_value) > m_step )
         emit valueChanged(m_value);
 }
 
