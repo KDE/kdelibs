@@ -25,8 +25,14 @@
 
 using namespace KABC;
 
-Key::Key( const QString &key, int type )
-  : mKey( key ), mType( type )
+Key::Key( const QString &text, int type )
+  : mTextData( text ), mIsBinary( false ), mType( type )
+{
+  mId = KApplication::randomString(8);
+}
+
+Key::Key( const QCString &binary, int type )
+  : mBinaryData( binary ), mIsBinary( true ), mType( type )
 {
   mId = KApplication::randomString(8);
 }
@@ -35,18 +41,22 @@ Key::~Key()
 {
 }
 
-bool Key::operator==( const Key &p ) const
+bool Key::operator==( const Key &k ) const
 {
-  if ( mKey != p.mKey ) return false;
-  if ( mType != p.mType ) return false;
-  if ( mCustomTypeString != p.mCustomTypeString ) return false;
+  if ( mIsBinary != k.mIsBinary ) return false;
+  if ( mIsBinary )
+    if ( mBinaryData != k.mBinaryData ) return false;
+  else
+    if ( mTextData != k.mTextData ) return false;
+  if ( mType != k.mType ) return false;
+  if ( mCustomTypeString != k.mCustomTypeString ) return false;
   
   return true;
 }
 
-bool Key::operator!=( const Key &p ) const
+bool Key::operator!=( const Key &k ) const
 {
-  return !( p == *this );
+  return !( k == *this );
 }
 
 void Key::setId( const QString &id )
@@ -59,14 +69,31 @@ QString Key::id() const
   return mId;
 }
 
-void Key::setKey( const QString &key )
+void Key::setBinaryData( const QCString &binary )
 {
-  mKey = key;
+  mBinaryData = binary;
+  mIsBinary = true;
 }
 
-QString Key::key() const
+QCString Key::binaryData() const
 {
-  return mKey;
+  return mBinaryData;
+}
+
+void Key::setTextData( const QString &text )
+{
+  mTextData = text;
+  mIsBinary = false;
+}
+
+QString Key::textData() const
+{
+  return mTextData;
+}
+
+bool Key::isBinary() const
+{
+  return mIsBinary;
 }
 
 void Key::setType( int type )
@@ -119,12 +146,14 @@ QString Key::typeLabel( int type )
 
 QDataStream &KABC::operator<<( QDataStream &s, const Key &key )
 {
-    return s << key.mId << key.mKey << key.mCustomTypeString << key.mType;
+    return s << key.mId << key.mIsBinary << key.mTextData << key.mBinaryData <<
+             key.mCustomTypeString << key.mType;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Key &key )
 {
-    s >> key.mId >> key.mKey >> key.mCustomTypeString >> key.mType;
+    s >> key.mId >> key.mIsBinary >> key.mTextData >> key.mBinaryData >>
+    key.mCustomTypeString >> key.mType;
 
     return s;
 }
