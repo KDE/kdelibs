@@ -255,9 +255,10 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     KHTMLView* v = 0;
     if ( docimpl ) {
       v = docimpl->view();
-      docimpl->updateRendering();
-      if ( v )
+      if ( v ) {
+        docimpl->updateRendering();
         docimpl->view()->layout();
+      }
 
       // refetch in case the renderer changed
       rend = node.handle() ? node.handle()->renderer() : 0L;

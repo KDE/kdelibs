@@ -176,19 +176,17 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
 #endif
-    styleDecl.removeProperty(prop);
-    if(!propvalue.isEmpty())
-    {
-      // Look whether the property is known. In that case add it as a CSS property.
-      QCString cprop = prop.latin1();
-      if (DOM::getPropertyID(cprop.data(), cprop.length()))
+    // Look whether the property is known. In that case add it as a CSS property.
+    QCString cprop = prop.latin1();
+    if (DOM::getPropertyID(cprop.data(), cprop.length())) {
+      if (propvalue.isEmpty())
+        styleDecl.removeProperty(prop);
+      else 
         styleDecl.setProperty(prop,DOM::DOMString(propvalue),""); // ### is "" ok for priority?
-      else
-      {
-        // otherwise add it as a JS property
-        DOMObject::tryPut( exec, pName, value, attr );
-      }
     }
+    else
+      // otherwise add it as a JS property
+      DOMObject::tryPut( exec, pName, value, attr );
   }
 }
 
