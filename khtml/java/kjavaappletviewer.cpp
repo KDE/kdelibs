@@ -99,7 +99,8 @@ static KStaticDeleter <KJavaServerMaintainer> serverMaintainerDeleter;
 //-----------------------------------------------------------------------------
 
 AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
-    : KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"), 
+    //: KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"), 
+    : KDialogBase (parent, "paramdialog", true, "Applet Parameters", 
                    KDialogBase::Close, KDialogBase::Close, true),
       m_appletWidget (parent) {
     KJavaApplet * applet = parent->applet ();
@@ -108,17 +109,22 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     table->setColumnWidth (0, 200);
     table->setColumnWidth (1, 340);
     QHeader *header = table->horizontalHeader();
-    header->setLabel (0, i18n ("Parameter"));
-    header->setLabel (1, i18n ("Value"));
-    QTableItem * tit = new QTableItem (table, QTableItem::Never, i18n("Class"));
+    //header->setLabel (0, i18n ("Parameter"));
+    header->setLabel (0, "Parameter");
+    //header->setLabel (1, i18n ("Value"));
+    header->setLabel (1, "Value");
+    //QTableItem * tit = new QTableItem (table, QTableItem::Never, i18n("Class"));
+    QTableItem * tit = new QTableItem (table, QTableItem::Never, "Class");
     table->setItem (0, 0, tit);
     tit = new QTableItem(table, QTableItem::Always, applet->appletClass());
     table->setItem (0, 1, tit);
-    tit = new QTableItem (table, QTableItem::Never, i18n ("Base URL"));
+    //tit = new QTableItem (table, QTableItem::Never, i18n ("Base URL"));
+    tit = new QTableItem (table, QTableItem::Never, "Base URL");
     table->setItem (1, 0, tit);
     tit = new QTableItem(table, QTableItem::Always, applet->baseURL());
     table->setItem (1, 1, tit);
-    tit = new QTableItem (table, QTableItem::Never, i18n ("Archives"));
+    //tit = new QTableItem (table, QTableItem::Never, i18n ("Archives"));
+    tit = new QTableItem (table, QTableItem::Never, "Archives");
     table->setItem (2, 0, tit);
     tit = new QTableItem(table, QTableItem::Always, applet->archives());
     table->setItem (2, 1, tit);
@@ -256,7 +262,8 @@ void KJavaAppletViewer::infoMessage (const QString & msg) {
 }
 
 KAboutData* KJavaAppletViewer::createAboutData () {
-    return new KAboutData("KJavaAppletViewer", I18N_NOOP("KDE Java Applet Plugin"), "1.0");
+    //return new KAboutData("KJavaAppletViewer", I18N_NOOP("KDE Java Applet Plugin"), "1.0");
+    return new KAboutData("KJavaAppletViewer", "KDE Java Applet Plugin", "1.0");
 }
 
 //---------------------------------------------------------------------
