@@ -31,17 +31,13 @@
 #ifdef Q_WS_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <kxerrorhandler.h>
 #endif
 
 #include <kipc.h>
 
 
 #ifndef Q_WS_QWS
-static int dropError(Display *, XErrorEvent *)
-{
-    return 0;
-}
-
 static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
@@ -90,12 +86,10 @@ void KIPC::sendMessageAll(Message msg, int data)
 {
     unsigned int i, nrootwins;
     Window dw1, dw2, *rootwins = 0;
-    int (*defaultHandler)(Display *, XErrorEvent *);
     Display *dpy = qt_xdisplay();
     int screen_count = ScreenCount(dpy);
 
-    defaultHandler = XSetErrorHandler(&dropError);
-
+    KXErrorHandler handler;
     for (int s = 0; s < screen_count; s++) {
 	Window root = RootWindow(dpy, s);
 
@@ -106,11 +100,9 @@ void KIPC::sendMessageAll(Message msg, int data)
 		if (getSimpleProperty(rootwins[i], a) != 0L)
 		    sendMessage(msg, rootwins[i], data);
 	    }
+        XFree((char *) rootwins);
     }
-
-    XFlush(dpy);
-    XSetErrorHandler(defaultHandler);
-    XFree((char *) rootwins);
+    XSync(dpy,False);
 }
 #else
 	// FIXME(E): Implement in Qt Embedded
