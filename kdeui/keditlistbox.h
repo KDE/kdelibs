@@ -55,7 +55,7 @@ public:
      *
      * @since 3.1
      **/
-    class CustomEditor
+    class KDEUI_EXPORT CustomEditor
     {
     public:
         CustomEditor()
