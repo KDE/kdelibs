@@ -24,8 +24,8 @@
 #ifndef _DOM_Events_h_
 #define _DOM_Events_h_
 
-#include "dom_node.h"
-#include "dom_misc.h"
+#include <dom/dom_node.h>
+#include <dom/dom_misc.h>
 
 namespace DOM {
 
