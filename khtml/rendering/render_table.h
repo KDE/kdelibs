@@ -182,8 +182,7 @@ protected:
     // calculates the height of each row
     void calcRowHeight(int r);
 
-    void layoutRow(int r);
-    void refreshRow(int r);
+    void layoutRow(int r, int yoff);
 
     void setCells( unsigned int r, unsigned int c, RenderTableCell *cell );
     void addRows( int num );

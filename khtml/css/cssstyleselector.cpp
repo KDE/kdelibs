@@ -629,6 +629,31 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	return;
     }
     case CSS_PROP_CAPTION_SIDE:
+    {
+    	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    style->setCaptionSide(e->parentNode()->style()->captionSide());
+	    break;
+	}
+	if(!primitiveValue) break;
+	ECaptionSide c = CAPTOP;
+	switch(primitiveValue->getIdent())
+	{
+	case CSS_VAL_LEFT:
+	    c = CAPLEFT; break;
+	case CSS_VAL_RIGHT:
+	    c = CAPRIGHT; break;
+	case CSS_VAL_TOP:
+	    c = CAPTOP; break;
+	case CSS_VAL_BOTTOM:
+	    c = CAPBOTTOM; break;
+	default:
+	    return;
+	}
+	style->setCaptionSide(c);
+	return;
+    }    
     case CSS_PROP_CLEAR:
     {
   	if(value->valueType() == CSSValue::CSS_INHERIT)

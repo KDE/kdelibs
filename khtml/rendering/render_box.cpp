@@ -365,7 +365,7 @@ void RenderBox::updateHeight()
 #endif
 
     if (parsing())
-    {
+    { 
     	setLayouted(false);
     	containingBlock()->updateHeight();		
 	return;

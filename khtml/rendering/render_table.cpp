@@ -177,7 +177,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
     case TABLE_CAPTION:
-	//setCaption(static_cast<RenderTableCaption *>(child));
+        tCaption = static_cast<RenderTableCaption *>(child);            
 	break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
@@ -1242,7 +1242,7 @@ void RenderTable::layout()
 
     setCellWidths();
 
-    if(tCaption)
+    if(tCaption && style()->captionSide()==CAPTOP)
     {
 	tCaption->setYPos(m_height);
 	tCaption->layout();
@@ -1253,12 +1253,19 @@ void RenderTable::layout()
 
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
-    	layoutRow(r);
+    	layoutRow(r,m_height);
     }
 
     m_height += rowHeights[totalRows];
     m_height += borderBottom();
 
+    if(tCaption && style()->captionSide()==CAPBOTTOM)
+    {
+	tCaption->setYPos(m_height);
+	tCaption->layout();
+	m_height += tCaption->height();
+    }    
+    
     //kdDebug(0) << "table height: " << m_height << endl;
 
     calcHeight();
@@ -1270,7 +1277,7 @@ void RenderTable::layout()
 }
 
 
-void RenderTable::layoutRow(int r)
+void RenderTable::layoutRow(int r, int yoff)
 {
     int rHeight;
     int indx, rindx;
@@ -1345,10 +1352,10 @@ void RenderTable::layoutRow(int r)
     	{
 	    cell->setPos( columnPos[(int)totalCols]
 	    	- columnPos[(int)(indx+cell->colSpan())] + borderLeft(),
-	    	rowHeights[rindx] );
+	    	rowHeights[rindx]+yoff );
 	}
 	else
-	    cell->setPos( columnPos[indx] + borderLeft(), rowHeights[rindx] );
+	    cell->setPos( columnPos[indx] + borderLeft(), rowHeights[rindx]+yoff );
 	
 	cell->setRowHeight(rHeight);
 	// ###
@@ -1356,27 +1363,6 @@ void RenderTable::layoutRow(int r)
     }
 }
 
-
-void RenderTable::refreshRow(int r)
-{
-    for ( unsigned int c = 0; c < totalCols; c++ )
-    {
-        RenderTableCell *cell = cells[r][c];
-        if (!cell)
-            continue;
-	if ( c < totalCols - 1 && cell == cells[r][c+1] )
-	    continue;
-	if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
-	    continue;
-	
-	cell->calcMinMaxWidth();
-    }
-
-    setCellWidths();
-
-    layoutRow(r);
-    repaint();
-}
 
 void RenderTable::setCellWidths()
 {
