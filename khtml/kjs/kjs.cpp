@@ -82,6 +82,9 @@ bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   Ptr res = prog->evaluate();
   res.release();
 
+  if (KJSWorld::error)
+    KJSWorld::error->deref();
+
   delete context;
   global->deref();
 
