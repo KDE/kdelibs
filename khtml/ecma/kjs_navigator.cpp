@@ -300,7 +300,7 @@ KJSO Plugins::get(const UString &p) const
 
         // plugin[name]
         for ( PluginInfo *pl = plugins->first(); pl!=0; pl = plugins->next() ) {
-            if ( pl->name==p )
+            if ( pl->name==p.string() )
                 return KJSO( new Plugin( pl ) );
         }
     }
@@ -327,7 +327,7 @@ KJSO MimeTypes::get(const UString &p) const
         //kdDebug(6070) << "MimeTypes[" << p.ascii() << "]" << endl;
         for ( MimeTypeInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
             //kdDebug(6070) << "m->type=" << m->type.ascii() << endl;
-            if ( m->type==p )
+            if ( m->type==p.string() )
                 return KJSO( new MimeType( m ) );
         }
     }
@@ -364,7 +364,7 @@ KJSO Plugin::get(const UString &p) const
         // plugin["name"]
         for ( PluginBase::MimeTypeInfo *m=m_info->mimes.first();
               m!=0; m=m_info->mimes.next() ) {
-            if ( m->type==p )
+            if ( m->type==p.string() )
                 return KJSO( new MimeType( m ) );
         }
 
