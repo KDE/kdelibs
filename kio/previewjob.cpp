@@ -491,6 +491,14 @@ void PreviewJob::saveThumbnail(const QByteArray &imgData)
     }*/
 }
 
+QStringList PreviewJob::availablePlugins()
+{
+    QStringList result;
+    KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
+    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+        result.append((*it)->desktopEntryName());
+}
+
 PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
