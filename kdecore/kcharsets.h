@@ -26,6 +26,7 @@
 #endif
 
 #include <qfont.h>
+#include <qstrlist.h>
 
 class KCharsetEntry;
 class KCharsetsData;
