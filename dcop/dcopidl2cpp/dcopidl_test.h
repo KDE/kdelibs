@@ -1,15 +1,22 @@
 #ifndef TEST_H
 #define TEST_H
 
+// misc tests:
+// - writeType
 // skel:
 // - non "CLASS" main elements
 // - namespacing stuff in skel
-// - no functions test
-// - ASYNC test
+// - no functions
+// - ASYNC
+// - lack of SUPER, is that even possible?, don't you *need* DCOPObject???
+// - qual / const
 // - does dispatcher cope with unnamed args?
-// - DCOPParent test - superclass?
-// - qual test, const?
-// writeType test
+// stub:
+// - INCLUDE's
+// - non "DCOPObject" SUPER
+// - includes to super relationship, a bit much to test, needs multiple files?
+// stubimpl:
+// - isIntType return types / void return types
 
 // test for k_dcop 
 // NOTE - non hashing test, therefore use < 7 function
