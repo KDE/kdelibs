@@ -9,6 +9,7 @@ AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
 AM_INIT_AUTOMAKE(kdelibs, 0.12) dnl searches for some needed programs
+AC_PROG_INSTALL
 
 dnl make $KDEDIR the default for the installation
 AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
@@ -16,21 +17,9 @@ AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
-dnl checks, if the debug code is wanted
-AC_CHECK_FLAGS
-
 dnl Checks for programs.
-AC_PROG_CC
-AC_PROG_CPP
-test "$CCC" = "" && CCC="c++ xlC DCC"
-AC_PROG_CXX
-AC_PROG_LN_S
-dnl libtool is only for C, so I must force him
-dnl to find the correct flags for C++
-ac_save_cc=$CC
-CC=$CXX
-AM_PROG_LIBTOOL dnl for libraries
-CC=$ac_save_cc
+AC_CHECK_COMPILERS
+KDE_PROG_LIBTOOL
 
 dnl find out some variables (not supported yet)
 AC_AIX
