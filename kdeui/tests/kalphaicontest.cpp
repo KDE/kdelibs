@@ -50,7 +50,7 @@ void KAlphaTest::paintEvent(QPaintEvent *)
     begin=time.elapsed();
     for (int y=0; y< m_bg.height()-m_image.height(); y+=40) 
       for (int x=0; x< m_bg.width()-m_image.width(); x+=40)
-	KAlphaIcon::draw(&p,m_image,bgTemp,x,y,m_correctOverlapping);
+	KAlphaPainter::draw(&p,m_image,bgTemp,x,y,m_correctOverlapping);
     end=time.elapsed();
   }
   else // use Pixmaps
@@ -58,7 +58,7 @@ void KAlphaTest::paintEvent(QPaintEvent *)
     begin=time.elapsed();
     for (int y=0; y< m_bg.height()-m_image.height(); y+=40) 
       for (int x=0; x< m_bg.width()-m_image.width(); x+=40)
-	KAlphaIcon::draw(&p,m_pixmap,bgTemp,x,y,m_correctOverlapping);
+	KAlphaPainter::draw(&p,m_pixmap,bgTemp,x,y,m_correctOverlapping);
     end=time.elapsed();
   }
 

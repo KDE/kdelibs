@@ -3,7 +3,7 @@
 #include <qimage.h>
 #include <qpixmap.h>
 #include <kimageeffect.h>
-#include <kalphaicon.h>
+#include <kalphapainter.h>
 
 class KAlphaTest : public QWidget
 {
