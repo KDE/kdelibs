@@ -1033,15 +1033,19 @@ int Ftp::ftpAcceptConnect()
   ksocklen_t l;
   fd_set mask;
 
-  FD_ZERO(&mask);
-  FD_SET(sDatal,&mask);
+  for ( ;; ) {
+    FD_ZERO(&mask);
+    FD_SET(sDatal,&mask);
 
-  if ( m_bPasv )
-    return sDatal;
-  if ( KSocks::self()->select( sDatal + 1, &mask, NULL, NULL, 0L ) == 0)
-  {
-    ::close( sDatal );
-    return -2;
+    if ( m_bPasv )
+      return sDatal;
+    int r = KSocks::self()->select( sDatal + 1, &mask, NULL, NULL, 0L );
+    if ( r == 0 || ( r < 0 && errno != EINTR && errno != EAGAIN )) {
+      ::close( sDatal );
+      return -2;
+    }
+    if ( r > 0 )
+        break;
   }
 
   l = sizeof(addr);
@@ -1663,7 +1667,7 @@ void Ftp::listDir( const KURL &url )
         m_initialPath = "/";
     realURL.setPath( m_initialPath );
     kdDebug(7102) << "REDIRECTION to " << realURL.prettyURL() << endl;
-    redirection( realURL.url() );
+    redirection( realURL );
     path = m_initialPath;
     finished();
     return;
@@ -2204,10 +2208,10 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
         return;
       }
-    } else if ( !overwrite && !resume ) {    
+    } else if ( !overwrite && !resume ) {
        error( ERR_FILE_ALREADY_EXIST, dest_orig );
        return;
-       
+
     } else if ( bMarkPartial ) { // when using mark partial, append .part extension
       if ( !ftpRename( dest_orig, dest_part, true ) )
       {
