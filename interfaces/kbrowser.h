@@ -39,6 +39,7 @@ class ViewPropertiesExtension : public QObject
 public:
   ViewPropertiesExtension( QObject *parent, const char *name = 0 ) : QObject( parent, name ) {}
 
+  virtual void reparseConfiguration() = 0;
   virtual void saveLocalProperties() = 0;
   virtual void savePropertiesAsDefault() = 0;
 };
@@ -103,11 +104,6 @@ public:
   virtual int xOffset() = 0;
   virtual int yOffset() = 0;
   virtual void stop() = 0;
-  /**
-   * Re-read and apply configuration.
-   * Currently only for built-in views.
-   */
-  virtual void configure() { }
 
   virtual void saveState( QDataStream &stream )
   { stream << url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
