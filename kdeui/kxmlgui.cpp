@@ -26,28 +26,7 @@
 #include <qaction.h>
 #include <qfile.h>
 #include <kdebug.h>
-/*
-class KXMLGUIServantPrivate
-{
-public:
-  KXMLGUIServantPrivate()
-  {
-    m_factory = 0L;
-    m_parent = 0L;
-    m_builder = 0L;
-  }
 
-  ~KXMLGUIServantPrivate()
-  {
-  }
-
-  QMap<QString,QByteArray> m_containerStates;
-  KXMLGUIFactory *m_factory;
-  KXMLGUIServant *m_parent;
-  QList<KXMLGUIServant> m_children;
-  KXMLGUIBuilder *m_builder;
-};
-*/
 /**
  * This structure is used to know to which servant certain actions belong. In addition we store
  * a boolean value indicating if the actions have been plugged with a merging index or not.
@@ -118,97 +97,7 @@ public:
   QString m_containerName;
   KXMLGUIBuilder *m_clientBuilder;
 };
-/*
-KXMLGUIServant::KXMLGUIServant()
-{
-  d = new KXMLGUIServantPrivate;
-}
 
-KXMLGUIServant::KXMLGUIServant( KXMLGUIServant *parent )
-{
-  d = new KXMLGUIServantPrivate;
-  d->m_parent = parent;
-}
-
-KXMLGUIServant::~KXMLGUIServant()
-{
-  //kDebugArea( 1000, "KXMLGUIServant::~KXMLGUIServant()");
-
-  if ( d->m_parent )
-    d->m_parent->removeChildServant( this );
-
-  QListIterator<KXMLGUIServant> childIt( d->m_children );
-  for (; childIt.current(); ++childIt )
-    childIt.current()->d->m_parent = 0L;
-
-  d->m_children.setAutoDelete( true );
-  d->m_children.clear();
-
-  delete d;
-}
-
-void KXMLGUIServant::storeContainerStateBuffer( const QString &key, const QByteArray &data )
-{
-  d->m_containerStates.replace( key, data );
-}
-
-QByteArray KXMLGUIServant::takeContainerStateBuffer( const QString &key )
-{
-  QByteArray res;
-
-  QMap<QString,QByteArray>::Iterator it = d->m_containerStates.find( key );
-  if ( it != d->m_containerStates.end() )
-  {
-    res = it.data();
-    d->m_containerStates.remove( it );
-  }
-
-  return res;
-}
-
-void KXMLGUIServant::setFactory( KXMLGUIFactory *factory )
-{
-  d->m_factory = factory;
-}
-
-KXMLGUIFactory *KXMLGUIServant::factory() const
-{
-  return d->m_factory;
-}
-
-KXMLGUIServant *KXMLGUIServant::parentServant() const
-{
-  return d->m_parent;
-}
-
-void KXMLGUIServant::insertChildServant( KXMLGUIServant *child )
-{
-  if ( child->parentServant() )
-    child->parentServant()->removeChildServant( child );
-
-  d->m_children.append( child );
-}
-
-void KXMLGUIServant::removeChildServant( KXMLGUIServant *child )
-{
-  d->m_children.removeRef( child );
-}
-
-const QList<KXMLGUIServant> *KXMLGUIServant::childServants()
-{
-  return &d->m_children;
-}
-
-void KXMLGUIServant::setServantBuilder( KXMLGUIBuilder *builder )
-{
-  d->m_builder = builder;
-}
-
-KXMLGUIBuilder *KXMLGUIServant::servantBuilder() const
-{
-  return d->m_builder;
-}
-*/
 KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIClient *_client, KXMLGUIBuilder *_builder, bool _merged, int id, const QString &_groupName )
 {
   container = _container;
