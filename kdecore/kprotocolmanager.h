@@ -48,24 +48,34 @@ public:
   enum Type { T_STREAM, T_FILESYSTEM, T_NONE, T_ERROR };
 
   /**
-   * @return the library to open for the protocol *p _protocol
+   * @return the library to open for the protocol @p protocol
    * Example : "kio_ftp.la"
    */
-  QString library( const QString& _protocol ) const;
+  QString library( const QString& protocol ) const;
 
-  Type inputType( const QString& _protocol ) const;
-  Type outputType( const QString& _protocol ) const;
-  QStringList listing( const QString& _protocol ) const;
-  bool isSourceProtocol( const QString& _protocol ) const;
-  bool isFilterProtocol( const QString& _protocol ) const;
-  bool isKnownProtocol( const QString& _protocol ) const;
-  bool supportsListing( const QString& _protocol ) const;
-  bool supportsReading( const QString& _protocol ) const;
-  bool supportsWriting( const QString& _protocol ) const;
-  bool supportsMakeDir( const QString& _protocol ) const;
-  bool supportsDeleting( const QString& _protocol ) const;
-  bool supportsLinking( const QString& _protocol ) const;
-  bool supportsMoving( const QString& _protocol ) const;
+  Type inputType( const QString& protocol ) const;
+  Type outputType( const QString& protocol ) const;
+  QStringList listing( const QString& protocol ) const;
+  bool isSourceProtocol( const QString& protocol ) const;
+  bool isFilterProtocol( const QString& protocol ) const;
+  bool isKnownProtocol( const QString& protocol ) const;
+  bool supportsListing( const QString& protocol ) const;
+  bool supportsReading( const QString& protocol ) const;
+  bool supportsWriting( const QString& protocol ) const;
+  bool supportsMakeDir( const QString& protocol ) const;
+  bool supportsDeleting( const QString& protocol ) const;
+  bool supportsLinking( const QString& protocol ) const;
+  bool supportsMoving( const QString& protocol ) const;
+
+  /**
+   * @return true if determining the mimetype of a URL with
+   * the protocol @p protocol can be done by simply looking at
+   * the extension (that's the fast mode). If false, or if
+   * the extension is unknown, a KIO::mimetype job will be necessary
+   * (i.e. downloading the beginning of the file).
+   * Defaults to false.
+   */
+  bool mimetypeFastMode( const QString& protocol ) const;
 
   QStringList protocols() const;
 
@@ -206,6 +216,7 @@ private:
     bool supportsDeleting;
     bool supportsLinking;
     bool supportsMoving;
+    bool mimetypeFastMode;
   };
 
   typedef QMap<QString,Protocol> Map;
