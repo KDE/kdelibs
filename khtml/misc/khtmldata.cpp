@@ -40,7 +40,7 @@ const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 4
 Settings::Settings()
 {
     resetFontSizes();
-    
+
     standardFamilies = new QString[6];
 
     charset	  = KGlobal::generalFont().charSet();
@@ -55,10 +55,11 @@ Settings::~Settings()
 
 void Settings::setFontSizes(const QValueList<int> &_newFontSizes )
 {
-    QValueList<int> newFontSizes = _newFontSizes;
+    QValueList<int> newFontSizes;
+    newFontSizes = _newFontSizes;
     while ( newFontSizes.count() > m_fontSizes.count() )
       newFontSizes.remove( newFontSizes.fromLast() );
-    
+
     QValueList<int>::ConstIterator it = newFontSizes.begin();
     QValueList<int>::ConstIterator end = newFontSizes.end();
     int i = 0;
@@ -66,14 +67,14 @@ void Settings::setFontSizes(const QValueList<int> &_newFontSizes )
       m_fontSizes[ i++ ] = *it;
 }
 
-QValueList<int> Settings::fontSizes() const
+const QValueList<int> &Settings::fontSizes() const
 {
     return m_fontSizes;
 }
 
 void Settings::resetFontSizes(void)
 {
-    m_fontSizes.clear(); 
+    m_fontSizes.clear();
     for ( int i = 0; i < MAXFONTSIZES; i++ )
       m_fontSizes << defaultFontSizes[ i ];
 }

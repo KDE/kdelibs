@@ -49,7 +49,7 @@ public:
     const Settings &operator=( const Settings & );
 
     void setFontSizes(const QValueList<int> &newFontSizes );
-    QValueList<int> fontSizes() const;
+    const QValueList<int> &fontSizes() const;
     void resetFontSizes();
 
     void resetStandardFamilies();
