@@ -147,7 +147,7 @@ bool KBufferedIO::canReadLine() const
 
 // unreads the current data
 // that is, writes into the read buffer, at the beginning
-int KBufferedIO::unreadBlock(const char *data, unsigned len)
+int KBufferedIO::unreadBlock(const char *data, uint len)
 {
   return feedReadBuffer(len, data, true);
 };

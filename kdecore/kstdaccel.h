@@ -41,7 +41,10 @@ namespace KStdAccel
   enum StdAccel {
     AccelNone,
     // File menu
-    Open, New, Close, Save, Print, Quit,
+    Open, New, Close, Save,
+    // The Print item
+    Print,
+    Quit,
     // Edit menu
     Undo, Redo, Cut, Copy, Paste, SelectAll, Deselect, DeleteWordBack,
     DeleteWordForward, Find, FindNext, FindPrev, Replace,
@@ -148,7 +151,7 @@ namespace KStdAccel
   const KShortcut& cut();
 
   /**
-   * Copy selected area into the clipboard. Default: Ctrl-c 
+   * Copy selected area into the clipboard. Default: Ctrl-c
    */
   const KShortcut& copy();
 

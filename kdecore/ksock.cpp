@@ -202,6 +202,8 @@ bool KSocket::connect( const QString& _host, unsigned short int _port, int _time
   return sock >= 0;
 }
 
+// only for doxygen - the define is always true as defined above
+#ifdef KSOCK_NO_BROKEN
 unsigned long KSocket::ipv4_addr()
 {
   unsigned long retval = 0;
@@ -252,6 +254,8 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   kdDebug(170) << "KSocket::initSockaddr: returning " << sin->pretty() << endl;
   return true;
 }
+
+#endif
 
 KSocket::~KSocket()
 {
@@ -327,7 +331,7 @@ bool KServerSocket::bindAndListen()
   if (d == NULL || d->ks == NULL)
     return false;
 
-  
+
   int ret = d->ks->listen( SOMAXCONN );
   if (ret < 0)
     {

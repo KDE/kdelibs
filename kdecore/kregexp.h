@@ -21,14 +21,14 @@
 class KRegExpPrivate;
 
 /**
- * Regular expression (regexp) matching with back-references. 
+ * Regular expression (regexp) matching with back-references.
  *
  * This was implemented
  * because @ref QRegExp does not support back-references.
  *
  * Back-references are parts of a regexp grouped with parentheses. If a
  * string matches the regexp, you can access the text that matched each
- * group with the @ref group method. This is similar to regular expressions in Perl.
+ * group with the #group method. This is similar to regular expressions in Perl.
  *
  * Example:
  * <pre>

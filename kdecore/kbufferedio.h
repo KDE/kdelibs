@@ -87,8 +87,8 @@ public:
    * Closes the stream now, discarding the contents of the
    * write buffer. That is, we won't try to flush that
    * buffer before closing. If you want that buffer to be
-   * flushed, you can call @ref flush, which is blocking, and
-   * then closeNow, or you can call @ref close for a delayed
+   * flushed, you can call @ref QIODevice::flush(), which is blocking, and
+   * then closeNow, or you can call @ref QIODevice::close() for a delayed
    * close.
    */
   virtual void closeNow() = 0;
@@ -210,7 +210,7 @@ protected:
 
   QPtrList<QByteArray> inBuf;
   QPtrList<QByteArray> outBuf;
-  
+
   unsigned inBufIndex, outBufIndex;
 
   /**

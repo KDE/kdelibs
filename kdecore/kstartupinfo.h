@@ -45,7 +45,7 @@ class KStartupInfoPrivate;
  * This class can be used to send information about started application,
  * change the information and receive this information. For detailed
  * description, see kdelibs/kdecore/README.kstartupinfo.
- * 
+ *
  * You usually don't need to use this class for sending the notification
  * information, as KDE libraries should do this when an application is
  * started ( e.g. KRun class ).
@@ -67,7 +67,7 @@ class KStartupInfo
     public:
 	/**
 	 * Creates an instance that will receive the startup notifications.
-	 * 
+	 *
 	 * @param clean_on_cantdetect if true, and a new unknown window appears,
 	 *  removes all notification for applications that are not compliant
 	 *  with the app startup protocol
@@ -82,13 +82,13 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef Q_WS_X11
+
 	/**
 	 * Like @ref sendStartup , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendStartupX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
-#endif
+
 	/**
 	 * Sends given notification data about started application
 	 * with the given startup identification. This is used for updating the notification
@@ -97,35 +97,35 @@ class KStartupInfo
 	 * @see KStartupInfoData
 	 */
         static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef Q_WS_X11
+
 	/**
 	 * Like @ref sendChange , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendChangeX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
-#endif
+
 	/**
 	 * Ends startup notification with the given identification.
 	 */
         static bool sendFinish( const KStartupInfoId& id );
-#ifdef Q_WS_X11
+
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
-#endif
+
 	/**
 	 * Ends startup notification with the given identification and the given data ( e.g.
 	 * PIDs of processes for this startup notification that exited ).
 	 */
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
-#ifdef Q_WS_X11
+
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
-#endif
+
 	/**
 	 * Returns the current startup notification identification for the current
 	 * startup notification environment variable. Note that KApplication constructor

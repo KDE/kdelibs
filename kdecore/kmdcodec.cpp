@@ -3,30 +3,30 @@
    Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
    This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License (LGPL) 
+   it under the terms of the GNU Lesser General Public License (LGPL)
    version 2 as published by the Free Software Foundation.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public 
+   You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.
    RSA Data Security, Inc. Created 1991. All rights reserved.
-   
+
    The KMD5 class is based on a C++ implementation of
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
    Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
    passes the test-suite as defined in RFC 1321.
-   
+
    The encoding and decoding utilities in KCodecs with the exception of
-   quoted-printable are based on the java implementation in HTTPClient 
+   quoted-printable are based on the java implementation in HTTPClient
    package by Ronald Tschalär Copyright (C) 1996-1999.
-   
+
    The quoted-printable codec as described in RFC 2045, section 6.7. is by
    Rik Hemsley (C) 2001.
 */
@@ -444,7 +444,7 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     }
 }
 
-QCString KBase64::base64Decode( const QCString& str )
+QCString KCodecs::base64Decode( const QCString& str )
 {
     if ( str.isEmpty() )
         return "";
@@ -454,14 +454,14 @@ QCString KBase64::base64Decode( const QCString& str )
     return base64Decode( in );
 }
 
-QCString KBase64::base64Decode( const QByteArray& in )
+QCString KCodecs::base64Decode( const QByteArray& in )
 {
     QByteArray out;
     base64Decode( in, out );
     return QCString( out.data(), out.size()+1 );
 }
 
-void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
+void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
 {
     out.resize(0);
     if ( in.isEmpty() )
@@ -954,7 +954,7 @@ void KMD5::transform( const unsigned char block[64] )
 
     decode (x, block, 64);
     //memcpy( x, block, 64 );
-    
+
     Q_ASSERT(!m_finalized);  // not just a user error, since the method is private
 
     /* Round 1 */

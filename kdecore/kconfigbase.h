@@ -153,10 +153,10 @@ public:
    * @deprecated
    *
    * @param pKey The key to search for.
-   * @return An invalid @ref QVariant if the key was not found or if the
+   * @return An invalid QVariant if the key was not found or if the
    * read value cannot be converted to the given QVariant::Type.
    *
-   * Note that only the following @ref QVariant::Type are allowed : String,
+   * Note that only the following QVariant types are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
    * Double, DateTime and Date.
    */
@@ -173,7 +173,7 @@ public:
    * @return The value for the key or the default value if the key was not
    *         found.
    *
-   * Note that only the following @ref QVariant::Type are allowed : String,
+   * Note that only the following QVariant types are allowed : String,
    * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
    * Double, DateTime and Date.
    */

@@ -92,7 +92,7 @@ class KGlobalSettings
      *
      * @return @p true if single click mode, or @p false if double click mode.
      *
-     * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
+     * see http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
      **/
     static bool singleClick();
 

@@ -186,7 +186,7 @@ public:
   void disableSessionManagement();
 
   /**
-   * The possible values for the @p confirm parameter of @ref requestShutdown.
+   * The possible values for the @p confirm parameter of #requestShutDown.
    */
   enum ShutdownConfirm {
     /**
@@ -204,7 +204,7 @@ public:
   };
 
   /**
-   * The possible values for the @p sdtype parameter of @ref requestShutdown.
+   * The possible values for the @p sdtype parameter of #requestShutDown.
    */
   enum ShutdownType {
     /**
@@ -226,7 +226,7 @@ public:
   };
 
   /**
-   * The possible values for the @p sdmode parameter of @ref requestShutdown.
+   * The possible values for the @p sdmode parameter of #requestShutDown.
    */
   enum ShutdownMode {
     /**
@@ -731,7 +731,7 @@ public slots:
   void ref();
 
   /**
-   * Tells KApplication that one operation such as those described in @ref ref just finished.
+   * Tells KApplication that one operation such as those described in #ref just finished.
    * The application exits if the counter is back to 0.
    */
   void deref();

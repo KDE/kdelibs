@@ -1492,7 +1492,7 @@ void KApplication::dcopBlockUserInput( bool b )
     kapp_block_user_input = b;
 }
 
-#ifndef Q_WS_QWS
+#ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if ( activeWindow() ) {
@@ -1982,7 +1982,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      //  if (q.startsWith("attach="))
      //    attach = KURL::decode_string((*it).mid(7));
    }
-   
+
    invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList() );
 }
 

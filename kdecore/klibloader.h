@@ -88,7 +88,7 @@ public:
     bool hasSymbol( const char* name ) const;
 
     /**
-     * Unloads the library. 
+     * Unloads the library.
      * This typically results in the deletion of this object. You should
      * not reference its pointer after calling this function.
      */
@@ -197,7 +197,7 @@ public:
      * returns an error message that can be useful to debug the problem
      * returns QString::null if the last call to ::library(const char*) was successful
      * you can call this function more than once. The error message is only
-     * reset by a new call to library(). 
+     * reset by a new call to library().
      */
     QString lastErrorMessage() const;
 
@@ -249,8 +249,8 @@ private:
  * <pre>
  *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
  * </pre>
- * 
- * The first macro argument is the name of your library, the second specifies the name 
+ *
+ * The first macro argument is the name of your library, the second specifies the name
  * of your factory.
  *
  * In the constructor of your factory you should create an instance of @ref KInstance
@@ -307,7 +307,7 @@ public:
 
 signals:
     /**
-     * Emitted in @ref create
+     * Emitted in #create
      */
     void objectCreated( QObject *obj );
 
@@ -324,7 +324,7 @@ protected:
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *
-     * This function is called by @ref create()
+     * This function is called by #create()
      */
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 

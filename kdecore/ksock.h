@@ -60,18 +60,18 @@ typedef sockaddr_in ksockaddr_in;
 class KSocketPrivate;
 class KServerSocketPrivate;
 
-/** 
- * You can connect this socket to any Internet address. 
+/**
+ * You can connect this socket to any Internet address.
  *
- * The socket gives you three signals: When ready for reading, 
- * ready for writing or if the connection is broken.  
+ * The socket gives you three signals: When ready for reading,
+ * ready for writing or if the connection is broken.
  * Using @ref socket() you get a file descriptor
  * which you can use with the usual UNIX function like @ref write() or
- *  @ref read(). 
+ *  @ref read().
  * If you have already such a socket identifier you can construct a KSocket
- * on this identifier. 
- *  
- * If @ref socket() delivers a value of -1 or less, the connection 
+ * on this identifier.
+ *
+ * If @ref socket() delivers a value of -1 or less, the connection
  * was not successful.
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
@@ -82,37 +82,37 @@ class KSocket : public QObject
 {
     Q_OBJECT
 public:
-    /** 
+    /**
      * Constructs a KSocket with the provided file descriptor.
      * @param _sock	The file descriptor to use.
      */
-    KSocket( int _sock );    
-    /** 
+    KSocket( int _sock );
+    /**
      * Creates a socket and connects to a host.
      * @param _host	The remote host to which to connect.
      * @param _port	The port on the remote host.
      * @param timeOut	The number of seconds waiting for connect (default 30).
      */
     KSocket( const char *_host, unsigned short int _port, int timeOut = 30);
-    
-    /** 
+
+    /**
      * Connects to a UNIX domain socket.
      * @param _path    The filename of the socket.
      */
     KSocket( const char * _path );
 
-    /** 
+    /**
      * Destructor. Closes the socket if it is still open.
      */
     virtual ~KSocket();
 
-    /** 
+    /**
      * Returns a file descriptor for this socket.
      * Returns -1 when an error occured.
      */
     int socket() const { return sock; }
-    
-    /** 
+
+    /**
      * Enables the socket for reading.
      *
      * If you enable read mode, the socket will emit the signal
@@ -120,8 +120,8 @@ public:
      * socket.
      */
     void enableRead( bool );
-    
-    /** 
+
+    /**
      * Enables the socket for writing.
      *
      * If you enable write mode, the socket will emit the signal
@@ -132,7 +132,7 @@ public:
      * in the order of thousands a second !
      */
     void enableWrite( bool );
-    
+
 #ifdef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
     /**
@@ -152,20 +152,20 @@ public:
       */
     static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
 #endif
-        
+
 signals:
-    /** 
+    /**
      * Data has arrived for reading.
      *
      * This signal will only be raised if @ref enableRead( @p true ) was called
      * first.
      */
     void readEvent( KSocket * );
-    
-    /** 
+
+    /**
      * Socket is ready for writing.
      *
-     * This signal will only be raised if @ref enableWrite( @p true ) was 
+     * This signal will only be raised if @ref enableWrite( @p true ) was
      * called first.
      *
      * Warning: If you forget to call enableWrite(false) when you are
@@ -173,45 +173,45 @@ signals:
      * in the order of thousands a second !
      */
     void writeEvent( KSocket * );
-    
-    /** 
+
+    /**
      * Raised when the connection is broken.
      */
     void closeEvent( KSocket * );
-    
+
 public slots:
-    /** 
+    /**
      * Connected to the writeNotifier.
      *
      * Called when
      *  the socket is ready for writing.
      */
     void slotWrite( int );
-    
-    /** 
+
+    /**
      * Connected to the readNotifier.
      *
      * Called when
      *  the socket is ready for reading.
      */
     void slotRead( int );
-    
+
 protected:
     bool connect( const QString& _host, unsigned short int _port, int timeout = 0 );
     bool connect( const char *_path );
-  
+
     /******************************************************
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
      */
     int sock;
-  
+
 private:
     KSocket(const KSocket&);
     KSocket& operator=(const KSocket&);
 
     KSocketPrivate *d;
-    
+
 };
 
 
@@ -253,7 +253,7 @@ public:
      */
     KServerSocket( const char *_path, bool _bind = true);
 
-    /** 
+    /**
      * Destructor. Closes the socket if it was not already closed.
      */
     virtual ~KServerSocket();
@@ -265,22 +265,22 @@ public:
      * On error the socket will be closed.
      */
     bool bindAndListen();
-    
-    /** 
+
+    /**
      * Returns the file descriptor associated with the socket.
      * Returns -1 when an error occured during construction or
      * @ref bindAndListen
      */
     int socket() const { return sock; }
 
-    /** 
+    /**
      * Returns the port number which is being monitored.
      */
     unsigned short int port();
 
 #ifdef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
-    /** 
+    /**
      * The address.
      * This is dumb. Don't use it
      * Refer to @ref KExtendedSocket::localAddress(int)
@@ -289,8 +289,8 @@ public:
     unsigned long ipv4_addr();
 #endif
 
-public slots: 
-    /** 
+public slots:
+    /**
      * Called when someone connected to our port.
      */
     virtual void slotAccept( int ); // why is this virtual?
@@ -307,14 +307,14 @@ signals:
     void accepted( KSocket* );
 
 protected:
-    bool init( short unsigned int );
+    bool init( unsigned short int );
     bool init( const char *_path );
-  
-    /** 
+
+    /**
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
-     */    
-    int sock;  
+     */
+    int sock;
 
 private:
     KServerSocket(const KServerSocket&);

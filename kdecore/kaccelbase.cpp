@@ -406,7 +406,7 @@ bool KAccelBase::updateConnections()
 }
 
 // Construct a list of keys to be connected, sorted highest priority first.
-void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
+void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
 {
 	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !m_bEnabled )
@@ -571,7 +571,7 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 	bool bInsertSeparator = false;
 	for( uint i = 0; i < actionCount(); i++ ) {
 		const KAccelAction* pAction = actions().actionPtr( i );
-		
+
 		if( !pAction->isEnabled() )
 			continue;
 

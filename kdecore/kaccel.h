@@ -38,7 +38,7 @@ class KAccelPrivate;
  * through application configuration files or through the
  * @ref KKeyChooser GUI.
  *
- * A @ref KAccel contains a list of @ref KAccelAction objects.
+ * A KAccel contains a list of @ref KAccelAction objects.
  *
  * For example, CTRL+Key_P could be a shortcut for printing a document. The key
  * codes are listed in qnamespace.h. "Print" could be the action name for printing.
@@ -240,12 +240,13 @@ class KAccel : public QAccel
 	/**
 	 * @deprecated.  Use actions().actionPtr().
 	 * Return the name of the accelerator item with the keycode @p key,
-	 * or @ref QString::null if the item cannot be found.
+	 * or QString::null if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
 #endif // !KDE_NO_COMPAT
 
  protected:
+        /// @internal
 	virtual void virtual_hook( int id, void* data );
  private:
 	class KAccelPrivate* d;

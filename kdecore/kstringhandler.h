@@ -42,7 +42,7 @@
  *
  * The ranges are a fairly powerful way of getting/stripping words from
  * a string. These ranges function, for the large part, as they would in
- * python. See the @ref word and @ref remword functions for more detail.
+ * python. See the @ref word(const QString&, int) and @ref remword(const QString&, int) functions for more detail.
  *
  * This class contains no data members of it own. All strings are cut
  * on the fly and returned as new qstrings/qstringlists.

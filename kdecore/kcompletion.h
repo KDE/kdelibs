@@ -52,7 +52,7 @@ class QPopupMenu;
  * and whenever completion should be invoked, you call @ref makeCompletion().
  * KLineEdit and (an editable) KComboBox even do this automatically for you.
  *
- * KCompletion offers the completed string via the signal @ref match() and
+ * KCompletion offers the completed string via the signal @ref #match() and
  * all matching strings (when the result is ambiguous) via the method
  * @ref allMatches().
  *
@@ -163,11 +163,11 @@ public:
      * In the latter case, a sound will be issued, depending on
      * @ref isSoundsEnabled().
      * If a match was found, it will also be emitted via the signal
-     * @ref match().
+     * @ref #match().
      *
      * If this is called twice or more often with the same string while no
      * items were added or removed in the meantime, all available completions
-     * will be emitted via the signal @ref matches().
+     * will be emitted via the signal @ref #matches().
      * This happens only in shell-completion-mode.
      *
      * @returns the matching item, or QString::null if there is no matching
@@ -487,8 +487,8 @@ protected:
 
     /**
      * This method is called before a list of all available completions is
-     * emitted via @ref matches. You can override this method to modify the
-     * found items before @ref match() or @ref matches() are emitted.
+     * emitted via @ref #matches(). You can override this method to modify the
+     * found items before @ref match() or @ref #matches() are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.
@@ -499,7 +499,7 @@ protected:
     /**
      * This method is called before a list of all available completions is
      * emitted via @ref matches. You can override this method to modify the
-     * found items before @ref match() or @ref matches() are emitted.
+     * found items before @ref match() or @ref #matches() are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.
@@ -556,7 +556,7 @@ class KCompletionMatchesPrivate;
  * you to modify some matches or merge them with matches
  * from another call to allWeightedMatches(), and sort the matches
  * after that in order to have the matches ordered correctly
- * 
+ *
  * Example (a simplified example of what Konqueror's completion does):
  * <pre>
  * KCompletionMatches matches = completion->allWeightedMatches( location );
@@ -917,7 +917,7 @@ public:
      * the internal pointer is @p NULL. Use this method to get the
      * pointer to a completion object when inheriting so that you
      * won't inadvertently create it!!
-     *	
+     *
      * @returns the completion object or NULL if one does not exist.
      */
     KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : (KCompletion*) m_pCompObj; }
@@ -958,12 +958,12 @@ private:
     KeyBindingMap m_keyMap;
     // we may act as a proxy to another KCompletionBase object
     KCompletionBase *m_delegate;
-	
+
     // BCI
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KCompletionBasePrivate *d;	
+    KCompletionBasePrivate *d;
 };
 
 #endif // KCOMPLETION_H

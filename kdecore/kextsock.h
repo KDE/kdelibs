@@ -365,7 +365,7 @@ public:
    * the current size will cause the buffer to be shrunk to the wanted value,
    * as if the data had been read.
    *
-   * Note 2: The @ref closed signal will only be emitted for a connection closed
+   * Note 2: The closed() signal will only be emitted for a connection closed
    * by the remote end if we are doing input buffering. That happens because if we aren't
    * reading from the connection, we don't know when it closed.
    * @param rsize	read buffer size
@@ -468,7 +468,7 @@ public:
    * @li @ref readyRead and @ref readyWrite signals will be enabled only if
    *    @ref enableRead or @ref enableWrite were called. You can still enable
    *    them by calling those functions, of course.
-   * @li @ref closed will only be sent if we are indeed reading from the input
+   * @li #closed() will only be sent if we are indeed reading from the input
    *    stream. That is, if this socket is buffering the input. See @ref setBufferSize
    *
    * Note that, in general, functions inherited/overriden from KBufferedIO will only
@@ -527,7 +527,7 @@ public:
    * This is useful if you just want to connect and don't need the rest of the
    * class.
    *
-   * Note that the buffers' contents will be discarded. 
+   * Note that the buffers' contents will be discarded.
    *
    * Use of this method is discouraged, because the socket created might be such that
    * normal library routines can't handle (read, write, close, etc.)

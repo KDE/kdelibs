@@ -560,13 +560,14 @@ public:
  *    myWriteGroups(myFile, myData);
  **/
 
-/**
+/*!
+ *
  * This function is just for convenience. It simply calls
- * instance->dirs()->findResource(type, filename).
+ *instance->dirs()-> \linkKStandardDirs::findResource() findResource(type, filename)\endlink .
  **/
 QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
-/**
+/*!
  * This function is much like locate. However it returns a
  * filename suitable for writing to. No check is made if the
  * specified filename actually exists. Missing directories

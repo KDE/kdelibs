@@ -92,16 +92,16 @@ class KCmdLineArgsPrivate;
  *     QCString anotherOptionArg = args->getOption("another-option");
  *
  *     // Arguments (e.g. files to open)
- *     for(int i = 0; i < args->count(); i++) // Counting start at 0! 
+ *     for(int i = 0; i < args->count(); i++) // Counting start at 0!
  *     {
- *        // don't forget to convert to Unicode!        
+ *        // don't forget to convert to Unicode!
  *        openFile( QFile::decodeName( args->arg(i)));
  *        // Or more convenient:
  *        // openURL( args->url(i));
  *
  *     }
  *
- *     args->clear(); // Free up some memory. 
+ *     args->clear(); // Free up some memory.
  *     ....
  *  }
  *  </pre>
@@ -109,7 +109,7 @@ class KCmdLineArgsPrivate;
  *  options are defined as follow
  *
  *  <pre>
- *  static KCmdLineOptions options[] = 
+ *  static KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
  *     { "b <file>", I18N_NOOP("A short option which takes an argument."), 0 },
@@ -119,7 +119,7 @@ class KCmdLineArgsPrivate;
  *     { "option3 <file>", I18N_NOOP("A long option which takes an argument."), 0 },
  *     { "option3 <speed>", I18N_NOOP("As above with 9600 as default."), "9600" },
  *     { "d", 0, 0 },
- *     { "option4", I18N_NOOP("A long option which has a short option as alias."), 0 }, 
+ *     { "option4", I18N_NOOP("A long option which has a short option as alias."), 0 },
  *     { "e", 0, 0 },
  *     { "nooption5", I18N_NOOP("Another long option with an alias."), 0 },
  *     { "f", 0, 0 },
@@ -134,7 +134,7 @@ class KCmdLineArgsPrivate;
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
- *  You can't use i18n() here because we are setting up a static data 
+ *  You can't use i18n() here because we are setting up a static data
  *  structure and can't do translations at compile time.
  *
  *  Note that a program should define the options before any arguments.
@@ -144,7 +144,7 @@ class KCmdLineArgsPrivate;
  *
  *  With the above options a command line could look like:
  *  <pre>
- *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file 
+ *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file
  *  </pre>
  *
  *  Long binary options can be in the form 'option' and 'nooption'.
@@ -158,7 +158,7 @@ class KCmdLineArgsPrivate;
  *     myapp --nooption4
  *  </pre>
  *
- *  Normally if an option value is provided multiple times only the last 
+ *  Normally if an option value is provided multiple times only the last
  *  value is used:
  *  <pre>
  *     myapp -c 1200 -c 2400 -c 4800
@@ -182,7 +182,7 @@ class KCmdLineArgsPrivate;
  *  @li The option "--foo bar" may also be written "--foo=bar"
  *  @li The option "-P lp1" may also be written "-P=lp1" or "-Plp1"
  *  @li The option "--foo bar" may also be written "-foo bar"
- * 
+ *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
  *  @version 0.0.4
@@ -194,7 +194,7 @@ class KCmdLineArgs
   friend class QPtrList<KCmdLineArgs>;
 public:
   // Static functions:
-  
+
   /**
    * Initialize class.
    *
@@ -208,7 +208,7 @@ public:
    * @param version A version.
    * @param noKApp Don't add commandline options for @ref QApplication/@ref KApplication
    */
-  static void init(int _argc, char **_argv, 
+  static void init(int _argc, char **_argv,
                    const char *_appname, const char *_description,
                    const char *_version, bool noKApp = false);
 
@@ -222,7 +222,7 @@ public:
    * @param about A KAboutData object describing your program.
    * @param noKApp Don't add commandline options for @ref QApplication / @ref KApplication
    */
-  static void init(int _argc, char **_argv, 
+  static void init(int _argc, char **_argv,
                    const KAboutData *about, bool noKApp = false);
 
   /**
@@ -236,17 +236,17 @@ public:
    *
    */
   static void init(const KAboutData *about);
-  
+
   /**
    * Add options to your application.
    *
    * You must make sure that all possible options have been added before
-   * any class uses the command line arguments. 
+   * any class uses the command line arguments.
    *
    * @param options A list of options thath your code supplies.
    * @param id A name with which these options can be identified.
    * @param afterId The options are inserted after this set of options.
-   *          
+   *
    * The list of options should look like this:
    *
    * static KCmdLineOptions options[] =
@@ -270,7 +270,7 @@ public:
    * In BNF:
    * cmd = myapp [options] file
    * options = (option)*
-   * option = --option1 <argument> | 
+   * option = --option1 <argument> |
    *          (-o | --option2 | --nooption2) |
    *          ( --option3 | --nooption3 )
    *
@@ -288,7 +288,7 @@ public:
    * @li "myapp --option2 --nooption2" (same as "myapp")
    * @li "myapp /tmp/file"
    */
-  static void addCmdLineOptions( const KCmdLineOptions *options, 
+  static void addCmdLineOptions( const KCmdLineOptions *options,
 				 const char *name=0, const char *id = 0,
 				 const char *afterId=0);
 
@@ -297,7 +297,7 @@ public:
    *
    * This function returns all command line arguments that your code
    * handles. If unknown command-line arguments are encountered the program
-   * is aborted and usage information is shown. 
+   * is aborted and usage information is shown.
    *
    * @param id The name of the options you are interested in.
    */
@@ -333,8 +333,8 @@ public:
 
   /**
    * Enable i18n to be able to print a translated error message.
-   * 
-   * N.B.: This function leaks memory, therefore you are expected to exit 
+   *
+   * N.B.: This function leaks memory, therefore you are expected to exit
    * afterwards (e.g., by calling @ref usage()).
    **/
   static void enable_i18n();
@@ -344,7 +344,7 @@ public:
 
   /**
    *  Read out a string option.
-   *  
+   *
    *  @param option The name of the option without '-'.
    *
    *  @return The value of the option. If the option was not
@@ -356,7 +356,7 @@ public:
 
   /**
    *  Read out all occurences of a string option.
-   *  
+   *
    *  @param option The name of the option without '-'.
    *
    *  @return A list of all option values. If no option was present
@@ -366,7 +366,7 @@ public:
 
   /**
    *  Read out a boolean option or check for the presence of string option.
-   *  
+   *
    *  @param option The name of the option without '-' or '-no'.
    *
    *  @return The value of the option. If the option was not
@@ -390,7 +390,7 @@ public:
    *  @return The number of arguments that aren't options
    */
   int count() const;
- 
+
   /**
    *  Read out an argument.
    *
@@ -404,7 +404,7 @@ public:
   /**
    *  Read out an argument representing a URL.
    *
-   *  The argument can be 
+   *  The argument can be
    *  @li an absolute filename
    *  @li a relative filename
    *  @li a URL
@@ -417,7 +417,7 @@ public:
   KURL url(int n) const;
 
   /**
-   * Used by @ref url
+   * Used by @ref #url
    * Made public for apps that don't use KCmdLineArgs
    * @param urlArgs the argument
    */
@@ -436,7 +436,7 @@ public:
   void clear();
 
 
-protected:   
+protected:
   /**
    * @internal
    *  Constructor.
@@ -445,7 +445,7 @@ protected:
 		const char *_name);
 
   /**
-   *  @internal use only. 
+   *  @internal use only.
    *
    *  Use @ref clear() if you want to free up some memory.
    *
@@ -468,11 +468,11 @@ private:
    * where they belong.
    */
   static void parseAllArgs();
-  
+
   /**
    * @internal for KApplication only:
    *
-   * Return argc 
+   * Return argc
    */
   static int *qt_argc();
 
@@ -509,7 +509,7 @@ private:
   static void loadAppArgs( QDataStream &);
 
   /**
-   * @internal 
+   * @internal
    *
    *  Set a boolean option
    */
@@ -523,7 +523,7 @@ private:
   void setOption(const QCString &option, const char *value);
 
   /**
-   * @internal 
+   * @internal
    *
    * Add an argument
    */
@@ -561,7 +561,7 @@ private:
   static void initIgnore(int _argc, char **_argv, const char *_appname);
 
   static void printQ(const QString &msg);
-  
+
   const KCmdLineOptions *options;
   const char *name;
   const char *id;
@@ -576,7 +576,7 @@ private:
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
   static bool ignoreUnknown; // Ignore unknown options and arguments
-  static char *mCwd; // Current working directory. Important for KUnqiueApp!  
+  static char *mCwd; // Current working directory. Important for KUnqiueApp!
 
   KCmdLineArgsPrivate *d;
 };
