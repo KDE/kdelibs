@@ -482,15 +482,15 @@ public:
     virtual short marginLeft() const { return 0; }
     virtual short marginRight() const { return 0; }
 
-    int paddingTop() const;
-    int paddingBottom() const;
-    int paddingLeft() const;
-    int paddingRight() const;
+    virtual int paddingTop() const;
+    virtual int paddingBottom() const;
+    virtual int paddingLeft() const;
+    virtual int paddingRight() const;
 
-    int borderTop() const { return style()->borderTopWidth(); }
-    int borderBottom() const { return style()->borderBottomWidth(); }
-    int borderLeft() const { return style()->borderLeftWidth(); }
-    int borderRight() const { return style()->borderRightWidth(); }
+    virtual int borderTop() const { return style()->borderTopWidth(); }
+    virtual int borderBottom() const { return style()->borderBottomWidth(); }
+    virtual int borderLeft() const { return style()->borderLeftWidth(); }
+    virtual int borderRight() const { return style()->borderRightWidth(); }
 
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
