@@ -17,24 +17,20 @@
   Boston, MA 02111-1307, USA.
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-#ifdef HAVE_UNISTD_H
+
 #include <unistd.h>
-#endif
+#include <fcntl.h>
+
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
-
-//#include <stdlib.h>
 
 #include <qdatetime.h>
 #include <qdir.h>

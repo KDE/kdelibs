@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
+    $Id$
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -17,26 +19,24 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "config.h"
+#include <config.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#include <assert.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <qfile.h>
 
 #include <dcopclient.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <qfile.h>
 #include <kcmdlineargs.h>
 #include <kstddirs.h>
 #include <kaboutdata.h>
 #include "kdebug.h"
-
-#include <sys/types.h>
-#include <sys/wait.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include <errno.h>
-
-#include "kuniqueapp.moc"
+#include "kuniqueapp.h"
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 
@@ -418,3 +418,5 @@ int KUniqueApplication::newInstance()
 {
   return 0; // do nothing in default implementation
 }
+
+#include "kuniqueapp.moc"

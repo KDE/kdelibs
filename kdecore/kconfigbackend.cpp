@@ -19,7 +19,9 @@
   Boston, MA 02111-1307, USA.
 */
 
-#include "config.h"
+#include <config.h>
+
+#include <unistd.h>
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -34,10 +36,6 @@
 #include <kstddirs.h>
 #include <ksavefile.h>
 #include <kurl.h>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 /* translate escaped escape sequences to their actual values. */
 static QString printableToString(const QString& s)

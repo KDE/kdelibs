@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
 
+    $Id$
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -16,37 +18,33 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/*
- * kwin.cpp Part of the KDE project.
- */
-
-#include <stdlib.h>
-#include "kwin.h"
-#include <qapplication.h>
-#include "kapp.h"
-#include <qbitmap.h>
-#include <qimage.h>
-#include <qwhatsthis.h>
-#include <qcstring.h>
-#include <kdatastream.h>
-#include <klocale.h>
-#include <dcopclient.h>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-
-#include "netwm.h"
 
 #include <config.h>
+
+#include <stdlib.h>
+#include <unistd.h>
 
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
 #endif
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include <qapplication.h>
+#include <qbitmap.h>
+#include <qimage.h>
+#include <qwhatsthis.h>
+#include <qcstring.h>
 
+#include "kwin.h"
+#include "kapp.h"
+#include <kdatastream.h>
+#include <klocale.h>
+#include <dcopclient.h>
+
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+
+#include "netwm.h"
 
 static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;

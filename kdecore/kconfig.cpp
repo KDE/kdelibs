@@ -22,14 +22,13 @@
 // $Id$
 
 #include <config.h>
-#include <stdlib.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_UNISTD_H
+
+#include <stdlib.h>
 #include <unistd.h>
-#endif
 
 #include <qfileinfo.h>
 

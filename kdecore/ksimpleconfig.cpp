@@ -20,14 +20,13 @@
 // $Id$
 
 #include <config.h>
-#include <stdlib.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_UNISTD_H
+
+#include <stdlib.h>
 #include <unistd.h>
-#endif
 
 #include <qfileinfo.h>
 
@@ -36,7 +35,6 @@
 #include "kconfigbackend.h"
 
 #include "ksimpleconfig.h"
-#include "ksimpleconfig.moc"
 
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
   : KConfig(QString::fromLatin1(""), bReadOnly, false)
@@ -132,3 +130,6 @@ void KSimpleConfig::sync()
    if (isDirty())
      rollback();
 }
+
+#include "ksimpleconfig.moc"
+

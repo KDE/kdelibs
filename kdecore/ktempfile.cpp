@@ -20,35 +20,34 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "config.h"
+#include <config.h>
 
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_FCNTL_H
+
 #include <fcntl.h>
-#endif
-#ifdef HAVE_UNISTD_H
+#include <stdlib.h>
 #include <unistd.h>
-#endif
+
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif
+
 #ifndef _PATH_TMP
 #define _PATH_TMP "/tmp"
 #endif
-
-#include <stdlib.h>
 
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qdatastream.h>
 #include <qtextstream.h>
+
 #include "kglobal.h"
 #include "kapp.h"
 #include "kinstance.h"
