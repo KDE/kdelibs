@@ -55,11 +55,14 @@ AC_SUBST(INSTALL_CATALOG)
 catdir=$kde_datadir/ksgmltools
 AC_SUBST(catdir)
 
-dtddir=$catdir
+dtddir=$catdir/dtd
 AC_SUBST(dtddir)
 
-dsldir=$kde_datadir/ksgmltools/stylesheets
+dsldir=$catdir/stylesheets
 AC_SUBST(dsldir)
+
+entdir=$catdir/entities
+AC_SUBST(entdir)
 
 dnl Don't remove !
 dnl AC_OUTPUT(ksgmltools/kdb2html)
