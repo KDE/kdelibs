@@ -208,7 +208,7 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     {
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
-	p->drawTiledPixmap(_tx + borderLeft(), _ty + borderTop(), w, h, m_bgImage->pixmap());
+	p->drawTiledPixmap(_tx + borderLeft(), _ty + borderTop(), w, h, m_bgImage->tiled_pixmap());
     }
     if(m_style->hasBorder())
     {

@@ -188,6 +188,7 @@ namespace khtml
 	virtual ~CachedImage();
 	
 	const QPixmap &pixmap() const;
+	const QPixmap &tiled_pixmap() const;
 
 	virtual void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
@@ -228,6 +229,9 @@ namespace khtml
 	bool typeChecked;
 	bool gotFrame;
 	
+        // Used to cache a tiled version of the image
+	QPixmap *bg;
+
 	ImageSource* imgSource;
 
 	DOM::DOMString m_baseURL;

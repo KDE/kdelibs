@@ -29,6 +29,8 @@
 #include <qtextstream.h>
 #include <qasyncio.h>
 #include <qasyncimageio.h>
+#include <qpainter.h>
+#include <qbitmap.h>
 
 #include <kio/job.h>
 #include <kdebug.h>
@@ -252,6 +254,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL)
 {
     p = 0;
     m = 0;
+    bg = 0;
     typeChecked = false;
     formatType = 0;
     m_status = Unknown;
@@ -268,6 +271,7 @@ CachedImage::~CachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
+    if (bg ) delete bg;
     //kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
 }
 
@@ -291,7 +295,92 @@ void CachedImage::deref( CachedObjectClient *c )
       delete this;
 }
 
-const QPixmap &CachedImage::pixmap() const
+static bool
+fixBackground(QPixmap &bgPixmap)
+{
+#define BGMINWIDTH	50
+#define BGMINHEIGHT	25
+   if (bgPixmap.isNull())
+       return false;
+   int w = bgPixmap.width();
+   int h = bgPixmap.height();
+   if (w < BGMINWIDTH)
+   {
+       int factor = ((BGMINWIDTH+w-1) / w);
+       QPixmap newPixmap(w * factor, h);
+       QPainter p;
+       p.begin(&newPixmap);
+       for(int i=0; i < factor; i++)
+           p.drawPixmap(i*w, 0, bgPixmap);
+       p.end();
+       const QBitmap *mask = bgPixmap.mask();
+       if (mask)
+       {
+          QBitmap newBitmap( w * factor, h);
+          p.begin(&newBitmap);
+          for(int i=0; i < factor; i++)
+             p.drawPixmap(i*w, 0, *mask);
+          p.end();
+          newPixmap.setMask(newBitmap);
+       }
+       bgPixmap = newPixmap;
+       w = w * factor;
+   }
+   else
+   {
+       printf("Not scaling in X-dir\n");
+   }
+   if (h < BGMINHEIGHT)
+   {
+       int factor = ((BGMINHEIGHT+h-1) / h);
+       QPixmap newPixmap(w, h*factor);
+       QPainter p;
+       p.begin(&newPixmap);
+       for(int i=0; i < factor; i++)
+          p.drawPixmap(0, i*h, bgPixmap);
+       p.end();
+       const QBitmap *mask = bgPixmap.mask();
+       if (mask)
+       {
+          QBitmap newBitmap( w, h*factor);
+          p.begin(&newBitmap);
+          for(int i=0; i < factor; i++)
+             p.drawPixmap(0, i*h, *mask);
+          p.end();
+          newPixmap.setMask(newBitmap);
+       }
+       bgPixmap = newPixmap;
+       h = h * factor;
+   }
+   else
+   {
+       printf("Not scaling in Y-dir\n");
+   }
+   return true;
+}
+
+
+const QPixmap &CachedImage::tiled_pixmap() const
+{
+    const QPixmap &r = pixmap();
+
+    if (r.isNull()) return r;
+
+    if (bg)
+       return *bg;
+
+    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT)) 
+    {
+       CachedImage *non_const_this = const_cast<CachedImage *>(this);
+       delete non_const_this->bg;
+       non_const_this->bg = new QPixmap(r);
+       fixBackground(*(non_const_this->bg));
+       return *(non_const_this->bg);
+    }
+    return r;
+}
+
+const QPixmap &CachedImage::pixmap( ) const
 {
     return m ? m->framePixmap() : ( p ? *p : *Cache::nullPixmap );
 }
