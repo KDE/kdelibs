@@ -4,20 +4,46 @@ dnl --------
 dnl
 dnl This is to be merged with toplevel configure.in.in soon
 
-dnl Don't check for getnameinfo and freeaddrinfo. If getaddrinfo is there,
-dnl so are those two
 AC_CHECK_FUNCS(inet_ntop inet_pton getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
 
 AC_SUBST(HAVE_GETADDRINFO)
 AC_SUBST(GETADDRINFO_RETURNS_UNIX)
+AC_SUBST(HAVE_BROKEN_GETADDRINFO)
+AC_SUBST(HAVE_STRUCT_ADDRINFO)
+AC_MSG_CHECKING([for struct addrinfo])
+AC_TRY_COMPILE(dnl
+      [
+        #include <netdb.h>
+      ],
+      [
+        struct addrinfo ai;
+      ],
+      [
+        AC_DEFINE(HAVE_STRUCT_ADDRINFO, 1, [Define if netdb.h defines struct addrinfo])
+	AC_MSG_RESULT(yes)
+      ],
+      AC_MSG_RESULT(no)
+)
 AC_CHECK_FUNC(getaddrinfo,
   [
-    AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo is present and works])
-    AC_MSG_CHECKING([if getaddrinfo returns AF_UNIX])
-    dnl At least one system has a bad implementation of getaddrinfo
-    dnl FreeBSD's libc getaddrinfo code has AF_UNIX disabled
-    dnl This is rather stupid, but since it's there...
-    AC_TRY_RUN(dnl
+    AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo is present])
+
+    dnl Even though we now know that getaddrinfo is there, make sure getnameinfo is there too
+    kde_gai_ok=true
+    AC_CHECK_FUNCS(freeaddrinfo getnameinfo gai_strerror, /bin/true, 
+    [
+      kde_gai_ok=false
+      AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken and should be replaced])
+      AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
+      break
+    ])
+
+    if $kde_gai_ok ; then
+      AC_MSG_CHECKING([if getaddrinfo returns AF_UNIX])
+      dnl At least one system has a bad implementation of getaddrinfo
+      dnl FreeBSD's libc getaddrinfo code has AF_UNIX disabled
+      dnl This is rather stupid, but since it's there...
+      AC_TRY_RUN(dnl
       [
         #include <sys/types.h>
 	#include <sys/socket.h>
@@ -54,7 +80,8 @@ AC_CHECK_FUNC(getaddrinfo,
 	    ;;
 	esac
       ]
-    )
+      )
+    fi		# test $kde_gai_broken
   ],
   [
     dnl Our getaddrinfo returns AF_UNIX sockets

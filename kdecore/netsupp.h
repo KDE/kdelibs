@@ -130,6 +130,7 @@ extern int kde_getaddrinfo(const char *name, const char *service,
 
 #else  /* !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO) */
 
+# ifndef HAVE_STRUCT_ADDRINFO
 struct addrinfo
 {
   int ai_flags;			/* Input flags.  */
@@ -141,6 +142,7 @@ struct addrinfo
   char *ai_canonname;		/* Canonical name for service location.  */
   struct addrinfo *ai_next;	/* Pointer to next in list.  */
 };
+# endif
 
 # ifdef AI_PASSIVE
 #  undef AI_PASSIVE
