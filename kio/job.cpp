@@ -222,7 +222,7 @@ void Job::showErrorDialog( QWidget * parent )
   kapp->enableStyles();
   // Show a message box, except for "user canceled"
   if ( m_error != ERR_USER_CANCELED )
-      KMessageBox::error( parent, errorString() );
+      KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
 }
 
 void Job::setWindow(QWidget *window)
