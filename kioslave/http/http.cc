@@ -701,6 +701,7 @@ int HTTPProtocol::codeFromResponse( const QString& response )
 
 void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& entry )
 {
+  QString mimeType;
   UDSAtom atom;
   bool foundExecutable = false;
   bool isDirectory = false;
@@ -795,11 +796,9 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         {
           isDirectory = true;
         }
-        else if ( property.text() != "" )
+        else
         {
-          atom.m_uds = KIO::UDS_MIME_TYPE;
-          atom.m_str = property.text();
-          entry.append( atom );
+	  mimeType = property.text();
         }
       }
       else if ( property.tagName() == "executable" )
@@ -886,6 +885,13 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = 0600;
     entry.append(atom);
+  }
+
+  if ( !isDirectory && !mimeType.isEmpty() )
+  {
+    atom.m_uds = KIO::UDS_MIME_TYPE;
+    atom.m_str = mimeType;
+    entry.append( atom );
   }
 }
 
