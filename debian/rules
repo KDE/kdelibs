@@ -59,22 +59,22 @@ binary-arch:  build
 	perl -w admin/debianrules kdelibs3-cvs
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
-	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-	(mkdir -p debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html) ; \
-	qt2kdoc --url=/usr/share/doc/qt2-doc/doc \
-	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-	--compress \
-	/usr/share/doc/qt2-doc/doc ; \
-	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-	--outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html ; \
-	dh_movefiles -pkdelibs-doc-cvs /usr/share/kdoc ; \
+	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
+	  (mkdir -p debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html) ; \
+	  qt2kdoc --url=/usr/share/doc/qt2-doc/doc \
+	  --outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	  --compress \
+	  /usr/share/doc/qt2-doc/doc ; \
+	  makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	  --outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html ; \
+	  dh_movefiles -pkdelibs-doc-cvs usr/share/kdoc ; \
 	fi
 
 # libraries not starting with lib are modules
 	dh_movefiles -pkdelibs3-dev-cvs $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
 	dh_installchangelogs
 	dh_undocumented
-	dh_link
+	#dh_link
 	dh_strip 
 	dh_compress 
 	dh_fixperms 
@@ -83,6 +83,8 @@ binary-arch:  build
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol
+	cd debian/tmp && find ./$(kde_confdir) -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
+	chmod 644 debian/tmp/DEBIAN/conffiles
 	dh_md5sums
 	perl -w admin/debianrules update
 	dh_builddeb

@@ -15,6 +15,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs-doc-cvs
 Architecture: all
 Section: doc
+Replaces: kdelibs-doc
 Depends: kdelibs3-cvs (= ${Source-Version})
 Suggests: kdevelop, kdoc, qt2-doc
 Conflicts: kdelibs-doc
@@ -25,9 +26,11 @@ Description: KDE core libraries (documentation)
 Package: kdelibs3-dev-cvs
 Architecture: any
 Section: devel
+Replaces: kdelibs-dev
 Depends: kdelibs3-cvs (= ${Source-Version}), qt2-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev (>= 2.3.0)
 Suggests: kdelibs-doc
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-cvs-dev, kdelibs3-dev
+Provides: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
