@@ -247,21 +247,6 @@ static const ushort tag_list_4[] = {
     0
 };
 
-static const ushort tag_list_5[] = {
-    ID_IMG,
-    ID_OBJECT,
-    ID_EMBED,
-    ID_APPLET,
-    ID_BIG,
-    ID_SMALL,
-    ID_SUB,
-    ID_SUP,
-    ID_FONT,
-    ID_BASEFONT,
-    ID_COMMENT,
-    0
-};
-
 static const ushort tag_list_6[] = {
     ID_DT,
     ID_DD,
@@ -273,21 +258,7 @@ static const ushort tag_list_7[] = {
     ID_OPTGROUP,
     ID_OPTION,
     ID_COMMENT,
-    0
-};
-
-static const ushort tag_list_8[] = {
-    ID_A,
-    ID_INPUT,
-    ID_SELECT,
-    ID_TEXTAREA,
-    ID_LABEL,
-    ID_BUTTON,
-    ID_FORM,
-    ID_ISINDEX,
-    ID_FIELDSET,
-    ID_IFRAME,
-    ID_COMMENT,
+    ID_SCRIPT,
     0
 };
 

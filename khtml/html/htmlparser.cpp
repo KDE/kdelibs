@@ -662,6 +662,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
             insertNode(e);
             handled = true;
             break;
+        case ID_SELECT:
+	    if( n->isInline() )
+		throw exception;
+	    break;
         case ID_P:
         case ID_H1:
         case ID_H2:
