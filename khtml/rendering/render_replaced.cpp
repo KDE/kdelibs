@@ -91,14 +91,17 @@ void RenderWidget::setQWidget(QWidget *widget, bool show)
 
 void RenderWidget::slotWidgetDestructed()
 {
-//    assert(0); - this is ok sometimes e.g. someSelectElement.multiple = !someSelectElement.multiple
     m_widget = 0;
 }
 
 void RenderWidget::setStyle(RenderStyle *style)
 {
     RenderReplaced::setStyle(style);
-    if(m_widget) m_widget->setFont(m_style->font());
+    if(m_widget)
+    {
+        m_widget->setFont(m_style->font());
+        if(!m_visible) m_widget->hide();
+    }
 }
 
 void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
@@ -106,7 +109,7 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
     // ### this does not get called if a form element moves of the screen, so
     // the widget stays in it's old place!
     assert(!deleted);
-    if(!(m_widget && m_view)) return;
+    if(!(m_widget && m_view) || !m_visible) return;
 
     // add offset for relative positioning
     if(isRelPositioned())

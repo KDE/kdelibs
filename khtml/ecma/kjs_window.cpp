@@ -126,26 +126,59 @@ KJSO Window::get(const UString &p) const
   // we don't want any operations on a closed window
   if (part.isNull())
     return Undefined();
-  
-  if (p == "location")
-    return KJSO(new Location(part));
+
+  if (p == "crypto")
+    return Undefined(); // ###
+  else if (p == "defaultStatus")
+    return String("");  // ###
   else if (p == "document")
     return getDOMNode(part->htmlDocument());
+  else if (p == "frames")
+    return new FrameArray(part);
+  else if (p == "history")
+    return Undefined(); //###
+  else if (p == "innerHeight")
+    return Number(part->view()->visibleHeight());
+  else if (p == "innerWidth")
+    return Number(part->view()->visibleWidth());
+  else if (p == "length")
+    return Number(part->frames().count());
+  else if (p == "location")
+    return KJSO(new Location(part));
+  else if (p == "name")
+    return String(part->name());
   else if (p == "navigator")
     return KJSO(new Navigator(part));
-  else if (p == "self")
-    return KJSO(newWindow(part));
+  else if (p == "offscreenBuffering")
+    return Boolean(true);
+  else if (p == "opener")
+    return Undefined(); // ###
+  else if (p == "outerHeight")
+    return Number(part->view() ? part->view()->height() : 0); // ###
+  else if (p == "outerWidth")
+    return Number(part->view() ? part->view()->width() : 0); // ###
+  else if (p == "pageXOffset")
+    return Number(part->view()->contentsX());
+  else if (p == "pageYOffset")
+    return Number(part->view()->contentsY());
   else if (p == "parent")
     return KJSO(newWindow(part->parentPart() ? part->parentPart() : (KHTMLPart*)part));
+  else if (p == "personalbar")
+    return Undefined(); // ###
+  else if (p == "screenX")
+    return Number(part->view() ? part->view()->mapToGlobal(QPoint(0,0)).x() : 0);
+  else if (p == "screenY")
+    return Number(part->view() ? part->view()->mapToGlobal(QPoint(0,0)).y() : 0);
+  else if (p == "scrollbars")
+    return Undefined(); // ###
+  else if (p == "self")
+    return KJSO(newWindow(part));
   else if (p == "top") {
     KHTMLPart *p = part;
     while (p->parentPart())
       p = p->parentPart();
     return KJSO(newWindow(p));
-  } else if (p == "name")
-    return String(part->name());
-  else if (p == "closed")
-    return Boolean(part.isNull());
+  }
   else if (p == "screen")
     return KJSO(new Screen());
   else if (p == "Image")
@@ -168,9 +201,6 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::Blur));
   else if (p == "close")
     return Function(new WindowFunc(this, WindowFunc::Close));
-
-  else if (p == "frames")
-    return new FrameArray(part);
 
   KJSO v = Imp::get(p);
   if (v.isDefined())
@@ -349,7 +379,7 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   }
   return Completion(Normal, result);
-  
+
 }
 
 void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
@@ -431,7 +461,7 @@ KJSO Location::get(const UString &p) const
 {
   if (part.isNull())
     return Undefined();
-  
+
   KURL url = part->url();
   QString str;
 

@@ -41,6 +41,7 @@ static QString jsNameToProp( const UString &p )
 	    continue;
 	prop.insert( i, '-' );
     }
+
     return prop.lower();
 }
 
@@ -64,6 +65,13 @@ void Style::put(const UString &p, const KJSO& v)
       return;
 
     QString prop = jsNameToProp( p );
+    QString propvalue = v.toString().value().string().string();
+
+    if(prop.left(6) == "pixel-")
+    {
+        prop = prop.mid(6); // cut it away
+        propvalue += "px";
+    }
     el.removeCSSProperty( prop );
-    el.addCSSProperty( prop, v.toString().value().string() );
+    el.addCSSProperty( prop, DOM::DOMString(propvalue) );
 }
