@@ -53,14 +53,15 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	progressbase.h defaultprogress.h statusbarprogress.h \
-	kimageio.h kdirnotify.h kurlpixmapprovider.h kprotocolinfo.h
+	kimageio.h kdirnotify.h kurlpixmapprovider.h kprotocolinfo.h \
+	kprotocolmanager.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) 
 
 libkio_la_SOURCES = \
 	kshred.cpp ktar.cpp \
-	scheduler.cpp \
+	kprotocolmanager.cpp scheduler.cpp \
 	connection.cpp filter.cpp \
 	slaveinterface.cpp job.cpp  \
 	global.cpp \
