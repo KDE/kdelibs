@@ -1123,6 +1123,10 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   KColor col;
   col.setHsv( 0, 0, 255 );
   _setColor( col );
+
+  d->htmlName->installEventFilter(this);
+  d->hsSelector->installEventFilter(this);
+  d->hsSelector->setAcceptDrops(true);
 }
 
 KColorDialog::~KColorDialog()
@@ -1130,6 +1134,25 @@ KColorDialog::~KColorDialog()
     if (d->bColorPicking)
         qt_set_x11_event_filter(d->oldfilter);
     delete d;
+}
+
+bool
+KColorDialog::eventFilter( QObject *obj, QEvent *ev )
+{
+    if ((obj == d->htmlName) || (obj == d->hsSelector))
+    switch(ev->type())
+    {
+      case QEvent::DragEnter:
+      case QEvent::DragMove:
+      case QEvent::DragLeave:
+      case QEvent::Drop:
+      case QEvent::DragResponse:
+            qApp->sendEvent(d->patch, ev);
+            return true;
+      default:
+            break;
+    }
+    return KDialogBase::eventFilter(obj, ev);
 }
 
 void

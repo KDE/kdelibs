@@ -525,6 +525,10 @@ class KColorDialog : public KDialogBase
     * @reimplemented
     */
     virtual void keyPressEvent( QKeyEvent * );
+   /**
+    * @reimplemented
+    */
+    virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   protected:
     virtual void virtual_hook( int id, void* data );
