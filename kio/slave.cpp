@@ -72,7 +72,6 @@ using namespace KIO;
 
 void Slave::accept(KSocket *socket)
 {
-    kdDebug(7002) << "slave has connected to application" << endl;
     slaveconn.init(socket);
     delete serv;
     serv = 0;
@@ -84,11 +83,11 @@ void Slave::accept(KSocket *socket)
 void Slave::timeout()
 {
    if (!serv) return; 
-   kdDebug(7002) << "slave failed to connect to application pid=" << m_pid << endl;
+   kdDebug(7002) << "slave failed to connect to application pid=" << m_pid << " protocol=" << m_protocol << endl;
    if (m_pid && (::kill(m_pid, 0) == 0))
    {
       int delta_t = (int) difftime(time(0), contact_started);
-      kdDebug(7002) << "slave is slow..." << delta_t << endl;
+      kdDebug(7002) << "slave is slow... pid=" << m_pid << " t=" << delta_t << endl;
       if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
       {
          QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, this, SLOT(timeout()));
@@ -105,11 +104,10 @@ void Slave::timeout()
    QString arg = m_protocol;
    if (!m_host.isEmpty())
       arg += "://"+m_host;
-   kdDebug(7002) << "slave died (1) pid = " << m_pid << endl;
+   kdDebug(7002) << "slave died pid = " << m_pid << endl;
    ref();
    // Tell the job about the problem.
    emit error(ERR_SLAVE_DIED, arg);
-   kdDebug(7002) << "slave died (2) pid = " << m_pid << endl;
    // Tell the scheduler about the problem.
    emit slaveDied(this);
    // After the above signal we're dead!!
@@ -188,10 +186,9 @@ void Slave::gotInput()
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
-        kdDebug(7002) << "slave died (1) pid = " << m_pid << endl;
+        kdDebug(7002) << "slave died pid = " << m_pid << endl;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
-        kdDebug(7002) << "slave died (2) pid = " << m_pid << endl;
         // Tell the scheduler about the problem.
         emit slaveDied(this);
         // After the above signal we're dead!!
@@ -210,7 +207,7 @@ void Slave::gotAnswer()
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
 
-    kdDebug(7002) << "got answer " << cmd << endl;
+    //kdDebug(7002) << "got answer " << cmd << endl;
 
     if (ok)
     {
@@ -229,7 +226,7 @@ void Slave::gotAnswer()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
-    kdDebug(7002) << "killing slave (" << m_protocol << "://"
+    kdDebug(7002) << "killing slave pid=" << m_pid << " (" << m_protocol << "://"
 		  << m_host << ")" << endl;
     if (m_pid)
     {
@@ -274,7 +271,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 
 Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text )
 {
-    kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    //kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -311,7 +308,6 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
         delete slave;
 	return 0;
     }
-    kdDebug(7002) << "PID of slave = " << pid << endl;
     slave->setPID(pid);
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
 

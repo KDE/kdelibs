@@ -1063,8 +1063,8 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       FD_ZERO(&set);
       FD_SET(sockfd, &set);
 
-      kdDebug(170).form("Accepting on %d with %d.%06d second timeout\n",
-		     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
+      //kdDebug(170).form("Accepting on %d with %d.%06d second timeout\n",
+      //	     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
       // check if there is anything to accept now
       int retval = KSocks::self()->select(sockfd + 1, &set, NULL, NULL, &d->timeout);
       if (retval == -1)
@@ -1090,7 +1090,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       return -1;
     }
 
-  kdDebug(170).form("Socket %d accepted socket %d\n", sockfd, newfd);
+  //kdDebug(170).form("Socket %d accepted socket %d\n", sockfd, newfd);
 
   setBlockingMode(block);	// restore blocking mode
 
@@ -1137,8 +1137,8 @@ int KExtendedSocket::connect()
 	  end.tv_usec -= 1000*1000;
 	  end.tv_sec++;
 	}
-      kdDebug(170).form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
-		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
+//	kdDebug(170).form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
+//		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
     }
 
   if (d->bindres)
@@ -1151,10 +1151,10 @@ int KExtendedSocket::connect()
       if (!valid_family(p, m_flags))
 	continue;
 
-      kdDebug(170) << "Trying to connect to " << pretty_sock(p) << endl;
+//      kdDebug(170) << "Trying to connect to " << pretty_sock(p) << endl;
       if (q != NULL)
 	{
-	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
+//	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
 	  if (q->ai_family != p->ai_family)
 	    // differing families, scan bindres for a matching family
 	    for (q = d->bindres->data; q; q = q->ai_next)
@@ -1194,7 +1194,7 @@ int KExtendedSocket::connect()
 	    }
 	}
 
-      kdDebug(170) << "Socket " << sockfd << " created" << endl;
+//      kdDebug(170) << "Socket " << sockfd << " created" << endl;
       m_status = created;
 
       // check if we have to do timeout
@@ -1248,8 +1248,8 @@ int KExtendedSocket::connect()
 		  d->timeout.tv_usec += 1000*1000;
 		  d->timeout.tv_sec--;
 		}
-	      kdDebug(170).form("Socket %d activity; %d.%06d seconds remaining\n",
-			     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
+//	      kdDebug(170).form("Socket %d activity; %d.%06d seconds remaining\n",
+//			     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
 
 	      // this means that an event occurred in the socket
 	      int errcode;
@@ -1283,7 +1283,7 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
 			m_flags & outputBufferedSocket ? -1 : 0);
-	  kdDebug(170) << "Socket " << sockfd << " connected\n";
+//	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;
 	}
       else
@@ -1302,7 +1302,7 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
 			m_flags & outputBufferedSocket ? -1 : 0);
-	  kdDebug(170) << "Socket " << sockfd << " connected\n";
+//	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;		// it connected
 	}
     }
@@ -2082,7 +2082,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
       return l;
     }
 
-  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
+//  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
   err = doLookup(host, port, hint, &res);
   if (err)
     {
@@ -2109,7 +2109,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 	ai->ai->ai_next = NULL;
 	ai->addr = KSocketAddress::newAddress(p->ai_addr, p->ai_addrlen);
 	ai->ai->ai_addr = const_cast<sockaddr*>(ai->addr->address());
-	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
+//	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
 	l.append(ai);
       }
 
