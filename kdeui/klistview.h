@@ -733,6 +733,11 @@ protected:
    */
   void konquerorKeyPressEvent (QKeyEvent*);
 
+  /**
+   * Convert the depth of an item into its indentation in pixels
+   */
+  int depthToPixels( int depth );
+
 private:
   class KListViewPrivate;
   class Tooltip;

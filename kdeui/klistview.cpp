@@ -719,6 +719,11 @@ void KListView::cleanDropVisualizer()
   }
 }
 
+int KListView::depthToPixels( int depth )
+{
+    return treeStepSize() * ( depth + (rootIsDecorated() ? 1 : 0) ) + itemMargin();
+}
+
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
 {
   QPoint p (contentsToViewport(pos));
@@ -731,36 +736,49 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
     above = lastItem();
   else
   {
-    // Get the closest item before us ('atpos' or the one above)
-    above =
-      p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2) ?
-      atpos->itemAbove() : atpos;
-  }
-
-  // Now, we know we want to go after "above". But as a child or as a sibling ?
-  // We have to ask the "above" item if it accepts children.
-  if (above->isExpandable())
-  {
-      // The mouse is sufficiently on the right ?
-      if (p.x() >= treeStepSize() * ( above->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin())
-      {
-          parent = above;
-          after = 0L;
-          return;
-      }
-  }
-
-  // Ok, there's one more level of complexity. We may want to become a new
-  // sibling, but of an upper-level group, rather than the "above" item
-  QListViewItem * betterAbove = above;
-  while ( betterAbove &&
-          ( betterAbove->nextSibling() == 0 || p.y() < itemRect(betterAbove->nextSibling()).topLeft().y() ) )
-  {
-      if (p.x() < treeStepSize() * ( betterAbove->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin())
-          above = betterAbove; // store this one, but don't stop yet, there may be a better one
+    // Get the closest item before us ('atpos' or the one above, if any)
+      if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2)
+          && atpos->itemAbove() )
+          above = atpos->itemAbove();
       else
-          break; // not that much on the left, so stop
-      betterAbove = betterAbove->parent(); // up one level
+          above = atpos;
+  }
+
+  if (above)
+  {
+      // Now, we know we want to go after "above". But as a child or as a sibling ?
+      // We have to ask the "above" item if it accepts children.
+      if (above->isExpandable())
+      {
+          // The mouse is sufficiently on the right ? - doesn't matter if 'above' has visible children
+          if (p.x() >= depthToPixels( above->depth() + 1 ) ||
+              (above->isOpen() && above->childCount() > 0) )
+          {
+              parent = above;
+              after = 0L;
+              return;
+          }
+      }
+
+      // Ok, there's one more level of complexity. We may want to become a new
+      // sibling, but of an upper-level group, rather than the "above" item
+      QListViewItem * betterAbove = above->parent();
+      QListViewItem * last = above;
+      while ( betterAbove )
+      {
+          // We are allowed to become a sibling of "betterAbove" only if we are
+          // after its last child
+          if ( last->nextSibling() == 0 )
+          {
+              if (p.x() < depthToPixels ( betterAbove->depth() + 1 ))
+                  above = betterAbove; // store this one, but don't stop yet, there may be a better one
+              else
+                  break; // not enough on the left, so stop
+              last = betterAbove;
+              betterAbove = betterAbove->parent(); // up one level
+          } else
+              break; // we're among the child of betterAbove, not after the last one
+      }
   }
   // set as sibling
   after = above;
@@ -916,11 +934,20 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
         int level;
         if (after)
         {
-            QListViewItem* lastchild = after->firstChild();
-            if (lastchild)
-                for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling()) ;
+            QListViewItem* it = 0L;
+            if (after->isOpen())
+            {
+                // Look for the last child (recursively)
+                it = after->firstChild();
+                if (it)
+                    while (it->nextSibling() || it->firstChild())
+                        if ( it->nextSibling() )
+                            it = it->nextSibling();
+                        else
+                            it = it->firstChild();
+            }
 
-            insertmarker = itemRect (lastchild ? lastchild : after);
+            insertmarker = itemRect (it ? it : after);
             level = after->depth();
         }
         else if (parent)
