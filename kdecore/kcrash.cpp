@@ -36,6 +36,8 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
+#include <X11/Xlib.h>
+
 #include "kcrash.h"
 
 
@@ -95,14 +97,18 @@ KCrash::defaultCrashHandler (int signal)
   if (crashRecursionCounter < 3 && appName) {
       // this code is leaking, but this should not hurt cause we will do a
       // exec() afterwards. exec() is supposed to clean up.
-      char * argv[14]; // don't forget to update this
+      char * argv[16]; // don't forget to update this
       int i = 0;
 
       // argument 0 has to be drkonqi
       argv[i++] = qstrdup("drkonqi");
 
+      // start up on the correct display
+      argv[i++] = qstrdup("-display");
+      argv[i++] = XDisplayString(qt_xdisplay());
+
       // we have already tested this
-      argv[i++] = "--appname";
+      argv[i++] = qstrdup("--appname");
       argv[i++] = qstrdup(appName->latin1());
 
       // only add apppath if it's not NULL
