@@ -890,8 +890,9 @@ protected:
     virtual void changeItem( int id, int index, const QString& text );
 
 protected slots:
-    void slotActivated( int id );
-    void slotActivated( const QString &text );
+    virtual void slotActivated( int id );
+    virtual void slotActivated( const QString &text );
+    virtual void slotActivated() { KAction::slotActivated(); }
 
 signals:
     void activated( int index );
@@ -910,7 +911,6 @@ private:
     class KSelectActionPrivate;
     KSelectActionPrivate *d;
 
-        void slotActivated() { KAction::slotActivated(); }
 };
 
 class KListAction : public KSelectAction
@@ -1002,6 +1002,7 @@ public:
     virtual QString currentText() const;
     virtual int currentItem() const;
 
+
 public slots:
     /**
      *  Sets the currently checked item.
@@ -1010,8 +1011,11 @@ public slots:
      */
     virtual void setCurrentItem( int index );
 
-private:
+    /// @internal
     virtual void setCurrentItem(int a, int b) { KSelectAction::setCurrentItem(a, b); }
+
+private:
+
     class KListActionPrivate;
     KListActionPrivate *d;
 };
@@ -1262,13 +1266,14 @@ public slots:
 protected slots:
     virtual void slotActivated( int );
     virtual void slotActivated( const QString& );
+    virtual void slotActivated() { KAction::slotActivated(); }
 
 signals:
     void fontSizeChanged( int );
 
 private:
     void init();
-    virtual void slotActivated() { KAction::slotActivated(); }
+
 
     class KFontSizeActionPrivate;
     KFontSizeActionPrivate *d;
@@ -1316,9 +1321,12 @@ protected:
     virtual void setText( int id, const QString& text );
     virtual void setIconSet( int id, const QIconSet& iconSet );
 
-private:
+    /// @internal
     virtual void setIconSet(const QIconSet &i) { KAction::setIconSet(i); }
+    /// @internal
     virtual void setText(const QString& s) { KAction::setText(s); }
+private:
+
     class KActionMenuPrivate;
     KActionMenuPrivate *d;
 };
