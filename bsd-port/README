@@ -1,0 +1,4 @@
+This directory contains the stuff necesary to build a BSD package out of
+kdelibs.  Remember to make NO_CHECKSUM=yes, otherwise it won't build.
+
+Broken as of May 1st, 1998.

@@ -1,0 +1,53 @@
+*** kdeui/Makefile.in~	Tue Feb  3 23:35:01 1998
+--- kdeui/Makefile.in	Tue Feb  3 23:35:01 1998
+***************
+*** 138,144 ****
+  x_includes = @x_includes@
+  x_libraries = @x_libraries@
+  
+! INCLUDES= $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
+  EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
+  DISTCLEANFILES = $(BUILT_SOURCES)
+  
+--- 138,144 ----
+  x_includes = @x_includes@
+  x_libraries = @x_libraries@
+  
+! INCLUDES= -I../kdecore $(QT_INCLUDES) $(X_INCLUDES)
+  EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
+  DISTCLEANFILES = $(BUILT_SOURCES)
+  
+*** kfmlib/Makefile.in~	Tue Feb  3 23:37:44 1998
+--- kfmlib/Makefile.in	Tue Feb  3 23:37:44 1998
+***************
+*** 138,144 ****
+  x_includes = @x_includes@
+  x_libraries = @x_libraries@
+  
+! INCLUDES = $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
+  DISTCLEANFILES = $(BUILT_SOURCES)
+  
+  lib_LTLIBRARIES = libkfm.la
+--- 138,144 ----
+  x_includes = @x_includes@
+  x_libraries = @x_libraries@
+  
+! INCLUDES = -I../kdecore $(QT_INCLUDES) $(X_INCLUDES)
+  DISTCLEANFILES = $(BUILT_SOURCES)
+  
+  lib_LTLIBRARIES = libkfm.la
+*** mediatool/Makefile.in~	Tue Apr 21 23:45:18 1998
+--- mediatool/Makefile.in	Tue Apr 21 23:45:35 1998
+***************
+*** 151,155 ****
+  MEDIATOOLVERSION=	0.0
+  MEDIATOOLPATCH	 =	91
+! INCLUDES = $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
+  libmediatool_la_SOURCES = chunk.c eventcounter.c \
+  			connect.c filename.c playlist.c kaudio.cpp
+--- 151,155 ----
+  MEDIATOOLVERSION=	0.0
+  MEDIATOOLPATCH	 =	91
+! INCLUDES = -I../kdecore $(QT_INCLUDES) $(X_INCLUDES)
+  libmediatool_la_SOURCES = chunk.c eventcounter.c \
+  			connect.c filename.c playlist.c kaudio.cpp
