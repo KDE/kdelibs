@@ -954,7 +954,8 @@ void KCookieJar::eatSessionCookies( int winId )
         eatSessionCookies( *it, winId, false );
 }
 
-void KCookieJar::eatSessionCookies( const QString& fqdn, int winId, bool isFQDN )
+void KCookieJar::eatSessionCookies( const QString& fqdn, int winId,
+                                    bool isFQDN )
 {
     KHttpCookieList* cookieList;
     if ( isFQDN )
@@ -978,6 +979,8 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, int winId, bool isFQDN 
                 cookie = cookieList->next();
                 cookieList->removeRef( old_cookie );
             }
+            else
+                cookie = cookieList->next();
         }
     }
 }
