@@ -85,6 +85,7 @@ KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *nam
 
 void KPasswordEdit::init()
 {
+    setEchoMode(QLineEdit::Password); // Just in case
     setAcceptDrops(false);
     m_Password = new char[PassLen];
     m_Password[0] = '\000';
@@ -98,6 +99,20 @@ KPasswordEdit::~KPasswordEdit()
     delete[] m_Password;
 }
 
+void KPasswordEdit::insert(const QString &txt)
+{
+    QCString localTxt = txt.local8Bit();
+    for(unsigned int i=0; i < localTxt.length(); i++)
+    {
+        unsigned char ke = localTxt[i];
+        if (m_Length < (PassLen - 1)) 
+        {
+            m_Password[m_Length] = ke;
+            m_Password[++m_Length] = '\000';
+        }
+    }
+    showPass();
+}
 
 void KPasswordEdit::erase()
 {
@@ -138,11 +153,7 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
     default:
 	unsigned char ke = e->text().local8Bit()[0];
 	if (ke >= 32) {
-	    if (m_Length < (PassLen - 1)) {
-		m_Password[m_Length] = ke;
-		m_Password[++m_Length] = '\000';
-		showPass();
-	    }
+	    insert(e->text());
 	} else
 	    e->ignore();
 	break;
@@ -156,7 +167,16 @@ bool KPasswordEdit::event(QEvent *e) {
       case QEvent::MouseButtonRelease:
       case QEvent::MouseButtonDblClick:
       case QEvent::MouseMove:
+      case QEvent::IMStart:
+      case QEvent::IMCompose:
         return TRUE; //Ignore
+
+      case QEvent::IMEnd:
+      {
+        QIMEvent *ie = (QIMEvent*) e;
+        insert( ie->text() );
+        return TRUE;
+      }
 
       case QEvent::AccelOverride:
       {
