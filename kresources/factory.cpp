@@ -41,7 +41,7 @@ ResourceFactory *ResourceFactory::self( const QString& resourceFamily )
 
   ResourceFactory *factory = 0;
   if ( !mSelves )
-    mSelves = staticDeleter.setObject( new QDict<ResourceFactory> );
+    staticDeleter.setObject( mSelves, new QDict<ResourceFactory> );
 
   factory = mSelves->find( resourceFamily );
 
