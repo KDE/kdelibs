@@ -85,7 +85,7 @@ class KServerSocketPrivate;
  * @version $Id$
  * @short A TCP/IP client socket.
  */
-class KDE_DEPRECATED KSocket : public QObject
+class KDECORE_EXPORT KSocket : public QObject
 {
     Q_OBJECT
 public:
@@ -93,20 +93,20 @@ public:
      * Constructs a KSocket with the provided file descriptor.
      * @param _sock	The file descriptor to use.
      */
-    KSocket( int _sock );
+    KSocket( int _sock ) KDE_DEPRECATED;
     /**
      * Creates a socket and connects to a host.
      * @param _host	The remote host to which to connect.
      * @param _port	The port on the remote host.
      * @param timeOut	The number of seconds waiting for connect (default 30).
      */
-    KSocket( const char *_host, unsigned short int _port, int timeOut = 30);
+    KSocket( const char *_host, unsigned short int _port, int timeOut = 30) KDE_DEPRECATED;
 
     /**
      * Connects to a UNIX domain socket.
      * @param _path    The filename of the socket.
      */
-    KSocket( const char * _path );
+    KSocket( const char * _path ) KDE_DEPRECATED;
 
     /**
      * Destructor. Closes the socket if it is still open.
@@ -249,7 +249,7 @@ private:
  * @author Torben Weis <weis@stud.uni-frankfurt.de>
  * @version $Id$
 */
-class KServerSocket : public QObject
+class KDECORE_EXPORT KServerSocket : public QObject
 {
     Q_OBJECT
 public:

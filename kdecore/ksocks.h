@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <kstaticdeleter.h>
+#include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX
 
@@ -44,7 +45,7 @@ typedef unsigned ksocklen_t;
  *
  * @short Access to a SOCKS Proxy.
  */
-class KSocks {
+class KDECORE_EXPORT KSocks {
    friend class KStaticDeleter<KSocks>;
 
 public:

@@ -88,7 +88,7 @@ class KExtendedSocketPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an extended socket
  */
-class KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
+class KDECORE_EXPORT KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
 {
   Q_OBJECT
 
