@@ -354,7 +354,7 @@ DCOPClient::~DCOPClient()
 
 void DCOPClient::setServerAddress(const QCString &addr)
 {
-    delete DCOPClientPrivate::serverAddr;
+    delete [] DCOPClientPrivate::serverAddr;
     DCOPClientPrivate::serverAddr = qstrdup( addr.data() );
 }
 
