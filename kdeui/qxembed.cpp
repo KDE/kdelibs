@@ -353,6 +353,7 @@ void QXEmbed::embed(WId w)
     QApplication::syncX();
     XResizeWindow(qt_xdisplay(), w, width(), height());
     XMapRaised(qt_xdisplay(), window);
+    XAddToSaveSet( qt_xdisplay(), w );
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
