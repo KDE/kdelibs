@@ -391,18 +391,15 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
-  m_iAuthFailed = 0;
+
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
   {
      kdDebug(7103) << "Can't connect with DCOP server." << endl;
   }
 
-  m_bCanResume = true; // most of http servers support resuming ?
-
   reparseConfiguration();
 
-  flushAuthenticationSettings();
 
   m_bEOF=false;
 #ifdef DO_SSL
@@ -410,9 +407,8 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 #endif
 
   m_sContentMD5 = "";
-  Authentication = AUTH_None;
   ProxyAuthentication = AUTH_None;
-
+  Authentication = AUTH_None;
   m_HTTPrev = HTTP_Unknown;
 
 #ifdef DO_SSL
@@ -1002,12 +998,17 @@ bool HTTPProtocol::http_open()
   }
 
   // Let's also clear out some things, so bogus values aren't used.
-  m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
+  m_sContentMD5 = "";
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
   m_iSize = -1;
+  m_strRealm = QString::null;
+  m_strAuthString = QString::null;
+  Authentication = AUTH_None;
+  m_iAuthFailed = 0;
+  m_bCanResume = false;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -1103,6 +1104,12 @@ bool HTTPProtocol::http_open()
   {
      header += "Accept: "+acceptHeader+"\r\n";
   }
+
+  // Adjust the offset value based on the "resume"
+  // meta-data.
+  QString resumeOffset = metaData(QString::fromLatin1("resume"));
+  if ( !resumeOffset.isEmpty() )
+      m_request.offset = resumeOffset.toInt();
 
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
@@ -1414,9 +1421,8 @@ bool HTTPProtocol::readHeader()
     // are we allowd to resume?  this will tell us
     if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
-        m_bCanResume = false;
+            m_bCanResume = false;
     }
-
     else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
       QStringList cacheControls = QStringList::split(',',
                                      QString::fromLatin1(trimLead(buffer+14)));
@@ -1560,10 +1566,11 @@ bool HTTPProtocol::readHeader()
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
-      else if (code == 100)
+      else if (code == 307)
       {
-        // We got 'Continue' - ignore it
-        cont = true;
+        // 307 Temporary Redirect
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
       }
       else if (code == 304)
       {
@@ -1592,11 +1599,19 @@ bool HTTPProtocol::readHeader()
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
-      else if (code == 307)
+      else if ( code == 206 )
       {
-        // 307 Temporary Redirect
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
+        // PARTIAL CONTENT - First step into being knowing whether we
+        // can resume, but we cannot be certain until we pass or fail
+        // the "Accept-Ranges:" check.  We set the can resume flag to
+        // true for now.
+        if ( m_request.offset )
+            m_bCanResume = true;
+      }
+      else if (code == 100)
+      {
+        // We got 'Continue' - ignore it
+        cont = true;
       }
 
     }
@@ -1703,10 +1718,9 @@ bool HTTPProtocol::readHeader()
       }
     }
 
-    // clear out our buffer for further use
+    // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
-  }
-  while(len && (gets(buffer, sizeof(buffer)-1)));
+  } while (len && (gets(buffer, sizeof(buffer)-1)));
 
   // Fixup expire date for clock drift.
   if (expireDate && (expireDate <= dateHeader))
@@ -1897,6 +1911,11 @@ bool HTTPProtocol::readHeader()
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
   }
+
+  // Inform the job that we can indeed resume...
+  if ( m_bCanResume && m_request.offset )
+    canResume();
+
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
   // Web-servers really shouldn't do this: They let Content-Size refer
@@ -2298,7 +2317,6 @@ void HTTPProtocol::get( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = parseCacheControl(metaData("cache"));
-
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -2728,15 +2746,15 @@ bool HTTPProtocol::readBody( )
   bool useMD5 = !m_sContentMD5.isEmpty();
 #endif
 
-  totalSize( (m_iSize > -1) ? m_iSize : 0 );
-
-  infoMessage( i18n( "Retrieving data from <b>%1</b>" ).arg( m_request.hostname ) );
-
-  // get the starting time.  this is used later to compute the transfer
-  // speed.
+  // Get the starting time.  This is used
+  // later to compute the transfer speed.
   time_t t_start = time(0L);
   time_t t_last = t_start;
-  long sz = 0;
+  long sz = m_request.offset;
+  if ( sz ) { m_iSize += sz; }
+
+  totalSize( (m_iSize > -1) ? m_iSize : 0 );
+  infoMessage( i18n( "Retrieving data from <b>%1</b>" ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {
@@ -2775,7 +2793,7 @@ bool HTTPProtocol::readBody( )
   else
     m_iBytesLeft = 1;
 
-  kdDebug() << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
+  kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
   // this is the main incoming loop.  gather everything while we can...
   big_buffer.resize(0);
@@ -3153,9 +3171,9 @@ HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
             // a relative date.
             date.setNum( expireDate );
         }
-        else 
+        else
         {
-            // expireDate before 2000. those values must be 
+            // expireDate before 2000. those values must be
             // interpreted as relative expiration dates from
             // <META http-equiv="Expires"> tags.
             // so we have to scan the creation time and add
@@ -3219,7 +3237,7 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    fputc('\n', m_fcache);
 
    if (!m_strCharset.isEmpty())
-      fputs(m_strCharset.latin1(), m_fcache);    // Charset 
+      fputs(m_strCharset.latin1(), m_fcache);    // Charset
    fputc('\n', m_fcache);
 
    return;
@@ -3361,20 +3379,9 @@ void HTTPProtocol::reparseConfiguration()
   m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, utf-8;q=0.8, *;q=0.9");
 }
 
-void HTTPProtocol::flushAuthenticationSettings()
-{
-  // Flush Authentication settings before
-  // starting a request.
-  m_strRealm = QString::null;
-  m_strAuthString = QString::null;
-  Authentication = AUTH_None;
-  m_iAuthFailed = 0;
-}
-
 void HTTPProtocol::retrieveContent( bool check_ssl )
 {
   m_request.window = metaData("window-id");
-  flushAuthenticationSettings();
 
   if(!http_open())
     return;
@@ -3396,7 +3403,6 @@ void HTTPProtocol::retrieveContent( bool check_ssl )
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
   m_request.window = metaData("window-id");
-  flushAuthenticationSettings();
 
   if (!http_open())
     return false;

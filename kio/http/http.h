@@ -237,11 +237,6 @@ protected:
   void cleanCache();
 
   /**
-   * Clears session specific settings.
-   */
-  void flushAuthenticationSettings();
-
-  /**
    * Performs a GET HTTP request.
    */
   void retrieveContent(bool check_ssl = false);
