@@ -110,7 +110,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( myCompletionMode == KGlobalSettings::CompletionNone )
         return QString::null;
 
-    kDebugInfo(250, "KCompletion: completing: %s", debugString( string ));
+    kdDebug(250) << "KCompletion: completing: " << debugString( string ) << endl;
 
     myMatches.clear();
     myRotationIndex = 0;
@@ -276,7 +276,7 @@ QString KCompletion::findCompletion( const QString& string )
 
 const QStringList& KCompletion::findAllCompletions( const QString& string )
 {
-    kDebugInfo(250, "*** finding all completions for %s", string.ascii() );
+    kdDebug(250) << "*** finding all completions for " << string << endl;
     myMatches.clear();
     myRotationIndex = 0;
 

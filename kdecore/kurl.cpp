@@ -412,7 +412,7 @@ void KURL::parse( const QString& _url )
   return;
 
  NodeErr:
-  kDebugError( 126, "Error in parsing \"%s\"",_url.ascii());
+  kdError(126) << "Error in parsing \"" << _url << "\"" << endl;
   delete []orig;
   reset();
   m_strProtocol = _url;
