@@ -421,7 +421,7 @@ void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMSt
 CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
 {
     if (!m_elemSheet)
-        m_elemSheet = new CSSStyleSheetImpl(this, url);
+        m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
     return m_elemSheet;
 }
 
