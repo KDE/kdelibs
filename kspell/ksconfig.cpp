@@ -257,7 +257,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     lname="de"; hname=i18n("German");
   }
   else if (dname=="german") {
-    lname="de"; hname=i18n("German (new orth.)");
+    lname="de"; hname=i18n("German (new orthography)");
   }
   else if (dname=="portuguesb" || dname=="br") {
     lname="br"; hname=i18n("Brazilian Portuguese");
