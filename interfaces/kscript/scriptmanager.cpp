@@ -114,3 +114,4 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 	}
 }
 #include "scriptmanager.moc"
+#include "scriptinterface.moc"
