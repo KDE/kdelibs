@@ -106,6 +106,11 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     fillBookmarkBar( toolbar );
 }
 
+QString KBookmarkBar::parentAddress() 
+{
+    return dptr()->m_filteredMgr ? QString::null : m_pManager->toolbar().address();
+}
+
 #define CURRENT_TOOLBAR() ( \
     dptr()->m_filteredMgr ? dptr()->m_filteredMgr->root()  \
                           : m_pManager->toolbar() )
@@ -398,7 +403,7 @@ void RMB::begin_rmb_action(KBookmarkBar *self)
 {
     RMB *s = rmbSelf(self);
     s->recv = self;
-    s->m_parentAddress = QString::null;
+    s->m_parentAddress = self->parentAddress();
     s->s_highlightedAddress = self->dptr()->m_highlightedAddress; // rename in RMB
     s->m_pManager = self->m_pManager;
     s->m_pOwner = self->m_pOwner;

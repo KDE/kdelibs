@@ -68,6 +68,11 @@ public:
      */
     void setReadOnly(bool);
 
+    /**
+     * @since 3.2
+     */
+    QString parentAddress();
+
 signals:
     /**
      * @since 3.2
