@@ -100,10 +100,11 @@ public:
     */
     static void setActiveWindow( WId win, long time );
     /**
-     * @overload
+     * @deprecated Consider using activateWindow(), use setActiveWindow()
+     * only if necessary.
      */
     // KDE4 merge with above with time = 0
-    static void setActiveWindow( WId win );
+    static void setActiveWindow( WId win ) KDE_DEPRECATED;
 
     /**
      * When application finishes some operation and wants to notify

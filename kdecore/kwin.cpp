@@ -216,14 +216,16 @@ void KWin::setActiveWindow( WId win, long time )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETRootInfo info( qt_xdisplay(), 0 );
-        time = qt_x_last_input_time;
     info.setActiveWindow( win, NET::FromTool, time );
 #endif // Q_WS_X11 ...
 }
 
 void KWin::setActiveWindow( WId win )
 {
-    setActiveWindow( win, 0 );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    NETRootInfo info( qt_xdisplay(), 0 );
+    info.setActiveWindow( win, NET::FromUnknown, 0 );
+#endif
 }
 
 void KWin::demandAttention( WId win, bool set )

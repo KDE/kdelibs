@@ -536,7 +536,7 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id 
     // usable timestamp without ASN, so force activating the window.
     // And even with ASN, it's not possible to get the timestamp here,
     // so if the WM doesn't have support for ASN, it can't be used either.
-        KWin::setActiveWindow( window->winId(), qt_x_time );
+        KWin::setActiveWindow( window->winId(), 0 );
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O,
