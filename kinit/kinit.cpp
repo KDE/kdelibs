@@ -1761,18 +1761,6 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid); // Wait for klauncher to be ready
    }
 
-   if ( !d.suicide )
-   {
-      pid = launch( 1, "krandrinithack", 0 );
-      if( pid > 0 && d.result == 0 )
-      {
-#ifndef NDEBUG
-         fprintf(stderr, "kdeinit: Launched KRandrInitHack, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
-         WaitPid(pid);
-      }
-   }
-
    if (launch_kded)
    {
       pid = launch( 1, "kded", 0 );
