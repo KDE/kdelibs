@@ -4260,6 +4260,8 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
                                                            event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
 
+      //kdDebug() << k_funcinfo << "checkSelectionPoint returned node=" << node << " offset=" << offset << endl;
+
       if ( node && node->renderer() )
       {
         // Extend selection to a complete word (double-click) or paragraph (triple-click)
@@ -4294,6 +4296,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
   }
+  //kdDebug() << k_funcinfo << "right=" << right << " offset=" << offset << " len=" << len << endl;
   QChar ch;
   do {
     // Last char was ok, point to it
@@ -4303,9 +4306,10 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     }
 
     // Get another char
-    while ( obj && ( (right && offset == len-1) || (!right && offset == 0) ) )
+    while ( obj && ( (right && offset >= len-1) || (!right && offset <= 0) ) )
     {
       obj = right ? obj->objectBelow() : obj->objectAbove();
+      //kdDebug() << "obj=" << obj << endl;
       if ( obj ) {
         if ( obj->isText() )
           str = static_cast<khtml::RenderText *>(obj)->data().string();
