@@ -142,11 +142,15 @@ bool ResourceLDAP::load()
   char *name;
   char **values;
 
-  const char *LdapSearchAttr[ 5 ] = {
-    "uid",
+  const char *LdapSearchAttr[ 9 ] = {
     "cn",
+    "display-name",
+    "givenname",
     "mail",
+    "mailalias",
     "phoneNumber",
+    "sn",
+    "uid",
     0 };
 
   if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).latin1(),
@@ -161,16 +165,29 @@ bool ResourceLDAP::load()
     for ( name = ldap_first_attribute( mLdap, msg, &track ); name; name = ldap_next_attribute( mLdap, msg, track ) ) {
       values = ldap_get_values( mLdap, msg, name );
       for ( int i = 0; i < ldap_count_values( values ); ++i ) {
-        if ( qstricmp( name, "uid" ) == 0 ) {
-          addr.setUid( values[ i ] );
+        if ( qstricmp( name, "cn" ) == 0 ) {
+          if ( !addr.formattedName().isEmpty() ) {
+            QString fn = addr.formattedName();
+            addr.setNameFromString( values[ i ] );
+            addr.setFormattedName( fn );
+          } else
+            addr.setNameFromString( values[ i ] );
           continue;
         }
-        if ( qstricmp( name, "cn" ) == 0 ) {
-          addr.setNameFromString( values[ i ] );
+        if ( qstricmp( name, "display-name" ) == 0 ) {
+          addr.setFormattedName( values[ i ] );
+          continue;
+        }
+        if ( qstricmp( name, "givenname" ) == 0 ) {
+          addr.setGivenName( values[ i ] );
           continue;
         }
         if ( qstricmp( name, "mail" ) == 0 ) {
-          addr.insertEmail( values[ i ] );
+          addr.insertEmail( values[ i ], true );
+          continue;
+        }
+        if ( qstricmp( name, "mailalias" ) == 0 ) {
+          addr.insertEmail( values[ i ], false );
           continue;
         }
         if ( qstricmp( name, "phoneNumber" ) == 0 ) {
@@ -178,6 +195,14 @@ bool ResourceLDAP::load()
           phone.setNumber( values[ i ] );
           addr.insertPhoneNumber( phone );
           break; // read only the home number
+        }
+        if ( qstricmp( name, "sn" ) == 0 ) {
+          addr.setFamilyName( values[ i ] );
+          continue;
+        }
+        if ( qstricmp( name, "uid" ) == 0 ) {
+          addr.setUid( values[ i ] );
+          continue;
         }
       }
       ldap_value_free( values );
@@ -199,21 +224,30 @@ bool ResourceLDAP::save( Ticket * )
     if ( (*it).resource() == this && (*it).changed() ) {
       LDAPMod **mods = NULL;
 	
+      addModOp( &mods, "objectClass", "organizationalPerson" );
       addModOp( &mods, "objectClass", "person" );
+      addModOp( &mods, "objectClass", "Top" );
+      addModOp( &mods, "cn", (*it).assembledName() );
+      addModOp( &mods, "display-name", (*it).formattedName() );
+      addModOp( &mods, "givenname", (*it).givenName() );
+      addModOp( &mods, "sn", (*it).familyName() );
       addModOp( &mods, "uid", (*it).uid() );
-      addModOp( &mods, "cn", (*it).formattedName() );
 
       QStringList emails = (*it).emails();
       QStringList::ConstIterator mailIt;
+      bool first = true;
       for ( mailIt = emails.begin(); mailIt != emails.end(); ++mailIt ) {
-        QString email = (*mailIt);
-        addModOp( &mods, "mail", email );
+        if ( first ) {
+          addModOp( &mods, "mail", (*mailIt) );
+          first = false;
+        } else
+          addModOp( &mods, "mailalias", (*mailIt) );
       }
 
       PhoneNumber number = (*it).phoneNumber( PhoneNumber::Home );
       addModOp( &mods, "phoneNumber", number.number() );
 
-      QString dn = "uid=" + (*it).uid() + "," + mDn;
+      QString dn = "cn=" + (*it).assembledName() + "," + mDn;
 
       int retval;
       if ( (retval = ldap_add_s( mLdap, dn.latin1(), mods )) != LDAP_SUCCESS )
