@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.137  1999/12/14 14:20:57  kulow
+// some template and header fixes
+//
 // Revision 1.136  1999/12/04 04:50:38  granroth
 // combox should be fixed size -- they look *really* strange with 40 pixels
 //
@@ -1541,6 +1544,17 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   item->show();
   updateRects(true);
   return items->at();
+}
+
+void KToolBar::clear ()
+{
+  for (KToolBarItem *b = items->first(); b; b=items->next())
+  {
+      if(b->isAuto())
+        haveAutoSized=false;
+      items->remove();
+  }
+  updateRects(true);
 }
 
 /// Removes item by ID

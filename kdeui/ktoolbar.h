@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.67  1999/11/26 12:48:06  dfaure
+// More proofreading. Found what I was looking for, will stop proofreading :-)
+//
 // Revision 1.66  1999/10/10 08:18:58  bero
 // Code cleanup ((void) stuff)
 //
@@ -563,6 +566,11 @@ public:
    * @see #alignItemRight
    */
   void setItemAutoSized (int id, bool yes = true);
+
+  /**
+   * Removes all items.  The toolbar is redrawn after it.
+   */
+  void clear ();
 
   /**
    * Removes item id.
