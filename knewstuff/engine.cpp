@@ -411,8 +411,9 @@ void Engine::slotUploadPreviewJobResult( KIO::Job *job )
 
 void Engine::slotUploadMetaJobResult( KIO::Job *job )
 {
+  mUploadMetaFile = QString::null;
   if ( job->error() ) {
-    kdDebug(5850) << "Error uploading new stuff payload." << endl;
+    kdDebug(5850) << "Error uploading new stuff metadata." << endl;
     job->showErrorDialog( mParentWidget );
     emit uploadFinished( false );
     return;
