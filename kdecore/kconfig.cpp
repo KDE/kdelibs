@@ -128,7 +128,7 @@ QStringList KConfig::groupList() const
          {
             if (group != "$Version") // Special case!
                retList.append(QString::fromUtf8(group));
-            break; // Grou is non-empty, added, next gropup
+            break; // Group is non-empty, added, next group
          }
          ++aIt;
       }
