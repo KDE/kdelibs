@@ -134,7 +134,7 @@ KGuiItem KStdGuiItem::clear()
 
 KGuiItem KStdGuiItem::help()
 {
-  return KGuiItem( i18n( "&Help" ), "help",
+  return KGuiItem( i18n( "show help", "&Help" ), "help",
                    i18n( "Show help" ) );
 }
 
@@ -154,7 +154,7 @@ KGuiItem KStdGuiItem::back( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::reverseLayout() )
                  ? "forward" : "back";
-  return KGuiItem( i18n( "&Back" ), icon,
+  return KGuiItem( i18n( "go back", "&Back" ), icon,
                    i18n( "Go back one step" ) );
 }
 
@@ -162,7 +162,7 @@ KGuiItem KStdGuiItem::forward( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::reverseLayout() )
                  ? "back" : "forward";
-  return KGuiItem( i18n( "&Forward" ), icon,
+  return KGuiItem( i18n( "go forward", "&Forward" ), icon,
                    i18n( "Go forward one step" ) );
 }
 
