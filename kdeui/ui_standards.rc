@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="standard_containers" version="8">
+<kpartgui name="standard_containers" version="9">
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
@@ -65,10 +65,12 @@
     <MergeLocal name="edit_paste_merge"/>
     <Separator/>
     <Action name="edit_select_all"/>
+    <Action name="edit_deselect"/>
     <MergeLocal name="edit_select_merge"/>
     <Separator/>
     <Action name="edit_find"/>
     <Action name="edit_find_next"/>
+    <Action name="edit_find_last"/>
     <Action name="edit_replace"/>
     <MergeLocal name="edit_find_merge"/>
     <Separator/>
@@ -128,8 +130,8 @@
   </Menu>
   <MergeLocal/>
   <Menu name="bookmarks"><text>&amp;Bookmarks</text>
-    <Action name="bookmarks_add"/>
-    <Action name="bookmarks_edit"/>
+    <Action name="bookmark_add"/>
+    <Action name="bookmark_edit"/>
     <Separator/>
     <MergeLocal/>
   </Menu>
