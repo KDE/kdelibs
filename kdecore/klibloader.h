@@ -106,7 +106,7 @@ signals:
      * Emit this in @ref create
      */
     void objectCreated( QObject *obj );
-public:
+private:
     KLibFactoryPrivate *d;
 };
 
