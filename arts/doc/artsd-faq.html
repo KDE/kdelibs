@@ -25,6 +25,28 @@ aRts sound server FAQ
    Check that artsd is linked to libaudiofile (ldd artsd), if it isn't,
    download kdesupport, recompile everything and it will work.
 <p>
+<b>I have sound as root but no users have sound?</b>
+<p>
+   The permissions of the file /dev/dsp affect which users will have sound. To
+   allow everybody to use it, do this:
+   <ul>
+   <li>log in as root
+   <li>open a konqueror window
+   <li>go into the /dev directory
+   <li>click on the file dsp with the right mouse button
+   <li>click on the permissions tab
+   <li>check the read and write checkboxes in all sections
+   <li>click on ok
+   </ul>
+<p>
+You can achieve the same effect in a terminal window using
+the command <pre>chmod 666 /dev/dsp</pre>
+<p>
+   For exactly limiting which users may access sound, you can use a group.
+   On some linux distributions, for instance debian/potatoe, /dev/dsp is
+   already owned by a group called audio, so the only thing you need to do
+   is adding users to the group.
+<p>
 <table width="100%"><tr bgcolor="#fafacb"><h2>non-aRts applications</h2></tr></table>
 <p>
 <b>As soon as KDE is running, no other application can access my sound device?</b>
