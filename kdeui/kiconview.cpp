@@ -365,6 +365,17 @@ void KIconView::slotDragHoldTimeout()
     emit held( tmp );
 }
 
+void KIconView::takeItem( QIconViewItem * item )
+{
+    if ( item == d->dragHoldItem )
+    {
+        d->dragHoldTimer.stop();
+        d->dragHoldItem = 0L;
+    }
+
+    QIconView::takeItem( item );
+}
+
 void KIconView::wheelEvent( QWheelEvent *e )
 {
     if (horizontalScrollBar() && (arrangement() == QIconView::TopToBottom)) {

@@ -97,6 +97,11 @@ public:
     */
   int iconTextHeight() const;
 
+  /**
+   * Reimplemented for held() signal behavior internal purposes
+   */
+  virtual void takeItem( QIconViewItem * item );
+
 signals:
 
   /**
