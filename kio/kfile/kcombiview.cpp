@@ -62,6 +62,7 @@ KCombiView::~KCombiView()
 
 void KCombiView::setRight(KFileView *view)
 {
+    // ### should we delete "right" here?
     right = view;
     right->KFileView::setViewMode( Files );
     setViewName( right->viewName() );
@@ -201,11 +202,15 @@ KFileItem * KCombiView::currentFileItem() const
 {
     // we can actually have two current items, one in each view. So we simply
     // prefer the fileview's item over the directory's.
-    KFileItem *item = 0L;
-    if ( right )
-        item = right->currentFileItem();
-    if ( !item )
+    // Smarter: if the right view has focus, prefer that over the left.
+    if ( !right )
+        return left->currentFileItem();
+    
+    KFileView *preferredView = focusView( right );
+    KFileItem *item = preferredView->currentFileItem();
+    if ( !item && preferredView != left )
         item = left->currentFileItem();
+    
     return item;
 }
 
@@ -218,34 +223,42 @@ void KCombiView::ensureItemVisible(const KFileItem *item)
 
 KFileItem * KCombiView::firstFileItem() const
 {
-    // ### depending on sortorder dirs first or last?
-    KFileItem *item = 0L;
-    if ( left )
-        item = left->firstFileItem();
-    if ( !item && right )
-        item = right->firstFileItem();
+    if ( !right )
+        return left->firstFileItem();
+    
+    KFileView *preferredView = focusView( left );
+    KFileView *otherView = (preferredView == left) ? right : left;
+    KFileItem *item = preferredView->firstFileItem();
+    if ( !item )
+        item = otherView->firstFileItem();
 
     return item;
 }
 
 KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
 {
-    KFileItem *item = 0L;
-    if ( left )
-        item = left->nextItem( fileItem );
-    if ( !item && right )
-        item = right->nextItem( fileItem );
+    if ( !right )
+        return left->nextItem( fileItem );
+    
+    KFileView *preferredView = focusView( left );
+    KFileView *otherView = (preferredView == left) ? right : left;
+    KFileItem *item = preferredView->nextItem( fileItem );
+    if ( !item )
+        item = otherView->nextItem( fileItem );
 
     return item;
 }
 
 KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
 {
-    KFileItem *item = 0L;
-    if ( left )
-        item = left->prevItem( fileItem );
-    if ( !item && right )
-        item = right->prevItem( fileItem );
+    if ( !right )
+        return left->nextItem( fileItem );
+    
+    KFileView *preferredView = focusView( left );
+    KFileView *otherView = (preferredView == left) ? right : left;
+    KFileItem *item = preferredView->prevItem( fileItem );
+    if ( !item )
+        item = otherView->prevItem( fileItem );
 
     return item;
 }
@@ -253,6 +266,13 @@ KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
 void KCombiView::slotSortingChanged( QDir::SortSpec sorting )
 {
     KFileView::setSorting( sorting );
+}
+
+KFileView *KCombiView::focusView( KFileView *preferred ) const
+{
+    QWidget *w = focusWidget();
+    KFileView *other = (right == preferred) ? left : right;
+    return (preferred && w == preferred->widget()) ? preferred : other;
 }
 
 void KCombiView::virtual_hook( int id, void* data )

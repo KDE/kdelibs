@@ -101,6 +101,9 @@ protected:
 protected slots:
     void slotSortingChanged( QDir::SortSpec );
 
+private:
+    KFileView *focusView( KFileView *preferred ) const;
+
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
