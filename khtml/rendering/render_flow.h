@@ -142,14 +142,16 @@ protected:
             Positioned,
             RelPositioned
         };
+
+        RenderObject* node;
         int startY;
         int endY;
+        Type type; // left or right aligned
         short left;
         short width;
-        Type type; // left or right aligned
-        RenderObject* node;
-        bool noPaint;
         short count;
+        bool noPaint;
+
         bool operator==(const SpecialObject& ) const
         {
             return false;

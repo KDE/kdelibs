@@ -76,6 +76,7 @@ private:
      * for some strange reason or that the image is waiting to be downloaded
      * from the internet for example.
      */
+
     QPixmap pix;
     QSize  pixSize;
 
@@ -87,9 +88,8 @@ private:
     // text to display as long as the image isn't available
     DOM::DOMString alt;
 
-    bool bComplete;
-
     CachedImage *image;
+    bool bComplete;
 };
 
 
