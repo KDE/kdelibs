@@ -36,6 +36,9 @@
 
 #include "cssvalues.h"
 
+// Hack for debugging purposes
+extern DOM::DOMString getPropertyName(unsigned short id);
+
 using namespace DOM;
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
@@ -170,7 +173,10 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	    p = m_lstValues->next();
 	}
     } else if((unsigned) pos == m_lstValues->count() )
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << " value: " << value.string() << endl;
+	{
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string() 
+					<< "] value: [" << value.string() << "]"<< endl;
+	}
     if (m_node)
 	m_node->setChanged(true);
 }
@@ -193,7 +199,10 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 	    p = m_lstValues->next();
 	}
     } else if((unsigned) pos == m_lstValues->count() )
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << " value: " << value << endl;
+	{
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()   
+					<< "] value: [" << value << "]" << endl;
+	}
     if (m_node)
 	m_node->setChanged(true);
 }
