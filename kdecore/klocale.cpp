@@ -70,8 +70,8 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
 
   ASSERT( cfg );
 
-  initCharset(cfg);  // #### HPB: Remove in KDE 3 after porting to Qt 3
   initEncoding(cfg);
+  initCharset(cfg);  // #### HPB: Remove in KDE 3 after porting to Qt 3
   initCatalogue(catalogue);
 
   initLanguage(cfg, config == 0);
@@ -1542,25 +1542,7 @@ bool KLocale::useDefaultLanguage() const
 // #### HPB: Remove in KDE 3 after porting to Qt 3
 void KLocale::initCharset(KConfig *config)
 {
-  KConfigGroupSaver saver(config, "Locale");
-  m_charset = config->readEntry("Charset");
-
-  if (m_charset.isEmpty())
-    {
-      m_charset = QString::fromLatin1("iso-8859-1");
-    }
-  else
-    {
-      // ### HPB: This code should be rewritten/removed
-      bool bOk;
-      KGlobal::charsets()->codecForName(m_charset, bOk);
-      // if !ok, we have a problem. it will return latin-1 then, but thats
-      // obviously not what the user wants
-      if(!bOk)
-	kdWarning(173) << "charset " << m_charset
-		       << " is not known. using ISO 8859-1 instead." << endl;
-      //m_charset = QString::fromLatin1("iso-8859-1");
-    }
+  m_charset = KGlobal::charsets()->charsetForEncoding(encoding());
 }
 
 void KLocale::initEncoding(KConfig *config)
