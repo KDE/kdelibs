@@ -40,6 +40,7 @@ class NoteArray
     class NoteArrayPrivate;
     NoteArrayPrivate *d;
 
+  public:
   struct noteCmd {
     /**
      * ms from beginning of song 
@@ -63,7 +64,8 @@ class NoteArray
      */
     int note; 
   };
-
+  
+  private:
   noteCmd *data;
   ulong totalAllocated;
 
