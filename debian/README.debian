@@ -1,5 +1,34 @@
-KDE NOTICE
-==========
+As you all may or may not know, Debian and KDE (and Troll) have been going
+rounds for a while now dealing with licensing.  In the old days of KDE 1.1
+and qt1 we have the non-free license of QT that caused KDE not to be
+included in Debian.  With the invention of QT 2 and the QPL v2 we now
+have a DFSG License'd QT which is good...*BUT* even though the QPL is
+a free license it conflicts with the GPL.  (The GPL is a bit too anal at
+times)  Anyways, in order to get around the GPL one must add an exclusion
+to the GPL license stating it's ok to compile against the QPL.
+
+Sound easy enough?  Well the truth is it's not that easy.  In order to change
+the license on a program you must get approval from every single person who
+has ever contributed to the code.  This can at times be impossible.  
+
+The good news is that KDE has been writing a lot of new code.  All that new
+code has been given a proper license. The new code is either LGPL'd (which
+is compatible with the QPL) or GPL'd with the exclusion.  This is at least
+the case for kdelibs.  kdelibs is so far the only KDE core package that can
+officially be a part of Debian.  The rest will soon come either by efforts
+on the KDE camp or by new versions of licenses.  Who knows.  
+
+In the meantime you can either build your own versions of the KDE binaries
+or download them from kde.tdyc.com.
+
+Anyways, I have verified all the binaries in kdelibs and all meet the
+DFSG.
+
+Ivan  <rkrusty@debian.org>
+
+===================
+Original KDE NOTICE
+===================
 
 When you want to install KDE applications using this libraries, be sure,
 that they installing in the right paths. It may be, that they are using
