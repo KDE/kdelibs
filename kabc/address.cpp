@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 
 #include <qfile.h>
 
@@ -30,7 +31,8 @@
 
 using namespace KABC;
 
-QMap<QString, QString> Address::mISOMap;
+QMap<QString, QString> *Address::mISOMap = 0;
+static KStaticDeleter< QMap<QString, QString> > isoMapDeleter;
 
 Address::Address() :
   mEmpty( true ), mType( 0 )
@@ -509,9 +511,13 @@ QString Address::countryToISO( const QString &cname )
   // we search a map file for translations from country names to
   // iso codes, storing caching things in a QMap for faster future 
   // access.
-  QString isoCode = mISOMap[ cname ];
-  if ( !isoCode.isEmpty() )
-    return isoCode;
+  if ( !mISOMap )
+    isoMapDeleter.setObject( mISOMap, new QMap<QString, QString>() );
+
+  QMap<QString, QString>::ConstIterator it;
+  it = mISOMap->find( cname );
+  if ( it != mISOMap->end() )
+    return it.data();
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
           QString::fromLatin1( "kabc/countrytransl.map" ) );
@@ -525,7 +531,7 @@ QString Address::countryToISO( const QString &cname )
         int index = strbuf.findRev('\t');
         strbuf = strbuf.mid(index+1, 2);
         file.close();
-        mISOMap[ cname ] = strbuf;
+        mISOMap->insert( cname, strbuf );
         return strbuf;
       }
       strbuf = s.readLine();
@@ -534,7 +540,7 @@ QString Address::countryToISO( const QString &cname )
   }
   
   // fall back to system country
-  mISOMap[ cname ] = KGlobal::locale()->country();
+  mISOMap->insert( cname, KGlobal::locale()->country() );
   return KGlobal::locale()->country();
 }
 
