@@ -242,7 +242,7 @@ h1, h2, h3, h4, h5, h6 { color: rgb(82,80,82);
    and they're more difficult to change.  We can live with it in here, 
    for the meantime, it gives consistent margins */
 
-.example { margin-left; 0.5in; 
+.example { margin-left: 0.5in; 
 	   margin-right: 0.5in;
 	}
 
