@@ -381,7 +381,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         setupEnvironment();
 
-        if (runmode == DontCare)
+        if (runmode == DontCare || runmode == OwnGroup)
           setsid();
 
         const char *executable = arglist[0];
@@ -463,7 +463,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
     // after the process has successfully run _asynchronously_ --ossi
     emit processExited(this);
     break;
-  default: // NotifyOnExit
+  default: // NotifyOnExit & OwnGroup
     input_data = 0; // Discard any data for stdin that might still be there
     break;
   }
@@ -475,7 +475,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 bool KProcess::kill(int signo)
 {
-  if (runs && pid_ > 0 && !::kill(pid_, signo))
+  if (runs && pid_ > 0 && !::kill(run_mode == OwnGroup ? -pid_ : pid_, signo))
     return true;
   return false;
 }
@@ -878,7 +878,7 @@ int KProcess::commSetupDoneP()
   in[0] = out[1] = err[1] = -1;
 
   // Don't create socket notifiers if no interactive comm is to be expected
-  if (run_mode != NotifyOnExit)
+  if (run_mode != NotifyOnExit && run_mode != OwnGroup)
     return 1;
 
   if (communication & Stdin) {

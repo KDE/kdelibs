@@ -63,6 +63,14 @@ class KPty;
  * This means in particular, that it usually makes no sense to use
  * a KProcess on the stack with NotifyOnExit.
  *
+ * @li  OwnGroup -- like NotifyOnExit, but the child process is started
+ * in an own process group (and an own session, FWIW). The behaviour of
+ * @ref kill() changes to killing the whole process group - this makes
+ * this mode useful for implementing primitive job management. It can be
+ * used to work around broken wrapper scripts that don't propagate signals
+ * to the "real" program. However, use this with care, as you disturb the
+ * shell's job management if your program is started from the command line.
+ *
  * @li  Block -- The child process starts and the parent process
  * is suspended until the child process exits. (@em Really not recommended
  * for programs with a GUI.)
@@ -153,7 +161,12 @@ public:
        /**
         * The application is suspended until the started process is finished.
         */
-       Block
+       Block,
+       /**
+        * Same as NotifyOnExit, but the process is run in an own session,
+        * just like with DontCare.
+        */
+       OwnGroup
   };
 
   /**
