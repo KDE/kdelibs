@@ -63,11 +63,10 @@ namespace KMDIPrivate {
   class GUIClient;
 }
 
-class KMdiDockContainer;
-
 namespace KMDI
 {
 
+class DockContainer;
 class TabWidget;
 
 class MainWindow : public KParts::DockMainWindow
@@ -158,8 +157,8 @@ class MainWindow : public KParts::DockMainWindow
     void setupGUIClient ();
 
   private slots:
-    void setActiveToolDock(KMdiDockContainer*);
-    void removeFromActiveDockList(KMdiDockContainer*);
+    void setActiveToolDock(KMDI::DockContainer*);
+    void removeFromActiveDockList(KMDI::DockContainer*);
 
   #define protected public
   signals:
@@ -173,10 +172,10 @@ class MainWindow : public KParts::DockMainWindow
     KMDIPrivate::GUIClient *m_guiClient;
     QMap <QWidget*, KMDI::ToolViewAccessor*> *m_toolViews;
 
-    KDockWidget*         m_leftContainer;
-    KDockWidget*         m_rightContainer;
-    KDockWidget*         m_topContainer;
-    KDockWidget*         m_bottomContainer;
+    KDockWidget *m_leftContainer;
+    KDockWidget *m_rightContainer;
+    KDockWidget *m_topContainer;
+    KDockWidget *m_bottomContainer;
 
     KMDI::TabWidget *m_tabWidget;
 

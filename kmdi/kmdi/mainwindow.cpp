@@ -87,7 +87,7 @@ namespace KMDIPrivate
         }
       }
       ~MainWindowPrivate() {}
-      KMdiDockContainer* activeDockPriority[4];
+      KMDI::DockContainer* activeDockPriority[4];
       int m_styleIDEAlMode;
       int m_toolviewStyle;
   };
@@ -171,46 +171,46 @@ void MainWindow::setupToolViews ()
   mainDock->setDockSite(KDockWidget::DockCorner);
 
 
-  KMdiDockContainer *tmpDC;
-  m_leftContainer->setWidget(tmpDC=new KMdiDockContainer(m_leftContainer, this, KDockWidget::DockLeft, d->m_styleIDEAlMode));
+  DockContainer *tmpDC;
+  m_leftContainer->setWidget(tmpDC=new DockContainer(m_leftContainer, this, KDockWidget::DockLeft, d->m_styleIDEAlMode));
   m_leftContainer->setEnableDocking(KDockWidget::DockLeft);
   m_leftContainer->manualDock(mainDock, KDockWidget::DockLeft,20);
   tmpDC->init();
 
   connect (this,SIGNAL(toggleLeft()),tmpDC,SLOT(toggle()));
   connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
-  connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
-  connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+  connect(tmpDC,SIGNAL(activated(DockContainer*)),this,SLOT(setActiveToolDock(DockContainer*)));
+  connect(tmpDC,SIGNAL(deactivated(DockContainer*)),this,SLOT(removeFromActiveDockList(DockContainer*)));
 
-  m_rightContainer->setWidget(tmpDC=new KMdiDockContainer(m_rightContainer, this, KDockWidget::DockRight, d->m_styleIDEAlMode));
+  m_rightContainer->setWidget(tmpDC=new DockContainer(m_rightContainer, this, KDockWidget::DockRight, d->m_styleIDEAlMode));
   m_rightContainer->setEnableDocking(KDockWidget::DockRight);
   m_rightContainer->manualDock(mainDock, KDockWidget::DockRight,80);
   tmpDC->init();
 
   connect (this,SIGNAL(toggleRight()),tmpDC,SLOT(toggle()));
   connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
-  connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
-  connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+  connect(tmpDC,SIGNAL(activated(DockContainer*)),this,SLOT(setActiveToolDock(DockContainer*)));
+  connect(tmpDC,SIGNAL(deactivated(DockContainer*)),this,SLOT(removeFromActiveDockList(DockContainer*)));
 
-  m_topContainer->setWidget(tmpDC=new KMdiDockContainer(m_topContainer, this, KDockWidget::DockTop, d->m_styleIDEAlMode));
+  m_topContainer->setWidget(tmpDC=new DockContainer(m_topContainer, this, KDockWidget::DockTop, d->m_styleIDEAlMode));
   m_topContainer->setEnableDocking(KDockWidget::DockTop);
   m_topContainer->manualDock(mainDock, KDockWidget::DockTop,20);
   tmpDC->init();
 
   connect (this,SIGNAL(toggleTop()),tmpDC,SLOT(toggle()));
   connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
-  connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
-  connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+  connect(tmpDC,SIGNAL(activated(DockContainer*)),this,SLOT(setActiveToolDock(DockContainer*)));
+  connect(tmpDC,SIGNAL(deactivated(DockContainer*)),this,SLOT(removeFromActiveDockList(DockContainer*)));
 
-  m_bottomContainer->setWidget(tmpDC=new KMdiDockContainer(m_bottomContainer, this, KDockWidget::DockBottom, d->m_styleIDEAlMode));
+  m_bottomContainer->setWidget(tmpDC=new DockContainer(m_bottomContainer, this, KDockWidget::DockBottom, d->m_styleIDEAlMode));
   m_bottomContainer->setEnableDocking(KDockWidget::DockBottom);
   m_bottomContainer->manualDock(mainDock, KDockWidget::DockBottom,80);
   tmpDC->init();
 
   connect (this,SIGNAL(toggleBottom()),tmpDC,SLOT(toggle()));
   connect(this,SIGNAL(collapseOverlapContainers()),tmpDC,SLOT(collapseOverlapped()));
-  connect(tmpDC,SIGNAL(activated(KMdiDockContainer*)),this,SLOT(setActiveToolDock(KMdiDockContainer*)));
-  connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
+  connect(tmpDC,SIGNAL(activated(DockContainer*)),this,SLOT(setActiveToolDock(DockContainer*)));
+  connect(tmpDC,SIGNAL(deactivated(DockContainer*)),this,SLOT(removeFromActiveDockList(DockContainer*)));
 
   m_leftContainer->setDockSite( KDockWidget::DockCenter );
   m_rightContainer->setDockSite( KDockWidget::DockCenter );
@@ -227,10 +227,10 @@ void MainWindow::setupToolViews ()
   dockManager->setSpecialTopDockContainer(m_topContainer);
   dockManager->setSpecialBottomDockContainer(m_bottomContainer);
 
-  ((KMdiDockContainer*) (m_leftContainer->getWidget()))->hideIfNeeded();
-  ((KMdiDockContainer*) (m_rightContainer->getWidget()))->hideIfNeeded();
-  ((KMdiDockContainer*) (m_topContainer->getWidget()))->hideIfNeeded();
-  ((KMdiDockContainer*) (m_bottomContainer->getWidget()))->hideIfNeeded();
+  ((DockContainer*) (m_leftContainer->getWidget()))->hideIfNeeded();
+  ((DockContainer*) (m_rightContainer->getWidget()))->hideIfNeeded();
+  ((DockContainer*) (m_topContainer->getWidget()))->hideIfNeeded();
+  ((DockContainer*) (m_bottomContainer->getWidget()))->hideIfNeeded();
 }
 
 void MainWindow::setupGUIClient ()
@@ -313,16 +313,16 @@ void MainWindow::setToolviewStyle(int flag)
 {
   d->m_styleIDEAlMode = flag; // see KMultiTabBar for the first 3 bits
 
-  KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  DockContainer *tmpL=(DockContainer*) (m_leftContainer->getWidget()->qt_cast("DockContainer"));
   if (tmpL) tmpL->setStyle(flag);
 
-  KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  DockContainer *tmpR=(DockContainer*) (m_rightContainer->getWidget()->qt_cast("DockContainer"));
   if (tmpR) tmpR->setStyle(flag);
 
-  KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  DockContainer *tmpT=(DockContainer*) (m_topContainer->getWidget()->qt_cast("DockContainer"));
   if (tmpT) tmpT->setStyle(flag);
 
-  KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  DockContainer *tmpB=(DockContainer*) (m_bottomContainer->getWidget()->qt_cast("DockContainer"));
   if (tmpB) tmpB->setStyle(flag);
 
   d->m_toolviewStyle = flag;
@@ -401,7 +401,7 @@ void MainWindow::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidg
     kdDebug(760)<<"No main dock widget found"<<endl;
 }
 
-void MainWindow::setActiveToolDock(KMdiDockContainer* td) {
+void MainWindow::setActiveToolDock(DockContainer* td) {
   if (td==d->activeDockPriority[0]) return;
   if (d->activeDockPriority[0]==0) {
     d->activeDockPriority[0]=td;
@@ -418,7 +418,7 @@ void MainWindow::setActiveToolDock(KMdiDockContainer* td) {
   d->activeDockPriority[0]=td;
 }
 
-void MainWindow::removeFromActiveDockList(KMdiDockContainer* td) {
+void MainWindow::removeFromActiveDockList(DockContainer* td) {
   for (int i=0;i<4;i++) {
     if (d->activeDockPriority[i]==td) {
       for (;i<3;i++)
@@ -437,13 +437,13 @@ void MainWindow::removeFromActiveDockList(KMdiDockContainer* td) {
 }
 
 void MainWindow::prevToolViewInDock() {
-  KMdiDockContainer* td=d->activeDockPriority[0];
+  DockContainer* td=d->activeDockPriority[0];
   if (!td) return;
   td->prevToolView();
 }
 
 void MainWindow::nextToolViewInDock() {
-  KMdiDockContainer* td=d->activeDockPriority[0];
+  DockContainer* td=d->activeDockPriority[0];
   if (!td) return;
   td->nextToolView();
 }

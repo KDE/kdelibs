@@ -34,13 +34,16 @@ class QWidgetStack;
 class KMultiTabBar;
 class KDockButton_Private;
 
-class KMdiDockContainer: public QWidget, public KDockContainer
+namespace KMDI
+{
+
+class DockContainer: public QWidget, public KDockContainer
 {
   Q_OBJECT
 
   public:
-    KMdiDockContainer(QWidget *parent, QWidget *win, int position, int flags);
-    virtual ~KMdiDockContainer();
+    DockContainer(QWidget *parent, QWidget *win, int position, int flags);
+    virtual ~DockContainer();
 
     KDockWidget *parentDockWidget();
 
@@ -98,9 +101,11 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     QMouseEvent *m_startEvent;
     enum MovingState {NotMoving=0,WaitingForMoveStart,Moving} m_movingState;
   signals:
-        void activated(KMdiDockContainer*);
-        void deactivated(KMdiDockContainer*);
+        void activated(DockContainer*);
+        void deactivated(DockContainer*);
 };
+
+}
 
 #endif
 
