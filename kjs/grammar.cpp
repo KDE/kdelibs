@@ -1463,6 +1463,7 @@ case 38:
 case 39:
 #line 237 "grammar.y"
 { yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].ustr); ;
+                                      delete yyvsp[0].ustr;
     break;}
 case 40:
 #line 241 "grammar.y"
