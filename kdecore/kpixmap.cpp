@@ -191,14 +191,51 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
                            int ncols)
 {
-    QPixmap pmCrop;
-    QColor cRow;
-    int ySize;
+    // hack from KWM
+    if(direction == Horizontal && QColor::numBitPlanes() >=15){
+        int c_red_a = ca.red() << 16;
+        int c_green_a = ca.green() << 16;
+        int c_blue_a = ca.blue() << 16;
+
+        int c_red_b = cb.red() << 16;
+        int c_green_b = cb.green() << 16;
+        int c_blue_b = cb.blue() << 16;
+
+        int d_red = (c_red_b - c_red_a) / width();
+        int d_green = (c_green_b - c_green_a) / width();
+        int d_blue = (c_blue_b - c_blue_a) / width();
+
+        QImage img(width(), height(), 32);
+        QRgb *p = (QRgb*)img.scanLine(0);
+
+        int r = c_red_a, g = c_green_a, b = c_blue_a;
+        for(int x = 0; x < width(); x++) {
+            p[x] = qRgb(r>>16,g>>16,b>>16);
+
+            r += d_red;
+            g += d_green;
+            b += d_blue;
+        }
+
+        unsigned int *scanline;
+        unsigned int *src = (unsigned int *)img.scanLine(0);;
+        // Believe it or not, manually copying in a for loop is faster
+        // than calling memcpy for each scanline (on the order of ms...).
+        // I think this is due to the function call overhead (mosfet).
+        int x, y;
+        for(y = 0; y < height(); ++y){
+            scanline = (unsigned int *)img.scanLine(y);
+            for(x=0; x < width(); ++x)
+                scanline[x] = src[x];
+        }
+        convertFromImage(img);
+        return;
+    }
+
+    // Normal gradient code
     int rca, gca, bca;
     int rDiff, gDiff, bDiff;
     float rat;
-    uint *p;
-    uint rgbRow;
 
     rca = ca.red();
     gca = ca.green();
@@ -208,6 +245,12 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
     bDiff = cb.blue() - ca.blue();
 
     if(direction == Horizontal || direction == Vertical){
+        QPixmap pmCrop;
+        QColor cRow;
+        int ySize;
+        uint *p;
+        uint rgbRow;
+
         if( direction == Vertical )
             ySize = height();
         else
@@ -352,103 +395,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
         gradientFill(ca, cb, Horizontal, ncols);
 }
 
-/*
 
-void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
-{				
-    QPixmap pmCrop;
-    QColor cRow;
-    int ySize;
-    int rca, gca, bca;
-    int rDiff, gDiff, bDiff;
-    float rat;
-    uint *p;
-    uint rgbRow;
-	
-	
-	if( upDown )
-    	ySize = height();
-    else
-    	ySize = width();
-
-    pmCrop.resize( 30, ySize );
-    QImage image( 30, ySize, 32 );
-
-    rca = ca.red();
-    gca = ca.green();
-    bca = ca.blue();
-    rDiff = cb.red() - ca.red();
-    gDiff = cb.green() - ca.green();
-    bDiff = cb.blue() - ca.blue();
-
-    for ( int y = ySize - 1; y >= 0; y-- ) {
-	    p = (uint *) image.scanLine( ySize - y - 1 );
-	    rat = 1.0 * y / ySize;
-	
-		cRow.setRgb( rca + (int) ( rDiff * rat ),
-						gca + (int) ( gDiff * rat ),
-						bca + (int) ( bDiff * rat ) );
-	
-		rgbRow = cRow.rgb();
-	
-	    for( int x = 0; x < 30; x++ ) {
-			*p = rgbRow;
-			p++;
-	    }
-	}
-	
-	if ( depth() <= 16 ) {
-	
-		if( depth() == 16 ) ncols = 32;
-		if ( ncols < 2 || ncols > 256 ) ncols = 3;
-
-		QColor *dPal = new QColor[ncols];
-		for ( int i=0; i<ncols; i++) {
-			dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
-								gca + gDiff * i / ( ncols - 1 ),
-								bca + bDiff * i / ( ncols - 1 ) );
-		}
-
-		kFSDither dither( dPal, ncols );
-		QImage dImage = dither.dither( image );
-		pmCrop.convertFromImage( dImage );
-		
-		delete [] dPal;	
-		
-	} else
-		pmCrop.convertFromImage( image );
-	
-	// Copy the cropped pixmap into the KPixmap.
-	// Extract only a central column from the cropped pixmap
-	// to avoid edge effects.
-	
-	int s;
-	int sSize = 20;
-	int sOffset = 5;
-	
-	if( upDown )
-	    s = width() / sSize + 1;
-	else
-	    s = height() / sSize + 1;
-	
-	QPainter paint;
-	paint.begin( this );
-	
-	if ( upDown )	
-	    for( int i=0; i<s; i++ )
-			paint.drawPixmap( sSize*i, 0, pmCrop, sOffset, 0 , sSize, ySize );
-	else {
-	    QWMatrix matrix;
-	    matrix.translate( (float) width() - 1.0, 0.0 );
-	    matrix.rotate( 90.0 );
-	    paint.setWorldMatrix( matrix );
-	    for( int i=0; i<s; i++)
-			paint.drawPixmap( sSize*i, 0, pmCrop, sOffset, 0 , sSize, ySize );
-	}
-	
-	paint.end();
-        }
-*/
 
 void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 {
