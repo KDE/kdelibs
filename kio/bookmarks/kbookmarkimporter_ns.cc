@@ -37,31 +37,8 @@
 
 void KNSBookmarkImporterImpl::parse()
 {
-    KNSBookmarkImporter importer(m_fileName);
-    connect(&importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
-            this,      SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
-    connect(&importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
-            this,      SIGNAL( newFolder( const QString &, bool, const QString & ) ));
-    connect(&importer, SIGNAL( newSeparator() ),
-            this,      SIGNAL( newSeparator() ) );
-    connect(&importer, SIGNAL( endFolder() ),
-            this,      SIGNAL( endFolder() ) );
-    importer.parseNSBookmarks(m_utf8);
-}
-
-QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
-{
-    return m_utf8 ? KNSBookmarkImporter::netscapeBookmarksFile(forSaving)
-                  : KNSBookmarkImporter::mozillaBookmarksFile(forSaving);
-}
-
-////////////////////////////////////////////////////////////////
-
-
-void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
-{
     QFile f(m_fileName);
-    QTextCodec * codec = utf8 ? QTextCodec::codecForName("UTF-8") : QTextCodec::codecForLocale();
+    QTextCodec * codec = m_utf8 ? QTextCodec::codecForName("UTF-8") : QTextCodec::codecForLocale();
     Q_ASSERT(codec);
     if (!codec)
         return;
@@ -122,20 +99,54 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
     }
 }
 
-QString KNSBookmarkImporter::netscapeBookmarksFile( bool )
+QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
 {
-    return QDir::homeDirPath() + "/.netscape/bookmarks.html";
+    if (m_utf8) 
+    {
+       if ( forSaving )
+           return KFileDialog::getSaveFileName( QDir::homeDirPath() + "/.mozilla",
+                                                i18n("*.html|HTML files (*.html)") );
+       else
+           return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
+                                                i18n("*.html|HTML files (*.html)") );
+    } 
+    else 
+    {
+       return QDir::homeDirPath() + "/.netscape/bookmarks.html";
+    }
+}
+
+////////////////////////////////////////////////////////////////
+
+
+void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
+{
+    KNSBookmarkImporterImpl importer;
+    importer.setFilename(m_fileName);
+    connect(&importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
+            this,      SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
+    connect(&importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
+            this,      SIGNAL( newFolder( const QString &, bool, const QString & ) ));
+    connect(&importer, SIGNAL( newSeparator() ),
+            this,      SIGNAL( newSeparator() ) );
+    connect(&importer, SIGNAL( endFolder() ),
+            this,      SIGNAL( endFolder() ) );
+    importer.setUtf8(utf8);
+    importer.parse();
+}
+
+QString KNSBookmarkImporter::netscapeBookmarksFile( bool forSaving )
+{
+    static KNSBookmarkImporterImpl importer;
+    importer.setUtf8(false);
+    return importer.findDefaultLocation(forSaving);
 }
 
 QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
 {
-    //return QDir::homeDirPath() + "/.mozilla/default/bookmarks.html";
-    if ( forSaving )
-        return KFileDialog::getSaveFileName( QDir::homeDirPath() + "/.mozilla",
-                                             i18n("*.html|HTML files (*.html)") );
-    else
-        return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
-                                             i18n("*.html|HTML files (*.html)") );
+    static KNSBookmarkImporterImpl importer;
+    importer.setUtf8(true);
+    return importer.findDefaultLocation(forSaving);
 }
 
 

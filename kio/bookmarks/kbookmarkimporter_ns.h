@@ -61,6 +61,7 @@ protected:
 class KNSBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
+    KNSBookmarkImporterImpl() { }
     void setUtf8(bool utf8) { m_utf8 = utf8; }
     virtual void parse();
     virtual QString findDefaultLocation(bool forSaving = false) const;
