@@ -1491,8 +1491,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   else
     d->extraCheckbox = 0;
 
-  updateAccessControls();
-
 
   /**** Group: Ownership ****/
   gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
@@ -1633,6 +1631,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       box->addWidget( d->cbRecursive );
   }
 
+  updateAccessControls();
 
 
   if ( isIntoTrash )
@@ -1985,6 +1984,8 @@ void KFilePermissionsPropsPlugin::enableAccessControls(bool enable) {
 	  d->extraCheckbox->setEnabled(enable);
         if ( d->pbAvancedPerm)
             d->pbAvancedPerm->setEnabled(enable);
+        if ( d->cbRecursive )
+            d->cbRecursive->setEnabled(enable);
 }
 
 // updates all widgets in the Access Control frame
