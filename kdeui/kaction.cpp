@@ -1068,13 +1068,11 @@ class KSelectAction::KSelectActionPrivate
 public:
   KSelectActionPrivate()
   {
-    m_lock = false;
     m_edit = false;
     m_menu = 0;
     m_current = -1;
     m_comboWidth = 70;
   }
-  bool m_lock;
   bool m_edit;
   QPopupMenu *m_menu;
   int m_current;
@@ -1414,14 +1412,7 @@ void KSelectAction::slotActivated( int id )
   if ( d->m_current == id )
     return;
 
-  if ( d->m_lock )
-    return;
-
-  d->m_lock = TRUE;
-
   setCurrentItem( id );
-
-  d->m_lock = FALSE;
   emit KAction::activated();
   emit activated( currentItem() );
   emit activated( currentText() );
@@ -1429,10 +1420,6 @@ void KSelectAction::slotActivated( int id )
 
 void KSelectAction::slotActivated( const QString &text )
 {
-  if ( d->m_lock )
-    return;
-
-  d->m_lock = true;
   if ( isEditable() )
   {
     QStringList lst = items();
@@ -1444,7 +1431,6 @@ void KSelectAction::slotActivated( const QString &text )
   }
 
   setCurrentItem( items().findIndex( text ) );
-  d->m_lock = false;
   emit KAction::activated();
   emit activated( currentItem() );
   emit activated( currentText() );
@@ -1890,6 +1876,8 @@ void KFontAction::setFont( const QString &family )
   int i = d->m_fonts.findIndex( family.lower() );
   if ( i != -1 )
     setCurrentItem( i );
+  else
+    kdDebug() << "Font not found " << family.lower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )
@@ -1907,9 +1895,7 @@ class KFontSizeAction::KFontSizeActionPrivate
 public:
   KFontSizeActionPrivate()
   {
-    m_lock = false;
   }
-  bool m_lock;
 };
 
 KFontSizeAction::KFontSizeAction( const QString& text, int accel,
@@ -2024,7 +2010,7 @@ void KFontSizeAction::setFontSize( int size )
     //emit KAction::activated();
     //emit activated( index );
     //emit activated( QString::number( size ) );
-    emit fontSizeChanged( size );
+    //emit fontSizeChanged( size );
 }
 
 int KFontSizeAction::fontSize() const
@@ -2041,18 +2027,9 @@ void KFontSizeAction::slotActivated( int index )
 
 void KFontSizeAction::slotActivated( const QString& size )
 {
-  if ( d->m_lock )
-    return;
-
-  if ( size.toInt() < 1 || size.toInt() > 128 )
-  {
-    kdWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
-    return;
-  }
-
-  d->m_lock = TRUE;
-  setFontSize( size.toInt() );
-  d->m_lock = FALSE;
+  setFontSize( size.toInt() ); // insert sorted first
+  KSelectAction::slotActivated( size );
+  emit fontSizeChanged( size.toInt() );
 }
 
 class KActionMenu::KActionMenuPrivate
