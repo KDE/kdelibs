@@ -78,6 +78,19 @@ static double dayFromYear(int year)
     + floor((year - 1601) / 400.0);
 }
 
+// depending on whether it's a leap year or not
+static int daysInYear(int year)
+{
+  if (year % 4 != 0)
+    return 365;
+  else if (year % 400 == 0)
+    return 366;
+  else if (year % 100 == 0)
+    return 365;
+  else
+    return 366;
+}
+
 // time value of the start of a year
 double timeFromYear(int year)
 {
@@ -657,13 +670,17 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
     }
 
     double yearOffset = 0.0;
-    if (t->tm_year < (1900 - 1900) || t->tm_year > (2038 - 1900)) {
+    if (t->tm_year < (1970 - 1900) || t->tm_year > (2038 - 1900)) {
       // we'll fool mktime() into believing that this year is within
-      // it's normal, portable range (1970-2038) by setting tm_year
-      // to 2000 and adding the difference in milliseconds later.
-      const double y2000 = timeFromYear(2000);
-      yearOffset = timeFromYear(t->tm_year + 1900) - y2000;
-      t->tm_year = 100;
+      // its normal, portable range (1970-2038) by setting tm_year to
+      // 2000 or 2001 and adding the difference in milliseconds later.
+      // choice between offset will depend on whether the year is a
+      // leap year or not.
+      int y = t->tm_year + 1900;
+      int baseYear = daysInYear(y) == 365 ? 2001 : 2000;
+      const double baseTime = timeFromYear(baseYear);
+      yearOffset = timeFromYear(y) - baseTime;
+      t->tm_year = baseYear - 1900;
     }
 
     return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
