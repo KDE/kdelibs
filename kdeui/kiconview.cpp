@@ -90,7 +90,7 @@ int KIconView::itemIndex( const QIconViewItem *item ) const
 	    i = i->nextItem();
 	    ++j;
 	}
-   
+
 	return i ? j : -1;
     }
 }
@@ -242,7 +242,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
     kdDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
     return;
   }
-    
+
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -285,6 +285,12 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
     blockSignals( block );
   }
 
+  // QIconView (2.2.1) bug workaround!
+  if ( e->state() & ShiftButton && !currentItem() ) {
+      setCurrentItem( firstItem() );
+  }
+  // end QIconView bug workaround
+  
   QIconView::contentsMousePressEvent( e );
 }
 
