@@ -511,7 +511,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     if ( opcode == DCOPSend )
         return;
 
-    d->currentKey = oldCurrentKey;
+    if ((d->currentKey == key) || (oldCurrentKey != 2))
+        d->currentKey = oldCurrentKey;
 
     QByteArray reply;
     QDataStream replyStream( reply, IO_WriteOnly );
