@@ -6,7 +6,7 @@ INCLUDES = -I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
 
 ####### Files
 
-lib_LTLIBRARIES = kio_file.la
+kde_module_LTLIBRARIES = kio_file.la
 
 kio_file_la_SOURCES = file.cc
 kio_file_la_LIBADD = ../libkio.la
