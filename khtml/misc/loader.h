@@ -64,7 +64,7 @@ namespace DOM
 {
     class CSSStyleSheetImpl;
     class DocumentImpl;
-};
+}
 
 namespace khtml
 {
@@ -518,6 +518,6 @@ namespace khtml
         static unsigned long s_ulRefCnt;
     };
 
-};
+} // namespace
 
 #endif

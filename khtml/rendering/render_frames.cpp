@@ -153,12 +153,12 @@ void RenderFrameSet::layout( )
             // percentage ones and distribute remaining over relative
             for(int i = 0; i< gridLen; ++i)
                 if (grid[i].isFixed()) {
-                    gridLayout[i] = kMin(grid[i].value > 0 ? grid[i].value : 0, remainingLen[k]);
+                    gridLayout[i] = kMin(grid[i].value() > 0 ? grid[i].value() : 0, remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
                     totalFixed += gridLayout[i];
                 }
                 else if(grid[i].isRelative()) {
-                    totalRelative += grid[i].value > 1 ? grid[i].value : 1;
+                    totalRelative += grid[i].value() > 1 ? grid[i].value() : 1;
                     countRelative++;
                 }
 
@@ -166,7 +166,7 @@ void RenderFrameSet::layout( )
                 if(grid[i].isPercent()) {
                     gridLayout[i] = kMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
                     remainingLen[k] -= gridLayout[i];
-                    totalPercent += grid[i].value;
+                    totalPercent += grid[i].value();
                     countPercent++;
                 }
 
@@ -176,7 +176,7 @@ void RenderFrameSet::layout( )
                 int remaining = remainingLen[k];
                 for (int i = 0; i < gridLen; ++i)
                     if (grid[i].isRelative()) {
-                        gridLayout[i] = ((grid[i].value > 1 ? grid[i].value : 1) * remaining) / totalRelative;
+                        gridLayout[i] = ((grid[i].value() > 1 ? grid[i].value() : 1) * remaining) / totalRelative;
                         remainingLen[k] -= gridLayout[i];
                     }
             }
@@ -187,8 +187,8 @@ void RenderFrameSet::layout( )
                 int total = countPercent ? totalPercent : totalFixed;
                 if (!total) total = 1;
                 for (int i = 0; i < gridLen; ++i)
-                    if (grid[i].type == distributeType) {
-                        int toAdd = (remainingLen[k] * grid[i].value) / total;
+                    if (grid[i].type() == distributeType) {
+                        int toAdd = (remainingLen[k] * grid[i].value()) / total;
                         gridLayout[i] += toAdd;
                     }
             }

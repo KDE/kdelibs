@@ -983,14 +983,14 @@ short RenderObject::lineHeight( bool firstLine ) const
         lh = style()->lineHeight();
 
     // its "unset", choose nice default
-    if ( lh.value < 0 )
+    if ( lh.value() < 0 )
         return style()->fontMetrics().lineSpacing();
 
     if ( lh.isPercent() )
         return lh.minWidth( style()->font().pixelSize() );
 
     // its fixed
-    return lh.value;
+    return lh.value();
 }
 
 short RenderObject::baselinePosition( bool firstLine ) const

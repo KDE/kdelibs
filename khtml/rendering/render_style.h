@@ -166,7 +166,7 @@ struct LengthBox
     }
 
 
-    bool nonZero() const { return left.value!=0 || right.value!=0 || top.value!=0 || bottom.value!=0; }
+    bool nonZero() const { return left.value() || right.value() || top.value() || bottom.value(); }
 };
 
 
