@@ -585,7 +585,7 @@ QString KURL::join( const KURL::List & lst )
 
     QString tmp = it->url();
     dest += tmp;
-    if ( it.node->data != lst.last() )
+    if ( it != lst.fromLast() )
       dest += "#";
   }
 
