@@ -771,7 +771,12 @@ void KRun::clientStarted(
 bool KFileManager::openFileManagerWindow( const KURL& _url )
 {
   QString cmd = "kfmclient openURL ";
-  cmd += _url.url();
+  QString urlStr = _url.url();
+  
+  urlStr.replace(QRegExp("'"), "'\"'\"'");
+  urlStr.prepend("'");
+  urlStr.append("'");
+  cmd += urlStr;
   system( cmd );
   return true; // assume kfmclient succeeded
 }
