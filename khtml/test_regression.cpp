@@ -858,7 +858,7 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                   "function runSlideShow(){\n"
                   "   document.getElementById('image').src = pics[t].src;\n"
                   "   t = 1 - t;\n"
-                  "   setTimeout('runSlideShow()', 50);\n"
+                  "   setTimeout('runSlideShow()', 200);\n"
                   "}\n"
                   "</script>\n")
          .arg( relpath+"/baseline/"+test+"-dump.png" )
