@@ -94,6 +94,11 @@ void KCookie::getXCookie()
     }
     unblockSigChild();
     output = output.simplifyWhiteSpace();
+    if (output.isEmpty())
+    {
+       kdWarning(900) << "No X authentication info set for display " <<
+       m_Display << endl; return;
+    }
     QCStringList lst = split(output, ' ');
     if (lst.count() != 3) 
     {
