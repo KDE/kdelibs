@@ -613,8 +613,16 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             }
         } else if ( isBreakable )
         {
-            lastBreak = i;
-            lineWidth = x + ww;
+            if ( ( c == '(' || c == '[' || c == '{' ) && i > 0 )
+            {
+                lastBreak = i - 1;
+                lineWidth = x;
+            }
+            else
+            {
+                lastBreak = i;
+                lineWidth = x + ww;
+            }
         }
         x += ww;
     }
