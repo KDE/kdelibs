@@ -335,10 +335,6 @@ QString Decoder::decode(const char *data, int len)
         out = m_decoder->toUnicode(data, len);
     }
 
-    // the hell knows, why the output does sometimes have a QChar::null at
-    // the end...
-    if( out[out.length()-1].isNull() )
-        assert(0);
     return out;
 }
 
