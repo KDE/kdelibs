@@ -678,12 +678,18 @@ QRect KWM::geometry(Window w, bool including_frame){
   }
   XWindowAttributes attr;
   if (XGetWindowAttributes(qt_xdisplay(), w, &attr)){
-    int x, y;
-    Window child;
-    XTranslateCoordinates(qt_xdisplay(),
-			  w, qt_xrootwin(),
-			  0, 0, &x, &y, &child);
-    result.setRect(x-attr.x, y-attr.y, attr.width, attr.height);
+    if (getQRectProperty(w, a, result)){
+      result.setWidth(attr.width);
+      result.setHeight(attr.height);
+    }
+    else{
+      int x, y;
+      Window child;
+      XTranslateCoordinates(qt_xdisplay(),
+			    w, qt_xrootwin(),
+			    0, 0, &x, &y, &child);
+      result.setRect(x, y, attr.width, attr.height);
+    }
   }
   return result;
 }
