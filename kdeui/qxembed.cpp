@@ -1063,6 +1063,15 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
     }
 }
 
+void QXEmbed::reparent( QWidget * parent, WFlags f, const QPoint & p, bool showIt )
+{
+// QWidget::reparent() destroys the old X Window for the widget, and creates a new one,
+// thus QXEmbed after reparenting is no longer the parent of the embedded window.
+// I think reparenting of QXEmbed can be done only by a mistake, so just complain.
+    Q_ASSERT( window == 0 );
+    QWidget::reparent( parent, f, p, showIt );
+}
+
 // for KDE
 #include "qxembed.moc"
 #endif
