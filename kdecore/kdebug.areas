@@ -157,6 +157,8 @@
 
 # toys and games
 10000	amor
+11000	libkdegames
+11001	libkdegames (KGame)
 
 20000	KDB (core)
 20001	KDB (ui)
