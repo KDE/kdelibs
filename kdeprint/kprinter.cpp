@@ -675,7 +675,7 @@ KPrinterImpl* KPrinter::implementation() const
 { return d->m_impl; }
 
 const QString& KPrinter::option(const QString& key) const
-{ return d->m_options[key]; }
+{ return ((const KPrinterPrivate*)(d))->m_options[key]; }
 
 void KPrinter::setOption(const QString& key, const QString& value)
 { d->m_options[key] = value; }

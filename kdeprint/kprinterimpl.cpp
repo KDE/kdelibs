@@ -76,7 +76,7 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 	DrMain	*driver = mgr->loadPrinterDriver(mgr->findPrinter(printer->printerName()), false);
 	if (driver)
 	{
-		QString	psname = (printer->options().contains("PageSize") ? printer->option("PageSize") : QString::null);
+		QString	psname = printer->option("PageSize");
 		if (psname.isEmpty())
 		{
 			DrListOption	*opt = (DrListOption*)driver->findOption("PageSize");
