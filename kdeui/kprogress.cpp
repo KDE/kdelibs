@@ -70,11 +70,8 @@ void KProgress::initialize()
 	bar_pixmap = 0;
 	bar_style = Solid;
 	text_enabled = TRUE;
-	setBackgroundMode( PaletteBase );
+	setBackgroundMode( PaletteBackground );
 	connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(paletteChange()));
-	QFont f(QString::fromLatin1("helvetica"), 12, QFont::Bold);
-	f.setPixelSize(12);
-	setFont(f);
 	paletteChange();
 }
 
@@ -253,6 +250,9 @@ void KProgress::drawText(QPainter *p)
 	s.replace(QRegExp(QString::fromLatin1("%m")), QString::number(maxValue()));
 
 	p->setPen(text_color);
+	QFont font = p->font();
+	font.setBold(true);
+	p->setFont(font);
 	//p->setRasterOp(XorROP);
 	p->drawText(r, AlignCenter, s);
 	p->setClipRegion( fr );
