@@ -186,6 +186,15 @@ QPixmap BarIcon(const QString& pixmap,
 		const KInstance* library = KGlobal::instance());
 
 /**
+ * Helper function to load toolbar icons with a very specific size. It
+ * simply returns
+ * library->iconLoader()->loadIcon("toolbar/" + pixmap, size)
+ * so @see loadIcon
+ */
+QPixmap BarIcon(const QString& pixmap, KIconLoader::Size size,
+		const KInstance* library = KGlobal::instance());
+
+/**
  * Helper function to load application icons with. It simply returns
  * library->iconLoader()->loadIcon("apps/" + pixmap)
  * so @see loadIcon

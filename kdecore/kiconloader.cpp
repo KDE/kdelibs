@@ -247,12 +247,21 @@ QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
     return pix;
 }
 
-QPixmap BarIcon(const QString& pixmap , const KInstance* library )
+QPixmap BarIcon(const QString& pixmap , const KInstance* library)
 {
     if (pixmap.at(0) == '/')
         return library->iconLoader()->loadIcon(pixmap);
     else
         return library->iconLoader()->loadIcon("toolbars/" + pixmap);
+}
+
+QPixmap BarIcon(const QString& pixmap , KIconLoader::Size size,
+               const KInstance* library)
+{
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadIcon(pixmap);
+    else
+        return library->iconLoader()->loadIcon("toolbars/" + pixmap, size);
 }
 
 QPixmap AppIcon(const QString& pixmap , const KInstance* library )
