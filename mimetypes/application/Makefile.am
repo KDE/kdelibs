@@ -26,7 +26,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-kpresenter.desktop x-krita.desktop x-kspread-crypt.desktop \
 	x-kspread.desktop x-kugar.desktop x-kword-crypt.desktop x-kword.desktop \
 	x-quattropro.desktop x-amipro.desktop x-tgif.desktop x-xfig.desktop \
-	x-lyx.desktop x-zerosize.desktop
+	x-lyx.desktop x-zerosize.desktop x-kpovmodeler.desktop
 
 datadir = $(kde_mimedir)/application
 
