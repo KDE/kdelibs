@@ -6,6 +6,7 @@
 
 125	kaccel (kdecore)
 126	kurl (kdecore)
+200	KTMW (kdeui)
 250	kfile (kdelibs)
 750	kspell (kdelibs)
 800	kabapi (kdelibs)
