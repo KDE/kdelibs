@@ -18,6 +18,7 @@
 */
 
 #include "khtml_events.h"
+#include "xml/dom_nodeimpl.h"
 
 using namespace khtml;
 
@@ -73,6 +74,14 @@ bool MouseEvent::isURLHandlingEnabled() const
 void MouseEvent::setURLHandlingEnabled( bool enable )
 {
     d->urlHandling = enable;
+}
+
+int MousePressEvent::offset()
+{
+    int offset = 0;
+    DOM::Node tempNode = 0;
+    m_innerNode.handle()->findSelectionNode( x(), y(), nodeAbsX(), nodeAbsY(), tempNode, offset );
+    return offset;
 }
 
 const char *MousePressEvent::s_strMousePressEvent = "khtml/Events/MousePressEvent";
