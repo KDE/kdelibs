@@ -39,28 +39,27 @@
 
 
 KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollView(parent)
+{
+	m_showActiveTabTexts=false;
+	m_tabs.setAutoDelete(true);
+	setHScrollBarMode(AlwaysOff);
+	setVScrollBarMode(AlwaysOff);
+	if (bm==KMultiTabBar::Vertical)
 	{
-		m_showActiveTabTexts=false;
-		m_tabs.setAutoDelete(true);
-		setHScrollBarMode(AlwaysOff);
-		setVScrollBarMode(AlwaysOff);
-		if (bm==KMultiTabBar::Vertical)
-		{
-			box=new QVBox(viewport());			
-			box->setFixedWidth(24);
-			setFixedWidth(24);
-		}
-		else
-		{
-			box=new QHBox(viewport());			
-			box->setFixedHeight(24);
-			setFixedHeight(24);
-		}
-		addChild(box);
-		setFrameStyle(NoFrame);
-		viewport()->setBackgroundMode(Qt::PaletteBackground);
-
+		box=new QVBox(viewport());			
+		box->setFixedWidth(24);
+		setFixedWidth(24);
 	}
+	else
+	{
+		box=new QHBox(viewport());			
+		box->setFixedHeight(24);
+		setFixedHeight(24);
+	}
+	addChild(box);
+	setFrameStyle(NoFrame);
+	viewport()->setBackgroundMode(Qt::PaletteBackground);
+}
 
 void KMultiTabBarInternal::setStyle(KMultiTabBar::KMultiTabBarStyle style)
 {
@@ -235,7 +234,6 @@ KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 	:KMultiTabBarButton(pic,text,0,id,parent,pos,style)
 {
 	m_expandedSize=24;
-	m_showActiveTabText=false;
 	setToggleButton(true);
 }
 
@@ -266,8 +264,8 @@ void KMultiTabBarTab::updateState()
 		if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
 			QPushButton::setText(m_text);
 		} else {
-			kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString"<<endl;
-			QPushButton::setText(QString(""));
+			//kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString"<<endl;
+			QPushButton::setText(QString::null);
 		}
 
 		if ((m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left)) {
@@ -338,24 +336,22 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 
 	if (isOn()) st|=QStyle::Style_On;
 
-	style().drawControl(QStyle::CE_PushButton,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()),
-		colorGroup(),st);
-	style().drawControl(QStyle::CE_PushButtonLabel,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()),
-		colorGroup(),st);
+	style().drawControl(QStyle::CE_PushButton,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
+	style().drawControl(QStyle::CE_PushButtonLabel,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
 
 	switch (m_position) {
 		case KMultiTabBar::Left:
-						paint->rotate(-90);
-						paint->drawPixmap(-pixmap.width(),0,pixmap);	
-						break;
+			paint->rotate(-90);
+			paint->drawPixmap(-pixmap.width(),0,pixmap);	
+			break;
 		case KMultiTabBar::Right:
-						paint->rotate(90);
-						paint->drawPixmap(0,-pixmap.height(),pixmap);	
-						break;
+			paint->rotate(90);
+			paint->drawPixmap(0,-pixmap.height(),pixmap);	
+			break;
 
 		default:
-						paint->drawPixmap(0,0,pixmap);
-						break;
+			paint->drawPixmap(0,0,pixmap);
+			break;
 	}
 //	style().drawControl(QStyle::CE_PushButtonLabel,painter,this, QRect(0,0,pixmap.width(),pixmap.height()),
 //		colorGroup(),QStyle::Style_Enabled);
