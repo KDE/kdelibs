@@ -231,10 +231,8 @@ void kimgio_tga_write( QImageIO *io )
         s << targaMagic[i];
 
     // write header
-    s << (unsigned char)0;
-    s << (unsigned char)(img.width() / 256); // width
-    s << (unsigned char)0;
-    s << (unsigned char)(img.height() / 256); // height
+    s << Q_UINT16(img.width()); // width
+    s << Q_UINT16(img.height()); // height
     s << (unsigned char)img.depth(); // depth
     s << (unsigned char)36;
 
