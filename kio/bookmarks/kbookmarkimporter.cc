@@ -31,3 +31,5 @@
 #include <assert.h>
 
 // todo - put stuff in here :)
+
+#include <kbookmarkimporter.moc>
