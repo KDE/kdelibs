@@ -208,6 +208,10 @@ void RenderTable::calcWidth()
     RenderBlock *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
+    // Subtract minimum margins
+    availableWidth -= style()->marginLeft().minWidth(cb->contentWidth());
+    availableWidth -= style()->marginRight().minWidth(cb->contentWidth());
+
     LengthType widthType = style()->width().type();
     if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
