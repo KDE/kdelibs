@@ -623,12 +623,21 @@ Value DOMNodeList::tryCall(ExecState *exec, Object &, const List &args)
 {
   // Do not use thisObj here. See HTMLCollection.
   UString s = args[0].toString(exec);
+
+  // index-based lookup?
   bool ok;
   unsigned int u = s.toULong(&ok);
   if (ok)
     return getDOMNode(exec,list.item(u));
 
-  kdDebug(6070) << "WARNING: KJS::DOMNodeList::tryCall " << s.qstring() << " not implemented" << endl;
+  // try lookup by name
+  // ### NodeList::namedItem() would be cool to have
+  // ### do we need to support the same two arg overload as in HTMLCollection?
+  Value result = tryGet(exec, Identifier(s));
+
+  if (result.isValid())
+    return result;
+
   return Undefined();
 }
 
