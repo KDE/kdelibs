@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
 
     // ShortURI tests
     filter( "linuxtoday.com" );
+    filter( "LINUXTODAY.COM" );
     filter( "kde.org" );
     filter( "mosfet.org" );
     filter( "~/.kde", "ShortURIFilter" );
@@ -36,6 +37,8 @@ int main(int argc, char **argv) {
     // SMB share test with a specific filter chosen
     filter( "\\\\THUNDER\\", "ShortURIFilter" );
     filter( "smb://", "ShortURIFilter" );
+    filter( "smb://THUNDER\\WORKGROUP", "ShortURIFilter" );
+    filter( "smb:/THUNDER/WORKGROUP", "ShortURIFilter" );   
     filter( "smb:///", "ShortURIFilter" ); // use specific filter.
     filter( "smb:", "ShortURIFilter" ); // use specific filter.
     filter( "smb:/", "ShortURIFilter" ); // use specific filter.
@@ -43,6 +46,10 @@ int main(int argc, char **argv) {
     // IKWS test
     filter( "KDE" );
     filter( "GNOME" );
+   
+    // ENVIRONMENT variable
+    filter( "$KDEDIR/local/src/kde2" );
+    filter( "$HOME/.kde/share" );
     return 0;
 }
 
