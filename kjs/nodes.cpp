@@ -1340,10 +1340,11 @@ void FuncDeclNode::processFuncDecl()
   const List *sc = Context::current()->pScopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
 
-
-  for(ParameterNode *p = param; p != 0L; p = p->nextParam())
+  int plen = 0;
+  for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
 
+  fimp->setLength(plen);
   Function f(fimp);
 
   Context::current()->variableObject().put(ident, f);
@@ -1355,8 +1356,10 @@ KJSO FuncExprNode::evaluate()
   const List *sc = Context::current()->pScopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, body, sc->copy());
 
-  for(ParameterNode *p = param; p != 0L; p = p->nextParam())
+  int plen = 0;
+  for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
+  fimp->setLength(plen);
 
   return Function(fimp);
 }
