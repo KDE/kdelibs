@@ -49,6 +49,7 @@ using namespace KJS;
 
 QPtrDict<Window> *window_dict = 0L;
 
+// ### put into class Window namespace
 Window *KJS::newWindow(KHTMLPart *p)
 {
   Window *w;
@@ -62,6 +63,27 @@ Window *KJS::newWindow(KHTMLPart *p)
 
   return w;
 }
+
+class History : public HostImp {
+  friend class HistoryFunc;
+public:
+  History(KHTMLPart */*p*/) /*: part(p)*/ { }
+  virtual KJSO get(const UString &p) const;
+  virtual bool hasProperty(const UString &p, bool recursive) const;
+private:
+  //  QGuardedPtr<KHTMLPart> part;
+};
+
+class HistoryFunc : public DOMFunction {
+public:
+  HistoryFunc(const History *h, int i) : history(h), id(i) { };
+  Completion tryExecute(const List &);
+  enum { Back, Forward, Go };
+
+private:
+  const History *history;
+  int id;
+};
 
 class FrameArray : public HostImp {
 public:
@@ -211,7 +233,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "frames")
     return new FrameArray(part);
   else if (p == "history")
-    return Undefined(); //###
+    return KJSO(new History(part));
   else if (p == "innerHeight")
     return Number(part->view()->visibleHeight());
   else if (p == "innerWidth")
@@ -755,6 +777,47 @@ Completion LocationFunc::tryExecute(const List &args)
       break;
     }
   }
+  return Completion(Normal, Undefined());
+}
+
+////////////////////// History Object ////////////////////////
+
+bool History::hasProperty(const UString &p, bool recursive) const
+{
+  if (p == "back" ||
+      p == "forward" ||
+      p == "go" ||
+      p == "length")
+      return true;
+
+  return HostImp::hasProperty(p, recursive);
+}
+
+KJSO History::get(const UString &p) const
+{
+  if (p == "back")
+    return Function(new HistoryFunc(this, HistoryFunc::Back));
+  else if (p == "forward")
+    return Function(new HistoryFunc(this, HistoryFunc::Forward));
+  else if (p == "go")
+    return Function(new HistoryFunc(this, HistoryFunc::Go));
+  else if (p == "length")
+    return Number(0);
+  else
+    return HostImp::get(p);
+}
+
+Completion HistoryFunc::tryExecute(const List &)
+{
+  switch (id) {
+  case Back:
+  case Forward:
+  case Go:
+    // ###
+    kdDebug(6070) << "history.back/forward/go() not implemented yet." << endl;
+    break;
+  }
+
   return Completion(Normal, Undefined());
 }
 
