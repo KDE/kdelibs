@@ -89,7 +89,7 @@ KRulerTest::KRulerTest( const char *name = 0L )
   layout->addWidget(vruler, 1, 0);
   layout->addWidget(bigwidget, 1, 1);
 
-  mouse_message = new QLabel("Press mouse button\nfor pointer movement", bigwidget);
+  mouse_message = new QLabel("Press and hold mouse button\nfor pointer movement", bigwidget);
   mouse_message->adjustSize();
   mouse_message->move(4,4);
 
