@@ -173,7 +173,7 @@ int main(int argc, char **argv)
     filter( "linuxtoday.com", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "LINUXTODAY.COM", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "kde.org", "http://kde.org", KURIFilterData::NET_PROTOCOL );
-    filter( "ftp.kde.org", "http://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
+    filter( "ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "cr.yp.to", "http://cr.yp.to", KURIFilterData::NET_PROTOCOL );
     filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
