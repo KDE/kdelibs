@@ -550,6 +550,7 @@ namespace KIO {
         void redirection( KIO::Job *, const KURL &url );
 
     protected slots:
+        virtual void slotFinished( );
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
         void slotRedirection( const KURL &url );
@@ -559,6 +560,7 @@ namespace KIO {
         bool recursive;
         QString prefix;
         unsigned long m_processedEntries;
+        KURL m_redirectionURL;
     };
 
     struct CopyInfo
@@ -613,14 +615,14 @@ namespace KIO {
         void canResume( KIO::Job *, bool can_resume );
 
         /**
-	 * The job emits this signal when copying or moving a file or directory successfully finished.
-	 * @param src the source URL
-	 * @param dst the destination URL
-	 * @param direction indicates whether a file or directory was successfully copied/moved
-	 * @param renamed indicates that the destination URL was created using a
+         * The job emits this signal when copying or moving a file or directory successfully finished.
+         * @param src the source URL
+         * @param dst the destination URL
+         * @param direction indicates whether a file or directory was successfully copied/moved
+         * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving).
          * This signal is mainly for the Undo feature.
-	 */
+         */
         void copyingDone( KIO::Job *, const KURL &from, const KURL &to, bool directory, bool renamed );
         /**
          * The job is copying or moving a symbolic link, that points to target.

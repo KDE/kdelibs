@@ -128,7 +128,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
       x = (max >= ctl->cavail) ? ctl->cavail : max-1;
       end = (char*)mymemccpy(buf,ctl->cget,'\n',x);
       if (end != NULL)
-	x = end - buf;
+        x = end - buf;
       retval += x;
       buf += x;
       *buf = '\0';
@@ -136,7 +136,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
       ctl->cget += x;
       ctl->cavail -= x;
       if (end != NULL)
-	break;
+        break;
     }
     if (max == 1)
     {
@@ -152,7 +152,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
     if (eof)
     {
       if (retval == 0)
-	retval = -1;
+        retval = -1;
       break;
     }
     if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
@@ -201,7 +201,7 @@ char Ftp::readresp()
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
-    	
+
   return rspbuf[0];
 }
 
@@ -632,9 +632,9 @@ bool Ftp::ftpOpenDataConnection()
     return false;
 
   sprintf(buf,"port %d,%d,%d,%d,%d,%d",
-	  (unsigned char)sin.sa.sa_data[2],(unsigned char)sin.sa.sa_data[3],
-	  (unsigned char)sin.sa.sa_data[4],(unsigned char)sin.sa.sa_data[5],
-	  (unsigned char)sin.sa.sa_data[0],(unsigned char)sin.sa.sa_data[1]);
+          (unsigned char)sin.sa.sa_data[2],(unsigned char)sin.sa.sa_data[3],
+          (unsigned char)sin.sa.sa_data[4],(unsigned char)sin.sa.sa_data[5],
+          (unsigned char)sin.sa.sa_data[0],(unsigned char)sin.sa.sa_data[1]);
 
   return ftpSendCmd( buf, '2' );
 }
@@ -696,10 +696,10 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     sprintf(buf, "rest %ld", _offset);
     if ( !ftpSendCmd( buf, '3' ) ) {
       if ( rspbuf[0] != '3' ) // other errors were already emitted
-	{
-	  error( ERR_CANNOT_RESUME, _path );
-	  return false;
-	}
+        {
+          error( ERR_CANNOT_RESUME, _path );
+          return false;
+        }
     }
   }
 
@@ -1046,6 +1046,8 @@ void Ftp::listDir( const KURL &url )
     kdDebug(7102) << "REDIRECTION to " << realURL.url() << endl;
     redirection( realURL.url() );
     path = m_initialPath;
+    finished();
+    return;
   }
 
   kdDebug(7102) << "hunting for path '" << path << "'" << endl;
@@ -1144,15 +1146,15 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
   if ((p_access = strtok(buffer," ")) != 0)
     if ((p_junk = strtok(NULL," ")) != 0)
       if ((p_owner = strtok(NULL," ")) != 0)
-	if ((p_group = strtok(NULL," ")) != 0)
-	  if ((p_size = strtok(NULL," ")) != 0)
-	  {
-	    // A special hack for "/dev". A listing may look like this:
-	    // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
-	    // So we just ignore the number in front of the ",". Ok, its a hack :-)
-	    if ( strchr( p_size, ',' ) != 0L )
-	      if ((p_size = strtok(NULL," ")) == 0)
-		return 0L;
+        if ((p_group = strtok(NULL," ")) != 0)
+          if ((p_size = strtok(NULL," ")) != 0)
+          {
+            // A special hack for "/dev". A listing may look like this:
+            // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
+            // So we just ignore the number in front of the ",". Ok, its a hack :-)
+            if ( strchr( p_size, ',' ) != 0L )
+              if ((p_size = strtok(NULL," ")) == 0)
+                return 0L;
 
             // Check whether the size we just read was really the size
             // or a month (this happens when the server lists no group)
@@ -1167,28 +1169,28 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
               p_date_1 = strtok(NULL," ");
 
             if ( p_date_1 != 0 )
-	      if ((p_date_2 = strtok(NULL," ")) != 0)
-		if ((p_date_3 = strtok(NULL," ")) != 0)
+              if ((p_date_2 = strtok(NULL," ")) != 0)
+                if ((p_date_3 = strtok(NULL," ")) != 0)
                   if ((p_name = strtok(NULL,"\r\n")) != 0)
                   {
                     if ( p_access[0] == 'l' )
-		    {
-		      tmp = p_name;
-		      int i = tmp.findRev( " -> " );
-		      if ( i != -1 ) {
-			de.link = p_name + i + 4;
-			tmp.truncate( i );
-			p_name = tmp.ascii();
-		      }
-		      else
-			de.link = "";
-		    }
-		    else
-		      de.link = "";
+                    {
+                      tmp = p_name;
+                      int i = tmp.findRev( " -> " );
+                      if ( i != -1 ) {
+                        de.link = p_name + i + 4;
+                        tmp.truncate( i );
+                        p_name = tmp.ascii();
+                      }
+                      else
+                        de.link = "";
+                    }
+                    else
+                      de.link = "";
 
-		    de.access = 0;
-		    de.type = S_IFREG;
-		    switch ( p_access[0] ) {
+                    de.access = 0;
+                    de.type = S_IFREG;
+                    switch ( p_access[0] ) {
                         case 'd':
                             de.type = S_IFDIR;
                             break;
@@ -1218,31 +1220,31 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                         default:
                             break;
                     }
-		
-		    if ( p_access[1] == 'r' )
-		      de.access |= S_IRUSR;
-		    if ( p_access[2] == 'w' )
-		      de.access |= S_IWUSR;
-		    if ( p_access[3] == 'x' )
-		      de.access |= S_IXUSR;
-		    if ( p_access[4] == 'r' )
-		      de.access |= S_IRGRP;
-		    if ( p_access[5] == 'w' )
-		      de.access |= S_IWGRP;
-		    if ( p_access[6] == 'x' )
-		      de.access |= S_IXGRP;
-		    if ( p_access[7] == 'r' )
-		      de.access |= S_IROTH;
-		    if ( p_access[8] == 'w' )
-		      de.access |= S_IWOTH;
-		    if ( p_access[9] == 'x' )
-		      de.access |= S_IXOTH;
 
-		    de.owner	= p_owner;
-		    de.group	= p_group;
-		    de.size	= atoi(p_size);
-		    // QString tmp( p_name );
-		    de.name	= p_name; /* tmp.stripWhiteSpace(); */
+                    if ( p_access[1] == 'r' )
+                      de.access |= S_IRUSR;
+                    if ( p_access[2] == 'w' )
+                      de.access |= S_IWUSR;
+                    if ( p_access[3] == 'x' )
+                      de.access |= S_IXUSR;
+                    if ( p_access[4] == 'r' )
+                      de.access |= S_IRGRP;
+                    if ( p_access[5] == 'w' )
+                      de.access |= S_IWGRP;
+                    if ( p_access[6] == 'x' )
+                      de.access |= S_IXGRP;
+                    if ( p_access[7] == 'r' )
+                      de.access |= S_IROTH;
+                    if ( p_access[8] == 'w' )
+                      de.access |= S_IWOTH;
+                    if ( p_access[9] == 'x' )
+                      de.access |= S_IXOTH;
+
+                    de.owner    = p_owner;
+                    de.group    = p_group;
+                    de.size     = atoi(p_size);
+                    // QString tmp( p_name );
+                    de.name     = p_name; /* tmp.stripWhiteSpace(); */
 
                     // Parsing the date is somewhat tricky
                     // Examples : "Oct  6 22:49", "May 13  1999"
@@ -1298,7 +1300,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 
                     //kdDebug(7102) << asctime( tmptr ) << endl;
                     de.date = mktime( tmptr );
-		    return( &de );
+                    return( &de );
                   }
           }
   return 0L;
@@ -1509,7 +1511,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
       /*
         Waldo said we don't always know the size of what we're writing...
       if ( m_size == _size ) {
-	error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
+        error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
       } else */
       error( ERR_FILE_ALREADY_EXIST, dest_orig );
       return;
@@ -1533,7 +1535,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
       /*
         Waldo said we don't always know the size of what we're writing...
       if ( m_size == _size ) {
-	error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
+        error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
       } else
       */
       error( ERR_FILE_ALREADY_EXIST, dest_orig );

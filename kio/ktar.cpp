@@ -82,7 +82,7 @@ bool KTarBase::open( int mode )
       int n = read( buffer, 0x200 );
       if ( n == 0x200 && buffer[0] != 0 )
       {
-	QString name( buffer );
+        QString name( buffer );
 
         // If filename is longer than 100 (0x64) chars, then tar uses ././@LongLink (David)
         if ( name == "././@LongLink" )
@@ -102,55 +102,55 @@ bool KTarBase::open( int mode )
             break;
         }
 
-	bool isdir = false;
-	QString nm;
+        bool isdir = false;
+        QString nm;
 
-	if ( name.right(1) == "/" )
-	{
-	  isdir = true;
-	  name = name.left( name.length() - 1 );
-	}
+        if ( name.right(1) == "/" )
+        {
+          isdir = true;
+          name = name.left( name.length() - 1 );
+        }
 
-	int pos = name.findRev( '/' );
-	if ( pos == -1 )
-	  nm = name;
-	else
-	  nm = name.mid( pos + 1 );
+        int pos = name.findRev( '/' );
+        if ( pos == -1 )
+          nm = name;
+        else
+          nm = name.mid( pos + 1 );
 
-	// read access
-	buffer[ 0x6a ] = 0;
-	char *dummy;
-	const char* p = buffer + 0x64;
-	while( *p == ' ' ) ++p;
-	int access = (int)strtol( p, &dummy, 8 );
+        // read access
+        buffer[ 0x6a ] = 0;
+        char *dummy;
+        const char* p = buffer + 0x64;
+        while( *p == ' ' ) ++p;
+        int access = (int)strtol( p, &dummy, 8 );
 
-	// read user and group
-	QString user( buffer + 0x109 );
-	QString group( buffer + 0x129 );
-	QString symlink(buffer + 0x9d );
+        // read user and group
+        QString user( buffer + 0x109 );
+        QString group( buffer + 0x129 );
+        QString symlink(buffer + 0x9d );
 
-	// read time
-	buffer[ 0x93 ] = 0;
-	p = buffer + 0x88;
-	while( *p == ' ' ) ++p;
-	int time = (int)strtol( p, &dummy, 8 );
+        // read time
+        buffer[ 0x93 ] = 0;
+        p = buffer + 0x88;
+        while( *p == ' ' ) ++p;
+        int time = (int)strtol( p, &dummy, 8 );
 
-	KTarEntry* e;
-	if ( isdir )
-	  e = new KTarDirectory( this, nm, access, time, user, group, symlink );
-	else
-	{
-	  // read size
-	  buffer[ 0x87 ] = 0;
-	  char *dummy;
-	  const char* p = buffer + 0x7c;
-	  while( *p == ' ' ) ++p;
-	  int size = (int)strtol( p, &dummy, 8 );
+        KTarEntry* e;
+        if ( isdir )
+          e = new KTarDirectory( this, nm, access, time, user, group, symlink );
+        else
+        {
+          // read size
+          buffer[ 0x87 ] = 0;
+          char *dummy;
+          const char* p = buffer + 0x7c;
+          while( *p == ' ' ) ++p;
+          int size = (int)strtol( p, &dummy, 8 );
 
-	  int rest = size % 0x200;
+          int rest = size % 0x200;
 
-	  // Read content
-	  QByteArray arr( size );
+          // Read content
+          QByteArray arr( size );
           if ( size )
           {
             assert( arr.data() );
@@ -168,23 +168,23 @@ bool KTarBase::open( int mode )
             }
           }
 
-	  e = new KTarFile( this, nm, access, time, user, group, symlink,
-			    position(), size, arr );
-	}
+          e = new KTarFile( this, nm, access, time, user, group, symlink,
+                            position(), size, arr );
+        }
 
-	if ( pos == -1 )
-	  m_dir->addEntry( e );
-	else
-	{
+        if ( pos == -1 )
+          m_dir->addEntry( e );
+        else
+        {
           // In some tar files we can find dir/./file => call cleanDirPath
           QString path = QDir::cleanDirPath( name.left( pos ) );
           // Ensure container directory exists, create otherwise
           KTarDirectory * d = findOrCreate( path );
-	  d->addEntry( e );
-	}
+          d->addEntry( e );
+        }
       }
       else
-	ende = true;
+        ende = true;
     } while( !ende );
   }
 
@@ -226,8 +226,8 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
   //debug("found parent %s adding %s to ensure %s", parent->name().latin1(), dirname.latin1(), path.latin1());
   // Found -> add the missing piece
   KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(),
-					 m_dir->date(), m_dir->user(),
-					 m_dir->group(), m_dir->symlink() );
+                                         m_dir->date(), m_dir->user(),
+                                         m_dir->group(), m_dir->symlink() );
   parent->addEntry( e );
   return e; // now a directory to <path> exists
 }
@@ -486,7 +486,7 @@ bool KTarGz::open( int mode )
     m = "wb";
   else
   {
-    qWarning("KTarBase::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
+    qWarning("KTarGz::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
     return false;
   }
 
@@ -559,8 +559,8 @@ int KTarData::position()
 
 
 KTarEntry::KTarEntry( KTarBase* t, const QString& name, int access, int date,
-		      const QString& user, const QString& group, const
-		      QString& symlink)
+                      const QString& user, const QString& group, const
+                      QString& symlink)
 {
   m_name = name;
   m_access = access;
@@ -584,9 +584,9 @@ QDateTime KTarEntry::datetime() const
 ////////////////////////////////////////////////////////////////////////
 
 KTarFile::KTarFile( KTarBase* t, const QString& name, int access, int date,
-		    const QString& user, const QString& group,
-		    const QString & symlink,
-		    int pos, int size, const QByteArray& data )
+                    const QString& user, const QString& group,
+                    const QString & symlink,
+                    int pos, int size, const QByteArray& data )
   : KTarEntry( t, name, access, date, user, group, symlink ), m_data( data )
 {
   m_pos = pos;
@@ -615,9 +615,9 @@ QByteArray KTarFile::data() const
 
 
 KTarDirectory::KTarDirectory( KTarBase* t, const QString& name, int access,
-			      int date,
-			      const QString& user, const QString& group,
-			      const QString &symlink)
+                              int date,
+                              const QString& user, const QString& group,
+                              const QString &symlink)
   : KTarEntry( t, name, access, date, user, group, symlink )
 {
   m_entries.setAutoDelete( true );

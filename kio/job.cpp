@@ -117,7 +117,7 @@ void Job::removeSubjob( Job *job )
     subjobs.remove(job);
     if (subjobs.isEmpty())
     {
-	emit result(this);
+        emit result(this);
         delete this; // Suicide is painless
     }
 }
@@ -169,9 +169,9 @@ void Job::slotResult( Job *job )
     // Did job have an error ?
     if ( job->error() && !m_error )
     {
-	// Store it in the parent only if first error
-	m_error = job->error();
-	m_errorText = job->errorText();
+        // Store it in the parent only if first error
+        m_error = job->error();
+        m_errorText = job->errorText();
     }
     removeSubjob(job);
 }
@@ -253,7 +253,7 @@ SimpleJob::~SimpleJob()
         m_slave->kill();
         Scheduler::jobFinished( this, m_slave ); // deletes the slave
 #endif
-	Scheduler::cancelJob( this );
+        Scheduler::cancelJob( this );
         m_slave = 0; // -> set to 0
     }
 }
@@ -262,25 +262,25 @@ void SimpleJob::start(Slave *slave)
 {
     m_slave = slave;
     connect( m_slave, SIGNAL( error( int , const QString & ) ),
-	     SLOT( slotError( int , const QString & ) ) );
+             SLOT( slotError( int , const QString & ) ) );
 
     connect( m_slave, SIGNAL( warning( const QString & ) ),
-	     SLOT( slotWarning( const QString & ) ) );
+             SLOT( slotWarning( const QString & ) ) );
 
     connect( m_slave, SIGNAL( infoMessage( const QString & ) ),
-	     SLOT( slotInfoMessage( const QString & ) ) );
+             SLOT( slotInfoMessage( const QString & ) ) );
 
     connect( m_slave, SIGNAL( finished() ),
-	     SLOT( slotFinished() ) );
+             SLOT( slotFinished() ) );
 
     connect( m_slave, SIGNAL( totalSize( unsigned long ) ),
-	     SLOT( slotTotalSize( unsigned long ) ) );
+             SLOT( slotTotalSize( unsigned long ) ) );
 
     connect( m_slave, SIGNAL( processedSize( unsigned long ) ),
-	     SLOT( slotProcessedSize( unsigned long ) ) );
+             SLOT( slotProcessedSize( unsigned long ) ) );
 
     connect( m_slave, SIGNAL( speed( unsigned long ) ),
-	     SLOT( slotSpeed( unsigned long ) ) );
+             SLOT( slotSpeed( unsigned long ) ) );
 
     m_slave->connection()->send( m_command, m_packedArgs );
 }
@@ -605,13 +605,13 @@ void TransferJob::start(Slave *slave)
     assert(slave);
 
     connect( slave, SIGNAL( data( const QByteArray & ) ),
-	     SLOT( slotData( const QByteArray & ) ) );
+             SLOT( slotData( const QByteArray & ) ) );
 
     connect( slave, SIGNAL( dataReq() ),
-	     SLOT( slotDataReq() ) );
+             SLOT( slotDataReq() ) );
 
     connect( slave, SIGNAL( redirection(const KURL &) ),
-	     SLOT( slotRedirection(const KURL &) ) );
+             SLOT( slotRedirection(const KURL &) ) );
 
     connect( slave, SIGNAL(mimeType( const QString& ) ),
              SLOT( slotMimetype( const QString& ) ) );
@@ -967,18 +967,18 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     slotProcessedSize( m_processedEntries );
 
     if (recursive) {
-	UDSEntryListConstIterator it = list.begin();
-	UDSEntryListConstIterator end = list.end();
+        UDSEntryListConstIterator it = list.begin();
+        UDSEntryListConstIterator end = list.end();
 
-	for (; it != end; ++it) {
-	    bool isDir = false;
-	    bool isLink = false;
-	    QString filename;
-	
-	    UDSEntry::ConstIterator it2 = (*it).begin();
-	    UDSEntry::ConstIterator end2 = (*it).end();
-	    for( ; it2 != end2; it2++ ) {
-		switch( (*it2).m_uds ) {
+        for (; it != end; ++it) {
+            bool isDir = false;
+            bool isLink = false;
+            QString filename;
+
+            UDSEntry::ConstIterator it2 = (*it).begin();
+            UDSEntry::ConstIterator end2 = (*it).end();
+            for( ; it2 != end2; it2++ ) {
+                switch( (*it2).m_uds ) {
                     case UDS_FILE_TYPE:
                         isDir = S_ISDIR((*it2).m_long);
                         break;
@@ -991,27 +991,27 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                         break;
                     default:
                         break;
-		}
-	    }
-	    if (isDir && !isLink) {
-		if (filename != ".." && filename != ".") {
- 		    KURL newone = url();
-		    newone.addPath(filename);
-		    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/");
-		    connect(job, SIGNAL(entries( KIO::Job *,
-						 const KIO::UDSEntryList& )),
-			    SLOT( gotEntries( KIO::Job*,
-					      const KIO::UDSEntryList& )));
-		    addSubjob(job);
-		}
-	    }
-	}
+                }
+            }
+            if (isDir && !isLink) {
+                if (filename != ".." && filename != ".") {
+                    KURL newone = url();
+                    newone.addPath(filename);
+                    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/");
+                    connect(job, SIGNAL(entries( KIO::Job *,
+                                                 const KIO::UDSEntryList& )),
+                            SLOT( gotEntries( KIO::Job*,
+                                              const KIO::UDSEntryList& )));
+                    addSubjob(job);
+                }
+            }
+        }
     }
 
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
     if (prefix.isNull()) {
-	emit entries(this, list);
-	return;
+        emit entries(this, list);
+        return;
     }
 
     UDSEntryList newlist;
@@ -1019,16 +1019,16 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     UDSEntryListConstIterator it = list.begin();
     UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it) {
-	
-	UDSEntry newone = *it;
-	UDSEntry::Iterator it2 = newone.begin();
+
+        UDSEntry newone = *it;
+        UDSEntry::Iterator it2 = newone.begin();
         QString filename;
-	for( ; it2 != newone.end(); it2++ ) {
-	    if ((*it2).m_uds == UDS_NAME) {
+        for( ; it2 != newone.end(); it2++ ) {
+            if ((*it2).m_uds == UDS_NAME) {
                 filename = (*it2).m_str;
-		(*it2).m_str = prefix + filename;
+                (*it2).m_str = prefix + filename;
             }
-	}
+        }
         // Avoid returning entries like subdir/. and subdir/..
         if (filename != ".." && filename != ".")
             newlist.append(newone);
@@ -1053,7 +1053,28 @@ void ListJob::slotResult( KIO::Job * job )
 
 void ListJob::slotRedirection( const KURL & url )
 {
+    m_redirectionURL = url; // We'll remember that when the job finishes
     emit redirection( this, url );
+}
+
+void ListJob::slotFinished()
+{
+    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    {
+        // Return slave to the scheduler
+        SimpleJob::slotFinished();
+    } else {
+        kdDebug(7007) << "ListJob: Redirection to " << m_redirectionURL.url() << endl;
+        m_url = m_redirectionURL;
+        m_redirectionURL = KURL();
+        m_packedArgs.truncate(0);
+        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        stream << m_url;
+
+        // Return slave to the scheduler
+        slaveDone();
+        Scheduler::doJob(this);
+    }
 }
 
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
@@ -1071,7 +1092,7 @@ ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo)
 void ListJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
-	     SLOT( slotListEntries( const KIO::UDSEntryList& )));
+             SLOT( slotListEntries( const KIO::UDSEntryList& )));
     connect( slave, SIGNAL( totalSize( unsigned long ) ),
              SLOT( slotTotalSize( unsigned long ) ) );
     connect( slave, SIGNAL( redirection(const KURL &) ),
@@ -1089,20 +1110,20 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
-	     Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+             Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
 
     connect( this, SIGNAL( canResume( KIO::Job*, bool ) ),
-	     Observer::self(), SLOT( slotCanResume( KIO::Job*, bool ) ) );
+             Observer::self(), SLOT( slotCanResume( KIO::Job*, bool ) ) );
   }
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false );
@@ -1314,11 +1335,11 @@ void CopyJob::slotResultStating( Job *job )
     {
         kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
 
-	kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << endl;
-	// emit all signals for total numbers
-	emit totalSize( this, m_totalSize );
-	emit totalFiles( this, 1 );
-	emit totalDirs( this, 0 );
+        kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << endl;
+        // emit all signals for total numbers
+        emit totalSize( this, m_totalSize );
+        emit totalFiles( this, 1 );
+        emit totalDirs( this, 0 );
 
         // Skip the "listing" stage and go directly copying the file
         state = STATE_COPYING_FILES;
@@ -1517,7 +1538,7 @@ void CopyJob::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
         KIO::Job * newjob = KIO::mkdir( (*it).uDest, -1 );
-	emit creatingDir( this, (*it).uDest );
+        emit creatingDir( this, (*it).uDest );
         addSubjob(newjob);
         return;
     }
@@ -1811,20 +1832,20 @@ void CopyJob::copyNextFile()
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
-	    emit moving( this, (*it).uSource, (*it).uDest );
+            emit moving( this, (*it).uSource, (*it).uDest );
             Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
-	    emit copying( this, (*it).uSource, (*it).uDest );
+            emit copying( this, (*it).uSource, (*it).uDest );
             if ( m_progressId ) // Did we get an ID from the observer ?
                 Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
         }
         addSubjob(newjob);
-	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     }
     else
     {
@@ -1911,14 +1932,14 @@ void CopyJob::slotResult( Job *job )
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
-		emit copyingDone( this, m_srcList.first(), m_currentDest, true, true );
+                emit copyingDone( this, m_srcList.first(), m_currentDest, true, true );
                 m_srcList.remove(m_srcList.begin()); // done with this url
                 startNextJob(); // done
             }
         }
         break;
         case STATE_LISTING: // recursive listing finished
-	    kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
+            kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?
             if (job->error())
             {
@@ -1929,10 +1950,10 @@ void CopyJob::slotResult( Job *job )
             subjobs.remove( job );
             assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-	    // emit all signals for total numbers
-	    emit totalSize( this, m_totalSize );
-	    emit totalFiles( this, files.count() );
-	    emit totalDirs( this, dirs.count() );
+            // emit all signals for total numbers
+            emit totalSize( this, m_totalSize );
+            emit totalFiles( this, files.count() );
+            emit totalDirs( this, dirs.count() );
 
             state = STATE_CREATING_DIRS;
             createNextDir();
@@ -2022,17 +2043,17 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+             Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
-	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
+             Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
   }
   startNextJob();
 }
@@ -2128,18 +2149,18 @@ void DeleteJob::deleteNextFile()
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
- 	    emit deleting( this, *it );
+            emit deleting( this, *it );
         } else
         {
             // Normal deletion
             job = KIO::file_delete( *it, false /*no GUI*/);
-	    emit deleting( this, *it );
+            emit deleting( this, *it );
         }
         if ( isLink ) symlinks.remove(it);
                  else files.remove(it);
         addSubjob(job);
-	connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     } else
     {
         state = STATE_DELETING_DIRS;
@@ -2276,10 +2297,10 @@ void DeleteJob::slotResult( Job *job )
             assert( subjobs.isEmpty() );
             kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
 
-	    // emit all signals for total numbers
-	    emit totalSize( this, m_totalSize );
-	    emit totalFiles( this, files.count() );
-	    emit totalDirs( this, dirs.count() );
+            // emit all signals for total numbers
+            emit totalSize( this, m_totalSize );
+            emit totalFiles( this, files.count() );
+            emit totalDirs( this, dirs.count() );
 
             state = STATE_DELETING_FILES;
             deleteNextFile();
