@@ -30,6 +30,8 @@
 #include <time.h>
 #include <stdlib.h>
 
+class KDirWatch;
+
 class KWalletD : public KDEDModule {
 	Q_OBJECT
 	K_DCOP
@@ -99,6 +101,7 @@ class KWalletD : public KDEDModule {
 
 	private slots:
 		void slotAppUnregistered(const QCString& app);
+		void emitWalletListDirty();
 
 	private:
 		// This also validates the handle.  May return NULL.
@@ -114,6 +117,7 @@ class KWalletD : public KDEDModule {
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
 		QMap<QString,QCString> _passwords;
+		KDirWatch *_dw;
 };
 
 

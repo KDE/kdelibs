@@ -25,6 +25,7 @@
 #include <dcopclient.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kdirwatch.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kpassdlg.h>
@@ -55,6 +56,10 @@ KWalletD::KWalletD(const QCString &name)
 		SIGNAL(applicationRemoved(const QCString&)),
 		this,
 		SLOT(slotAppUnregistered(const QCString&)));
+	_dw = new KDirWatch(this, "KWallet Directory Watcher");
+	_dw->addDir(KGlobal::dirs()->saveLocation("kwallet"));
+	_dw->startScan(true);
+	connect(_dw, SIGNAL(dirty(const QString&)), this, SLOT(emitWalletListDirty()));
 }
   
 
@@ -570,6 +575,11 @@ void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	ds << wallet;
 	ds << folder;
 	emitDCOPSignal("folderUpdated(QString, QString)", data);
+}
+
+
+void KWalletD::emitWalletListDirty() {
+	emitDCOPSignal("walletListDirty()", QByteArray());
 }
 
 #include "kwalletd.moc"
