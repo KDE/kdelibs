@@ -177,9 +177,7 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
       }
     } else
     {
-      // We have no database at all
-      _self = 0L;
-      delete this;
+      // We have no database at all.. uh-oh
     }
 }
 
