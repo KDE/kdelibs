@@ -100,7 +100,7 @@ class KGlobalAccel : public QObject
 	 * @param sAction the name of the action to remove
 	 * @since 3.1
          */
-        void remove( const QString& sAction );
+        bool remove( const QString& sAction );
         
 	/**
 	 * Use this to insert a label into the action list.  This will be

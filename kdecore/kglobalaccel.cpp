@@ -58,8 +58,8 @@ KAccelAction* KGlobalAccel::insert( const QString& sName, const QString& sDesc )
 bool KGlobalAccel::updateConnections()
 	{ return d->updateConnections(); }
 
-void KGlobalAccel::remove( const QString& sAction )
-        { d->remove( sAction ); }
+bool KGlobalAccel::remove( const QString& sAction )
+        { return d->remove( sAction ); }
         
 const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
 {
