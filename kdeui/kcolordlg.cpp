@@ -929,7 +929,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   // The add to custom colors button
   //
   QPushButton *button = new QPushButton( page );
-  button->setText(i18n("Add to &Custom Colors"));
+  button->setText(i18n("&Add to Custom Colors"));
   l_hbox->addWidget(button, 0, AlignLeft);
   connect( button, SIGNAL( clicked()), 
            SLOT( slotAddToCustomColors()));
