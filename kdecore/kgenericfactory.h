@@ -237,7 +237,7 @@ protected:
  * </pre>
  */
 template <class Product, class ProductListTail>
-class KGenericFactory< KTypeList<Product, ProductListTail> > 
+class KGenericFactory< KTypeList<Product, ProductListTail>, QObject > 
     : public KLibFactory,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {

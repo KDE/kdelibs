@@ -208,7 +208,7 @@ namespace KDEPrivate
     };
  
     template <class Product, class ProductListTail>
-    class MultiFactory< KTypeList<Product, ProductListTail> >
+    class MultiFactory< KTypeList<Product, ProductListTail>, QObject >
     {
     public:
         inline static QObject *create( QWidget *parentWidget, const char *widgetName,
