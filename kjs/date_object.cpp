@@ -654,7 +654,11 @@ static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 // we follow the recommendation of rfc2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000"
 static const struct {
+#ifdef _WIN32
+    char tzName[4];
+#else
     const char tzName[4];
+#endif
     int tzOffset;
 } known_zones[] = {
     { "UT", 0 },
@@ -675,12 +679,13 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
     int utcOffset;
     if (utc) {
 	time_t zero = 0;
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
 	struct tm t3;
        	localtime_r(&zero, &t3);
-#if defined BSD || defined(__linux__) || defined(__APPLE__)
         utcOffset = t3.tm_gmtoff;
         t->tm_isdst = t3.tm_isdst;
 #else
+        (void)localtime(&zero);
 #  if defined(__BORLANDC__)
         utcOffset = - _timezone;
 #  else
