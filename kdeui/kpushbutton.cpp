@@ -78,6 +78,7 @@ void KPushButton::init( const KGuiItem &item )
     d->item = item;
     setText( item.text() );
     slotSettingsChanged( 0 );
+    setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
     
     if (kapp)
     {

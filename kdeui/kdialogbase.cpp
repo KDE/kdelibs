@@ -207,7 +207,7 @@ void SButton::resize( bool sameWidth, int margin,
     {
       QSize s( p->sizeHint() );
       if( sameWidth == true ) { s.setWidth( w ); }
-      p->setFixedSize( s );
+      p->setFixedWidth( s.width() );
       t += s.width() + spacing;
     }
 
