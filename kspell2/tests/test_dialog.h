@@ -21,8 +21,8 @@
 #ifndef TEST_DIALOG_H
 #define TEST_DIALOG_H
 
-#include "kspell_dialog.h"
-#include "kspell_broker.h"
+#include "dialog.h"
+#include "broker.h"
 
 #include <qobject.h>
 

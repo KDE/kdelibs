@@ -52,7 +52,7 @@ namespace KSpell2
         void changed();
 
     protected slots:
-        void defaultSettingsurationChanged();
+        void defaultConfigurationChanged();
 
     private:
         class Private;

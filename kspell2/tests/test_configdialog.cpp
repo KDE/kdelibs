@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307  USA
  */
-#include "kspell_configdialog.h"
-#include "kspell_broker.h"
+#include "configdialog.h"
+#include "broker.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -30,7 +30,7 @@ int main( int argc, char** argv )
     KApplication app(argc, argv, "KSpell2Test");
 
     Broker::Ptr broker = Broker::openBroker();
-    SettingsDialog *dialog = new SettingsDialog( broker, 0 );
+    ConfigDialog *dialog = new ConfigDialog( broker, 0 );
 
     dialog->show();
 

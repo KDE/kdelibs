@@ -24,7 +24,7 @@
 #include <qobject.h>
 #include <qdatetime.h>
 
-#include "kspell_backgroundchecker.h"
+#include "backgroundchecker.h"
 
 class BackgroundTest : public QObject
 {

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307  USA
  */
-#include "kspell_broker.h"
-#include "kspell_dictionary.h"
+#include "broker.h"
+#include "dictionary.h"
 
 #include <kapplication.h>
 #include <kdebug.h>

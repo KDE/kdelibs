@@ -21,7 +21,7 @@
 #include "backgroundtest.h"
 #include "backgroundtest.moc"
 
-#include "kspell_broker.h"
+#include "broker.h"
 using namespace KSpell2;
 
 #include <kapplication.h>

@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307  USA
  */
-#include "kspell_highlighter.h"
-#include "kspell_dictionary.h"
-#include "kspell_filter.h"
+#include "highlighter.h"
+#include "dictionary.h"
+#include "filter.h"
 
 #include <kapplication.h>
 #include <kdebug.h>

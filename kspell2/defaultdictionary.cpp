@@ -80,7 +80,7 @@ bool DefaultDictionary::addToSession( const QString& word )
     return d->dict->addToSession( word );
 }
 
-void DefaultDictionary::defaultSettingsurationChanged()
+void DefaultDictionary::defaultConfigurationChanged()
 {
     delete d->dict;
     d->dict = d->broker->dictionary();

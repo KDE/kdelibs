@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT $(all_includes)
+AM_CPPFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT -I$(top_srcdir)/kspell2 -I$(top_srcdir)/kspell2/ui $(all_includes)
 METASOURCES = AUTO
 
 
@@ -15,10 +15,10 @@ backgroundtest_SOURCES = backgroundtest.cpp
 backgroundtest_LDADD = ../libkspell2.la $(LIB_KDECORE)
 
 test_dialog_SOURCES = test_dialog.cpp
-test_dialog_LDADD = libkspell2ui.la $(LIB_KDECORE)
+test_dialog_LDADD = ../libkspell2.la $(LIB_KDECORE)
 
 test_highlighter_SOURCES = test_highlighter.cpp
-test_highlighter_LDADD = libkspell2ui.la $(LIB_KDECORE)
+test_highlighter_LDADD = ../libkspell2.la $(LIB_KDECORE)
 
 test_configdialog_SOURCES = test_configdialog.cpp
-test_configdialog_LDADD = libkspell2ui.la $(LIB_KDECORE)
+test_configdialog_LDADD = ../libkspell2.la $(LIB_KDECORE)

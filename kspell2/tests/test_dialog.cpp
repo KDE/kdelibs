@@ -21,9 +21,9 @@
 #include "test_dialog.h"
 #include "test_dialog.moc"
 
-#include "kspell_backgroundchecker.h"
-#include "kspell_dictionary.h"
-#include "kspell_filter.h"
+#include "backgroundchecker.h"
+#include "dictionary.h"
+#include "filter.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
