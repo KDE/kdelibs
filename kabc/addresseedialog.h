@@ -17,32 +17,54 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_ADDRESSEEDIALOG_H
 #define KABC_ADDRESSEEDIALOG_H
 
 #include <qdict.h>
 
 #include <kdialogbase.h>
-#include <klistview.h>
 #include <klineedit.h>
+#include <klistview.h>
 
 #include "addressbook.h"
 
 namespace KABC {
 
+/**
+ * @short Special ListViewItem, that is used by the @ref AddresseeDialog.
+ */
 class AddresseeItem : public QListViewItem
 {
-  public:
-    enum columns { Name = 0, Email = 1 };
+public:
 
-    AddresseeItem( QListView *parent, const Addressee &addressee );
+  /**
+   * Type of column
+   * @li @p Name -  Name in Addressee
+   * @li @p Email - Email in Addressee
+   */
+  enum columns { Name = 0, Email = 1 };
 
-    Addressee addressee() const { return mAddressee; }
+  /**
+   * Constructor.
+   *
+   * @param parent    The parent listview.
+   * @param addressee The associated addressee.
+   */
+  AddresseeItem( QListView *parent, const Addressee &addressee );
 
-    virtual QString key( int column, bool ascending ) const;
+  /**
+   * Returns the addressee.
+   */
+  Addressee addressee() const { return mAddressee; }
 
-  private:
-    Addressee mAddressee;
+  /**
+   * Method used by QListView to sort the items.
+   */
+  virtual QString key( int column, bool ascending ) const;
+
+private:
+  Addressee mAddressee;
 };
 
 /**
@@ -58,77 +80,78 @@ class AddresseeItem : public QListViewItem
  * return or pressing the ok button to return the selected addressee to the
  * application.
  */
-class AddresseeDialog : public KDialogBase {
-    Q_OBJECT
-  public:
-    /**
-     * Construct addressbook entry select dialog.
-     *
-     * @param parent parent widget
-     */
-    AddresseeDialog( QWidget *parent=0, bool multiple=false );
+class AddresseeDialog : public KDialogBase
+{
+  Q_OBJECT
 
-    /**
-     * Destructor.
-     */
-    virtual ~AddresseeDialog();
+public:
+  /**
+   * Construct addressbook entry select dialog.
+   *
+   * @param parent parent widget
+   */
+  AddresseeDialog( QWidget *parent=0, bool multiple=false );
 
-    /**
-     * Return the address chosen.
-     *
-     * If it is a multiple select, this will return only the first address chosen
-     */
-    Addressee addressee();
+  /**
+   * Destructor.
+   */
+  virtual ~AddresseeDialog();
 
-    /**
-     * Return the list of addresses chosen
-     */
-    Addressee::List addressees();
+  /**
+   * Return the address chosen.
+   *
+   * If it is a multiple select, this will return only the first address chosen
+   */
+  Addressee addressee();
 
-    /**
-     * Select a single address book entry.
-     *
-     * Open addressee select dialog and return the entry selected by the user.
-     * If the user doesn't select an entry or presses cancel, the returned
-     * addressee is empty.
-     */
-    static Addressee getAddressee( QWidget *parent );
+  /**
+   * Return the list of addresses chosen
+   */
+  Addressee::List addressees();
 
-    /**
-     * Select multiple adress book entries.
-     * 
-     * Open addressee select dialog and return the entries selected by the user.
-     * If the user doesn't select an entry or presses cancel, the returned
-     * addressee list is empty.
-     */
-    static Addressee::List getAddressees( QWidget *parent );
+  /**
+   * Select a single address book entry.
+   *
+   * Open addressee select dialog and return the entry selected by the user.
+   * If the user doesn't select an entry or presses cancel, the returned
+   * addressee is empty.
+   */
+  static Addressee getAddressee( QWidget *parent );
 
-  private slots:
-    void selectItem( const QString & );
-    void updateEdit( QListViewItem *item );
-    void addSelected( QListViewItem *item );
-    void removeSelected();
+  /**
+   * Select multiple adress book entries.
+   * 
+   * Open addressee select dialog and return the entries selected by the user.
+   * If the user doesn't select an entry or presses cancel, the returned
+   * addressee list is empty.
+   */
+  static Addressee::List getAddressees( QWidget *parent );
 
-  private:
-    void loadAddressBook();
-    void addCompletionItem( const QString &str, QListViewItem *item );
+private slots:
+  void selectItem( const QString & );
+  void updateEdit( QListViewItem *item );
+  void addSelected( QListViewItem *item );
+  void removeSelected();
 
-    bool mMultiple;
+private:
+  void loadAddressBook();
+  void addCompletionItem( const QString &str, QListViewItem *item );
 
-    KListView *mAddresseeList;
-    KLineEdit *mAddresseeEdit;
+  bool mMultiple;
 
-    KListView *mSelectedList;
+  KListView *mAddresseeList;
+  KLineEdit *mAddresseeEdit;
 
-    AddressBook *mAddressBook;
+  KListView *mSelectedList;
 
-    QDict<QListViewItem> mItemDict;
-    QDict<QListViewItem> mSelectedDict;
+  AddressBook *mAddressBook;
 
-    class AddresseeDialogPrivate;
-    AddresseeDialogPrivate *d;
+  QDict<QListViewItem> mItemDict;
+  QDict<QListViewItem> mSelectedDict;
+
+  class AddresseeDialogPrivate;
+  AddresseeDialogPrivate *d;
 };
 
 }
-
 #endif

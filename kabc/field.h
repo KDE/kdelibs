@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_FIELD_H
 #define KABC_FIELD_H
 
@@ -31,141 +32,140 @@ namespace KABC {
 
 class Field
 {
-    class FieldImpl;
-    friend class FieldImpl;
+  class FieldImpl;
+  friend class FieldImpl;
 
-  public:
-    typedef QValueList<Field *> List;
+public:
+  typedef QValueList<Field *> List;
 
-    /**
-     * @li @p All -
-     * @li @p Frequent -
-     * @li @p Address -
-     * @li @p Email -
-     * @li @p Personal -
-     * @li @p Organization -
-     * @li @p CustomCategory -
-     */  
-    enum FieldCategory
-    {
-      All = 0x0,
-      Frequent = 0x01,
-      Address = 0x02,
-      Email = 0x04,
-      Personal = 0x08,
-      Organization = 0x10,
-      CustomCategory = 0x20
-    };
+  /**
+   * @li @p All -
+   * @li @p Frequent -
+   * @li @p Address -
+   * @li @p Email -
+   * @li @p Personal -
+   * @li @p Organization -
+   * @li @p CustomCategory -
+   */  
+  enum FieldCategory
+  {
+    All = 0x0,
+    Frequent = 0x01,
+    Address = 0x02,
+    Email = 0x04,
+    Personal = 0x08,
+    Organization = 0x10,
+    CustomCategory = 0x20
+  };
 
-    /**
-     * Returns the translated label for this field.
-     */
-    virtual QString label();
+  /**
+   * Returns the translated label for this field.
+   */
+  virtual QString label();
 
-    /**
-     * Returns the  ored categories the field belongs to.
-     */
-    virtual int category();
+  /**
+   * Returns the  ored categories the field belongs to.
+   */
+  virtual int category();
 
-    /**
-     * Returns the translated label for field category.
-     */
-    static QString categoryLabel( int category );
+  /**
+   * Returns the translated label for field category.
+   */
+  static QString categoryLabel( int category );
 
-    /**
-     * Returns a string representation of the value the field has in the given
-     * Addressee. Returns QString::null, if it is not possible to convert the
-     * value to a string.
-     */
-    virtual QString value( const KABC::Addressee & );
+  /**
+   * Returns a string representation of the value the field has in the given
+   * Addressee. Returns QString::null, if it is not possible to convert the
+   * value to a string.
+   */
+  virtual QString value( const KABC::Addressee & );
 
-    /**
-     * Sets the value of the field in the given Addressee. Returns true on success
-     * or false, if the given string couldn't be converted to a valid value.
-     */
-    virtual bool setValue( KABC::Addressee &, const QString & );
+  /**
+   * Sets the value of the field in the given Addressee. Returns true on success
+   * or false, if the given string couldn't be converted to a valid value.
+   */
+  virtual bool setValue( KABC::Addressee &, const QString & );
 
-    /**
-     * Returns, if the field is a user-defined field.
-     */
-    virtual bool isCustom();
+  /**
+   * Returns, if the field is a user-defined field.
+   */
+  virtual bool isCustom();
 
-    /**
-     * Returns, if the field is equal with @param field.
-     */
-    virtual bool equals( Field *field );
+  /**
+   * Returns, if the field is equal with @param field.
+   */
+  virtual bool equals( Field *field );
 
-    /**
-     * Returns a list of all fields.
-     */
-    static Field::List allFields();
+  /**
+   * Returns a list of all fields.
+   */
+  static Field::List allFields();
 
-    /**
-     * Returns a list of the default fields.
-     */
-    static Field::List defaultFields();
+  /**
+   * Returns a list of the default fields.
+   */
+  static Field::List defaultFields();
 
-    /**
-     * Creates a custom field.
-     *
-     * @param label    The label for this field
-     * @param category The category of this field
-     * @param key      Unique key for this field
-     * @param app      Unique app name for this field
-     */
-    static Field *createCustomField( const QString &label, int category,
-                                     const QString &key, const QString &app );
+  /**
+   * Creates a custom field.
+   *
+   * @param label    The label for this field
+   * @param category The category of this field
+   * @param key      Unique key for this field
+   * @param app      Unique app name for this field
+   */
+  static Field *createCustomField( const QString &label, int category,
+                                   const QString &key, const QString &app );
 
-    /**
-     * Delete all fields from list.
-     */
-    static void deleteFields();
+  /**
+   * Delete all fields from list.
+   */
+  static void deleteFields();
 
-    /**
-     * Save the field settings to a config file.
-     *
-     * @param cfg        The config file object
-     * @param identifier The unique identifier
-     * @param fields     The list of the fields
-     */
-    static void saveFields( KConfig *cfg, const QString &identifier,
-                            const Field::List &fields );
-    /**
-     * This is the same as above, with the difference, that
-     * the list is stored in KGlobal::config() in group "KABCFields".
-     */
-    static void saveFields( const QString &identifier,
-                            const Field::List &fields );
+  /**
+   * Save the field settings to a config file.
+   *
+   * @param cfg        The config file object
+   * @param identifier The unique identifier
+   * @param fields     The list of the fields
+   */
+  static void saveFields( KConfig *cfg, const QString &identifier,
+                          const Field::List &fields );
+  /**
+   * This is the same as above, with the difference, that
+   * the list is stored in KGlobal::config() in group "KABCFields".
+   */
+  static void saveFields( const QString &identifier,
+                          const Field::List &fields );
 
-    /**
-     * Load the field settings from a config file.
-     *
-     * @param cfg        The config file object
-     * @param identifier The unique identifier
-     */
-    static Field::List restoreFields( KConfig *cfg, const QString &identifier );
+  /**
+   * Load the field settings from a config file.
+   *
+   * @param cfg        The config file object
+   * @param identifier The unique identifier
+   */
+  static Field::List restoreFields( KConfig *cfg, const QString &identifier );
 
-    /**
-     * This is the same as above, with the difference, that
-     * the list is loaded from KGlobal::config() from group "KABCFields".
-     */
-    static Field::List restoreFields( const QString &identifier );
+  /**
+   * This is the same as above, with the difference, that
+   * the list is loaded from KGlobal::config() from group "KABCFields".
+   */
+  static Field::List restoreFields( const QString &identifier );
 
-  protected:
-    static void createField( int id, int category = 0 );
-    static void createDefaultField( int id, int category = 0 );
+protected:
+  static void createField( int id, int category = 0 );
+  static void createDefaultField( int id, int category = 0 );
 
-  private:
-    Field( FieldImpl * );
-    virtual ~Field();
+private:
+  Field( FieldImpl * );
+  virtual ~Field();
 
-    FieldImpl *mImpl;
+  FieldImpl *mImpl;
 
-    static Field::List mAllFields;
-    static Field::List mDefaultFields;
-    static Field::List mCustomFields;
+  static Field::List mAllFields;
+  static Field::List mDefaultFields;
+  static Field::List mCustomFields;
 };
 
 }
-
 #endif

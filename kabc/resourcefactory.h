@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef RESOURCEFACTORY_H
-#define RESOURCEFACTORY_H
+#ifndef KABC_RESOURCEFACTORY_H
+#define KABC_RESOURCEFACTORY_H
 
 #include <qdict.h>
 #include <qstring.h>
@@ -31,6 +31,12 @@
 #include "resourceconfigwidget.h"
 
 namespace KABC {
+
+struct ResourceInfo {
+  QString library;
+  QString nameLabel;
+  QString descriptionLabel;
+};
 
 /**
  * Class for loading resource plugins.
@@ -82,6 +88,11 @@ public:
    */
   QStringList resources();
 
+  /**
+   * Returns the info structure for a special type.
+   */
+  ResourceInfo *info( const QString &type );
+
 protected:
   ResourceFactory();
   ~ResourceFactory();
@@ -90,12 +101,6 @@ private:
   KLibrary *openLibrary( const QString& libName );
 
   static ResourceFactory *mSelf;
-
-  struct ResourceInfo {
-    QString library;
-    QString nameLabel;
-    QString descriptionLabel;
-  };
 
   QDict<ResourceInfo> mResourceList;
 };

@@ -17,13 +17,14 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_ADDRESSEE_H
 #define KABC_ADDRESSEE_H
 
-#include <qvaluelist.h>
+#include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdatetime.h>
+#include <qvaluelist.h>
 
 #include <ksharedptr.h>
 #include <kurl.h>

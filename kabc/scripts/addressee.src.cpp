@@ -421,7 +421,7 @@ void Addressee::removeCategory( const QString &c )
 
 bool Addressee::hasCategory( const QString &c ) const
 {
-  return ( mData->categories.find( c ) != mData->categories.end() );
+  return ( mData->categories.contains( c ) );
 }
 
 void Addressee::setCategories( const QStringList &c )

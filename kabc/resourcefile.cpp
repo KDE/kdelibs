@@ -57,11 +57,11 @@ void ResourceFile::init( const QString &filename, Format *format )
     mFormat = format;
   }
 
-  mFileCheckTimer = new QTimer( this );
+  connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( fileChanged() ) );
+  connect( &mDirWatch, SIGNAL( created(const QString&) ), SLOT( fileChanged() ) );
+  connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( fileChanged() ) );
 
   setFileName( filename );
-
-  connect( mFileCheckTimer, SIGNAL( timeout() ), SLOT( checkFile() ) );
 }
 
 Ticket *ResourceFile::requestSaveTicket()
@@ -179,15 +179,13 @@ void ResourceFile::unlock( const QString &fileName )
 
 void ResourceFile::setFileName( const QString &fileName )
 {
+  mDirWatch.stopScan();
+  mDirWatch.removeFile( mFileName );
+
   mFileName = fileName;
 
-  struct stat s;
-  int result = stat( QFile::encodeName( mFileName ), &s );
-  if ( result == 0 ) {
-    mChangeTime  = s.st_ctime;
-  }
-
-  mFileCheckTimer->start( 500 );
+  mDirWatch.addFile( mFileName );
+  mDirWatch.startScan();
 }
 
 QString ResourceFile::fileName() const
@@ -195,23 +193,10 @@ QString ResourceFile::fileName() const
   return mFileName;
 }
 
-void ResourceFile::checkFile()
+void ResourceFile::fileChanged()
 {
-  struct stat s;
-  int result = stat( QFile::encodeName( mFileName ), &s );
-
-#if 0
-  kdDebug(5700) << "AddressBook::checkFile() result: " << result
-            << " new ctime: " << s.st_ctime
-            << " old ctime: " << mChangeTime
-            << endl;
-#endif
-
-  if ( result == 0 && ( mChangeTime != s.st_ctime ) ) {
-    mChangeTime  = s.st_ctime;
-    load();
-    addressBook()->emitAddressBookChanged();
-  }
+  load();
+  addressBook()->emitAddressBookChanged();
 }
 
 QString ResourceFile::identifier() const
@@ -221,7 +206,7 @@ QString ResourceFile::identifier() const
 
 void ResourceFile::removeAddressee( const Addressee& )
 {
-    // this function is only used by record-based resources
+  // this function is only used by record-based resources
 }
 
 #include "resourcefile.moc"

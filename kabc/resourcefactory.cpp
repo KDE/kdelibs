@@ -122,6 +122,14 @@ ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidge
   return widget;
 }
 
+ResourceInfo *ResourceFactory::info( const QString &type )
+{
+  if ( type.isEmpty() )
+    return 0;
+  else
+    return mResourceList[ type ];
+}
+
 Resource *ResourceFactory::resource( const QString& type, AddressBook *ab, const KConfig *config )
 {
   Resource *resource = 0;

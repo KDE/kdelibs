@@ -23,13 +23,19 @@
 
 #include <qstring.h>
 
-#include <kabc/addressee.h>
+#include "addressee.h"
 
 namespace KABC {
 
+/**
+ * Class to convert a vcard string to a addressee and vice versa.
+ * At the moment there exists read support for vCard2.1 and vCard3.0
+ * and write support for vCard3.0
+ */
 class VCardConverter
 {
 public:
+
   /**
    * @li v2_1 - VCard format version 2.1
    * @li v3_0 - VCard format version 3.0
@@ -40,11 +46,33 @@ public:
     v3_0
   };
 
+  /**
+   * Constructor.
+   */
   VCardConverter();
+
+  /**
+   * Destructor.
+   */
   ~VCardConverter();
   
-  bool VCardToAddressee( const QString &str, Addressee &addr, Version = v3_0 );
-  bool AddresseeToVCard( const Addressee &addr, QString &str, Version = v3_0 );
+  /**
+   * Converts a vcard string to an addressee.
+   *
+   * @param str     The vcard string.
+   * @param addr    The addressee.
+   * @param version The version of the vcard string.
+   */
+  bool VCardToAddressee( const QString &str, Addressee &addr, Version version = v3_0 );
+
+  /**
+   * Converts an addressee to a vcard string.
+   *
+   * @param addr    The addressee.
+   * @param str     The vcard string.
+   * @param version The version of the vcard string.
+   */
+  bool AddresseeToVCard( const Addressee &addr, QString &str, Version version = v3_0 );
 
 private:
   struct VCardConverterData;

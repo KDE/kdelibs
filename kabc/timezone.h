@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_TIMEZONE_H
 #define KABC_TIMEZONE_H
 
@@ -24,61 +25,63 @@
 
 namespace KABC {
 
-/*
-  @short Time zone information.
-  
-  This class stores information about a time zone.
-*/
+/**
+ * @short Time zone information.
+ * 
+ * This class stores information about a time zone.
+ */
 class TimeZone
 {
-    friend QDataStream &operator<<( QDataStream &, const TimeZone & );
-    friend QDataStream &operator>>( QDataStream &, TimeZone & );
+  friend QDataStream &operator<<( QDataStream &, const TimeZone & );
+  friend QDataStream &operator>>( QDataStream &, TimeZone & );
 
-  public:
-    /*
-      Construct invalid time zone.
-    */
-    TimeZone();
-    /*
-      Construct time zone.
-    
-      @param offset Offset in minutes relative to UTC.
-    */
-    TimeZone( int offset );
-    
-    /*
-      Set time zone offset relative to UTC.
-      
-      @param offset Offset in minutes.
-    */
-    void setOffset( int );
-    /*
-      Return offset in minutes relative to UTC.
-    */
-    int offset() const;
+public:
 
-    /*
-      Return, if this time zone object is valid.
-    */
-    bool isValid() const;
-    
-    bool operator==( const TimeZone & ) const;
-    bool operator!=( const TimeZone & ) const;
-    
-    /*
-      Return string representation of time zone offset.
-    */
-    QString asString() const;
-    
-  private:
-    int mOffset;  // Offset in minutes
+  /**
+   * Construct invalid time zone.
+   */
+  TimeZone();
 
-    bool mValid;
+  /**
+   * Construct time zone.
+   * 
+   * @param offset Offset in minutes relative to UTC.
+   */
+  TimeZone( int offset );
+    
+  /**
+   * Set time zone offset relative to UTC.
+   *   
+   * @param offset Offset in minutes.
+   */
+  void setOffset( int );
+
+  /**
+   * Return offset in minutes relative to UTC.
+   */
+  int offset() const;
+
+  /**
+   * Return, if this time zone object is valid.
+   */
+  bool isValid() const;
+    
+  bool operator==( const TimeZone & ) const;
+  bool operator!=( const TimeZone & ) const;
+    
+  /**
+   * Return string representation of time zone offset.
+   */
+  QString asString() const;
+    
+private:
+  int mOffset;  // Offset in minutes
+
+  bool mValid;
 };
 
 QDataStream &operator<<( QDataStream &, const TimeZone & );
 QDataStream &operator>>( QDataStream &, TimeZone & );
 
 }
-
 #endif

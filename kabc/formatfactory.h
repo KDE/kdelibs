@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef FORMATFACTORY_H
-#define FORMATFACTORY_H
+#ifndef KABC_FORMATFACTORY_H
+#define KABC_FORMATFACTORY_H
 
 #include <qdict.h>
 #include <qstring.h>
@@ -30,6 +30,12 @@
 #include "kabcformat.h"
 
 namespace KABC {
+
+struct FormatInfo {
+  QString library;
+  QString nameLabel;
+  QString descriptionLabel;
+};
 
 /**
  * Class for loading format plugins.
@@ -47,13 +53,6 @@ namespace KABC {
  * }
  * </pre>
  */
-
-struct FormatInfo {
-  QString library;
-  QString nameLabel;
-  QString descriptionLabel;
-};
-
 class FormatFactory
 {
 public:

@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_DISTRIBUTIONLISTEDITOR_H
 #define KABC_DISTRIBUTIONLISTEDITOR_H
 
@@ -31,8 +32,8 @@ class QButtonGroup;
 namespace KABC {
 
 class AddressBook;
-class DistributionListManager;
 class DistributionListEditorWidget;
+class DistributionListManager;
 
 /**
  * @short Frontend to create distribution lists
@@ -53,23 +54,24 @@ class DistributionListEditorWidget;
  */
 class DistributionListEditor : public KDialogBase
 {
-    Q_OBJECT
-public:
-    /**
-     * Constructor.
-     *
-     * @param ab     The addressbook, the addressees should be used from
-     * @param parent The parent widget
-     */
-    DistributionListEditor( AddressBook *ab, QWidget *parent );
+  Q_OBJECT
 
-    /**
-     * Destructor.
-     */
-    virtual ~DistributionListEditor();
+public:
+  /**
+   * Constructor.
+   *
+   * @param ab     The addressbook, the addressees should be used from
+   * @param parent The parent widget
+   */
+  DistributionListEditor( AddressBook *ab, QWidget *parent );
+
+  /**
+   * Destructor.
+   */
+  virtual ~DistributionListEditor();
 
 private:
-    DistributionListEditorWidget *mEditor;
+  DistributionListEditorWidget *mEditor;
 };
 
 /**
@@ -77,17 +79,17 @@ private:
  */
 class EmailSelectDialog : public KDialogBase
 {
-  public:
-    EmailSelectDialog( const QStringList &emails, const QString &current,
-                       QWidget *parent );
+public:
+  EmailSelectDialog( const QStringList &emails, const QString &current,
+      QWidget *parent );
     
-    QString selected();
+  QString selected();
 
-    static QString getEmail( const QStringList &emails, const QString &current,
-                             QWidget *parent );
+  static QString getEmail( const QStringList &emails, const QString &current,
+      QWidget *parent );
 
-  private:
-    QButtonGroup *mButtonGroup;
+private:
+  QButtonGroup *mButtonGroup;
 };
 
 /**
@@ -95,37 +97,37 @@ class EmailSelectDialog : public KDialogBase
  */
 class DistributionListEditorWidget : public QWidget
 {
-    Q_OBJECT
-  public:
-    DistributionListEditorWidget( AddressBook *, QWidget *parent );
-    virtual ~DistributionListEditorWidget();
+  Q_OBJECT
 
-  private slots:
-    void newList();
-    void editList();
-    void removeList();
-    void addEntry();
-    void removeEntry();
-    void changeEmail();
-    void updateEntryView();
-    void updateAddresseeView();
-    void updateNameCombo();
-    void slotSelectionEntryViewChanged();
-    void slotSelectionAddresseeViewChanged();
-    void save();
+public:
+  DistributionListEditorWidget( AddressBook *, QWidget *parent );
+  virtual ~DistributionListEditorWidget();
 
-  private:
-    QComboBox *mNameCombo;  
-    QLabel *mListLabel;
-    QListView *mEntryView;
-    QListView *mAddresseeView;
+private slots:
+  void newList();
+  void editList();
+  void removeList();
+  void addEntry();
+  void removeEntry();
+  void changeEmail();
+  void updateEntryView();
+  void updateAddresseeView();
+  void updateNameCombo();
+  void slotSelectionEntryViewChanged();
+  void slotSelectionAddresseeViewChanged();
+  void save();
 
-    AddressBook *mAddressBook;
-    DistributionListManager *mManager;
-    QPushButton *mNewButton, *mEditButton, *mRemoveButton;
-    QPushButton *mChangeEmailButton, *mRemoveEntryButton, *mAddEntryButton;
+private:
+  QComboBox *mNameCombo;  
+  QLabel *mListLabel;
+  QListView *mEntryView;
+  QListView *mAddresseeView;
+
+  AddressBook *mAddressBook;
+  DistributionListManager *mManager;
+  QPushButton *mNewButton, *mEditButton, *mRemoveButton;
+  QPushButton *mChangeEmailButton, *mRemoveEntryButton, *mAddEntryButton;
 };
 
 }
-
 #endif

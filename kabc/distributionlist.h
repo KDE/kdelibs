@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KABC_DISTRIBUTIONLIST_H
 #define KABC_DISTRIBUTIONLIST_H
 
@@ -35,75 +36,79 @@ class DistributionListManager;
  */
 class DistributionList
 {
-  public:
-    /**
-     *  @short Distribution List Entry
-     * 
-     * This class represents an entry of a distribution list. It consists of an
-     * addressee and an email address. If the email address is null, the
-     * preferred email address of the addressee is used.
-     */
-    struct Entry
-    {
-      typedef QValueList<Entry> List;
+public:
+  /**
+   *  @short Distribution List Entry
+   * 
+   * This class represents an entry of a distribution list. It consists of an
+   * addressee and an email address. If the email address is null, the
+   * preferred email address of the addressee is used.
+   */
+  struct Entry
+  {
+    typedef QValueList<Entry> List;
     
-      Entry() {}
-      Entry( const Addressee &_addressee, const QString &_email ) :
+    Entry() {}
+    Entry( const Addressee &_addressee, const QString &_email ) :
         addressee( _addressee ), email( _email ) {}
     
-      Addressee addressee;
-      QString email;
-    };
+    Addressee addressee;
+    QString email;
+  };
 
-    /**
-     *  Create distribution list object.
-     * 
-     * @param manager Managing object of this list.
-     * @param name    Name of this list.
-     */
-    DistributionList( DistributionListManager *manager, const QString &name );
-    ~DistributionList();
+  /**
+   *  Create distribution list object.
+   * 
+   * @param manager Managing object of this list.
+   * @param name    Name of this list.
+   */
+  DistributionList( DistributionListManager *manager, const QString &name );
+
+  /**
+   * Destructor.
+   */
+  ~DistributionList();
   
-    /**
-     * Set name of this list. The name is used as key by the
-     * DistributinListManager.
-     */
-    void setName( const QString & );
+  /**
+   * Set name of this list. The name is used as key by the
+   * DistributinListManager.
+   */
+  void setName( const QString & );
 
-    /**
-     * Get name of this list.
-     */
-    QString name() const;
+  /**
+   * Get name of this list.
+   */
+  QString name() const;
   
-    /**
-     * Insert an entry into this distribution list. If the entry already exists
-     * nothing happens.
-     */
-    void insertEntry( const Addressee &, const QString &email=QString::null );
+  /**
+   * Insert an entry into this distribution list. If the entry already exists
+   * nothing happens.
+   */
+  void insertEntry( const Addressee &, const QString &email=QString::null );
 
-    /**
-     * Remove an entry from this distribution list. If the entry doesn't exist
-     * nothing happens.
-     */
-    void removeEntry( const Addressee &, const QString &email=QString::null );
+  /**
+   * Remove an entry from this distribution list. If the entry doesn't exist
+   * nothing happens.
+   */
+  void removeEntry( const Addressee &, const QString &email=QString::null );
 
-    /**
-     * Return list of email addresses, which belong to this distributon list.
-     * These addresses can be directly used by e.g. a mail client.
-     */
-    QStringList emails() const;
+  /**
+   * Return list of email addresses, which belong to this distributon list.
+   * These addresses can be directly used by e.g. a mail client.
+   */
+  QStringList emails() const;
 
-    /**
-     * Return list of entries belonging to this distribution list. This function
-     * is mainly useful for a distribution list editor.
-     */
-    Entry::List entries() const;
+  /**
+   * Return list of entries belonging to this distribution list. This function
+   * is mainly useful for a distribution list editor.
+   */
+  Entry::List entries() const;
 
-  private:
-    DistributionListManager *mManager;
-    QString mName;
+private:
+  DistributionListManager *mManager;
+  QString mName;
     
-    Entry::List mEntries;
+  Entry::List mEntries;
 };
 
 /**
@@ -114,55 +119,54 @@ class DistributionList
  */
 class DistributionListManager
 {
-  public:
-    /**
-     * Create manager for given address book.
-     */
-    DistributionListManager( AddressBook * );
+public:
+  /**
+   * Create manager for given address book.
+   */
+  DistributionListManager( AddressBook * );
     
-    /**
-     * Destructor.
-     */
-    ~DistributionListManager();
+  /**
+   * Destructor.
+   */
+  ~DistributionListManager();
 
-    /**
-     * Return distribution list with given name.
-     */
-    DistributionList *list( const QString &name );    
+  /**
+   * Return distribution list with given name.
+   */
+  DistributionList *list( const QString &name );    
     
-    /**
-     * Insert distribution list. If a list with this name already exists, nothing
-     * happens.
-     */
-    void insert( DistributionList * );
+  /**
+   * Insert distribution list. If a list with this name already exists, nothing
+   * happens.
+   */
+  void insert( DistributionList * );
 
-    /**
-     * Remove distribution list. If a list with this name doesn't exist, nothing
-     * happens.
-     */
-    void remove( DistributionList * );
+  /**
+   * Remove distribution list. If a list with this name doesn't exist, nothing
+   * happens.
+   */
+  void remove( DistributionList * );
     
-    /**
-     * Return names of all distribution lists managed by this manager.
-     */
-    QStringList listNames();
+  /**
+   * Return names of all distribution lists managed by this manager.
+   */
+  QStringList listNames();
     
-    /**
-     * Load distribution lists form disk.
-     */
-    bool load();
+  /**
+   * Load distribution lists form disk.
+   */
+  bool load();
 
-    /**
-     * Save distribution lists to disk.
-     */
-    bool save();
+  /**
+   * Save distribution lists to disk.
+   */
+  bool save();
     
-  private:
-    AddressBook *mAddressBook;
+private:
+  AddressBook *mAddressBook;
     
-    QPtrList<DistributionList> mLists;
+  QPtrList<DistributionList> mLists;
 };
 
 }
-
 #endif
