@@ -22,7 +22,7 @@ Send suggestions, comments, etc. to Frederik Fouvry
 --
 
 OVERRIDE YES
-SGMLDECL "xml.soc"
+SGMLDECL "xml.dcl"
 
 			    -- DocBook --
 
@@ -101,5 +101,4 @@ CATALOG sk/catalog
 CATALOG sl/catalog
 CATALOG sr/catalog
 CATALOG sv/catalog
-CATALOG zh-CN/catalog
 CATALOG zh-TW/catalog
