@@ -63,3 +63,9 @@ if test "$all_tests" = "fine"; then
   echo ""
 fi
 
+if test "$all_tests" = "bad"; then
+  echo ""
+  echo "Please remove the file config.cache after installing any libraries"
+  echo "so that configure will find them next time."
+  echo ""
+fi
