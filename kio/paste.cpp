@@ -45,11 +45,11 @@ bool KIO::isClipboardEmpty()
   return true;
 }
 
-void KIO::pasteClipboard( const KURL& dest_url, bool move )
+KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 {
   if ( KURL::split(dest_url).isEmpty() ) {
     KMessageBox::error( 0L, i18n( "Malformed URL\n%1" ).arg( dest_url.url() ) );
-    return;
+    return 0;
   }
 
   QMimeSource *data = QApplication::clipboard()->data();
@@ -59,19 +59,20 @@ void KIO::pasteClipboard( const KURL& dest_url, bool move )
   if ( QUriDrag::canDecode( data ) && QUriDrag::decode( data, uris ) ) {
     if ( uris.count() == 0 ) {
       KMessageBox::error( 0L, i18n("The clipboard is empty"));
-      return;
+      return 0;
     }
 
     KURL::List urls;
     for (QStrListIterator it(uris); *it; ++it)
       urls.append(KURL(*it)); // *it is encoded already (David)
 
+    KIO::Job *res = 0;
     if ( move )
-      (void) KIO::move( urls, dest_url );
+      res = KIO::move( urls, dest_url );
     else
-      (void) KIO::copy( urls, dest_url );
+      res = KIO::copy( urls, dest_url );
 
-    return;
+    return res;
   }
 
   QByteArray ba = data->encodedData( data->format() );
@@ -79,10 +80,11 @@ void KIO::pasteClipboard( const KURL& dest_url, bool move )
   if ( ba.size() == 0 )
   {
     KMessageBox::sorry(0, i18n("The clipboard is empty"));
-    return;
+    return 0;
   }
 
   pasteData( dest_url, ba );
+  return 0;
 }
 
 void KIO::pasteData( const KURL& u, const QByteArray& _data )

@@ -24,7 +24,8 @@
 #include <qarray.h>
 
 namespace KIO {
-  void pasteClipboard( const KURL& _dest_url, bool move = false );
+  class Job;
+  Job *pasteClipboard( const KURL& _dest_url, bool move = false );
   void pasteData( const KURL& _dest_url, const QByteArray& _data );
   bool isClipboardEmpty();
 };

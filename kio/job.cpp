@@ -1442,7 +1442,10 @@ void CopyJob::slotResultCreatingDirs( Job * job )
         }
     }
     else // no error : remove from list, to move on to next dir
+    {
+        emit copyingDone( this, (*it).uSource, (*it).uDest );
         dirs.remove( it );
+    }
 
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
@@ -1630,7 +1633,10 @@ void CopyJob::slotResultCopyingFiles( Job * job )
             return;
         }
     } else // no error : remove from list, to move on to next file
+    {
+        emit copyingDone( this, (*it).uSource, (*it).uDest );
         files.remove( it );
+    }
 
     kdDebug() << "" << files.count() << " files remaining" << endl;
     subjobs.remove( job );
@@ -1902,6 +1908,7 @@ void CopyJob::slotResult( Job *job )
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
+		emit copyingDone( this, m_srcList.first(), m_currentDest );
                 m_srcList.remove(m_srcList.begin()); // done with this url
                 startNextJob(); // done
             }
