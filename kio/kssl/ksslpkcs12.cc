@@ -267,7 +267,12 @@ KSSLCertificate::KSSLValidation KSSLPKCS12::revalidate(KSSLCertificate::KSSLPurp
 
 
 bool KSSLPKCS12::isValid() {
-return (validate() == KSSLCertificate::Ok);
+return isValid(KSSLCertificate::SSLServer);
+}
+
+
+bool KSSLPKCS12::isValid(KSSLCertificate::KSSLPurpose p) {
+return (validate(p) == KSSLCertificate::Ok);
 }
 
 

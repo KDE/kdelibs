@@ -72,6 +72,7 @@ class KSSLCertificatePrivate {
 public:
 	KSSLCertificatePrivate() {
 		kossl = KOSSL::self();
+		_lastPurpose = KSSLCertificate::None;
 	}
 
 	~KSSLCertificatePrivate() {
@@ -85,6 +86,7 @@ public:
 	KOSSL *kossl;
 	KSSLCertChain _chain;
 	KSSLX509V3 _extensions;
+	KSSLCertificate::KSSLPurpose _lastPurpose;
 };
 
 KSSLCertificate::KSSLCertificate() {
@@ -498,29 +500,29 @@ return 0;
 #include "ksslcallback.c"
 
 
+bool KSSLCertificate::isValid(KSSLCertificate::KSSLPurpose p) {
+	return (validate(p) == KSSLCertificate::Ok);
+}
+
+
 bool KSSLCertificate::isValid() {
-	return (validate() == KSSLCertificate::Ok);
+	return isValid(KSSLCertificate::SSLServer);
 }
 
 
 int KSSLCertificate::purposeToOpenSSL(KSSLCertificate::KSSLPurpose p) const {
 int rc = 0;
 
-	if (p & KSSLCertificate::SSLServer || p == KSSLCertificate::Any) {
-		rc |= X509_PURPOSE_SSL_SERVER;
-		rc |= X509_PURPOSE_NS_SSL_SERVER;
-	}
-
-	if (p & KSSLCertificate::SSLClient || p == KSSLCertificate::Any) {
-		rc |= X509_PURPOSE_SSL_CLIENT;
-	}
-
-	if (p & KSSLCertificate::SMIMEEncrypt || p == KSSLCertificate::Any) {
-		rc |= X509_PURPOSE_SMIME_ENCRYPT;
-	}
-
-	if (p & KSSLCertificate::SMIMESign || p == KSSLCertificate::Any) {
-		rc |= X509_PURPOSE_SMIME_SIGN;
+	if (p == KSSLCertificate::SSLServer) {
+		rc = X509_PURPOSE_SSL_SERVER;
+	} else if (p == KSSLCertificate::SSLClient) {
+		rc = X509_PURPOSE_SSL_CLIENT;
+	} else if (p == KSSLCertificate::SMIMEEncrypt) {
+		rc = X509_PURPOSE_SMIME_ENCRYPT;
+	} else if (p == KSSLCertificate::SMIMESign) {
+		rc = X509_PURPOSE_SMIME_SIGN;
+	} else if (p == KSSLCertificate::Any) {
+		rc = X509_PURPOSE_ANY;
 	}
 
 return rc;	
@@ -540,6 +542,13 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 // CRL files?  we don't do that yet
 
 KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLPurpose purpose) {
+
+	if (d->_lastPurpose != purpose && d->m_stateCached) {
+		d->m_stateCached = false;
+	}
+
+	if (!d->m_stateCached)
+		d->_lastPurpose = purpose;
 
 #ifdef HAVE_SSL
 X509_STORE *certStore;
@@ -612,12 +621,22 @@ int rc = 0;
 		certStoreCTX->error = X509_V_OK;
 		rc = d->kossl->X509_verify_cert(certStoreCTX);
 		int errcode = certStoreCTX->error;
+		ksslv = processError(errcode);
+		// For servers, we can try NS_SSL_SERVER too
+		if (ksslv != KSSLCertificate::Ok &&
+			purpose == KSSLCertificate::SSLServer) {
+			d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX,
+						X509_PURPOSE_NS_SSL_SERVER);
+
+			certStoreCTX->error = X509_V_OK;
+			rc = d->kossl->X509_verify_cert(certStoreCTX);
+			errcode = certStoreCTX->error;
+			ksslv = processError(errcode);
+		}
 		d->kossl->X509_STORE_CTX_free(certStoreCTX);
 		d->kossl->X509_STORE_free(certStore);
 		// end of checking code
 		//
-
-		ksslv = processError(errcode);
 
 		//kdDebug(7029) << "KSSL Validation procedure RC: " 
 		//		<< rc << endl;

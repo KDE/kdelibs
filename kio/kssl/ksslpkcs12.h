@@ -128,6 +128,7 @@ public:
    *   Return true if the X.509 and private key are valid.
    */
   bool isValid();
+  bool isValid(KSSLCertificate::KSSLPurpose p);
 
 
 

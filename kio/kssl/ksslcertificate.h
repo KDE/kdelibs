@@ -86,7 +86,7 @@ public:
                         Rejected, PrivateKeyFailed };
 
   enum KSSLPurpose { None=0, SSLServer=1, SSLClient=2, 
-		     SMIMESign=4, SMIMEEncrypt=8, Any=0xffff };
+			SMIMESign=3, SMIMEEncrypt=4, Any=5 };
 
   QString toString();
 
@@ -112,6 +112,7 @@ public:
   QString getSignatureText() const;
 
   bool isValid();
+  bool isValid(KSSLPurpose p);
   KSSLValidation validate();
   KSSLValidation validate(KSSLPurpose p);
   KSSLValidation revalidate();
