@@ -77,7 +77,7 @@ KJSO Navigator::get(const UString &p) const
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
   } else if (p == "language") {
-    return String(KGlobal::locale()->language() == "C" ? "en" : KGlobal::locale()->language());
+    return String(KGlobal::locale()->language() == "C" ? QString::fromLatin1("en") : KGlobal::locale()->language());
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
