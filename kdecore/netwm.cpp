@@ -68,7 +68,7 @@ static Atom net_wm_ping              = 0;
 // used to determine whether application window is managed or not
 static Atom xa_wm_state              = 0;
 
-static Bool atoms_created            = False;
+static bool netwm_atoms_created            = FALSE;
 
 
 static char *nstrdup(const char *s1) {
@@ -222,7 +222,7 @@ static void create_atoms(Display *d) {
     while (i--)
 	*atomsp[i] = atoms[i];
 
-    atoms_created = True;
+    netwm_atoms_created = True;
 }
 
 
@@ -359,7 +359,7 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
 
     role = WindowManager;
 
-    if (! atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_atoms(p->display);
 }
 
 
@@ -391,7 +391,7 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
 
     role = Client;
 
-    if (! atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_atoms(p->display);
 
     if (p->protocols)
 	update(p->protocols);
@@ -1252,7 +1252,7 @@ NETWinInfo::NETWinInfo(Display *d, Window win, Window rwin,
 
     role = rl;
 
-    if (! atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_atoms(p->display);
 
     if (p->properties)
 	update(p->properties);

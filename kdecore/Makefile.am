@@ -40,8 +40,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp  \
-	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp \
+libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
+	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp netwm.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
@@ -54,7 +54,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp  \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp netwm.cpp \
+	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
 	kdatastream.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
