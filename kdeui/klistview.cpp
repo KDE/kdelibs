@@ -26,10 +26,9 @@
 #include <kapp.h>
 #include <kipc.h>
 #include <kdebug.h>
-#include <klineedit.h>
 
-#include "klistviewlineedit.h"
 #include "klistview.h"
+#include "klistviewlineedit.h"
 
 #include <X11/Xlib.h>
 
@@ -52,7 +51,7 @@ public:
 class QListViewItemHack
 {
 public:
-	QListViewItemHack();
+	QListViewItemHack() {} ;
 	void moveItem(QListViewItemHack *after, bool child);
 
 private:
@@ -391,7 +390,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
 // If the row was already selected, create an editor widget.
 	QListViewItem *at=itemAt(p);
-	if (at && at->isSelected())
+	if (at && at->isSelected() && itemsRenameable())
 		rename(at, 0); // TODO
 
   QListView::contentsMousePressEvent( e );
@@ -493,25 +492,25 @@ void KListView::dropEvent(QDropEvent *event, QListView *parent, QListViewItem *a
 
 void KListView::dragMoveEvent(QDragMoveEvent *event)
 {
-    QListView::dragMoveEvent(event);
-    if (!event->isAccepted()) return;
+	QListView::dragMoveEvent(event);
+	if (!event->isAccepted()) return;
 
-    //Clean up the view
-    QListViewItem *afterme=findDrop(event->pos());
+	//Clean up the view
+	QListViewItem *afterme=findDrop(event->pos());
 
-    QRect *rectTemp=new QRect(drawDropVisualizer(0,0, afterme));
+	if (dropVisualizer())
+	{
+		QRect *rectTemp=new QRect(drawDropVisualizer(0,0, afterme));
+		if (d->invalidateRect && (*d->invalidateRect)!=*rectTemp)
+		{
+			cleanRect();
+			QPainter painter(viewport());
+			drawDropVisualizer(&painter,0, afterme);
+		}
 
-    if (d->invalidateRect && (*d->invalidateRect)!=*rectTemp)
-    {
-        cleanRect();
-        QPainter painter(viewport());
-        drawDropVisualizer(&painter,0, afterme);
-    }
-
-    delete d->invalidateRect;
-    d->invalidateRect=rectTemp;
-
-
+		delete d->invalidateRect;
+		d->invalidateRect=rectTemp;
+	}
 }
 
 void KListView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -673,7 +672,8 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *after, bool child)
 void KListView::dragEnterEvent(QDragEnterEvent *event)
 {
 	QListView::dragEnterEvent(event);
-	event->accept(event->source()==viewport());
+	if (itemsMovable())
+		event->accept(event->source()==viewport());
 }
 
 QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after)

@@ -47,4 +47,5 @@ protected:
 	KListView *p;
 
 };
+
 #endif
