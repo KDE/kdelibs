@@ -564,12 +564,12 @@ int KJSList::size() const
   return s;
 }
 
-KJSO *HostObject::get(const CString &p) const
+KJSO *HostObject::get(const CString &) const
 {
   return new KJSUndefined();
 }
 
-void HostObject::put(const CString &p, KJSO *v, int attr)
+void HostObject::put(const CString &, KJSO *, int)
 {
   cout << "Ignoring put() in HostObject" << endl;
 }

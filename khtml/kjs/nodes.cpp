@@ -45,13 +45,20 @@ Node::Node()
 
   // create a list of allocated objects. Makes
   // deleting (even after a parse error) quite easy
-  nextNode = firstNode;
+  next = firstNode;
+  prev = 0L;
+  if (firstNode)
+    firstNode->prev = this;
   firstNode = this;
 }
 
 Node::~Node()
 {
   //  cout << "~Node()" << endl;
+  if (next)
+    next->prev = prev;
+  if (prev)
+    prev->next = next;
   nodeCount--;
 }
 
@@ -60,10 +67,11 @@ void Node::deleteAllNodes()
   Node *tmp, *n = firstNode;
 
   while ((tmp = n)) {
-    n = n->nextNode;
+    n = n->next;
     delete tmp;
   }
   firstNode = 0L;
+  prog = 0L;
   assert(nodeCount == 0);
 }
 
@@ -808,6 +816,11 @@ KJSO *ProgramNode::evaluate()
   return source->evaluate();
 }
 
+void ProgramNode::deleteStatements()
+{
+  source->deleteStatements();
+}
+
 // ECMA 14
 KJSO *SourceElementsNode::evaluate()
 {
@@ -840,6 +853,14 @@ void SourceElementsNode::processFuncDecl()
     elements->processFuncDecl();
 }
 
+void SourceElementsNode::deleteStatements()
+{
+  element->deleteStatements();
+
+  if (elements)
+    elements->deleteStatements();
+}
+
 // ECMA 14
 KJSO *SourceElementNode::evaluate()
 {
@@ -854,6 +875,11 @@ void SourceElementNode::processFuncDecl()
 {
   if (function)
     function->processFuncDecl();
+}
+
+void SourceElementNode::deleteStatements()
+{
+  delete statement;
 }
 
 // for debugging purposes

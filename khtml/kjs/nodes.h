@@ -50,7 +50,7 @@ private:
   Node& operator=(const Node&);
   int line;
   static  int nodeCount;
-  Node *nextNode;
+  Node *next, *prev;
   static Node *firstNode;
 };
 
@@ -502,6 +502,7 @@ public:
   SourceElementNode(FuncDeclNode *f) { function = f; statement = 0L;}
   KJSO *evaluate();
   virtual void processFuncDecl();
+  void deleteStatements();
 private:
   StatementNode *statement;
   FuncDeclNode *function;
@@ -514,6 +515,7 @@ public:
     { elements = s1; element = s2; }
   KJSO *evaluate();
   virtual void processFuncDecl();
+  void deleteStatements();
 private:
   SourceElementNode *element;
   SourceElementsNode *elements;
@@ -523,6 +525,7 @@ class ProgramNode : public Node {
 public:
   ProgramNode(SourceElementsNode *s) : source(s) { Node::prog = this; }
   KJSO *evaluate();
+  void deleteStatements();
 private:
   SourceElementsNode *source;
 };

@@ -58,6 +58,8 @@ KJScript::~KJScript()
 {
   KJScriptLock lock(this);
 
+  KJS::Node::deleteAllNodes();
+
   delete context();
   global()->deref();
 
@@ -111,7 +113,8 @@ bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   if (error())
     error()->deref();
 
-  KJS::Node::deleteAllNodes();
+  if (KJS::Node::progNode())
+    KJS::Node::progNode()->deleteStatements();
 
   return true;
 }
