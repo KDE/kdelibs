@@ -65,6 +65,12 @@ KService::init( KDesktopFile *config )
 
   config->setDesktopGroup();
   config->setDollarExpansion( true ); // mainly for Exec and Path
+  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  if (m_bDeleted)
+  {
+    m_bValid = false;
+    return;
+  }
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
@@ -137,7 +143,6 @@ KService::init( KDesktopFile *config )
   m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
-  m_bDeleted = config->readBoolEntry( "Hidden", false );
   m_mapNotify = config->readBoolEntry( "MapNotify", false );
   m_lstKeywords = config->readListEntry("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
