@@ -779,15 +779,15 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
 
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset)
 {
-    if ( m_part && m_part->onlyLocalReferences() ) return 0;
+    KURL fullURL = Cache::completeURL( url, baseUrl );
+    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
 
     if (m_reloading) {
-        QString fullURL = Cache::completeURL( url, baseUrl ).url();
-        if (!m_reloadedURLs.contains(fullURL)) {
-            CachedObject *existing = Cache::cache->find(fullURL);
+        if (!m_reloadedURLs.contains(fullURL.url())) {
+            CachedObject *existing = Cache::cache->find(fullURL.url());
             if (existing)
                 Cache::removeCacheEntry(existing);
-            m_reloadedURLs.append(fullURL);
+            m_reloadedURLs.append(fullURL.url());
             return Cache::requestStyleSheet(this, url,baseUrl,true,m_expireDate, charset);
         }
     }
@@ -797,15 +797,15 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset)
 {
-    if ( m_part && m_part->onlyLocalReferences() ) return 0;
+    KURL fullURL = Cache::completeURL( url, baseUrl );
+    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
 
     if (m_reloading) {
-        QString fullURL = Cache::completeURL( url, baseUrl ).url();
-        if (!m_reloadedURLs.contains(fullURL)) {
-            CachedObject *existing = Cache::cache->find(fullURL);
+        if (!m_reloadedURLs.contains(fullURL.url())) {
+            CachedObject *existing = Cache::cache->find(fullURL.url());
             if (existing)
                 Cache::removeCacheEntry(existing);
-            m_reloadedURLs.append(fullURL);
+            m_reloadedURLs.append(fullURL.url());
             return Cache::requestScript(this, url,baseUrl,true,m_expireDate, charset);
         }
     }
