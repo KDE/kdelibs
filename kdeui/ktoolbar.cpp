@@ -1394,18 +1394,8 @@ void KToolBar::childEvent( QChildEvent *e )
     if ( e->child()->isWidgetType() ) {
         QWidget * w = (QWidget*)e->child();
 	if ( e->type() == QEvent::ChildInserted ) {
-/*
-    I disabled this code/feature because it breaks with QDockWindow's 
-    internal widgets, like the titlebar or the splitters. They trigger
-    a child event where we can't distinguish if it's a qdockwindow internal
-    widget or a real external widget on which we can safely call show() .
-    And doing inherits() checks for all internal QDockWindowBlah classes
-    doesn't look like a solution to me. A good place to see how this
-    actually breaks is to enable this code snippet again and launch
-    the KFileDialog (run kfstest for example) . You'll see all the
-    titlebar, splitters, etc. and a horribly broken layout :) (Simon)
-
-	    if ( !e->child()->inherits( "QPopupMenu" ) ) {
+	    if ( !e->child()->inherits( "QPopupMenu" ) &&
+                 qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
 
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
@@ -1416,7 +1406,6 @@ void KToolBar::childEvent( QChildEvent *e )
                     w->show();
                 }
 	    }
-*/
 	} else {
             widgets.removeRef(w);
             //removeWidgetInternal( w );
