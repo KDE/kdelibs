@@ -585,7 +585,7 @@ QCString KCodecs::uudecode( const QCString& str )
 {
     if ( str.isEmpty() )
         return "";
-    
+
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
@@ -618,13 +618,16 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
         count ++;
 
     bool hasLF = false;
-    if ( strncasecmp( in_buf, "begin", 5) == 0 )
+    if ( strncasecmp( in_buf+count, "begin", 5) == 0 )
     {
-       count += 5;
+        count += 5;
         while ( count < len && in_buf[count] != '\n' && in_buf[count] != '\r' )
             count ++;
 
-        in_buf += (++count);
+        while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r') )
+            count ++;
+
+        in_buf += count;
         len -= count;
         hasLF = true;
     }
@@ -637,16 +640,18 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
         // ascii printable to 0-63 and 4-byte to 3-byte conversion
         end = didx+line_len;
         char A, B, C, D;
-        while (didx < end-2)
-        {
-            A = UUDecMap[in_buf[sidx]];
-            B = UUDecMap[in_buf[sidx+1]];
-            C = UUDecMap[in_buf[sidx+2]];
-            D = UUDecMap[in_buf[sidx+3]];
-            out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
-            out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
-            out[didx++] = ( ((C << 6) & 255) | (D & 077) );
-            sidx += 4;
+        if (end > 2) {
+          while (didx < end-2)
+          {
+             A = UUDecMap[in_buf[sidx]];
+             B = UUDecMap[in_buf[sidx+1]];
+             C = UUDecMap[in_buf[sidx+2]];
+             D = UUDecMap[in_buf[sidx+3]];
+             out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
+             out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
+             out[didx++] = ( ((C << 6) & 255) | (D & 077) );
+             sidx += 4;
+          }
         }
 
         if (didx < end)
@@ -672,11 +677,11 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
             sidx++;
 
         // skip the "END" separator when present.
-        while ( hasLF && strncasecmp( in_buf+sidx, "end", 3) == 0 )
-            sidx+=3;
+        if ( hasLF && strncasecmp( in_buf+sidx, "end", 3) == 0 )
+            break;
     }
 
-    if ( didx > out.size()  )
+    if ( didx < out.size()  )
         out.resize( didx );
 }
 
