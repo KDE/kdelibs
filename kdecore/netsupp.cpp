@@ -47,6 +47,10 @@
 #undef CLOBBER_IN6
 #include "netsupp.h"
 
+#ifdef __hpux
+extern int h_errno;
+#endif
+
 #if !defined(kde_sockaddr_in6)
 /*
  * kde_sockaddr_in6 might have got defined even though we #undef'ed
