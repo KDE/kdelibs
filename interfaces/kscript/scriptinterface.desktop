@@ -1,3 +1,4 @@
 [Desktop Entry]
 Type=ServiceType
-X-KDE-ServiceType=ScriptRunner/ScriptRunner
+X-KDE-ServiceType=KScriptRunner/KScriptRunner
+Comment=This is a generic test script engine for testing the script interface.

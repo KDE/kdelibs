@@ -21,50 +21,25 @@
 
 #include <kscript/scriptinterface.h>
 #include <qvariant.h>
+#include <qobject.h>
 #include <kprocess.h>
 
-class ShellScript : public KScriptInterface
+class ShellScript :  public KScriptInterface
 {
 	Q_OBJECT
 public:
 	ShellScript(QObject *parent, const char *name, const QStringList &args);
 	virtual ~ShellScript();
-	/**
-	*	Return the current script code data
-	*	@returns QString containing the currenly runable code
-	**/
 	QString script() const;
-	/**
-	*	Sets the parent object of the script to the passed in
-	*	QObject.  This is used to access public data members of
-	*	the main application.  This is handy if your script runner
-	*	contains an object twin.
-	**/
 	void setScript( const QString &scriptFile );
-	/**
-	*	Sets the path to the script library that we are going to embed.
-	*	The second argument is the function from the script library that
-	*	we wish to call.
-	**/
 	void setScript( const QString &scriptLibFile, const QString &method );
-
-public slots:
-	/**
-	*	Run the actual script code
-	*	This can both take a context object that will be shared between the
-	*	main application and a variant that will contain the arguments.
-	**/
 	void run(QObject *context = 0, const QVariant &arg = 0);
-	/**
-	*	Abort the scripts run
-	**/
-	void stop();
-	/**
-	*	Check to see if the script is still running
-	**/
-	bool isRunning();
+	void kill();
 private slots:
 	void goodExit(KProcess *proc);
+	void badExit(KProcess *proc);
+	void stdErr(KProcess *proc);
+	void stdOut(KProcess *proc);
 private:
 	KProcess *m_script;
 };

@@ -20,7 +20,7 @@
 #include "shellscript.h"
 
 #include <kgenericfactory.h>
-
+#include <kscript/scriptclientinterface.h>
 typedef KGenericFactory<ShellScript> ShellScriptFactory;
 K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) );
 
@@ -36,7 +36,7 @@ ShellScript::~ShellScript()
 
 QString ShellScript::script() const
 {
-
+//	return m_script;
 }
 
 void ShellScript::setScript( const QString &scriptFile  )
@@ -48,7 +48,7 @@ void ShellScript::run(QObject *context, const QVariant &arg)
 {
 	 m_script->start();
 }
-void ShellScript::stop()
+void ShellScript::kill()
 {
 	if (!m_script->kill())		// Kill the process
 		m_script->kill(9);	// Kill it harder
@@ -57,6 +57,20 @@ void ShellScript::stop()
 void ShellScript::goodExit(KProcess *proc)
 {
 //	emit done(proc->exitStatus());
+}
+
+
+void ShellScript::badExit(KProcess *proc)
+{
+
+}
+void ShellScript::stdErr(KProcess *proc)
+{
+
+}
+void ShellScript::stdOut(KProcess *proc)
+{
+	ScriptClientInterface->output("message");
 }
 
 #include "shellscript.moc"
