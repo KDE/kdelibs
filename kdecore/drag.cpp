@@ -20,6 +20,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.20  1998/06/16 06:03:12  kalle
+ * Implemented copy constructors and assignment operators or disabled them
+ *
  * Revision 1.19  1998/03/09 20:21:52  kulow
  * just remove the dragZone from the dragZoneList, if kapp is still exist.
  * If this happens in the end of the application, big problems accour (the
@@ -324,9 +327,9 @@ int myErrorHandler(Display *d, XErrorEvent *e)
 {
 	char msg[80];
 	XGetErrorText(d, e->error_code, msg, 80);
-	fprintf(stderr, "Ignored Error: %s\n", msg);
-	fprintf(stderr, "Request: Maj=%d Min=%di, Serial=%08lx\n",
-		e->request_code, e->minor_code, e->serial);
+	//	fprintf(stderr, "Ignored Error: %s\n", msg);
+	//	fprintf(stderr, "Request: Maj=%d Min=%di, Serial=%08lx\n",
+	//		e->request_code, e->minor_code, e->serial);
 	return 0;
 }
 
@@ -342,9 +345,9 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 
   dndIcon->move( -200, -200 );
   
-  printf("************************************************************\n");
-  printf("*** id = %i ****\n", dndIcon->winId());
-  printf("************************************************************\n");
+//   printf("************************************************************\n");
+//   printf("*** id = %i ****\n", dndIcon->winId());
+//   printf("************************************************************\n");
   debugWin = dndIcon->winId();
   
   QPoint p = mapToGlobal( _mouse->pos() );
@@ -353,9 +356,9 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
   root = DefaultRootWindow( kapp->getDisplay() );
   
   Window win = findRootWindow( p );
-  printf("************************************************************\n");
-  printf("*** win = %ld **** dndLastWindow = %ld ****\n", win, dndLastWindow );
-  printf("************************************************************\n");
+//   printf("************************************************************\n");
+//   printf("*** win = %ld **** dndLastWindow = %ld ****\n", win, dndLastWindow );
+//   printf("************************************************************\n");
   
   drag = false;
 /* I commented this out, since it works without (coolo)
@@ -364,7 +367,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
   XUngrabPointer(kapp->getDisplay(),CurrentTime);
 */
 
-  printf("Ungarbbed\n");
+//   printf("Ungarbbed\n");
   
   // If we found a destination for the drop
    if ( win != 0 )
@@ -375,7 +378,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
           XGetWindowAttributes(kapp->getDisplay(), win, &Wattr);
           if (Wattr.map_state != IsUnmapped)
           { 
-	printf("Sending event\n");
+// 	printf("Sending event\n");
 	
 	      XEvent Event;
 	  
@@ -393,11 +396,11 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
               // Switch to "friendly" error handler.
               if (oldErrorHandler == 0L)
 	          oldErrorHandler = XSetErrorHandler(myErrorHandler);
-	      printf("1\n");
+// 	      printf("1\n");
 	      XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );	
-	      printf("2\n");
+// 	      printf("2\n");
 	      XSync( kapp->getDisplay(), FALSE );	
-	      printf("3\n");
+// 	      printf("3\n");
 	      (void) XSetErrorHandler(oldErrorHandler);
               oldErrorHandler = 0L;
           }
@@ -407,7 +410,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
     }
    else
    {
-       printf("Root Drop Event\n");
+//        printf("Root Drop Event\n");
        rootDropEvent( p.x(), p.y() );
    }
 
@@ -451,9 +454,9 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
   Window *children;
   unsigned int cchildren;
     
-  printf("Root Window\n");
+//   printf("Root Window\n");
   root = DefaultRootWindow( kapp->getDisplay() );
-  printf("Query root tree\n");
+//   printf("Query root tree\n");
 
   // Switch to "friendly" error handler.
   if (oldErrorHandler == 0L)
@@ -462,8 +465,8 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
     
   for ( uint i = 0; i < cchildren; i++ )
   {
-      if ( children[i] == debugWin )
-	  printf("******************** root id = %ld *********************\n",children[i] );
+	if ( children[i] == debugWin ) {}
+// 	  printf("******************** root id = %ld *********************\n",children[i] );
       else
       {
 	  XEvent Event;
@@ -490,7 +493,7 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
     
   (void)XSetErrorHandler(oldErrorHandler);
   oldErrorHandler = 0L;
-  printf("Done\n");
+//   printf("Done\n");
   
   // Clean up.
   rootDropEvent();
