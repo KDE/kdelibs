@@ -290,7 +290,25 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 		    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size()); 
                     form_data[form_data.size()-2] = '\r';
                     form_data[form_data.size()-1] = '\n';
-                }
+
+		    // reset unsubmittedFormChange flag
+                    if (current->id() == ID_INPUT &&
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT &&
+                        current->renderer())
+                    {
+                        QString state( static_cast<HTMLInputElementImpl*>(current)->state() );
+			state[state.length()-1]='.';
+			static_cast<HTMLInputElementImpl*>(current)->restoreState(state);
+                    }
+                
+                    if (current->id() == ID_TEXTAREA && current->renderer())
+                    {
+                        QString state( static_cast<HTMLTextAreaElementImpl*>(current)->state() );
+			state[state.length()-1]='.';
+			static_cast<HTMLTextAreaElementImpl*>(current)->restoreState(state);
+                    }
+
+		}
             }
         }
     }
