@@ -29,7 +29,10 @@ QFontEngine *
 QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 			 const QFontDef &request, int force_encoding_id )
 {
-    return new QFontEngineBox( request.pixelSize );
+    QFontEngine *fe = new QFontEngineBox( request.pixelSize );
+    QFontCache::Key key( request, script, fp->screen );
+    QFontCache::instance->insertEngine( key, fe );
+    return fe;
 }
 
 bool QFontDatabase::isBitmapScalable( const QString &family,
