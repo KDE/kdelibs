@@ -640,7 +640,6 @@ void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
         }
         // ### include media, import rules and other
     }
-    sort();
 }
 
 
