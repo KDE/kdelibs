@@ -359,11 +359,10 @@ Value Window::get(ExecState *exec, const UString &p) const
     return Undefined();
 
   // Look for overrides first
-  ValueImp * val = ObjectImp::getDirect(p);
-  if (val) {
+  Value val = ObjectImp::get(exec, p);
+  if (!val.isA(UndefinedType)) {
     //kdDebug(6070) << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
-    if (isSafeScript(exec))
-      return Value(val);
+    return isSafeScript(exec) ? val : Undefined();
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
