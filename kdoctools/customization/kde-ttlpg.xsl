@@ -39,10 +39,19 @@
 
 <!-- other things to be added: add date phrase: Last updated -->
 
-<xsl:template match="othercredit" mode="titlepage.mode">
-  <p class="{name(.)}">
-  <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
-  <xsl:text>: </xsl:text>
+  <xsl:template match="othercredit" mode="titlepage.mode">
+    <p class="{name(.)}">
+      <xsl:choose>
+	<xsl:when test="./contrib">
+	  <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
+	</xsl:when>
+	<xsl:when test="not(./contrib)">
+	  <span style="text-transform: capitalize">
+	    <xsl:apply-templates mode="titlepage.mode" select="@role"/>
+	  </span>
+	</xsl:when>
+      </xsl:choose>
+      <xsl:text>: </xsl:text>
   <a><!-- removed the name="./@id" attribute: it was wrong and I don't understand what it's supposed to do -->
     <xsl:call-template name="person.name"/>
   </a>
