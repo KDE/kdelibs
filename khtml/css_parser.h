@@ -98,7 +98,7 @@ namespace DOM {
 	    TIME      = 0x0020,
 	    FREQUENCY = 0x0040
 	};
-	    
+	
 	/* called by parseValue, parses numbers+units */
 	CSSValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
 	
@@ -106,7 +106,7 @@ namespace DOM {
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
 
-	virtual bool parseString(const DOMString &cssString) {}
+	virtual bool parseString(const DOMString &/*cssString*/) { return false; }
 
     protected:
 	StyleBaseImpl *m_parent;

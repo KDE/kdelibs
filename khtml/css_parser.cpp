@@ -252,21 +252,58 @@ printf("selectString = \"%s\"\n", selecString.ascii());
             }
             else if (*curP == '[')
             {
-		// ### FIXME
                 tag = QString( startP, curP - startP );
+		curP++;
 		printf("tag = %s\n", tag.ascii());
 		const QChar *equal = parseToChar(curP, endP, '=', false);
+		QString attr;
 		if(!equal)
 		{
-		    QString attr( curP, endP - curP );
-		    cs->attr = getAttrID(attr.ascii(), attr.length());
-		    break;
+		    attr = QString( curP, endP - curP );
+		    cs->match = CSSSelector::Set;
 		}
-		// check relation: = / ~= / |=
-		printf("Attribute name = %s  equal = %c\n", QString(curP, equal-curP).ascii(), equal->latin1());
-
-            }
-            else
+		else
+		{
+		    // check relation: = / ~= / |=
+		    if(*(equal-1) == '~')
+		    {
+			attr = QString( curP, equal - curP - 1 );
+			cs->match = CSSSelector::List;
+		    }
+		    else if(*(equal-1) == '|')
+		    {
+			attr = QString( curP, equal - curP - 1 );
+			cs->match = CSSSelector::Hyphen;
+		    }
+		    else
+		    {
+			attr = QString(curP, equal - curP );
+			cs->match = CSSSelector::Exact;
+		    }
+		}
+		cs->attr = getAttrID(attr.ascii(), attr.length());
+		if(equal)
+		{
+		    equal++;
+		    if(*equal == '\'')
+		    {
+			equal++;
+			while(*endP != '\'' && endP > equal)
+			    endP--;
+		    }
+		    else if(*equal == '\"')
+		    {
+			equal++;
+			while(*endP != '\"' && endP > equal)
+			    endP--;
+		    }
+		    else
+			endP--;
+		    cs->value = QString(equal, endP - equal);
+		}
+		break;
+	    }
+	    else
             {
                 curP++;
             }
@@ -279,13 +316,13 @@ printf("selectString = \"%s\"\n", selecString.ascii());
 	    cs->tag = -1;
 	else
 	    cs->tag = getTagID(tag.lower().data(), tag.length());
-	printf("found tag \"%s\"\n", tag.ascii());
    }
    if (cs->tag == 0)
    {
        delete cs;
        return(0);
    }
+   printf("[Selector: tag=%d Attribute=%d relation=%d value=%s]\n", cs->tag, cs->attr, cs->match, cs->value.ascii());
    return(cs);
 }
 
@@ -450,11 +487,12 @@ printf("Property-value = \"%s\"\n", propVal.data());
 
     CSSValueImpl *val = parseValue(curP, endP, propPtr->id);
 
+    if(!val) return 0;
+    
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propPtr->id;
 
-    // #### Parse into right CSSValue!!!!
-    //prop->value = propVal.data();
+    prop->m_value = val;
     prop->m_bImportant = important;
 
     return(prop);
@@ -792,7 +830,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     while( (*split < '0' || *split > '9') && *split != '.' && split > curP)
 	split--;
     split++;
-    
+
     QString s(curP, split-curP);
     printf("number = %s\n", s.ascii());
 
@@ -810,7 +848,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
 	if(allowedUnits & NUMBER)
 	    return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
-	    
+	
 	if(allowedUnits & INTEGER && isInt) // ### DOM CSS doesn't seem to define something for integer
 	    return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
 
@@ -822,7 +860,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     CSSPrimitiveValue::UnitTypes type = CSSPrimitiveValue::CSS_UNKNOWN;
     int unit = 0;
-    
+
     switch(split->lower().latin1())
     {
     case '%':
@@ -831,12 +869,12 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'e':
 	split++;
 	if(split > endP) break;
-	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	if(split->latin1() == 'm' || split->latin1() == 'M')
 	{
 	    type = CSSPrimitiveValue::CSS_EMS;
 	    unit = LENGTH;
 	}
-	else if(split->latin1() == 'x' || split->latin1() == 'X') 
+	else if(split->latin1() == 'x' || split->latin1() == 'X')
 	{
 	    type = CSSPrimitiveValue::CSS_EXS;
 	    unit = LENGTH;
@@ -845,17 +883,17 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'p':
 	split++;
 	if(split > endP) break;
-	if(split->latin1() == 'x' || split->latin1() == 'X') 
+	if(split->latin1() == 'x' || split->latin1() == 'X')
 	{
 	    type = CSSPrimitiveValue::CSS_PX;
 	    unit = LENGTH;
 	}
-	else if(split->latin1() == 't' || split->latin1() == 'T') 
+	else if(split->latin1() == 't' || split->latin1() == 'T')
 	{
 	    type = CSSPrimitiveValue::CSS_PT;
 	    unit = LENGTH;
 	}
-	else if(split->latin1() == 'c' || split->latin1() == 'C') 
+	else if(split->latin1() == 'c' || split->latin1() == 'C')
 	{
 	    type = CSSPrimitiveValue::CSS_PC;
 	    unit = LENGTH;
@@ -864,7 +902,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'c':
 	split++;
 	if(split > endP) break;
-	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	if(split->latin1() == 'm' || split->latin1() == 'M')
 	{
 	    type = CSSPrimitiveValue::CSS_CM;
 	    unit = LENGTH;
@@ -873,12 +911,12 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'm':
 	split++;
 	if(split > endP) break;
-	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	if(split->latin1() == 'm' || split->latin1() == 'M')
 	{
 	    type = CSSPrimitiveValue::CSS_MM;
 	    unit = LENGTH;
 	}
-	else if(split->latin1() == 's' || split->latin1() == 'S') 
+	else if(split->latin1() == 's' || split->latin1() == 'S')
 	{
 	    type = CSSPrimitiveValue::CSS_MS;
 	    unit = TIME;
@@ -887,7 +925,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'i':
 	split++;
 	if(split > endP) break;
-	if(split->latin1() == 'n' || split->latin1() == 'N') 
+	if(split->latin1() == 'n' || split->latin1() == 'N')
 	{
 	    type = CSSPrimitiveValue::CSS_IN;
 	    unit = LENGTH;
@@ -924,7 +962,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 	printf("found allowed number %f, unit %d\n", value, type);
 	return new CSSPrimitiveValueImpl(value, type);
     }
-    
+
     return 0;
 }
 
