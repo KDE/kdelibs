@@ -220,8 +220,8 @@ public:
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
                                     NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
 
-    TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter &filter,
-                            bool entityReferenceExpansion);
+    TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
+                            bool entityReferenceExpansion, int &exceptioncode);
 
     virtual void recalcStyle( StyleChange = NoChange );
     static QPtrList<DocumentImpl> * changedDocuments;

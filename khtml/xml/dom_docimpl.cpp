@@ -897,11 +897,15 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long
     return new NodeIteratorImpl(root,whatToShow,filter,entityReferenceExpansion);
 }
 
-TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter &/*filter*/,
-                                bool /*entityReferenceExpansion*/)
+TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
+                                bool entityReferenceExpansion, int &exceptioncode)
 {
-    // ###
-    return new TreeWalkerImpl;
+    if (!root) {
+        exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+        return 0;
+    }
+
+    return new TreeWalkerImpl( root, whatToShow, filter, entityReferenceExpansion );
 }
 
 void DocumentImpl::setDocumentChanged(bool b)
