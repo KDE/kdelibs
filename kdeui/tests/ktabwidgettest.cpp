@@ -11,8 +11,6 @@ Test::Test( QWidget* parent, const char *name )
   resize( 600,300 );
 
   mWidget = new KTabWidget( this );
-  mWidget->setLeftButtonPixmap( SmallIcon( "tab_new" ) );
-  mWidget->setRightButtonPixmap( SmallIcon( "tab_remove" ) );
   mList.append( mWidget->addChangeableTab( "One" ) );
   mList.append( mWidget->addChangeableTab( "Twoooooo" ) );
   mList.append( mWidget->addChangeableTab( "Threeeeeeee" ) );

@@ -19,6 +19,7 @@
 
 #include "ktabwidget.h"
 #include "ktabbar.h"
+#include <kiconloader.h>
 
 KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     : QTabWidget( parent, name, f ), mTabReordering( false )
@@ -26,6 +27,10 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   m_pTabBar = new KTabBar(this, "tabbar");
   setTabBar(m_pTabBar);
   setAcceptDrops(TRUE);
+
+  setCloseButtonsPixmap( SmallIcon( "fileclose" ) );
+  setLeftButtonPixmap( SmallIcon( "tab_new" ) );
+  setRightButtonPixmap( SmallIcon( "tab_remove" ) );
 
   connect(m_pTabBar, SIGNAL(contextMenu( QWidget *, const QPoint & )), this, SIGNAL(contextMenu( QWidget *, const QPoint & )));
   connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
