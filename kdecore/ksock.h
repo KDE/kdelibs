@@ -102,7 +102,7 @@ public:
     /**
       *  A small wrapper around gethostbyname and such
       */
-    static bool initSockaddr(struct ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
+    static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
     
     /** 
      * Returns a file descriptor for this socket.
@@ -170,7 +170,7 @@ protected:
   
     bool init_sockaddr( const QString& hostname, unsigned short int port );
     
-    struct ksockaddr_in server_name;
+    ksockaddr_in server_name;
     struct sockaddr_un unix_addr;
 
     /******************************************************

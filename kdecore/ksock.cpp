@@ -304,12 +304,12 @@ unsigned long KSocket::getAddr()
   if ( domain != PF_INET )
     return 0;
   
-  struct ksockaddr_in name; ksize_t len = sizeof(name);
+  ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohl(name.sin_addr.s_addr);
 }
 
-bool KSocket::initSockaddr (struct ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
+bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
 {
   struct hostent *hostinfo;
 #ifdef INET6
@@ -442,7 +442,7 @@ bool KServerSocket::init( unsigned short int _port )
   if ( domain != PF_INET )
     return false;
   
-  struct ksockaddr_in name;
+  ksockaddr_in name;
     
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
@@ -479,7 +479,7 @@ unsigned short int KServerSocket::getPort()
   if ( domain != PF_INET )
     return false;
 
-  struct ksockaddr_in name; ksize_t len = sizeof(name);
+  ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohs(name.sin_port);
 }
@@ -489,7 +489,7 @@ unsigned long KServerSocket::getAddr()
   if ( domain != PF_INET )
     return false;
 
-  struct ksockaddr_in name; ksize_t len = sizeof(name);
+  ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohl(name.sin_addr.s_addr);
 }
@@ -498,7 +498,7 @@ void KServerSocket::slotAccept( int )
 {
   if ( domain == PF_INET )
   {      
-    struct ksockaddr_in clientname;
+    ksockaddr_in clientname;
     int new_sock;
     
     ksize_t size = sizeof(clientname);
