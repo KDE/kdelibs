@@ -1,9 +1,18 @@
 [Desktop Entry]
-# Basetype for MPEG 1-2 audio, also called mp2 and mp3.
-# See also audio/x-mp3
+# Basetype for MPEG-1 and MPEG-2 audio layer 1-3
+# Doesnt cover MPEG-2 AAC or MPEG-4 audio
+# See also audio/x-mp3 and audio/x-mp2
 Encoding=UTF-8
 Type=MimeType
 MimeType=audio/mpeg
 Icon=sound
-Patterns=*.mp2;*.MP2;
 Comment=MPEG Audio
+Comment[be]=MPEG аўдыё
+Comment[da]=MPEG lyd
+Comment[el]=Ήχος MPEG
+Comment[et]=MPEG audiofail
+Comment[pt_BR]=Áudio MPEG
+Comment[sv]=MPEG-ljud
+Comment[ta]=MPEG கேட்பொலி
+Comment[th]=แฟ้มเสียง MPEG
+Comment[uz]=MPEG аудио
