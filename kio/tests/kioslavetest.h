@@ -32,7 +32,7 @@ public:
   KioslaveTest( QString src, QString dest, uint op, uint pr );
   ~KioslaveTest() {}
 
-  enum Operations { List, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Shred, Mkdir };
+  enum Operations { List, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Shred, Mkdir, Mimetype };
 
   enum ProgressModes { ProgressNone, ProgressDefault, ProgressStatus };
 
@@ -62,6 +62,7 @@ protected:
   QRadioButton *rbDelete;
   QRadioButton *rbShred;
   QRadioButton *rbMkdir;
+  QRadioButton *rbMimetype;
 
   // progress stuff
   QButtonGroup *progressButtons;

@@ -105,6 +105,10 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   opButtons->insert( rbMkdir, Mkdir );
   hbLayout->addWidget( rbMkdir, 5 );
 
+  rbMimetype = new QRadioButton( "Mimetype", opButtons );
+  opButtons->insert( rbMimetype, Mimetype );
+  hbLayout->addWidget( rbMimetype, 5 );
+
   opButtons->setButton( op );
   changeOperation( op );
 
@@ -266,6 +270,10 @@ void KioslaveTest::startJob() {
 
   case Mkdir:
     job = KIO::mkdir( src );
+    break;
+
+  case Mimetype:
+    job = KIO::mimetype( src );
     break;
   }
 
