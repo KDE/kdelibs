@@ -2,7 +2,7 @@
                           security.cpp  -  description
                              -------------------
     begin                : Thu Jun 24 11:22:12 2004
-    copyright          : (C) 2004 by Andras Mantia <amantia@kde.org>
+    copyright          : (C) 2004, 2005 by Andras Mantia <amantia@kde.org>
  ***************************************************************************/
 
 /***************************************************************************
@@ -30,6 +30,8 @@
 
  //app includes
 #include "security.h"
+
+using namespace KNS;
 
 Security::Security()
 {
@@ -94,13 +96,6 @@ void Security::slotProcessExited(KProcess *process)
    }
    m_gpgRunning = false;
    delete process;
-/*
-   QMap<QString, KeyStruct>::Iterator it;
-   for (it = m_keys.begin(); it != m_keys.end(); ++it)
-   {
-       KeyStruct key = it.data();
-       kdDebug(24000) << "Id: " << it.key() << " Name: " << key.name << " Mail: " << key.mail << " Trusted: " << key.trusted << endl;
-   }*/
 }
 
 void Security::slotDataArrived(KProcIO *procIO)
@@ -181,7 +176,10 @@ void Security::slotDataArrived(KProcIO *procIO)
            KeyStruct key = m_keys[m_secretKey];
            int result = KPasswordDialog::getPassword(password, i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>").arg(m_secretKey).arg(key.name).arg(key.mail));
            if (result == KPasswordDialog::Accepted)
+           {
              procIO->writeStdin(password, true);
+             password.fill(' ');
+           }
            else
            {
              m_result |= BAD_PASSPHRASE;

@@ -2,7 +2,7 @@
                           security.h  -  description
                              -------------------
     begin                : Thu Jun 24 11:22:12 2004
-    copyright          : (C) 2004 by Andras Mantia <amantia@kde.org>
+    copyright          : (C) 2004, 2005 by Andras Mantia <amantia@kde.org>
  ***************************************************************************/
 
 /***************************************************************************
@@ -33,10 +33,14 @@ struct KeyStruct {
 };
 
 /**
-Handles security releated issues, like signing, veirfying.
-The code is partly inspired by the KGPG utility.
-@author Andras Mantia
+Handles security releated issues, like signing, verifying.
+It is a private class, not meant to be used by third party applications.
+
+@author Andras Mantia <amantia@kde.org>
 */
+
+namespace KNS {
+
 class Security : public QObject
 {
 Q_OBJECT
@@ -87,11 +91,11 @@ public slots:
   void readKeys();
   /** Reads the available secret keys */
   void readSecretKeys();
-  /** Verifies the integrity and the signature of a tarball file (@ref m_fileName).
+  /** Verifies the integrity and the signature of a tarball file (@see m_fileName).
    */
   void slotCheckValidity();
 
-  /** Creates a signature and an md5sum file for the @ref m_fileName and packs
+  /** Creates a signature and an md5sum file for the @see m_fileName and packs
    * everything into a gzipped tarball.
    */
   void slotSignFile();
@@ -131,5 +135,7 @@ signals:
     */
     void fileSigned(int result);
 };
+
+}
 
 #endif

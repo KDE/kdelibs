@@ -1,8 +1,8 @@
 /***************************************************************************
-                          qnewstuff.cpp  -  description
+                          knewstuffsecure.cpp  -  description
                              -------------------
     begin                : Tue Jun 22 12:19:55 2004
-    copyright          : (C) 2004 by Andras Mantia <amantia@kde.org>
+    copyright          : (C) 2004, 2005 by Andras Mantia <amantia@kde.org>
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,24 +27,30 @@
 #include <ktempdir.h>
 
 //app includes
+#include "engine.h"
 #include "knewstuffsecure.h"
 #include "security.h"
 
-QNewStuff::QNewStuff(const QString &type,  QWidget *parentWidget)
+using namespace KNS;
+
+KNewStuffSecure::KNewStuffSecure(const QString &type,  QWidget *parentWidget)
  : KNewStuff(type, parentWidget)
 {
   m_tempDir = 0L;
+  connect(engine(), SIGNAL(uploadFinished(bool)), SLOT(slotUploadFinished(bool)));
 }
 
 
-QNewStuff::~QNewStuff()
+KNewStuffSecure::~KNewStuffSecure()
 {
+  removeTempDirectory();
 }
 
-bool QNewStuff::install(const QString &fileName)
+bool KNewStuffSecure::install(const QString &fileName)
 {
   bool ok = true;
 
+  removeTempDirectory();
   m_tempDir = new KTempDir();
   m_tempDir->setAutoDelete(true);
   KTar tar(fileName, "application/x-gzip");
@@ -77,7 +83,7 @@ bool QNewStuff::install(const QString &fileName)
   return ok;
 }
 
-void QNewStuff::slotValidated(int result)
+void KNewStuffSecure::slotValidated(int result)
 {
    QString errorString;
    QString signatureStr;
@@ -146,42 +152,38 @@ void QNewStuff::slotValidated(int result)
     }
     cfg->sync();
   }
-  if (m_tempDir)
-  {
-    KIO::NetAccess::del(KURL().fromPathOrURL(m_tempDir->name()), parentWidget());
-    delete m_tempDir;
-    m_tempDir = 0L;
-  }
+  removeTempDirectory();
   disconnect(Security::ref(), SIGNAL(validityResult(int)), this, SLOT(slotValidated(int)));
 }
 
-void QNewStuff::downloadResource()
+void KNewStuffSecure::downloadResource()
 {
   connect(Security::ref(), SIGNAL(validityResult(int)), this, SLOT(slotValidated(int)));
   KConfig *cfg = KGlobal::config();
   m_installedResources = cfg->entryMap("KNewStuffStatus");
+  engine()->ignoreInstallResult(true);
   KNewStuff::download();
 }
 
-bool QNewStuff::createUploadFile(const QString &fileName)
+bool KNewStuffSecure::createUploadFile(const QString &fileName)
 {
   Q_UNUSED(fileName);
   return true; 
 }
 
-KTempDir* QNewStuff::uploadResource(const QString& fileName)
+void KNewStuffSecure::uploadResource(const QString& fileName)
 {
   connect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
+  removeTempDirectory();
   m_tempDir = new KTempDir();
   m_tempDir->setAutoDelete(true);
   QFileInfo f(fileName);
   m_signedFileName = m_tempDir->name() + "/" + f.fileName();
   KIO::NetAccess::file_copy(KURL::fromPathOrURL(fileName), KURL::fromPathOrURL(m_signedFileName), -1, true);
   Security::ref()->signFile(m_signedFileName);
-  return m_tempDir;
 }
 
-void QNewStuff::slotFileSigned(int result)
+void KNewStuffSecure::slotFileSigned(int result)
 {
   if (result == 0)
   {
@@ -193,6 +195,7 @@ void QNewStuff::slotFileSigned(int result)
       if (KMessageBox::warningContinueCancel(parentWidget(), i18n("There are no keys usable for signing or you did not entered the correct passphrase.\nProceed without signing the resource?")) == KMessageBox::Cancel)
       {
         disconnect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
+        removeTempDirectory();
         return;    
       }
     } 
@@ -215,6 +218,22 @@ void QNewStuff::slotFileSigned(int result)
     KIO::NetAccess::file_move(KURL::fromPathOrURL(m_signedFileName + ".signed"), KURL::fromPathOrURL(m_signedFileName), -1, true);
     KNewStuff::upload(m_signedFileName, QString::null);
     disconnect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
+  }
+}
+
+void KNewStuffSecure::slotUploadFinished(bool result)
+{
+  Q_UNUSED(result);
+  removeTempDirectory();
+}
+
+void KNewStuffSecure::removeTempDirectory()
+{
+  if (m_tempDir)
+  {
+    KIO::NetAccess::del(KURL().fromPathOrURL(m_tempDir->name()), parentWidget());
+    delete m_tempDir;
+    m_tempDir = 0L;
   }
 }
 

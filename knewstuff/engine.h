@@ -125,7 +125,19 @@ class Engine : public QObject
       @param entry the Hotstuff data object to be uploaded
     */
     void upload( Entry *entry );
+    
+    /**
+    Ignores the return value of the install method. Used internally to
+    avoid showing of the success/failure dialog when installation is done
+    in another place, like in @ref KNewStuffSecure
+     */
+    void ignoreInstallResult(bool ignore);   
 
+  signals:
+    /** Emitted when the upload has finished.
+      @param result indicates the success/failure of the upload
+    */
+    void uploadFinished( bool result );
   protected slots:
     void getMetaInformation( Provider::List *providers );
     void selectUploadProvider( Provider::List *providers );
@@ -141,7 +153,7 @@ class Engine : public QObject
 
   protected:
     bool createMetaFile( Entry * );
-
+    
   private:
     QWidget *mParentWidget;
 
@@ -168,6 +180,8 @@ class Engine : public QObject
     KNewStuff *mNewStuff;
 
     QString mType;
+    
+    bool mIgnoreInstallResult;
 };
 
 }

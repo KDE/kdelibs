@@ -22,6 +22,9 @@
 
 #include <qstring.h>
 
+#include <kdemacros.h>
+
+class QObject;
 class QWidget;
 class KAction;
 class KActionCollection;
@@ -142,7 +145,15 @@ class KDE_EXPORT KNewStuff
       the new stuff to be downloaded to a temporary file.
     */
     virtual QString downloadDestination( KNS::Entry *entry );
+    
+    
+  protected:
+    /**
+      Get the pointer to the engine. Needed by subclasses to access the KNS::Engine object.
+     */  
+    KNS::Engine *engine() { return mEngine; }  
 
+    
   private:
     KNS::Engine *mEngine;
 };

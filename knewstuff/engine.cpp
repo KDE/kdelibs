@@ -206,11 +206,14 @@ void Engine::slotDownloadJobResult( KIO::Job *job )
   }
 
   if ( mNewStuff->install( mDownloadDestination ) ) {
-    KMessageBox::information( mParentWidget,
-                              i18n("Successfully installed hot new stuff.") );
-  } else {
-    KMessageBox::error( mParentWidget,
-                        i18n("Failed to install hot new stuff.") );
+    if ( !mIgnoreInstallResult ) {
+      KMessageBox::information( mParentWidget,
+                                i18n("Successfully installed hot new stuff.") );
+    }
+  } else 
+    if ( !mIgnoreInstallResult ){
+      KMessageBox::error( mParentWidget,
+                          i18n("Failed to install hot new stuff.") );
   }
 }
 
@@ -265,6 +268,7 @@ void Engine::upload( Entry *entry )
 
     if ( !mNewStuff->createUploadFile( mUploadFile ) ) {
       KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
+      emit uploadFinished( false );
       return;
     }
   }
@@ -273,7 +277,10 @@ void Engine::upload( Entry *entry )
   QFileInfo fi( mUploadFile );
   entry->setPayload( KURL::fromPathOrURL( fi.fileName() ), lang );
 
-  if ( !createMetaFile( entry ) ) return;
+  if ( !createMetaFile( entry ) ) {
+    emit uploadFinished( false );
+    return;
+  } 
 
   QString text = i18n("The files to be uploaded have been created at:\n");
   text.append( i18n("Data file: %1\n").arg( mUploadFile) );
@@ -309,6 +316,8 @@ void Engine::upload( Entry *entry )
       KIO::FileCopyJob *job = KIO::file_copy( KURL::fromPathOrURL( mUploadFile ), destination );
       connect( job, SIGNAL( result( KIO::Job * ) ),
                SLOT( slotUploadPayloadJobResult( KIO::Job * ) ) );
+    } else {
+      emit uploadFinished( false );
     }
   }
 }
@@ -352,6 +361,7 @@ void Engine::slotUploadPayloadJobResult( KIO::Job *job )
   if ( job->error() ) {
     kdDebug(5850) << "Error uploading new stuff payload." << endl;
     job->showErrorDialog( mParentWidget );
+    emit uploadFinished( false );
     return;
   }
 
@@ -375,6 +385,7 @@ void Engine::slotUploadPreviewJobResult( KIO::Job *job )
   if ( job->error() ) {
     kdDebug(5850) << "Error uploading new stuff preview." << endl;
     job->showErrorDialog( mParentWidget );
+    emit uploadFinished( true );
     return;
   }
 
@@ -393,9 +404,16 @@ void Engine::slotUploadMetaJobResult( KIO::Job *job )
   if ( job->error() ) {
     kdDebug(5850) << "Error uploading new stuff payload." << endl;
     job->showErrorDialog( mParentWidget );
+    emit uploadFinished( false );
     return;
   }
 
   KMessageBox::information( mParentWidget,
                             i18n("Successfully uploaded new stuff.") );
+  emit uploadFinished( true );
+}
+
+void Engine::ignoreInstallResult(bool ignore)
+{
+  mIgnoreInstallResult = ignore;
 }
