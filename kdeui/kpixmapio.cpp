@@ -414,18 +414,18 @@ QImage KPixmapIO::convertFromXImage()
 	    for (x=0; x<width/2; x++)
 	    {
 		pixel = *src++;
-		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 4) |
+		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 5) |
 			((pixel & 0x1f) << 3);
 		*dst++ = val;
 		pixel >>= 16;
-		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 4) |
+		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 5) |
 			((pixel & 0x1f) << 3);
 		*dst++ = val;
 	    }
 	    if (width%2)
 	    {
 		pixel = *src++;
-		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 4) |
+		val = ((pixel & 0xf800) << 8) | ((pixel & 0x7e0) << 5) |
 			((pixel & 0x1f) << 3);
 		*dst++ = val;
 	    }
