@@ -87,7 +87,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 
     QDomElement e = de.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
-	if ( e.tagName() == "CLASS" ) {
+	if ( e.tagName() != "CLASS" )
+	    continue;
 	    QDomElement n = e.firstChild().toElement();
 	    Q_ASSERT( n.tagName() == "NAME" );
   	    QString classNameBase = n.firstChild().toText().data();
@@ -142,7 +143,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    // Write marshalling code
 	    QDomElement s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if (s.tagName() == "FUNC") {
+	    if (s.tagName() != "FUNC")
+		continue;
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
@@ -262,14 +264,12 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    }
 		    str << "}" << endl << endl;
 		}
-	    }
 
             for(;
                  namespace_count > 0;
                  --namespace_count )
                 str << "} // namespace" << endl;
             str << endl;
-	}
     }
     impl.close();
 }

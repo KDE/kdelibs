@@ -82,7 +82,9 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
             }
             includeslist.clear();
         }
-        if ( e.tagName() == "CLASS" ) {
+        if ( e.tagName() != "CLASS" )
+	    continue;
+
 	    str << endl;
 	
 	    QDomElement n = e.firstChild().toElement();
@@ -155,7 +157,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 
 	    s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if (s.tagName() == "FUNC") {
+	    if (s.tagName() != "FUNC")
+		continue;
 		    QDomElement r = s.firstChild().toElement();
 		    str << "    virtual "; // KDE4 - I really don't think these need to be virtual
 		    writeType( str, r );
@@ -188,7 +191,6 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 			//str << " " << s.attribute("qual");
 		    str << ";" << endl;
 		}
-	    }
 
             // needed for inherited stubs
 	    str << "protected:" << endl;
@@ -202,8 +204,6 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
                  --namespace_count )
                 str << "} // namespace" << endl;
             str << endl;
-
-	}
     }
 
     str << "#endif" << endl;

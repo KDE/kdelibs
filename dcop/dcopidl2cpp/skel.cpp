@@ -85,7 +85,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
     }
 
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
-	if ( e.tagName() == "CLASS" ) {
+	if ( e.tagName() != "CLASS" )
+	    continue;
 	    QDomElement n = e.firstChild().toElement();
 	    Q_ASSERT( n.tagName() == "NAME" );
 	    QString className = n.firstChild().toText().data();
@@ -101,7 +102,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    QValueList<Function> functions;
 	    s = n.nextSibling().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if ( s.tagName() == "FUNC" ) {
+	    if ( s.tagName() != "FUNC" )
+		continue;
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString funcType = r.firstChild().toText().data();
@@ -148,7 +150,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    fullFuncName += ')';
 		    functions.append( Function( funcType, funcName, fullFuncName ) );
 		}
-	    }
 
 	    // create static tables
 	
@@ -219,7 +220,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    int fcount = 0; // counter of written functions
 	    bool firstFunc = TRUE;
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if ( s.tagName() == "FUNC" ) {
+	    if ( s.tagName() != "FUNC" )
+		continue;
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString funcType = r.firstChild().toText().data();
@@ -293,7 +295,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			str << "    }";
 		    }
 		}
-	    }
 
             // only open an 'else' clause if there were one or more functions
 	    if ( fcount > 0 ) {
@@ -356,7 +357,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 	    // Go over all children of the CLASS tag
 	    for(s = e.firstChild().toElement(); !s.isNull(); s = s.nextSibling().toElement() ) {
-	        if (s.tagName() == "SIGNAL") {
+	    if (s.tagName() != "SIGNAL")
+		continue;
 		    QDomElement r = s.firstChild().toElement();
 		    QString result = writeType( str, r );
 
@@ -417,7 +419,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 		    str << "}" << endl << endl;
 	        
-	        } // if SIGNAL tag
 	    } // for each class function 
 
             for(;
@@ -425,8 +426,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
                  --namespace_count )
                 str << "} // namespace" << endl;
             str << endl;
-
-	} // if CLASS tag
     } // for each CLASS-level tag
 	
     skel.close();
