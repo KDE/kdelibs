@@ -60,6 +60,7 @@
 #include <qptrlist.h>
 #include <qptrdict.h>
 #include <qfile.h>
+#include <qdir.h>
 
 #include <kurl.h>
 #include <krfcdate.h>
@@ -481,7 +482,7 @@ bool KCookieJar::parseURL(const QString &_url,
         return false;  // deny everything!!
     }
 
-    _path = kurl.path();
+    _path = QDir::cleanDirPath(kurl.path());
     if (_path.isEmpty())
        _path = "/";
     return true;
