@@ -666,12 +666,12 @@ void RenderBox::calcAbsoluteHorizontal()
     int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
 
     l=r=ml=mr=w=AUTO;
-    cw = containingBlockWidth()+cb->paddingLeft() +cb->paddingRight();
+    cw = containingBlock()->width();
 
     if(!style()->left().isVariable())
         l = style()->left().width(cw) + cb->borderLeft();
     if(!style()->right().isVariable())
-        r = style()->right().width(cw) - cb->borderRight();
+        r = style()->right().width(cw) + cb->borderRight();
     if(!style()->width().isVariable())
         w = style()->width().width(cw);
     else if (isReplaced())
@@ -820,8 +820,8 @@ void RenderBox::calcAbsoluteVertical()
 
     Length hl = cb->style()->height();
     if (hl.isFixed())
-        ch = hl.value + cb->paddingTop()
-             + cb->paddingBottom();
+        ch = hl.value + cb->paddingTop() + cb->paddingBottom()
+	     + cb->borderTop() + cb->borderBottom();
     else if (cb->isHtml())
         ch = cb->availableHeight();
     else
@@ -830,7 +830,7 @@ void RenderBox::calcAbsoluteVertical()
     if(!style()->top().isVariable())
         t = style()->top().width(ch) + cb->borderTop();
     if(!style()->bottom().isVariable())
-        b = style()->bottom().width(ch) - cb->borderBottom();
+        b = style()->bottom().width(ch) + cb->borderBottom();
     if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
