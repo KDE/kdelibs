@@ -13,11 +13,12 @@
 class KPixmapEffect
 {
 public:
-    enum GradientType { PyramidGradient, RectangleGradient, ConicGradient };
+    enum GradientType { PyramidGradient, RectangleGradient, 
+			PipeCrossGradient, EllipticGradient };
     enum RGBComponent { Red, Green, Blue };
     /**
-     * Draws a pyramid, rectangle, or conic gradient from color ca to
-     * color cb.
+     * Draws a pyramid, rectangle, pipecross or elliptic gradient 
+     * from color ca to color cb.
      */
     static void advancedGradient(KPixmap &pixmap, const QColor &ca,
                                  const QColor &cb, GradientType type,
