@@ -52,7 +52,7 @@ class QWidget;
  *
  * @see KAutoConfigDialog
  * @since 3.2
- **/ 
+ */ 
 class KAutoConfig : public QObject {
 
 Q_OBJECT
@@ -81,7 +81,8 @@ signals:
    * actually changed from the saved values.
    */
   void widgetModified();
-	  
+
+
 public:
   /**
    * Constructor.
@@ -163,6 +164,7 @@ public:
     changedMap.insert( widgetName, signal );
   }
 
+
 public slots:
   /**
    * Traverse the specified widgets, retrieving the settings for all known
@@ -190,6 +192,7 @@ public slots:
    */
   void resetSettings(); 
 
+
 protected:
   // KConfig object used to get/save values.
   KConfig *config;
@@ -210,7 +213,8 @@ protected:
    */ 
   bool parseChildren( const QWidget *widget,
 		  QPtrList<QWidget>&currentGroup, bool trackChanges );
- 
+
+
 private:
   // KAutoConfig Private class.
   class KAutoConfigPrivate;

@@ -37,7 +37,7 @@ class KAutoConfig;
  *
  * @see KAutoConfig
  * @since 3.2
- **/ 
+ */ 
 class KAutoConfigDialog : public QObject {
 Q_OBJECT
 
@@ -47,7 +47,8 @@ signals:
    * the user clicked on the Apply or Ok button.
    */
   void settingsChanged();
-	
+
+
 public:
   /**
    * @param parent - The parent object of this object.  Even though the class
