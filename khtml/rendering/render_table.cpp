@@ -133,16 +133,16 @@ RenderTable::~RenderTable()
     delete [] cells;
 }
 
-void RenderTable::setStyle(RenderStyle *style)
+void RenderTable::setStyle(RenderStyle *_style)
 {
-    RenderBox::setStyle(style);
+    RenderBox::setStyle(_style);
 
     // init RenderObject attributes
-    m_inline = (style->display()==INLINE_TABLE);
-    m_replaced = (style->display()==INLINE_TABLE);
+    setInline(style()->display()==INLINE_TABLE);
+    setReplaced(style()->display()==INLINE_TABLE);
 
-    spacing = style->borderSpacing();
-    collapseBorders = style->borderCollapse();
+    spacing = style()->borderSpacing();
+    collapseBorders = style()->borderCollapse();
 }
 
 inline void
@@ -206,7 +206,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         else {
 //          kdDebug( 6040 ) << "creating anonymous table section" << endl;
             o = new RenderTableSection();
-            RenderStyle *newStyle = new RenderStyle(m_style);
+            RenderStyle *newStyle = new RenderStyle(style());
             newStyle->setDisplay(TABLE_ROW_GROUP);
             o->setStyle(newStyle);
             o->setIsAnonymousBox(true);
@@ -899,7 +899,7 @@ void RenderTable::calcColMinMax()
 
             calcSingleColMinMax(c, col);
 
-            if ( col->span>1 && m_style->width().type != Percent
+            if ( col->span>1 && style()->width().type != Percent
                 && (col->type==Fixed || col->type==Variable ))
             {
                 calcFinalColMax(c, col);
@@ -969,9 +969,9 @@ void RenderTable::calcColMinMax()
     }
 
 
-    if(m_style->width().type > Relative) // Percent or fixed table
+    if(style()->width().type > Relative) // Percent or fixed table
     {
-        m_width = m_style->width().minWidth(availableWidth);
+        m_width = style()->width().minWidth(availableWidth);
         if(m_minWidth > m_width) m_width = m_minWidth;
 /*      kdDebug( 6040 ) << "1 width=" << width << " minWidth=" << minWidth << " m_availableWidth=" << m_availableWidth << " " << endl;
         if (width>1000) for(int i = 0; i < totalCols; i++)
@@ -1032,11 +1032,11 @@ void RenderTable::calcColMinMax()
 
     // PHASE 5, set table min and max to final values
 
-    if(m_style->width().type == Fixed)
+    if(style()->width().type == Fixed)
     {
         m_minWidth = m_maxWidth = m_width;
     }
-    else if(m_style->width().type == Variable && hasPercent)
+    else if(style()->width().type == Variable && hasPercent)
     {
         int tot = QMIN(99,totalPercent);
         int mx;
@@ -1050,7 +1050,7 @@ void RenderTable::calcColMinMax()
 
 
 
-    if (m_style->width().type == Percent)
+    if (style()->width().type == Percent)
     {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
@@ -1080,8 +1080,8 @@ void RenderTable::calcColMinMax()
 
 void RenderTable::calcWidth()
 {
-    Length ml = m_style->marginLeft();
-    Length mr = m_style->marginRight();
+    Length ml = style()->marginLeft();
+    Length mr = style()->marginRight();
     int cw = containingBlockWidth();
     m_marginLeft = ml.minWidth(cw);
     m_marginRight = mr.minWidth(cw);
@@ -1581,13 +1581,11 @@ void RenderTable::print( QPainter *p, int _x, int _y,
      kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
-     if(m_visible)
+     if(isVisible())
          printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     if ( tCaption )
-    {
         tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
-    }
 
     // draw the cells
     FOR_EACH_CELL(r, c, cell)
@@ -1655,7 +1653,7 @@ RenderTableSection::RenderTableSection()
     : RenderObject()
 {
     // init RenderObject attributes
-    m_inline = false;   // our object is not Inline
+    setInline(false);   // our object is not Inline
 }
 
 RenderTableSection::~RenderTableSection()
@@ -1679,7 +1677,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         else {
 //          kdDebug( 6040 ) << "creating anonymous table row" << endl;
             row = new RenderTableRow();
-            RenderStyle *newStyle = new RenderStyle(m_style);
+            RenderStyle *newStyle = new RenderStyle(style());
             newStyle->setDisplay(TABLE_ROW);
             row->setStyle(newStyle);
             row->setIsAnonymousBox(true);
@@ -1700,7 +1698,7 @@ RenderTableRow::RenderTableRow()
   : RenderObject()
 {
     // init RenderObject attributes
-    m_inline = false;   // our object is not Inline
+    setInline(false);   // our object is not Inline
 
     rIndex = -1;
 }
@@ -1743,7 +1741,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         else {
 //          kdDebug( 6040 ) << "creating anonymous table cell" << endl;
             cell = new RenderTableCell();
-            RenderStyle *newStyle = new RenderStyle(m_style);
+            RenderStyle *newStyle = new RenderStyle(style());
             newStyle->setDisplay(TABLE_CELL);
             cell->setStyle(newStyle);
             cell->setIsAnonymousBox(true);
@@ -1773,7 +1771,7 @@ RenderTableCell::RenderTableCell()
   rowHeight = 0;
   m_table = 0;
   rowimpl = 0;
-  m_printSpecial=true;
+  setSpecialObjects(true);
   _topExtra = 0;
   _bottomExtra = 0;
 }
@@ -1795,7 +1793,7 @@ void RenderTableCell::calcMinMaxWidth()
 
     RenderFlow::calcMinMaxWidth();
 
-    if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
+    if(nWrap && style()->width().type!=Fixed) m_minWidth = m_maxWidth;
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
         m_table->addColInfo(this);
@@ -1812,16 +1810,16 @@ void RenderTableCell::close()
     setParsing(false);
     if(haveAnonymousBox())
     {
-        m_last->close();
+        lastChild()->close();
         //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
         setHaveAnonymousBox(false);
     }
 
-    //if(m_last)
-    //    m_height += m_last->height() + m_last->marginBottom();
-    if(m_style->hasBorder())
+    //if(lastChild())
+    //    m_height += lastChild()->height() + lastChild()->marginBottom();
+    if(style()->hasBorder())
         m_height += borderBottom();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         m_height += paddingBottom();
 
     setMinMaxKnown(false);
@@ -1867,7 +1865,7 @@ void RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 void RenderTableCell::setStyle( RenderStyle *style )
 {
     RenderFlow::setStyle( style );
-    m_printSpecial = true;
+    setSpecialObjects(true);
 }
 
 void RenderTableCell::print(QPainter *p, int _x, int _y,
@@ -1907,7 +1905,7 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     else
         mh = QMIN(_h,h);
 
-    QColor c = m_style->backgroundColor();
+    QColor c = style()->backgroundColor();
     if ( !c.isValid() && parent() ) // take from row
         c = parent()->style()->backgroundColor();
     if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
@@ -1915,7 +1913,7 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     // ### col is missing...
 
     // ### get offsets right in case the bgimage is inherited.
-    CachedImage *bg = m_bgImage;
+    CachedImage *bg = backgroundImage();
     if ( !bg && parent() )
         bg = parent()->backgroundImage();
     if ( !bg && parent() && parent()->parent() )
@@ -1924,8 +1922,8 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     if ( bg || c.isValid() )
 	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
-    if(m_style->hasBorder())
-        printBorder(p, _tx, _ty, w, h, m_style);
+    if(style()->hasBorder())
+        printBorder(p, _tx, _ty, w, h, style());
 }
 
 // -------------------------------------------------------------------------
@@ -1934,7 +1932,7 @@ RenderTableCol::RenderTableCol()
   : RenderObject()
 {
     // init RenderObject attributes
-    m_inline = false;   // our object is not Inline
+    setInline(true);   // our object is not Inline
 
     _span = 1;
 }
@@ -1965,12 +1963,12 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 
 Length RenderTableCol::width()
 {
-    if (m_style->width().type == Undefined
+    if (style()->width().type == Undefined
         && parent() &&
             parent()->style()->display()==TABLE_COLUMN_GROUP)
         return static_cast<RenderTableCol*>(parent())->width();
     else
-        return m_style->width();
+        return style()->width();
 }
 
 // -------------------------------------------------------------------------

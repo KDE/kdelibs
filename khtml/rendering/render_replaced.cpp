@@ -32,13 +32,13 @@ RenderReplaced::RenderReplaced()
     : RenderBox()
 {
     // init RenderObject attributes
-    m_replaced = true;
+    setReplaced(true);
 }
 
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
-    if ( !m_visible )
+    if ( !isVisible() )
         return;
 
     _tx += m_x;
@@ -46,7 +46,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
    if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-   if(m_printSpecial) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+   if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
    printReplaced(p, _tx, _ty);
 }
 
@@ -95,13 +95,13 @@ void RenderWidget::slotWidgetDestructed()
     m_widget = 0;
 }
 
-void RenderWidget::setStyle(RenderStyle *style)
+void RenderWidget::setStyle(RenderStyle *_style)
 {
-    RenderReplaced::setStyle(style);
+    RenderReplaced::setStyle(_style);
     if(m_widget)
     {
-        m_widget->setFont(m_style->font());
-        if(!m_visible) m_widget->hide();
+        m_widget->setFont(style()->font());
+        if(!isVisible()) m_widget->hide();
     }
 }
 
@@ -110,7 +110,7 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
     // ### this does not get called if a form element moves of the screen, so
     // the widget stays in it's old place!
     assert(!deleted);
-    if(!(m_widget && m_view) || !m_visible) return;
+    if(!(m_widget && m_view) || !isVisible()) return;
 
     // add offset for relative positioning
     if(isRelPositioned())
@@ -124,11 +124,11 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 short RenderWidget::verticalPositionHint() const
 {
     assert(!deleted);
-    switch(m_style->verticalAlign())
+    switch(style()->verticalAlign())
     {
     case BASELINE:
         //kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return (m_height - QFontMetrics(m_style->font()).descent());
+        return (m_height - QFontMetrics(style()->font()).descent());
     case SUB:
         // ###
     case SUPER:
@@ -136,13 +136,13 @@ short RenderWidget::verticalPositionHint() const
     case TOP:
         return PositionTop;
     case TEXT_TOP:
-        return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(style()->font()).ascent();
     case MIDDLE:
-        return -QFontMetrics(m_style->font()).width('x')/2;
+        return -QFontMetrics(style()->font()).width('x')/2;
     case BOTTOM:
         return PositionBottom;
     case TEXT_BOTTOM:
-        return QFontMetrics(m_style->font()).descent();
+        return QFontMetrics(style()->font()).descent();
     }
     return 0;
 }

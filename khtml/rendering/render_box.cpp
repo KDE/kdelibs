@@ -68,30 +68,30 @@ RenderBox::RenderBox()
     m_marginRight = 0;
 }
 
-void RenderBox::setStyle(RenderStyle *style)
+void RenderBox::setStyle(RenderStyle *_style)
 {
-    RenderObject::setStyle(style);
+    RenderObject::setStyle(_style);
 
     // ### move this into the parser
     // if only horizontal position was defined, vertical should be 50%
-    if(!style->backgroundXPosition().isVariable() && style->backgroundYPosition().isVariable())
-        m_style->setBackgroundYPosition(Length(50, Percent));
+    if(!_style->backgroundXPosition().isVariable() && _style->backgroundYPosition().isVariable())
+        style()->setBackgroundYPosition(Length(50, Percent));
 
-    switch(style->position())
+    switch(_style->position())
     {
     case ABSOLUTE:
     case FIXED:
-        m_positioned = true;
+        setPositioned(true);
         break;
     default:
-        if(style->isFloating()) {
-            m_floating = true;
+        setPositioned(false);
+        if(_style->isFloating()) {
+            setFloating(true);
         } else {
-            if(style->position() == RELATIVE)
-                m_relPositioned = true;
+            if(_style->position() == RELATIVE)
+                setRelPositioned(true);
         }
     }
-
 }
 
 RenderBox::~RenderBox()
@@ -103,12 +103,12 @@ QSize RenderBox::contentSize() const
 {
     int w = m_width;
     int h = m_height;
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
     {
         w -= borderLeft() + borderRight();
         h -= borderTop() + borderBottom();
     }
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
     {
         w -= paddingLeft() + paddingRight();
         h -= paddingTop() + paddingBottom();
@@ -121,9 +121,9 @@ short RenderBox::contentWidth() const
 {
     short w = m_width;
     //kdDebug( 6040 ) << "RenderBox::contentWidth(1) = " << m_width << endl;
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
         w -= borderLeft() + borderRight();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         w -= paddingLeft() + paddingRight();
 
     //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
@@ -133,9 +133,9 @@ short RenderBox::contentWidth() const
 int RenderBox::contentHeight() const
 {
     int h = m_height;
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
         h -= borderTop() + borderBottom();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         h -= paddingTop() + paddingBottom();
 
     return h;
@@ -210,10 +210,10 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
         mh = QMIN(_h,h);
 
-    printBackground(p, m_style->backgroundColor(), m_bgImage, my, mh, _tx, _ty, w, h);
+    printBackground(p, style()->backgroundColor(), backgroundImage(), my, mh, _tx, _ty, w, h);
 
-    if(m_style->hasBorder())
-        printBorder(p, _tx, _ty, w, h, m_style);
+    if(style()->hasBorder())
+        printBorder(p, _tx, _ty, w, h, style());
 }
 
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
@@ -230,8 +230,8 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         int sy = 0;
 
         //hacky stuff
-        RenderStyle* sptr = m_style;
-        if ( isHtml() && firstChild() && !m_bgImage )
+        RenderStyle* sptr = style();
+        if ( isHtml() && firstChild() && !backgroundImage() )
             sptr = firstChild()->style();
 
 	int cx = _tx;
@@ -285,7 +285,7 @@ void RenderBox::close()
     calcWidth();
     calcHeight();
     calcMinMaxWidth();
-    if(containingBlockWidth() < m_minWidth && m_parent)
+    if(containingBlockWidth() < m_minWidth && parent())
         containingBlock()->updateSize();
     else if(!isInline() || isReplaced())
     {
@@ -304,7 +304,7 @@ short RenderBox::containingBlockWidth() const
 
 void RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if ( m_style->position() == FIXED )
+    if ( style()->position() == FIXED )
 	f = true;
     RenderObject *o = container();
     if( o ) {
@@ -393,7 +393,7 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool)
 
 short RenderBox::verticalPositionHint() const
 {
-    switch(m_style->verticalAlign())
+    switch(style()->verticalAlign())
     {
     case BASELINE:
         //kdDebug( 6040 ) << "aligned to baseline" << endl;
@@ -405,13 +405,13 @@ short RenderBox::verticalPositionHint() const
     case TOP:
         return PositionTop;
     case TEXT_TOP:
-        return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case BOTTOM:
         return PositionBottom;
     case TEXT_BOTTOM:
-        return QFontMetrics(m_style->font()).descent();
+        return QFontMetrics(style()->font()).descent();
     }
     return 0;
 }
@@ -419,7 +419,7 @@ short RenderBox::verticalPositionHint() const
 
 short RenderBox::baselineOffset() const
 {
-    switch(m_style->verticalAlign())
+    switch(style()->verticalAlign())
     {
     case BASELINE:
 //      kdDebug( 6040 ) << "aligned to baseline" << endl;
@@ -431,13 +431,13 @@ short RenderBox::baselineOffset() const
     case TOP:
         return -1000;
     case TEXT_TOP:
-        return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(style()->font()).ascent();
     case MIDDLE:
-        return -QFontMetrics(m_style->font()).width('x')/2;
+        return -QFontMetrics(style()->font()).width('x')/2;
     case BOTTOM:
         return 1000;
     case TEXT_BOTTOM:
-        return QFontMetrics(m_style->font()).descent();
+        return QFontMetrics(style()->font()).descent();
     }
     return 0;
 }
@@ -473,21 +473,21 @@ void RenderBox::repaintObject(RenderObject *o, int x, int y)
 
 void RenderBox::relativePositionOffset(int &tx, int &ty)
 {
-    if(!m_style->left().isVariable())
-        tx += m_style->left().width(containingBlockWidth());
-    else if(!m_style->right().isVariable())
-        tx -= m_style->right().width(containingBlockWidth());
-    if(!m_style->top().isVariable())
+    if(!style()->left().isVariable())
+        tx += style()->left().width(containingBlockWidth());
+    else if(!style()->right().isVariable())
+        tx -= style()->right().width(containingBlockWidth());
+    if(!style()->top().isVariable())
     {
-        if (!m_style->top().isPercent()
+        if (!style()->top().isPercent()
                 || containingBlock()->style()->height().isFixed())
-            ty += m_style->top().width(containingBlockHeight());
+            ty += style()->top().width(containingBlockHeight());
     }
-    else if(!m_style->bottom().isVariable())
+    else if(!style()->bottom().isVariable())
     {
-        if (!m_style->bottom().isPercent()
+        if (!style()->bottom().isPercent()
                 || containingBlock()->style()->height().isFixed())
-            ty -= m_style->bottom().width(containingBlockHeight());
+            ty -= style()->bottom().width(containingBlockHeight());
     }
 }
 
@@ -502,12 +502,12 @@ void RenderBox::calcWidth()
     }
     else
     {
-        Length w = m_style->width();
+        Length w = style()->width();
         if (isReplaced())
         {
             if(w.isVariable())
             {
-                Length h = m_style->height();
+                Length h = style()->height();
                 if(intrinsicHeight() > 0 && (h.isFixed() || h.isPercent()))
                 {
                     int myh = h.width(containingBlockHeight());
@@ -532,8 +532,8 @@ void RenderBox::calcWidth()
             }
         }
 
-        Length ml = m_style->marginLeft();
-        Length mr = m_style->marginRight();
+        Length ml = style()->marginLeft();
+        Length mr = style()->marginRight();
 
         int cw = containingBlockWidth();
 
@@ -648,12 +648,12 @@ void RenderBox::calcHeight()
         calcAbsoluteVertical();
     else
     {
-        Length h = m_style->height();
+        Length h = style()->height();
         if (isReplaced())
         {
             if(h.isVariable())
             {
-                Length w = m_style->width();
+                Length w = style()->width();
                 if(intrinsicWidth() > 0 && (w.isFixed() || w.isPercent()))
                 {
                     int myw = w.width(containingBlockWidth());
@@ -721,27 +721,28 @@ void RenderBox::calcAbsoluteHorizontal()
     cw = containingBlockWidth()
         +containingBlock()->paddingLeft() +containingBlock()->paddingRight();
 
-    if(!m_style->left().isVariable())
-        l = m_style->left().width(cw);
-    if(!m_style->right().isVariable())
-        r = m_style->right().width(cw);
-    if(!m_style->width().isVariable())
-        w = m_style->width().width(cw);
+    if(!style()->left().isVariable())
+        l = style()->left().width(cw);
+    if(!style()->right().isVariable())
+        r = style()->right().width(cw);
+    if(!style()->width().isVariable())
+        w = style()->width().width(cw);
     else if (isReplaced())
         w = intrinsicWidth();
-    if(!m_style->marginLeft().isVariable())
-        ml = m_style->marginLeft().width(cw);
-    if(!m_style->marginRight().isVariable())
-        mr = m_style->marginRight().width(cw);
+    if(!style()->marginLeft().isVariable())
+        ml = style()->marginLeft().width(cw);
+    if(!style()->marginRight().isVariable())
+        mr = style()->marginRight().width(cw);
 
 
     // css2 spec 10.3.7 & 10.3.8
     // 1
     RenderObject* o=parent();
+    RenderObject* h;
     if (style()->direction()==LTR && l==AUTO )
     {
-        if (m_next) l = m_next->xPos();
-        else if (m_previous) l = m_previous->xPos()+m_previous->contentWidth();
+        if ((h = nextSibling())) l = h->xPos();
+        else if ((h = previousSibling())) l = h->xPos()+h->contentWidth();
         else l=0;
         while (o && o!=containingBlock()) { l+=o->xPos(); o=o->parent(); }
     }
@@ -749,8 +750,8 @@ void RenderBox::calcAbsoluteHorizontal()
     // 2
     else if (style()->direction()==RTL && r==AUTO )
     {
-        if (m_previous) r = (m_previous->xPos() + m_previous->contentWidth());
-        else if (m_next) r = m_next->xPos();
+        if ((h = previousSibling())) r = (h->xPos() + h->contentWidth());
+        else if ((h = nextSibling())) r = h->xPos();
         else r=0;
         r += cw -
             (o->width()-o->borderLeft()-o->borderRight()-o->paddingLeft()-o->paddingRight());
@@ -804,9 +805,9 @@ void RenderBox::calcAbsoluteHorizontal()
     // 7
     if (cw != l + r + w + ml + mr + pab)
     {
-        if (m_style->left().isVariable())
+        if (style()->left().isVariable())
             l = cw - ( r + w + ml + mr + pab);
-        else if (m_style->right().isVariable())
+        else if (style()->right().isVariable())
             r = cw - ( l + w + ml + mr + pab);
         else if (style()->direction()==LTR)
             r = cw - ( l + w + ml + mr + pab);
@@ -839,13 +840,13 @@ void RenderBox::calcAbsoluteVertical()
     else
         ch = containingBlock()->height();
 
-    if(!m_style->top().isVariable())
-        t = m_style->top().width(ch);
-    if(!m_style->bottom().isVariable())
-        b = m_style->bottom().width(ch);
-    if(!m_style->height().isVariable())
+    if(!style()->top().isVariable())
+        t = style()->top().width(ch);
+    if(!style()->bottom().isVariable())
+        b = style()->bottom().width(ch);
+    if(!style()->height().isVariable())
     {
-        h = m_style->height().width(ch);
+        h = style()->height().width(ch);
         // use real height if higher
         if (h < m_height - pab)
             h = m_height - pab;
@@ -853,19 +854,20 @@ void RenderBox::calcAbsoluteVertical()
     else if (isReplaced())
         h = intrinsicHeight();
 
-    if(!m_style->marginTop().isVariable())
-        mt = m_style->marginTop().width(ch);
-    if(!m_style->marginBottom().isVariable())
-        mb = m_style->marginBottom().width(ch);
+    if(!style()->marginTop().isVariable())
+        mt = style()->marginTop().width(ch);
+    if(!style()->marginBottom().isVariable())
+        mb = style()->marginBottom().width(ch);
 
 
     // css2 spec 10.6.4 & 10.6.5
     // 1
     RenderObject* o = parent();
+    RenderObject* ro;
     if (t==AUTO && (h==AUTO || b==AUTO))
     {
-        if (m_next) t = m_next->yPos();
-        else if (m_previous) t = m_previous->yPos()+m_previous->height();
+        if ((ro = nextSibling())) t = ro->yPos();
+        else if ((ro = previousSibling())) t = ro->yPos()+ro->height();
         else t=0;
         while (o && o!=containingBlock()) { t+=o->yPos(); o=o->parent(); }
     }

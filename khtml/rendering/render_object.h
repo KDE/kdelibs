@@ -1,8 +1,9 @@
 /**
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ *           (C) 2000 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -56,28 +57,42 @@ public:
     RenderObject();
     virtual ~RenderObject();
 
-    static RenderObject *createObject(DOM::NodeImpl *node);
-
-    DOM::ActivationState hasKeyboardFocus;
-
-    virtual const char *renderName() const { return "RenderObject"; }
-    virtual void printTree(int indent=0) const;
-
-    void setParent(RenderObject *parent) { m_parent = parent; }
+    // RenderObject tree manipulation
+    //////////////////////////////////////////
     RenderObject *parent() const { return m_parent; }
 
     RenderObject *previousSibling() const { return m_previous; }
     RenderObject *nextSibling() const { return m_next; }
-    void setPreviousSibling(RenderObject *previous) { m_previous = previous; }
-    void setNextSibling(RenderObject *next) { m_next = next; }
 
     RenderObject *firstChild() const { return m_first; }
     RenderObject *lastChild() const { return m_last; }
-    void setFirstChild(RenderObject *first) { m_first = first; }
-    void setLastChild(RenderObject *last) { m_last = last; }
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
     virtual void removeChild(RenderObject *oldChild);
+
+    // raw tree manipulation
+    RenderObject* removeChildNode(RenderObject* child);
+    void appendChildNode(RenderObject* child);
+    void insertChildNode(RenderObject* child, RenderObject* before);
+    //////////////////////////////////////////
+
+private:
+    //////////////////////////////////////////
+    // Helper functions. Dangerous to use!
+    void setPreviousSibling(RenderObject *previous) { m_previous = previous; }
+    void setNextSibling(RenderObject *next) { m_next = next; }
+    void setParent(RenderObject *parent) { m_parent = parent; }
+    void setFirstChild(RenderObject *first) { m_first = first; }
+    void setLastChild(RenderObject *last) { m_last = last; }
+    //////////////////////////////////////////
+
+public:
+    virtual const char *renderName() const { return "RenderObject"; }
+    virtual void printTree(int indent=0) const;
+
+    static RenderObject *createObject(DOM::NodeImpl *node);
+
+    DOM::ActivationState hasKeyboardFocus;
 
     // some helper functions...
     /**
@@ -107,7 +122,8 @@ public:
     bool isText() const  { return m_isText; }   // inherits RenderText
     bool isInline() const { return m_inline; }  // inline object
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
-
+    bool hasSpecialObjects() const { return m_printSpecial; }
+    bool isVisible() const  { return m_visible; }
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
@@ -123,10 +139,17 @@ public:
     RenderObject *container() const;
 
     void setContainsPositioned(bool p);
-
     void setLayouted(bool b=true) { m_layouted = b; }
     void setParsing(bool b=true) { m_parsing = b; }
     void setMinMaxKnown(bool b=true) { m_minMaxKnown = b; }
+    void setPositioned(bool b=true)  { m_positioned = b;  }
+    void setRelPositioned(bool b=true) { m_relPositioned = b; }
+    void setFloating(bool b=true) { m_floating = b; }
+    void setInline(bool b=true) { m_inline = b; }
+    void setSpecialObjects(bool b=true) { m_printSpecial = b; }
+    void setVisible(bool b=true) { m_visible = b; }
+    void setRenderText() { m_isText = true; }
+    void setReplaced(bool b=true) { m_replaced = b; }
 
     virtual short baselineOffset() const { return 0; }
     virtual short verticalPositionHint() const { return 0; }
@@ -359,6 +382,7 @@ protected:
 
     virtual QRect viewRect() const;
 
+private:
     RenderStyle *m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;

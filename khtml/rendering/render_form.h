@@ -296,10 +296,14 @@ public:
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual void keyPressEvent(QKeyEvent *);
+    virtual void keyReleaseEvent(QKeyEvent *);
     virtual bool event( QEvent *e );
 signals:
     void focused();
     void blurred();
+    void onKeyDown();
+    void onKeyUp();
 };
 
 // -------------------------------------------------------------------------

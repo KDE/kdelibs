@@ -40,7 +40,7 @@ RenderApplet::RenderApplet(QScrollView *view,
     : RenderWidget(view)
 {
     // init RenderObject attributes
-    m_inline = true;   // our object is Inline
+    setInline(true);
     m_applet = applet;
 
     KJavaAppletContext *context = 0;
@@ -117,7 +117,7 @@ RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
   : RenderWidget( view )
 {
     // init RenderObject attributes
-    m_inline = true;   // our object is Inline
+    setInline(true);
 
     setQWidget(
         new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),

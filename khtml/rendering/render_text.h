@@ -142,7 +142,7 @@ public:
     inline QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
-    virtual unsigned int width( int from, int len, bool firstLine = false) const;
+    virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
     virtual short width() const;
     virtual int height() const;
 
@@ -174,8 +174,8 @@ public:
     virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false);
     void posOfChar(int ch, int &x, int &y);
 
-    virtual short marginLeft() const { return m_style->marginLeft().minWidth(0); }
-    virtual short marginRight() const { return m_style->marginRight().minWidth(0); }
+    virtual short marginLeft() const { return style()->marginLeft().minWidth(0); }
+    virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
     virtual void repaint();
 protected:

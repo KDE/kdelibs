@@ -42,7 +42,7 @@ RenderHtml::~RenderHtml()
 void RenderHtml::setStyle(RenderStyle *style)
 {
     RenderFlow::setStyle(style);
-    m_printSpecial = true;
+    setSpecialObjects(true);
 }
 
 void RenderHtml::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
@@ -59,8 +59,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 {
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << _tx << "/" << _ty << endl;
 
-    QColor c = m_style->backgroundColor();
-    CachedImage *bg = m_bgImage;
+    QColor c = style()->backgroundColor();
+    CachedImage *bg = backgroundImage();
 
     if( firstChild() ) {
 	if( !c.isValid() )
@@ -89,8 +89,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
     printBackground(p, c, bg, my, _h, bx, by, bw, bh);
 
-    if(m_style->hasBorder())
-	printBorder( p, _tx, _ty, w, h, m_style );
+    if(style()->hasBorder())
+	printBorder( p, _tx, _ty, w, h, style() );
 }
 
 void RenderHtml::repaint()
@@ -107,8 +107,8 @@ void RenderHtml::layout()
     //kdDebug(0) << renderName() << " height = " << m_height << endl;
     int lp = lowestPosition();
     // margins of Html element can only be fixed, right?
-    int margins  = m_style->marginTop().isFixed() ? m_style->marginTop().value : 0;
-        margins += m_style->marginBottom().isFixed() ? m_style->marginBottom().value : 0;
+    int margins  = style()->marginTop().isFixed() ? style()->marginTop().value : 0;
+        margins += style()->marginBottom().isFixed() ? style()->marginBottom().value : 0;
 
     if( m_height + margins < lp )
 	m_height = lp - margins;

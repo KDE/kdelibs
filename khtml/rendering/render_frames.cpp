@@ -48,7 +48,7 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *vi
 : RenderBox()
 {
   // init RenderObject attributes
-  m_inline = false;   // our object is not Inline
+    setInline(false);
 
   m_frameset = frameSet;
 
@@ -86,7 +86,7 @@ RenderFrameSet::~RenderFrameSet()
 void RenderFrameSet::layout( )
 {
 
-    if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
+    if ( strcmp( parent()->renderName(), "RenderFrameSet" ) != 0 )
     {
         m_width = m_view->visibleWidth();
         m_height = m_view->visibleHeight();
@@ -450,7 +450,7 @@ RenderPart::RenderPart( QScrollView *view )
 : RenderWidget( view )
 {
   // init RenderObject attributes
-  m_inline = false;   // our object is not Inline
+    setInline(false);
 
   m_view = view;
 }
@@ -525,7 +525,7 @@ RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
   // init RenderObject attributes
-  m_inline = true;   // our object is Inline
+    setInline(true);
 
   m_obj = o;
 }
@@ -692,8 +692,8 @@ void RenderPartObject::setSize( int w, int h )
 void RenderPartObject::layout( )
 {
     // ### shouldn't this be relative to the containingBlock?????
-  setSize( m_style->width().minWidth( m_view->visibleWidth() ),
-           m_style->height().minWidth( m_view->visibleHeight() ) );
+  setSize( style()->width().minWidth( m_view->visibleWidth() ),
+           style()->height().minWidth( m_view->visibleHeight() ) );
   calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
           containingBlockWidth());
   RenderPart::layout();

@@ -54,15 +54,15 @@ RenderImage::~RenderImage()
     if(image) image->deref(this);
 }
 
-void RenderImage::setStyle(RenderStyle* style)
+void RenderImage::setStyle(RenderStyle* _style)
 {
-    RenderReplaced::setStyle(style);
+    RenderReplaced::setStyle(_style);
 
-    if(m_style->width().isFixed())  pixSize.setWidth(m_style->width().value);
-    if(m_style->height().isFixed()) pixSize.setHeight(m_style->height().value);
+    if(style()->width().isFixed())  pixSize.setWidth(style()->width().value);
+    if(style()->height().isFixed()) pixSize.setHeight(style()->height().value);
 
     // init RenderObject attributes
-    m_inline = ( m_style->display()==INLINE );
+    setInline( style()->display()==INLINE );
 }
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
@@ -291,7 +291,7 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 short RenderImage::baselineOffset() const
 {
-    switch(m_style->verticalAlign())
+    switch(style()->verticalAlign())
     {
     case BASELINE:
     case SUB:
@@ -301,11 +301,11 @@ short RenderImage::baselineOffset() const
     case TOP:
         return 0;
     case TEXT_TOP:
-        return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case TEXT_BOTTOM:
-        return contentHeight()-QFontMetrics(m_style->font()).descent();
+        return contentHeight()-QFontMetrics(style()->font()).descent();
     }
     return 0;
 }

@@ -30,7 +30,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
     // init RenderObject attributes
-    m_inline = false;   // our object is no Inline
+    setInline(false);
 
     m_view = view;
     // try to contrain the width to the views width
@@ -39,7 +39,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_maxWidth = m_minWidth;
     m_height = view->visibleHeight();
 
-    m_positioned=true; // to 0,0 :)
+    setPositioned(true); // to 0,0 :)
     printingMode = false;
 
     selectionStart = 0;
@@ -138,7 +138,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
         relativePositionOffset(_tx, _ty);
 
     // 1. print background, borders etc
-    if(m_printSpecial && !isInline())
+    if(hasSpecialObjects() && !isInline())
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print contents
@@ -347,10 +347,10 @@ int RenderRoot::docHeight() const
     else
         h = m_view->visibleHeight();
 
-    if(m_first) {
-        int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
-        if( m_first->lowestPosition() > dh )
-            dh = m_first->lowestPosition();
+    if(firstChild()) {
+        int dh = firstChild()->height() + firstChild()->marginTop() + firstChild()->marginBottom();
+        if( firstChild()->lowestPosition() > dh )
+            dh = firstChild()->lowestPosition();
         if( dh > h )
             h = dh;
     }
@@ -365,8 +365,9 @@ int RenderRoot::docWidth() const
     else
         w = m_view->visibleWidth();
 
-    if(m_first) {
-        int dw = m_first->width() + m_first->marginLeft() + m_first->marginRight();
+    RenderObject* h = firstChild();
+    if(h) {
+        int dw = h->width() + h->marginLeft() + h->marginRight();
         if( dw > w )
             w = dw;
     }

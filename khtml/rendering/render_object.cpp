@@ -119,7 +119,7 @@ RenderObject::RenderObject()
     m_replaced = false;
     m_visible = true;
     m_containsOverhangingFloats = false;
-    
+
     m_bgImage = 0;
 }
 
@@ -127,9 +127,9 @@ RenderObject::~RenderObject()
 {
     if(m_bgImage) m_bgImage->deref(this);
 
-    if (m_parent)
+    if (parent())
         //have parent, take care of the tree integrity
-        m_parent->removeChild(this);
+        parent()->removeChild(this);
 
     //if not, it is mass a deletion, just kill everyone
     RenderObject *n;
@@ -211,37 +211,13 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     }
 
     // just add it...
-    newChild->setParent(this);
-
-    if (!beforeChild) {
-        if(m_last)
-        {
-            newChild->setPreviousSibling(m_last);
-            m_last->setNextSibling(newChild);
-            m_last = newChild;
-        }
-        else
-        {
-            m_first = m_last = newChild;
-        }
-    }
-    else {
-        if (beforeChild == m_first)
-            m_first = newChild;
-        RenderObject *newPrev = beforeChild->previousSibling();
-        newChild->setNextSibling(beforeChild);
-        beforeChild->setPreviousSibling(newChild);
-
-        if(newPrev) newPrev->setNextSibling(newChild);
-        newChild->setPreviousSibling(newPrev);
-
-    }
+    insertChildNode(newChild, beforeChild);
     newChild->calcWidth();
 }
 
-void RenderObject::removeChild(RenderObject *oldChild)
+RenderObject* RenderObject::removeChildNode(RenderObject* oldChild)
 {
-    //kdDebug() << "RenderObject::removeChild" << endl;
+    ASSERT(oldChild->parent() == this);
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())
@@ -255,8 +231,50 @@ void RenderObject::removeChild(RenderObject *oldChild)
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+    return oldChild;
+}
 
+void RenderObject::removeChild(RenderObject *oldChild)
+{
+    removeChildNode(oldChild);
     setLayouted(false);
+}
+
+void RenderObject::appendChildNode(RenderObject* newChild)
+{
+    ASSERT(newChild->parent() == 0);
+    newChild->setParent(this);
+    RenderObject* lChild = lastChild();
+
+    if(lChild)
+    {
+        newChild->setPreviousSibling(lChild);
+        lChild->setNextSibling(newChild);
+    }
+    else
+        setFirstChild(newChild);
+
+    setLastChild(newChild);
+}
+
+void RenderObject::insertChildNode(RenderObject* child, RenderObject* beforeChild)
+{
+    if(!beforeChild)
+        return appendChildNode(child);
+
+    ASSERT(!child->parent());
+    ASSERT(beforeChild->parent() == this);
+
+    if(beforeChild == firstChild())
+        setFirstChild(child);
+
+    RenderObject* prev = beforeChild->previousSibling();
+    child->setNextSibling(beforeChild);
+    beforeChild->setPreviousSibling(child);
+    if(prev) prev->setNextSibling(child);
+    child->setPreviousSibling(prev);
+
+    child->setParent(this);
 }
 
 RenderObject *RenderObject::containingBlock() const
@@ -546,12 +564,12 @@ void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int t
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h)
 {
-    if(m_parent) m_parent->repaintRectangle(x, y, w, h);
+    if(parent()) parent()->repaintRectangle(x, y, w, h);
 }
 
 void RenderObject::repaintObject(RenderObject *o, int x, int y)
 {
-    if(m_parent) m_parent->repaintObject(o, x, y);
+    if(parent()) parent()->repaintObject(o, x, y);
 }
 
 void RenderObject::printTree(int indent) const
@@ -614,9 +632,9 @@ void RenderObject::setStyle(RenderStyle *style)
     }
 
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
-        m_printSpecial = true;
+        setSpecialObjects(true);
     else
-	m_printSpecial = false;
+        setSpecialObjects(false);
 
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
 	m_visible = false;
@@ -673,8 +691,8 @@ QRect RenderObject::viewRect() const
 
 void RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if(m_parent)
-        m_parent->absolutePosition(xPos, yPos, f);
+    if(parent())
+        parent()->absolutePosition(xPos, yPos, f);
     else
         xPos = yPos = -1;
 }
@@ -725,13 +743,13 @@ RenderObject *RenderObject::container() const
     else if ( pos == ABSOLUTE )
 	o = containingBlock();
     else
-	o = m_parent;
+	o = parent();
     return o;
 }
 
 RenderObject *RenderObject::root() const
 {
-    RenderObject *o = m_parent;
+    RenderObject *o = parent();
     while( o && !o->isRoot() )
 	o = o->parent();
     return o;

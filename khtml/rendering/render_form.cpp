@@ -54,7 +54,7 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     : RenderWidget(view)
 {
     // init RenderObject attributes
-    m_inline = true;   // our object is Inline
+    setInline(true);   // our object is Inline
 
     m_element = element;
 }
@@ -65,11 +65,11 @@ RenderFormElement::~RenderFormElement()
 
 void RenderFormElement::applyLayout(int iWidth, int iHeight)
 {
-    if(!m_style->width().isVariable())
-        iWidth = m_style->width().width(containingBlock()->contentWidth());
+    if(!style()->width().isVariable())
+        iWidth = style()->width().width(containingBlock()->contentWidth());
 
-    if(!m_style->height().isVariable())
-        iHeight = m_style->height().width(containingBlock()->contentHeight());
+    if(!style()->height().isVariable())
+        iHeight = style()->height().width(containingBlock()->contentHeight());
 
     if(m_widget) {
         m_widget->resize(iWidth, iHeight);
@@ -301,7 +301,7 @@ void RenderSubmitButton::layout()
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
     value = value.visual();
     static_cast<PushButtonWidget*>(m_widget)->setText(value.stripWhiteSpace());
-    static_cast<PushButtonWidget*>(m_widget)->setFont(m_style->font());
+    static_cast<PushButtonWidget*>(m_widget)->setFont(style()->font());
 
     RenderButton::layout();
 }
@@ -406,6 +406,17 @@ void LineEditWidget::focusOutEvent(QFocusEvent* e)
     emit blurred();
 }
 
+void LineEditWidget::keyPressEvent(QKeyEvent* e)
+{
+    QLineEdit::keyPressEvent(e);
+    emit onKeyDown();
+}
+
+void LineEditWidget::keyReleaseEvent(QKeyEvent* e)
+{
+    QLineEdit::keyReleaseEvent(e);
+    emit onKeyUp();
+}
 
 // -----------------------------------------------------------------------------
 

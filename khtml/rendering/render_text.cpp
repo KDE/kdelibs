@@ -190,7 +190,7 @@ int TextSlaveArray::compareItems( Item d1, Item d2 )
 }
 
 // remove this once QVector::bsearch is fixed
-int TextSlaveArray::findFirstMatching( Item d) const
+int TextSlaveArray::findFirstMatching(Item d) const
 {
     int len = count();
 
@@ -232,8 +232,8 @@ RenderText::RenderText(DOMStringImpl *_str)
     : RenderObject()
 {
     // init RenderObject attributes
-    m_isText = true;   // our object inherits from RenderText
-    m_inline = true;   // our object is Inline
+    setRenderText();   // our object inherits from RenderText
+    setInline(true);   // our object is Inline
 
     m_minWidth = -1;
     m_maxWidth = -1;
@@ -249,12 +249,12 @@ RenderText::RenderText(DOMStringImpl *_str)
 #endif
 }
 
-void RenderText::setStyle(RenderStyle *style)
+void RenderText::setStyle(RenderStyle *_style)
 {
-    RenderObject::setStyle(style);
+    RenderObject::setStyle(_style);
     delete fm;
-    fm = new QFontMetrics(m_style->font());
-    m_contentHeight = m_style->lineHeight().width(fm->height());
+    fm = new QFontMetrics(style()->font());
+    m_contentHeight = style()->lineHeight().width(fm->height());
 }
 
 RenderText::~RenderText()
@@ -375,8 +375,8 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
 void RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
-    if(m_parent) {
-        m_parent->absolutePosition(xPos, yPos, false);
+    if(parent()) {
+        parent()->absolutePosition(xPos, yPos, false);
         if ( m_lines.count() ) {
             TextSlave* s = m_lines[0];
             xPos += s->m_x;
@@ -389,13 +389,13 @@ void RenderText::absolutePosition(int &xPos, int &yPos, bool)
 
 void RenderText::posOfChar(int chr, int &x, int &y)
 {
-    if (!m_parent)
+    if (!parent())
     {
        x = -1;
        y = -1;
        return;
     }
-    m_parent->absolutePosition( x, y, false );
+    parent()->absolutePosition( x, y, false );
 
     //if( chr > (int) str->l )
     //chr = str->l;
@@ -414,8 +414,8 @@ void RenderText::posOfChar(int chr, int &x, int &y)
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
-    RenderStyle* pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE);
-    int d = m_style->textDecoration();
+    RenderStyle* pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+    int d = style()->textDecoration();
     TextSlave f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to print
@@ -472,24 +472,24 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         // know we can stop
         do {
             TextSlave* s = m_lines[si];
-            RenderStyle* style = pseudoStyle && s->m_firstLine ? pseudoStyle : m_style;
+            RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
 
-            if(style->font() != p->font())
-                p->setFont(style->font());
+            if(_style->font() != p->font())
+                p->setFont(_style->font());
 
-            if(style->color() != p->pen().color())
-                p->setPen(style->color());
+            if(_style->color() != p->pen().color())
+                p->setPen(_style->color());
 
-            if((m_printSpecial  &&
-                (m_parent->isInline() || pseudoStyle)) &&
+            if((hasSpecialObjects()  &&
+                (parent()->isInline() || pseudoStyle)) &&
                (!pseudoStyle || s->m_firstLine))
-                s->printBoxDecorations(p, style, this, tx, ty, si == 0, si == (int)m_lines.count());
+                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count());
 
             s->print(p, tx, ty);
 
             if(d != TDNONE && hasKeyboardFocus == DOM::ActivationOff)
             {
-                p->setPen(m_style->textDecorationColor());
+                p->setPen(_style->textDecorationColor());
                 s->printDecoration(p, tx, ty, d);
             }
 
@@ -497,7 +497,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if (selectionState() != SelectionNone && endPos > 0)
             {
                 //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
-                s->printSelection(p, style, tx, ty, startPos, endPos);
+                s->printSelection(p, _style, tx, ty, startPos, endPos);
 
                 int diff;
                 if(si < (int)m_lines.count()-1)
@@ -545,7 +545,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
                       int tx, int ty)
 {
-    if ( !m_visible )
+    if ( !isVisible() )
         return;
 
     printObject(p, x, y, w, h, tx, ty);
@@ -650,9 +650,9 @@ void RenderText::setText(DOMStringImpl *text)
 int RenderText::height() const
 {
     return m_contentHeight
-        + m_style->borderTopWidth() + m_style->borderBottomWidth();
+        + style()->borderTopWidth() + style()->borderBottomWidth();
    // ### padding is relative to the _width_ of the containing block
-    //+ m_style->paddingTop() + m_style->paddingBottom()
+    //+ style()->paddingTop() + style()->paddingBottom()
  }
 
 int RenderText::bidiHeight() const
@@ -676,7 +676,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(len == 0) return;
 
     QChar *ch;
-    reverse = reverse && !m_style->visuallyOrdered();
+    reverse = reverse && !style()->visuallyOrdered();
     if ( reverse ) {
         // reverse String
         QString aStr = QConstString(str->s+from, len).string();
@@ -689,9 +689,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         {
             ch[len-1-i] = s[i];
             ch[i] = s[len-1-i];
-            if(ch[i].mirrored() && !m_style->visuallyOrdered())
+            if(ch[i].mirrored() && !style()->visuallyOrdered())
                 ch[i] = ch[i].mirroredChar();
-            if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
+            if(ch[len-1-i].mirrored() && !style()->visuallyOrdered() && i != len-1-i)
                 ch[len-1-i] = ch[len-1-i].mirroredChar();
         }
     }
@@ -699,13 +699,13 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         ch = str->s+from;
 
     // ### margins and RTL
-    if(from == 0 && m_parent->isInline() && m_parent->firstChild()==this)
+    if(from == 0 && parent()->isInline() && parent()->firstChild()==this)
     {
         x += paddingLeft() + borderLeft() + marginLeft();
         width -= marginLeft();
     }
 
-    if(from + len == int(str->l) && m_parent->isInline() && m_parent->lastChild()==this)
+    if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
 
 #ifdef DEBUG_LAYOUT
@@ -723,7 +723,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     m_lines.insert(m_lines.count(), s);
 }
 
-unsigned int RenderText::width( int from, int len, bool firstLine) const
+unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLine) const
 {
     if(!str->s || from > str->l ) return 0;
 
@@ -731,7 +731,7 @@ unsigned int RenderText::width( int from, int len, bool firstLine) const
 
     QFontMetrics metrics = *fm;
     RenderStyle *pseudoStyle;
-    if ( firstLine && (pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE) ) )
+    if ( firstLine && (pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE) ) )
 	metrics = QFontMetrics ( pseudoStyle->font() );
 
     int w;
@@ -742,12 +742,12 @@ unsigned int RenderText::width( int from, int len, bool firstLine) const
 
     // ### add margins and support for RTL
 
-    if(m_parent->isInline())
+    if(parent()->isInline())
     {
-        if(from == 0 && m_parent->firstChild() == static_cast<const RenderObject*>(this))
+        if(from == 0 && parent()->firstChild() == static_cast<const RenderObject*>(this))
             w += borderLeft() + paddingLeft() + marginLeft();
-        if(from + len == int(str->l) &&
-           m_parent->lastChild() == static_cast<const RenderObject*>(this))
+        if(from + len == str->l &&
+           parent()->lastChild() == static_cast<const RenderObject*>(this))
             w += borderRight() + paddingRight() +marginRight();
     }
 
@@ -761,7 +761,7 @@ short RenderText::width() const
     int minx = 100000000;
     int maxx = 0;
     // slooow
-    for(int si = 0; si < m_lines.count(); si++) {
+    for(unsigned int si = 0; si < m_lines.count(); si++) {
         TextSlave* s = m_lines[si];
         if(s->m_x < minx)
             minx = s->m_x;
@@ -771,11 +771,11 @@ short RenderText::width() const
 
     w = QMAX(0, maxx-minx);
 
-    if(m_parent->isInline())
+    if(parent()->isInline())
     {
-        if(m_parent->firstChild() == static_cast<const RenderObject*>(this))
+        if(parent()->firstChild() == static_cast<const RenderObject*>(this))
             w += borderLeft() + paddingLeft();
-        if(m_parent->lastChild() == static_cast<const RenderObject*>(this))
+        if(parent()->lastChild() == static_cast<const RenderObject*>(this))
             w += borderRight() + paddingRight();
     }
 
@@ -791,7 +791,7 @@ void RenderText::repaint()
 
 bool RenderText::isFixedWidthFont() const
 {
-    return QFontInfo(m_style->font()).fixedPitch();
+    return QFontInfo(style()->font()).fixedPitch();
 }
 
 #undef BIDI_DEBUG

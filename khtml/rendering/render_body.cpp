@@ -43,10 +43,10 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
     QColor c;
     if( parent()->style()->backgroundColor().isValid() )
-	c =  m_style->backgroundColor();
+	c =  style()->backgroundColor();
     CachedImage *bg = 0;
     if( parent() ->backgroundImage() )
-	bg = m_bgImage;
+	bg = backgroundImage();
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -61,8 +61,8 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
 
     printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
-    if(m_style->hasBorder())
-	printBorder( p, _tx, _ty, w, h, m_style );
+    if(style()->hasBorder())
+	printBorder( p, _tx, _ty, w, h, style() );
 
 }
 

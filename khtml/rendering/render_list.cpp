@@ -73,21 +73,21 @@ RenderListItem::RenderListItem()
     : RenderFlow()
 {
     // init RenderObject attributes
-    m_inline = false;   // our object is not Inline
+    setInline(false);   // our object is not Inline
 
     predefVal = -1;
     m_marker = 0;
 }
 
-void RenderListItem::setStyle(RenderStyle *style)
+void RenderListItem::setStyle(RenderStyle *_style)
 {
-    RenderFlow::setStyle(style);
-    RenderStyle *newStyle = new RenderStyle(style);
+    RenderFlow::setStyle(_style);
+    RenderStyle *newStyle = new RenderStyle(style());
        if(newStyle->direction() == LTR)
            newStyle->setFloating(FLEFT);
        else
            newStyle->setFloating(FRIGHT);
-       if(!m_marker && m_style->listStyleType() != LNONE) {
+       if(!m_marker && style()->listStyleType() != LNONE) {
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
         addChild(m_marker);
@@ -106,10 +106,10 @@ void RenderListItem::calcListValue()
 
     if(predefVal != -1)
         m_marker->val = predefVal;
-    else if(!m_previous)
+    else if(!previousSibling())
         m_marker->val = 1;
     else {
-	RenderObject *o = m_previous;
+	RenderObject *o = previousSibling();
 	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
 	    o = o->previousSibling();
         if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
@@ -140,9 +140,9 @@ void RenderListItem::layout( )
 bool RenderListItem::checkChildren() const
 {
     //kdDebug(0) << " checkCildren" << endl;
-    if(!m_first)
+    if(!firstChild())
         return false;
-    RenderObject *o = m_first;
+    RenderObject *o = firstChild();
     while(o->firstChild())
         o = o->firstChild();
     while (!o->nextSibling() && o->parent() != static_cast<const RenderObject*>(this))
@@ -195,8 +195,8 @@ RenderListMarker::RenderListMarker()
     : RenderBox()
 {
     // init RenderObject attributes
-    m_inline = true;   // our object is Inline
-    m_replaced = true; // pretend to be replaced
+    setInline(true);   // our object is Inline
+    setReplaced(true); // pretend to be replaced
 
     val = -1;
     listImage = 0;
@@ -206,17 +206,17 @@ RenderListMarker::~RenderListMarker()
 {
     if(listImage)
         listImage->deref(this);
-    delete m_style;
+    delete style();
 }
 
 void RenderListMarker::setStyle(RenderStyle *s)
 {
     RenderBox::setStyle(s);
 
-    if ( listImage != m_style->listStyleImage() ) {
+    if ( listImage != style()->listStyleImage() ) {
 	if(listImage)
 	    listImage->deref(this);
-	listImage = m_style->listStyleImage();
+	listImage = style()->listStyleImage();
 	if(listImage)
 	    listImage->ref(this);
     }
@@ -232,14 +232,14 @@ void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
 void RenderListMarker::printObject(QPainter *p, int, int,
                                     int, int, int _tx, int _ty)
 {
-    if( !m_visible )
+    if( !isVisible() )
         return;
 #ifdef DEBUG_LAYOUT
 
         kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
-    p->setFont(m_style->font());
-    p->setPen(m_style->color());
+    p->setFont(style()->font());
+    p->setPen(style()->color());
     QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
 
@@ -253,10 +253,10 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     int xoff = 0;
     int yoff = fm.ascent() - offset;
 
-    if(m_style->listStylePosition() != INSIDE) {
+    if(style()->listStylePosition() != INSIDE) {
         xoff = -7 - offset;
-        if(m_style->direction() == RTL)
-            xoff = -xoff + m_parent->width();
+        if(style()->direction() == RTL)
+            xoff = -xoff + parent()->width();
     }
 
     if ( listImage ) {
@@ -267,7 +267,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
 
-    switch(m_style->listStyleType()) {
+    switch(style()->listStyleType()) {
     case DISC:
         p->setBrush( QBrush( color ) );
         p->drawEllipse( _tx + xoff, _ty + yoff, offset, offset );
@@ -291,16 +291,16 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     default:
         if(item != QString::null) {
             //_ty += fm.ascent() - fm.height()/2 + 1;
-            if(m_style->listStylePosition() == INSIDE) {
-                if(m_style->direction() == LTR)
+            if(style()->listStylePosition() == INSIDE) {
+                if(style()->direction() == LTR)
                     p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
                 else
                     p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
             } else {
-                if(m_style->direction() == LTR)
+                if(style()->direction() == LTR)
                     p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
                 else
-                    p->drawText(_tx+offset/2 + m_parent->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+                    p->drawText(_tx+offset/2 + parent()->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
             }
         }
     }
@@ -350,20 +350,20 @@ void RenderListMarker::calcMinMaxWidth()
     m_width = 0;
 
     if(listImage) {
-        if(m_style->listStylePosition() == INSIDE)
+        if(style()->listStylePosition() == INSIDE)
             m_width = listImage->pixmap().width() + 5;
         m_height = listImage->pixmap().height();
         return;
     }
 
-    switch(m_style->listStyleType())
+    switch(style()->listStyleType())
     {
     case DISC:
     case CIRCLE:
     case SQUARE:
     {
-        QFontMetrics fm(m_style->font());
-        if(m_style->listStylePosition() == INSIDE) {
+        QFontMetrics fm(style()->font());
+        if(style()->listStylePosition() == INSIDE) {
             m_width = fm.ascent();
         }
         else
@@ -406,8 +406,8 @@ void RenderListMarker::calcMinMaxWidth()
     item += QString::fromLatin1(". ");
 
     {
-        QFontMetrics fm(m_style->font());
-        if(m_style->listStylePosition() != INSIDE)
+        QFontMetrics fm(style()->font());
+        if(style()->listStylePosition() != INSIDE)
             m_width = 0;
         else
             m_width = fm.width(item);
@@ -421,12 +421,12 @@ void RenderListMarker::calcMinMaxWidth()
 
 short RenderListMarker::baselineOffset() const
 {
-    return QFontMetrics(m_style->font()).ascent();
+    return QFontMetrics(style()->font()).ascent();
 }
 
 short RenderListMarker::verticalPositionHint() const
 {
-    return QFontMetrics(m_style->font()).ascent();
+    return QFontMetrics(style()->font()).ascent();
 }
 
 void RenderListMarker::calcWidth()

@@ -59,31 +59,31 @@ static inline int collapseMargins(int a, int b)
 RenderFlow::RenderFlow()
     : RenderBox()
 {
-    m_inline = true;
+    setInline(true);
     m_childrenInline = true;
     m_haveAnonymous = false;
 
     specialObjects = 0;
 }
 
-void RenderFlow::setStyle(RenderStyle *style)
+void RenderFlow::setStyle(RenderStyle *_style)
 {
 
 //    kdDebug( 6040 ) << (void*)this<< " renderFlow(" << renderName() << ")::setstyle()" << endl;
 
-    RenderBox::setStyle(style);
+    RenderBox::setStyle(_style);
 
-    if(m_positioned)
-        m_style->setDisplay(BLOCK);
+    if(isPositioned())
+        style()->setDisplay(BLOCK);
 
-    if( m_floating || !style->display() == INLINE)
-        m_inline = false;
+    if(isFloating() || !style()->display() == INLINE)
+        setInline(false);
 
-    if (m_inline == true && m_childrenInline==false)
-        m_inline = false;
+    if (isInline() && !m_childrenInline)
+        setInline(false);
 
     m_pre = false;
-    if(m_style->whiteSpace() == PRE)
+    if(style()->whiteSpace() == PRE)
         m_pre = true;
 
     if (haveAnonymousBox())
@@ -95,7 +95,7 @@ void RenderFlow::setStyle(RenderStyle *style)
             {
                 if (child->style())
                     delete child->style();
-                RenderStyle* newStyle = new RenderStyle(style);
+                RenderStyle* newStyle = new RenderStyle(style());
                 newStyle->setDisplay(BLOCK);
                 child->setStyle(newStyle);
                 child->setIsAnonymousBox(true);
@@ -112,7 +112,7 @@ RenderFlow::~RenderFlow()
         delete specialObjects;
     if(isAnonymousBox()) // usually the style object is deleted by the DOM tree, but
         // since anonymous boxes don't have a corresponding DOM element...
-        delete m_style;
+        delete style();
 }
 
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
@@ -156,7 +156,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         relativePositionOffset(_tx, _ty);
 
     // 1. print background, borders etc
-    if(m_printSpecial && !isInline() && m_visible)
+    if(hasSpecialObjects() && !isInline() && isVisible())
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
 
@@ -243,9 +243,9 @@ void RenderFlow::layout()
             m_height += borderBottom() + paddingBottom();
         }
     }
-    else if (isTableCell() && m_last && m_last->hasOverhangingFloats())
+    else if (isTableCell() && lastChild() && lastChild()->hasOverhangingFloats())
     {
-        m_height = m_last->yPos() + static_cast<RenderFlow*>(m_last)->floatBottom();
+        m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
         m_height += borderBottom() + paddingBottom();
     }
 
@@ -284,20 +284,20 @@ void RenderFlow::layoutBlockChildren()
 
     m_height = 0;
 
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
     {
         xPos += borderLeft();
         m_height += borderTop();
         toAdd += borderBottom();
     }
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
     {
         xPos += paddingLeft();
         m_height += paddingTop();
         toAdd += paddingBottom();
     }
 
-    if( m_style->direction() == RTL ) {
+    if( style()->direction() == RTL ) {
         xPos = marginLeft() + m_width - paddingRight() - borderRight();
     }
 
@@ -356,10 +356,10 @@ void RenderFlow::layoutBlockChildren()
 
         int chPos = xPos + child->marginLeft();
 
-        if( m_style->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
+        if( style()->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
             //kdDebug() << "should align to center" << endl;
             chPos += ( width() - child->width() )/2;
-        } else if(m_style->direction() == LTR) {
+        } else if(style()->direction() == LTR) {
             // html blocks flow around floats
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
                 chPos = leftOffset(m_height) + child->marginLeft();
@@ -622,7 +622,6 @@ void RenderFlow::positionNewFloats()
                         }
                     }
                 }
-
                 if(isAnonymousBox() && obj->style()->flowAroundFloats())
                     break;
             }
@@ -666,16 +665,16 @@ RenderFlow::leftOffset() const
 {
     int left = 0;
 
-    if ( firstLine && m_style->direction() == LTR ) {
+    if ( firstLine && style()->direction() == LTR ) {
         int cw=0;
         if (style()->width().isPercent())
             cw = containingBlock()->contentWidth();
-        left += m_style->textIndent().minWidth(cw);
+        left += style()->textIndent().minWidth(cw);
     }
 
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
         left = borderLeft();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         left += paddingLeft();
 
     return left;
@@ -709,16 +708,16 @@ RenderFlow::rightOffset() const
 {
     int right = m_width;
 
-    if ( firstLine && m_style->direction() == RTL ) {
+    if ( firstLine && style()->direction() == RTL ) {
         int cw=0;
         if (style()->width().isPercent())
             cw = containingBlock()->contentWidth();
-        right += m_style->textIndent().minWidth(cw);
+        right += style()->textIndent().minWidth(cw);
     }
 
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
         right -= borderRight();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         right -= paddingRight();
     return right;
 }
@@ -852,7 +851,7 @@ RenderFlow::clearFloats()
 
     if (isFloating()) return;
 
-    RenderObject *prev = m_previous;
+    RenderObject *prev = previousSibling();
 
     // find the element to copy the floats from
     // pass non-flows
@@ -868,7 +867,7 @@ RenderFlow::clearFloats()
 
         offset -= prev->yPos();
     } else {
-        prev = m_parent;
+        prev = parent();
 	if(!prev) return;
     }
 
@@ -904,7 +903,7 @@ RenderFlow::clearFloats()
                 special->startY = r->startY - offset;
                 special->endY = r->endY - offset;
                 special->left = r->left - marginLeft();
-                if (prev!=m_parent)
+                if (prev!=parent())
                     special->left += prev->marginLeft();
                 special->width = r->width;
                 special->node = r->node;
@@ -921,7 +920,7 @@ RenderFlow::clearFloats()
 
 short RenderFlow::baselineOffset() const
 {
-    switch(m_style->verticalAlign())
+    switch(style()->verticalAlign())
     {
     case BASELINE:
         {
@@ -938,13 +937,13 @@ short RenderFlow::baselineOffset() const
     case TOP:
         return 0;
     case TEXT_TOP:
-        return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case BOTTOM:
         return contentHeight();
     case TEXT_BOTTOM:
-        return contentHeight() - QFontMetrics(m_style->font()).descent();
+        return contentHeight() - QFontMetrics(style()->font()).descent();
     }
     return 0;
 }
@@ -1093,9 +1092,9 @@ void RenderFlow::calcMinMaxWidth()
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
     int toAdd = 0;
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
         toAdd = borderLeft() + borderRight();
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
         toAdd += paddingLeft() + paddingRight();
 
     m_minWidth += toAdd;
@@ -1115,7 +1114,7 @@ void RenderFlow::close()
 //    kdDebug( 6040 ) << (void*)this<< " renderFlow::close()" << endl;
     if(haveAnonymousBox())
     {
-        m_last->close();
+        lastChild()->close();
         //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
         setHaveAnonymousBox(false);
     }
@@ -1125,7 +1124,7 @@ void RenderFlow::close()
 
     calcMinMaxWidth();
 
-    if(containingBlockWidth() < m_minWidth && m_parent)
+    if(containingBlockWidth() < m_minWidth && parent())
         containingBlock()->updateSize();
     else
         containingBlock()->updateHeight();
@@ -1147,8 +1146,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 
     RenderStyle* pseudoStyle=0;
-    if ((!m_first || m_first==beforeChild)
-            && (pseudoStyle=m_style->getPseudoStyle(RenderStyle::FIRST_LETTER))
+    if ((!firstChild() || firstChild()==beforeChild)
+            && (pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER))
             && newChild->style()->styleType()==RenderStyle::NOPSEUDO)
     {
 
@@ -1230,29 +1229,19 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 // ### the children have a wrong style!!!
                 // They get exactly the style of this element, not of the anonymous box
                 // might be important for bg colors!
-                beforeBox->setFirstChild(boxSource->firstChild());
-                RenderObject *beforeBoxLast;
-                if (beforeChild)
-                    beforeBoxLast = beforeChild->previousSibling();
-                else
-                    beforeBoxLast = boxSource->lastChild();
-                beforeBoxLast->setNextSibling(0);
-                beforeBox->setLastChild(beforeBoxLast);
-                RenderObject *o = beforeBox->firstChild();
-                while(o) {
-                    o->setParent(beforeBox);
-                    o = o->nextSibling();
+
+                RenderObject* node = boxSource->firstChild();
+                while(node && node != beforeChild) {
+                    RenderObject* cnode = node;
+                    node = node->nextSibling();
+                    beforeBox->appendChildNode(boxSource->removeChildNode(cnode));
                 }
-                beforeBox->setParent(boxSource);
-                boxSource->setFirstChild(beforeBox);
-                boxSource->setLastChild(beforeBox);
                 beforeBox->close();
                 beforeBox->setPos(beforeBox->xPos(), -100000);
                 beforeBox->setLayouted(false);
             }
             if (beforeChild) {
                 RenderFlow *afterBox = new RenderFlow();
-                afterBox = new RenderFlow();
                 RenderStyle *newStyle = new RenderStyle(boxSource->style());
                 newStyle->setDisplay(BLOCK);
                 afterBox->setStyle(newStyle);
@@ -1260,23 +1249,12 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 // ### the children have a wrong style!!!
                 // They get exactly the style of this element, not of the anonymous box
                 // might be important for bg colors!
-                beforeChild->setPreviousSibling(0);
-                afterBox->setFirstChild(beforeChild);
-                RenderObject *o = afterBox->firstChild();
-                while(o)
-                {
-                    // a bit hacky, but should work
-                    afterBox->setLastChild(o);
-                    o->setParent(afterBox);
-                    o = o->nextSibling();
+                RenderObject* node = beforeChild;
+                while(node) {
+                    RenderObject* cnode = node;
+                    node = node->nextSibling();
+                    afterBox->appendChildNode(boxSource->removeChildNode(cnode));
                 }
-                afterBox->setParent(boxSource);
-                boxSource->setLastChild(afterBox);
-                if(beforeBox)
-                  beforeBox->setNextSibling(afterBox);
-                else
-                  boxSource->setFirstChild(afterBox);
-                afterBox->setPreviousSibling(beforeBox);
                 afterBox->close();
                 afterBox->setPos(afterBox->xPos(), -100000);
                 afterBox->setLayouted(false);
@@ -1286,30 +1264,16 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 boxSource->setLayouted(false);
                 // boxSource will now contain up to two anonymous boxes - move
                 // them into this in place of boxSource
-                boxSource->firstChild()->setParent(this);
-                boxSource->firstChild()->setPreviousSibling(boxSource->previousSibling());
-                if (boxSource->previousSibling())
-                    boxSource->previousSibling()->setNextSibling(boxSource->firstChild());
-
-                boxSource->lastChild()->setParent(this);
-                boxSource->lastChild()->setNextSibling(boxSource->nextSibling());
-                if (boxSource->nextSibling())
-                    boxSource->nextSibling()->setPreviousSibling(boxSource->lastChild());
-
-                if (m_first == boxSource)
-                    m_first = boxSource->firstChild();
-                if (m_last == boxSource)
-                    m_last = boxSource->lastChild();
+                if(boxSource->firstChild())
+                    insertChildNode(boxSource->removeChildNode(boxSource->firstChild()), boxSource);
+                if(boxSource->lastChild())
+                    insertChildNode(boxSource->removeChildNode(boxSource->lastChild()), boxSource);
 
                 // make sure boxSource doesn't muck other objects up when deleted
-                boxSource->setFirstChild(0);
-                boxSource->setLastChild(0);
-                boxSource->setPreviousSibling(0);
-                boxSource->setNextSibling(0);
+                removeChildNode(boxSource);
                 delete boxSource;
                 // ### what happens with boxSource's bg image if it had one?
             }
-
         }
         m_childrenInline = false;
     }
@@ -1328,7 +1292,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             if(!haveAnonymousBox())
             {
                 //kdDebug( 6040 ) << "creating anonymous box" << endl;
-                RenderStyle *newStyle = new RenderStyle(m_style);
+                RenderStyle *newStyle = new RenderStyle(style());
                 newStyle->setDisplay(BLOCK);
                 RenderFlow *newBox = new RenderFlow();
                 newBox->setStyle(newStyle);
@@ -1342,14 +1306,14 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             else
             {
                 //kdDebug( 6040 ) << "adding to last box" << endl;
-                m_last->addChild(newChild); // ,beforeChild ???
+                lastChild()->addChild(newChild); // ,beforeChild ???
                 return;
             }
         }
         else if(haveAnonymousBox())
         {
-            m_last->close();
-            m_last->layout();
+            lastChild()->close();
+            lastChild()->layout();
             setHaveAnonymousBox(false);
 //          kdDebug( 6040 ) << "closing anonymous box" << endl;
         }
@@ -1361,10 +1325,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     if(!newChild->isInline() && !newChild->isFloating())
     {
-        newChild->setParent(this);
         if (style()->display() == INLINE)
         {
-            m_inline=false; // inline can't contain blocks
+            setInline(false); // inline can't contain blocks
             if (parent() && parent()->isFlow())
                 static_cast<RenderFlow*>(parent())->makeChildrenNonInline();
         }
@@ -1382,10 +1345,10 @@ void RenderFlow::makeChildrenNonInline()
 
     m_childrenInline = false;
 
-    RenderObject *child = m_first;
+    RenderObject *child = firstChild();
     RenderObject *next;
-    RenderObject *boxFirst = m_first;
-    RenderObject *boxLast = m_first;
+    RenderObject *boxFirst = firstChild();
+    RenderObject *boxLast = firstChild();
     while (child) {
         next = child->nextSibling();
 
@@ -1406,31 +1369,16 @@ void RenderFlow::makeChildrenNonInline()
             // ### the children have a wrong style!!!
             // They get exactly the style of this element, not of the anonymous box
             // might be important for bg colors!
-            box->setPreviousSibling(boxFirst->previousSibling());
-            if (boxFirst->previousSibling())
-                boxFirst->previousSibling()->setNextSibling(box);
-            boxFirst->setPreviousSibling(0);
 
-            box->setNextSibling(boxLast->nextSibling());
-            if (boxLast->nextSibling())
-                boxLast->nextSibling()->setPreviousSibling(box);
-            boxLast->setNextSibling(0);
-
-            if (m_first == boxFirst)
-                m_first = box;
-            if (m_last == boxLast)
-                m_last = box;
-
-            box->setFirstChild(boxFirst);
-            box->setLastChild(boxLast);
-
-            RenderObject *o = box->firstChild();
-            while(o) {
-                o->setParent(box);
-                o = o->nextSibling();
+            insertChildNode(box, boxFirst);
+            RenderObject* o = boxFirst;
+            while(o && o != boxLast)
+            {
+                RenderObject* no = o;
+                o = no->nextSibling();
+                box->appendChildNode(removeChildNode(no));
             }
-            box->setParent(this);
-
+            box->appendChildNode(removeChildNode(boxLast));
             box->close();
             box->setPos(box->xPos(), -100000);
             box->setLayouted(false);
@@ -1442,7 +1390,7 @@ void RenderFlow::makeChildrenNonInline()
         child = next;
     }
     if ( isInline() ) {
-        m_inline = false;
+        setInline(false);
         if ( parent()->isFlow() )
             static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
     }
@@ -1457,6 +1405,24 @@ void RenderFlow::specialHandler(RenderObject *o)
     else if(o->isPositioned())
         static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
 
+}
+
+void RenderFlow::printTree(int indent) const
+{
+    RenderBox::printTree(indent);
+
+    if(specialObjects)
+    {
+        QListIterator<SpecialObject> it(*specialObjects);
+        SpecialObject *r;
+        for ( ; (r = it.current()); ++it )
+        {
+            QString s;
+            s.fill(indent, ' ');
+            qDebug("%s, special: %08lx (%4d -> %4d) count: %4d, width: %4d", s.latin1(),
+                   r->node, r->startY, r->endY, r->count, r->width);
+        }
+    }
 }
 
 #undef DEBUG

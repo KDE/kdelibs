@@ -670,7 +670,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     int count = runs.count() - 1;
 
     // do not reverse for visually ordered web sites
-    if(!m_style->visuallyOrdered()) {
+    if(!style()->visuallyOrdered()) {
         while(levelHigh >= levelLow) {
             int i = 0;
             while ( i < count ) {
@@ -753,7 +753,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     r = runs.first();
     int x = leftOffset(m_height);
     int availableWidth = lineWidth(m_height);
-    switch(m_style->textAlign()) {
+    switch(style()->textAlign()) {
     case LEFT:
         break;
     case JUSTIFY:
@@ -785,24 +785,24 @@ void RenderFlow::layoutInlineChildren()
 {
     // ### a hack to make khtml not hang completely on stuff as the seamonkey cvs pages on mozilla.org
     if( parsing() ) return;
-    
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "layoutInlineChildren" << endl;
 #endif
     int toAdd = 0;
     m_height = 0;
 
-    if(m_style->hasBorder())
+    if(style()->hasBorder())
     {
         m_height = borderTop();
         toAdd = borderBottom();
     }
-    if(m_style->hasPadding())
+    if(style()->hasPadding())
     {
         m_height += paddingTop();
         toAdd += paddingBottom();
     }
-    if(m_first) {
+    if(firstChild()) {
         // layout replaced elements
         RenderObject *o = first();
         while ( o ) {
@@ -956,13 +956,13 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             if(!w && m_height < fb && width < lineWidth(fb)) {
                 m_height = fb;
                 width = lineWidth(m_height);
-            } 
+            }
 	    if( !w && w + tmpW > width+1 && (o != start.obj || pos != start.pos) ) {
 		// getting below floats wasn't enough...
 		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 		lBreak.obj = o;
 	    if(last != o) {
-		//kdDebug() << " using last " << last << endl; 
+		//kdDebug() << " using last " << last << endl;
 		//lBreak.obj = last;
 		lBreak.pos = 0;//last->length() - 1;
 	    } else {
@@ -1036,8 +1036,8 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 
 RenderObject *RenderFlow::first()
 {
-    if(!m_first) return 0;
-    RenderObject *o = m_first;
+    if(!firstChild()) return 0;
+    RenderObject *o = firstChild();
 
     if(!o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
         o = next(o) ;
