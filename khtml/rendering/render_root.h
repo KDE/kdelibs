@@ -54,12 +54,13 @@ public:
 
     int docHeight() const;
     int docWidth() const;
-    
+
     QScrollView *view();
 
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
+    virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();

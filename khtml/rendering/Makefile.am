@@ -30,7 +30,7 @@ libkhtmlrender_la_SOURCES = \
 	render_image.cpp render_table.cpp \
 	render_replaced.cpp render_form.cpp render_list.cpp \
 	render_root.cpp render_frames.cpp render_br.cpp render_applet.cpp \
-	render_hr.cpp
+	render_hr.cpp render_html.cpp
 
 libkhtmlrender_la_METASOURCES = AUTO
 

@@ -178,6 +178,8 @@ public:
     virtual tagStatus startTag() { return HTMLStartTag; }
     virtual tagStatus endTag() { return HTMLEndTag; }
 
+    virtual void attach(KHTMLView *w);
+
 };
 
 

@@ -35,7 +35,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
     m_height = view->visibleHeight();
-    
+
     m_positioned=true; // to 0,0 :)
     printingMode = false;
 
@@ -109,6 +109,10 @@ void RenderRoot::absolutePosition(int &xPos, int &yPos)
     xPos = yPos = 0;
 }
 
+void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
+{
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
+}
 
 void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
@@ -275,7 +279,7 @@ int RenderRoot::docHeight() const
     int h = m_view->visibleHeight();
     if(m_first) {
 	int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
-	if( m_first->lowestPosition() > dh ) 
+	if( m_first->lowestPosition() > dh )
 	    dh = m_first->lowestPosition();
 	if( dh > h )
 	    h = dh;
@@ -292,4 +296,4 @@ int RenderRoot::docWidth() const
 	    w = dw;
     }
     return w;
-}    
+}

@@ -31,6 +31,7 @@
 #include "khtml_part.h"
 
 #include "rendering/render_frames.h"
+#include "rendering/render_html.h"
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
@@ -485,6 +486,24 @@ ushort HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
 }
+
+void HTMLHtmlElementImpl::attach(KHTMLView *w)
+{
+    m_style = document->styleSelector()->styleForElement( this );
+    khtml::RenderObject *r = _parent->renderer();
+
+    if ( !r )
+      return;
+
+    khtml::RenderHtml *renderHtml = new khtml::RenderHtml();
+    m_render = renderHtml;
+    m_render->setStyle(m_style);
+    m_render->ref();
+    r->addChild( m_render, _next ? _next->renderer() : 0 );
+
+    NodeBaseImpl::attach( w );
+}
+
 
 // -------------------------------------------------------------------------
 
