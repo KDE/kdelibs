@@ -59,11 +59,20 @@ if test -z "$jpeg_incdir" || test -z "$LIBJPEG" ; then
 fi 
 
 if test "$ac_use_cups" != "yes"; then
-  echo ""
-  echo "You're missing CUPS (Common UNIX Printing System) support."
-  echo "If you want CUPS support, please install CUPS from http://www.cups.org"
-  echo "or the development packages of your distribution."
-  echo ""
+  if test "$ac_have_new_cups" != "yes"; then
+    echo ""
+    echo "The installed CUPS version is too old. The minimum"
+    echo "required version is 1.1.9. Please upgrade your CUPS"
+    echo "installation from http://www.cups.org. CUPS support"
+    echo "has been disabled."
+    echo ""
+  else
+    echo ""
+    echo "You're missing CUPS (Common UNIX Printing System) support."
+    echo "If you want CUPS support, please install CUPS from http://www.cups.org"
+    echo "or the development packages of your distribution."
+    echo ""
+  fi
   all_tests=bad
 fi
 

@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <config.h>
 
 #define CUPS_SERVERROOT	"/etc/cups"
 static http_t		*cups_server;
@@ -35,12 +34,8 @@ cupsGetConf()
   * Connect to the correct server as needed...
   */
 
-#ifdef HAVE_CUPS_CONNECT_ENCRYPT
     if ((cups_server = httpConnectEncrypt(cupsServer(), ippPort(),
                                           cupsEncryption())) == NULL)
-#else
-    if ((cups_server = httpConnect(cupsServer(), ippPort())) == NULL)
-#endif
     {
       last_error = IPP_SERVICE_UNAVAILABLE;
       return (NULL);
@@ -243,12 +238,8 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
   * Connect to the correct server as needed...
   */
 
-#ifdef HAVE_CUPS_CONNECT_ENCRYPT
     if ((cups_server = httpConnectEncrypt(cupsServer(), ippPort(),
                                           cupsEncryption())) == NULL)
-#else
-    if ((cups_server = httpConnect(cupsServer(), ippPort())) == NULL)
-#endif
     {
       last_error = IPP_SERVICE_UNAVAILABLE;
       return 0;
