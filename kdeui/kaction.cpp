@@ -51,8 +51,8 @@ static void cleanupFontDatabase()
 static void get_fonts( QStringList &lst )
 {
     if ( !fontDataBase ) {
-	fontDataBase = new QFontDatabase();
-	qAddPostRoutine( cleanupFontDatabase );
+        fontDataBase = new QFontDatabase();
+        qAddPostRoutine( cleanupFontDatabase );
     }
     lst = fontDataBase->families();
 }
@@ -60,8 +60,8 @@ static void get_fonts( QStringList &lst )
 static QValueList<int> get_standard_font_sizes()
 {
     if ( !fontDataBase ) {
-	fontDataBase = new QFontDatabase();
-	qAddPostRoutine( cleanupFontDatabase );
+        fontDataBase = new QFontDatabase();
+        qAddPostRoutine( cleanupFontDatabase );
     }
     return fontDataBase->standardSizes();
 }
@@ -122,7 +122,7 @@ KAction::KAction( const QString& text, int accel, QObject* parent,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setAccel( accel );
     setText( text );
@@ -136,7 +136,7 @@ KAction::KAction( const QString& text, int accel, const QObject* receiver,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setAccel( accel );
     setText( text );
@@ -153,7 +153,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setAccel( accel );
     setText( text );
@@ -168,7 +168,7 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setText( text );
     setAccel( accel );
@@ -184,7 +184,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setAccel( accel );
     setText( text );
@@ -203,7 +203,7 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection )
-	m_parentCollection->insert( this );
+        m_parentCollection->insert( this );
 
     setAccel( accel );
     setText( text );
@@ -224,7 +224,7 @@ KAction::~KAction()
 {
     // ### Do we really need this? KActionCollection catches QChildEvent, no? (Simon)
     //    if ( m_parentCollection )
-    //	m_parentCollection->take( this );
+    //  m_parentCollection->take( this );
 
     delete d; d = 0;
 }
@@ -477,7 +477,7 @@ void KAction::unplugAccel()
 {
   if ( d->m_kaccel==0 )
     return;
-  
+
    d->m_kaccel->removeItem(name());
    d->m_kaccel->disconnect(this);
    d->m_kaccel = 0;
@@ -538,7 +538,7 @@ void KAction::setText( int i, const QString &text )
   if ( w->inherits( "QPopupMenu" ) )
     static_cast<QPopupMenu*>(w)->changeItem( itemId( i ), text );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), text );	
+    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), text );
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
@@ -882,7 +882,7 @@ int KToggleAction::plug( QWidget* widget, int index )
   if ( !widget->inherits("QPopupMenu") && !widget->inherits("KToolBar") )
   {
     kdDebug() << "Can not plug KToggleAction in " << widget->className() << endl;
-    return -1;	
+    return -1;
   }
 
   int _index = KAction::plug( widget, index );
@@ -986,31 +986,31 @@ KRadioAction::KRadioAction( const QString& text, int accel, QObject* parent, con
 }
 
 KRadioAction::KRadioAction( const QString& text, int accel,
-	                    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
 : KToggleAction( text, accel, receiver, slot, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
-	                    QObject* parent, const char* name )
+                            QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
-	                    QObject* parent, const char* name )
+                            QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
-			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
-			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+                            const QObject* receiver, const char* slot, QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
@@ -1116,11 +1116,15 @@ KSelectAction::~KSelectAction()
 
 void KSelectAction::setCurrentItem( int id )
 {
-    if ( id < 0 )
+    if ( id < 0 ) {
+        qAssert(id >= 0);
         return;
+    }
 
-    if ( id >= (int)d->m_list.count() )
+    if ( id >= (int)d->m_list.count() ) {
+        qAssert(id < (int)d->m_list.count());
         return;
+    }
 
     if ( d->m_menu )
     {
@@ -1706,7 +1710,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
         key = QString( "File%1" ).arg( i );
         value = config->readEntry( key, QString::null );
 
-	if (!value.isNull())
+        if (!value.isNull())
             lst.append( value );
     }
 
@@ -1927,7 +1931,7 @@ void KFontSizeAction::init()
     QValueList<int> sizes = get_standard_font_sizes();
     QStringList lst;
     for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
-	lst.append( QString::number( *it ) );
+        lst.append( QString::number( *it ) );
 
     setItems( lst );
 }
@@ -1935,38 +1939,38 @@ void KFontSizeAction::init()
 void KFontSizeAction::setFontSize( int size )
 {
     if ( size == fontSize() ) {
-	setCurrentItem( items().findIndex( QString::number( size ) ) );
-	return;
+        setCurrentItem( items().findIndex( QString::number( size ) ) );
+        return;
     }
 
     if ( size < 1 || size > 128 ) {
-	kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
-	return;
+        kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
+        return;
     }
 
     int index = items().findIndex( QString::number( size ) );
     if ( index == -1 ) {
         // Insert at the correct position in the list (to keep sorting)
-	QValueList<int> lst;
+        QValueList<int> lst;
         // Convert to list of ints
         QStringList itemsList = items();
         for (QStringList::Iterator it = itemsList.begin() ; it != itemsList.end() ; ++it)
             lst.append( (*it).toInt() );
         // New size
-	lst.append( size );
+        lst.append( size );
         // Sort the list
-	qHeapSort( lst );
+        qHeapSort( lst );
         // Convert back to string list
         QStringList strLst;
         for (QValueList<int>::Iterator it = lst.begin() ; it != lst.end() ; ++it)
             strLst.append( QString::number(*it) );
-	KSelectAction::setItems( strLst );
+        KSelectAction::setItems( strLst );
         // Find new current item
-	index = lst.findIndex( size );
-	setCurrentItem( index );
+        index = lst.findIndex( size );
+        setCurrentItem( index );
     }
     else
-	setCurrentItem( index );
+        setCurrentItem( index );
 
 
     emit KAction::activated();
@@ -2082,18 +2086,18 @@ int KActionMenu::plug( QWidget* widget, int index )
     id = bar->insertItem( text(), d->m_popup, -1, index );
 
     bar->setItemEnabled( id, isEnabled() );
-	
+
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    return containerCount() - 1;	
+    return containerCount() - 1;
   }
   else if ( widget->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
     if ( !pixmap().isNull() )
-      id = menu->insertItem( pixmap(), d->m_popup, -1, index );	
+      id = menu->insertItem( pixmap(), d->m_popup, -1, index );
     else
     {
       if ( hasIconSet() )
@@ -2107,7 +2111,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    return containerCount() - 1;	
+    return containerCount() - 1;
   }
   else if ( widget->inherits( "KToolBar" ) )
   {
@@ -2390,7 +2394,7 @@ void KActionCollection::insert( KAction* action )
       return;
 
   d->m_actionDict.insert( action->name(), action );
-  
+
   emit inserted( action );
 
   KKeyEntry entry;
@@ -2421,7 +2425,7 @@ KAction* KActionCollection::take( KAction* action )
   KAction *a = d->m_actionDict.take( action->name() );
   if ( !a || a != action )
       return 0;
-  
+
   d->m_keyMap.remove( a->name() );
   emit removed( action );
   return a;
@@ -2431,7 +2435,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 {
   if ( !classname && name )
     return d->m_actionDict[ name ];
-      
+
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
   {
@@ -2575,10 +2579,10 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
     actionList = new QList<KAction>;
 
     connect( container, SIGNAL( highlighted( int ) ),
-	     this, SLOT( slotHighlighted( int ) ) );
+             this, SLOT( slotHighlighted( int ) ) );
 
     connect( container, SIGNAL( destroyed() ),
-	     this, SLOT( slotDestroyed() ) );
+             this, SLOT( slotDestroyed() ) );
 
     d->m_dctHighlightContainers.insert( container, actionList );
   }
