@@ -33,7 +33,7 @@ public:
     KTextEdit( QWidget *parent = 0L, const char *name = 0 );
     ~KTextEdit();
     
-    virtual void setReadOnly (bool readOnly)
+    virtual void setReadOnly (bool readOnly);
 
 protected:
     virtual void keyPressEvent( QKeyEvent * );
