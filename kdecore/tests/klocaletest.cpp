@@ -18,7 +18,7 @@
 #include <kcharsets.h>
 #include <kdebug.h>
 
-#include "klocaletest2.h"
+#include "klocaletest.h"
 
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )
@@ -48,11 +48,9 @@ void Test::createFields()
   // but you can copy other *.mo file
   string+="Used language: ";
   string+=KGlobal::locale()->language()+"\n";
-  string+="Locale charset: ";
-  string+=KGlobal::locale()->charset()+"\n";
+  string+="Locale encoding: ";
+  string+=QString::fromLatin1(KGlobal::locale()->encoding())+"\n";
 
-  QFont charset=KGlobal::locale()->charset();
-  string+="Charset name: " + charset.rawName() + "\n";
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
   string+="\nLocalized number: ";
@@ -79,11 +77,11 @@ int main( int argc, char ** argv )
   KApplication a( argc, argv, "klocaletest" );
 
   kdDebug() << "setLanguage C\n";
-  KGlobal::locale()->setLanguage("C");
+  KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
   kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
 
   kdDebug() << "setLanguage de\n";
-  KGlobal::locale()->setLanguage("de");
+  KGlobal::locale()->setLanguage(QString::fromLatin1("de"));
   kdDebug() << "de: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
   Test m;
 
