@@ -1529,7 +1529,7 @@ void FileCopyJob::startBestCopyMethod()
    {
       startCopyJob();
    }
-   if (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
+   else if (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
    {
       startCopyJob(m_dest);
    }
