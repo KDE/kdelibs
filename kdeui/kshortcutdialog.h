@@ -31,6 +31,7 @@ class KShortcutDialog : public KDialog
 	const KShortcut& cut() const { return m_cut; }
 
  protected:
+	bool          m_bGrabKeyboardOnFocusIn;
 	bool          m_bKeyboardGrabbed;
 	KShortcut     m_cut;
 	QRadioButton* m_prbSeq[2];
@@ -41,19 +42,17 @@ class KShortcutDialog : public KDialog
 	QCheckBox*    m_pcbAutoClose;
 	uint          m_iSeq;             // index of sequence being edited.
 	uint          m_iKey;             // index of key being edited.
-	
+
 	void selectSeq( uint );
 	void clearSeq( uint );
-
-	virtual void focusInEvent( QFocusEvent* );
-	virtual void focusOutEvent( QFocusEvent* );
-	virtual void paintEvent( QPaintEvent* );
 
  protected slots:
 	void slotSeq0Selected();
 	void slotSeq1Selected();
 	void slotClearSeq0();
 	void slotClearSeq1();
+
+	virtual void accept();	// override parent's accept()
 
  private:
 	void initGUI();

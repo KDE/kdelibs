@@ -53,6 +53,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 :	KDialog( parent, name ),
 	m_cut( cut )
 {
+	m_bGrabKeyboardOnFocusIn = true;
 	m_bKeyboardGrabbed = false;
 	m_iSeq = 0;
 	m_iKey = 0;
@@ -65,8 +66,10 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 
 KShortcutDialog::~KShortcutDialog()
 {
-	releaseKeyboard();
-	//releaseMouse();
+	if( m_bKeyboardGrabbed ) {
+		kdWarning(125) << "KShortcutDialog::~KShortcutDialog(): m_bKeyboardGrabbed still true." << endl;
+		releaseKeyboard();
+	}
 }
 
 void KShortcutDialog::initGUI()
@@ -148,42 +151,26 @@ void KShortcutDialog::clearSeq( uint i )
 	m_peditSeq[i]->setSeq( KKeySequence::null() );
 	m_cut.setSeq( i, KKeySequence::null() );
 	selectSeq( i );
-}
 
-void KShortcutDialog::focusInEvent( QFocusEvent* )
-{
-	kdDebug(125) << "KShortcutDialog::focusInEvent()" << endl;
-	setFocus();
-	grabKeyboard();
-	//grabMouse();
-}
-
-void KShortcutDialog::focusOutEvent( QFocusEvent* )
-{
-	kdDebug(125) << "KShortcutDialog::focusOutEvent()" << endl;
-	releaseKeyboard();
-	//releaseMouse();
-}
-
-void KShortcutDialog::paintEvent( QPaintEvent* pEvent )
-{
-	kdDebug(125) << "KShortcutDialog::paintEvent( QPaintEvent* )" << endl;
-	kdDebug(125) << "m_bKeyboardGrabbed = " << m_bKeyboardGrabbed << endl;
-	kdDebug(125) << "hasFocus() = " << hasFocus() << endl;
-	if( !m_bKeyboardGrabbed ) {
-	kdDebug(125) << "KShortcutDialog::2paintEvent( QPaintEvent* )" << endl;
-		m_bKeyboardGrabbed = true;
-		setFocus();
-		grabKeyboard();
-		//grabMouse();
-	}
-	KDialog::paintEvent( pEvent );
+	// If we're clearing the alternate, then we need to set m_cut.count()
+	//  back to 1 if there is a primary sequence.
+	if( i == 1 && m_cut.count() > 0 )
+		m_cut = m_cut.seq(0);
 }
 
 void KShortcutDialog::slotSeq0Selected() { selectSeq( 0 ); }
 void KShortcutDialog::slotSeq1Selected() { selectSeq( 1 ); }
 void KShortcutDialog::slotClearSeq0()    { clearSeq( 0 ); }
 void KShortcutDialog::slotClearSeq1()    { clearSeq( 1 ); }
+
+void KShortcutDialog::accept()
+{
+	kdDebug(125) << "KShortcutDialog::accept()" << endl;
+	m_bGrabKeyboardOnFocusIn = false;
+	m_bKeyboardGrabbed = false;
+	releaseKeyboard();
+	KDialog::accept();
+}
 
 #ifdef Q_WS_X11
 bool KShortcutDialog::x11Event( XEvent *pEvent )
@@ -195,6 +182,26 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 			return true;
 		case ButtonPress:
 			m_iKey = 0;
+			break;
+		case XFocusIn:
+			kdDebug(125) << "FocusIn" << endl;
+			if( m_bGrabKeyboardOnFocusIn && !m_bKeyboardGrabbed ) {
+				kdDebug(125) << "\tkeyboard grabbed." << endl;
+				m_bKeyboardGrabbed = true;
+				grabKeyboard();
+			}
+			break;
+		case XFocusOut:
+			kdDebug(125) << "FocusOut" << endl;
+			if( m_bKeyboardGrabbed ) {
+				kdDebug(125) << "\tkeyboard released." << endl;
+				m_bKeyboardGrabbed = false;
+				releaseKeyboard();
+			}
+			break;
+		default:
+			//kdDebug(125) << "x11Event->type = " << pEvent->type << endl;
+			break;
 	}
 	return QWidget::x11Event( pEvent );
 }
@@ -214,8 +221,9 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 		case XK_Shift_L:   case XK_Shift_R:   keyModX = KKeyNative::modX(KKey::SHIFT); break;
 		case XK_Control_L: case XK_Control_R: keyModX = KKeyNative::modX(KKey::CTRL); break;
 		case XK_Alt_L:     case XK_Alt_R:     keyModX = KKeyNative::modX(KKey::ALT); break;
-		case XK_Meta_L:    case XK_Meta_R:    keyModX = KKeyNative::modX(KKey::WIN); break;
-		case XK_Super_L:   case XK_Super_R:
+		// FIXME: check whether the Meta or Super key are for the Win modifier
+		case XK_Meta_L:    case XK_Meta_R:
+		case XK_Super_L:   case XK_Super_R:   keyModX = KKeyNative::modX(KKey::WIN); break;
 		case XK_Hyper_L:   case XK_Hyper_R:
 		case XK_Mode_switch:
 			break;
@@ -224,8 +232,6 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				// If RETURN was pressed and we are recording a
 				//  multi-key shortcut, then we are done.
 				if( keyNative.sym() == XK_Return && m_iKey > 0 ) {
-					// HACK: releaseKeyboard should be called from accept()
-					releaseKeyboard();
 					accept();
 					return;
 				}
@@ -249,10 +255,8 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				//  key, and if so, call setShortcut(uint) with the new value.
 				//emit capturedShortcut( KShortcut(KKey(keyNative)) );
 				kdDebug(125) << "m_cut = " << m_cut.toString() << endl;
-				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() ) {
-					releaseKeyboard();
+				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() )
 					accept();
-				}
 			}
 			return;
 	}
@@ -266,11 +270,10 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			keyModX = pEvent->xkey.state & ~keyModX;
 
 		QString keyModStr;
-		// FIXME: use KKey::modFlagLabel(KKey::xxx)
-		if( keyModX & KKeyNative::modX(KKey::WIN) )	keyModStr += i18n("Win") + "+";
-		if( keyModX & KKeyNative::modX(KKey::ALT) )	keyModStr += i18n("Alt") + "+";
-		if( keyModX & KKeyNative::modX(KKey::CTRL) )	keyModStr += i18n("Ctrl") + "+";
-		if( keyModX & KKeyNative::modX(KKey::SHIFT) )	keyModStr += i18n("Shift") + "+";
+		if( keyModX & KKeyNative::modX(KKey::WIN) )	keyModStr += KKey::modFlagLabel(KKey::WIN) + "+";
+		if( keyModX & KKeyNative::modX(KKey::ALT) )	keyModStr += KKey::modFlagLabel(KKey::ALT) + "+";
+		if( keyModX & KKeyNative::modX(KKey::CTRL) )	keyModStr += KKey::modFlagLabel(KKey::CTRL) + "+";
+		if( keyModX & KKeyNative::modX(KKey::SHIFT) )	keyModStr += KKey::modFlagLabel(KKey::SHIFT) + "+";
 
 		// Display currently selected modifiers, or redisplay old key.
 		if( !keyModStr.isEmpty() )
