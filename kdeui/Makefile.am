@@ -119,12 +119,16 @@ EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorrese
 
 kdepackages:
 	-rm $(srcdir)/kdepackages.h
-	if test -f $(top_srcdir)/../bugs/Maintainers; then \
-		echo "// DO NOT EDIT - EDIT bugs/Maintainers instead" >  $(srcdir)/kdepackages.h ;\
-		echo "const char * const packages[] = {" >> $(srcdir)/kdepackages.h ;\
-		grep -v "^todo-" $(top_srcdir)/../bugs/Maintainers | sed -e "s#^\([^ ]*\).*#\"\1\",#" | sort >> $(srcdir)/kdepackages.h ; \
-		echo "0 };" >>  $(srcdir)/kdepackages.h ; \
-	fi
+	curl "http://bugs.kde.org/xml.cgi?data=versiontable" > tmp_download
+	echo "// DO NOT EDIT - EDIT bugs/Maintainers instead" >  $(srcdir)/kdepackages.h
+	echo "const char * const packages[] = {" >> $(srcdir)/kdepackages.h
+	cat tmp_download | egrep "product|component" | grep -v "</product>" | \
+	sed -e "s,<product name=\"\([^\"]*\)\">,product=\"\1\"; component=\"general\",; \
+	s#<component>\([^<]*\)</component>#component=\"\1\"#"  > tmp_download2
+	(while read i; do eval $$i; echo "\"$$product/$$component\","; done) < tmp_download2 | \
+	sort -u | sed -e "s,/general\",\"," >> $(srcdir)/kdepackages.h
+	echo "0 };" >>  $(srcdir)/kdepackages.h
+	rm tmp_download2 tmp_download
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop kio
 include ../admin/Doxyfile.am
