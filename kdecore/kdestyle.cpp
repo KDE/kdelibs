@@ -1,7 +1,7 @@
 /*-
  B2Style (C)2000 Daniel M. Duley <mosfet@kde.org>
  Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -18,7 +18,7 @@
  AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 */
 
 
@@ -180,7 +180,7 @@ void KDEStyle::polish(QWidget *w)
 {
     if (w->isTopLevel())
         return;
-    if(w->inherits("QButton") || w->inherits("QLabel")){
+    if(w->inherits("QButton") ) {
         if(!w->parent() || ( !w->parent()->inherits("KToolBar") &&
            !w->parent()->inherits("KHTMLView")))
             w->setBackgroundOrigin(QWidget::ParentOrigin);
@@ -202,7 +202,7 @@ void KDEStyle::unPolish(QWidget *w)
     if (w->isTopLevel())
         return;
 
-    if(w->inherits("QButton") || w->inherits("QLabel")){
+    if(w->inherits("QButton")){
         if(!w->parent() || (!w->parent()->inherits("KToolBar") &&
            !w->parent()->inherits("KHTMLView")))
             w->setBackgroundOrigin(QWidget::WidgetOrigin);

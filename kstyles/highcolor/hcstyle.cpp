@@ -280,8 +280,7 @@ void HCStyle::polish(QWidget *w)
         w->setBackgroundMode(QWidget::NoBackground);
         return;
     }
-    if(w->inherits("QLabel") || w->inherits("QButton") ||
-       w->inherits("QComboBox")){
+    if( w->inherits("QButton") || w->inherits("QComboBox")){
         if((w->parent() && !w->parent()->inherits("KToolBar") &&
             !w->parent()->inherits("KHTMLView")))
             w->setBackgroundOrigin(QWidget::ParentOrigin);
@@ -309,8 +308,7 @@ void HCStyle::unPolish(QWidget *w)
         w->setBackgroundMode(QWidget::PaletteBackground);
         return;
     }
-    if(w->inherits("QLabel") || w->inherits("QButton") ||
-       w->inherits("QComboBox")){
+    if(w->inherits("QButton") || w->inherits("QComboBox")){
         if(w->parent() && !w->parent()->inherits("KToolBar") &&
            !w->parent()->inherits("KHTMLView"))
             w->setBackgroundOrigin(QWidget::WidgetOrigin);
@@ -1891,7 +1889,7 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
         }
 
         p->setPen(sunken ? g.light() : g.buttonText());
-        
+
         p->drawText(br.x()+ textPos, -1, w-textPos, h,
                     AlignLeft|AlignVCenter, s);
     }
