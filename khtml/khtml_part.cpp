@@ -358,7 +358,9 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_workingURL = url;
 
-  m_url = url;
+  // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
+  // data arrives) (Simon) 
+  //  m_url = url;
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   emit started( d->m_job );
@@ -1078,13 +1080,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 {
   KURL u( url );
   bool hasTarget = false;
-  
+
    QString target = _target;
   if ( target.isEmpty() )
     target = d->m_baseTarget;
   else
       hasTarget = true;
-  
+
   KURL cURL = completeURL( url, target );
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
