@@ -458,7 +458,8 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
       if(body && body->id() == ID_FRAMESET) frameset = true;
   }
 
-  if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true ) )
+  if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true ) 
+       && !_post_data )
   {
     KURL u( m_strWorkingURL );
 
