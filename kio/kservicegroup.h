@@ -100,7 +100,7 @@ public:
    * List of all Services and ServiceGroups within this 
    * ServiceGroup
    */
-  virtual List entries();
+  virtual List entries(bool sorted = false);
 
   static Ptr root();
   static Ptr group(const QString &relPath);
@@ -115,6 +115,7 @@ protected:
   QString m_strCaption;
   QString m_strIcon;
   QString m_strComment;
+  QString m_configFile;
 
   List m_serviceList;
   bool m_bDeep;

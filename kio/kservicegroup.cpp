@@ -26,13 +26,14 @@
 #include "ksycoca.h"
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(_relpath)
+ : KSycocaEntry(_relpath),
+   m_configFile(configFile)
 {
   m_bDeleted = false;
 
-  if (!configFile.isEmpty())
+  if (!m_configFile.isEmpty())
   {
-     KDesktopFile config( configFile );
+     KDesktopFile config( m_configFile );
 
      config.setDesktopGroup();
 
@@ -130,7 +131,7 @@ void KServiceGroup::save( QDataStream& s )
 }
 
 KServiceGroup::List 
-KServiceGroup::entries()
+KServiceGroup::entries(bool sorted)
 {
    KServiceGroup *group = this;
    // If the entries haven't been loaded yet, we have to reload ourselves
@@ -142,7 +143,45 @@ KServiceGroup::entries()
       if (!group) // No guarantee that we still exist!
          return List();
    }
-   return group->m_serviceList;
+
+   if (!sorted || m_configFile.isEmpty())
+     return group->m_serviceList;
+
+   else {
+
+     KDesktopFile config( m_configFile );
+     QStringList sortSpec = config.readEntry("SortOrder");
+
+     List sortedList;
+
+     QStringList::ConstIterator it(sortSpec.begin());
+
+     for (; it != sortSpec.end(); ++it) {
+
+       QString name = *it;
+
+       bool found = false;
+
+       KServiceGroup::List::Iterator sit(group->m_serviceList.begin());
+
+       for (; sit != group->m_serviceList.end(); ++sit) {
+
+         KSycocaEntry * p  = *sit;
+
+         if (p->name() == name) {
+           found = true;
+           sortedList.append(p);
+           break;
+         }
+       }
+
+       if (!found) {
+         qDebug("!found!");
+       }
+     }
+
+     return sortedList;
+   }
 }
 
 KServiceGroup::Ptr 
