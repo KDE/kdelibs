@@ -97,9 +97,31 @@ QStringList KConfig::groupList() const
   QStringList retList;
 
   KEntryMapConstIterator aIt;
-  for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
-    if (aIt.key().mKey.isEmpty())
-      retList.append(QString::fromUtf8(aIt.key().mGroup));
+  KEntryMapConstIterator aEnd = aEntryMap.end();
+  for (aIt = aEntryMap.begin(); aIt != aEnd; ++aIt)
+  {
+    while(aIt.key().mKey.isEmpty())
+    {
+      QCString group = aIt.key().mGroup;
+      ++aIt;
+      while (true)
+      {
+         if (aIt == aEnd)
+            return retList; // done
+
+         if (aIt.key().mKey.isEmpty())
+            break; // Group is empty, next group
+
+         if (!(*aIt).bDeleted)
+         {
+            retList.append(QString::fromUtf8(group));
+            aIt++;
+            break; // Grou is non-empty, added, next gropup
+         }
+         ++aIt;
+      }
+    }
+  }
 
   return retList;
 }
@@ -248,7 +270,22 @@ bool KConfig::hasGroup(const char *_pGroup) const
 bool KConfig::hasGroup(const QCString &group) const
 {
   KEntryKey groupKey( group, 0);
-  return aEntryMap.contains(groupKey);
+
+  KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
+  KEntryMapConstIterator aEnd = aEntryMap.end();
+
+  if (aIt == aEnd)
+     return false;
+  ++aIt;
+  for(; (aIt != aEnd); ++aIt)
+  {
+     if (aIt.key().mKey.isEmpty())
+        break;
+
+     if (!(*aIt).bDeleted)
+        return true;
+  }
+  return false;
 }
 
 
