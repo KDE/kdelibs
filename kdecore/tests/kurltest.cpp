@@ -475,10 +475,12 @@ int main(int argc, char *argv[])
 #endif
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
-  check("locale8bit",uloc.url(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
+  check("locale8bit",uloc.url().latin1(),"file:/home/dfaure/konqtests/Mat%E9riel"); // escaping the letter would be correct too
   check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   // 106 is MIB for UTF-8
   check("UTF8",uloc.url(0, 106),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
+  uloc = KURL("file:/home/dfaure/konqtests/Mat%C3%A9riel", 106);
+  check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
