@@ -42,7 +42,7 @@ class DCOPClient : public QObject
    *
    * @return true if attaching was successful.
    */
-  bool attach(const QCString &appId);
+  bool attach(const QCString &appId = 0);
 
   /**
    * Detach from the DCOP server.

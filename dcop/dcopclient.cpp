@@ -129,9 +129,9 @@ bool DCOPClient::attach(const QCString &appId)
 
   d->appId = appId;
 
-  
+
   if ( d->iceConn && IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
-    detach();
+      detach(); // that's a bit slow for just changing the name..... TODO
   }
 
   if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
@@ -179,21 +179,26 @@ bool DCOPClient::attach(const QCString &appId)
     return false;
   }
 
-  DCOPMsg *pMsg;
 
-  IceGetHeader(d->iceConn, d->majorOpcode, DCOPRegisterClient,
-	       sizeof(DCOPMsg), DCOPMsg, pMsg);
+  if ( !appId.isEmpty() ) {
+      // register the application identifier with the server
 
-  QByteArray ba;
-  QDataStream ds(ba, IO_WriteOnly);
-  ds << d->appId;
+      DCOPMsg *pMsg;
 
-  int datalen = ba.size();
+      IceGetHeader(d->iceConn, d->majorOpcode, DCOPRegisterClient,
+		   sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-  pMsg->length += datalen;
-  IceWriteData(d->iceConn, datalen, (char *) ba.data());
+      QByteArray ba;
+      QDataStream ds(ba, IO_WriteOnly);
+      ds << d->appId;
 
-  IceFlush(d->iceConn);
+      int datalen = ba.size();
+
+      pMsg->length += datalen;
+      IceWriteData(d->iceConn, datalen, (char *) ba.data());
+
+      IceFlush(d->iceConn);
+  }
 
   // check if we have a qApp instantiated.  If we do,
   // we can create a QSocketNotifier and use it for receiving data.
@@ -201,6 +206,8 @@ bool DCOPClient::attach(const QCString &appId)
     if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
       return false;
 
+    if ( d->notifier )
+	delete d->notifier;
     d->notifier = new QSocketNotifier(socket(),
 				      QSocketNotifier::Read, 0, 0);
     connect(d->notifier, SIGNAL(activated(int)),
@@ -220,10 +227,10 @@ bool DCOPClient::detach()
     status = IceCloseConnection(d->iceConn);
     if (status != IceClosedNow)
       return false;
-    else
-      return true;
-  } else
-    return true;
+  } 
+  delete d->notifier;
+  d->notifier = 0L;
+  return true;
 }
 
 bool DCOPClient::isAttached() const
