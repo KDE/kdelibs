@@ -336,6 +336,17 @@ public:
   virtual QVariant property( const QString& _name ) const;
 
   /**
+   * Returns the requested property.
+   * 
+   * @param _name the name of the property
+   * @param t the assumed type of the property
+   * @return the property, or invalid if not found
+   * @see KServiceType
+   * @since 3.2
+   */
+  QVariant property( const QString& _name, QVariant::Type t ) const;
+
+  /**
    * Returns the list of all properties that this service can have.
    * That means, that some of these properties may be empty.
    * @return the list of supported properties
@@ -476,15 +487,6 @@ protected:
 
   QStringList &accessServiceTypes() { return m_lstServiceTypes; }
 
-  /**
-   * Returns the requested property.
-   * 
-   * @param _name the name of the property
-   * @param t the assumed type of the property
-   * @return the property, or invalid if not found
-   * @see KServiceType
-   */
-  QVariant property( const QString& _name, QVariant::Type t ) const;
 
 private:
   KService( const KService& ); // forbidden
