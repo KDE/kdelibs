@@ -537,12 +537,15 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!print) return *this;
     output += '[';
     unsigned int i = 0;
+    unsigned int sz = QMIN( data.size(), 64 );
     for ( ;; ) {
         output += QString::number( data[i], 16 ).rightJustify(2, '0');
-        if ( ++i == data.size() )
+        if ( ++i == sz )
             break;
         output += ' ';
     }
+    if ( sz < data.size() )
+        output += "...";
     output += ']';
     return *this;
 }

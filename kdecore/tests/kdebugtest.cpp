@@ -75,6 +75,9 @@ public:
     data[4] = 'l';
     data[5] = 'o';
     kdDebug() << data << endl;
+    data.resize( 80 );
+    data.fill( 42 );
+    kdDebug() << data << endl;
   }
   void resizeEvent(QResizeEvent*)
   {
