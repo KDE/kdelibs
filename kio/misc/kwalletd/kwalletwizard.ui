@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>KWalletWizard</class>
 <widget class="QWizard">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>732</width>
-            <height>484</height>
+            <width>556</width>
+            <height>385</height>
         </rect>
     </property>
     <property name="caption">
@@ -75,7 +75,7 @@
                     </sizepolicy>
                 </property>
                 <property name="margin">
-                    <number>43</number>
+                    <number>26</number>
                 </property>
                 <property name="text">
                     <string>Welcome to KWallet, the KDE Wallet System.  KWallet allows you to store your passwords and other personal information on disk in an encrypted file, preventing others from viewing the information.  This wizard will tell you about KWallet and help you configure it for the first time.</string>
