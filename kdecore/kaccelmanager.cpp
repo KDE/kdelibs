@@ -847,7 +847,7 @@ QWidgetStackAccelManager::QWidgetStackAccelManager(QWidgetStack *stack)
 
 bool QWidgetStackAccelManager::eventFilter ( QObject * watched, QEvent * e )
 {
-    if ( e->type() == QEvent::Show ) {
+    if ( e->type() == QEvent::Show && qApp->activeWindow() ) {
         KAcceleratorManager::manage( qApp->activeWindow() );
         watched->removeEventFilter( this );
     }
