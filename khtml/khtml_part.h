@@ -575,6 +575,8 @@ private slots:
   void slotIncFontSizes();
   void slotDecFontSizes();
 
+    void slotPrint();
+    
   void slotLoadImages();
 
   /**

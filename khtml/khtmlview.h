@@ -159,6 +159,8 @@ public:
 
     bool hasSelection() const;
 
+    void print();
+    
 protected:
     void paintElement( khtml::RenderObject *o, int x, int y );
     virtual void resizeEvent ( QResizeEvent * event );

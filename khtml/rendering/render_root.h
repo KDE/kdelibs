@@ -63,10 +63,12 @@ public:
     virtual void printObject( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
 
+    void setPrintingMode(bool print) { printingMode = print; }
+
 protected:
 
     virtual void selectionStartEnd(int& spos, int& epos);
-    
+
     virtual QRect viewRect() const;
 
     KHTMLView *m_view;
@@ -78,6 +80,8 @@ protected:
     int selectionStartPos;
     int selectionEndPos;
 
+    // used to ignore viewport width when printing to the printer
+    bool printingMode;
 };
 
 };

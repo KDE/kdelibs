@@ -164,7 +164,8 @@ public:
   KAction *m_paIncFontSizes;
   KAction *m_paDecFontSizes;
   KAction *m_paLoadImages;
-
+  KAction *m_paPrint;
+    
   KParts::PartManager *m_manager;
 
   bool m_bClearing;
@@ -242,6 +243,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
+  d->m_paPrint = new KAction( i18n( "Print Document" ), "print", 0, this, SLOT( slotPrint() ), actionCollection(), "printDocument" );
   /*
   if ( !autoloadImages() )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
@@ -1127,6 +1129,10 @@ void KHTMLPart::slotSetEncoding()
 	setEncoding(d->m_paSetEncoding->currentText());
 }
 
+void KHTMLPart::slotPrint()
+{
+    view()->print();
+}
 
 void KHTMLPart::updateActions()
 {

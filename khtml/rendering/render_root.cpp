@@ -36,6 +36,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_maxWidth = m_minWidth;
 
     m_positioned=true; // to 0,0 :)
+    printingMode = false;
 
     selectionStart = 0;
     selectionEnd = 0;
@@ -47,6 +48,9 @@ RenderRoot::RenderRoot(KHTMLView *view)
 
 void RenderRoot::calcWidth()
 {
+    // the width gets set by KHTMLView::print when printing to a printer.
+    if(printingMode) return;
+
     m_width = m_view->frameWidth();
     if(m_width < m_minWidth) m_width = m_minWidth;
     if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
@@ -261,12 +265,12 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 	if (firstChild()->firstChild() && !c.isValid())
     	    c = firstChild()->firstChild()->style()->backgroundColor();
     }
-    
+
     int w = m_view->visibleWidth();
     int h = m_view->visibleHeight();	
 
     if(c.isValid())
-	p->fillRect(_tx + m_view->contentsX(), 
+	p->fillRect(_tx + m_view->contentsX(),
 	    _ty + m_view->contentsY(), w, h, c);
 
     RenderFlow::printObject(p,_x,_y,_w,_h,_tx,_ty);

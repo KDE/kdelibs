@@ -56,7 +56,7 @@ public:
 	// from HTMLDocument
 	DOC_IMAGES,    // all IMG elements in the document
 	DOC_APPLETS,   // all OBJECT and APPLET elements
-	DOC_FORMS,     // all FORMS 
+	DOC_FORMS,     // all FORMS
 	DOC_LINKS,     // all A _and_ AREA elements with a value for href
 	DOC_ANCHORS,      // all A elements with a value for name
 	// from HTMLTable, HTMLTableSection, HTMLTableRow
@@ -82,13 +82,17 @@ public:
 protected:
     unsigned long calcLength(NodeImpl *current) const;
     NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
-    NodeImpl *getNamedItem( NodeImpl *current, int attr_id, 
+    NodeImpl *getNamedItem( NodeImpl *current, int attr_id,
 			    const DOMString &name ) const;
    // the base node, the collection refers to
     NodeImpl *base;
     // The collection list the following elements
     int type;
-    
+
+    // ### add optimization, so that a linear loop through the
+    // Collection is O(n) and not O(n^2)!
+    //NodeImpl *current;
+    //int currentPos;
 };
 
 }; //namespace

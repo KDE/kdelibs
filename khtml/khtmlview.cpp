@@ -29,6 +29,7 @@
 #include "html/html_inlineimpl.h"
 #include "dom/dom2_range.h"
 #include "rendering/render_object.h"
+#include "rendering/render_root.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_textimpl.h"
 
@@ -52,6 +53,8 @@
 #include <qwidget.h>
 #include <qapplication.h>
 
+#include <qprinter.h>
+#include <qpaintdevicemetrics.h>
 
 #define SCROLLBARWIDTH 16
 
@@ -142,7 +145,7 @@ void KHTMLView::init()
   viewport()->setFocusPolicy( QWidget::WheelFocus );
 
   _marginWidth = -1; // undefined
-  _marginHeight = -1; 
+  _marginHeight = -1;
   _width = width()- SCROLLBARWIDTH - 2*marginWidth();
   _height = 0;
 
@@ -853,3 +856,52 @@ void KHTMLView::followLink()
   }
 }
 
+void KHTMLView::print()
+{
+    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->docImpl()->renderer());
+    if(!root) return;
+
+    QPrinter *printer = new QPrinter;
+    if(printer->setup(this)) {
+	// set up QPrinter
+	printer->setFullPage(true);
+	printer->setCreator("KDE 2.0 HTML Library");
+	
+	QPainter *p = new QPainter;
+	p->begin( printer );
+	
+	QPaintDeviceMetrics metrics( printer );
+	
+	// this is a simple approximation... we layout the document 
+	// according to the width of the page, then just cut
+	// pages without caring about the content. We should do better
+	// in the future, but for the moment this is better than no 
+	// printing support
+	
+	root->setPrintingMode(true);
+	root->setWidth(metrics.width());
+	root->setMinWidth(metrics.width());
+	root->setMaxWidth(metrics.width());
+	root->layout(true);
+	// 	
+
+	// ok. now print the pages.
+	
+	int top = 0;
+	while(top < root->height()) {
+	    if(top > 0) printer->newPage();
+	    p->translate(0,-top);
+	    root->print(p, 0, top, metrics.width(), metrics.height(), 0, 0);
+	    top += metrics.height();
+	}
+
+	p->end();
+	delete p;
+
+	// and now reset the layout to the usual one...
+	root->setPrintingMode(false);
+	//root->setWidth(...);
+	root->layout(true);
+    }
+    delete printer;
+}
