@@ -94,6 +94,7 @@ void yyerror( const char *s )
 %token T_GREATER
 %token T_AMPERSAND
 %token T_EXTERN
+%token T_EXTERN_C
 %token T_ACCESS
 %token T_ENUM
 %token T_NAMESPACE
@@ -152,7 +153,7 @@ includes
           {
 		printf("<INCLUDE>%s</INCLUDE>\n", $1->latin1() );
 	  }
-	| T_EXTERN T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
+	| T_EXTERN_C T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
 	  {
 	  }
         | /* empty */
@@ -180,6 +181,9 @@ declaration
 	  {
 	  }
 	| T_NAMESPACE T_IDENTIFIER T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET T_SEMICOLON
+	  {
+	  }
+	| T_EXTERN T_SEMICOLON
 	  {
 	  }
 	| T_TYPEDEF type Identifier T_SEMICOLON

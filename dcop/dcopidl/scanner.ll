@@ -230,7 +230,8 @@ typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 Q_OBJECT		;
 ("0"|"0L")		return T_NULL;
-"extern \"C\""		return T_EXTERN;
+"extern "[A-Za-z0-9_ \t*]+	return T_EXTERN;
+"extern \"C\""			return T_EXTERN_C;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );
