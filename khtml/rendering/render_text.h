@@ -178,7 +178,7 @@ public:
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false);
-    void posOfChar(int ch, int &x, int &y);
+    bool posOfChar(int ch, int &x, int &y);
 
     virtual short marginLeft() const { return style()->marginLeft().minWidth(0); }
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }

@@ -182,8 +182,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
-  d->m_paDebugRenderTree = new KAction( "print rendering tree to stdout", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
-  d->m_paDebugDOMTree = new KAction( "print DOM tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
+  d->m_paDebugRenderTree = new KAction( "Print Rendering Tree to STDOUT", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
+  d->m_paDebugDOMTree = new KAction( "Print DOM Tree to STDOUT", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
   QString foo1 = i18n("Show Images");
   QString foo2 = i18n("Show Animated Images");
@@ -1908,9 +1908,9 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
-                static_cast<khtml::RenderText *>(d->m_findNode->renderer())
-                  ->posOfChar(d->m_findPos, x, y);
-                d->m_view->setContentsPos(x-50, y-50);
+                if(static_cast<khtml::RenderText *>(d->m_findNode->renderer())
+                  ->posOfChar(d->m_findPos, x, y))
+                    d->m_view->setContentsPos(x-50, y-50);
 
                 d->m_selectionStart = d->m_findNode;
                 d->m_startOffset = d->m_findPos;
@@ -2171,9 +2171,9 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   if ( node->renderer() )
   {
     int x = 0, y = 0;
-    static_cast<khtml::RenderText *>(node->renderer())
-      ->posOfChar(d->m_startOffset, x, y);
-    d->m_view->setContentsPos(x-50, y-50);
+    if (static_cast<khtml::RenderText *>(node->renderer())
+      ->posOfChar(d->m_startOffset, x, y))
+        d->m_view->setContentsPos(x-50, y-50);
   }
 
   // Now look for end node

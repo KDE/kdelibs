@@ -426,28 +426,23 @@ bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
     return false;
 }
 
-void RenderText::posOfChar(int chr, int &x, int &y)
+bool RenderText::posOfChar(int chr, int &x, int &y)
 {
     if (!parent())
-    {
-       x = -1;
-       y = -1;
-       return;
-    }
+        return false;
     parent()->absolutePosition( x, y, false );
-
-    //if( chr > (int) str->l )
-    //chr = str->l;
 
     int pos;
     TextSlave * s = findTextSlave( chr, pos );
 
-    if ( s )
-    {
+    if ( s ) {
         // s is the line containing the character
         x += s->m_x; // this is the x of the beginning of the line, but it's good enough for now
         y += s->m_y;
+        return true;
     }
+
+    return false;
 }
 
 int RenderText::rightmostPosition() const
