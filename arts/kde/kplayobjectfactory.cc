@@ -23,6 +23,8 @@
 #include "kplayobject.h"
 #include "kplayobjectfactory.h"
 
+using namespace std;
+
 KPlayObjectFactory::KPlayObjectFactory(Arts::SimpleSoundServer server)
 {
     m_factory = Arts::DynamicCast(server.createObject("Arts::KWrapperFactory"));
