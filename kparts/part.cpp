@@ -27,7 +27,7 @@ using namespace KParts;
 namespace KParts
 {
 
-template class QList<KXMLGUIServant>;
+template class QList<KXMLGUIClient>;
 
 class PartBasePrivate
 {
@@ -78,7 +78,7 @@ void PartBase::setInstance( KInstance *inst )
 
 void PartBase::setInstance( KInstance *inst, bool loadPlugins )
 {
-  KXMLGUIBase::setInstance( inst );
+  KXMLGUIClient::setInstance( inst );
   if ( loadPlugins )
     Plugin::loadPlugins( m_obj, instance() );
 }

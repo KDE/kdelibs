@@ -34,7 +34,7 @@ class PartBasePrivate;
  *
  *  @short Base class for all parts.
  */
-class PartBase : virtual public KXMLGUIBase
+class PartBase : virtual public KXMLGUIClient
 {
 public:
 

@@ -76,8 +76,8 @@ const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instan
 
 void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 {
-  loadPlugins( parent, pluginDocuments( instance ) ); 
-} 
+  loadPlugins( parent, pluginDocuments( instance ) );
+}
 
 void Plugin::loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs )
 {
@@ -124,23 +124,23 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return (Plugin*)obj;
 }
 
-QValueList<KXMLGUIServant *> Plugin::pluginServants( QObject *parent )
+QValueList<KXMLGUIClient *> Plugin::pluginClients( QObject *parent )
 {
-  QValueList<KXMLGUIServant *> servants;
+  QValueList<KXMLGUIClient *> clients;
 
   if (!parent )
-    return servants;
+    return clients;
 
   QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
 
   QObjectListIt it( *plugins );
   while( it.current() )
   {
-    servants.append( (KXMLGUIServant *)((Plugin *)it.current()) );
+    clients.append( (KXMLGUIClient *)((Plugin *)it.current()) );
     ++it;
   }
 
-  return servants;
+  return clients;
 }
 
 #include "plugin.moc"

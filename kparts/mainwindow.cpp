@@ -60,8 +60,8 @@ void MainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
-  QValueList<KXMLGUIServant *> plugins;
-  QValueList<KXMLGUIServant *>::ConstIterator pIt, pBegin, pEnd;
+  QValueList<KXMLGUIClient *> plugins;
+  QValueList<KXMLGUIClient *>::ConstIterator pIt, pBegin, pEnd;
 
   if ( d->m_activePart )
   {
@@ -70,17 +70,17 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
 
-    plugins = Plugin::pluginServants( d->m_activePart );
+    plugins = Plugin::pluginClients( d->m_activePart );
     pIt = plugins.fromLast();
     pBegin = plugins.begin();
 
     for (; pIt != pBegin ; --pIt )
-      factory->removeServant( *pIt );
+      factory->removeClient( *pIt );
 
     if ( pIt != plugins.end() )
-      factory->removeServant( *pIt );
+      factory->removeClient( *pIt );
 
-    factory->removeServant( d->m_activePart );
+    factory->removeClient( d->m_activePart );
 
     disconnect( d->m_activePart, SIGNAL( setWindowCaption( const QString & ) ),
              this, SLOT( setCaption( const QString & ) ) );
@@ -93,13 +93,13 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( this, &ev );
 
-    factory->addServant( this );
+    factory->addClient( this );
 
-    plugins = Plugin::pluginServants( this );
+    plugins = Plugin::pluginClients( this );
     pIt = plugins.begin();
     pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
-      factory->addServant( *pIt );
+      factory->addClient( *pIt );
 
     d->m_bShellGUIActivated = true;
   }
@@ -115,14 +115,14 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
-    factory->addServant( part );
+    factory->addClient( part );
 
-    plugins = Plugin::pluginServants( part );
+    plugins = Plugin::pluginClients( part );
     pIt = plugins.begin();
     pEnd = plugins.end();
 
     for (; pIt != pEnd; ++pIt )
-      factory->addServant( *pIt );
+      factory->addClient( *pIt );
   }
 
   setUpdatesEnabled( true );

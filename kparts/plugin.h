@@ -4,6 +4,7 @@
 #include <qobject.h>
 #include <qaction.h>
 #include <kxmlgui.h>
+#include <kxmlguibase.h>
 
 class KInstance;
 
@@ -24,7 +25,7 @@ namespace KParts
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
  * where instancename is the name of the part's instance.
  */
-class Plugin : public QObject, KXMLGUIServant
+class Plugin : public QObject, KXMLGUIClient
 {
     Q_OBJECT
 public:
@@ -65,7 +66,7 @@ public:
      */
     static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
 
-    static QValueList<KXMLGUIServant *> pluginServants( QObject *parent );
+    static QValueList<KXMLGUIClient *> pluginClients( QObject *parent );
 
 protected:
     /**
