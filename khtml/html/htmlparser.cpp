@@ -77,7 +77,10 @@ public:
 	m_inline(_inline),
         node(_node),
         next(_next)
-        {}
+        { node->ref(); }
+
+    ~HTMLStackElem()
+        { node->deref(); }
 
     int       id;
     int       level;

@@ -1,3 +1,7 @@
+2004-01-22  Waldo Bastian  <bastian@kde.org>
+
+	* html/htmlparser.cpp (class HTMLStackElem): ref and unref the nodes to avoid them beeing removed below us (#73112)
+
 2004-01-22  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.cpp: make Ctrl only temporary suspend Shift+Down scrolling
