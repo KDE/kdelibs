@@ -322,10 +322,11 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
         else
         {
             // ### suggestedFilename not taken into account. Fix this (and
-            // the duplicated code) with shiny new KDownload class for 3.2
-            // (pfeiffer)
-            cmd += " " + KProcess::quote(url.url());
-            kdDebug(1000) << "Calling command  "<<cmd<<endl;
+            // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
+            // Until the shiny new class comes about, send the suggestedFilename
+            // along with the actual URL to download. (DA)
+            cmd += " " + KProcess::quote(url.url()) + " " + KProcess::quote(suggestedFilename);
+            kdDebug(1000) << "Calling command  " << cmd << endl;
             // slave is already on hold (slotBrowserMimetype())
             KIO::Scheduler::publishSlaveOnHold();
             KRun::runCommand(cmd);
