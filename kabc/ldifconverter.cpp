@@ -166,11 +166,12 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   LDIF ldif;
   LDIF::ParseVal ret;
   const char *latinstr = str.latin1();
+  int latinstrlen = qstrlen( latinstr );
   QByteArray data;
   Addressee a;
   Address homeAddr, workAddr;
   
-  data.setRawData( latinstr, qstrlen( latinstr ) );
+  data.setRawData( latinstr, latinstrlen );
   ldif.setLDIF( data );
   if (!dt.isValid())
     dt = QDateTime::currentDateTime();
@@ -216,7 +217,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     }
   } while ( !end );
 
-  data.resetRawData( latinstr, qstrlen( latinstr ) );
+  data.resetRawData( latinstr, latinstrlen );
   
   return true;
 }
