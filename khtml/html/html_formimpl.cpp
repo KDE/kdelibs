@@ -308,7 +308,7 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
 
 bool HTMLFormElementImpl::prepareSubmit()
 {
-    if(!view) return;
+    if ( !view ) return false;
 
     if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true)) {
 	return false; // don't submit if preventDefault() called
@@ -1209,7 +1209,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	m_render->absolutePosition(offsetX,offsetY);
 	xPos = me->clientX()-offsetX;
 	yPos = me->clientY()-offsetY;
-	
+
 	// since we are not called from a RenderFormElement, the DOMActivate event will not get
 	// sent so we have to do it here
 	if (me->detail() % 2 == 0) // single click
