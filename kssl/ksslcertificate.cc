@@ -22,7 +22,9 @@
 
 
 KSSLCertificate::KSSLCertificate() {
+#ifdef HAVE_SSL
   m_cert = NULL;
+#endif
 }
 
 
