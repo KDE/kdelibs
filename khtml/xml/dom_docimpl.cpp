@@ -586,7 +586,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // form elements
 // ### FIXME: we need a way to set form dependency after we have made the form elements
     case ID_FORM:
-            n = new HTMLFormElementImpl(docPtr());
+            n = new HTMLFormElementImpl(docPtr(), false);
         break;
     case ID_BUTTON:
             n = new HTMLButtonElementImpl(docPtr());
@@ -647,10 +647,10 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 // formatting elements (block)
     case ID_DIV:
-        n = new HTMLDivElementImpl(docPtr());
+    case ID_P:
+        n = new HTMLDivElementImpl(docPtr(), id);
         break;
     case ID_BLOCKQUOTE:
-    case ID_P:
     case ID_H1:
     case ID_H2:
     case ID_H3:

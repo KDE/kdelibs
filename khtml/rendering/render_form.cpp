@@ -67,23 +67,6 @@ short RenderFormElement::baselinePosition( bool f ) const
     return RenderWidget::baselinePosition( f ) - 2 - style()->fontMetrics().descent();
 }
 
-short RenderFormElement::calcReplacedWidth(bool*) const
-{
-    Length w = style()->width();
-    if ( w.isVariable() )
-        return intrinsicWidth();
-    else
-        return RenderReplaced::calcReplacedWidth();
-}
-
-int RenderFormElement::calcReplacedHeight() const
-{
-    Length h = style()->height();
-    if ( h.isVariable() )
-        return intrinsicHeight();
-    else
-        return RenderReplaced::calcReplacedHeight();
-}
 
 void RenderFormElement::updateFromElement()
 {
@@ -362,7 +345,6 @@ QPopupMenu *LineEditWidget::createPopupMenu()
         return 0L;
     connect( popup, SIGNAL( activated( int ) ),
              this, SLOT( extendedMenuActivated( int ) ) );
-
     return popup;
 }
 
@@ -436,6 +418,10 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
 
 void RenderLineEdit::slotClearCompletionHistory()
 {
+    if ( element()->autoComplete() ) {
+        view()->clearCompletionHistory(element()->name().string());
+        static_cast<LineEditWidget*>(m_widget)->completionObject()->clear();
+    }
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -927,9 +913,9 @@ void RenderSelect::updateFromElement()
                 }
 
                 if(m_useListBox)
-                    static_cast<KListBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
+                    static_cast<KListBox*>(m_widget)->insertItem(text, listIndex);
                 else
-                    static_cast<KComboBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
+                    static_cast<KComboBox*>(m_widget)->insertItem(text, listIndex);
             }
             else
                 KHTMLAssert(false);
