@@ -199,6 +199,9 @@ void KLineEdit::aboutToShowSubMenu( int itemID )
         m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionAuto );
         id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT( modeManual()) );
         m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionMan );
+        m_pSubMenu->insertSeparator();
+        id = m_pSubMenu->insertItem( i18n("Default"), this, SLOT( modeDefault()) );
+        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionMan );
     }
 }
 

@@ -514,7 +514,6 @@ public slots:
     */
     virtual void iterateDownInList();
 
-
 protected slots:
 
     /**
@@ -554,6 +553,12 @@ protected slots:
     * Sets the comepltion mode to KGlobal::CompletionShell
     */
     virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
+
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionShell
+    */
+    virtual void modeDefault()  { useGlobalSettings(); }
+
 
     /**
     * Populates the context menu before it is displayed.
