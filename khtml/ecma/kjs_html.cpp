@@ -17,9 +17,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
+
 #include <qstring.h>
 #include <html_element.h>
 #include <html_head.h>
+#include <html_inline.h>
 #include <dom_string.h>
 
 #include "kjs.h"
@@ -147,6 +150,10 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
   DOM::HTMLHtmlElement html;
   DOM::HTMLBodyElement body;
   DOM::HTMLLinkElement link;
+  DOM::HTMLAnchorElement anchor;
+
+  fprintf(stderr, "HTMLElement::get(%s) id: %d\n",
+	  p.ascii(), element.elementId());
 
   switch (element.elementId()) {
   case ID_HTML:
@@ -154,7 +161,7 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
     if (p == "version")
       return new KJSString(html.version());
     break;
-  case ID_A:
+  case ID_LINK:
     link = element;
     if (p == "disabled")
       return new KJSBoolean(link.disabled());
@@ -195,6 +202,35 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
     else
       break;
     return new KJSString(str);
+  case ID_A:
+    anchor = element;
+    if (p == "accessKey")
+      str = anchor.accessKey();
+    else if (p == "charset")
+      str = anchor.charset();
+    else if (p == "coords")
+      str = anchor.coords();
+    else if (p == "href")
+      str = anchor.href();
+    else if (p == "hreflang")
+      str = anchor.hreflang();
+    else if (p == "name")
+      str = anchor.name();
+    else if (p == "rel")
+      str = anchor.rel();
+    else if (p == "rev")
+      str = anchor.rev();
+    else if (p == "shape")
+      str = anchor.shape();
+    else if (p == "tabIndex")
+      return new KJSNumber((unsigned long)anchor.tabIndex()); /* ??? */
+    else if (p == "target")
+      str = anchor.target();
+    else if (p == "type")
+      str = anchor.type();
+    else
+      break;
+    return new KJSString(str);
   }
 
   // generic properties
@@ -220,17 +256,20 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
 {
   DOM::HTMLHtmlElement html;
   DOM::HTMLLinkElement link;
+  DOM::HTMLBodyElement body;
+  DOM::HTMLAnchorElement anchor;
 
   Ptr s = toString(v);
   DOM::DOMString str = s->sVal().string();
   Ptr b = toBoolean(v);
+  Ptr n = toNumber(v);
 
   switch (element.elementId()) {
   case ID_HTML:
     html = element;
     html.setVersion(str);
     return;
-  case ID_A:
+  case ID_LINK:
     link = element;
     if (p == "disabled")
       link.setDisabled(b->bVal());
@@ -254,8 +293,6 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
       break;
     return;
   case ID_BODY:
-    // HTMLBodyElement
-    DOM::HTMLBodyElement body;
     body = element;
     if (p == "aLink")
       body.setALink(str);
@@ -269,6 +306,35 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
       body.setText(str);
     else if (p == "vLink")
       body.setVLink(str);
+    else
+      break;
+    return;
+  case ID_A:
+    anchor = element;
+    if (p == "accessKey")
+      anchor.setAccessKey(str);
+    else if (p == "charset")
+      anchor.setCharset(str);
+    else if (p == "coords")
+      anchor.setCoords(str);
+    else if (p == "href")
+      anchor.setHref(str);
+    else if (p == "hreflang")
+      anchor.setHreflang(str);
+    else if (p == "name")
+      anchor.setName(str);
+    else if (p == "rel")
+      anchor.setRel(str);
+    else if (p == "rev")
+      anchor.setRev(str);
+    else if (p == "shape")
+      anchor.setShape(str);
+    else if (p == "tabIndex")
+      anchor.setTabIndex((long)n->dVal());
+    else if (p == "target")
+      anchor.setTarget(str);
+    else if (p == "type")
+      anchor.setType(str);
     else
       break;
     return;
