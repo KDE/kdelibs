@@ -40,6 +40,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
 			 const QString& caption, int type, QWidget *parent, const char* name, bool modal)
    : KFileDialog(startDir,filter,parent,name,modal), d(new KEncodingFileDialogPrivate)
 {
+  Q_UNUSED(type)
   setCaption(caption);
 
   KToolBar *tb = toolBar();

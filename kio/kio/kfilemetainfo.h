@@ -1309,7 +1309,7 @@ private:
  * Synchronous access to metadata of a local file. Ususally, you don't want
  * to use this class. Use KFileMetaInfo directly.
  **/
-class KFileMetaInfoProvider: QObject
+class KFileMetaInfoProvider: private QObject
 {
     friend class KFilePlugin;
 
