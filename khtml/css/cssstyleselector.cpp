@@ -56,17 +56,13 @@ using namespace DOM;
 #include <kglobal.h>
 #include <kconfig.h>
 #include <qfile.h>
-#include <qfontdatabase.h>
-#include <qfontinfo.h>
 #include <qvaluelist.h>
 #include <qstring.h>
 #include <qtooltip.h>
 #include <kdebug.h>
 #include <kurl.h>
-#include <qdatetime.h>
 #include <assert.h>
 #include <qpaintdevicemetrics.h>
-#include <qintcache.h>
 #include <stdlib.h>
 
 namespace khtml {
@@ -560,7 +556,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
         case CSS_PROP_BACKGROUND_IMAGE:
         case CSS_PROP_DISPLAY:
             // these have to be applied first, because other properties use the computed
-            // values of these porperties.
+            // values of these properties.
 	    first = true;
             break;
         default:
@@ -599,7 +595,7 @@ static void cleanpath(QString &path)
 
     // Don't remove "//" from an anchor identifier. -rjw
     // Set refPos to -2 to mean "I haven't looked for the anchor yet".
-    // We don't want to waste a function call on the search for the the anchor
+    // We don't want to waste a function call on the search for the anchor
     // in the vast majority of cases where there is no "//" in the path.
     int refPos = -2;
     while ( (pos = path.find( "//", pos )) != -1) {
@@ -1061,7 +1057,7 @@ void CSSStyleSelector::clearLists()
 void CSSStyleSelector::buildLists()
 {
     clearLists();
-    // collect all selectors and Properties in lists. Then transer them to the array for faster lookup.
+    // collect all selectors and Properties in lists. Then transfer them to the array for faster lookup.
 
     QPtrList<CSSSelector> selectorList;
     CSSOrderedPropertyList propertyList;
