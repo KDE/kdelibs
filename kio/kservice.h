@@ -247,20 +247,6 @@ public:
    */
   static Ptr serviceByName( const QString& _name );
 
-  /**
-   * Starts a service based on the (translated) name of the service.
-   *
-   * @param URL - if not empty this URL is passed to the service
-   *
-   * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.   
-   */
-  static int startServiceByName( const QString& _name, const QString &URL,
-                                 QCString &dcopService, QString &error );
 
   /**
    * @return a pointer to the requested service or 0 if the service is
@@ -270,42 +256,11 @@ public:
   static Ptr serviceByDesktopPath( const QString& _name );
 
   /**
-   * Starts a service based on the desktop path of the service.
-   *
-   * @param URL - if not empty this URL is passed to the service
-   *
-   * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.   
-   */
-  static int startServiceByDesktopPath( const QString& _name, 
-              const QString &URL, QCString &dcopService, QString &error );
-
-  /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !
    */
   static Ptr serviceByDesktopName( const QString& _name );
-
-  /**
-   * Starts a service based on the desktop name of the service.
-   *
-   * @param URL - if not empty this URL is passed to the service
-   *
-   * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.   
-   */
-  static int startServiceByDesktopName( const QString& _name, 
-              const QString &URL, QCString &dcopService, QString &error );
-
 
   /**
    * @return the whole list of services. Useful for being able to
@@ -317,14 +272,6 @@ public:
 protected:
 
   void init(KDesktopFile *config);
-
-  /**
-   * Internal function which does the actual work for startService....()
-   */
-  static  int startServiceInternal( 
-              const QCString &function, const QString& _name, 
-              const QString &URL, QCString &dcopService, QString &error );
-
 
 private:
   QString m_strType;

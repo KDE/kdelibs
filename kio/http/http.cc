@@ -46,6 +46,7 @@
 
 #include "http.h"
 
+#include <kapp.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <ksock.h>
@@ -2173,7 +2174,7 @@ HTTPProtocol::cleanCache()
       utime(cleanFile.ascii(), 0);
       QCString dcopService;
       QString error;
-      KService::startServiceByDesktopPath("http_cache_cleaner.desktop",
+      KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop",
               QString::null, dcopService, error);
    }
 }
