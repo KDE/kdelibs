@@ -59,7 +59,7 @@ bool connectSoundServer()
 	 * some time after the first process requests knotify to do some
 	 * notifications
 	 */
-	for(int tries = 0; tries < 10; tries++)
+	for(int tries = 0; tries < 8; tries++)
 	{
 		server = Arts::Reference("global:Arts_SimpleSoundServer");
 		if(!server.isNull()) return true;
@@ -95,6 +95,8 @@ int main(int argc, char **argv)
 
 	if(!connectSoundServer())
 		cerr << "artsd is not running, there will be no sound notifications.\n";
+	// get the PID of artsd and check if it disconnects
+	
 
 	(void) new KNotify;
 
@@ -154,6 +156,10 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
 bool KNotify::notifyBySound(const QString &sound)
 {
+	// Oh dear! we seem to have lost our connection to artsd!
+	if(server.error())
+		connectSoundServer();
+	
 	QString f(sound);
 	if (QFileInfo(sound).isRelative())
 		f=locate("sound", sound);
@@ -168,26 +174,21 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
 {
 	if ( text.isEmpty() )
 		return false;
-		
 	
-//	if (!fork())
+	switch(level)
 	{
-		switch(level)
-		{
-		default:
-		case(KNotifyClient::Notification):
-			KMessageBox::information(0, text, i18n("Notification"), 0, false);
-			break;
-		case(KNotifyClient::Warning):
-			KMessageBox::sorry(0, text, i18n("Warning"), false);
-			break;
-		case(KNotifyClient::Error):
-			KMessageBox::error(0, text, i18n("Error"), false);
-			break;
-		case(KNotifyClient::Catastrophe):
-			KMessageBox::error(0, text, i18n("Catastrophe!"), false);
-		};
-//		_exit(0);
+	default:
+	case(KNotifyClient::Notification):
+		KMessageBox::information(0, text, i18n("Notification"), 0, false);
+		break;
+	case(KNotifyClient::Warning):
+		KMessageBox::sorry(0, text, i18n("Warning"), false);
+		break;
+	case(KNotifyClient::Error):
+		KMessageBox::error(0, text, i18n("Error"), false);
+		break;
+	case(KNotifyClient::Catastrophe):
+		KMessageBox::error(0, text, i18n("Catastrophe!"), false);
 	}
 	
 	return true;
