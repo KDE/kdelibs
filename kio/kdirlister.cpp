@@ -43,7 +43,8 @@ public:
     bool autoUpdate;
     bool urlChanged;
     QString nameFilter;
-    QString mimeFilter;
+    QStringList mimeFilter;
+    QString deprecated_mimeFilter;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -533,9 +534,6 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
     assert( item != 0L );
 
-    if ( d->mimeFilter.isEmpty() )
-        return true;
-
     return matchesMimeFilter( item->mimetype() );
 }
 
@@ -554,14 +552,14 @@ bool KDirLister::matchesFilter(const QString& name) const
 bool KDirLister::matchesMimeFilter(const QString& mime) const
 {
     if ( d->mimeFilter.isEmpty() )
-        return false;
+        return true;
 
-    QStringList list = QStringList::split(' ', d->mimeFilter);
-    QStringList::Iterator it = list.begin();
-    for ( ; it != list.end(); ++it )
-        if ( (*it) == mime ) break;
+    QStringList::Iterator it = d->mimeFilter.begin();
+    for ( ; it != d->mimeFilter.end(); ++it )
+        if ( (*it) == mime )
+            return true;
 
-    return ( it != list.end() );
+    return false;
 }
 
 void KDirLister::setNameFilter(const QString& nameFilter)
@@ -579,19 +577,46 @@ void KDirLister::setNameFilter(const QString& nameFilter)
     }
 }
 
-void KDirLister::setMimeFilter( const QString& mimefilter )
+void KDirLister::setMimeFilter( const QStringList& mimefilter )
 {
     d->mimeFilter = mimefilter;
+}
+
+QStringList KDirLister::mimeFilters() const
+{
+    return d->mimeFilter;
+}
+
+void KDirLister::clearMimeFilter()
+{
+    d->mimeFilter.clear();
+}
+
+// ## the deprecated one
+void KDirLister::setMimeFilter( const QString& mimefilter )
+{
+    d->mimeFilter = QStringList::split(' ', mimefilter);
+}
+
+// ## the deprecated one
+const QString& KDirLister::mimeFilter() const
+{
+    d->deprecated_mimeFilter = QString::null;
+    QStringList::ConstIterator it = d->mimeFilter.begin();
+    while ( it != d->mimeFilter.end() ) {
+        if ( it != d->mimeFilter.begin() )
+            d->deprecated_mimeFilter += ' ';
+        d->deprecated_mimeFilter += *it;
+
+        ++it;
+    }
+
+    return d->deprecated_mimeFilter;
 }
 
 const QString& KDirLister::nameFilter() const
 {
     return d->nameFilter;
-}
-
-const QString& KDirLister::mimeFilter() const
-{
-    return d->mimeFilter;
 }
 
 void KDirLister::FilesAdded( const KURL & directory )

@@ -197,18 +197,29 @@ public:
   void setNameFilter(const QString&);
 
   /**
-   * Set mime-based filter to only list items matching the given mimetype
+   * Set mime-based filter to only list items matching the given mimetypes
    *
-   * You can set more than one filter by separating them with whitespace,
-   * e.g "text/plain image/x-png". If this method is invoked with a null
-   * argument, @p setMimeFilter(QString::null), mime based filtering will
-   * be diabled. NOTE: setting the filter does not automatically reload
-   * the direcory.  Also calling this function will not affect any named
-   * filter already set.
+   * NOTE: setting the filter does not automatically reload direcory.  
+   * Also calling this function will not affect any named filter already set.
    *
+   * @see #clearMimeFilter
    * @see #matchesMimeFilter
    *
-   * @param a list of mime-types speparated by space.
+   * @param a list of mime-types.
+   */
+  void setMimeFilter( const QStringList& );
+
+  /**
+   * Clears the mime based filter.
+   *
+   * @see #setMimeFilter
+   */
+  void clearMimeFilter();
+    
+  /**
+   * @deprecated
+   * Sets mime filters separated with space.
+   * ## remove for 3.0
    */
   void setMimeFilter(const QString&);
 
@@ -218,6 +229,13 @@ public:
   const QString& nameFilter() const;
 
   /**
+   * @returns the list of mime based filters, as set via @ref setMimeFilter().
+   * Empty, when no mime filter is set.
+   */
+  QStringList mimeFilters() const;
+    
+  /**
+   * @deprecated
    * @returns the current mime filter as set via @ref setMimeFilter()
    */
   const QString& mimeFilter() const;
