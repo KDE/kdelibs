@@ -1306,6 +1306,12 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_cacheId = 0;
   d->m_bComplete = false;
 
+  // ### the setFontSizes in restore currently doesn't seem to work,
+  // so let's also reset the font base here, so that the font buttons start
+  // at 0 and not at the last used value (would make sense if the sizes
+  // would be restored properly though)
+  d->m_fontBase = 0;
+
   if(url.isValid())
       KHTMLFactory::vLinks()->insert( url.url() );
 
@@ -3124,6 +3130,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_charset = (QFont::CharSet) charset;
 
   stream >> fSizes >> d->m_fontBase;
+  // ### odd: this doesn't appear to have any influence on the used font 
+  // sizes :(
   setFontSizes( fSizes );
 
   // Restore ssl data
