@@ -202,6 +202,7 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
     attributeMap.add(a);
 
     parseAttribute(&a);
+    applyChanges();
 }
 
 void ElementImpl::setAttribute( AttributeList list )
@@ -214,6 +215,7 @@ void ElementImpl::setAttribute( AttributeList list )
 	parseAttribute(attributeMap[i]);
 	i++;
     }
+    applyChanges();
 }
 
 void ElementImpl::removeAttribute( const DOMString &name )
@@ -224,6 +226,7 @@ void ElementImpl::removeAttribute( const DOMString &name )
     // ### defaultMap!!!
     Attribute a(name, "");
     parseAttribute(&a);
+    applyChanges();
 }
 
 // pay attention to memory leaks here!
@@ -255,7 +258,8 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
     Attribute a(newAttr->attrId(), newAttr->value());
     attributeMap.add(a);
     parseAttribute(&a);
-
+    applyChanges();
+    
     return newAttr;
 }
 
@@ -274,7 +278,8 @@ AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
 
     Attribute a(oldAttr->name(), "");
     parseAttribute(&a);
-
+    applyChanges();
+    
     return oldAttr;
 }
 

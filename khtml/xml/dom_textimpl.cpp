@@ -61,6 +61,7 @@ void CharacterDataImpl::setData( const DOMString &newStr )
     if(str) str->deref();
     str = newStr.impl;
     if(str) str->ref();
+    applyChanges();
 }
 
 unsigned long CharacterDataImpl::length() const
@@ -77,11 +78,13 @@ DOMString CharacterDataImpl::substringData( const unsigned long /*offset*/, cons
 void CharacterDataImpl::appendData( const DOMString &arg )
 {
     str->append(arg.impl);
+    applyChanges();
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
 {
     str->insert(arg.impl, offset);
+    applyChanges();
 }
 
 void CharacterDataImpl::deleteData( const unsigned long /*offset*/, const unsigned long /*count */)

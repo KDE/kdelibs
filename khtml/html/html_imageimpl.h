@@ -57,7 +57,8 @@ public:
                              NodeImpl *&innerNode, long &offset );
 
     virtual void attach(KHTMLView *w);
-    
+    virtual void applyChanges();
+
 protected:
     bool ismap;
 

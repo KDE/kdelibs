@@ -190,6 +190,15 @@ void HTMLImageElementImpl::attach(KHTMLView *)
     }
 }
 
+void HTMLImageElementImpl::applyChanges()
+{
+    if(m_render) {
+	static_cast<RenderImage *>(m_render)
+	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->URL());
+    }
+    HTMLElementImpl::applyChanges();
+}
+
 // -------------------------------------------------------------------------
 
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
