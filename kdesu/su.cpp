@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <signal.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -105,7 +106,11 @@ int SuProcess::exec(const char *password, int check)
 	if (ret < 0)
 	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
 	if (ret == StubUnknownRequest)
+	{
+	    kill(m_Pid, SIGTERM);
+	    waitForChild();
 	    ret = SuIncorrectPassword;
+	}
 	return ret;
     }
 
