@@ -218,14 +218,16 @@ void KPassivePopup::moveNear( QRect target )
     int w = width();
     int h = height();
 
-    if ( x < ( qApp->desktop()->screenGeometry().width() / 2 ) )
+    QRect r( qApp->desktop()->screenGeometry( QPoint(x+w/2,y+h/2) ) );
+
+    if ( x < ( r.width() / 2 ) )
 	x = x + target.width();
     else
 	x = x - w;
 
     // It's apparently trying to go off screen, so display it ALL at the bottom.
-    if ( (y + h) > qApp->desktop()->screenGeometry().height() )
-	y = qApp->desktop()->screenGeometry().height() - h;
+    if ( (y + h) > r.height() )
+	y = r.height() - h;
 
     if ( y < 0 )
         y = 0;
