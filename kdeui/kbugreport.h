@@ -28,17 +28,50 @@ class KProcess;
 class KAboutData;
 class KBugReportPrivate;
 
+/**
+ * A dialog box for sending bug reports.
+ * All the information needed by the dialog box
+ * (program name, version, bug-report address, etc.)
+ * comes from the @ref KAboutData class.
+ * Make sure you create an instance of KAboutData and pass it
+ * to @ref KCmdLineArgs.
+ *
+ * @short A dialog box for sending bug reports.
+ * @author David Faure <faure@kde.org>
+ */
 class KBugReport : public KDialogBase
 {
   Q_OBJECT
 public:
+  /**
+   * Creates a bug-report dialog.
+   * Note that you shouldn't have to do this manually,
+   * since @ref KHelpMenu takes care of the menu item
+   * for "Report Bug..." and of creating a KBugReport dialog.
+   */
   KBugReport( QWidget * parent = 0L, bool modal=true );
+  /**
+   * Destructor
+   */
   virtual ~KBugReport();
 
 protected slots:
+  /**
+   * "Configure email" has been clicked - this calls kcmshell System/email
+   */
   virtual void slotConfigureEmail();
+  /**
+   * Sets the "From" field from the e-mail configuration
+   * Called at creation time, but also after "Configure email" is closed.
+   */
   virtual void slotSetFrom();
+  /**
+   * The URL-Label "http://bugs.kde.org/" was clicked.
+   */
   virtual void slotUrlClicked(const QString &);
+  /**
+   * OK has been clicked
+   */
   virtual void slotOk( void );
 
 protected:
