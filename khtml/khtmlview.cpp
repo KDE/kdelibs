@@ -76,8 +76,9 @@ public:
         underMouse = 0;
         linkPressed = false;
         useSlowRepaints = false;
-        currentNode = 0;
         originalNode = 0;
+        currentNode = 0;
+	newNode = 0;
         vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
     }
@@ -86,8 +87,12 @@ public:
     QPixmap  *paintBuffer;
     NodeImpl *underMouse;
 
+    // the currently selected node
     HTMLElementImpl *currentNode;
+    // the node that was selected when enter was pressed
     HTMLElementImpl *originalNode;
+    // the node the will be approached next.
+    HTMLElementImpl *newNode;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -599,6 +604,7 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     {
         scrollBy(deltax, deltay);
         d->currentNode = n;
+	d->newNode = 0;
         return true;
     }
 
@@ -627,6 +633,7 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
     {
         d->currentNode = n;
+	d->newNode = 0;
     }
     return true;
 }
@@ -636,62 +643,38 @@ bool KHTMLView::gotoLink(bool forward)
     if (!m_part->xmlDocImpl())
         return false;
 
-    if (!d->currentNode && forward)
-        return notabindex(0, forward);
-    else if (!d->currentNode && !forward)
-        return tabindexzero(0, forward);
-    else if(d->currentNode->tabIndex()==-1)
-        return notabindex(d->currentNode, forward);
-    else if (d->currentNode->tabIndex()>0)
-        return intabindex(d->currentNode, forward);
-    else // d->currentNode->tabIndex()==0
-        return tabindexzero(d->currentNode, forward);
-}
-
-bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
-{
-    // REQ: n must be after the current node and its tabindex must be -1
-    if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, -1)))
-        return gotoLink(cur);
-
-    if (forward)
-        return intabindex(cur, forward);
-    setContentsPos( 0, 0);
-    return gotoLink((HTMLElementImpl *)0);
-}
-
-bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
-{
-    short tmptabindex;
-    short maxtabindex = m_part->xmlDocImpl()->findHighestTabIndex();
-    short increment=(forward?1:-1);
-    if (cur)
+    // ### what if direction changed since last move ?
+    // exchange currentNode and newNode ? (try)
+    if (d->currentNode && d->newNode && (d->newNode != m_part->xmlDocImpl()->findNextLink(d->currentNode, forward)))
     {
-        tmptabindex = cur->tabIndex();
+	d->currentNode->blur();
+	HTMLElementImpl *tmpNode = d->newNode;
+	d->newNode = d->currentNode;
+	d->currentNode = tmpNode;
     }
-    else tmptabindex=(forward?1:maxtabindex);
 
-    while(tmptabindex>0 && tmptabindex<=maxtabindex)
+    // we are already busy moving to a node.
+    // in this case, don't try to navigate any further.
+    if (d->newNode)
+	return gotoLink(d->newNode);
+
+    // currently, no node is targeted.
+    // find a new node, else return false:
+    d->newNode = m_part->xmlDocImpl()->findNextLink(d->currentNode, forward);
+
+    // none found ? blur and abort
+    if (d->newNode == 0)
     {
-        if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, tmptabindex)))
-            return gotoLink(cur);
-        tmptabindex+=increment;
+	if (d->currentNode)
+	    d->currentNode->blur();
+	d->currentNode = 0;
+	return false;
     }
-    if (forward)
-        return tabindexzero(cur, forward);
-    else
-        return notabindex(cur, forward) ;
-}
 
-bool KHTMLView::tabindexzero(HTMLElementImpl *cur, bool forward)
-{
-    //REQ: tabindex of result must be 0 and it must be after the current node ;
-    if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, 0)))
-        return gotoLink(cur);
-    if (!forward)
-        return intabindex(cur, forward);
-    setContentsPos( 0, contentsHeight() - height() + 5 );
-    return gotoLink((HTMLElementImpl *)0);
+    // activate new node.
+    // Notice: this will transfer the value of d->newNode to d->currentNode
+    // if target reached.
+    return gotoLink(d->newNode);
 }
 
 bool KHTMLView::gotoNextLink()

@@ -1098,6 +1098,21 @@ int DocumentImpl::findHighestTabIndex()
     return retval;
 }
 
+HTMLElementImpl *DocumentImpl::findNextLink(HTMLElementImpl *cur, bool forward)
+{
+    int curTabIndex = (cur?cur->tabIndex():-1);
+
+    switch(curTabIndex)
+    {
+    case -1:
+	return notabindex(cur, forward);
+    case 0:
+	return tabindexzero(cur, forward);
+    default:
+	return intabindex(cur, forward);
+    }
+}
+
 HTMLElementImpl *DocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
 {
     // tabIndexHint is the tabIndex that should be found.
@@ -1117,6 +1132,50 @@ HTMLElementImpl *DocumentImpl::findLink(HTMLElementImpl *n, bool forward, int ta
 	// because DOM::NodeImpl::tabIndex() defaults to -1.
     } while (n && (n->tabIndex()!=tabIndexHint));
     return n;
+}
+
+HTMLElementImpl *DocumentImpl::notabindex(HTMLElementImpl *cur, bool forward)
+{
+    // REQ: n must be after the current node and its tabindex must be -1
+    if ((cur = findLink(cur, forward, -1)))
+        return cur;
+
+    if (forward)
+        return intabindex(cur, forward);
+    return 0;
+}
+
+HTMLElementImpl *DocumentImpl::intabindex(HTMLElementImpl *cur, bool forward)
+{
+    short tmptabindex;
+    short maxtabindex = findHighestTabIndex();
+    short increment=(forward?1:-1);
+    if (cur)
+    {
+        tmptabindex = cur->tabIndex();
+    }
+    else tmptabindex=(forward?1:maxtabindex);
+
+    while(tmptabindex>0 && tmptabindex<=maxtabindex)
+    {
+        if ((cur = findLink(cur, forward, tmptabindex)))
+            return cur;
+        tmptabindex+=increment;
+    }
+    if (forward)
+        return tabindexzero(cur, forward);
+    else
+        return notabindex(cur, forward) ;
+}
+
+HTMLElementImpl *DocumentImpl::tabindexzero(HTMLElementImpl *cur, bool forward)
+{
+    //REQ: tabindex of result must be 0 and it must be after the current node ;
+    if ((cur = findLink(cur, forward, 0)))
+        return cur;
+    if (!forward)
+        return intabindex(cur, forward);
+    return 0;
 }
 
 bool DocumentImpl::mouseEvent( int _x, int _y,

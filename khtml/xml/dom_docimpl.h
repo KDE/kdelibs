@@ -204,14 +204,18 @@ public:
 
     void setTextColor( DOMString color ) { m_textColor = color; }
     DOMString textColor() const { return m_textColor; }
-    
+
     // internal
     NodeImpl *findElement( int id );
-    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
-    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
-    int findHighestTabIndex();
 
-    // oeverrides NodeImpl
+    /**
+     * find next link for keyboard traversal.
+     * @param start node to start search from
+     * @param forward whether to search forward or backward.
+     */
+    HTMLElementImpl *findNextLink(HTMLElementImpl *start, bool forward);
+
+    // overrides NodeImpl
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,
                              MouseEvent *ev );
@@ -230,6 +234,15 @@ signals:
 
 public slots:
     virtual void slotFinishedParsing();
+
+private:
+    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
+    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
+    int findHighestTabIndex();
+    HTMLElementImpl *notabindex(DOM::HTMLElementImpl *cur, bool forward);
+    HTMLElementImpl *intabindex(DOM::HTMLElementImpl *cur, bool forward);
+    HTMLElementImpl *tabindexzero(DOM::HTMLElementImpl *cur, bool forward);
+
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
