@@ -351,7 +351,7 @@ void KCharSelectTable::setToolTips()
 	    const ushort uni = vTableNum * 256 + numCols()*i + j;
 	    QString s;
 	    s.sprintf( "%04X", uint( uni ) );
-	    QToolTip::add(this, r, i18n( "Character","<qt>Unicode code point: U+%1<br>(In decimal: %2)<br>(Character: %3)</qt>" ).arg( s ).arg( uni ).arg( QChar( uni ) ) );
+	    QToolTip::add(this, r, i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) ) );
 	}
     }
 }
