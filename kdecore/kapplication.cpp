@@ -868,6 +868,23 @@ void KApplication::disableSessionManagement() {
 
 void KApplication::enableSessionManagement() {
   bSessionManagement = true;
+  // Session management support in Qt/KDE is awfully broken.
+  // If konqueror disables session management right after its startup,
+  // and enables it later (preloading stuff), it won't be properly
+  // saved on session shutdown.
+  // I'm not actually sure why it doesn't work, but saveState()
+  // doesn't seem to be called on session shutdown, possibly
+  // because disabling session management after konqueror startup
+  // disabled it somehow. Forcing saveState() here for this application
+  // seems to fix it.
+  if( mySmcConnection ) {
+        SmcRequestSaveYourself( mySmcConnection, SmSaveLocal, False,
+				SmInteractStyleAny,
+				False, False );
+
+	// flush the request
+	IceFlush(SmcGetIceConnection(mySmcConnection));
+  }
 }
 
 
@@ -1006,6 +1023,8 @@ void KApplication::commitData( QSessionManager& sm )
 
     if ( !bSessionManagement )
         sm.setRestartHint( QSessionManager::RestartNever );
+    else
+	sm.setRestartHint( QSessionManager::RestartIfRunning );
     d->session_save = false;
 }
 
@@ -1021,6 +1040,8 @@ void KApplication::saveState( QSessionManager& sm )
 	d->session_save = false;
         return;
     }
+    else
+    	sm.setRestartHint( QSessionManager::RestartIfRunning );
 
 #if QT_VERSION < 0x030100
     {
@@ -1091,6 +1112,8 @@ void KApplication::saveState( QSessionManager& sm )
         QStringList discard;
         discard  << "rm" << locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
+    } else {
+	sm.setDiscardCommand( "" );
     }
 
     if ( cancelled )
