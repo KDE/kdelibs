@@ -135,8 +135,8 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	
 	emit processedDirs( ul );
 	break;
-    case INF_CONNECT_FINISHED:
-	emit connectFinished();
+    case MSG_CONNECTED:
+	emit connected();
 	break;
     case INF_SCANNING_DIR:
 	stream >> str1;

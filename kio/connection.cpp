@@ -37,6 +37,7 @@ Connection::Connection()
     receiver = 0;
     member = 0;
     queueonly = false;
+    unqueuedTasks = 0;
 }
 
 Connection::~Connection()
@@ -80,19 +81,20 @@ void Connection::send(int cmd, const QByteArray& data)
 	sendnow( cmd, data );
     }
 
-    if (tasks.count() > 0 && !queueonly)
+    if (inited() && tasks.count() > 0 && !queueonly)
 	QTimer::singleShot(100, this, SLOT(dequeue()));
 }
 
 void Connection::queueOnly(bool queue) {
+    unqueuedTasks = tasks.count();
+    kDebugInfo( 7007, "setting queueOnly to %d", queue);
     queueonly = queue;
-    if (!queueonly && tasks.count() > 0)
-	dequeue();
+    dequeue();
 }
 
 void Connection::dequeue()
 {
-    if (tasks.count() == 0)
+    if (tasks.count() == 0  || !inited() || (queueonly && unqueuedTasks == 0))
 	return;
 
     kDebugInfo(7017, "dequeue");
@@ -102,7 +104,10 @@ void Connection::dequeue()
     sendnow( task->cmd, task->data );
     delete task;
 
-    if (tasks.count() > 0 && !queueonly)
+    if (queueonly)
+	unqueuedTasks--;
+
+    if (tasks.count() > 0 && (!queueonly || unqueuedTasks > 0))
 	QTimer::singleShot(100, this, SLOT(dequeue()));
 }
 
@@ -125,6 +130,7 @@ void Connection::init(KSocket *sock)
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
 	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
     }
+    dequeue();
 }
 
 void Connection::connect(QObject *_receiver, const char *_member)

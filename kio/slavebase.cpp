@@ -49,6 +49,11 @@ void SlaveBase::ready()
     m_pConnection->send( MSG_READY );
 }
 
+void SlaveBase::connected()
+{
+    m_pConnection->send( MSG_CONNECTED );
+}
+
 void SlaveBase::finished()
 {
     m_pConnection->send( MSG_FINISHED );
@@ -208,7 +213,7 @@ void SlaveBase::sigsegv_handler (int)
 void SlaveBase::openConnection(QString const &host, int, QString const &, QString const &)
 {
    kDebugInfo( 7007, "openConnection( host = %s)", host.ascii() );
-   ready();
+   connected();
 }
 
 void SlaveBase::closeConnection(void)
@@ -311,7 +316,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         QString passwd;
 	stream >> str1 >> i >> str2 >> passwd;
 	openConnection( str1, i, str2, passwd );
-	m_pConnection->send( INF_CONNECT_FINISHED );
     }
     break;
     case CMD_DISCONNECT:

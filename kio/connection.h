@@ -82,6 +82,7 @@ namespace KIO {
 	QObject *receiver;
 	const char *member;
 	QList<Task> tasks;
+	int unqueuedTasks;
     };
 
 };

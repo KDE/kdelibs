@@ -150,7 +150,7 @@ void Scheduler::startStep()
            slave->openConnection(host, port, user, passwd);
 	   // halt the queue til we know it's connected
 	   slave->queueOnly(true);
-	   connect(slave, SIGNAL(connectFinished()),
+	   connect(slave, SIGNAL(connected()),
 		   SLOT(slotSlaveConnected()));
        }
        job->start(slave);

@@ -72,7 +72,6 @@ class Connection;
    INF_WARNING,
    INF_GETTING_FILE,
    INF_DELETING_FILE,
-   INF_CONNECT_FINISHED,
    INF_NEED_PASSWD
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
@@ -85,6 +84,7 @@ class Connection;
    MSG_DATA_REQ,
    MSG_ERROR,
    MSG_READY,
+   MSG_CONNECTED,
    MSG_FINISHED,
    MSG_STAT_ENTRY,
    MSG_LIST_ENTRIES,
@@ -123,6 +123,7 @@ public:
     void dataReq( );
     void error( int , const QString & );
     void ready();
+    void connected();
     void finished();
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );

@@ -64,6 +64,7 @@ public:
      * (David) or we could use finished for consistency with the other methods...
      */
     void ready();
+    void connected();
     void finished();
 
     void statEntry( const UDSEntry& _entry );

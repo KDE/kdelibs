@@ -257,7 +257,7 @@ void Ftp::openConnection( const QString& _host, int _port, const QString& _user,
   }
 
   kDebugInfo( 7102, "Connected ...." );
-  ready(); // we emit ready here as we're connected
+  connected();
 
   m_bLoggedOn = ftpLogin( user, passwd );
   if ( !m_bLoggedOn ) {

@@ -45,7 +45,6 @@ Slave::Slave(KServerSocket *socket, const QString &protocol)
 
 void Slave::gotInput( int )
 {
-    debug("gotInput");
     if (!dispatch())
     {
         QString arg = m_protocol;
@@ -58,7 +57,6 @@ void Slave::gotInput( int )
 
 void Slave::gotAnswer( int )
 {
-    debug("gotAnswer");
     int cmd;
     QByteArray data;
     bool ok = true;
@@ -66,11 +64,12 @@ void Slave::gotAnswer( int )
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
 
-    if (ok && (cmd != MSG_READY))
+    if (ok && (cmd != MSG_CONNECTED))
         ok = false;
 
     if (ok)
     {
+	emit connected();
         slaveconn.connect(this, SLOT(gotInput(int)));
     }
     else
