@@ -33,18 +33,18 @@
 
 #include "kcustommenueditor.h"
 
-class KCustomMenuEditor::Item : public KListViewItem
+class KCustomMenuEditor::Item : public QListViewItem
 {
 public:
    Item(QListView *parent, KService::Ptr service)
-     : KListViewItem(parent),
+     : QListViewItem(parent),
        s(service)
    {
       init();
    }
 
    Item(QListViewItem *parent, KService::Ptr service)
-     : KListViewItem(parent),
+     : QListViewItem(parent),
        s(service)
    {
       init();
@@ -87,6 +87,7 @@ void KCustomMenuEditor::init()
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);
+   m_listView->setSorting(-1);
    KButtonBox *buttonBox = new KButtonBox(page, Vertical);
    buttonBox->addButton(i18n("New..."), this, SLOT(slotNewItem()));
    buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
@@ -97,53 +98,52 @@ void KCustomMenuEditor::init()
 void 
 KCustomMenuEditor::load(KConfigBase *cfg)
 {
-  cfg->setGroup(QString::null);
-  int count = cfg->readNumEntry("NrOfItems");
-  qWarning("Count = %d", count);
-  for(int i = 0; i < count; i++)
-  {
-     QString entry = cfg->readEntry(QString("Item%1").arg(i+1));
-     if (entry.isEmpty())
-        continue;
+   cfg->setGroup(QString::null);
+   int count = cfg->readNumEntry("NrOfItems");
+   QListViewItem *last = 0;
+   for(int i = 0; i < count; i++)
+   {
+      QString entry = cfg->readEntry(QString("Item%1").arg(i+1));
+      if (entry.isEmpty())
+         continue;
 
-qWarning("Entry = %s", entry.latin1());
-     // Try KSycoca first.
-     KService::Ptr menuItem = KService::serviceByDesktopPath( entry );
-     if (!menuItem)
-        menuItem = KService::serviceByDesktopName( entry );
-     if (!menuItem)
-        menuItem = new KService( entry );
+      // Try KSycoca first.
+      KService::Ptr menuItem = KService::serviceByDesktopPath( entry );
+      if (!menuItem)
+         menuItem = KService::serviceByDesktopName( entry );
+      if (!menuItem)
+         menuItem = new KService( entry );
 
-qWarning("Valid = %d", menuItem->isValid());
-     if (!menuItem->isValid())
-        continue;
+      if (!menuItem->isValid())
+         continue;
 
-qWarning("New Item."); 
-     new Item(m_listView, menuItem);
-  }
+      QListViewItem *item = new Item(m_listView, menuItem);
+      item->moveItem(last);
+      last = item;
+   }
 }
 
 void 
 KCustomMenuEditor::save(KConfigBase *cfg)
 {
-  // First clear the whole config file.
-  QStringList groups = cfg->groupList();
-  for(QStringList::ConstIterator it = groups.begin();
+   // First clear the whole config file.
+   QStringList groups = cfg->groupList();
+   for(QStringList::ConstIterator it = groups.begin();
       it != groups.end(); ++it)
-  {
-     cfg->deleteGroup(*it);
-  }
+   {
+      cfg->deleteGroup(*it);
+   }
 
-  cfg->setGroup(QString::null);
-  Item * item = (Item *) m_listView->firstChild();
-  int i = 0;
-  while(item)
-  {
-    i++;
-    cfg->writeEntry(QString("Item%1").arg(i), item->s->desktopEntryPath());
-    item = (Item *) item->nextSibling();
-  }
-  cfg->writeEntry("NrOfItems", i);
+   cfg->setGroup(QString::null);
+   Item * item = (Item *) m_listView->firstChild();
+   int i = 0;
+   while(item)
+   {
+      i++;
+      cfg->writeEntry(QString("Item%1").arg(i), item->s->desktopEntryPath());
+      item = (Item *) item->nextSibling();
+   }
+   cfg->writeEntry("NrOfItems", i);
 }
 
 void
