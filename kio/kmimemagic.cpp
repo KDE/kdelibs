@@ -43,6 +43,10 @@ void KMimeMagic::initStatic()
 #include <qregexp.h>
 #include <qstring.h>
 
+#ifndef __GNUC__
+#define __FUNCTION__ "unknown"
+#endif
+
 /*
  * data structures and related constants
  */
