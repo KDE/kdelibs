@@ -97,6 +97,7 @@ public:
     virtual void restoreState(const QString &) { };
 
     bool submit();
+    bool userSubmit();
     void reset();
 
     static void i18nData();

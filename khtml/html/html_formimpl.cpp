@@ -319,9 +319,6 @@ bool HTMLFormElementImpl::submit(  )
 
     m_insubmit = true;
 
-    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true))
-        return ( m_insubmit = false );
-
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submit pressed!" << endl;
 #endif
@@ -356,6 +353,17 @@ bool HTMLFormElementImpl::submit(  )
     // hence, m_insubmit _must_ _not_ be reset to false here!
     return m_insubmit;
 }
+
+bool HTMLFormElementImpl::userSubmit()
+{
+    if (dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true)) {
+	submit();
+	return true;
+    }
+    else
+	return false;
+}
+
 
 void HTMLFormElementImpl::reset(  )
 {
@@ -1252,17 +1260,16 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         m_clicked = true;
         if(m_type == RESET)
-            m_form->reset();
+	    m_form->reset();
         else {
             if ( ownerDocument() )
                 ownerDocument()->setFocusNode( this );
             m_activeSubmit = true;
-            bool ret = m_form->submit();
+	    if (!m_form->userSubmit()) {
+		xPos = 0;
+		yPos = 0;
+	    }
             m_activeSubmit = false; // in case we were canceled
-            if (!ret) {
-                xPos = 0;
-                yPos = 0;
-            }
         }
     }
 }

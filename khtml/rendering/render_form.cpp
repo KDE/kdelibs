@@ -499,6 +499,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
 void RenderLineEdit::slotReturnPressed()
 {
+    // ### this gets called twice when the user presses enter
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
     if ( box && box->isVisible() && box->currentItem() != -1 )
@@ -506,7 +507,7 @@ void RenderLineEdit::slotReturnPressed()
 
     HTMLFormElementImpl* fe = m_element->form();
     if ( fe )
-        fe->submit();
+	fe->userSubmit();
 }
 
 void RenderLineEdit::layout()
@@ -651,7 +652,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-        m_element->form()->submit();
+	m_element->form()->userSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
