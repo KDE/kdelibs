@@ -283,7 +283,6 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   }
   lang = _lang; // taking deep copy
 
-debug("Using: %s", lang.ascii());
   setEncodingLang(lang);
 #ifdef HAVE_SETLOCALE
   setlocale(LC_MESSAGES,lang.ascii());
