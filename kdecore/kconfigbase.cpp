@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.27  1998/03/31 03:47:31  tibirna
+// CT little typo in readNumEntry ( = instead of == )
+//
 // Revision 1.26  1998/03/30 17:30:51  kalle
 // Accept "true" and "on" as 1 in readNumEntry
 //
@@ -536,14 +539,28 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 	  uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
 	  if( nFontBits & 0x01 )
 		aRetFont.setItalic( true );
+      else
+	    aRetFont.setItalic( false );
+		
 	  if( nFontBits & 0x02 )
 		aRetFont.setUnderline( true );
+      else
+		aRetFont.setUnderline( false );
+		
 	  if( nFontBits & 0x04 )
 		aRetFont.setStrikeOut( true );
+      else
+		aRetFont.setStrikeOut( false );
+		
 	  if( nFontBits & 0x08 )
 		aRetFont.setFixedPitch( true );
+      else
+		aRetFont.setFixedPitch( false );
+		
 	  if( nFontBits & 0x20 )
 		aRetFont.setRawMode( true );
+      else
+		aRetFont.setRawMode( false );
 	}
   else {
     if( pDefault )
