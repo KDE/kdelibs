@@ -140,7 +140,8 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
     char errstr[256];
     XGetErrorText( dpy, err->error_code, errstr, 256 );
     if ( err->error_code != BadWindow )
-        qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
+        kdWarning() << "KDE detected X Error: " << errstr << " " << err->error_code
+		<< "\n  Major opcode:  " << err->request_code << endl;
     return 0;
 }
 
@@ -1364,7 +1365,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             styleHandle = lt_dlopen(QFile::encodeName(styleStr));
         }
         else {
-            qWarning("KApp: Unable to find style plugin %s.", styleStr.local8Bit().data());
+            kdWarning() << "Unable to find style plugin " << styleStr << endl;
             pKStyle = new KDEStyle;
             setStyle(pKStyle);
             styleHandle=0;
@@ -1374,8 +1375,8 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         }
 
         if(!styleHandle){
-            qWarning("KApp: Unable to open style plugin %s (%s).",
-                    styleStr.local8Bit().data(), lt_dlerror());
+            kdWarning() << "Unable to open style plugin " << styleStr 
+                    << "(" << lt_dlerror() << ")\n";
 
             pKStyle = new KDEStyle;
             setStyle(pKStyle);
@@ -1388,8 +1389,8 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                 alloc_func= lt_dlsym(styleHandle,"allocateCustomTheme");
 
             if(!alloc_func){
-                qWarning("KApp: Unable to init style plugin %s (%s).",
-                        styleStr.local8Bit().data(), lt_dlerror());
+	        kdWarning() << "Unable to init style plugin " << styleStr
+		                      << "(" << lt_dlerror() << ")\n";
                 pKStyle = new KDEStyle;
                 setStyle(pKStyle);
                 lt_dlclose(styleHandle);
@@ -1412,7 +1413,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                   setStyle(pKStyle);
                }
                else{
-                    qWarning("KApp: Style plugin unable to allocate style.");
+                    kdWarning() << "Style plugin unable to allocate style.\n";
                     pKStyle = new KDEStyle;
                     setStyle(pKStyle);
                     lt_dlclose(styleHandle);
@@ -1628,14 +1629,14 @@ void KApplication::invokeHelp( const QString& anchor,
 
    if (startServiceByDesktopName("khelpcenter", url, &error))
    {
-      qWarning("Could not launch help:\n%s\n", error.local8Bit().data());
+      kdWarning() << "Could not launch help:\n" << error << endl;
       return;
    }
 }
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
 {
-   qWarning("invoking HTML help is deprecated! use docbook and invokeHelp!");
+   kdWarning() << "invoking HTML help is deprecated! use docbook and invokeHelp!\n";
 
    QString filename;
 
@@ -1654,7 +1655,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 
    if (startServiceByDesktopName("khelpcenter", url, &error))
    {
-      qWarning("Could not launch help:\n%s\n", error.local8Bit().data());
+      kdWarning() << "Could not launch help:\n" << error << endl;
       return;
    }
 }
@@ -1730,7 +1731,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
 
    if (kdeinitExec(cmd, cmdTokens, &error))
    {
-      qWarning("Could not launch mail client:\n%s\n", error.local8Bit().data());
+      kdWarning() << "Could not launch mail client:\n" << error << endl;
    }
 }
 
@@ -1741,7 +1742,7 @@ void KApplication::invokeBrowser( const QString &url )
 
    if (startServiceByDesktopName("kfmclient", url, &error))
    {
-      qWarning("Could not launch browser:\n%s\n", error.local8Bit().data());
+      kdWarning() << "Could not launch browser:\n" << error << endl;
       return;
    }
 }
