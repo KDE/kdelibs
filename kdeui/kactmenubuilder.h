@@ -25,7 +25,13 @@ public:
 	/**
 	* KActionMenuBuilder Constructor
 	*/
-	KActionMenuBuilder( KUIActions *actions ) { _act = actions; }
+	KActionMenuBuilder( KUIActions *actions, QPopupMenu *menu = 0 ) 
+		: _menu( menu ), _act( actions ), _style( 1 ) {}
+
+	/**
+	* KActionMenuBuilder Destructor
+	*/
+	virtual ~KActionMenuBuilder() {}
 
 	enum ItemStyle { 
 		Text	=	1,
@@ -43,14 +49,14 @@ public:
 	unsigned style() const			{ return _style; }
 
 	virtual int insert( const QString& action, int id = -1 );
+	KActionMenuBuilder& operator<<( const QString& action )
+				{ insert( action ); return *this; }
+
+	int insertSeparator(int id = -1 );
+	int insertPopup( const QString& text, QPopupMenu *menu, int id = -1 );
 	
-
-	/**
-	* KActionMenuBuilder Destructor
-	*/
-	virtual ~KActionMenuBuilder() {}
-
 private:
+	// disallowed operations.
 	KActionMenuBuilder();
 	KActionMenuBuilder& operator=( const KActionMenuBuilder& );
 	KActionMenuBuilder( const KActionMenuBuilder& );
