@@ -2,7 +2,9 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[eu]=Portable Graymap Irudia
 Name[ga]=Íomhá "Portable Graymap"
+Name[pt_BR]=Imagem de Mapas de Escalas de Cinza Portável
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

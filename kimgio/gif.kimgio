@@ -2,7 +2,9 @@
 Type=GIF
 Header=
 Name=GIF Image
+Name[eu]=GIF Irudia
 Name[ga]=Íomhá GIF
+Name[pt_BR]=Imagem GIF
 Read=true
 Write=false
 Suffices=gif,GIF

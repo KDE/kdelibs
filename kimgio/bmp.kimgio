@@ -2,7 +2,9 @@
 Type=BMP
 Header=
 Name=Windows BMP Image
+Name[eu]=Windows BMP Irudia
 Name[ga]=Íomhá Windows BMP
+Name[pt_BR]=Imagem BMP Windows
 Read=true
 Write=true
 Suffices=bmp,BMP

@@ -2,7 +2,9 @@
 Type=G3
 Header=II
 Name=CCITT G3 Fax
+Name[eu]=CCITT G3 Faxa
 Name[ga]=Facs CCITT G3
+Name[pt_BR]=CCITT G3 fax
 Read=true
 Write=false
 Suffices=g3,G3,

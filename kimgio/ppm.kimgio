@@ -2,7 +2,9 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Image
+Name[eu]=Pixmap Irudi Eramangarria
 Name[ga]=Íomhá "Portable Pixmap"
+Name[pt_BR]=Imagem Pixmap Portável
 Read=true
 Write=true
 Suffices=PPM,ppmraw,PPMRAW,pnm,PNM

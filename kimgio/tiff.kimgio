@@ -2,7 +2,9 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF Image
+Name[eu]=TIFF irudia
 Name[ga]=Íomhá TIFF
+Name[pt_BR]=Imagem TIFF
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 

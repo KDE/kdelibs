@@ -2,7 +2,9 @@
 Type=jp2
 Header=^\x01\x01\x01\x0C\x6A\x50
 Name=JPEG 2000 Image
+Name[eu]=JPEG 2000 Irudia
 Name[ga]=Íomhá JPEG 2000
+Name[pt_BR]=Imagem JPEG 2000
 Read=true
 Write=true
 Suffices=jp2,JP2

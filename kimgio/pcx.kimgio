@@ -2,7 +2,9 @@
 Type=PCX
 Header=^\012
 Name=PCX Image
+Name[eu]=PCX Irudia
 Name[ga]=Íomhá PCX
+Name[pt_BR]=Imagem PCX
 Name[sv]=PCX-bild
 Read=true
 Write=true

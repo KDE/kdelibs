@@ -2,7 +2,9 @@
 Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated PostScript Image
+Name[eu]=Encapsulated PostScript Irudia
 Name[ga]=Íomhá "Encapsulated PostScript"
+Name[pt_BR]=Imagens PostScript Encapsuladas
 Name[sv]=Inkapslad Postscript-bild
 Read=true
 Write=true

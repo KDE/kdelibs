@@ -2,7 +2,9 @@
 Type=XBM
 Header=
 Name=X BitMap Image
+Name[eu]=X BitMap Irudia
 Name[ga]=Íomhá "X BitMap"
+Name[pt_BR]=Imagem Bitmap X
 Read=true
 Write=true
 Suffices=xbm,XBM

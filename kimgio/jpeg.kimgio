@@ -2,7 +2,9 @@
 Type=JPEG
 Header=
 Name=JPEG Image
+Name[eu]=JPEG Irudia
 Name[ga]=Íomhá JPEG
+Name[pt_BR]=Imagem JPEG
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

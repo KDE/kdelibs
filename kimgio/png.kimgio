@@ -2,7 +2,9 @@
 Type=PNG
 Header=
 Name=PNG Image
+Name[eu]=PNG Irudia
 Name[ga]=Íomhá PNG
+Name[pt_BR]=Imagem PNG
 Read=true
 Write=true
 Suffices=png,PNG

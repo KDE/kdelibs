@@ -2,7 +2,9 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL Image
+Name[eu]=KRL Irudia
 Name[ga]=Íomhá KRL
+Name[pt_BR]=Imagem KRL
 Name[sv]=KRL-bild
 Read=true
 Write=true

@@ -2,7 +2,9 @@
 Type=PBM
 Header=
 Name=Portable Bitmap Image
+Name[eu]=Bitmap Irudi Eramangarria
 Name[ga]=Íomhá PBM (Portable Bitmap)
+Name[pt_BR]=Imagem Bitmap Portável
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW
