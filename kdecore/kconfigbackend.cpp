@@ -417,7 +417,11 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       struct sigaction act;
       act.sa_handler = mmap_sigbus_handler;
       sigemptyset( &act.sa_mask );
+#ifdef SA_ONESHOT
       act.sa_flags = SA_ONESHOT;
+#else
+      act.sa_flags = SA_RESETHAND;
+#endif      
       sigaction( SIGBUS, &act, &mmap_old_sigact );
 
       if (sigsetjmp (mmap_jmpbuf, 1))
