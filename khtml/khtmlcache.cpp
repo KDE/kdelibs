@@ -27,7 +27,8 @@
 #include "khtmlcache.moc"
 #include "khtml.h"
 
-#undef CACHE_DEBUG
+//#undef CACHE_DEBUG
+#define CACHE_DEBUG
 
 #include <qpixmap.h>
 #include <qmovie.h>
@@ -349,9 +350,17 @@ KHTMLCache::fileLoaded( const char * _url, const char *_file )
 bool
 KHTMLCache::fileLoaded( const char *_url, QBuffer & _buffer, bool eof )
 {
+#ifdef CACHE_DEBUG
+  printf("FileLoaded %s\n",_url);
+#endif
+
     KHTMLCachedImage *im = cache->find(_url);
 
     if(!im) return false;
+
+#ifdef CACHE_DEBUG
+  printf("Processing %s\n",_url);
+#endif
 
     // convert file to pixmap or movie
     return im->data( _buffer, eof );

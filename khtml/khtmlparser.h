@@ -180,6 +180,7 @@ protected:
     void parseTagDLEnd(void);
     void parseTagDT(void);
     void parseTagEM(void);
+    void parseTagEmbed(void);
     void parseTagFieldset(void);
     void parseTagFont(void); 
     void parseTagForm(void); 

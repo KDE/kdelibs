@@ -63,6 +63,7 @@ class JSWindowObject;
 class KHTMLView;
 class KHTMLWidget;
 class KHTMLParser;
+class KHTMLEmbededWidget;
 
 struct HTMLPendingFile
 {
@@ -1137,7 +1138,15 @@ protected:
      */
     QList<KHTMLWidget> frameList;    
 
-    /*
+    /**
+     * List of all embeded widgets.
+     *
+     * @see #addEmbededFrame
+     *
+     */
+    QList<KHTMLEmbededWidget> embededFrameList;
+
+    /**
      * Adds a new frame
      */
     void addFrame( HTMLFrameSet *_frameSet, const char *_name, 
@@ -1145,34 +1154,39 @@ protected:
 		   int _frameborder, int _marginwidth, int _marginheight,
 		   const char *_src);  
 
-    /*
+    /**
+     * Adds a new embeded frame.
+     */
+    void addEmbededFrame( HTMLFrameSet *_frameSet, KHTMLEmbededWidget* _embed );
+  
+    /**
      * @return TRUE if the current document is a framed document.
      */
     bool bIsFrameSet;
 
-    /*
+    /**
      * @return TRUE if the widget is a frame of a frameset.
      */
     bool bIsFrame;
 
-    /*
+    /**
      * Is TRUE if we parsed the complete frame set.
      */
     bool bFramesComplete;
 
-    /*
+    /**
      * If the owner of this widget is a @ref HTMLView then this is a
      * pointert to the owner, otherwise 0L.
      */
     KHTMLView *htmlView;
 
-    /*
+    /**
      * This is a pointer to the selectede frame. This means that the frame
      * gets a black inner border.
      */
     KHTMLView *selectedFrame;
 
-    /*
+    /**
      * Flag that indicates wether the user selected this widget. This is only of
      * interest if the widget is a frame in a frameset. Try Netscape to see
      * what I mean.
@@ -1181,7 +1195,7 @@ protected:
      */
     bool bIsSelected;
 
-    /*
+    /**
      * Holds the amount of pixel for the left border. This variable is used
      * to implement the
      * <tt>&lt;frame marginwidth=... &gt;</tt> tag.
@@ -1191,7 +1205,7 @@ protected:
      */
     int leftBorder;
 
-    /*
+    /**
      * Holds the amount of pixel for the right border. This variable is used
      * to implement the
      * <tt>&lt;frame marginwidth=... &gt;</tt> tag.
@@ -1201,7 +1215,7 @@ protected:
      */
     int rightBorder;
 
-    /*
+    /**
      * Holds the amount of pixel for the top border. This variable is used
      * to implement the
      * <tt>&lt;frame marginheight=... &gt;</tt> tag.
@@ -1211,7 +1225,7 @@ protected:
      */
     int topBorder;
 
-    /*
+    /**
      * Holds the amount of pixel for the bottom border. This variable is used
      * to implement the
      * <tt>&lt;frame marginheight=... &gt;</tt> tag.
@@ -1221,14 +1235,14 @@ protected:
      */
     int bottomBorder;
 
-    /*
+    /**
      * This pointer is per default 0L. An instance of @ref JSEnvironment is
      * created if someone calls @ref #getJSEnvironment. This instance is used
      * to run java script.
      */
     JSEnvironment *jsEnvironment;      
 
-    /*
+    /**
      * Iterator used to find text within the document
      */
     HTMLIterator *textFindIter;

@@ -43,6 +43,7 @@
 #include <strings.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 #include <qfile.h>
 #include <qimage.h>
@@ -1333,7 +1334,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
       return;
     }
 
-    //printf("********* IMAGE %s ******\n",_filename );
+    printf("********* IMAGE %s ******\n",_filename );
     
     htmlWidget->requestImage( this, imageURL.data() );
 }

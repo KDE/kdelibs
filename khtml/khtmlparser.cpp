@@ -46,6 +46,7 @@
 #include "khtml.h"
 #include "khtmlframe.h"
 #include "khtmljscript.h"
+#include "khtmlview.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -167,6 +168,7 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagDL,	&KHTMLParser::parseTagDLEnd,	// ID_DL
 &KHTMLParser::parseTagDT,		0,			// ID_DT
 &KHTMLParser::parseTagEM,	&KHTMLParser::parseTagEnd,	// ID_EM
+&KHTMLParser::parseTagEmbed,            0,                      // ID_EMBED
 &KHTMLParser::parseTagFieldset,		0,			// ID_FIELDSET
 &KHTMLParser::parseTagFont,	&KHTMLParser::parseTagEnd, 	// ID_FONT
 &KHTMLParser::parseTagForm,	&KHTMLParser::parseTagFormEnd,	// ID_FORM
@@ -893,8 +895,8 @@ void KHTMLParser::parseOneToken()
 {
     if ((tagID < 0) || (tagID > ID_MAX))
     {
-printf("Unknown tag!! tagID = %d\n", tagID);
-        return;
+      printf("Unknown tag!! tagID = %d\n", tagID);
+      return;
     }
     tagFunc func = tagJumpTable[tagID];
     if (func)
@@ -1644,6 +1646,63 @@ void KHTMLParser::parseTagFrame(void)
 		    	frameborder, marginwidth, marginheight, src);
 }
 
+void KHTMLParser::parseTagEmbed(void)
+{
+  if ( !frameSet)
+    return; // Frames need a frameset
+
+  QString src;
+  QString name;
+  QString type;
+  int marginwidth = leftBorder;
+  int marginheight = rightBorder;
+  bool noresize = FALSE;
+  // -1 = default ( 5 )
+  int frameborder = -1;
+	
+  const char *token;
+  while ( ( token = ht->nextOption() ) != 0 )
+  {
+    if ( strncasecmp( token, "SRC=", 4 ) == 0 )
+    {
+      src = token + 4;
+    }
+    else if ( strncasecmp( token, "NAME=", 5 ) == 0 )
+    {
+      name = token + 5;
+    }
+    else if ( strncasecmp( token, "TYPE=", 4 ) == 0 )
+    {
+      type = token + 4;
+    }
+    else if ( strncasecmp( token, "MARGINWIDTH=", 12 ) == 0 )
+    {
+      marginwidth = atoi( token + 12 );
+    }
+    else if ( strncasecmp( token, "MARGINHEIGHT=", 13 ) == 0 )
+    {
+      marginheight = atoi( token + 13 );
+    }
+    else if ( strncasecmp( token, "FRAMEBORDER=", 12 ) == 0 )
+    {
+      frameborder = atoi( token + 12 );
+      if ( frameborder < 0 )
+	frameborder = -1;
+    }
+    else if ( strncasecmp( token, "NORESIZE", 8 ) == 0 )
+      noresize = TRUE;
+  }	      
+
+  // Create the widget
+  KHTMLEmbededWidget *embed = HTMLWidget->getView()->newEmbededWidget( frameSet, name,
+								       src, type,
+								       marginwidth,
+								       marginheight, 
+								       frameborder,
+								       !noresize );
+  HTMLWidget->addEmbededFrame( frameSet, embed );
+}
+
 void KHTMLParser::parseTagFrameset(void)
 {
     const char *cols = 0;
@@ -1847,6 +1906,8 @@ void KHTMLParser::parseTagIframe(void)
 
 void KHTMLParser::parseTagImg(void)
 {
+  printf("************** Parsing an image ****************\n" );
+  
     vspace_inserted = FALSE;
 
     // Parse all arguments but delete '<' and '>' and skip 'cell'
@@ -1916,6 +1977,8 @@ void KHTMLParser::parseTagImg(void)
     // if we have a file name do it...
     if ( filename != 0 )
     {
+        printf("**************** IMAGE Parsing URL=%s\n", filename );
+      
         KURL kurl( HTMLWidget->getBaseURL(), filename );
         // Do we need a new FlowBox ?
         if ( !flow )

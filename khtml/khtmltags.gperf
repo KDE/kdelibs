@@ -38,6 +38,7 @@ div, ID_DIV
 dl, ID_DL
 dt, ID_DT
 em, ID_EM
+embed, ID_EMBED
 fieldset, ID_FIELDSET
 font, ID_FONT
 form, ID_FORM

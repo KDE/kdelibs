@@ -51,6 +51,7 @@
 #include "khtmlview.h"
 #include "khtmlsavedpage.h"
 #include "khtmltags.h"
+#include "khtmlembed.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -129,9 +130,9 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     parser = 0;
 
     mapPendingFiles.setAutoDelete( true );
-    framesetList.setAutoDelete( false );
+    framesetList.setAutoDelete( true );
     frameList.setAutoDelete( false ); 
-    // XXX waitingFileList.setAutoDelete( false );
+    embededFrameList.setAutoDelete( false ); 
     formList.setAutoDelete( true );
     mapList.setAutoDelete( true );
 
@@ -271,12 +272,14 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
 
     HTMLObject* o;
     for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
-      if ( o->fileLoaded( _url, p->m_buffer ) )
+      if ( o->fileLoaded( _url, p->m_buffer, true ) )
 	do_update = true;
     
     mapPendingFiles.remove( _url );
   }
-
+  else
+    return;
+  
   if ( do_update )
   {
     calcSize();
@@ -1227,6 +1230,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     bFramesComplete = FALSE;
     framesetList.clear();
     frameList.clear();
+    embededFrameList.clear();
     
     findTextEnd();
 
@@ -1401,20 +1405,29 @@ void KHTMLWidget::stopParser()
 
 void KHTMLWidget::timerEvent( QTimerEvent * )
 {
-    debugM("Timer event\n");
+  /*** DEBUG ***/
+  printf("############### timerEvent ##############\n");
+  /*** END DEBUG ***/
+
     static const char end[] = { ID_BODY + ID_CLOSE_TAG, 0 }; 
 
     if ( !painter )
-	return;
-
+    {
+      printf("############### Dont have a painter ##############\n");
+      return;
+    }
+    
     debugM("Killing timer\n");
     killTimer( timerId );
     timerId = 0;
 
     debugM("Has more tokens?\n");
     if ( !ht->hasMoreTokens() && writing )
-	return;
-
+    {
+      printf("############### waiting for more ##############\n");
+      return;
+    }
+    
     debugM("Storing font info\n");
     const QFont &oldFont = painter->font();
 
@@ -1422,7 +1435,11 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     int lastHeight = docHeight();
 
     parseCount = granularity;
-    debugM("Parsing body height\n");
+
+  /*** DEBUG ***/
+  printf("############### parsing body ##############\n");
+  /*** END DEBUG ***/
+
     if ( parser->parseBody( clue, end, TRUE ) )
 	stopParser();
     else if ( !ht->hasMoreTokens() && !writing )
@@ -1495,6 +1512,10 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	    emit documentDone();
 	}
 
+	/*** DEBUG ***/
+	printf("############### Showing frames ##############\n");
+	/*** END DEBUG ***/
+
 	// Now it is time to tell all frames what they should do
 	KHTMLView *v;
 	KHTMLWidget *w;
@@ -1505,6 +1526,9 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 		v->openURL( v->getCookie() );
 	    v->show();
 	}
+	KHTMLEmbededWidget* e;
+	for( e = embededFrameList.first(); e != 0L; e = embededFrameList.next() )
+	  e->show();
 
 	HTMLFrameSet *s;
 	for ( s = framesetList.first(); s != 0; s = framesetList.next() )
@@ -1516,7 +1540,10 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	bDrawBackground = true;
     }
     else{
-        debugM("No\n");
+      /*** DEBUG ***/
+      printf("############### More timerEvents ##############\n");
+      /*** END DEBUG ***/
+      
 	timerId = startTimer( TIMER_INTERVAL );
     }	
 }
@@ -2580,6 +2607,13 @@ void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, const char *_name,
     // html->show();
     // Add frame to list
     frameList.append( frame->getKHTMLWidget() );  
+}
+
+void KHTMLWidget::addEmbededFrame( HTMLFrameSet *_frameSet, KHTMLEmbededWidget* _embed )
+{
+  _frameSet->append( _embed );
+  
+  embededFrameList.append( _embed );
 }
 
 void KHTMLWidget::addForm( HTMLForm *_form )
