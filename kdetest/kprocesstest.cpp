@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
  // the signal "processExited" will be emitted.
  //
 
- p1.setExecutable("kghostview");
+ p1 << "kghostview";
  QObject::connect(&p1, SIGNAL(processExited(KProcess *)),  &dummy, SLOT(printMessage(KProcess *)));
  
  printf("starting kghostview blocking (close to continue)\n");
@@ -66,8 +66,7 @@ int main(int argc, char *argv[])
  //
 
  printf("Starting kvt for doing a ls (will only run a short time)\n");
- p2.setExecutable("kvt");
- p2 << "-e" << "-ls -l";
+ p2 << "kvt" << "-e" << "-ls -l";
  QObject::connect(&p2, SIGNAL(processExited(KProcess *)),  &dummy, SLOT(printMessage(KProcess *)));
  p2.start();
 
@@ -75,8 +74,7 @@ int main(int argc, char *argv[])
  // Getting the output from a process. "ls" with parameter "-l" is called and it output is captured
  //
 
- p3.setExecutable("ls");
- p3 << "-l";
+ p3 << "ls" << "-l";
  QObject::connect(&p3, SIGNAL(processExited(KProcess *)), 
 		  &dummy, SLOT(printMessage(KProcess *)));
 
@@ -99,7 +97,7 @@ int main(int argc, char *argv[])
  //
  //
 
- p4.setExecutable("sort");
+ p4 << "sort";
  QObject::connect(&p4, SIGNAL(processExited(KProcess *)), 
 		  &dummy, SLOT(printMessage(KProcess *)));
 
