@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes)
+INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(SSL_INCLUDES) $(all_includes)
 
 SUBDIRS = . klauncher kded file http ftp tests
 
@@ -54,8 +54,8 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	progressbase.h defaultprogress.h statusbarprogress.h \
 	kimageio.h kdirnotify.h kurlpixmapprovider.h kprotocolinfo.h
 
-libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
-libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM)
+libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(SSL_LDFLAGS) $(all_libraries)
+libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBSSL) $(LIBFAM) 
 
 libkio_la_SOURCES = \
 	kshred.cpp ktar.cpp \
