@@ -42,9 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include <qstring.h>
 #include <qstrlist.h>
@@ -52,6 +50,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qdict.h>
 
 #include <kurl.h>
+#include <krfcdate.h>
 #include <kconfig.h>
 #include <ksavefile.h>
 #include <kdebug.h>
@@ -188,8 +187,6 @@ int KHttpCookieList::compareItems( void * item1, void * item2)
     return 0;
 }
 
-
-static time_t parseExpire(const QString &expireDate);
 
 // KCookieJar
 ///////////////////////////////////////////////////////////////////////////
@@ -413,155 +410,6 @@ static void stripDomain(const QString &_fqdn, QString &_domain)
        _domain = '.' + _domain;
 }
 
-static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
-
-static time_t parseExpire(const QString &_expireDate)
-{
-     // This parse an expire date in the form:
-     //     Wednesday, 09-Nov-99 23:12:40 GMT
-     // or
-     //     Sat, 01-Jan-2000 08:00:00 GMT
-     //
-     // We always assume GMT, the weekday is ignored
-     //
-     time_t result = 0;
-     char *newPosStr;
-     const char *expireDate = _expireDate.latin1();
-     int day;
-     char monthStr[4];
-     int month;
-     int year;
-     int hour;
-     int minute;
-     int second;
-     struct tm tm_s;
-
-     while(*expireDate && (*expireDate != ' '))
-     	expireDate++;
-
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-     	
-     // ' 09-Nov-99 23:12:40 GMT'
-     day = strtol(expireDate, &newPosStr, 10);
-     expireDate = newPosStr;
-
-     if ((day < 1) || (day > 31))
-     	return result; // Invalid expire date;
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-
-     if (*expireDate++ != '-')
-     	return result;  // Invalid expire date
-
-     for(int i=0; i < 3;i++)
-     {
-         if (!*expireDate || (*expireDate == '-'))
-              return result;  // Invalid expire date
-         monthStr[i] = tolower(*expireDate++);
-     }
-     monthStr[3] = '\0';
-
-     newPosStr = (char*)strstr(haystack, monthStr);
-
-     if (!newPosStr)
-     	return result;  // Invalid expire date
-
-     month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
-
-     if ((month < 0) || (month > 11))
-     	return result;  // Invalid expire date
-
-     while(*expireDate && (*expireDate != '-'))
-     	expireDate++;
-
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-     	
-     // '-99 23:12:40 GMT'
-     if (*expireDate++ != '-')
-     	return result;  // Invalid expire date
-
-     // '99 23:12:40 GMT'
-     year = strtol(expireDate, &newPosStr, 10);
-     expireDate = newPosStr;
-
-     // Y2K: Solve 2 digit years
-     if ((year >= 0) && (year < 50))
-         year += 2000;
-
-     if ((year >= 50) && (year < 100))
-         year += 1900;  // Y2K
-
-     if ((year < 1900) || (year > 2500))
-     	return result; // Invalid expire date
-
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-
-     // ' 23:12:40 GMT'
-     if (*expireDate++ != ' ')
-     	return result;  // Invalid expire date
-
-     hour = strtol(expireDate, &newPosStr, 10);
-     expireDate = newPosStr;
-
-     if ((hour < 0) || (hour > 23))
-     	return result; // Invalid expire date
-
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-          	
-     // ':12:40 GMT'
-     if (*expireDate++ != ':')
-     	return result;  // Invalid expire date
-
-     minute = strtol(expireDate, &newPosStr, 10);
-     expireDate = newPosStr;
-
-     if ((minute < 0) || (minute > 59))
-     	return result; // Invalid expire date
-
-     if (!*expireDate)
-     	return result;  // Invalid expire date
-
-     // ':40 GMT'
-     if (*expireDate++ != ':')
-     	return result;  // Invalid expire date
-
-     second = strtol(expireDate, &newPosStr, 10);
-
-     if ((second < 0) || (second > 59))
-     	return result; // Invalid expire date
-
-     tm_s.tm_sec = second;
-     tm_s.tm_min = minute;
-     tm_s.tm_hour = hour;
-     tm_s.tm_mday = day;
-     tm_s.tm_mon = month;
-     tm_s.tm_year = year-1900;
-     tm_s.tm_isdst = -1;
-
-#ifndef BSD
-     result = mktime( &tm_s)-timezone; // timezone = seconds _west_ of UTC
-#else
-     result = mktime (&tm_s);
-     struct tm *tzone = localtime(&result);
-     result += (tzone->tm_gmtoff); // tm_gmtoff = seconds _east_ of UTC
-#endif
-
-////////////////
-// Debug stuff
-//
-//   printf("time = %ld sec since epoch, ctime=%s\n", result, ctime(&result));
-//
-//   time_t now = time(0);
-//   printf("now = %ld (expire is in %s)\n", now, result > now ? "future" : "past");
-////////////////
-
-     return result;
-}
-
 bool KCookieJar::extractDomain(const QString &_url,
                                QString &_fqdn,
                                QString &_domain,
@@ -674,7 +522,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             else if (Name == "expires")
             {
                 // Parse brain-dead netscape cookie-format
-                lastCookie->mExpireDate = parseExpire(Value);
+                lastCookie->mExpireDate = KRFCDate::parseDate(Value);
             }
             else if (Name == "path")
             {
