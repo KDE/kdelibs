@@ -176,7 +176,7 @@ KLocale::KLocale( const QString& _catalogue )
   : _inited(false), _codec( 0 )
 {
     d = new KLocalePrivate;
-    d->plural_form = 0;
+    d->plural_form = -1; // C
 
     KConfig *config = KGlobal::instance()->config();
     if (config)
@@ -411,9 +411,10 @@ void KLocale::initFormat(KConfig *config)
   if (lang != "C") {
 
   QString pf = translate_priv( I18N_NOOP("_: Dear translator, please do not translate this string in any form, but pick the _right_ value out of NoPlural/TwoForms/French.... If not sure what to do mail thd@kde.org and coolo@kde.org, they will tell you. Better leave that out if unsure, the programs will crash!!\nDefinition of PluralForm - to be set by the translator of kdelibs.po"), 0);
-  if ( pf.isEmpty() )
+  if ( pf.isEmpty() ) {
       kdWarning() << "found no definition of PluralForm" << endl;
-  else if ( pf == "NoPlural" )
+      d->plural_form = -1;
+  } else if ( pf == "NoPlural" )
       d->plural_form = 0;
   else if ( pf == "TwoForms" )
       d->plural_form = 1;
@@ -561,7 +562,7 @@ QString KLocale::translate( const char *singular, const char *plural,
     QString r = translate_priv(newstring, 0);
     delete [] newstring;
 
-    if ( r.isEmpty() || lang == "C") {
+    if ( r.isEmpty() || lang == "C" || d->plural_form == -1) {
         if ( n == 1 )
             return put_n_in( QString::fromUtf8( singular ),  n );
         else
