@@ -81,8 +81,13 @@ void Connection::close()
     notifier = 0;
     delete socket;
     socket = 0;
-//    if (f_out) // causes double close, as KSocket already closed it for us
-//       fclose(f_out);
+
+    // KSocket has already closed the file descriptor, but we need to
+    // close the file-stream as well otherwise we leak memory. 
+    // As a result we close the file descriptor twice, but that should
+    // be harmless
+    if (f_out)
+       fclose(f_out);
     f_out = 0;
     fd_in = -1;
     tasks.clear();
