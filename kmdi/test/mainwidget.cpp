@@ -38,7 +38,7 @@ MainWidget::MainWidget()
    addToolWindow( mle, KDockWidget::DockBottom, m_pMdi, 70);
    addToolWindow( mle2, KDockWidget::DockCenter, mle, 70);
    addToolWindow( mle3, KDockWidget::DockCenter, mle, 70);
-   addToolWindow( mle4, KDockWidget::DockNone, mle, 70);
+   addToolWindow( mle4, KDockWidget::DockCenter, mle, 70);
 
    KMdiToolViewAccessor *tva=createToolWindow();
    tva->setWidgetToWrap(new QMultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
