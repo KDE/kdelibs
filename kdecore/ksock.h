@@ -195,6 +195,9 @@ private:
     KSocket& operator=(const KSocket&);
 
     KSocketPrivate *d;
+    
+    static char *cachedHostname;
+    static ksockaddr_in *cachedServerName;
 };
 
 

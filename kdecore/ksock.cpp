@@ -73,6 +73,9 @@
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
+char *KSocket::cachedHostname = 0;
+ksockaddr_in *KSocket::cachedServerName = 0;
+
 // I moved this into here so we could accurately detect the domain, for
 // posterity.  Really.
 KSocket::KSocket( int _sock)
@@ -179,27 +182,7 @@ void KSocket::slotWrite( int )
  */
 bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 {
-  if (
-#ifdef INET6
-     ( domain != PF_INET6 ) &&
-#endif
-     ( domain != PF_INET ) )
-    return false;
-  
-  struct hostent *hostinfo;
-  memset(&server_name, 0, sizeof(server_name));
-
-  hostinfo = gethostbyname( hostname.ascii() );
-  if ( !hostinfo ) {
-	  warning("Unknown host %s.\n", hostname.ascii());
-	  return false;	
-    }
-
-  get_sin_family(server_name) = domain;
-  get_sin_port(server_name) = htons(port);
-  memcpy(&get_sin_addr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
-
-  return true;
+  return initSockaddr(&server_name, hostname.ascii(), port, domain);
 }
 
 /*
@@ -324,18 +307,22 @@ unsigned long KSocket::ipv4_addr()
 
 bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
 {
-  struct hostent *hostinfo;
+  if (
 #ifdef INET6
-  if (domain == PF_INET6) {
-    server_name->sin6_family = domain;
-    server_name->sin6_port = htons( port );
-  } else
+     ( domain != PF_INET6 ) &&
 #endif
+     ( domain != PF_INET ) )
+    return false;  
+
+  if (cachedHostname && (strcmp(hostname, cachedHostname) == 0))
   {
-    get_sin_pfamily(server_name) = domain;
-    get_sin_pport(server_name) = htons( port );
+     memcpy( server_name, cachedServerName, sizeof(ksockaddr_in));
+     return true;
   }
 
+  memset(server_name, 0, sizeof(ksockaddr_in));
+
+  struct hostent *hostinfo;
   hostinfo = gethostbyname( hostname );
 
   if ( hostinfo == 0L )
@@ -344,13 +331,24 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 #ifdef INET6
   if (domain == PF_INET6) {
     server_name->sin6_family = hostinfo->h_addrtype;
+    server_name->sin6_port = htons( port );
     memcpy(&server_name->sin6_addr, hostinfo->h_addr_list[0], hostinfo->h_length);
   } else
 #endif
   {
     get_sin_pfamily(server_name) = hostinfo->h_addrtype;
+    get_sin_pport(server_name) = htons( port );
     memcpy(&get_sin_paddr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
   }
+
+  // update our primitive cache 
+  delete [] cachedHostname;
+  cachedHostname = new char[ strlen(hostname)+1 ];
+  strcpy(cachedHostname, hostname);
+
+  if (!cachedServerName)
+     cachedServerName = new ksockaddr_in;
+  memcpy( cachedServerName, server_name, sizeof(ksockaddr_in));
 
   return true;
 }
