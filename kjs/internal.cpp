@@ -699,6 +699,9 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId
   sid++;
   if (sourceId)
     *sourceId = sid;
+  // Enable this (and the #define YYDEBUG in grammar.y) to debug a parse error
+  //extern int kjsyydebug;
+  //kjsyydebug=1;
   int parseError = kjsyyparse();
   ProgramNode *prog = progNode;
   progNode = 0;

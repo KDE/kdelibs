@@ -391,7 +391,7 @@ Statement:
 
 Block:
     '{' '}'                        { $$ = new BlockNode(0L); DBG($$, @2, @2); }
-  | '{' StatementList '}'          { $$ = new BlockNode($2); DBG($$, @3, @3); }
+  | '{' SourceElements '}'          { $$ = new BlockNode($2); DBG($$, @3, @3); }
 ;
 
 StatementList:

@@ -638,14 +638,14 @@ namespace KJS {
 
   class BlockNode : public StatementNode {
   public:
-    BlockNode(StatListNode *s) : statlist(s) {}
+    BlockNode(SourceElementsNode *s) : source(s) {}
     virtual void ref();
     virtual bool deref();
     virtual ~BlockNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
   private:
-    StatListNode *statlist;
+    SourceElementsNode *source;
   };
 
   class EmptyStatementNode : public StatementNode {

@@ -1852,30 +1852,32 @@ BlockNode::~BlockNode()
 void BlockNode::ref()
 {
   Node::ref();
-  if ( statlist )
-    statlist->ref();
+  if ( source )
+    source->ref();
 }
 
 bool BlockNode::deref()
 {
-  if ( statlist && statlist->deref() )
-    delete statlist;
+  if ( source && source->deref() )
+    delete source;
   return Node::deref();
 }
 
 // ECMA 12.1
 Completion BlockNode::execute(ExecState *exec)
 {
-  if (!statlist)
+  if (!source)
     return Completion(Normal);
 
-  return statlist->execute(exec);
+  source->processFuncDecl(exec);
+
+  return source->execute(exec);
 }
 
 void BlockNode::processVarDecls(ExecState *exec)
 {
-  if (statlist)
-    statlist->processVarDecls(exec);
+  if (source)
+    source->processVarDecls(exec);
 }
 
 // ------------------------------ EmptyStatementNode ---------------------------
@@ -2180,7 +2182,7 @@ void ForNode::processVarDecls(ExecState *exec)
 // ------------------------------ ForInNode ------------------------------------
 
 ForInNode::ForInNode(Node *l, Node *e, StatementNode *s)
-  : init(0L), lexpr(l), expr(e), statement(s), varDecl(0L)
+  : init(0L), lexpr(l), expr(e), varDecl(0L), statement(s)
 {
 }
 
