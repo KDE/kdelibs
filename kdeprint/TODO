@@ -5,6 +5,10 @@ BUGS
 	FontPath /usr/...
 	FontPath /opt/...
 
+- Completion of LPR plugin:
+	print options
+	don't use the "lpr" options from driver as other options
+
 
 WISHES
 ------
