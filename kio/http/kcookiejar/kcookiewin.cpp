@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <klocale.h>
 #include <kapp.h>
+#include <kwin.h>
 
 #include <qwidget.h>
 #include <qlayout.h>
@@ -47,6 +48,7 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
                  i18n("&Accept"), i18n("&Reject")),
     cookie(_cookie)
 {
+    KWin::setState( winId(), NET::StaysOnTop );
     QWidget *contents = new QWidget(this);
 
     QGridLayout *layout = new QGridLayout(contents, 5, 3, 
