@@ -206,8 +206,10 @@ static void readImage8( QDataStream &s )
 
     readLine( s, buf );
 
+    uchar *p = img.scanLine( y );
+
     for ( int x=0; x<header.BytesPerLine; ++x )
-      *( img.scanLine( y )+x ) = buf[ x ];
+      *p++ = buf[ x ];
   }
 
   Q_UINT8 flag;
@@ -246,11 +248,10 @@ static void readImage24( QDataStream &s )
     readLine( s, g_buf );
     readLine( s, b_buf );
 
+    uint *p = ( uint * )img.scanLine( y );
+
     for ( int x=0; x<header.BytesPerLine; ++x )
-    {
-      uint *p = ( uint * )img.scanLine( y )+x;
-      *p = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
-    }
+      *p++ = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
   }
 }
 
@@ -362,6 +363,7 @@ static void writeImage1( QDataStream &s )
 
   header.Bpp = 1;
   header.NPlanes = 1;
+  header.BytesPerLine = img.bytesPerLine();
 
   header.ColorMap.setColor( 0, qRgb( 0, 0, 0 ) );
   header.ColorMap.setColor( 1, qRgb( 255, 255, 255 ) );
@@ -385,19 +387,20 @@ void writeImage8( QDataStream &s )
 {
   header.Bpp = 8;
   header.NPlanes = 1;
+  header.BytesPerLine = img.bytesPerLine();
 
   s << header;
 
-  QByteArray buf(  header.BytesPerLine );
+  QByteArray buf( header.BytesPerLine );
 
-  for (  int y=0; y<h; ++y )
+  for ( int y=0; y<h; ++y )
   {
     Q_UINT8 *p = img.scanLine(  y );
 
-    for (  int i=0; i<header.BytesPerLine; ++i )
-      buf[  i ] = p[  i ];
+    for ( int i=0; i<header.BytesPerLine; ++i )
+      buf[ i ] = p[  i ];
 
-    writeLine(  s, buf );
+    writeLine( s, buf );
   }
 
   // Write palette flag
@@ -406,8 +409,36 @@ void writeImage8( QDataStream &s )
 
   // Write palette
   for ( int i=0; i<256; ++i )
-  {
     s << RGB( img.color( i ) );
+}
+
+void writeImage24( QDataStream &s )
+{
+  header.Bpp = 8;
+  header.NPlanes = 3;
+  header.BytesPerLine = w;
+
+  s << header;
+
+  QByteArray r_buf( w );
+  QByteArray g_buf( w );
+  QByteArray b_buf( w );
+
+  for ( int y=0; y<h; ++y )
+  {
+    uint *p = ( uint * )img.scanLine( y );
+
+    for ( int x=0; x<w; ++x )
+    {
+      QRgb rgb = *p++;
+      r_buf[ x ] = qRed( rgb );
+      g_buf[ x ] = qGreen( rgb );
+      b_buf[ x ] = qBlue( rgb );
+    }
+
+    writeLine( s, r_buf );
+    writeLine( s, g_buf );
+    writeLine( s, b_buf );
   }
 }
 
@@ -435,7 +466,6 @@ void kimgio_pcx_write( QImageIO *io )
   header.HDpi = 300;
   header.YDpi = 300;
   header.Reserved = 0;
-  header.BytesPerLine = img.bytesPerLine();
   header.PaletteInfo =1;
 
   if ( img.depth() == 1 )
@@ -445,6 +475,10 @@ void kimgio_pcx_write( QImageIO *io )
   else if ( img.depth() == 8 )
   {
     writeImage8( s );
+  }
+  else if ( img.depth() == 32 )
+  {
+    writeImage24( s );
   }
 
   io->setStatus( 0 );
