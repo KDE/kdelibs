@@ -160,7 +160,7 @@ PlayObject SoundServerV2_impl::createPlayObjectForURL(const std::string& url, co
 
 PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, const std::string& mimetype, bool createBUS)
 {
-	arts_debug("search playobject, mimetype = %s", mimetype.c_str());
+	arts_debug("search streamplayobject, mimetype = %s", mimetype.c_str());
 
 	TraderQuery query;
 	query.supports("Interface","Arts::StreamPlayObject");
