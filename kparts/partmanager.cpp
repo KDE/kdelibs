@@ -73,7 +73,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 {
 
   if ( ev->type() != QEvent::MouseButtonPress &&
-       ev->type() != QEvent::MouseButtonDblClick *&&
+       ev->type() != QEvent::MouseButtonDblClick &&
        ev->type() != QEvent::FocusIn )
     return false;
 
