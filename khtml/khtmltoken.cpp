@@ -443,6 +443,8 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	    //*dest++ = *src++;
 	    if ( pre )
 	        prePos += searchCount;	    
+	    searchCount = 0;
+	    return;
 	}
 	else if (charEntity)
 	{
@@ -458,6 +460,15 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	        entityValue = *((unsigned char *)res.data());
 	    }
 
+	    if (tag && 
+	        ( (*src != ';') || (bytesConverted != searchCount) )
+	       )
+	    {
+	        // Don't translate entities in tags with a missing ';'
+	        entityValue = 0;
+	        res = 0;
+	    }
+	    
 	    if (
 	        (
 	         (entityValue < 128) &&
@@ -474,11 +485,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 		if (*src == ';')
 		    src++;
 	    }	    	
-	    else if ((!entityValue && !res) ||
-	             (tag && ( (*src != ';') || 
-	                       (bytesConverted != searchCount) 
-	                     ) 
-	             ))
+	    else if (!entityValue && !res)
 	    {
 	        // ignore the sequence, add it to the buffer as plaintext
 	        *dest++ = '&';
