@@ -35,9 +35,12 @@ public:
 	KMPrinter* createPrinter(PrintcapEntry*);
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
+	DrMain* loadDbDriver(const QString&);
+	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
 
 private:
-	MaticBlock* loadMaticDriver(PrintcapEntry*);
+	MaticBlock* loadMaticData(const QString&);
+	DrMain* loadMaticDriver(const QString&);
 	KURL parsePostpipe(const QString&);
 };
 

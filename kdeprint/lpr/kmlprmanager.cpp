@@ -191,3 +191,13 @@ bool KMLprManager::disablePrinter(KMPrinter *prt)
 	}
 	return true;
 }
+
+bool KMLprManager::savePrinterDriver(KMPrinter *prt, DrMain *driver)
+{
+	LprHandler	*handler = findHandler(prt);
+	PrintcapEntry	*entry = findEntry(prt);
+	if (handler && entry)
+		return handler->savePrinterDriver(prt, entry, driver);
+	setErrorMsg(i18n("Internal error."));
+	return false;
+}

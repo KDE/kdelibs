@@ -20,9 +20,13 @@
 #ifndef MATICHELPER_H
 #define MATICHELPER_H
 
+#include <qstring.h>
+
 class DrMain;
 class MaticBlock;
+class PrintcapEntry;
 
 DrMain* maticToDriver(MaticBlock*);
+QString maticFile(PrintcapEntry*);
 
 #endif

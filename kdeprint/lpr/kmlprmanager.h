@@ -40,7 +40,7 @@ public:
 	bool completePrinterShort(KMPrinter*);
 	bool enablePrinter(KMPrinter*);
 	bool disablePrinter(KMPrinter*);
-
+	bool savePrinterDriver(KMPrinter*, DrMain*);
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 
 protected:

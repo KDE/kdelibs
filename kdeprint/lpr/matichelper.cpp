@@ -18,6 +18,7 @@
  **/
 
 #include "matichelper.h"
+#include "printcapentry.h"
 #include "matic.h"
 #include "driver.h"
 
@@ -40,6 +41,8 @@ DrMain* maticToDriver(MaticBlock *blk)
 	driver->set("model", varblk->arg("model"));
 	QString	desc = QString::fromLatin1("%1 %2 (%3)").arg(driver->get("manufacturer")).arg(driver->get("model")).arg(varblk->arg("driver"));
 	driver->set("text", desc);
+	if (!(desc = blk->arg("$postpipe")).isEmpty())
+		driver->set("postpipe", desc);
 	if (argblk)
 	{
 		DrGroup	*adjgrp(0), *gengrp(0), *othergrp(0);
@@ -134,4 +137,21 @@ void loadPageSizes(DrMain *driver, MaticBlock *blk)
 			driver->addPageSize(ps);
 		}
 	}
+}
+
+
+QString maticFile(PrintcapEntry *entry)
+{
+	QString	s(entry->field("af"));
+	if (s.isEmpty())
+	{
+		s = entry->field("filter_options");
+		if (!s.isEmpty())
+		{
+			int	p = s.findRev(' ');
+			if (p != -1)
+				s = s.right(s.length()-p-1);
+		}
+	}
+	return s;
 }

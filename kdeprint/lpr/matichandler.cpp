@@ -22,13 +22,20 @@
 #include "kmprinter.h"
 #include "matic.h"
 #include "matichelper.h"
+#include "driver.h"
+#include "kpipeprocess.h"
+#include "kmmanager.h"
 
 #include <klocale.h>
-#include <kstringhandler.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+
+#include <stdlib.h>
+#include <sys/wait.h>
 
 MaticHandler::MaticHandler(KMManager *mgr)
 : LprHandler("foomatic", mgr)
@@ -78,7 +85,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 
 	if (!shortmode)
 	{
-		MaticBlock	*blk = loadMaticDriver(entry);
+		MaticBlock	*blk = loadMaticData(maticFile(entry));
 		if (blk)
 		{
 			QString	postpipe = blk->arg("$postpipe");
@@ -106,23 +113,12 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 	return true;
 }
 
-MaticBlock* MaticHandler::loadMaticDriver(PrintcapEntry *entry)
+MaticBlock* MaticHandler::loadMaticData(const QString& fname)
 {
-	QString	s(entry->field("af"));
-	if (s.isEmpty())
-	{
-		s = entry->field("filter_options");
-		if (!s.isEmpty())
-		{
-			int	p = s.findRev(' ');
-			if (p != -1)
-				s = s.right(s.length()-p-1);
-		}
-	}
-	QFile	f(s);
+	QFile	f(fname);
 	if (!f.exists() || !f.open(IO_ReadOnly))
 	{
-		kdDebug() << "unable to load matic data: " << s << endl;
+		kdDebug() << "unable to load matic data: " << fname << endl;
 		return NULL;
 	}
 
@@ -130,8 +126,21 @@ MaticBlock* MaticHandler::loadMaticDriver(PrintcapEntry *entry)
 	f.readBlock(buffer.data(), f.size());
 	f.close();
 
-	MaticBlock	*blk = loadMaticData(buffer.data());
+	MaticBlock	*blk = ::loadMaticData(buffer.data());
 	return blk;
+}
+
+DrMain* MaticHandler::loadMaticDriver(const QString& fname)
+{
+	MaticBlock	*blk = loadMaticData(fname);
+	if (blk)
+	{
+		DrMain	*driver = maticToDriver(blk);
+		delete blk;
+		return driver;
+	}
+	else
+		return NULL;
 }
 
 KURL MaticHandler::parsePostpipe(const QString& s)
@@ -211,8 +220,105 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 
 DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
 {
-	MaticBlock	*blk = loadMaticDriver(entry);
-	if (blk)
-		return maticToDriver(blk);
-	return NULL;
+	QString	filename = maticFile(entry);
+	DrMain	*driver = loadMaticDriver(filename);
+	if (driver)
+	{
+		driver->set("template", filename);
+		return driver;
+	}
+	else
+		return NULL;
+}
+
+DrMain* MaticHandler::loadDbDriver(const QString& path)
+{
+	QStringList	comps = QStringList::split('/', path, false);
+	if (comps.count() < 3 || comps[0] != "foomatic")
+		return NULL;
+
+	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
+	if (exe.isEmpty())
+	{
+		manager()->setErrorMsg(i18n("Unable to find the executable <b>foomatic-datafile</b> "
+		                            "in your PATH. Check that Foomatic is correctly installed."));
+		return NULL;
+	}
+
+	KPipeProcess	in;
+	QFile		out(tmpFile);
+	if (in.open(exe + " -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	{
+		QTextStream	tin(&in), tout(&out);
+		QString	line;
+		while (!tin.atEnd())
+		{
+			line = tin.readLine();
+			tout << line << endl;
+		}
+		in.close();
+		out.close();
+
+		DrMain	*driver = loadMaticDriver(tmpFile);
+		if (driver)
+		{
+			driver->set("template", tmpFile);
+			driver->set("temporary", tmpFile);
+			return driver;
+		}
+		else
+			return NULL;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver)
+{
+	QFile	tmpFile(locateLocal("tmp", "foomatic_" + kapp->randomString(8)));
+	QFile	inFile(driver->get("template"));
+	QString	outFile = maticFile(entry);
+
+	if (inFile.open(IO_ReadOnly) && tmpFile.open(IO_WriteOnly))
+	{
+		QTextStream	tin(&inFile), tout(&tmpFile);
+		QString	line, optname;
+		int	p(-1), q(-1);
+		while (!tin.atEnd())
+		{
+			line = tin.readLine();
+			if ((p = line.find("'name'")) != -1)
+			{
+				p = line.find('\'', p+6)+1;
+				q = line.find('\'', p);
+				optname = line.mid(p, q-p);
+			}
+			else if ((p = line.find("'default'")) != -1)
+			{
+				DrBase	*opt = driver->findOption(optname);
+				if (opt)
+				{
+					tout << line.left(p+9) << " => '" << opt->valueText() << "'," << endl;
+					continue;
+				}
+			}
+			tout << line << endl;
+		}
+		inFile.close();
+		tmpFile.close();
+
+		QString	cmd = "mv " + tmpFile.name() + " " + outFile;
+		int	status = ::system(QFile::encodeName(cmd).data());
+		QFile::remove(tmpFile.name());
+		return (status != -1 && WEXITSTATUS(status) == 0);
+	}
+	else
+	{
+		QFile::remove(tmpFile.name());
+		return false;
+	}
 }
