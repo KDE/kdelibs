@@ -101,7 +101,9 @@ PartManager::~PartManager()
                 this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
 
   for ( QPtrListIterator<Part> it( d->m_parts ); it.current(); ++it )
+  {
       it.current()->setManager( 0 );
+  }
 
   // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
@@ -170,7 +172,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   {
       mev = static_cast<QMouseEvent *>( ev );
 #ifdef DEBUG_PARTMANAGER
-      kdDebug() << "PartManager::eventFilter button: " << mev->button() << " " << "d->m_activationButtonMask=" << d->m_activationButtonMask << endl;
+      kdDebug(1000) << "PartManager::eventFilter button: " << mev->button() << " " << "d->m_activationButtonMask=" << d->m_activationButtonMask << endl;
 #endif
       if ( ( mev->button() & d->m_activationButtonMask ) == 0 )
         return false; // ignore this button
@@ -299,8 +301,13 @@ Part * PartManager::findPartFromWidget( QWidget * widget )
 
 void PartManager::addPart( Part *part, bool setActive )
 {
-    if ( d->m_parts.findRef( part ) != -1 ) // don't add parts more than once :)
-      return;
+  if ( d->m_parts.findRef( part ) != -1 ) // don't add parts more than once :)
+  {
+#ifdef DEBUG_PARTMANAGER
+    kdWarning(1000) << k_funcinfo << part << " already added" << kdBacktrace(5) << endl;
+#endif
+    return;
+  }
 
   d->m_parts.append( part );
 
@@ -338,7 +345,10 @@ void PartManager::removePart( Part *part )
 
   //Warning. The part could be already deleted
   //kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
-  d->m_parts.removeRef( part );
+  int nb = d->m_parts.count();
+  bool ok = d->m_parts.removeRef( part );
+  Q_ASSERT( ok );
+  Q_ASSERT( d->m_parts.count() == nb-1 );
   part->setManager(0);
 
   emit partRemoved( part );
@@ -388,8 +398,10 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     }
   }
 
-  //kdDebug() << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
-  //          << " d->m_activeWidget=" << d->m_activeWidget << "<->widget=" << widget << endl;
+#ifdef DEBUG_PARTMANAGER
+  kdDebug(1000) << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
+                << " d->m_activeWidget=" << d->m_activeWidget << "<->widget=" << widget << endl;
+#endif
 
   // don't activate twice
   if ( d->m_activePart && part && d->m_activePart == part &&
