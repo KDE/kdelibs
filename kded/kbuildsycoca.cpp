@@ -73,11 +73,20 @@ static QString sycocaPath()
   QString path;
   QCString ksycoca_env = getenv("KDESYCOCA");
   if (ksycoca_env.isEmpty())
-     path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
+     path = KGlobal::dirs()->saveLocation("cache")+"ksycoca";
   else
      path = QFile::decodeName(ksycoca_env);
 
   return path;     
+}
+
+static QString oldSycocaPath()
+{
+  QCString ksycoca_env = getenv("KDESYCOCA");
+  if (ksycoca_env.isEmpty())
+     return KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
+
+  return QString::null;
 }
 
 KBuildSycoca::KBuildSycoca()
@@ -341,6 +350,20 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   QDataStream str( &ksycocastamp );
   str << newTimestamp;
   str << existingResourceDirs();
+
+  // Recreate compatibility symlink
+  QString oldPath = oldSycocaPath();
+  if (!oldPath.isEmpty())
+  {
+     KTempFile tmp;
+     if (tmp.status() == 0)
+     {
+        QString tmpFile = tmp.name();
+        tmp.unlink();
+        symlink(QFile::encodeName(path), QFile::encodeName(tmpFile));
+        rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
+     }
+  }
 }
 
 void KBuildSycoca::save()
@@ -568,7 +591,7 @@ int main(int argc, char **argv)
    Q_UINT32 filestamp = 0;
    if( checkstamps && incremental )
        {
-       QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycocastamp";
+       QString path = KGlobal::dirs()->saveLocation("cache")+"ksycocastamp";
        QFile ksycocastamp(path);
        if( ksycocastamp.open( IO_ReadOnly ))
            {
