@@ -56,6 +56,9 @@ Number::Number(unsigned int u)
 Number::Number(double d)
   : KJSO(new NumberImp(d)) { }
 
+Number::Number(long int l)
+  : KJSO(new NumberImp(static_cast<double>(l))) { }
+
 Number::Number(long unsigned int l)
   : KJSO(new NumberImp(static_cast<double>(l))) { }
 

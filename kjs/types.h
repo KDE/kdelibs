@@ -67,6 +67,7 @@ namespace KJS {
     Number(int i);
     Number(unsigned int u);
     Number(double d = 0.0);
+    Number(long int l);
     Number(long unsigned int l);
     virtual ~Number();
     double value() const;
