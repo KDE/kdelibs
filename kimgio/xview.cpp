@@ -9,6 +9,8 @@
 #include <string.h>
 #include <qimage.h>
 
+#include <kdelibs_export.h>
+
 #include "xview.h"
 
 #define BUFSIZE 1024

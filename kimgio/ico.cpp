@@ -19,6 +19,8 @@
 #include <qmemarray.h>
 #include <qpaintdevicemetrics.h>
 
+#include <kdelibs_export.h>
+
 #include "ico.h"
 
 namespace
