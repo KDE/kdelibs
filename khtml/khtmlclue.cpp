@@ -1589,10 +1589,11 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	    // obj->setMaxWidth( remainingWidth );
             // obj->calcSize( this);
 	    obj->setXPos( w );
-	    if ( obj->getAscent() > a )
+	    if ( (a == 0) && (d == 0))
+	    {
 		a = obj->getAscent();
-	    if ( obj->getDescent() > d )
 		d = obj->getDescent();
+	    }
 	    newLine = true;
 	    HTMLVSpace *vs = (HTMLVSpace *)obj;
 	    clear = vs->clear();

@@ -33,44 +33,24 @@
 #include <strings.h>
 #include <stdlib.h>
 
-HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
+HTMLFrameSet::HTMLFrameSet( QWidget *_parent, 
+			    const char *_cols, const char *_rows,
+			    int _frameBorder, bool _bAllowResize)
     : QWidget( _parent )
 {
     lastPanner = 0L;
     
-    frameBorder = 1;
-    bAllowResize = TRUE;
+    frameBorder = _frameBorder;
+    bAllowResize = _bAllowResize;
+    cols = _cols;
+    rows = _rows;
     
     widgetList.setAutoDelete( TRUE );
     
     size = 0L;
     cFrames = 0;
     
-    QString s = _src + 9;
-    StringTokenizer st;
-    st.tokenize( s, " >" );
-    while ( st.hasMoreTokens() )
-    {
-	const char* token = st.nextToken();
-	if ( strncasecmp( token, "COLS=", 5 ) == 0 )
-	{
-	    cols = token + 5;
-	}
-	else if ( strncasecmp( token, "ROWS=", 5 ) == 0 )
-	{
-	    rows = token + 5;
-	}
-	else if ( strncasecmp( token, "FRAMEBORDER=", 12 ) == 0 )
-	{
-	    frameBorder = atoi( token + 12 );
-	}
-	else if ( strncasecmp( token, "NORESIZE", 8 ) == 0 )
-	{
-            bAllowResize = FALSE;
-	}
-    }
-
-    if ( !cols.isNull() )
+    if ( !cols.isEmpty() )
 	orientation = HTMLFramePanner::VERTICAL;
     else
 	orientation = HTMLFramePanner::HORIZONTAL;
@@ -78,9 +58,9 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
     // Calculate amount of frames
     elements = 1;
     char *p = "";
-    if ( !cols.isNull() )
+    if ( !cols.isEmpty() )
 	p = cols.data();
-    else if ( !rows.isNull() )
+    else if ( !rows.isEmpty() )
 	p = rows.data();
     while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; elements++; }
  

@@ -77,7 +77,9 @@ class HTMLFrameSet : public QWidget
     // FIXME Implement the missing functions (Lars)
     friend class KHTMLWidget;
 public:
-    HTMLFrameSet( QWidget *_parent, const char *_src );
+    HTMLFrameSet( QWidget *_parent,
+                  const char *_cols, const char *_rows,
+                  int _frameBorder, bool _bAllowResize);
     ~HTMLFrameSet();
     
     void append( QWidget *_w );

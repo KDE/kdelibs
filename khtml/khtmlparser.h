@@ -83,6 +83,38 @@ class HTMLFrameSet;
 ///////////////////
 
 class KHTMLParser;
+class HTMLStackElem;
+
+typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
+
+class HTMLStackElem
+{
+public:
+	HTMLStackElem(		int _id, 
+	 					int _level, 
+	 				   	blockFunc _exitFunc, 
+	 				   	int _miscData1,
+	 				   	int _miscData2, 
+	 				   	HTMLStackElem * _next
+	 				  ) 
+	 				  :	id(_id), 
+	 				   	level(_level),
+	 				   	exitFunc(_exitFunc), 
+	 				   	miscData1(_miscData1), 
+	 				   	miscData2(_miscData2), 
+	 				   	next(_next) 
+                 { }
+
+    int       id;
+    int       level;
+   	 
+    blockFunc exitFunc;
+   
+    int       miscData1;
+    int       miscData2;
+
+	HTMLStackElem *next;
+};
 
 // Default borders between widgets frame and displayed text
 #define LEFT_BORDER 10
@@ -380,38 +412,6 @@ protected:
      */
     QStack<QColor> colorStack;
 
-	class HTMLStackElem;
-
-    typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
-
-	class HTMLStackElem
-	{
-	 public:
-		HTMLStackElem(		int _id, 
-		 					int _level, 
-		 				   	blockFunc _exitFunc, 
-		 				   	int _miscData1,
-		 				   	int _miscData2, 
-		 				   	HTMLStackElem * _next
-		 				  ) 
-		 				  :	id(_id), 
-		 				   	level(_level),
-		 				   	exitFunc(_exitFunc), 
-		 				   	miscData1(_miscData1), 
-		 				   	miscData2(_miscData2), 
-		 				   	next(_next) 
-	                 { }
-
-   	    int       id;
-	    int       level;
-   	 
-	    blockFunc exitFunc;
-    
-   	    int       miscData1;
-   	    int       miscData2;
-
-		HTMLStackElem *next;
-	 };
 
 	 HTMLStackElem *blockStack; 
 

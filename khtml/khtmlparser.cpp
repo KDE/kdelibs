@@ -1347,20 +1347,7 @@ void KHTMLParser::parseTagBr(void)
     if (!flow)
         newFlow();
 
-    HTMLObject *last = flow->lastChild(); 
-    if (!last || last->isNewline())
-    {
-        // Start of line, add vertical space based on current font.
-	flow->append( new HTMLVSpace( 
-			currentFont()->pointSize(),
-			clear ));
-    }
-    else
-    {
-	// Terminate current line
-	flow->append( new HTMLVSpace(0, clear));
-    }
-
+    flow->append( new HTMLVSpace( currentFont()->pointSize(), clear ));
     vspace_inserted = false;
 }
 
@@ -1734,29 +1721,49 @@ void KHTMLParser::parseTagFrame(void)
 
 void KHTMLParser::parseTagFrameset(void)
 {
+    const char *cols = 0;
+    const char *rows = 0;
+    int frameBorder = 1;
+    bool bAllowResize = true;
+
     // We need a view to do frames
     if ( !HTMLWidget->getView())
     	return;
 
-// WABA temporarily unsupported, interface should be fixed
-return;
+    const char *token;
+    while( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "cols=", 5 ) == 0 )
+	{
+	    cols = token + 5;
+	}
+	else if ( strncasecmp( token, "rows=", 5 ) == 0 )
+	{
+	    rows = token + 5;
+	}
+	else if ( strncasecmp( token, "frameborder=", 12 ) == 0 )
+	{
+	    frameBorder = atoi( token + 12 );
+	}
+	else if ( strncasecmp( token, "noresize", 8 ) == 0 )
+	{
+            bAllowResize = false;
+	}
+    }
+
 
     HTMLFrameSet *oldFrameSet = frameSet;
     if ( !oldFrameSet )
     {
        // This is the toplevel frameset
-#if 0
-// WABA temporarily unsupported, interface should be fixed
-       frameSet = new HTMLFrameSet( HTMLWidget, str );
-#endif
+       frameSet = new HTMLFrameSet( HTMLWidget, cols, rows, 
+       				    frameBorder, bAllowResize );
     }
     else
     { 
        // This is a nested frameset
-#if 0
-// WABA temporarily unsupported, interface should be fixed
-       frameSet = new HTMLFrameSet( oldFrameSet, str );
-#endif
+       frameSet = new HTMLFrameSet( oldFrameSet, cols, rows,
+       				    frameBorder, bAllowResize );
        oldFrameSet->append(frameSet);
     }
     HTMLWidget->addFrameSet( frameSet);
@@ -1869,11 +1876,14 @@ void KHTMLParser::parseTagHR(void)
 	else if ( strncasecmp( token, "width=", 6 ) == 0 )
 	{
             if ( strchr( token+6, '%' ) )
+            {
+                length = UNDEFINED;
 		percent = atoi( token+6 );
+	    }
 	    else
 	    {
 		length = atoi( token+6 );
-		percent = 0; // fixed width
+		percent = UNDEFINED; // fixed width
 	    }
 	}
 	else if ( strncasecmp( token, "noshade", 6 ) == 0 )
@@ -1882,11 +1892,15 @@ void KHTMLParser::parseTagHR(void)
 	}
     }
 
+    divAlign = align;
     newFlow();
 
     flow->append( new HTMLRule( length, percent, size, shade ) );
+printf("HR: length = %d, percent = %d, size = %d, shade = %d\n",
+	length, percent, size, shade);
 
     flow = 0;
+    divAlign = oldAlign;
 
     vspace_inserted = false;
 }

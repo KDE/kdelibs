@@ -1136,8 +1136,8 @@ HTMLRule::HTMLRule( int _length, int _percent, int _size, bool _shade )
 	: HTMLObject()
 {
     // Width is set in setMaxWidth()
-    if ( _size < 1 )
-	_size = 1;
+    if ( _size < 2 )
+	_size = 2;
     ascent = 6 + _size;
     descent = 6;
     length = _length;
@@ -1206,16 +1206,18 @@ bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 {
-    QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
-	    black, white );
+    QColorGroup colorGrp( black, black, lightGray, black, gray, black, black );
 
-    int xp = x + _tx, yp = y + _ty;
+    int size = ascent - 6;
+    int xp = x + _tx;
+    int yp = y + _ty;
+    int lw = size/2;
 
     if ( shade )
-	qDrawShadeLine( _painter, xp, yp, xp + width, yp,
-		colorGrp, TRUE, 1, ascent-7 );
+	qDrawShadePanel( _painter, xp, yp-size, width, size,
+		colorGrp, false, lw, 0 );
     else
-	_painter->fillRect( xp, yp, width, ascent-6, QBrush(black) );
+	_painter->fillRect( xp, yp-size, width, size, black );
 }
 
 //-----------------------------------------------------------------------------
