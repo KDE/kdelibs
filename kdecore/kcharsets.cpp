@@ -278,7 +278,7 @@ static struct Builtin
     { "tscii", "tscii" },
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
-    { "winsami2", "ws2" },
+    { "x-winsami2", "winsami2" },
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
