@@ -545,8 +545,11 @@ void RenderLineEdit::layout()
     edit->blockSignals(false);
 
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
-    if (input->maxLength() > 0)
-        edit->setMaxLength(input->maxLength());
+    int ml = input->maxLength();
+    if ( ml < 0 || ml > 1024 )
+        ml = 1024;
+    edit->setMaxLength( ml );
+
     edit->setReadOnly(m_element->readOnly());
 
     applyLayout(s.width(), s.height());
