@@ -65,6 +65,12 @@ void srandom(unsigned int seed);
 #endif
 
 #ifndef HAVE_VSNPRINTF
+#if __STDC__
+#include <stdarg.h>
+#include <stdlib.h>
+#else
+#include <varargs.h>
+#endif
 #ifdef __cplusplus
 extern "C"
 #endif
