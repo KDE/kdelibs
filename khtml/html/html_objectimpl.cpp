@@ -399,7 +399,7 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled()) {
+    if (!w->part()->pluginsEnabled()) {
         // render alternative content
         ElementImpl::attach();
         return;
