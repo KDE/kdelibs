@@ -55,7 +55,7 @@ public:
   virtual ~HTTPProtocol();
 
   /** HTTP version **/
-  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
+  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11, SHOUTCAST};
 
   /** Authorization method used **/
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};

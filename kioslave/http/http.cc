@@ -1,9 +1,8 @@
 /*
-   Copyright (C) 2000-2002 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2000-2003 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000-2002 George Staikos <staikos@kde.org>
    Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <meddie@yoyo.cc.monash.edu.au>
-
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -2504,9 +2503,16 @@ bool HTTPProtocol::readHeader()
     // calling application later
     m_responseHeader << QString::fromLatin1(buf);
 
-    if (strncasecmp(buf, "HTTP/", 5) == 0)
+    if ((strncasecmp(buf, "HTTP/", 5) == 0) ||
+        (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
     {
-      if (strncmp((buf + 5), "1.0",3) == 0)
+      if (strncasecmp(buf, "ICY ", 4) == 0)
+      {
+        // Shoutcast support
+        httpRev = SHOUTCAST;
+        m_bKeepAlive = false;
+      }
+      else if (strncmp((buf + 5), "1.0",3) == 0)
       {
         httpRev = HTTP_10;
         // For 1.0 servers, the server itself has to explicitly
