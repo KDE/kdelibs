@@ -391,7 +391,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
         }
     }
     // dynamic HTML...
-    if(inside || mouseInside()) mouseEventHandler(ev, inside);
+    // ### if(inside || mouseInside()) mouseEventHandler(ev, inside);
 
     return inside;
 }

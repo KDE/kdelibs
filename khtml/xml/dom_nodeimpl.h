@@ -33,6 +33,7 @@
 class QPainter;
 class KHTMLView;
 class QRect;
+class QMouseEvent;
 
 namespace khtml {
     class RenderStyle;
@@ -163,7 +164,7 @@ public:
     /*
      * Called whenever we are getting ready to handle a mouse event.
      * Does not actually perform any actions e.g. rollovers - this
-     * is handled in handleLocalEvents()
+     * is handled in eventDefault()
      *
      * This fills in ev with appropriate info such as innerNode, url etc.
      *
@@ -257,7 +258,13 @@ public:
 
     virtual bool dispatchEvent(EventImpl *evt, int &exceptioncode);
     virtual bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    virtual bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
+    virtual bool dispatchUIEvent(int _id, int detail = 0);
     virtual void handleLocalEvents(EventImpl *evt, bool useCapture);
+    /**
+     * Perform the default action for an event e.g. submitting a form
+     */
+    virtual void defaultEventHandler(EventImpl *evt);
 	
 protected:
     DocumentImpl *document;

@@ -62,6 +62,10 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     setInline(true);   // our object is Inline
 
     m_element = element;
+    m_mousePressed = false;
+    m_clickX = -1;
+    m_clickY = -1;
+    m_clickCount = 0;
 }
 
 RenderFormElement::~RenderFormElement()
@@ -128,8 +132,65 @@ void RenderFormElement::slotSelected()
 
 void RenderFormElement::slotClicked()
 {
-    DOM::NodeImpl::MouseEvent dummy( 0, DOM::NodeImpl::MouseClick );
-    m_element->mouseEventHandler( &dummy, true);
+}
+
+void RenderFormElement::slotMousePressed(QMouseEvent *e)
+{
+    // ### QApplication:;sendEvent() stuff like in KHTMLView?
+    // ### for buttons, don't require mouse in same position for click to occur (like normal qt)
+
+    int absX, absY;
+    absolutePosition(absX,absY);
+    QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
+
+    if (m_clickCount > 0 && m_clickX == absX && m_clickY == absY) // ### support mouse threshold
+	m_clickCount++;
+    else {
+	m_clickCount = 1;
+	m_clickX = absX;
+	m_clickY = absY;
+    }
+
+    m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEDOWN_EVENT,m_clickCount);
+    // ### DOMActivate is also dispatched for thigs like selects & textareas -
+    // not sure if this is correct
+    if (m_clickCount % 2) // odd click: simple activation
+	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+    else // even click: hyperactivation
+	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
+    m_mousePressed = true;
+}
+
+void RenderFormElement::slotMouseReleased(QMouseEvent *e)
+{
+    int absX, absY;
+    absolutePosition(absX,absY);
+    QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
+    m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
+
+    if (m_mousePressed) { // ### is this still needed?
+	if (m_clickCount > 0 && m_clickX == absX && m_clickY == absY)
+	    m_element->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
+    }
+
+    m_mousePressed = false;
+}
+
+void RenderFormElement::slotMouseDoubleClicked(QMouseEvent *e)
+{
+    // handled by slotMousePressed() with detail = odd
+    slotMousePressed(e);
+}
+
+void RenderFormElement::slotMouseMoved(QMouseEvent *e)
+{
+    int absX, absY;
+    absolutePosition(absX,absY);
+    QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
+    m_element->dispatchMouseEvent(&e2);
+    m_clickCount = 0;  // moving the mouse invalidats the click (### support mouse threshold)
+
+    // ### change cursor like in KHTMLView?
 }
 
 void RenderFormElement::editableWidgetFocused( QWidget *widget )
@@ -163,6 +224,7 @@ RenderButton::RenderButton(QScrollView *view,
                            HTMLGenericFormElementImpl *element)
     : RenderFormElement(view, element)
 {
+    // ### support DOMActivate event when clicked
 }
 
 void RenderButton::layout()
@@ -195,6 +257,7 @@ CheckBoxWidget::CheckBoxWidget(QWidget *parent)
     : QCheckBox(parent)
 {
     setAutoMask(true);
+    setMouseTracking(true);
 }
 
 void CheckBoxWidget::focusInEvent(QFocusEvent* e)
@@ -209,6 +272,30 @@ void CheckBoxWidget::focusOutEvent(QFocusEvent* e)
     emit blurred();
 }
 
+void CheckBoxWidget::mousePressEvent(QMouseEvent *e)
+{
+    QCheckBox::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void CheckBoxWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    QCheckBox::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void CheckBoxWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QCheckBox::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void CheckBoxWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QCheckBox::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------------
 
 RenderCheckBox::RenderCheckBox(QScrollView *view,
@@ -221,6 +308,10 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
     connect(b,SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(b,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(b,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+//    connect(b,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(b,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
 }
 
 void RenderCheckBox::layout()
@@ -240,6 +331,7 @@ RadioButtonWidget::RadioButtonWidget(QWidget *parent)
     : QRadioButton(parent)
 {
     setAutoMask(true);
+    setMouseTracking(true);
 }
 
 void RadioButtonWidget::focusInEvent(QFocusEvent* e)
@@ -254,6 +346,30 @@ void RadioButtonWidget::focusOutEvent(QFocusEvent* e)
     emit blurred();
 }
 
+void RadioButtonWidget::mousePressEvent(QMouseEvent *e)
+{
+    QRadioButton::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void RadioButtonWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    QRadioButton::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void RadioButtonWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QRadioButton::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void RadioButtonWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QRadioButton::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------------
 
 RenderRadioButton::RenderRadioButton(QScrollView *view,
@@ -266,6 +382,10 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(b,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(b,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+//    connect(b,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(b,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
 }
 
 void RenderRadioButton::setChecked(bool checked)
@@ -292,6 +412,12 @@ void RenderRadioButton::layout()
 
 // -------------------------------------------------------------------------------
 
+
+PushButtonWidget::PushButtonWidget(QWidget *parent) : QPushButton(parent)
+{
+    setMouseTracking(true);
+}
+
 void PushButtonWidget::focusInEvent(QFocusEvent* e)
 {
     QPushButton::focusInEvent(e);
@@ -304,6 +430,30 @@ void PushButtonWidget::focusOutEvent(QFocusEvent* e)
     emit blurred();
 }
 
+void PushButtonWidget::mousePressEvent(QMouseEvent *e)
+{
+    QPushButton::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void PushButtonWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    QPushButton::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void PushButtonWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QPushButton::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void PushButtonWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QPushButton::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------------
 
 
@@ -314,7 +464,10 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     setQWidget(p, false);
     connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
-
+    connect(m_widget,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(m_widget,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+//    connect(m_widget,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(m_widget,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
 }
@@ -329,8 +482,6 @@ void RenderSubmitButton::slotClicked()
     RenderButton::slotClicked();
 
     // ### if the above line calls some javascript which deletes us we will probably crash here
-    if (m_element->form())
-        m_element->form()->prepareSubmit();
 }
 
 void RenderSubmitButton::layout()
@@ -363,6 +514,7 @@ RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
     : RenderImage()
 {
     m_element = element;
+    // ### support DOMActivate event when clicked
 }
 
 RenderImageButton::~RenderImageButton()
@@ -419,6 +571,12 @@ QString RenderPushButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
+LineEditWidget::LineEditWidget(QWidget *parent)
+        : KLineEdit(parent)
+{
+    setMouseTracking(true);
+}
+
 bool LineEditWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
@@ -464,6 +622,30 @@ void LineEditWidget::keyReleaseEvent(QKeyEvent* e)
     emit onKeyUp();
 }
 
+void LineEditWidget::mousePressEvent(QMouseEvent *e)
+{
+    KLineEdit::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void LineEditWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    KLineEdit::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void LineEditWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    KLineEdit::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    KLineEdit::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
@@ -474,6 +656,10 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    connect(edit,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
@@ -590,6 +776,31 @@ RenderFieldset::~RenderFieldset()
 FileHBoxWidget::FileHBoxWidget(QWidget* parent)
     : QHBox(parent)
 {
+    setMouseTracking(true);
+}
+
+void FileHBoxWidget::mousePressEvent(QMouseEvent *e)
+{
+    QHBox::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void FileHBoxWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    QHBox::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void FileHBoxWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QHBox::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void FileHBoxWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QHBox::mouseMoveEvent(e);
+    emit mouseMoved(e);
 }
 
 // -------------------------------------------------------------------------
@@ -606,14 +817,28 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(m_edit,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(m_edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    connect(m_edit,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(m_edit,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(m_edit,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(m_edit,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
+
     m_button = new PushButtonWidget(i18n("Browse..."), w);
 
     connect(m_button,SIGNAL(clicked()),w,SIGNAL(clicked()));
     connect(m_button,SIGNAL(focused()),w,SIGNAL(focused()));
     connect(m_button,SIGNAL(blurred()),w,SIGNAL(blurred()));
+    connect(m_button,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(m_button,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(m_button,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(m_button,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
     connect(w,SIGNAL(clicked()),this,SLOT(slotClicked()));
     connect(w,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(w,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    connect(w,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(w,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(w,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(w,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
+    // ### check we don't get duplicate mouse events from the different widgets
 
     if (element->maxLength() > 0) m_edit->setMaxLength(element->maxLength());
 
@@ -762,6 +987,7 @@ ListBoxWidget::ListBoxWidget(QWidget *parent)
     // ### looks broken
     //setAutoMask(true);
     connect(this, SIGNAL(pressed(QListBoxItem*)), this, SLOT(slotPressed(QListBoxItem*)));
+    setMouseTracking(true);
 }
 
 void ListBoxWidget::focusInEvent(QFocusEvent* e)
@@ -782,6 +1008,30 @@ void ListBoxWidget::slotPressed(QListBoxItem* item)
         emit activated(index(item));
 }
 
+void ListBoxWidget::mousePressEvent(QMouseEvent *e)
+{
+    KListBox::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void ListBoxWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    KListBox::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void ListBoxWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    KListBox::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void ListBoxWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    KListBox::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------------
 
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
@@ -789,6 +1039,7 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 {
     setAutoMask(true);
     if (listBox()) listBox()->installEventFilter(this);
+    setMouseTracking(true);
 }
 
 void ComboBoxWidget::focusInEvent(QFocusEvent* e)
@@ -847,6 +1098,30 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
     return KComboBox::eventFilter(dest, e);
 }
 
+void ComboBoxWidget::mousePressEvent(QMouseEvent *e)
+{
+    KComboBox::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void ComboBoxWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    KComboBox::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void ComboBoxWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    KComboBox::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void ComboBoxWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    KComboBox::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------
 
 RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
@@ -862,6 +1137,10 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 	setQWidget(createComboBox(), false);
 
     connect(m_widget, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
+    connect(m_widget,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(m_widget,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(m_widget,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(m_widget,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
     m_ignoreSelectEvents = false;
 }
 
@@ -870,6 +1149,8 @@ void RenderSelect::layout( )
     // ### maintain selection properly between type/size changes, and work
     // out how to handle multiselect->singleselect (probably just select
     // first selected one)
+
+    // ### reconnect mouse signals when we change widget type
 
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
     m_ignoreSelectEvents = true;
@@ -1114,6 +1395,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     }
     KCursor::setAutoHideCursor(this, true);
     setAutoMask(true);
+    setMouseTracking(true);
 }
 
 void TextAreaWidget::focusInEvent(QFocusEvent* e)
@@ -1149,6 +1431,30 @@ bool TextAreaWidget::event( QEvent *e )
     return QMultiLineEdit::event( e );
 }
 
+void TextAreaWidget::mousePressEvent(QMouseEvent *e)
+{
+    QMultiLineEdit::mousePressEvent(e);
+    emit mousePressed(e);
+}
+
+void TextAreaWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    QMultiLineEdit::mouseReleaseEvent(e);
+    emit mouseReleased(e);
+}
+
+void TextAreaWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QMultiLineEdit::mouseDoubleClickEvent(e);
+    emit mouseDoubleClicked(e);
+}
+
+void TextAreaWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QMultiLineEdit::mouseMoveEvent(e);
+    emit mouseMoved(e);
+}
+
 // -------------------------------------------------------------------------
 
 // ### allow contents to be manipulated via DOM - will require updating
@@ -1163,6 +1469,10 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(edit,SIGNAL(mousePressed(QMouseEvent*)),this,SLOT(slotMousePressed(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseReleased(QMouseEvent*)),this,SLOT(slotMouseReleased(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseDoubleClicked(QMouseEvent*)),this,SLOT(slotMouseDoubleClicked(QMouseEvent*)));
+    connect(edit,SIGNAL(mouseMoved(QMouseEvent*)),this,SLOT(slotMouseMoved(QMouseEvent*)));
 }
 
 void RenderTextArea::layout( )

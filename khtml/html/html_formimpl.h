@@ -197,7 +197,7 @@ public:
 
     virtual void attach(KHTMLView *w);
 
-    virtual void mouseEventHandler( MouseEvent *ev, bool inside);
+    virtual void defaultEventHandler(EventImpl *evt);
 
 protected:
     DOMString m_value;
@@ -268,8 +268,6 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    virtual void setFocus(bool=true);
-
     void select();
     void click();
 
@@ -282,14 +280,12 @@ public:
     typeEnum inputType() const { return m_type; }
     virtual void reset();
 
-    virtual bool prepareMouseEvent( int _x, int _y,
-				    int _tx, int _ty,
-				    MouseEvent *ev );
-
     virtual void setOwnerDocument(DocumentImpl *_document);
     // used in case input type=image was clicked.
     int clickX() const { return xPos; }
     int clickY() const { return yPos; }
+
+    virtual void defaultEventHandler(EventImpl *evt);
 
 protected:
     DOMString m_value;

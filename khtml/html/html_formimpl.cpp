@@ -550,15 +550,17 @@ void HTMLGenericFormElementImpl::onChange()
 
 void HTMLGenericFormElementImpl::setFocus(bool received)
 {
+    HTMLElementImpl::setFocus(received);
+    // ### support focus for buttons & images
     if (received)
     {
-	if(m_render)
+	if(m_render && m_render->isFormElement())
 	    static_cast<RenderFormElement*>(m_render)->focus(); // will call onFocus()
 	onFocus();
     }
     else
     {
-	if(m_render)
+	if(m_render && m_render->isFormElement())
 	    static_cast<RenderFormElement*>(m_render)->blur(); // will call onBlur()
 	else
 	    onBlur();
@@ -640,13 +642,13 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLButtonElementImpl::mouseEventHandler( MouseEvent *ev, bool /*inside*/)
+void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (m_type != BUTTON && (ev->type == MouseClick) || (ev->type == MouseRelease)) {
+    if (m_type != BUTTON && (evt->id() == EventImpl::CLICK_EVENT) || (evt->id() == EventImpl::MOUSEUP_EVENT)) {
         m_clicked = true;
 
-        if(m_form && m_type == SUBMIT) m_form->prepareSubmit();
-        if(m_form && m_type == RESET) m_form->prepareReset();
+	if(m_form && m_type == SUBMIT) m_form->prepareSubmit();
+	if(m_form && m_type == RESET) m_form->prepareReset();
     }
 }
 
@@ -779,14 +781,6 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         break;
     }
     setChanged(true);
-}
-
-void HTMLInputElementImpl::setFocus(bool received)
-{
-    if (m_type != IMAGE)
-        HTMLGenericFormElementImpl::setFocus(received);
-    else
-	HTMLElementImpl::setFocus(received);
 }
 
 void HTMLInputElementImpl::select(  )
@@ -1171,30 +1165,42 @@ void HTMLInputElementImpl::setValue(DOMString val)
     }
 }
 
-bool HTMLInputElementImpl::prepareMouseEvent( int _x, int _y,
-					      int _tx, int _ty,
-					      MouseEvent *ev )
-{
-    bool wasPressed = pressed();
-    bool ret = HTMLGenericFormElementImpl::prepareMouseEvent(_x,_y,_tx,_ty,ev);
-    if  ( m_render && m_render->style() && !m_render->style()->visiblity() == khtml::HIDDEN) {
-        if (m_type == IMAGE && (ev->type == MouseClick || ((ev->type == MouseRelease) && wasPressed))) {
-            xPos = _x - _tx - m_render->xPos();
-            yPos = _y - _ty - m_render->yPos();
-            m_clicked = true;
-            if(m_form) m_form->prepareSubmit();
-            return true;
-        }
-    }
-    return ret;
-}
-
 void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 {
     if (ownerDocument())
 	ownerDocument()->removeElement(this);
     HTMLGenericFormElementImpl::setOwnerDocument(_document);
 }
+
+void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
+{
+    if (evt->id() == EventImpl::DOMACTIVATE_EVENT) {
+	if (!m_form)
+	    return;
+	
+	// ### should this be done on click instead? what about keyboard activation of control?
+	if (m_type == SUBMIT)
+	    m_form->prepareSubmit();
+	else if (m_type == RESET)
+	    m_form->prepareReset();
+    }
+
+    if (evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE) {
+	if (!m_form || !m_render)
+	    return;
+	
+	// ### actually submit image on DOMActivate event?
+	MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
+	int offsetX, offsetY;
+	m_render->absolutePosition(offsetX,offsetY);
+	xPos = me->clientX()-offsetX;
+	yPos = me->clientY()-offsetY;
+	
+	m_clicked = true;
+	m_form->prepareSubmit();
+    }
+}
+
 
 // -------------------------------------------------------------------------
 

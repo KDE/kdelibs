@@ -70,6 +70,7 @@ public:
     virtual const char *renderName() const { return "RenderForm"; }
 
     virtual bool isRendered() const  { return true; }
+    virtual bool isFormElement() const { return true; }
 
     virtual void calcMinMaxWidth();
 
@@ -83,6 +84,10 @@ public slots:
     virtual void slotFocused();
     virtual void slotSelected();
     virtual void slotClicked();
+    virtual void slotMousePressed(QMouseEvent *e);
+    virtual void slotMouseReleased(QMouseEvent *e);
+    virtual void slotMouseDoubleClicked(QMouseEvent *e);
+    virtual void slotMouseMoved(QMouseEvent *e);
 
 protected:
 
@@ -92,6 +97,10 @@ protected:
     void editableWidgetBlurred( QWidget *widget );
 
     DOM::HTMLGenericFormElementImpl *m_element;
+    bool m_mousePressed;
+    int m_clickX;
+    int m_clickY;
+    int m_clickCount;
 
 private:
     KHTMLPartBrowserExtension *browserExt() const;
@@ -118,16 +127,24 @@ class PushButtonWidget : public QPushButton
 {
     Q_OBJECT
 public:
-    PushButtonWidget(QWidget *parent) : QPushButton(parent) {}
+    PushButtonWidget(QWidget *parent);
     PushButtonWidget(const QString &text, QWidget *parent) : QPushButton(text,parent) {}
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     void focused();
     void blurred();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 
@@ -169,10 +186,18 @@ public:
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     void focused();
     void blurred();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 
@@ -206,10 +231,18 @@ public:
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     void focused();
     void blurred();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 
@@ -304,8 +337,7 @@ class LineEditWidget : public KLineEdit
 {
     Q_OBJECT
 public:
-    LineEditWidget(QWidget *parent)
-        : KLineEdit(parent) {}
+    LineEditWidget(QWidget *parent);
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
@@ -313,11 +345,19 @@ protected:
     virtual void keyPressEvent(QKeyEvent *);
     virtual void keyReleaseEvent(QKeyEvent *);
     virtual bool event( QEvent *e );
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 signals:
     void focused();
     void blurred();
     void onKeyDown();
     void onKeyUp();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 // -------------------------------------------------------------------------
@@ -394,11 +434,19 @@ public:
 protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     void focused();
     void blurred();
     void activated(int);
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 private slots:
     void slotPressed(QListBoxItem*);
 };
@@ -417,10 +465,18 @@ protected:
     virtual void focusOutEvent(QFocusEvent *);
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     virtual void focused();
     virtual void blurred();
+    virtual void mousePressed(QMouseEvent *e);
+    virtual void mouseReleased(QMouseEvent *e);
+    virtual void mouseDoubleClicked(QMouseEvent *e);
+    virtual void mouseMoved(QMouseEvent *e);
 };
 
 class FileHBoxWidget : public QHBox
@@ -429,10 +485,20 @@ class FileHBoxWidget : public QHBox
 public:
     FileHBoxWidget(QWidget* parent);
 
+protected:
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
+
 signals:
     void focused();
     void blurred();
     void clicked();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 // -------------------------------------------------------------------------
@@ -488,10 +554,18 @@ protected:
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
     virtual bool event (QEvent *e );
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
 
 signals:
     void focused();
     void blurred();
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
+    void mouseDoubleClicked(QMouseEvent *e);
+    void mouseMoved(QMouseEvent *e);
 };
 
 

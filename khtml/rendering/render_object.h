@@ -114,6 +114,7 @@ public:
     virtual bool isTable() const { return false; }
     virtual bool isWidget() const { return false; }
     virtual bool isBody() const { return false; }
+    virtual bool isFormElement() const { return false; }
 
     /**
      * a block box that holds inline content or vice versa.

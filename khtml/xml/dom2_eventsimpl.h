@@ -39,7 +39,7 @@ class EventImpl : public DomShared
 {
 public:
     enum EventId {
-	UNKNOWN_EVENT,
+	UNKNOWN_EVENT = 0,
 	// UI events
         DOMFOCUSIN_EVENT,
         DOMFOCUSOUT_EVENT,

@@ -672,7 +672,7 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
         if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
         {
             // dynamic HTML...
-            mouseEventHandler(ev, inside);
+            // ### mouseEventHandler(ev, inside);
         }
 
     bool oldinside=mouseInside();

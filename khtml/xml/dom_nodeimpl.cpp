@@ -35,6 +35,8 @@
 #include "rendering/render_object.h"
 #include "rendering/render_text.h"
 #include <qrect.h>
+#include <qevent.h>
+#include <qnamespace.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -443,11 +445,18 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     evt->setCurrentTarget(0);
     evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
 
+    if (!evt->defaultPrevented()) {
+	// now we call all default event handlers (this is not part of DOM - it is internal to khtml)
+	it.toLast();
+	for (; it.current() && !evt->propagationStopped(); --it)
+	    it.current()->defaultEventHandler(evt);
+    }
+
     // deref all nodes in chain
     it.toFirst();
     for (; it.current(); ++it)
 	it.current()->deref(); // this may delete us
-
+    	
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
 
@@ -455,6 +464,97 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    evt->ref();
+    bool r = dispatchEvent(evt,exceptioncode);
+    evt->deref();
+    return r;
+}
+
+bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overrideDetail)
+{
+    bool cancelable = true;
+    int detail = overrideDetail; // defaults to 0
+    EventImpl::EventId evtId = EventImpl::UNKNOWN_EVENT;
+    if (overrideId) {
+	evtId = static_cast<EventImpl::EventId>(overrideId);
+    }
+    else {
+	switch (_mouse->type()) {
+	    case QEvent::MouseButtonPress:
+		evtId = EventImpl::MOUSEDOWN_EVENT;
+		break;
+	    case QEvent::MouseButtonRelease:
+		evtId = EventImpl::MOUSEUP_EVENT;
+		break;
+	    case QEvent::MouseButtonDblClick:
+		evtId = EventImpl::CLICK_EVENT;
+		detail = 1; // ### support for multiple double clicks
+		break;
+	    case QEvent::MouseMove:
+		evtId = EventImpl::MOUSEMOVE_EVENT;
+		cancelable = false;
+		break;
+	    default:
+		break;
+	}
+    }
+    if (evtId == EventImpl::UNKNOWN_EVENT)
+	return false; // shouldn't happen
+
+
+    int exceptioncode;
+
+//    int clientX, clientY;
+//    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
+    int clientX = _mouse->x(); // ### adjust to be relative to view
+    int clientY = _mouse->y(); // ### adjust to be relative to view
+
+    int screenX = _mouse->globalX();
+    int screenY = _mouse->globalY();
+
+    int button = -1;
+    switch (_mouse->button()) {
+	case Qt::LeftButton:
+	    button = 0;
+	    break;
+	case Qt::MidButton:
+	    button = 1;
+	    break;
+	case Qt::RightButton:
+	    button = 2;
+	    break;
+	default:
+	    break;
+    }
+    bool ctrlKey = (_mouse->state() & Qt::ControlButton);
+    bool altKey = (_mouse->state() & Qt::AltButton);
+    bool shiftKey = (_mouse->state() & Qt::ShiftButton);
+    bool metaKey = false; // ### qt support?
+
+    EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
+		   detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,
+		   button,0);
+    evt->ref();
+    bool r = dispatchEvent(evt,exceptioncode);
+    evt->deref();
+    return r;
+
+}
+
+bool NodeImpl::dispatchUIEvent(int _id, int detail = 0)
+{
+    if (_id != EventImpl::DOMFOCUSIN_EVENT &&
+	_id != EventImpl::DOMFOCUSOUT_EVENT &&
+	_id != EventImpl::DOMACTIVATE_EVENT)
+	return; // shouldn't happen
+				
+    bool cancelable = false;
+    if (_id == EventImpl::DOMACTIVATE_EVENT)
+	cancelable = true;
+
+    int exceptioncode;
+    UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
+				       cancelable,getDocument()->defaultView(),detail);
     evt->ref();
     bool r = dispatchEvent(evt,exceptioncode);
     evt->deref();
@@ -472,6 +572,10 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     for (; it.current() && !found; ++it)
 	if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
 	    it.current()->listener->handleEvent(ev);
+}
+
+void NodeImpl::defaultEventHandler(EventImpl */*evt*/)
+{
 }
 
 //--------------------------------------------------------------------
