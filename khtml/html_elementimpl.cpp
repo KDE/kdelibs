@@ -1112,7 +1112,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		}
 		else
 		{
-		    printf("%d,%d\n",startPos,endPos);
+		    //printf("%d,%d\n",startPos,endPos);
 		    if (endPos==-1)
 		    {
 		    	endPos = text->l;

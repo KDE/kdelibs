@@ -102,8 +102,14 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    // they all add Widgets, and don't render any contents by themself
-    virtual void print(QPainter *, int, int, int, int, int, int) {}
+    virtual void setPos( int xPos, int yPos );
+    virtual void setXPos( int xPos );
+    virtual void setYPos( int yPos );
+
+    virtual void print(QPainter *, int, int, int, int, int, int);
+
+    virtual void attach(KHTMLWidget *w);
+    virtual void detach();
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -112,6 +118,9 @@ protected:
 
     DOMString _name;
     HTMLFormElementImpl *_form;
+    KHTMLWidget *view;
+    QWidget *w;
+    bool badPos;
 };
 
 // -------------------------------------------------------------------------
@@ -214,12 +223,8 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach();
 
     virtual void layout( bool deep = false );
-
-    virtual void setXPos( int xPos );
-    virtual void setYPos( int yPos );
 
     virtual void setPixmap( QPixmap *p );
     virtual void pixmapChanged( QPixmap *p );
@@ -245,9 +250,6 @@ protected:
     DOMString _src;
     QPixmap *_pixmap;
     bool _clicked;
-
-    KHTMLWidget *view;
-    QWidget *w;
 };
 
 // -------------------------------------------------------------------------
@@ -321,20 +323,14 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach();
 
     virtual void layout( bool deep = false );
 
-    virtual void setXPos( int xPos );
-    virtual void setYPos( int yPos );
     virtual void calcMinMaxWidth();
 
     virtual void close();
 
 protected:
-    QWidget *w;
-    KHTMLWidget *view;
-
     int _size;
     bool _disabled;
     bool _multiple;
@@ -425,18 +421,12 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
-    virtual void detach();
 
     virtual void layout( bool deep = false );
 
-    virtual void setXPos( int xPos );
-    virtual void setYPos( int yPos );
     virtual void calcMinMaxWidth();
 
 protected:
-    QMultiLineEdit *edit;
-    KHTMLWidget *view;
-
     int _rows;
     int _cols;
     bool _disabled;

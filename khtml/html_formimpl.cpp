@@ -238,6 +238,10 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     : HTMLPositionedElementImpl(doc)
 {
     _form = 0;
+    view = 0;
+    w = 0;
+
+    badPos = true;
 }
 
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
@@ -345,6 +349,49 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     return 0;
 }
 
+void HTMLGenericFormElementImpl::setPos( int xPos, int yPos )
+{
+    x = xPos;
+    y = yPos;
+    badPos = true;
+}
+
+void HTMLGenericFormElementImpl::setXPos( int xPos )
+{
+    x = xPos;
+    badPos = true;
+}
+
+void HTMLGenericFormElementImpl::setYPos( int yPos )
+{
+    y = yPos;
+    badPos = true;
+}
+
+void HTMLGenericFormElementImpl::print(QPainter *, int, int, int, int, int, int)
+{
+    if(badPos && view && w)
+    {
+	int absX, absY;
+	getAbsolutePosition(absX, absY);
+	absY -= ascent;
+	view->addChild(w, absX, absY);
+	w->show();
+	badPos = false;
+    }
+}
+
+void HTMLGenericFormElementImpl::attach(KHTMLWidget *_view)
+{
+    view = _view;
+}
+
+void HTMLGenericFormElementImpl::detach()
+{
+    if(w) delete w;
+    w = 0;
+    view = 0;
+}
 
 // -------------------------------------------------------------------------
 
@@ -429,6 +476,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
 
     w = 0;
     view = 0;
+    badPos = true;
 }
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
@@ -703,7 +751,6 @@ void HTMLInputElementImpl::layout( bool )
 	descent = 5;
 	ascent = w->height() - descent;
 	width = w->width();
-	w->show();
 	break;
     }
     case FILE:
@@ -713,39 +760,6 @@ void HTMLInputElementImpl::layout( bool )
     }
 
     setLayouted();
-}
-
-void HTMLInputElementImpl::setXPos( int xPos )
-{
-    x = xPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && w)
-    {
-      view->addChild(w, absX, absY);
-      w->show();
-    }
-}
-
-void HTMLInputElementImpl::setYPos( int yPos )
-{
-    y = yPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && w)
-    {
-      view->addChild(w, absX, absY);
-      w->show();
-    }
-}
-
-void HTMLInputElementImpl::detach()
-{
-    if(w) delete w;
-    w = 0;
-    view = 0;
 }
 
 void HTMLInputElementImpl::setPixmap( QPixmap *p )
@@ -1103,39 +1117,6 @@ void HTMLSelectElementImpl::layout( bool )
     setLayouted();
 }
 
-void HTMLSelectElementImpl::setXPos( int xPos )
-{
-    x = xPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && w)
-    {
-      view->addChild(w, absX, absY);
-      w->show();
-    }
-}
-
-void HTMLSelectElementImpl::setYPos( int yPos )
-{
-    y = yPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && w)
-    {
-      view->addChild(w, absX, absY);
-      w->show();
-    }
-}
-
-void HTMLSelectElementImpl::detach()
-{
-    if(w) delete w;
-    w = 0;
-    view = 0;
-}
-
 void HTMLSelectElementImpl::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT
@@ -1263,13 +1244,10 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
     _rows = _cols = 0;
     _disabled = false;
 
-    edit = 0;
-    view = 0;
 }
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
 {
-    if(edit) delete edit;
 }
 
 const DOMString HTMLTextAreaElementImpl::nodeName() const
@@ -1384,7 +1362,8 @@ void HTMLTextAreaElementImpl::parseAttribute(Attribute *attr)
 void HTMLTextAreaElementImpl::attach(KHTMLWidget *_view)
 {
     view = _view;
-    edit = new QMultiLineEdit(view->viewport());
+    QMultiLineEdit *edit = new QMultiLineEdit(view->viewport());
+    w = edit;
     if(_first && _first->id() == ID_TEXT)
     {
 	TextImpl *t = static_cast<TextImpl *>(_first);
@@ -1399,49 +1378,16 @@ void HTMLTextAreaElementImpl::layout( bool )
     if(!width) return;
 
     _style->font.family = pSettings->fixedFontFace;
-    edit->setFont( *getFont() );
+    w->setFont( *getFont() );
 
-    QFontMetrics m = edit->fontMetrics();
+    QFontMetrics m = w->fontMetrics();
     QSize size( _cols * m.maxWidth() + 2, m.height()*_rows + 6);
-    edit->resize( size );
+    w->resize( size );
     descent = 5;
     ascent = size.height() - descent;
     width = size.width();
 
     setLayouted();
-}
-
-void HTMLTextAreaElementImpl::setXPos( int xPos )
-{
-    x = xPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && edit)
-    {
-      view->addChild(edit, absX, absY);
-      edit->show();
-    }
-}
-
-void HTMLTextAreaElementImpl::setYPos( int yPos )
-{
-    y = yPos;
-    int absX, absY;
-    getAbsolutePosition(absX, absY);
-    absY -= ascent;
-    if(view && edit)
-    {
-      view->addChild(edit, absX, absY);
-      edit->show();
-    }
-}
-
-void HTMLTextAreaElementImpl::detach()
-{
-    if(edit) delete edit;
-    edit = 0;
-    view = 0;
 }
 
 void HTMLTextAreaElementImpl::calcMinMaxWidth()
@@ -1452,8 +1398,8 @@ void HTMLTextAreaElementImpl::calcMinMaxWidth()
 
     if(minMaxKnown()) return;
 
-    if(edit)
-	minWidth = edit->width();
+    if(w)
+	minWidth = w->width();
     else
 	printf("InputElement: no Widget!!!\n");
     maxWidth = minWidth;
