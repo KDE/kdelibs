@@ -838,6 +838,10 @@ void Window::scheduleClose()
 
 bool Window::isSafeScript(ExecState *exec) const
 {
+  if (m_part.isNull()) { // part deleted ? can't grant access
+    kdDebug(6070) << "Window::isSafeScript: accessing deleted part !" << endl;
+    return false;
+  }
   KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
   if (!activePart) {
     kdDebug(6070) << "Window::isSafeScript: current interpreter's part is 0L!" << endl;
