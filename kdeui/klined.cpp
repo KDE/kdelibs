@@ -84,7 +84,6 @@ bool KLineEdit::eventFilter (QObject *, QEvent *e)
 		emit completion ();
 	    else
 		emit rotation ();
-	    cursorAtEnd();
 	    return TRUE;
 	}
     }
