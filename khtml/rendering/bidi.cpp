@@ -812,8 +812,10 @@ void RenderFlow::layoutInlineChildren()
 	BidiStatus status;
 	if( style()->direction() == LTR ) {
 	    startEmbed = new BidiContext( 0, QChar::DirL );
+	    status.eor = QChar::DirL;
 	} else {
 	    startEmbed = new BidiContext( 1, QChar::DirR );
+	    status.eor = QChar::DirR;
 	}
 	startEmbed->ref();
 	
