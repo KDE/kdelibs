@@ -16,7 +16,7 @@ namespace KKeyServer
 	 * @since 3.1
 	 */
 	enum ExtraModFlag { MODE_SWITCH = 0x2000 };
-	
+
 	/**
 	 * Represents a key symbol.
 	 * @see KKey
@@ -25,81 +25,81 @@ namespace KKeyServer
 	struct Sym
 	{
 	 public:
-          /// the actual value of the symbol
+		/// the actual value of the symbol
 		uint m_sym;
 
-	  /// Creates a null symbol.
+		/// Creates a null symbol.
 		Sym()
 			{ m_sym = 0; }
-	  /**
-	   * Creates asymbol with the given value.
-	   * @param sym the value
-	   */
+		/**
+		 * Creates asymbol with the given value.
+		 * @param sym the value
+		 */
 		Sym( uint sym )
 			{ m_sym = sym; }
-	  /**
-	   * Creates a symbol from the given string description.
-	   * @param s the description of the symbol
-	   * @see toString()
-	   */
+		/**
+		 * Creates a symbol from the given string description.
+		 * @param s the description of the symbol
+		 * @see toString()
+		 */
 		Sym( const QString& s )
 			{ init( s ); }
 
-	  /**
-	   * Initializes the symbol with the given Qt key code.
-	   * @param keyQt the qt key code
-	   * @return true if succesful, false otherwise
-	   * @see Qt::Key
-	   */
+		/**
+		 * Initializes the symbol with the given Qt key code.
+		 * @param keyQt the qt key code
+		 * @return true if succesful, false otherwise
+		 * @see Qt::Key
+		 */
 		bool initQt( int keyQt );
-	  
-	  /**
-	   * Initializes the key with the given string description.
-	   * @param s the string description
-	   * @return true if succesful, false otherwise
-	   * @see toString()
-	   */
+
+		/**
+		 * Initializes the key with the given string description.
+		 * @param s the string description
+		 * @return true if succesful, false otherwise
+		 * @see toString()
+		 */
 		bool init( const QString &s );
 
-	  /**
-	   * Returns the qt key code of the symbol.
-	   * @return the qt key code
-	   */
+		/**
+		 * Returns the qt key code of the symbol.
+		 * @return the qt key code
+		 */
 		int qt() const;
 
-	  /**
-	   * @internal
-	   */
+		/**
+		 * @internal
+		 */
 		QString toStringInternal() const;
 
-	  /**
-	   * Returns the string representation of the symbol.
-	   * @return the string representation of the symbol
-	   */
+		/**
+		 * Returns the string representation of the symbol.
+		 * @return the string representation of the symbol
+		 */
 		QString toString() const;
 
-	  /**
-	   * Returns the mods that are required for this symbol as 
-	   * ORed @ref KKey::ModFlag's. For example, Break requires a 
-	   * Ctrl to be valid.
-	   * @return the required @ref KKey::ModFlag's
-	   * @see KKey::ModFlag
-	   */
+		/**
+		 * Returns the mods that are required for this symbol as
+		 * ORed @ref KKey::ModFlag's. For example, Break requires a
+		 * Ctrl to be valid.
+		 * @return the required @ref KKey::ModFlag's
+		 * @see KKey::ModFlag
+		 */
 		uint getModsRequired() const;
 
-	  /**
-	   * TODO: please find out what this method does and document it
-	   */
+		/**
+		 * TODO: please find out what this method does and document it
+		 */
 		uint getSymVariation() const;
 
-	  /**
-	   * Casts the symbol to its integer representation.
-	   */
+		/**
+		 * Casts the symbol to its integer representation.
+		 */
 		operator uint() const { return m_sym; }
-	  
-	  /**
-	   * Overloaded operator to convert ints to Sym.
-	   */
+
+		/**
+		 * Overloaded operator to convert ints to Sym.
+		 */
 		Sym& operator =( uint sym ) { m_sym = sym; return *this; }
 
 	 private:
@@ -114,105 +114,105 @@ namespace KKeyServer
 	 */
 	struct Key
 	{
-	  /// Code for native Keys in Qt
+		/// Code for native Keys in Qt
 		enum { CODE_FOR_QT = 256 };
 
-	  /// The code of the key
+		/// The code of the key
 		uint m_code;
 
-	  /// The modifiers of the key
+		/// The modifiers of the key
 		uint m_mod;
 
-	  /// The symbol of the key
+		/// The symbol of the key
 		uint m_sym;
 
-	  /**
-	   * Initializes the key with a @ref KKey.
-	   * @param key the key to get the data from
-	   * @param bQt true to take the Qt keycode, false
-	   *            for the native key code
-	   * @see Qt::Key
-	   * @see KKeyNative
-	   */
+		/**
+		 * Initializes the key with a @ref KKey.
+		 * @param key the key to get the data from
+		 * @param bQt true to take the Qt keycode, false
+		 *            for the native key code
+		 * @see Qt::Key
+		 * @see KKeyNative
+		 */
 		bool init( const KKey& key, bool bQt );
 
-	  /**
-	   * Checks whether the key code is a native code.
-	   * @return true if native code of the window system,
-	   *         false if it is a Qt keycode
-	   * @see Qt::Key
-	   * @see KKeyNative
-	   */
+		/**
+		 * Checks whether the key code is a native code.
+		 * @return true if native code of the window system,
+		 *         false if it is a Qt keycode
+		 * @see Qt::Key
+		 * @see KKeyNative
+		 */
 		bool isNative() const { return m_code != CODE_FOR_QT; }
 
-	  /**
-	   * Returns the code of the key.
-	   * @return the code of the key
-	   */
+		/**
+		 * Returns the code of the key.
+		 * @return the code of the key
+		 */
 		uint code() const { return m_code; }
 
-	  /**
-	   * Returns the modifiers of the key.
-	   * @return the modifiers of the key
-	   */
+		/**
+		 * Returns the modifiers of the key.
+		 * @return the modifiers of the key
+		 */
 		uint mod() const { return m_mod; }
 
-	  /**
-	   * Returns the symbol of the key.
-	   * @return the symbol of the key
-	   */
+		/**
+		 * Returns the symbol of the key.
+		 * @return the symbol of the key
+		 */
 		uint sym() const { return m_sym; }
 
-	  /**
-	   * Returns the qt key code.
-	   * @return the qt key code
-	   */
+		/**
+		 * Returns the qt key code.
+		 * @return the qt key code
+		 */
 		int keyCodeQt() const { return (int) m_sym; }
 
-	  /**
-	   * Sets the qt key code.
-	   * @param keyQt the qt key code
-	   */
+		/**
+		 * Sets the qt key code.
+		 * @param keyQt the qt key code
+		 */
 		void setKeycodeQt( int keyQt )
 			{ m_code = CODE_FOR_QT; m_sym = keyQt; }
 
-	  /**
-	   * Initializes this key with a @ref KKeyNative.
-	   * @return this key
-	   */
+		/**
+		 * Initializes this key with a @ref KKeyNative.
+		 * @return this key
+		 */
 		Key& operator =( const KKeyNative& key );
 
-	/**
-	 * Compares this key with the given Key object. Returns a 
-	 * negative number if the given Key is larger, 0 if they 
-	 * are equal and a positive number this Key is larger. The 
-	 * returned value is the difference between the symbol, modifier
-	 * or code, whatever is non-zero first.
-	 *
-	 * @param key the key to compare with this key
-	 * @return a negative number if the given Key is larger, 0 if 
-	 * they are equal and a positive number this Key is larger
-	 */
+		/**
+		 * Compares this key with the given Key object. Returns a
+		 * negative number if the given Key is larger, 0 if they
+		 * are equal and a positive number this Key is larger. The
+		 * returned value is the difference between the symbol, modifier
+		 * or code, whatever is non-zero first.
+		 *
+		 * @param key the key to compare with this key
+		 * @return a negative number if the given Key is larger, 0 if
+		 * they are equal and a positive number this Key is larger
+		 */
 		int compare( const Key& key ) const;
 
-	/**
-	 * Compares the symbol, modifiers and code of both keys.
-	 * @see compare()
-	 */
+		/**
+		 * Compares the symbol, modifiers and code of both keys.
+		 * @see compare()
+		 */
 		bool operator ==( const Key& b ) const
 			{ return compare( b ) == 0; }
 
-	/**
-	 * Compares the symbol, modifiers and code of both keys.
-	 * @see compare()
-	 */
+		/**
+		 * Compares the symbol, modifiers and code of both keys.
+		 * @see compare()
+		 */
 		bool operator <( const Key& b ) const
 			{ return compare( b ) < 0; }
 
-	  /**
-	   * Converts this Key to a KKey.
-	   * @return the KKey
-	   */
+		/**
+		 * Converts this Key to a KKey.
+		 * @return the KKey
+		 */
 		KKey key() const;
 	};
 
@@ -229,7 +229,7 @@ namespace KKeyServer
 		Variations() { m_nVariations = 0; }
 
 		void init( const KKey&, bool bQt );
-		
+
 		uint count() const { return m_nVariations; }
 		const Key& key( uint i ) const { return m_rgkey[i]; }
 	};
@@ -325,7 +325,7 @@ namespace KKeyServer
 	 * @see Sym
 	 */
 	bool keyQtToSym( int keyQt, uint& sym );
-	
+
 	/**
 	 * Extracts the modifiers from the given Qt key and
 	 * converts them in a mask of ORed @ref KKey::ModFlag modifiers.
