@@ -151,16 +151,20 @@ sub output() {
   print "\nnamespace KJS {\n";
 
   # first, build the string table
-  # TODO: implement tail-string optimisation
   my %soffset = ();
-  my $l = 1;
   print "\nstatic const char $nameStringTable\[\] = {\n";
-  foreach my $k (@keys) {
-    print "    \"\\000$k\"\n";
-    $soffset{$k} = $l;
-    $l += length($k)+1;
+  my $s = "\0";
+  print "    \"\\0\"\n";
+  for my $k (sort { length $b <=> length $a || $a cmp $b } @keys) {
+    if ($s =~ /^(.*)\Q$k\E\0/) {
+      $soffset{$k} = length $1;
+     } else {
+       $soffset{$k} = length $s;
+       print "    \"$k\\0\"\n";
+       $s .= $k;
+       $s .= "\0";
+     }
   }
-  print "    \"\\000\"\n";
   print "};\n\n";
 
   # now, dump the hash table
