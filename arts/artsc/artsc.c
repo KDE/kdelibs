@@ -208,5 +208,5 @@ const char *arts_error_text(int errorcode)
 		case ARTS_E_NOSTREAM:
 			return "you passed no valid aRts stream to a function";
 	}
-	return "unknown arts error happend";
+	return "unknown arts error happened";
 }
