@@ -342,6 +342,9 @@ protected:
     // store a flag to get rid of the O(n^2) behaviour in such a case.
     bool brokenComments;
 
+    // counter
+    int recursion;
+
 #define CBUFLEN 14
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;

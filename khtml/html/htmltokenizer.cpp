@@ -88,6 +88,7 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
                 case 0x97: (x) = '-'; break; \
                 case 0x98: (x) = '~'; break; \
                 case 0xb7: (x) = '*'; break; \
+                case 0x2014: (x) = '-'; break; \
                 case 0x2019: (x) = '\''; break; \
                 default: break; \
                 } \
@@ -105,6 +106,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     parser = new KHTMLParser(_view, _doc);
     cachedScript = 0;
     m_executingScript = 0;
+    loadingExtScript = 0;
     onHold = false;
 
     reset();
@@ -129,6 +131,8 @@ void HTMLTokenizer::reset()
 {
     assert(m_executingScript == 0);
     assert(onHold == false);
+    assert( !loadingExtScript );
+
     if (cachedScript)
         cachedScript->deref(this);
     cachedScript = 0;
@@ -178,6 +182,7 @@ void HTMLTokenizer::begin()
     pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
+    recursion = 0;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
@@ -347,9 +352,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 scriptCodeSize = 0;
                 cachedScript->ref(this);
                 // will be 0 if script was already loaded and ref() executed it
-                if (cachedScript) {
+                if (cachedScript)
                     loadingExtScript = true;
-                }
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
                 pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
@@ -1250,6 +1254,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
+    kdDebug( 6036 ) << "Recursion is " << recursion << endl;
 #endif
 
     if ( !buffer )
@@ -1269,6 +1274,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     }
     else
         _src = str;
+
+    recursion++;
 
     src = DOMStringIt(_src);
 
@@ -1462,7 +1469,10 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         }
     }
     _src = QString();
-    if (noMoreData && !loadingExtScript && !m_executingScript )
+
+    --recursion;
+
+    if (noMoreData && !recursion && !loadingExtScript && !m_executingScript )
         end(); // this actually causes us to be deleted
 }
 
@@ -1631,13 +1641,11 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
-         if ( !script ) {
-//              qDebug( "adding pending output! *%s*", pendingSrc.latin1() );
-
-             QString rest = pendingSrc;
-             pendingSrc = "";
-             write(rest, false);
-         }
+        if ( !script ) {
+            QString rest = pendingSrc;
+            pendingSrc = "";
+            write(rest, false);
+        }
     }
 }
 
@@ -1645,8 +1653,6 @@ void HTMLTokenizer::addPendingSource()
 {
 //    kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
     QString newStr = QString(src.current(), src.length());
-//     qDebug( "src: %s", newStr.latin1() );
-//     qDebug( "pendingSrc: %s", pendingSrc.latin1() );
     newStr += pendingSrc;
     _src = newStr;
     src = DOMStringIt(_src);
