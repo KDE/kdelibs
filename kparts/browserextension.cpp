@@ -538,6 +538,7 @@ void BrowserExtension::createActionSlotMap()
     s_actionSlotMap->insert( "properties", SLOT( properties() ) );
     s_actionSlotMap->insert( "editMimeType", SLOT( editMimeType() ) );
     s_actionSlotMap->insert( "print", SLOT( print() ) );
+    s_actionSlotMap->insert( "searchProvider", SLOT( searchProvider() ) );
     // Tricky. Those aren't actions in fact, but simply methods that a browserextension
     // can have or not. No need to return them here.
     //s_actionSlotMap->insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
@@ -649,8 +650,8 @@ bool LiveConnectExtension::put( const unsigned long, const QString &, const QStr
       return false;
 }
 
-bool LiveConnectExtension::call( const unsigned long, const QString &, const QStringList &, Type &, unsigned long &, QString & ) { 
-      return false; 
+bool LiveConnectExtension::call( const unsigned long, const QString &, const QStringList &, Type &, unsigned long &, QString & ) {
+      return false;
 }
 
 void LiveConnectExtension::unregister( const unsigned long ) {}

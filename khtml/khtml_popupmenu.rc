@@ -1,7 +1,8 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="10">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="11">
 <Menu name="popupmenu">
  <Action name="copy" group="editactions"/>
  <Action name="selectAll" group="editactions"/>
+ <Action name="searchProvider" group="editactions"/>
  <Separator weakSeparator="1" group="editactions"/>
  <Action name="savelinkas" group="linkactions"/>
  <Action name="copylinklocation" group="linkactions"/>

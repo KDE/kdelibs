@@ -256,6 +256,7 @@ class BrowserExtensionPrivate;
   * @li @p shred : Shred selected items (secure deletion) - DEPRECATED.
   * @li @p properties : Show file/document properties.
   * @li @p editMimeType : show file/document's mimetype properties.
+  * @li @p searchProvider : Lookup selected text at default search provider
   *
   * [normal actions]
   * @li @p print : Print :-)

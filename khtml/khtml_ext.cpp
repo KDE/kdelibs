@@ -52,6 +52,10 @@
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <krun.h>
+#include <kurifilter.h>
+#include <kiconloader.h>
+#include <kdesktopfile.h>
+
 
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"
@@ -221,6 +225,23 @@ void KHTMLPartBrowserExtension::copy()
     }
 }
 
+void KHTMLPartBrowserExtension::searchProvider()
+{
+    if ( m_extensionProxy )
+    {
+        callExtensionProxyMethod( "searchProvider()" );
+        return;
+    }
+
+    KURIFilterData data;
+    QStringList list;
+    data.setData( m_part->selectedText() );
+    list << "kurisearchfilter" << "kuriikwsfilter";
+
+    if ( KURIFilter::self()->filterURI(data, list) )
+        emit m_part->browserExtension()->openURLRequest( data.uri() );
+}
+
 void KHTMLPartBrowserExtension::paste()
 {
     if ( m_extensionProxy )
@@ -346,6 +367,43 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       copyAction->setText(i18n("&Copy Text"));
       copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
       actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+
+      KConfig config("kuriikwsfilterrc");
+      config.setGroup("General");
+      QString engine = config.readEntry("DefaultSearchEngine");
+      if ( !engine.isEmpty() )
+      {
+        // search text
+        QString selectedText = khtml->selectedText();
+        if ( selectedText.length()>18 ) {
+          selectedText.truncate(15);
+          selectedText+="...";
+        }
+
+        // search provider name
+        KDesktopFile file("searchproviders/" + engine + ".desktop", true, "services");
+
+        // search provider icon
+        QPixmap icon;
+        KURIFilterData data;
+        QStringList list;
+        data.setData( QString("some keyword") );
+        list << "kurisearchfilter" << "kuriikwsfilter";
+
+        if ( KURIFilter::self()->filterURI(data, list) )
+        {
+          QString iconPath = locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+          if ( iconPath.isEmpty() )
+            icon = SmallIcon("find");
+          else
+            icon = QPixmap( iconPath );
+        }
+        else
+          icon = SmallIcon("find");
+
+        new KAction( i18n( "Search '%1' at %2" ).arg( selectedText ).arg( file.readName() ), icon, 0, d->m_khtml->browserExtension(),
+                     SLOT( searchProvider() ), actionCollection(), "searchProvider" );
+      }
     }
     else
     {
