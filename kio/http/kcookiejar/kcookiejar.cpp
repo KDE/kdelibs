@@ -762,7 +762,6 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
     QString domain;
     stripDomain( cookiePtr->host(), domain);
-
     // First check if the domain matches the host
     if (!cookiePtr->domain().isEmpty() &&
         (cookiePtr->domain() != domain) && 
@@ -770,7 +769,17 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     {
         qWarning("WARNING: Host %s tries to set cookie for domain %s",
               cookiePtr->host().latin1(), cookiePtr->domain().latin1());
-        return KCookieReject;
+        if (domain.contains(cookiePtr->domain()))
+        {
+           // When eg. www.zdf.msnbc.de tries to set a cookie for .msnbc.de
+           // we accept the cookie but restrict it to ".zdf.msnbc.de"
+           qWarning("WARNING: Restricting cookie to %s", domain.latin1());
+           cookiePtr->fixDomain(domain);
+        }
+        else
+        {
+           return KCookieReject;
+        }
     }
 
     if ((cookiePtr->name().find('\"') != -1) ||
