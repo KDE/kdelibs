@@ -46,7 +46,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
-           Images, Applets, Links, Forms, Anchors, Scripts, All, Clear, Open, Close,
+           Images, Applets, Links, Forms, Layers, Anchors, Scripts, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName, GetSelection, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
            Height, Width, Dir, Frames, CompatMode };
@@ -75,7 +75,7 @@ namespace KJS {
       hr_info, mod_info, a_info, img_info, object_info, param_info,
       applet_info, map_info, area_info, script_info, table_info,
       caption_info, col_info, tablesection_info, tr_info,
-      tablecell_info, frameSet_info, frame_info, iFrame_info, marquee_info;
+      tablecell_info, frameSet_info, frame_info, iFrame_info, marquee_info, layer_info;
 
     enum { HtmlVersion, HeadProfile, LinkHref, LinkRel, LinkMedia,
            LinkCharset, LinkDisabled, LinkHrefLang, LinkRev, LinkTarget, LinkType,
@@ -146,6 +146,7 @@ namespace KJS {
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth, IFrameContentDocument,
            MarqueeStart, MarqueeStop,
+           LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument, ElementChildren, ElementAll };
 
@@ -169,15 +170,17 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
-    virtual bool toBoolean(ExecState *) const { return true; }
+    virtual bool toBoolean(ExecState *) const;
     virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     enum { Item, NamedItem, Tags };
     Value getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::HTMLCollection toCollection() const { return collection; }
+    virtual void hide() { hidden = true; }
   protected:
     DOM::HTMLCollection collection;
+    bool hidden;
   };
 
   class HTMLSelectCollection : public HTMLCollection {
@@ -232,7 +235,7 @@ namespace KJS {
     JSEventListener *m_onLoadListener;
   };
 
-  Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
+  Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
   Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 
   /* Helper function object for determining the number

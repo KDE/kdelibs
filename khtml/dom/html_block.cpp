@@ -1,7 +1,8 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +24,9 @@
 
 
 #include "dom/html_block.h"
+#include "dom/html_misc.h"
 #include "html/html_blockimpl.h"
+#include "html/html_miscimpl.h"
 
 using namespace DOM;
 
@@ -117,17 +120,17 @@ void HTMLDivElement::setAlign( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLHRElement::HTMLHRElement() 
+HTMLHRElement::HTMLHRElement()
     : HTMLElement()
 {
 }
 
-HTMLHRElement::HTMLHRElement(const HTMLHRElement &other) 
+HTMLHRElement::HTMLHRElement(const HTMLHRElement &other)
     : HTMLElement(other)
 {
 }
 
-HTMLHRElement::HTMLHRElement(HTMLHRElementImpl *impl) 
+HTMLHRElement::HTMLHRElement(HTMLHRElementImpl *impl)
     : HTMLElement(impl)
 {
 }
@@ -200,17 +203,17 @@ void HTMLHRElement::setWidth( const DOMString &value )
 
 // --------------------------------------------------------------------------
 
-HTMLHeadingElement::HTMLHeadingElement() 
+HTMLHeadingElement::HTMLHeadingElement()
     : HTMLElement()
 {
 }
 
-HTMLHeadingElement::HTMLHeadingElement(const HTMLHeadingElement &other) 
+HTMLHeadingElement::HTMLHeadingElement(const HTMLHeadingElement &other)
     : HTMLElement(other)
 {
 }
 
-HTMLHeadingElement::HTMLHeadingElement(HTMLElementImpl *impl) 
+HTMLHeadingElement::HTMLHeadingElement(HTMLElementImpl *impl)
     : HTMLElement(impl)
 {
 }
@@ -259,12 +262,12 @@ HTMLParagraphElement::HTMLParagraphElement() : HTMLElement()
 {
 }
 
-HTMLParagraphElement::HTMLParagraphElement(const HTMLParagraphElement &other) 
+HTMLParagraphElement::HTMLParagraphElement(const HTMLParagraphElement &other)
     : HTMLElement(other)
 {
 }
 
-HTMLParagraphElement::HTMLParagraphElement(HTMLElementImpl *impl) 
+HTMLParagraphElement::HTMLParagraphElement(HTMLElementImpl *impl)
     : HTMLElement(impl)
 {
 }
@@ -302,12 +305,12 @@ HTMLPreElement::HTMLPreElement() : HTMLElement()
 {
 }
 
-HTMLPreElement::HTMLPreElement(const HTMLPreElement &other) 
+HTMLPreElement::HTMLPreElement(const HTMLPreElement &other)
     : HTMLElement(other)
 {
 }
 
-HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl) 
+HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl)
     : HTMLElement(impl)
 {
 }
@@ -345,3 +348,96 @@ void HTMLPreElement::setWidth( long _width )
     ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 
+// --------------------------------------------------------------------------
+
+HTMLLayerElement::HTMLLayerElement() : HTMLElement()
+{
+}
+
+HTMLLayerElement::HTMLLayerElement(const HTMLLayerElement &other)
+    : HTMLElement(other)
+{
+}
+
+HTMLLayerElement::HTMLLayerElement(HTMLLayerElementImpl *impl)
+    : HTMLElement(impl)
+{
+}
+
+HTMLLayerElement &HTMLLayerElement::operator = (const Node &other)
+{
+    assignOther( other, ID_LAYER );
+    return *this;
+}
+
+HTMLLayerElement &HTMLLayerElement::operator = (const HTMLLayerElement &other)
+{
+    HTMLElement::operator = (other);
+    return *this;
+}
+
+HTMLLayerElement::~HTMLLayerElement()
+{
+}
+
+long HTMLLayerElement::top() const
+{
+    if(!impl) return 0;
+    DOMString t = ((ElementImpl *)impl)->getAttribute(ATTR_TOP);
+    return t.toInt();
+}
+
+void HTMLLayerElement::setTop( long _top )
+{
+    if(!impl) return;
+
+    QString aStr;
+    aStr.sprintf("%ld", _top);
+    DOMString value(aStr);
+    ((ElementImpl *)impl)->setAttribute(ATTR_TOP, value);
+}
+
+long HTMLLayerElement::left() const
+{
+    if(!impl) return 0;
+    DOMString l = ((ElementImpl *)impl)->getAttribute(ATTR_LEFT);
+    return l.toInt();
+}
+
+void HTMLLayerElement::setLeft( long _left )
+{
+    if(!impl) return;
+
+    QString aStr;
+    aStr.sprintf("%ld", _left);
+    DOMString value(aStr);
+    ((ElementImpl *)impl)->setAttribute(ATTR_LEFT, value);
+}
+
+DOMString HTMLLayerElement::visibility() const
+{
+    if(!impl) return DOMString();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VISIBILITY);
+}
+
+void HTMLLayerElement::setVisibility( const DOMString &value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VISIBILITY, value);
+}
+
+DOMString HTMLLayerElement::bgColor() const
+{
+    if(!impl) return DOMString();
+    return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
+}
+
+void HTMLLayerElement::setBgColor( const DOMString &value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BGCOLOR, value);
+}
+
+HTMLCollection HTMLLayerElement::layers() const
+{
+    if(!impl) return HTMLCollection();
+    return HTMLCollection(impl, HTMLCollectionImpl::DOC_LAYERS);
+}

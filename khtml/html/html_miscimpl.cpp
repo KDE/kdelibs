@@ -93,6 +93,10 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                 if(e->id() == ID_FORM)
                     len++;
                 break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
+                    len++;
+                break;
             case TABLE_TBODIES:
                 if(e->id() == ID_TBODY)
                     len++;
@@ -181,6 +185,10 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                 break;
             case DOC_FORMS:
                 if(e->id() == ID_FORM)
+                    len++;
+                break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
                     len++;
                 break;
             case TABLE_TBODIES:
@@ -333,6 +341,10 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 if(e->id() == ID_FORM)
                     check = true;
                 break;
+            case DOC_LAYERS:
+                if(e->id() == ID_LAYER || e->id() == ID_ILAYER)
+                    check = true;
+                break;
             case TABLE_TBODIES:
                 if(e->id() == ID_TBODY)
                     check = true;
@@ -389,7 +401,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                           e->id() == ID_IMG ||
                           e->id() == ID_INPUT ||
                           e->id() == ID_MAP ||
-			  e->id() == ID_META || 
+			  e->id() == ID_META ||
                           e->id() == ID_OBJECT ||
                           e->id() == ID_SELECT ||
                           e->id() == ID_TEXTAREA

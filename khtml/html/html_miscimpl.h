@@ -54,6 +54,7 @@ public:
         DOC_IMAGES = 0, // all IMG elements in the document
         DOC_APPLETS,   // all OBJECT and APPLET elements
         DOC_FORMS,     // all FORMS
+        DOC_LAYERS,    // all LAYERS
         DOC_LINKS,     // all A _and_ AREA elements with a value for href
         DOC_ANCHORS,      // all A elements with a value for name
         // from HTMLTable, HTMLTableSection, HTMLTableRow

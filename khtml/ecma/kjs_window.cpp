@@ -773,13 +773,13 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript(exec) &&
       part->document().isHTMLDocument()) { // might be XML
-    // This is only for images, forms and applets, see KJS::HTMLDocument::tryGet
+    // This is only for images, forms, layers and applets, see KJS::HTMLDocument::tryGet
     DOM::HTMLDocument doc = part->htmlDocument();
-    NamedTagLengthDeterminer::TagLength tags[3] = {
-      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+    NamedTagLengthDeterminer::TagLength tags[4] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
     };
-    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
-    for (int i = 0; i < 3; i++)
+    NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
+    for (int i = 0; i < 4; i++)
       if (tags[i].length > 0) {
         if (tags[i].length == 1)
           return getDOMNode(exec, tags[i].last);

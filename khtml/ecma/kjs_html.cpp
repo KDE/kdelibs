@@ -61,6 +61,8 @@
 
 #include <kdebug.h>
 
+#define KJS_VERBOSE
+
 using namespace KJS;
 
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
@@ -167,8 +169,9 @@ const ClassInfo KJS::HTMLDocument::info =
   compatMode		HTMLDocument::CompatMode	DontDelete|ReadOnly
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
+#NS4 extension
+  layers		HTMLDocument::Layers		DontDelete|ReadOnly
 #potentially obsolete array properties
-# layers
 # plugins
 # tags
 #potentially obsolete properties
@@ -208,11 +211,11 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
     return false;
 
   // Keep in sync with tryGet
-  NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+  NamedTagLengthDeterminer::TagLength tags[4] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
   };
-  NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
-  for (int i = 0; i < 3; i++)
+  NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
+  for (int i = 0; i < 4; i++)
     if (tags[i].length > 0)
         return true;
 
@@ -245,11 +248,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   // Note that document.myform should only look at forms
   // Check for applets with name==propertyName, return item or list if found
 
-  NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+  NamedTagLengthDeterminer::TagLength tags[4] = {
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
   };
-  NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
-  for (int i = 0; i < 3; i++)
+  NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
+  for (int i = 0; i < 4; i++)
     if (tags[i].length > 0) {
       if (tags[i].length == 1)
         return getDOMNode(exec, tags[i].last);
@@ -295,6 +298,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
       return getHTMLCollection(exec,doc.links());
     case Forms:
       return getHTMLCollection(exec,doc.forms());
+    case Layers:
+      // ### Should not be hidden when we emulate Netscape4
+      return getHTMLCollection(exec,doc.layers(), true);
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
     case Scripts: // TODO (IE-specific)
@@ -375,6 +381,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     DOM::HTMLElement element = coll.namedItem(propertyName.string());
     if (!element.isNull()) {
       return getDOMNode(exec,element);
+    }
+
+    DOM::HTMLCollection coll2 = doc.layers();
+    DOM::HTMLElement element2 = coll2.namedItem(propertyName.string());
+    if (!element2.isNull()) {
+      return getDOMNode(exec,element2);
     }
   }
 #ifdef KJS_VERBOSE
@@ -511,6 +523,7 @@ const ClassInfo KJS::HTMLElement::frameSet_info = { "HTMLFrameSetElement", &KJS:
 const ClassInfo KJS::HTMLElement::frame_info = { "HTMLFrameElement", &KJS::HTMLElement::info, &HTMLFrameElementTable, 0 };
 const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTMLElement::info, &HTMLIFrameElementTable, 0 };
 const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, &HTMLMarqueeElementTable, 0 };
+const ClassInfo KJS::HTMLElement::layer_info = { "HTMLLayerElement", &KJS::HTMLElement::info, &HTMLLayerElementTable, 0 };
 
 const ClassInfo* KJS::HTMLElement::classInfo() const
 {
@@ -637,12 +650,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
     return &iFrame_info;
   case ID_MARQUEE:
     return &marquee_info;
+  case ID_LAYER:
+    return &layer_info;
   default:
     return &info;
   }
 }
 /*
-@begin HTMLElementTable 8
+@begin HTMLElementTable 11
   id		KJS::HTMLElement::ElementId	DontDelete
   title		KJS::HTMLElement::ElementTitle	DontDelete
   lang		KJS::HTMLElement::ElementLang	DontDelete
@@ -1070,6 +1085,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   cols		KJS::HTMLElement::FrameSetCols			DontDelete
   rows		KJS::HTMLElement::FrameSetRows			DontDelete
 @end
+@begin HTMLLayerElementTable 6
+  top		  KJS::HTMLElement::LayerTop			DontDelete
+  left		  KJS::HTMLElement::LayerLeft			DontDelete
+  visibility	  KJS::HTMLElement::LayerVisibility		DontDelete
+  bgColor	  KJS::HTMLElement::LayerBgColor		DontDelete
+  clip	  	  KJS::HTMLElement::LayerClip			DontDelete|ReadOnly
+  layers	  KJS::HTMLElement::LayerLayers			DontDelete|ReadOnly
+@end
 @begin HTMLFrameElementTable 9
   contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
   frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
@@ -1151,8 +1174,8 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
       unsigned long robjid;
       if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
         return getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid);
+    }
       break;
-  }
   default:
     break;
   }
@@ -1810,6 +1833,18 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FrameSetCols:            return String(frameSet.cols());
     case FrameSetRows:            return String(frameSet.rows());
+    }
+  }
+  break;
+  case ID_LAYER: {
+    DOM::HTMLLayerElement layerElement = element;
+    switch (token) {
+    case LayerTop:            return Number(layerElement.top());
+    case LayerLeft:           return Number(layerElement.left());
+    case LayerVisibility:     return getString(layerElement.visibility());
+    case LayerBgColor:        return getString(layerElement.bgColor());
+    /*case LayerClip:           return getLayerClip(exec, layerElement); */
+    case LayerLayers:         return getHTMLCollection(exec,layerElement.layers());
     }
   }
   break;
@@ -2919,6 +2954,17 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       }
     }
     break;
+    case ID_LAYER: {
+      DOM::HTMLLayerElement layerElement = element;
+      switch (token) {
+      case LayerTop:                   { layerElement.setTop(value.toInteger(exec)); return; }
+      case LayerLeft:                  { layerElement.setLeft(value.toInteger(exec)); return; }
+      case LayerVisibility:            { layerElement.setVisibility(str); return; }
+      case LayerBgColor:               { layerElement.setBgColor(str); return; }
+      // read-only: layers, clip
+      }
+    }
+    break;
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
       switch (token) {
@@ -3000,11 +3046,15 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c), hidden(false) {}
 
 KJS::HTMLCollection::~HTMLCollection()
 {
   ScriptInterpreter::forgetDOMObject(collection.handle());
+}
+
+bool KJS::HTMLCollection::toBoolean(ExecState *) const {
+    return !hidden;
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
@@ -3450,9 +3500,14 @@ Image::~Image()
       m_onLoadListener->deref();
 }
 
-Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
+Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
 {
-  return cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
+  Value coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
+  if (hide) {
+    KJS::HTMLCollection *impl = static_cast<KJS::HTMLCollection*>(coll.imp());
+    impl->hide();
+  }
+  return coll;
 }
 
 Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
