@@ -4,6 +4,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
+#include <assert.h>
 
 int main(int argc, char **argv) {
     KAboutData aboutData("kprotocolinfotest", "KProtocolinfo Test",
