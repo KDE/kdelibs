@@ -43,6 +43,8 @@
 #include <qpopupmenu.h>
 #include <qtoolbutton.h>
 #include <qnamespace.h>
+#include <qimage.h>
+
 #include <klocale.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -623,9 +625,14 @@ void KMdiChildFrm::enableClose(bool bEnable)
 
 void KMdiChildFrm::setIcon(const QPixmap& pxm)
 {
-   *m_pIconButtonPixmap = pxm;
-   m_pWinIcon->setPixmap( pxm);
-   m_pUnixIcon->setPixmap( pxm);
+   QPixmap p = pxm;
+   if (p.width()>18 || p.height()>18) {
+      QImage img = pxm.convertToImage();
+      p = img.smoothScale(18,18,QImage::ScaleMin);
+   }
+   *m_pIconButtonPixmap = p;
+   m_pWinIcon->setPixmap( p );
+   m_pUnixIcon->setPixmap( p );
 }
 
 //============ icon =================//
