@@ -25,11 +25,13 @@
 1203	libkonq
 1204	kdesktop
 1205	kdesud
+1206	kdesu
 
 1400	khelpcenter (kdebase)
 
 # kdeutils
 1501	khexedit (kdeutils)
+1511	kdessh (kdeutils)
 1601	ark (kdeutils)
 1901	kfind
 1902	kfind (KfindWindow::updateResults)
