@@ -236,20 +236,6 @@ if test "$want_mitshm" = "yes" -a "$have_mitshm" = "yes"; then
   AC_DEFINE(HAVE_MITSHM,1,[Define if you want MIT-SHM support])
 fi
 
-dnl begin check for --enable-qtonly
-AC_MSG_CHECKING(if K_WS_QTONLY is wanted)
-
-AC_ARG_ENABLE(qtonly,
-AC_HELP_STRING([--enable-qtonly],[use only qt-dependent functions even under X11]),
-[if test "$enableval" = yes; then
-  AC_MSG_RESULT(yes)
-  AC_DEFINE(K_WS_QTONLY,1,[Define if you want qt-only stuff under X11])
-else
-  AC_MSG_RESULT(no)
-fi], [AC_MSG_RESULT(no)])
-dnl end check for --enable-qtonly
-
-
 AC_SUBST(ICE_SUBDIR, 'ICE')
 AC_SUBST(ICE_RLIB, 'ICE/libkICE.la')
 
