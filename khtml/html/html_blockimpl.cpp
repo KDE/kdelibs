@@ -3,6 +3,8 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -247,6 +249,59 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
             break;
         case ATTR_TRUESPEED:
             m_minimumDelay = attr->val() ? 0 : defaultMinimumDelay;
+            break;
+        default:
+            HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+// ------------------------------------------------------------------------
+
+HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc, ushort _tagid)
+    : HTMLDivElementImpl( doc, _tagid )
+{
+    if (_tagid == ID_LAYER)
+        addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+}
+
+void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
+{
+//    HTMLElementImpl::parseAttribute(attr);
+
+    // layers are evil
+    switch(attr->id()) {
+        case ATTR_LEFT:
+            addCSSProperty(CSS_PROP_LEFT, attr->value());
+            break;
+        case ATTR_TOP:
+            addCSSProperty(CSS_PROP_TOP, attr->value());
+            break;
+        case ATTR_WIDTH:
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_WIDTH, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_WIDTH);
+            break;
+        case ATTR_HEIGHT:
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_HEIGHT, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_HEIGHT);
+            break;
+        case ATTR_BGCOLOR:
+            if (!attr->value().isEmpty())
+                addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
+            break;
+        case ATTR_Z_INDEX:
+            if (!attr->value().isEmpty())
+                addCSSProperty(CSS_PROP_Z_INDEX, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_Z_INDEX);
+            break;
+        case ATTR_VISIBILITY:
+            addCSSProperty(CSS_PROP_VISIBILITY, attr->value());
             break;
         default:
             HTMLElementImpl::parseAttribute(attr);

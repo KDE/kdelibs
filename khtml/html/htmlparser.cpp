@@ -888,9 +888,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
+        n = new HTMLGenericElementImpl(document, t->tid);
+        break;
     case ID_LAYER:
     case ID_ILAYER:
-        n = new HTMLGenericElementImpl(document, t->tid);
+        n = new HTMLLayerElementImpl(document, t->tid);
         break;
     case ID_P:
     case ID_DIV:
