@@ -921,12 +921,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		return;
 	    }
 	}
-        if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT))
-            if (m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke))
-            {
+        if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT)) {
+            // If listener returned false, stop here. Otherwise handle standard keys (#60403).
+            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke)) {
                 _ke->accept();
                 return;
             }
+        }
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
