@@ -16,26 +16,40 @@ execution of a KDE program, internationalization files for these libraries,
 misc HTML documentation, and regression tests.  The ten libraries are:
 
 * kdecore
-    This is
+    This is the core collection of KDE stuff.  Non GUI classes reside here.
 
 * kdeui
+    The main collection of misc. user interface classes (widgets).
 
 * jscript
+    A JavaScript interperter perhaps?  Who knows.
 
 * kimgio
+    An all purpose extension to the qimgio class that supports PNG and
+    other image formats.
 
 * khtmlw
+    The main HTML rendering widget, due to be replaced by khwml (For the
+    next release of kfm).
 
 * kfmlib
+    The kfm support library.  UhHuh.
 
 * kfile
+    This library contains the KFileDialog in all its glory.  A reasonably
+    source compatable replacement to QFileDialog.
 
 * mediatool
+    Sound related classes (such as a mixer class), for use by anything
+    that wants a rather neutral way to use sounds (and sound events)
+    within KDE apps.
 
 * kspell
+    KSpell and related classes are a frontend to ispell for use within a
+    GUI app.  kedit uses them already.
 
 * kab
-
+    The address book library.  See the README for more information.
 
 Licensing
 ---------
@@ -73,5 +87,30 @@ used for most apps.
 More Info
 ---------
 
+If you get odd error such as:
+
+as: Error: /var/tmp/ccK1Cfxa.s, line 2827: Truncating token:
+__t4pair2Zt18__rb_tree_iterator3Zt4pair2ZCt12basic_string3ZcZt18string_char_trai
+ts1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char_traits1
+ZcZt24__default_alloc_template2b0i0ZRt4pair2ZCt12basic_string3ZcZt18string_char_
+traits1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char_tra
+its1ZcZt24__default_alloc_template2b0i0ZPt4pair2ZCt12basic_string3ZcZt18string_c
+har_traits1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char
+_traits1ZcZt24__default_alloc_template2b0i0ZbRCt18__rb_tree_iterator3Zt4pair2ZCt
+12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0Zt12b
+asic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0ZRt4pair
+2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0Z
+t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0ZPt4
+pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b
+0i0Zt12basic_string3ZcZt18strin!
+g_char_traits1ZcZt24__default_al
+
+and you're using egcs, try re-compiling all your C++ libs with -fsquangle,
+and then recompiling whatever you were working on with -fsquangle.  It
+should help, and more information about this is available on the egcs FAQ
+available at http://egcs.cygnus.com
+
 Please direct any bug reports to me (kalle@kde.org). General KDE
 discussions should go to the KDE mailing list (kde@kde.org).
+
+Cow!
