@@ -36,6 +36,7 @@ namespace DOM {
     class StyleSheetImpl;
     class MediaList;
 
+    class CSSSelector;
     class CSSProperty;
     class CSSValueImpl;
     class CSSPrimitiveValueImpl;
@@ -50,11 +51,13 @@ namespace DOM {
     {
     public:
 	CSSSelector()
-	    : tagHistory(0), attr(0), tag(0xffff), relation( Descendant ),
-	      match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed) {}
+	    : tagHistory(0), simpleSelector(0), attr(0), tag(0xffff), relation( Descendant ),
+	      match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed)
+        {}
 
 	~CSSSelector() {
 	    delete tagHistory;
+            delete simpleSelector;
 	}
 
 	/**
@@ -103,6 +106,8 @@ namespace DOM {
 	    PseudoOther,
 	    PseudoEmpty,
 	    PseudoFirstChild,
+            PseudoLastChild,
+            PseudoOnlyChild,
 	    PseudoFirstLine,
 	    PseudoFirstLetter,
 	    PseudoLink,
@@ -110,9 +115,13 @@ namespace DOM {
 	    PseudoHover,
 	    PseudoFocus,
 	    PseudoActive,
+            PseudoTarget,
 	    PseudoBefore,
 	    PseudoAfter,
-	    PseudoFunction
+            PseudoLang,
+            PseudoNot,
+            PseudoRoot,
+            PseudoSelection
 	};
 
 	inline PseudoType pseudoType() const
@@ -124,6 +133,7 @@ namespace DOM {
 
 	mutable DOM::DOMString value;
 	CSSSelector *tagHistory;
+        CSSSelector* simpleSelector; // Used for :not.
 	unsigned int attr;
 	unsigned int tag;
 
@@ -131,7 +141,7 @@ namespace DOM {
 	Match 	 match         : 4;
 	bool	nonCSSHint : 1;
 	unsigned int pseudoId : 3;
-	mutable PseudoType _pseudoType : 4;
+	mutable PseudoType _pseudoType : 5;
 
     private:
 	void extractPseudoType() const;
@@ -163,7 +173,6 @@ namespace DOM {
 	virtual bool isCharetRule() { return false; }
 	virtual bool isImportRule() { return false; }
 	virtual bool isMediaRule() { return false; }
-	virtual bool isQuirksRule() { return false; }
 	virtual bool isFontFaceRule() { return false; }
 	virtual bool isPageRule() { return false; }
 	virtual bool isUnknownRule() { return false; }

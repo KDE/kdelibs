@@ -40,6 +40,10 @@ using namespace DOM;
 
 #include <stdlib.h>
 
+#ifdef APPLE_CHANGES
+void qFatal ( const char * msg ) {}
+#endif
+
 ValueList::ValueList()
 {
     values = (Value *) malloc( 16 * sizeof ( Value ) );
@@ -148,10 +152,15 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "<<<<<<< done parsing style sheet" << endl;
 #endif
+
+    delete rule;
+    rule = 0;
 }
 
-CSSRuleImpl *CSSParser::parseRule( const DOM::DOMString &string )
+CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOMString &string )
 {
+    styleElement = sheet;
+
     const char konq_rule[] = "@-konq-rule{";
     int length = string.length() + 4 + strlen(konq_rule);
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
@@ -168,12 +177,15 @@ CSSRuleImpl *CSSParser::parseRule( const DOM::DOMString &string )
     yytext = yy_c_buf_p = data;
     yy_hold_char = *yy_c_buf_p;
 
-
     CSSParser *old = currentParser;
     currentParser = this;
     cssyyparse( this );
     currentParser = old;
-    return rule;
+
+    CSSRuleImpl *result = rule;
+    rule = 0;
+
+    return result;
 }
 
 bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, const DOM::DOMString &string,
@@ -210,6 +222,9 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     currentParser = this;
     cssyyparse( this );
     currentParser = old;
+
+    delete rule;
+    rule = 0;
 
     bool ok = false;
     if ( numParsedProperties ) {
@@ -256,6 +271,9 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     currentParser = this;
     cssyyparse( this );
     currentParser = old;
+
+    delete rule;
+    rule = 0;
 
     bool ok = false;
     if ( numParsedProperties ) {
@@ -352,8 +370,6 @@ static bool validUnit( Value *value, int unitflags, bool strict )
 	b = (unitflags & FPercent);
 	break;
     case Value::Q_EMS:
-	if ( strict )
-	    break;
     case CSSPrimitiveValue::CSS_EMS:
     case CSSPrimitiveValue::CSS_EXS:
     case CSSPrimitiveValue::CSS_PX:
@@ -724,10 +740,9 @@ bool CSSParser::parseValue( int propId, bool important )
 	// nw-resize | n-resize | se-resize | sw-resize | s-resize | w-resize | text |
 	// wait | help ] ] | inherit
     // MSIE 5 compatibility :/
-	if ( !strict && id == CSS_VAL_HAND ) {
-	    id = CSS_VAL_POINTER;
+	if ( !strict && id == CSS_VAL_HAND )
 	    valid_primitive = true;
-	} else if ( id >= CSS_VAL_AUTO && id <= CSS_VAL_HELP )
+	else if ( id >= CSS_VAL_AUTO && id <= CSS_VAL_HELP )
 	    valid_primitive = true;
 	break;
 
@@ -1215,6 +1230,14 @@ bool CSSParser::parseContent( int propId, bool important )
 #endif
         } else if ( val->unit == Value::Function ) {
 	    // attr( X )
+            ValueList *args = val->function->args;
+            QString fname = qString( val->function->name ).lower();
+            if ( fname != "attr(" || !args )
+                return false;
+            if ( args->numValues != 1)
+                return false;
+            Value *a = args->current();
+            parsedValue = new CSSPrimitiveValueImpl(domString(a->string), CSSPrimitiveValue::CSS_ATTR);
         } else if ( val->unit == CSSPrimitiveValue::CSS_IDENT ) {
             // open-quote
             // close-quote
@@ -1492,16 +1515,15 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
 {
     QRgb c = khtml::invalidColor;
     Value *value = valueList->current();
-    if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
-         value->unit == CSSPrimitiveValue::CSS_IDENT ||
-	 (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION ) )
-	c = ::parseColor( qString( value->string ));
-    else if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&
+    if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&
 	      value->fValue >= 0. && value->fValue < 1000000. ) {
 	QString str;
 	str.sprintf( "%06d", (int)(value->fValue+.5) );
 	c = ::parseColor( str );
-    }
+    } else if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
+              value->unit == CSSPrimitiveValue::CSS_IDENT ||
+              (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION) )
+	c = ::parseColor( qString( value->string ));
     else if ( value->unit == Value::Function &&
 		value->function->args->numValues == 5 /* rgb + two commas */ &&
 		qString( value->function->name ).lower() == "rgb(" ) {

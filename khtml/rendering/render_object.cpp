@@ -77,6 +77,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         o = new (arena) RenderListItem(node);
         break;
     case RUN_IN:
+    case COMPACT:
     case INLINE_BLOCK:
         break;
     case TABLE:

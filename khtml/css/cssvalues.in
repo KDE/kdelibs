@@ -219,6 +219,7 @@ inline
 block
 list-item
 run-in
+compact
 inline-block
 table
 inline-table

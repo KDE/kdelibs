@@ -2,7 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef _CSS_cssstyleselector_h_
 #define _CSS_cssstyleselector_h_
@@ -87,7 +86,7 @@ namespace khtml
 	   the virtual methods until then, so the class has no vptr.
 	*/
 // 	virtual ~StyleSelector() {};
-// 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int = None) = 0;
+// 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e) = 0;
 
 	enum State {
 	    None = 0x00,
@@ -149,12 +148,18 @@ namespace khtml
 	/* checks if the selector matches the given Element */
 	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e);
 
+#ifdef APPLE_CHANGES
+	/* This function fixes up the default font size if it detects that the
+	   current generic font family has changed. -dwh */
+	void checkForGenericFamilyChange(RenderStyle* aStyle, RenderStyle* aParentStyle);
+#endif
+
 	/* builds up the selectors and properties lists from the CSSStyleSelectorList's */
 	void buildLists();
 	void clearLists();
 
-	unsigned int addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
-				   unsigned int numProps );
+        unsigned int addInlineDeclarations(DOM::ElementImpl* e, DOM::CSSStyleDeclarationImpl *decl,
+				   unsigned int numProps);
 
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static DOM::CSSStyleSheetImpl *quirksSheet;

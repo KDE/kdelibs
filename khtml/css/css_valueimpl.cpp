@@ -500,7 +500,17 @@ void CSSPrimitiveValueImpl::cleanup()
 
 int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
 {
-    return ( int ) computeLengthFloat( style, devMetrics );
+    double result = computeLengthFloat( style, devMetrics );
+    int intResult = (int)result;
+#ifdef APPLE_CHANGES
+    // This conversion is imprecise, often resulting in values of e.g., 44.99998.  We
+    // need to go ahead and round if we're really close to the next integer value.
+    double newResult = (intResult < 0) ? result-0.01 : result+0.01;
+    int secondIntResult = (int)newResult;
+    if (secondIntResult != intResult)
+        return secondIntResult;
+#endif
+    return intResult;
 }
 
 double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
@@ -522,8 +532,12 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPa
     case CSSPrimitiveValue::CSS_EXS:
 	{
         QFontMetrics fm = style->fontMetrics();
+#ifdef APPLE_CHANGES
+        factor = fm.xHeight();
+#else
         QRect b = fm.boundingRect('x');
         factor = b.height();
+#endif
         break;
 	}
     case CSSPrimitiveValue::CSS_PX:
@@ -547,6 +561,7 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPa
     default:
         return -1;
     }
+
     return getFloatValue(type)*factor;
 }
 
@@ -770,12 +785,18 @@ CSSImageValueImpl::~CSSImageValueImpl()
 // ------------------------------------------------------------------------
 
 FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
-    : CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
+: CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
 {
-    // standard faces as serif, cursive etc. are handled by the parser.
     static const QRegExp parenReg(" \\(.*\\)$");
     static const QRegExp braceReg(" \\[.*\\]$");
 
+#ifdef APPLE_CHANGES
+    parsedFontName = string;
+    // a language tag is often added in braces at the end. Remove it.
+    parsedFontName.replace(parenReg, "");
+    // remove [Xft] qualifiers
+    parsedFontName.replace(braceReg, "");
+#else
     const QString &available = KHTMLSettings::availableFamilies();
 
     QString face = string.lower();
@@ -807,8 +828,8 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
 	    pos = available.length();
 	parsedFontName = available.mid( pos1, pos - pos1 );
     }
+#endif // !APPLE_CHANGES
 }
-
 
 FontValueImpl::FontValueImpl()
     : style(0), variant(0), weight(0), size(0), lineHeight(0), family(0)

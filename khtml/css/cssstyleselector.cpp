@@ -2,7 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -61,7 +61,6 @@ using namespace DOM;
 #include <qvaluelist.h>
 #include <qstring.h>
 #include <qtooltip.h>
-#include <qpalette.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <qdatetime.h>
@@ -90,7 +89,6 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     KHTMLView* view = doc->view();
     strictParsing = _strictParsing;
-    // kdDebug() << "CSSStyleSelector::CSSStyleSelector: strict parsing = " << strictParsing << endl;
     settings = view ? view->part()->settings() : 0;
     if(!defaultStyle) loadDefaultStyle(settings);
     m_medium = view ? view->mediaType() : QString("all");
@@ -259,11 +257,18 @@ void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,
     computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
 }
 
-void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool /* isFixed */)
+void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool isFixed)
 {
+#ifdef APPLE_CHANGES
+    // We don't want to scale the settings by the dpi.
+    const float toPix = 1;
+#else
+    Q_UNUSED( isFixed );
+
     // ### get rid of float / double
     float toPix = paintDeviceMetrics->logicalDpiY()/72.;
     if (toPix  < 96./72.) toPix = 96./72.;
+#endif // ######### fix isFixed code again.
 
     fontSizes.clear();
     const float factor = 1.2;
@@ -272,7 +277,7 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
     float minFontSize;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
-#if 0
+#ifdef APPLE_CHANGES
 	if (isFixed)
 	    mediumFontSize = settings->mediumFixedFontSize() * toPix;
 	else
@@ -317,7 +322,6 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
-
     if (!e->getDocument()->haveStylesheetsLoaded()) {
         if (!styleNotYetAvailable) {
             styleNotYetAvailable = new RenderStyle();
@@ -353,7 +357,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	int tag = selectors[i]->tag&NodeImpl_IdLocalMask;
+	int tag = selectors[i]->tag & NodeImpl_IdLocalMask;
 	if ( cssTagId == tag || tag == 0xffff ) {
 	    ++schecked;
 
@@ -388,19 +392,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     }
 
-//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
-//     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
-//             selectors_size, schecked, smatch, (*propsToApply)->count(), properties_size );
-
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
-    if(e->m_styleDecls)
-	numPropsToApply = addInlineDeclarations( e->m_styleDecls, numPropsToApply );
+    numPropsToApply = addInlineDeclarations( e, e->m_styleDecls, numPropsToApply );
+
+//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+//     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
+// 	    selectors_size, schecked, smatch, numPropsToApply, properties_size );
 
     bubbleSort( propsToApply, propsToApply+numPropsToApply-1 );
     bubbleSort( pseudoProps, pseudoProps+numPseudoProps-1 );
-
-//    qDebug("applying properties, count=%d", numPropsToApply );
 
     // we can't apply style rules without a view() and a part. This
     // tends to happen on delayed destruction of widget Renderobjects
@@ -413,19 +414,26 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 		if ( fontDirty && propsToApply[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
+#ifdef APPLE_CHANGES
+		    checkForGenericFamilyChange(style, parentStyle);
+#endif
 		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
 		    fontDirty = false;
 		}
 		DOM::CSSProperty *prop = propsToApply[i]->prop;
                 applyRule( prop->m_id, prop->value() );
 	    }
-	    if ( fontDirty )
+	    if ( fontDirty ) {
+#ifdef APPLE_CHANGES
+	        checkForGenericFamilyChange(style, parentStyle);
+#endif
 		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+        }
         }
 
         if ( numPseudoProps ) {
 	    fontDirty = false;
-            //qDebug("%d applying %d pseudo props", cssTagId, numPseudoProps);
+            //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
             for (unsigned int i = 0; i < numPseudoProps; ++i) {
 		if ( fontDirty && pseudoProps[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
@@ -448,11 +456,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
                         pseudoStyle->inheritFrom( style );
                 }
 
-		CSSStyleSelector::style = pseudoStyle;
+                RenderStyle* oldStyle = style;
+		style = pseudoStyle;
                 if ( pseudoStyle ) {
 		    DOM::CSSProperty *prop = pseudoProps[i]->prop;
 		    applyRule( prop->m_id, prop->value() );
 		}
+                style = oldStyle;
             }
 
 	    if ( fontDirty ) {
@@ -465,27 +475,69 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
         }
     }
 
+    // Mutate the display to BLOCK or TABLE for certain cases, e.g., if someone attempts to
+    // position or float an inline, compact, or run-in.
+    if (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE) {
+        if (style->display() == INLINE || // style->display() == COMPACT || #### fixme after merge in rendering
+            style->display() == RUN_IN) // || style->display() == INLINE_BLOCK) FIXME!!!
+            style->setDisplay(BLOCK);
+        else if (style->display() == INLINE_TABLE)
+            style->setDisplay(TABLE);
+    }
+
+#ifdef APPLE_CHANGES // ####### include this for us aswell.
+    // Finally update our text decorations in effect, but don't allow text-decoration to percolate through
+    // tables, inline blocks, inline tables, or run-ins.
+    if (style->display() == TABLE || style->display() == INLINE_TABLE || style->display() == RUN_IN)
+        // || style->display() == INLINE_BLOCK) FIXME!
+        style->setTextDecorationsInEffect(style->textDecoration());
+    else
+        style->addToTextDecorationsInEffect(style->textDecoration());
+#endif
+
+    // Now return the style.
     return style;
 }
 
-unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
-					    unsigned int numProps )
+unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
+                                                     DOM::CSSStyleDeclarationImpl *decl,
+                                                     unsigned int numProps)
 {
-    QPtrList<CSSProperty> *values = decl->values();
-    if(!values) return numProps;
-    int len = values->count();
+    CSSStyleDeclarationImpl* addDecls = 0;
+#ifdef APPLE_CHANGES
+    if (e->id() == ID_TD || e->id() == ID_TH)     // For now only TableCellElement implements the
+        addDecls = e->getAdditionalStyleDecls();  // virtual function for shared cell rules.
+#else
+    Q_UNUSED( e );
+#endif
 
-    if ( inlineProps.size() < (uint)len )
-	inlineProps.resize( len+1 );
-    if (numProps + len >= propsToApplySize ) {
+    if (!decl && !addDecls)
+        return numProps;
+
+    QPtrList<CSSProperty>* values = decl ? decl->values() : 0;
+    QPtrList<CSSProperty>* addValues = addDecls ? addDecls->values() : 0;
+    if (!values && !addValues)
+        return numProps;
+
+    int firstLen = values ? values->count() : 0;
+    int secondLen = addValues ? addValues->count() : 0;
+    int totalLen = firstLen + secondLen;
+
+    if (inlineProps.size() < (uint)totalLen)
+        inlineProps.resize(totalLen + 1);
+
+    if (numProps + totalLen >= propsToApplySize ) {
         propsToApplySize += propsToApplySize;
         propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
     }
 
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
-    for(int i = 0; i < len; i++)
+    for(int i = 0; i < totalLen; i++)
     {
-        CSSProperty *prop = values->at(i);
+        if (i == firstLen)
+            values = addValues;
+
+        CSSProperty *prop = values->at(i >= firstLen ? i - firstLen : i);
 	Source source = Inline;
 
         if( prop->m_bImportant ) source = InlineImportant;
@@ -496,9 +548,8 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
         switch(prop->m_id)
         {
         case CSS_PROP_FONT_STYLE:
-        case CSS_PROP_FONT_VARIANT:
-        case CSS_PROP_FONT_WEIGHT:
 	case CSS_PROP_FONT_SIZE:
+	case CSS_PROP_FONT_WEIGHT:
         case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
@@ -525,9 +576,74 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
 
 static bool subject;
 
+// modified version of the one in kurl.cpp
+static void cleanpath(QString &path)
+{
+    int pos;
+    while ( (pos = path.find( "/../" )) != -1 ) {
+        int prev = 0;
+        if ( pos > 0 )
+            prev = path.findRev( "/", pos -1 );
+        // don't remove the host, i.e. http://foo.org/../foo.html
+        if (prev < 0 || (prev > 3 && path.findRev("://", prev-1) == prev-2))
+            path.remove( pos, 3);
+        else
+            // matching directory found ?
+            path.remove( prev, pos- prev + 3 );
+    }
+    pos = 0;
+
+    // Don't remove "//" from an anchor identifier. -rjw
+    // Set refPos to -2 to mean "I haven't looked for the anchor yet".
+    // We don't want to waste a function call on the search for the the anchor
+    // in the vast majority of cases where there is no "//" in the path.
+    int refPos = -2;
+    while ( (pos = path.find( "//", pos )) != -1) {
+        if (refPos == -2)
+            refPos = path.find("#", 0);
+        if (refPos > 0 && pos >= refPos)
+            break;
+
+        if ( pos == 0 || path[pos-1] != ':' )
+            path.remove( pos, 1 );
+        else
+            pos += 2;
+    }
+    while ( (pos = path.find( "/./" )) != -1)
+        path.remove( pos, 2 );
+    //kdDebug() << "checkPseudoState " << path << endl;
+}
+
+static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
+{
+    if( e->id() != ID_A ) {
+        pseudoState = PseudoNone;
+        return;
+    }
+    DOMString attr = e->getAttribute(ATTR_HREF);
+    if( attr.isNull() ) {
+        pseudoState = PseudoNone;
+        return;
+    }
+    QConstString cu(attr.unicode(), attr.length());
+    QString u = cu.string();
+    if ( !u.contains("://") ) {
+        if ( u[0] == '/' )
+            u = encodedurl.host + u;
+        else if ( u[0] == '#' )
+            u = encodedurl.file + u;
+        else
+            u = encodedurl.path + u;
+        cleanpath( u );
+    }
+    //completeURL( attr.string() );
+    pseudoState = KHTMLFactory::vLinks()->contains( u ) ? PseudoVisited : PseudoLink;
+}
+
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 {
     dynamicPseudo = RenderStyle::NOPSEUDO;
+
     NodeImpl *n = e;
 
     selectorCache[ selIndex ].state = Invalid;
@@ -536,11 +652,15 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     // we have the subject part of the selector
     subject = true;
 
-    // hack. We can't allow :hover, as it would trigger a complete
-    // relayout with every mouse event.
-    bool single = ( (sel->tag & NodeImpl_IdLocalMask) == NodeImpl_IdLocalMask );
-
+    // We track whether or not the rule contains only :hover and :active in a simple selector. If
+    // so, we can't allow that to apply to every element on the page.  We assume the author intended
+    // to apply the rules only to links.
+    bool onlyHoverActive = (((sel->tag & NodeImpl_IdLocalMask) == NodeImpl_IdLocalMask) &&
+                            (sel->match == CSSSelector::Pseudo &&
+                              (sel->pseudoType() == CSSSelector::PseudoHover ||
+                               sel->pseudoType() == CSSSelector::PseudoActive)));
     bool affectedByHover = style->affectedByHoverRules();
+    bool affectedByActive = style->affectedByActiveRules();
 
     // first selector has to match
     if(!checkOneSelector(sel, e)) return;
@@ -549,7 +669,6 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     CSSSelector::Relation relation = sel->relation;
     while((sel = sel->tagHistory))
     {
-        if (strictParsing || (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask) single = false;
         if(!n->isElementNode()) return;
         switch(relation)
         {
@@ -590,11 +709,15 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::SubSelector:
 	{
+            if (onlyHoverActive)
+                onlyHoverActive = (sel->match == CSSSelector::Pseudo &&
+                                   (sel->pseudoType() == CSSSelector::PseudoHover ||
+                                    sel->pseudoType() == CSSSelector::PseudoActive));
+
 	    //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
-                //qDebug("failing, dynamicPseudo: %d", dynamicPseudo);
 		return;
 	    }
 	    if(!checkOneSelector(sel, elem)) return;
@@ -604,10 +727,19 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         relation = sel->relation;
     }
-    // disallow *:hover
-    if (single && !affectedByHover && style->affectedByHoverRules()) {
+
+    // disallow *:hover, *:active, and *:hover:active except for links
+    if (onlyHoverActive && subject) {
+        if (pseudoState == PseudoUnknown)
+            checkPseudoState( encodedurl, e );
+
+        if (pseudoState == PseudoNone) {
+            if (!affectedByHover && style->affectedByHoverRules())
         style->setAffectedByHoverRules(false);
+            if (!affectedByActive && style->affectedByActiveRules())
+                style->setAffectedByActiveRules(false);
         return;
+    }
     }
 
     if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
@@ -615,73 +747,9 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	selectors[ selIndex ]->pseudoId = dynamicPseudo;
     } else
 	selectorCache[ selIndex ].state = Applies;
-//     qDebug( "selector %d applies", selIndex );
-//     selectors[ selIndex ]->print();
-    return;
-}
-
-// modified version of the one in kurl.cpp
-static void cleanpath(QString &path)
-{
-    int pos;
-    while ( (pos = path.find( "/../" )) != -1 ) {
-	int prev = 0;
-	if ( pos > 0 )
-	    prev = path.findRev( "/", pos -1 );
-        // don't remove the host, i.e. http://foo.org/../foo.html
-        if (prev < 0 || (prev > 3 && path.findRev("://", prev-1) == prev-2))
-            path.remove( pos, 3);
-        else
-            // matching directory found ?
-            path.remove( prev, pos- prev + 3 );
-    }
-    pos = 0;
-
-    // Don't remove "//" from an anchor identifier. -rjw
-    // Set refPos to -2 to mean "I haven't looked for the anchor yet".
-    // We don't want to waste a function call on the search for the the anchor
-    // in the vast majority of cases where there is no "//" in the path.
-    int refPos = -2;
-    while ( (pos = path.find( "//", pos )) != -1) {
-        if (refPos == -2)
-            refPos = path.find("#", 0);
-        if (refPos > 0 && pos >= refPos)
-            break;
-
-	if ( pos == 0 || path[pos-1] != ':' )
-	    path.remove( pos, 1 );
-	else
-	    pos += 2;
-    }
-    while ( (pos = path.find( "/./" )) != -1)
-	path.remove( pos, 2 );
-    //kdDebug() << "checkPseudoState " << path << endl;
-}
-
-static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
-{
-    if( e->id() != ID_A ) {
-	pseudoState = PseudoNone;
-	return;
-    }
-    DOMString attr = e->getAttribute(ATTR_HREF);
-    if( attr.isNull() ) {
- 	pseudoState = PseudoNone;
+    //qDebug( "selector %d applies", selIndex );
+    //selectors[ selIndex ]->print();
  	return;
-    }
-    QConstString cu(attr.unicode(), attr.length());
-    QString u = cu.string();
-    if ( u.find("://") == -1 ) {
-	if ( u[0] == '/' )
-	    u = encodedurl.host + u;
-	else if ( u[0] == '#' )
-	    u = encodedurl.file + u;
-	else
-	    u = encodedurl.path + u;
-	cleanpath( u );
-    }
-    //completeURL( attr.string() );
-    pseudoState = KHTMLFactory::vLinks()->contains( u ) ? PseudoVisited : PseudoLink;
 }
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
@@ -689,39 +757,36 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     if(!e)
         return false;
 
-//     qDebug("element: %d", e->id());
-//     sel->print();
-
-    int element_id = e->id();
+    unsigned int element_id = e->id();
     if ( (sel->tag & NodeImpl_IdNSMask) == NodeImpl_IdNSMask ) {
-	// all namespaces would match
-	unsigned int sel_id = sel->tag & NodeImpl_IdLocalMask;
-	if ( (element_id & NodeImpl_IdLocalMask) != sel_id &&
-	     sel_id != NodeImpl_IdLocalMask )
-	    return false;
+       // all namespaces would match
+       unsigned int sel_id = sel->tag & NodeImpl_IdLocalMask;
+       if ( (element_id & NodeImpl_IdLocalMask) != sel_id &&
+            sel_id != NodeImpl_IdLocalMask )
+           return false;
     } else {
-	// specific namespace selected
-	if( (element_id & NodeImpl_IdNSMask) != (sel->tag & NodeImpl_IdNSMask) )
-	    return false;
-	if ( element_id != sel->tag &&
-	     (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask )
-	    return false;
+       // specific namespace selected
+       if( (element_id & NodeImpl_IdNSMask) != (sel->tag & NodeImpl_IdNSMask) )
+           return false;
+       if ( element_id != sel->tag &&
+            (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask )
+           return false;
     }
 
     if(sel->attr)
     {
-	unsigned int attr_id = sel->attr;
-	if ( (attr_id & NodeImpl_IdNSMask ) == NodeImpl_IdNSMask ) {
-	    // ### fixme: this should allow attributes from all
-	    // ### namespaces. I'm not 100% sure what the semantics
-	    // ### should be in this case. Do they all have to match?
-	    // ### Or should only one of them match. Anyways it might
-	    // ### be we have to iterate over all namespaces and check
-	    // ### all of them. For now we just set the namespace to
-	    // ### 0, so they at least match attributes in the default
-	    // ### namespace.
-	    attr_id &= NodeImpl_IdLocalMask;
-	}
+       unsigned int attr_id = sel->attr;
+       if ( (attr_id & NodeImpl_IdNSMask ) == NodeImpl_IdNSMask ) {
+           // ### fixme: this should allow attributes from all
+           // ### namespaces. I'm not 100% sure what the semantics
+           // ### should be in this case. Do they all have to match?
+           // ### Or should only one of them match. Anyways it might
+           // ### be we have to iterate over all namespaces and check
+           // ### all of them. For now we just set the namespace to
+           // ### 0, so they at least match attributes in the default
+           // ### namespace.
+           attr_id &= NodeImpl_IdLocalMask;
+       }
         DOMString value = e->getAttribute(attr_id);
         if(value.isNull()) return false; // attribute is not set
 
@@ -747,50 +812,48 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return false;
 		break;
 	    }
-	    int l = value.implementation()->l;
-	    int sl = sel->value.implementation()->l;
-            QConstString str( value.implementation()->s, l );
-            QConstString selStr( sel->value.implementation()->s, sl );
-            int pos = str.string().find(selStr.string(), 0, strictParsing);
+
+            // The selector's value can't contain a space, or it's totally bogus.
+            spacePos = sel->value.find(' ');
+            if (spacePos != -1)
+                return false;
+
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, strictParsing);
             if(pos == -1) return false;
-            if(pos && value.implementation()->s[pos-1] != ' ') return false;
-            pos += selStr.string().length();
-            if(pos < l && value.implementation()->s[pos] != ' ') return false;
+            if(pos && str[pos-1] != ' ') return false;
+            pos += selStr.length();
+            if(pos < (int)str.length() && str[pos] != ' ') return false;
             break;
         }
         case CSSSelector::Contain:
         {
             //kdDebug( 6080 ) << "checking for contains match" << endl;
-	    int l = value.implementation()->l;
-	    int sl = sel->value.implementation()->l;
-            QConstString str( value.implementation()->s, l );
-            QConstString selStr( sel->value.implementation()->s, sl );
-            int pos = str.string().find(selStr.string(), 0, strictParsing);
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, strictParsing);
             if(pos == -1) return false;
             break;
         }
         case CSSSelector::Begin:
         {
             //kdDebug( 6080 ) << "checking for beginswith match" << endl;
-	    int l = value.implementation()->l;
-	    int sl = sel->value.implementation()->l;
-            QConstString str( value.implementation()->s, l );
-            QConstString selStr( sel->value.implementation()->s, sl );
-            int pos = str.string().find(selStr.string(), 0, strictParsing);
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, strictParsing);
             if(pos != 0) return false;
             break;
         }
         case CSSSelector::End:
         {
             //kdDebug( 6080 ) << "checking for endswith match" << endl;
-	    int l = value.implementation()->l;
-	    int sl = sel->value.implementation()->l;
-            QConstString str( value.implementation()->s, l );
-            QConstString selStr( sel->value.implementation()->s, sl );
-	    if (strictParsing && !str.string().endsWith(selStr.string())) return false;
+            QString str = value.string();
+            QString selStr = sel->value.string();
+	    if (strictParsing && !str.endsWith(selStr)) return false;
 	    if (!strictParsing) {
-	        int pos = l - sl;
-		if (pos < 0 || pos != str.string().find(selStr.string(), pos, false) )
+	        int pos = str.length() - selStr.length();
+		if (pos < 0 || pos != str.find(selStr, pos, false) )
 		    return false;
 	    }
             break;
@@ -798,16 +861,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Hyphen:
         {
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
-	    int l = value.implementation()->l;
-	    int sl = sel->value.implementation()->l;
-            QConstString str( value.implementation()->s, l );
-            QConstString selStr( sel->value.implementation()->s, sl );
-            if(str.string().length() < selStr.string().length()) return false;
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
-            if(str.string().find(selStr.string(), 0, strictParsing) != 0) return false;
+            if(str.find(selStr, 0, strictParsing) != 0) return false;
             // It does. Check for exact match or following '-':
-            if(l != sl
-                && value.implementation()->s[sl] != '-') return false;
+            if(str.length() != selStr.length()
+                && str[selStr.length()] != '-') return false;
             break;
         }
         case CSSSelector::Pseudo:
@@ -820,20 +881,49 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 // 	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
-	switch( sel->pseudoType() ) {
+	switch (sel->pseudoType()) {
 	case CSSSelector::PseudoEmpty:
 	    if (!e->firstChild())
 		return true;
 	    break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
-	    DOM::NodeImpl *n = e->parentNode()->firstChild();
-	    while( n && !n->isElementNode() )
+                if (e->parentNode()) {
+                    DOM::NodeImpl* n = e->previousSibling();
+                    while ( n && !n->isElementNode() )
+                        n = n->previousSibling();
+                    if ( !n )
+                        return true;
+                }
+                break;
+            }
+            case CSSSelector::PseudoLastChild: {
+                // last-child matches the last child that is an element!
+                if (e->parentNode()) {
+                    DOM::NodeImpl* n = e->nextSibling();
+                    while ( n && !n->isElementNode() )
 		n = n->nextSibling();
-	    if( n == e )
+                    if ( !n )
+                        return true;
+                }
+                break;
+            }
+            case CSSSelector::PseudoOnlyChild: {
+                // If both first-child and last-child apply, then only-child applies.
+                if (e->parentNode()) {
+                    DOM::NodeImpl* n = e->previousSibling();
+                    while ( n && !n->isElementNode() )
+                        n = n->previousSibling();
+                    if ( !n ) {
+                        n = e->nextSibling();
+                        while ( n && !n->isElementNode() )
+                            n = n->nextSibling();
+                        if ( !n )
 		return true;
 	}
+                }
 	    break;
+            }
 	case CSSSelector::PseudoFirstLine:
 	    if ( subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LINE;
@@ -846,21 +936,28 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	    }
 	    break;
+            case CSSSelector::PseudoTarget:
+#ifdef APPLE_CHANGES
+                if (!e->getDocument()->getCSSTarget() && // :target matches the root when no CSS target exists
+                     e == e->getDocument()->documentElement())
+                    return true;
+                if (e == e->getDocument()->getCSSTarget())
+                    return true;
+#endif
+                break;
 	case CSSSelector::PseudoLink:
 	    if ( pseudoState == PseudoUnknown )
-		checkPseudoState( encodedurl, e );
+                    checkPseudoState( encodedurl, e );
 	    if ( pseudoState == PseudoLink )
 		return true;
 	    break;
 	case CSSSelector::PseudoVisited:
 	    if ( pseudoState == PseudoUnknown )
-		checkPseudoState( encodedurl, e );
+                    checkPseudoState( encodedurl, e );
 	    if ( pseudoState == PseudoVisited )
 		return true;
 	    break;
-	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
-	    // to the element.
-	case CSSSelector::PseudoHover:
+            case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
 	    // href.  This is important for sites like wsj.com.
 	    if (strictParsing || e->id() != ID_A || e->hasAnchor()) {
@@ -874,6 +971,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		}
 	    }
 	    break;
+            }
 	case CSSSelector::PseudoFocus:
 	    if (e && e->focused()) {
 		return true;
@@ -891,16 +989,41 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return true;
 	    }
 	    break;
+            case CSSSelector::PseudoRoot:
+                if (e == e->getDocument()->documentElement())
+                    return true;
+                break;
+            case CSSSelector::PseudoNot: {
+                // check the simple selector
+                for (CSSSelector* subSel = sel->simpleSelector; subSel;
+                     subSel = subSel->tagHistory) {
+                    // :not cannot nest.  I don't really know why this is a restriction in CSS3,
+                    // but it is, so let's honor it.
+                    if (subSel->simpleSelector)
+                        break;
+                    if (!checkOneSelector(subSel, e))
+                        return true;
+                }
+                break;
+            }
+	case CSSSelector::PseudoSelection:
+#ifdef APPLE_CHANGES
+	    dynamicPseudo = RenderStyle::SELECTION;
+	    return true;
+#else
+	    break;
+#endif
 	case CSSSelector::PseudoBefore:
 	    dynamicPseudo = RenderStyle::BEFORE;
 	    return true;
 	case CSSSelector::PseudoAfter:
 	    dynamicPseudo = RenderStyle::AFTER;
 	    return true;
+
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
-	case CSSSelector::PseudoFunction:
+            case CSSSelector::PseudoLang:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
@@ -1085,7 +1208,8 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
     for(int i = 0; i< len; i++)
     {
         StyleBaseImpl *item = sheet->item(i);
-        if( item->isStyleRule() ) {
+        if(item->isStyleRule())
+        {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
             QPtrList<CSSSelector> *s = r->selector();
             for(int j = 0; j < (int)s->count(); j++)
@@ -1094,7 +1218,9 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 		QPtrList<CSSOrderedRule>::append(rule);
                 //kdDebug( 6080 ) << "appending StyleRule!" << endl;
             }
-        } else if(item->isImportRule()) {
+        }
+        else if(item->isImportRule())
+        {
             CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(item);
 
             //kdDebug( 6080 ) << "@import: Media: "
@@ -1105,7 +1231,9 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 CSSStyleSheetImpl *importedSheet = import->styleSheet();
                 append( importedSheet, medium );
             }
-        } else if( item->isMediaRule() ) {
+        }
+        else if( item->isMediaRule() )
+        {
             CSSMediaRuleImpl *r = static_cast<CSSMediaRuleImpl *>( item );
             CSSRuleListImpl *rules = r->cssRules();
 
@@ -1206,9 +1334,8 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         switch(prop->m_id)
         {
         case CSS_PROP_FONT_STYLE:
-        case CSS_PROP_FONT_VARIANT:
-        case CSS_PROP_FONT_WEIGHT:
 	case CSS_PROP_FONT_SIZE:
+	case CSS_PROP_FONT_WEIGHT:
         case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
@@ -1235,7 +1362,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 {
     Length l;
     if ( !primitiveValue ) {
-        if ( ok )
+	if ( *ok )
             *ok = false;
     } else {
 	int type = primitiveValue->primitiveType();
@@ -1287,16 +1414,16 @@ struct uiColors {
     int css_value;
     const char * configGroup;
     const char * configEntry;
-    QPalette::ColorGroup group;
-    QColorGroup::ColorRole role;
+QPalette::ColorGroup group;
+QColorGroup::ColorRole role;
 };
 
 const char * const wmgroup = "WM";
 const char * const generalgroup = "General";
 
 /* Mapping system settings to CSS 2
- * Tried hard to get an appropriate mapping - schlpbch
- */
+* Tried hard to get an appropriate mapping - schlpbch
+*/
 static const uiColors uimap[] = {
 	// Active window border.
     { CSS_VAL_ACTIVEBORDER, wmgroup, "background", QPalette::Active, QColorGroup::Light },
@@ -1370,6 +1497,7 @@ static QColor colorForCSSValue( int css_value )
     const uiColors *uicol = uimap;
     while ( uicol->css_value && uicol->css_value != css_value )
 	++uicol;
+#ifndef APPLE_CHANGES
     if ( !uicol->css_value ) {
 	if ( css_value == CSS_VAL_INFOBACKGROUND )
 	    return QToolTip::palette().inactive().background();
@@ -1383,14 +1511,17 @@ static QColor colorForCSSValue( int css_value )
 	}
 	return khtml::invalidColor;
     }
+#endif
 
     const QPalette &pal = qApp->palette();
     QColor c = pal.color( uicol->group, uicol->role );
+#ifndef APPLE_CHANGES
     if ( uicol->configEntry ) {
 	KConfig *globalConfig = KGlobal::config();
 	globalConfig->setGroup( uicol->configGroup );
 	c = globalConfig->readColorEntry( uicol->configEntry, &c );
     }
+#endif
 
     return c;
 };
@@ -1398,7 +1529,7 @@ static QColor colorForCSSValue( int css_value )
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
-//     kdDebug( 6080 ) << "applying property " << id << endl;
+//      kdDebug( 6080 ) << "applying property " << id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -1603,15 +1734,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	EDisplay d;
 	if ( id == CSS_VAL_NONE) {
 	    d = NONE;
-	} else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_INLINE_BLOCK ) {
-	    // these are not supported at the moment, so we just ignore them.
+	} else if ( id == CSS_VAL_INLINE_BLOCK ) {
+	    // inline-block is not supported at the moment, so we just ignore it.
 	    return;
 	} else {
 	    d = EDisplay(primitiveValue->getIdent() - CSS_VAL_INLINE);
 	}
 
         style->setDisplay(d);
-        //kdDebug( 6080 ) << "setting display to " << d << endl;
+        //kdDebug( 6080 ) << "setting display " << primitiveValue->getIdent() << " to " << d << endl;
 
         break;
     }
@@ -1869,6 +2000,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	}
 	break;
     }
+
     case CSS_PROP_UNICODE_BIDI: {
 	EUnicodeBidi b = UBNormal;
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
@@ -1944,15 +2076,23 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         EWhiteSpace s;
         switch(primitiveValue->getIdent()) {
-	case CSS_VAL__KONQ_NOWRAP: s = KONQ_NOWRAP; break;
-        case CSS_VAL_NOWRAP:   s = NOWRAP;      break;
-        case CSS_VAL_PRE:      s = PRE;         break;
+        case CSS_VAL__KONQ_NOWRAP:
+            s = KONQ_NOWRAP;
+            break;
+        case CSS_VAL_NOWRAP:
+            s = NOWRAP;
+            break;
+        case CSS_VAL_PRE:
+            s = PRE;
+            break;
         case CSS_VAL_NORMAL:
-        default:               s = NORMAL;      break;
+        default:
+            s = NORMAL;
+            break;
         }
         style->setWhiteSpace(s);
-
         break;
+
 
 // special properties (css_extensions)
 //    case CSS_PROP_AZIMUTH:
@@ -2063,7 +2203,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		else
 		    col = colorForCSSValue( ident );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {
+#ifndef APPLE_CHANGES
 		if(qAlpha(primitiveValue->getRGBColorValue()))
+#endif
 		    col.setRgb(primitiveValue->getRGBColorValue());
 	    } else {
 		return;
@@ -2273,7 +2415,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     }
 
-// length, percent
+        // length, percent
     case CSS_PROP_MAX_WIDTH:
         // +none +inherit
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE)
@@ -2421,6 +2563,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 default:
                     return;
                 }
+            return;
         }
         if(primitiveValue && !apply)
         {
@@ -2520,7 +2663,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else if(primitiveValue->getIdent()) {
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
-#if 0
+#ifdef APPLE_CHANGES
 	    QValueList<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
 					 m_fixedFontSizes : m_fontSizes;
 #else
@@ -2713,7 +2856,26 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
+#ifdef APPLE_CHANGES
+                style->setContent(val->getStringValue(), i != 0);
+#else
                 style->setContent(val->getStringValue());
+#endif
+            }
+            else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
+            {
+                // FIXME: Should work with generic XML attributes also, and not
+                // just the hardcoded HTML set.  Can a namespace be specified for
+                // an attr(foo)?
+#ifdef APPLE_CHANGES
+                int attrID = element->getDocument()->attrId(0, val->getStringValue(), false);
+                if (attrID)
+                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
+#else
+                int attrID = element->getDocument()->attrNames()->getId(val->getStringValue(), false);
+                if (attrID)
+                    style->setContent(element->getAttribute(attrID).implementation());
+#endif
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
@@ -2949,6 +3111,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    applyRule( CSS_PROP_FONT_VARIANT, font->variant );
 	    applyRule( CSS_PROP_FONT_WEIGHT, font->weight );
 	    applyRule( CSS_PROP_FONT_SIZE, font->size );
+
+            // Line-height can depend on font().pixelSize(), so we have to update the font
+            // before we evaluate line-height, e.g., font: 1em/1em.  FIXME: Still not
+            // good enough: style="font:1em/1em; font-size:36px" should have a line-height of 36px.
+            if (fontDirty)
+                CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+
 	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
 	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
 	}
@@ -2963,5 +3132,38 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 }
 
-}
+#ifdef APPLE_CHANGES
+void CSSStyleSelector::checkForGenericFamilyChange(RenderStyle* aStyle, RenderStyle* aParentStyle)
+{
+  const FontDef& childFont = aStyle->htmlFont().fontDef;
 
+  if (childFont.sizeSpecified || !aParentStyle)
+    return;
+
+  const FontDef& parentFont = aParentStyle->htmlFont().fontDef;
+
+  if (childFont.genericFamily == parentFont.genericFamily)
+    return;
+
+  // For now, lump all families but monospace together.
+  if (childFont.genericFamily != FontDef::eMonospace &&
+      parentFont.genericFamily != FontDef::eMonospace)
+    return;
+
+  // We know the parent is monospace or the child is monospace, and that font
+  // size was unspecified.  We want to alter our font size to use the correct
+  // "medium" font for our family.
+  float size = 0;
+  int minFontSize = settings->minFontSize();
+  size = (childFont.genericFamily == FontDef::eMonospace) ? m_fixedFontSizes[3] : m_fontSizes[3];
+  int isize = (int)size;
+  if (isize < minFontSize)
+    isize = minFontSize;
+
+  FontDef newFontDef(childFont);
+  newFontDef.size = isize;
+  aStyle->setFontDef(newFontDef);
+}
+#endif
+
+} // namespace khtml

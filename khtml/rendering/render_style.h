@@ -466,9 +466,9 @@ struct ContentData {
 //------------------------------------------------
 
 enum EDisplay {
-    INLINE, BLOCK, LIST_ITEM, RUN_IN, INLINE_BLOCK,
-    TABLE, INLINE_TABLE, TABLE_ROW_GROUP,
-    TABLE_HEADER_GROUP, TABLE_FOOTER_GROUP, TABLE_ROW,
+    INLINE, BLOCK, LIST_ITEM, RUN_IN,
+    COMPACT, INLINE_BLOCK, TABLE, INLINE_TABLE,
+    TABLE_ROW_GROUP, TABLE_HEADER_GROUP, TABLE_FOOTER_GROUP, TABLE_ROW,
     TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_CELL,
     TABLE_CAPTION, NONE
 };
@@ -529,7 +529,7 @@ protected:
 
         union {
             struct {
-                EDisplay _display : 4;
+                EDisplay _display : 5;
                 EBackgroundRepeat _bg_repeat : 2;
                 bool _bg_attachment : 1;
                 EOverflow _overflow : 4 ;
@@ -545,7 +545,6 @@ protected:
 		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
-               int _unused : 1;
             } f;
             Q_UINT32 _niflags;
         };
@@ -608,7 +607,6 @@ protected:
 	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
 	noninherited_flags.f._unicodeBidi = UBNormal;
-        noninherited_flags.f._unused = 0;
     }
 
 public:

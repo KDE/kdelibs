@@ -3,6 +3,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2002-2003 Lars Knoll (knoll@kde.org)
+ *  Copyright (c) 2003 Apple Computer
  *  Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
@@ -47,8 +48,13 @@ using namespace DOM;
 //
 // with 'props->id' a CSS property in the range from CSS_PROP_MIN to
 // (and including) CSS_PROP_TOTAL-1
+
+// turn off inlining to void warning with newer gcc
+#undef __inline
+#define __inline
 #include "cssproperties.c"
 #include "cssvalues.c"
+#undef __inline
 
 int DOM::getPropertyID(const char *tagStr, int len)
 {
@@ -396,7 +402,6 @@ media_list:
     }
     ;
 
-
 media:
     MEDIA_SYM maybe_space media_list '{' maybe_space ruleset_list '}' {
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -410,7 +415,6 @@ media:
 	}
     }
   ;
-
 
 ruleset_list:
     /* empty */ { $$ = 0; }
@@ -602,7 +606,11 @@ element_name:
 	    if (doc->isHTMLDocument())
 		tag = tag.lower();
 	    const DOMString dtag(tag);
+#if APPLE_CHANGES
+            $$ = doc->tagId(0, dtag.implementation(), false);
+#else
 	    $$ = doc->elementNames()->getId(dtag.implementation(), false);
+#endif
 	} else {
 	    $$ = khtml::getTagID(tag.lower().ascii(), tag.length());
 	    // this case should never happen - only when loading
@@ -631,7 +639,7 @@ specifier_list:
     | specifier_list error {
 	delete $1;
 	$$ = 0;
-}
+    }
 ;
 
 specifier:
@@ -673,7 +681,11 @@ attrib_id:
 	    if (doc->isHTMLDocument())
 		attr = attr.lower();
 	    const DOMString dattr(attr);
+#if APPLE_CHANGES
+            $$ = doc->attrId(0, dattr.implementation(), false);
+#else
 	    $$ = doc->attrNames()->getId(dattr.implementation(), false);
+#endif
 	} else {
 	    $$ = khtml::getAttrID(attr.lower().ascii(), attr.length());
 	    // this case should never happen - only when loading
@@ -729,11 +741,17 @@ pseudo:
 	$$->match = CSSSelector::Pseudo;
 	$$->value = domString($2);
     }
-    | ':' FUNCTION maybe_space IDENT maybe_space ')' {
+    |
+    ':' ':' IDENT {
 	$$ = new CSSSelector();
 	$$->match = CSSSelector::Pseudo;
-	$$->_pseudoType = CSSSelector::PseudoFunction;
-	$$->value = domString($4);
+        $$->value = domString($3);
+    }
+    | ':' FUNCTION maybe_space simple_selector ')' {
+        $$ = new CSSSelector();
+        $$->match = CSSSelector::Pseudo;
+        $$->simpleSelector = $4;
+        $$->value = domString($2);
     }
   ;
 
@@ -802,12 +820,11 @@ declaration:
     property ':' maybe_space expr prio {
 	$$ = false;
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( $4 ) {
+	if ( $1 && $4 ) {
 	    p->valueList = $4;
-            if ( $1 ) {
 #ifdef CSS_DEBUG
-	        kdDebug( 6080 ) << "   got property: " << $1
-                                << ($5?" important":"") << endl;
+	    kdDebug( 6080 ) << "   got property: " << $1 <<
+		($5?" important":"")<< endl;
 #endif
 	        bool ok = p->parseValue( $1, $5 );
                 if ( ok )
@@ -816,7 +833,8 @@ declaration:
 	        else
 		    kdDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
-            }
+	} else {
+            delete $4;
         }
 	delete p->valueList;
 	p->valueList = 0;
