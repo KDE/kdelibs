@@ -469,10 +469,10 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 	    {
 		colMaxWidth[c]+=distmax/span;
 		tmax-=distmax/span;
+		colType[c]=type;
 		if (tmax<span)
 		{
-		    colMaxWidth[c]+=tmax;
-		    colType[c]=type;
+		    colMaxWidth[c]+=tmax;		    
 		    tmax=0;
 		}
 	    }
@@ -658,7 +658,8 @@ void RenderTable::calcColMinMax()
 	    	    	    
 	    calcSingleColMinMax(c, col);
 	    
-	    if ( col->span>1 && (col->type==Fixed || col->type==Variable ))
+	    if ( col->span>1 && m_style->width().type != Percent
+	    	&& (col->type==Fixed || col->type==Variable ))
     	    {
 	    	calcFinalColMax(c, col);
 	    }
