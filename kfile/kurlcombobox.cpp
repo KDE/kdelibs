@@ -318,10 +318,10 @@ void KURLComboBox::updateItem( const KURLComboItem *item,
     // using an editable combobox, so we just remove and insert
     if ( isEditable() ) {
 	removeItem( index );
-	insertItem( opendirPix, text, index );
+	insertItem( pixmap, text, index );
     }
     else
-	changeItem( opendirPix, text, index );
+	changeItem( pixmap, text, index );
 }
 
 
