@@ -27,7 +27,6 @@
 #endif
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -47,16 +46,20 @@
 #include "kdesu_pty.h"
 
 // stdlib.h is meant to declare the prototypes but doesn't :(
+#ifndef __THROW
+#define __THROW
+#endif
+
 #ifdef HAVE_GRANTPT
-extern "C" int grantpt(int fd);
+extern "C" int grantpt(int fd) __THROW;
 #endif
 
 #ifdef HAVE_PTSNAME
-extern "C" char * ptsname(int fd);
+extern "C" char * ptsname(int fd) __THROW;
 #endif
 
 #ifdef HAVE_UNLOCKPT
-extern "C" int unlockpt(int fd);
+extern "C" int unlockpt(int fd) __THROW;
 #endif
 
 #ifdef HAVE_PTY_H
