@@ -161,7 +161,7 @@ int KNewPanner::seperatorPos()
     int value;
 
     if (currentunits == Percent)
-	value= (int) ((position / (double) width()) * 100);
+	value= position * 100 / width();
     else
 	value= position;
 	    
@@ -171,7 +171,7 @@ int KNewPanner::seperatorPos()
 void KNewPanner::setSeperatorPos(int pos)
 {
     if (currentunits == Percent)
-	setAbsSeperatorPos((int) (pos/100.0 * width()));
+	setAbsSeperatorPos(pos * width() / 100);
     else
 	setAbsSeperatorPos(pos);
 }
@@ -207,7 +207,7 @@ void KNewPanner::resizeEvent(QResizeEvent*)
      if (orientation == Horizontal) {
       child0->setGeometry(0, 0, width(), position);
       child1->setGeometry(0, position+4, width(), height()-position-4);
-      divider->setGeometry(0, position, width(), position+4);
+      divider->setGeometry(0, position, width(), 4);
     }
     else {
       if (showlabels) {
