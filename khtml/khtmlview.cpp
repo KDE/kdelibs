@@ -198,7 +198,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         body = m_part->docImpl()->body();
 
     if(!body) {
-        p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Background));
+        p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
 
@@ -220,7 +220,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
 
         // ### fix this for frames...
-        tp.fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+        tp.fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
         m_part->docImpl()->renderer()->print(&tp, ex, ey+py, ew, ph, 0, 0);
 
         p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
