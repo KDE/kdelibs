@@ -252,14 +252,19 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderFieldset : public RenderFormElement
+class RenderFieldset : public RenderFlow
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
-
+    
     virtual const char *renderName() const { return "RenderFieldSet"; }
+protected:
+    virtual void printBoxDecorations(QPainter *p,int, int _y,
+                                          int, int _h, int _tx, int _ty);
+    void printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
+    int h, const RenderStyle *style, int lx, int lw);
+    bool findLegend( int &lx, int &ly, int &lw, int &lh);
 };
-
 
 // -------------------------------------------------------------------------
 
@@ -309,7 +314,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderLegend : public RenderFormElement
+class RenderLegend : public RenderFlow
 {
 public:
     RenderLegend(DOM::HTMLGenericFormElementImpl *element);

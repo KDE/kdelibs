@@ -36,6 +36,7 @@
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
@@ -784,7 +785,7 @@ bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 // -------------------------------------------------------------------------
 
 HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f)
+    : HTMLGenericFormElementImpl(doc, f), m_legend(0)
 {
 }
 
@@ -795,6 +796,48 @@ HTMLFieldSetElementImpl::~HTMLFieldSetElementImpl()
 NodeImpl::Id HTMLFieldSetElementImpl::id() const
 {
     return ID_FIELDSET;
+}
+
+void HTMLFieldSetElementImpl::attach()
+{
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+    addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+    addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+    addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+    addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+    addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
+    addCSSProperty(CSS_PROP_PADDING_LEFT, "4px");
+    addCSSProperty(CSS_PROP_PADDING_RIGHT, "4px");
+    addCSSProperty(CSS_PROP_PADDING_BOTTOM, "4px");
+
+    
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE)
+        m_render = new RenderFieldset(this);
+    if (m_render) {
+        m_render->setStyle(_style);
+    }
+    HTMLGenericFormElementImpl::attach();
+    _style->deref();
+}
+
+NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
+{
+    if(!m_legend && child->id() == ID_LEGEND) {
+        int exceptioncode = 0;
+        NodeImpl* r = insertBefore( child, firstChild(), exceptioncode );
+        m_legend = child;
+        return r;
+    }
+    return HTMLGenericFormElementImpl::addChild(child); 
+}
+
+void HTMLFieldSetElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    HTMLElementImpl::parseAttribute(attr);
 }
 
 // -------------------------------------------------------------------------
@@ -1366,6 +1409,36 @@ HTMLLegendElementImpl::~HTMLLegendElementImpl()
 NodeImpl::Id HTMLLegendElementImpl::id() const
 {
     return ID_LEGEND;
+}
+
+void HTMLLegendElementImpl::attach()
+{
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+    addCSSProperty(CSS_PROP_PADDING_LEFT, "1px");
+    addCSSProperty(CSS_PROP_PADDING_RIGHT, "1px");
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE)
+        m_render = new RenderLegend(this);
+    if (m_render)
+        m_render->setStyle(_style);
+
+    HTMLGenericFormElementImpl::attach();
+    _style->deref();
+}
+    
+void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    switch(attr->id())
+    {
+    case ATTR_ACCESSKEY:
+        // ### ignore for the moment
+        break;
+    default:
+        HTMLElementImpl::parseAttribute(attr);
+    }
 }
 
 // -------------------------------------------------------------------------
