@@ -887,7 +887,7 @@ public:
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
                     int options = Notify);
 
-    /*
+    /**
      * Like messageBox
      *
      * Only for message boxes of type Information, Sorry or Error.
