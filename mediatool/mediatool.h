@@ -20,6 +20,10 @@
 #ifndef MEDIATOOL_H
 #define MEDIATOOL_H "$Id$"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef signed char    int8;
 typedef unsigned char  uint8;
 typedef signed int     int32;
@@ -93,7 +97,6 @@ typedef struct
 void   EventCounterRaise(EventCounter *evc, uint32 count);
 uint32 EventCounterRead(EventCounter *evc, uint32 max);
 void   EventCounterReset(EventCounter *evc);
-
 
 
 /***********************************************************************************
@@ -310,5 +313,9 @@ typedef struct
 				   /* (e.g.: Rob Hubbard)		*/
 #define MD_CAT_FILETYPE		 9 /* e.g. "General Midi", "MT32" or	*/
 				   /* "PSID single-file"		*/
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* MEDIATOOL_H */
