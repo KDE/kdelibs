@@ -19,7 +19,7 @@ build:
 		kde_wallpaperdir=/usr/share/wallpaper \
 		kde_bindir=/usr/X11R6/bin \
 		kde_partsdir=/usr/lib/parts \
-		CFLAGS="-O2 -Wall -g" \
+		CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 		CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 		 ./configure --prefix=/usr --enable-debug --enable-new-stuff \
 		  	     --disable-rpath \
