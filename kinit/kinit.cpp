@@ -60,7 +60,7 @@
 
 #include <X11/Xlib.h>
 
-#if HAVE_DLFCN_H
+#ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
 
