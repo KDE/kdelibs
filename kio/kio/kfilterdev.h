@@ -44,10 +44,22 @@ public:
     KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false );
     /**
      * Destructs the KFilterDev.
+     * Calls close() if the filter device is still open.
      */
     virtual ~KFilterDev();
 
+    /**
+     * Open for reading or writing.
+     * If the KFilterBase's device is not opened, it will be opened.
+     */
     virtual bool open( int mode );
+    /**
+     * Close after reading or writing.
+     * If the KFilterBase's device was opened by open(), it will be closed.
+     *
+     * (behaviour in KDE-3.1: it was always closed here; but the destructor
+     * didn't call close() when destroying an open KFilterDev).
+     */
     virtual void close();
     virtual void flush();
 
@@ -117,7 +129,7 @@ public:
      * @param fileName the name of the file to filter
      * @param mimetype the mime type of the file to filter, or QString::null if unknown
      * @param forceFilter if true, the function will always return a QIODevice. If no
-     *                    filter is available it will return a simple @ref QFile. 
+     *                    filter is available it will return a simple @ref QFile.
      *                    This can be useful if the file is usable without a filter.
      *                    If false, the function returns 0 if no filter is available
      * @return if a filter has been found, the @ref QIODevice for the filter. If the
@@ -142,7 +154,7 @@ public:
      * The returned QIODevice has to be deleted after using.
      * @param inDevice input device, becomes owned by this device! Automatically deleted!
      * @param mimetype the mime type for the filter
-     * @return a QIODevice that filters the original stream. Must be deleted after 
+     * @return a QIODevice that filters the original stream. Must be deleted after
      *         using
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype);
@@ -164,7 +176,7 @@ public:
      * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
      * @param mimetype the mime type for the filter
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
-     * @return a QIODevice that filters the original stream. Must be deleted after 
+     * @return a QIODevice that filters the original stream. Must be deleted after
      *         using
      * @since 3.1
      */
