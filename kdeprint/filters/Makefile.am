@@ -7,6 +7,7 @@ filters_DATA = enscript.desktop enscript.xml\
 	       psbook2.desktop psbook2.xml \
 	       psbook.desktop psbook.xml \
 	       psselect.desktop psselect.xml \
-	       ps2pdf.desktop ps2pdf.xml
+	       ps2pdf.desktop ps2pdf.xml \
+	       poster.desktop poster.xml
 
 bin_SCRIPTS = imagetops
