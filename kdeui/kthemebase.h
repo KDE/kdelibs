@@ -46,32 +46,42 @@ public:
     KThemePixmap(bool timer = true);
     ~KThemePixmap();
     QPixmap* secondary();
-    void setSecondary(QPixmap &p);
-    void clearSecondary();
+    QPixmap* border(BorderType type);
+    void setSecondary(const QPixmap &p);
+    void setBorder(BorderType type, const QPixmap &p);
     void updateAccessed();
     bool isOld();
 protected:
     QTime *t;
-    QPixmap *s;
+    QPixmap *s, *b[8];
 };
+
+inline QPixmap* KThemePixmap::border(BorderType type)
+{
+    return(b[type]);
+}
 
 inline QPixmap* KThemePixmap::secondary()
 {
     return(s);
 }
 
-inline void KThemePixmap::setSecondary(QPixmap &p)
+inline void KThemePixmap::setBorder(BorderType type, const QPixmap &p)
 {
-    if(s)
-        delete s;
-    s = new QPixmap(p);
+    if(b[type]){
+        warning("KThemePixmap: Overwriting existing border!");
+        delete(b[type]);
+    }
+    b[type] = new QPixmap(p);
 }
 
-inline void KThemePixmap::clearSecondary()
+inline void KThemePixmap::setSecondary(const QPixmap &p)
 {
-    if(s)
+    if(s){
+        warning("KThemePixmap: Overwriting existing secondary pixmap!");
         delete s;
-    s = NULL;
+    }
+    s = new QPixmap(p);
 }
 
 inline void KThemePixmap::updateAccessed()
@@ -303,6 +313,16 @@ public:
      */
     int borderWidth(WidgetType widget) const;
     /**
+     * Pixmap border width of the specified widget.
+     */
+    int pixBorderWidth(WidgetType widget) const;
+    /**
+     * Returns the border pixmap if enabled for the specified widget. This
+     * will contain the originial pixmap, plus the edges separated in
+     * KThemePixmap::border() if valid. If invalid it will return NULL.
+     */
+    KThemePixmap* borderPixmap(WidgetType widget);
+    /**
      * The highlight width of the specified widget.
      */
     int highlightWidth(WidgetType widget) const;
@@ -417,8 +437,9 @@ protected:
      */
     void readConfig(Qt::GUIStyle colorStyle = Qt::WindowsStyle);
     void readWidgetConfig(int i, KConfig *config, QString *pixnames,
-                          bool *loadArray);
-    void copyWidgetConfig(int sourceID, int destID, QString *pixnames);
+                          QString *brdnames, bool *loadArray);
+    void copyWidgetConfig(int sourceID, int destID, QString *pixnames,
+                         QString *brdnames);
     /**
      * Makes a full color group based on the given foreground and background
      * colors. This is the same code used by KDE (kapp.cpp) in previous
@@ -429,6 +450,7 @@ protected:
     KThemePixmap* scale(int w, int h, WidgetType widget);
     KThemePixmap* gradient(int w, int h, WidgetType widget);
     KThemePixmap* blend(WidgetType widget);
+    void generateBorderPix(int i);
     /**
      * Attempts to load a pixmap from the default KThemeBase locations.
      */
@@ -506,6 +528,19 @@ private:
      * Duplicate pixmap entries (used during destruction).
      */
     bool duplicate[WIDGETS];
+    /**
+     * Pixmapped border widths
+     */
+    int pbWidth[WIDGETS];
+    /**
+     * Pixmapped borders
+     */
+    KThemePixmap *pbPixmaps[WIDGETS];
+    /**
+     * Duplicate border pixmapped border entries
+     */
+    bool pbDuplicate[WIDGETS];
+     
 };
 
 inline bool KThemeBase::isPixmap( WidgetType widget) const
@@ -566,17 +601,22 @@ inline const QColorGroup* KThemeBase::colorGroup(const QColorGroup &defaultGroup
 
 inline int KThemeBase::borderWidth(WidgetType widget) const
 {
-    return(borders[widget]);
+    return(pbWidth[widget] ? pbWidth[widget] : borders[widget]);
+}
+
+inline int KThemeBase::pixBorderWidth(WidgetType widget) const
+{
+    return(pbWidth[widget]);
 }
 
 inline int KThemeBase::highlightWidth(WidgetType widget) const
 {
-    return(highlights[widget]);
+    return(pbWidth[widget] ? 0 : highlights[widget]);
 }
 
 inline int KThemeBase::decoWidth(WidgetType widget) const
 {
-    return(borders[widget]+highlights[widget]);
+    return(pbWidth[widget] ? pbWidth[widget] : borders[widget]+highlights[widget]);
 }
 
 inline QColor* KThemeBase::gradientHigh(WidgetType widget) const
@@ -660,6 +700,11 @@ inline bool KThemeBase::activeTabLine() const
 inline bool KThemeBase::inactiveTabLine() const
 {
     return(iTabLine);
+}
+
+inline KThemePixmap* KThemeBase::borderPixmap(WidgetType widget)
+{
+    return(pbPixmaps[widget]);
 }
 
 #endif

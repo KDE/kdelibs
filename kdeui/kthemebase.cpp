@@ -28,6 +28,7 @@
 #include <qtextstream.h>
 #include <qdir.h>
 #include <qpainter.h>
+#include <qbitmap.h>
 #include <stdlib.h>
 
 static const char *widgetEntries[] = { // unsunken widgets (see header)
@@ -64,7 +65,7 @@ union kthemeKey{
 
 // reads a single widget's config
 void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
-                                  bool *loadArray)
+                                  QString *brdnames, bool *loadArray)
 {
     if(loadArray[i] == true){
         return; // already been preloaded.
@@ -81,12 +82,13 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
             for(sIndex=0; sIndex < WIDGETS; ++sIndex){
                 if(tmpStr == widgetEntries[sIndex]){
                     if(!loadArray[sIndex]) // hasn't been loaded yet
-                        readWidgetConfig(sIndex, config, pixnames, loadArray);
+                        readWidgetConfig(sIndex, config, pixnames, brdnames,
+                                         loadArray);
                     break;
                 }
             }
             if(loadArray[sIndex]){
-                copyWidgetConfig(sIndex, i, pixnames);
+                copyWidgetConfig(sIndex, i, pixnames, brdnames);
             }
             else{
                 warning("KThemeBase: Unable to identify source widget for %s!",
@@ -212,6 +214,38 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
             images[i] = loadImage(tmpStr);
     }
 
+    // Pixmap border
+    tmpStr = config->readEntry("PixmapBorder", "");
+    brdnames[i] = tmpStr;
+    pbDuplicate[i] = false;
+    pbPixmaps[i] = NULL;
+    pbWidth[i] = 0;
+    if(!tmpStr.isEmpty()){
+        pbWidth[i] = config->readNumEntry("PixmapBWidth", 0);
+        if(pbWidth[i] == 0){
+            warning("KThemeBase: No border width specified for pixmapped border widget %s",
+                    widgetEntries[i]);
+            warning("KThemeBase: Using default of 2.");
+            pbWidth[i] = 2;
+        }
+        // duplicate check
+        for(existing=0; existing < i; ++existing){
+            if(tmpStr == brdnames[existing]){
+                pbPixmaps[i] = pbPixmaps[existing];
+                pbDuplicate[i] = true;
+                warning("KThemeBase: Marking border pixmap %s as duplicate.",
+                        brdnames[i].latin1());
+                break;
+            }
+        }
+    }
+    // load
+    if(!pbDuplicate[i] && !tmpStr.isEmpty())
+        pbPixmaps[i] = loadPixmap(tmpStr);
+
+    if(pbPixmaps[i] && !pbDuplicate[i])
+        generateBorderPix(i);
+                          
     // Various widget specific settings. This was more efficent when bunched
     // together in the misc group, but this makes an easier to read config.
     if(i == SliderGroove)
@@ -242,7 +276,106 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
     loadArray[i] = true;
 }
 
-void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames)
+void KThemeBase::generateBorderPix(int i)
+{
+    // separate pixmap into separate components
+    if(pbPixmaps[i]){
+        // evidently I have to do masks manually...
+        const QBitmap *srcMask = pbPixmaps[i]->mask();
+        QBitmap destMask(pbWidth[i], pbWidth[i]);
+        QPixmap tmp(pbWidth[i], pbWidth[i]);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], 0, 0, pbWidth[i], pbWidth[i],
+               Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, 0, 0, pbWidth[i], pbWidth[i],
+                   Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::TopLeft, tmp);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], pbPixmaps[i]->width()-pbWidth[i], 0,
+               pbWidth[i], pbWidth[i], Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, pbPixmaps[i]->width()-pbWidth[i],
+                   0, pbWidth[i], pbWidth[i], Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::TopRight, tmp);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], 0, pbPixmaps[i]->height()-pbWidth[i],
+               pbWidth[i], pbWidth[i], Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, 0, pbPixmaps[i]->height()-pbWidth[i],
+                   pbWidth[i], pbWidth[i], Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::BottomLeft, tmp);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], pbPixmaps[i]->width()-pbWidth[i],
+               pbPixmaps[i]->height()-pbWidth[i], pbWidth[i], pbWidth[i],
+               Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, pbPixmaps[i]->width()-pbWidth[i],
+                   pbPixmaps[i]->height()-pbWidth[i], pbWidth[i], pbWidth[i],
+                   Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::BottomRight, tmp);
+
+        tmp.resize(pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i]);
+        destMask.resize(pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i]);
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], pbWidth[i], 0,
+               pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i], Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, pbWidth[i], 0,
+                   pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i],
+                   Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::Top, tmp);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], pbWidth[i],
+               pbPixmaps[i]->height()-pbWidth[i],
+               pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i], Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, pbWidth[i],
+                   pbPixmaps[i]->height()-pbWidth[i],
+                   pbPixmaps[i]->width()-pbWidth[i]*2, pbWidth[i], Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::Bottom, tmp);
+
+        tmp.resize(pbWidth[i], pbPixmaps[i]->height()-pbWidth[i]*2);
+        destMask.resize(pbWidth[i], pbPixmaps[i]->height()-pbWidth[i]*2);
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], 0, pbWidth[i], pbWidth[i],
+               pbPixmaps[i]->height()-pbWidth[i]*2, Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, 0, pbWidth[i], pbWidth[i],
+                   pbPixmaps[i]->height()-pbWidth[i]*2, Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+
+        pbPixmaps[i]->setBorder(KThemePixmap::Left, tmp);
+
+        bitBlt(&tmp, 0, 0, pbPixmaps[i], pbPixmaps[i]->width()-pbWidth[i],
+               pbWidth[i], pbWidth[i], pbPixmaps[i]->height()-pbWidth[i]*2,
+               Qt::CopyROP, false);
+        if(srcMask){
+            bitBlt(&destMask, 0, 0, srcMask, pbPixmaps[i]->width()-pbWidth[i],
+                   pbWidth[i], pbWidth[i], pbPixmaps[i]->height()-pbWidth[i]*2,
+                   Qt::CopyROP, false);
+            tmp.setMask(destMask);
+        }
+        pbPixmaps[i]->setBorder(KThemePixmap::Right, tmp);
+    }
+    else
+        warning("KThemeBase: Tried making border from empty pixmap");
+}
+    
+
+void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
+                                 QString *brdnames)
 {
     scaleHints[destID] = scaleHints[sourceID];
     gradients[destID] = gradients[sourceID];
@@ -266,6 +399,7 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames)
     else
         colors[destID] = NULL;
 
+    // pixmap
     pixnames[destID] = pixnames[sourceID];
     duplicate[destID] = false;
     pixmaps[destID] = NULL;
@@ -285,14 +419,26 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames)
                 images[destID] = loadImage(pixnames[destID]);
         }
     }
+
+    // border pixmap
+    pbDuplicate[destID] = false;
+    pbPixmaps[destID] = NULL;
+    pbWidth[destID] = pbWidth[sourceID];
+    brdnames[destID] = brdnames[sourceID];
+    if(!brdnames[destID].isEmpty()){
+        pbPixmaps[destID] = pbPixmaps[sourceID];
+        pbDuplicate[destID] = true;
+        warning("KThemeBase: Marking border pixmap %s as duplicate.",
+                pixnames[destID].latin1());
+    }
+    
     if(sourceID == ActiveTab && destID == InactiveTab)
         aTabLine = iTabLine;
     else if(sourceID == InactiveTab && destID == ActiveTab)
         iTabLine = aTabLine;
 }
-    
 
-void KThemeBase::readConfig(Qt::GUIStyle style)
+void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
 {
 #define PREBLEND_ITEMS 12
     static WidgetType preBlend[]={Slider, IndicatorOn, IndicatorOff,
@@ -302,6 +448,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     int i;
     QString tmpStr;
     QString pixnames[WIDGETS]; // used for duplicate check
+    QString brdnames[WIDGETS];
     bool loaded[WIDGETS]; // used for preloading for CopyWidget
 
     // initalize defaults that may not be read
@@ -314,15 +461,15 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     
     KConfig config("kstylerc", true, false);
     for(i=0; i < INHERIT_ITEMS; ++i) 
-        readWidgetConfig(i, &config, pixnames, loaded);
+        readWidgetConfig(i, &config, pixnames, brdnames, loaded);
     for(; i < INHERIT_ITEMS*2; ++i){
         if(config.hasGroup(widgetEntries[i]))
-            readWidgetConfig(i, &config, pixnames, loaded);
+            readWidgetConfig(i, &config, pixnames, brdnames, loaded);
         else
-            copyWidgetConfig(i-INHERIT_ITEMS, i, pixnames);
+            copyWidgetConfig(i-INHERIT_ITEMS, i, pixnames, brdnames);
     }
     for(; i < WIDGETS; ++i) 
-        readWidgetConfig(i, &config, pixnames, loaded);
+        readWidgetConfig(i, &config, pixnames, brdnames, loaded);
 
     // misc items
     config.setGroup("Misc");
@@ -375,11 +522,27 @@ KThemeBase::KThemeBase(const QString &)
 
 void KThemeBase::applyConfigFile(const QString &file)
 {
-    QString cmd;
     // Fix to use KStdDirs
-    cmd.sprintf("cp %s %s/.kde/share/config/kstylerc", file.latin1(),
-                QDir::homeDirPath().latin1());
-    system(cmd.latin1());
+
+    // Do copy ourselves
+    QFile src(file);
+    QFile dest(QDir::homeDirPath() + "/.kde/share/config/kstylerc");
+    if(!src.open(IO_ReadOnly)){
+        warning("Cannot open theme file for reading!");
+        return;
+    }
+    if(!dest.open(IO_WriteOnly)){
+        warning("Cannot write to theme settings!");
+        return;
+    }
+    int input = src.getch();
+    while(input != -1){
+        dest.putch(input);
+        input = src.getch();
+    }
+    src.close();
+    dest.close();
+
     // handle std color scheme
     KConfig inConfig(file, true, false);
     KConfig *globalConfig = KGlobal::config();
@@ -431,6 +594,8 @@ KThemeBase::~KThemeBase()
             if(pixmaps[i])
                 delete pixmaps[i];
         }
+        if(!pbDuplicate[i] && pbPixmaps[i])
+            delete pbPixmaps[i];
         if(colors[i])
             delete(colors[i]);
         if(grLowColors[i])
@@ -473,7 +638,11 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
             KThemePixmap *cachePix = cache->pixmap(w, h, widget);
             if(cachePix){
                 cachePix = new KThemePixmap(*cachePix);
-                cache->insert(pixmaps[widget], KThemeCache::FullScale, widget);
+                if(pixmaps[widget])
+                    cache->insert(pixmaps[widget], KThemeCache::FullScale,
+                                  widget);
+                else
+                    warning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -491,7 +660,10 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
             KThemePixmap *cachePix = cache->horizontalPixmap(w, widget);
             if(cachePix){
                 cachePix = new KThemePixmap(*cachePix);
-                cache->insert(pixmaps[widget], KThemeCache::HorizontalScale, widget);
+                if(pixmaps[widget])
+                    cache->insert(pixmaps[widget], KThemeCache::HorizontalScale, widget);
+                else
+                    warning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -510,7 +682,10 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
             KThemePixmap *cachePix = cache->verticalPixmap(w, widget);
             if(cachePix){
                 cachePix = new KThemePixmap(*cachePix);
-                cache->insert(pixmaps[widget], KThemeCache::VerticalScale, widget);
+                if(pixmaps[widget])
+                    cache->insert(pixmaps[widget], KThemeCache::VerticalScale, widget);
+                else
+                    warning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -733,6 +908,9 @@ KThemePixmap::KThemePixmap(bool timer)
     }
     else
         t = NULL;
+    int i;
+    for(i=0; i < 8; ++i)
+        b[i] = NULL;
 }
 
 KThemePixmap::~KThemePixmap()
@@ -741,6 +919,10 @@ KThemePixmap::~KThemePixmap()
         delete s;
     if(t)
         delete t;
+    int i;
+    for(i=0; i < 8; ++i)
+        if(b[i])
+            delete b[i];
 }
 
 KThemeCache::KThemeCache(int maxSize, QObject *parent, const char *name)
@@ -756,11 +938,8 @@ void KThemeCache::flushTimeout()
 {
     QIntCacheIterator<KThemePixmap> it(cache);
     for(;it.current(); ++it){
-        if(it.current()->isOld()){
-            kthemeKey key;
-            key.cacheKey = it.currentKey();
+        if(it.current()->isOld())
             cache.remove(it.currentKey());
-        }
     }
 }
 
@@ -771,10 +950,9 @@ KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID)
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = h;
-    KThemePixmap *pix = cache.find(key.cacheKey);
-    if(pix){
+    KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
+    if(pix)
         pix->updateAccessed();
-    }
     return(pix);
 }
 
@@ -784,10 +962,9 @@ KThemePixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = 0;
-    KThemePixmap *pix = cache.find(key.cacheKey);
-    if(pix){
+    KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
+    if(pix)
         pix->updateAccessed();
-    }
     return(pix);
 }
 
@@ -797,10 +974,9 @@ KThemePixmap* KThemeCache::verticalPixmap(int h, int widgetID)
     key.data.id = widgetID;
     key.data.width = 0;
     key.data.height = h;
-    KThemePixmap *pix = cache.find(key.cacheKey);
-    if(pix){
+    KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
+    if(pix)
         pix->updateAccessed();
-    }
     return(pix);
 }
 
@@ -813,10 +989,10 @@ bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID)
     key.data.height = (scale == FullScale || scale == VerticalScale) ?
         pixmap->height() : 0;
 
-    if(cache.find(key.cacheKey, true) != NULL){
+    if(cache.find((unsigned long)key.cacheKey, true) != NULL){
         return(true); // a pixmap of this scale is already in there
     }
-    return(cache.insert(key.cacheKey, pixmap,
+    return(cache.insert((unsigned long)key.cacheKey, pixmap,
                         pixmap->width()*pixmap->height()*pixmap->depth()/8));
 }
 

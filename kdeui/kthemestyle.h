@@ -90,6 +90,11 @@ public:
      */
     virtual void drawBaseMask(QPainter *p, int x, int y, int w, int h,
                               bool rounded);
+    virtual void drawBorderMask(QPainter *p, WidgetType type, int x, int y,
+                                int w, int h);
+    virtual void drawBorderPixmap(QPainter *p, WidgetType type, int x, int y,
+                                  int w, int h);
+
     /**
      * Draws a pushbutton. This calls drawBaseButton with PushButton as the
      * widget type.
@@ -278,6 +283,7 @@ public:
 	virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
 protected:
     QPalette oldPalette;
+	QPalette popupPalette;
 };
 
 #endif

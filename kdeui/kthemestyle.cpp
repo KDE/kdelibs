@@ -66,6 +66,7 @@ void KThemeStyle::polish(QWidget *w)
             w->setAutoMask( TRUE );
     }
     if(w->inherits("QPopupMenu")){
+        popupPalette = w->palette();
         if(isColor(MenuItem)){
             QPalette newPal(w->palette());
             w->setPalettePropagation(QWidget::SamePalette);
@@ -91,7 +92,7 @@ void KThemeStyle::unPolish(QWidget* w)
             w->setAutoMask( FALSE );
     }
     if(w->inherits("QPopupMenu"))
-        w->setPalette(kapp->palette());
+        w->setPalette(popupPalette);
 }                                     
 
 void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
@@ -109,6 +110,8 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
         for(i=0; i < borderWidth(type); ++i, ++x, ++y, w-=2, h-=2)
             p->drawRect(x, y, w, h);
         KThemePixmap *pixmap = gradient(w, h, type);
+        if(!pixmap->secondary())
+            warning("Secondary pixmap for reverse bevel not set!");
         bitBlt(p->device(), x, y, !sunken && hWidth ? pixmap->secondary() :
                pixmap, 0, 0, w, h, Qt::CopyROP, true);
         if(hWidth)
@@ -117,6 +120,11 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                    w-hWidth*2, h-hWidth*2, Qt::CopyROP, true);
     }
     else{
+        if(borderPixmap(type))
+            drawBorderPixmap(p, type, x, y, w, h);
+        else
+            drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
+                      highlightWidth(type), borderWidth(type), shade());
         if((w-offset*2) > 0 && (h-offset*2) > 0){
             if(isPixmap(type))
                 if(rounded)
@@ -130,10 +138,48 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                 p->fillRect(x+offset, y+offset, w-offset*2, h-offset*2,
                             colorGroup(g, type)->brush(QColorGroup::Button));
         }
-        drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
-                  highlightWidth(type), borderWidth(type), shade());
     }
     p->setPen(oldPen);
+}
+
+void KThemeStyle::drawBorderPixmap(QPainter *p, WidgetType type, int x, int y,
+                                   int w, int h)
+{
+    p->fillRect(x, y, w, h, QApplication::palette().
+                brush(QPalette::Normal, QColorGroup::Background));
+    QPixmap *tmp = borderPixmap(type)->border(KThemePixmap::TopLeft);
+    int bdWidth = tmp->width();
+    bitBlt(p->device(), x, y, tmp, 0, 0, bdWidth, bdWidth,
+           Qt::CopyROP, false);
+
+    tmp = borderPixmap(type)->border(KThemePixmap::TopRight);
+    bitBlt(p->device(), x+w-bdWidth, y, tmp, 0, 0, bdWidth,
+           bdWidth, Qt::CopyROP, false);
+
+    tmp = borderPixmap(type)->border(KThemePixmap::BottomLeft);
+    bitBlt(p->device(), x, y+h-bdWidth, tmp, 0, 0, bdWidth,
+           bdWidth, Qt::CopyROP, false);
+
+    tmp = borderPixmap(type)->border(KThemePixmap::BottomRight);
+    bitBlt(p->device(), x+w-bdWidth, y+h-bdWidth, tmp, 0, 0,
+           bdWidth, bdWidth, Qt::CopyROP, false);
+
+    if(w-bdWidth*2 > 0){
+        tmp = borderPixmap(type)->border(KThemePixmap::Top);
+        p->drawTiledPixmap(x+bdWidth, y, w-bdWidth*2, bdWidth, *tmp);
+
+        tmp = borderPixmap(type)->border(KThemePixmap::Bottom);
+        p->drawTiledPixmap(x+bdWidth, y+h-bdWidth, w-bdWidth*2, bdWidth,
+                           *tmp);
+    }
+    if(h-bdWidth*2 > 0){
+        tmp = borderPixmap(type)->border(KThemePixmap::Left);
+        p->drawTiledPixmap(x, y+bdWidth, bdWidth, h-bdWidth*2, *tmp);
+
+        tmp = borderPixmap(type)->border(KThemePixmap::Right);
+        p->drawTiledPixmap(x+w-bdWidth, y+bdWidth, bdWidth, h-bdWidth*2,
+                           *tmp);
+    }
 }
 
 void KThemeStyle::drawButton(QPainter *p, int x, int y, int w, int h,
@@ -148,8 +194,8 @@ void KThemeStyle::drawPushButton(QPushButton* btn, QPainter *p)
 {
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
-    drawButton(p, x1, y1, x2-x1+1, y2-y1+1, btn->colorGroup(), btn->isOn() ||
-               btn->isDown(), NULL);
+    drawButton(p, x1, y1, btn->width(), btn->height(), btn->colorGroup(),
+               btn->isOn() || btn->isDown(), NULL);
 }
 
 void KThemeStyle::drawBaseMask(QPainter *p, int x, int y, int w, int h,
@@ -195,21 +241,31 @@ void KThemeStyle::drawBaseMask(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x2, y+6, x2, y2-6);
 
     }
-    else
         p->fillRect(x, y, w, h, fillBrush);
+}
+
+void KThemeStyle::drawBorderMask(QPainter *, WidgetType, int, int, int, int)
+{
+    ; // Not yet..
 }
 
 void KThemeStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
 {
-
-    drawBaseMask(p, x, y, w, h, roundButton());
+    p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
+    //if(borderPixmap(PushButton))
+    //    drawBorderMask(p, PushButton, x, y, w, h);
+    //else
+    //    drawBaseMask(p, x, y, w, h, roundButton());
 }                                         
 
 void KThemeStyle::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
 {
     // This isn't getting called by QStyle...
-    warning("In drawComboButtonMask");
-    drawBaseMask(p, x, y, w, h, roundComboBox());
+    p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
+    //if(borderPixmap(ComboBox))
+    //    drawBorderMask(p, ComboBox, x, y, w, h);
+    //else
+    //    drawBaseMask(p, x, y, w, h, roundComboBox());
 }
  
 void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
