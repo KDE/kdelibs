@@ -453,7 +453,7 @@ void DeviceManager::seqbuf_dump (void)
         {
             if ((r==-1)&&(errno==EAGAIN))
             {
-                usleep(0);
+                usleep(1);
             }
             else if ((r>0)&&(r!=w))
             {
