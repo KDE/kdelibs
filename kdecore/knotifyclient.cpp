@@ -37,7 +37,7 @@ KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QStr
 	levent->sound=sound;
 	levent->file=file;
 	levent->client=client;
-	KApplication::startServiceByDesktopName("knotify");
+//	KApplication::startServiceByDesktopName("knotify");
 }
 
 KNotifyClient::~KNotifyClient()
@@ -58,7 +58,7 @@ bool KNotifyClient::send()
 	QString appname = kapp->name();
 	ds << levent->message << appname << levent->text << levent->sound << levent->file << levent->present;
 
-	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int)", data);
+	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int)", data, true);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
