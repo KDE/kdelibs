@@ -19,12 +19,14 @@
 #include <qdir.h>
 
 #include "kbuildsycoca.h"
+#include "kresourcelist.h"
 
 #include <kservice.h>
 #include <kmimetype.h>
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
 #include <kbuildservicegroupfactory.h>
+#include <kbuildimageiofactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -42,7 +44,6 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <unistd.h>
-#include <kimageiofactory.h>
 
 #include <stdlib.h>
 
@@ -57,6 +58,7 @@ KBuildSycoca::~KBuildSycoca()
 
 void KBuildSycoca::build()
 {
+  QStringList allResources;
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
   for (KSycocaFactory *factory = m_lstFactories->first();
@@ -64,30 +66,67 @@ void KBuildSycoca::build()
        factory = m_lstFactories->next() )
   {
     // For each resource the factory deals with
-    for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
-         it1 != factory->resourceList()->end();
+    const KSycocaResourceList *list = factory->resourceList();
+    if (!list) continue;
+
+    for( KSycocaResourceList::ConstIterator it1 = list->begin();
+         it1 != list->end();
          ++it1 )
     {
-      const char *resource = (*it1).ascii();
-
-      QStringList relFiles;
-
-      (void) KGlobal::dirs()->findAllResources( resource,
-                                                QString::null,
-                                                true, // Recursive!
-                                                true, // uniq
-                                                relFiles);
-      // For each file the factory deals with.
-      for( QStringList::ConstIterator it2 = relFiles.begin();
-           it2 != relFiles.end();
-           ++it2 )
-      {
-         // Create a new entry
-         KSycocaEntry* entry = factory->createEntry( *it2, resource );
-         if ( entry && entry->isValid() )
-           factory->addEntry( entry );
-      }
+      KSycocaResource res = (*it1);
+      if (!allResources.contains(res.resource))
+         allResources.append(res.resource);
     }
+  }
+
+  // For all resources
+  for( QStringList::ConstIterator it1 = allResources.begin();
+       it1 != allResources.end();
+       ++it1 )
+  {
+     const char *resource = (*it1).ascii();
+
+     QStringList relFiles;
+
+     (void) KGlobal::dirs()->findAllResources( resource,
+                                               QString::null,
+                                               true, // Recursive!
+                                               true, // uniq
+                                               relFiles);
+
+     // Now find all factories that use this resource....
+     // For each factory
+     QListIterator<KSycocaFactory> factit ( *m_lstFactories );
+     for (KSycocaFactory *factory = m_lstFactories->first();
+          factory;
+          factory = m_lstFactories->next() )
+     {
+        // For each resource the factory deals with
+        const KSycocaResourceList *list = factory->resourceList();
+        if (!list) continue;
+
+        for( KSycocaResourceList::ConstIterator it2 = list->begin();
+             it2 != list->end();
+             ++it2 )
+        {
+           KSycocaResource res = (*it2);
+           if (res.resource != (*it1)) continue;
+
+           // For each file in the resource
+           for( QStringList::ConstIterator it3 = relFiles.begin();
+                it3 != relFiles.end();
+                ++it3 )
+           {
+              // Check if file matches filter
+              if (res.filter.match(*it3) == -1) continue;
+
+              // Create a new entry
+              KSycocaEntry* entry = factory->createEntry( *it3, resource );
+              if ( entry && entry->isValid() )
+                 factory->addEntry( entry );
+           }
+        }
+     }
   }
 }
 
@@ -113,10 +152,13 @@ void KBuildSycoca::recreate()
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
   (void) new KBuildServiceFactory(stf, bsgf);
-  (void) KImageIOFactory::self();
+  (void) new KBuildImageIOFactory();
 
+   time_t Time1 = time(0);
   build(); // Parse dirs
+   time_t Time2 = time(0);
   save(); // Save database
+   time_t Time3 = time(0);
 
   m_str = 0L;
   if (!database.close())
@@ -124,6 +166,7 @@ void KBuildSycoca::recreate()
      kdError(7021) << "Error writing database to " << database.name() << endl;
      return;
   }
+fprintf(stderr, "Build = %d Save = %d\n", Time2-Time1, Time3-Time2);
 }
 
 void KBuildSycoca::save()
@@ -209,6 +252,7 @@ static const char *appVersion = "1.0";
 
 int main(int argc, char **argv)
 {
+   time_t Time1 = time(0);
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
 		KAboutData::License_GPL, "(c) 1999,2000 David Faure");
@@ -233,6 +277,7 @@ int main(int argc, char **argv)
      fprintf(stderr, "%s already running!\n", appName);
      exit(0);
    }
+
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
    sycoca->recreate();

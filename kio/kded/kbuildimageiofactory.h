@@ -16,39 +16,41 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __k_build_service_group_factory_h__
-#define __k_build_service_group_factory_h__
+#ifndef __k_build_imageio_factory_h__
+#define __k_build_imageio_factory_h__
 
-#include <kservicegroupfactory.h>
-#include <qdict.h>
+#include <kimageiofactory.h>
 
 /**
  * @internal
  * Service group factory for building ksycoca
  */
-class KBuildServiceGroupFactory : public KServiceGroupFactory
+class KBuildImageIOFactory : public KImageIOFactory
 {
 public:
   /**
    * Create factory
    */
-  KBuildServiceGroupFactory();
+  KBuildImageIOFactory();
   
-  virtual ~KBuildServiceGroupFactory();
+  virtual ~KBuildImageIOFactory();
+
+  /**
+   * Save header info to database
+   */
+  virtual void saveHeader(QDataStream &);
+
+  /**
+   * Write out service type specific index files.
+   */
+  virtual void save(QDataStream &str);
 
   /**
    * Create new entry.
    */
-  virtual KServiceGroup * createEntry(const QString &, const char *);
+  virtual KSycocaEntry* createEntry(const QString &, const char *);
 
-  /**
-   * Adds the entry newEntry to the correct group, creating the group if
-   * necassery. If newEntry is 0, only the group is created.
-   */
-  KServiceGroup *addNewEntry( const QString& file, const char *resource, KSycocaEntry *newEntry);
-  	
-protected:
-  QDict<KServiceGroup> m_entryDict;
+  virtual void addEntry(KSycocaEntry *newEntry);
 };
 
 #endif

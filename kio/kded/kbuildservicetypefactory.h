@@ -34,7 +34,7 @@ public:
    */
   KBuildServiceTypeFactory();
   
-  virtual ~KBuildServiceTypeFactory() { }
+  virtual ~KBuildServiceTypeFactory();
 
   /**
    * Find a service type in the database file 

@@ -19,6 +19,7 @@
 #include "kbuildservicetypefactory.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
+#include "kresourcelist.h"
 
 #include <kglobal.h>
 #include <kstddirs.h>
@@ -33,8 +34,16 @@ KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
 {
    // Read servicetypes first, since they might be needed to read mimetype properties
-   m_resourceList->append("servicetypes");
-   m_resourceList->append( "mime" );
+   m_resourceList = new KSycocaResourceList;
+   m_resourceList->add("servicetypes", "*.desktop");
+   m_resourceList->add("servicetypes", "*.kdelnk");
+   m_resourceList->add( "mime", "*.desktop" );
+   m_resourceList->add( "mime", "*.kdelnk" );
+}
+
+KBuildServiceTypeFactory::~KBuildServiceTypeFactory()
+{
+   delete m_resourceList;
 }
 
 KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_name)
@@ -58,16 +67,6 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if (name.isEmpty())
      return 0;
-
-  // Just a backup file ?
-  if ( ( name.right(1) == "~") ||
-       ( name.right(4) == ".bak") ||
-       ( name[0] == '.') ||
-       ( name[0] == '%' && name.right(1) == "%" ) )
-      return 0;
-
-  if (name == "magic")
-      return 0;
 
   KDesktopFile desktopFile(file, true, resource);
 

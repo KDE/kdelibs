@@ -28,6 +28,7 @@
 class KSycoca;
 class QStringList;
 class KSycocaDict;
+class KSycocaResourceList;
 
 typedef QDict<KSycocaEntry> KSycocaEntryDict;
 
@@ -106,7 +107,7 @@ public:
    /**
     * @return the resources for which this factory is responsible.
     */
-   virtual const QStringList * resourceList() const { return m_resourceList; }
+   virtual const KSycocaResourceList * resourceList() const { return m_resourceList; }
 
 private:
    int mOffset;
@@ -117,7 +118,7 @@ protected:
    int m_endEntryOffset;
    QDataStream *m_str;
 
-   QStringList *m_resourceList;
+   KSycocaResourceList *m_resourceList;
    KSycocaEntryDict *m_entryDict;
    KSycocaDict *m_sycocaDict;
 };

@@ -22,6 +22,7 @@
 #include "kbuildservicefactory.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
+#include "kresourcelist.h"
 
 #include <kglobal.h>
 #include <kstddirs.h>
@@ -36,8 +37,16 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
   m_serviceTypeFactory( serviceTypeFactory ),
   m_serviceGroupFactory( serviceGroupFactory )
 {
-   m_resourceList->append( "apps" );
-   m_resourceList->append( "services" );
+   m_resourceList = new KSycocaResourceList();
+   m_resourceList->add( "apps", "*.desktop" );
+   m_resourceList->add( "apps", "*.kdelnk" );
+   m_resourceList->add( "services", "*.desktop" );
+   m_resourceList->add( "services", "*.kdelnk" );
+}
+
+KBuildServiceFactory::~KBuildServiceFactory()
+{
+   delete m_resourceList;
 }
 
 KSycocaEntry *

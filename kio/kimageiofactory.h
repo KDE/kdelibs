@@ -16,6 +16,70 @@
 class KImageIOFormat;
 class KImageIOFormatList;
 
+class KImageIOFormat : public KSycocaEntry
+{
+  K_SYCOCATYPE( KST_KImageIOFormat, KSycocaEntry )
+
+public:
+  typedef KSharedPtr<KImageIOFormat> Ptr;
+  typedef QValueList<Ptr> List;
+public: // KDoc seems to barf on those typedefs and generates no docs after them
+  /**
+   * Read a KImageIOFormat description file
+   */
+  KImageIOFormat( const QString & path);
+  
+  /**
+   * @internal construct a ImageIOFormat from a stream
+   */ 
+  KImageIOFormat( QDataStream& _str, int offset);
+
+  virtual ~KImageIOFormat();
+
+  virtual QString name() const { return mType; }
+
+  virtual bool isValid() const { return true; } 
+
+  /**
+   * @internal
+   * Load the image format from a stream.
+   */
+  virtual void load(QDataStream& ); 
+
+  /**
+   * @internal
+   * Save the image format to a stream.
+   */
+  virtual void save(QDataStream& );
+
+  /**
+   * @internal 
+   * Calls image IO function
+   */
+  void callLibFunc( bool read, QImageIO *);
+
+public:  
+  QString mType;
+  QString mHeader;
+  QString mFlags;
+  bool bRead;
+  bool bWrite;
+  QStringList mSuffices;
+  QString mPattern;
+  QString mMimetype;
+  QString mLib;
+  QStringList rPaths;
+  bool bLibLoaded;
+  void (*mReadFunc)(QImageIO *);
+  void (*mWriteFunc)(QImageIO *);
+};
+
+class KImageIOFormatList : public KImageIOFormat::List
+{
+public:
+   KImageIOFormatList() { }
+};
+
 
 class KImageIOFactory : public KSycocaFactory
 {
@@ -38,13 +102,6 @@ protected: // Internal stuff
    * Load information from database
    */
   void load();
-
-  /**
-   * @internal
-   *
-   * Save header info to database
-   */
-  void saveHeader(QDataStream &);
 
   /**
    * @internal Create pattern string

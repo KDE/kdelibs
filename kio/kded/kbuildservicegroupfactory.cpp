@@ -19,6 +19,7 @@
 #include "kbuildservicegroupfactory.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
+#include "kresourcelist.h"
 
 #include <kglobal.h>
 #include <kstddirs.h>
@@ -30,6 +31,19 @@
 KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
   KServiceGroupFactory()
 {
+   m_resourceList = new KSycocaResourceList();
+   m_resourceList->add( "apps", "*.directory" );
+}
+
+KBuildServiceGroupFactory::~KBuildServiceGroupFactory() 
+{
+   delete m_resourceList;
+}
+
+KServiceGroup *
+KBuildServiceGroupFactory::createEntry( const QString& file, const char *resource )
+{
+  return addNewEntry(file, resource, 0);
 }
 
 KServiceGroup *

@@ -30,71 +30,6 @@
 
 #include <qimage.h>
 
-class KImageIOFormat : public KSycocaEntry
-{
-  K_SYCOCATYPE( KST_KImageIOFormat, KSycocaEntry )
-
-public:
-  typedef KSharedPtr<KImageIOFormat> Ptr;
-  typedef QValueList<Ptr> List;
-public: // KDoc seems to barf on those typedefs and generates no docs after them
-  /**
-   * Read a KImageIOFormat description file
-   */
-  KImageIOFormat( const QString & path);
-  
-  /**
-   * @internal construct a ImageIOFormat from a stream
-   */ 
-  KImageIOFormat( QDataStream& _str, int offset);
-
-  virtual ~KImageIOFormat();
-
-  virtual QString name() const { return mType; }
-
-  virtual bool isValid() const { return true; } 
-
-  /**
-   * @internal
-   * Load the image format from a stream.
-   */
-  virtual void load(QDataStream& ); 
-
-  /**
-   * @internal
-   * Save the image format to a stream.
-   */
-  virtual void save(QDataStream& );
-
-  /**
-   * @internal 
-   * Calls image IO function
-   */
-  void callLibFunc( bool read, QImageIO *);
-
-public:  
-  QString mType;
-  QString mHeader;
-  QString mFlags;
-  bool bRead;
-  bool bWrite;
-  QStringList mSuffices;
-  QString mPattern;
-  QString mMimetype;
-  QString mLib;
-  QStringList rPaths;
-  bool bLibLoaded;
-  void (*mReadFunc)(QImageIO *);
-  void (*mWriteFunc)(QImageIO *);
-};
-
-class KImageIOFormatList : public KImageIOFormat::List
-{
-public:
-   KImageIOFormatList() { }
-};
-
-
 KImageIOFormat::KImageIOFormat( const QString &path)
 {
    bLibLoaded = false;
@@ -234,34 +169,6 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
      {
         formatList = new KImageIOFormatList();
      }
-     QStringList list = KGlobal::dirs()->findAllResources("services", "*.kimgio");
-     for (QStringList::ConstIterator it = list.begin(); 
-          it != list.end(); ++it) 
-     {
-        KImageIOFormat *format = new KImageIOFormat(*it);
-        addEntry(format);
-        formatList->append( format );
-        rPath += format->rPaths;
-     }
-     rPath.sort();
-     // Remove duplicates from rPath:
-     QString last;
-     for(QStringList::Iterator it = rPath.begin();
-         it != rPath.end(); )
-     {
-        QStringList::Iterator it2 = it++;
-        if (*it2 == last)
-        {
-           // remove duplicate
-           rPath.remove(it2);
-        }
-        else
-        {
-           last = *it2;
-        }
-     }
-     mReadPattern = createPattern( KImageIO::Reading );
-     mWritePattern = createPattern( KImageIO::Writing );
   }
 }
 
@@ -444,14 +351,6 @@ KImageIOFactory::createEntry(int offset)
       format = 0;
    }
    return format;
-}
-
-void
-KImageIOFactory::saveHeader(QDataStream &str)
-{
-   KSycocaFactory::saveHeader(str);
-  
-   str << mReadPattern << mWritePattern << rPath;
 }
 
 void KImageIO::registerFormats()

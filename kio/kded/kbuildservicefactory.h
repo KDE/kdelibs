@@ -38,7 +38,7 @@ public:
   KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
                         KBuildServiceGroupFactory *serviceGroupFactory );
   
-  virtual ~KBuildServiceFactory() { }
+  virtual ~KBuildServiceFactory();
 
   /**
    * Construct a KService from a config file.

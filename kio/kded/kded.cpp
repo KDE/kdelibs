@@ -23,6 +23,7 @@
 
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
+#include <kresourcelist.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -97,11 +98,12 @@ void Kded::build()
        factory = m_lstFactories->first() )
   {
     // For each resource the factory deals with
-    for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
+    for( KSycocaResourceList::ConstIterator it1 = factory->resourceList()->begin();
          it1 != factory->resourceList()->end();
          ++it1 )
     {
-      QStringList dirs = KGlobal::dirs()->resourceDirs( *it1 );
+      KSycocaResource res = (*it1);
+      QStringList dirs = KGlobal::dirs()->resourceDirs( res.resource );
       // For each resource the factory deals with
       for( QStringList::ConstIterator it2 = dirs.begin();
            it2 != dirs.end();

@@ -54,7 +54,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
    {
       // Build new database!
       m_str = 0;
-      m_resourceList = new QStringList();
+      m_resourceList = 0;
       m_entryDict = new KSycocaEntryDict();
       m_entryDict->setAutoDelete(true);
       m_sycocaDict = new KSycocaDict();
@@ -68,7 +68,6 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 
 KSycocaFactory::~KSycocaFactory()
 {
-   delete m_resourceList;
    delete m_entryDict;
    delete m_sycocaDict;
 }
