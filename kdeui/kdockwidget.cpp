@@ -316,6 +316,10 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
 
   delete drag;
   drag = nd;
+  if (drag->parentWidget()!=this) {
+	drag->reparent(this,QPoint(0,0));
+  }
+
 
   layout->addWidget( drag );
   layout->addWidget( dockbackButton );
@@ -332,7 +336,9 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
   if (dontShowDummy) d->dummy->hide(); else d->dummy->show();
   layout->addWidget( closeButton );
   layout->activate();
-  drag->setFixedHeight( layout->minimumSize().height() );
+  kdDebug()<<"KdockWidgetHeader::setDragPanel:minimum height="<<layout->minimumSize().height()<<endl;
+#warning FIXME
+  drag->setFixedHeight( closeButton->height()); // /*layout->minimumS*/sizeHint().height() );
 }
 
 void KDockWidgetHeader::addButton(KDockButton_Private* btn) {
