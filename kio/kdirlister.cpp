@@ -105,8 +105,6 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
 
   m_isShowingDotFiles = _showDotFiles;
 
-  // TODO: Check whether the URL is really a directory
-
   // Stop running jobs, if any
   stop();
 
