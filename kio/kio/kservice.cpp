@@ -19,12 +19,15 @@
 
 // $Id$
 
+#include <config.h>
+
 #include "kservice.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #include <stddef.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <qstring.h>
 #include <qfile.h>
@@ -505,9 +508,17 @@ bool KService::substituteUid() const {
   QVariant v = property("X-KDE-SubstituteUID");
   return v.isValid() && v.toBool();
 }
+
 QString KService::username() const {
+  // See also KDesktopFile::tryExec()
+  QString user;
   QVariant v = property("X-KDE-Username");
-  return v.isValid() ? v.toString() : QString::null;
+  user = v.isValid() ? v.toString() : QString::null;
+  if (user.isEmpty())
+     user = ::getenv("ADMIN_ACCOUNT");
+  if (user.isEmpty())
+     user = "root";
+  return user;
 }
 
 bool KService::noDisplay() const {
