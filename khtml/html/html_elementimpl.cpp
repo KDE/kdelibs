@@ -299,6 +299,7 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
     removeChildren();
     int ec = 0;
     appendChild( fragment, ec );
+    delete fragment;
     return !ec;
 }
 
