@@ -113,6 +113,12 @@ public:
    */
   static bool runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
+  /**
+   * Returns the location of the LD_PRELOAD library that makes app
+   * start notification work.
+   */
+  static QString libmapnotify();
+
 signals:
   void finished();
   void error();
@@ -201,11 +207,6 @@ protected:
    * Quotes a string for the shell
    */
   static void shellQuote( QString &_str );
-
-private:
-
-  static QString libmapnotify();
-
 };
 
 /**
