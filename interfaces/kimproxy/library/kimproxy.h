@@ -41,9 +41,25 @@ class DCOPClient;
 class KIMIface_stub;
 class KURL;
 
-typedef QMap<QCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
-typedef QDict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
-typedef QMap<int, QString> PresenceStringMap;
+struct AppPresence
+{
+	QCString appId;
+	int presence;
+};
+
+class ContactPresenceList : public QValueList<AppPresence>
+{
+	public:
+		// return value indicates if the supplied parameter was better than any existing presence
+		bool update( const AppPresence );
+		AppPresence best();
+};
+
+//typedef QValueList<AppPresence> ContactPresenceList;
+typedef QMap<QString, ContactPresenceList> PresenceMap;
+//typedef QMap<int, QString> PresenceStringMap;
+//typedef QDict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
+//typedef QMap<QCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
 
 /**
  * This class provides an easy-to-use interface to any instant messengers or chat programs
@@ -251,6 +267,10 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		void sigPresenceInfoExpired();
 	protected:
 		/**
+		 * Bootstrap our presence data for a newly registered app
+		 */
+		void pollApp( const QCString & appId );
+		/**
 		 * Bootstrap our presence data by polling all known apps
 		 */
 		void pollAll( const QString &uid );
@@ -283,9 +303,13 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		// KABC Uid -> (appId, numeric presence )(AppPresence)
 		PresenceMap m_presence_map;
+		// list of the strings in use by KIMIface
+		QStringList m_presence_strings;
+		// list of the icon names in use by KIMIface
+		QStringList m_presence_icons;
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
-		QPtrDict<PresenceStringMap> m_client_presence_strings;
+		//QPtrDict<PresenceStringMap> m_client_presence_strings;
 		DCOPClient *m_dc;
 		bool m_apps_available;
 		bool m_initialized;

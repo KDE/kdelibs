@@ -1,3 +1,5 @@
+SUBDIRS = icons
+
 INCLUDES = $(all_includes)
 
 noinst_HEADERS = kimproxyiface.h

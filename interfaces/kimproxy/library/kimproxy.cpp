@@ -41,47 +41,101 @@ static KStaticDeleter<KIMProxy> _staticDeleter;
 
 KIMProxy * KIMProxy::s_instance = 0L;
 
-int bestPresence( AppPresence* ap )
+bool ContactPresenceList::update( AppPresence ap )
 {
-	Q_ASSERT( ap );
-	AppPresence::const_iterator it;
-	it = ap->begin();
-	int best = 0; // unknown
-	if ( it != ap->end() )
+	if ( isEmpty() )
 	{
-		best = it.data();
-		++it;
-		for ( ; it != ap->end(); ++it )
-		{
-			if ( it.data() > best )
-				best = it.data(); 
-		}
+		append( ap );
+		return true;
 	}
+	
+	bool bestChanged = false;
+	AppPresence best;
+	best.presence = -1;
+	ContactPresenceList::iterator it = begin();
+	const ContactPresenceList::iterator itEnd = end();
+	ContactPresenceList::iterator existing = itEnd;
+
+	while ( it != itEnd )
+	{
+		if ( (*it).presence > best.presence )
+			best = (*it);
+		if ( (*it).appId = ap.appId )
+			existing = it;
+		++it;
+	}
+	
+	if ( ap.presence > best.presence ||
+      best.appId == ap.appId )
+		bestChanged = true;
+	
+	if ( existing != itEnd )
+	{
+		remove( existing );
+		append( ap );
+	}
+	return bestChanged;
+}
+
+AppPresence ContactPresenceList::best()
+{
+	AppPresence best;
+	best.presence = -1;
+	ContactPresenceList::iterator it = begin();
+	const ContactPresenceList::iterator itEnd = end();
+	while ( it != itEnd )
+	{
+		if ( (*it).presence > best.presence )
+			best = (*it);
+		++it;
+	}
+	// if it's still -1 here, we have no presence data, so we return Unknown
+	if ( best.presence == -1 )
+		best.presence = 0;
 	return best;
 }
 
-QCString bestAppId( AppPresence* ap )
-{
-	Q_ASSERT( ap );
-	AppPresence::const_iterator it;
-	QCString bestAppId;
-	it = ap->begin();
-	if ( it != ap->end() )
-	{
-		int best = it.data();
-		bestAppId = it.key();
-		++it;
-		for ( ; it != ap->end(); ++it )
-		{
-			if ( it.data() > best )
-			{
-				best = it.data();
-				bestAppId = it.key();
-			}
-		}
-	}
-	return bestAppId;
-}
+// int bestPresence( AppPresence* ap )
+// {
+// 	Q_ASSERT( ap );
+// 	AppPresence::const_iterator it;
+// 	it = ap->begin();
+// 	int best = 0; // unknown
+// 	if ( it != ap->end() )
+// 	{
+// 		best = it.data();
+// 		++it;
+// 		for ( ; it != ap->end(); ++it )
+// 		{
+// 			if ( it.data() > best )
+// 				best = it.data(); 
+// 		}
+// 	}
+// 	return best;
+// }
+// 
+// QCString bestAppId( AppPresence* ap )
+// {
+// 	Q_ASSERT( ap );
+// 	AppPresence::const_iterator it;
+// 	QCString bestAppId;
+// 	it = ap->begin();
+// 	if ( it != ap->end() )
+// 	{
+// 		int best = it.data();
+// 		bestAppId = it.key();
+// 		++it;
+// 		for ( ; it != ap->end(); ++it )
+// 		{
+// 			if ( it.data() > best )
+// 			{
+// 				best = it.data();
+// 				bestAppId = it.key();
+// 			}
+// 		}
+// 	}
+// 	return bestAppId;
+// }
 
 KIMProxy * KIMProxy::instance( DCOPClient * client ) 
 {
@@ -98,15 +152,25 @@ KIMProxy * KIMProxy::instance( DCOPClient * client )
 KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject()
 {
 	m_im_client_stubs.setAutoDelete( true );
-	m_presence_map.setAutoDelete( true );
 
-	m_apps_available = false;
 	m_dc = dc;
 	m_initialized = false;
 	connect( m_dc, SIGNAL( applicationRemoved( const QCString& ) ) , this, SLOT( unregisteredFromDCOP( const QCString& ) ) );
 	connect( m_dc, SIGNAL( applicationRegistered( const QCString& ) ) , this, SLOT( registeredToDCOP( const QCString& ) ) );
 	m_dc->setNotifications( true );
 
+	m_presence_strings.append( "Unknown" );
+	m_presence_strings.append( "Offline" );
+	m_presence_strings.append( "Connecting" );
+	m_presence_strings.append( "Away" );
+	m_presence_strings.append( "Online" );
+	
+	m_presence_icons.append( "presence_unknown" );
+	m_presence_icons.append( "presence_offline" );
+	m_presence_icons.append( "presence_connecting" );
+	m_presence_icons.append( "presence_away" );
+	m_presence_icons.append( "presence_online" );
+	
 	//QCString senderApp = "Kopete";
 	//QCString senderObjectId = "KIMIface";
 	QCString method = "contactPresenceChanged( QString, QCString, int )";
@@ -160,8 +224,9 @@ bool KIMProxy::initialize()
 							//kdDebug( 790 ) << " app name: " << (*offer)->name() << ", has instance " << *app << ", dcopService: " << dcopService << endl;
 							if ( !m_im_client_stubs.find( dcopService ) )
 							{
-								kdDebug( 790 ) << "inserting new stub for " << *app << " dcopObjectId " << dcopObjectId << endl;
+								kdDebug( 790 ) << "App " << *app << ", dcopObjectId " << dcopObjectId << " found, using it for presence info." << endl;
 								m_im_client_stubs.insert( *app, new KIMIface_stub( m_dc, *app, dcopObjectId ) );
+								pollApp( *app );
 							}
 						}
 					}
@@ -172,18 +237,137 @@ bool KIMProxy::initialize()
 	return !m_im_client_stubs.isEmpty();
 }
 
-QStringList KIMProxy::allContacts()
+void KIMProxy::registeredToDCOP( const QCString& appId )
 {
-	QStringList value;
-	
+	//kdDebug( 790 ) << k_funcinfo << " appId '" << appId << "'" << endl;
+	// check that appId implements our service
+	// if the appId ends with a number, i.e. a pid like in foobar-12345,
+	if ( appId.isEmpty() )
+		return;
+
+	bool newApp = false;
+	// get an up to date list of offers in case a new app was installed
+	// and check each of the offers that implement the service type we're looking for,
+	// to see if any of them are the app that just registered
+	const KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
+	KService::List::const_iterator it;
+	for ( it = offers.begin(); it != offers.end(); ++it )
+	{
+		QCString dcopObjectId = "KIMIface";
+		QCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
+		if ( appId.left( dcopService.length() ) == dcopService )
+		{
+			// if it's not already known, insert it
+			if ( !m_im_client_stubs.find( appId ) )
+			{
+				newApp = true;
+				kdDebug( 790 ) << "App: " << appId << ", dcopService: " << dcopService << " started, using it for presence info."<< endl;
+				m_im_client_stubs.insert( appId, new KIMIface_stub( m_dc, appId, dcopObjectId ) );
+			}
+		}
+		//else
+		//	kdDebug( 790 ) << "App doesn't implement our ServiceType" << endl;
+	}
+	//if ( newApp )
+	//	emit sigPresenceInfoExpired();
+}
+
+void KIMProxy::unregisteredFromDCOP( const QCString& appId )
+{
+	//kdDebug( 790 ) << k_funcinfo << appId << endl;
+	if ( m_im_client_stubs.find( appId ) )
+	{
+		kdDebug( 790 ) << appId << " quit, removing its presence info." << endl;
+		
+		PresenceMap::Iterator it = m_presence_map.begin();
+		const PresenceMap::Iterator end = m_presence_map.end();
+		for ( ; it != end; ++it )
+		{
+			ContactPresenceList list = it.data();
+			ContactPresenceList::iterator cpIt = list.begin();
+			while( cpIt != list.end() )
+			{
+				ContactPresenceList::iterator gone = cpIt++;
+				if ( (*gone).appId == appId )
+				{
+					list.remove( gone );
+				}
+			}
+		}
+		m_im_client_stubs.remove( appId );
+		emit sigPresenceInfoExpired();
+	}
+}
+
+void KIMProxy::contactPresenceChanged( QString uid, QCString appId, int presence )
+{
+	// update the presence map
+	//kdDebug( 790 ) << k_funcinfo << "uid: " << uid << " appId: " << appId << " presence " << presence << endl;
+	ContactPresenceList current;
+	current = m_presence_map[ uid ];
+  //kdDebug( 790 ) << "current best presence from : " << current.best().appId << " is: " << current.best().presence << endl;
+	AppPresence newPresence;
+	newPresence.appId = appId;
+	newPresence.presence = presence;
+
+	if ( current.update( newPresence ) )
+	{
+		m_presence_map.insert( uid, current );
+		emit sigContactPresenceChanged( uid );
+	}
+}
+
+int KIMProxy::presenceNumeric( const QString& uid )
+{
+	AppPresence ap;
+	ap.presence = 0;
 	if ( initialize() )
 	{
-		QDictIterator<KIMIface_stub> it( m_im_client_stubs );
-		for ( ; it.current(); ++it )
-		{
-			value += it.current()->allContacts();
-		}
+		ContactPresenceList presence = m_presence_map[ uid ];
+		ap = presence.best();
 	}
+	return ap.presence;
+}
+
+QString KIMProxy::presenceString( const QString& uid )
+{
+	AppPresence ap;
+	ap.presence = 0;
+	if ( initialize() )
+	{
+		ContactPresenceList presence = m_presence_map[ uid ];
+		ap = presence.best();
+	}
+	if ( ap.appId.isEmpty() )
+		return QString::null;
+	else
+		return m_presence_strings[ ap.presence ];
+}
+
+QPixmap KIMProxy::presenceIcon( const QString& uid )
+{
+	AppPresence ap;
+	ap.presence = 0;
+	if ( initialize() )
+	{
+		ContactPresenceList presence = m_presence_map[ uid ];
+		ap = presence.best();
+	}
+	if ( ap.appId.isEmpty() )
+	{
+		//kdDebug( 790 ) << k_funcinfo << "returning a null QPixmap because we were asked for an icon for a uid we know nothing about" << endl;
+		return QPixmap();
+	}
+	else
+	{
+		//kdDebug( 790 ) << k_funcinfo << "returning this: " << m_presence_icons[ ap.presence ] << endl;
+		return SmallIcon( m_presence_icons[ ap.presence ]);
+	}
+}
+
+QStringList KIMProxy::allContacts()
+{
+	QStringList value = m_presence_map.keys();
 	return value;
 }
 
@@ -205,15 +389,12 @@ QStringList KIMProxy::reachableContacts()
 QStringList KIMProxy::onlineContacts()
 {
 	QStringList value;
-	
-	if ( initialize() )
-	{
-		QDictIterator<KIMIface_stub> it( m_im_client_stubs );
-		for ( ; it.current(); ++it )
-		{
-			value += it.current()->onlineContacts( );
-		}
-	}
+	PresenceMap::iterator it = m_presence_map.begin();
+	const PresenceMap::iterator end= m_presence_map.end();
+	for ( ; it != end; ++it )
+		if ( it.data().best().presence > 2 /*Better than Connecting, ie Away or Online*/ )
+			value.append( it.key() );
+		
 	return value;
 }
 
@@ -234,20 +415,7 @@ QStringList KIMProxy::fileTransferContacts()
 
 bool KIMProxy::isPresent( const QString& uid )
 {
-	bool present = false;
-	if ( initialize() )
-	{
-		QDictIterator<KIMIface_stub> it( m_im_client_stubs );
-		for ( ; it.current(); ++it )
-		{
-			if (it.current()->isPresent( uid ) )
-			{
-				present = true;
-		 		break;
-			}
-		}
-    }
-    return present;
+	return ( !m_presence_map[ uid ].isEmpty() );
 }
 
 QString KIMProxy::displayName( const QString& uid )
@@ -260,77 +428,6 @@ QString KIMProxy::displayName( const QString& uid )
 	}
 	//kdDebug( 790 ) << k_funcinfo << name << endl;
     return name;
-}
-
-int KIMProxy::presenceNumeric( const QString& uid )
-{
-	int presence = -1;
-	if ( initialize() )
-	{
-		pollAll( uid );
-		AppPresence *ap = m_presence_map.find( uid );
-		if ( ap ) // find returns 0 on not found.
-			presence = bestPresence( ap );
-	}
-	return presence;
-}
-
-QString KIMProxy::presenceString( const QString& uid )
-{
-	//kdDebug( 790 ) << k_funcinfo << endl;
-	
-	QString presence;
-	KIMIface_stub* s = stubForUid( uid );
-	if ( initialize() && s )
-	{
-		
-		PresenceStringMap * appPresenceStrings = m_client_presence_strings[ s ];
-		if ( !appPresenceStrings ) // we have no presence strings mapped at all for this stub
-		{
-			//kdDebug( 790 ) << " no string cache found for this stub , creating one" << endl;
-			appPresenceStrings = new PresenceStringMap();
-			m_client_presence_strings.insert( s, appPresenceStrings );
-		}
-		int numeric = presenceNumeric( uid );
-		presence = (*appPresenceStrings)[ numeric ];
-		if ( presence.isEmpty() ) //  cache miss
-		{
-			//kdDebug( 790 ) << " no cached string found for this app, fetching it" << endl;
-			presence = s->presenceString( uid );
-			appPresenceStrings->insert( numeric, presence );
-		}
-		//kdDebug( 790 ) << " resulting presence string for " << uid << " : " << presence << endl;
-	}
-	return presence;
-}
-
-QPixmap KIMProxy::presenceIcon( const QString& uid )
-{
-	QPixmap presence;
-	if ( initialize() )
-	{
-		// get the app id 
-		pollAll( uid );
-		AppPresence *existing = m_presence_map.find( uid );
-		// try the pixmap cache, and insert if not found
-		QCString ba = bestAppId( existing );
-		if ( !ba.isNull() )
-		{
-			QString appPresenceKey = QString::number( presenceNumeric( uid ) ).append( ba );
-			if ( !QPixmapCache::find( appPresenceKey, presence ) )
-			{
-				if ( KIMIface_stub* s = stubForUid( uid ) )
-				{
-					presence = s->icon( uid );
-					if ( !presence.isNull() )
-						QPixmapCache::insert( appPresenceKey, presence );
-					//else
-						//kdDebug(790) << k_funcinfo << "got a null icon for " << uid << " from " << ba << endl;
-				}
-			}
-		}
-	}
-	return presence;
 }
 
 bool KIMProxy::canReceiveFiles( const QString & uid )
@@ -429,8 +526,7 @@ QString KIMProxy::locate( const QString & contactId, const QString & protocol )
 
 bool KIMProxy::imAppsAvailable()
 {
-	//kdDebug( 790 ) << k_funcinfo << " returning " << m_apps_available<< endl;
-	return m_apps_available;
+	return ( !m_im_client_stubs.isEmpty() );
 }
 
 bool KIMProxy::startPreferredApp()
@@ -450,108 +546,13 @@ bool KIMProxy::startPreferredApp()
 	return ( result == 0 );
 }
 
-void KIMProxy::unregisteredFromDCOP( const QCString& appId )
-{
-	//kdDebug( 790 ) << k_funcinfo << appId << endl;
-	if ( m_im_client_stubs.find( appId ) )
-	{
-		kdDebug( 790 ) << "removing references to " << appId << endl;
-		// invalidate all
-		QDictIterator<AppPresence> it( m_presence_map ); 
-		for ( ; it.current(); ++it )
-		{
-			AppPresence::iterator apIt;
-			for ( apIt = it.current()->begin(); apIt != it.current()->end(); ++apIt )
-				if ( apIt.key() == appId )
-				{
-					it.current()->remove( apIt );
-				}
-		}
-		m_im_client_stubs.remove( appId );
-		emit sigPresenceInfoExpired();
-	}
-}
-
-void KIMProxy::registeredToDCOP( const QCString& appId )
-{
-	// check that appId implements our service
-	// if the appId ends with a number, i.e. a pid like in foobar-12345,
-	// there's no chance - why did i make this decision
-	if ( appId.isEmpty() ) /*|| QChar( appId[ appId.length() - 1 ] ).isDigit() ) */
-		return;
-	// So there is no error from a failed query when using kdelibs 3.2, which don't have this servicetype
-	if ( !KServiceType::serviceType( IM_SERVICE_TYPE ) ) 
-		return;
-
-	//kdDebug( 790 ) << k_funcinfo << appId << endl;
-	bool newApp = false;
-	// get an up to date list of offers in case a new app was installed
-	const KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
-	KService::List::const_iterator it;
-	// check each of the offers that implement the service type we're lookin for,
-	// to see if any of them are the app that just registered
-	for ( it = offers.begin(); it != offers.end(); ++it )
-	{
-		QCString dcopObjectId = "KIMIface";
-		QCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
-		//kdDebug( 790 ) << "dcopService: " << dcopService << ", appId: " << appId << endl;
-		if ( appId.left( dcopService.length() ) == dcopService )
-		{
-			m_apps_available = true;
-			// if it's not already known, insert it
-			if ( !m_im_client_stubs.find( appId ) )
-			{	
-				newApp = true;
-				m_im_client_stubs.insert( appId, new KIMIface_stub( m_dc, appId, dcopObjectId ) );
-			}
-		}
-		//else
-		//	kdDebug( 790 ) << "App doesn't implement our ServiceType" << endl;
-	}
-	if ( newApp )
-		emit sigPresenceInfoExpired();
-}
-
-void KIMProxy::contactPresenceChanged( QString uid, QCString appId, int presence )
-{
-	// update the presence map
-	//kdDebug( 790 ) << k_funcinfo << "uid: " << uid << " appId: " << appId << " presence " << presence << endl;
-	if ( updatePresence( uid, appId, presence ) )
-		emit sigContactPresenceChanged( uid );
-}
-
-bool KIMProxy::updatePresence( const QString &uid, const QCString &appId, int presence )
-{
-	// if exists	
-	AppPresence *userPresences = 0L;
-	if ( ( userPresences = m_presence_map.find( uid ) ) )
-	{
-		// get the old presence
-		int oldBest = bestPresence( userPresences );
-		QCString oldBestApp = bestAppId( userPresences );
-		// update the presence
-		userPresences->insert( appId, presence );
-		int newBest =  bestPresence( userPresences );
-		// return if the update is better than the old presence
-		return ( newBest > oldBest || appId == oldBestApp );
-	}
-	else
-	{
-		// else insert
-		userPresences = new AppPresence();
-		userPresences->insert( appId, presence );
-		m_presence_map.insert( uid, userPresences );
-		return true;
-	}
-	return false;
-}
 
 void KIMProxy::pollAll( const QString &uid )
 {
-	// We only need to call this function if we don't have any data at all
+/*	// We only need to call this function if we don't have any data at all
 	// otherwise, the data will be kept fresh by received presence change
 	// DCOP signals
-	if ( !m_presence_map.find( uid ) )
+	if ( !m_presence_map.contains( uid ) )
 	{
 		AppPresence *presence = new AppPresence();
 		// record current presence from known clients
@@ -561,20 +562,37 @@ void KIMProxy::pollAll( const QString &uid )
 			presence->insert( it.currentKey().ascii(), it.current()->presenceStatus( uid ) ); // m_im_client_stubs has qstring keys...
 		}
 		m_presence_map.insert( uid, presence );
+	}*/
+}
+
+void KIMProxy::pollApp( const QCString & appId )
+{
+	//kdDebug( 790 ) << k_funcinfo << endl;
+	KIMIface_stub * appStub = m_im_client_stubs[ appId ];
+	QStringList contacts = m_im_client_stubs[ appId ]->allContacts();
+	QStringList::iterator it = contacts.begin();
+	QStringList::iterator end = contacts.end();
+	for ( ; it != end; ++it )
+	{
+		ContactPresenceList current = m_presence_map[ *it ];
+		AppPresence ap;
+		ap.appId = appId;
+		ap.presence = appStub->presenceStatus( *it );
+		current.append( ap );
+
+		m_presence_map.insert( *it, current );
+		if ( current.update( ap ) )
+			emit sigContactPresenceChanged( *it );
+		//kdDebug( 790 ) << " uid: " << *it << " presence: " << ap.presence << endl;
 	}
 }
 
 KIMIface_stub * KIMProxy::stubForUid( const QString &uid )
 {
-	pollAll( uid );
 	// get best appPresence
-	
-	AppPresence *ap = m_presence_map.find( uid );
+	AppPresence ap = m_presence_map[ uid ].best();
 	// look up the presence string from that app
-	if ( ap )
-		return m_im_client_stubs.find( bestAppId( ap ) );
-	else
-		return 0L;
+		return m_im_client_stubs.find( ap.appId );
 }
 
 KIMIface_stub * KIMProxy::stubForProtocol( const QString &protocol)
