@@ -3347,6 +3347,8 @@ void HTTPProtocol::decodeGzip()
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
   unlink(filename); // If you want to inspect the raw data, comment this line out
+  free(filename);
+  filename = 0;
 
   // And then reads it back in with gzread so it'll
   // decompress on the fly.
