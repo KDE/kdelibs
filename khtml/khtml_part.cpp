@@ -4939,7 +4939,9 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
         d->m_activeFrame = 0L;
         if ( !part->inherits( "KHTMLPart" ) )
         {
-            factory()->removeClient( part );
+            if (factory()) {
+                factory()->removeClient( part );
+            }
             removeChildClient( part );
         }
     }
