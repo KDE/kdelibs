@@ -265,6 +265,7 @@ public:
      * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
      * kfile->setFilter("*.cpp");
      * kfile->setFilter("*.cpp|Sources (*.cpp)");
+     * kfile->setFilter("*.cpp|" + i18n("Sources (*.cpp)"));
      * kfile->setFilter("*.cpp *.cc *.C|C++ Source Files\n*.h *.H|Header files");
      * </code>
      *
