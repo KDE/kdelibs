@@ -5,6 +5,7 @@ MimeType=audio/x-wav
 Icon=sound.xpm
 Patterns=*.wav;*.WAV;
 Comment=Wav file
+Comment[cs]=oubor wav
 Comment[de]=WAV Dokument
 Comment[es]=Archivo de sonido WAV
 Comment[fi]=WAV -tiedosto

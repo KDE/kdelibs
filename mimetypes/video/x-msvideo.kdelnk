@@ -5,4 +5,5 @@ MimeType=video/x-msvideo
 Icon=video.xpm
 Patterns=*.avi;*.AVI;
 Comment=Microsoft AVI Movie Format
+Comment[cs]=Filmy ve formátu Microsoft AVI
 Comment[pt_BR]=Filme Microsoft AVI
