@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -37,6 +37,11 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
       return;
    }
 
+   QTextCodec * codec = QTextCodec::codecForName("UTF-8");
+   Q_ASSERT(codec);
+   if (!codec)
+      return;
+
    int lineno = 0;
    QString url, name, type;
    QCString line(4096);
@@ -49,6 +54,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
           continue;
     
       QString currentLine = line.stripWhiteSpace();
+      QString currentLine_utf8 = codec->toUnicode(line);
     
       // end of data block
       if (currentLine.isEmpty()) {
@@ -73,9 +79,9 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
          if ( tag = "#", currentLine.startsWith( tag ) )
             type = currentLine.remove( 0, tag.length() );
          else if ( tag = "NAME=", currentLine.startsWith( tag ) )
-            name = currentLine.remove( 0, tag.length() );
+            name = currentLine_utf8.remove(0, tag.length());
          else if ( tag = "URL=", currentLine.startsWith( tag ) )
-            url = currentLine.remove( 0, tag.length() );
+            url = currentLine_utf8.remove(0, tag.length());
       }
    }
 
