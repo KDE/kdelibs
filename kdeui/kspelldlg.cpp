@@ -2,6 +2,7 @@
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000 Rik Hemsley <rik@kde.org>
    Copyright (C) 2000-2001 Wolfram Diestel <wolfram@steloj.de>
+   Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,176 +27,166 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <klistbox.h>
+#include <kcombobox.h>
+#include <klistview.h>
 #include <klineedit.h>
+#include <kpushbutton.h>
 #include <kprogress.h>
 #include <kbuttonbox.h>
 #include <kdebug.h>
 
+#include "ksconfig.h"
 #include "kspelldlg.h"
+#include "kspellui.h"
 
-KSpellDlg::KSpellDlg(
-  QWidget * parent,
-  const char * name,
-  bool _progressbar,
-  bool _modal
-)
+class KSpellDlg::KSpellDlgPrivate {
+public:
+  KSpellUI* ui;
+  KSpellConfig* spellConfig;
+};
+
+KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bool _modal )
   : KDialogBase(
       parent, name, _modal, i18n("Check spelling"), Help|Cancel|User1,
       Cancel, true, i18n("&Finished")
     ),
-    progressbar(_progressbar)
+    progressbar( false )
 {
-  QWidget * w = new QWidget(this);
-  setMainWidget(w);
+  Q_UNUSED( _progressbar );
+  d = new KSpellDlgPrivate;
+  d->ui = new KSpellUI( this );
+  setMainWidget( d->ui );
 
-  wordlabel = new QLabel(w, "wordlabel");
-  wordlabel->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  connect( d->ui->m_replaceBtn, SIGNAL(clicked()),
+           this, SLOT(replace()));
+  connect( this, SIGNAL(ready(bool)),
+           d->ui->m_replaceBtn, SLOT(setEnabled(bool)) );
 
-  editbox = new KLineEdit(w, "editbox");
+  connect( d->ui->m_replaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
+  connect(this, SIGNAL(ready(bool)), d->ui->m_replaceAllBtn, SLOT(setEnabled(bool)));
 
-  listbox = new KListBox(w, "listbox");
+  connect( d->ui->m_skipBtn, SIGNAL(clicked()), this, SLOT(ignore()));
+  connect( this, SIGNAL(ready(bool)), d->ui->m_skipBtn, SLOT(setEnabled(bool)));
 
-  QLabel * l_misspelled =
-    new QLabel(i18n("Misspelled word:"), w, "l_misspelled");
+  connect( d->ui->m_skipAllBtn, SIGNAL(clicked()), this, SLOT(ignoreAll()));
+  connect( this, SIGNAL(ready(bool)), d->ui->m_skipAllBtn, SLOT(setEnabled(bool)));
 
-  QLabel * l_replacement =
-    new QLabel(i18n("Replacement:"), w, "l_replacement");
+  connect( d->ui->m_addBtn, SIGNAL(clicked()), this, SLOT(add()));
+  connect( this, SIGNAL(ready(bool)), d->ui->m_addBtn, SLOT(setEnabled(bool)));
 
-  QLabel * l_suggestions =
-    new QLabel(i18n("Suggestions:"), w, "l_suggestions");
-  l_suggestions->setAlignment(Qt::AlignLeft | Qt::AlignTop );
-
-  KButtonBox * buttonBox = new KButtonBox(w, Vertical);
-
-  QPushButton * b = 0L;
-
-  b = buttonBox->addButton(i18n("&Replace"), this, SLOT(replace()));
-  connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
-  qpbrep = b;
-
-  b = buttonBox->addButton(i18n("Replace &All"), this, SLOT(replaceAll()));
-  connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
-  qpbrepa = b;
-
-  b = buttonBox->addButton(i18n("&Ignore"), this, SLOT(ignore()));
-  connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
-
-  b = buttonBox->addButton(i18n("I&gnore All"), this, SLOT(ignoreAll()));
-  connect(this, SIGNAL(ready(bool)), this, SLOT(setEnabled(bool)));
-
-  b = buttonBox->addButton(i18n("A&dd"), this, SLOT(add()));
-  connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
+  connect( d->ui->m_suggestBtn, SIGNAL(clicked()), this, SLOT(suggest()));
+  connect( this, SIGNAL(ready(bool)), d->ui->m_suggestBtn, SLOT(setEnabled(bool)) );
+  d->ui->m_suggestBtn->hide();
 
   connect(this, SIGNAL(user1Clicked()), this, SLOT(stop()));
 
-  buttonBox->layout();
+  connect( d->ui->m_replacement, SIGNAL(textChanged(const QString &)),
+           SLOT(textChanged(const QString &)) );
 
-  QHBoxLayout * layout = 0L;
+  connect( d->ui->m_replacement, SIGNAL(returnPressed()),   SLOT(replace()) );
+  connect( d->ui->m_suggestions, SIGNAL(selectionChanged(QListViewItem*)),
+           SLOT(slotSelectionChanged(QListViewItem*)) );
 
-  if (progressbar) {
+  d->spellConfig = new KSpellConfig( 0, 0 ,0, false );
+  d->spellConfig->fillDicts( d->ui->m_language );
+  connect( d->ui->m_language, SIGNAL(activated(int)),
+	   d->spellConfig, SLOT(sSetDictionary(int)) );
+  connect( d->spellConfig, SIGNAL(configChanged()),
+           SLOT(slotConfigChanged()) );
 
-    QVBoxLayout * topLayout =
-      new QVBoxLayout(w, 0, KDialog::spacingHint());
+  setHelp( "spelldlg", "kspell" );
 
-    layout = new QHBoxLayout(topLayout);
-    progbar = new KProgress (w);
-    topLayout->addWidget(progbar);
-
-  } else {
-
-    layout =
-      new QHBoxLayout(w, 0, KDialog::spacingHint());
-  }
-
-  QGridLayout * leftGrid = new QGridLayout(layout);
-
-  leftGrid->addWidget(l_misspelled,   0, 0);
-  leftGrid->addWidget(l_replacement,  1, 0);
-  leftGrid->addWidget(l_suggestions,  2, 0);
-  leftGrid->addWidget(wordlabel,      0, 1);
-  leftGrid->addWidget(editbox,        1, 1);
-  leftGrid->addWidget(listbox,        2, 1);
-
-  layout->addWidget(buttonBox);
-
-  connect(
-    editbox,
-    SIGNAL(textChanged(const QString &)),
-    SLOT(textChanged(const QString &))
-  );
-
-  connect(editbox, SIGNAL(returnPressed()),   SLOT(replace()));
-  connect(listbox, SIGNAL(selected(int)),     SLOT(selected(int)));
-  connect(listbox, SIGNAL(highlighted(int)),  SLOT(highlighted (int)));
-
-  QSize bs = sizeHint();
-  if (bs.width() < bs.height()) {
-    resize(9 * bs.height() / 6, bs.height());
-  }
-
-  setHelp("spelldlg", "kspell");
-
-  emit(ready(false));
+  emit ready( false );
 }
 
 void
-KSpellDlg::init(const QString & _word, QStringList * _sugg)
+KSpellDlg::init( const QString & _word, QStringList * _sugg )
 {
   sugg = _sugg;
   word = _word;
 
-  listbox->clear();
-  listbox->insertStringList(*sugg);
+  d->ui->m_suggestions->clear();
+
+  for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
+    new QListViewItem( d->ui->m_suggestions, *it );
+  }
 
   kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
 
-  emit(ready(true));
+  emit ready( true );
 
-  wordlabel->setText(_word);
+  d->ui->m_unknownWord->setText( _word );
 
-  if (sugg->count() == 0) {
-
-    editbox->setText(_word);
-    qpbrep->setEnabled(false);
-    qpbrepa->setEnabled(false);
-
+  if ( sugg->count() == 0 ) {
+    d->ui->m_replacement->setText( _word );
+    d->ui->m_replaceBtn->setEnabled( false );
+    d->ui->m_replaceAllBtn->setEnabled( false );
+    d->ui->m_suggestBtn->setEnabled( false );
   } else {
-
-    editbox->setText((*sugg)[0]);
-    qpbrep->setEnabled(true);
-    qpbrepa->setEnabled(true);
-    listbox->setCurrentItem (0);
+    d->ui->m_replacement->setText( (*sugg)[0] );
+    d->ui->m_replaceBtn->setEnabled( true );
+    d->ui->m_replaceAllBtn->setEnabled( true );
+    d->ui->m_suggestBtn->setEnabled( false );
+    d->ui->m_suggestions->setSelected( d->ui->m_suggestions->firstChild(), true );
   }
 }
 
 void
-KSpellDlg::slotProgress (unsigned int p)
+KSpellDlg::init( const QString& _word, QStringList* _sugg,
+                 const QString& context )
+{
+  sugg = _sugg;
+  word = _word;
+
+  d->ui->m_suggestions->clear();
+
+  for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
+    new QListViewItem( d->ui->m_suggestions, *it );
+  }
+
+  kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
+
+  emit ready( true );
+
+  d->ui->m_unknownWord->setText( _word );
+  d->ui->m_contextLabel->setText( context );
+
+  if ( sugg->count() == 0 ) {
+    d->ui->m_replacement->setText( _word );
+    d->ui->m_replaceBtn->setEnabled( false );
+    d->ui->m_replaceAllBtn->setEnabled( false );
+    d->ui->m_suggestBtn->setEnabled( false );
+  } else {
+    d->ui->m_replacement->setText( (*sugg)[0] );
+    d->ui->m_replaceBtn->setEnabled( true );
+    d->ui->m_replaceAllBtn->setEnabled( true );
+    d->ui->m_suggestBtn->setEnabled( false );
+    d->ui->m_suggestions->setSelected( d->ui->m_suggestions->firstChild(), true );
+  }
+}
+
+void
+KSpellDlg::slotProgress( unsigned int p )
 {
   if (!progressbar)
     return;
 
-  progbar->setValue((int) p);
+  progbar->setValue( (int) p );
 }
 
 void
-KSpellDlg::textChanged (const QString &)
+KSpellDlg::textChanged( const QString & )
 {
-  qpbrep->setEnabled(true);
-  qpbrepa->setEnabled(true);
+  d->ui->m_replaceBtn->setEnabled( true );
+  d->ui->m_replaceAllBtn->setEnabled( true );
+  d->ui->m_suggestBtn->setEnabled( true );
 }
 
 void
-KSpellDlg::selected (int i)
+KSpellDlg::slotSelectionChanged( QListViewItem* item )
 {
-  highlighted (i);
-  replace();
-}
-
-void
-KSpellDlg::highlighted (int i)
-{
-  if (listbox->text (i)!=0)
-    editbox->setText (listbox->text (i));
+  if ( item )
+    d->ui->m_replacement->setText( item->text( 0 ) );
 }
 
 /*
@@ -209,58 +200,72 @@ KSpellDlg::closeEvent( QCloseEvent * )
 }
 
 void
-KSpellDlg::done (int result)
+KSpellDlg::done( int result )
 {
-  emit command (result);
+  emit command( result );
 }
 void
 KSpellDlg::ignore()
 {
   newword = word;
-  done (KS_IGNORE);
+  done( KS_IGNORE );
 }
 
 void
 KSpellDlg::ignoreAll()
 {
   newword = word;
-  done (KS_IGNOREALL);
+  done( KS_IGNOREALL );
 }
 
 void
 KSpellDlg::add()
 {
   newword = word;
-  done (KS_ADD);
+  done( KS_ADD );
 }
 
 
 void
 KSpellDlg::cancel()
 {
-  newword=word;
-  done (KS_CANCEL);
+  newword = word;
+  done( KS_CANCEL );
 }
 
 void
 KSpellDlg::replace()
 {
-  newword = editbox->text();
-  done (KS_REPLACE);
+  newword = d->ui->m_replacement->text();
+  done( KS_REPLACE );
 }
 
 void
 KSpellDlg::stop()
 {
   newword = word;
-  done (KS_STOP);
+  done( KS_STOP );
 }
 
 void
 KSpellDlg::replaceAll()
 {
-  newword = editbox->text();
-  done (KS_REPLACEALL);
+  newword = d->ui->m_replacement->text();
+  done( KS_REPLACEALL );
+}
+
+void
+KSpellDlg::suggest()
+{
+  newword = d->ui->m_replacement->text();
+  done( KS_SUGGEST );
+}
+
+void
+KSpellDlg::slotConfigChanged()
+{
+  d->spellConfig->writeGlobalSettings();
+  done( KS_CONFIG );
 }
 
 #include "kspelldlg.moc"

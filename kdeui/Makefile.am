@@ -113,7 +113,7 @@ libkdeui_la_SOURCES = \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		ksconfig.cpp kspelldlg.cpp \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
-		ksplashscreen.cpp
+		ksplashscreen.cpp kspellui.ui
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \

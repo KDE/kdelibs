@@ -96,11 +96,13 @@ class KSpellConfig : public QWidget
     KSpellConfig( QWidget *parent=0, const char *name=0,
 		  KSpellConfig *spellConfig=0, bool addHelpButton = true );
 
-    KSpellConfig (const KSpellConfig &);
+    KSpellConfig( const KSpellConfig & );
 
-    virtual ~KSpellConfig ();
+    virtual ~KSpellConfig();
 
-    void operator= (const KSpellConfig &ksc);
+    void operator=( const KSpellConfig &ksc );
+
+    void fillDicts( QComboBox* box );
 
     /**
      * @sect Options setting routines.
@@ -116,62 +118,62 @@ class KSpellConfig : public QWidget
      * It may be useful to save this list with the document being
      * edited to facilitate quicker future spellchecking.
      */
-    void setIgnoreList (QStringList _ignorelist);
+    void setIgnoreList( QStringList _ignorelist );
 
     /**
      * The @p _replaceAllList contains word you like that replace
      * word. Becarefull this list contains word which is replaced
      * and new word.
      */
-    void setReplaceAllList (QStringList _replaceAllList);
+    void setReplaceAllList( QStringList _replaceAllList );
 
     /**
      * Set an ISpell option.
      *
      * If @p true, don't create root-affix combinations.
      */
-    void setNoRootAffix (bool);
+    void setNoRootAffix( bool );
 
     /**
      * Set an ISpell option.
      *
      * If @p true, treat run-together words a valid.
      */
-    void setRunTogether(bool);
+    void setRunTogether( bool );
 
     /**
      * Set the name of the dictionary to use.
      */
-    void setDictionary (const QString qs);
-    void setDictFromList (bool dfl);
+    void setDictionary( const QString qs );
+    void setDictFromList( bool dfl );
     //void setPersonalDict (const char *s);
 
     /**
      *
      */
-    void setEncoding (int enctype);
-    void setClient (int client);
+    void setEncoding( int enctype );
+    void setClient( int client );
 
     /**
      * Options reading routines.
      */
-    bool noRootAffix () const;
+    bool noRootAffix() const;
     bool runTogether() const;
-    const QString dictionary () const;
-    bool dictFromList () const;
+    const QString dictionary() const;
+    bool dictFromList() const;
     //QString personalDict () const;
-    int encoding () const;
-    QStringList ignoreList () const;
-    QStringList replaceAllList () const;
+    int encoding() const;
+    QStringList ignoreList() const;
+    QStringList replaceAllList() const;
 
-    int client () const; //see enums at top of file
+    int client() const; //see enums at top of file
 
     /**
      * Call this method before this class is deleted  if you want
      * the settings you have (or the user has) chosen to become the
      * global, default settings.
      */
-    bool writeGlobalSettings ();
+    bool writeGlobalSettings();
 
   protected:
     void fillInDialog();
@@ -205,13 +207,13 @@ class KSpellConfig : public QWidget
     void sHelp();
     //void sBrowseDict();
     //void sBrowsePDict();
-    void sNoAff(bool);
-    void sRunTogether(bool);
-    void sDictionary(bool);
-    void sPathDictionary(bool);
-    void sSetDictionary (int);
-    void sChangeEncoding (int);
-    void sChangeClient (int);
+    void sNoAff( bool );
+    void sRunTogether( bool );
+    void sDictionary( bool );
+    void sPathDictionary( bool );
+    void sSetDictionary( int );
+    void sChangeEncoding( int );
+    void sChangeClient( int );
     //void textChanged1 (const char *);
     //void textChanged2 (const char *);
 
@@ -241,10 +243,10 @@ class KSpellConfig : public QWidget
 signals:
     void configChanged();
 
-  private:
-    KSpellConfigPrivate *d;
-    void getAvailDictsIspell();
-    void getAvailDictsAspell();
+private:
+  KSpellConfigPrivate *d;
+  void getAvailDictsIspell();
+  void getAvailDictsAspell();
 };
 
 #endif

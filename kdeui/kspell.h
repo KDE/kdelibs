@@ -201,6 +201,7 @@ public:
    *  suggested replacements were.
    */
   virtual bool checkWord (const QString &_buffer, bool usedialog = false);
+  bool checkWord( const QString & buffer, bool _usedialog, bool suggest );
 
   /**
    * Hides the dialog box.
@@ -301,12 +302,14 @@ public:
   virtual ~KSpell();
 
   /**
+   * @deprecated
    * Performs a synchronous spellcheck.
    *
    * This method does not return until spellchecking is done or canceled.
    * Your application's GUI will still be updated, however.
+   *
    */
-  static int modalCheck( QString& text ); // marked as deprecated
+  static int modalCheck( QString& text );
 
   /**
    * Performs a synchronous spellcheck.
@@ -454,6 +457,7 @@ protected slots:
   void checkList4 ();
   void dialog2 (int dlgresult);
   void check3 ();
+  void suggestWord( KProcIO * );
 
   void slotStopCancel (int);
   void ispellExit (KProcess *);

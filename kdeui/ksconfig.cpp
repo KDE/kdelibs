@@ -544,6 +544,135 @@ void KSpellConfig::getAvailDictsAspell () {
   }
 }
 
+void
+KSpellConfig::fillDicts( QComboBox* box )
+{
+  langfnames.clear();
+  if ( box ) {
+    if ( iclient == KS_CLIENT_ISPELL ) {
+      box->clear();
+      langfnames.append(""); // Default
+      box->insertItem( i18n("ISpell Default") );
+
+      // dictionary path
+      QFileInfo dir ("/usr/lib/ispell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/local/lib/ispell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/local/share/ispell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/share/ispell");
+      /* TODO get them all instead of just one of them.
+       * If /usr/local/lib exists, it skips the rest
+       if (!dir.exists() || !dir.isDir())
+       dir.setFile ("/usr/local/lib");
+      */
+      if (!dir.exists() || !dir.isDir()) return;
+
+      kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
+                   << dir.filePath() << " " << dir.dirPath() << endl;
+
+      QDir thedir (dir.filePath(),"*.hash");
+
+      kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kdDebug(750) << "entryList().count()="
+                   << thedir.entryList().count() << endl;
+
+      for (unsigned int i=0;i<thedir.entryList().count();i++)
+      {
+        QString fname, lname, hname;
+        fname = thedir [i];
+
+        // remove .hash
+        if (fname.right(5) == ".hash") fname.remove (fname.length()-5,5);
+
+        if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+        { // This one is the KDE default language
+          // so place it first in the lists (overwrite "Default")
+
+          langfnames.remove ( langfnames.begin() );
+          langfnames.prepend ( fname );
+
+          hname=i18n("default spelling dictionary"
+                     ,"Default - %1 [%2]").arg(hname).arg(fname);
+
+          box->changeItem (hname,0);
+        }
+        else
+        {
+          langfnames.append (fname);
+          hname=hname+" ["+fname+"]";
+
+          box->insertItem (hname);
+        }
+      }
+    } else if ( iclient == KS_CLIENT_HSPELL ) {
+      box->clear();
+      box->insertItem( i18n("Hebrew") );
+      sChangeEncoding( KS_E_LATIN8 );
+    }
+    else {
+      box->clear();
+
+      box->insertItem (i18n("ASpell Default"));
+
+      // dictionary path
+      // FIXME: use "aspell dump config" to find out the dict-dir
+      QFileInfo dir ("/usr/lib/aspell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/local/lib/aspell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/share/aspell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/local/share/aspell");
+      if (!dir.exists() || !dir.isDir()) return;
+
+      kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
+                   << dir.filePath() << " " << dir.dirPath() << endl;
+
+      QDir thedir (dir.filePath(),"*");
+
+      kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kdDebug(750) << "entryList().count()="
+                   << thedir.entryList().count() << endl;
+
+      for (unsigned int i=0; i<thedir.entryList().count(); i++)
+      {
+        QString fname, lname, hname;
+        fname = thedir [i];
+
+        // consider only simple dicts without '-' in the name
+        // FIXME: may be this is wrong an the list should contain
+        // all *.multi files too, to allow using special dictionaries
+        if (fname[0] != '.')
+        {
+
+          // remove .multi
+          if (fname.right(6) == ".multi") fname.remove (fname.length()-6,6);
+
+          if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
+          { // This one is the KDE default language
+            // so place it first in the lists (overwrite "Default")
+
+            langfnames.remove ( langfnames.begin() );
+            langfnames.prepend ( fname );
+
+            hname=i18n("default spelling dictionary"
+                       ,"Default - %1").arg(hname);
+
+            box->changeItem (hname,0);
+          }
+          else
+          {
+            langfnames.append (fname);
+            box->insertItem (hname);
+          }
+        }
+      }
+    }
+  }
+}
+
 /*
  * Options setting routines.
  */
@@ -814,7 +943,7 @@ KSpellConfig::setReplaceAllList (QStringList _replacelist)
 }
 
 QStringList
-KSpellConfig::replaceAllList () const
+KSpellConfig::replaceAllList() const
 {
   return d->replacelist;
 }

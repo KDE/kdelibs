@@ -1,0 +1,223 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KSpellUI</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>KSpellUI</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>438</width>
+            <height>299</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Form1</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel2</cstring>
+            </property>
+            <property name="text">
+                <string>Unknown word:</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="2">
+            <property name="name">
+                <cstring>m_unknownWord</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;b&gt;mispeled&lt;/b&gt;</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="8" column="0">
+            <property name="name">
+                <cstring>textLabel5</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Language:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>m_language</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="6">
+            <property name="name">
+                <cstring>m_contextLabel</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>Box</enum>
+            </property>
+            <property name="text">
+                <string>... the &lt;b&gt;mispeled&lt;/b&gt; word shown in context ...</string>
+            </property>
+            <property name="alignment">
+                <set>WordBreak|AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="4" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_addBtn</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;&lt; Add To Dictionary</string>
+            </property>
+        </widget>
+        <spacer row="1" column="3">
+            <property name="name">
+                <cstring>spacer2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>21</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QPushButton" row="4" column="5">
+            <property name="name">
+                <cstring>m_replaceAllBtn</cstring>
+            </property>
+            <property name="text">
+                <string>R&amp;eplace All</string>
+            </property>
+            <property name="accel">
+                <string>Alt+E</string>
+            </property>
+        </widget>
+        <widget class="KListView" row="3" column="0" rowspan="5" colspan="5">
+            <column>
+                <property name="text">
+                    <string>Suggested Words</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>m_suggestions</cstring>
+            </property>
+            <property name="resizeMode">
+                <enum>AllColumns</enum>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="3" column="5">
+            <property name="name">
+                <cstring>m_replaceBtn</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Replace</string>
+            </property>
+            <property name="accel">
+                <string>Alt+R</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel4</cstring>
+            </property>
+            <property name="text">
+                <string>Replace &amp;with:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>m_replacement</cstring>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="5" column="5">
+            <property name="name">
+                <cstring>m_skipBtn</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Ignore</string>
+            </property>
+            <property name="accel">
+                <string>Alt+I</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="6" column="5">
+            <property name="name">
+                <cstring>m_skipAllBtn</cstring>
+            </property>
+            <property name="text">
+                <string>I&amp;gnore All</string>
+            </property>
+            <property name="accel">
+                <string>Alt+G</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit" row="2" column="2" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>m_replacement</cstring>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="2" column="5">
+            <property name="name">
+                <cstring>m_suggestBtn</cstring>
+            </property>
+            <property name="text">
+                <string>S&amp;uggest</string>
+            </property>
+            <property name="accel">
+                <string>Alt+U</string>
+            </property>
+        </widget>
+        <widget class="KComboBox" row="8" column="1" rowspan="1" colspan="4">
+            <item>
+                <property name="text">
+                    <string>English</string>
+                </property>
+            </item>
+            <property name="name">
+                <cstring>m_language</cstring>
+            </property>
+        </widget>
+        <spacer row="7" column="5" rowspan="2" colspan="1">
+            <property name="name">
+                <cstring>spacer1</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>40</height>
+                </size>
+            </property>
+        </spacer>
+    </grid>
+</widget>
+<tabstops>
+    <tabstop>m_addBtn</tabstop>
+    <tabstop>m_replacement</tabstop>
+    <tabstop>m_suggestBtn</tabstop>
+    <tabstop>m_replaceBtn</tabstop>
+    <tabstop>m_replaceAllBtn</tabstop>
+    <tabstop>m_skipBtn</tabstop>
+    <tabstop>m_skipAllBtn</tabstop>
+    <tabstop>m_suggestions</tabstop>
+    <tabstop>m_language</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>klistview.h</includehint>
+    <includehint>kcombobox.h</includehint>
+</includehints>
+</UI>

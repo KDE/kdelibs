@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000 Rik Hemsley <rik@kde.org>
+   Copyright (C) 2003 Zack Rusin  <zack@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 
 class QStringList;
 class QLabel;
+class QListViewItem;
 class QPushButton;
 class KListBox;
 class KLineEdit;
@@ -36,7 +38,9 @@ enum KS_RESULT {
   KS_IGNORE=     3,
   KS_IGNOREALL=  4,
   KS_ADD=        5,
-  KS_STOP=       7
+  KS_STOP=       7,
+  KS_SUGGEST=    8,
+  KS_CONFIG=     9
 };
 
 class KSpellDlg : public KDialogBase
@@ -55,10 +59,10 @@ class KSpellDlg : public KDialogBase
   bool progressbar;
 
 public:
-  KSpellDlg (QWidget *parent, const char *name,
+  KSpellDlg( QWidget *parent, const char *name,
 	     bool _progressbar = FALSE, bool _modal = FALSE );
 
-  QString replacement () const
+  QString replacement() const
     { return newword; }
 
   /**
@@ -66,43 +70,44 @@ public:
    *  and enable the disabled buttons on the dialog box.
    * (Buttons are disabled by standby().)
    **/
-  void init (const QString& _word, QStringList *_sugg);
+  void init( const QString& _word, QStringList* _sugg );
+  void init( const QString& _word, QStringList* _sugg,
+             const QString& context );
 
-  void standby() { emit(ready(false)); }
+  void standby() { emit ready( false ); }
 
   public slots:
   /**
    * Adjust the progress bar to @p p percent.
    **/
-  void slotProgress (unsigned int p);
+  void slotProgress( unsigned int p );
 
 protected:
-  virtual void closeEvent ( QCloseEvent * e );
-  void done (int i);
+  virtual void closeEvent( QCloseEvent * e );
+  void done( int i );
 
  signals:
     /**
       This signal is emitted when a button is pressed.
       */
-  void command (int);
+  void command( int );
 
-  void ready(bool);
+  void ready( bool );
 
 protected slots:
   void ignore();
   void add();
-  void ignoreAll();  
+  void ignoreAll();
   void cancel();
   void replace();
   void replaceAll();
+  void suggest();
   void stop();
+  void slotConfigChanged();
 
-  void textChanged (const QString &);
+  void textChanged( const QString & );
 
-  void selected (int i);
-  void highlighted (int i);
-
-
+  void slotSelectionChanged( QListViewItem* item );
 };
 
 #endif
