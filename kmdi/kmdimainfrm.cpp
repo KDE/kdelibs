@@ -333,7 +333,7 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
    }
 
    // embed the view depending on the current MDI mode
-   if (m_mdiMode == KMdi::TabPageMode) {
+   if (m_mdiMode == KMdi::TabPageMode || m_mdiMode == KMdi::IDEAlMode) {
       const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
       KDockWidget* pCover = createDockWidget( pWnd->name(),
                                               wndIcon,
