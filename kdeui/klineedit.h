@@ -400,6 +400,8 @@ protected slots:
      * @deprecated.  Will be removed in the next major release!
      */
     void slotCancelled() {}
+    
+    void userCancelled(const QString & cancelText);
 
 protected:
 
@@ -455,6 +457,13 @@ protected:
     */
     virtual void setCompletedText( const QString& /*text*/, bool /*marked*/ );
 
+
+    /**
+     * Sets the widget in userSelection mode or in automatic completion 
+     * selection mode. This changes the colors of selections.
+     */
+    void setUserSelection( bool userSelection );
+    
     /**
      * Reimplemented for internal reasons, the API is not affected.
      */
@@ -464,6 +473,7 @@ protected:
 private slots:
     void completionMenuActivated( int id );
     void tripleClickTimeout();  // resets possibleTripleClick
+    void slotRestoreSelectionColors();
     void setTextWorkaround( const QString& text );
 
 private:
@@ -476,7 +486,8 @@ private:
         AutoCompletion,
         ShellCompletion,
         PopupCompletion,
-        SemiAutoCompletion
+        SemiAutoCompletion,
+        PopupAutoCompletion
     };
 
     /**
