@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.126  1999/03/04 17:49:06  ettrich
+// more fixes for Qt-2.0
+//
 // Revision 1.125  1999/03/02 15:56:25  kulow
 // CVS_SILENT replacing klocale->translate with i18n
 //
@@ -410,6 +413,7 @@ int KApplication::xioErrhandler()
 
 void KApplication::init()
 {
+  QApplication::useXResourceManager( FALSE );
   // this is important since we fork() to launch the help (Matthias)
   fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
   // set up the fance KDE xio error handler (Matthias)
@@ -1282,8 +1286,8 @@ void KApplication::kdisplaySetPalette()
 {
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
-    
-    /*    
+
+    /*
   // WARNING : QApplication::setPalette() produces inconsistent results.
   // There are 3 problems :-
   // 1) You can't change select colors
