@@ -2,22 +2,22 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <stdlib.h>
 #include "dcopserver.moc"
@@ -108,24 +108,6 @@ void DCOPProcessMessage( IceConn iceConn, IcePointer clientData, int opcode, uns
 void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap)
 {
   switch( opcode ) {
-  case DCOPRegisterClient:
-    {
-      DCOPMsg *pMsg = 0;
-      IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-      QByteArray ba( length );
-      IceReadData(iceConn, length, ba.data() );
-      QDataStream ds( ba, IO_ReadOnly );
-      QCString app;
-      ds >> app;
-      DCOPConnection* con = clients.find( iceConn );
-      if ( con ) {
-	qDebug("registered app %s", app.data() );
-	DCOPConnection* con = clients[iceConn];
-	con->appId = app;
-	appIds.insert( app, con );
-      }
-    }
-    break;
   case DCOPSend:
     {
       DCOPMsg *pMsg = 0;
@@ -137,7 +119,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       ds >> app;
       DCOPConnection* target = appIds.find( app );
       if ( target ) {
-	IceGetHeader( target->ice_conn, majorOpcode, DCOPRegisterClient,
+	IceGetHeader( target->ice_conn, majorOpcode, DCOPSend,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	int datalen = ba.size();
 	pMsg->length += datalen;
@@ -148,7 +130,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	QByteArray data;
 	ds >> obj >> fun >> data;
 	QByteArray replyData;
-	receive( app, obj, fun, data, replyData );
+	receive( app, obj, fun, data, replyData, iceConn );
       }
     }
     break;
@@ -177,7 +159,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	  QCString obj, fun;
 	  QByteArray data;
 	  ds >> obj >> fun >> data;
-	  b = receive( app, obj, fun, data, replyData );
+	  b = receive( app, obj, fun, data, replyData, iceConn );
 	}
 	int datalen = replyData.size();
 	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed,
@@ -195,16 +177,16 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
-      DCOPConnection* con = clients.find( iceConn );
-      if ( con ) {
-	DCOPConnection* conreply = clients.find( con->waitingForReply.pop() );
-	if ( conreply ) {
-	  IceGetHeader( conreply->ice_conn, majorOpcode, opcode,
+      DCOPConnection* conn = clients.find( iceConn );
+      if ( conn ) {
+	DCOPConnection* connreply = clients.find( conn->waitingForReply.pop() );
+	if ( connreply ) {
+	  IceGetHeader( connreply->ice_conn, majorOpcode, opcode,
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
-	  IceWriteData( conreply->ice_conn, datalen, (char *) ba.data());
-	  IceFlush( conreply->ice_conn );
+	  IceWriteData( connreply->ice_conn, datalen, (char *) ba.data());
+	  IceFlush( connreply->ice_conn );
 	}
       }
     }
@@ -384,15 +366,15 @@ DCOPServer::~DCOPServer()
 
 void DCOPServer::processData( int socket )
 {
-  DCOPConnection* con = (DCOPConnection*)sender();
-  IceProcessMessagesStatus s =  IceProcessMessages( con->ice_conn, 0, 0 );
+  DCOPConnection* conn = (DCOPConnection*)sender();
+  IceProcessMessagesStatus s =  IceProcessMessages( conn->ice_conn, 0, 0 );
 
 
   if (s == IceProcessMessagesIOError) {
-    IceCloseConnection( con->ice_conn );
+    IceCloseConnection( conn->ice_conn );
     return;
   }
-  con->status = IceConnectionStatus(  con->ice_conn );
+  conn->status = IceConnectionStatus(  conn->ice_conn );
 }
 
 void DCOPServer::newClient( int socket )
@@ -420,6 +402,7 @@ void DCOPServer::newClient( int socket )
 
 void* DCOPServer::watchConnection( IceConn ice_conn )
 {
+  qDebug("new connection (count=%d)", clients.count() );
   DCOPConnection* con = new DCOPConnection( ice_conn );
   connect( con, SIGNAL( activated(int) ), this, SLOT( processData(int) ) );
 
@@ -430,18 +413,53 @@ void* DCOPServer::watchConnection( IceConn ice_conn )
 
 void DCOPServer::removeConnection( void* data )
 {
-  DCOPConnection* con = (DCOPConnection*)data;
-  qDebug("remove appId %s", con->appId.data() );
-  clients.remove(con->ice_conn );
-  appIds.remove( con->appId );
-  delete con;
+  DCOPConnection* conn = (DCOPConnection*)data;
+  clients.remove(conn->ice_conn );
+  appIds.remove( conn->appId );
+  if ( conn->appId.data() )
+      qDebug("remove connection '%s' (count%d)", conn->appId.data(), clients.count() );
+  else
+      qDebug("remove unregistered connection (count=%d)", clients.count() );
+  delete conn;
 }
 
 bool DCOPServer::receive(const QCString &app, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
-			 QByteArray &replyData)
+			 QByteArray &replyData,  IceConn iceConn)
 {
-  if ( fun == "registeredApplications" ) {
+  if ( fun == "registerAs" ) {
+    QDataStream args( data, IO_ReadOnly );
+    if (!args.atEnd()) {
+      QCString app;
+      args >> app;
+      QDataStream reply( replyData, IO_WriteOnly );
+      DCOPConnection* conn = clients.find( iceConn );
+      if ( conn && !app.isEmpty() ) {
+	  if ( !conn->appId.isNull() &&
+	       appIds.find( conn->appId ) == conn )
+	      appIds.remove( conn->appId );
+	
+	  conn->appId = app;
+	  if ( appIds.find( app ) != 0 ) {
+	      // we already have this application, unify
+	      int n = 1;
+	      QCString tmp;
+	      do {
+		  n++;
+		  tmp.setNum( n );
+		  tmp.prepend("-");
+		  tmp.prepend( app );
+	      } while ( appIds.find( tmp ) != 0 );
+	      conn->appId = tmp;
+	  }
+	  qDebug("register '%s'", conn->appId.data() );
+	  appIds.insert( conn->appId, conn );
+      }
+      reply << conn->appId;
+      return TRUE;
+    }
+  }
+  else if ( fun == "registeredApplications" ) {
     QDataStream reply( replyData, IO_WriteOnly );
     QCStringList applications;
     QDictIterator<DCOPConnection> it( appIds );

@@ -53,6 +53,7 @@ public:
 
   static char* serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
+   bool registered;
 };
 
 struct ReplyStruct
@@ -127,6 +128,7 @@ DCOPClient::DCOPClient()
   d->majorOpcode = 0;
   d->appId = 0;
   d->notifier = 0L;
+  d->registered = false;
 }
 
 DCOPClient::~DCOPClient()
@@ -144,16 +146,12 @@ void DCOPClient::setServerAddress(const QCString &addr)
   DCOPClientPrivate::serverAddr = qstrdup(addr);
 }
 
-bool DCOPClient::attach(const QCString &appId)
+bool DCOPClient::attach() 
 {
   char errBuf[1024];
 
-  d->appId = appId;
-
-
-  if ( d->iceConn && IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
-      detach(); // that's a bit slow for just changing the name..... TODO
-  }
+  if ( isAttached() )
+      detach(); 
 
   if ((d->majorOpcode = IceRegisterForProtocolSetup("DCOP", DCOPVendorString,
 						    DCOPReleaseString, 1, DCOPVersions,
@@ -176,7 +174,8 @@ bool DCOPClient::attach(const QCString &appId)
 
   if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
                                       sizeof(errBuf), errBuf)) == 0L) {
-    qDebug("Could not open connection to DCOP server, msg %s",errBuf);
+    qDebug("DCOP open connection: %s",errBuf);
+    d->iceConn = 0;
     return false;
   }
 
@@ -192,34 +191,14 @@ bool DCOPClient::attach(const QCString &appId)
   if (setupstat == IceProtocolSetupFailure ||
       setupstat == IceProtocolSetupIOError) {
     IceCloseConnection(d->iceConn);
-    qDebug("Error setting up DCOP protocol, msg is %s", errBuf);
+    qDebug("DCOP protocol setup: %s", errBuf);
     return false;
   } else if (setupstat == IceProtocolAlreadyActive) {
     /* should not happen because 3rd arg to IceOpenConnection was 0. */
-    qDebug("internal error in IceOpenConnection");
+    qDebug("DCOP: internal error in IceOpenConnection");
     return false;
   }
 
-
-  if ( !appId.isEmpty() ) {
-      // register the application identifier with the server
-
-      DCOPMsg *pMsg;
-
-      IceGetHeader(d->iceConn, d->majorOpcode, DCOPRegisterClient,
-		   sizeof(DCOPMsg), DCOPMsg, pMsg);
-
-      QByteArray ba;
-      QDataStream ds(ba, IO_WriteOnly);
-      ds << d->appId;
-
-      int datalen = ba.size();
-
-      pMsg->length += datalen;
-      IceWriteData(d->iceConn, datalen, (char *) ba.data());
-
-      IceFlush(d->iceConn);
-  }
 
   // check if we have a qApp instantiated.  If we do,
   // we can create a QSocketNotifier and use it for receiving data.
@@ -251,6 +230,7 @@ bool DCOPClient::detach()
   } 
   delete d->notifier;
   d->notifier = 0L;
+  d->registered = false;
   return true;
 }
 
@@ -261,6 +241,41 @@ bool DCOPClient::isAttached() const
 
   return (IceConnectionStatus(d->iceConn) == IceConnectAccepted);
 }
+
+
+QCString DCOPClient::registerAs( const QCString& appId )
+{
+    QCString result;
+    if ( !isAttached() ) {
+	if ( !attach() ) {
+	    return result;
+	}
+    }
+	
+    // register the application identifier with the server
+    QByteArray data, replyData;
+    QDataStream arg( data, IO_WriteOnly );
+    arg <<appId;
+    if ( call( "DCOPServer", "", "registerAs", data, replyData ) ) {
+	QDataStream reply( replyData, IO_ReadOnly );
+	reply >> result;
+    }
+    d->appId = result;
+    d->registered = !result.isNull();
+    return result;
+}
+
+bool DCOPClient::isRegistered() const
+{
+    return d->registered;
+}
+    
+
+QCString DCOPClient::appId() const
+{
+    return d->appId;
+}
+
 
 int DCOPClient::socket() const
 {
@@ -274,6 +289,9 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      bool fast)
 {
+  if ( !isAttached() )
+      return false;
+  
   DCOPMsg *pMsg;
 
   QByteArray ba;
@@ -349,7 +367,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
     return process( fun, data, replyData );
   }
   if (!DCOPObject::hasObject(objId)) {
-    qDebug("we received a message for an object we don't know about!");
+    qDebug("we received a DCOP message for an object we don't know about!");
     return false;
   } else {
     DCOPObject *objPtr = DCOPObject::find(objId);
@@ -367,6 +385,9 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QByteArray &replyData, bool fast)
 {
+  if ( !isAttached() )
+      return false;
+  
   DCOPMsg *pMsg;
 
   QByteArray ba;

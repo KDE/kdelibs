@@ -24,11 +24,10 @@
 #define DCOPVersionMajor 1
 #define DCOPVersionMinor 0
 
-#define DCOPRegisterClient 1
-#define DCOPSend 2
-#define DCOPCall 3
-#define DCOPReply 4
-#define DCOPReplyFailed 5
+#define DCOPSend 1
+#define DCOPCall 2
+#define DCOPReply 3
+#define DCOPReplyFailed 4
 
 int DCOPAuthCount = 1;
 char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};

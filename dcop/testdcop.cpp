@@ -36,7 +36,7 @@ public:
   MyDCOPObject(const QCString &name) : DCOPObject(name) {}
   bool process(const QCString &fun, const QByteArray &data,
 	       QByteArray &replyData);
-  void function(const QCString &arg) { qDebug("function got arg: %s",arg.data()); }
+  void function(const QString &arg) { qDebug("function got arg: %s",arg.data()); }
 };
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
@@ -45,7 +45,7 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
   qDebug("in MyDCOPObject::process");
   if (fun == "aFunction") {
     QDataStream args(data, IO_ReadOnly);
-    QCString arg;
+    QString arg;
     args >> arg;
     function(arg);
     return true;
@@ -60,26 +60,25 @@ int main(int argc, char **argv)
 
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
-//   client->attach();
-  client->attach(app.name());
 
-  if (!client->call(app.name(), "unknownObj", "unknownFunction", data, reply))
-    qDebug("I couldn't call myself.");
+  client->attach(); // attach to the server, now we can use DCOP service
+  
+  
+  client->registerAs( app.name() ); // register at the server, now others can call us.
+  qDebug("I registered as '%s'", client->appId().data() );
+
+  if ( client->isApplicationRegistered( app.name() ) )
+      qDebug("indeed, we are registered!");
+  
 
   DCOPObject *obj1 = new MyDCOPObject("object1");
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("This is the argument string");
-
   if (!client->call(app.name(), "object1", "aFunction", data, reply))
     qDebug("I couldn't call myself");
 
-  if ( !client->isApplicationAttached("gubel") ) //app.name()) )
-    qDebug("not attached");
-  else
-    qDebug("attached");
-
-  int n = client->attachedApplications().count();
+  int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
 
   return app.exec();

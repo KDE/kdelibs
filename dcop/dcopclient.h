@@ -2,22 +2,22 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #ifndef _DCOPCLIENT_H
 #define _DCOPCLIENT_H
@@ -36,7 +36,7 @@ typedef QValueList<QCString> QCStringList;
  * for KDE applications.
  *
  * This class provides IPC and RPC for KDE applications.  Usually you
- * will not have to instantiate one yourself, because KApplication 
+ * will not have to instantiate one yourself, because KApplication
  * contains a method to return a pointer to a DCOPClient object which
  * can be used for your whole application.
  *
@@ -80,16 +80,14 @@ class DCOPClient : public QObject
   static void setServerAddress(const QCString &addr);
 
   /**
-   * Attach to the DCOP server.  If the connection was already attached,
-   * the connection will be re-established with the new appId.
+   * Attach to the DCOP server.   If the connection was already attached,
+   * the connection will be re-established with the current server address.
    *
-   * @param appId is a UNIQUE application/program id that the server
-   * will use to associate requests with.  If no appId is specified
-   * an anonymous connection will be made.
+   * Naturally, only attached application can use DCOP services.
    *
    * @return true if attaching was successful.
    */
-  bool attach(const QCString &appId = 0);
+  bool attach();
 
   /**
    * Detach from the DCOP server.
@@ -100,6 +98,38 @@ class DCOPClient : public QObject
    * Query whether or not the client is attached to the server.
    */
   bool isAttached() const;
+
+
+  /**
+   * Register at the DCOP server.  If the application was already registered,
+   * the registration will be re-done with the new appId.
+   *
+   * @param appId is a UNIQUE application/program id that the server
+   * will use to associate requests with. If there is already an application
+   * registered with the same name, the server will add a number to the
+   * id to unify it.
+   *
+   * Registration is necessary if you want to allow other clients to talk to you.
+   * They can do so using your @param appId as first parameter for send() or
+   * call(). If you just want to talk to other clients, you do not need to register
+   * at the server. In that case attach() is enough.
+   *
+   * @returns the actuall appId used for the registration or a null string
+   * if the registration wasn't successfull.
+   */
+  QCString registerAs( const QCString& appId );
+
+  /**
+   * Query whether or not the client is registered at the server.
+   */
+  bool isRegistered() const;
+
+ /**
+  * Returns the current app id or a null string if the application wasn't
+  * registered yet.
+  */
+  QCString appId() const;
+
 
   /**
    * return the socket over which DCOP is communicating with the server.
@@ -182,9 +212,6 @@ class DCOPClient : public QObject
  protected:
 
  private:
-  /**
-   * this is only public so that ICE callbacks work.  Don't touch.
-   */
   DCOPClientPrivate *d;
 
 };
