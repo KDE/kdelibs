@@ -4,8 +4,8 @@
 
 int main()
 {
-    kdbg() << 17;
-    kdbg() << 18;
+    kdbg() << 17 << endl;
+    kdbg() << 18 << endl;
   kDebug("Before instance creation");
   kDebugArea(1202,"Before instance creation");
   KInstance i("kdebugtest");
