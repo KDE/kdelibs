@@ -704,24 +704,27 @@
 0       belong          0x000001b3              video/mpeg
 0       belong          0x000001ba              video/mpeg
 
-# MPEG 1.0 Layer 3
-0       beshort&0xfff0  0xfff0                  audio/x-mp3
+# MPEG 1.0 audio (layer III,II,I)
+0       beshort&0xff80  0xff80
+>0      beshort&0x0006  0x0002         		audio/x-mp3
+>0      beshort&0x0006  0x0004         		audio/x-mp2
+>0      beshort&0x0006  0x0006         		audio/mpeg
 
-# MPEG 1.0 Layer 2
-0       beshort&0xfffe  =0xfffc         	audio/x-mp2
+# MPEG 2.0 audio (layer III,II,I)
+0       beshort&0xff80  0xff00
+>0      beshort&0x0006  0x0002         		audio/x-mp3
+>0      beshort&0x0006  0x0004         		audio/x-mp2
+>0      beshort&0x0006  0x0006         		audio/mpeg
 
-# MPEG 2.0
-0       beshort&0xfff8  =0xfff0
-# Layer 3
->1      byte            &0x02          		audio/x-mp3
-# Layer 2
->1      byte            &0x04           	audio/x-mp2
+# MPEG 2.5 audio (layer III,II,I)
+0       beshort&0xff80  0xf800
+>0      beshort&0x0006  0x0002         		audio/x-mp3
+>0      beshort&0x0006  0x0004         		audio/x-mp2
+>0      beshort&0x0006  0x0006         		audio/mpeg
 
-
-#From: Johan Gade <jgade@diku.dk>
-
-# MPEG-4 Advanced Audio Coding (AAC) file (perhaps also MPEG-2 ACC?)
+# MPEG-4 audio
 16	string		M4A			audio/mp4
+
 
 # FLI animation format
 0	leshort		0xAF11				video/x-flic
@@ -956,3 +959,10 @@
 0	string		[Program\ Neighborhood	application/x-ica
 1	string		[Program\ Neighborhood	application/x-ica
 
+#------------------------------------------------------------------------------
+# CD image files (ISO is imported from file 4.07)
+32769	string		CD001			application/x-iso
+32633	string		CD001			application/x-iso
+
+# CDR-wins bin-with-cue files
+#0	belong		0x00FFFFFF		application/x-cuebin
