@@ -193,6 +193,8 @@ Object StringImp::toObject(ExecState *exec) const
 
 // ------------------------------ NumberImp ------------------------------------
 
+NumberImp *NumberImp::staticNaN;
+
 NumberImp::NumberImp(double v)
   : val(v)
 {
@@ -798,6 +800,8 @@ void InterpreterImp::globalInit()
   BooleanImp::staticTrue->ref();
   BooleanImp::staticFalse = new BooleanImp(false);
   BooleanImp::staticFalse->ref();
+  NumberImp::staticNaN = new NumberImp(NaN);
+  NumberImp::staticNaN->ref();
 }
 
 void InterpreterImp::globalClear()
@@ -815,6 +819,9 @@ void InterpreterImp::globalClear()
   BooleanImp::staticFalse->deref();
   BooleanImp::staticFalse->setGcAllowed();
   BooleanImp::staticFalse = 0L;
+  NumberImp::staticNaN->deref();
+  NumberImp::staticNaN->setGcAllowed();
+  NumberImp::staticNaN = 0;
 }
 
 InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)

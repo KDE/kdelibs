@@ -130,6 +130,7 @@ namespace KJS {
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
+    static NumberImp *staticNaN;
 
   private:
     double val;

@@ -409,7 +409,7 @@ Number::Number(unsigned int u)
   : Value(new NumberImp(static_cast<double>(u))) { }
 
 Number::Number(double d)
-  : Value(new NumberImp(d)) { }
+  : Value(KJS::isNaN(d) ? NumberImp::staticNaN : new NumberImp(d)) { }
 
 Number::Number(long int l)
   : Value(new NumberImp(static_cast<double>(l))) { }
@@ -452,7 +452,7 @@ int Number::intValue() const
 
 bool Number::isNaN() const
 {
-  return KJS::isNaN(value());
+  return rep == NumberImp::staticNaN;
 }
 
 bool Number::isInf() const

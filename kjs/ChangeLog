@@ -1,3 +1,7 @@
+2003-02-02  Harri Porten  <porten@kde.org>
+
+	* internal.h: added NumberImp::staticNaN
+
 2003-02-01  Harri Porten  <porten@kde.org>
 
 	* internal.cpp (putValue): throw error if reference is invalid

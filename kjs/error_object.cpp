@@ -99,10 +99,11 @@ bool ErrorObjectImp::implementsConstruct() const
 Object ErrorObjectImp::construct(ExecState *exec, const List &args)
 {
   Object proto = Object::dynamicCast(exec->interpreter()->builtinErrorPrototype());
-  Object obj(new ObjectImp(proto));
+  ObjectImp *imp = new ObjectImp(proto);
+  Object obj(imp);
 
   if (!args.isEmpty() && args[0].type() != UndefinedType) {
-    obj.put(exec,"message", String(args[0].toString(exec)));
+    imp->put(exec,"message", String(args[0].toString(exec)));
   }
 
   return obj;
@@ -124,7 +125,7 @@ Value ErrorObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &arg
 
 NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState *exec, ErrorPrototypeImp *errorProto,
                                                  ErrorType et, UString name, UString message)
-  : ObjectImp(Object(errorProto))
+  : ObjectImp(errorProto)
 {
   Value protect(this);
   errType = et;
@@ -154,9 +155,10 @@ bool NativeErrorImp::implementsConstruct() const
 
 Object NativeErrorImp::construct(ExecState *exec, const List &args)
 {
-  Object obj(new ObjectImp(Object(proto)));
+  ObjectImp *imp = new ObjectImp(proto);
+  Object obj(imp);
   if (args[0].type() != UndefinedType)
-    obj.put(exec, "message", String(args[0].toString(exec)));
+    imp->put(exec, "message", String(args[0].toString(exec)));
   return obj;
 }
 
