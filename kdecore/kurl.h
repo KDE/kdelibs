@@ -591,7 +591,7 @@ public:
    * Returns the URL as string in human-friendly format.
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    * @return A human readable URL, with no non-necessary encodings/escaped
-   * characters.
+   * characters. Password will not be shown.
    */
   QString prettyURL( int _trailing = 0) const;
 
@@ -600,7 +600,7 @@ public:
    * Returns the URL as string, escaped for HTML.
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters which is html encoded for safe inclusion in html or
-   * rich text.
+   * rich text. Password will not be shown.
    */
   QString htmlURL() const;
 
@@ -608,7 +608,7 @@ public:
    * Returns the URL as string, escaped for HTML.
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    * @return A human readable URL, with no non-necessary encodings/escaped
-   * characters.
+   * characters. Password will not be shown.
    */
   QString prettyURL( int _trailing, AdjustementFlags _flags) const;
   // ### BIC: Merge the two above
