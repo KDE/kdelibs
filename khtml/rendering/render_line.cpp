@@ -577,18 +577,15 @@ void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
             object()->getTextDecorationColors(deco, underline, overline, linethrough);
         if (deco & UNDERLINE) {
             p->setPen(underline);
-#warning FIXME
-            //p->drawLineForText(_tx, _ty, m_baseline, w);
+            p->drawLine(_tx, _ty+m_baseline, _tx+w, _ty+m_baseline );
         }
         if (deco & OVERLINE) {
             p->setPen(overline);
-#warning FIXME
-            //p->drawLineForText(_tx, _ty, 0, w);
+            p->drawLine(_tx, _ty, _tx+w, _ty );
         }
         if (deco & LINE_THROUGH) {
             p->setPen(linethrough);
-#warning FIXME
-            //p->drawLineForText(_tx, _ty, 2*m_baseline/3, w);
+            p->drawLine(_tx, _ty+2*m_baseline/3, _tx+w, _ty+2*m_baseline/3 );
         }
     }
 }
