@@ -140,10 +140,13 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
     if (widget->metaObject()->findProperty("maxValue", true) != -1)
        widget->setProperty("maxValue", maxValue);
   }
-  QString whatsThis = item->whatsThis();
-  if ( !whatsThis.isEmpty() )
+  if (QWhatsThis::textFor( widget ).isEmpty())
   {
-    QWhatsThis::add( widget, whatsThis );
+    QString whatsThis = item->whatsThis();
+    if ( !whatsThis.isEmpty() )
+    {
+      QWhatsThis::add( widget, whatsThis );
+    }
   }
 }
 
@@ -275,6 +278,7 @@ void KConfigDialogManager::updateWidgets()
      if (p != property(widget))
      {
         setProperty(widget, p);
+//        kdDebug(178) << "The setting '" << it.currentKey() << "' [" << widget->className() << "] has changed" << endl;
         changed = true;
      }
      if (item->isImmutable())
@@ -376,7 +380,7 @@ bool KConfigDialogManager::hasChanged()
      QVariant p = property(widget);
      if (p != item->property())
      {
-//      kdDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
+//        kdDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
         return true;
      }
   }
