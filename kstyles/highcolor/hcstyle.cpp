@@ -1645,8 +1645,8 @@ static const int windowsRightBorder     = 12;
             int m = motifItemVMargin;
             const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
             if (t >= 0) {
-                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
-                            y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
+                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
+                            y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
             }
             p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
         } else if (mi->pixmap()) {
