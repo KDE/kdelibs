@@ -28,7 +28,7 @@
 (define (et-xref-strings)
   (list (list (normalize "appendix")    (if %chapter-autolabel%
 					    "&Appendix; %n"
-					    "&appendix; nimega %t"))
+					    "&appendix; %t"))
 	(list (normalize "article")     (string-append %gentext-et-start-quote%
 						       "%t"
 						       %gentext-et-end-quote%))
@@ -36,7 +36,7 @@
 	(list (normalize "book")        "%t")
 	(list (normalize "chapter")     (if %chapter-autolabel%
 					    "&Chapter; %n"
-					    "&chapter; nimega %t"))
+					    "&chapter; %t"))
 	(list (normalize "equation")    "&Equation; %n")
 	(list (normalize "example")     "&Example; %n")
 	(list (normalize "figure")      "&Figure; %n")
@@ -49,25 +49,25 @@
 	(list (normalize "reference")   "&Reference; %n, %t")
 	(list (normalize "section")     (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sect1")       (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sect2")       (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sect3")       (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sect4")       (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sect5")       (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "simplesect")  (if %section-autolabel%
 					    "&Section; %n"
-					    "&section; nimega %t"))
+					    "&section; %t"))
 	(list (normalize "sidebar")     "&sidebar; %t")
 	(list (normalize "step")        "&step; %n")
 	(list (normalize "table")       "&Table; %n")))
@@ -222,7 +222,7 @@
 (define (gentext-et-intra-label-sep gind)
   (let* ((giname (if (string? gind) gind (gi gind)))
 	 (name   (normalize giname))
-	 (sep    (assoc name (et-intra-label-sep))))
+	 (sep    (assoc name (en-intra-label-sep))))
     (if sep
 	(car (cdr sep))
 	"")))
@@ -388,4 +388,3 @@
 </style-specification-body>
 </style-specification>
 </style-sheet>
-

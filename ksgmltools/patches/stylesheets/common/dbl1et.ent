@@ -4,24 +4,24 @@
 <!ENTITY Article	"Artikkel">
 <!ENTITY Bibliography	"Bibliograafia">
 <!ENTITY Book		"Raamat">
-<!ENTITY CAUTION	"HOIATUS">
-<!ENTITY Caution	"Hoiatus">
+<!ENTITY CAUTION	"ETTEVAATUST">
+<!ENTITY Caution	"Ettevaatust">
 <!ENTITY Chapter	"Peatükk">
-<!ENTITY Colophon	"Lõppmärgis"> <!-- with the slash? -->
+<!ENTITY Colophon	"Lõpumärgis">
 <!ENTITY Copyright	"Autoriõigus">
 <!ENTITY Dedication	"Pühendus">
 <!ENTITY Edition	"Väljaanne">
 <!ENTITY Equation	"Valem">
-<!ENTITY Example	"Näidis">
+<!ENTITY Example	"Näide">
 <!ENTITY Figure		"Joonis">
-<!ENTITY GlossSee	"Vaata">
-<!ENTITY GlossSeeAlso	"Vaata ka">
+<!ENTITY GlossSee	"Vt.">
+<!ENTITY GlossSeeAlso	"Vt. ka">
 <!ENTITY Glossary	"Sõnastik">
 <!ENTITY IMPORTANT	"OLULINE">
 <!ENTITY ISBN		"ISBN">
 <!ENTITY Important	"Oluline">
 <!ENTITY Index		"Aineregister">
-<!ENTITY LegalNotice	"Seadusmärge">
+<!ENTITY LegalNotice	"Autoriõiguse märge">
 <!ENTITY MsgAud		"Auditoorium">
 <!ENTITY MsgLevel	"Tase">
 <!ENTITY MsgOrig	"Algallikas">
@@ -33,16 +33,16 @@
 <!ENTITY Published	"Avaldatud">
 <!ENTITY Question	"K:">
 <!ENTITY RefEntry       "">
-<!ENTITY Reference	"Viitemärk">
+<!ENTITY Reference	"Viide">
 <!ENTITY RefName	"Nimi">
-<!ENTITY RefSection     "Sektsioon">
+<!ENTITY RefSection     "Lõik">
 <!ENTITY RefSynopsisDiv "Sünopsis">
-<!ENTITY Revision	"Revisjon">
-<!ENTITY RevHistory	"Revisjoni ajalugu">
+<!ENTITY Revision	"Vigade parandus">
+<!ENTITY RevHistory	"Vigade paranduste ajalugu">
 <!ENTITY Section	"Sektsioon">
-<!ENTITY See		"Vaata">
-<!ENTITY SeeAlso	"Vaata ka">
-<!ENTITY Set		"Seadista">
+<!ENTITY See		"Vt.">
+<!ENTITY SeeAlso	"Vt. ka">
+<!ENTITY Set		"Sea">
 <!ENTITY SetIndex	"Sea indeks">
 <!ENTITY Sidebar	"">
 <!ENTITY Step		"Samm">
@@ -53,30 +53,30 @@
 <!ENTITY Warning	"Hoiatus">
 <!ENTITY appendix	"lisa">
 <!ENTITY chapter	"peatükk">
-<!ENTITY section	"sektsioon">
-<!ENTITY sidebar	"külgriba">  <!-- sidebar ~ excursion -->
-<!ENTITY step		"aste">
-<!ENTITY Seealso	"Vaata ka">
+<!ENTITY section	"lõik">
+<!ENTITY sidebar	"külgriba">
+<!ENTITY step		"samm">
+<!ENTITY Seealso	"Vt. ka">
 
 <!ENTITY TableofContents	"Sisukord">
-<!ENTITY in		"in">
-<!ENTITY by		"autor">
-<!ENTITY Edited		"Redigeeritud">
-<!ENTITY Editedby	"&Redaktsiooni; &autor;">
+<!ENTITY in		"">
+<!ENTITY by		"">
+<!ENTITY Edited		"Redaktsioon">
+<!ENTITY Editedby	"Redaktsiooni autor(id)">
 <!ENTITY and		"ja">
 <!ENTITY Notes		"Märkused">
 <!ENTITY TableNotes     "Märkused">
-<!ENTITY nonexistantelement	"Mitte eksisteeriv element">
+<!ENTITY nonexistantelement	"mitte eksisteeriv element">
 <!ENTITY Pgs 		"Lk.">
 <!ENTITY unsupported	"toetuseta">
-<!ENTITY xrefto		"viide"> <!-- ?? -->
+<!ENTITY xrefto		"viide">
 <!ENTITY unexpectedelementname	"Ootamatu elemendi nimi">
-<!ENTITY Revisedby      "Üle vaadatanud: "> <!-- ?? -->
+<!ENTITY Revisedby      "Üle vaadanud: ">
 
 <!ENTITY ListofTables "Tabelite nimekiri">
-<!ENTITY ListofExamples "Näidiste nimekiri">
+<!ENTITY ListofExamples "Näidete nimekiri">
 <!ENTITY ListofFigures "Jooniste nimekiri">
-<!ENTITY ListofEquations "Võrrandite nimekiri">
+<!ENTITY ListofEquations "Valemite nimekiri">
 <!ENTITY ListofUnknown "Tundmatute nimekiri">
 
 <!ENTITY nav-prev		"Eelmine">
@@ -85,5 +85,3 @@
 <!ENTITY nav-next		"Järgmine">
 <!ENTITY nav-up		"Üles">
 <!ENTITY nav-home		"Koju">
-
-
