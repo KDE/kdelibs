@@ -18,6 +18,11 @@
 
 #include <kdebug.h>
 
+#define protected public
+#include <object.h>
+#undef protected
+#include <soundserver.h>
+
 #include <qmap.h>
 #include <qdatastream.h>
 #include "mcopdcopobject.h"
@@ -26,11 +31,13 @@ class MCOPDCOPObjectPrivate
 {
 public:
 	QMap<QCString, MCOPEntryInfo *> dynamicFunctions;
+	Arts::MCOPInfo object;
 };
 
-MCOPDCOPObject::MCOPDCOPObject(QCString name) : DCOPObject(name)
+MCOPDCOPObject::MCOPDCOPObject(Arts::MCOPInfo object, QCString name) : DCOPObject(name)
 {
     d = new MCOPDCOPObjectPrivate();
+	d->object = object;
 }
 
 MCOPDCOPObject::~MCOPDCOPObject()
@@ -47,6 +54,46 @@ QCStringList MCOPDCOPObject::functionsDynamic()
 		returnList.append(it.key());
 	
 	return returnList;
+}
+
+Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, QCString ifaceName)
+{
+	long methodID = -1;
+	long requestID;
+	Arts::Buffer *request, *result;
+
+	Arts::InterfaceRepo ifaceRepo = Arts::Dispatcher::the()->interfaceRepo();
+	Arts::InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(ifaceName));
+
+	vector<Arts::MethodDef> ifaceMethods = ifaceDef.methods;
+
+	vector<Arts::MethodDef>::iterator ifaceMethodsIterator;
+	for(ifaceMethodsIterator = ifaceMethods.begin(); ifaceMethodsIterator != ifaceMethods.end(); ifaceMethodsIterator++)
+	{
+		Arts::MethodDef currentMethod = *ifaceMethodsIterator;
+
+		if(currentMethod.name.c_str() == entry->functionName())
+		{			
+			methodID = d->object._lookupMethod(currentMethod);
+			break;
+		}
+	}
+
+	if(methodID == -1)
+		return 0;
+	
+	Arts::Object_base *obj = static_cast<Arts::Object &>(d->object)._get_pool()->base;
+	
+	request = Arts::Dispatcher::the()->createRequest(requestID, obj->_getObjectID(), methodID);
+	request->patchLength();
+	
+	(obj->_getConnection())->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID, obj->_getConnection());
+	if(!result)
+		return 0;
+
+	return result;
 }
 
 bool MCOPDCOPObject::processDynamic(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData)
@@ -72,9 +119,19 @@ bool MCOPDCOPObject::processDynamic(const QCString &fun, const QByteArray &data,
 			else if(type == "long")
 			{
 				replyType = type;
+
+				long returnCode = -1;
+				
+				Arts::Buffer *result = callFunction(entry, objId());
+			
+				if(result != 0)
+				{
+					returnCode = result->readLong();
+					delete result;
+				}
 				
 				QDataStream reply(replyData, IO_WriteOnly);
-				reply << -1;
+				reply << returnCode;
 			}
 			
 			return true;

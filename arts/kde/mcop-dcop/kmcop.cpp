@@ -105,7 +105,7 @@ void KMCOP::addInterfacesHackHackHack()
 			{
 				Arts::InterfaceRepo ifaceRepo = Dispatcher::the()->interfaceRepo();
 
-				MCOPDCOPObject *interface = new MCOPDCOPObject(interfaceName);
+				MCOPDCOPObject *interface = new MCOPDCOPObject(d->mcopInfo, interfaceName);
 				d->list.append(interface);
 			
 				InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(interfaceName));

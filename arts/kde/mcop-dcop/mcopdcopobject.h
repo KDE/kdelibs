@@ -70,13 +70,15 @@ private:
 class MCOPDCOPObject : public DCOPObject
 {
 public:
-	MCOPDCOPObject(QCString name);
+	MCOPDCOPObject(Arts::MCOPInfo object, QCString name);
 	~MCOPDCOPObject();
 
 	virtual bool processDynamic(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData);
 	virtual QCStringList functionsDynamic();
 
 	void addDynamicFunction(QCString value, MCOPEntryInfo *entry);
+
+	Arts::Buffer *callFunction(MCOPEntryInfo *entry, QCString ifaceName);
 	
 private:
     MCOPDCOPObjectPrivate *d;
