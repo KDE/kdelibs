@@ -60,17 +60,17 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 	drawTriangularExpander = new QCheckBox(i18n("Triangular tree expander"), this);
 	inputFocusHighlight = new QCheckBox(i18n("Highlight focused text input fields"), this);
 
-    customFocusHighlightColor = new QCheckBox(i18n("Custom text input highlight color"), this);
+    customFocusHighlightColor = new QCheckBox(i18n("Custom text input highlight color;"), this);
     QHBox *hbox1 = new QHBox(this);
     hbox1->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     focusHighlightColor = new KColorButton(hbox1);
 
-    customOverHighlightColor = new QCheckBox(i18n("Custom mouseover highlight color"), this);
+    customOverHighlightColor = new QCheckBox(i18n("Custom mouseover highlight color:"), this);
     QHBox *hbox2 = new QHBox(this);
     hbox2->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     overHighlightColor = new KColorButton(hbox2);
 
-    customCheckMarkColor = new QCheckBox(i18n("Custom checkmark color"), this);
+    customCheckMarkColor = new QCheckBox(i18n("Custom checkmark color:"), this);
     QHBox *hbox3 = new QHBox(this);
     hbox3->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     checkMarkColor = new KColorButton(hbox3);
