@@ -567,19 +567,19 @@ void KHTMLWidget::slotFinished( KIO::Job * job )
     // !!!!!! HACK !!!!!!!!!!
     job->showErrorDialog();
 
-    kdebug(0,1202,"+++++++++++ RETURN from error ++++++++++");
+    kDebugInfo(1202,"+++++++++++ RETURN from error ++++++++++");
 
     emit canceled();
 
   } else {
 
-    kdebug(0,1202,"SLOT_FINISHED 1");
+    kDebugInfo(1202,"SLOT_FINISHED 1");
 
     m_strWorkingURL = "";
 
     if ( m_bParsing )
     {
-      kdebug(0,1202,"SLOT_FINISHED 2");
+      kDebugInfo(1202,"SLOT_FINISHED 2");
       end();
     }
 
@@ -601,12 +601,12 @@ void KHTMLWidget::slotData( KIO::Job*, const QByteArray &data )
 {
   //if(job != m_job) return; // the data is still from the previous page.
 
-  kdebug(0,1202,"SLOT_DATA %d", data.size());
+  kDebugInfo(1202,"SLOT_DATA %d", data.size());
 
   // The first data ?
   if ( !m_strWorkingURL.isEmpty() )
   {
-    kdebug(0,1202,"BEGIN...");
+    kDebugInfo(1202,"BEGIN...");
     m_lstChildren.clear();
     m_bParsing = true;
     begin( m_strWorkingURL, m_iNextXOffset, m_iNextYOffset );
@@ -767,10 +767,10 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       }
       else if ( ::strcmp( target.latin1(), "_top" ) == 0 )
       {
-	  kdebug(0,1202,"OPENING top %s", url.ascii());
+	  kDebugInfo(1202,"OPENING top %s", url.ascii());
 	  topView()->openURL( url );
 	  emit urlClicked( url, target, _button );
-	  kdebug(0,1202,"OPENED top");
+	  kDebugInfo(1202,"OPENED top");
 	  return;
       }
       else if ( ::strcmp( target.latin1(), "_blank" ) == 0 )
@@ -929,8 +929,8 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
 void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
 {
   /** DEBUG **/
-  kdebug(0,1202,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-  kdebug(0,1202,"--------------- ChildFinished %p ----------------------",this);
+  kDebugInfo(1202,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  kDebugInfo(1202,"--------------- ChildFinished %p ----------------------",this);
   /** End DEBUG **/
 
   QListIterator<Child> it( m_lstChildren );
@@ -942,7 +942,7 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
 
   checkCompleted();
 
-  kdebug(0,1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+  kDebugInfo(1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
 
 void KHTMLWidget::write( const char *_str)
@@ -970,12 +970,12 @@ void KHTMLWidget::end()
   /** DEBUG **/
   if ( !_parent )
   {
-    kdebug(0,1202,"--------------------------------------------------");
-    kdebug(0,1202,"--------------- DocFinished %p ----------------------",this);
-    kdebug(0,1202,"--------------------------------------------------");
+    kDebugInfo(1202,"--------------------------------------------------");
+    kDebugInfo(1202,"--------------- DocFinished %p ----------------------",this);
+    kDebugInfo(1202,"--------------------------------------------------");
   }
   else
-    kdebug(0,1202,"########### SUB-DocFinished %p ##############",this);
+    kDebugInfo(1202,"########### SUB-DocFinished %p ##############",this);
   /** End DEBUG **/
 
   m_bParsing = false;
