@@ -200,8 +200,6 @@ DCOPIDL2CPP='$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp'
 AC_SUBST(DCOPIDL)
 AC_SUBST(DCOPIDL2CPP)
 
-topdir=`cd $srcdir && pwd`
-ac_configure_args="$ac_configure_args --with-auxdir=$topdir/admin"
 AC_CONFIG_SUBDIRS(libltdl)
 
 CXXFLAGS="$CXXFLAGS $USE_RTTI"
