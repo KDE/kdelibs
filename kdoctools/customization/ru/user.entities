@@ -7,7 +7,7 @@
  -->
 
 <!ENTITY kcontrol "<application>Центр управления &kde;</application>" ><!-- kde help -->
-<!ENTITY khelpcenter "<application>Центр управлению &kde;</application>" ><!-- khelpcenter -->
+<!ENTITY khelpcenter "<application>Центр справки &kde;</application>" ><!-- khelpcenter -->
 <!ENTITY LMB    "<mousebutton>левая</mousebutton> кнопка мыши">
 <!ENTITY MMB    "<mousebutton>средняя</mousebutton> кнопка мыши">
 <!ENTITY RMB    "<mousebutton>правая</mousebutton> кнопка мыши">
@@ -32,6 +32,9 @@
 <!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY Shift  "<keycap>Shift</keycap>">
 <!ENTITY Alt    "<keycap>Alt</keycap>">
+<!ENTITY Tab    "<keycap>Tab</keycap>">
+<!ENTITY Enter  "<keycap>Ввод</keycap>">
+<!ENTITY OS     "ОС">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY eg     "<abbrev>e.g.</abbrev>">
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
