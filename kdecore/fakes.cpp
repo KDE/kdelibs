@@ -19,7 +19,7 @@
 #include <config.h>
 #endif
 
-#ifndef HAVE_FUNC_SETENV
+#ifndef HAVE_SETENV
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
@@ -46,7 +46,7 @@ int setenv(const char *name, const char *value, int overwrite) {
 }
 #endif
 
-#ifndef HAVE_FUNC_UNSETENV
+#ifndef HAVE_UNSETENV
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
