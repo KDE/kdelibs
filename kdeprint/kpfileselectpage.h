@@ -17,38 +17,24 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KFILELIST_H
-#define KFILELIST_H
+#ifndef KPFILESELECT_H
+#define KPFILESELECT_H
 
-#include <qwidget.h>
+#include "kprintdialogpage.h"
 
-class KListView;
-class QPushButton;
+class KFileList;
 
-class KFileList : public QWidget
+class KPFileSelectPage : public KPrintDialogPage
 {
-	Q_OBJECT
 public:
-	KFileList(QWidget *parent = 0, const char *name = 0);
-	virtual ~KFileList();
+	KPFileSelectPage(QWidget *parent = 0, const char *name = 0);
 
-	void setFileList(const QStringList&);
-	QStringList fileList() const;
-	QSize sizeHint() const;
-
-protected slots:
-	void slotAddFile();
-	void slotRemoveFile();
-	void slotOpenFile();
-
-protected:
-	void dragEnterEvent(QDragEnterEvent*);
-	void dropEvent(QDropEvent*);
-	void addFiles(const QStringList&);
+	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	void setOptions(const QMap<QString,QString>& opts);
 
 private:
-	KListView	*m_files;
-	QPushButton	*m_add, *m_remove, *m_open;
+	KFileList	*m_files;
+	bool	m_first;
 };
 
 #endif

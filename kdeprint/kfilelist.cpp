@@ -19,7 +19,6 @@
 
 #include "kfilelist.h"
 
-#include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -31,25 +30,52 @@
 #include <kfiledialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <klistview.h>
+#include <krun.h>
+#include <kopenwith.h>
+#include <kmimetype.h>
 
 KFileList::KFileList(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
-	m_edit = new QLineEdit(this);
-	m_edit->setAcceptDrops(false);
-	QLabel	*m_label = new QLabel(i18n("Files:"), this);
-	QPushButton	*m_button = new QPushButton(this);
-	m_button->setPixmap(SmallIcon("fileopen"));
-	connect(m_button, SIGNAL(clicked()), SLOT(slotAddFile()));
+	m_files = new KListView(this);
+	m_files->addColumn(i18n("Path"));
+	m_files->addColumn(i18n("Type"));
+	m_files->setAllColumnsShowFocus(true);
+	m_files->setSorting(-1);
+	m_files->setAcceptDrops(false);
 
-	QToolTip::add(m_edit, i18n("<p>Drag file(s) here or use the button to open a file dialog. Leave empty for <b>&lt;STDIN&gt;</b>.</p>"));
+	m_add = new QPushButton(this);
+	m_add->setPixmap(SmallIcon("fileopen"));
+	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
+	QToolTip::add(m_add, i18n("Add File"));
+
+	m_remove = new QPushButton(this);
+	m_remove->setPixmap(SmallIcon("remove"));
+	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
+	QToolTip::add(m_remove, i18n("Remove File"));
+	m_remove->setEnabled(false);
+
+	m_open = new QPushButton(this);
+	m_open->setPixmap(SmallIcon("filefind"));
+	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
+	QToolTip::add(m_open, i18n("Open File"));
+	m_open->setEnabled(false);
 
 	setAcceptDrops(true);
 
+	QToolTip::add(m_files, i18n(
+		"Drag file(s) here or use the button to open a file dialog. "
+		"Leave empty for <b>&lt;STDIN&gt;</b>."));
+
 	QHBoxLayout	*l0 = new QHBoxLayout(this, 0, 5);
-	l0->addWidget(m_label, 0);
-	l0->addWidget(m_edit, 1);
-	l0->addWidget(m_button, 0);
+	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 0);
+	l0->addWidget(m_files);
+	l0->addLayout(l1);
+	l1->addWidget(m_add);
+	l1->addWidget(m_remove);
+	l1->addWidget(m_open);
+	l1->addStretch(1);
 }
 
 KFileList::~KFileList()
@@ -74,33 +100,48 @@ void KFileList::addFiles(const QStringList& files)
 {
 	if (files.count() > 0)
 	{
-		// first download files if necessary
-		QStringList	localFiles;
-		QString		target;
-		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (KIO::NetAccess::download(KURL(*it), target))
-				localFiles.append(target);
+		// search last item in current list, to add new ones at the end
+		QListViewItem	*item = m_files->firstChild();
+		while (item && item->nextSibling())
+			item = item->nextSibling();
 
-		// then add them to the edit line
-		QString	txt = m_edit->text().stripWhiteSpace();
-		if (!txt.isEmpty())
-			txt.append(", ");
-		txt.append(localFiles.join(", "));
-		m_edit->setText(txt);
+		// for each file, download it (if necessary) and add it
+		QString	downloaded;
+		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+			if (KIO::NetAccess::download(KURL(*it), downloaded))
+			{
+				KURL	url(downloaded);
+				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
+				item = new QListViewItem(m_files, item, downloaded, mime->comment());
+				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
+			}
+
+		if (m_files->childCount() > 0)
+		{
+			m_remove->setEnabled(true);
+			m_open->setEnabled(true);
+			if (m_files->currentItem() == 0)
+				m_files->setSelected(m_files->firstChild(), true);
+		}
 	}
 }
 
 void KFileList::setFileList(const QStringList& files)
 {
-	m_edit->clear();
+	m_files->clear();
 	addFiles(files);
 }
 
 QStringList KFileList::fileList() const
 {
-	QString	txt = m_edit->text();
-	QStringList	files = QStringList::split(QRegExp(",\\s*"), txt, false);
-	return files;
+	QStringList	l;
+	QListViewItem	*item = m_files->firstChild();
+	while (item)
+	{
+		l << item->text(0);
+		item = item->nextSibling();
+	}
+	return l;
 }
 
 void KFileList::slotAddFile()
@@ -109,4 +150,34 @@ void KFileList::slotAddFile()
 	if (!fname.isEmpty())
 		addFiles(QStringList(fname));
 }
+
+void KFileList::slotRemoveFile()
+{
+	QListViewItem	*item = m_files->currentItem();
+	{
+		if (item)
+			delete item;
+		if (m_files->childCount() == 0)
+		{
+			m_remove->setEnabled(false);
+			m_open->setEnabled(false);
+		}
+	}
+}
+
+void KFileList::slotOpenFile()
+{
+	QListViewItem	*item = m_files->currentItem();
+	if (item)
+	{
+		KOpenWithHandler	handler;
+		new KRun(KURL(item->text(0)));
+	}
+}
+
+QSize KFileList::sizeHint() const
+{
+	return QSize(100, 100);
+}
+
 #include "kfilelist.moc"

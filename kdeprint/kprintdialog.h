@@ -59,6 +59,7 @@ protected slots:
 	void slotOptions();
 	virtual void done(int);
 	void slotWizard();
+	void slotExtensionClicked();
 
 protected:
 	bool checkOutputFile();
@@ -69,7 +70,7 @@ protected:
 
 protected:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard;
+	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
 	QComboBox	*m_printers;
@@ -77,6 +78,7 @@ protected:
 	PluginComboBox	*m_plugin;
 	KFileList	*m_fileselect;
 	KURLRequester	*m_file;
+	bool	m_reduced;
 
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;

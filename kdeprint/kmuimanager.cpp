@@ -32,6 +32,7 @@
 #include "kpqtpage.h"
 #include "kpfilterpage.h"
 #include "kmfiltermanager.h"
+#include "kpfileselectpage.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -102,11 +103,16 @@ int KMUiManager::dialogFlags()
 void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 {
 	// dialog flags
-	dlg->setFlags(dialogFlags());
+	int	f = dialogFlags();
+	dlg->setFlags(f);
 
 	// add standard dialog pages
 	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
 		m_printdialogpages.prepend(new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
+
+	// add file select page if needed (flag set by kprinter)
+	if (f & KMUiManager::FileSelect)
+		m_printdialogpages.prepend(new KPFileSelectPage(0, "FileSelectPage"));
 
 	// add plugins pages
 	setupPrintDialogPages(&m_printdialogpages);

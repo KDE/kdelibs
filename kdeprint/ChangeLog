@@ -153,3 +153,17 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * wizard: SMB printers with space in their name are now shown
     correctly when scanning the network (however it should be
     avoided as smbspool seems to be unable to handle it).
+
+14/11/2001 Michael Goffioul <goffioul@imec.be>
+  * ioslave: uploaded new templates from Chris (which adds support
+    for pseudo printers
+  * manager: modified RootOnly message for better consistency between
+    "root" and "administrator" concepts
+  * print dialog: updated accels (general, Qt, copies and other CUPS
+    pages)
+  * print dialog:
+  	. file selection: line edit -> listview
+	. file selection made as print dialog page and inserted at
+	  the same level than "Copies"
+	. added hiding mechanism to make the dialog more compact
+	  (show/hide button can probably be improved)
