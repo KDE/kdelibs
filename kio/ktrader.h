@@ -23,13 +23,16 @@
 #include <kservice.h>
 
 /**
- * This class implements a Trader interface -- similar to the CORBA
- * Trader.  Basically, it provides a way for an application to query
+ * A Trader interface, similar to the CORBA Trader.
+ *
+ * Basically, it provides a way for an application to query
  * all KDE services (that is, applications and components) that match
  * a specific set of requirements.  This allows you to find an
  * application in real-time without you having to hard-code the name
  * and/or path of the application.  It is mostly used when you want to
  * do complex queries that @ref KServiceTypeProfile can't handle.
+ *
+ * @sect Examples
  *
  * A few examples will make this a lot more clear.
  *
@@ -41,9 +44,9 @@
  * browser to run stand-alone or embedded.
  *
  * If you want the browser to run standalone, then you will limit the
- * query to search for all services that handle 'text/html' AND
+ * query to search for all services that handle 'text/html' @em and,
  * furthermore, they must be applications (Type=Application).  You
- * then will use @ref KRun::run to invoke the application.  In "trader-speak",
+ * then will use @ref KRun::run() to invoke the application.  In "trader-speak",
  * this looks like so:
  * <PRE>
  * KTrader::OfferList offers = KTrader::self()->query("text/plain", "Type == 'Application'");
@@ -53,8 +56,8 @@
  * KRun::run(*ptr, lst);
  * </PRE>
  *
- * It should be noted that in the above example, using @ref
- * KServiceTypeProfile would be the better choice since you would
+ * It should be noted that in the above example, using 
+ * @ref KServiceTypeProfile would be the better choice sincea you would
  * probably want the preferred service and the trader doesn't take
  * this into account.  The trader does allow you to do more complex
  * things, though.  Say, for instance, you want to only choose
@@ -84,11 +87,10 @@
  * otherwise it could also be interpreted as
  * Substract the numeric value of the property "KDE" and "Blah" from the property "X" and make sure it
  * is less than 4.
- * Instead of the other meaning
- * Make sure that the numeric value of "X-KDE-Blah" is less than 4.
+ * Instead of the other meaning, make sure that the numeric value of "X-KDE-Blah" is less than 4.
  *
  * @short Provides a way to query the KDE infrastructure for specific
- *        applications or components
+ *        applications or components.
  * @author Torben Weis <weis@kde.org>
  */
 class KTrader : public QObject
@@ -106,7 +108,8 @@ public:
     virtual ~KTrader();
 
     /**
-     * This is the main (almost only) function in the KTrader class.
+     * The main (and almost only) function in the KTrader class.
+     *
      * It will return a list of services that match your
      * specifications.  The only required parameter is the service
      * type.  This is something like 'text/plain' or 'text/html'.  The
@@ -123,18 +126,20 @@ public:
      * The keys used in the query (Type, ServiceType, Exec) are all
      * fields found in the .desktop files.
      *
-     * @param servicetype A service type like 'text/plain' or 'text/html'
-     * @param constraint  A constraint to limit the choices returned
-     * @param preferences Indicates a particular preference to return
+     * @param servicetype A service type like 'text/plain' or 'text/html'.
+     * @param constraint  A constraint to limit the choices returned.
+     * @param preferences Indicates a particular preference to return.
      *
-     * @return A list of services that satisfy the query
+     * @return A list of services that satisfy the query.
      */
     virtual OfferList query( const QString& servicetype,
 			     const QString& constraint = QString::null,
 			     const QString& preferences = QString::null) const;
 
     /**
-     * This is a static pointer to a KTrader instance.  You will need
+     * This is a static pointer to a @ref KTrader instance.
+     *
+     *  You will need
      * to use this to access the KTrader functionality since the
      * constuctors are protected.
      *

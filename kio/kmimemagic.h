@@ -35,8 +35,10 @@
 class KMimeMagic; // see below (read this one first)
 
 /**
- * An instance of this class is returned by @ref KMimeMagic find...Type methods
- * It contains the mimetype and the encoding of the file or buffer read.
+ * Returned by @ref KMimeMagic @tt find...Type methods.
+ *
+ * It contains the mimetype and the encoding of
+ * the file or buffer read. 
  */
 class KMimeMagicResult
 {
@@ -45,19 +47,19 @@ public:
   ~KMimeMagicResult() { }
 
   /**
-   * @return the mimetype (e.g. "text/html") of the file or buffer parsed
+   * Retrieve the mimetype (e.g. "text/html") of the file or buffer parsed.
    */
   const QString mimeType() { return m_strMimeType; }
   /**
-   * @return the encoding (e.g. "8bit", see 'magic' file) of the file or buffer parsed
+   * Retrieve the encoding (e.g. "8bit", see 'magic' file) of the file or buffer parsed.
    */
   const QString encoding() { return m_strEncoding; }
   /**
-   * @return the accuracy of the matching
+   * Retrievee the accuracy of the matching.
    */
   int accuracy() { return m_iAccuracy; }
   /**
-   * @return whether the result is valid (i.e. mimetype not empty)
+   * Returns whether the result is valid (i.e. mimetype not empty).
    */
   bool isValid() { return !m_strMimeType.isEmpty(); }
 
@@ -76,27 +78,30 @@ protected:
 };
 
 /**
- * The goal of KMimeMagic is to determine auto-magically the type of file,
- * not only using its extension, but also reading its contents.
- * Unless specified otherwise, KMimeMagic uses $KDEDIR/share/mimelnk/magic
- * for this purpose.
+ * Determine auto-magically the type of file,
+ * not only by using its extension, but also by reading its contents.
  *
- * The basic usage of KMimeMagic is :
- * - get a pointer to it, using KMimeMagic::self()
- * - use it for any file or buffer you want, using one of the three find...Type methods.
  *
- * The result is contained in the class @ref KMimeMagicResult
+ * Unless specified otherwise, @ref KMimeMagic uses
+ * $KDEDIR/share/mimelnk/magic for this purpose.
+ *
+ * The basic usage of @ref KMimeMagic is :
+ * @li Get a pointer to it, using @ref KMimeMagic::self().
+ * @li Use it for any file or buffer you want, using one of the three 
+ * @tt find...Type() methods.
+ *
+ * The result is contained in the class @ref KMimeMagicResult.
  */
 class KMimeMagic
 {
 public:
   /**
-   * Create a parser, initialize it with the given config file.
+   * Create a parser and initialize it with the given config file.
    */
   KMimeMagic( const QString & configFile );
 
   /**
-   * Destroys the parser
+   * Destroy the parser.
    */
   ~KMimeMagic();
 
@@ -104,7 +109,7 @@ public:
    * Merge an existing parse table with the data from the
    * given file.
    *
-   * @return true on success.
+   * @return @tt true on success.
    */
   bool mergeConfig( const QString & configFile );
 
@@ -112,22 +117,25 @@ public:
    * Merge an existing parse table with the data from the
    * given buffer.
    *
-   * @return: true on success.
+   * @return @tt true on success.
    */
   bool mergeBufConfig(char *);
 
   /**
    * Enable/Disable follow-links.
-   * (Default is off)
+   *
+   * (Default is disabled.)
    */
   void setFollowLinks( bool _enable );
 
   /**
-   * Tries to find a MimeType for the given file. If no special
+   * Try to find a MimeType for the given file.
+   *
+   * If no special
    * MimeType is found, the default MimeType is returned.
    * This function looks at the content of the file.
    *
-   * @return a pointer to the result object. Do NOT delete the
+   * @return A pointer to the result object. Do @em not delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.
@@ -136,11 +144,13 @@ public:
 
   /**
    * Same functionality as above, except data is not
-   * read from a file. Instead a buffer can be supplied which
-   * is examined. The integer parameter supplies the lenght of
+   * read from a file.
+   *
+   * Instead a buffer can be supplied which
+   * is examined. The integer parameter supplies the length of
    * the buffer.
    *
-   * @return a pointer to the result object. Do NOT delete the
+   * @return A pointer to the result object. Do @rm not delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.
@@ -148,13 +158,15 @@ public:
   KMimeMagicResult* findBufferType( const QByteArray &p );
 
   /**
-   * Same functionality as @ref findBufferType but with
+   * Same functionality as @ref findBufferType() but with
    * additional capability of distinguishing between
-   * C-headers and C-Source. For this purpose this function looks
-   * at the extension of the filename. This means that 'filename'
-   * can be a filename on some ftp server, too.
+   * C-headers and C-Source.
    *
-   * @return a pointer to the result object. Do NOT delete the
+   * For this purpose this function looks
+   * at the extension of the filename. This means that 'filename'
+   * can be a filename on some FTP server, too.
+   *
+   * @return A pointer to the result object. Do @em not delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.
@@ -162,7 +174,7 @@ public:
   KMimeMagicResult * findBufferFileType( const QByteArray &, const QString & filename );
 
   /**
-   * @return a pointer to the unique KMimeMagic instance in this process
+   * Returns a pointer to the unique @ref KMimeMagic instance in this process.
    */
   static KMimeMagic* self();
 

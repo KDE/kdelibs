@@ -34,41 +34,44 @@ namespace KIO {
 
   class Job;
 
-/** This class isn't meant to be used as a class but only as a simple
- *  namespace for static functions, though an instance of the class
- *  is built for internal purposes.
- *  KIO::NetAccess implements the Net Transparency, which was formerly
- *  provided by kfmlib, but now using KIO::Jobs.
- *  Whereas a kiojob is asynchronous, meaning that the developer has
- *  to connect slots for it, KIO::NetAccess provides synchronous downloads
- *  and uploads, as well as temporary file creation and removal.
- *
- *  Port to kio done by David Faure, faure@kde.org
- *
- * @short Provides a synchronous interface to io jobs.
- */
+  /**  
+   * Net Transparency, formerly provided by kfmlib, but now 
+   * done with @ref KIO::Jobs.
+   *
+   * This class isn't meant to be used as a class but only as a simple
+   *  namespace for static functions, though an instance of the class
+   *  is built for internal purposes.  Whereas a @tt kiojob is
+   *  asynchronous, meaning that the developer has to connect slots
+   *  for it, @tt KIO::NetAccess provides synchronous downloads and
+   *  uploads, as well as temporary file creation and removal.
+   *
+   *  Port to kio done by David Faure, faure@kde.org
+   *
+   * @short Provides a synchronous interface to io jobs.  */
 class NetAccess : public QObject
 {
   Q_OBJECT
 
 public:
     /**
-     * This function downloads a file from an arbitrary URL (source) to a
-     * temporary file on the local filesystem (target). If the argument
-     * for target is an empty string, download will generate a
-     * unique temporary filename in /tmp. Since target is a reference
-     * to QString you can access this filename easily. Download will
-     * return true if the download was successful, otherwise false.
+     * Download a file from an arbitrary URL (@p src) to a
+     * temporary file on the local filesystem (@p target). 
+     *
+     * If the argument
+     * for @p target is an empty string, download will generate a
+     * unique temporary filename in /tmp. Since @p target is a reference
+     * to @ref QString you can access this filename easily. Download will
+     * return @tt true if the download was successful, otherwise @tt false.
      *
      * Special case:
-     * If the url is of kind "file:" then no downloading is
-     * processed but the full filename returned in target.
-     * That means: you _have_ to take care about the target argument.
+     * If the URL is of kind @tt file: then no downloading is
+     * processed but the full filename is returned in @tt target.
+     * That means you @em have to take care about the @tt target argument.
      * (This is very easy to do, please see the example below.)
      *
      * Download is synchronous. That means you can use it like
-     * this, (assuming u is a string which represents a URL and your
-     * application has a loadFile function):
+     * this, (assuming @tt u is a string which represents a URL and your
+     * application has a @ref loadFile() function):
      *
      * <pre>
      * QString tmpFile;
@@ -82,20 +85,20 @@ public:
      * Of course, your user interface will still process exposure/repaint
      * events during the download.
      *
-     * @param src URL referencing the file to download
+     * @param src URL Reference to the file to download.
      *
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
-     *               return a location in a temporary spot
+     *               return a location in a temporary spot.
      */
     static bool download(const KURL& src, QString & target);
 
     /**
      * Remove the specified file if and only if it was created
-     * by KIO::NetAccess as temporary file for a former download.
+     * by @ref KIO::NetAccess as a temporary file for a former download.
      *
-     * Note: This means that if you created your temporary with KTempFile,
-     * use KTempFile::unlink() or KTempFile::setAutoDelete() to have
+     * Note: This means that if you created your temporary with @ref KTempFile,
+     * use @ref KTempFile::unlink() or @ref KTempFile::setAutoDelete() to have
      * it removed.
      *
      * @param name Path to temporary file to remove.  May not be
@@ -104,10 +107,12 @@ public:
     static void removeTempFile(const QString& name);
 
     /**
-     * Upload file src to url target.  Both must be specified,
+     * Upload file @p src to URL @p target.  
+     *
+     * Both must be specified,
      * unlike @ref download.
      *
-     * @param src URL referencing the file to upload
+     * @param src URL Referencing the file to upload.
      *
      * @param target URL containing the final location of the
      *               file.
@@ -115,61 +120,70 @@ public:
     static bool upload(const QString& src, const KURL& target);
 
     /**
-     * Alternative method for copying over the network
+     * Alternative method for copying over the network.
+     *
      * This one takes two URLs and is a direct equivalent
-     * of KIO::file_copy (not KIO::copy!).
+     * of @ref KIO::file_copy (not KIO::copy!).
      */
     static bool copy( const KURL& src, const KURL& target );
 
     /**
-     * Test whether a url exists
-     * This is a convenience function for KIO::stat
-     * (it saves creating a slot and testing for the job result)
+     * Test whether a URL exists.
+     *
+     * This is a convenience function for @ref KIO::stat
+     * (it saves creating a slot and testing for the job result).
      *
      * @param url the url we are testing
      */
     static bool exists(const KURL& url);
 
     /**
-     * Test whether a url exists and returns information on it
-     * This is a convenience function for KIO::stat
-     * (it saves creating a slot and testing for the job result)
+     * Test whether a URL exists and return information on it.
      *
-     * @param url the url we are testing
-     * @param entry the result of the stat. Iterate over the list
-     * of atoms to get hold of name, type, size, etc., or use KFileItem.
+     * This is a convenience function for @ref KIO::stat
+     * (it saves creating a slot and testing for the job result).
+     *
+     * @param url The URL we are testing.
+     * @param entry The result of the stat. Iterate over the list
+     * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
      */
     static bool stat(const KURL& url, KIO::UDSEntry & entry);
 
     /**
-     * Delete a file or a directory in an synchronous way
-     * This is a convenience function for KIO::del
-     * (it saves creating a slot and testing for the job result)
-     * @param url the file or directory to delete
-     * @return true on success, false on failure
+     * Delete a file or a directory in an synchronous way.
+     *
+     * This is a convenience function for @ref KIO::del
+     * (it saves creating a slot and testing for the job result).
+     *
+     * @param url The file or directory to delete.
+     * @return @tt true on success, @tt false on failure.
      */
     static bool del( const KURL & url );
 
     /**
-     * Create a directory in an synchronous way
-     * This is a convenience function for KIO::mkdir
-     * (it saves creating a slot and testing for the job result)
-     * @param url the directory to create
-     * @return true on success, false on failure
+     * Create a directory in an synchronous way.
+     *
+     * This is a convenience function for @tt KIO::mkdir
+     * (it saves creating a slot and testing for the job result).
+     *
+     * @param url The directory to create.
+     * @return @tt true on success, @tt false on failure.
      */
     static bool mkdir( const KURL & url, int permissions = -1 );
 
 
     /**
-     * Determines the mimetype of a given URL.
-     * This is a convenience function for KIO::mimetype.
-     * You should call this only when really necessary.
-     * KMimeType::findByURL can determine extension a lot faster, but less reliably
-     * for remote files. Only when findByURL returns unknown (application/octet-stream)
-     * then this one should be used.
+     * Determine the mimetype of a given URL.
      *
-     * @param url the URL whose mimetype we are interested in
-     * @return the mimetype name
+     * This is a convenience function for @ref KIO::mimetype.  You
+     * should call this only when really necessary.  @ref
+     * KMimeType::findByURL can determine extension a lot faster, but
+     * less reliably for remote files. Only when @ref findByURL() returns
+     * unknown (application/octet-stream) then this one should be
+     * used.
+     *
+     * @param url The URL whose mimetype we are interested in.
+     * @return The mimetype name.
      */
     static QString mimetype( const KURL & url );
 

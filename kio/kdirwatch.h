@@ -30,17 +30,21 @@
 class KDirWatchPrivate;
 
  /**
-  * Class for watching directory changes. It uses stat (2) and
+  * Watch directories for changes.
+  *
+  * It uses @tt stat (2) and
   * compares stored and actual changed time of directories. If
   * there is a difference it notifies about the change. Directories can be
   * added, removed from the list and scanning of particular directories
   * can be stopped and restarted. The whole class can be stopped and
   * restarted. Directories can be added/removed from list in
   * any state.
-  * When a watched directory is changed, KDirWatch will emit signal 'dirty'.
+  * When a watched directory is changed, @ref KDirWatch will emit
+  * the signal @ref dirty().
   *
-  * If a watched directory gets deleted, KDirwatch will remove it from
-  * the list, and  emit a signal 'deleted'.
+  * If a watched directory gets deleted, @ref KDirwatch will remove it from
+  * the list, and  emit the signal @ref deleted().
+  *
   * @short Class for watching directory changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
   */
@@ -50,69 +54,85 @@ class KDirWatch : public QObject
     
   public:
    /**
-    * Constructor. Does not begin with scanning until @ref startScan()
+    * Constructor.
+    *
+    * Does not begin scanning until @ref startScan()
     * is called. Default frequency is 500 ms. The created list of
     * directories has deep copies.
     */
    KDirWatch ( int freq = 500 );
 
    /**
-    * Destructor. Stops scanning and cleans up.
+    * Destructor.
+    *
+    * Stops scanning and cleans up.
     */
    ~KDirWatch();
 
    /**
-    * Adds directory to list of directories to be watched. (The list
-    * makes deep copies).
+    * Add a directory to the list of directories to be watched.
+    *
+    * The list makes deep copies.
     */
    void addDir(const QString& path);
 
    /**
-    * Returns the time the directory was last changed.
+    * Retrieve the time the directory was last changed.
     */
    time_t ctime(const QString& path);
 
    /**
-    * Removes directory from list of scanned directories. If specified
-    * path is not in the list, does nothing.
+    * Remove a directory from the list of scanned directories.
+    *
+    * If specified path is not in the list this does nothing.
     */
    void removeDir(const QString& path);
 
    /**
-    * Stops scanning for specified path. Does not delete dir from list,
-    * just skips it. Call this function when you make an huge operation
-    * on this directory (copy/move big files or lot of files). When finished,
-    * call @ref #restartDirScan (path).
-    * Returns @p false if specified path is not in list, @p true otherwise.
+    * Stop scanning the specified path.
+    *
+    * The @p path is not deleted from the interal just, it is just skipped.
+    * Call this function when you perform an huge operation
+    * on this directory (copy/move big files or many files). When finished,
+    * call @ref restartDirScan (path).
+    * Returns @tt false if specified path is not in list, @tt true otherwise.
     */
    bool stopDirScan(const QString& path);
 
    /**
-    * Restarts scanning for specified path. Resets ctime. It doesn't notify
-    * the change, since ctime value is reset. Call it when you are finished
-    * with big operations on that path, *and* when *you* have refreshed that
-    * path.
-    * Returns @p false if specified path is not in list, @p true otherwise.
+    * Restart scanning for specified path.
+    *
+    * Resets ctime. It doesn't notify
+    * the change (by emitted a signal), since the ctime value is reset.
+    *
+    * Call it when you are finished with big operations on that path,
+    * @em and when @em you have refreshed that path.  Returns @tt false
+    * if specified path is not in list, @tt true otherwise.  
     */
    bool restartDirScan(const QString& path);
 
    /**
-    * Starts scanning of all dirs in list. If notify is true, all changed
-    * dirs (since @ref #stopScan() call) will be notified for refresh. If
-    * notify is false, all ctimes will be reset (except those who are stopped,
-    * but only if skippedToo is false) and changed dirs won't be
-    * notified. You can start scanning even if the list is empty. First call
-    * should be called with 'false' or else all dirs in list will be notified.
-    * Note that direcories that were.
-    * If @p skippedToo is true, the skipped dirs, (scanning of which was
-    * stopped with @ref #stopDirScan() ) will be reset and notified for change.
-    * Otherwise, stopped dirs will continue to be unnotified.
+    * Start scanning of all dirs in list.
+    *
+    * If notify is @tt true, all changed directories (since @ref
+    * stopScan() call) will be notified for refresh. If notify is
+    * @tt false, all ctimes will be reset (except those who are stopped,
+    * but only if @p skippedToo is @tt false) and changed dirs won't be
+    * notified. You can start scanning even if the list is
+    * empty. First call should be called with @tt false or else all 
+    * directories 
+    * in list will be notified.  If
+    * @p skippedToo is true, the skipped directoris (scanning of which was
+    * stopped with @ref stopDirScan() ) will be reset and notified
+    * for change.  Otherwise, stopped directories will continue to be
+    * unnotified.
     */
    void startScan( bool notify=false, bool skippedToo=false );
 
    /**
-    * Stops scanning of all dirs in list. List is not cleared, just the
-    * timer is stopped.
+    * Stop scanning of all directories in internal list.
+    *
+    * The timer is stopped, but the list is not cleared.
     */
    void stopScan();
   
@@ -126,22 +146,28 @@ class KDirWatch : public QObject
  signals:
 
    /**
-    * This signal is emited when directory is changed. The new ctime is set
+    * Emitted when a directory is changed.
+    *
+    * The new ctime is set
     * before the signal is emited.
     */
    void dirty (const QString& dir);
    
    /**
-    * This signal is emited when KDirWatch learns that the file
-    * _file has changed. This happens for instance when a .desktop file 
+    * Emitted when @ref KDirWatch learns that the file
+    * @p _file has changed.
+    *
+    * This happens for instance when a .desktop file 
     * gets a new icon - but this isn't automatic, one has to call 
-    * setFileDirty() for this signal to be emitted.
+    * @ref setFileDirty() for this signal to be emitted.
     */
    void fileDirty (const QString& _file);
 
    /**
-    * This signal is emited when directory is deleted. When you receive
-    * this signal, directory is not yet deleted from the list. You will
+    * Emitted when directory is deleted.
+    *
+    *  When you receive
+    * this signal, the directory is not yet deleted from the list. You will
     * receive this signal only once, because one directory cannot be
     * deleted more than once. Please, forget the last^H^H^H^Hprevious
     * sentence.

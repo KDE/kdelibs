@@ -36,6 +36,7 @@ namespace KIO {
 
 /**
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
+ *
  * It can execute any desktop entry, as well as any file, using
  * default binding (service) or another bound service.
  */
@@ -44,13 +45,13 @@ class KRun : public QObject
   Q_OBJECT
 public:
   /**
-   * @param _mode is the st_mode field of <tt>struct stat</tt>. If
+   * @param _mode The @tt st_mode field of <tt>struct stat</tt>. If
    *        you dont know this set it to 0.
    *
    * @param _is_local_file
-   *        if this * parameter is set to false, then '_url' is
-   *        examnined to find out * whether it is a local URL or
-   *        not. This flag is just used to * improve speed, since the
+   *        If this parameter is set to @tt false then @p _url is
+   *        examnined to find out whether it is a local URL or
+   *        not. This flag is just used to improve speed, since the
    *        function @ref KURL::isLocalFile is a bit slow.
    */
   KRun( const KURL& _url, mode_t _mode = 0,
@@ -67,21 +68,23 @@ public:
   void setAutoDelete() { m_bAutoDelete = m_bAutoDelete; }
 
   /**
-   * Opens a list of URLs with a certain service.
+   * Open a list of URLs with a certain service.
+   *
    * @param _service
    * @param _urls the list of URLs, can be empty (app launched
    *        without argument)
    */
   static bool run( const KService& _service, const KURL::List& _urls );
+
   /**
-   * Opens a list of URLs with.
+   * Open a list of URLs with.
    *
-   * @param _exec is the name of the executable, for example
+   * @param _exec The name of the executable, for example
    *        "/usr/bin/netscape".
-   * @param _name is the logical name of the application, for example
+   * @param _name The logical name of the application, for example
    *        "Netscape 4.06".
-   * @param _icon is the icon which should be used by the application.
-   * @param _miniicon is the icon which should be used by the application.
+   * @param _icon The icon which should be used by the application.
+   * @param _miniicon The icon which should be used by the application.
    */
   static bool run( const QString& _exec, const KURL::List& _urls,
 		   const QString& _name = QString::null,
@@ -90,20 +93,23 @@ public:
 		   const QString& _desktop_file = QString::null );
 
   /**
-   * Open the given URL. This function is used after the mime type
+   * Open the given URL.
+   *
+   * This function is used after the mime type
    * is found out. It will search for all services which can handle
-   * the mime type and call @ref #run afterwards.
+   * the mime type and call @ref run() afterwards.
    */
   static bool runURL( const KURL& _url, const QString& _mimetype );
 
   /**
-   * Runs the given command and notifies kicker of the starting
+   * Run the given command and notifies kicker of the starting
    * of the application.
+   *
    * Use only when you know the full command line. Otherwise use the other
-   * static methods, or KRun's constructor.
-   * @param cmd the full command line to run, see @run
-   * @param execName the name of the executable (usually the first 'word' of the command)
-   * @param iconName the name of the (mini) icon to show in kicker
+   * static methods, or @ref KRun's constructor.
+   * @param cmd the full command line to run, see @ref run()
+   * @param execName Dhe name of the executable (usually the first 'word' of the command).
+   * @param iconName The name of the (mini) icon to show in kicker.
    */
   static bool runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
@@ -209,7 +215,7 @@ private:
  * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
  * which displays the real open-with dialog box.
  *
- * If you use KRun you @em need to create an instance of KFileOpenWithHandler
+ * If you use KRun you @tt need to create an instance of KFileOpenWithHandler
  * (except if you can make sure you only use it for executables or
  *  Type=Application desktop files)
  *

@@ -37,7 +37,8 @@
 #include "kservicetype.h"
 
 /**
- * Represents a mime type, like "text/plain".
+ * Represent a mime type, like "text/plain".
+ *
  * The starting point you need is often the static methods.
  * See also @ref KServiceType.
  */
@@ -50,24 +51,27 @@ public:
   typedef QValueList<Ptr> List;
 public:
   /**
-   * Constructor.  You may pass in arguments to create a mimetype with
-   * specific properties
+   * Constructor. 
+   *
+   * You may pass in arguments to create a mimetype with
+   * specific properties.
    */
   KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
 	     const QString& _comment, const QStringList& _patterns );
 
   /**
-   * Construct a mimetype and take all informations from a config file.
+   * Construct a mimetype and take all information from a config file.
    */
   KMimeType( const QString & _fullpath );
 
   /**
-   * Construct a mimetype and take all informations from a desktop file.
+   * Construct a mimetype and take all information from a desktop file.
    */
   KMimeType( KDesktopFile *config );
 
   /**
-   * @internal construct a service from a stream.
+   * @internal Construct a service from a stream.
+   *
    * The stream must already be positionned at the correct offset
    */
   KMimeType( QDataStream& _str, int offset );
@@ -76,75 +80,88 @@ public:
 
   /**
    * Return the filename of the icon associated with the mimetype.
-   * The arguments are unused, but provided so that KMimeType derived classes
+   *
+   * The arguments are unused, but provided so that @ref KMimeType - derived classes
    * can use them (e.g. @ref KFolderType uses the URL to return one out of 2 icons)
-   * @return the path to the icon associated with this MIME type.
+   *
+   * @return The path to the icon associated with this MIME type.
    */
   virtual QString icon( const QString& , bool ) const { return m_strIcon; }
+
   /**
-   * This function differs from the above only in that a KURL may be
-   * provided instead of a QString for convenience.
+   * This function differs from the above only in that a @ref KURL may be
+   * provided instead of a @ref QString for convenience.
    */
   virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
+
   /**
    * Use this function only if you don't have a special URL
-   * for which you search a pixmap.  This function is useful to find
+   * for which you search a pixmap. 
+   *
+   * This function is useful to find
    * out, which icon is usually chosen for a certain mime type. Since
    * no URL is passed, it is impossible to obey icon hints in desktop
    * entries for example.
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: KIcon::DefaultState,
-   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _state The icon state, one of: @tt KIcon::DefaultState,
+   * @tt KIcon::ActiveState or @tt KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
   virtual QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
                           QString * _path = 0L ) const;
 
   /**
-   * Find the pixmap for a given file of this mimetype
-   * Convenience method that uses icon(), but also locates and load the pixmap
-   * @param _url URL for the file
+   * Find the pixmap for a given file of this mimetype.
+   *
+   * Convenience method that uses @ref icon(), but also locates and
+   * load the pixmap.
+   *
+   * @param _url URL for the file.
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: @p KIcon::DefaultState,
-   * @p KIcon::ActiveState or @p KIcon::DisabledState.
-   * @param _path Output parameter to get the full path. Seldom needed.
+   * @param _state The icon state, one of: @tt KIcon::DefaultState,
+   * @p KIcon::ActiveState or @tt KIcon::DisabledState.
+   * @param _path Output parameter to get the full path. Seldom needed.  
    */
   virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
    * Convenience method to find the pixmap for a URL
+   *
    * Call this one when you don't know the mimetype.
    */
   static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, int _group = 0,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
   /**
-   * The arguments are unused, but provided so that KMimeType derived classes
+   * The arguments are unused, but provided so that @ref KMimeType derived classes
    * can use them.
-   * @return the descriptive comment associated with the MIME type, if any.
+   *
+   * @return The descriptive comment associated with the MIME type, if any.
    */
   virtual QString comment( const QString&, bool ) const { return m_strComment; }
   /**
-   * This function differs from the above only in that a KURL may be
-   * provided instead of a QString for convenience.
+   * This function differs from the above only in that a @ref KURL may be
+   * provided instead of a @ref QString for convenience.
    */
   virtual QString comment( const KURL&, bool ) const { return m_strComment; }
 
   /**
-   * @return the list of patterns associated to the MIME Type
+   * Retrieve the list of patterns associated with the MIME Type.
    */
   virtual const QStringList& patterns() const { return m_lstPatterns; }
 
   /**
    * Load the mimetype from a stream.
-   * @param _parentLoaded internal (set by the constructor)
+   *
+   * @param _parentLoaded Internal (set by the constructor)
    */
   virtual void load( QDataStream&, bool _parentLoaded = false );
+
   /**
-   * Save the mimetype to a stream
+   * Save the mimetype to a stream.
    */
   virtual void save( QDataStream& );
 
@@ -152,23 +169,29 @@ public:
   virtual QStringList propertyNames() const;
 
   /**
-   * @return a pointer to the mime type '_name' or a pointer to the default
-   *         mime type "application/octet-stream". 0L is NEVER returned.
+   * Retrieve a pointer to the mime type @p _name or a pointer to the default
+   *         mime type "application/octet-stream".
    *
-   * VERY IMPORTANT : don't store the result in a KMimeType * !
+   * 0L is @em never returned.
+   *
+   * @em Very @em important: Don't store the result in a @ref KMimeType * !
+   *
    * @see KServiceType::serviceType
    */
   static Ptr mimeType( const QString& _name );
+
   /**
-   * This function looks at mode_t first. If that does not help it
-   * looks at the extension.  This is ok for FTP, FILE, TAR and
+   * This function looks at mode_t first.
+   *
+   * If that does not help it
+   * looks at the extension.  This is find for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
    * @ref KRun instead, but this function returns immediately while
-   * @ref KRun is async. If no extension matches, then @ref
-   * KMimeMagic is used if the URL a local file or
+   * @ref KRun is async. If no extension matches, then 
+   * @ref KMimeMagic is used if the URL a local file or
    * "application/octet-stream" is returned otherwise.
    *
-   * @param _url is the right most URL with a filesystem protocol. It
+   * @param _url Is the right most URL with a filesystem protocol. It
    *        is up to you to find out about that if you have a nested
    *        URL.  For example
    *        "http://localhost/mist.gz#gzip:/decompress" would have to
@@ -177,17 +200,19 @@ public:
    *        have to pass the "tar:/..." part of the URL, since gzip is
    *        a filter protocol and not a filesystem protocol.
    *
-   * @param _fast_mode If set to true no disk access is allowed to
+   * @param _fast_mode If set to @tt true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
-   *        it is * FAST.
-   * @return a pointer to the matching mimetype. 0L is NEVER returned.
-   * VERY IMPORTANT : don't store the result in a KMimeType * !
+   *        it is @em fast.
+   * @return A pointer to the matching mimetype. 0L is @em never returned.
+   * @em Very @em Important: Don't store the result in a @ref KMimeType * !
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
 
   /**
-   * Get all the mimetypes. Useful for showing the list of
+   * Get all the mimetypes.
+   *
+   * Useful for showing the list of
    * available mimetypes.
    * More memory consuming than the ones above, don't use unless
    * really necessary.
@@ -201,15 +226,16 @@ protected:
   static void errorMissingMimeType( const QString& _type );
 
   /**
-   * This function makes sure that the default mime type exists
+   * This function makes sure that the default mime type exists.
    */
   static void buildDefaultType();
+
   /**
    * This function makes sure that vital mime types are installed.
    */
   static void checkEssentialMimeTypes();
   /**
-   * True if check for vital mime types has been done
+   * Returns @tt true if check for vital mime types has been done.
    */
   static bool s_bChecked;
 

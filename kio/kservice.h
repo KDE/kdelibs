@@ -31,8 +31,9 @@
 class KDesktopFile;
 class KService;
 /**
- * Represents a service, i.e. an application bound to one or several mimetypes
+ * Represent a service, i.e. an application bound to one or several mimetypes
  * (or servicetypes) as written in its desktop entry file.
+ *
  * A service may be a library, too.
  * The starting point you need is often the static methods.
  *
@@ -48,91 +49,94 @@ public:
 public:
 
   /**
-   * Construct a service and take all informations from a config file
-   * @param _fullpath full path to the config file
-   * @param _relpath relative path wrt to $KDEDIRS/+resource
+   * Construct a service and take all information from a config file.
+   *
+   * @param _fullpath Full path to the config file.
+   * @param _relpath Relative path wrt to $KDEDIRS/+resource.
    */
   KService( const QString & _fullpath );
 
   /**
-   * Construct a service and take all informations from a desktop file
+   * Construct a service and take all information from a desktop file.
    */
   KService( KDesktopFile *config );
 
   /**
-   * @internal construct a service from a stream.
-   * The stream must already be positionned at the correct offset
+   * @internal
+   * Construct a service from a stream.
+   * The stream must already be positionned at the correct offset.
    */
   KService( QDataStream& _str, int offset );
 
   virtual ~KService();
 
   /**
-   * @return the type of the service ("Application" or "Service").
+   * Returns the type of the service ("Application" or "Service").
    */
   virtual QString type() const { return m_strType; }
   /**
-   * @return the name of the service.
+   * Returns the name of the service.
    */
   virtual QString name() const { return m_strName; }
   /**
-   * @return the command that the service executes.
+   * Returns the command that the service executes.
    */
   QString exec() const { return m_strExec; }
   /**
-   * @return the name of the library that contains the services
+   * Returns the name of the library that contains the services
    *         implementation.
    */
   QString library() const { return m_strLibrary; }
   /**
-   * @return the major number of the library.
+   * Returns the major number of the library.
    *
-   * @see #library
-   * @see #libraryMinor
+   * @see library()
+   * @see libraryMinor()
    */
   int libraryMajor() const { return m_libraryMajor; }
   /**
-   * @return the minor number of the library.
+   * Returns the minor number of the library.
    *
-   * @see #library
-   * @see #libraryMajor
+   * @see library()
+   * @see libraryMajor()
    */
   int libraryMinor() const { return m_libraryMinor; }
   /**
-   * @return the libraries on which this service depends. That is
+   * Returns the libraries on which this service depends. That is
    *         only of interest if the service itelf is a library.
    */
   QStringList libraryDependencies() const { return m_lstLibraryDeps; }
   /**
-   * @return the icon associated with the service.
+   * Returns the icon associated with the service.
    */
   QString icon() const { return m_strIcon; }
   /**
-   * @return a pixmap for this service (finds and loads icon())
+   * Returns a pixmap for this service (finds and loads icon())
    */
   QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
                   QString * _path = 0L ) const;
   /**
-   * @return Run the service in a terminal?
+   * Returns @tt true is the service is run in a terminal.
    */
   bool terminal() const { return m_bTerminal; }
   /**
-   * @return any options associated with the terminal the service
-   * runs in, if it requires a terminal.  The service must be a
-   * tty-oriented program).
+   * Returns any options associated with the terminal the service
+   * runs in, if it requires a terminal.
+   *
+   * The service must be a tty-oriented program.
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
   /**
-   * @return If the service has to be run under a different uid.
+   * Returns @tt true if the service has to be run under a different uid.
    */
   bool substituteUid() const;
   /**
-   * @return The username as which the service has to be run.
+   * Returns the username under which the service has to be run.
    */
   QString username() const;
 
   /**
-   * @return the path to the location where the service desktop entry
+   * Returns the path to the location where the service desktop entry
    * is stored.
    *
    * This is a relative path if the desktop entry was found in any
@@ -143,7 +147,7 @@ public:
   QString desktopEntryPath() const { return entryPath(); }
 
   /**
-   * @return the filename of the service desktop entry without any
+   * Returns the filename of the service desktop entry without any
    * extension. E.g. "kppp"
    */
   QString desktopEntryName() const { return m_strDesktopEntryName; }
@@ -160,42 +164,43 @@ public:
   enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi };
 
   /**
-   * @return The DCOPServiceType supported by this service.
+   * Returns The @ref DCOPServiceType supported by this service.
    */
   DCOPServiceType_t DCOPServiceType() const { return m_DCOPServiceType; }
 
   /**
-   * @return the working directory to run the program in
+   * Returns the working directory to run the program in.
    */
   QString path() const { return m_strPath; }
 
   /**
-   * @return the descriptive comment for the service, if there is one.
+   * Returns the descriptive comment for the service, if there is one.
    */
   QString comment() const { return m_strComment; }
 
   /**
-   * @return a list of descriptive keywords the service, if there are any.
+   * Returns a list of descriptive keywords the service, if there are any.
    */
   QStringList keywords() const { return m_lstKeywords; }
 
   /**
-   * @return the service types that this service supports
+   * Returns the service types that this service supports.
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
 
   /**
-   * @param _service is the name of the service type you are
+   * @param _service The name of the service type you are
    *        interested in determining whether this services supports.
    *
-   * @return TRUE if the service you specified is supported,
-   *        otherwise FALSE.  */
+   * @return @tt true if the service you specified is supported,
+   *        otherwise @tt false.
+   */
   bool hasServiceType( const QString& _service ) const;
   /**
-   * @return TRUE if the service may be used as a default setting, for
+   * Returns @tt true if the service may be used as a default setting, for
    *         example in a file manager. Usually that is the case, but
    *         some services may only be started when the user selected
-   *         them. This kind of services returns FALSE here.
+   *         them. This kind of services returns @tt false here.
    */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
 
@@ -207,24 +212,24 @@ public:
   int initialPreference() const { return m_initialPreference; }
 
   /**
-   * @return the requested properties. Some often used properties
-   *         have convenience access functions like @ref #exec,
-   *         @ref #serviceTypes etc.
+   * Returns the requested properties. Some often used properties
+   *         have convenience access functions like @ref exec(),
+   *         @ref serviceTypes etc.
    *
-   *         It depends upon the @ref #serviceTypes of this service which
+   *         It depends upon the @ref serviceTypes() of this service which
    *         properties a service can have.
    *
    * @see KServiceType
    */
   virtual QVariant property( const QString& _name ) const;
   /**
-   * @return the list of all properties that this service can have.
+   * Returns the list of all properties that this service can have.
    *         That means, that some properties may be empty.
    */
   virtual QStringList propertyNames() const;
 
   /**
-   * @return true if the service is valid (e.g. name is not empty)
+   * Returns @tt true if the service is valid (e.g. name is not empty)
    */
   bool isValid() const { return m_bValid; }
 
@@ -240,28 +245,30 @@ public:
   virtual void save( QDataStream& );
 
   /**
-   * @return a pointer to the requested service or 0 if the service is
+   * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * VERY IMPORTANT : don't store the result in a KService * !
+   * @em Very @em important: Don't store the result in a @ref KService * !
    */
   static Ptr serviceByName( const QString& _name );
 
   /**
-   * @return a pointer to the requested service or 0 if the service is
+   * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * VERY IMPORTANT : don't store the result in a KService * !
+   * @em Very @em important: Don't store the result in a @ref KService * !
    */
   static Ptr serviceByDesktopPath( const QString& _name );
 
   /**
-   * @return a pointer to the requested service or 0 if the service is
+   * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * VERY IMPORTANT : don't store the result in a KService * !
+   * @em Very @em important: Don't store the result in a @ref KService * !
    */
   static Ptr serviceByDesktopName( const QString& _name );
 
   /**
-   * @return the whole list of services. Useful for being able to
+   * Returns the whole list of services.
+   *
+   *  Useful for being able to
    * to display them in a list box, for example.
    * More memory consuming than the ones above, don't use unless
    * really necessary.
