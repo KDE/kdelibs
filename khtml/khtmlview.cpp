@@ -995,6 +995,11 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
+	m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ? 
+						  "* { background-image: none !important;"
+						  "    background-color: transparent !important;"
+						  "    color: black !important }" :
+						  "" );
         m_part->xmlDocImpl()->updateStyleSelector();
 
         QPaintDeviceMetrics metrics( printer );

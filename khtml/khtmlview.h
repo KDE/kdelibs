@@ -33,6 +33,7 @@ class QRect;
 
 namespace DOM {
     class HTMLDocumentImpl;
+    class DocumentImpl;
     class ElementImpl;
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
@@ -72,6 +73,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLGenericFormElementImpl;
     friend class DOM::HTMLFormElementImpl;
     friend class DOM::HTMLAnchorElementImpl;
+    friend class DOM::DocumentImpl;
     friend class KHTMLPart;
     friend class khtml::RenderRoot;
     friend class khtml::RenderObject;

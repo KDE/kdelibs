@@ -226,6 +226,8 @@ public:
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
     void setUserStyleSheet(const QString& sheet);
     QString userStyleSheet() const { return m_usersheet; }
+    void setPrintStyleSheet(const QString& sheet) { m_printSheet = sheet; }
+    QString printStyleSheet() const { return m_printSheet; }
 
     CSSStyleSheetImpl* elementSheet();
     virtual Tokenizer *createTokenizer();
@@ -381,6 +383,7 @@ protected:
 
     StyleSheetImpl *m_sheet;
     QString m_usersheet;
+    QString m_printSheet;
     QStringList m_availableSheets;
 
     CSSStyleSheetImpl *m_elemSheet;

@@ -1767,7 +1767,10 @@ void DocumentImpl::recalcStyleSelector()
 
     // Create a new style selector
     delete m_styleSelector;
-    m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
+    QString usersheet = m_usersheet;
+    if ( m_view && m_view->mediaType() == "print" )
+	usersheet += m_printSheet;
+    m_styleSelector = new CSSStyleSelector( m_view, usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
 
     m_styleSelectorDirty = false;
