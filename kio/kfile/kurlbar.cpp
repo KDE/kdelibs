@@ -703,15 +703,9 @@ void KURLBar::slotDropped( QDropEvent *e )
 
         KURL::List::Iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
-            url = *it;
-            if ( KURLBarItemDialog::getInformation( m_useGlobal,
-                                                    url, description, icon,
-                                                    appLocal, m_iconSize,
-                                                    this ) ) {
-                (void) insertItem( url, description, appLocal, icon );
-                m_isModified = true;
-                updateGeometry();
-            }
+            (void) insertItem( *it, description, appLocal, icon );
+            m_isModified = true;
+            updateGeometry();
         }
     }
 }
