@@ -70,12 +70,12 @@ KSelectionOwnerPrivate::KSelectionOwnerPrivate( KSelectionOwner* owner_P )
     
 bool KSelectionOwnerPrivate::x11Event( XEvent* ev_P )
     {
-    owner->filterEvent( ev_P );
-    return false;
+    return owner->filterEvent( ev_P );
     }
     
-KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P )
-    :   selection( selection_P ),
+KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P, QObject* parent_P )
+    :   QObject( parent_P ),
+        selection( selection_P ),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         window( None ),
         timestamp( CurrentTime ),
@@ -84,8 +84,9 @@ KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P )
     {
     }
     
-KSelectionOwner::KSelectionOwner( const char* selection_P, int screen_P )
-    :   selection( XInternAtom( qt_xdisplay(), selection_P, False )),
+KSelectionOwner::KSelectionOwner( const char* selection_P, int screen_P, QObject* parent_P )
+    :   QObject( parent_P ),
+        selection( XInternAtom( qt_xdisplay(), selection_P, False )),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         window( None ),
         timestamp( CurrentTime ),
@@ -193,41 +194,52 @@ void KSelectionOwner::setData( long extra1_P, long extra2_P )
     extra2 = extra2_P;
     }
     
-void KSelectionOwner::filterEvent( XEvent* ev_P )
+bool KSelectionOwner::filterEvent( XEvent* ev_P )
     {
+    if( timestamp != CurrentTime && ev_P->xany.window == window )
+        {
+        if( handleMessage( ev_P ))
+            return true;
+        }
     switch( ev_P->type )
 	{
 	case SelectionClear:
 	    {
 	    if( timestamp == CurrentTime || ev_P->xselectionclear.selection != selection )
-	        return;
+	        return false;
 	    timestamp = CurrentTime;
 //	    kdDebug() << "Lost selection" << endl;
 	    emit lostOwnership();
 	    XSelectInput( qt_xdisplay(), window, 0 );
 	    XDestroyWindow( qt_xdisplay(), window );
-	  return;
+	  return false;
 	    }
 	case DestroyNotify:
 	    {
 	    if( timestamp == CurrentTime || ev_P->xdestroywindow.window != window )
-	        return;
+	        return false;
 	    timestamp = CurrentTime;
 //	    kdDebug() << "Lost selection (destroyed)" << endl;
 	    emit lostOwnership();
-	  return;
+	  return false;
 	    }
 	case SelectionNotify:
 	    {
 	    if( timestamp == CurrentTime || ev_P->xselection.selection != selection )
-	        return;
+	        return false;
 	    // ignore?
-	  return;
+	  return false;
 	    }
 	case SelectionRequest:
 	    filter_selection_request( ev_P->xselectionrequest );
-	  return;
+	  return false;
 	}
+    return false;
+    }
+
+bool KSelectionOwner::handleMessage( XEvent* )
+    {
+    return false;
     }
 
 void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
@@ -371,8 +383,9 @@ bool KSelectionWatcherPrivate::x11Event( XEvent* ev_P )
     }
     
 
-KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P )
-    :   selection( selection_P ),
+KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P, QObject* parent_P )
+    :   QObject( parent_P ),
+        selection( selection_P ),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         selection_owner( None ),
         d( new KSelectionWatcherPrivate( this ))
@@ -380,8 +393,9 @@ KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P )
     init();
     }
     
-KSelectionWatcher::KSelectionWatcher( const char* selection_P, int screen_P )
-    :   selection( XInternAtom( qt_xdisplay(), selection_P, False )),
+KSelectionWatcher::KSelectionWatcher( const char* selection_P, int screen_P, QObject* parent_P )
+    :   QObject( parent_P ),
+        selection( XInternAtom( qt_xdisplay(), selection_P, False )),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         selection_owner( None ),
         d( new KSelectionWatcherPrivate( this ))

@@ -40,15 +40,16 @@ class KSelectionOwner
     {
     Q_OBJECT
     public:
-        KSelectionOwner( Atom selection, int screen_P = -1 );
-        KSelectionOwner( const char* selection, int screen_P = -1 );
+        KSelectionOwner( Atom selection, int screen_P = -1, QObject* parent = NULL );
+        KSelectionOwner( const char* selection, int screen_P = -1, QObject* parent = NULL );
 	virtual ~KSelectionOwner();
         bool claim( bool force, bool force_kill = true );
         void release();
-	void filterEvent( XEvent* ev_P ); // internal
+	bool filterEvent( XEvent* ev_P ); // internal
     signals:
         void lostOwnership(); // it's NOT safe to delete the instance in a slot
     protected:
+        virtual bool handleMessage( XEvent* ev );
         virtual bool genericReply( Atom target, Atom property, Window requestor );
         virtual void replyTargets( Atom property, Window requestor );
         virtual void getAtoms();
@@ -79,8 +80,8 @@ class KSelectionWatcher
     {
     Q_OBJECT
     public:
-        KSelectionWatcher( Atom selection_P, int screen_P = -1 );
-        KSelectionWatcher( const char* selection_P, int screen_P = -1 );
+        KSelectionWatcher( Atom selection_P, int screen_P = -1, QObject* parent = NULL );
+        KSelectionWatcher( const char* selection_P, int screen_P = -1, QObject* parent = NULL );
 	virtual ~KSelectionWatcher();
         Window owner();
         void filterEvent( XEvent* ev_P ); // internal
