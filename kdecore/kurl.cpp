@@ -873,7 +873,7 @@ bool KURL::operator==( const KURL& _u ) const
   if ( m_strProtocol == _u.m_strProtocol &&
        m_strUser == _u.m_strUser &&
        m_strPass == _u.m_strPass &&
-       m_strHost == _u.m_strHost &&
+       m_strHost.lower() == _u.m_strHost.lower() &&
        m_strPath == _u.m_strPath &&
        // The encoded path may be null, but the URLs are still equal (David)
        ( m_strPath_encoded.isNull() || _u.m_strPath_encoded.isNull() ||
