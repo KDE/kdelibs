@@ -162,6 +162,10 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
     setQWidget(b);
+
+    // prevent firing toggled() signals on initialization
+    b->setChecked(element->checked());
+
     connect(b,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
 }
 
@@ -185,11 +189,13 @@ void RenderRadioButton::calcMinMaxWidth()
     RenderButton::calcMinMaxWidth();
 }
 
-void RenderRadioButton::slotToggled(bool)
+void RenderRadioButton::slotToggled(bool activated)
 {
-    ref();
-    element()->onChange();
-    deref();
+    if(activated) {
+      ref();
+      element()->onChange();
+      deref();
+    }
 }
 
 // -------------------------------------------------------------------------------
