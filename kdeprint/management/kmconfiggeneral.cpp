@@ -24,12 +24,12 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <klocale.h>
+#include <kurlrequester.h>
 #include <krun.h>
 #include <kmimemagic.h>
 #include <kconfig.h>
 #include <knuminput.h>
 #include <kmessagebox.h>
-#include <kurlrequester.h>
 #include <kcursor.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
