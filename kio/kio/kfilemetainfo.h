@@ -774,7 +774,6 @@ public:
 
     QStringList supportedKeys() const;
 
-
    /**
     * @return the list of groups that you can add or remove from the file.
     */
@@ -1008,6 +1007,8 @@ public:
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
 
+    QStringList supportedMimeTypes() const;
+    
 protected:
     KFileMetaInfoProvider();
 

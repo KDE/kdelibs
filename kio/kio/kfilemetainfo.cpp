@@ -23,6 +23,7 @@
 #include <qshared.h>
 #include <qdict.h>
 
+#include <ktrader.h>
 #include <kstaticdeleter.h>
 #include <kparts/componentfactory.h>
 #include <kuserprofile.h>
@@ -352,7 +353,7 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
         if (p && !p->readInfo( item, what))
             *this=KFileMetaInfo();
     }
-    else 
+    else
     {
         kdDebug(7033) << "No mimetype info for " << mimeType << endl;
         d = Data::makeNull();
@@ -969,6 +970,23 @@ KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
     return info;
 }
 
+QStringList KFileMetaInfoProvider::supportedMimeTypes() const
+{
+    QStringList allMimeTypes;
+    
+    KTrader::OfferList offers = KTrader::self()->query( "KFilePlugin" );
+    KTrader::OfferListIterator it = offers.begin();
+    for ( ; it != offers.end(); ++it )
+    {
+        QStringList mimeTypes = (*it)->serviceTypes();
+        QStringList::ConstIterator it2 = mimeTypes.begin();
+        for ( ; it2 != mimeTypes.end(); ++it2 )
+            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() )
+                allMimeTypes.append( *it2 );
+    }
+    
+    return allMimeTypes;
+}
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
