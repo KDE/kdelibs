@@ -1376,7 +1376,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb->layout(), 6, 2);
+  gl = new QGridLayout (gb->layout(), 7, 2);
+  gl->setColStretch(1, 1);
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
@@ -1416,9 +1417,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     l = d->extraCheckbox = new QCheckBox(hasDir ? 
 					 i18n("Only own&er can rename and delete directory content") :
 					 i18n("Is &executable"),
-					 d->m_frame );
+					 gb );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
-    gl->addMultiCellWidget(l, 4, 4, 0, 1);
+    gl->addWidget(l, 4, 1);
     QWhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the directory's owner to "
 				     "delete or rename the contained files and directories. Other "
 				     "users can only add new files, which requires the 'Modify "
@@ -1427,8 +1428,11 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 			   "sense for programs and scripts. It is required when you want to "
 			   "execute them."));
 
+    QLayoutItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    gl->addMultiCell(spacer, 5, 5, 0, 1);
+
     l = new QPushButton(i18n("A&dvanced Permissions..."), gb);
-    gl->addWidget(l, 5, 1);
+    gl->addMultiCellWidget(l, 6, 6, 0, 1, AlignRight);
     connect(l, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
   else
