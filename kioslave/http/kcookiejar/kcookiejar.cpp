@@ -147,7 +147,7 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
     else
     {
         result.sprintf("$Version=\"%d\"; ", mProtocolVersion);
-        result += mName + "=\"" + mValue + "\"";
+        result += mName + "=" + mValue + "";
         if (!mPath.isEmpty())
             result += "; $Path=\""+ mPath + "\"";
         if (!mDomain.isEmpty())

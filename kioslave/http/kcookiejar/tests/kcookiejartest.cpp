@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
    // Simple Case tests...
    arg1 = "http://www.foo.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_0=\"www.foo.com\"; Path=\"/acme\"";
+   arg2 = "Set-Cookie: set_by_0=\"www.foo.com\"; Path=\"/acme\" Version=\"1\"";
    addCookies(arg1, arg2);
 
    // Another simple test
