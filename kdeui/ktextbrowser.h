@@ -39,7 +39,7 @@ class KTextBrowser : public QTextBrowser
 
   public:
     /**
-     * Constructore wher you specify the face.
+     * Constructor.
      *
      * @param parent Parent of the widget.
      * @param name Widget name.
