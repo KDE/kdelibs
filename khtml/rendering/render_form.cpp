@@ -289,10 +289,8 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
-void RenderSubmitButton::calcMinMaxWidth()
+QString RenderSubmitButton::rawText()
 {
-    KHTMLAssert( !minMaxKnown() );
-
     QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
     value = value.stripWhiteSpace();
     QString raw;
@@ -301,7 +299,14 @@ void RenderSubmitButton::calcMinMaxWidth()
         if(value[i] == '&')
             raw += '&';
     }
+    return raw;
+}
 
+void RenderSubmitButton::calcMinMaxWidth()
+{
+    KHTMLAssert( !minMaxKnown() );
+
+    QString raw = rawText();
     static_cast<QPushButton*>(m_widget)->setText(raw);
     static_cast<QPushButton*>(m_widget)->setFont(style()->font());
 
@@ -319,6 +324,18 @@ void RenderSubmitButton::calcMinMaxWidth()
     setIntrinsicHeight( s.height() );
 
     RenderButton::calcMinMaxWidth();
+}
+
+void RenderSubmitButton::updateFromElement()
+{
+    QString oldText = static_cast<QPushButton*>(m_widget)->text();
+    QString newText = rawText();
+    static_cast<QPushButton*>(m_widget)->setText(newText);
+    if ( oldText != newText ) {
+        setMinMaxKnown(false);
+	setLayouted(false);
+    }
+    RenderFormElement::updateFromElement();
 }
 
 QString RenderSubmitButton::defaultLabel() {
