@@ -76,15 +76,7 @@ void MouseEvent::setURLHandlingEnabled( bool enable )
     d->urlHandling = enable;
 }
 
-int MousePressEvent::offset()
-{
-    int offset = 0;
-    DOM::Node tempNode = 0;
-    innerNode().handle()->findSelectionNode( x(), y(), nodeAbsX(), nodeAbsY(), tempNode, offset );
-    return offset;
-}
-
-int MouseReleaseEvent::offset()
+int MouseEvent::offset() const
 {
     int offset = 0;
     DOM::Node tempNode = 0;

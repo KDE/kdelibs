@@ -52,6 +52,9 @@ public:
   bool isURLHandlingEnabled() const; // ### make inline KDE 3.0
   void setURLHandlingEnabled( bool enable );
 
+  // return the offset of innerNode
+  int offset() const;
+
 private:
   QMouseEvent *m_qmouseEvent;
   int m_x;
@@ -73,8 +76,6 @@ public:
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMousePressEvent ); }
 
-  // return the offset of innerNode
-  int offset();
 
 private:
   static const char *s_strMousePressEvent;
@@ -118,9 +119,6 @@ public:
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMouseReleaseEvent ); }
-
-  // return the offset of innerNode
-  int offset();
 
 private:
   static const char *s_strMouseReleaseEvent;
