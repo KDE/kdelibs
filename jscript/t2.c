@@ -126,7 +126,6 @@ extern FILE *yyin, *yyout;
 		{ \
 		/* Undo effects of setting up yytext. */ \
 		*yy_cp = yy_hold_char; \
-		YY_RESTORE_YY_MORE_OFFSET \
 		yy_c_buf_p = yy_cp = yy_bp + n - YY_MORE_ADJ; \
 		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		} \
@@ -440,7 +439,6 @@ static char *yy_last_accepting_cpos;
 #define REJECT reject_used_but_not_detected
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
-#define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "t2.l"
 #define INITIAL 0
@@ -455,7 +453,7 @@ char* putString( char *_name );
 int yywrap();
 void initFlex( const char *_code );
 
-#line 459 "lex.yy.c"
+#line 457 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -475,10 +473,6 @@ static void yyunput YY_PROTO(( int c, char *buf_ptr ));
 
 #ifndef yytext_ptr
 static void yy_flex_strncpy YY_PROTO(( char *, yyconst char *, int ));
-#endif
-
-#ifdef YY_NEED_STRLEN
-static int yy_flex_strlen YY_PROTO(( yyconst char * ));
 #endif
 
 #ifndef YY_NO_INPUT
@@ -609,7 +603,7 @@ YY_DECL
 #line 17 "t2.l"
 
 
-#line 613 "lex.yy.c"
+#line 607 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -912,7 +906,7 @@ YY_RULE_SETUP
 #line 70 "t2.l"
 ECHO;
 	YY_BREAK
-#line 916 "lex.yy.c"
+#line 910 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -923,7 +917,6 @@ case YY_STATE_EOF(INITIAL):
 
 		/* Undo the effects of YY_DO_BEFORE_ACTION. */
 		*yy_cp = yy_hold_char;
-		YY_RESTORE_YY_MORE_OFFSET
 
 		if ( yy_current_buffer->yy_buffer_status == YY_BUFFER_NEW )
 			{
@@ -1069,7 +1062,7 @@ static int yy_get_next_buffer()
 		{ /* Don't try to fill the buffer, so this is an EOF. */
 		if ( yy_c_buf_p - yytext_ptr - YY_MORE_ADJ == 1 )
 			{
-			/* We matched a single character, the EOB, so
+			/* We matched a singled characater, the EOB, so
 			 * treat this as a final EOF.
 			 */
 			return EOB_ACT_END_OF_FILE;
@@ -1313,7 +1306,7 @@ static int input()
 
 		else
 			{ /* need more input */
-			int offset = yy_c_buf_p - yytext_ptr;
+			yytext_ptr = yy_c_buf_p;
 			++yy_c_buf_p;
 
 			switch ( yy_get_next_buffer() )
@@ -1322,7 +1315,8 @@ static int input()
 					{
 					if ( yywrap() )
 						{
-						yy_c_buf_p = yytext_ptr + offset;
+						yy_c_buf_p =
+						yytext_ptr + YY_MORE_ADJ;
 						return EOF;
 						}
 
@@ -1336,7 +1330,7 @@ static int input()
 					}
 
 				case EOB_ACT_CONTINUE_SCAN:
-					yy_c_buf_p = yytext_ptr + offset;
+					yy_c_buf_p = yytext_ptr + YY_MORE_ADJ;
 					break;
 
 				case EOB_ACT_LAST_MATCH:
@@ -1700,7 +1694,7 @@ char msg[];
 		{ \
 		/* Undo effects of setting up yytext. */ \
 		yytext[yyleng] = yy_hold_char; \
-		yy_c_buf_p = yytext + n; \
+		yy_c_buf_p = yytext + n - YY_MORE_ADJ; \
 		yy_hold_char = *yy_c_buf_p; \
 		*yy_c_buf_p = '\0'; \
 		yyleng = n; \
@@ -1723,22 +1717,6 @@ int n;
 	register int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
-	}
-#endif
-
-#ifdef YY_NEED_STRLEN
-#ifdef YY_USE_PROTOS
-static int yy_flex_strlen( yyconst char *s )
-#else
-static int yy_flex_strlen( s )
-yyconst char *s;
-#endif
-	{
-	register int n;
-	for ( n = 0; s[n]; ++n )
-		;
-
-	return n;
 	}
 #endif
 
