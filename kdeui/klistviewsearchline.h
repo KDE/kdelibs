@@ -20,6 +20,7 @@
 #define KLISTVIEWSEARCHLINE_H
 
 #include <klineedit.h>
+#include <qhbox.h>
 
 class KListView;
 class QListViewItem;
@@ -198,6 +199,49 @@ private slots:
 private:
     class KListViewSearchLinePrivate;
     KListViewSearchLinePrivate *d;
+};
+
+/**
+ * Creates a widget featuring a KListViewSearchLine, a label with the text
+ * "Search" and a button to clear the search.
+ *
+ * @since 3.4
+ */
+class KDEUI_EXPORT KListViewSearchLineWidget : public QHBox
+{
+public:
+    /**
+     * Creates a KListViewSearchLineWidget for \a listView with \a parent as the
+     * parent with and \a name.
+     */
+    KListViewSearchLineWidget(KListView *listView = 0, QWidget *parent = 0,
+                              const char *name = 0);
+
+    /**
+     * Destroys the KListViewSearchLineWidget
+     */
+    ~KListViewSearchLineWidget();
+
+    /**
+     * Creates the search line.  This can be useful to reimplement in cases where
+     * a KListViewSearchLine subclass is used.
+     */
+    virtual KListViewSearchLine *createSearchLine(KListView *listView);
+
+    /**
+     * Reimplemented from QWidget to instantiate the widgets after object
+     * creation.
+     */
+    virtual void polish();
+
+    /**
+     * Returns a pointer to the search line.
+     */
+    KListViewSearchLine *searchLine() const;
+
+private:
+    class KListViewSearchLineWidgetPrivate;
+    KListViewSearchLineWidgetPrivate *d;
 };
 
 #endif

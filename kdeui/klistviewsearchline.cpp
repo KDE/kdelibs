@@ -19,11 +19,15 @@
 #include "klistviewsearchline.h"
 
 #include <klistview.h>
+#include <kapplication.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 #include <klocale.h>
 
 #include <qtimer.h>
 #include <qpopupmenu.h>
+#include <qlabel.h>
+#include <qtoolbutton.h>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -345,6 +349,54 @@ bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item)
             item->setVisible(false);
     }
     return visible;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// KListViewSearchLineWidget
+////////////////////////////////////////////////////////////////////////////////
+
+class KListViewSearchLineWidget::KListViewSearchLineWidgetPrivate
+{
+public:
+    KListViewSearchLineWidgetPrivate() : listView(0), searchLine(0) {}
+    KListView *listView;
+    KListViewSearchLine *searchLine;
+};
+
+KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
+                                                     QWidget *parent,
+                                                     const char *name) :
+    QHBox(parent, name)
+{
+    d = new KListViewSearchLineWidgetPrivate;
+    d->listView = listView;
+}
+
+KListViewSearchLineWidget::~KListViewSearchLineWidget()
+{
+    delete d;
+}
+
+KListViewSearchLine *KListViewSearchLineWidget::createSearchLine(KListView *listView)
+{
+    if(!d->searchLine)
+        d->searchLine = new KListViewSearchLine(this, listView);
+    return d->searchLine;
+}
+
+void KListViewSearchLineWidget::polish()
+{
+    QIconSet icon = SmallIconSet(KApplication::reverseLayout() ? "clear_left"
+                                                               : "locationbar_erase");
+
+    QToolButton *clearSearchButton = new QToolButton(this);
+    clearSearchButton->setIconSet(icon);
+
+    new QLabel(i18n("S&earch"), this, "kde toolbar widget");
+
+    d->searchLine = createSearchLine(d->listView);
+
+    connect(clearSearchButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 }
 
 #include "klistviewsearchline.moc"
