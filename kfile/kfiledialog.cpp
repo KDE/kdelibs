@@ -193,6 +193,14 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     text = i18n("Home Directory: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
+    KURL docPath;
+    docPath.setPath( KGlobalSettings::documentPath() );
+    if ( u.path(+1) != docPath.path(+1) ) {
+        text = i18n("Documents: %1").arg( docPath.path( +1 ) );
+        combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                              text );
+    }
+
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
@@ -245,8 +253,15 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     if ( defaultStartDir )
     {
-        if (lastDirectory->isEmpty())
-            *lastDirectory = QDir::currentDirPath();
+        if (lastDirectory->isEmpty()) {
+            *lastDirectory = KGlobalSettings::documentPath();
+            KURL home;
+            home.setPath( QDir::homeDirPath() );
+            // if there is no docpath set (== home dir), we prefer the current
+            // directory over it.
+            if ( lastDirectory->path(+1) == home.path(+1) )
+                *lastDirectory = QDir::currentDirPath();
+        }
         d->url = *lastDirectory;
     }
 
