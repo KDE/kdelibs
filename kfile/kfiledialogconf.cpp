@@ -37,8 +37,6 @@ KFileDialogConfigureDlg::KFileDialogConfigureDlg(QWidget *parent,
   : QTabDialog(parent, name, true)
 {
   KFileDialogConfigure *kfdc= new KFileDialogConfigure(this);
-
-  resize(kfdc->size());
   addTab(kfdc, i18n("Look and Feel"));
 
   QLabel *label= new QLabel(i18n("KDE File Selector by:\n"
@@ -53,13 +51,13 @@ KFileDialogConfigureDlg::KFileDialogConfigureDlg(QWidget *parent,
 				 "and Martin Jones <mjones@kde.org>"),
 			    this);
   label->setAlignment(AlignCenter);
-  label->adjustSize();
   addTab(label, i18n("About"));
-
+  
   setCancelButton(i18n("Cancel"));
   // setApplyButton(i18n("Apply"));
   setOKButton(i18n("OK"));
-  connect( this, SIGNAL(applyButtonPressed()), kfdc, SLOT(saveConfiguration()) );
+  connect( this, SIGNAL(applyButtonPressed()), kfdc, 
+	   SLOT(saveConfiguration()) );
 };
 
 KFileDialogConfigure::KFileDialogConfigure(QWidget *parent, 
@@ -74,13 +72,11 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   l1->addSpacing(10);
   myShortView= new QRadioButton( i18n("Show Short View"), group);
   group->insert( myShortView, B_SHORTVIEW );
-  myShortView->adjustSize();
   myShortView->setMinimumSize( myShortView->sizeHint() );
   l1->addWidget( myShortView, 0 );
   l1->addSpacing(10);
   myDetailView= new QRadioButton( i18n("Show Detail View"), group);
   group->insert( myDetailView, B_DETAILVIEW );
-  myDetailView->adjustSize();
   myDetailView->setMinimumSize( myDetailView->sizeHint() );
   l1->addWidget( myDetailView, 0 );
   choices->addWidget(group, 2);
@@ -95,43 +91,36 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   l2->addSpacing(10);
   myShowFilter= new QCheckBox(i18n("Show Filter"), group2);
   group2->insert( myShowFilter, B_FILTER );
-  myShowFilter->adjustSize();
   myShowFilter->setMinimumSize( myShowFilter->sizeHint() );
   l2->addWidget( myShowFilter, 0 );
   l2->addSpacing(10);
   myShowListLabels= new QCheckBox(i18n("Show List Labels"), group2);
   group2->insert( myShowListLabels, B_LISTLABELS );
-  myShowListLabels->adjustSize();
   myShowListLabels->setMinimumSize( myShowListLabels->sizeHint() );
   l2->addWidget( myShowListLabels, 0 );
   l2->addSpacing(10);
   myShowHidden= new QCheckBox( i18n("Show Hidden"), group2);
   group2->insert( myShowHidden, B_HIDDEN );
-  myShowHidden->adjustSize();
   myShowHidden->setMinimumSize( myShowHidden->sizeHint() );
   l2->addWidget( myShowHidden, 0 );
   l2->addSpacing(10);
   myShowStatusLine= new QCheckBox( i18n("Show Status Line"), group2);
   group2->insert( myShowStatusLine, B_STATUSLINE );
-  myShowStatusLine->adjustSize();
   myShowStatusLine->setMinimumSize( myShowStatusLine->sizeHint() );
   l2->addWidget( myShowStatusLine, 0 );
   l2->addSpacing(10);
   useSingleClick= new QCheckBox( i18n("Use single Click"), group2);
   group2->insert( useSingleClick, B_SINGLECLICK );
-  useSingleClick->adjustSize();
   useSingleClick->setMinimumSize( useSingleClick->sizeHint() );
   l2->addWidget( useSingleClick, 0 );
   l2->addSpacing(10);
   myMixDirsAndFiles = new QCheckBox( i18n("Mix dirs and files"), group2);
   group2->insert( myMixDirsAndFiles, B_MIX );
-  myMixDirsAndFiles->adjustSize();
   myMixDirsAndFiles->setMinimumSize( myMixDirsAndFiles->sizeHint() );
   l2->addWidget( myMixDirsAndFiles, 0 );
   l2->addSpacing(10);
   myKeepDirsFirst = new QCheckBox( i18n("Keep dirs first"), group2);
   group2->insert( myKeepDirsFirst, B_KEEPDIR );
-  myKeepDirsFirst->adjustSize();
   myKeepDirsFirst->setMinimumSize( myKeepDirsFirst->sizeHint() );
   l2->addWidget( myKeepDirsFirst, 0 );
 
@@ -140,7 +129,6 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   group->setMinimumSize( group->childrenRect().size() );
   l1->activate();
   choices->activate();
-  this->adjustSize();
   
 /*
   horizontal->addSpacing( 10 );
