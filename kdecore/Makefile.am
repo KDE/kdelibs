@@ -29,7 +29,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
 	kpoint.h ltdl.h kprotocolmanager.h kregexp.h
 
-noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h
+noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
