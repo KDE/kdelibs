@@ -479,7 +479,6 @@ QPopupMenu* KPopupMenu::contextMenu()
     if (!d->m_ctxMenu)
     {
         d->m_ctxMenu = new QPopupMenu(this);
-        installEventFilter(this);
         connect(d->m_ctxMenu, SIGNAL(aboutToHide()), this, SLOT(ctxMenuHiding()));
     }
 
@@ -546,25 +545,16 @@ void KPopupMenu::ctxMenuHiding()
     KPopupMenuPrivate::s_continueCtxMenuShow = true;
 }
 
-bool KPopupMenu::eventFilter(QObject* obj, QEvent* event)
+void KPopupMenu::contextMenuEvent(QContextMenuEvent* e)
 {
-    if (d->m_ctxMenu && obj == this)
+    if (d->m_ctxMenu)
     {
-        if (event->type() == QEvent::MouseButtonRelease)
-        {
-            if (d->m_ctxMenu->isVisible())
-            {
-                return true;
-            }
-        }
-        else if (event->type() ==  QEvent::ContextMenu)
-        {
-            showCtxMenu(mapFromGlobal(QCursor::pos()));
-            return true;
-        }
+        showCtxMenu(mapFromGlobal(QCursor::pos()));
+        e->accept();
+        return;
     }
 
-    return QWidget::eventFilter(obj, event);
+    QPopupMenu::contextMenuEvent(e);
 }
 
 void KPopupMenu::hideEvent(QHideEvent*)

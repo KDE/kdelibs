@@ -239,7 +239,7 @@ signals:
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
-    virtual bool eventFilter(QObject* obj, QEvent* event);
+    virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
 
     virtual void virtual_hook( int id, void* data );
