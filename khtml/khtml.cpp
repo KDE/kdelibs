@@ -1157,6 +1157,9 @@ void KHTMLWidget::paintElement( NodeImpl *e, bool recursive )
 
 void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
 {
+    press_x = _mouse->pos().x();
+    press_y = _mouse->pos().y();
+
     if(!document) return;
 
     int xm, ym;
@@ -1207,8 +1210,6 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
 	selectPt1.setX( _mouse->pos().x() + contentsX());
 	selectPt1.setY( _mouse->pos().y() + contentsY());
     }
-    press_x = _mouse->pos().x();
-    press_y = _mouse->pos().y();
 #endif
 
 }
@@ -1237,19 +1238,27 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // drag of URL
     if(pressed && !m_strSelectedURL.isEmpty())
     {
-	QStrList uris;
-	KURL u(completeURL(m_strSelectedURL));
-	uris.append(u.url().ascii());
-	QDragObject *d = new QUriDrag(uris, this);
-	QPixmap p = KMimeType::pixmapForURL(u, 0, KIconLoader::Medium);
-	if(p.isNull()) printf("null pixmap\n");
-	d->setPixmap(p);
-	d->drag();
+      QPoint mPos = _mouse->pos();
+      int delay = KGlobal::dndEventDelay();
+      if ((mPos.x() > press_x + delay) ||
+          (mPos.x() < press_x - delay) ||
+          (mPos.y() > press_y + delay) ||
+          (mPos.y() < press_y - delay))
+      {
+        QStrList uris;
+        KURL u(completeURL(m_strSelectedURL));
+        uris.append(u.url().ascii());
+        QDragObject *d = new QUriDrag(uris, this);
+        QPixmap p = KMimeType::pixmapForURL(u, 0, KIconLoader::Medium);
+        if(p.isNull()) printf("null pixmap\n");
+        d->setPixmap(p);
+        d->drag();
 
-	// when we finish our drag, we need to undo our mouse press
-	pressed = false;
-    m_strSelectedURL = "";
-	return;
+        // when we finish our drag, we need to undo our mouse press
+        pressed = false;
+        m_strSelectedURL = "";
+        return;
+      }
     }
 
     int xm, ym;
