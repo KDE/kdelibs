@@ -35,31 +35,76 @@ DEALINGS IN THE SOFTWARE.
 
 // TODO docs
 /**
- * Description coming soon ... and you most probably don't want to use this anyway.
+ * Sending string messages to other applications using the X Client Messages.
+ *
+ * Used internally by KStartupInfo. You usually don't want to use this, use DCOP
+ * instead.
+ *
+ * @author Lubos Lunak <l.lunak@kde.org>
+ * @version $Id$
  */
 class KXMessages
     : public QWidget
     {
     Q_OBJECT
     public:
+	/**
+	 * Creates an instance which will receive X messages.
+	 *
+	 * If accept_broadcast is non-NULL,  all broadcast messages with this
+	 * message type will be received.
+	 */
+	// CHECKME accept_broadcast == NULL is useless now
         KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
         virtual ~KXMessages();
         void sendMessage( WId w, const char* msg_type, const QString& message );
+	/**
+	 * Broadcasts the given message with the given message type.
+	 */
         void broadcastMessage( const char* msg_type, const QString& message );
         static bool sendMessageX( Display* disp, WId w, const char* msg_type,
             const QString& message );
+	/**
+	 * Broadcasts the given message with the given message type.
+	 *
+	 * @param disp X11 connection which will be used instead of qt_x11display()
+	 */
         static bool broadcastMessageX( Display* disp, const char* msg_type,
             const QString& message );
     signals:
+	/**
+	 * Emitted when a message was received.
+	 */
         void gotMessage( const QString& message );
     protected:
+	/**
+	 * @internal
+	 */
         virtual bool x11Event( XEvent* ev );
+	/**
+	 * @internal
+	 */
         static void send_message_internal( WId w_P, const QString& msg_P, long mask_P,
             Display* disp, Atom atom_P, Window handle_P );
+	/**
+	 * @internal
+	 */
         QWidget* handle;
+	/**
+	 * @internal
+	 */
         Atom cached_atom;
+	/**
+	 * @internal
+	 */
         QCString cached_atom_name;
+	/**
+	 * @internal
+	 */
         Atom accept_atom;
+	/**
+	 * @internal
+	 */
         QMap< WId, QCString > incoming_messages;
     private:
         class Private;
