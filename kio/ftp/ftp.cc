@@ -1085,8 +1085,11 @@ void Ftp::stat( const KURL &url)
     // It is a file or it doesn't exist, use the name in the list command
     listarg = path;
     search = path;
-    // LIST doesn't support spaces. Using a '?' wildcard instead.
-    listarg.replace(QRegExp(QString::fromLatin1(" ")),QString::fromLatin1("?"));
+    // I committed a replace to '?', but that was MSDOS specific.
+    // Replacing with "\\ " could be an idea... However, it works as is on the 
+    // sites I'm trying with, and I can't find the address of the site that
+    // didn't work :(
+    //listarg.replace(QRegExp(QString::fromLatin1(" ")),QString::fromLatin1("\\ "));
   }
   else
   {
