@@ -2165,6 +2165,8 @@ KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
 {
     KFileItemList result;
     KFileItemList *allItems = s_pCache->itemsForDir( dir );
+    if ( !allItems )
+        return result;
 
     if ( which == AllItems )
         result = *allItems; // shallow copy
