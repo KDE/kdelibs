@@ -55,7 +55,6 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
-#include "kjs.h"
 #include "kentities.c"
 
 using namespace khtml;
@@ -413,7 +412,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
       url = static_cast<DocumentImpl*>(view->part()->document().handle())->URL();
     else
       url = scriptURL;
-      
+
     view->part()->executeScript(url,baseLine,Node(),str);
     m_executingScript--;
     script = oldscript;
