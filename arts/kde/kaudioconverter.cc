@@ -28,6 +28,8 @@
 #include "kioinputstream_impl.h"
 #include "kaudioconverter.moc"
 
+#include <iostream>
+
 #include <qfile.h>
 #include <qtimer.h>
 
