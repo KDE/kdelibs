@@ -44,26 +44,68 @@ public:
 };
 
 
-KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollView(parent)
+void KMultiTabBarInternal::layoutButtonsHoriz()
+{
+   if (!m_tabs.first()) {
+       setFixedHeight(0);
+       return;
+   }
+   int childHeight = m_tabs.first()->height();
+   int posX = 0;
+   int posY = 0;
+   KMultiTabBarTab* child;
+   for (child = m_tabs.first(); child ; child = m_tabs.next()) {
+      if ( ( posX > 0) && ( posX + child->width() > width()) ) {
+         posX = 0;
+         posY += childHeight;
+      }
+      child->move(posX, posY);
+      posX = child->geometry().right();
+   }
+   setFixedHeight(posY + childHeight);
+}
+
+void KMultiTabBarInternal::layoutButtonsVertic()
+{
+   if (!m_tabs.first()) {
+       setFixedWidth(0);
+       return;
+   }
+   int childWidth = m_tabs.first()->width();
+   int posX = 0;
+   int posY = 0;
+   KMultiTabBarTab* child;
+   for (child = m_tabs.first(); child ; child = m_tabs.next()) {
+      if ( ( posY > 0) && ( posY + child->height() > height()) ) {
+         posY = 0;
+         posX += childWidth;
+      }
+      child->move(posX, posY);
+      posY = child->geometry().bottom();
+   }
+   setFixedWidth(posX + childWidth);
+}
+
+void KMultiTabBarInternal::resizeEvent(QResizeEvent* e)
+{
+   QWidget::resizeEvent(e);
+   if (m_style == KMultiTabBar::KDEV3) {
+      if (m_bm==KMultiTabBar::Vertical) {
+         layoutButtonsVertic();
+      }
+      else {
+         layoutButtonsHoriz();
+      }
+   }
+}
+
+KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollView(parent),box(0L),m_bm(bm)
 {
 	m_expandedTabSize=-1;
 	m_showActiveTabTexts=false;
 	m_tabs.setAutoDelete(true);
 	setHScrollBarMode(AlwaysOff);
 	setVScrollBarMode(AlwaysOff);
-	if (bm==KMultiTabBar::Vertical)
-	{
-		box=new QVBox(viewport());			
-		box->setFixedWidth(24);
-		setFixedWidth(24);
-	}
-	else
-	{
-		box=new QHBox(viewport());			
-		box->setFixedHeight(24);
-		setFixedHeight(24);
-	}
-	addChild(box);
 	setFrameStyle(NoFrame);
 	viewport()->setBackgroundMode(Qt::PaletteBackground);
 }
@@ -74,6 +116,30 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
         for (uint i=0;i<m_tabs.count();i++)
                 m_tabs.at(i)->setStyle(m_style);
         viewport()->repaint();
+	
+	if (m_style == KMultiTabBar::KDEV3) {
+		if (box)
+			delete box;
+		QHBoxLayout* hbl = new QHBoxLayout(this);
+		box = (QVBox*) new QWidget(this);
+		hbl->add(box);
+	}
+	else {
+		if (box)
+			delete box;
+		if (m_bm==KMultiTabBar::Vertical) {
+			box=new QVBox(viewport());			
+			box->setFixedWidth(24);
+			setFixedWidth(24);
+		}
+		else
+		{
+			box=new QHBox(viewport());			
+			box->setFixedHeight(24);
+			setFixedHeight(24);
+		}
+		addChild(box);
+	}
 }
 
 void KMultiTabBarInternal::drawContents ( QPainter * paint, int clipx, int clipy, int clipw, int cliph )
@@ -163,6 +229,14 @@ int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& te
 		} else tab->setSize(m_expandedTabSize);
 	} else tab->updateState();
 	tab->show();
+	if (m_style == KMultiTabBar::KDEV3) {
+		if (m_bm==KMultiTabBar::Vertical) {
+			layoutButtonsVertic();
+		}
+		else {
+			layoutButtonsHoriz();
+		}
+	}
 	return 0;
 }
 
@@ -174,6 +248,14 @@ void KMultiTabBarInternal::removeTab(int id)
 		{
 			m_tabs.remove(pos);
 			break;
+		}
+	}
+	if (m_style == KMultiTabBar::KDEV3) {
+		if (m_bm==KMultiTabBar::Vertical) {
+			layoutButtonsVertic();
+		}
+		else {
+			layoutButtonsHoriz();
 		}
 	}
 }
@@ -593,12 +675,12 @@ KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent,const char *name
 	if (bm==Vertical)
 	{
 		m_l=new QVBoxLayout(this);
-		setFixedWidth(24);
+//		setFixedWidth(24);
 	}
 	else
 	{
 		m_l=new QHBoxLayout(this);
-		setFixedHeight(24);
+//		setFixedHeight(24);
 	}
 	m_l->setMargin(0);
 	m_l->setAutoAdd(false);
