@@ -912,6 +912,7 @@ void RenderPartObject::slotViewCleared()
           kdDebug(6031) << "frame is a KHTMLview!" << endl;
 #endif
           KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+          htmlView->setIgnoreWheelEvents( m_obj->id() == ID_IFRAME );
           if(marginw != -1) htmlView->setMarginWidth(marginw);
           if(marginh != -1) htmlView->setMarginHeight(marginh);
         }

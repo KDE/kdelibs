@@ -100,6 +100,7 @@ public:
         vmode = QScrollView::AlwaysOff;
         hmode = QScrollView::AlwaysOff;
 #endif
+        ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
 	clickX = -1;
@@ -125,6 +126,7 @@ public:
     bool prevScrollbarVisible;
     bool linkPressed;
     bool useSlowRepaints;
+    bool ignoreWheelEvents;
 
     int borderX, borderY;
     KSimpleConfig *formCompletions;
@@ -1114,7 +1116,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 	    // send mouseover event to the new node
 	    if (targetNode) {
-
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
 							0,screenX,screenY,clientX,clientY,
@@ -1161,18 +1162,24 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 }
 
+void KHTMLView::setIgnoreWheelEvents( bool e )
+{
+    d->ignoreWheelEvents = e;
+}
+
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-    if ( d->vmode == QScrollView::AlwaysOff )
-        e->accept();
-    else if ( !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
+    if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
-
         e->ignore();
     }
-    else
+    else if ( d->vmode == QScrollView::AlwaysOff ) {
+        e->accept();
+    }
+    else {
         QScrollView::viewportWheelEvent( e );
+    }
 }
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )

@@ -50,6 +50,7 @@ namespace khtml {
     class RenderRoot;
     class RenderStyle;
     class RenderLineEdit;
+    class RenderPartObject;
     void applyRule(RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 };
 
@@ -73,6 +74,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLGenericFormElementImpl;
     friend class DOM::HTMLFormElementImpl;
     friend class khtml::RenderLineEdit;
+    friend class khtml::RenderPartObject;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:
@@ -133,7 +135,7 @@ public:
      * override the scrollbar mode
      */
     void forceVScrollBarMode( ScrollBarMode mode );
-     
+
     /**
      * Print the HTML document.
      **/
@@ -211,6 +213,8 @@ private:
     bool gotoLink(bool);
 
     void useSlowRepaints();
+
+    void setIgnoreWheelEvents(bool e);
 
     void init();
 
