@@ -30,7 +30,7 @@ static void addCookies( QString url, QCString cookieHeader)
    long int winId;
    stream << url << cookieHeader << winId;
    if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar", 
-	"addCookies(QString, QCString,long)", params))
+	"addCookies(QString,QCString,long int)", params))
 	printf("There was some error using DCOP!\n");
 }
 
