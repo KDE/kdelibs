@@ -29,8 +29,10 @@
 using namespace KJS;
 
 RegExp::RegExp(const UString &p, int f)
-  : pat(p), flgs(f), m_notEmpty(false)
+  : pat(p), flgs(f), m_notEmpty(false), valid(true)
 {
+  nrSubPatterns = 0; // determined in match() with POSIX regex.
+
   // JS regexps can contain Unicode escape sequences (\uxxxx) which
   // are rather uncommon elsewhere. As our regexp libs don't understand
   // them we do the unescaping ourselves internally.
@@ -81,10 +83,13 @@ RegExp::RegExp(const UString &p, int f)
 
   pcregex = pcre_compile(intern.ascii(), pcreflags,
 			 &perrormsg, &errorOffset, NULL);
+  if (!pcregex) {
 #ifndef NDEBUG
-  if (!pcregex)
     fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", perrormsg);
 #endif
+    valid = false;
+    return;
+  }
 
 #ifdef PCRE_INFO_CAPTURECOUNT
   // Get number of subpatterns that will be returned
@@ -95,7 +100,6 @@ RegExp::RegExp(const UString &p, int f)
 
 #else /* HAVE_PCREPOSIX */
 
-  nrSubPatterns = 0; // determined in match() with POSIX regex.
   int regflags = 0;
 #ifdef REG_EXTENDED
   regflags |= REG_EXTENDED;
@@ -110,10 +114,10 @@ RegExp::RegExp(const UString &p, int f)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  if (regcomp(&preg, intern.ascii(), regflags) != 0) {
-    /* TODO: throw JS exception */
+  if (regcomp(&preg, intern.ascii(), regflags) == 0)
     regcomp(&preg, "", regflags);
-  }
+  else
+    valid = false;
 #endif
 }
 

@@ -2,6 +2,8 @@
 
 	* regexp_object.cpp: fixed RegExp(/regexp/) constructor
 
+	* regexp_object.cpp: throw exception on invalid regexps
+	
 2004-11-07  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp: fix conversion of Date(value) argument, fixed
