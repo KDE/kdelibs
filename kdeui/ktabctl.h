@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1997/10/16 11:15:54  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.2  1997/07/24 21:06:08  kalle
  * Kalle:
  * KToolBar upgraded to newtoolbar 0.6
@@ -76,10 +80,13 @@ public:
 
     void show();
     void setFont(const QFont & font);
+    void setTabFont( const QFont &font );
 
     void addTab(QWidget *, const char *);
     bool isTabEnabled(const char * );
     void setTabEnabled(const char *, bool);
+    void setBorder(bool);
+    void setShape( QTabBar::Shape shape );
 
 protected:
     void paintEvent(QPaintEvent *);
@@ -98,5 +105,6 @@ private:
     QTabBar * tabs;
     QArrayT<QWidget *> pages;
     int bh;
+    bool blBorder;
 };
 #endif

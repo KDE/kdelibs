@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  1997/11/23 22:23:55  leconte
+ * Two patches have been applied for the header line painting bug:
+ * I removed mine.
+ *
  * Revision 1.10  1997/11/18 21:41:39  kalle
  * kiconloaderdialog uses the default fonts (patch by Paul Kendall)
  * ktabctl paints the header lines correctly (patch by Paul Kendall)
@@ -98,6 +102,8 @@ KTabCtl::KTabCtl(QWidget *parent, const char *name)
     tabs = new QTabBar(this, "_tabbar");
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));
     tabs->move(2, 1);
+    
+    blBorder = TRUE;
 
     //    setFont(QFont("helvetica")); //BL: Why force a font ?
 }
@@ -115,6 +121,10 @@ void KTabCtl::resizeEvent(QResizeEvent *)
         for (i=0; i<(int)pages.size(); i++) {
             pages[i]->setGeometry(r);
         }
+        if( ( tabs->shape() == QTabBar::RoundedBelow ) ||
+            ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+            tabs->move( 0, height()-tabs->height()-4 );
+        }
     }
 }
 
@@ -123,6 +133,15 @@ void KTabCtl::setFont(const QFont & font)
     QFont f(font);
     f.setWeight(QFont::Light);
     QWidget::setFont(f);
+
+    setSizes();
+}
+
+void KTabCtl::setTabFont(const QFont & font)
+{
+    QFont f(font);
+//    f.setWeight(QFont::Light);
+    tabs->setFont(f);
 
     setSizes();
 }
@@ -225,11 +244,24 @@ void KTabCtl::setSizes()
     }
 }
 
+void KTabCtl::setBorder( bool state )
+{
+    blBorder = state;
+}
+
+void KTabCtl::setShape( QTabBar::Shape shape )
+{
+    tabs->setShape( shape );  
+}
+
 void KTabCtl::paintEvent(QPaintEvent *)
 {
     if (!tabs)
 	return;
 
+    if( !blBorder )
+        return;
+      
     QPainter p;
     p.begin(this);
 
@@ -257,8 +289,14 @@ void KTabCtl::paintEvent(QPaintEvent *)
 
 QRect KTabCtl::getChildRect() const
 {
-    return QRect(2, tabs->height() + 1, width() - 4,
-		  height() - tabs->height() - 4);
+    if( ( tabs->shape() == QTabBar::RoundedBelow ) || 
+        ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+    	return QRect(2, 1, width() - 4,
+		     height() - tabs->height() - 4);      
+    } else {
+      	return QRect(2, tabs->height() + 1, width() - 4,
+		     height() - tabs->height() - 4);
+    }
 }
 
 /*
