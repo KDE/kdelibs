@@ -137,7 +137,7 @@ public:
     *  Server:   Squid Proxy @ foo.com
     *  </pre>
     *
-    * where "Server:" is the commetLabel and the rest is the
+    * where "Server:" is the commentLabel and the rest is the
     * actual comment.  Note that it is always better to use
     * the @p commentLabel field as it will be placed properly
     * in the dialog rather than to include it within the actual
@@ -148,7 +148,7 @@ public:
    QString comment;
 
    /**
-    * Descriptive label to be displayed infront of the
+    * Descriptive label to be displayed in front of the
     * comment when prompting the user for password.
     *
     * This setting is @em optional and only applicable when
@@ -207,8 +207,8 @@ public:
    /**
     * Flag to indicate the persistence of the given password.
     *
-    * This is a two-way flag when set before calling openPassDlg
-    * makes the "keep Password" check box will visible to the user.
+    * This is a two-way flag, when set before calling openPassDlg
+    * it makes the "keep Password" check box visible to the user.
     * In return the flag will indicate the state of the check box.
     * By default if the flag is checked the password will be cached
     * for the entire life of the current KDE session otherwise the
