@@ -770,7 +770,10 @@ private:
     void initKMainWindow(const char *name);
 };
 
-#define RESTORE(type) kRestoreMainWindows<type>();
+#define RESTORE(type) { int n = 1;\
+    while (KMainWindow::canBeRestored(n)){\
+      (new type)->restore(n);\
+      n++;}}
 
 #define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
 
