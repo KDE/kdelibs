@@ -570,6 +570,7 @@ public:
   KFilePropsPluginPrivate()
   {
     dirSizeJob = 0L;
+    dirSizeUpdateTimer = 0L;
   }
   ~KFilePropsPluginPrivate()
   {
@@ -578,6 +579,7 @@ public:
   }
 
   KDirSize * dirSizeJob;
+  QTimer *dirSizeUpdateTimer;
   QFrame *m_frame;
   bool bMultiple;
   QLabel *m_freeSpaceLabel;
@@ -990,6 +992,14 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
+void KFilePropsPlugin::slotDirSizeUpdate()
+{
+    KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
+    m_sizeLabel->setText( QString::fromLatin1("Calculating... %1 (%2)")
+			  .arg(KIO::convertSize(totalSize))
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
+}
+
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 {
   if (job->error())
@@ -1006,6 +1016,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
   m_sizeDetermineButton->setText( i18n("Refresh") );
   m_sizeDetermineButton->setEnabled(true);
   d->dirSizeJob = 0L;
+  delete d->dirSizeUpdateTimer;
+  d->dirSizeUpdateTimer = 0L;
 }
 
 void KFilePropsPlugin::slotSizeDetermine()
@@ -1014,6 +1026,10 @@ void KFilePropsPlugin::slotSizeDetermine()
   kdDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
   kdDebug(250) << " URL=" << properties->item()->url().url() << endl;
   d->dirSizeJob = KDirSize::dirSizeJob( properties->items() );
+  d->dirSizeUpdateTimer = new QTimer(this);
+  connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
+           SLOT( slotDirSizeUpdate() ) );
+  d->dirSizeUpdateTimer->start(500);
   connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotDirSizeFinished( KIO::Job * ) ) );
   m_sizeStopButton->setEnabled(true);

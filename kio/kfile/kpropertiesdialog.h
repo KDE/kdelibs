@@ -419,6 +419,7 @@ public:
 protected slots:
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
+  void slotDirSizeUpdate();
   void slotDirSizeFinished( KIO::Job * );
   void slotFoundMountPoint( const QString& mp, unsigned long kBSize,
 			    unsigned long kBUsed, unsigned long kBAvail );
