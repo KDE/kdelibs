@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -225,7 +225,7 @@ void KMInstancePage::slotTest()
 		if (testpage.isEmpty())
 			KMessageBox::error(this,i18n("Unable to locate test page."));
 		else if (!mpr)
-			KMessageBox::error(this,"Internal error: printer not found.");
+			KMessageBox::error(this,i18n("Internal error: printer not found."));
 		else
 		{
 			KPrinter::setApplicationType(KPrinter::StandAlone);
