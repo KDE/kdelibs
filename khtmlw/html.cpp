@@ -380,6 +380,46 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
     emit documentDone();
 }
 
+static bool
+fixBackground(QPixmap &bgPixmap, const QBrush &brush)
+{
+#define BGMINWIDTH	50
+#define BGMINHEIGHT	25
+   if (bgPixmap.isNull())
+       return false;
+   int w = bgPixmap.width();
+   int h = bgPixmap.height();
+   if (w < BGMINWIDTH)
+   {
+       int factor = ((BGMINWIDTH+w-1) / w);
+//printf("Scaling pixmap %d times in X-direction\n", factor);
+       QPixmap newPixmap(w * factor, h);
+       QPainter p;
+       p.begin(&newPixmap);
+       p.fillRect(0,0, w*factor, h, brush );
+       for(int i=0; i < factor; i++)
+           p.drawPixmap(i*w, 0, bgPixmap);
+       p.end();
+       bgPixmap = newPixmap;
+       w = w * factor;
+   }
+   if (h < BGMINHEIGHT)
+   {
+       int factor = ((BGMINHEIGHT+h-1) / h);
+//printf("Scaling pixmap %d times in Y-direction\n", factor);
+       QPixmap newPixmap(w, h*factor);
+       QPainter p;
+       p.begin(&newPixmap);
+       p.fillRect(0,0, w, h*factor, brush);
+       for(int i=0; i < factor; i++)
+          p.drawPixmap(0, i*h, bgPixmap);
+       p.end();
+       bgPixmap = newPixmap;
+       h = h * factor;
+   }
+   return true;
+}
+
 void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 {
   //printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
@@ -393,9 +433,10 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	// Did the background image arrive ?
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
 	{
-	    bgPixmap.load( _filename );					
+	    bgPixmap.load( _filename );
 	    bgPixmapURL = 0;
-	    scheduleUpdate( true );
+            if (fixBackground(bgPixmap, settings->bgColor))
+                scheduleUpdate( true );
 	}
     }    
     return;
@@ -2742,15 +2783,13 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		if ( strcmp( kurl.protocol(), "file" ) == 0 )
 		{
 		    bgPixmap.load( kurl.path() );
-		    scheduleUpdate( true );
 		}
 		else
 		{
 		    requestBackgroundImage( kurl.url() );
 		}
 		
-		if ( !bgPixmap.isNull() )
-		    bgPixmapSet = TRUE;
+		bgPixmapSet = !bgPixmap.isNull();
 	    }
 	    else if ( strncasecmp( token, "text=", 5 ) == 0 &&
                     !defaultSettings->forceDefault )
@@ -2810,6 +2849,8 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		setBackgroundColor( settings->bgColor );
 	    }
 	}
+        if (fixBackground(bgPixmap, settings->bgColor ))
+            scheduleUpdate( true );
     }
     else if ( strncmp( str, "br", 2 ) == 0 )
     {
