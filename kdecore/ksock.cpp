@@ -85,6 +85,9 @@ extern "C" {
 
 #include "netsupp.h"		// leave this last
 
+bool KSocket::sigpipeBlocked = false;
+
+
 class KSocketPrivate
 {
 public:
@@ -110,6 +113,7 @@ KSocket::KSocket( int _sock)
   // since sockaddr_in will exist everywhere and is somewhat compatible
   // with sockaddr_in6, we can use it to avoid needless ifdefs.
   KSocks::self()->getsockname(_sock, (struct sockaddr *)&sin, &len);
+  blockSigpipe();
 }
 
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
@@ -257,6 +261,18 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
 #endif
 
+void KSocket::blockSigpipe() {
+  if (sigpipeBlocked)
+    return;
+
+  sigset_t s;
+  sigemptyset(&s);
+  sigaddset(&s, SIGPIPE);
+  sigprocmask(SIG_BLOCK, &s, 0);
+
+  sigpipeBlocked = true;
+}
+
 KSocket::~KSocket()
 {
   // Coolo says delete 0 is ok :) -thiago
@@ -303,6 +319,7 @@ bool KServerSocket::init( const char *_path )
   unlink(_path );
   d->path = _path;
 
+  KSocket::blockSigpipe();
   KExtendedSocket *ks = new KExtendedSocket(QString::null, _path, KExtendedSocket::passiveSocket |
 					    KExtendedSocket::unixSocket);
   d->ks = ks;
@@ -316,6 +333,8 @@ bool KServerSocket::init( const char *_path )
 bool KServerSocket::init( unsigned short int _port )
 {
   d->port = _port;
+
+  KSocket::blockSigpipe();
   KExtendedSocket *ks;
   ks = new KExtendedSocket(QString::null, _port, KExtendedSocket::passiveSocket |
 			   KExtendedSocket::inetSocket);
