@@ -1577,7 +1577,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 if ( mi->popup() )
                 {
                     PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-                    int dim = ( h - 2 * itemFrame ) / 2;
+                    int dim = 10 -  itemFrame; //We're not very useful to inherit off, so just hardcode..
                     QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
                                                   y + h / 2 - dim / 2, dim, dim ), r );
 
