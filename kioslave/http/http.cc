@@ -305,8 +305,6 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 
   m_bCanResume = true; // most of http servers support resuming ?
 
-  m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-
   m_bUseProxy = KProtocolManager::self().useProxy();
 
   if ( m_bUseProxy ) {
@@ -318,6 +316,12 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
     m_strProxyPass = ur.pass();
 
     m_strNoProxyFor = KProtocolManager::self().noProxyFor();
+  }
+
+  m_bUseCache = KProtocolManager::self().useCache();
+  if (m_bUseCache)
+  {
+     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
   }
 
   m_bEOF=false;
@@ -546,15 +550,22 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_state.port = port;
   m_state.do_proxy = do_proxy;
 
-  if (m_state.reload || m_bUseSSL || (m_state.postDataSize > 0))
-     m_fcache = 0;
-  else
-     m_fcache = checkCacheEntry( m_state.cef );
-
-  if (m_fcache)
+  m_fcache = 0;
+  m_bCachedRead = false;
+  m_bCachedWrite = false;
+  if (m_bUseCache)
   {
-     m_bCached = true;
-     return true;
+     if (!m_state.reload && !m_bUseSSL && (m_state.postDataSize == 0))
+     {
+        m_fcache = checkCacheEntry( m_state.cef );
+        m_bCachedWrite = true;
+     }
+
+     if (m_fcache)
+     {
+        m_bCachedRead = true;
+        return true;
+     }
   }
 
   // Let's also clear out some things, so bogus values aren't used.
@@ -564,7 +575,6 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_qTransferEncodings.clear(); 
   m_bChunked = false;
   m_iSize = 0;
-  m_bCached = false;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -756,7 +766,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 bool HTTPProtocol::readHeader()
 {
   // Check 
-  if (m_bCached)
+  if (m_bCachedRead)
   {
      // Read header from cache...
      char buffer[4097];
@@ -842,6 +852,16 @@ bool HTTPProtocol::readHeader()
     // whoops.. we received a warning
     else if (strncasecmp(buffer, "Warning:", 8) == 0) {
       error(ERR_WARNING, trimLead(buffer + 8));
+    }
+    else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
+      m_bCachedWrite = false; // Don't put in cache
+    }
+    else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
+      const char *cacheControl = trimLead( buffer+14);
+      if (strncasecmp(cacheControl, "no-cache", 8) == 0)
+         m_bCachedWrite = false; // Don't put in cache
+      else if (strncasecmp(cacheControl, "no-store", 8) == 0)
+         m_bCachedWrite = false; // Don't put in cache
     }
 		
     // oh no.. i think we're about to get a page not found
@@ -1008,7 +1028,18 @@ bool HTTPProtocol::readHeader()
   // and that we do indeed have a header
   mimeType(m_strMimeType);
 
-  createCacheEntry(m_strMimeType); // Create a cache entry 
+  // Do we want to cache this request?
+  if (m_bCachedWrite)
+  {
+     // Check...
+     createCacheEntry(m_strMimeType); // Create a cache entry 
+     if (!m_fcache)
+        m_bCachedWrite = false; // Error creating cache entry.
+  }
+  if (m_bCachedWrite)
+    kdebug( KDEBUG_INFO, 7103, "Cache, adding \"%s\"", m_state.url.url().ascii());
+  else
+    kdebug( KDEBUG_INFO, 7103, "Cache, not adding \"%s\"", m_state.url.url().ascii());
 
   return true;
 }
@@ -1111,7 +1142,7 @@ void HTTPProtocol::http_close()
   {
      fclose(m_fcache);
      m_fcache = 0;
-     if (!m_bCached)
+     if (m_bCachedWrite)
      {
         QString filename = m_state.cef + ".new";
         kdebug( KDEBUG_INFO, 7103, "deleting cache entry: %s", filename.ascii());
@@ -1359,11 +1390,11 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   if (sent < sz)
     ioJob->data(big_buffer.data()+sent, (sz-sent));
 
-  if (m_fcache)
+  if (m_bCachedWrite &&  m_fcache)
+  {
      writeCacheEntry(big_buffer.data(), big_buffer.size());
-
-  if (m_fcache)
      closeCacheEntry();
+  }
 
   ioJob->dataEnd();
   m_cmd = CMD_NONE;
@@ -1866,7 +1897,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   time_t t_last = t_start;
   long sz = 0;
 
-  if (m_bCached)
+  if (m_bCachedRead)
   {
      // Jippie! It's already in the cache :-)
      m_bufReceive.resize(MAX_IPC_SIZE);
@@ -1933,7 +1964,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 #endif
         // yep, let the world know that we have some data
         ioJob->data(m_bufReceive.data(), bytesReceived);
-        if (m_fcache)
+        if (m_bCachedWrite && m_fcache)
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
         sz += bytesReceived;
         processedSize( sz );
@@ -2023,7 +2054,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   // Close cache entry
   if (m_iBytesLeft == 0)
   {
-     if (m_fcache)
+     if (m_bCachedWrite && m_fcache)
         closeCacheEntry();
   }
 

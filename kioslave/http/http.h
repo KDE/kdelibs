@@ -213,7 +213,9 @@ protected: // Members
   QByteArray m_bufReceive; // Receive buffer
 
   // Cache related 
-  bool m_bCached; // Whether the page is to be read from m_fcache.
+  bool m_bUseCache; // Whether the cache is active
+  bool m_bCachedRead; // Whether the file is to be read from m_fcache.
+  bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
   FILE* m_fcache; // File stream of a cache entry
   QString m_strCacheDir; // Location of the cache. 
 
