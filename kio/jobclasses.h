@@ -390,13 +390,14 @@ namespace KIO {
         void setSide( bool source ) { m_bSource = source; }
 
         /**
-         * Select whether we want all the details about the file or not.
-         * By default this is true (details wanted, including modification time, size, etc.),
-         * but by calling setDetails(false) we'll only get the answer
-         * "it's a file or a directory, or it doesn't exist".
-         * This can be used e.g. when deleting a file, to speed things up.
+         * Selects the level of details we want.
+         * By default this is 2 (all details wanted, including modification time, size, etc.),
+         * setDetails(1) is used when deleting: we don't need all the information if it takes
+         * too much time, no need to follow symlinks etc.
+         * setDetails(0) is used for very simple probing: we'll only get the answer
+         * "it's a file or a directory, or it doesn't exist". This is used by KRun.
          */
-        void setDetails( bool details ) { m_bDetails = details; }
+        void setDetails( short int details ) { m_details = details; }
 
         /**
          * Call this in the slot connected to @ref result,
@@ -427,7 +428,7 @@ namespace KIO {
         UDSEntry m_statResult;
         KURL m_redirectionURL;
         bool m_bSource;
-        bool m_bDetails;
+        short int m_details;
         class StatJobPrivate;
         StatJobPrivate *d;
     };

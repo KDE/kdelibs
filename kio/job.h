@@ -194,13 +194,14 @@ namespace KIO {
      * @param sideIsSource is true when stating a source file (we will do a get on it if
      * the stat works) and false when stating a destination file (target of a copy).
      *
-     * @param details selects whether we want all the details about the file or not.
-     * By default this is true (details wanted, including modification time, size, etc.),
-     * but by calling setDetails(false) we'll only get the answer
-     * "it's a file or a directory, or it doesn't exist".
-     * This can be used e.g. when deleting a file, to speed things up.
+     * @param details selects the level of details we want.
+     * By default this is 2 (all details wanted, including modification time, size, etc.),
+     * setDetails(1) is used when deleting: we don't need all the information if it takes
+     * too much time, no need to follow symlinks etc.
+     * setDetails(0) is used for very simple probing: we'll only get the answer
+     * "it's a file or a directory, or it doesn't exist". This is used by KRun.
      */
-    StatJob * stat( const KURL& url, bool sideIsSource, bool details, bool showProgressInfo = true );
+    StatJob * stat( const KURL& url, bool sideIsSource, short int details, bool showProgressInfo = true );
 
     /**
      * Get (a.k.a. read).

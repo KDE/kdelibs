@@ -498,7 +498,7 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 StatJob::StatJob( const KURL& url, int command,
                   const QByteArray &packedArgs, bool showProgressInfo )
     : SimpleJob(url, command, packedArgs, showProgressInfo),
-    m_bSource(true), m_bDetails(true)
+    m_bSource(true), m_details(2)
 {
 }
 
@@ -506,7 +506,7 @@ void StatJob::start(Slave *slave)
 {
     KIO::MetaData outgoingMetaData;
     outgoingMetaData.insert( "statSide", m_bSource ? "source" : "dest" );
-    outgoingMetaData.insert( "details", m_bDetails ? "yes" : "no" );
+    outgoingMetaData.insert( "details", QString::number(m_details) );
     KIO_ARGS << outgoingMetaData;
     slave->connection()->send( CMD_META_DATA, packedArgs );
 
@@ -557,10 +557,10 @@ void StatJob::slotFinished()
 StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
 {
     // Assume sideIsSource. Gets are more common than puts.
-    return stat( url, true, showProgressInfo );
+    return stat( url, true, 2, showProgressInfo );
 }
 
-StatJob *KIO::stat(const KURL& url, bool sideIsSource, bool details, bool showProgressInfo)
+StatJob *KIO::stat(const KURL& url, bool sideIsSource, short int details, bool showProgressInfo)
 {
     kdDebug(7007) << "stat " << url.prettyURL() << endl;
     KIO_ARGS << url;
@@ -1479,7 +1479,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
         m_reportTimer->start(REPORT_TIMEOUT,false);
     }
     // Stat the dest
-    KIO::Job * job = KIO::stat( m_dest, false, true, false );
+    KIO::Job * job = KIO::stat( m_dest, false, 2, false );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.prettyURL() << endl;
     addSubjob(job);
 }
@@ -1764,7 +1764,7 @@ void CopyJob::statNextSrc()
         else
         {
             // Stat the next src url
-            Job * job = KIO::stat( *m_currentStatSrc, true, true, false );
+            Job * job = KIO::stat( *m_currentStatSrc, true, 2, false );
             //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
             state = STATE_STATING;
             addSubjob(job);
@@ -1838,7 +1838,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
 
                 // We need to stat the existing dir, to get its last-modification time
                 KURL existingDest( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingDest, false, true, false );
+                SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
 		Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
                 state = STATE_CONFLICT_CREATING_DIRS;
@@ -2042,7 +2042,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 assert ( subjobs.isEmpty() );
                 // We need to stat the existing file, to get its last-modification time
                 KURL existingFile( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingFile, false, true, false );
+                SimpleJob * newJob = KIO::stat( existingFile, false, 2, false );
                 Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingFile.prettyURL() << endl;
                 state = STATE_CONFLICT_COPYING_FILES;
@@ -2736,7 +2736,7 @@ void DeleteJob::startNextJob()
     if (it != m_srcList.end())
     {
         // Stat first
-        KIO::SimpleJob * job = KIO::stat( *it, true, false, false );
+        KIO::SimpleJob * job = KIO::stat( *it, true, 1, false );
         Scheduler::scheduleJob(job);
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).prettyURL() << endl;
         state = STATE_STATING;
