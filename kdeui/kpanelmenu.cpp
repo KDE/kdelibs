@@ -165,7 +165,7 @@ bool KPanelMenu::process(const QCString &fun, const QByteArray &data,
 }
 
 
-#include "panelmenu.moc"
+#include "kpanelmenu.moc"
 
 
 

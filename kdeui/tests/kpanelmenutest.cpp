@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     app->exec();
 }
 
-#include "panelmenutest.moc"
+#include "kpanelmenutest.moc"
 
 
 
