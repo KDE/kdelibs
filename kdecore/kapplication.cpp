@@ -71,6 +71,7 @@
 #include <kaccel.h>
 #include "kcheckaccelerators.h"
 #include <qptrdict.h>
+#include <kmacroexpander.h>
 
 #include <kstartupinfo.h>
 
@@ -1947,22 +1948,16 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    QString lastToken;
    QStringList newTokens;
 
+   QMap<QChar, QString> keyMap;
+   keyMap.insert('t', to);
+   keyMap.insert('s', subject);
+   keyMap.insert('c', cc);
+   keyMap.insert('b', bcc);
+   keyMap.insert('B', body);
+
    for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); ++it)
    {
-     if ((*it).find("%t") >= 0)
-       (*it).replace(QRegExp("%t"), to);
-
-     if ((*it).find("%s") >= 0)
-       (*it).replace(QRegExp("%s"), subject);
-
-     if ((*it).find("%c") >= 0)
-       (*it).replace(QRegExp("%c"), cc);
-
-     if ((*it).find("%b") >= 0)
-       (*it).replace(QRegExp("%b"), bcc);
-
-     if ((*it).find("%B") >= 0)
-       (*it).replace(QRegExp("%B"), body);
+     *it = KMacroExpander::expandMacrosShellQuote(*it, keyMap);
 
      if ((*it).find("%A") >= 0)
      {
