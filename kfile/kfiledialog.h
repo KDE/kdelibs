@@ -225,7 +225,8 @@ public:
     KMimeType::Ptr currentFilterMimeType();
 
     /**
-     * Add a preview widget and enter the preview mode. (deprecated)
+     * @deprecated
+     * Add a preview widget and enter the preview mode.
      *
      * In this mode
      * the dialog is split and the right part contains your widget.
