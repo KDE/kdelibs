@@ -1647,7 +1647,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     virtual void virtual_hook( int id, void* data );
   private:
     class KDialogBasePrivate;
-    KDialogBasePrivate *d;
+    KDialogBasePrivate* const d;
 };
 
 #endif

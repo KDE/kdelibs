@@ -104,9 +104,8 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
   :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal)
+   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
 {
-  d = new KDialogBasePrivate;
   setCaption( caption );
 
   makeRelay();
@@ -127,9 +126,8 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal)
+   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
 {
-  d = new KDialogBasePrivate;
   setCaption( caption );
 
   makeRelay();
@@ -157,9 +155,8 @@ KDialogBase::KDialogBase(  KDialogBase::DialogType dialogFace, WFlags f, QWidget
   :KDialog( parent, name, modal, f ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
-   mButtonOrientation(Horizontal)
+   mButtonOrientation(Horizontal), d(new KDialogBasePrivate)
 {
-  d = new KDialogBasePrivate;
   setCaption( caption );
 
   makeRelay();
@@ -186,10 +183,9 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
   :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
-   mButtonOrientation(Horizontal),mEscapeButton(escapeButton)
+   mButtonOrientation(Horizontal),mEscapeButton(escapeButton),
+   d(new KDialogBasePrivate)
 {
-  d = new KDialogBasePrivate;
-
   setCaption( caption );
 
   makeRelay();

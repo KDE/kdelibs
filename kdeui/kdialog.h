@@ -159,14 +159,14 @@ class KDEUI_EXPORT KDialog : public QDialog
     void layoutHintChanged();
 
   private:
-    static int mMarginSize;
-    static int mSpacingSize;
+    static const int mMarginSize;
+    static const int mSpacingSize;
 
   protected:
     virtual void virtual_hook( int id, void* data );
   private:
     class KDialogPrivate;
-    KDialogPrivate *d;
+    KDialogPrivate* const d;
 
 };
 
@@ -204,7 +204,7 @@ private slots:
       void slotShowQueuedDialog();
 
 protected:
-      KDialogQueuePrivate *d;
+      KDialogQueuePrivate* const d;
       static KDialogQueue *_self;
 };
 

@@ -38,13 +38,13 @@
 #include <netwm.h> 
 #endif
 
-int KDialog::mMarginSize = 11;
-int KDialog::mSpacingSize = 6;
+const int KDialog::mMarginSize = 11;
+const int KDialog::mSpacingSize = 6;
 
 template class QPtrList<QLayoutItem>;
 
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
-  : QDialog(parent, name, modal, f)
+  : QDialog(parent, name, modal, f), d(0)
 {
     KWhatsThisManager::init ();
 }
@@ -139,14 +139,15 @@ void KDialog::resizeLayout( QWidget *w, int margin, int spacing )
 
   if( w->children() )
   {
-    QObjectList *l = (QObjectList*)w->children(); // silence please
-    for( uint i=0; i < l->count(); i++ )
-    {
-      QObject *o = l->at(i);
+    const QObjectList * const l = w->children();
+    QObjectListIterator itr(*l);
+    QObject *o;
+    while ((o = itr.current()) != 0) {
       if( o->isWidgetType() )
       {
 	resizeLayout( (QWidget*)o, margin, spacing );
       }
+      ++itr;
     }
   }
 }
@@ -271,15 +272,14 @@ KDialogQueue* KDialogQueue::self()
    return _self;
 }
 
-KDialogQueue::KDialogQueue()
+KDialogQueue::KDialogQueue() : d(new KDialogQueuePrivate)
 {
-   d = new KDialogQueuePrivate;
    d->busy = false;
 }
 
 KDialogQueue::~KDialogQueue()
 {
-   delete d; d = 0;
+   delete d;
    _self = 0;
 }
 
@@ -297,10 +297,10 @@ void KDialogQueue::slotShowQueuedDialog()
       return;
    QDialog *dialog;
    do {
-      if(!d->queue.count())
+       if(d->queue.isEmpty())
          return;
       dialog = d->queue.first();
-      d->queue.remove(d->queue.begin());
+      d->queue.pop_front();
    }
    while(!dialog);
 
@@ -309,7 +309,7 @@ void KDialogQueue::slotShowQueuedDialog()
    d->busy = false;
    delete dialog;
 
-   if (d->queue.count())
+   if (!d->queue.isEmpty())
       QTimer::singleShot(20, this, SLOT(slotShowQueuedDialog()));
    else
       ksdkdq.destructObject(); // Suicide.
