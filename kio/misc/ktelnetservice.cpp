@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 		cmd << url.user();
 	}
 
-	host = url.host();
+	QString host = url.host();
 
         if (host.isEmpty() || host.startsWith("-"))
         {
