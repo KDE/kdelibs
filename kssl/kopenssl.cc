@@ -24,8 +24,8 @@
 #include <stdio.h>
 #include "kopenssl.h"
 
-#ifdef HAVE_SSL
 extern "C" {
+#ifdef HAVE_SSL
 static int (*K_SSL_connect)     (SSL *ssl) = NULL;
 static int (*K_SSL_read)        (SSL *ssl, void *buf, int num) = NULL;
 static int (*K_SSL_write)       (SSL *ssl, const void *buf, int num) = NULL;
@@ -79,13 +79,15 @@ static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
 static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
 static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
 static int (*K_X509_print_fp)  (FILE *, X509*) = NULL;
+#else
+struct PKCS12;
+#endif    
 static int (*K_i2d_PKCS12_fp)  (FILE *, PKCS12*) = NULL;
 static int (*K_PKCS12_newpass) (PKCS12*, char*, char*) = NULL;
 static PKCS12* (*K_d2i_PKCS12_fp) (FILE*, PKCS12**) = NULL;
 static PKCS12* (*K_PKCS12_new) (void) = NULL;
 static void (*K_PKCS12_free) (PKCS12 *) = NULL;
 };
-#endif
 
 
 bool KOpenSSLProxy::hasLibSSL() const {
