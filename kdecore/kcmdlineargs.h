@@ -27,6 +27,9 @@
 
 typedef QValueList<QCString> QCStringList;
 
+/**
+ * @short Structure that holds command line options.
+ */
 struct KCmdLineOptions
 {
    const char *name;
