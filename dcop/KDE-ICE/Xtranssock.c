@@ -936,11 +936,9 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port)
 	sprintf (sockname.sun_path, "%s%d", UNIX_PATH, getpid());
     }
 
-#if defined(BSD44SOCKETS) && !defined(Lynx)
-    sockname.sun_len = strlen(sockname.sun_path);
-    namelen = SUN_LEN(&sockname);
-#else
-    namelen = strlen(sockname.sun_path) + sizeof(sockname.sun_family);
+    namelen = sizeof( sockname ) - sizeof( sockname.sun_path ) + strlen( sockname.sun_path );
+#if defined(BSD44SOCKETS)
+    sockname.sun_len = namelen;
 #endif
 
     unlink (sockname.sun_path);
@@ -1563,13 +1561,10 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
 	return TRANS_CONNECT_FAILED;
     }
 
-#if defined(BSD44SOCKETS) && !defined(Lynx)
-    sockname.sun_len = strlen (sockname.sun_path);
-    namelen = SUN_LEN (&sockname);
-#else
-    namelen = strlen (sockname.sun_path) + sizeof (sockname.sun_family);
+    namelen = sizeof( sockname ) - sizeof( sockname.sun_path ) + strlen( sockname.sun_path );
+#if defined(BSD44SOCKETS)
+    sockname.sun_len = namelen;
 #endif
-
 
 #if defined(hpux) && defined(X11_t)
     /*
