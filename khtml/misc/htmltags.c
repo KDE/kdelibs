@@ -33,7 +33,7 @@ hash_tag (register const char *str, register unsigned int len)
       306, 306, 306, 306, 306, 306, 306,   0,   5,  30,
        35,   0, 105,   5,  47,  10,   0,  25,  45,  30,
        15,   0, 100,  25,   5,  30,   0,  87,  90,   0,
-       20, 115, 306, 306, 306, 306, 306, 306, 306, 306,
+       20, 125, 306, 306, 306, 306, 306, 306, 306, 306,
       306, 306, 306, 306, 306, 306, 306, 306, 306, 306,
       306, 306, 306, 306, 306, 306, 306, 306, 306, 306,
       306, 306, 306, 306, 306, 306, 306, 306, 306, 306,
@@ -86,7 +86,7 @@ findTag (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 104,
+      TOTAL_KEYWORDS = 105,
       MIN_WORD_LENGTH = 1,
       MAX_WORD_LENGTH = 10,
       MIN_HASH_VALUE = 1,
@@ -100,9 +100,9 @@ findTag (register const char *str, register unsigned int len)
        5,  6,  2,  3,  2,  5,  6,  2,  3,  4,  2,  2,  5,  6,
        3,  2,  2,  3,  2,  4,  5,  1,  2,  7,  3,  4,  5,  1,
        6,  6,  3,  5,  6,  6,  7,  4,  3,  4,  7,  6,  3,  2,
-       4,  3,  5,  7,  4,  5,  4,  3,  7,  5,  6,  3,  4,  5,
-       7,  8,  4,  6,  5,  8,  6,  7,  8,  5,  8,  9,  7,  5,
-       3, 10,  8,  6,  8,  8
+       4,  3,  5,  7,  4,  5,  4,  3,  7,  5,  6,  3,  7,  8,
+       4,  4,  5,  6,  8,  5,  6,  6,  8,  7,  8,  9,  5,  7,
+       5,  3, 10,  8,  6,  8,  8
     };
   static const struct tags wordlist_tag[] =
     {
@@ -188,20 +188,21 @@ findTag (register const char *str, register unsigned int len)
       {"small", ID_SMALL},
       {"iframe", ID_IFRAME},
       {"dfn", ID_DFN},
-      {"body", ID_BODY},
-      {"tbody", ID_TBODY},
       {"caption", ID_CAPTION},
       {"basefont", ID_BASEFONT},
       {"samp", ID_SAMP},
+      {"body", ID_BODY},
+      {"tbody", ID_TBODY},
       {"keygen", ID_KEYGEN},
-      {"layer", ID_LAYER},
       {"frameset", ID_FRAMESET},
+      {"layer", ID_LAYER},
       {"script", ID_SCRIPT},
-      {"nolayer", ID_NOLAYER},
+      {"ilayer", ID_ILAYER},
       {"noframes", ID_NOFRAMES},
-      {"style", ID_STYLE},
+      {"nolayer", ID_NOLAYER},
       {"noscript", ID_NOSCRIPT},
       {"plaintext", ID_PLAINTEXT},
+      {"style", ID_STYLE},
       {"acronym", ID_ACRONYM},
       {"input", ID_INPUT},
       {"sup", ID_SUP},
@@ -218,8 +219,8 @@ findTag (register const char *str, register unsigned int len)
         -1,    4,   -1,    5,    6,    7,   -1,   -1,
         -1,   -1,   -1,    8,   -1,   -1,   -1,    9,
         -1,   -1,   10,   -1,   -1,   11,   -1,   12,
-        13,   14,   15,   -1,   -1, -150,   -1,   18,
-        -1,   19,   -1,   20,   21,  -88,   -2,   22,
+        13,   14,   15,   -1,   -1, -151,   -1,   18,
+        -1,   19,   -1,   20,   21,  -89,   -2,   22,
         23,   24,   25,   -1,   -1,   26,   27,   28,
         29,   30,   31,   32,   33,   34,   -1,   -1,
         35,   -1,   -1,   -1,   36,   37,   -1,   -1,
@@ -233,26 +234,26 @@ findTag (register const char *str, register unsigned int len)
         -1,   -1,   -1,   67,   -1,   68,   69,   -1,
         70,   -1,   71,   -1,   72,   -1,   73,   -1,
         74,   75,   -1,   -1,   -1,   76,   -1,   -1,
-        -1,   77,   78,   79,   80,   -1,   81,   82,
-        83,   -1,   84,   85,   86,   -1,   87,   -1,
-        -1,   -1,   88,   -1,   -1,   -1,   -1,   -1,
-        -1,   -1,   89,   -1,   -1,   90,   -1,   -1,
-        -1,   -1,   -1,   91,   -1,   -1,   -1,   -1,
-        -1,   92,   -1,   93,   -1,   -1,   94,   95,
-        -1,   -1,   96,   -1,   -1,   -1,   -1,   -1,
+        -1,   77,   78,   79,   80,   -1,   81,   -1,
+        -1,   -1,   82,   83,   84,   -1,   -1,   -1,
+        -1,   85,   86,   -1,   -1,   -1,   -1,   -1,
+        87,   -1,   88,   -1,   89,   90,   -1,   -1,
+        -1,   -1,   -1,   -1,   -1,   -1,   -1,   91,
+        -1,   92,   -1,   -1,   -1,   93,   94,   95,
+        -1,   -1,   -1,   -1,   -1,   96,   -1,   -1,
+        -1,   -1,   -1,   -1,   97,   -1,   -1,   -1,
+        -1,   98,   -1,   -1,   99,   -1,   -1,   -1,
+        -1,   -1,   -1,  100,   -1,   -1,   -1,   -1,
+        -1,  101,   -1,   -1,   -1,   -1,   -1,   -1,
         -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,   97,   -1,   -1,   98,   -1,   -1,   -1,
-        -1,   -1,   -1,   99,   -1,   -1,   -1,   -1,
-        -1,  100,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,   -1,   -1,  101,   -1,   -1,   -1,   -1,
-        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-       102,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+        -1,   -1,   -1,  102,   -1,   -1,   -1,   -1,
         -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
         -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-        -1,  103
+        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+       103,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+        -1,  104
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -347,6 +348,7 @@ static const char * const tagList[] = {
     "HTML",
     "I",
     "IFRAME",
+    "ILAYER",
     "IMG",
     "INPUT",
     "INS",
@@ -450,6 +452,7 @@ static const char * const tagList[] = {
     "/HTML",
     "/I",
     "/IFRAME",
+    "/ILAYER",
     "/IMG",
     "/INPUT",
     "/INS",
@@ -511,4 +514,4 @@ DOM::DOMString getTagName(unsigned short id)
 {
     if(id > ID_CLOSE_TAG*2) id = ID_CLOSE_TAG+1;
     return DOM::DOMString(tagList[id]);
-}
+};

@@ -928,6 +928,9 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     return getDOMNodeList(exec,doc.getElementsByTagNameNS(args[0].toString(exec).string(),
                                                           args[1].toString(exec).string()));
   case DOMDocument::GetElementById:
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMDocument::GetElementById looking for " << args[0].toString(exec).string() << endl;
+#endif
     return getDOMNode(exec,doc.getElementById(args[0].toString(exec).string()));
   case DOMDocument::CreateRange:
     return getDOMRange(exec,doc.createRange());

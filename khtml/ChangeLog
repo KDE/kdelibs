@@ -1,3 +1,9 @@
+2003-10-14  David Faure  <faure@kde.org>
+
+	* misc/htmltags.in, html/htmlparser.cpp, html/dtd.cpp: added very basic
+	support for <ilayer>, much like <layer>, as a generic block element.
+	Fixes sites looking for such elements by ID, like www.sp ort1.de's diashow.
+
 2003-10-14  Wilco Greven <greven@kde.org>
 	* ecma/kjs_window.cpp (tryCall): Scroll should do the same as
 	ScrollTo, not ScrollBy. #63301

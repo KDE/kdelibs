@@ -94,6 +94,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
    11,// ID_HTML
     1, // ID_I
     1, // ID_IFRAME
+    1, // ID_ILAYER
     0, // ID_IMG
     0, // ID_INPUT
     1, // ID_INS
@@ -200,6 +201,7 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_HTML
     REQUIRED,  // ID_I
     REQUIRED,  // ID_IFRAME
+    REQUIRED,  // ID_ILAYER
     FORBIDDEN, // ID_IMG
     FORBIDDEN, // ID_INPUT
     REQUIRED,  // ID_INS
@@ -324,6 +326,7 @@ static const ushort tag_list_1[] = {
     ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
+    ID_ILAYER,
     ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
@@ -408,6 +411,7 @@ static const ushort tag_list_3[] = {
     ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
+    ID_ILAYER,
     ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
@@ -443,6 +447,7 @@ static const ushort tag_list_4[] = {
     ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
+    ID_ILAYER,
     ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
@@ -626,6 +631,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LI:
     case ID_DIV:
     case ID_SPAN:
+    case ID_ILAYER:
     case ID_LAYER:
     case ID_CENTER:
     case ID_BLOCKQUOTE:

@@ -54,6 +54,7 @@ hr, ID_HR
 html, ID_HTML
 i, ID_I
 iframe, ID_IFRAME
+ilayer, ID_ILAYER
 img, ID_IMG
 input, ID_INPUT
 ins, ID_INS
