@@ -1,5 +1,8 @@
 #include "kmessagebox.h"
 
+#include <qdialog.h>
+#include <qlayout.h>
+
 #include <stdlib.h>
 
 #include <stdio.h>
@@ -8,6 +11,40 @@
 #include <kapplication.h>
 
 #include <kglobal.h>
+
+class ExampleWidget : public QLabel
+{
+public:
+    ExampleWidget( QWidget *parent = 0, const char *name = 0 );
+};
+
+ExampleWidget::ExampleWidget( QWidget *parent, const char *name )
+    : QLabel(parent, name )
+{
+    // Make the top-level layout; a vertical box to contain all widgets
+    // and sub-layouts.
+    QSize sh;
+    setText("<p>Hello.</p>");
+    sh = sizeHint();
+    qWarning("SizeHint = %d x %d", sh.width(), sh.height());
+    setText("Hello.");
+    sh = sizeHint();
+    qWarning("SizeHint = %d x %d", sh.width(), sh.height());
+    setText("<p>Hello<br>World</p>");
+    sh = sizeHint();
+    qWarning("SizeHint = %d x %d", sh.width(), sh.height());
+//    setText("Hello\nWorld");
+    sh = sizeHint();
+    qWarning("SizeHint = %d x %d", sh.width(), sh.height());
+    setMinimumSize(sizeHint());
+}
+
+
+class Foo: public QDialog
+{
+ public:
+   Foo() : QDialog(0, "foo", true) { resize(200,200); new QLabel("Hello World", this); show(); }
+};
 
 void showResult(int test, int i)
 {
@@ -28,16 +65,19 @@ int main( int argc, char *argv[] )
     int i, test;
     new KApplication( argc, argv, "MyApplication" );
 
+    ExampleWidget w;
+    w.show();    
+
     QStringList list; list.append("Hello"); list.append("World");
 
-    for( test = 6; true; test++)
+    for( test = 1; true; test++)
     {
        for( int count = 0; count < 3; count++)
        {
          switch(test)
          {
 case 1:
-  i = KMessageBox::questionYesNo(0, "Do you have a printer?");
+  i = KMessageBox::questionYesNo(0, "Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla.");
   break;
 
 case 2:
@@ -118,13 +158,13 @@ case 14:
 
 case 15:
   i = KMessageBox::Ok;
-  KMessageBox::information(0, "You can enable the menubar again\n"
+  KMessageBox::information(0, "You can enable the menubar again "
             "with the right mouse button menu.");
   break;
 
 case 16:
   i = KMessageBox::Ok;
-  KMessageBox::information(0, "You can enable the menubar again\n"
+  KMessageBox::information(0, "You can enable the menubar again "
             "with the right mouse button menu.", "Menubar Info");
   break;
 
