@@ -405,7 +405,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
   if ( !s ){
     move(p);
 #ifndef NO_KDE2    
-    KWin::setType( winId(), NET::Tool );
+//    KWin::setType( winId(), NET::Tool );
 #endif    
   }
   updateHeader();
@@ -861,7 +861,8 @@ void KDockWidget::makeDockVisible()
   }
   QWidget* p = parentWidget();
   while ( p ){
-    if ( !p->isVisible() ) p->show();
+    if ( !p->isVisible() )
+      p->show();
     p = p->parentWidget();
   }
   if( parent() == 0L) // is undocked
@@ -1742,7 +1743,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   c->sync();
   //debug("END Write Config");
 }
-
+#include <qmessagebox.h>
 void KDockManager::readConfig( KConfig* c, QString group )
 {
   if ( !c ) c = kapp->config();
@@ -1762,7 +1763,9 @@ void KDockManager::readConfig( KConfig* c, QString group )
   autoCreateDock->setAutoDelete( true );
 
   bool isMainVisible = main->isVisible();
-  main->hide();
+  if (isMainVisible)
+  QMessageBox::information(0,"","hallo");
+//COMMENTED4TESTING  main->hide();
 
   QObjectListIt it( *childDock );
   KDockWidget * obj;
