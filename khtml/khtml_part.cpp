@@ -37,6 +37,7 @@
 #include "html/html_baseimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
+#include "html/html_objectimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
@@ -3926,6 +3927,18 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
         checkEmitLoadEvent();
         return false;
+    } else if (child->m_frame) {
+        child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
+        DOM::NodeImpl* elm = child->m_frame->element();
+        if (elm)
+            switch (child->m_frame->element()->id()) {
+                case ID_APPLET:
+                case ID_EMBED:
+                case ID_OBJECT:
+                    static_cast<HTMLObjectBaseElementImpl*>(elm)->setLiveConnect(child->m_liveconnect);
+                default:
+                    break;
+            }
     }
 
     //CRITICAL STUFF
@@ -4003,7 +4016,6 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
-    child->m_liveconnect = KParts::LiveConnectExtension::childObject( part );
   }
   else if ( child->m_frame && child->m_part &&
             child->m_frame->widget() != child->m_part->widget() )
