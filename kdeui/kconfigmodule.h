@@ -28,7 +28,8 @@
 #endif
 
 class KConfig;
-#include <qtabdlg.h>
+
+#include <qwidget.h>
 #include <qstrlist.h>
 
 #include <klocale.h>
@@ -56,6 +57,7 @@ private:
     QStrList domains;
 };
 
+
 class KPeerConfig
 {
 public:
@@ -71,13 +73,16 @@ private:
 };
 
 
-class KConfigWidget : public QTabDialog
+class KConfigWidget : public QWidget
 {
   Q_OBJECT;
 
 public:
 
-  KConfigWidget(QWidget *parent, const char *name=0, bool modal=FALSE);
+  KConfigWidget(QWidget *parent, const char *name=0);
+  
+  virtual void loadSettings() {};
+  virtual void applySettings() {};
 };
 
 
@@ -103,8 +108,7 @@ public:
     
   virtual void showAboutDialog(QWidget *);
   
-  virtual KConfigWidget *getNewWidget(QWidget *parent, const char *name,
-				      bool modal=FALSE) = 0;
+  virtual KConfigWidget *getNewWidget(QWidget *parent, const char *name) = 0;
 
 protected:
 
@@ -128,6 +132,15 @@ private:
 
   bool    supportsInit;
   bool    needsRoot;
+};
+
+
+class KConfigModuleList : public QList<KConfigModule>
+{
+public:
+
+  KConfigModuleList() { setAutoDelete(FALSE); };
+  ~KConfigModuleList() {};
 };
 
 #endif
