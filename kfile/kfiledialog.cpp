@@ -181,15 +181,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     }
     */
 
-    connect( combo, SIGNAL( urlActivated( const KURL&  )),
-	     this,  SLOT( pathComboActivated( const KURL& ) ));
-    connect( combo, SIGNAL( returnPressed( const QString&  )),
-	     this,  SLOT( pathComboReturnPressed( const QString& ) ));
-    connect( combo, SIGNAL(textChanged( const QString& )),
-	     SLOT( pathComboChanged( const QString& ) ));
-
-    QToolTip::add( combo, i18n("Often used directories") );
     d->pathCombo = combo;
+    QToolTip::add( d->pathCombo, i18n("Often used directories") );
 
     bookmarksMenu = 0L;
 
@@ -220,8 +213,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(ops, SIGNAL(finishedLoading()),
 	    SLOT(slotLoadingFinished()));
 			
-    d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
-
     KActionCollection *coll = ops->actionCollection();
     coll->action( "up" )->plug( toolbar );
     coll->action( "back" )->plug( toolbar );
@@ -268,14 +259,22 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
     connect( locationEdit, SIGNAL( completion( const QString& )),
-	     SLOT( fileCompletion( const QString& )));
+    	     SLOT( fileCompletion( const QString& )));
     connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
 	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
+    d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
+
+    connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
+	     this,  SLOT( pathComboActivated( const KURL& ) ));
+    connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
+	     this,  SLOT( pathComboReturnPressed( const QString& ) ));
+    connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
+	     SLOT( pathComboChanged( const QString& ) ));
     connect( d->pathCombo, SIGNAL( completion( const QString& )),
-	     SLOT( dirCompletion( const QString& )));	
+    	     SLOT( dirCompletion( const QString& )));	
     connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
+    	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
 				  d->mainWidget);
@@ -861,13 +860,11 @@ void KFileDialog::setSelection(const QString& url)
      */
     KFileViewItem i(-1, -1, u, true );
     //    KFileViewItem i(u.path());
-    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) // trust isDir() only if the file is
-                                                                     // local (we cannot stat non-local urls)
-                                                                     // and if it exists!
-                                                                     // (as KFileItem does not check if the
-                                                                     // file exists or not -> the statbuffer
-                                                                     // is undefined -> isDir() is
-                                                                     // unreliable) (Simon)
+    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) )
+	// trust isDir() only if the file is
+	// local (we cannot stat non-local urls) and if it exists!
+	// (as KFileItem does not check if the file exists or not
+	// -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
 	setURL(u, true);
     else {
 	QString filename = u.url();
@@ -914,7 +911,7 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 
 	if (!complete.isNull()) {
 	    QString newText = base + complete;
-	    d->pathCombo->setEditText( newText );
+	    d->pathCombo->setCompletedText( newText );
 	    d->url = newText;
 	}
     }

@@ -203,19 +203,9 @@ void KURLComboBox::setURL( const KURL& url )
         if ( url.url(-1) == mit.data()->url.url(-1) ) {
             setCurrentItem( mit.key() );
 
-	    if ( myMode == Directories ) {
-		
-		// QComboBox::changeItem() doesn't honour the pixmap when
-		// using an editable combobox, so we just remove and insert
-// hmm, this seems to be fixed?
-//		if ( isEditable() ) {
-//		    removeItem( mit.key() );
-//		    insertItem( opendirPix, mit.data()->url.url( myMode ),
-//				mit.key() );
-//		}
-//		else
-		    changeItem( opendirPix, mit.data()->text, mit.key() );
-	    }
+	    if ( myMode == Directories )
+		updateItem( mit.data(), mit.key(), opendirPix );
+
             blockSignals( false );
             return;
         }
@@ -252,9 +242,7 @@ void KURLComboBox::slotActivated( int index )
     const KURLComboItem *item = itemMapper[ index ];
 
     if ( item ) {
-	blockSignals( true ); // don't produce a textChanged() signal
-	setEditText( item->url.url( myMode ) );
-	blockSignals( false );
+	setURL( item->url.url( myMode ) );
 	emit urlActivated( item->url );
     }
 }
@@ -316,6 +304,24 @@ QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 	return dirpix;
     else
 	return KMimeType::pixmapForURL( url, 0, KIcon::Small );
+}
+
+
+// updates "item" with pixmap "pixmap" and sets the URL instead of text
+// works around a Qt bug.
+void KURLComboBox::updateItem( const KURLComboItem *item, 
+			       int index, const QPixmap& pixmap )
+{
+    const QString &text = isEditable() ? item->url.url(myMode) : item->text;
+
+    // QComboBox::changeItem() doesn't honour the pixmap when
+    // using an editable combobox, so we just remove and insert
+    if ( isEditable() ) {
+	removeItem( index );
+	insertItem( opendirPix, text, index );
+    }
+    else
+	changeItem( opendirPix, text, index );
 }
 
 
