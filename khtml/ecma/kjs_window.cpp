@@ -1235,6 +1235,16 @@ Value Window::openWindow(ExecState *exec, const List& args)
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
+    if ( uargs.frameName.lower() == "_self")
+    {
+      Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
+      return Window::retrieve(p);
+    }
+    if ( uargs.frameName.lower() == "replace" )
+    {
+      Window::retrieveWindow(p)->goURL(exec, url.url(), true /*lock history*/);
+      return Window::retrieve(p);
+    }
     uargs.serviceType = "text/html";
 
     // request window (new or existing if framename is set)
