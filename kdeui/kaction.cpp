@@ -1923,8 +1923,6 @@ KListAction::KListAction( const QString& text, const KShortcut& cut,
   : KSelectAction( text, cut, parent, name )
 {
   d = new KListActionPrivate;
-  if ( receiver )
-    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
@@ -1950,8 +1948,6 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
   : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
-  if ( receiver )
-    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
@@ -1961,8 +1957,6 @@ KListAction::KListAction( const QString& text, const QString& pix,
   : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
-  if ( receiver )
-    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( QObject* parent, const char* name )
