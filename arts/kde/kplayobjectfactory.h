@@ -23,11 +23,13 @@
 #define KPLAYOBJECTFACTORY_H
 
 #include <kurl.h>
+#include <qobject.h>
 #include "soundserver.h"
 #include "kplayobject.h"
 
-class KPlayObjectFactory
+class KPlayObjectFactory : public QObject
 {
+Q_OBJECT
 public:
 	KPlayObjectFactory(Arts::SoundServerV2 server);
 	~KPlayObjectFactory();
@@ -39,11 +41,16 @@ public:
 	bool allowStreaming() { return m_allowStreaming; }
 
 	bool isAStream() { return m_stream; }
-	
+
+private slots:
+        void slotMimeType(const QString &mimetype);
+
 private:
 	Arts::SoundServerV2 m_server;
 	bool m_allowStreaming;
 	bool m_stream;
+	bool m_eventLoopEntered;
+	QString m_mimeType;
 };
 
 #endif
