@@ -91,6 +91,7 @@ void RenderReplaced::calcMinMaxWidth()
 
     bool isPercent = false;
     int width = calcReplacedWidth(&isPercent);
+    width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
     if ( isPercent ) {
         m_minWidth = 0;
