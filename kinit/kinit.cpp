@@ -1384,6 +1384,9 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
    }
+   
+   if (suicide)
+      setenv("KDE_MINIMAL_SESSION", "true", true);
 
    pipe(d.initpipe);
 
