@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.127  1999/07/26 19:42:44  pbrown
+// fixed for qcombobox.
+//
 // Revision 1.126  1999/07/25 11:53:48  kulow
 // taking out some headers from ktmainwindow.h, they just don't belong there
 //
@@ -50,243 +53,6 @@
 // Revision 1.118  1999/06/10 21:47:50  cschlaeg
 // setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
 //
-// Revision 1.117  1999/06/10 13:05:57  cschlaeg
-// fix for KOffice horizontal toolbar problem
-//
-// Revision 1.116  1999/06/09 21:52:26  cschlaeg
-// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
-//
-// Revision 1.115  1999/06/07 21:11:04  cschlaeg
-// more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
-//
-// Revision 1.114  1999/06/06 17:29:45  cschlaeg
-// New layout management implemented for KTMainWindow. This required
-// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
-// public variables removed. Use mainViewGeometry() instead if you really
-// have to. Added new classes in ktmlayout to handle the new layout
-// management.
-//
-// Revision 1.113  1999/06/05 01:16:45  dmuell
-// adjust references to ~/.kderc accordingly
-//
-// Revision 1.112  1999/06/04 15:43:54  pbrown
-// improved KLineEdit to have a right popup menu with cut, copy, past, clear
-// etc. like newer windows (heh) applications have.  Renamed class from
-// KLined to KLineEdit for consistency -- provided a #define for backwards
-// comptability, but I am working on stamping the old class name out now.
-//
-// Revision 1.111  1999/05/11 23:16:39  dfaure
-// Added an "emit moved" in KToolBar::enable(...)
-//  -> it's connected to KTMainWindow::updateRects, which gets the thing right.
-// [ kfm contained the manual call to updateRects(), which was a hack ]
-//
-// Revision 1.110  1999/05/07 15:43:03  kulow
-// making some changes to the code and partly to the API to make it
-// -DQT_NO_ASCII_CAST compatible.
-// The job is quite boring, but triggers some abuses of QString. BTW:
-// I added some TODOs to the code where I was too lazy to continue.
-// Someone should start a grep for TODO in the code on a regular base ;)
-//
-// Revision 1.109  1999/05/06 04:54:06  warwick
-// myqstring = 0  becomes  myqstring = QString::null, or just remove the
-// line if it's already going to be null (default QString constructor).
-//
-// Revision 1.108  1999/04/30 20:43:00  mosfet
-// Added QSplitter and cleaned up some
-//
-// Revision 1.107  1999/04/23 13:56:21  mosfet
-// KDE theme style classes and some KStyle additions to the bars.
-//
-// Revision 1.106  1999/04/22 15:59:42  shausman
-// - support QStringList for combos
-//
-// Revision 1.105  1999/03/06 18:03:36  ettrich
-// the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
-// It has its own menu entry and reacts on simple LMP clicks.
-//
-// Revision 1.104  1999/03/04 17:49:17  ettrich
-// more fixes for Qt-2.0
-//
-// Revision 1.103  1999/03/02 15:56:40  kulow
-// CVS_SILENT replacing klocale->translate with i18n
-//
-// Revision 1.102  1999/03/01 23:35:24  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.101  1999/02/21 20:21:20  radej
-// sven: added default to avoid warning about something not handled in a switch
-//
-// Revision 1.100  1999/02/11 19:27:20  koss
-// reimported because of wrong commit
-//
-// Revision 1.97  1999/02/10 19:12:18  koss
-// Added insertLineSeparator() - convenience function
-//
-// Revision 1.96  1999/01/18 10:57:11  kulow
-// .moc files are back in kdelibs. Built fine here using automake 1.3
-//
-// Revision 1.95  1999/01/15 09:31:30  kulow
-// it's official - kdelibs builds with srcdir != builddir. For this I
-// automocifized it, the generated rules are easier to maintain than
-// selfwritten rules. I have to fight with some bugs of this tool, but
-// generally it's better than keeping them updated by hand.
-//
-// Revision 1.94  1998/12/09 13:44:30  radej
-// sven: iconify() -> hide() even when floating. Commented out debug output.
-//
-// Revision 1.93  1998/12/02 16:08:26  radej
-// sven: hide toolbar items better when session management wants toolbar flat
-//
-// Revision 1.92  1998/11/21 19:27:19  radej
-// sven: doubleClicked signal for buttons.
-//
-// Revision 1.91  1998/11/18 01:00:02  radej
-// sven: set*BarPos(Flat) works now (I hope)
-//
-// Revision 1.90  1998/11/11 14:32:08  radej
-// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
-//
-// Revision 1.89  1998/11/10 14:12:46  radej
-// sven: windows-style handle smaller
-//
-// Revision 1.88  1998/11/09 17:58:34  radej
-// sven: Fix for IconText=3 (pixmap wider then text; kfm's wheel)
-//
-// Revision 1.87  1998/11/09 00:29:16  radej
-// sven: IconText 3 (text under pixmap)
-//
-// Revision 1.86  1998/11/06 16:48:20  radej
-// sven: nicer docking, some bugfixes
-//
-// Revision 1.85  1998/11/06 15:08:48  radej
-// sven: finished handles. Comments?
-//
-// Revision 1.84  1998/11/06 12:54:52  radej
-// sven: radioGroup is in. handle changed again (broken in vertical mode)
-//
-// Revision 1.83  1998/11/05 18:23:31  radej
-// sven: new look for *Bar handles (unfinished)
-//
-// Revision 1.82  1998/10/10 11:28:53  radej
-// sven: Fixed popup position (if too close to bottom of screen, pops above)
-//
-// Revision 1.81  1998/10/09 12:42:19  radej
-// sven: New: (un) highlight sugnals, Autorepeat buttons, button down when
-//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
-//
-// Revision 1.80  1998/10/05 15:09:53  kulow
-// purify (and me) likes initialized members, so I choose one (like the compiler
-// would do :)
-//
-// Revision 1.79  1998/09/15 05:56:45  antlarr
-// I've added a setIconText function to change the state of a variable
-// in KToolBar
-//
-// Revision 1.78  1998/09/01 20:22:23  kulow
-// I renamed all old qt header files to the new versions. I think, this looks
-// nicer (and gives the change in configure a sense :)
-//
-// Revision 1.77  1998/08/30 21:04:33  radej
-// sven: Minor improvement for docking in KTM
-//
-// Revision 1.76  1998/08/09 17:49:28  radej
-// sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
-//
-// Revision 1.75  1998/08/09 14:01:17  radej
-// sven: reintroduced makeDisabledPixmap code, and dumped QIconSet. Fixed a bug
-//       with paletteChange too.
-//
-// Revision 1.74  1998/08/06 15:39:01  radej
-// sven: Popups & delayedPopups. Uses QIconSet. Needs Qt-1.4x
-//
-// Revision 1.73  1998/07/29 12:48:29  ssk
-// Removed more warnings, possible portability problems and ANSI violations.
-//
-// Revision 1.72  1998/07/23 09:42:26  radej
-// sven: improved styles
-//
-// Revision 1.71  1998/06/18 13:41:42  radej
-// sven: fixed invisible disabled buttons (I already wanted to defend it as
-//       a feature, like You don't have to see it, it's disabled!)
-//
-// Revision 1.70  1998/06/18 08:56:57  radej
-// sven: removed debug output.
-//
-// Revision 1.69  1998/06/17 12:58:30  radej
-// sven: Removed compiler warning.
-//
-// Revision 1.68  1998/06/16 17:20:46  radej
-// sven: Fixed Warnings when switching palettes (separators hav no pixmaps)
-//
-// Revision 1.67  1998/05/19 14:10:05  radej
-// Bugfixes: Unhighlighting a handle and catching the fast click
-//
-// Revision 1.66  1998/05/13 09:56:31  radej
-// Changelog order
-//
-// Revision 1.65  1998/05/12 10:47:31  radej
-// Fixed sizehint - returns more real width
-//
-// Revision 1.64  1998/05/07 23:12:30  radej
-// Fix for optional highlighting of handle
-//
-// Revision 1.63  1998/05/05 16:53:31  radej
-// This damned opaque moving...
-//
-// Revision 1.62  1998/05/04 16:38:19  radej
-// Bugfixes for moving + opaque moving
-//
-// Revision 1.60  1998/05/02 18:31:01  radej
-// Improved docking
-//
-// Revision 1.59  1998/04/28 09:17:28  radej
-// New moving and docking BINARY INCOMPATIBLE
-//
-// Revision 1.58  1998/04/27 19:22:41  ettrich
-// Matthias: the nifty feature that you can globally change the size of the
-//   toolbars broke the nifty-as-well feature that a client can pass another
-//   size than 26 to the toolbar´s constructor.
-//
-//   I hope I found a solution which allows both. If you pass an argument
-//   to the constructor, than a new attribute fixed_size is set.
-//
-// Revision 1.57  1998/04/26 13:30:16  kulow
-// fixed typo
-//
-// Revision 1.56  1998/04/23 16:08:56  radej
-// Fixed a bug reported by Thomas Tanghus
-//
-// Revision 1.54  1998/04/21 20:37:03  radej
-// Added insertWidget and some reorganisation - BINARY INCOMPATIBLE
-//
-// Revision 1.53  1998/04/16 18:47:19  radej
-// Removed some debug text before beta4
-//
-
-//-------------------------------------------------------------------------
-// OLD CHANGES:
-// Solved one-button problem and added handle-highlighting - sven 5.1.1998
-// Some fixes of yesterday fixes - sven 6.1. 1998
-// Fixing of fixes - one button, three buttons + separator,
-// Improved engine, no handles if not movable. - sven 22. 1. 1998.
-// Matthias - setting size of toolbar (bin incompat) 22.1.98
-// Merged sven's & Matthias' changes 23-25. 1.98
-// Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
-// boolett proofing by Marcin Dalecki 06.03.1998
-// BINARY INCOMPATIBLE CHANGES sven 19.3. 1998:
-//  - optional icons+text, variable size  with reading options from
-//    from ~/.kde/share/config/kdeglobals
-//  - Fixing of bug reported by Antonio Larrosa (Thanks!)
-//  - Optional highlighting of buttons
-//  - added sizeHint()
-//  - sample (default) ~/.kde/share/config/kdeglobals group for toolbar:
-//      [Toolbar style]
-//      IconText=0        0=icons, 1=icons+text
-//      Highlighting=1    0=No, 1=yes
-//      Size=26           height of one row in toolbar
-// Fixed white bg on disabled buttons in icontext mode and
-// positioning on signal appearanceChanged - sven 24.3.1998
-//-------------------------------------------------------------------------
 
 
 #include <qpainter.h>
@@ -589,7 +355,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       &buttonFont);
     return;
   }
-    
+
   if ( isDown() || isOn() )
   {
     if ( style() == WindowsStyle )
@@ -1109,7 +875,7 @@ void KToolBar::setMaxWidth (int w)
 	updateRects(true);
 }
 
-void 
+void
 KToolBar::layoutHorizontal(int w)
 {
 	int xOffset = 4 + 9 + 3;
@@ -1291,7 +1057,7 @@ KToolBar::heightForWidth(int w) const
 	return (yOffset + tallest + 1);
 }
 
-void 
+void
 KToolBar::layoutVertical(int h)
 {
 	int xOffset = 3;
@@ -1384,7 +1150,7 @@ KToolBar::widthForHeight(int h) const
 	return(xOffset + widest + 3);
 }
 
-void 
+void
 KToolBar::updateRects(bool res)
 {
 	switch (position)
@@ -1444,7 +1210,7 @@ KToolBar::updateRects(bool res)
 	}
 }
 
-QSize 
+QSize
 KToolBar::sizeHint() const
 {
 	switch (position)
@@ -1543,13 +1309,13 @@ KToolBar::maximumSizeHint() const
 	return (QSize(prefWidth, prefHeight));
 }
 
-QSize 
+QSize
 KToolBar::minimumSizeHint() const
 {
 	return (sizeHint());
 }
 
-QSizePolicy 
+QSizePolicy
 KToolBar::sizePolicy() const
 {
 	switch (position)
@@ -1602,7 +1368,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 	if (!buttonDownOnHandle)
 		return;
 	buttonDownOnHandle = FALSE;
-  
+
 	if (position != Flat)
 	{
 		int ox, oy, ow, oh;
@@ -1685,19 +1451,21 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 	}
 }
 
-void KToolBar::mouseReleaseEvent ( QMouseEvent *)
+void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
 {
     buttonDownOnHandle = FALSE;
     if (mgr)
 	mgr->stop();
-    if ( position != Floating)
+    if ( position != Floating &&
+	 ((horizontal && m->x()<9) || (!horizontal && m->y()<9)) ) {
 	setFlat (position != Flat);
+    }
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
     buttonDownOnHandle |=   ((horizontal && m->x()<9) || (!horizontal && m->y()<9));
-    
+
   if (moving)
       if (m->button() == RightButton)
 	{
@@ -1823,7 +1591,7 @@ void KToolBar::paintEvent(QPaintEvent *)
   int stipple_height;
 
   // Moved around a little to make variables available for KStyle (mosfet).
-  
+
   QColorGroup g = QWidget::colorGroup();
   // Took higlighting handle from kmenubar - sven 040198
   QBrush b;
