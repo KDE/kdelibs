@@ -263,13 +263,12 @@ int KFileSimpleView::cellWidth ( int col )
 	}
 	cellWidths[col] = width + file_pixmap->width() + 9; 
     }
-    debug("cellWidth %d %d", col, cellWidths[col]);
+    debugC("cellWidth %d %d", col, cellWidths[col]);
     return cellWidths[col];
 }
 
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
-  debug("resizeEvent");
     QTableView::resizeEvent(e);
     rowsVisible = lastRowVisible();
     setNumRows(rowsVisible);
