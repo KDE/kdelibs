@@ -161,15 +161,6 @@ class KMDI_EXPORT KMdiChildArea : public QFrame
      */
      void setMdiCaptionInactiveBackColor(const QColor &clr);
 
-     /**
-     * Gets all caption colors, consistent with current WM settings 
-     * (or other Desktop settings e.g. system settings for win32).
-     * This method is useful not only for KMDI child windows.
-     * Colors are returned via activeBG, activeFG, inactiveBG, inactiveFG references.
-     */
-     static void getCaptionColors( const QPalette &pal, 
-         QColor &activeBG, QColor &activeFG, QColor &inactiveBG, QColor &inactiveFG );
-
   public slots:
      /**
      * Cascades the windows resizing it to the minimum size.
