@@ -456,13 +456,18 @@ void KFileDialog::slotOk()
 
     else {
         QString text = locationEdit->currentText();
-        if ( !text.isEmpty() && text[0] == '/' )
-            selectedURL.setPath( text );
-        else
+        KURL tryURL(text);
+        if ( tryURL.isMalformed() )
         {
-            selectedURL = ops->url();
-            selectedURL.addPath( text ); // works for filenames and relative paths
-        }
+            if ( !text.isEmpty() && text[0] == '/' ) // absolute path
+                selectedURL.setPath( text );
+            else
+            {
+                selectedURL = ops->url();
+                selectedURL.addPath( text ); // works for filenames and relative paths
+            }
+        } else // complete URL
+            selectedURL = tryURL;
     }
 
     if ( selectedURL.isMalformed() ) {
