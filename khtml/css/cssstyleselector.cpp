@@ -478,8 +478,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     // Mutate the display to BLOCK or TABLE for certain cases, e.g., if someone attempts to
     // position or float an inline, compact, or run-in.
     if (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE) {
-        if (style->display() == INLINE || // style->display() == COMPACT || #### fixme after merge in rendering
-            style->display() == RUN_IN) // || style->display() == INLINE_BLOCK) FIXME!!!
+        if (style->display() == INLINE || style->display() == COMPACT ||
+            style->display() == RUN_IN || style->display() == INLINE_BLOCK)
             style->setDisplay(BLOCK);
         else if (style->display() == INLINE_TABLE)
             style->setDisplay(TABLE);
@@ -487,11 +487,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     // Finally update our text decorations in effect, but don't allow text-decoration to percolate through
     // tables, inline blocks, inline tables, or run-ins.
-    if (style->display() == TABLE || style->display() == INLINE_TABLE || style->display() == RUN_IN)
-        // || style->display() == INLINE_BLOCK) FIXME!
+    switch( style->display() ) {
+    case TABLE:
+    case INLINE_TABLE:
+    case RUN_IN:
+    case INLINE_BLOCK:
         style->setTextDecorationsInEffect(style->textDecoration());
-    else
+        break;
+    default:
         style->addToTextDecorationsInEffect(style->textDecoration());
+    }
 
     // Now return the style.
     return style;
@@ -1732,19 +1737,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         }
         if(!primitiveValue) break;
 	int id = primitiveValue->getIdent();
-	EDisplay d;
-	if ( id == CSS_VAL_NONE) {
-	    d = NONE;
-	} else if ( id == CSS_VAL_INLINE_BLOCK ) {
-	    // inline-block is not supported at the moment, so we just ignore it.
-	    return;
-	} else {
-	    d = EDisplay(primitiveValue->getIdent() - CSS_VAL_INLINE);
-	}
-
-        style->setDisplay(d);
-        //kdDebug( 6080 ) << "setting display " << primitiveValue->getIdent() << " to " << d << endl;
-
+        style->setDisplay( id == CSS_VAL_NONE ? NONE : EDisplay(id - CSS_VAL_INLINE) );
         break;
     }
 

@@ -363,10 +363,11 @@ FORM {
 }
 
 LEGEND { 
-        display: block;
+        display: inline-block;
         padding-left: 2px;
         padding-right: 2px;
         border: none;
+        margin: 0;
 }
 
 FIELDSET {
@@ -377,7 +378,7 @@ FIELDSET {
 } 
 
 BUTTON {
-        display: block;
+        display: inline-block;
         border: 2px outset ButtonFace;
         background-color: ButtonFace;
         color: ButtonText;
