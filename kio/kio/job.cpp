@@ -246,7 +246,7 @@ void Job::showErrorDialog( QWidget * parent )
   // Show a message box, except for "user canceled" or "no content"
   if ( (m_error != ERR_USER_CANCELED) && (m_error != ERR_NO_CONTENT) ) {
     //old plain error message
-    kdDebug() << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
+    //kdDebug(7007) << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
     if ( 1 )
       KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
 #if 0
@@ -745,7 +745,7 @@ void TransferJob::slotData( const QByteArray &_data)
 // Slave got a redirection request
 void TransferJob::slotRedirection( const KURL &url)
 {
-    kdDebug(7007) << "TransferJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+     kdDebug(7007) << "TransferJob::slotRedirection(" << url.prettyURL() << ")" << endl;
      if (!kapp->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "TransferJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
@@ -849,7 +849,7 @@ void TransferJob::slotDataReq()
 
     static const size_t max_size = 14 * 1024 * 1024;
     if (dataForSlave.size() > max_size) {
-        kdDebug() << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
+        kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
         staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
         dataForSlave.truncate(max_size);
     }
@@ -1129,7 +1129,7 @@ void MimetypeJob::start(Slave *slave)
 
 void MimetypeJob::slotFinished( )
 {
-    kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
+    //kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
     if ( m_error == KIO::ERR_IS_DIRECTORY )
     {
         // It is in fact a directory. This happens when HTTP redirects to FTP.
@@ -1335,7 +1335,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 {
     if ( job == m_putJob )
     {
-        kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
+        //kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
         if (offset)
         {
             RenameDlg_Result res = R_RESUME;
@@ -1375,7 +1375,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             m_getJob->slotTotalSize( d->m_sourceSize );
         if (offset)
         {
-            kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
+            //kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
             m_getJob->addMetaData( "resume", KIO::number(offset) );
 
             // Might or might not get emitted
@@ -1396,7 +1396,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
     {
         // Cool, the get job said ok, we can resume
         m_canResume = true;
-        kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
+        //kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
 
         m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
     }
@@ -1419,7 +1419,7 @@ void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
    if (!m_resumeAnswerSent)
    {
        m_resumeAnswerSent = true;
-       kdDebug(7007) << "FileCopyJob::slotData (first time) -> send resume answer " << m_canResume << endl;
+       //kdDebug(7007) << "FileCopyJob::slotData (first time) -> send resume answer " << m_canResume << endl;
        m_putJob->slave()->sendResumeAnswer( m_canResume );
    }
 }
@@ -1674,7 +1674,7 @@ void ListJob::slotFinished()
         // Return slave to the scheduler
         SimpleJob::slotFinished();
     } else {
-        kdDebug(7007) << "ListJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        //kdDebug(7007) << "ListJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, m_url, m_redirectionURL);
         m_url = m_redirectionURL;
@@ -2053,7 +2053,7 @@ void CopyJob::statNextSrc()
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 dest.addPath( m_currentSrcURL.fileName() );
-            kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
+            //kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
             state = STATE_RENAMING;
             SimpleJob * newJob = KIO::rename( m_currentSrcURL, dest, false /*no overwrite */);
             Scheduler::scheduleJob(newJob);
@@ -2072,7 +2072,7 @@ void CopyJob::statNextSrc()
             }
             // Stat the next src url
             Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
-            //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
+            //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
             state = STATE_STATING;
             addSubjob(job);
             m_currentDestURL=m_dest;
@@ -2585,14 +2585,14 @@ void CopyJob::copyNextFile()
                 KIO::SimpleJob *newJob = KIO::symlink( (*it).uSource.path(), (*it).uDest, bOverwrite, false /*no GUI*/ );
                 newjob = newJob;
                 Scheduler::scheduleJob(newJob);
-                kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.prettyURL() << endl;
+                //kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.prettyURL() << endl;
                 //emit linking( this, (*it).uSource.path(), (*it).uDest );
                 m_bCurrentOperationIsLink = true;
                 m_currentSrcURL=(*it).uSource;
                 m_currentDestURL=(*it).uDest;
                 //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
-                kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
+                //kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
                     bool devicesOk=false;
@@ -2625,7 +2625,7 @@ void CopyJob::copyNextFile()
                     if (!devicesOk)
                     {
                        QString path = (*it).uDest.path();
-                       kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
+                       //kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
                        QFile f( path );
                        if ( f.open( IO_ReadWrite ) )
                        {
@@ -2681,7 +2681,7 @@ void CopyJob::copyNextFile()
             KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, (*it).uDest, bOverwrite, false /*no GUI*/ );
             Scheduler::scheduleJob(newJob);
             newjob = newJob;
-            kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.prettyURL() << endl;
+            //kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.prettyURL() << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
             m_currentSrcURL=(*it).linkDest;
             m_currentDestURL=(*it).uDest;
@@ -2840,7 +2840,7 @@ void CopyJob::slotResult( Job *job )
                     QCString _dest( QFile::encodeName(dest.path()) );
                     KTempFile tmpFile( m_currentSrcURL.directory() );
                     QCString _tmp( QFile::encodeName(tmpFile.name()) );
-                    kdDebug() << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
+                    kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
                     tmpFile.unlink();
                     if ( ::rename( _src, _tmp ) == 0 )
                     {
@@ -2869,14 +2869,14 @@ void CopyJob::slotResult( Job *job )
                 m_currentDestURL=m_dest;
                 kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
                 Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
-                //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
+                //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
                 state = STATE_STATING;
                 addSubjob(job);
                 m_bOnlyRenames = false;
             }
             else
             {
-                kdDebug(7007) << "Renaming succeeded, move on" << endl;
+                //kdDebug(7007) << "Renaming succeeded, move on" << endl;
                 emit copyingDone( this, *m_currentStatSrc, m_currentDest, true, true );
                 ++m_currentStatSrc;
                 statNextSrc();
@@ -2920,7 +2920,7 @@ void CopyJob::slotResult( Job *job )
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-    //kdDebug() << "KIO::copy src=" << src.url() << " dest=" << dest.url() << endl;
+    //kdDebug(7007) << "KIO::copy src=" << src.url() << " dest=" << dest.url() << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, false, showProgressInfo );
@@ -2928,7 +2928,7 @@ CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 
 CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-    //kdDebug() << "KIO::copyAs src=" << src.url() << " dest=" << dest.url() << endl;
+    //kdDebug(7007) << "KIO::copyAs src=" << src.url() << " dest=" << dest.url() << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, true, showProgressInfo );
