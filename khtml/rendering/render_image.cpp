@@ -437,7 +437,11 @@ void RenderImage::updateImage(CachedImage* new_image)
     if (tempimage && image != tempimage && oimage != tempimage )
         tempimage->deref(this);
 
-    berrorPic = image->isErrorImage();
+    // if the loading finishes we might get an error and then the image is deleted
+    if ( image )
+        berrorPic = image->isErrorImage();
+    else
+        berrorPic = true;
 }
 
 void RenderImage::updateFromElement()
