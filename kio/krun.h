@@ -121,12 +121,18 @@ public:
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
   /**
-   * Run the given command and notifies kicker of the starting
-   * of the application.
+   * Run the given shell command and notifies kicker of the starting
+   * of the application. If the program to be called doesn't exist,
+   * an error box will be displayed.
+   *
+   * @ref _cmd must be a shell command. You must not append "&"
+   * to it, since the function will do that for you.
+   *
+   * @return PID of running command, 0 if it could not be started, 0 - (PID
+   * of running command) if command was unsafe for map notification.
    *
    * Use only when you know the full command line. Otherwise use the other
    * static methods, or @ref KRun's constructor.
-   * @param cmd the full command (unquoted) line to run, see @ref run()
    */
   static pid_t runCommand( QString cmd );
   

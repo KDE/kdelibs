@@ -331,10 +331,9 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   return retval;
 }
 
-// KDE 3.0 : make one single public method, instead of a public and a protected
 pid_t KRun::runCommand( QString cmd )
 {
-  return KRun::run( cmd );
+  return KRun::runCommand( cmd, binaryName( cmd ), QString::null /*unused*/);
 }
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString &/*iconName*/ )
@@ -785,19 +784,18 @@ KProcessRunner::slotProcessExited(KProcess * p)
   if (p != process_)
     return; // Eh ?
 
-  //kdDebug() << "slotProcessExited " << binName << endl;
-  //kdDebug() << "normalExit " << process_->normalExit() << endl;
-  //kdDebug() << "exitStatus " << process_->exitStatus() << endl;
-  if ( !binName.isEmpty() &&
-       process_->normalExit() && process_->exitStatus() == 127 )
+  kdDebug() << "slotProcessExited " << binName << endl;
+  kdDebug() << "normalExit " << process_->normalExit() << endl;
+  kdDebug() << "exitStatus " << process_->exitStatus() << endl;
+  if ( !binName.isEmpty() && process_->normalExit()
+          && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 ) )
   {
-    // Often we get 127 because the binary doesn't exist.
+    // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
     if ( KStandardDirs::findExe( binName ).isEmpty() )
     {
       kapp->ref();
-      KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( binName ) );
-      // TODO after 2.0: turn this into "Couldn't file the program named %1" or so.
+      KMessageBox::sorry( 0L, i18n("Couldn't find the program %1").arg( binName ) );
       kapp->deref();
     }
   }
