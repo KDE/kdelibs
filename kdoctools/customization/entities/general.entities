@@ -172,6 +172,7 @@
 <!ENTITY kbiff	"<application>KBiff</application>">
 <!ENTITY kblackbox	"<application>KBlackbox</application>">
 <!ENTITY kbounce	"<application>KBounce</application>">
+<!ENTITY kbugbuster	"<application>kbugbuster</application>">
 <!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
 <!ENTITY kchart "<application>KChart</application>">
