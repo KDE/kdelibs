@@ -399,6 +399,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
 
    if (!args || !result)
    {
+      enable_i18n();
       usage( i18n("Unknown option '%1'.").arg(_opt));
    }
 
@@ -406,11 +407,13 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
    {
       if (!enabled)
       {
+         enable_i18n();
          usage( i18n("Unknown option '%1'.").arg(_opt));
       }
       i++;
       if (i >= argc)
       {
+         enable_i18n();
          usage( i18n("'%1' missing.").arg( opt_name));
       }
       args->setOption(opt, argv[i]);
@@ -482,6 +485,7 @@ KCmdLineArgs::parseAllArgs()
 			arg(about->appName()).arg(about->version()));
             exit(0);
          } else if ( strcmp( option, "author") == 0 ) {
+             enable_i18n();
 	     if ( about ) {
 		 const QValueList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
@@ -508,6 +512,7 @@ KCmdLineArgs::parseAllArgs()
          // Check whether appOptions allows these arguments
          if (!allowArgs)
          {
+            enable_i18n();
             usage( i18n("Unexpected argument '%1'.").arg( argv[i]));
          }
          else
@@ -582,6 +587,10 @@ KCmdLineArgs::qt_argv()
 void
 KCmdLineArgs::enable_i18n()
 {
+    // called twice or too late
+    if (KGlobal::_locale)
+	    return;
+
     if (!KGlobal::_instance) {
 	KInstance *instance = new KInstance(about);
 	(void) instance->config();
@@ -589,11 +598,10 @@ KCmdLineArgs::enable_i18n()
     }
 }
 
-
 void
 KCmdLineArgs::usage(const QString &error)
 {
-    if (!KGlobal::_locale) enable_i18n();
+    assert(KGlobal::_locale);
     QCString localError = error.local8Bit();
     if (localError[error.length()-1] == '\n')
 	localError = localError.left(error.length()-1);
@@ -608,7 +616,7 @@ KCmdLineArgs::usage(const QString &error)
 void
 KCmdLineArgs::usage(const char *id)
 {
-   if (!KGlobal::_locale) enable_i18n();
+   enable_i18n();
    assert(argsList != 0); // It's an error to call usage(...) without
                           // having done addCmdLineOptions first!
 
