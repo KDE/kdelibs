@@ -19,11 +19,13 @@
 
 #include "kmconfigjobs.h"
 
-#include <knuminput.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
+
+#include <knuminput.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kdialog.h>
 
 KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
@@ -39,10 +41,10 @@ KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
 	m_limit->setSpecialValueText(i18n("Unlimited"));
 	m_limit->setLabel(i18n("Maximum number of jobs shown:"));
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	l0->addWidget(box, 0);
 	l0->addStretch(1);
-	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), 10);
+	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
 	l1->addWidget(m_limit);
 }
 

@@ -23,9 +23,11 @@
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
+
 #include <klocale.h>
 #include <kurlrequester.h>
 #include <kconfig.h>
+#include <kdialog.h>
 
 KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
@@ -45,10 +47,10 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 					  "external PostScript viewer"));
 	lab->setTextFormat(Qt::RichText);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	l0->addWidget(box);
 	l0->addStretch(1);
-	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), 10);
+	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
 	l1->addWidget(lab);
 	l1->addWidget(m_useext);
 	l1->addWidget(m_program);

@@ -21,15 +21,17 @@
 #include "kmmanager.h"
 #include "kmfactory.h"
 
-#include <klistbox.h>
 #include <qgroupbox.h>
 #include <qlineedit.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qlayout.h>
 #include <qlabel.h>
+
 #include <klocale.h>
 #include <kconfig.h>
 #include <kiconloader.h>
+#include <klistbox.h>
+#include <kdialog.h>
 
 KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
@@ -44,10 +46,10 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	m_list1->setSelectionMode(KListBox::Extended);
 	m_list2 = new KListBox(box);
 	m_list2->setSelectionMode(KListBox::Extended);
-	m_add = new QPushButton(box);
-	m_add->setPixmap(SmallIcon("forward"));
-	m_remove = new QPushButton(box);
-	m_remove->setPixmap(SmallIcon("back"));
+	m_add = new QToolButton( box );
+	m_add->setIconSet(SmallIconSet( "forward" ));
+	m_remove = new QToolButton( box );
+	m_remove->setIconSet(SmallIconSet( "back" ));
 	m_locationre = new QLineEdit(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("The printer filtering allows you to view only a specific set of "
@@ -58,11 +60,11 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	lab->setTextFormat(Qt::RichText);
 	QLabel	*lab1 = new QLabel(i18n("Location filter:"), box);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	l0->addWidget(box, 1);
-	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), 10);
+	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
 	l1->addWidget(lab);
-	QGridLayout	*l2 = new QGridLayout(0, 4, 3, 0, 10);
+	QGridLayout	*l2 = new QGridLayout(0, 4, 3, 0, KDialog::spacingHint());
 	l1->addLayout(l2);
 	l2->setRowStretch(0, 1);
 	l2->setRowStretch(3, 1);
@@ -72,7 +74,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	l2->addMultiCellWidget(m_list2, 0, 3, 2, 2);
 	l2->addWidget(m_add, 1, 1);
 	l2->addWidget(m_remove, 2, 1);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
 	l1->addLayout(l3, 0);
 	l3->addWidget(lab1, 0);
 	l3->addWidget(m_locationre, 1);
@@ -143,7 +145,7 @@ void KMConfigFilter::slotSelectionChanged()
 	const KListBox	*lb = static_cast<const KListBox*>(sender());
 	if (!lb)
 		return;
-	QPushButton	*pb = (lb == m_list1 ? m_add : m_remove);
+	QToolButton	*pb = (lb == m_list1 ? m_add : m_remove);
 	for (uint i=0; i<lb->count(); i++)
 		if (lb->isSelected(i))
 		{

@@ -19,7 +19,6 @@
 
 #include "kmconfigfonts.h"
 
-#include <klistview.h>
 #include <qgroupbox.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
@@ -28,11 +27,14 @@
 #include <qcheckbox.h>
 #include <qsettings.h>
 #include <qwhatsthis.h>
+
 #include <klocale.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kurlrequester.h>
 #include <kfile.h>
+#include <klistview.h>
+#include <kdialog.h>
 
 KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
@@ -59,11 +61,11 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	QLabel	*lab0 = new QLabel(i18n("Additional director&y:"), box2);
 	lab0->setBuddy(m_addpath);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(box->layout(), 0);
+	QVBoxLayout	*l0 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
 	l0->addWidget(m_embedfonts);
-	QVBoxLayout	*l1 = new QVBoxLayout(box2->layout(), 5);
+	QVBoxLayout	*l1 = new QVBoxLayout(box2->layout(), KDialog::spacingHint());
 	l1->addWidget(m_fontpath);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, KDialog::spacingHint());
 	l1->addLayout(l2);
 	l2->addWidget(m_up);
 	l2->addWidget(m_down);
@@ -71,11 +73,11 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	l1->addSpacing(10);
 	l1->addWidget(lab0);
 	l1->addWidget(m_addpath);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
 	l1->addLayout(l3);
 	l3->addStretch(1);
 	l3->addWidget(m_add);
-	QVBoxLayout	*l4 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l4 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	l4->addWidget(box);
 	l4->addWidget(box2);
 

@@ -23,7 +23,7 @@
 #include "kmconfigpage.h"
 
 class KListBox;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 
 class KMConfigFilter : public KMConfigPage
@@ -45,7 +45,7 @@ protected:
 
 private:
 	KListBox	*m_list1, *m_list2;
-	QPushButton	*m_add, *m_remove;
+	QToolButton	*m_add, *m_remove;
 	QLineEdit	*m_locationre;
 };
 

@@ -24,6 +24,7 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qwhatsthis.h>
+
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <kurlrequester.h>
@@ -35,6 +36,7 @@
 #include <kcursor.h>
 #include <klineedit.h>
 #include <kguiitem.h>
+#include <kdialog.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 : KMConfigPage(parent,"ConfigTimer")
@@ -69,25 +71,27 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_uselast = new QCheckBox(i18n("De&faults to the last printer used in the application"), m_statusbox);
 
 	//layout
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	lay0->addWidget(m_timerbox);
 	lay0->addWidget(m_testpagebox);
 	lay0->addWidget(m_statusbox);
 	lay0->addStretch(1);
-	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 0);
-	lay1->addSpacing(5);
+	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 
+		KDialog::spacingHint());
 	lay1->addWidget(m_timer);
-	QVBoxLayout	*lay2 = new QVBoxLayout(m_testpagebox->layout(), 10);
+	QVBoxLayout	*lay2 = new QVBoxLayout(m_testpagebox->layout(),
+		KDialog::spacingHint());
 	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 0);
 	lay2->addWidget(m_defaulttestpage);
 	lay2->addWidget(m_testpage);
 	lay2->addLayout(lay3);
 	lay3->addStretch(1);
 	lay3->addWidget(m_preview);
-	QVBoxLayout	*lay4 = new QVBoxLayout(m_statusbox->layout(), 10);
+	QVBoxLayout	*lay4 = new QVBoxLayout(m_statusbox->layout(),
+		KDialog::spacingHint());
 	lay4->addWidget(m_statusmsg);
 	lay4->addWidget(m_uselast);
-        m_preview->setEnabled( !m_testpage->lineEdit()->text().isEmpty());
+	m_preview->setEnabled( !m_testpage->url().isEmpty());
 }
 
 void KMConfigGeneral::testPageChanged(const QString &test )
@@ -97,7 +101,7 @@ void KMConfigGeneral::testPageChanged(const QString &test )
 
 void KMConfigGeneral::setEnabledPreviewButton(bool b)
 {
-    m_preview->setEnabled(!m_testpage->lineEdit()->text().isEmpty()&&b);
+    m_preview->setEnabled(!m_testpage->url().isEmpty() && b);
 }
 
 void KMConfigGeneral::loadConfig(KConfig *conf)

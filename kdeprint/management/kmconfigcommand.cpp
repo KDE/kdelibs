@@ -23,7 +23,9 @@
 #include <qlabel.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
+
 #include <klocale.h>
+#include <kdialog.h>
 
 KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
@@ -42,10 +44,10 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 				"changes will only be effective for you."), gb);
 	KXmlCommandSelector	*sel = new KXmlCommandSelector(false, gb);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	l0->addWidget(gb);
 	l0->addStretch(1);
-	QVBoxLayout	*l2 = new QVBoxLayout(gb->layout(), 10);
+	QVBoxLayout	*l2 = new QVBoxLayout(gb->layout(), KDialog::spacingHint());
 	l2->addWidget(lab);
 	l2->addWidget(sel);
 }
