@@ -457,7 +457,7 @@ public:
    * You will insert normal a button with connection (or use signals from
    * toolbar):
    * <pre>
-   * bar->insertButton(icon, id, const SIGNAL(clicked ()), this,
+   * bar->insertButton(icon, id, SIGNAL(clicked ()), this,
    *                   SLOT (slotClick()), true, "click or wait for popup");
    * </pre> And then add a delayed popup:
    * <pre>
