@@ -10,24 +10,14 @@
  * licensing terms.
  */
 
-#include <math.h>
-
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qrect.h>
-#include <qpoint.h>
-#include <qevent.h>
 #include <qimage.h>
-#include <qpixmap.h>
-#include <qcstring.h>
 
 #ifndef Q_WS_QWS //FIXME
 #include <kapp.h>
-#include <klocale.h>
-#include <kwin.h>
 #include <kimageeffect.h>
-#include <kpixmapeffect.h>
-#include <kmessagebox.h>
 #include <kpixmapio.h>
 #include <kdebug.h>
 #include <netwm.h>
@@ -36,39 +26,27 @@
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-
 
 KRootPixmap::KRootPixmap( QWidget *widget, const char *name )
-    : QObject(widget, name ? name : "KRootPixmap" )
+    : QObject(widget, name ? name : "KRootPixmap" ), m_pWidget(widget)
 {
-    m_pWidget = widget;
+    init();
+}
+
+KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
+    : QObject( parent, name ? name : "KRootPixmap" ), m_pWidget(widget)
+{
+    init();
+}
+
+void KRootPixmap::init()
+{
+    m_Fade = 0;
     m_pPixmap = new KSharedPixmap;
     m_pTimer = new QTimer( this );
     m_bInit = false;
     m_bActive = false;
     m_bCustomPaint = false;
-
-    connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
-    connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
-    connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
-
-    QObject *obj = m_pWidget;
-    while (obj->parent())
-	obj = obj->parent();
-    obj->installEventFilter(this);
-}
-
-KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
-    : QObject( parent, name ? name : "KRootPixmap" )
-{
-    m_pWidget = widget;
-    connect( widget, SIGNAL( destroyed() ), SLOT( stop() ) );
-    m_pPixmap = new KSharedPixmap;
-    m_pTimer = new QTimer( this );
-    m_bInit = false;
-    m_bActive = false;
 
     connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
     connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
@@ -93,7 +71,7 @@ int KRootPixmap::currentDesktop() const
     return rinfo.currentDesktop();
 }
 
-    
+
 void KRootPixmap::start()
 {
     if (m_bActive)
@@ -118,7 +96,7 @@ void KRootPixmap::stop()
 }
 
 
-void KRootPixmap::setFadeEffect(double fade, QColor color)
+void KRootPixmap::setFadeEffect(double fade, const QColor &color)
 {
     if (fade < 0)
 	m_Fade = 0;
@@ -127,6 +105,8 @@ void KRootPixmap::setFadeEffect(double fade, QColor color)
     else
 	m_Fade = fade;
     m_FadeColor = color;
+
+    if ( m_bActive && m_bInit ) repaint(true);
 }
 
 
@@ -141,7 +121,7 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 
     if (!m_bActive)
 	return false;
-	
+
     switch (event->type())
     {
     case QEvent::Resize:
@@ -211,7 +191,7 @@ void KRootPixmap::enableExports()
     args << 1;
     client->send( "kdesktop", "KBackgroundIface", "setExport(int)", data );
 }
-    
+
 
 void KRootPixmap::slotDone(bool success)
 {

@@ -3,8 +3,8 @@
  * $Id$
  * This file is part of the KDE project, module kdesktop.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * You can Freely distribute this program under the GNU Library General 
+ *
+ * You can Freely distribute this program under the GNU Library General
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
  */
 
@@ -16,7 +16,6 @@
 
 #ifndef Q_WS_QWS //FIXME
 
-class QEvent;
 class QRect;
 class QWidget;
 class QTimer;
@@ -24,14 +23,14 @@ class KSharedPixmap;
 class KRootPixmapData;
 
 /**
- * Creates pseudo-transparent widgets. 
- * 
+ * Creates pseudo-transparent widgets.
+ *
  * A pseudo-transparent widget is a widget with its background pixmap set to
  * that part of the desktop background that it is currently obscuring. This
  * gives a transparency effect.
  *
- * To create a transparent widget, construct a KRootPixmap and pass it a 
- * pointer to your widget. That's it! Moving, resizing and background changes 
+ * To create a transparent widget, construct a KRootPixmap and pass it a
+ * pointer to your widget. That's it! Moving, resizing and background changes
  * are handled automatically.
  *
  * Instead of using the default behaviour, you can ask KRootPixmap
@@ -53,7 +52,7 @@ public:
      * of the target widget so it will be deleted automatically when the
      * widget is destroyed.
      *
-     * @param target A pointer to the widget that you want to make pseudo 
+     * @param target A pointer to the widget that you want to make pseudo
      * transparent.
      */
     KRootPixmap( QWidget *target, const char *name=0 );
@@ -114,13 +113,13 @@ public slots:
      * Sets the fade effect.
      *
      * This effect will fade the background to the
-     * specified color. 
+     * specified color.
      * @param strength A value between 0 and 1, indicating the strength
      * of the fade. A value of 0 will not change the image, a value of 1
      * will make it the fade color everywhere, and in between.
      * @param color The color to fade to.
      */
-    void setFadeEffect(double strength, QColor color);
+    void setFadeEffect(double strength, const QColor &color);
 
     /**
      * Repaints the widget background. Normally, you shouldn't need this
@@ -170,7 +169,7 @@ protected:
     /**
      * Called when the pixmap has been updated. The default implementation
      * applies the fade effect, then sets the target's background, or emits
-     * @backgroundUpdated( KSharedPixmap * ) depending on the painting mode.
+     * @ref backgroundUpdated(const QPixmap &) depending on the painting mode.
      */
     virtual void updateBackground( KSharedPixmap * );
 
@@ -190,6 +189,8 @@ private:
     QTimer *m_pTimer;
     KSharedPixmap *m_pPixmap;
     KRootPixmapData *d;
+
+    void init();
 };
 
 #endif // ! Q_WS_QWS
