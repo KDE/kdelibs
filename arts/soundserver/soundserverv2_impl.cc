@@ -157,7 +157,7 @@ PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, b
     arts_debug("search playobject, mimetype = %s", mimetype.c_str());
 
     TraderQuery query;
-    query.supports("Interface","Arts::PlayObject");
+    query.supports("Interface","Arts::StreamPlayObject");
     query.supports("MimeType", mimetype);
 
     string objectType;
@@ -193,7 +193,7 @@ PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, b
 	else
 	    return result;
     }
-    else arts_warning("mimetype %s unsupported", mimetype.c_str());
+    else arts_warning("mimetype %s unsupported for streaming", mimetype.c_str());
 
     return PlayObject::null();
 }
