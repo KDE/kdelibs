@@ -39,253 +39,253 @@ class KConfigGroup;
  */
 class KPluginInfo
 {
-	public:
-		/**
-		 * Read plugin info from @p filename.
-		 *
-		 * The file should be of the following form:
-		 * \verbatim
-		   [Desktop Entry]
-		   Name=User Visible Name
-		   Comment=Description of what the plugin does
-		   Type=Plugin
-		  
-		   [X-KDE Plugin Info]
-		   Author=Author's Name
-		   Email=author@foo.bar
-		   PluginName=internalname
-		   Version=1.1
-		   Website=http://www.plugin.org/
-		   Category=playlist
-		   Require=plugin1,plugin3
-		   License=GPL
-		   EnabledByDefault=true
-		   \endverbatim
-		 * The first three entries in the "Desktop Entry" group always need to be
-		 * present. The Type is always "Plugin".
-		 *
-		 * In the "X-KDE Plugin Info" section you may add further entries which
-		 * will be available using @ref property(). The Website,Category,Require
-		 * keys are optional.
-		 * For EnabledByDefault look at setPluginEnabledByDefault and/or
-		 * pluginEnabledByDefault.
-		 *
-		 * @param filename  The filename of the .desktop file.
-		 */
-		KPluginInfo( const QString & filename );
+    public:
+        /**
+         * Read plugin info from @p filename.
+         *
+         * The file should be of the following form:
+         * \verbatim
+           [Desktop Entry]
+           Name=User Visible Name
+           Comment=Description of what the plugin does
+           Type=Plugin
 
-		/**
-		 * Create an empty hidden plugin.
-		 * @internal
-		 */
-		KPluginInfo();
+           [X-KDE Plugin Info]
+           Author=Author's Name
+           Email=author@foo.bar
+           PluginName=internalname
+           Version=1.1
+           Website=http://www.plugin.org/
+           Category=playlist
+           Require=plugin1,plugin3
+           License=GPL
+           EnabledByDefault=true
+           \endverbatim
+         * The first three entries in the "Desktop Entry" group always need to be
+         * present. The Type is always "Plugin".
+         *
+         * In the "X-KDE Plugin Info" section you may add further entries which
+         * will be available using @ref property(). The Website,Category,Require
+         * keys are optional.
+         * For EnabledByDefault look at setPluginEnabledByDefault and/or
+         * pluginEnabledByDefault.
+         *
+         * @param filename  The filename of the .desktop file.
+         */
+        KPluginInfo( const QString & filename );
 
-	private:
-		/**
-		 * Standard copy ctor. (deep copy)
-		 */
-		KPluginInfo( const KPluginInfo & );
+        /**
+         * Create an empty hidden plugin.
+         * @internal
+         */
+        KPluginInfo();
 
-		/**
-		 * Make a deep copy.
-		 */
-		const KPluginInfo & operator=( const KPluginInfo & );
+    private:
+        /**
+         * Standard copy ctor. (deep copy)
+         */
+        KPluginInfo( const KPluginInfo & );
 
-	public:
-		virtual ~KPluginInfo();
+        /**
+         * Make a deep copy.
+         */
+        const KPluginInfo & operator=( const KPluginInfo & );
 
-		/**
-		 * @return A list of KPluginInfo objects constructed from a list of
-		 * KService objects. If you get a trader offer of the plugins you want
-		 * to use you can just pass them to this function.
-		 */
-		static QValueList<KPluginInfo*> fromServices( const KService::List & services, KConfig * config = 0, const QString & group = QString::null );
+    public:
+        virtual ~KPluginInfo();
 
-		/**
-		 * @return A list of KPluginInfo objects constructed from a list of
-		 * filenames. If you make a lookup using, for example,
-		 * KStandardDirs::findAllResources() you pass the list of files to this
-		 * function.
-		 */
-		static QValueList<KPluginInfo*> fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString::null );
+        /**
+         * @return A list of KPluginInfo objects constructed from a list of
+         * KService objects. If you get a trader offer of the plugins you want
+         * to use you can just pass them to this function.
+         */
+        static QValueList<KPluginInfo*> fromServices( const KService::List & services, KConfig * config = 0, const QString & group = QString::null );
 
-		/**
-		 * @return A list of KPluginInfo objects for the KParts plugins of an
-		 * instance. You only need the name of the instance not a pointer to the
-		 * KInstance object.
-		 */
-		static QValueList<KPluginInfo*> fromKPartsInstanceName( const QString &, KConfig * config = 0, const QString & group = QString::null );
+        /**
+         * @return A list of KPluginInfo objects constructed from a list of
+         * filenames. If you make a lookup using, for example,
+         * KStandardDirs::findAllResources() you pass the list of files to this
+         * function.
+         */
+        static QValueList<KPluginInfo*> fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString::null );
 
-		/**
-		 * @return Whether the plugin should be hidden.
-		 */
-		bool isHidden() const;
+        /**
+         * @return A list of KPluginInfo objects for the KParts plugins of an
+         * instance. You only need the name of the instance not a pointer to the
+         * KInstance object.
+         */
+        static QValueList<KPluginInfo*> fromKPartsInstanceName( const QString &, KConfig * config = 0, const QString & group = QString::null );
 
-		/**
-		 * Set whether the plugin is currently loaded.
-		 *
-		 * You might need to reimplement this method for special needs.
-		 *
-		 * @see pluginEnabled()
-		 */
-		virtual void setPluginEnabled( bool enabled );
+        /**
+         * @return Whether the plugin should be hidden.
+         */
+        bool isHidden() const;
 
-		/**
-		 * @return Whether the plugin is currently loaded.
-		 *
-		 * You might need to reimplement this method for special needs.
-		 *
-		 * @see setPluginEnabled()
-		 */
-		virtual bool pluginEnabled() const;
+        /**
+         * Set whether the plugin is currently loaded.
+         *
+         * You might need to reimplement this method for special needs.
+         *
+         * @see pluginEnabled()
+         */
+        virtual void setPluginEnabled( bool enabled );
 
-		/**
-		 * @return The default value whether the plugin is enabled or not.
-		 * Defaults to the value set in the desktop file, or if that isn't set
-		 * to false.
-		 *
-		 * @see setPluginEnabledByDefault( bool )
-		 */
-		bool pluginEnabledByDefault() const;
+        /**
+         * @return Whether the plugin is currently loaded.
+         *
+         * You might need to reimplement this method for special needs.
+         *
+         * @see setPluginEnabled()
+         */
+        virtual bool pluginEnabled() const;
 
-		/**
-		 * @return The string associated with the @p key.
-		 *
-		 * @see operator[]
-		 */
-		const QString & property( const QString & key ) const
-			{ return m_propertymap[ key ]; }
+        /**
+         * @return The default value whether the plugin is enabled or not.
+         * Defaults to the value set in the desktop file, or if that isn't set
+         * to false.
+         *
+         * @see setPluginEnabledByDefault( bool )
+         */
+        bool pluginEnabledByDefault() const;
 
-		/**
-		 * This is the same as @ref property(). It is provided for convenience.
-		 *
-		 * @return The string associated with the @p key.
-		 *
-		 * @see property()
-		 */
-		const QString & operator[]( const QString & key ) const
-			{ return property( key ); }
+        /**
+         * @return The string associated with the @p key.
+         *
+         * @see operator[]
+         */
+        const QString & property( const QString & key ) const
+        { return m_propertymap[ key ]; }
 
-		/**
-		 * @return The user visible name of the plugin.
-		 */
-		const QString & name() const
-			{ return m_propertymap[ QString::fromLatin1("Name") ]; }
+        /**
+         * This is the same as @ref property(). It is provided for convenience.
+         *
+         * @return The string associated with the @p key.
+         *
+         * @see property()
+         */
+        const QString & operator[]( const QString & key ) const
+        { return property( key ); }
 
-		/**
-		 * @return A comment describing the plugin.
-		 */
-		const QString & comment() const 
-			{ return m_propertymap[ QString::fromLatin1("Comment") ]; }
+        /**
+         * @return The user visible name of the plugin.
+         */
+        const QString & name() const
+        { return m_propertymap[ QString::fromLatin1("Name") ]; }
 
-		/**
-		 * @return The file containing the information about the plugin.
-		 */
-		const QString & specfile() const;
+        /**
+         * @return A comment describing the plugin.
+         */
+        const QString & comment() const 
+        { return m_propertymap[ QString::fromLatin1("Comment") ]; }
 
-		/**
-		 * @return The author of this plugin.
-		 */
-		const QString & author() const 
-			{ return m_propertymap[ QString::fromLatin1("Author") ]; }
+        /**
+         * @return The file containing the information about the plugin.
+         */
+        const QString & specfile() const;
 
-		/**
-		 * @return The email address of the author.
-		 */
-		const QString & email() const 
-			{ return m_propertymap[ QString::fromLatin1("Email") ]; }
-		
-		/**
-		 * @return The category of this plugin (e.g. playlist/skin).
-		 */
-		const QString & category() const 
-			{ return m_propertymap[ QString::fromLatin1("Category") ]; }
+        /**
+         * @return The author of this plugin.
+         */
+        const QString & author() const 
+        { return m_propertymap[ QString::fromLatin1("Author") ]; }
 
-		/**
-		 * @return The internal name of the plugin (for KParts Plugins this is
-		 * the same name as set in the .rc file).
-		 */
-		const QString & pluginname() const 
-			{ return m_propertymap[ QString::fromLatin1("PluginName") ]; }
+        /**
+         * @return The email address of the author.
+         */
+        const QString & email() const 
+        { return m_propertymap[ QString::fromLatin1("Email") ]; }
 
-		/**
-		 * @return The version of the plugin.
-		 */
-		const QString & version() const 
-			{ return m_propertymap[ QString::fromLatin1("Version") ]; }
+        /**
+         * @return The category of this plugin (e.g. playlist/skin).
+         */
+        const QString & category() const 
+        { return m_propertymap[ QString::fromLatin1("Category") ]; }
 
-		/**
-		 * @return The website of the plugin/author.
-		 */
-		const QString & website() const 
-			{ return m_propertymap[ QString::fromLatin1("Website") ]; }
+        /**
+         * @return The internal name of the plugin (for KParts Plugins this is
+         * the same name as set in the .rc file).
+         */
+        const QString & pluginname() const 
+        { return m_propertymap[ QString::fromLatin1("PluginName") ]; }
+
+        /**
+         * @return The version of the plugin.
+         */
+        const QString & version() const 
+        { return m_propertymap[ QString::fromLatin1("Version") ]; }
+
+        /**
+         * @return The website of the plugin/author.
+         */
+        const QString & website() const 
+        { return m_propertymap[ QString::fromLatin1("Website") ]; }
 
 
-		/**
-		 * @return The license of this plugin.
-		 */
-		const QString & license() const 
-			{ return m_propertymap[ QString::fromLatin1("License") ]; }
+        /**
+         * @return The license of this plugin.
+         */
+        const QString & license() const 
+        { return m_propertymap[ QString::fromLatin1("License") ]; }
 
-		/**
-		 * @return A list of plugins required for this plugin to be enabled. Use
-		 *         the pluginname in this list.
-		 */
-		const QStringList & requirements() const;
+        /**
+         * @return A list of plugins required for this plugin to be enabled. Use
+         *         the pluginname in this list.
+         */
+        const QStringList & requirements() const;
 
-		/**
-		 * @return A list of Service pointers if the plugin installs one or more
-		 *         @ref KCModule
-		 */
-		const QValueList<KService::Ptr> & services() const;
+        /**
+         * @return A list of Service pointers if the plugin installs one or more
+         *         @ref KCModule
+         */
+        const QValueList<KService::Ptr> & services() const;
 
-		/**
-		 * Set the KConfigGroup to use for load()ing and save()ing the
-		 * configuration. This will be overridden by the KConfigGroup passed to
-		 * save() or load() (if one is passed).
-		 */
-		void setConfig( KConfig * config, const QString & group );
+        /**
+         * Set the KConfigGroup to use for load()ing and save()ing the
+         * configuration. This will be overridden by the KConfigGroup passed to
+         * save() or load() (if one is passed).
+         */
+        void setConfig( KConfig * config, const QString & group );
 
-		/**
-		 * @return If the KPluginInfo object has a KConfig object set return
-		 * it, else return 0.
-		 */
-		KConfig * config() const;
+        /**
+         * @return If the KPluginInfo object has a KConfig object set return
+         * it, else return 0.
+         */
+        KConfig * config() const;
 
-		/**
-		 * @return The groupname used in the KConfig object for load()ing and
-		 * save()ing whether the plugin is enabled.
-		 */
-		const QString & configgroup() const;
+        /**
+         * @return The groupname used in the KConfig object for load()ing and
+         * save()ing whether the plugin is enabled.
+         */
+        const QString & configgroup() const;
 
-		/**
-		 * Save state of the plugin - enabled or not. This function is provided
-		 * for reimplementation if you need to save somewhere else.
-		 * @param config    The KConfigGroup holding the information whether
-		 *                  plugin is enabled.
-		 */
-		virtual void save( KConfigGroup * config = 0 );
+        /**
+         * Save state of the plugin - enabled or not. This function is provided
+         * for reimplementation if you need to save somewhere else.
+         * @param config    The KConfigGroup holding the information whether
+         *                  plugin is enabled.
+         */
+        virtual void save( KConfigGroup * config = 0 );
 
-		/**
-		 * Load the state of the plugin - enabled or not. This function is provided
-		 * for reimplementation if you need to save somewhere else.
-		 * @param config    The KConfigGroup holding the information whether
-		 *                  plugin is enabled.
-		 */
-		virtual void load( KConfigGroup * config = 0 );
+        /**
+         * Load the state of the plugin - enabled or not. This function is provided
+         * for reimplementation if you need to save somewhere else.
+         * @param config    The KConfigGroup holding the information whether
+         *                  plugin is enabled.
+         */
+        virtual void load( KConfigGroup * config = 0 );
 
-		/**
-		 * Restore defaults (enabled or not).
-		 */
-		virtual void defaults();
+        /**
+         * Restore defaults (enabled or not).
+         */
+        virtual void defaults();
 
-	private:
-		QMap<QString,QString> m_propertymap;
-		bool m_loaded;
+    private:
+        QMap<QString,QString> m_propertymap;
+        bool m_loaded;
 
-		class KPluginInfoPrivate;
-		KPluginInfoPrivate * d;
+        class KPluginInfoPrivate;
+        KPluginInfoPrivate * d;
 };
 
-// vim: sw=4 ts=4
+// vim: sw=4 sts=4 et
 #endif // KPLUGININFO_H
