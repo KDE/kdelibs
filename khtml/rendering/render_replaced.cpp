@@ -34,6 +34,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h" // ### remove dependency
+#include <iostream.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -297,11 +298,11 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
     // widgets can be drawn as part of the normal rendering process, and the z-index of other objects can be properly
     // taken into account.
 
-    if (!m_widgetShown) {
+//    if (!m_widgetShown) {
 //	m_widgetShown = true;
 	m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
 	m_widget->show();
-    }
+//    }
 
     m_view->setIgnoreEvents(true);
     QWidget *prevFocusWidget = qApp->focusWidget();
@@ -322,7 +323,9 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
 
 bool RenderWidget::eventFilter(QObject *o, QEvent *e)
 {
- //   if (e->type() == QEvent::ShowWindowRequest)
+    cerr << "RenderWidget::eventFilter(): event type is " << e->type() << endl;
+/*
+//    if (e->type() == QEvent::ShowWindowRequest)
 //	return true;
 
     if ((e->type() == QEvent::Paint) && m_paintingSelf)
@@ -337,7 +340,7 @@ bool RenderWidget::eventFilter(QObject *o, QEvent *e)
 	}
 	return true;
     }
-
+*/
     return QObject::eventFilter(o,e);
 }
 
