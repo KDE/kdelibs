@@ -198,35 +198,37 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
 }
 
 
-bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
+bool Observer::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName )
 {
-//   kdDebug() << "** Observer::authorize " << endl;
-    QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
-    arg << user;
-    arg << head;
-    arg << key;
-    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "authorize(QString,QString,QString)", data, replyType, replyData, true ) && replyType == "QByteArray" )
+  kdDebug(7007) << "Observer: Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+  QByteArray data, replyData;
+  QCString replyType;
+  QDataStream arg( data, IO_WriteOnly );
+  arg << msg << user << lockUserName;
+  bool result = kapp->dcopClient()->call("kio_uiserver", "UIServer", "openPassDlg(QString,QString,bool)",
+                                         data, replyType, replyData, true );
+  if ( result && replyType == "QByteArray" )
+  {
+    QString u, p;
+    Q_UINT8 authorized;
+
+    QByteArray res_data;
+    QDataStream res_stream( replyData, IO_ReadOnly );
+    res_stream >> res_data;
+
+    QDataStream stream( res_data, IO_ReadOnly );
+    stream >> authorized >> u >> p;
+
+    if( authorized )
     {
-        kdDebug(7007) << "Call was ok" << endl;
-        QDataStream _reply_stream( replyData, IO_ReadOnly );
-        QByteArray res;
-        _reply_stream >> res;
-        QDataStream stream( res, IO_ReadOnly );
-        Q_UINT8 authorized;
-        QString u, p;
-        stream >> authorized >> u >> p;
-        if( authorized )
-        {
-            user = u;
-            pass = p;
-            return true;
-        }
+      user = u;
+      passwd = p;
+      kdDebug(7007) << "Observer::openPassDlg call succeeded: User=" << user << " Password=[hidden] " << endl;
+      return true;
     }
-    else
-        kdDebug(7007) << "Call was not OK" << endl;
-    return false;
+  }
+  kdDebug(7007) << "Observer::openPassDlg call failed!" << endl;
+  return false;
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
@@ -331,6 +333,5 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
   kdDebug(7007) << "open_SkipDlg call failed" << endl;
   return S_CANCEL;
 }
-
 
 #include "observer.moc"

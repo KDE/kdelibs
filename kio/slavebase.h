@@ -186,21 +186,8 @@ public:
      */
     void infoMessage( const QString &msg );
 
-    /**
-     * Call this when requesting for a login and password.
-     *
-     * @param head and i18n'ed message to explain the dialog box
-     * @param user user name, in and out
-     * @param pass password, in and out
-     * @param key the string to be used to cache the password.
-     * This can be for example the host, so that any authorization
-     * can kept around for a whole session, or realm etc.
-     *
-     * @return true on ok, false on cancel
-     */
-    bool openPassDlg( const QString& /*head*/, QString& /*user*/, QString& /*pass*/, const QString& /*key*/ = QString::null );
-
     enum { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
+
     /**
      * Call this to show a message box from the slave (it will in fact be handled
      * by kio_uiserver, so that the progress info dialog for the slave is hidden
@@ -442,16 +429,126 @@ protected:
     void disconnectSlave();
 
     /**
-     * internal function that slaves use to see if there is any cached
-     * authentication entries
+     * Checks whether the password daemon kdesud is
+     * up and running or can be started if it is not.
+     *
+     * @return true if password daemon is/can be started successfully.
      */
-    bool checkCachedAuthentication(QString& user, QString& passwd, int& auth_type, QString& valid_path, const QString& realm);
+    bool pingCacheDaemon() const;
 
     /**
-     * internal function to store authentication entries
+     * Prompts the user for Authentication info (login & password).
+     *
+     * This function attempts to prompt the user for a password
+     * and returns true if the user complies (clicks OK) or
+     * false otherwise (clicks Cancel).
+     *
+     * Exception: A call to this function can also fail, result
+     * in @p false, if the UIServer could not be started for some
+     * reason.
+     *
+     * @param msg     i18n'ed message to explain the dialog box
+     * @param user    user name, in and out
+     * @param pass    password, in and out
+     * @param lockUserName flag used to enable/disable the username field.
+     *
+     * @return        @p true on if successful, @p false otherwise
      */
-    void cacheAuthentication(const KURL& url, const QString& user,
-                             const QString& password, int auth_type);
+    bool openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName = false );
+
+    /**
+     * Checks for any cached Authentication.
+     *
+     * @param url           url for which to check cached Authentication.
+     * @param user          cached user name.
+     * @param passw         cached password.
+     * @param realm         unique key to distinguish protection spaces (ex: HTTP Realm values)
+     * @param extra         extra info to store (ex: Authentication strings in Digest Authentication )
+     * @param verify_path   if true, check new url contains cached url (== same protection space)
+     *
+     * @return              @p true if a cached Authentication is found
+     */
+    bool checkCachedAuthentication( const KURL& url,
+                                    QString& user,
+                                    QString& passwd,
+                                    QString& realm,
+                                    QString& extra,
+                                    bool verify_path = true );
+
+    /**
+     * Same as above except in the number of arguments it takes.
+     *
+     * This is a convenience method for protocols that have simple
+     * Authentication and do not require complex caching schemes
+     * such as ftp
+     *
+     * @param url           url for which to check cached Authentication.
+     * @param user          cached user name.
+     * @param passw         cached password.
+     *
+     * @return              @p true if cached Authentication if found
+     */
+    bool checkCachedAuthentication( const KURL& url,
+                                    QString& user,
+                                    QString& passwd);
+
+    /**
+     * Caches Authentication information in kdesu daemon.
+     *
+     * Authentication caching is based on the following criteria:
+     *
+     *   i.)  The protocol as part of the key generation.  This will
+     *        reduce the chances of inadvertantly sending password to the
+     *        incorrect server. Thus, http://www.foobar.org and
+     *        ftp://www.foobar.org are treated as different request sites
+     *        even if the same Authentication is assigned to the user for
+     *        accessing both locations.
+     *
+     *  ii.)  Cache different servers on the the same host but with different
+     *        port numbers. For example, one might have multiple web-based admin
+     *        tools, such as Webmin and SWAT, on the same server with different
+     *        port numbers.
+     *
+     * iii.)  Use reference counting to keep track of all applications that are
+     *        requesting password caching for the same location instead of storing
+     *        duplicate enteries.  The cached password can then be deleted when the
+     *        last application referencing it is destroyed.
+     *
+     *  iv.)  Allow redundant password caching for the same host based on heirarchy
+     *        such that protocols, such as HTTP, can store Authentication info
+     *	       for multiple password protected content within the same site.  For example,
+     *        http://foo.org/foo/foo.html and http://foo.org/foo/bar/bar.html would fall
+     *        under the same protection space while http://foo.org/foobar/foo.html would
+     *        not and hence gets a different entry. Refer to RFC 2617 for further details.
+     *
+     * @param url       url for which Authentication is to be cached.
+     * @param user      user name to be cached.
+     * @param passw     password to be cached.
+     * @param realm     unique key to distinguish protection spaces (ex: HTTP Realm values)
+     * @param extra     extra info to store (ex: Authentication strings in Digest Authentication )
+     *
+     * @return          @p true if Authentication was sucessfully cached
+     */
+    bool cacheAuthentication( const KURL& url,
+                              const QString& user,
+                              const QString& passwd,
+                              const QString& realm = QString::null,
+                              const QString& extra = QString::null );
+
+    /**
+     * Creates a basic key to be used to cache the password.
+     *
+     * @param url   URL for which a caching key should be generated.
+     * @return      NULL if @p url is malformed, otherwise the generated key.
+     */
+    QString createAuthCacheKey( const KURL& url );
+
+    /**
+     * Deletes any cached keys for the given group.
+     *
+     * @param grpname   group name for which cached Authentication is to be deleted.
+     */
+    void delCachedAuthentication( const QString& grpname );
 
     /**
      * Used by the slave to check if it can connect

@@ -19,8 +19,9 @@
 #define __kio_pass_dlg_h__
 
 #include <qstring.h>
-#include <kdialog.h>
 #include <qlineedit.h>
+
+#include <kdialogbase.h>
 
 namespace KIO {
 
@@ -54,10 +55,15 @@ namespace KIO {
      */
     QString user() { return m_pUser->text(); }
 
-  private:
+    /**
+     * Enables/disables the username field.
+     */
+    void setEnableUserField( bool, bool gainsFocus = false );
 
+  private:
     QLineEdit* m_pPass;
     QLineEdit* m_pUser;
+
   };
 
 };

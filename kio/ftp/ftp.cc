@@ -365,40 +365,92 @@ bool Ftp::ftpLogin( const QString & user )
 
   assert( !m_bLoggedOn );
 
-  if ( !m_user.isEmpty() ) {
-    QCString tempbuf = "user ";
-    tempbuf += m_user.ascii();
+  if ( !m_user.isEmpty() )
+  {
+    QString msg;
+    QCString tempbuf;
+    int failedAuth = 0;
+    KURL url( QString::fromLatin1("ftp://%1:%2").arg(m_host).arg(m_port) );
 
-    bool needPass = true;
-    rspbuf[0] = '\0';
 
-    if ( !ftpSendCmd( tempbuf, '3' ) ) {
-      kdDebug(7102) << "1> " << rspbuf << endl;
-
-      if ( rspbuf[0] == '2' )
-        needPass = false; /* no password required */
-    }
-
-    if (needPass) {
-      //kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
-      if ( m_pass.isEmpty() ) {
-        QString tmp = i18n("Authorization is required for %1").arg(m_user + QString::fromLatin1("@") + m_host);
-        if ( !openPassDlg( tmp, m_user, m_pass, m_host ) )
+    while( ++failedAuth )
+    {
+      // Ask user if we should retry after login failure.
+      if( failedAuth > 2 )
+      {
+        msg = i18n("Login Failed! Do you want to retry ?");
+        if( messageBox(QuestionYesNo, msg, i18n("Authorization")) != 3 )
         {
-          error( ERR_USER_CANCELED, m_host );
+          kdDebug(7102) << "Login aborted by user!" << endl;
+          error( ERR_COULD_NOT_LOGIN, i18n("Could not login to <b>%1<b>").arg(m_host));
           return false;
         }
       }
-      //kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
 
-      tempbuf = "pass ";
-      tempbuf += m_pass.ascii();
+      // Check the cache and/or prompt user for password if 1st
+      // login attempt failed OR the user supplied a login name,
+      // but no password.
+      if( failedAuth > 1 || (!m_user.isEmpty() && m_pass.isEmpty()) )
+      {
+        QString user = (m_user == FTP_LOGIN && m_pass == FTP_PASSWD) ? QString::null : m_user;
+        if( checkCachedAuthentication( url, user , m_pass ) )
+        {
+          m_user = user;
+        }
+        else
+        {
+          msg = i18n("Authorization is required to access"
+                     "<center><b>%1</b></center>"
+                     "Enter login information:").arg(m_host);
 
-      kdDebug(7102) << "Sending pass command" << endl;
-      if ( !ftpSendCmd( tempbuf, '2' ) ) {
-        kdDebug(7102) << "Wrong password" << endl;
-        error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host));
-        return false;
+          if ( !openPassDlg( msg, user, m_pass ) )
+          {
+            error( ERR_USER_CANCELED, m_host );
+            return false;
+          }
+          else
+          {
+            if( !user.isEmpty() )
+              m_user = user;
+          }
+        }
+      }
+
+      tempbuf = "user ";
+      tempbuf += m_user.latin1();
+      kdDebug(7102) << "Sending Login name: " << m_user << endl;
+      bool loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp( rspbuf, "230", 3));
+      bool needPass = !strncmp( rspbuf, "331", 3);
+      // Prompt user for login info if we do not
+      // get back a "230" or "331".
+      if( !loggedIn && !needPass )
+      {
+        kdDebug(7102) << "1> " << rspbuf << endl;
+        continue;  // Well we failed, prompt the user please!!
+      }
+
+      if( needPass )
+      {
+        tempbuf = "pass ";
+        tempbuf += m_pass.latin1();
+        kdDebug(7102) << "Sending Login password: " << "[protected]" << endl;
+        loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp(rspbuf, "230", 3));
+      }
+
+      if( loggedIn )
+      {
+        kdDebug(7102) << "Logged in successfully!" << endl;
+        // Do not cache the default login!!
+        if( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
+          cacheAuthentication(url, m_user, m_pass);
+        failedAuth = -1;
+      }
+      else
+      {
+        // TODO: Need to parse error messages here!!
+        // Currently the user is prompted for password
+        // even if login attempt failed because the server
+        // reached its limit!!!
       }
     }
   }

@@ -236,6 +236,21 @@ protected:
    */
   void cleanCache();
 
+  /**
+   * Clears session specific settings.
+   */
+  void flushAuthenticationSettings();
+
+  /**
+   * Performs a GET HTTP request.
+   */
+  void retrieveContent(bool close = true);
+
+  /**
+   * Performs a HEADER HTTP request.
+   */
+  void retrieveHeader(bool close = true);
+
 protected: // Members
   HTTPState m_state;
   HTTPRequest m_request;
@@ -276,18 +291,19 @@ protected: // Members
   // Proxy related members
   bool m_bUseProxy;  // Whether we want a proxy
   int m_iProxyPort;
+  KURL m_proxyURL;
   QString m_strNoProxyFor;
-  QString m_strProxyHost;
-  QString m_strProxyUser;
-  QString m_strProxyPass;
+  QString m_strProxyRealm;
+
   ksockaddr_in m_proxySockaddr;
   QCString m_protocol;
 
   // Authentication
-  QString m_strRealm,
-          m_strAuthString,
-          m_strProxyAuthString;
+  QString m_strRealm;
+  QString m_strAuthString;
+  QString m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
+  int m_iAuthFailed;
 
   // Persistant connections
   bool m_bKeepAlive;
@@ -300,8 +316,6 @@ protected: // Members
   DCOPClient *m_dcopClient;
 
   short unsigned int mDefaultPort;
-
-  QStringList m_userAgentList;
 
 #ifdef DO_SSL
   bool m_bUseSSL;

@@ -64,31 +64,31 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
    grid->addWidget( l, 0, 1 );
    m_pUser = new QLineEdit( this );
    grid->addWidget( m_pUser, 0, 3 );
+   l->setBuddy( m_pUser );
+
    l = new QLabel( i18n( "Password:" ), this );
    l->setAlignment( Qt::AlignVCenter | Qt::AlignRight );
    grid->addWidget( l, 2, 1 );
    m_pPass = new QLineEdit( this );
    m_pPass->setEchoMode( QLineEdit::Password );
    grid->addWidget( m_pPass, 2, 3 );
+   l->setBuddy( m_pPass );
 
-   if ( !_user.isNull() )
+   if ( !_user.isEmpty() )
      m_pUser->setText( _user );
-   if ( !_pass.isNull() )
+
+   if ( !_pass.isEmpty() )
      m_pPass->setText( _pass );
 
    layout->addSpacing( spacingHint() );
 
-   //
    // Connect vom LineEdit herstellen und Accelerator
-   //
    QAccel *ac = new QAccel(this);
    ac->connectItem( ac->insertItem(Key_Escape), this, SLOT(reject()) );
 
    connect( m_pPass, SIGNAL(returnPressed()), SLOT(accept()) );
 
-   //
    // Die Buttons "OK" & "Cancel" erzeugen
-   //
    KButtonBox *bbox = new KButtonBox(this);
    layout->addWidget(bbox);
 
@@ -114,6 +114,16 @@ PassDlg::PassDlg( QWidget* parent, const char* name, bool modal,
    layout->addStretch( 10 );
 
    resize( sizeHint() );
+}
+
+void PassDlg::setEnableUserField( bool enable, bool gainsFocus )
+{
+  m_pUser->setEnabled(enable);
+  if( enable && gainsFocus )
+    m_pUser->setFocus();
+
+  if( !enable && m_pUser->hasFocus() )
+    m_pPass->setFocus();
 }
 
 #include "passdlg.moc"

@@ -2,8 +2,6 @@
    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                       David Faure <faure@kde.org>
 
-#include "uiserver.h"
-
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -761,62 +759,19 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
-QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& key )
+QByteArray UIServer::openPassDlg( const QString& msg, const QString& user, bool lockUserName )
 {
-    kdDebug( 7024 ) << "User " << user << "Header " << head << "Key " << key << endl;
-    QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
-    bool isCached = false;
-    KDEsuClient client;
-    if( !key.isNull() )
-    {
-        kdDebug(7024) << "Checking if password is cached for " << key.utf8() << endl;
-        int sucess = client.ping();
-        if( sucess == -1 )
-        {
-            kdDebug(7024) << "No running kdesu daemon found. Starting one..." << endl;
-            sucess = client.startServer();
-            if( sucess != -1 )
-                kdDebug(7024) << "New kdesu daemon sucessfully started..." << endl;
-        }
-
-        if( sucess != - 1 )
-        {
-            kdDebug(7024) << "Checking for presence of a key named " << (key + "-user").utf8() << endl;
-            QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
-            kdDebug(7024) << "Key check resulted in " << u.utf8() << endl;
-            // Re-request the password if the user is supplied and is different!!
-            if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isEmpty() ) )
-            {
-                isCached = true;
-                kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
-                QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
-                kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;
-                stream << Q_UINT8(1) << u << p;
-                kdDebug(7024) << "Success.  Sending back Authorization..." << endl;
-                return packedArgs;
-            }
-        }
-    }
-    if( !isCached )
-    {
-        KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null );
-        if ( dlg.exec() )
-        {
-            QString u = dlg.user();
-            QString p = dlg.password();
-            kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
-            kdDebug(7024) << "Username: " << u.utf8() << endl;
-            //kdDebug(7024) << "Password: " << p.utf8() << endl;
-            client.setVar( (key + "-user").utf8() , u.utf8() );
-            client.setVar( (key + "-pass").utf8() , p.utf8() );
-            stream << Q_UINT8(1) << u << p;
-            kdDebug(7024) << "Authorization cached sucessfully..." << endl;
-            return packedArgs;
-        }
-    }
-    stream << Q_UINT8(0) << QString::null << QString::null;
-    return packedArgs;
+    kdDebug(7024) << "Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    KIO::PassDlg dlg( 0, 0, true, 0, msg, user, QString::null );
+    if( lockUserName )
+        dlg.setEnableUserField( false );
+    if ( dlg.exec() )
+        stream << Q_UINT8(1) << dlg.user() << dlg.password();
+    else
+        stream << Q_UINT8(0) << QString::null << QString::null;
+    return data;
 }
 
 int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )

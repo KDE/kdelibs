@@ -64,7 +64,8 @@ class SlaveInterfacePrivate;
    CMD_SYMLINK = 'Q', // 81
    CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
    CMD_MESSAGEBOXANSWER = 'S', // 83
-   CMD_RESUMEANSWER = 'T' // 84
+   CMD_RESUMEANSWER = 'T', // 84
+   CMD_DEL_AUTHORIZATION = 'U' // 85
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -179,7 +180,17 @@ protected:
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
 
-    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ = QString::null );
+    /**
+     * Prompt user for authentication info (login & password).
+     *
+     * @param msg     i18n'ed message to explain the dialog box
+     * @param user    user name if one is already supplied
+     * @param lockUserName enable/disable the username field
+     *
+     * @return        @p true if sucessfully, false otherwise
+     */
+    void openPassDlg( const QString& msg, const QString& user, bool lockUserName );
+
     void messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
 
     // I need to identify the slaves

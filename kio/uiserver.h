@@ -26,13 +26,11 @@
 #include <kurl.h>
 #include <kmainwindow.h>
 #include <kdatastream.h>
-
 #include <klistview.h>
-
-#include "defaultprogress.h"
 
 class QTimer;
 class ListProgress;
+class DefaultProgress;
 
 namespace KIO {
   class Job;
@@ -226,16 +224,15 @@ k_dcop:
   ASYNC canResume( int id, unsigned long offset );
 
   /**
-   * Invoke this method to request autorization info from the user
-   * or query the password daemon to see if one is stored.
+   * Prompts the user for authorization information ( login & password ).
    *
-   * @param user  the username to be authenticated
-   * @param head  the resource the requires authorization
-   * @param key   the key used to cache the password.
+   * @param msg     the resource the requires authorization
+   * @param user    the username to be authenticated
+   * @param lockUserName    enables/disables the username field
    *
    * @return serialized autorization info: (bool authorized, QString user, QString password)
    */
-  QByteArray authorize( const QString& /*user*/, const QString& /*head*/, const QString& /*key*/ );
+  QByteArray openPassDlg( const QString& msg, const QString& user, bool lockUserName );
 
   /**
    * Popup a message box

@@ -165,9 +165,10 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_NEED_PASSWD: {
 	kdDebug(7007) << "needs passwd\n";
-	QString key, user, pass;
-	stream >> key >> str1 >> user >> pass;
-	openPassDlg(str1, user, pass, key);
+	QString user;
+	bool lockUserName;
+	stream >> str1 >> user >> lockUserName;
+	openPassDlg( str1, user, lockUserName);
 	break;
     }
     case INF_MESSAGEBOX: {
@@ -233,21 +234,20 @@ void SlaveInterface::sendResumeAnswer( bool resume )
     m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
-void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )
+void SlaveInterface::openPassDlg( const QString& msg, const QString& user, bool lockUserName )
 {
-    kdDebug(7007) << "openPassDlg " << head << endl;
-    QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
-    QString u = user, p = pass;
-    bool result = Observer::self()->authorize( u, p, head, key );
+    kdDebug(7007) << "SlaveInterface: Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+    QString u = user, p;
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    bool result = Observer::self()->openPassDlg(msg, u , p, lockUserName );
     if( result )
     {
         stream << u << p;
-        m_pConnection->sendnow( CMD_USERPASS, packedArgs );
+        m_pConnection->sendnow( CMD_USERPASS, data );
     }
     else
-        m_pConnection->sendnow( CMD_NONE, packedArgs );
-
+        m_pConnection->sendnow( CMD_NONE, data );
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption, const QString &buttonYes, const QString &buttonNo )

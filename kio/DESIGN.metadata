@@ -26,10 +26,16 @@ cache           "cache"         Use entry from cache if available.
                 "verify"        Use entry from after verifying with remote server
                 "reload"        Do not do any cache lookups.
 
+no-cache        bool            Flag that indicates whether caching is enabled/disabled
+
 window-id       number          winId() of the window the request is associated with.
 
 resume          number          Try to get the file starting at the given offset (set by TransferJob)
 
 ssl_*           *               Many SSL metadata fields (see khtml_part and kio_http)
+
+authGroupKey    string          Key used to group Authentication information (used by SlaveBase/Scheduler)
+
+charset         string          Charset of the current content as returned by the HTTP Header Response.
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.

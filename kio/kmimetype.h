@@ -134,7 +134,7 @@ public:
    *
    * @param _url URL for the file.
    * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globallly configured icon size.
+   * @param _force_size Override globally configured icon size.
    * @param _state The icon state, one of: KIcon::DefaultState,
    * KIcon::ActiveState or KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.

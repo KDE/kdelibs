@@ -103,12 +103,12 @@ using namespace KIO;
 #define RESPONSE_TIMEOUT 60
 
 extern "C" {
-  char *create_basic_auth (const char *header, const char *user, const char *passwd);
-  const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
+  const char* create_basic_auth (const char *header, const char *user, const char *passwd);
+  const char* create_digest_auth (const char *header, const char *user,
+                                  const char *passwd, const char *auth_str);
   void sigalrm_handler(int);
+  int kdemain(int argc, char **argv);
 };
-
-extern "C" { int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
@@ -171,111 +171,152 @@ void setup_alarm(unsigned int timeout)
 }
 
 #ifdef DO_MD5
-const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
+const char * create_digest_auth (const char *header, const char *user,
+				                          const char *passwd, const char *auth_str)
 {
-  QCString domain, realm, algorithm, nonce, opaque, qop;
-  const char *p=auth_str;
   int i;
-  HASHHEX HA1, HA2 = "", Response;
+  HASHHEX HA1;
+  HASHHEX HA2 = "";
+  HASHHEX Response;
 
-  if (!user || !passwd)
+  const char *p=auth_str;
+  QCString domain ="", realm = "", algorithm="MD5", nonce="", opaque="", qop="";
+
+  if (!user || !passwd || p == 0)
     return "";
 
   QCString t1;
-
-  while (*p) {
-    while( (*p == ' ') || (*p == ',') || (*p == '\t'))
-      p++;
+  kdDebug(7113) << "User is :" << user << ":    Password is : ..." << /* passwd << */ ":" << endl;
+  while (*p)
+  {
+    while( (*p == ' ') || (*p == ',') || (*p == '\t')) { p++; }
     i = 0;
-    if ( strncasecmp(p, "realm=\"", 7 ) == 0 ) {
-      p += 7;
-      while( p[i] != '"' ) i++;
-      realm = QCString( p, i );
-      kdDebug(7113) << "Realm is :" << realm.data() << ":" << endl;
-    } else if (strncasecmp(p, "algorith=\"", 10)==0) {
-      p+=10;
-      while (p[i] != '"' ) i++;
-      algorithm = QCString(p, i);
-      kdDebug(7113) << "Algorithm is :" << algorithm.data() << ":" << endl;
-    } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
-      p+=11;
-      while (p[i] != '"') i++;
-      algorithm = QCString(p,i);
-    } else if (strncasecmp(p, "domain=\"", 8)==0) {
-      p+=8;
-      while (p[i] != '"') i++;
-      domain = QCString(p,i);
-    } else if (strncasecmp(p, "nonce=\"", 7)==0) {
-      p+=7;
-      while (p[i] != '"') i++;
-      nonce = QCString(p,i);
-    } else if (strncasecmp(p, "opaque=\"", 8)==0) {
-      p+=8;
-      while (p[i] != '"') i++;
-      opaque = QCString(p,i);
-    } else if (strncasecmp(p, "qop=\"", 5)==0) {
-      p+=5;
-      while (p[i] != '"') i++;
-      qop = QCString(p,i);
+    if (strncasecmp(p, "realm=", 6 )==0)
+    {
+      p+=6;
+      while( *p == '"' ) p++;  // Go past any number of " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      realm = QCString( p, i+1 );
+      kdDebug(7113) << "realm:==> " << realm.data() << endl;
     }
-
-    p+=i;
-    p++;
+    else if (strncasecmp(p, "algorith=", 9)==0)
+    {
+      p+=9;
+      while( *p == '"' ) p++;  // Go past any number of " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      algorithm = QCString(p, i+1);
+      kdDebug(7113) << "algorith:==> " << algorithm << endl;
+    }
+    else if (strncasecmp(p, "algorithm=", 10)==0)
+    {
+      p+=10;
+      while( *p == '"' ) p++;  // Go past any " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      algorithm = QCString(p,i+1);
+      kdDebug(7113) << "algorithm:==> " << algorithm << endl;
+    }
+    else if (strncasecmp(p, "domain=", 7)==0)
+    {
+      p+=7;
+      while( *p == '"' ) p++;  // Go past any " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      domain = QCString(p,i+1);
+      kdDebug(7113) << "domain:==> " << domain << endl;
+    }
+    else if (strncasecmp(p, "nonce=", 6)==0)
+    {
+      p+=6;
+      while( *p == '"' ) p++;  // Go past any " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      nonce = QCString(p,i+1);
+      kdDebug(7113) << "nonce:==> " << nonce << endl;
+    }
+    else if (strncasecmp(p, "opaque=", 7)==0)
+    {
+      p+=7;
+      while( *p == '"' ) p++;  // Go past any " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      opaque = QCString(p,i+1);
+      kdDebug(7113) << "opaque:==>" << opaque << endl;
+    }
+    else if (strncasecmp(p, "qop=", 4)==0)
+    {
+      p+=4;
+      while( *p == '"' ) p++;  // Go past any " mark(s) first
+      while( p[i] != '"' ) i++;  // Read everything until the last " mark
+      qop = QCString(p,i+1);
+      kdDebug(7113) << "qop:==> " << qop << endl;
+    }
+    p+=(i+1);
   }
 
   t1 += header;
   t1 += ": Digest username=\"";
   t1 += user;
-  t1 += "\", ";
+  t1 += "\"";
 
-  t1 += "realm=\"";
+  t1 += ", realm=\"";
   t1 += realm.data();
-  t1 += "\", ";
+  t1 += "\"";
 
-  t1 += "nonce=\"";
+  t1 += ", nonce=\"";
   t1 += nonce.data();
-  t1 += "\", ";
+  t1 += "\"";
 
-  t1 += "uri=\"";
-  t1 += domain.data();
-  t1 += "\", ";
-
-  char szCNonce[10] = "abcdefghi";
-  char szNonceCount[9] = "00000001";
-
-
-
-  DigestCalcHA1("md5", user, realm.data(), passwd, nonce.data(), szCNonce, HA1);
-  DigestCalcResponse(HA1, nonce.data(), szNonceCount, szCNonce, qop.data(), "GET", domain.data(), HA2, Response);
-  t1 += "qop=\"auth\", ";
-
-  t1 += "cnonce=\"";
-  t1 += szCNonce;
-  t1 += "\", ";
-
-  t1 += "response=\"";
-  t1 += Response;
-  t1 += "\", ";
-
-  if (opaque != "") {
-    t1 += "opaque=\"";
-    t1 += opaque.data();
-    t1 += "\" ";
+  if( !domain.isEmpty() )
+  {
+    t1 += ", uri=";
+	  t1 += domain.data();
   }
 
-  t1 += "\r\n";
+  const char* szCNonce = "4477b65d"; // RIDDLE: Can anyone guess what this value means ??
+  const char* szNonceCount = "00000001";
 
+  DigestCalcHA1(algorithm.data(), user, realm.data(), passwd, nonce.data(), szCNonce, HA1);
+
+  // FIXME- I ONLY WORK FOR "GET"!!  What about other methods ??
+  DigestCalcResponse(HA1, nonce.data(), szNonceCount, szCNonce, qop.data(), "GET", domain.data(), HA2, Response);
+
+  if( !qop.isEmpty() )
+  {
+    t1 += ", qop=";
+    t1 += qop.data();
+    t1 += ", nc=";
+    t1 += szNonceCount; // HACK: Should be fixed according to RFC 2617 section 3.2.2
+    t1 += ", cnonce=\"";
+    t1 += szCNonce;
+    t1 += "\"";
+  }
+
+  t1 += ", response=\"";
+  t1 += Response;
+  t1 += "\"";
+
+  if ( !opaque.isEmpty() )
+  {
+    t1 += ", opaque=\"";
+    t1 += opaque.data();
+    t1 += "\"";
+  }
+  // Please do not add things that should be done
+  // by the header generator method itself!! (DA)
+  // t1 += "\r\n";
+  kdDebug(7113) << "Digest Response: " << t1.data() << endl;
   return qstrdup(t1.data());
 }
 #else
 const char *create_digest_auth (const char *, const char *, const char *, const char *)
 {
-  //error(ERR_COULD_NOT_AUTHENTICATE, "digest");
-  return strdup("\r\n");
+  kdError(7113) << "Cannot perform digest authentication!!!" << endl;
+  // error(ERR_COULD_NOT_AUTHENTICATE, "digest");
+
+  // Please do not add things that should be done
+  // by the header generator method itself!! (DA)
+  return strdup(""); // ("\r\n");
 }
 #endif
 
-char *create_basic_auth (const char *header, const char *user, const char *passwd)
+const char *create_basic_auth (const char *header, const char *user, const char *passwd)
 {
   char *wwwauth;
   if (user && passwd) {
@@ -287,7 +328,11 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
     t2 = base64_encode_line(t1);
     free(t1);
     wwwauth = (char *)malloc(strlen(t2) + strlen(header) + 11); // UPDATE WHEN FORMAT BELOW CHANGES !!!
-    sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
+
+    // Please do not add things that should be done
+    // by the header generator method itself!! (DA)
+    // sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
+    sprintf(wwwauth, "%s: Basic %s", header, t2);
     free(t2);
   }
   else
@@ -296,11 +341,10 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
   return(wwwauth);
 }
 
-/*****************************************************************************/
-
 /* Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
-   nplist is "inka.de,hadiko.de" or if host is "localhost" and
-   nplist is "localhost" */
+   nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
+   "localhost".
+*/
 bool revmatch(const char *host, const char *nplist)
 {
   const char *hptr = host + strlen( host ) - 1;
@@ -348,7 +392,6 @@ bool revmatch( const QString& host, const QString& nplist )
     return found;
 }
 */
-
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
@@ -362,6 +405,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
+  m_iAuthFailed = 0;
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
   {
@@ -371,6 +415,8 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_bCanResume = true; // most of http servers support resuming ?
 
   reparseConfiguration();
+
+  flushAuthenticationSettings();
 
   m_bEOF=false;
 #ifdef DO_SSL
@@ -573,7 +619,9 @@ void HTTPProtocol::http_checkConnection()
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-      m_request.do_proxy = !revmatch(m_request.hostname.latin1(), m_strNoProxyFor.latin1());
+  {
+    m_request.do_proxy = !revmatch( m_request.hostname.latin1(), m_strNoProxyFor.latin1() );
+  }
 
   if (m_sock)
   {
@@ -691,10 +739,12 @@ HTTPProtocol::http_openConnection()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-      kdDebug(7113) << "http_openConnection " << m_strProxyHost << " " << m_iProxyPort << endl;
+      QString proxy_host = m_proxyURL.host();
+      int proxy_port = m_proxyURL.port();
+      kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
       // yep... open up a connection to the proxy instead of our host
-      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.latin1(), m_iProxyPort)) {
-        error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
+      if(!KSocket::initSockaddr(&m_proxySockaddr, proxy_host.latin1(), proxy_port)) {
+        error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
         return false;
       }
 
@@ -703,28 +753,28 @@ HTTPProtocol::http_openConnection()
       if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
-          error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
-          kdDebug(7103) << "Could not connect to PROXY (line:697)" << endl;
+          error(ERR_COULD_NOT_CONNECT, proxy_host );
+          kdDebug(7103) << "Could not connect to PROXY server!!" << endl;
           return false;
         }
         // Wait for connection
         if (!waitForConnect(m_sock, PROXY_CONNECT_TIMEOUT))
         {
-          error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
-          kdDebug(7103) << "Timed out waiting to connect to PROXY (line:703)" << endl;
+          error(ERR_COULD_NOT_CONNECT, proxy_host );
+          kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
           return false;
         }
       }
 
       // SSL proxying requires setting up a tunnel through the proxy server
       // with the CONNECT directive.
-      #ifdef DO_SSL
+#ifdef DO_SSL
       if (m_bUseSSL) {   // we might have DO_SSL but not m_bUseSSL someday
       kdDebug(7113) << "http proxy for SSL - setting up" << endl;
       // Set socket blocking.
       fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
 
-      QString proxyconheader = QString("CONNECT %1:443 HTTP/1.0\r\n\r\n").arg(m_request.url.host());
+      QString proxyconheader = QString("CONNECT %1:443 HTTP/1.0\r\n\r\n").arg(m_request.hostname);
       // WARNING: ugly hack alert!  We don't want to use the SSL routines
       //          for this code so we have to disabled it temporarily.
       bool useSSLSaved = m_bUseSSL;   m_bUseSSL = false;
@@ -734,7 +784,7 @@ HTTPProtocol::http_openConnection()
       if (!sendOk) {
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        error(ERR_COULD_NOT_CONNECT, proxy_host );
         m_bUseSSL = useSSLSaved;
         return false;
       }
@@ -744,7 +794,7 @@ HTTPProtocol::http_openConnection()
         //        here if we can.
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        error(ERR_COULD_NOT_CONNECT, proxy_host );
         m_bUseSSL = useSSLSaved;
         return false;
       }
@@ -758,7 +808,7 @@ HTTPProtocol::http_openConnection()
         //        here if we can.
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        error(ERR_COULD_NOT_CONNECT, proxy_host );
         m_bUseSSL = useSSLSaved;
         return false;
       }
@@ -766,7 +816,7 @@ HTTPProtocol::http_openConnection()
       m_bUseSSL = useSSLSaved;
       }  // if m_bUseSSL
       m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
-      #endif
+#endif
     } else {
       // apparently we don't want a proxy.  let's just connect directly
       ksockaddr_in server_name;
@@ -1031,23 +1081,13 @@ bool HTTPProtocol::http_open()
 #endif
   QString agent = metaData("userAgent");
   // If application did not specify a user agent,
-  // use one supplied by user or default!!
+  // use configured by the user or the default!!
   if( agent.isEmpty() )
     agent = KProtocolManager::userAgentForHost( m_state.hostname );
 
   if( !agent.isEmpty() )
   {
-    header += "User-Agent: " + agent;
-#ifdef DO_MD5
-    header+="; Supports MD5-Digest";
-#endif
-#ifdef DO_GZIP
-    header+="; Supports gzip encoding";
-#endif
-#ifdef DO_SSL
-    header+="; Supports SSL/HTTPS";
-#endif
-    header += "\r\n";
+    header += "User-Agent: " + agent + "\r\n";
   }
 
   QString referrer = metaData("referrer");
@@ -1112,87 +1152,115 @@ bool HTTPProtocol::http_open()
   }
 
   if (m_request.method == HTTP_POST) {
-//    header += m_request.user_headers; // DA: replaced with meta-data
       header += metaData("content-type");
       header += "\r\n";
   }
 
-  int auth_type;
-  QString user, password;
-  // we now try to determine if we have any saved authentication
-  // credentials.  this can be done two ways; either this particular
-  // process has a saved username and password in the state OR this
-  // process has just started and we check if it is cached.
-  if (!m_state.passwd.isNull() && !m_state.user.isNull())
+  // Check the cache if it is not a re-authentication request.
+  if( m_iAuthFailed == 0 )
   {
-    kdDebug(7113) << "(" << getpid() << ") Saved state authentication: m_state.user = " << m_state.user << ", m_state.passwd = " << m_state.passwd << endl;
-    user     = m_state.user;
-    password = m_state.passwd;
-  }
-  else
-  {
-    kdDebug(7113) << "(" << getpid() << ")  Checking cached authentication" << endl;
-    // we have just started... check if we are in a "state" of
-    // authentication and didn't even know it
-    QString realm;
-    if (m_strRealm.isNull())
-      realm = m_request.url.host();
-    else
-      realm = m_strRealm + "@" + m_request.url.host();
-
-    QString valid_path;
-    checkCachedAuthentication(user, password, auth_type, valid_path, realm);
-    if (valid_path.isNull())
-      valid_path = "/";
-
-    // now we make sure that the current path is a valid one
-    QString path(m_request.url.directory());
-    if (valid_path != path.left(valid_path.length())) {
-      user     = QString::null;
-      password = QString::null;
-      Authentication = AUTH_None;
-    }
-    else
+    kdDebug(7113) << "(" << getpid() << ")  Checking for Authentication info in cache..." << endl;
+    QString user, passwd, realm, extra;
+    if( checkCachedAuthentication( m_request.url, user, passwd, realm, extra, true ) )
     {
-      Authentication = (HTTP_AUTH)auth_type;
+      kdDebug(7103) << "(" << getpid() << ") Found a matching Authentication entry..." << endl;
+      Authentication = extra.isEmpty() ? AUTH_Basic : AUTH_Digest ;
       m_state.user   = user;
-      m_state.passwd = password;
+      m_state.passwd = passwd;
+      m_strRealm = realm;
+      if( Authentication == AUTH_Digest )
+        m_strAuthString = extra;
     }
   }
-  kdDebug(7113) << "(" << getpid() << "): Cached auth for realm " << m_strRealm << ": user= " << user << ", pass= " << password << ", auth_type = " << auth_type << endl;
 
-  // check if we need to login
-  if (!password.isNull() || !user.isNull()) {
-    if (Authentication == AUTH_Basic || Authentication == AUTH_None) {
-      header += create_basic_auth("Authorization", user.latin1(), password.latin1());
-    } else if (Authentication == AUTH_Digest) {
-      header += create_digest_auth("Authorization", user.latin1(), password.latin1(),
-                                   m_strAuthString.latin1());
-    }
-    // Don't do this as the authorization methods already add it!!!
-    // header+="\r\n";
+  // Check if we need to send "Authentication" is required
+  if( Authentication == AUTH_Basic )
+  {
+    kdDebug(7113) << "Using authentication: " << endl
+                  << " User= " << m_state.user << endl
+                  << " Password= [protected]" << endl
+                  << " Realm= " << m_strRealm << endl
+                  << " Extra= " << m_strAuthString << endl;
+
+    header += create_basic_auth("Authorization", m_state.user.latin1(), m_state.passwd.latin1());
+    header+="\r\n";
+  }
+  else if( Authentication == AUTH_Digest )
+  {
+    kdDebug(7113) << "Using authentication: " << endl
+                  << " User= " << m_state.user << endl
+                  << " Password= [protected]" << endl
+                  << " Realm= " << m_strRealm << endl
+                  << " Extra= " << m_strAuthString  << endl;
+
+    header += create_digest_auth("Authorization", m_state.user.latin1(), m_state.passwd.latin1(),
+                                 m_strAuthString.latin1());
+    header+="\r\n";
   }
 
-  // the proxy might need authorization of it's own. do that now
-  if( m_state.do_proxy ) {
-    if( m_strProxyUser != "" && m_strProxyPass != "" ) {
-      if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
-        header += create_basic_auth("Proxy-Authorization", m_strProxyUser.latin1(), m_strProxyPass.latin1() );
-      } else {
-        if (ProxyAuthentication == AUTH_Digest) {
-          header += create_digest_auth("Proxy-Authorization",
-                                       m_strProxyUser.latin1(),
-                                       m_strProxyPass.latin1(),
-                                       m_strProxyAuthString.latin1());
+  // Do we need to authorize to the proxy server ?
+  if( m_state.do_proxy )
+  {
+    // We keep proxy authentication locally until they are
+    // changed.  Thus, no need to check with kdesud for it
+    // when they are available...
+    kdDebug(7113) << "Proxy Setting HOST: " << m_proxyURL.host() << endl
+                  << "Proxy Setting PORT: " << m_proxyURL.port() << endl
+                  << "Proxy Setting USER: " << m_proxyURL.user() << endl
+                  << "Proxy Setting PASS: [protected]" << endl
+                  << "Proxy Setting REALM: " << m_strProxyRealm << endl
+                  << "Proxy Setting AUTH_TYPE: " << ProxyAuthentication << endl
+                  << "Proxy Setting AUTH_STRING: " << m_strProxyAuthString << endl;
+
+    if( m_strProxyRealm.isEmpty() )
+    {
+      kdDebug(7113) << "Checking for Proxy Authentication..." << endl;
+      QString user, passwd, realm, extra;
+      bool isCached = checkCachedAuthentication( m_proxyURL, user, passwd, realm, extra, false );
+      if( isCached )
+      {
+        m_proxyURL.setUser( user );
+        m_proxyURL.setPass( passwd );
+        m_strProxyRealm = realm;
+        if( !extra.isEmpty() )
+        {
+          ProxyAuthentication = AUTH_Digest;
+          m_strProxyAuthString = extra;
         }
+        else
+        {
+          ProxyAuthentication = AUTH_Basic;
+        }
+        kdDebug(7113) << "Request URL matches protection space. Retreived cached authentication: " << endl
+                      << " User= " << user << endl
+                      << " Pasword= [protected]" << endl
+                      << " Realm= " << realm << endl
+                      << " Extra= " << extra << endl;
+      }
+      else
+      {
+          ProxyAuthentication = AUTH_None;
       }
     }
+
+    if( ProxyAuthentication == AUTH_Basic )
+    {
+      header+= create_basic_auth("Proxy-Authorization", m_proxyURL.user().latin1(), m_proxyURL.pass().latin1() );
+      header+="\r\n";
+    }
+    else if( ProxyAuthentication == AUTH_Digest )
+    {
+      header+= create_digest_auth( "Proxy-Authorization", m_proxyURL.user().latin1(),
+                                   m_proxyURL.pass().latin1(), m_strProxyAuthString.latin1());
+      header+="\r\n";
+    }
   }
 
-  if (!moreData)
-     header += "\r\n";  /* end header */
+  if( !moreData )
+    header += "\r\n";  /* end header */
 
-  kdDebug(7113) << "(" << getpid() << ") Sending header: \n===\n" << header << "\n===" << endl;
+  kdDebug(7113) << "(" << getpid() << ") Sending header: \n=======" << endl << header << "\n=======" << endl;
+
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
@@ -1268,6 +1336,7 @@ bool HTTPProtocol::readHeader()
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
+  int code;
   char buffer[4097];
   bool unauthorized = false;
   bool cont = false;
@@ -1448,11 +1517,12 @@ bool HTTPProtocol::readHeader()
            m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
 #endif
       }
-      int code = atoi(buffer+9);
+      code = atoi(buffer+9);
 
       // unauthorized access
       if ((code == 401) || (code == 407)) {
-        unauthorized = true;
+    	unauthorized = true;
+    	m_iAuthFailed++;
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
@@ -1650,35 +1720,111 @@ bool HTTPProtocol::readHeader()
      }
   }
 
-  // we need to reread the header if we got a '100 Continue'
+  // We need to reread the header if we got a '100 Continue'
   if ( cont )
+  {
     return readHeader();
-  // we need to try to login again if we failed earlier
-  else if (unauthorized) {
-    http_closeConnection();
-    if (m_strRealm.isEmpty())
-      m_strRealm = m_state.hostname;
+  }
+  // We need to try to login again if we failed earlier
+  else if( unauthorized )
+  {
+    http_closeConnection();  // Close the connection first
+    QString msg, user, passwd;
 
-    if (!openPassDlg( i18n( "Authorization is required for <b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname ) ,
-                                  m_request.user, m_request.passwd, m_strRealm + "@" + m_request.hostname )) {
-      error(ERR_ACCESS_DENIED, m_state.hostname);
-      return false;
+    if( m_iAuthFailed > 1 || (!user.isEmpty() && !passwd.isEmpty()) )
+    {
+      if( code == 401 )
+        msg = i18n( "Authentication Failed!" );
+      else if( code == 407 )
+        msg = i18n( "Proxy Authentication Failed!");
+
+      msg += i18n("  Do you want to retry ?");
+
+      if( messageBox(QuestionYesNo, msg, i18n("Authentication")) != 3  )
+      {
+        kdDebug(7103) << "User rejected Authentication retry!!" << endl;
+        if( code == 401 )
+            msg = QString("%1").arg(m_state.hostname);
+        else if( code == 407 )
+            msg = QString("%1").arg(m_proxyURL.host());
+        error(ERR_ACCESS_DENIED, msg);
+        return false;
+      }
+    }
+    if( code == 401 )
+    {
+      // For cases where the user does http://foo@www.foo.org
+      if( !m_request.user.isEmpty() && m_iAuthFailed == 1 )
+        user = m_request.user;
+
+      if( m_strRealm.isEmpty() )
+        m_strRealm = m_state.hostname;
+
+      msg = i18n( "<center>Authentication required to access<br/>"
+                    "<b>%1</b> at <b>%2</b></center>" ).arg( m_strRealm ).arg( m_request.hostname );
+    }
+    else if( code == 407 )
+    {
+      if( m_strProxyRealm.isEmpty() )
+        m_strProxyRealm = m_state.hostname;
+
+      msg = i18n( "<b>Proxy Authentication</b> required to access this site.<br/>"
+                  "Enter your Authentication information below:" );
+    }
+
+    kdDebug(7103) << "(" << getpid() << ") Request URI's user: "<< m_request.url.user() << endl;
+    bool result = openPassDlg( msg, user, passwd, !m_request.url.user().isEmpty() );
+    if( result )
+    {
+      // Note that a single io-slave cannot be doing
+      // both authentications at the same time sine
+      // these requests come sequentially...
+      if( code == 401 )  // Request-Authentication
+      {
+        m_request.user = user;
+        m_request.passwd = passwd;
+      }
+      else if( code == 407 )  // Proxy-Authentication
+      {
+        m_proxyURL.setUser( user );
+        m_proxyURL.setPass( passwd );
+      }
     }
     else
-      cacheAuthentication(m_request.url, m_request.user, m_request.passwd, (int)Authentication);
-
-    if ( !http_open())
+    {
+      error( ERR_USER_CANCELED, "" ); // Ignore the user then!!
       return false;
+    }
 
-    return readHeader();
+    if( !http_open() )
+        return false;
+
+    result = readHeader();
+    m_iAuthFailed--;
+    if( result && m_iAuthFailed == 0 )
+    {
+        if( code == 401 )
+        {
+          kdDebug(7103) << "(" << getpid() << ") Caching request Authentication..." << endl;
+          cacheAuthentication( m_request.url, m_request.user, m_request.passwd, m_strRealm, m_strAuthString );
+        }
+        else if( code == 407 )
+        {
+          kdDebug(7103) << "(" << getpid() << ") Caching Proxy Authentication..." << endl;
+          cacheAuthentication( m_proxyURL, m_proxyURL.user(), m_proxyURL.pass(), m_strProxyRealm, m_strProxyAuthString );
+        }
+    }
+    return result;
   }
   // We need to do a redirect
   else if (!locationStr.isEmpty() && !noRedirect)
   {
-    kdDebug(7113) << "request.url is " << m_request.url.url() << " locationstr " << locationStr.data() << endl;
+    kdDebug(7113) << "request.url: " << m_request.url.url() << endl
+                  << "LocationStr: " << locationStr.data() << endl;
 
     KURL u(m_request.url, locationStr);
-    if(u.isMalformed()) {
+    if(u.isMalformed())
+    {
       error(ERR_MALFORMED_URL, u.url());
       return false;
     }
@@ -1820,9 +1966,11 @@ void HTTPProtocol::configAuth(const char *p, bool b)
 
   while( *p == ' ' ) p++;
   if ( strncasecmp( p, "Basic", 5 ) == 0 ) {
+    kdDebug(7103) << "Basic Authentication" << endl;
     f = AUTH_Basic;
     p += 5;
   } else if (strncasecmp (p, "Digest", 6) ==0 ) {
+    kdDebug(7103) << "Digest Authentication" << endl;
     p += 6;
     f = AUTH_Digest;
     strAuth = strdup(p);
@@ -1853,7 +2001,10 @@ void HTTPProtocol::configAuth(const char *p, bool b)
       assign=(char *)malloc(i+1);
       memcpy((void *)assign, (const void *)p, i);
       assign[i]=0;
-      m_strRealm=assign;
+      if( b )
+        m_strProxyRealm = assign;
+      else
+        m_strRealm = assign;
       free(assign);
     }
     p+=i;
@@ -2028,16 +2179,11 @@ void HTTPProtocol::stat(const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = parseCacheControl(metaData("cache"));
-  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  if (!http_open())
-    return;
-
-  if (!readHeader())
-    return;
+  retrieveHeader( false );
 
   UDSEntry entry;
   UDSAtom atom;
@@ -2075,7 +2221,6 @@ void HTTPProtocol::get( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = parseCacheControl(metaData("cache"));
-  m_request.window = metaData("window-id");
 
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
@@ -2083,20 +2228,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.passwd = url.pass();
   m_request.user = url.user();
 
-  if (!http_open())
-     return;
-
-  if (!readHeader())
-     return;
-
-  if (!checkSSL())
-     return;
-
-  if (!readBody())
-     return;
-
-  http_close();
-  finished();
+  retrieveContent();
 }
 
 void HTTPProtocol::put( const KURL &url, int, bool, bool)
@@ -2111,22 +2243,12 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.path = url.path();
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
-  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  if (!http_open())
-     return;
+  retrieveContent();
 
-  if (!readHeader())
-     return;
-
-  if (!readBody())
-     return;
-
-  http_close();
-  finished();
 }
 
 void HTTPProtocol::post( const KURL& url)
@@ -2141,22 +2263,12 @@ void HTTPProtocol::post( const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
-  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  if (!http_open())
-     return;
+  retrieveContent();
 
-  if (!readHeader())
-     return;
-
-  if (!readBody())
-     return;
-
-  http_close();
-  finished();
 }
 
 void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDate)
@@ -2199,19 +2311,13 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Cache;
-  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  if (!http_open())
-     return;
+  retrieveHeader();
 
-  if (!readHeader())
-     return;
-
-  http_close();
-  finished();
+  kdDebug(7103) << "http: mimetype = " << m_strMimeType << endl;
 
 }
 
@@ -2713,7 +2819,6 @@ bool HTTPProtocol::readBody( )
 
     if (m_sContentMD5.left(f) != enc_digest) {
       kdDebug(7103) << "MD5 checksum mismatch : got " << m_sContentMD5.left(f) << " , calculated " << enc_digest << endl;
-//      error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
     } else {
       kdDebug(7103) << "MD5 checksum present, and hey it matched what I calculated." << endl;
     }
@@ -3072,27 +3177,30 @@ void HTTPProtocol::reparseConfiguration()
   kdDebug( 7103 ) << "reparseConfiguration!" << endl;
   m_bUseProxy = false;
 
-  if ( KProtocolManager::useProxy() ) {
-
+  if ( KProtocolManager::useProxy() )
+  {
     // Use the appropriate proxy depending on the protocol
-    KURL ur (
-      m_protocol == "ftp"
-      ? KProtocolManager::ftpProxy()
-      : KProtocolManager::httpProxy() );
-
-    if (!ur.isEmpty())
+    m_proxyURL = KURL( KProtocolManager::proxyFor( mProtocol ) );
+    if (!m_proxyURL.isMalformed() )
     {
-      kdDebug(7103) << "Using proxy " << ur.url() << endl;
-      // Set "use proxy" to true if we got a non empty proxy URL
-      m_bUseProxy = true;
-
-      m_strProxyHost = ur.host();
-      m_iProxyPort = ur.port();
-      m_strProxyUser = ur.user();
-      m_strProxyPass = ur.pass();
-
-      m_strNoProxyFor = KProtocolManager::noProxyFor();
+        // Set "use proxy" to true if we got a non empty proxy URL
+        m_bUseProxy = true;
+        m_strNoProxyFor = KProtocolManager::noProxyFor();
+        // Reset the current set-up since the proxy info changed
+        // If the proxy needs authentication, it would reject the
+        // request with a 407 where this info will then be setup
+        // properly.
+        m_strProxyRealm = QString::null;
+        m_strProxyAuthString = QString::null;
+        ProxyAuthentication = AUTH_None;
+        kdDebug(7103) << "Using Proxy HOST: " << m_proxyURL.host() << endl
+                      << "Using Proxy PORT: " << m_proxyURL.port() << endl
+                      << "Using Proxy REALM: " << m_strProxyRealm << endl
+                      << "Using Proxy AUTH_STRING: " << m_strProxyAuthString << endl
+                      << "No Proxy for: " << m_strNoProxyFor << endl;
     }
+    else
+        kdDebug(7103) << "The proxy URL \"" << m_proxyURL.url() << "\" is either MALFORMED or not supported. IGNORED!!" << endl;
   }
 
   m_bUseCache = KProtocolManager::useCache();
@@ -3110,5 +3218,54 @@ void HTTPProtocol::reparseConfiguration()
     (*c) = QString::fromLatin1("en");
   m_strLanguages = languageList.join( " " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, utf-8;q=0.8, *;q=0.9");
+}
+
+void HTTPProtocol::flushAuthenticationSettings()
+{
+  // Flush Authentication settings before
+  // starting a request.
+  m_strRealm = QString::null;
+  m_strAuthString = QString::null;
+  Authentication = AUTH_None;
+  m_iAuthFailed = 0;
+}
+
+void HTTPProtocol::retrieveContent( bool close_connection )
+{
+  m_request.window = metaData("window-id");
+  flushAuthenticationSettings();
+
+  if(!http_open())
+    return;
+
+  if(!readHeader())
+    return;
+
+  if (!readBody())
+     return;
+
+  if( close_connection )
+  {
+    http_close();
+    finished();
+  }
+}
+
+void HTTPProtocol::retrieveHeader( bool close_connection )
+{
+  m_request.window = metaData("window-id");
+  flushAuthenticationSettings();
+
+  if (!http_open())
+    return;
+
+  if (!readHeader())
+    return;
+
+  if( close_connection )
+  {
+    http_close();
+    finished();
+  }
 }

@@ -77,20 +77,19 @@ public:
   void jobFinished( int progressId );
 
   /**
-   * Invoke to request autorization info from the user or query the
-   * password daemon to see if one is stored.
+   * Prompts the user for authorization info( login & password ).
    *
-   * Note this is simply a forwarding method to @ref UIServer::authorize
-   * It simply returns the result of the UIServer to the calling function.
+   * Note this function simply forwards the request to @ref UIServer::openPassDlg
+   * and returns the result of that function call...
    *
-   * @param user  the user to be allowed authorized access
-   * @param pass  the password of the authorized user
-   * @param head  the resource the requires authorization
-   * @param key   the key used to cache the password.
+   * @param msg         the resource the requires authorization
+   * @param user        the user to be allowed authorized access
+   * @param passwd      the password of the authorized user
+   * @param lockUserName enables/disables the username field
    *
-   * @return true if authrization information was obtained.
+   * @return true if authorization was sucessfully obtained.
    */
-  bool authorize( QString& /*user*/, QString& /*pass*/, const QString& /*head*/, const QString& /*key*/ );
+  bool openPassDlg(  const QString& msg, QString& user, QString& passwd, bool lockUserName );
 
   /**
    * Popup a message box. See @ref SlaveBase.
