@@ -182,6 +182,7 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
+   (*str) << (Q_INT32) 0; // UserProfile offset
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -190,6 +191,12 @@ KBuildSycoca::save()
    {
       factory->save(*str);
    }
+
+   // Write user profile
+   Q_INT32 userProfileOffset = str->device()->at();
+
+   // .. TODO
+   
    int endOfData = str->device()->at();
 
    // Write header (#pass 2)
@@ -207,6 +214,7 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
+   (*str) << (Q_INT32) userProfileOffset; // UserProfile offset
 
    // Jump to end of database
    str->device()->at(endOfData);
