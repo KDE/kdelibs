@@ -309,8 +309,8 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
 
     if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
         kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
-    initShortcut( cut );
     d->setText( text );
+    initShortcut( cut );
 
     if ( receiver )
         connect( this, SIGNAL( activated() ), receiver, slot );
@@ -489,6 +489,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if( !d->m_cut.isNull() ) {
+      kdDebug() << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
       b = kaccel->insert( name(), d->plainText(), QString::null,
           d->m_cut,
           this, SLOT(slotActivated()),
@@ -801,6 +802,7 @@ void KAction::unplug( QWidget *w )
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
   kdWarning(129) << "KAction::plugAccel(): call to deprecated action." << endl;
+  kdDebug(129) << kdBacktrace() << endl;
   //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();
