@@ -695,7 +695,7 @@ public slots:
   void toDesktop( );
 
 protected:
-
+  friend class KMdiMainFrm;
   /**
    * Checks some conditions and shows or hides the dockwidget header (drag panel).
    * The header is hidden if:

@@ -37,7 +37,7 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 #define KDOCKWIDGET_P_H
 
 #include <kdockwidget.h>
-
+#include <qstringlist.h>
 // Add some describing comment !!
 
 class EXPORT_DOCKCLASS KDockContainer
@@ -52,6 +52,7 @@ public:
   virtual void save(KConfig *cfg);
   virtual void load(KConfig *cfg);
   virtual void setToolTip (KDockWidget *, QString &);
+  QStringList containedWidgets();
 protected:
   friend class KDockManager;
   friend class KDockSplitter;

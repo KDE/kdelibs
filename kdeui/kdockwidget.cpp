@@ -2800,6 +2800,16 @@ bool KDockContainer::isOverlapMode() {
 }
 
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
+
+QStringList KDockContainer::containedWidgets() {
+	QStringList tmp;
+	for (struct ListItem *it=m_childrenListBegin;it;it=it->next) {
+		tmp<<QString(it->data);
+	}
+
+	return tmp;
+}
+
 void KDockContainer::insertWidget (KDockWidget *dw, QPixmap, const QString &, int &)
 	{
 		struct ListItem *it=new struct ListItem;
