@@ -73,7 +73,7 @@ bool TCPServer::initSocket()
 {
     struct sockaddr_in socket_addr;
 
-	theSocket = socket(AF_INET,SOCK_STREAM,0);
+	theSocket = socket(PF_INET,SOCK_STREAM,0);
 	if(theSocket < 0)
 	{
 		fprintf(stderr,"MCOP TCPServer: can't create a socket\n");

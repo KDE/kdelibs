@@ -73,7 +73,7 @@ bool UnixServer::initSocket(string serverID)
 {
     struct sockaddr_un socket_addr;
 
-	theSocket = socket(AF_UNIX,SOCK_STREAM,0);
+	theSocket = socket(PF_UNIX,SOCK_STREAM,0);
 	if(theSocket < 0)
 	{
 		fprintf(stderr,"MCOP UnixServer: can't create a socket\n");
@@ -87,10 +87,12 @@ bool UnixServer::initSocket(string serverID)
 		return false;
 	}
 
+	int maxlen = sizeof(socket_addr.sun_path);
 	string pathname = MCOPUtils::createFilePath(serverID);
+
     socket_addr.sun_family = AF_UNIX;
-	strncpy(socket_addr.sun_path,pathname.c_str(),108);
-	socket_addr.sun_path[107] = 0;
+	strncpy(socket_addr.sun_path,pathname.c_str(),maxlen);
+	socket_addr.sun_path[maxlen-1] = 0;
 
 	xserverpath = socket_addr.sun_path;
 
