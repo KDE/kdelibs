@@ -60,7 +60,7 @@ alsa-stamp:
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
-		--includedir=/usr/include/kde
+		--includedir=/usr/include/kde $(XINERAMA) $(OBJPRELINK)
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 

@@ -1,3 +1,8 @@
 #
 libkmid: shlib-missing-in-control-file libartskde.so usr/lib/libartskde.so
 libkmid: shlib-missing-in-control-file knotify.so usr/lib/knotify.so
+libkmid: shlib-with-non-pic-code usr/lib/libartskde.so
+libkmid: shlib-with-non-pic-code usr/lib/knotify.so
+libkmid: shlib-with-non-pic-code usr/lib/libkmid.so.0.0.95
+libkmid: shlib-with-non-pic-code usr/lib/libqtmcop.so.0.0.0
+
