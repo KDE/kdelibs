@@ -183,6 +183,8 @@ int main(int argc, char *argv[])
   // even more tricky
   u2 = "print:/specials/Print%20To%20File%20(PDF%2FAcrobat)";
   printf("\n* URL is %s\n",u2.url().ascii());
+  check("KURL::path()", u2.fileName(), "/specials/Print%20To%20File%20(PDF%2FAcrobat)");
+  check("KURL::fileName()", u2.fileName(), "Print%20To%20File%20(PDF%2FAcrobat)");
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "print:/specials/");
 
