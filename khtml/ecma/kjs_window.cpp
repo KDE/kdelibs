@@ -32,6 +32,7 @@
 #include <kconfig.h>
 #include <assert.h>
 #include <qstyle.h>
+#include <qobjectlist.h>
 
 #include <kjs/collector.h>
 #include "kjs_proxy.h"
@@ -1336,6 +1337,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // then schedule a delayed close (so that the script terminates first).
       // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
       if ( Window::retrieveActive(exec) == window ) {
+        if (widget) {
+          // quit all dialogs of this view
+          // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
+          QObjectList *dlgs = widget->topLevelWidget()->queryList("QDialog");
+          for (QObject *dlg = dlgs->first(); dlg; dlg = dlgs->next())
+            static_cast<QDialog*>(dlg)->hide();
+          delete dlgs;
+        }
         // We'll close the window at the end of the script execution
         Window* w = const_cast<Window*>(window);
         w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
