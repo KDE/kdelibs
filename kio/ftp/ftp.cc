@@ -95,7 +95,6 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   ksControl = NULL;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
-  m_crappyMSServer = false;
   kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
@@ -470,14 +469,12 @@ bool Ftp::ftpLogin()
   kdDebug(7102) << "Login OK" << endl;
   infoMessage( i18n("Login OK") );
 
-  m_crappyMSServer = false;
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
   if( ftpSendCmd( "syst", '2' ) )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
     {
-      m_crappyMSServer = true;
       (void)ftpSendCmd( "site dirstyle", '2' );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
@@ -1362,11 +1359,14 @@ void Ftp::stat( const KURL &url)
 
   if ( !bFound )
   {
-    if (m_crappyMSServer)
+    if ( 1 )
     {
-	kdDebug() << "Not found, but activating the hack for MSServers - assuming found" << endl;
+	kdDebug() << "Not found, but assuming found, because some servers don't allow listing" << endl;
         // MS Server is incapable of handling "list <blah>" in a case insensitive way
         // But "retr <blah>" works. So lie in stat(), to get going...
+	//
+	// There's also the case of ftp://ftp2.3ddownloads.com/90380/linuxgames/loki/patches/ut/ut-patch-436.run
+	// where listing permissions are denied, but downloading is still possible.
         UDSEntry entry;
         UDSAtom atom;
  
@@ -1388,8 +1388,8 @@ void Ftp::stat( const KURL &url)
         finished();
         return;
     }
-    error( ERR_DOES_NOT_EXIST, path );
-    return;
+    //error( ERR_DOES_NOT_EXIST, path );
+    //return;
   }
 
   if ( !linkURL.isEmpty() )

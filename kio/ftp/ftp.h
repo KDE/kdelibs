@@ -256,7 +256,6 @@ private: // data members
   bool m_bPasv;
 
   bool m_bPersistent;
-  bool m_crappyMSServer;
 
   size_t m_size;
 
