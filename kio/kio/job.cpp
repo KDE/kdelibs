@@ -386,7 +386,6 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
     {
        KURL::List list = KURL::split(m_url);
        KURL::List::Iterator it = list.fromLast();
-       m_url = *it;
        list.remove(it);
        m_subUrl = KURL::join(list);
        //kdDebug(7007) << "New URL = "  << m_url.url() << endl;
@@ -895,7 +894,7 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
            emitPercent( size, m_totalSize );
        }
     }
-    
+
     extraFlags() &= ~EF_TransferJobNeedData;
 }
 
@@ -906,7 +905,7 @@ void TransferJob::setReportDataSent(bool enabled)
     else
        extraFlags() &= ~EF_TransferJobDataSent;
 }
-        
+
 bool TransferJob::reportDataSent()
 {
     return (extraFlags() & EF_TransferJobDataSent);
@@ -919,7 +918,7 @@ void TransferJob::slotDataReq()
     QByteArray dataForSlave;
 
     extraFlags() |= EF_TransferJobNeedData;
-    
+
     if (!staticData.isEmpty())
     {
        dataForSlave = staticData;
@@ -934,7 +933,7 @@ void TransferJob::slotDataReq()
     }
 
     static const size_t max_size = 14 * 1024 * 1024;
-    if (dataForSlave.size() > max_size) 
+    if (dataForSlave.size() > max_size)
     {
        kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
        staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
@@ -1072,7 +1071,7 @@ class PostErrorJob : public TransferJob
 {
 public:
 
-  // KDE 4: Make it const QString & 
+  // KDE 4: Make it const QString &
   PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
     m_error = KIO::ERR_POST_DENIED;
@@ -1645,7 +1644,7 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
-// KDE 4: Make it const QString & _prefix 
+// KDE 4: Make it const QString & _prefix
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
     recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)
