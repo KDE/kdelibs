@@ -102,6 +102,10 @@ public:
    * Constructs a widget for color selection.
    */
   KValueSelector( QWidget *parent=0, const char *name=0 );
+  /**
+   * Constructs a widget for color selection with a given orientation
+   */
+  KValueSelector( Orientation o, QWidget *parent = 0, const char *name = 0 );
 
   int hue() const
         { return _hue; }
@@ -112,7 +116,7 @@ public:
   void setSaturation( int s )
         { _sat = s; }
   void updateContents();
-    
+
 protected:
   /**
    * Draws the contents of the widget on a pixmap,

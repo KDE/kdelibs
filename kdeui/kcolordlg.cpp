@@ -223,6 +223,13 @@ KValueSelector::KValueSelector( QWidget *parent, const char *name )
 	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
+KValueSelector::KValueSelector(Orientation o, QWidget *parent, const char *name )
+	: KSelector( o, parent, name), _hue(0), _sat(0)
+{
+	setRange( 0, 255 );
+	pixmap.setOptimization( QPixmap::BestOptim );
+}
+
 void KValueSelector::updateContents()
 {
 	drawPalette(&pixmap);
@@ -246,13 +253,31 @@ void KValueSelector::drawPalette( QPixmap *pixmap)
 	uint *p;
 	QRgb rgb;
 
-	for ( int v = 0; v < ySize; v++ )
+	if ( orientation() == KSelector::Horizontal )
 	{
-		p = (uint *) image.scanLine( ySize - v - 1 );
-		col.setHsv( _hue, _sat, 255*v/(ySize-1) );
-		rgb = col.rgb();
-		for ( int i = 0; i < xSize; i++ )
-			*p++ = rgb;
+		for ( int v = 0; v < ySize; v++ )
+		{
+			p = (uint *) image.scanLine( ySize - v - 1 );
+
+			for( int x = 0; x < xSize; x++ )
+			{
+				col.setHsv( _hue, _sat, 255*x/(xSize-1) );
+				rgb = col.rgb();
+				*p++ = rgb;
+			}
+		}
+	}
+
+	if( orientation() == KSelector::Vertical )
+	{
+		for ( int v = 0; v < ySize; v++ )
+		{
+			p = (uint *) image.scanLine( ySize - v - 1 );
+			col.setHsv( _hue, _sat, 255*v/(ySize-1) );
+			rgb = col.rgb();
+			for ( int i = 0; i < xSize; i++ )
+				*p++ = rgb;
+		}
 	}
 
 	if ( QColor::numBitPlanes() <= 8 )
