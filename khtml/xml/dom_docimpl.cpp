@@ -620,7 +620,7 @@ void DocumentImpl::recalcStyle()
         if(size < settings->minFontSize())
             size = settings->minFontSize();
 
-        khtml::setFontSize( f,  size,  settings, paintDeviceMetrics() );
+        khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
         KGlobal::charsets()->setQFont(f, settings->charset());
     }
 
