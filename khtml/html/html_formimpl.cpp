@@ -292,7 +292,15 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE &&
                         current->renderer())
                     {
-                        const KURL path ( static_cast<HTMLInputElementImpl*>(current)->value().string());
+                        KURL path;
+                        QString val = static_cast<HTMLInputElementImpl*>(current)->value().string();
+                        if (!val.isEmpty() &&
+                            QDir::isRelativePath(val) && 
+                            QFile::exists(KGlobalSettings::documentPath() + val)) {
+                            path.setPath(KGlobalSettings::documentPath() + val);
+                        } else {
+                            path = KURL::fromPathOrURL(val);
+                        }
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if(path.isValid()) {
@@ -1396,14 +1404,23 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             }
             break;
 
-        case FILE:
+	case FILE: // hmm, we have the type FILE also.  bad choice here...
         {
             // don't submit if display: none or display: hidden
             if(!renderer() || renderer()->style()->visibility() != khtml::VISIBLE)
                 return false;
 
             QString local;
-            const KURL fileurl(value().string());
+            KURL fileurl;
+            QString val = value().string();
+            if (!val.isEmpty() &&
+                QDir::isRelativePath(val) &&
+                QFile::exists(KGlobalSettings::documentPath() + val)) {
+                fileurl.setPath(KGlobalSettings::documentPath() + val);
+            } else {
+                fileurl = KURL::fromPathOrURL(val);
+            }
+qDebug("URL: %s", fileurl.url().latin1());
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
@@ -1413,7 +1430,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
                     const KFileItem fileitem(filestat, fileurl, true, false);
                     if ( fileitem.isFile() &&
-                         KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
+                         KIO::NetAccess::download(fileurl, local, toplevel) ) {
                         QFile file(local);
                         filearray.resize(file.size()+1);
                         if ( file.open( IO_ReadOnly ) ) {

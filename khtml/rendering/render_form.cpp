@@ -35,6 +35,7 @@
 #include <kreplace.h>
 #include <kreplacedialog.h>
 #include <kspell.h>
+#include <kurlcompletion.h>
 #include <kwin.h>
 
 #include <qstyle.h>
@@ -720,6 +721,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
 
     w->setMode(KFile::File | KFile::ExistingOnly);
+    w->completionObject()->setDir(KGlobalSettings::documentPath());
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
