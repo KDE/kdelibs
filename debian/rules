@@ -163,9 +163,9 @@ binary-arch:  build install
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib/kde3:`pwd`/debian/libarts1/usr/lib/kde3:`pwd`/debian/libkmid0/usr/lib/kde3:`pwd`/debian/kdelibs4-cups/usr/lib/kde3
 	echo -n `cat debian/libarts1.substvars ` > debian/libarts1-alsa.substvars
-	echo ", libasound1 (>= 0.5.5)" >> debian/libarts1-alsa.substvars
+	echo ", libasound2 (>= 0.9.0beta7-1)" >> debian/libarts1-alsa.substvars
 	echo -n `cat debian/libkmid0.substvars` > debian/libkmid0-alsa.substvars
-	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid0-alsa.substvars
+	echo ", libasound2 (>= 0.9.0beta7-1)" >> debian/libkmid0-alsa.substvars
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a
