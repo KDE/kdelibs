@@ -29,7 +29,7 @@
 #include <kio/slavebase.h>
 #include <ksock.h>
 #include <kurl.h>
-
+#include <kmdcodec.h>
 
 // Default ports.. you might want to change this if you're trying to dodge
 // a proxy with some creative network address translation..  HTTP_PORT
