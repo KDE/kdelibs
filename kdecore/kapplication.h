@@ -144,9 +144,7 @@ public:
 #endif
 
   /**
-   * @deprecated
-   * // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
-   * // KCmdLineArgs::init isn't called
+   * @deprecated do not use it at all, it will make your application crash, use KCmdineArgs
    *
    * Constructor. Parses command-line arguments.
    *
@@ -167,6 +165,8 @@ public:
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
+  // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
+  // KCmdLineArgs::init isn't called
   KApplication(int& argc, char** argv,
               const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
