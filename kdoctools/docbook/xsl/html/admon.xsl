@@ -12,7 +12,7 @@
 
      ******************************************************************** -->
 
-<xsl:template name="admon.graphic.width">
+<xsl:template match="*" mode="admon.graphic.width">
   <xsl:param name="node" select="."/>
   <xsl:text>25</xsl:text>
 </xsl:template>
@@ -54,6 +54,12 @@
     </xsl:choose>
   </xsl:variable>
 
+  <xsl:variable name="alt">
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key" select="$admon.type"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <div class="{name(.)}">
     <xsl:if test="$admon.style != ''">
       <xsl:attribute name="style">
@@ -72,9 +78,9 @@
       <tr>
         <td rowspan="2" align="center" valign="top">
           <xsl:attribute name="width">
-            <xsl:call-template name="admon.graphic.width"/>
+            <xsl:apply-templates select="." mode="admon.graphic.width"/>
           </xsl:attribute>
-          <img alt="[{$admon.type}]">
+          <img alt="[{$alt}]">
             <xsl:attribute name="src">
               <xsl:call-template name="admon.graphic"/>
             </xsl:attribute>

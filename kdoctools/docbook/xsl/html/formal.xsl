@@ -52,11 +52,15 @@
 
 <xsl:template name="formal.object.heading">
   <xsl:param name="object" select="."/>
+  <xsl:param name="title">
+    <xsl:apply-templates select="$object" mode="object.title.markup">
+      <xsl:with-param name="allow-anchors" select="1"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
   <p class="title">
     <b>
-      <xsl:apply-templates select="$object" mode="object.title.markup">
-        <xsl:with-param name="allow-anchors" select="1"/>
-      </xsl:apply-templates>
+      <xsl:copy-of select="$title"/>
     </b>
   </p>
 </xsl:template>
@@ -157,6 +161,11 @@
     <xsl:otherwise>
       <xsl:copy>
         <xsl:copy-of select="@*"/>
+	<xsl:if test="not(@id)">
+	  <xsl:attribute name="id">
+	    <xsl:call-template name="object.id"/>
+	  </xsl:attribute>
+	</xsl:if>
         <xsl:call-template name="htmlTable"/>
       </xsl:copy>
     </xsl:otherwise>
