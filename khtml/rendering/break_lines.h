@@ -24,7 +24,7 @@ namespace khtml {
          - FF64 halfwidth ideographic comma
       these character is commented out.
     */
-    static const ushort dontbreakbefore[] = {
+    const ushort dontbreakbefore[] = {
         //0x3001,   //ideographic comma
         //0x3002,   //ideographic full stop
         0x3005, //ideographic iteration mark
@@ -89,7 +89,7 @@ namespace khtml {
     };
 
     // characters that aren't covered by QChar::Punctuation_Open
-    static const ushort dontbreakafter[] = {
+    const ushort dontbreakafter[] = {
         0x3012, //postal mark
         0xFF03, //full width pound mark
         0xFF04, //full width dollar sign
