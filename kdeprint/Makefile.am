@@ -23,7 +23,7 @@ libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
 libkdeprint_la_METASOURCES = AUTO
 
-noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmobject.h kmprinter.h \
+noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
 		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
 		 kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
@@ -33,7 +33,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmob
 
 include_HEADERS = kprinter.h
 
-kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h
+kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h
 kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc
