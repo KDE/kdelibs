@@ -31,7 +31,7 @@ using namespace khtml;
 #include "qfontmetrics.h"
 
 #define BIDI_DEBUG 0
-#define DEBUG_LINEBREAKS
+//#define DEBUG_LINEBREAKS
 
 // ---------------------------------------------------------------------
 
