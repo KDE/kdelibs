@@ -21,7 +21,7 @@ LDADD = $(top_builddir)/kio/libkio.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
-		kioslavetest
+		kioslavetest kdirwatchtest
 
 METASOURCES = AUTO
 
@@ -31,3 +31,6 @@ kruntest_SOURCES = kruntest.cpp
 ktartest_SOURCES = ktartest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kioslavetest_SOURCES = kioslavetest.cpp
+kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
+
+
