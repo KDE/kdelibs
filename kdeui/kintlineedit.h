@@ -40,13 +40,12 @@ enum KEditLineType{
  *  LineEdit for integers. Only octal, decimal or
  *  hexadecimal characters are valid input characters for this sort 
  *  of edit lines. 
+ *
  *  A few special keys are supported by this class:
- *  <ul>
- *  <li>The up-arrow increments the contents by 1, 
- *  <li>the down-arrow decrements the contents by 1,
- *  <li>Page-Up increments by 8, 10 or 16 (depending on the EditLineType),
- *  <li>Page-Down decrements by 8, 10 or 16 (depending on the EditLinetype)
- *  </ul>
+ *  @li The up-arrow increments the contents by 1, 
+ *  @li The down-arrow decrements the contents by 1,
+ *  @li Page-Up increments by 8, 10 or 16 (depending on the EditLineType),
+ *  @li Page-Down decrements by 8, 10 or 16 (depending on the EditLinetype)
  *
  *  @author Michael Wiedmann <mw@miwie.in-berlin.de>
  *  @version 0.0.1
