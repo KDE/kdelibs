@@ -372,11 +372,13 @@ public:
      * Reimplement this method to dispatch method calls.
      *
      * This method is called of all proxies if the @ref DCOPClient
-     * knows no object with the id @p obj. If the first proxy returns
-     * @p true, the @ref DCOPClient will no longer call other proxies.
+     * knows no object with the id obj. If the first proxy returns
+     * true, the DCOPClient will no longer call other proxies.
      *
-     * The object id @p obj may be empty for app-wide function calls no
+     * The object id obj may be empty for app-wide function calls not
      * associated with any object.
+     * @param obj The object id, or empty for app-wide function calls
+                  not associated with any object.
      * @param fun is the normalized function signature.
      *            Such a signature usually looks like
      *            foobar(QString,int). The return type,

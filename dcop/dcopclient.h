@@ -201,7 +201,7 @@ class DCOPClient : public QObject
   /**
    * Returns the current app id or a null string if the application
    * hasn't yet been registered.
-   * @param the application id, or QString::null if not registered
+   * @return the application id, or QString::null if not registered
    */
   QCString appId() const;
 
@@ -471,7 +471,7 @@ class DCOPClient : public QObject
 
   /**
    * Retrieves the list of objects of the remote application @p remApp.
-   * @param tremAPp he id of the application
+   * @param remApp the id of the application
    * @param ok if not null, the function sets @p ok to true if successful
    *           and false if an error occurred
    * @return the list of object ids
