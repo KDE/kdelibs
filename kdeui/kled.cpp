@@ -28,11 +28,11 @@
 
 
 #include <qpainter.h>
+#include <qimage.h>
 #include <qcolor.h>
 #include <kapplication.h>
 #include <kpixmapeffect.h>
 #include "kled.h"
-
 
 
 class KLed::KLedPrivate
@@ -41,6 +41,8 @@ class KLed::KLedPrivate
 
   int dark_factor;
   QColor offcolor;
+  QPixmap *off_map;
+  QPixmap *on_map;
 };
 
 
@@ -55,6 +57,8 @@ KLed::KLed(QWidget *parent, const char *name)
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
+  d->off_map = 0;
+  d->on_map = 0;
 
   setColor(col);
 }
@@ -69,6 +73,8 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
+  d->off_map = 0;
+  d->on_map = 0;
 
   setColor(col);
   //setShape(Circular);
@@ -84,6 +90,8 @@ KLed::KLed(const QColor& col, KLed::State state,
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
+  d->off_map = 0;
+  d->on_map = 0;
 
   //setShape(shape);
   setColor(col);
@@ -92,6 +100,8 @@ KLed::KLed(const QColor& col, KLed::State state,
 
 KLed::~KLed()
 {
+  delete d->off_map;
+  delete d->on_map;
   delete d;
 }
 
@@ -149,73 +159,121 @@ KLed::paintEvent(QPaintEvent *)
 #endif
 }
 
+int
+KLed::ensureRoundLed()
+{
+    // Initialize coordinates, width, and height of the LED
+    //
+    int width = this->width();
+    // Make sure the LED is round!
+    if (width > this->height())
+        width = this->height();
+    width -= 2; // leave one pixel border
+    if (width < 0)
+        width = 0;
+
+    return width;
+}
+
+bool
+KLed::paintCachedPixmap()
+{
+    if (led_state) {
+        if (d->on_map) {
+            QPainter paint(this);
+            paint.drawPixmap(0, 0, *d->on_map);
+            return true;
+        }
+    } else {
+        if (d->off_map) {
+            QPainter paint(this);
+            paint.drawPixmap(0, 0, *d->off_map);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void
 KLed::paintFlat() // paint a ROUND FLAT led lamp
 {
-	QPainter paint;
-	QColor color;
-	QBrush brush;
-	QPen pen;
+    if (paintCachedPixmap()) return;
 
-	// Initialize coordinates, width, and height of the LED
-	//
-	int width = this->width();
-	// Make sure the LED is round!
-	if (width > this->height())
-		width = this->height();
-	width -= 2; // leave one pixel border
-	if (width < 0)
-	  width = 0;
+    QPainter paint;
+    QColor color;
+    QBrush brush;
+    QPen pen;
+
+    int width = ensureRoundLed();
 
 
-	// start painting widget
-	//
-	paint.begin( this );
+    int scale = 3;
+    QPixmap *tmpMap = 0;
 
-	// Set the color of the LED according to given parameters
-   	color = ( led_state ) ? led_color : d->offcolor;
+    width *= scale;
 
-	// Set the brush to SolidPattern, this fills the entire area
-	// of the ellipse which is drawn with a thin gray "border" (pen)
-	brush.setStyle( QBrush::SolidPattern );
-	brush.setColor( color );
+    tmpMap = new QPixmap(width + 6, width + 6);
+    tmpMap->fill(paletteBackgroundColor());
 
-	pen.setWidth( 1 );
-	color = colorGroup().dark();
-	pen.setColor( color );			// Set the pen accordingly
+    // start painting widget
+    //
+    paint.begin(tmpMap);
 
-	paint.setPen( pen );			// Select pen for drawing
-	paint.setBrush( brush );		// Assign the brush to the painter
+    // Set the color of the LED according to given parameters
+    color = ( led_state ) ? led_color : d->offcolor;
 
-	// Draws a "flat" LED with the given color:
-	paint.drawEllipse( 1, 1, width, width );
+    // Set the brush to SolidPattern, this fills the entire area
+    // of the ellipse which is drawn with a thin gray "border" (pen)
+    brush.setStyle( QBrush::SolidPattern );
+    brush.setColor( color );
 
-	paint.end();
-	//
-	// painting done
+    pen.setWidth( scale );
+    color = colorGroup().dark();
+    pen.setColor( color );			// Set the pen accordingly
+
+    paint.setPen( pen );			// Select pen for drawing
+    paint.setBrush( brush );		// Assign the brush to the painter
+
+    // Draws a "flat" LED with the given color:
+    paint.drawEllipse( scale, scale, width - scale * 2, width - scale * 2 );
+
+    paint.end();
+    //
+    // painting done
+    QPixmap *&dest = led_state ? d->on_map : d->off_map;
+    QImage i = tmpMap->convertToImage();
+    width /= 3;
+    i = i.smoothScale(width, width);
+    delete tmpMap;
+    dest = new QPixmap(i);
+    paint.begin(this);
+    paint.drawPixmap(0, 0, *dest);
+    paint.end();
+
 }
 
 void
 KLed::paintRound() // paint a ROUND RAISED led lamp
 {
+    if (paintCachedPixmap()) return;
+
     QPainter paint;
     QColor color;
     QBrush brush;
     QPen pen;
 
     // Initialize coordinates, width, and height of the LED
-    int width = this->width();
+    int width = ensureRoundLed();
 
-    // Make sure the LED is round!
-    if (width > this->height())
-      width = this->height();
-    width -= 2; // leave one pixel border
-    if (width < 0)
-      width = 0;
+    int scale = 3;
+    QPixmap *tmpMap = 0;
 
-    // start painting widget
-    //
-    paint.begin( this );
+    width *= scale;
+
+    tmpMap = new QPixmap(width + 6, width + 6);
+    tmpMap->fill(paletteBackgroundColor());
+    paint.begin(tmpMap);
 
     // Set the color of the LED according to given parameters
     color = ( led_state ) ? led_color : d->offcolor;
@@ -227,14 +285,14 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     paint.setBrush( brush );		// Assign the brush to the painter
 
     // Draws a "flat" LED with the given color:
-    paint.drawEllipse( 1, 1, width, width );
+    paint.drawEllipse( scale, scale, width - scale*2, width - scale*2 );
 
     // Draw the bright light spot of the LED now, using modified "old"
     // painter routine taken from KDEUI´s KLed widget:
 
     // Setting the new width of the pen is essential to avoid "pixelized"
     // shadow like it can be observed with the old LED code
-    pen.setWidth( 2 );
+    pen.setWidth( 2 * scale );
 
     // shrink the light on the LED to a size about 2/3 of the complete LED
     int pos = width/5 + 1;
@@ -266,23 +324,35 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     // around the LED; it looks nicer that way. We do this here to
     // avoid that the border can be erased by the bright spot of the LED
 
-    pen.setWidth( 1 );
+    pen.setWidth( 2 * scale + 1 );
     color = colorGroup().dark();
     pen.setColor( color );			// Set the pen accordingly
     paint.setPen( pen );			// Select pen for drawing
     brush.setStyle( QBrush::NoBrush );		// Switch off the brush
     paint.setBrush( brush );			// This avoids filling of the ellipse
 
-    paint.drawEllipse( 1, 1, width, width );
+    paint.drawEllipse( 2, 2, width, width );
 
     paint.end();
     //
     // painting done
+    QPixmap *&dest = led_state ? d->on_map : d->off_map;
+    QImage i = tmpMap->convertToImage();
+    width /= 3;
+    i = i.smoothScale(width, width);
+    delete tmpMap;
+    dest = new QPixmap(i);
+    paint.begin(this);
+    paint.drawPixmap(0, 0, *dest);
+    paint.end();
+
 }
 
 void
 KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 {
+    if (paintCachedPixmap()) return;
+
     QPainter paint;
     QColor color;
     QBrush brush;
@@ -290,20 +360,16 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 
     // First of all we want to know what area should be updated
     // Initialize coordinates, width, and height of the LED
-    int	width = this->width();
+    int	width = ensureRoundLed();
 
-    // Make sure the LED is round!
-    if (width > this->height())
-      width = this->height();
-    width -= 2; // leave one pixel border
-    if (width < 0)
-      width = 0;
+    int scale = 3;
+    QPixmap *tmpMap = 0;
 
-    // maybe we could stop HERE, if width <=0 ?
+    width *= scale;
 
-    // start painting widget
-    //
-    paint.begin( this );
+    tmpMap = new QPixmap(width, width);
+    tmpMap->fill(paletteBackgroundColor());
+    paint.begin(tmpMap);
 
     // Set the color of the LED according to given parameters
     color = ( led_state ) ? led_color : d->offcolor;
@@ -315,14 +381,14 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     paint.setBrush( brush );                // Assign the brush to the painter
 
     // Draws a "flat" LED with the given color:
-    paint.drawEllipse( 1, 1, width, width );
+    paint.drawEllipse( scale, scale, width - scale*2, width - scale*2 );
 
     // Draw the bright light spot of the LED now, using modified "old"
     // painter routine taken from KDEUI´s KLed widget:
 
     // Setting the new width of the pen is essential to avoid "pixelized"
     // shadow like it can be observed with the old LED code
-    pen.setWidth( 2 );
+    pen.setWidth( 2 * scale );
 
     // shrink the light on the LED to a size about 2/3 of the complete LED
     int pos = width/5 + 1;
@@ -354,7 +420,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     // around the LED which resembles a shadow with light coming
     // from the upper left.
 
-    pen.setWidth( 3 ); // ### shouldn't this value be smaller for smaller LEDs?
+    pen.setWidth( 2 * scale + 1 ); // ### shouldn't this value be smaller for smaller LEDs?
     brush.setStyle( QBrush::NoBrush );              // Switch off the brush
     paint.setBrush( brush );                        // This avoids filling of the ellipse
 
@@ -367,14 +433,26 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     for ( int arc = 120; arc < 2880; arc += 240 ) {
       pen.setColor( color );
       paint.setPen( pen );
-      paint.drawArc( 1, 1, width, width, angle + arc, 240 );
-      paint.drawArc( 1, 1, width, width, angle - arc, 240 );
+      int w = width - pen.width()/2 - scale + 1;
+      paint.drawArc( pen.width()/2, pen.width()/2, w, w, angle + arc, 240 );
+      paint.drawArc( pen.width()/2, pen.width()/2, w, w, angle - arc, 240 );
       color = color.dark( 110 ); //FIXME: this should somehow use the contrast value
     }	// end for ( angle = 720; angle < 6480; angle += 160 )
 
     paint.end();
     //
     // painting done
+
+    QPixmap *&dest = led_state ? d->on_map : d->off_map;
+    QImage i = tmpMap->convertToImage();
+    width /= 3;
+    i = i.smoothScale(width, width);
+    delete tmpMap;
+    dest = new QPixmap(i);
+    paint.begin(this);
+    paint.drawPixmap(0, 0, *dest);
+    paint.end();
+
 }
 
 void

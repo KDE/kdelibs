@@ -300,7 +300,18 @@ protected:
    */
   virtual void paintRectFrame(bool raised);
 
-    void paintEvent( QPaintEvent * );
+  void paintEvent( QPaintEvent * );
+
+  /**
+   * Compute LED width
+   */
+  int ensureRoundLed();
+
+  /**
+   * Paint the cached antialiased pixmap corresponding to the state if any
+   * @return true if the pixmap was painted, false if it hasn't been created yet
+   */
+  bool paintCachedPixmap();
 
 private:
   State led_state;
