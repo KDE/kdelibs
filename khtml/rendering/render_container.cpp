@@ -82,8 +82,11 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case INLINE_BLOCK:
         case TABLE:
         case INLINE_TABLE:
-        case TABLE_COLUMN:
             break;
+        case TABLE_COLUMN:
+            if ( isTableCol() )
+                break;
+            // nobreak
         case TABLE_COLUMN_GROUP:
         case TABLE_CAPTION:
         case TABLE_ROW_GROUP:

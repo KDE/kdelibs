@@ -1,5 +1,9 @@
 2004-01-18  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_container.cpp (addChild): make sure
+	that a RenderTableCol object is correctly nested inside
+	a table (#59766).
+
 	* xml/dom_elementimpl.cpp (recalcStyle): fix tree corruption 
 	when recalcStyle() happens to be invoked in the wrong moment.
 
