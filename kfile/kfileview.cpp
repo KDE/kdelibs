@@ -23,6 +23,7 @@
 #include <kapp.h>
 #include "config-kfile.h"
 #include <stdlib.h>
+#include <kdebug.h>
 #include <kstddirs.h>
 #include <kglobal.h>
 #include <assert.h>
@@ -140,7 +141,7 @@ void qt_qstring_stats();
 
 void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 {
-    debugC("insertedSorted %ld %d", time(0), counter);
+    kDebugInfo(kfile_area, "insertedSorted %ld %d", time(0), counter);
 
     KFileViewItem **sortedArray = new KFileViewItem*[counter];
     KFileViewItem *it;
@@ -162,7 +163,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     }
     delete [] sortedArray;
 
-    debugC("inserting %ld %p", time(0), first);
+    kDebugInfo(kfile_area, "inserting %ld %p", time(0), first);
 
 #if 0
       for (it = first; it; it = it->next()) {
@@ -348,7 +349,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
     if (reversed)
       bigger = !bigger;
 
-    // debugC("compare " + fi1->fileName() + " against " +
+    // kDebugInfo(kfile_area, "compare " + fi1->fileName() + " against " +
     // fi2->fileName() + ": " + ( bigger ? "bigger" : "smaller"));
 
     return (bigger ? 1 : -1);
@@ -356,11 +357,11 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 
 void KFileView::select( const KFileViewItem *entry )
 {
-    debugC("select %s", entry->name().ascii());
+    kDebugInfo(kfile_area, "select %s", entry->name().ascii());
     assert(entry);
 
     if ( entry->isDir() ) {
-	debugC("selectDir %s", entry->name().ascii());
+	kDebugInfo(kfile_area, "selectDir %s", entry->name().ascii());
 	sig->activateDir(entry);
     } else {
 	sig->activateFile(entry);
@@ -379,7 +380,7 @@ void  KFileView::updateView(bool f)
 
 void KFileView::updateView(const KFileViewItem *)
 {
-    debug("repaint not reimplemented in %s", widget()->name("KFileView"));
+    kDebugInfo(kfile_area, "repaint not reimplemented in %s", widget()->name("KFileView"));
 }
 
 void KFileView::setCurrentItem(const QString &item,
@@ -479,7 +480,7 @@ QString KFileView::findCompletion( const char *base,
         }
 	name = backup;
 
-	debugC("completion base (%s) name (%s) body (%s)", base, name, body.data());
+	kDebugInfo(kfile_area, "completion base (%s) name (%s) body (%s)", base, name, body.data());
 
 	bool matchExactly = (name == body);
 
@@ -505,7 +506,7 @@ QString KFileView::findCompletion( const char *base,
 
 	return body;
     } else {
-	debugC("no completion for %s", base);
+	kDebugInfo(kfile_area, "no completion for %s", base);
 	return QString();
     }
 

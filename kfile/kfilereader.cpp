@@ -62,6 +62,7 @@
 
 #include "kfilereader.h"
 #include <kio_job.h>
+#include <kdebug.h>
 #include <config-kfile.h>
 #include <kdebug.h>
 
@@ -127,7 +128,7 @@ void KFileReader::setURL(const KURL& url)
 {
     KURL oldurl = *this;
     KURL::operator=(url);
-    debug("%s is %sslowly mounted", debugString(url.url()),
+    kDebugInfo(kfile_area, "%s is %sslowly mounted", debugString(url.url()),
 	  (probably_slow_mounted(path(+1).local8Bit()) ? "" : "not "));
 
     if (isLocalFile()) { // we can check, if the file is there
@@ -265,7 +266,7 @@ void KFileReader::getEntries()
 #ifdef Q2HELPER
     qt_qstring_stats();
 #endif
-    debugC("\ngetEntries %ld\n", time(0));
+    kDebugInfo(kfile_area, "getEntries %ld", time(0));
 
     KFileViewItem *i;
     QString _url = url(+1);
@@ -286,7 +287,7 @@ void KFileReader::getEntries()
     closedir(myOpendir);
     myOpendir = 0;
 
-    debug("got %d entries %ld", myPendingEntries.count(), time(0));
+    kDebugInfo(kfile_area, "got %d entries %ld", myPendingEntries.count(), time(0));
 
     statLocalFiles();
 }
@@ -355,7 +356,7 @@ void KFileReader::statLocalFiles()
     chdir(cwd);
     free(cwd);
 
-    debugC("\nemit contents %ld\n", time(0));
+    kDebugInfo(kfile_area, "emit contents %ld", time(0));
     if (!myNewEntries.isEmpty())
 	emit contents( &myNewEntries, myPendingEntries.isEmpty());
 
@@ -440,7 +441,7 @@ bool KFileReader::startLoading()
 
 void KFileReader::slotListEntry(int, const KUDSEntry& entry) // SLOT
 {
-    debugC("slotListEntry");
+    kDebugInfo(kfile_area, "slotListEntry");
     KFileViewItem *i= new KFileViewItem(entry);
     CHECK_PTR(i);
 
@@ -549,7 +550,7 @@ void KFileReader::slotDirUpdate()
 
 void KFileReader::slotDirDeleted( const QString& dir )
 {
-  debug("********** dir deleted: %s ***********", dir.ascii());
+  kDebugInfo(kfile_area, "********** dir deleted: %s ***********", dir.ascii());
 }
 
 void KFileReader::setShowHiddenFiles(bool b)

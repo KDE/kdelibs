@@ -1,14 +1,7 @@
 #ifndef CONFIG_KFILE_H
 #define CONFIG_KFILE_H
 
-
-#define COOLOS 1
-
-#if defined(COOLOS)
-#define debugC debug
-#else
-inline void debugC(const char *,...) {};
-#endif
+const int kfile_area = 250;
 
 #define DefaultViewStyle QString::fromLatin1("SimpleView")
 #define DefaultPannerPosition 40

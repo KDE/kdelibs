@@ -76,7 +76,7 @@ KDirOperator::~KDirOperator()
 void KDirOperator::readNextMimeType()
 {
     if (pendingMimeTypes.isEmpty()) {
-	debugC("all mimetypes checked %ld", time(0));
+	kDebugInfo(kfile_area, "all mimetypes checked %ld", time(0));
 	return;
     }
 
@@ -92,7 +92,7 @@ void KDirOperator::readNextMimeType()
 
 void KDirOperator::slotKIOError(int, const QString& )
 {
-    debugC("slotKIOError");
+    kDebugInfo(kfile_area, "slotKIOError");
     resetCursor();
 }
 
@@ -103,7 +103,7 @@ void KDirOperator::resetCursor()
     finished = false;
     if (progress)
 	progress->hide();
-    debugC("\ndone %ld\n", time(0));
+    kDebugInfo(kfile_area, "\ndone %ld\n", time(0));
 }
 
 void KDirOperator::activatedMenu( const KFileViewItem *item )
@@ -325,7 +325,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 	accept();
     }
 #endif
-    debug("TODO checkPath");
+    kDebugInfo(kfile_area, "TODO checkPath");
 }
 
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
@@ -341,7 +341,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     if (newurl == *dir) // already set
 	return;
 
-    debugC("setURL %s %ld (%s)", debugString(newurl.url()), time(0), debugString(dir->url()));
+    kDebugInfo(kfile_area, "setURL %s %ld (%s)", debugString(newurl.url()), time(0), debugString(dir->url()));
 
     /*
        what is the sense of this? If it's set, it's set, not?
@@ -401,7 +401,7 @@ void KDirOperator::pathChanged()
     if (!fileList)
 	return;
 
-    debugC("changed %ld", time(0));
+    kDebugInfo(kfile_area, "changed %ld", time(0));
 
     fileList->clear();
     myCompletion.clear();
@@ -630,7 +630,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
     if (!newone)
 	return;
 
-    debug("insertNewFiles %d", newone->count());
+    kDebugInfo(kfile_area, "insertNewFiles %d", newone->count());
     myCompleteListDirty = true;
 
     bool isLocal = dir->isLocalFile();

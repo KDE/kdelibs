@@ -41,6 +41,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmimetype.h>
+#include <kdebug.h>
 #include <kurl.h>
 #include "config-kfile.h"
 #include <kdebug.h>
@@ -60,7 +61,7 @@ KFileViewItem::KFileViewItem(const KUDSEntry &e)
     mySize = 0;
     myPixmap = 0L;
 
-    debugC("KFileViewItem::KFileViewItem");
+    kDebugInfo(kfile_area, "KFileViewItem::KFileViewItem");
 
     KURL url;
     KUDSEntry::ConstIterator it = e.begin();
@@ -97,14 +98,14 @@ KFileViewItem::KFileViewItem(const KUDSEntry &e)
 	    myBaseURL = url.path( 1 ); // we want a trailing "/"
 	    break;
 	case KIO::UDS_MIME_TYPE:
-	  debugC("Do something with KIO::UDS_MIME_TYPE?");
+	  kDebugInfo(kfile_area, "Do something with KIO::UDS_MIME_TYPE?");
 	  break;
 	default:
-	    debugC("got %ld", static_cast<long int>(( *it ).m_uds));
+	    kDebugInfo(kfile_area, "got %ld", static_cast<long int>(( *it ).m_uds));
 	};
     }
 
-    debugC("COMPLETE %s %d %d", debugString(myName), myIsDir, mySize);
+    kDebugInfo(kfile_area, "COMPLETE %s %d %d", debugString(myName), myIsDir, mySize);
     myName.replace( QRegExp(QString::fromLatin1("/$")), QString::fromLatin1("") );
     myIsReadable = true;
 
@@ -186,7 +187,7 @@ void KFileViewItem::stat(bool alreadyindir)
 
     } else {
 	// default
-	debugC("the file does not exist %s%s", debugString(myBaseURL), debugString(myName));
+	kDebugInfo(kfile_area, "the file does not exist %s%s", debugString(myBaseURL), debugString(myName));
 	myName.insert(0, '?');
 	mySize = 0;
 	myIsFile = false;
