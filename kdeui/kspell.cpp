@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000-2001 Wolfram Diestel <wolfram@steloj.de>
+   Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -705,9 +706,13 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     return MISTAKE;
   }
 
+  if ( buffer.isEmpty() ) {
+      kdDebug(750) << "Got an empty response: ignoring"<<endl;
+      return GOOD;
+  }
 
   kdError(750) << "HERE?: [" << buffer << "]" << endl;
-  kdError(750) << "Please report this to dsweet@kde.org" << endl;
+  kdError(750) << "Please report this to zack@kde.org" << endl;
   kdError(750) << "Thank you!" << endl;
 
   emit done( false );
