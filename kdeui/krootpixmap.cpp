@@ -43,13 +43,13 @@ public:
 
 
 KRootPixmap::KRootPixmap( QWidget *widget, const char *name )
-    : QObject(widget, name ? name : "KRootPixmap" ), m_pWidget(widget)
+    : QObject(widget, name ? name : "KRootPixmap" ), m_Desk(0), m_pWidget(widget)
 {
     init();
 }
 
 KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
-    : QObject( parent, name ? name : "KRootPixmap" ), m_pWidget(widget)
+    : QObject( parent, name ? name : "KRootPixmap" ), m_Desk(0), m_pWidget(widget)
 {
     init();
 }
