@@ -33,6 +33,7 @@
 
 #include "dom/dom_string.h"
 #include "dom/dom_element.h"
+#include "dom/dom_exception.h"
 #include "html/html_documentimpl.h"
 #include "html/html_baseimpl.h"
 #include "html/html_objectimpl.h"
@@ -3194,7 +3195,11 @@ QString KHTMLPart::selectedTextAsHTML() const
     kdDebug() << "invalid values for end/startOffset " << d->m_startOffset << " " << d->m_endOffset << endl;
     return QString::null;
   }
-  return selection().toHTML().string();
+  DOM::Range r = selection();
+  if(r.isNull() || r.isDetached())
+    return QString::null;
+  int exceptioncode = 0; //ignore the result
+  return r.handle()->toHTML(exceptioncode).string();
 }
 
 QString KHTMLPart::selectedText() const
@@ -3350,34 +3355,53 @@ bool KHTMLPart::hasSelection() const
 
 DOM::Range KHTMLPart::selection() const
 {
+    if( d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() )
+        return DOM::Range();
     DOM::Range r = document().createRange();
-
-    const NodeImpl *n = d->m_selectionStart.handle();
-    if(!n->parentNode()) {
-        r.setStart( d->m_selectionStart, d->m_startOffset );	 
-    } else if(!n->renderer()) {
-        r.setStart( d->m_selectionStart, d->m_startOffset );
-    } else if(!n->renderer()->isReplaced() && !n->renderer()->isBR()) {
-	r.setStart( d->m_selectionStart, d->m_startOffset );
+    RangeImpl *rng = r.handle();
+    int exception = 0;
+    NodeImpl *n = d->m_selectionStart.handle();
+    if(!n->parentNode() || 
+       !n->renderer() ||
+       (!n->renderer()->isReplaced() && !n->renderer()->isBR())) {
+        rng->setStart( n, d->m_startOffset, exception );
+	if(exception) {
+	    kdDebug(6000) << "1 -selection() threw the exception " << exception << ".  Returning empty range." << endl;
+	    return DOM::Range();
+	}
     } else {    
         int o_start = 0;
         while ((n = n->previousSibling()))
             o_start++;
-	r.setStart( d->m_selectionStart.parentNode(), o_start + d->m_startOffset );
+	rng->setStart( d->m_selectionStart.parentNode().handle(), o_start + d->m_startOffset, exception );
+	if(exception) {
+	    kdDebug(6000) << "2 - selection() threw the exception " << exception << ".  Returning empty range." << endl;
+	    return DOM::Range();
+	}
+
     }
  
-    int o_end = 0;
     n = d->m_selectionEnd.handle();
-    if(!n->parentNode()) {
-        r.setEnd( d->m_selectionEnd, d->m_endOffset );	 
-    } else if(!n->renderer()) {
-        r.setEnd( d->m_selectionEnd, d->m_endOffset );
-    } else if(!n->renderer()->isReplaced() && !n->renderer()->isBR()) {
-	r.setEnd( d->m_selectionEnd, d->m_endOffset );
+    if(!n->parentNode() || 
+       !n->renderer() ||
+       (!n->renderer()->isReplaced() && !n->renderer()->isBR())) {
+	    
+	rng->setEnd( n, d->m_endOffset, exception );
+	if(exception) {
+	    kdDebug(6000) << "3 - selection() threw the exception " << exception << ".  Returning empty range." << endl;
+	    return DOM::Range();
+	}
+
     } else {    
+        int o_end = 0;
         while ((n = n->previousSibling()))
             o_end++;
-	r.setEnd( d->m_selectionEnd.parentNode(), o_end + d->m_endOffset );
+	rng->setEnd( d->m_selectionEnd.parentNode().handle(), o_end + d->m_endOffset, exception);
+	if(exception) {
+	    kdDebug(6000) << "4 - selection() threw the exception " << exception << ".  Returning empty range." << endl;
+	    return DOM::Range();
+	}
+
     }
 
     return r;
