@@ -419,7 +419,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
         // make sure we relayout children if we need it,
         // like inherited floats or percentage based widths.
-        if ( relayoutChildren || 1|| floatBottom() > m_height ||
+        if ( relayoutChildren || floatBottom() > m_height ||
              ( ( child->isReplaced() || child->isFloating() ) &&
 	       ( child->style()->width().isPercent() || child->style()->height().isPercent() ) )
 	    )
