@@ -1322,7 +1322,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   KURL ref(url);
   ref.setRef(QString::null);
-  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
+  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : QString::fromLatin1( "" );
 
   m_url = url;
   KURL baseurl;
@@ -1765,8 +1765,6 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  qDebug( "comparing %s and %s", 
-   cUrl.url().latin1(), url.url().latin1() );
   if (!kapp || !kapp->kapp->authorizeURLAction("redirect", cUrl, url))
   {
     kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
