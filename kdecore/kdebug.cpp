@@ -177,7 +177,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         aAreaName = KGlobal::instance()->instanceName();
   }
 
-  static short nOutput = 4;
+  static short nOutput = 2;
   static ushort oldLevel = KDEBUG_FATAL + 1;
   static int nPriority = 0;
   static QString aCaption;
@@ -212,7 +212,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 	break;
       }
 
-    nOutput = debug_Config ? debug_Config->readNumEntry(key, 4) : 4;
+    nOutput = debug_Config ? debug_Config->readNumEntry(key, 2) : 2;
   }
 
   // If the application doesn't have a QApplication object it can't use
