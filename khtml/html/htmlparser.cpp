@@ -313,11 +313,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 	// don't push elements without end tag on the stack
         if(tagPriority[id] != 0 && !flat) {
 #if SPEED_DEBUG < 2
-            if(!n->attached() && HTMLWidget ) {
+            if(!n->attached() && HTMLWidget )
                 n->attach();
-                if (n->renderer())
-                    n->renderer()->setBlockBidi();
-            }
 #endif
 	    if(n->isInline()) m_inline = true;
             pushBlock(id, tagPriority[id]);
