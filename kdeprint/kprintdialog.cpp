@@ -19,8 +19,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-/* 
- *  "WhatsThis" help items added by Kurt Pfeifle, August 2003, 
+/*
+ *  "WhatsThis" help items added by Kurt Pfeifle, August 2003,
  *  same copyright as above.
  **/
 
@@ -598,9 +598,11 @@ void KPrintDialog::slotPrinterSelected(int index)
 			d->m_state->setText(p->stateString());
 			ok = p->isValid();
 			enableSpecial(p->isSpecial());
-			enableOutputFile(p->option("kde-special-file") == "1");
+			enableOutputFile( p->option("kde-special-file") == "1" );
 			setOutputFileExtension(p->option("kde-special-extension"));
 		}
+                else
+                    enableOutputFile( ok );
 	}
 	d->m_properties->setEnabled(ok);
 	d->m_ok->setEnabled(ok);
