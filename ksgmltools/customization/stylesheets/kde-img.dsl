@@ -17,7 +17,7 @@
 (define ($graphic$ fileref 
 		   #!optional (format #f) (alt #f) (align #f))
   (let* ((csim?  (equal? (gi (parent (current-node)))
-			 (normalize "graphicco")))
+			 (normalize "imageobjectco")))
 	 (ismap  (if csim?
 		     '(("ISMAP" "ISMAP"))
 		     '()))
