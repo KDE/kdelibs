@@ -57,5 +57,5 @@ Comment[zh_TW]=AbiWord 文件
 Comment[zu]=Uhlu lwamafayela e-AbiWord
 Icon=kword
 MimeType=application/x-abiword
-Patterns=*.abw;*.ABW;*.abw.gz;*.ABW.GZ;*.zabw;*.ZABW;
+Patterns=*.abw;*.ABW;*.abw.gz;*.zabw;*.abw.bz2;*.bzabw
 Type=MimeType
