@@ -558,7 +558,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if (d->m_kaccel)
     unplugAccel();
   d->m_kaccel = kacc;
-  d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->m_plainText,
+  d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->plainText(),
       KKeySequence(d->m_accel),
       this, SLOT(slotActivated()),
       0, 0, configurable, isEnabled());
