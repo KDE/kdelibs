@@ -1790,7 +1790,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * group)
 
 void KConfigGroup::deleteGroup(bool bGlobal)
 {
-  mMaster->deleteGroup(KConfigBase::group(), false, bGlobal);
+  mMaster->deleteGroup(KConfigBase::group(), true, bGlobal);
 }
 
 void KConfigGroup::setDirty(bool _bDirty)
