@@ -924,6 +924,8 @@ KCmdLineArgs::setOption(const QCString &opt, bool enabled)
    {
       // Qt does it own parsing.
       QCString arg = "-";
+      if( !enabled )
+          arg += "no";
       arg += opt;
       addArgument(arg);
       return;
