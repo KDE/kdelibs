@@ -253,6 +253,14 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
 
 void KHTMLPartBrowserExtension::updateEditActions()
 {
+    if ( !m_editableFormWidget )
+    {
+        enableAction( "cut", false );
+        enableAction( "copy", false );
+        enableAction( "paste", false );
+        return;
+    }
+
     // ### duplicated from KonqMainWindow::slotClipboardDataChanged
 #ifndef QT_NO_MIMECLIPBOARD // Handle minimalized versions of Qt Embedded
     QMimeSource *data = QApplication::clipboard()->data();
@@ -261,21 +269,13 @@ void KHTMLPartBrowserExtension::updateEditActions()
     QString data=QApplication::clipboard()->text();
     enableAction( "paste", data.contains("://"));
 #endif
-    if ( !m_editableFormWidget )
-    {
-        enableAction( "cut", false );
-        enableAction( "paste", false );
-        return;
-    }
-
     bool hasSelection = false;
 
-    if ( m_editableFormWidget->inherits( "QLineEdit" ) ) {
-        hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-    }
-    else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-    {
-        hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+    if( m_editableFormWidget) {
+        if ( ::qt_cast<QLineEdit*>(m_editableFormWidget))
+            hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+        else if(::qt_cast<QTextEdit*>(m_editableFormWidget))
+            hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     }
 
     enableAction( "copy", hasSelection );
