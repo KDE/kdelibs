@@ -58,7 +58,7 @@ class KCmdLineArgsPrivate;
  *
  *  A typical KDE application should look like this:
  *
- *  <pre>
+ *  \code
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
@@ -104,11 +104,11 @@ class KCmdLineArgsPrivate;
  *     args->clear(); // Free up some memory.
  *     ....
  *  }
- *  </pre>
+ *  \endcode
  *
  *  options are defined as follow
  *
- *  <pre>
+ *  <code>
  *  static KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
@@ -130,7 +130,7 @@ class KCmdLineArgsPrivate;
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
  *     { 0, 0, 0 } // End of options.
  *  };
- *  </pre>
+ *  </code>
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
