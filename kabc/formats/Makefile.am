@@ -6,7 +6,7 @@ kabcformat_binary_la_SOURCES = binaryformat.cpp
 kabcformat_binary_la_LDFLAGS =  -module $(KDE_PLUGIN) $(KDE_RPATH) $(all_libraries) \
                                 -no-undefined
 kabcformat_binary_la_LIBADD  = $(top_builddir)/kabc/libkabc.la
-kabcformat_binary_la_COMPILE_FIRST = $(top_srcdir)/kabc/addressee.h
+kabcformat_binary_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 
 # these are the headers for your project
 noinst_HEADERS = binaryformat.h
