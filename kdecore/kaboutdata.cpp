@@ -33,7 +33,10 @@ KAboutPerson::name() const
 QString
 KAboutPerson::task() const
 {
-   return i18n(mTask);
+   if (mTask)
+      return i18n(mTask);
+   else
+      return QString::null;
 }
 
 QString
@@ -107,7 +110,10 @@ KAboutData::appName() const
 QString
 KAboutData::programName() const
 {
-   return i18n(mProgramName);
+   if (mProgramName)
+      return i18n(mProgramName);
+   else
+      return QString::null;
 }
 
 QString
@@ -119,7 +125,10 @@ KAboutData::version() const
 QString
 KAboutData::shortDescription() const
 {
-   return i18n(mShortDescription);
+   if (mShortDescription)
+      return i18n(mShortDescription);
+   else
+      return QString::null;
 }
 
 QString
@@ -149,7 +158,10 @@ KAboutData::credits() const
 QString
 KAboutData::otherText() const
 {
-   return i18n(mOtherText);
+   if (mOtherText)
+      return i18n(mOtherText);
+   else
+      return QString::null;
 }
 
 
