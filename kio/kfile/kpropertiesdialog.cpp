@@ -638,6 +638,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
                                       KDialog::spacingHint(), "vbl");
   QGridLayout *grid = new QGridLayout(0, 3); // unknown rows
+  grid->setColStretch(0, 0);
+  grid->setColStretch(1, 0);
   grid->setColStretch(2, 1);
   grid->addColSpacing(1, KDialog::spacingHint());
   vbl->addLayout(grid);
@@ -806,9 +808,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     grid->addWidget(l, curRow, 0);
     
-    l = new QLabel(mimeComment, d->m_frame );
+    QHBox *box = new QHBox(d->m_frame);
+    l = new QLabel(mimeComment, box );
 
-    QPushButton *button = new QPushButton(d->m_frame);
+    QPushButton *button = new QPushButton(box);
     
     QIconSet iconSet = SmallIconSet(QString::fromLatin1("configure"));
     QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
@@ -818,12 +821,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( pressed() ), SLOT( slotEditFileType() ));
 
-    QHBoxLayout *layout = new QHBoxLayout(grid);
-    
-    layout->addWidget(l,1);
-    layout->addWidget(button);
 
-    grid->addLayout(layout, curRow++, 2);
+    grid->addWidget(box, curRow++, 2);
   }
 
   if ( !magicMimeComment.isEmpty() && magicMimeComment != mimeComment )
@@ -922,12 +921,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     sep = new KSeparator( KSeparator::HLine, d->m_frame);
     grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
     ++curRow;
-
-    grid = new QGridLayout(0, 3); // unknown # of rows
-    grid->setColStretch(2, 1);
-    grid->addColSpacing(1, KDialog::spacingHint());
-    vbl->addLayout(grid);
-    curRow = 0;
 
     QDateTime dt;
     time_t tim = item->time(KIO::UDS_CREATION_TIME);
