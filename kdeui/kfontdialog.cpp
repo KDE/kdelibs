@@ -260,28 +260,15 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QWhatsThis::add( sizeListBox, fontSizeWhatsThisText );
   QWhatsThis::add( diff?(QWidget *)sizeCheckbox:(QWidget *)sizeLabel, fontSizeWhatsThisText );
 
-  static const int c[] =
-  {
-    4,  5,  6,  7,
-    8,  9,  10, 11,
-    12, 13, 14, 15,
-    16, 17, 18, 19,
-    20, 22, 24, 26,
-    28, 32, 48, 64,
-    0
-  };
-  for(int i = 0; c[i] != 0; i++)
-  {
-    sizeListBox->insertItem(QString::number(c[i]));
-  }
+  fillSizeList();
   sizeListBox->setMinimumWidth( minimumListWidth(sizeListBox) +
     sizeListBox->fontMetrics().maxWidth() );
   sizeListBox->setMinimumHeight(
     minimumListHeight( sizeListBox, visibleListSize  ) );
 
-
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	   SLOT(size_chosen_slot(const QString&)) );
+  sizeListBox->setSelected(sizeListBox->findItem(QString::number(10)), true); // default to 10pt.
 
   row ++;
 #if QT_VERSION < 300
@@ -353,6 +340,25 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 KFontChooser::~KFontChooser()
 {
   delete d;
+}
+
+void KFontChooser::fillSizeList() {
+  if(! sizeListBox) return; //assertion.
+
+  static const int c[] =
+  {
+    4,  5,  6,  7,
+    8,  9,  10, 11,
+    12, 13, 14, 15,
+    16, 17, 18, 19,
+    20, 22, 24, 26,
+    28, 32, 48, 64,
+    0
+  };
+  for(int i = 0; c[i] != 0; i++)
+  {
+    sizeListBox->insertItem(QString::number(c[i]));
+  }
 }
 
 void KFontChooser::setColor( const QColor & col )
@@ -506,37 +512,80 @@ void KFontChooser::toggled_checkbox()
 
 void KFontChooser::family_chosen_slot(const QString& family)
 {
-  selFont.setFamily(family);
+    fillCharsetsCombo();
 
-  fillCharsetsCombo();
+    QFontDatabase dbase;
+    QStringList styles = QStringList(dbase.styles(family));
+    styleListBox->clear();
+    currentStyles.clear();
+    for ( QStringList::Iterator it = styles.begin(); it != styles.end(); ++it ) {
+        QString style = *it;
+        int pos = style.find("Plain");
+        if(pos >=0) style = style.replace(pos,5,i18n("Regular"));
+        pos = style.find("Normal");
+        if(pos >=0) style = style.replace(pos,6,i18n("Regular"));
+        pos = style.find("Oblique");
+        if(pos >=0) style = style.replace(pos,7,i18n("Italic"));
+        if(styleListBox->findItem(style) ==0) {
+            styleListBox->insertItem(style);
+            currentStyles.insert(style, *it);
+        }
+    }
 
-  emit fontSelected(selFont);
+    QString origSelectedStyle = selectedStyle; // don't let the next line overwrite our cache via signals/slots..
+    styleListBox->setSelected(styleListBox->findItem(selectedStyle), true);
+
+    QString style = selectedStyle;
+    if(styleListBox->currentItem() < 0) { // fallback if the style does not exist for this font.
+        style = styleListBox->text(0);
+    }
+
+    sizeListBox->clear();
+    if(dbase.isSmoothlyScalable(family)) {  // is vector font
+        // TODO set an appropriate "Vector" background to the preview area.
+        fillSizeList();
+    } else {                                // is bitmap font.
+        // TODO set an appropriate "Bitmap" background to the preview area.
+        QValueList<int> sizes = dbase.smoothSizes(family, style);
+        if(sizes.count() > 0) {
+            QValueList<int>::iterator it;
+            for ( it = sizes.begin(); it != sizes.end(); ++it ) {
+                sizeListBox->insertItem(QString::number(*it));
+            }
+        } else { // there are times QT does not provide the list..
+            fillSizeList(); 
+        }
+    }
+    int origSelectedSize = selectedSize; // same as selectedStyle above.
+    // The next command will emit the fontSelected signal for a second time, no idea how to avoid it..
+    sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
+
+    if(styleListBox->currentItem() < 0 ||  sizeListBox->currentItem() < 0) { 
+        // only do this if the style was not present; because the slot of either list would have done this 
+        // allready
+        //kdDebug() << "Showing: " << family << ", " << currentStyles[style] << ", " << origSelectedSize << endl;
+        selFont= dbase.font(family, currentStyles[style], origSelectedSize);
+        emit fontSelected(selFont);
+        selectedStyle = origSelectedStyle;
+    }
+    selectedSize=origSelectedSize;
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){
 
-  QString size_string = size;
+  selectedSize=size.toInt();
 
-  selFont.setPointSize(size_string.toInt());
+  selFont.setPointSize(selectedSize);
   emit fontSelected(selFont);
 }
 
 void KFontChooser::style_chosen_slot(const QString& style)
 {
-  QString style_string = style;
+  selectedStyle= style;
 
-  if ( style_string.contains(i18n("Italic"))||
-       style_string.contains(i18n("Bold Italic")) )
-    selFont.setItalic(true);
-  else
-    selFont.setItalic(false);
-
-  if ( style_string.contains(i18n("Bold")) ||
-       style_string.contains(i18n("Bold Italic")) )
-    selFont.setBold(true);
-  else
-    selFont.setBold(false);
-
+  QFontDatabase dbase;
+  //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[style] << ", " << selectedSize << endl;
+  selFont = dbase.font(familyListBox->currentText(), currentStyles[style], selectedSize);
   emit fontSelected(selFont);
 }
 
@@ -584,28 +633,32 @@ void KFontChooser::setupDisplay()
 }
 
 
-void KFontChooser::getFontList( QStringList &list, bool fixed )
+void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
 {
   QFontDatabase dbase;
   QStringList lstSys(dbase.families());
 
-  // Since QFontDatabase doesn't have any easy way of returning just
-  // the fixed width fonts, we'll do it in a very hacky way
-  if (fixed)
+  // if we have criteria; then check fonts before adding
+  if (fontListCriteria)
   {
-    QStringList lstFixed;
+    QStringList lstFonts;
     for (QStringList::Iterator it = lstSys.begin(); it != lstSys.end(); ++it)
     {
-        if (dbase.isFixedPitch(*it))
-          lstFixed.append(*it);
+        if ((fontListCriteria & FixedWidthFonts) > 0 && !dbase.isFixedPitch(*it)) continue;
+        if ((fontListCriteria & (SmoothScalableFonts | ScalableFonts) == ScalableFonts) && 
+                !dbase.isBitmapScalable(*it)) continue;
+        if ((fontListCriteria & SmoothScalableFonts) > 0 && !dbase.isSmoothlyScalable(*it)) continue;
+        lstFonts.append(*it);
     }
 
-    // Fallback.. if there are no fixed fonts found, it's probably a
-    // bug in the font server or Qt.  In this case, just use 'fixed'
-    if (lstFixed.count() == 0)
-      lstFixed.append("fixed");
+    if((fontListCriteria & FixedWidthFonts) > 0) {
+        // Fallback.. if there are no fixed fonts found, it's probably a
+        // bug in the font server or Qt.  In this case, just use 'fixed'
+        if (lstFonts.count() == 0)
+          lstFonts.append("fixed");
+    }
 
-    lstSys = lstFixed;
+    lstSys = lstFonts;
   }
 
   lstSys.sort();
@@ -665,7 +718,7 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
 void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
 {
   QStringList fontList;
-  getFontList(fontList, onlyFixedFonts);
+  getFontList(fontList, onlyFixedFonts?FixedWidthFonts:0);
   familyListBox->clear();
   familyListBox->insertStringList(fontList);
 }
@@ -760,6 +813,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.80  2001/12/19 10:33:32  zander
+* fixed warnings
+*
 * Revision 1.79  2001/12/18 22:07:01  zander
 * Slight change of layout
 *

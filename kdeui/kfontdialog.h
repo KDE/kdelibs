@@ -209,13 +209,28 @@ public:
    */
   static void getFontList( QStringList &list, const char *pattern );
 
+
+  /** 
+   * The selection criteria for the font families shown in the dialog.
+   *  @li @p FixedWidthFont when included only fixed-width fonts are returned. 
+   *        The fonts where the width of every character is equal.
+   *  @li @p ScalableFont when included only scalable fonts are returned; 
+   *        certain configurations allow bitmap fonts to remain unscaled and 
+   *        thus these fonts have limited number of sizes.
+   *  @li @p SmoothScalableFont when included only return smooth scalable fonts. 
+   *        this will return only non-bitmap fonts which are scalable to any size requested.
+   *        Setting this option to true will mean the "scalable" flag is irrelavant.
+   */
+  enum FontListCriteria { FixedWidthFonts=0x01, ScalableFonts=0x02, SmoothScalableFonts=0x04 };
+
   /**
    * Creates a list of font strings.
    *
    * @param list The list is returned here.
-   * @param fixed Flag, when true only fixed fonts are returned.
+   * @param fontListCriteria should contain all the restrictions for font selection as OR-ed values
+   *        @see KFontChooser::FontListCriteria for the individual values
    */
-  static void getFontList( QStringList &list, bool fixed );
+  static void getFontList( QStringList &list, uint fontListCriteria);
 
   /**
    * Reimplemented for internal reasons.
@@ -240,6 +255,7 @@ private slots:
 private:
   void fillFamilyListBox(bool onlyFixedFonts = false);
   void fillCharsetsCombo();
+  void fillSizeList();
   // This one must be static since getFontList( QStringList, char*) is so
   static void addFont( QStringList &list, const char *xfont );
 
@@ -267,6 +283,10 @@ private:
   QCheckBox    *sizeIsRelativeCheckBox;
 
   QFont        selFont;
+
+  QString      selectedStyle;
+  int          selectedSize;
+  QMap<QString, QString> currentStyles;
 
   bool usingFixed;
 
