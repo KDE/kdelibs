@@ -63,6 +63,7 @@ Otherwise kdostartupconfig is launched to create or update all the necessary fil
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
