@@ -316,16 +316,25 @@ impossible to use KProcess.
 You want to use this if you need to start a new process which needs to be a 
 child of your process, e.g. because you want to catch stdout/stderr or need 
 to send it data via stdin. You should never use this to start other KDE 
-applications unless your application is called kgdb :-)
+applications unless your application is called kgdb :-) If you need to
+send/receive text like data to/from the process, you are probably better 
+off with KProcIO
 </P>
-<H4>3. startServiceByDesktopPath</H4>
+
+<H4>3. KProcIO</H4>
+<P>
+Like KProcess. Unlike KProcess, this class actually makes it easy to 
+send data to and receive data from the process.
+
+</P>
+<H4>4. startServiceByDesktopPath</H4>
 <P>
 Preferred way to launch desktop (KDE/Gnome/X) applications or KDE services. 
 The application/service must have a .desktop file. It will make use of 
 KDEinit for increased startup performance and lower memory usage. These 
 benefits only apply to applications available as KDEinit loadable module (KLM)
 </P>
-<H4>4. KRun</H4>
+<H4>5. KRun</H4>
 <P>
 Generic way to open documents/applications/shell commands. Uses
 startServiceBy.... where applicable. Offers the additional 
