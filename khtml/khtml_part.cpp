@@ -217,11 +217,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   // set the default java(script) flags according to the current host.
-  d->m_bBackRightClick = KHTMLFactory::defaultHTMLSettings()->isBackRightClickEnabled();
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
-  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
+  d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
+  d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
+  d->m_bJScriptDebugEnabled = d->m_settings->isJavaScriptDebugEnabled();
+  d->m_bJavaEnabled = d->m_settings->isJavaEnabled();
+  d->m_bPluginsEnabled = d->m_settings->isPluginsEnabled();
+
+  // Set the meta-refresh flag...
+  d->m_metaRefreshEnabled = d->m_settings->isAutoDelayedActionsEnabled ();
 
   connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );
 
@@ -4195,6 +4198,8 @@ void KHTMLPart::reparseConfiguration()
   d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
   d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
+  d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
+
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
