@@ -27,6 +27,127 @@ using namespace DOM;
 
 #include <kdebug.h>
 
+// priority of tags. Closing tags of higher priority close tags of lower
+// priority.
+// Update this list, whenever you change htmltags.*
+//
+// 0 elements with forbidden close tag and text. They don't get pushed
+//   to the stack.
+// 1 inline elements
+// 2 form elements
+// 3 regular block level elements
+// 4 lists (OL UL DIR MENU)
+// 5 TD TH SELECT
+// 6 TR
+// 7 tbody thead tfoot caption  object
+// 8 table
+// 9 body frameset
+// 10 html
+const unsigned short DOM::tagPriority[] = {
+    0, // 0
+    5, // ID_A == 1
+    1, // ID_ABBR
+    1, // ID_ACRONYM
+    3, // ID_ADDRESS
+    1, // ID_APPLET
+    0, // ID_AREA
+    1, // ID_B
+    0, // ID_BASE
+    0, // ID_BASEFONT
+    1, // ID_BDO
+    1, // ID_BIG
+    3, // ID_BLOCKQUOTE
+    9, // ID_BODY
+    0, // ID_BR
+    1, // ID_BUTTON
+    5, // ID_CAPTION
+    4, // ID_CENTER
+    1, // ID_CITE
+    1, // ID_CODE
+    0, // ID_COL
+    1, // ID_COLGROUP
+    3, // ID_DD
+    1, // ID_DEL
+    1, // ID_DFN
+    4, // ID_DIR
+    3, // ID_DIV
+    4, // ID_DL
+    3, // ID_DT
+    1, // ID_EM
+    0, // ID_EMBED
+    3, // ID_FIELDSET
+    1, // ID_FONT
+    3, // ID_FORM
+    0, // ID_FRAME
+    9, // ID_FRAMESET
+    3, // ID_H1
+    3, // ID_H2
+    3, // ID_H3
+    3, // ID_H4
+    3, // ID_H5
+    3, // ID_H6
+    9, // ID_HEAD
+    0, // ID_HR
+    10, // ID_HTML
+    1, // ID_I
+    1, // ID_IFRAME
+    0, // ID_IMG
+    0, // ID_INPUT
+    1, // ID_INS
+    0, // ID_ISINDEX
+    1, // ID_KBD
+    0, // ID_KEYGEN
+    5, // ID__KONQBLOCK
+    1, // ID_LABEL
+    1, // ID_LAYER
+    1, // ID_LEGEND
+    3, // ID_LI
+    0, // ID_LINK
+    1, // ID_LISTING
+    1, // ID_MAP
+    4, // ID_MENU
+    0, // ID_META
+    9, // ID_NOEMBED
+    9, // ID_NOFRAMES
+    3, // ID_NOSCRIPT
+    1, // ID_NOLAYER
+    7, // ID_OBJECT
+    4, // ID_OL
+    1, // ID_OPTGROUP
+    2, // ID_OPTION
+    3, // ID_P
+    0, // ID_PARAM
+    1, // ID_PLAIN
+    5, // ID_PRE
+    1, // ID_Q
+    1, // ID_S
+    1, // ID_SAMP
+    1, // ID_SCRIPT
+    5, // ID_SELECT
+    1, // ID_SMALL
+    1, // ID_SPAN
+    1, // ID_STRIKE
+    1, // ID_STRONG
+    1, // ID_STYLE
+    1, // ID_SUB
+    1, // ID_SUP
+    8, // ID_TABLE
+    7, // ID_TBODY
+    5, // ID_TD
+    1, // ID_TEXTAREA
+    7, // ID_TFOOT
+    5, // ID_TH
+    7, // ID_THEAD
+    1, // ID_TITLE
+    6, // ID_TR
+    1, // ID_TT
+    1, // ID_U
+    4, // ID_UL
+    1, // ID_VAR
+    0, // ID_TEXT
+};
+
+
 static const ushort tag_list_0[] = {
     ID_TEXT,
     ID_TT,

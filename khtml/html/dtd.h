@@ -35,6 +35,8 @@ enum tagStatus { OPTIONAL, REQUIRED, FORBIDDEN };
 
 bool checkChild(ushort tagID, ushort childID);
 
+extern const unsigned short tagPriority[];
+
 DOMString findDefAttrNone(ushort);
 // (TT|I|B|U|S|STRIKE|BIG|SMALL|EM|STRONG|DFN|CODE|SAMP|KBD|VAR|CITE|ABBR|ACRONYM)
 #define findDefAttrTT findDefAttrNone
