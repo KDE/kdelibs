@@ -228,10 +228,25 @@ void KMLpdUnixManager::parseEtcPrintcap()
 	}
 }
 
+// helper function for NIS support in Solaris-2.6 (use "ypcat printers.conf.byname")
+QString getEtcPrintersConfName()
+{
+	QString	printersconf("/etc/printers.conf");
+	if (!QFile::exists(printersconf))
+	{
+		// standard file not found, try NIS
+		printersconf = locateLocal("tmp","printers.conf");
+		QString	cmd = QString::fromLatin1("ypcat printers.conf.byname > %1").arg(printersconf);
+		kdDebug() << "printers.conf obtained from NIS server: " << cmd << endl;
+		::system(cmd.local8Bit());
+	}
+	return printersconf;
+}
+
 // "/etc/printers.conf" file parsing (Solaris 2.6)
 void KMLpdUnixManager::parseEtcPrintersConf()
 {
-	QFile	f("/etc/printers.conf");
+	QFile	f(getEtcPrintersConfName());
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
 		KTextBuffer	t(&f);
