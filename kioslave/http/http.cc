@@ -2772,7 +2772,7 @@ bool HTTPProtocol::readHeader()
         }
      }
   }
-  
+
   // Send the response header if it was requested
   if (!responseHeader.isEmpty())
     setMetaData("HTTP-Headers", responseHeader.join("\n"));
@@ -3221,7 +3221,7 @@ void HTTPProtocol::httpClose()
     return;
   }
 
-  closeConnection();
+  httpCloseConnection();
 }
 
 void HTTPProtocol::closeConnection()
