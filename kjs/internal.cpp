@@ -452,12 +452,14 @@ DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
 					 FunctionBodyNode *b, const List *sc)
   : ConstructorImp(n), body(b), scopes(sc->copy())
 {
+  body->ref();
 }
 
 DeclaredFunctionImp::~DeclaredFunctionImp()
 {
   delete scopes;
-  delete body;
+  if ( body->deref() )
+      delete body;
 }
 
 // step 2 of ECMA 13.2.1. rest in FunctionImp::executeCall()
@@ -587,9 +589,6 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int sourceId,
   progNode = 0;
   sid = -1;
 
-  //  Node::setFirstNode(firstNode());
-  //  setFirstNode(Node::firstNode());
-
   if (parseError) {
     // ###
     int eline = Lexer::curr()->lineNo();
@@ -602,8 +601,7 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int sourceId,
 #ifndef NDEBUG
     fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", eline);
 #endif
-    if (prog)
-      delete prog;
+    delete prog;
     return 0;
   }
 
@@ -823,8 +821,12 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
   if (!progNode)
     return false;
 
-  if (onlyCheckSyntax)
+  if (onlyCheckSyntax) {
+    delete progNode;
     return true;
+  }
+
+  progNode->ref();
 
   clearException();
 
@@ -868,7 +870,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
     context()->setVariableObject(oldVar);
   }
 
-  delete progNode;
+  if ( progNode->deref() )
+    delete progNode;
 
   return !errType;
 }

@@ -46,11 +46,7 @@ Node::Node()
   //  assert(Lexer::curr());
   //  line = Lexer::curr()->lineNo();
   line = 0; // ### FIXME
-}
-
-Node::Node(const Node &other)
-{
-  line = other.line;
+  refcount = 0;
 }
 
 Node::~Node()
@@ -64,14 +60,12 @@ KJSO Node::throwError(ErrorType e, const char *msg)
 
 
 // ------------------------------ StatementNode --------------------------------
-
-StatementNode::StatementNode(const StatementNode &other) : Node(other)
+StatementNode::StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false)
 {
-  ls = other.ls; // ### write copy-constructor for ls
-  l0 = other.l0;
-  l1 = other.l1;
-  sid = other.sid;
-  breakPoint = other.breakPoint;
+}
+
+StatementNode::~StatementNode()
+{
 }
 
 void StatementNode::setLoc(int line0, int line1, int sourceId)
@@ -110,31 +104,12 @@ Completion StatementNode::execute(KJScriptImp */*script*/, Context */*context*/)
 
 // ------------------------------ NullNode -------------------------------------
 
-NullNode::NullNode(const NullNode &other) : Node(other)
-{
-}
-
-Node *NullNode::copy() const
-{
-  return new NullNode(*this);
-}
-
 KJSO NullNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 {
   return Null();
 }
 
 // ------------------------------ BooleanNode ----------------------------------
-
-BooleanNode::BooleanNode(const BooleanNode &other) : Node(other)
-{ 
-  value = other.value;
-}
-
-Node *BooleanNode::copy() const
-{
-  return new BooleanNode(*this);
-}
 
 KJSO BooleanNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 {
@@ -143,16 +118,6 @@ KJSO BooleanNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 
 // ------------------------------ NumberNode -----------------------------------
 
-NumberNode::NumberNode(const NumberNode &other) : Node(other)
-{
-  value = other.value;
-}
-
-Node *NumberNode::copy() const
-{
-  return new NumberNode(*this);
-}
-
 KJSO NumberNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 {
   return Number(value);
@@ -160,33 +125,12 @@ KJSO NumberNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 
 // ------------------------------ StringNode -----------------------------------
 
-StringNode::StringNode(const StringNode &other) : Node(other)
-{
-  value = other.value;
-}
-
-Node *StringNode::copy() const
-{
-  return new StringNode(*this);
-}
-
 KJSO StringNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 {
   return String(value);
 }
 
 // ------------------------------ RegExpNode -----------------------------------
-
-RegExpNode::RegExpNode(const RegExpNode &other) : Node(other)
-{
-  pattern = other.pattern;
-  flags = other.flags;
-}
-
-Node *RegExpNode::copy() const
-{
-  return new RegExpNode(*this);
-}
 
 KJSO RegExpNode::evaluate(KJScriptImp *script, Context */*context*/)
 {
@@ -204,15 +148,6 @@ KJSO RegExpNode::evaluate(KJScriptImp *script, Context */*context*/)
 
 // ------------------------------ ThisNode -------------------------------------
 
-ThisNode::ThisNode(const ThisNode &other) : Node(other)
-{
-}
-
-Node *ThisNode::copy() const
-{
-  return new ThisNode(*this);
-}
-
 // ECMA 11.1.1
 KJSO ThisNode::evaluate(KJScriptImp */*script*/, Context *context)
 {
@@ -220,16 +155,6 @@ KJSO ThisNode::evaluate(KJScriptImp */*script*/, Context *context)
 }
 
 // ------------------------------ ResolveNode ----------------------------------
-
-ResolveNode::ResolveNode(const ResolveNode &other) : Node(other)
-{
-  ident = other.ident;
-}
-
-Node *ResolveNode::copy() const
-{
-  return new ResolveNode(*this);
-}
 
 // ECMA 11.1.2 & 10.1.4
 KJSO ResolveNode::evaluate(KJScriptImp */*script*/, Context *context)
@@ -255,20 +180,22 @@ KJSO ResolveNode::evaluate(KJScriptImp */*script*/, Context *context)
 
 // ------------------------------ GroupNode ------------------------------------
 
-GroupNode::GroupNode(const GroupNode &other) : Node(other)
-{
-  group = other.group ? other.group->copy() : 0;
-}
-
 GroupNode::~GroupNode()
 {
-  if (group)
-    delete group;
 }
 
-Node *GroupNode::copy() const
+void GroupNode::ref()
 {
-  return new GroupNode(*this);
+  Node::ref();
+  if ( group )
+    group->ref();
+}
+
+bool GroupNode::deref()
+{
+  if ( group && group->deref() )
+    delete group;
+  return Node::deref();
 }
 
 // ECMA 11.1.6
@@ -279,20 +206,22 @@ KJSO GroupNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ElisionNode ----------------------------------
 
-ElisionNode::ElisionNode(const ElisionNode &other) : Node(other)
-{
-  elision = other.elision ? static_cast<ElisionNode*>(other.elision->copy()) : 0;
-}
-
 ElisionNode::~ElisionNode()
 {
-  if (elision)
-    delete elision;
 }
 
-Node *ElisionNode::copy() const
+void ElisionNode::ref()
 {
-  return new ElisionNode(*this);
+  Node::ref();
+  if ( elision )
+    elision->ref();
+}
+
+bool ElisionNode::deref()
+{
+  if ( elision && elision->deref() )
+    delete elision;
+  return Node::deref();
 }
 
 // ECMA 11.1.4
@@ -306,26 +235,30 @@ KJSO ElisionNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ElementNode ----------------------------------
 
-ElementNode::ElementNode(const ElementNode &other) : Node(other)
-{
-  list = other.list ? static_cast<ElementNode*>(other.list->copy()) : 0;
-  elision = other.elision ? static_cast<ElisionNode*>(other.elision->copy()) : 0;
-  node = other.node ? other.node->copy() : 0;
-}
-
 ElementNode::~ElementNode()
 {
-  if (list)
-    delete list;
-  if (elision)
-    delete elision;
-  if (node)
-    delete node;
 }
 
-Node *ElementNode::copy() const
+void ElementNode::ref()
 {
-  return new ElementNode(*this);
+  Node::ref();
+  if ( list )
+    list->ref();
+  if ( elision )
+    elision->ref();
+  if ( node )
+    node->ref();
+}
+
+bool ElementNode::deref()
+{
+  if ( list && list->deref() )
+    delete list;
+  if ( elision && elision->deref() )
+    delete elision;
+  if ( node && node->deref() )
+    delete node;
+  return Node::deref();
 }
 
 // ECMA 11.1.4
@@ -351,24 +284,26 @@ KJSO ElementNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ArrayNode ------------------------------------
 
-ArrayNode::ArrayNode(const ArrayNode &other) : Node(other)
-{
-  element = other.element ? static_cast<ElementNode*>(other.element->copy()) : 0;
-  elision = other.elision ? static_cast<ElisionNode*>(other.elision->copy()) : 0;
-  opt = other.opt;
-}
-
 ArrayNode::~ArrayNode()
 {
-  if (element)
-    delete element;
-  if (elision)
-    delete elision;
 }
 
-Node *ArrayNode::copy() const
+void ArrayNode::ref()
 {
-  return new ArrayNode(*this);
+  Node::ref();
+  if ( element )
+    element->ref();
+  if ( elision )
+    elision->ref();
+}
+
+bool ArrayNode::deref()
+{
+  if ( element && element->deref() )
+    delete element;
+  if ( elision && elision->deref() )
+    delete elision;
+  return Node::deref();
 }
 
 // ECMA 11.1.4
@@ -394,20 +329,22 @@ KJSO ArrayNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ObjectLiteralNode ----------------------------
 
-ObjectLiteralNode::ObjectLiteralNode(const ObjectLiteralNode &other) : Node (other)
-{
-  list = other.list ? other.list->copy() : 0;
-}
-
 ObjectLiteralNode::~ObjectLiteralNode()
 {
-  if (list)
-    delete list;
 }
 
-Node *ObjectLiteralNode::copy() const
+void ObjectLiteralNode::ref()
 {
-  return new ObjectLiteralNode(*this);
+  Node::ref();
+  if ( list )
+    list->ref();
+}
+
+bool ObjectLiteralNode::deref()
+{
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 // ECMA 11.1.5
@@ -421,26 +358,30 @@ KJSO ObjectLiteralNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ PropertyValueNode ----------------------------
 
-PropertyValueNode::PropertyValueNode(const PropertyValueNode &other) : Node (other)
-{
-  name = other.name ? other.name->copy() : 0;
-  assign = other.assign ? other.assign->copy() : 0;
-  list = other.list ? other.list->copy() : 0;
-}
-
 PropertyValueNode::~PropertyValueNode()
 {
-  if (name)
-    delete name;
-  if (assign)
-    delete assign;
-  if (list)
-    delete list;
 }
 
-Node *PropertyValueNode::copy() const
+void PropertyValueNode::ref()
 {
-  return new PropertyValueNode(*this);
+  Node::ref();
+  if ( name )
+    name->ref();
+  if ( assign )
+    assign->ref();
+  if ( list )
+    list->ref();
+}
+
+bool PropertyValueNode::deref()
+{
+  if ( name && name->deref() )
+    delete name;
+  if ( assign && assign->deref() )
+    delete assign;
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 // ECMA 11.1.5
@@ -462,17 +403,6 @@ KJSO PropertyValueNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ PropertyNode ---------------------------------
 
-PropertyNode::PropertyNode(const PropertyNode &other) : Node(other)
-{
-  numeric = other.numeric;
-  str = other.str;
-}
-
-Node *PropertyNode::copy() const
-{
-  return new PropertyNode(*this);
-}
-
 // ECMA 11.1.5
 KJSO PropertyNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 {
@@ -488,23 +418,26 @@ KJSO PropertyNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 
 // ------------------------------ AccessorNode1 --------------------------------
 
-AccessorNode1::AccessorNode1(const AccessorNode1 &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-}
-
 AccessorNode1::~AccessorNode1()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *AccessorNode1::copy() const
+void AccessorNode1::ref()
 {
-  return new AccessorNode1(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool AccessorNode1::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.2.1a
@@ -521,20 +454,22 @@ KJSO AccessorNode1::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ AccessorNode2 --------------------------------
 
-AccessorNode2::AccessorNode2(const AccessorNode2 &other) : Node (other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  ident = other.ident;
-}
-
 AccessorNode2::~AccessorNode2()
 {
-  delete expr;
 }
 
-Node *AccessorNode2::copy() const
+void AccessorNode2::ref()
 {
-  return new AccessorNode2(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool AccessorNode2::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.2.1b
@@ -557,23 +492,26 @@ ArgumentListNode::ArgumentListNode(ArgumentListNode *l, Node *e)
 {
 }
 
-ArgumentListNode::ArgumentListNode(const ArgumentListNode &other) : Node(other)
-{
-  list = other.list ? static_cast<ArgumentListNode*>(other.list->copy()) : 0;
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 ArgumentListNode::~ArgumentListNode()
 {
-  if (list)
-    delete list;
-  if (expr)
-    delete expr;
 }
 
-Node *ArgumentListNode::copy() const
+void ArgumentListNode::ref()
 {
-  return new ArgumentListNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+  if ( list )
+    list->ref();
+}
+
+bool ArgumentListNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 KJSO ArgumentListNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
@@ -606,20 +544,22 @@ ArgumentsNode::ArgumentsNode(ArgumentListNode *l) : list(l)
 {
 }
 
-ArgumentsNode::ArgumentsNode(const ArgumentsNode &other) : Node(other)
-{
-  list = other.list ? static_cast<ArgumentListNode*>(other.list->copy()) : 0;
-}
-
 ArgumentsNode::~ArgumentsNode()
 {
-  if (list)
-    delete list;
 }
 
-Node *ArgumentsNode::copy() const
+void ArgumentsNode::ref()
 {
-  return new ArgumentsNode(*this);
+  Node::ref();
+  if ( list )
+    list->ref();
+}
+
+bool ArgumentsNode::deref()
+{
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 KJSO ArgumentsNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
@@ -641,23 +581,26 @@ List* ArgumentsNode::evaluateList(KJScriptImp *script, Context *context)
 
 // ECMA 11.2.2
 
-NewExprNode::NewExprNode(const NewExprNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  args = other.args ? static_cast<ArgumentsNode*>(other.args->copy()) : 0;
-}
-
 NewExprNode::~NewExprNode()
 {
-  if (expr)
-    delete expr;
-  if (args)
-    delete args;
 }
 
-Node *NewExprNode::copy() const
+void NewExprNode::ref()
 {
-  return new NewExprNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+  if ( args )
+    args->ref();
+}
+
+bool NewExprNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( args && args->deref() )
+    delete args;
+  return Node::deref();
 }
 
 KJSO NewExprNode::evaluate(KJScriptImp *script, Context *context)
@@ -690,23 +633,26 @@ KJSO NewExprNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ FunctionCallNode -----------------------------
 
-FunctionCallNode::FunctionCallNode(const FunctionCallNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  args = other.args ? static_cast<ArgumentsNode*>(other.args->copy()) : 0;
-}
-
 FunctionCallNode::~FunctionCallNode()
 {
-  if (expr)
-    delete expr;
-  if (args)
-    delete args;
 }
 
-Node *FunctionCallNode::copy() const
+void FunctionCallNode::ref()
 {
-  return new FunctionCallNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+  if ( args )
+    args->ref();
+}
+
+bool FunctionCallNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( args && args->deref() )
+    delete args;
+  return Node::deref();
 }
 
 // ECMA 11.2.3
@@ -752,21 +698,22 @@ KJSO FunctionCallNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ PostfixNode ----------------------------------
 
-PostfixNode::PostfixNode(const PostfixNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  oper = other.oper;
-}
-
 PostfixNode::~PostfixNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *PostfixNode::copy() const
+void PostfixNode::ref()
 {
-  return new PostfixNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool PostfixNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.3
@@ -786,20 +733,22 @@ KJSO PostfixNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ DeleteNode -----------------------------------
 
-DeleteNode::DeleteNode(const DeleteNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 DeleteNode::~DeleteNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *DeleteNode::copy() const
+void DeleteNode::ref()
 {
-  return new DeleteNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool DeleteNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.1
@@ -817,20 +766,22 @@ KJSO DeleteNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ VoidNode -------------------------------------
 
-VoidNode::VoidNode(const VoidNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 VoidNode::~VoidNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *VoidNode::copy() const
+void VoidNode::ref()
 {
-  return new VoidNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool VoidNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.2
@@ -844,20 +795,22 @@ KJSO VoidNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ TypeOfNode -----------------------------------
 
-TypeOfNode::TypeOfNode(const TypeOfNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 TypeOfNode::~TypeOfNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *TypeOfNode::copy() const
+void TypeOfNode::ref()
 {
-  return new TypeOfNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool TypeOfNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.3
@@ -901,20 +854,22 @@ KJSO TypeOfNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ PrefixNode -----------------------------------
 
-PrefixNode::PrefixNode(const PrefixNode &other) : Node(other)
-{
-  oper = other.oper;
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 PrefixNode::~PrefixNode()
 {
-  delete expr;
 }
 
-Node *PrefixNode::copy() const
+void PrefixNode::ref()
 {
-  return new PrefixNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool PrefixNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.4 and 11.4.5
@@ -934,20 +889,22 @@ KJSO PrefixNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ UnaryPlusNode --------------------------------
 
-UnaryPlusNode::UnaryPlusNode(const UnaryPlusNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 UnaryPlusNode::~UnaryPlusNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *UnaryPlusNode::copy() const
+void UnaryPlusNode::ref()
 {
-  return new UnaryPlusNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool UnaryPlusNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.6
@@ -961,20 +918,22 @@ KJSO UnaryPlusNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ NegateNode -----------------------------------
 
-NegateNode::NegateNode(const NegateNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 NegateNode::~NegateNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *NegateNode::copy() const
+void NegateNode::ref()
 {
-  return new NegateNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool NegateNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.7
@@ -991,19 +950,22 @@ KJSO NegateNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ BitwiseNotNode -------------------------------
 
-BitwiseNotNode::BitwiseNotNode(const BitwiseNotNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 BitwiseNotNode::~BitwiseNotNode()
 {
-  delete expr;
 }
 
-Node *BitwiseNotNode::copy() const
+void BitwiseNotNode::ref()
 {
-  return new BitwiseNotNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool BitwiseNotNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.8
@@ -1018,20 +980,22 @@ KJSO BitwiseNotNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ LogicalNotNode -------------------------------
 
-LogicalNotNode::LogicalNotNode(const LogicalNotNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 LogicalNotNode::~LogicalNotNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *LogicalNotNode::copy() const
+void LogicalNotNode::ref()
 {
-  return new LogicalNotNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool LogicalNotNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.4.9
@@ -1046,24 +1010,26 @@ KJSO LogicalNotNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ MultNode -------------------------------------
 
-MultNode::MultNode(const MultNode &other) : Node(other)
-{
-  term1 = other.term1 ? other.term1->copy() : 0;
-  term2 = other.term2 ? other.term2->copy() : 0;
-  oper = other.oper;
-}
-
 MultNode::~MultNode()
 {
-  if (term1)
-    delete term1;
-  if (term2)
-    delete term2;
 }
 
-Node *MultNode::copy() const
+void MultNode::ref()
 {
-  return new MultNode(*this);
+  Node::ref();
+  if ( term1 )
+    term1->ref();
+  if ( term2 )
+    term2->ref();
+}
+
+bool MultNode::deref()
+{
+  if ( term1 && term1->deref() )
+    delete term1;
+  if ( term2 && term2->deref() )
+    delete term2;
+  return Node::deref();
 }
 
 // ECMA 11.5
@@ -1080,24 +1046,26 @@ KJSO MultNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ AddNode --------------------------------------
 
-AddNode::AddNode(const AddNode &other) : Node(other)
-{
-  term1 = other.term1 ? other.term1->copy() : 0;
-  term2 = other.term2 ? other.term2->copy() : 0;
-  oper = other.oper;
-}
-
 AddNode::~AddNode()
 {
-  if (term1)
-    delete term1;
-  if (term2)
-    delete term2;
 }
 
-Node *AddNode::copy() const
+void AddNode::ref()
 {
-  return new AddNode(*this);
+  Node::ref();
+  if ( term1 )
+    term1->ref();
+  if ( term2 )
+    term2->ref();
+}
+
+bool AddNode::deref()
+{
+  if ( term1 && term1->deref() )
+    delete term1;
+  if ( term2 && term2->deref() )
+    delete term2;
+  return Node::deref();
 }
 
 // ECMA 11.6
@@ -1114,24 +1082,26 @@ KJSO AddNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ShiftNode ------------------------------------
 
-ShiftNode::ShiftNode(const ShiftNode &other) : Node(other)
-{
-  term1 = other.term1 ? other.term1->copy() : 0;
-  term2 = other.term2 ? other.term2->copy() : 0;
-  oper = other.oper;
-}
-
 ShiftNode::~ShiftNode()
 {
-  if (term1)
-    delete term1;
-  if (term2)
-    delete term2;
 }
 
-Node *ShiftNode::copy() const
+void ShiftNode::ref()
 {
-  return new ShiftNode(*this);
+  Node::ref();
+  if ( term1 )
+    term1->ref();
+  if ( term2 )
+    term2->ref();
+}
+
+bool ShiftNode::deref()
+{
+  if ( term1 && term1->deref() )
+    delete term1;
+  if ( term2 && term2->deref() )
+    delete term2;
+  return Node::deref();
 }
 
 // ECMA 11.7
@@ -1165,24 +1135,26 @@ KJSO ShiftNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ RelationalNode -------------------------------
 
-RelationalNode::RelationalNode(const RelationalNode &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-  oper = other.oper;
-}
-
 RelationalNode::~RelationalNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *RelationalNode::copy() const
+void RelationalNode::ref()
 {
-  return new RelationalNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool RelationalNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.8
@@ -1225,24 +1197,26 @@ KJSO RelationalNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ EqualNode ------------------------------------
 
-EqualNode::EqualNode(const EqualNode &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-  oper = other.oper;
-}
-
 EqualNode::~EqualNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *EqualNode::copy() const
+void EqualNode::ref()
 {
-  return new EqualNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool EqualNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.9
@@ -1268,24 +1242,26 @@ KJSO EqualNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ BitOperNode ----------------------------------
 
-BitOperNode::BitOperNode(const BitOperNode &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-  oper = other.oper;
-}
-
 BitOperNode::~BitOperNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *BitOperNode::copy() const
+void BitOperNode::ref()
 {
-  return new BitOperNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool BitOperNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.10
@@ -1310,24 +1286,26 @@ KJSO BitOperNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ BinaryLogicalNode ----------------------------
 
-BinaryLogicalNode::BinaryLogicalNode(const BinaryLogicalNode &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-  oper = other.oper;
-}
-
 BinaryLogicalNode::~BinaryLogicalNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *BinaryLogicalNode::copy() const
+void BinaryLogicalNode::ref()
 {
-  return new BinaryLogicalNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool BinaryLogicalNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.11
@@ -1347,26 +1325,30 @@ KJSO BinaryLogicalNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ ConditionalNode ------------------------------
 
-ConditionalNode::ConditionalNode(const ConditionalNode &other) : Node(other)
-{
-  logical = other.logical ? other.logical->copy() : 0;
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-}
-
 ConditionalNode::~ConditionalNode()
 {
-  if (logical)
-    delete logical;
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *ConditionalNode::copy() const
+void ConditionalNode::ref()
 {
-  return new ConditionalNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+  if ( logical )
+    logical->ref();
+}
+
+bool ConditionalNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  if ( logical && logical->deref() )
+    delete logical;
+  return Node::deref();
 }
 
 // ECMA 11.12
@@ -1386,24 +1368,26 @@ KJSO ConditionalNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ AssignNode -----------------------------------
 
-AssignNode::AssignNode(const AssignNode &other) : Node(other)
-{
-  left = other.left ? other.left->copy() : 0;
-  oper = other.oper;
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 AssignNode::~AssignNode()
 {
-  if (left)
-    delete left;
-  if (expr)
-    delete expr;
 }
 
-Node *AssignNode::copy() const
+void AssignNode::ref()
 {
-  return new AssignNode(*this);
+  Node::ref();
+  if ( left )
+    left->ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool AssignNode::deref()
+{
+  if ( left && left->deref() )
+    delete left;
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 11.13
@@ -1472,23 +1456,26 @@ KJSO AssignNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ CommaNode ------------------------------------
 
-CommaNode::CommaNode(const CommaNode &other) : Node(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-}
-
 CommaNode::~CommaNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
 }
 
-Node *CommaNode::copy() const
+void CommaNode::ref()
 {
-  return new CommaNode(*this);
+  Node::ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+}
+
+bool CommaNode::deref()
+{
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  return Node::deref();
 }
 
 // ECMA 11.14
@@ -1503,23 +1490,26 @@ KJSO CommaNode::evaluate(KJScriptImp *script, Context *context)
 
 // ------------------------------ StatListNode ---------------------------------
 
-StatListNode::StatListNode(const StatListNode &other) : StatementNode(other)
-{
-  statement = other.statement ? static_cast<StatementNode*>(other.statement->copy()) : 0;
-  list = other.list ? static_cast<StatListNode*>(other.list->copy()) : 0;
-}
-
 StatListNode::~StatListNode()
 {
-  if (statement)
-    delete statement;
-  if (list)
-    delete list;
 }
 
-Node *StatListNode::copy() const
+void StatListNode::ref()
 {
-  return new StatListNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( list )
+    list->ref();
+}
+
+bool StatListNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 // ECMA 12.1
@@ -1563,21 +1553,24 @@ void StatListNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ AssignExprNode -------------------------------
 
-AssignExprNode::AssignExprNode(const AssignExprNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 AssignExprNode::~AssignExprNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *AssignExprNode::copy() const
+void AssignExprNode::ref()
 {
-  return new AssignExprNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
 }
+
+bool AssignExprNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
+}
+
 
 // ECMA 12.2
 KJSO AssignExprNode::evaluate(KJScriptImp *script, Context *context)
@@ -1592,21 +1585,22 @@ VarDeclNode::VarDeclNode(const UString *id, AssignExprNode *in)
 {
 }
 
-VarDeclNode::VarDeclNode(const VarDeclNode &other) : Node(other)
-{
-  ident = other.ident;
-  init = other.init ? static_cast<AssignExprNode*>(other.init->copy()) : 0;
-}
-
 VarDeclNode::~VarDeclNode()
 {
-  if (init)
-    delete init;
 }
 
-Node *VarDeclNode::copy() const
+void VarDeclNode::ref()
 {
-  return new VarDeclNode(*this);
+  Node::ref();
+  if ( init )
+    init->ref();
+}
+
+bool VarDeclNode::deref()
+{
+  if ( init && init->deref() )
+    delete init;
+  return Node::deref();
 }
 
 // ECMA 12.2
@@ -1637,24 +1631,28 @@ void VarDeclNode::processVarDecls(KJScriptImp */*script*/, Context *context)
 
 // ------------------------------ VarDeclListNode ------------------------------
 
-VarDeclListNode::VarDeclListNode(const VarDeclListNode &other) : Node(other)
-{
-  list = other.list ? other.list->copy() : 0;
-  var = other.var ? static_cast<VarDeclNode*>(other.var->copy()) : 0;
-}
-
 VarDeclListNode::~VarDeclListNode()
 {
-  if (list)
-    delete list;
-  if (var)
-    delete var;
 }
 
-Node *VarDeclListNode::copy() const
+void VarDeclListNode::ref()
 {
-  return new VarDeclListNode(*this);
+  Node::ref();
+  if ( list )
+    list->ref();
+  if ( var )
+    var->ref();
 }
+
+bool VarDeclListNode::deref()
+{
+  if ( list && list->deref() )
+    delete list;
+  if ( var && var->deref() )
+    delete var;
+  return Node::deref();
+}
+
 
 // ECMA 12.2
 KJSO VarDeclListNode::evaluate(KJScriptImp *script, Context *context)
@@ -1677,20 +1675,22 @@ void VarDeclListNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ VarStatementNode -----------------------------
 
-VarStatementNode::VarStatementNode(const VarStatementNode &other) : StatementNode(other)
-{
-  list = other.list ? static_cast<VarDeclListNode*>(other.list->copy()) : 0;
-}
-
 VarStatementNode::~VarStatementNode()
 {
-  if (list)
-    delete list;
 }
 
-Node *VarStatementNode::copy() const
+void VarStatementNode::ref()
 {
-  return new VarStatementNode(*this);
+  Node::ref();
+  if ( list )
+    list->ref();
+}
+
+bool VarStatementNode::deref()
+{
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 // ECMA 12.2
@@ -1710,20 +1710,22 @@ void VarStatementNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ BlockNode ------------------------------------
 
-BlockNode::BlockNode(const BlockNode &other) : StatementNode(other)
-{
-  statlist = other.statlist ? static_cast<StatListNode*>(other.statlist->copy()) : 0;
-}
-
 BlockNode::~BlockNode()
 {
-  if (statlist)
-    delete statlist;
 }
 
-Node *BlockNode::copy() const
+void BlockNode::ref()
 {
-  return new BlockNode(*this);
+  Node::ref();
+  if ( statlist )
+    statlist->ref();
+}
+
+bool BlockNode::deref()
+{
+  if ( statlist && statlist->deref() )
+    delete statlist;
+  return Node::deref();
 }
 
 // ECMA 12.1
@@ -1743,15 +1745,6 @@ void BlockNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ EmptyStatementNode ---------------------------
 
-EmptyStatementNode::EmptyStatementNode(const EmptyStatementNode &other) : StatementNode(other)
-{
-}
-
-Node *EmptyStatementNode::copy() const
-{
-  return new EmptyStatementNode(*this);
-}
-
 // ECMA 12.3
 Completion EmptyStatementNode::execute(KJScriptImp */*script*/, Context */*context*/)
 {
@@ -1760,20 +1753,22 @@ Completion EmptyStatementNode::execute(KJScriptImp */*script*/, Context */*conte
 
 // ------------------------------ ExprStatementNode ----------------------------
 
-ExprStatementNode::ExprStatementNode(const ExprStatementNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 ExprStatementNode::~ExprStatementNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *ExprStatementNode::copy() const
+void ExprStatementNode::ref()
 {
-  return new ExprStatementNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool ExprStatementNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.4
@@ -1789,26 +1784,30 @@ Completion ExprStatementNode::execute(KJScriptImp *script, Context *context)
 
 // ------------------------------ IfNode ---------------------------------------
 
-IfNode::IfNode(const IfNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  statement1 = other.statement1 ? static_cast<StatementNode*>(other.statement1->copy()) : 0;
-  statement2 = other.statement2 ? static_cast<StatementNode*>(other.statement2->copy()) : 0;
-}
-
 IfNode::~IfNode()
 {
-  if (expr)
-    delete expr;
-  if (statement1)
-    delete statement1;
-  if (statement2)
-    delete statement2;
 }
 
-Node *IfNode::copy() const
+void IfNode::ref()
 {
-  return new IfNode(*this);
+  Node::ref();
+  if ( statement1 )
+    statement1->ref();
+  if ( statement2 )
+    statement2->ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool IfNode::deref()
+{
+  if ( statement1 && statement1->deref() )
+    delete statement1;
+  if ( statement2 && statement2->deref() )
+    delete statement2;
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.5
@@ -1842,23 +1841,26 @@ void IfNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ DoWhileNode ----------------------------------
 
-DoWhileNode::DoWhileNode(const DoWhileNode &other) : StatementNode(other)
-{
-  statement = other.statement ? static_cast<StatementNode*>(other.statement->copy()) : 0;
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 DoWhileNode::~DoWhileNode()
 {
-  if (statement)
-    delete statement;
-  if (expr)
-    delete expr;
 }
 
-Node *DoWhileNode::copy() const
+void DoWhileNode::ref()
 {
-  return new DoWhileNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool DoWhileNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.6.1
@@ -1896,23 +1898,26 @@ void DoWhileNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ WhileNode ------------------------------------
 
-WhileNode::WhileNode(const WhileNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  statement = other.statement ? static_cast<StatementNode*>(other.statement->copy()) : 0;
-}
-
 WhileNode::~WhileNode()
 {
-  if (expr)
-    delete expr;
-  if (statement)
-    delete statement;
 }
 
-Node *WhileNode::copy() const
+void WhileNode::ref()
 {
-  return new WhileNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool WhileNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.6.2
@@ -1957,29 +1962,34 @@ void WhileNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ ForNode --------------------------------------
 
-ForNode::ForNode(const ForNode &other) : StatementNode(other)
-{
-  expr1 = other.expr1 ? other.expr1->copy() : 0;
-  expr2 = other.expr2 ? other.expr2->copy() : 0;
-  expr3 = other.expr3 ? other.expr3->copy() : 0;
-  stat = other.stat ? static_cast<StatementNode*>(other.stat->copy()) : 0;
-}
-
 ForNode::~ForNode()
 {
-  if (expr1)
-    delete expr1;
-  if (expr2)
-    delete expr2;
-  if (expr3)
-    delete expr3;
-  if (stat)
-    delete stat;
 }
 
-Node *ForNode::copy() const
+void ForNode::ref()
 {
-  return new ForNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( expr1 )
+    expr1->ref();
+  if ( expr2 )
+    expr2->ref();
+  if ( expr3 )
+    expr3->ref();
+}
+
+bool ForNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( expr1 && expr1->deref() )
+    delete expr1;
+  if ( expr2 && expr2->deref() )
+    delete expr2;
+  if ( expr3 && expr3->deref() )
+    delete expr3;
+  return Node::deref();
 }
 
 // ECMA 12.6.3
@@ -2004,7 +2014,7 @@ Completion ForNode::execute(KJScriptImp *script, Context *context)
     if (script->hadException())
       return Completion(Throw, KJScriptImp::exception());
 
-    Completion c = stat->execute(script,context);
+    Completion c = statement->execute(script,context);
     if (c.isValueCompletion())
       cval = c.value();
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
@@ -2025,35 +2035,39 @@ void ForNode::processVarDecls(KJScriptImp *script, Context *context)
   if (expr1)
     expr1->processVarDecls(script,context);
 
-  stat->processVarDecls(script,context);
+  statement->processVarDecls(script,context);
 }
 
 // ------------------------------ ForInNode ------------------------------------
 
-ForInNode::ForInNode(const ForInNode &other) : StatementNode(other)
-{
-  ident = other.ident;
-  init = other.init ? static_cast<AssignExprNode*>(other.init->copy()) : 0;
-  lexpr = other.lexpr ? other.lexpr->copy() : 0;
-  expr = other.expr ? other.expr->copy() : 0;
-  stat = other.stat ? static_cast<StatementNode*>(other.stat->copy()) : 0;
-}
-
 ForInNode::~ForInNode()
 {
-  if (init)
-    delete init;
-  if (lexpr)
-    delete lexpr;
-  if (expr)
-    delete expr;
-  if (stat)
-    delete stat;
 }
 
-Node *ForInNode::copy() const
+void ForInNode::ref()
 {
-  return new ForInNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( expr )
+    expr->ref();
+  if ( lexpr )
+    lexpr->ref();
+  if ( init )
+    init->ref();
+}
+
+bool ForInNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( lexpr && lexpr->deref() )
+    delete lexpr;
+  if ( init && init->deref() )
+    delete init;
+  return Node::deref();
 }
 
 // ECMA 12.6.4
@@ -2085,7 +2099,7 @@ Completion ForInNode::execute(KJScriptImp *script, Context *context)
     e = lexpr->evaluate(script,context);
     e.putValue(String(curr->name));
 
-    c = stat->execute(script,context);
+    c = statement->execute(script,context);
     if (c.isValueCompletion())
       retval = c.value();
 
@@ -2107,20 +2121,10 @@ Completion ForInNode::execute(KJScriptImp *script, Context *context)
 
 void ForInNode::processVarDecls(KJScriptImp *script, Context *context)
 {
-  stat->processVarDecls(script,context);
+  statement->processVarDecls(script,context);
 }
 
 // ------------------------------ ContinueNode ---------------------------------
-
-ContinueNode::ContinueNode(const ContinueNode &other) : StatementNode(other)
-{
-  ident = other.ident;
-}
-
-Node *ContinueNode::copy() const
-{
-  return new ContinueNode(*this);
-}
 
 // ECMA 12.7
 Completion ContinueNode::execute(KJScriptImp *script, Context *context)
@@ -2136,16 +2140,6 @@ Completion ContinueNode::execute(KJScriptImp *script, Context *context)
 
 // ------------------------------ BreakNode ------------------------------------
 
-BreakNode::BreakNode(const BreakNode &other) : StatementNode(other)
-{
-  ident = other.ident;
-}
-
-Node *BreakNode::copy() const
-{
-  return new BreakNode(*this);
-}
-
 // ECMA 12.8
 Completion BreakNode::execute(KJScriptImp *script, Context *context)
 {
@@ -2160,20 +2154,22 @@ Completion BreakNode::execute(KJScriptImp *script, Context *context)
 
 // ------------------------------ ReturnNode -----------------------------------
 
-ReturnNode::ReturnNode(const ReturnNode &other) : StatementNode(other)
-{
-  value = other.value ? other.value->copy() : 0;
-}
-
 ReturnNode::~ReturnNode()
 {
-  if (value)
-    delete value;
 }
 
-Node *ReturnNode::copy() const
+void ReturnNode::ref()
 {
-  return new ReturnNode(*this);
+  Node::ref();
+  if ( value )
+    value->ref();
+}
+
+bool ReturnNode::deref()
+{
+  if ( value && value->deref() )
+    delete value;
+  return Node::deref();
 }
 
 // ECMA 12.9
@@ -2192,23 +2188,26 @@ Completion ReturnNode::execute(KJScriptImp *script, Context *context)
 
 // ------------------------------ WithNode -------------------------------------
 
-WithNode::WithNode(const WithNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  stat = other.stat ? static_cast<StatementNode*>(other.stat->copy()) : 0;
-}
-
 WithNode::~WithNode()
 {
-  if (expr)
-    delete expr;
-  if (stat)
-    delete stat;
 }
 
-Node *WithNode::copy() const
+void WithNode::ref()
 {
-  return new WithNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool WithNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.10
@@ -2220,7 +2219,7 @@ Completion WithNode::execute(KJScriptImp *script, Context *context)
   KJSO v = e.getValue();
   Object o = v.toObject();
   context->pushScope(o);
-  Completion res = stat->execute(script,context);
+  Completion res = statement->execute(script,context);
   context->popScope();
 
   return res;
@@ -2228,28 +2227,31 @@ Completion WithNode::execute(KJScriptImp *script, Context *context)
 
 void WithNode::processVarDecls(KJScriptImp *script, Context *context)
 {
-  stat->processVarDecls(script,context);
+  statement->processVarDecls(script,context);
 }
 
 // ------------------------------ CaseClauseNode -------------------------------
 
-CaseClauseNode::CaseClauseNode(const CaseClauseNode &other) : Node(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  list = other.list ? static_cast<StatListNode*>(other.list->copy()) : 0;
-}
-
 CaseClauseNode::~CaseClauseNode()
 {
-  if (expr)
-    delete expr;
-  if (list)
-    delete list;
 }
 
-Node *CaseClauseNode::copy() const
+void CaseClauseNode::ref()
 {
-  return new CaseClauseNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+  if ( list )
+    list->ref();
+}
+
+bool CaseClauseNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( list && list->deref() )
+    delete list;
+  return Node::deref();
 }
 
 // ECMA 12.11
@@ -2257,7 +2259,6 @@ KJSO CaseClauseNode::evaluate(KJScriptImp *script, Context *context)
 {
   KJSO e = expr->evaluate(script,context);
   KJSO v = e.getValue();
-
   return v;
 }
 
@@ -2278,23 +2279,26 @@ void CaseClauseNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ ClauseListNode -------------------------------
 
-ClauseListNode::ClauseListNode(const ClauseListNode &other) : Node(other)
-{
-  cl = other.cl ? static_cast<CaseClauseNode*>(other.cl->copy()) : 0;
-  nx = other.nx ? static_cast<ClauseListNode*>(other.nx->copy()) : 0;
-}
-
 ClauseListNode::~ClauseListNode()
 {
-  if (cl)
-    delete cl;
-  if (nx)
-    delete nx;
 }
 
-Node *ClauseListNode::copy() const
+void ClauseListNode::ref()
 {
-  return new ClauseListNode(*this);
+  Node::ref();
+  if ( cl )
+    cl->ref();
+  if ( nx )
+    nx->ref();
+}
+
+bool ClauseListNode::deref()
+{
+  if ( cl && cl->deref() )
+    delete cl;
+  if ( nx && nx->deref() )
+    delete nx;
+  return Node::deref();
 }
 
 KJSO ClauseListNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
@@ -2325,26 +2329,30 @@ void ClauseListNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ CaseBlockNode --------------------------------
 
-CaseBlockNode::CaseBlockNode(const CaseBlockNode &other) : Node(other)
-{
-  list1 = other.list1 ? static_cast<ClauseListNode*>(other.list1->copy()) : 0;
-  def = other.def ? static_cast<CaseClauseNode*>(other.def->copy()) : 0;
-  list2 = other.list2 ? static_cast<ClauseListNode*>(other.list2->copy()) : 0;
-}
-
 CaseBlockNode::~CaseBlockNode()
 {
-  if (list1)
-    delete list1;
-  if (def)
-    delete def;
-  if (list2)
-    delete list2;
 }
 
-Node *CaseBlockNode::copy() const
+void CaseBlockNode::ref()
 {
-  return new CaseBlockNode(*this);
+  Node::ref();
+  if ( def )
+    def->ref();
+  if ( list1 )
+    list1->ref();
+  if ( list2 )
+    list2->ref();
+}
+
+bool CaseBlockNode::deref()
+{
+  if ( def && def->deref() )
+    delete def;
+  if ( list1 && list1->deref() )
+    delete list1;
+  if ( list2 && list2->deref() )
+    delete list2;
+  return Node::deref();
 }
 
 KJSO CaseBlockNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
@@ -2425,23 +2433,26 @@ void CaseBlockNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ SwitchNode -----------------------------------
 
-SwitchNode::SwitchNode(const SwitchNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-  block = other.block ? static_cast<CaseBlockNode*>(other.block->copy()) : 0;
-}
-
 SwitchNode::~SwitchNode()
 {
-  if (expr)
-    delete expr;
-  if (block)
-    delete block;
 }
 
-Node *SwitchNode::copy() const
+void SwitchNode::ref()
 {
-  return new SwitchNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+  if ( block )
+    block->ref();
+}
+
+bool SwitchNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  if ( block && block->deref() )
+    delete block;
+  return Node::deref();
 }
 
 // ECMA 12.11
@@ -2466,21 +2477,22 @@ void SwitchNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ LabelNode ------------------------------------
 
-LabelNode::LabelNode(const LabelNode &other) : StatementNode(other)
-{
-  label = other.label;
-  stat = other.stat ? static_cast<StatementNode*>(other.stat->copy()) : 0;
-}
-
 LabelNode::~LabelNode()
 {
-  if (stat)
-    delete stat;
 }
 
-Node *LabelNode::copy() const
+void LabelNode::ref()
 {
-  return new LabelNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+}
+
+bool LabelNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  return Node::deref();
 }
 
 // ECMA 12.12
@@ -2492,7 +2504,7 @@ Completion LabelNode::execute(KJScriptImp *script, Context *context)
     return Completion( Throw,
 		       throwError(SyntaxError, "Duplicated label found" ));
   };
-  e = stat->execute(script,context);
+  e = statement->execute(script,context);
   context->seenLabels()->pop();
 
   if ((e.complType() == Break) && (e.target() == label))
@@ -2503,25 +2515,27 @@ Completion LabelNode::execute(KJScriptImp *script, Context *context)
 
 void LabelNode::processVarDecls(KJScriptImp *script, Context *context)
 {
-  stat->processVarDecls(script,context);
+  statement->processVarDecls(script,context);
 }
 
 // ------------------------------ ThrowNode ------------------------------------
 
-ThrowNode::ThrowNode(const ThrowNode &other) : StatementNode(other)
-{
-  expr = other.expr ? other.expr->copy() : 0;
-}
-
 ThrowNode::~ThrowNode()
 {
-  if (expr)
-    delete expr;
 }
 
-Node *ThrowNode::copy() const
+void ThrowNode::ref()
 {
-  return new ThrowNode(*this);
+  Node::ref();
+  if ( expr )
+    expr->ref();
+}
+
+bool ThrowNode::deref()
+{
+  if ( expr && expr->deref() )
+    delete expr;
+  return Node::deref();
 }
 
 // ECMA 12.13
@@ -2536,21 +2550,22 @@ Completion ThrowNode::execute(KJScriptImp *script, Context *context)
 
 // ------------------------------ CatchNode ------------------------------------
 
-CatchNode::CatchNode(const CatchNode &other) : StatementNode(other)
-{
-  ident = other.ident;
-  block = other.block ? static_cast<StatementNode*>(other.block->copy()) : 0;
-}
-
 CatchNode::~CatchNode()
 {
-  if (block)
-    delete block;
 }
 
-Node *CatchNode::copy() const
+void CatchNode::ref()
 {
-  return new CatchNode(*this);
+  Node::ref();
+  if ( block )
+    block->ref();
+}
+
+bool CatchNode::deref()
+{
+  if ( block && block->deref() )
+    delete block;
+  return Node::deref();
 }
 
 Completion CatchNode::execute(KJScriptImp */*script*/, Context */*context*/)
@@ -2582,20 +2597,22 @@ void CatchNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ FinallyNode ----------------------------------
 
-FinallyNode::FinallyNode(const FinallyNode &other) : StatementNode(other)
-{
-  block = other.block ? static_cast<StatementNode*>(other.block->copy()) : 0;
-}
-
 FinallyNode::~FinallyNode()
 {
-  if (block)
-    delete block;
 }
 
-Node *FinallyNode::copy() const
+void FinallyNode::ref()
 {
-  return new FinallyNode(*this);
+  Node::ref();
+  if ( block )
+    block->ref();
+}
+
+bool FinallyNode::deref()
+{
+  if ( block && block->deref() )
+    delete block;
+  return Node::deref();
 }
 
 // ECMA 12.14
@@ -2611,26 +2628,30 @@ void FinallyNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ TryNode --------------------------------------
 
-TryNode::TryNode(const TryNode &other) : StatementNode(other)
-{
-  block = other.block ? static_cast<StatementNode*>(other.block->copy()) : 0;
-  _catch = other._catch ? static_cast<CatchNode*>(other._catch->copy()) : 0;
-  _final = other._final ? static_cast<FinallyNode*>(other._final->copy()) : 0;
-}
-
 TryNode::~TryNode()
 {
-  if (block)
-    delete block;
-  if (_final)
-    delete _final;
-  if (_catch)
-    delete _catch;
 }
 
-Node *TryNode::copy() const
+void TryNode::ref()
 {
-  return new TryNode(*this);
+  Node::ref();
+  if ( block )
+    block->ref();
+  if ( _final )
+    _final->ref();
+  if ( _catch )
+    _catch->ref();
+}
+
+bool TryNode::deref()
+{
+  if ( block && block->deref() )
+    delete block;
+  if ( _final && _final->deref() )
+    delete _final;
+  if ( _catch && _catch->deref() )
+    delete _catch;
+  return Node::deref();
 }
 
 // ECMA 12.14
@@ -2671,21 +2692,22 @@ void TryNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ ParameterNode --------------------------------
 
-ParameterNode::ParameterNode(const ParameterNode &other) : Node(other)
-{
-  id = other.id;
-  next = other.next ? static_cast<ParameterNode*>(other.next->copy()) : 0;
-}
-
 ParameterNode::~ParameterNode()
 {
-  if (next)
-    delete next;
 }
 
-Node *ParameterNode::copy() const
+void ParameterNode::ref()
 {
-  return new ParameterNode(*this);
+  Node::ref();
+  if ( next )
+    next->ref();
+}
+
+bool ParameterNode::deref()
+{
+  if ( next && next->deref() )
+    delete next;
+  return Node::deref();
 }
 
 ParameterNode* ParameterNode::append(const UString *i)
@@ -2714,20 +2736,22 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
   setLoc(-1, -1, -1);
 }
 
-FunctionBodyNode::FunctionBodyNode(const FunctionBodyNode &other) : StatementNode(other)
-{
-  source = other.source ? static_cast<SourceElementsNode*>(other.source->copy()) : 0;
-}
-
 FunctionBodyNode::~FunctionBodyNode()
 {
-  if (source)
-    delete source;
 }
 
-Node *FunctionBodyNode::copy() const
+void FunctionBodyNode::ref()
 {
-  return new FunctionBodyNode(*this);
+  Node::ref();
+  if ( source )
+    source->ref();
+}
+
+bool FunctionBodyNode::deref()
+{
+  if ( source && source->deref() )
+    delete source;
+  return Node::deref();
 }
 
 // ECMA 13 + 14 for ProgramNode
@@ -2750,24 +2774,26 @@ void FunctionBodyNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ FuncDeclNode ---------------------------------
 
-FuncDeclNode::FuncDeclNode(const FuncDeclNode &other) : StatementNode(other)
-{
-  ident = other.ident;
-  param = other.param ? static_cast<ParameterNode*>(other.param->copy()) : 0;
-  body = other.body ? static_cast<FunctionBodyNode*>(other.body->copy()) : 0;
-}
-
 FuncDeclNode::~FuncDeclNode()
 {
-  if (param)
-    delete param;
-  if (body)
-    delete body;
 }
 
-Node *FuncDeclNode::copy() const
+void FuncDeclNode::ref()
 {
-  return new FuncDeclNode(*this);
+  Node::ref();
+  if ( param )
+    param->ref();
+  if ( body )
+    body->ref();
+}
+
+bool FuncDeclNode::deref()
+{
+  if ( param && param->deref() )
+    delete param;
+  if ( body && body->deref() )
+    delete body;
+  return Node::deref();
 }
 
 // ECMA 13
@@ -2775,7 +2801,7 @@ void FuncDeclNode::processFuncDecl(KJScriptImp */*script*/, Context *context)
 {
   const List *sc = context->pScopeChain();
   /* TODO: let this be an object with [[Class]] property "Function" */
-  FunctionImp *fimp = new DeclaredFunctionImp(ident, static_cast<FunctionBodyNode*>(body->copy()), sc);
+  FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
   Function func(fimp); // protect from GC
   fimp->put("prototype", Object::create(ObjectClass), DontDelete);
 
@@ -2790,30 +2816,34 @@ void FuncDeclNode::processFuncDecl(KJScriptImp */*script*/, Context *context)
 
 // ------------------------------ FuncExprNode ---------------------------------
 
-FuncExprNode::FuncExprNode(const FuncExprNode &other) : Node(other)
-{
-  param = other.param ? static_cast<ParameterNode*>(other.param->copy()) : 0;
-  body = other.body ? static_cast<FunctionBodyNode*>(other.body->copy()) : 0;
-}
-
 FuncExprNode::~FuncExprNode()
 {
-  if (param)
-    delete param;
-  if (body)
-    delete body;
 }
 
-Node *FuncExprNode::copy() const
+void FuncExprNode::ref()
 {
-  return new FuncExprNode(*this);
+  Node::ref();
+  if ( param )
+    param->ref();
+  if ( body )
+    body->ref();
 }
+
+bool FuncExprNode::deref()
+{
+  if ( param && param->deref() )
+    delete param;
+  if ( body && body->deref() )
+    delete body;
+  return Node::deref();
+}
+
 
 // ECMA 13
 KJSO FuncExprNode::evaluate(KJScriptImp */*script*/, Context *context)
 {
   const List *sc = context->pScopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, body, sc ? sc->copy() : 0);
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, body, sc);
   Function ret(fimp);
 
   int plen = 0;
@@ -2826,23 +2856,26 @@ KJSO FuncExprNode::evaluate(KJScriptImp */*script*/, Context *context)
 
 // ------------------------------ SourceElementNode ----------------------------
 
-SourceElementNode::SourceElementNode(const SourceElementNode &other) : StatementNode(other)
-{
-  statement = other.statement ? static_cast<StatementNode*>(other.statement->copy()) : 0;
-  function = other.function ? static_cast<FuncDeclNode*>(other.function->copy()) : 0;
-}
-
 SourceElementNode::~SourceElementNode()
 {
-  if (function)
-    delete function;
-  if (statement)
-    delete statement;
 }
 
-Node *SourceElementNode::copy() const
+void SourceElementNode::ref()
 {
-  return new SourceElementNode(*this);
+  Node::ref();
+  if ( statement )
+    statement->ref();
+  if ( function )
+    function->ref();
+}
+
+bool SourceElementNode::deref()
+{
+  if ( statement && statement->deref() )
+    delete statement;
+  if ( function && function->deref() )
+    delete function;
+  return Node::deref();
 }
 
 // ECMA 14
@@ -2869,23 +2902,26 @@ void SourceElementNode::processVarDecls(KJScriptImp *script, Context *context)
 
 // ------------------------------ SourceElementsNode ---------------------------
 
-SourceElementsNode::SourceElementsNode(const SourceElementsNode &other) : StatementNode(other)
-{
-  element = other.element ? static_cast<SourceElementNode*>(other.element->copy()) : 0;
-  elements = other.elements ? static_cast<SourceElementsNode*>(other.elements->copy()) : 0;
-}
-
 SourceElementsNode::~SourceElementsNode()
 {
-  if (elements)
-    delete elements;
-  if (element)
-    delete element;
 }
 
-Node *SourceElementsNode::copy() const
+void SourceElementsNode::ref()
 {
-  return new SourceElementsNode(*this);
+  Node::ref();
+  if ( element )
+    element->ref();
+  if ( elements )
+    elements->ref();
+}
+
+bool SourceElementsNode::deref()
+{
+  if ( element && element->deref() )
+    delete element;
+  if ( elements && elements->deref() )
+    delete elements;
+  return Node::deref();
 }
 
 // ECMA 14
@@ -2926,15 +2962,3 @@ void SourceElementsNode::processVarDecls(KJScriptImp *script, Context *context)
 
   element->processVarDecls(script,context);
 }
-
-// ------------------------------ ProgramNode ----------------------------------
-
-ProgramNode::ProgramNode(const ProgramNode &other) : FunctionBodyNode(other)
-{
-}
-
-Node *ProgramNode::copy() const
-{
-  return new ProgramNode(*this);
-}
-

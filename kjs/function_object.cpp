@@ -23,6 +23,7 @@
 #include "nodes.h"
 #include "error_object.h"
 #include "debugger.h"
+#include <stdio.h>
 
 using namespace KJS;
 
@@ -71,9 +72,7 @@ Object FunctionObject::construct(const List &args)
 
   List scopeChain;
   scopeChain.append(KJScriptImp::current()->globalObject());
-  FunctionBodyNode *bodyNode = progNode;
-  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
-					      &scopeChain);
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, progNode, &scopeChain);
   Object ret(fimp); // protect from GC
 
   // parse parameter list. throw syntax error on illegal identifiers

@@ -69,24 +69,33 @@ namespace KJS {
   class Node {
   public:
     Node();
-    Node(const Node &other);
     virtual ~Node();
     virtual KJSO evaluate(KJScriptImp *script, Context *context) = 0;
     virtual void processVarDecls(KJScriptImp */*script*/, Context */*context*/) {}
     int lineNo() const { return line; }
-    virtual Node *copy() const = 0;
+
+  public:
+    // reference counting mechanism
+    virtual void ref() { refcount++; }
+    virtual bool deref() { return (!--refcount); }
+
   protected:
     KJSO throwError(ErrorType e, const char *msg);
     int line;
   private:
+    unsigned int refcount;
+    // Global counter of nodes, for debugging purposes (to check that
+    // they have all been deleted at the very end)
+    static int nodeCount;
     // disallow assignment
     Node& operator=(const Node&);
+    Node(const Node &other);
   };
 
   class StatementNode : public Node {
   public:
-    StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false) { }
-    StatementNode(const StatementNode &other);
+    StatementNode();
+    ~StatementNode();
     void setLoc(int line0, int line1, int sourceId);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
@@ -109,16 +118,12 @@ namespace KJS {
   class NullNode : public Node {
   public:
     NullNode() {}
-    NullNode(const NullNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   };
 
   class BooleanNode : public Node {
   public:
     BooleanNode(bool v) : value(v) {}
-    BooleanNode(const BooleanNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     bool value;
@@ -127,8 +132,6 @@ namespace KJS {
   class NumberNode : public Node {
   public:
     NumberNode(double v) : value(v) { }
-    NumberNode(const NumberNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     double value;
@@ -137,8 +140,6 @@ namespace KJS {
   class StringNode : public Node {
   public:
     StringNode(const UString *v) { value = *v; }
-    StringNode(const StringNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     UString value;
@@ -148,8 +149,6 @@ namespace KJS {
   public:
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
-    RegExpNode(const RegExpNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     UString pattern, flags;
@@ -158,16 +157,12 @@ namespace KJS {
   class ThisNode : public Node {
   public:
     ThisNode() {}
-    ThisNode(const ThisNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   };
 
   class ResolveNode : public Node {
   public:
     ResolveNode(const UString *s) : ident(*s) { }
-    ResolveNode(const ResolveNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     UString ident;
@@ -176,8 +171,8 @@ namespace KJS {
   class GroupNode : public Node {
   public:
     GroupNode(Node *g) : group(g) { }
-    GroupNode(const GroupNode &other);
-    virtual Node *copy() const;
+    virtual void ref();
+    virtual bool deref();
     virtual ~GroupNode();
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
@@ -187,8 +182,8 @@ namespace KJS {
   class ElisionNode : public Node {
   public:
     ElisionNode(ElisionNode *e) : elision(e) { }
-    ElisionNode(const ElisionNode &other);
-    virtual Node *copy() const;
+    virtual void ref();
+    virtual bool deref();
     virtual ~ElisionNode();
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
@@ -200,8 +195,8 @@ namespace KJS {
     ElementNode(ElisionNode *e, Node *n) : list(0l), elision(e), node(n) { }
     ElementNode(ElementNode *l, ElisionNode *e, Node *n)
       : list(l), elision(e), node(n) { }
-    ElementNode(const ElementNode &other);
-    virtual Node *copy() const;
+    virtual void ref();
+    virtual bool deref();
     virtual ~ElementNode();
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
@@ -217,9 +212,9 @@ namespace KJS {
       : element(ele), elision(0), opt(false) { }
     ArrayNode(ElisionNode *eli, ElementNode *ele)
       : element(ele), elision(eli), opt(true) { }
-    ArrayNode(const ArrayNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ArrayNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     ElementNode *element;
@@ -230,9 +225,9 @@ namespace KJS {
   class ObjectLiteralNode : public Node {
   public:
     ObjectLiteralNode(Node *l) : list(l) { }
-    ObjectLiteralNode(const ObjectLiteralNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ObjectLiteralNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *list;
@@ -242,9 +237,9 @@ namespace KJS {
   public:
     PropertyValueNode(Node *n, Node *a, Node *l = 0L)
       : name(n), assign(a), list(l) { }
-    PropertyValueNode(const PropertyValueNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~PropertyValueNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *name, *assign, *list;
@@ -254,8 +249,6 @@ namespace KJS {
   public:
     PropertyNode(double d) : numeric(d) { }
     PropertyNode(const UString *s) : str(*s) { }
-    PropertyNode(const PropertyNode &other);
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     double numeric;
@@ -265,9 +258,9 @@ namespace KJS {
   class AccessorNode1 : public Node {
   public:
     AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
-    AccessorNode1(const AccessorNode1 &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~AccessorNode1();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1;
@@ -277,9 +270,9 @@ namespace KJS {
   class AccessorNode2 : public Node {
   public:
     AccessorNode2(Node *e, const UString *s) : expr(e), ident(*s) { }
-    AccessorNode2(const AccessorNode2 &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~AccessorNode2();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -290,9 +283,9 @@ namespace KJS {
   public:
     ArgumentListNode(Node *e);
     ArgumentListNode(ArgumentListNode *l, Node *e);
-    ArgumentListNode(const ArgumentListNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ArgumentListNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     List *evaluateList(KJScriptImp *script, Context *context);
   private:
@@ -303,9 +296,9 @@ namespace KJS {
   class ArgumentsNode : public Node {
   public:
     ArgumentsNode(ArgumentListNode *l);
-    ArgumentsNode(const ArgumentsNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ArgumentsNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     List *evaluateList(KJScriptImp *script, Context *context);
   private:
@@ -316,8 +309,8 @@ namespace KJS {
   public:
     NewExprNode(Node *e) : expr(e), args(0L) {}
     NewExprNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
-    NewExprNode(const NewExprNode &other);
-    virtual Node *copy() const;
+    virtual void ref();
+    virtual bool deref();
     virtual ~NewExprNode();
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
@@ -328,9 +321,9 @@ namespace KJS {
   class FunctionCallNode : public Node {
   public:
     FunctionCallNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
-    FunctionCallNode(const FunctionCallNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~FunctionCallNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -340,9 +333,9 @@ namespace KJS {
   class PostfixNode : public Node {
   public:
     PostfixNode(Node *e, Operator o) : expr(e), oper(o) {}
-    PostfixNode(const PostfixNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~PostfixNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -352,9 +345,9 @@ namespace KJS {
   class DeleteNode : public Node {
   public:
     DeleteNode(Node *e) : expr(e) {}
-    DeleteNode(const DeleteNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~DeleteNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -363,9 +356,9 @@ namespace KJS {
   class VoidNode : public Node {
   public:
     VoidNode(Node *e) : expr(e) {}
-    VoidNode(const VoidNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~VoidNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -374,9 +367,9 @@ namespace KJS {
   class TypeOfNode : public Node {
   public:
     TypeOfNode(Node *e) : expr(e) {}
-    TypeOfNode(const TypeOfNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~TypeOfNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -385,9 +378,9 @@ namespace KJS {
   class PrefixNode : public Node {
   public:
     PrefixNode(Operator o, Node *e) : oper(o), expr(e) {}
-    PrefixNode(const PrefixNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~PrefixNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Operator oper;
@@ -397,9 +390,9 @@ namespace KJS {
   class UnaryPlusNode : public Node {
   public:
     UnaryPlusNode(Node *e) : expr(e) {}
-    UnaryPlusNode(const UnaryPlusNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~UnaryPlusNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -408,9 +401,9 @@ namespace KJS {
   class NegateNode : public Node {
   public:
     NegateNode(Node *e) : expr(e) {}
-    NegateNode(const NegateNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~NegateNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -419,9 +412,9 @@ namespace KJS {
   class BitwiseNotNode : public Node {
   public:
     BitwiseNotNode(Node *e) : expr(e) {}
-    BitwiseNotNode(const BitwiseNotNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~BitwiseNotNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -430,9 +423,9 @@ namespace KJS {
   class LogicalNotNode : public Node {
   public:
     LogicalNotNode(Node *e) : expr(e) {}
-    LogicalNotNode(const LogicalNotNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~LogicalNotNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -441,9 +434,9 @@ namespace KJS {
   class MultNode : public Node {
   public:
     MultNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
-    MultNode(const MultNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~MultNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *term1, *term2;
@@ -453,9 +446,9 @@ namespace KJS {
   class AddNode : public Node {
   public:
     AddNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
-    AddNode(const AddNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~AddNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *term1, *term2;
@@ -466,9 +459,9 @@ namespace KJS {
   public:
     ShiftNode(Node *t1, Operator o, Node *t2)
       : term1(t1), term2(t2), oper(o) {}
-    ShiftNode(const ShiftNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ShiftNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *term1, *term2;
@@ -479,9 +472,9 @@ namespace KJS {
   public:
     RelationalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    RelationalNode(const RelationalNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~RelationalNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2;
@@ -492,9 +485,9 @@ namespace KJS {
   public:
     EqualNode(Node *e1, Operator o, Node *e2)
       : expr1(e1), expr2(e2), oper(o) {}
-    EqualNode(const EqualNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~EqualNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2;
@@ -505,9 +498,9 @@ namespace KJS {
   public:
     BitOperNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    BitOperNode(const BitOperNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~BitOperNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2;
@@ -518,9 +511,9 @@ namespace KJS {
   public:
     BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    BinaryLogicalNode(const BinaryLogicalNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~BinaryLogicalNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2;
@@ -531,9 +524,9 @@ namespace KJS {
   public:
     ConditionalNode(Node *l, Node *e1, Node *e2) :
       logical(l), expr1(e1), expr2(e2) {}
-    ConditionalNode(const ConditionalNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ConditionalNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *logical, *expr1, *expr2;
@@ -542,9 +535,9 @@ namespace KJS {
   class AssignNode : public Node {
   public:
     AssignNode(Node *l, Operator o, Node *e) : left(l), oper(o), expr(e) {}
-    AssignNode(const AssignNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~AssignNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *left;
@@ -555,9 +548,9 @@ namespace KJS {
   class CommaNode : public Node {
   public:
     CommaNode(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
-    CommaNode(const CommaNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~CommaNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2;
@@ -567,9 +560,9 @@ namespace KJS {
   public:
     StatListNode(StatementNode *s) : statement(s), list(0L) { }
     StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
-    StatListNode(const StatListNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~StatListNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -580,9 +573,9 @@ namespace KJS {
   class AssignExprNode : public Node {
   public:
     AssignExprNode(Node *e) : expr(e) {}
-    AssignExprNode(const AssignExprNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~AssignExprNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -591,9 +584,9 @@ namespace KJS {
   class VarDeclNode : public Node {
   public:
     VarDeclNode(const UString *id, AssignExprNode *in);
-    VarDeclNode(const VarDeclNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~VarDeclNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -605,9 +598,9 @@ namespace KJS {
   public:
     VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
     VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
-    VarDeclListNode(const VarDeclListNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~VarDeclListNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -618,9 +611,9 @@ namespace KJS {
   class VarStatementNode : public StatementNode {
   public:
     VarStatementNode(VarDeclListNode *l) : list(l) {}
-    VarStatementNode(const VarStatementNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~VarStatementNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -630,9 +623,9 @@ namespace KJS {
   class BlockNode : public StatementNode {
   public:
     BlockNode(StatListNode *s) : statlist(s) {}
-    BlockNode(const BlockNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~BlockNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -642,17 +635,15 @@ namespace KJS {
   class EmptyStatementNode : public StatementNode {
   public:
     EmptyStatementNode() { } // debug
-    EmptyStatementNode(const EmptyStatementNode &other);
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   };
 
   class ExprStatementNode : public StatementNode {
   public:
     ExprStatementNode(Node *e) : expr(e) { }
-    ExprStatementNode(const ExprStatementNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ExprStatementNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -662,9 +653,9 @@ namespace KJS {
   public:
     IfNode(Node *e, StatementNode *s1, StatementNode *s2)
       : expr(e), statement1(s1), statement2(s2) {}
-    IfNode(const IfNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~IfNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -675,9 +666,9 @@ namespace KJS {
   class DoWhileNode : public StatementNode {
   public:
     DoWhileNode(StatementNode *s, Node *e) : statement(s), expr(e) {}
-    DoWhileNode(const DoWhileNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~DoWhileNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -688,9 +679,9 @@ namespace KJS {
   class WhileNode : public StatementNode {
   public:
     WhileNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
-    WhileNode(const WhileNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~WhileNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -701,41 +692,39 @@ namespace KJS {
   class ForNode : public StatementNode {
   public:
     ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
-      expr1(e1), expr2(e2), expr3(e3), stat(s) {}
-    ForNode(const ForNode &other);
+      expr1(e1), expr2(e2), expr3(e3), statement(s) {}
+    virtual void ref();
+    virtual bool deref();
     virtual ~ForNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
     Node *expr1, *expr2, *expr3;
-    StatementNode *stat;
+    StatementNode *statement;
   };
 
   class ForInNode : public StatementNode {
   public:
     ForInNode(Node *l, Node *e, StatementNode *s) :
-      init(0L), lexpr(l), expr(e), stat(s) {}
+      init(0L), lexpr(l), expr(e), statement(s) {}
     ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s)
-      : ident(*i), init(in), lexpr(0L), expr(e), stat(s) {}
-    ForInNode(const ForInNode &other);
+      : ident(*i), init(in), lexpr(0L), expr(e), statement(s) {}
+    virtual void ref();
+    virtual bool deref();
     virtual ~ForInNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
     UString ident;
     AssignExprNode *init;
     Node *lexpr, *expr;
-    StatementNode *stat;
+    StatementNode *statement;
   };
 
   class ContinueNode : public StatementNode {
   public:
     ContinueNode() { }
     ContinueNode(const UString *i) : ident(*i) { }
-    ContinueNode(const ContinueNode &other);
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   private:
     UString ident;
@@ -745,8 +734,6 @@ namespace KJS {
   public:
     BreakNode() { }
     BreakNode(const UString *i) : ident(*i) { }
-    BreakNode(const BreakNode &other);
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   private:
     UString ident;
@@ -755,9 +742,9 @@ namespace KJS {
   class ReturnNode : public StatementNode {
   public:
     ReturnNode(Node *v) : value(v) {}
-    ReturnNode(const ReturnNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ReturnNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   private:
     Node *value;
@@ -765,23 +752,23 @@ namespace KJS {
 
   class WithNode : public StatementNode {
   public:
-    WithNode(Node *e, StatementNode *s) : expr(e), stat(s) {}
-    WithNode(const WithNode &other);
+    WithNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
+    virtual void ref();
+    virtual bool deref();
     virtual ~WithNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
     Node *expr;
-    StatementNode *stat;
+    StatementNode *statement;
   };
 
   class CaseClauseNode: public Node {
   public:
     CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
-    CaseClauseNode(const CaseClauseNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~CaseClauseNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     Completion evalStatements(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
@@ -793,9 +780,9 @@ namespace KJS {
   class ClauseListNode : public Node {
   public:
     ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
-    ClauseListNode(const ClauseListNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ClauseListNode();
-    virtual Node *copy() const;
     ClauseListNode* append(CaseClauseNode *c);
     KJSO evaluate(KJScriptImp *script, Context *context);
     CaseClauseNode *clause() const { return cl; }
@@ -810,9 +797,9 @@ namespace KJS {
   public:
     CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2)
       : list1(l1), def(d), list2(l2) { }
-    CaseBlockNode(const CaseBlockNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~CaseBlockNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     Completion evalBlock(KJScriptImp *script, Context *context, const KJSO& input);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
@@ -825,9 +812,9 @@ namespace KJS {
   class SwitchNode : public StatementNode {
   public:
     SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
-    SwitchNode(const SwitchNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~SwitchNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -837,23 +824,23 @@ namespace KJS {
 
   class LabelNode : public StatementNode {
   public:
-    LabelNode(const UString *l, StatementNode *s) : label(*l), stat(s) { }
-    LabelNode(const LabelNode &other);
+    LabelNode(const UString *l, StatementNode *s) : label(*l), statement(s) { }
+    virtual void ref();
+    virtual bool deref();
     virtual ~LabelNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
     UString label;
-    StatementNode *stat;
+    StatementNode *statement;
   };
 
   class ThrowNode : public StatementNode {
   public:
     ThrowNode(Node *e) : expr(e) {}
-    ThrowNode(const ThrowNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ThrowNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
   private:
     Node *expr;
@@ -862,9 +849,9 @@ namespace KJS {
   class CatchNode : public StatementNode {
   public:
     CatchNode(const UString *i, StatementNode *b) : ident(*i), block(b) {}
-    CatchNode(const CatchNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~CatchNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     Completion execute(KJScriptImp *script, Context *context, const KJSO &arg);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
@@ -876,9 +863,9 @@ namespace KJS {
   class FinallyNode : public StatementNode {
   public:
     FinallyNode(StatementNode *b) : block(b) {}
-    FinallyNode(const FinallyNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~FinallyNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -889,9 +876,9 @@ namespace KJS {
   public:
     TryNode(StatementNode *b, Node *c = 0L, Node *f = 0L)
       : block(b), _catch((CatchNode*)c), _final((FinallyNode*)f) {}
-    TryNode(const TryNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~TryNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
@@ -904,9 +891,9 @@ namespace KJS {
   public:
     ParameterNode(const UString *i) : id(*i), next(0L) { }
     ParameterNode *append(const UString *i);
-    ParameterNode(const ParameterNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~ParameterNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
     UString ident() { return id; }
     ParameterNode *nextParam() { return next; }
@@ -919,9 +906,9 @@ namespace KJS {
   class FunctionBodyNode : public StatementNode {
   public:
     FunctionBodyNode(SourceElementsNode *s);
-    FunctionBodyNode(const FunctionBodyNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~FunctionBodyNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   protected:
@@ -932,9 +919,9 @@ namespace KJS {
   public:
     FuncDeclNode(const UString *i, ParameterNode *p, FunctionBodyNode *b)
       : ident(*i), param(p), body(b) { }
-    FuncDeclNode(const FuncDeclNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~FuncDeclNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp */*script*/, Context */*context*/)
       { /* empty */ return Completion(); }
     void processFuncDecl(KJScriptImp *script, Context *context);
@@ -948,9 +935,9 @@ namespace KJS {
   public:
     FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
 	: param(p), body(b) { }
-    FuncExprNode(const FuncExprNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~FuncExprNode();
-    virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
   private:
     ParameterNode *param;
@@ -961,9 +948,9 @@ namespace KJS {
   public:
     SourceElementNode(StatementNode *s) { statement = s; function = 0L; }
     SourceElementNode(FuncDeclNode *f) { function = f; statement = 0L;}
-    SourceElementNode(const SourceElementNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~SourceElementNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processFuncDecl(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
@@ -977,9 +964,9 @@ namespace KJS {
     SourceElementsNode(SourceElementNode *s1) { element = s1; elements = 0L; }
     SourceElementsNode(SourceElementsNode *s1, SourceElementNode *s2)
       { elements = s1; element = s2; }
-    SourceElementsNode(const SourceElementsNode &other);
+    virtual void ref();
+    virtual bool deref();
     virtual ~SourceElementsNode();
-    virtual Node *copy() const;
     Completion execute(KJScriptImp *script, Context *context);
     virtual void processFuncDecl(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
@@ -991,8 +978,9 @@ namespace KJS {
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s) { }
+  private:
+    // Disallow copy
     ProgramNode(const ProgramNode &other);
-    virtual Node *copy() const;
   };
 
 }; // namespace
