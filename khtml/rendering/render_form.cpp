@@ -333,7 +333,15 @@ void RenderSubmitButton::layout()
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
     value = value.visual();
-    static_cast<PushButtonWidget*>(m_widget)->setText(value.stripWhiteSpace());
+    value = value.stripWhiteSpace();
+    QString raw;
+    for(unsigned int i = 0; i < value.length(); i++) {
+        raw += value[i];
+        if(value[i] == '&')
+            raw += '&';
+    }
+
+    static_cast<PushButtonWidget*>(m_widget)->setText(raw);
     static_cast<PushButtonWidget*>(m_widget)->setFont(style()->font());
 
     RenderButton::layout();
