@@ -15,9 +15,9 @@
 <!ENTITY eg     "<abbrev>por exemplo</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc   "<keycap>Esc</keycap>">
-<!ENTITY etc     "<abbrev>etc.</abbrev>">
+<!ENTITY etc     "<abbrev>etc</abbrev>">
 <!ENTITY ex     "<abbrev>por exemplo</abbrev>">
-<!ENTITY FAQ     "Perguntas e Respostas - <acronym>FAQ</acronym>">
+<!ENTITY FAQ     "Perguntas Mais Freqüentes (do inglês <acronym>FAQ</acronym>)">
 <!ENTITY HTML	'<acronym>HTML</acronym>'>
 <!ENTITY ie     "isto é">
 <!ENTITY infocenter	"<application>Centro de Informações</application>">
