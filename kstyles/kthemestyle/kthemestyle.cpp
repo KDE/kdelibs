@@ -469,6 +469,9 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
+    if (w->inherits("QStatusBar"))
+         w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+
     if (w->backgroundPixmap() && !w->isTopLevel())
     {
         //The brushHandle check verifies that the bg pixmap is actually the brush..
