@@ -2,6 +2,7 @@
 Type=PNG
 Header=
 Name=PNG Image
+Name[ar]=صورة من نوع PNG
 Name[az]=PNG Rəsmi
 Name[be]=Малюнак PNG
 Name[bg]=Изображение PNG
@@ -32,6 +33,7 @@ Name[lt]=PNG paveiksliukas
 Name[mn]=PNG-Зураг
 Name[ms]=Imej PNG
 Name[nb]=PNG-bilde
+Name[nds]=PNG-Bild
 Name[nl]=PNG-afbeelding
 Name[nn]=PNG-bilete
 Name[pl]=Obrazek PNG

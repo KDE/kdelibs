@@ -2,6 +2,7 @@
 Type=PCX
 Header=^\012
 Name=PCX Image
+Name[ar]=صورة من نوع PCX
 Name[az]=PCX Rəsmi
 Name[be]=Малюнак PCX
 Name[bg]=Изображение PCX
@@ -32,6 +33,7 @@ Name[lt]=PCX paveiksliukas
 Name[mn]=PCX-Зураг
 Name[ms]=Imej PCX
 Name[nb]=PCX-bilde
+Name[nds]=PCX-Bild
 Name[nl]=PCX-afbeelding
 Name[nn]=PCX-bilete
 Name[pl]=Obrazek PCX
