@@ -3186,13 +3186,14 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::Left;
 			}
 		}
-		if ( flow == 0 )
+		if ( flow == 0 && align != divAlign )
 		{
 		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 		    flow->setIndent( indent );
 		    _clue->append( flow );
 		}
-		flow->setHAlign( align );
+		if ( align != divAlign )
+		    flow->setHAlign( align );
 	}
 	else if ( *str == '/' && *(str+1) == 'p' &&
 	    ( *(str+2) == ' ' || *(str+2) == '>' ) )
