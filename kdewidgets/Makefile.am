@@ -27,7 +27,7 @@ kdewidgets_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 kdewidgets_la_LIBADD = $(LIB_KIO)
 kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp 
 
-make-kdewidgets: kde.widgets
+kdewidgets.cpp: kde.widgets makekdewidgets
 	$(srcdir)/makekdewidgets -o $(srcdir)/kdewidgets.cpp $<
 
 all-local:

@@ -45,6 +45,7 @@
 #include "ktextbrowser.h"
 #include "ktextedit.h"
 #include "ktimewidget.h"
+#include "ktoolbarbutton.h"
 #include "kurlrequester.h"
 #include "kurllabel.h"
 #include "kurlrequester.h"
@@ -228,20 +229,20 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	m_widgets.insert("KFontChooser", widget);
 
 	widget.group = "Input (KDE)";
-	widget.iconSet = QString::null;
-	widget.includeFile = "kfontrequester.h";
-	widget.toolTip = "Font Requester (KDE)";
-	widget.whatsThis = "KFontRequester";
-	widget.isContainer = false;
-	m_widgets.insert("KFontRequester", widget);
-
-	widget.group = "Input (KDE)";
 	widget.iconSet = "kfontcombo.png";
 	widget.includeFile = "kfontcombo.h";
 	widget.toolTip = "Font Combo Box (KDE)";
 	widget.whatsThis = "KFontCombo";
 	widget.isContainer = false;
 	m_widgets.insert("KFontCombo", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "kfontrequester.png";
+	widget.includeFile = "kfontrequester.h";
+	widget.toolTip = "Font Requester (KDE)";
+	widget.whatsThis = "KFontRequester";
+	widget.isContainer = false;
+	m_widgets.insert("KFontRequester", widget);
 
 	widget.group = "Graphics (KDE)";
 	widget.iconSet = "kgradientselector.png";
@@ -403,6 +404,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KTimeWidget", widget);
 
+	widget.group = "Buttons (KDE)";
+	widget.iconSet = "ktoolbarbutton.png";
+	widget.includeFile = "ktoolbarbutton.h";
+	widget.toolTip = "A toolbar button with KDE extensions";
+	widget.whatsThis = "KToolBarButton";
+	widget.isContainer = false;
+	m_widgets.insert("KToolBarButton", widget);
+
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kurlcomborequester.png";
 	widget.includeFile = "kurlrequester.h";
@@ -510,6 +519,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KTextEdit(parent, name);
 	if (key == "KTimeWidget")
 		return new KTimeWidget(parent, name);
+	if (key == "KToolBarButton")
+		return new KToolBarButton(parent, name);
 	if (key == "KURLComboRequester")
 		return new KURLComboRequester(parent, name);
 	if (key == "KURLLabel")
