@@ -1031,15 +1031,24 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
         // these are special, and normally not rendered
     case ID_NOEMBED:
-        if (!t->flat) discard_until = ID_NOEMBED + ID_CLOSE_TAG;
-        return 0;
+        if (!t->flat) {
+            n = new HTMLGenericElementImpl(document, t->id);
+            discard_until = ID_NOEMBED + ID_CLOSE_TAG;
+        }
+        return n;
     case ID_NOFRAMES:
-        if (!t->flat) discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
-        return 0;
+        if (!t->flat) {
+            n = new HTMLGenericElementImpl(document, t->id);
+            discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
+        }
+        return n;
     case ID_NOSCRIPT:
-        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled() && !t->flat)
-            discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
-        return 0;
+        if (!t->flat) {
+            n = new HTMLGenericElementImpl(document, t->id);
+            if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
+                discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
+        }
+        return n;
     case ID_NOLAYER:
 //        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
         return 0;
