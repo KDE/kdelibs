@@ -1,0 +1,4 @@
+[KDE Print Filter Entry]
+Name=imagetops
+Require=imagetops
+Comment=Generic image to PS filter
