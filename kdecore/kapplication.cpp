@@ -2412,6 +2412,10 @@ void KApplication::initUrlActionRestrictions()
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", "webdav", QString::null, QString::null, "file", QString::null, QString::null, false));
 
+  // Lan may redirect everywhere
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "lan", QString::null, QString::null, QString::null, QString::null, QString::null, true));
+
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
