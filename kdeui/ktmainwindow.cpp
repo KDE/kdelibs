@@ -321,6 +321,12 @@ void KTMainWindow::setCaption( const QString &caption )
     QWidget::setCaption( kapp->makeStdCaption(caption) );
 }
 
+void KTMainWindow::setCaption( const QString &caption, bool modified )
+{
+    if ( initing ) // we are in our constructor
+	return;
+    QWidget::setCaption( kapp->makeStdCaption(caption, true, modified) );
+}
 
 void KTMainWindow::setPlainCaption( const QString &caption )
 {

@@ -620,6 +620,17 @@ public slots:
      * standard.
      */
     virtual void setCaption( const QString &caption );
+   
+    /**
+     * Makes a KDE compliant caption.
+     *
+     * @param caption Your caption. DO NOT include the application name
+     * in this string. It will be added automatically according to the KDE
+     * standard.
+     * @param modified Whether the document is modified. This displays
+     * an additionnal sign in the title bar, usually "**".
+     */
+    virtual void setCaption( const QString &caption, bool modified );
 
     /**
      * Makes a plain caption without any modifications.
