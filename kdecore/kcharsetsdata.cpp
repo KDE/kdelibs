@@ -59,14 +59,17 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
   else if (unicodeIn && unicodeOut) conversionType=UnicodeUnicode;
   else if (unicodeIn){
     conversionType=FromUnicode;
+    kchdebug("Conversion: from unicode\n");
     if (!createFromUnicodeDict()) return;
   }  
   else if (unicodeOut){
     conversionType=ToUnicode;
+    kchdebug("Conversion: to unicode\n");
     if (!getToUnicodeTable()) return;
   }  
   else{
     conversionType=EightToEight;
+    kchdebug("Conversion: no unicode\n");
     if (!getToUnicodeTable()) return;
     if (!createFromUnicodeDict()) return;
   } 
@@ -127,7 +130,6 @@ void KCharsetConverterData::setInputSettings(){
     unicodeIn=TRUE;
   }  
   else if ( ! stricmp(name,"utf8") ){
-    warning("Sorry, UTF8 encoding is not supported yet\n");
     inputEnc=UTF8;
     inBits=0;
     unicodeIn=TRUE;
@@ -160,7 +162,6 @@ void KCharsetConverterData::setOutputSettings(){
     unicodeOut=TRUE;
   }  
   else if ( ! stricmp(name,"utf8") ){
-    warning("Sorry, UTF8 encoding is not supported yet\n");
     outputEnc=UTF8;
     outBits=0;
     unicodeOut=TRUE;
@@ -188,11 +189,100 @@ bool KCharsetConverterData::decodeUTF7(const char*,unsigned int &,int &){
   return FALSE;
 }
 
-bool KCharsetConverterData::decodeUTF8(const char*,unsigned int &,int &){
+bool KCharsetConverterData::decodeUTF8(const char*str,unsigned int &code
+                                      ,int &extrachars){
+  code=0;
+  extrachars=0;
+  unsigned char chr=*str;
+  kchdebug("str: ");
+  for(int i=0;i<6 && str[i];i++)
+    kchdebug("%02x ",(int)(unsigned char)str[i]);
+  kchdebug("\n");
+  if ( (chr&0x80)==0 ){
+    code=chr&0x7f;
+    extrachars=0;
+  }
+  else if ( (chr&0xe0)==0xc0 ){
+    code=chr&0x1f;
+    extrachars=1;
+  }
+  else if ( (chr&0xf0)==0xe0 ){
+    code=chr&0x0f;
+    extrachars=2;
+  }  
+  else if ( (chr&0xf8)==0xf0 ){
+    code=chr&0x07;
+    extrachars=3;
+  }  
+  else if ( (chr&0xfc)==0xf8 ){
+    code=chr&0x03;
+    extrachars=4;
+  }  
+  else if ( (chr&0xfe)==0xf8 ){
+    code=chr&0x01;
+    extrachars=5;
+  }  
+  else {
+    warning("Invalid UTF8 sequence!");
+    return FALSE;
+  }  
+
+  int chars=extrachars;
+  while(chars>0){
+    str++;
+    code<<=6;
+    kchdebug("Code: %4x char: %2x masked char: %2x\n",code,*str,(*str)&0x3f);
+    code|=(*str)&0x3f;
+    chars--;
+  }
+  return TRUE;
+}
+
+bool KCharsetConverterData::encodeUTF7(unsigned int,QString &){
 
   return FALSE;
 }
 
+bool KCharsetConverterData::encodeUTF8(unsigned int code,QString &result){
+
+  if (code<0x80){
+    result+=(char)code;
+    return TRUE;
+  }  
+  kchdebug("Code: %4x\n",code);
+  int octets=2;
+  unsigned mask1=0xc0;
+  unsigned mask2=0x1f;
+  unsigned range=0x800;
+  int left=24;
+  while(code>range){
+    if (range>=0x40000000){
+      warning("Unicode value too big!");
+      return FALSE;
+    }
+    mask2=(mask2>>1)&0x80;
+    mask1>>=1;
+    range<<=5;
+    octets++;
+    left-=6;
+  }
+  kchdebug("octets: %i  mask1: %x mask2: %x range: %x left: %i\n"
+            ,octets,mask1,mask2,range,left);
+  unsigned char chr=((code>>((octets-1)*6))&mask2)|mask1;
+  kchdebug("Chars: %02x ",chr);
+  result+=chr;
+  octets--;
+  unsigned int tmp=(code<<left)&0xffffffff;
+  while(octets>0){
+    chr=((tmp>>24)&0x3f)|0x80;
+    kchdebug("%02x ",chr);
+    result+=chr;
+    tmp<<=6;
+    octets--;
+  }
+  kchdebug("\n");
+  return TRUE;
+}
    
 void KCharsetConverterData::convert(const QString &str
                                     ,KCharsetConversionResult &result) {
@@ -215,20 +305,20 @@ void KCharsetConverterData::convert(const QString &str
   for(i=0;(inBits<=8)?str[i]:(str[i]&&str[i+1]);){
     switch(inputEnc){
        case UTF7:
-         if (decodeUTF7(str+i,index,tmp)) i+=tmp;
-	 else index=str[i];
+         if (decodeUTF7(((const char *)str)+i,index,tmp)) i+=tmp;
+	 else index=(unsigned char)str[i];
 	 break;
        case UTF8:
-         if (decodeUTF8(str+i,index,tmp)) i+=tmp;
-	 else index=str[i];
+         if (decodeUTF8(((const char *)str)+i,index,tmp)) i+=tmp;
+	 else index=(unsigned char)str[i];
 	 break;
        default:
          if (inBits<=8) index=(unsigned char)str[i];
-	 else if (inBits==16) index=(unsigned char)str[i++]+(unsigned char)str[i]<<8;
+	 else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
 	 break;
     }
     kchdebug("Got index: %x\n",index);
-    switch(conversionType){
+    if (index>0) switch(conversionType){
        case ToUnicode:
          if (convTable)
 	   chr=convTable[index];
@@ -254,7 +344,7 @@ void KCharsetConverterData::convert(const QString &str
  	   if (ptr) index2=*ptr;
 	   else index2=0;
 	 }  
-         kchdebug("Converted to unicode: %x\n",index);
+         kchdebug("Converted to unicode: %4x\n",index);
 	 if (index2){
             ptr=(*convFromUniDict)[index2];
   	    if (ptr) chr=*ptr;
@@ -263,8 +353,11 @@ void KCharsetConverterData::convert(const QString &str
 	 else chr=0;
          break;
     }
+    else chr=0;
     kchdebug("Converted to: %x\n",chr);
-    if (chr==0)
+    if (outputEnc==UTF8) encodeUTF8(chr,result.text);
+    else if (outputEnc==UTF7) encodeUTF7(chr,result.text);
+    else if (chr==0)
       if (outAmps){
         if (conversionType!=FromUnicode){
 	  if (convTable)
@@ -282,8 +375,8 @@ void KCharsetConverterData::convert(const QString &str
       else result.text+="?";
     else
       if (outBits==16){
-        result.text+=(char)(chr&255);
-	result.text+=(char)(chr>>8);
+        result.text+=(char)(chr>>8);
+	result.text+=(char)(chr&255);
       }
       else result.text+=(char)chr;
       
@@ -411,8 +504,7 @@ KCharsetsData::~KCharsetsData(){
   KCharsetEntry *e;
   while( (e=it.current()) ){
     if (e->toUnicodeDict) delete e->toUnicodeDict;
-// delete static members ... It is a new vision of C++ :-)
-//    if (e->name) delete e->name;
+    if (e->name) delete e->name;
     delete e;
   }
   delete config;

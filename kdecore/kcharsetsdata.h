@@ -21,7 +21,7 @@
 #ifndef _CHARSETSDATA_H
 #define _CHARSETSDATA_H
 
-// #define KCH_DEBUG
+#define KCH_DEBUG
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -79,6 +79,8 @@ friend class KCharsets;
    bool createFromUnicodeDict();
    bool decodeUTF7(const char*,unsigned int &code,int &extrachars);
    bool decodeUTF8(const char*,unsigned int &code,int &extrachars);
+   bool encodeUTF7(unsigned int code,QString &result);
+   bool encodeUTF8(unsigned int code,QString &result);
    bool createFromUnicodeTable();
 public:
    KCharsetConverterData(const char * inputCharset,bool iamps,
