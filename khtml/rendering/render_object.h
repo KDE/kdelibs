@@ -36,6 +36,8 @@
 
 #include "bidi.h"
 
+#include <stdio.h>
+
 class QPainter;
 class QPixmap;
 class CSSStyle;

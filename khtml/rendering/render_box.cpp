@@ -32,8 +32,20 @@
 #include <qfontmetrics.h>
 #include <qstack.h>
 
+#include "dom_node.h"
+#include "dom_textimpl.h"
+#include "dom_stringimpl.h"
+#include "dom_exception.h"
+
+#include "htmlhashes.h"
+#include "khtmlview.h"
+
 #include "render_box.h"
 #include "render_style.h"
+#include "render_object.h"
+#include "render_text.h"
+
+#include "render_root.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -50,6 +62,12 @@ RenderBox::RenderBox(RenderStyle* style)
     m_minWidth = -1;
     m_maxWidth = -1;
     m_x = m_y = m_width = m_height = 0;
+    
+    CachedImage *i = style->backgroundImage();
+    if(i)
+    {
+	i->ref(this);
+    }
 
     switch(style->position())
     {
@@ -157,6 +175,11 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 	child->print(p, _x, _y, _w, _h, _tx, _ty);
 	child = child->nextSibling();
     }
+}
+
+void RenderBox::setPixmap(const QPixmap &)
+{
+    repaint();	//repaint bg when it gets loaded
 }
 
 void RenderBox::printBoxDecorations(QPainter *p, int _tx, int _ty)

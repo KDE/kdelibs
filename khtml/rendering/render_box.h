@@ -25,6 +25,7 @@
 #define RENDER_OBJECT_H
 
 #include "render_object.h"
+#include "loader.h"
 
 namespace khtml {
 
@@ -91,6 +92,8 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
+    
+    virtual void setPixmap(const QPixmap &);
 
 protected:
     virtual void printBoxDecorations(QPainter *p, int _tx, int _ty);
