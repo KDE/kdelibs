@@ -349,6 +349,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~InterfaceRepo() {
 	if (!_pool) return;
@@ -429,6 +430,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~FlowSystemSender() {
 	if (!_pool) return;
@@ -506,6 +508,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~FlowSystemReceiver() {
 	if (!_pool) return;
@@ -593,6 +596,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~FlowSystem() {
 	if (!_pool) return;
@@ -679,6 +683,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~GlobalComm() {
 	if (!_pool) return;
@@ -756,6 +761,7 @@ public:
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
+		return *this;
 	}
 	inline ~TmpGlobalComm() {
 	if (!_pool) return;

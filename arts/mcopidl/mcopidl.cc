@@ -1269,6 +1269,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
 		fprintf(header,"\t\t_pool = target._pool;\n");
 		fprintf(header,"\t\t_pool->Inc();\n");
+		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
 		
 		// destructor - take care of reference counting
