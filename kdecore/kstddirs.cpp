@@ -738,9 +738,9 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	    QStringList dirs = QStringList::split(',',
 						  *it2);
 	    QStringList::Iterator sIt(dirs.begin());
-	    const char *resType = key.mid(4, key.length()).ascii();
+	    QString resType = key.mid(4, key.length());
 	    for (; sIt != dirs.end(); ++sIt) {
-		addResourceDir(resType, *sIt);
+		addResourceDir(resType.latin1(), *sIt);
 	    }
 	}
     }
