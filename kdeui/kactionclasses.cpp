@@ -1832,8 +1832,9 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     int id_ = KAction::getToolButtonID();
 
     if ( icon().isEmpty() && !iconSet().isNull() ) {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
-                           SLOT( slotActivated() ), isEnabled(), plainText(),
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
+                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+                           isEnabled(), plainText(),
                            index );
     } else {
         KInstance * instance;
@@ -1842,8 +1843,9 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
         else
             instance = KGlobal::instance();
 
-        bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
-                           SLOT( slotActivated() ), isEnabled(), plainText(),
+        bar->insertButton( icon(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
+                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+                           isEnabled(), plainText(),
                            index, instance );
     }
 
