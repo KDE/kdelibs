@@ -261,8 +261,8 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtr
 	}
 	syst = (syst && joblist.count() > 0);
 	coll->action("plugin_ipp")->setEnabled(joblist.count() == 1);
-	coll->action("plugin_prioup")->setEnabled(syst);
-	coll->action("plugin_priodown")->setEnabled(syst);
+	coll->action("plugin_prioup")->setEnabled(syst && false);
+	coll->action("plugin_priodown")->setEnabled(syst && false);
 }
 
 bool KMCupsJobManager::increasePriority(const QPtrList<KMJob>&)
