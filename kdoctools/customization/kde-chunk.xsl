@@ -45,6 +45,27 @@
 <xsl:param name="admon.graphics.path"><xsl:value-of select="kde.common"/></xsl:param>
 <xsl:param name="callout.graphics.path"><xsl:value-of select="kde.common"/></xsl:param>
 
+<xsl:param name="generate.toc">
+appendix  toc,title
+article/appendix  nop
+article   toc,title
+book      toc,title,figure,table,example,equation
+chapter   nop
+part      toc,title
+preface   toc,title
+qandadiv  toc
+qandaset  toc
+reference toc,title
+sect1     nop
+sect2     nop
+sect3     nop
+sect4     nop
+sect5     nop
+section   nop
+set       toc,title
+</xsl:param>
+
+
 
 <xsl:template name="dbhtml-filename">
 <xsl:choose>
