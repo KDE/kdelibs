@@ -22,6 +22,8 @@
 #include <kdebug.h>
 
 #include "stdaddressbook.h"
+#include "resourcefile.h"
+#include "resourcesql.h"
 
 using namespace KABC;
 
@@ -44,7 +46,7 @@ AddressBook *StdAddressBook::self()
 
 bool StdAddressBook::save()
 {
-  kdDebug() << "StdAddressBook::save()" << endl;
+  kdDebug(5700) << "StdAddressBook::save()" << endl;
   Ticket *ticket = self()->requestSaveTicket();
   if ( !ticket ) {
     kdError() << "Can't save to standard addressbook. It's locked." << endl;
@@ -56,10 +58,16 @@ bool StdAddressBook::save()
 
 StdAddressBook::StdAddressBook()
 {
-  load( fileName() );
+  addResource( new ResourceFile( this, fileName() ) );
+  load();
 }
 
 StdAddressBook::~StdAddressBook()
 {
   save();
+}
+
+QString StdAddressBook::identifier()
+{
+  return fileName();
 }

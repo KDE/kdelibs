@@ -51,6 +51,8 @@ class StdAddressBook : public AddressBook
     */
     static QString fileName();
     
+    QString identifier();
+    
   protected:
     StdAddressBook();
     ~StdAddressBook();

@@ -8,6 +8,8 @@
 
 #include "addressbook.h"
 #include "vcardformat.h"
+#include "resourcefile.h"
+#include "resourcesql.h"
 
 using namespace KABC;
 
@@ -18,7 +20,13 @@ int main(int argc,char **argv)
 
   KApplication app;
   
-  AddressBook ab( new VCardFormat );
+  AddressBook ab; 
+   
+  ResourceFile r( &ab, "my.kabc" );
+  ab.addResource( &r );
+  
+  ResourceSql rsql( &ab, "root", "kde4ever", "localhost" );
+  ab.addResource( &rsql );
 
   struct tms start;
 
@@ -32,7 +40,7 @@ int main(int argc,char **argv)
 #endif
 	    
   kdDebug() << "Start load" << endl;
-  ab.load( "my.kabc" );
+  ab.load();
   kdDebug() << "Finished load" << endl;
 
   struct tms end;
@@ -48,4 +56,6 @@ int main(int argc,char **argv)
 
   kdDebug() << "UTime: " << int( end.tms_utime ) - int( start.tms_utime ) << endl; 
   kdDebug() << "STime: " << int( end.tms_stime ) - int( start.tms_stime ) << endl; 
+
+  ab.dump();
 }

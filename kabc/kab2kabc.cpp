@@ -463,5 +463,5 @@ int main(int argc,char **argv)
 
   StdAddressBook::save();
   
-  kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->fileName() << "'" << endl;
+  kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->identifier() << "'" << endl;
 }

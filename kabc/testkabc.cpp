@@ -6,6 +6,7 @@
 
 #include "addressbook.h"
 #include "vcardformat.h"
+#include "resourcefile.h"
 
 using namespace KABC;
 
@@ -16,11 +17,17 @@ int main(int argc,char **argv)
 
 //  KApplication app( false, false );
   KApplication app;
+
+  AddressBook ab;
   
-  AddressBook ab( new VCardFormat );
+  ResourceFile r( &ab, "my.kabc", new VCardFormat );
   
-  ab.load( "/home/cs/kdecvs/kdepim/kabc/my.kabc" );
-  kdDebug() << "Read addressbook from: " << ab.fileName() << endl;
+  if ( !ab.addResource( &r ) ) {
+    kdDebug() << "Can't add Resource." << endl;
+  }
+  
+  ab.load();
+  kdDebug() << "Read addressbook from: " << r.fileName() << endl;
   ab.dump();
   
   ab.clear();
@@ -59,10 +66,10 @@ int main(int argc,char **argv)
   AddressBook::Iterator it = ab.find( c );
   (*it).insertEmail( "neueemail@woauchimmer" );
   
-  kdDebug() << "Write addressbook to: " << ab.fileName() << endl;
+  kdDebug() << "Write addressbook to: " << ab.identifier() << endl;
   ab.dump();
   
-  AddressBook::Ticket *t = ab.requestSaveTicket( "/home/cs/kdecvs/kdepim/kabc/my.kabc" );
+  Ticket *t = ab.requestSaveTicket( &r );
   if ( t ) {
     ab.save( t );
   } else {

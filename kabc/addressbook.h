@@ -21,18 +21,15 @@
 #define KABC_ADDRESSBOOK_H
 // $Id$
 
-#include <sys/types.h>
-
 #include <qobject.h>
+#include <qptrlist.h>
 
 #include "addressee.h"
 
-class QTimer;
-
 namespace KABC {
 
-class Format;
-class AddressBookPrivate;
+class Resource;
+class Ticket;
 
 /**
   @short Address Book
@@ -51,21 +48,24 @@ class AddressBook : public QObject
     class Iterator
     {
       public:
-        Iterator() {}
-        Iterator( const Addressee::List::Iterator &it ) : mIt( it ) {}
-      
-        const Addressee & operator*() const { return *mIt; }
-        Addressee &operator*() { return *mIt; }
-        Iterator &operator++() { mIt++; return *this; }
-        Iterator &operator++(int) { mIt++; return *this; }
-        Iterator &operator--() { mIt--; return *this; }
-        Iterator &operator--(int) { mIt--; return *this; }
-        bool operator==( const Iterator &it ) { return ( mIt == it.mIt ); }
-        bool operator!=( const Iterator &it ) { return ( mIt != it.mIt ); }
+        Iterator();
+        Iterator( const Iterator & );
+      	~Iterator();
 
-        Addressee::List::Iterator mIt;
+      	Iterator &operator=( const Iterator & );
+        const Addressee & operator*() const;
+        Addressee &operator*();
+        Iterator &operator++();
+        Iterator &operator++(int);
+        Iterator &operator--();
+        Iterator &operator--(int);
+        bool operator==( const Iterator &it );
+        bool operator!=( const Iterator &it );
+
+      	struct IteratorData;
+	IteratorData *d;
     };
-    
+
     /**
       @short Address Book Const Iterator
       
@@ -74,41 +74,29 @@ class AddressBook : public QObject
     class ConstIterator
     {
       public:
-        ConstIterator() {}
-        ConstIterator( const Addressee::List::ConstIterator &it ) : mIt( it ) {}
+        ConstIterator();
+        ConstIterator( const ConstIterator & );
+      	~ConstIterator();
       
-        const Addressee & operator*() const { return *mIt; }
-        ConstIterator &operator++() { mIt++; return *this; }
-        ConstIterator &operator++(int) { mIt++; return *this; }
-        ConstIterator &operator--() { mIt--; return *this; }
-        ConstIterator &operator--(int) { mIt--; return *this; }
-        bool operator==( const ConstIterator &it ) { return ( mIt == it.mIt ); }
-        bool operator!=( const ConstIterator &it ) { return ( mIt != it.mIt ); }
+      	ConstIterator &operator=( const ConstIterator & );
+        const Addressee & operator*() const;
+        ConstIterator &operator++();
+        ConstIterator &operator++(int);
+        ConstIterator &operator--();
+        ConstIterator &operator--(int);
+        bool operator==( const ConstIterator &it );
+        bool operator!=( const ConstIterator &it );
 
-        Addressee::List::ConstIterator mIt;
+      	struct ConstIteratorData;
+	ConstIteratorData *d;
     };
     
-    /**
-      @short Helper class for handling coordinated save of address books.
-      
-      This class is used as helper class for saving address book. @See
-      requestSaveTicket(), save().
-    */
-    class Ticket
-    {
-        friend class AddressBook;
-    
-        Ticket( const QString &_fileName ) : fileName( _fileName ) {}
-        
-        QString fileName;
-    };
-
     /**
       Construct address book object.
       
       @param format File format class.
     */
-    AddressBook( Format *format=0 );
+    AddressBook();
     virtual ~AddressBook();
 
     /**
@@ -117,20 +105,19 @@ class AddressBook : public QObject
       locked the function returns 0. You need the returned @ref Ticket object
       for calling the @ref save() function.
       
-      @param fileName The file name the addres book is to be saved. If this
-                      parameter is omitted or null, the file is used, the
-                      address book has been loaded from.
-    
       @see save()
     */
-    Ticket *requestSaveTicket( const QString &fileName = QString::null );
+    Ticket *requestSaveTicket( Resource *resource=0 );
+    
+    /**
+      Add address book resource.
+    */
+    bool addResource( Resource * );
     
     /**
       Load address book from file.
-      
-      @param fileName name of file to be loaded.
     */
-    bool load( const QString &fileName );
+    bool load();
     /**
       Save address book. The address book is saved to the file, the Ticket
       object has been requested for by @ref requestSaveTicket().
@@ -138,28 +125,23 @@ class AddressBook : public QObject
       @param ticket a ticket object returned by @ref requestSaveTicket()
     */
     bool save( Ticket *ticket );
-
-    /**
-      Reload currently loaded addressbook.
-    */
-    bool reload();
     
     /**
       Return iterator for first entry of address book.
     */
-    Iterator begin() { return Iterator( mAddressees.begin() ); }
+    Iterator begin();
     /**
       Return const iterator for first entry of address book.
     */
-    ConstIterator begin() const { return ConstIterator( mAddressees.begin() ); }
+    ConstIterator begin() const;
     /**
       Return iterator for first entry of address book.
     */
-    Iterator end() { return Iterator( mAddressees.end() ); }
+    Iterator end();
     /**
       Return const iterator for first entry of address book.
     */
-    ConstIterator end() const { return ConstIterator( mAddressees.end() ); }
+    ConstIterator end() const;
     
     /**
       Remove all entries from address book.
@@ -210,18 +192,18 @@ class AddressBook : public QObject
     Addressee::List findByCategory( const QString & );
 
     /**
-      Set name of file to be used for saving.
+      Return a string identifying this addressbook.
     */
-    void setFileName( const QString & );
-    /**
-      Return name of file used for loading and saving the address book.
-    */
-    QString fileName() const;
+    virtual QString identifier();
 
     /**
       Debug output.
     */
     void dump() const;
+
+    void emitAddressBookLocked() { emit addressBookLocked( this ); }
+    void emitAddressBookUnlocked() { emit addressBookUnlocked( this ); }
+    void emitAddressBookChanged() { emit addressBookChanged( this ); }
 
   signals:
     /**
@@ -237,26 +219,11 @@ class AddressBook : public QObject
     */
     void addressBookUnlocked( AddressBook * );
 
-  protected slots:
-    void checkFile();
-
-  protected:
-    bool lock( const QString &fileName );
-    void unlock( const QString &fileName );
-
   private:
-    Addressee::List mAddressees;
+    QPtrList<Resource> mResources;
 
-    Format *mFormat;
-
-    QString mFileName;
-    
-    QString mLockUniqueName;
-    
-    QTimer *mFileCheckTimer;
-    time_t mChangeTime;
-
-    AddressBookPrivate *d;
+    struct AddressBookData;
+    AddressBookData *d;
 };
 
 }

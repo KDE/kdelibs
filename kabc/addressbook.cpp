@@ -18,10 +18,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <qtimer.h>
 #include <qfile.h>
 #include <qregexp.h>
@@ -32,79 +28,247 @@
 
 #include "simpleformat.h"
 #include "vcardformat.h"
+#include "resource.h"
 
 #include "addressbook.h"
 #include "addressbook.moc"
 
 using namespace KABC;
 
-AddressBook::AddressBook( Format *format )
+struct AddressBook::AddressBookData
 {
-  if ( !format ) {
-    mFormat = new VCardFormat();
-  } else {
-    mFormat = format;
-  }
+  Addressee::List mAddressees;
+};
 
-  mFileCheckTimer = new QTimer( this );
-  connect( mFileCheckTimer, SIGNAL( timeout() ), SLOT( checkFile() ) );
+struct AddressBook::Iterator::IteratorData
+{
+  Addressee::List::Iterator mIt;
+};
+
+struct AddressBook::ConstIterator::ConstIteratorData
+{
+  Addressee::List::ConstIterator mIt;
+};
+
+AddressBook::Iterator::Iterator()
+{
+  d = new IteratorData;
+}
+
+AddressBook::Iterator::Iterator( const AddressBook::Iterator &i )
+{
+  d = new IteratorData;
+  d->mIt = i.d->mIt;
+}
+
+AddressBook::Iterator &AddressBook::Iterator::operator=( const AddressBook::Iterator &i )
+{
+  d = new IteratorData;
+  d->mIt = i.d->mIt;
+  return *this;
+}
+
+AddressBook::Iterator::~Iterator()
+{
+  delete d;
+}
+
+const Addressee &AddressBook::Iterator::operator*() const
+{
+  return *(d->mIt);
+}
+
+Addressee &AddressBook::Iterator::operator*()
+{
+  return *(d->mIt);
+}
+
+AddressBook::Iterator &AddressBook::Iterator::operator++()
+{
+  (d->mIt)++;
+  return *this;
+}
+
+AddressBook::Iterator &AddressBook::Iterator::operator++(int)
+{
+  (d->mIt)++;
+  return *this;
+}
+
+AddressBook::Iterator &AddressBook::Iterator::operator--()
+{
+  (d->mIt)--;
+  return *this;
+}
+
+AddressBook::Iterator &AddressBook::Iterator::operator--(int)
+{
+  (d->mIt)--;
+  return *this;
+}
+
+bool AddressBook::Iterator::operator==( const Iterator &it )
+{
+  return ( d->mIt == it.d->mIt );
+}
+
+bool AddressBook::Iterator::operator!=( const Iterator &it )
+{
+  return ( d->mIt != it.d->mIt );
+}
+
+
+AddressBook::ConstIterator::ConstIterator()
+{
+  d = new ConstIteratorData;
+}
+
+AddressBook::ConstIterator::ConstIterator( const AddressBook::ConstIterator &i )
+{
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+}
+
+AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const AddressBook::ConstIterator &i )
+{
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+  return *this;
+}
+
+AddressBook::ConstIterator::~ConstIterator()
+{
+  delete d;
+}
+
+const Addressee & AddressBook::ConstIterator::operator*() const
+{
+  return *(d->mIt);
+}
+AddressBook::ConstIterator &AddressBook::ConstIterator::operator++()
+{
+  (d->mIt)++;
+  return *this;
+}
+
+AddressBook::ConstIterator &AddressBook::ConstIterator::operator++(int)
+{
+  (d->mIt)++;
+  return *this;
+}
+
+AddressBook::ConstIterator &AddressBook::ConstIterator::operator--()
+{
+  (d->mIt)--;
+  return *this;
+}
+
+AddressBook::ConstIterator &AddressBook::ConstIterator::operator--(int)
+{
+  (d->mIt)--;
+  return *this;
+}
+
+bool AddressBook::ConstIterator::operator==( const ConstIterator &it )
+{
+  return ( d->mIt == it.d->mIt );
+}
+
+bool AddressBook::ConstIterator::operator!=( const ConstIterator &it )
+{
+  return ( d->mIt != it.d->mIt );
+}
+
+
+AddressBook::AddressBook()
+{
+  d = new AddressBookData;
 }
 
 AddressBook::~AddressBook()
 {
-  delete mFormat;
+  delete d;
 }
 
-bool AddressBook::load( const QString &fileName )
+bool AddressBook::addResource( Resource *resource )
 {
-  setFileName( fileName );
+  if ( !resource->open() ) return false;
+  mResources.append( resource );
+  return true;
+}
 
-  mAddressees.clear();
+bool AddressBook::load()
+{
+  kdDebug(5700) << "AddressBook::load()" << endl;
 
-  return mFormat->load( this, fileName );
+  clear();
+
+  Resource *r;
+  for( r = mResources.first(); r; r = mResources.next() ) {
+    kdDebug() << " Tick" << endl;
+    if ( !r->load( this ) ) return false;
+  }
+
+  return true;
 }
 
 bool AddressBook::save( Ticket *ticket )
 {
-  kdDebug(5700) << "AddressBook::save() '" << ticket->fileName << "'" << endl;
-  
-  bool success = mFormat->save( this, ticket->fileName );
+  kdDebug(5700) << "AddressBook::save()"<< endl;
 
-  setFileName( ticket->fileName );
+  if ( ticket->resource() ) {
+    return ticket->resource()->save( ticket );
+  }
 
-  delete ticket;
-  unlock( mFileName );
-
-  return success;
+  return false;
 }
 
-bool AddressBook::reload()
+AddressBook::Iterator AddressBook::begin()
 {
-  if ( fileName().isEmpty() ) return false;
+  Iterator it = Iterator();
+  it.d->mIt = d->mAddressees.begin();
+  return it;
+}
 
-  return load( fileName() );
+AddressBook::ConstIterator AddressBook::begin() const
+{
+  ConstIterator it = ConstIterator();
+  it.d->mIt = d->mAddressees.begin();
+  return it;
+}
+
+AddressBook::Iterator AddressBook::end()
+{
+  Iterator it = Iterator();
+  it.d->mIt = d->mAddressees.end();
+  return it;
+}
+
+AddressBook::ConstIterator AddressBook::end() const
+{
+  ConstIterator it = ConstIterator();
+  it.d->mIt = d->mAddressees.end();
+  return it;
 }
 
 void AddressBook::clear()
 {
-  mAddressees.clear();
+  d->mAddressees.clear();
 }
 
-AddressBook::Ticket *AddressBook::requestSaveTicket( const QString &fn )
+Ticket *AddressBook::requestSaveTicket( Resource *resource )
 {
-  kdDebug(5700) << "AddressBook::requestSaveTicket(): '" << fn << "'" << endl; 
+  kdDebug(5700) << "AddressBook::requestSaveTicket()" << endl; 
 
-  QString saveFileName;
-
-  if ( fn.isEmpty() ) saveFileName = fileName();
-  else saveFileName = fn;
-
-  if ( !lock( saveFileName ) ) {
-    kdDebug() << "AddressBook::requestSaveTicket(): Can't lock file '"
-              << saveFileName << "'" << endl;
-    return 0;
+  if ( !resource ) {
+    resource = mResources.first();
   }
-  return new Ticket( saveFileName );
+  
+  if ( mResources.find( resource ) < 0 ) {
+    return 0;
+  } else {
+    return resource->requestSaveTicket();
+  }
 }
 
 void AddressBook::insertAddressee( const Addressee &a )
@@ -116,7 +280,7 @@ void AddressBook::insertAddressee( const Addressee &a )
       return;
     }
   }
-  mAddressees.append( a );
+  d->mAddressees.append( a );
 }
 
 void AddressBook::removeAddressee( const Addressee &a )
@@ -132,7 +296,7 @@ void AddressBook::removeAddressee( const Addressee &a )
 
 void AddressBook::removeAddressee( const Iterator &it )
 {
-  mAddressees.remove( it.mIt );
+  d->mAddressees.remove( it.d->mIt );
 }
 
 AddressBook::Iterator AddressBook::find( const Addressee &a )
@@ -199,90 +363,6 @@ Addressee::List AddressBook::findByCategory( const QString &category )
   return results;
 }
 
-bool AddressBook::lock( const QString &fileName )
-{
-  kdDebug(5700) << "AddressBook::lock()" << endl;
-
-  QString fn = fileName;
-  fn.replace( QRegExp("/"), "_" );
-
-  QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
-  kdDebug(5700) << "-- lock name: " << lockName << endl;
-
-  if (QFile::exists( lockName )) return false;
-
-  QString lockUniqueName;
-  lockUniqueName = fn + kapp->randomString(8);
-  mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
-  kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
-
-  // Create unique file
-  QFile file( mLockUniqueName );
-  file.open( IO_WriteOnly );
-  file.close();
-
-  // Create lock file
-  int result = ::link( QFile::encodeName( mLockUniqueName ),
-                       QFile::encodeName( lockName ) );
-
-  if ( result == 0 ) {
-    emit addressBookLocked( this );
-    return true;
-  }
-
-  // TODO: check stat
-
-  return false;
-}
-
-void AddressBook::unlock( const QString &fileName )
-{
-  QString fn = fileName;
-  fn.replace( QRegExp( "/" ), "_" );
-
-  QString lockName = locate( "data", "kabc/lock/" + fn + ".lock" );
-  ::unlink( QFile::encodeName( lockName ) );
-  QFile::remove( mLockUniqueName );
-  emit addressBookUnlocked( this );
-}
-
-void AddressBook::setFileName( const QString &fileName )
-{
-  mFileName = fileName;
-
-  struct stat s;
-  int result = stat( QFile::encodeName( mFileName ), &s );
-  if ( result == 0 ) {
-    mChangeTime  = s.st_ctime;
-  }
-
-  mFileCheckTimer->start( 500 );
-}
-
-QString AddressBook::fileName() const
-{
-  return mFileName;
-}
-
-void AddressBook::checkFile()
-{
-  struct stat s;
-  int result = stat( QFile::encodeName( mFileName ), &s );
-
-#if 0
-  kdDebug(5700) << "AddressBook::checkFile() result: " << result
-            << " new ctime: " << s.st_ctime
-            << " old ctime: " << mChangeTime
-            << endl;
-#endif
-
-  if ( result == 0 && ( mChangeTime != s.st_ctime ) ) {
-    mChangeTime  = s.st_ctime;
-    load( mFileName );
-    emit addressBookChanged( this );
-  }
-}
-
 void AddressBook::dump() const
 {
   kdDebug(5700) << "AddressBook::dump() --- begin ---" << endl;
@@ -293,4 +373,9 @@ void AddressBook::dump() const
   }
 
   kdDebug(5700) << "AddressBook::dump() ---  end  ---" << endl;
+}
+
+QString AddressBook::identifier()
+{
+  return "NoIdentifier";
 }

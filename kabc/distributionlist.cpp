@@ -150,13 +150,13 @@ bool DistributionListManager::load()
 {
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
-  QMap<QString,QString> entryMap = cfg.entryMap( mAddressBook->fileName() );
+  QMap<QString,QString> entryMap = cfg.entryMap( mAddressBook->identifier() );
   if ( entryMap.isEmpty() ) {
-    kdDebug() << "No distlists for '" << mAddressBook->fileName() << "'" << endl;
+    kdDebug() << "No distlists for '" << mAddressBook->identifier() << "'" << endl;
     return false;
   }
 
-  cfg.setGroup( mAddressBook->fileName() );
+  cfg.setGroup( mAddressBook->identifier() );
 
   QMap<QString,QString>::ConstIterator it;
   for( it = entryMap.begin(); it != entryMap.end(); ++it ) {
@@ -193,7 +193,7 @@ bool DistributionListManager::save()
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
-  cfg.setGroup( mAddressBook->fileName() );
+  cfg.setGroup( mAddressBook->identifier() );
   
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {

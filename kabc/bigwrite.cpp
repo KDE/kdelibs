@@ -6,6 +6,7 @@
 
 #include "addressbook.h"
 #include "vcardformat.h"
+#include "resourcefile.h"
 
 using namespace KABC;
 
@@ -15,8 +16,10 @@ int main(int argc,char **argv)
   KCmdLineArgs::init(argc,argv,&aboutData);
 
   KApplication app;
-  
-  AddressBook ab( new VCardFormat );
+
+  AddressBook ab;
+  ResourceFile r( &ab, "my.kabc" );
+  ab.addResource( &r );
   
   for( int i = 0; i < 1000; ++i ) {
     Addressee a;
@@ -28,7 +31,7 @@ int main(int argc,char **argv)
   }
   printf( "\n" );
   
-  AddressBook::Ticket *t = ab.requestSaveTicket( "my.kabc" );
+  Ticket *t = ab.requestSaveTicket( &r );
   if ( t ) {
     if ( !ab.save( t ) ) {
       kdDebug() << "Can't save." << endl;
