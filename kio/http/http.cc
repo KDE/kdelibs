@@ -835,7 +835,10 @@ bool HTTPProtocol::http_open()
       u.setUser( m_state.user );
       u.setProtocol( m_protocol );
       u.setHost( m_state.hostname );
-      u.setPort( m_state.port );
+
+      if (m_state.port != m_iDefaultPort)
+        u.setPort( m_state.port );
+
       u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
       header += u.url();
     }
