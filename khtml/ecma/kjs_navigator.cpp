@@ -216,7 +216,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
   case CookieEnabled:
     return Boolean(true); /// ##### FIXME
   default:
-    kdWarning() << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }

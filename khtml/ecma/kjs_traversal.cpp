@@ -75,7 +75,7 @@ Value DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
   case ExpandEntityReferences:
     return Boolean(ni.expandEntityReferences());
  default:
-   kdWarning() << "Unhandled token in DOMNodeIterator::getValueProperty : " << token << endl;
+   kdDebug(6070) << "Unhandled token in DOMNodeIterator::getValueProperty : " << token << endl;
    return Value();
   }
 }
@@ -236,7 +236,7 @@ Value DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
   case CurrentNode:
     return getDOMNode(exec,tw.currentNode());
   default:
-    kdWarning() << "Unhandled token in DOMTreeWalker::getValueProperty : " << token << endl;
+    kdDebug(6070) << "Unhandled token in DOMTreeWalker::getValueProperty : " << token << endl;
     return Value();
   }
 }

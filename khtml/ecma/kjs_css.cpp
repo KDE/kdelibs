@@ -758,7 +758,7 @@ Value DOMCSSRule::getValueProperty(ExecState *exec, int token) const
     return getString(static_cast<DOM::CSSCharsetRule>(cssRule).encoding());
 
   default:
-    kdWarning() << "DOMCSSRule::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "DOMCSSRule::getValueProperty unhandled token " << token << endl;
   }
   return Undefined();
 }
@@ -801,7 +801,7 @@ void DOMCSSRule::putValueProperty(ExecState *exec, int token, const Value& value
     return;
 
   default:
-    kdWarning() << "DOMCSSRule::putValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "DOMCSSRule::putValueProperty unhandled token " << token << endl;
   }
 }
 
