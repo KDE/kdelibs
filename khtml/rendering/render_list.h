@@ -30,41 +30,44 @@
 
 namespace khtml
 {
-    /* used to render the lists marker.
-       This class always has to be a direct child of a RenderListItem!
-     */
-    class RenderListMarker : public RenderBox
-    {
-    public:
-        RenderListMarker();
-        ~RenderListMarker();
 
-        virtual void setStyle(RenderStyle *style);
+class RenderListItem;
 
-        virtual const char *renderName() const { return "RenderListMarker"; }
-        // so the marker gets to layout itself. Only needed for
-        // list-style-position: inside
+/* used to render the lists marker.
+     This class always has to be a direct child of a RenderListItem!
+*/
+class RenderListMarker : public RenderBox
+{
+public:
+    RenderListMarker();
+    ~RenderListMarker();
 
-        virtual void print(QPainter *p, int x, int y, int w, int h,
+    virtual void setStyle(RenderStyle *style);
+
+    virtual const char *renderName() const { return "RenderListMarker"; }
+    // so the marker gets to layout itself. Only needed for
+    // list-style-position: inside
+
+    virtual void print(QPainter *p, int x, int y, int w, int h,
                            int xoff, int yoff);
-        virtual void printObject(QPainter *p, int x, int y, int w, int h,
-                                 int xoff, int yoff);
-        virtual void layout( );
-        virtual void calcMinMaxWidth();
+    virtual void printObject(QPainter *p, int x, int y, int w, int h,
+                             int xoff, int yoff);
+    virtual void layout( );
+    virtual void calcMinMaxWidth();
 
-        virtual short verticalPositionHint( bool firstLine ) const;
+    virtual short verticalPositionHint( bool firstLine ) const;
 
-        virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
+    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 
-        virtual void calcWidth();
+    virtual void calcWidth();
 
-	long m_value;
+protected:
+    friend class RenderListItem;
 
-    protected:
-        QString m_item;
-        CachedImage *m_listImage;
-    };
-
+    QString m_item;
+    CachedImage *m_listImage;
+    long m_value;
+};
 
 class RenderListItem : public RenderFlow
 {

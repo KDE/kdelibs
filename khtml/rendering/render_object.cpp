@@ -23,13 +23,12 @@
  * $Id$
  */
 
-#include "render_object.h"
-
-#include "render_table.h"
-#include "render_list.h"
-#include "render_root.h"
-#include "render_hr.h"
-
+#include "rendering/render_object.h"
+#include "rendering/render_table.h"
+#include "rendering/render_list.h"
+#include "rendering/render_root.h"
+#include "rendering/render_hr.h"
+#include "xml/dom_nodeimpl.h"
 #include <kdebug.h>
 #include <qpainter.h>
 
@@ -37,8 +36,9 @@
 using namespace DOM;
 using namespace khtml;
 
-RenderObject *RenderObject::createObject(RenderStyle *style)
+RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
 {
+    RenderStyle* style = node->style();
     RenderObject *o = 0;
     switch(style->display())
     {

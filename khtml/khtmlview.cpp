@@ -65,7 +65,7 @@ public:
         tp=0;
         paintBuffer=0;
         formCompletions=0;
-        prevScrollbarVisible = true;        
+        prevScrollbarVisible = true;
     }
     ~KHTMLViewPrivate()
     {
@@ -849,33 +849,33 @@ void KHTMLView::focusNextPrevNode(bool next)
 
     // Find the next/previous node from the current one
     if (next)
-	newFocusNode = doc->nextFocusNode(oldFocusNode);
+        newFocusNode = doc->nextFocusNode(oldFocusNode);
     else
-	newFocusNode = doc->previousFocusNode(oldFocusNode);
+        newFocusNode = doc->previousFocusNode(oldFocusNode);
 
     // If there was previously no focus node and the user has scrolled the document, then instead of picking the first
     // focusable node in the document, use the first one that lies within the visible area (if possible).
-    if (!oldFocusNode) {
-	bool visible = false;
-	NodeImpl *toFocus = newFocusNode;
-	while (!visible) {
-	    QRect focusNodeRect = toFocus->getRect();
-	    if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
-		(focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
-		// toFocus is visible in the contents area
-		visible = true;
-	    }
-	    else {
-		// toFocus is _not_ visible in the contents area, pick the next node
-		if (next)
-		    toFocus = doc->nextFocusNode(toFocus);
-		else
-		    toFocus = doc->previousFocusNode(toFocus);
-	    }
-	}
+    if (!oldFocusNode && newFocusNode) {
+        bool visible = false;
+        NodeImpl *toFocus = newFocusNode;
+        while (!visible) {
+            QRect focusNodeRect = toFocus->getRect();
+            if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
+                (focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
+                // toFocus is visible in the contents area
+                visible = true;
+            }
+            else {
+                // toFocus is _not_ visible in the contents area, pick the next node
+                if (next)
+                    toFocus = doc->nextFocusNode(toFocus);
+                else
+                    toFocus = doc->previousFocusNode(toFocus);
+            }
+        }
 
-	if (toFocus)
-	    newFocusNode = toFocus;
+        if (toFocus)
+            newFocusNode = toFocus;
     }
 
     // Set focus node on the document
@@ -883,25 +883,25 @@ void KHTMLView::focusNextPrevNode(bool next)
     emit m_part->nodeActivated(Node(newFocusNode));
 
     if (newFocusNode) {
-	// Scroll the view as necessary to ensure that the new focus node is visible
-	scrollTo(newFocusNode->getRect());
+        // Scroll the view as necessary to ensure that the new focus node is visible
+        scrollTo(newFocusNode->getRect());
 
-	// If the newly focussed node is a link, notify the part
-	HTMLAnchorElementImpl *anchor = 0;
-	if ((newFocusNode->id() == ID_A || newFocusNode->id() == ID_AREA))
-	    anchor = static_cast<HTMLAnchorElementImpl *>(newFocusNode);
+        // If the newly focussed node is a link, notify the part
+        HTMLAnchorElementImpl *anchor = 0;
+        if ((newFocusNode->id() == ID_A || newFocusNode->id() == ID_AREA))
+            anchor = static_cast<HTMLAnchorElementImpl *>(newFocusNode);
 
-	if (anchor && !anchor->areaHref().isNull())
-	    m_part->overURL(anchor->areaHref().string(), 0);
-	else
-	    m_part->overURL(QString(), 0);
+        if (anchor && !anchor->areaHref().isNull())
+            m_part->overURL(anchor->areaHref().string(), 0);
+        else
+            m_part->overURL(QString(), 0);
     }
     else {
-	// No new focus node, scroll to bottom or top depending on next
-	if (next)
-	    scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
-	else
-	    scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+        // No new focus node, scroll to bottom or top depending on next
+        if (next)
+            scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+        else
+            scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
     }
 }
 

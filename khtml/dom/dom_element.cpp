@@ -208,14 +208,17 @@ Attr Element::removeAttributeNode( const Attr &oldAttr )
 
 NodeList Element::getElementsByTagName( const DOMString &name )
 {
-    if (!impl)
-        return 0; // ### throw exception
+    if (!impl) return 0;
+    return static_cast<ElementImpl*>(impl)->
+        getElementsByTagNameNS(0, name.implementation());
+}
 
-    int exceptioncode = 0;
-    NodeListImpl *r = ((ElementImpl *)impl)->getElementsByTagName(name, exceptioncode);
-    if ( exceptioncode )
-        throw DOMException( exceptioncode );
-    return r;
+NodeList Element::getElementsByTagNameNS( const DOMString &namespaceURI,
+                                          const DOMString &localName )
+{
+    if (!impl) return 0;
+    return static_cast<ElementImpl*>(impl)->
+        getElementsByTagNameNS(namespaceURI.implementation(), localName.implementation());
 }
 
 DOMString Element::getAttributeNS( const DOMString &namespaceURI,
@@ -281,18 +284,6 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
     return r;
 }
 
-NodeList Element::getElementsByTagNameNS( const DOMString &namespaceURI,
-                                          const DOMString &localName )
-{
-    if (!impl)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
-    int exceptioncode = 0;
-    NodeListImpl *r = ((ElementImpl *)impl)->getElementsByTagNameNS(namespaceURI,localName,exceptioncode);
-    if ( exceptioncode )
-        throw DOMException( exceptioncode );
-    return r;
-}
 
 bool Element::hasAttribute( const DOMString& name )
 {

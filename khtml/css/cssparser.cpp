@@ -20,8 +20,6 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
 //#define CSS_DEBUG
@@ -507,7 +505,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (doc->isHTMLDocument())
                     tag = tag.lower();
                 const DOMString dtag(tag);
-                cs->tag = doc->tagId(dtag.implementation(), 0);
+                cs->tag = doc->tagId(0, dtag.implementation(), true);
             }
             else
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());

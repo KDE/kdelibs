@@ -48,6 +48,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
     : document(doc),
       m_render(0),
       m_regdListeners( 0 ),
+      m_tabIndex( 0 ),
       m_complexText( false ),
       m_hasEvents( false ),
       m_hasId( false ),
@@ -60,8 +61,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false ),
-      m_tabIndex( 0 )
+      m_styleElement( false )
 {
     if (document)
         document->ref();
@@ -1666,6 +1666,21 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
     }
 }
 
+NodeListImpl* NodeBaseImpl::getElementsByTagNameNS ( DOMStringImpl* namespaceURI,
+                                                     DOMStringImpl* localName )
+{
+    if (!localName) return 0;
+
+    NodeImpl::Id idMask = NodeImpl::IdNSMask | NodeImpl::IdLocalMask;
+    if (localName->l && localName->s[0] == '*')
+        idMask &= ~NodeImpl::IdLocalMask;
+    if (namespaceURI && namespaceURI->l && namespaceURI->s[0] == '*')
+        idMask &= ~NodeImpl::IdNSMask;
+
+    return new TagNodeListImpl( this,
+                                ownerDocument()->tagId(namespaceURI, localName, true), idMask);
+}
+
 // I don't like this way of implementing the method, but I didn't find any
 // other way. Lars
 bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
@@ -1890,13 +1905,6 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset )
     return 0; // no matching node in this subtree
 }
 
-bool NodeListImpl::nodeMatches( NodeImpl */*testNode*/ ) const
-{
-  // ###
-    return false;
-}
-
-
 ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n )
 {
     refNode = n;
@@ -1932,14 +1940,15 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
     return n;
 }
 
-
-
-TagNodeListImpl::TagNodeListImpl(NodeImpl *n, const DOMString &t )
-  : tagName(t)
+bool ChildNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    refNode = n;
+    return true;
+}
+
+TagNodeListImpl::TagNodeListImpl(NodeImpl *n, NodeImpl::Id _id, NodeImpl::Id _idMask )
+    : refNode(n), m_id(_id & _idMask), m_idMask(_idMask)
+{
     refNode->ref();
-    allElements = (t == "*");
 }
 
 TagNodeListImpl::~TagNodeListImpl()
@@ -1959,11 +1968,9 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return ((allElements && testNode->nodeType() == Node::ELEMENT_NODE) ||
-            !strcasecmp(testNode->nodeName(),tagName));
+    return ( testNode->isElementNode() &&
+             (testNode->id() & m_idMask) == m_id);
 }
-
-
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
   : nodeName(t)

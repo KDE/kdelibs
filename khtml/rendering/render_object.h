@@ -93,7 +93,7 @@ public:
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
-    static RenderObject *createObject(RenderStyle *style);
+    static RenderObject *createObject(DOM::NodeImpl* node);
 
     // some helper functions...
     virtual bool childrenInline() const { return false; }

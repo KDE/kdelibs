@@ -291,8 +291,6 @@ protected:
 
     // name of an unknown attribute
     QString attrName;
-    // id of the attribute we just read the name of (0 if unknown)
-    int attrId;
 
     // Used to store the code of a srcipting sequence
     QChar *scriptCode;

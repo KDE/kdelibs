@@ -135,14 +135,16 @@ bool DOMImplementation::isNull() const
 
 // ----------------------------------------------------------------------------
 
-Document::Document() : Node()
+Document::Document()
+    : Node()
 {
     // we always want an implementation
     impl = DOMImplementationImpl::instance()->createDocument();
     impl->ref();
 }
 
-Document::Document(bool create) : Node()
+Document::Document(bool create)
+    : Node()
 {
     if(create)
     {
@@ -273,8 +275,16 @@ Element Document::getElementById( const DOMString &elementId ) const
 
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
-    if (impl) return ((DocumentImpl *)impl)->getElementsByTagName( tagName );
-    return 0;
+    if (!impl) return 0;
+    return static_cast<DocumentImpl*>(impl)->
+        getElementsByTagNameNS(0, tagName.implementation());
+}
+
+NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    if (!impl) return 0;
+    return static_cast<DocumentImpl*>(impl)->
+        getElementsByTagNameNS(namespaceURI.implementation(), localName.implementation());
 }
 
 Node Document::importNode( const Node & importedNode, bool deep )
@@ -284,18 +294,6 @@ Node Document::importNode( const Node & importedNode, bool deep )
 
     int exceptioncode = 0;
     NodeImpl *r = static_cast<DocumentImpl*>(impl)->importNode(importedNode.handle(), deep, exceptioncode);
-    if (exceptioncode)
-	throw DOMException(exceptioncode);
-    return r;
-}
-
-NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
-{
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    int exceptioncode = 0;
-    NodeListImpl *r = static_cast<DocumentImpl*>(impl)->getElementsByTagNameNS(namespaceURI, localName, exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;

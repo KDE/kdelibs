@@ -361,11 +361,6 @@ EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name
     return new EntityReferenceImpl(docPtr(), name.implementation());
 }
 
-NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
-{
-    return new TagNodeListImpl( this, tagname );
-}
-
 NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
                                            int &/*exceptioncode*/ )
 {
@@ -398,13 +393,6 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI, const
     int exceptioncode = 0; // ### propagate
     attr->setValue("", exceptioncode);
     return attr;
-}
-
-NodeListImpl *DocumentImpl::getElementsByTagNameNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                                    int &/*exceptioncode*/ )
-{
-    // ### implement
-    return 0;
 }
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
@@ -1404,7 +1392,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
     return 0;
 }
 
-NodeImpl::Id DocumentImpl::tagId(DOMStringImpl *_name, DOMStringImpl* _namespaceURI)
+NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
@@ -1428,7 +1416,7 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl *_name, DOMStringImpl* _namespace
                 break;
             }
 
-        if (!found) {
+        if (!found && !readonly) {
             // something new, add it
             if (m_namespaceURICount >= m_namespaceURIAlloc) {
                 m_namespaceURIAlloc += 32;
@@ -1440,7 +1428,7 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl *_name, DOMStringImpl* _namespace
             }
             m_namespaceURIs[m_namespaceURICount++] = _namespaceURI;
             _namespaceURI->ref();
-            id |= (m_namespaceURICount) << 16;
+            id |= m_namespaceURICount << 16;
         }
     }
 
@@ -1448,6 +1436,9 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl *_name, DOMStringImpl* _namespace
     for (id = 0; id < m_elementNameCount; id++)
         if (DOMString(m_elementNames[id]) == DOMString(_name))
             return ID_LAST_TAG+id;
+
+    if (readonly)
+        return 0xFFFFFFFF; // invalid / unknown
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {

@@ -123,7 +123,6 @@ public:
     virtual AttrImpl *getAttributeNode ( const DOMString &name, int &exceptioncode );
     virtual Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
     virtual Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
-    virtual NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
     virtual DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                        int &exceptioncode );
     virtual void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName,
@@ -133,8 +132,6 @@ public:
     virtual AttrImpl *getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                            int &exceptioncode );
     virtual AttrImpl *setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode );
-    virtual NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
-                                                   int &exceptioncode );
     virtual bool hasAttribute ( const DOMString &name, int &exceptioncode ) const;
     virtual bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
                                  int &exceptioncode );

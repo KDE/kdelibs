@@ -464,11 +464,6 @@ Attr ElementImpl::removeAttributeNode( AttrImpl *oldAttr, int &exceptioncode )
     return namedAttrMap->removeAttr(oldAttr, exceptioncode);
 }
 
-NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name, int &/*exceptioncode*/ )
-{
-    return new TagNodeListImpl( this, name );
-}
-
 DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
                                        int &exceptioncode )
 {
@@ -575,12 +570,6 @@ AttrImpl *ElementImpl::setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncod
     return static_cast<AttrImpl*>(namedAttrMap->setNamedItemNS(newAttr, exceptioncode));
 }
 
-NodeListImpl *ElementImpl::getElementsByTagNameNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                                    int &/*exceptioncode*/ )
-{
-    // ### implement
-    return 0;
-}
 
 bool ElementImpl::hasAttribute( const DOMString &name, int &exceptioncode ) const
 {
@@ -778,7 +767,7 @@ void ElementImpl::attach()
 #if SPEED_DEBUG < 1
         if(_parent && _parent->renderer())
         {
-            m_render = khtml::RenderObject::createObject(style());
+            m_render = khtml::RenderObject::createObject(this);
             if(m_render)
             {
                 _parent->renderer()->addChild(m_render, nextRenderer());
@@ -984,7 +973,7 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
     : ElementImpl(doc)
 {
-    m_id = doc->document()->tagId(_tagName, 0 /* no namespace */);
+    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,  false /* allocate */);
 }
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
@@ -1002,7 +991,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
         DOMStringImpl* localName = _qualifiedName->copy();
         localName->ref();
         localName->remove(0,colonpos+1);
-        m_id = doc->document()->tagId(localName, _namespaceURI);
+        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */);
         localName->deref();
         m_prefix = _qualifiedName->copy();
         m_prefix->ref();
@@ -1010,7 +999,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
     }
     else {
         // no prefix
-        m_id = doc->document()->tagId(_qualifiedName, _namespaceURI);
+        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */);
         m_prefix = 0;
     }
 }

@@ -479,6 +479,8 @@ public:
     Element getElementById ( const DOMString &elementId ) const;
 
     /**
+     * No Exceptions.
+     *
      * Returns a <code> NodeList </code> of all the <code> Element
      * </code> s with a given tag name in the order in which they
      * would be encountered in a preorder traversal of the <code>
@@ -492,6 +494,25 @@ public:
      *
      */
     NodeList getElementsByTagName ( const DOMString &tagname );
+
+    /**
+     * Introduced in DOM Level 2
+     * No Exceptions
+     *
+     * Returns a NodeList of all the Elements with a given local name and
+     * namespace URI in the order in which they are encountered in a preorder
+     * traversal of the Document tree.
+     *
+     * @param namespaceURI The namespace URI of the elements to match on. The
+     * special value "*" matches all namespaces.
+     *
+     * @param localName The local name of the elements to match on. The special
+     * value "*" matches all local names.
+     *
+     * @return A new NodeList object containing all the matched Elements.
+     */
+    NodeList getElementsByTagNameNS( const DOMString &namespaceURI,
+                                     const DOMString &localName );
 
     /**
      * Introduced in DOM Level 2
@@ -587,24 +608,6 @@ public:
      * supported.
      */
     Node importNode( const Node & importedNode, bool deep );
-
-    /**
-     * Introduced in DOM Level 2
-     *
-     * Returns a NodeList of all the Elements with a given local name and
-     * namespace URI in the order in which they are encountered in a preorder
-     * traversal of the Document tree.
-     *
-     * @param namespaceURI The namespace URI of the elements to match on. The
-     * special value "*" matches all namespaces.
-     *
-     * @param localName The local name of the elements to match on. The special
-     * value "*" matches all local names.
-     *
-     * @return A new NodeList object containing all the matched Elements.
-     */
-    NodeList getElementsByTagNameNS( const DOMString &namespaceURI,
-                                     const DOMString &localName );
 
     /**
      * @internal

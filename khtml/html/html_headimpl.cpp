@@ -89,7 +89,8 @@ void HTMLBaseElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
+HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentPtr *doc)
+    : HTMLElementImpl(doc)
 {
     m_sheet = 0;
     m_loading = false;
@@ -114,6 +115,12 @@ void HTMLLinkElementImpl::attach()
 
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
+
+    KHTMLPart* part = getDocument()->view() ? getDocument()->view()->part() : 0;
+
+    // IE extension: location of small icon for locationbar / bookmarks
+    if ( part && rel.contains("shortcut icon") && !m_url.isEmpty() && !part->parentPart())
+        part->browserExtension()->setIconURL( KURL(m_url.string()) );
 
     if((type.contains("text/css") || rel == "stylesheet") && !rel.contains("alternate"))
     {

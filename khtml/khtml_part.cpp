@@ -1637,28 +1637,6 @@ void KHTMLPart::checkCompleted()
 
   checkEmitLoadEvent(); // if we didn't do it before
 
-  // check for a <link rel="SHORTCUT ICON" href="url to icon">,
-  // IE extension to set an icon for this page to use in
-  // bookmarks and the locationbar
-  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument()
-    && d->m_doc->firstChild() && d->m_doc->firstChild()->firstChild() &&
-    d->m_doc->firstChild()->firstChild()->id() == ID_HEAD) {
-    DOM::TagNodeListImpl links(d->m_doc->firstChild()->firstChild(), "LINK");
-    for (unsigned long i = 0; i < links.length(); ++i)
-      if (links.item(i)->isElementNode()) {
-        DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
-        if (link->getAttribute("REL").string().upper() == "SHORTCUT ICON") {
-
-          QString href = link->getAttribute( "HREF" ).string();
-          if ( !href.isEmpty() && d->m_doc ) {
-            href = d->m_doc->completeURL(href);
-            emit d->m_extension->setIconURL( KURL( href ) );
-            break;
-          }
-        }
-      }
-  }
-
   // check that the view has not been moved by the user
   if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 )
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,

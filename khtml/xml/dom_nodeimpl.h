@@ -325,8 +325,8 @@ protected:
     khtml::RenderObject *m_render;
     QPtrList<RegisteredEventListener> *m_regdListeners;
 
-    short m_tabindex : 16;
-    bool m_hasTabindex  : 1;
+    unsigned short m_tabIndex : 15;
+    bool m_hasTabIndex  : 1;
 
     bool m_complexText : 1;
     bool m_hasEvents : 1;
@@ -341,8 +341,6 @@ protected:
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
-
-    unsigned short m_tabIndex : 16;
 };
 
 // this class implements nodes, which can have a parent but no children:
@@ -406,6 +404,9 @@ public:
     virtual void detach();
     virtual void cloneChildNodes(NodeImpl *clone, int &exceptioncode);
 
+    virtual NodeListImpl *getElementsByTagNameNS ( DOMStringImpl* namespaceURI,
+                                                   DOMStringImpl* localName );
+
     virtual void setStyle(khtml::RenderStyle *style);
     virtual khtml::RenderStyle *style() const { return m_style; }
 
@@ -459,7 +460,7 @@ protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
     NodeImpl *recursiveItem ( NodeImpl *start, unsigned long &offset ) const;
-    virtual bool nodeMatches( NodeImpl *testNode ) const;
+    virtual bool nodeMatches( NodeImpl *testNode ) const = 0;
 };
 
 class ChildNodeListImpl : public NodeListImpl
@@ -474,6 +475,8 @@ public:
     virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
+    virtual bool nodeMatches( NodeImpl *testNode ) const;
+
     NodeImpl *refNode;
 };
 
@@ -484,7 +487,7 @@ protected:
 class TagNodeListImpl : public NodeListImpl
 {
 public:
-    TagNodeListImpl( NodeImpl *n, const DOMString &t );
+    TagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, NodeImpl::Id tagIdMask );
     virtual ~TagNodeListImpl();
 
     // DOM methods overridden from  parent classes
@@ -498,8 +501,8 @@ protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
     NodeImpl *refNode;
-    DOMString tagName;
-    bool allElements;
+    NodeImpl::Id m_id;
+    NodeImpl::Id m_idMask;
 };
 
 
