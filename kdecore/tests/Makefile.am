@@ -28,7 +28,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
-	kxerrorhandlertest startserviceby kstdacceltest
+	kxerrorhandlertest startserviceby kstdacceltest kglobaltest
 
 TESTS = kurltest kstdacceltest
 
@@ -76,3 +76,4 @@ kshelltest_SOURCES = kshelltest.cpp
 kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
 startserviceby_SOURCES = startserviceby.cpp
 kstdacceltest_SOURCES = kstdacceltest.cpp
+kglobaltest_SOURCES = kglobaltest.cpp
