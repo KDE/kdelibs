@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 
     KMainWindow *toplevel = new KMainWindow;
     KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
-    doc->widget()->resize(800,500);
     toplevel->setCentralWidget( doc->widget() );
+    toplevel->resize(800,800);
 
     toplevel->guiFactory()->addClient( doc );
 
