@@ -517,5 +517,65 @@ void BuildHelper::processCustomElement( const QDomElement &e, int idx )
         containerClient->customElements.append( id );
 }
 
+void BuildHelper::processMergeElement( const QString &tag, const QString &name )
+{
+    static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
+    static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
+    static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
+    static const QString &attrGroup = KGlobal::staticQString( "group" );
+
+    QString mergingName( name );
+    if ( mergingName.isEmpty() )
+    {
+        if ( tag == tagDefineGroup )
+        {
+            kdError(1000) << "cannot define group without name!" << endl;
+            return;
+        }
+        if ( tag == tagActionList )
+        {
+            kdError(1000) << "cannot define actionlist without name!" << endl;
+            return;
+        }
+        mergingName = defaultMergingName;
+    }
+
+    if ( tag == tagDefineGroup )
+        mergingName.prepend( attrGroup ); //avoid possible name clashes by prepending
+                                              // "group" to group definitions
+    else if ( tag == tagActionList )
+        mergingName.prepend( tagActionList );
+
+    if ( parentNode->findIndex( mergingName ) != parentNode->mergingIndices.end() )
+        return; //do not allow the redefinition of merging indices!
+
+    MergingIndexList::Iterator mIt( parentNode->mergingIndices.end() );
+
+    // calculate the index of the new merging index. Usually this does not need any calculation,
+    // we just want the last available index (i.e. append) . But in case the <Merge> tag appears
+    // "inside" another <Merge> tag from a previously build client, then we have to use the
+    // "parent's" index. That's why we call calcMergingIndex here.
+    MergingIndex newIdx;
+    newIdx.value = m_factory->calcMergingIndex( parentNode,
+                                                QString::null /* ### allow group for <merge/> ? */ ,
+                                                mIt, ignoreDefaultMergingIndex );
+    newIdx.mergingName = mergingName;
+    newIdx.clientName = m_state.clientName;
+
+    // if that merging index is "inside" another one, then append it right after the "parent" .
+    if ( mIt != parentNode->mergingIndices.end() )
+        parentNode->mergingIndices.insert( ++mIt, newIdx );
+    else
+        parentNode->mergingIndices.append( newIdx );
+
+    if ( mergingName == defaultMergingName )
+        ignoreDefaultMergingIndex = true;
+
+    // re-calculate the running default and client merging indices.
+    m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
+    m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
+                                 ignoreDefaultMergingIndex );
+}
+
 /* vim: et sw=4
  */

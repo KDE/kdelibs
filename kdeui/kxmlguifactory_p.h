@@ -158,6 +158,8 @@ private:
     void processActionElement( const QDomElement &e, int idx );
     void processCustomElement( const QDomElement &e, int idx );
 
+    void processMergeElement( const QString &tag, const QString &name );
+
     QStringList customTags;
     QStringList containerTags;
 
