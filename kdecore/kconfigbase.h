@@ -1807,6 +1807,7 @@ public:
    * Check whether the config files are writable.
    * @param warnUser Warn the user if the configuration files are not writable.
    * @return Indicates that all of the configuration files used are writable.
+   * @since 3.2
    */
   bool checkConfigFilesWritable(bool warnUser);
 
