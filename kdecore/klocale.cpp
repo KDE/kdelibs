@@ -996,16 +996,27 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
 
   // Remove thousand separators
   int thlen = thousandsSeparator().length();
+  int lastpos = 0;
   while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
   {
     // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
     int fromEnd = major.length() - pos;
-    if ( fromEnd % (3+thlen) != 0 ) // Needs to be a multiple, otherwise it's an error
+    if ( fromEnd % (3+thlen) != 0 // Needs to be a multiple, otherwise it's an error
+        || pos - lastpos > 3 // More than 3 digits between two separators -> error
+        || pos == 0          // Can't start with a separator
+        || (lastpos>0 && pos-lastpos!=3))   // Must have exactly 3 digits between two separators
     {
       if (ok) *ok = false;
       return 0.0;
     }
+
+    lastpos = pos;
     major.remove( pos, thlen );
+  }
+  if (lastpos>0 && major.length()-lastpos!=3)   // Must have exactly 3 digits after the last separator
+  {
+    if (ok) *ok = false;
+    return 0.0;
   }
 
   QString tot;
@@ -1082,16 +1093,26 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
 
   // Remove thousand separators
   int thlen = monetaryThousandsSeparator().length();
+  int lastpos = 0;
   while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
   {
     // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
     int fromEnd = major.length() - pos;
-    if ( fromEnd % (3+thlen) != 0 ) // Needs to be a multiple, otherwise it's an error
+    if ( fromEnd % (3+thlen) != 0 // Needs to be a multiple, otherwise it's an error
+        || pos - lastpos > 3 // More than 3 digits between two separators -> error
+        || pos == 0          // Can't start with a separator
+        || (lastpos>0 && pos-lastpos!=3))   // Must have exactly 3 digits between two separators
     {
       if (ok) *ok = false;
       return 0.0;
     }
+    lastpos = pos;
     major.remove( pos, thlen );
+  }
+  if (lastpos>0 && major.length()-lastpos!=3)   // Must have exactly 3 digits after the last separator
+  {
+    if (ok) *ok = false;
+    return 0.0;
   }
 
   QString tot;
