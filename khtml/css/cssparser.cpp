@@ -1300,23 +1300,23 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
   while(!last) {
     const QChar *nextP = getNext( curP, endP, last );;
       bool found = false;
-      //#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG
       kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
-      //#endif
+#endif
       int i = 0;
       while ( !found && i < num ) {
 	if( multiple || !fnd[i] )
 	  found = parseValue(curP, nextP, properties[i], important, propList);
 	if( found ) {
-	  kdDebug() << "found " << i << endl;
+	    //kdDebug() << "found " << i << endl;
 	  fnd[i] = true;
 	}
 	i++;
       }
       if(!found) {
-	//#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG
 	  kdDebug(6080) << "invalid property" << endl;
-	  //#endif
+#endif
 	  return false;
       }
       curP = nextP+1;
