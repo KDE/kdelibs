@@ -195,6 +195,23 @@ public:
     KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
         : QIconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
+    
+   /**
+    * Using this function, you can specify a custom size for the pixmap. The
+    * geometry of the item will be calculated to let a pixmap of the given size
+    * fit in the iconView without needing an update.
+    * This may be useful if you want to change the pixmap later without breaking
+    * the layout. A possible use of this function is to replace a fileItem icon
+    * by a larger pixmap (preview).
+    *
+    * @param size The size to use
+    */
+    void setPixmapSize( const QSize& size );
+    
+   /**
+    * @return The size set by setPixmapSize() or QSize( 0, 0 )
+    */
+    const QSize pixmapSize() const;
 
 protected:
     void init();

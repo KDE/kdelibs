@@ -365,6 +365,7 @@ QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
 
 struct KIconViewItem::KIconViewItemPrivate
 {
+    QSize m_pixmapSize;
 };
 
 void KIconViewItem::init()
@@ -420,9 +421,16 @@ void KIconViewItem::calcRect( const QString& text_ )
         ph = pixmap()->height() + 2;
     }
     itemIconRect.setWidth( pw );
+#if QT_VERSION < 0x030302
+    // There is a bug in Qt < 3.3.2 which prevents the item from being placed
+    // properly when the pixmapRect is not at the top of the itemRect, so we
+    // have to increase the height of the pixmapRect and leave it at the top
+    // of the itemRect...
+    if ( d && !d->m_pixmapSize.isNull() )
+        itemIconRect.setHeight( d->m_pixmapSize.height() + 2 );
+    else
+#endif
     itemIconRect.setHeight( ph );
-    //kdDebug() << "KIconViewItem::calcRect itemIconRect[tmp]=" << itemIconRect.x() << "," << itemIconRect.y()
-    //          << " " << itemIconRect.width() << "x" << itemIconRect.height() << endl;
 
     // When is text_ set ? Doesn't look like it's ever set.
     QString t;
@@ -457,7 +465,7 @@ void KIconViewItem::calcRect( const QString& text_ )
         r.setWidth( view->maxItemWidth() - ( view->itemTextPos() == QIconView::Bottom ? 0 :
                                              pixmapRect().width() ) );
     
-    r.setWidth( r.width() + 4 );
+    r.setWidth( QMIN( r.width() + 4, view->maxItemWidth() ) );
     tw = r.width();
     th = r.height();
     int minw = fm->width( "X" );
@@ -466,15 +474,23 @@ void KIconViewItem::calcRect( const QString& text_ )
 
     itemTextRect.setWidth( tw );
     itemTextRect.setHeight( th );
-    //kdDebug() << "KIconViewItem::calcRect itemTextRect[tmp]=" << itemTextRect.x() << "," << itemTextRect.y()
-    //          << " " << itemTextRect.width() << "x" << itemTextRect.height() << endl;
 
-    // All this code isn't related to the word-wrap algo...
-    // Sucks that we have to duplicate it.
-    int w = 0;    int h = 0;
+    int w = 0;    int h = 0;    int y = 0;
     if ( view->itemTextPos() == QIconView::Bottom ) {
-        w = QMAX( itemTextRect.width(), itemIconRect.width() );
-        h = itemTextRect.height() + itemIconRect.height() + 1;
+        // If the pixmap size has been specified, use it
+        if ( d && !d->m_pixmapSize.isNull() )
+        {
+            w = QMAX( itemTextRect.width(), d->m_pixmapSize.width() + 2 );
+            h = itemTextRect.height() + d->m_pixmapSize.height() + 2 + 1;
+#if QT_VERSION >= 0x030302
+            // With Qt < 3.1.2, the pixmapRect must stay on the top...
+            y = d->m_pixmapSize.height() + 2 - itemIconRect.height();
+#endif
+        }
+        else {
+            w = QMAX( itemTextRect.width(), itemIconRect.width() );
+            h = itemTextRect.height() + itemIconRect.height() + 1;
+        }
 
         itemRect.setWidth( w );
         itemRect.setHeight( h );
@@ -482,10 +498,14 @@ void KIconViewItem::calcRect( const QString& text_ )
         int height = QMAX( h, QApplication::globalStrut().height() ); // see QIconViewItem::height()
         itemTextRect = QRect( ( width - itemTextRect.width() ) / 2, height - itemTextRect.height(),
                               itemTextRect.width(), itemTextRect.height() );
-        itemIconRect = QRect( ( width - itemIconRect.width() ) / 2, 0,
+        itemIconRect = QRect( ( width - itemIconRect.width() ) / 2, y,
                               itemIconRect.width(), itemIconRect.height() );
     } else {
-        h = QMAX( itemTextRect.height(), itemIconRect.height() );
+        // If the pixmap size has been specified, use it
+        if ( d && !d->m_pixmapSize.isNull() )
+            h = QMAX( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
+        else
+            h = QMAX( itemTextRect.height(), itemIconRect.height() );
         w = itemTextRect.width() + itemIconRect.width() + 1;
 
         itemRect.setWidth( w );
@@ -502,15 +522,6 @@ void KIconViewItem::calcRect( const QString& text_ )
 	    itemIconRect = QRect( 0, QMAX(( fm->height() - itemIconRect.height() ) / 2, 0),
                                   itemIconRect.width(), itemIconRect.height() );
     }
-#if 0
-    kdDebug() << "KIconViewItem::calcRect itemIconRect=" << itemIconRect.x() << "," << itemIconRect.y()
-              << " " << itemIconRect.width() << "x" << itemIconRect.height() << endl;
-    kdDebug() << "KIconViewItem::calcRect itemTextRect=" << itemTextRect.x() << "," << itemTextRect.y()
-              << " " << itemTextRect.width() << "x" << itemTextRect.height() << endl;
-    kdDebug() << "KIconViewItem::calcRect itemRect=" << itemRect.x() << "," << itemRect.y()
-              << " " << itemRect.width() << "x" << itemRect.height() << endl;
-    kdDebug() << "KIconViewItem::calcRect - DONE" << endl;
-#endif
 
     if ( itemIconRect != pixmapRect() )
         setPixmapRect( itemIconRect );
@@ -554,8 +565,6 @@ KWordWrap * KIconViewItem::wordWrap()
 void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
 {
     KIconView *kview = static_cast<KIconView *>(iconView());
-    int iconX = pixmapRect( false ).x();
-    int iconY = pixmapRect( false ).y();
 
 #ifndef QT_NO_PICTURE
     if ( picture() ) {
@@ -568,12 +577,28 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
     } else
 #endif
     {
+        int iconX = pixmapRect( false ).x();
+        int iconY = pixmapRect( false ).y();
+
         QPixmap *pix = pixmap();
+        if ( !pix || pix->isNull() )
+            return;
+
+#if QT_VERSION < 0x030302
+        if ( d && !d->m_pixmapSize.isNull() )
+        {
+            int offset = 0;
+            if ( kview->itemTextPos() == QIconView::Bottom )
+                offset = d->m_pixmapSize.height() - pix->height();
+            else
+                offset = ( d->m_pixmapSize.height() - pix->height() ) / 2;
+            if ( offset > 0 )
+                iconY += offset;
+        }
+#endif
         if ( isSelected() ) {
-            if ( pix && !pix->isNull() ) {
-                QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.highlight() );
-                p->drawPixmap( iconX, iconY, selectedPix );
-            }
+            QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.highlight() );
+            p->drawPixmap( iconX, iconY, selectedPix );
         } else {
             p->drawPixmap( iconX, iconY, *pix );
         }
@@ -602,6 +627,19 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
         calcTmpText();
         p->drawText( textRect( FALSE ), align, tempText() );
     }
+}
+
+const QSize KIconViewItem::pixmapSize() const
+{
+    return d ? d->m_pixmapSize : QSize( 0, 0 );
+}
+
+void KIconViewItem::setPixmapSize( const QSize& size )
+{
+    if ( !d )
+        d = new KIconViewItemPrivate;
+
+    d->m_pixmapSize = size;
 }
 
 void KIconView::virtual_hook( int, void* )
