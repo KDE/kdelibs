@@ -32,7 +32,8 @@ libkabc_la_SOURCES = \
   resourceselectdialog.cpp secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
   vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp \
-  addresslineedit.cpp ldapclient.cpp addresseelist.cpp vcardtool.cpp
+  addresslineedit.cpp ldapclient.cpp addresseelist.cpp vcardtool.cpp \
+  addresseehelper.cpp addresseehelper.skel
 
 
 kabcincludedir = $(includedir)/kabc

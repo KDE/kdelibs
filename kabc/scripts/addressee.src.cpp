@@ -1,6 +1,7 @@
 /*
     This file is part of libkabc.
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,6 +23,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 
+#include "addresseehelper.h"
 #include "resource.h"
 #include "addressee.h"
 
@@ -137,55 +139,30 @@ void Addressee::setNameFromString( const QString &str )
   setFormattedName( str );
   setName( str );
 
-  QStringList titles;
-  titles += i18n( "Dr." );
-  titles += i18n( "Miss" );
-  titles += i18n( "Mr." );
-  titles += i18n( "Mrs." );
-  titles += i18n( "Ms." );
-  titles += i18n( "Prof." );
-
-  QStringList suffixes;
-  suffixes += i18n( "I" );
-  suffixes += i18n( "II" );
-  suffixes += i18n( "III" );
-  suffixes += i18n( "Jr." );
-  suffixes += i18n( "Sr." );
-
-  QStringList prefixes;
-  prefixes += "van";
-  prefixes += "von";
-  prefixes += "de";
-
-  KConfig config( "kabcrc" );
-  config.setGroup( "General" );
-  titles += config.readListEntry( "Prefixes" );
-  titles.remove( "" );
-  prefixes += config.readListEntry( "Inclusions" );
-  prefixes.remove( "" );
-  suffixes += config.readListEntry( "Suffixes" );
-  suffixes.remove( "" );
-
   // clear all name parts
-  setPrefix( "" );
-  setGivenName( "" );
-  setAdditionalName( "" );
-  setFamilyName( "" );
-  setSuffix( "" );
+  setPrefix( QString::null );
+  setGivenName( QString::null );
+  setAdditionalName( QString::null );
+  setFamilyName( QString::null );
+  setSuffix( QString::null );
 
   if ( str.isEmpty() )
     return;
 
+  QString spaceStr = " ";
+  QString emptyStr = "";
+  AddresseeHelper *helper = AddresseeHelper::self();
+      
   int i = str.find(',');
   if( i < 0 ) {
-    QStringList parts = QStringList::split( " ", str );
+    QStringList parts = QStringList::split( spaceStr, str );
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;
 
     QString suffix;
     while ( rightOffset >= 0 ) {
-      if ( suffixes.contains( parts[ rightOffset ] ) ) {
-        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? "" : " "));
+      if ( helper->containsSuffix( parts[ rightOffset ] ) ) {
+        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr));
         rightOffset--;
       } else
         break;
@@ -195,16 +172,16 @@ void Addressee::setNameFromString( const QString &str )
     if ( rightOffset < 0 )
       return;
 
-    if ( rightOffset - 1 >= 0 && prefixes.contains( parts[ rightOffset - 1 ].lower() ) ) {
-      setFamilyName( parts[ rightOffset - 1 ] + " " + parts[ rightOffset ] );
+    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
+      setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
       rightOffset--;
     } else
       setFamilyName( parts[ rightOffset ] );
 
     QString prefix;
     while ( leftOffset < rightOffset ) {
-      if ( titles.contains( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      if ( helper->containsTitle( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
         leftOffset++;
       } else
         break;
@@ -218,7 +195,7 @@ void Addressee::setNameFromString( const QString &str )
 
     QString additionalName;
     while ( leftOffset < rightOffset ) {
-      additionalName.append( ( additionalName.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
       leftOffset++;
     }
     setAdditionalName( additionalName );
@@ -226,43 +203,43 @@ void Addressee::setNameFromString( const QString &str )
     QString part1 = str.left( i );
     QString part2 = str.mid( i + 1 );
 
-    QStringList parts = QStringList::split( " ", part1 );
+    QStringList parts = QStringList::split( spaceStr, part1 );
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;
 
     QString suffix;
     while ( rightOffset >= 0 ) {
-      if ( suffixes.contains( parts[ rightOffset ] ) ) {
-        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? "" : " "));
+      if ( helper->containsSuffix( parts[ rightOffset ] ) ) {
+        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr));
         rightOffset--;
       } else
         break;
     }
     setSuffix( suffix );
 
-    if ( rightOffset - 1 >= 0 && prefixes.contains( parts[ rightOffset - 1 ].lower() ) ) {
-      setFamilyName( parts[ rightOffset - 1 ] + " " + parts[ rightOffset ] );
+    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
+      setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
       rightOffset--;
     } else
       setFamilyName( parts[ rightOffset ] );
 
     QString prefix;
     while ( leftOffset < rightOffset ) {
-      if ( titles.contains( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      if ( helper->containsTitle( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
         leftOffset++;
       } else
         break;
     }
 
-    parts = QStringList::split( " ", part2 );
+    parts = QStringList::split( spaceStr, part2 );
 
     leftOffset = 0;
     rightOffset = parts.count();
 
     while ( leftOffset < rightOffset ) {
-      if ( titles.contains( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      if ( helper->containsTitle( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
         leftOffset++;
       } else
         break;
@@ -276,7 +253,7 @@ void Addressee::setNameFromString( const QString &str )
 
     QString additionalName;
     while ( leftOffset < rightOffset ) {
-      additionalName.append( ( additionalName.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
       leftOffset++;
     }
     setAdditionalName( additionalName );
@@ -852,7 +829,7 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
 {
   if (!a.mData) return s;
 
-  s << a.uid(); 
+  s << a.uid();
 
   --STREAMOUT--
   s << a.mData->phoneNumbers;
