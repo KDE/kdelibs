@@ -1638,14 +1638,16 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 void KHTMLPart::slotRedirect()
 {
   QString u = d->m_redirectURL;
-  // kdDebug( 6050 ) << "KHTMLPart::slotRedirect() " << u << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::slotRedirect() " << u << endl;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   QString target;
   u = splitUrlTarget( u, &target );
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    QVariant res = executeScript( u.right( u.length() - 11 ) );
+    QString script = KURL::decode_string( u.right( u.length() - 11 ) );
+    //kdDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
+    QVariant res = executeScript( script );
     if ( res.type() == QVariant::String ) {
       begin( url() );
       write( res.asString() );
