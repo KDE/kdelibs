@@ -361,8 +361,6 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     }
   }
 
-  kdDebug() << documentToXML( doc ) << endl;
-  
   buildRecursive( docElement, d->m_rootNode );
 
   client->setFactory( this );
