@@ -48,7 +48,7 @@ class KPopupMenu;
  * program.
  *
  * For instance, a user may want to @p paste the contents of
- * the clipboard or @p scroll @p down a document or @ quit the
+ * the clipboard or @p scroll @p down a document or @p quit the
  * application.  These are all @p actions -- events that the
  * user causes to happen.  The KAction class allows the developer to
  * deal with these actions in an easy and intuitive manner.
@@ -69,7 +69,7 @@ class KPopupMenu;
  * (maybe nothing is selected), you woud have to hunt down the pointer
  * to the menu item and the toolbar button and disable both
  * individually.  Setting the menu item and toolbar item up uses very
- * similar code.. but has to be done twice!
+ * similar code - but has to be done twice!
  *
  * With the Action concept, you simply "plug" the Action into whatever
  * GUI element you want.  The KAction class will then take care of
