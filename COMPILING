@@ -8,7 +8,7 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-3.0.0)
+qt-copy (This is qt-3.0.1)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
@@ -51,8 +51,8 @@ ldconfig -m $QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
-See http://www.kde.org/kde1-and-kde2.html for tips about setting up
-KDE 2.0 next to KDE 1.x.
+See http://www.kde.org/kde2-and-kde3.html for tips about setting up
+KDE 3.0 next to KDE 2.x.
 
 Preparing CVS modules
 =====================
