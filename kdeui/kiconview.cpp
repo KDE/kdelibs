@@ -277,6 +277,26 @@ void KIconView::leaveEvent( QEvent *e )
   QIconView::leaveEvent( e );
 }
 
+void KIconView::wheelEvent( QWheelEvent *e )
+{
+    QWheelEvent ce( viewport()->mapFromGlobal( e->globalPos() ),
+                    e->globalPos(), e->delta(), e->state() );
+    viewportWheelEvent( &ce );
+    if( !ce.isAccepted() ) {
+	// Let the mousewheel scroll horizontally in TopToBottom mode.
+	if( arrangement() == TopToBottom && e->orientation() == Vertical && 
+		horizontalScrollBar() ) {
+	    QWheelEvent ne( e->pos(), e->delta(), e->state(), Horizontal );
+	    QApplication::sendEvent( horizontalScrollBar(), &ne );
+    	}
+	else if( e->orientation() == Horizontal && horizontalScrollBar() )
+	    QApplication::sendEvent( horizontalScrollBar(), e );
+	else if( e->orientation() == Vertical && verticalScrollBar() )
+	    QApplication::sendEvent( verticalScrollBar(), e );
+    }
+    
+}
+
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {

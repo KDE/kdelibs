@@ -130,6 +130,7 @@ protected:
 
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void leaveEvent( QEvent *e );
+  virtual void wheelEvent( QWheelEvent *e );
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
