@@ -386,8 +386,9 @@ void XMLTokenizer::executeScripts()
 {
     while (m_scriptsIt->current()) {
 	DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
+        QString charset = m_scriptsIt->current()->getAttribute( "charset" ).string();
 	if (scriptSrc != "") {
-	    m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, m_doc->baseURL());
+	    m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, m_doc->baseURL(), charset);
 	    ++(*m_scriptsIt);
 	    m_cachedScript->ref(this); // will call executeScripts() again if already cached
 	    return;
@@ -432,7 +433,8 @@ XMLStyleSheetLoader::XMLStyleSheetLoader(DocumentImpl *_doc, DOM::DOMString url)
     m_doc = _doc;
 
     // ### make sure doc->baseURL() is not empty?
-    m_cachedSheet = m_doc->docLoader()->requestStyleSheet(url, m_doc->baseURL());
+    // ### FIXME charset
+    m_cachedSheet = m_doc->docLoader()->requestStyleSheet(url, m_doc->baseURL(), QString::null);
     m_cachedSheet->ref( this );
 }
 
