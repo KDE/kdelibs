@@ -201,7 +201,7 @@ void HTTPProtocol::resetSessionSettings()
   m_bCanResume = false;
   m_bUnauthorized = false;
   m_bIsTunneled = false;
-  setMetaData("request-id", m_request.id);     
+  setMetaData("request-id", m_request.id);
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -236,7 +236,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
   // Store user agent for this host.
   if ( config()->readBoolEntry("SendUserAgent", true) )
      m_strUserAgent = metaData("UserAgent");
-  else 
+  else
      m_strUserAgent = QString::null;
 
   if ( m_bUseCache ) { cleanCache(); }
@@ -302,7 +302,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
       m_request.charsets = QString::null;
       m_request.languages = QString::null;
   }
-  
+
   // Adjust the offset value based on the "resume" meta-data.
   QString resumeOffset = metaData("resume");
   if ( !resumeOffset.isEmpty() )
@@ -313,7 +313,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
   m_request.disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
   m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
   m_request.id = metaData("request-id");
-  
+
   return true;
 }
 
@@ -876,7 +876,7 @@ bool HTTPProtocol::http_open()
     {
         header += "Referer: "; //Don't try to correct spelling!
         header += m_request.referrer;
-        header += "\r\n";     
+        header += "\r\n";
     }
 
     if ( m_request.offset > 0 )
@@ -920,10 +920,10 @@ bool HTTPProtocol::http_open()
 
     if (!m_request.charsets.isEmpty())
       header += "Accept-Charset: " + m_request.charsets + "\r\n";
-    
+
     if (!m_request.languages.isEmpty())
       header += "Accept-Language: " + m_request.languages + "\r\n";
- 
+
 
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: ";
@@ -1654,7 +1654,7 @@ bool HTTPProtocol::readHeader()
       return false;
     }
     if ((u.protocol() != "http") && (u.protocol() != "https") &&
-       (u.protocol() != "ftp")) 
+       (u.protocol() != "ftp"))
     {
       error(ERR_ACCESS_DENIED, u.url());
       return false;
@@ -2009,9 +2009,10 @@ void HTTPProtocol::special( const QByteArray &data)
       multi_get(n, stream);
     } break;
     default:
-      assert(0);
+      // Some command we don't understand.
+      // Just ignore it, it may come from some future version of KDE.
+      break;
   }
-
 }
 
 void HTTPProtocol::decodeDeflate()
