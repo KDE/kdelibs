@@ -62,6 +62,7 @@
 #include <kprotocolinfo.h>
 #include <kpushbutton.h>
 #include <krecentdirs.h>
+#include <kshell.h>
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
 #include <kstaticdeleter.h>
@@ -300,8 +301,9 @@ void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {
     d->hasView = true;
 }
 
-KURL KFileDialog::getCompleteURL(const QString &url)
+KURL KFileDialog::getCompleteURL(const QString &_url)
 {
+    QString url = KShell::tildeExpand(_url);
     KURL u;
 
     if ( KURL::isRelativeURL(url) ) // only a full URL isn't relative. Even /path is.
@@ -411,10 +413,10 @@ void KFileDialog::slotOk()
     KURL selectedURL;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
-        if ( locationEdit->currentText().contains( '/' )) {
-
+        QString locationText = locationEdit->currentText();
+        if ( locationText.contains( '/' )) {
             // relative path? -> prepend the current directory
-            KURL u( ops->url(), locationEdit->currentText() );
+            KURL u( ops->url(), KShell::tildeExpand(locationText));
             if ( u.isValid() )
                 selectedURL = u;
             else
