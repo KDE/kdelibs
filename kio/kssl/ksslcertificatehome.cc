@@ -71,8 +71,8 @@ return true;
 
 
 // KDE 4: make it const QString &
-void KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, QString passToStore) {
-   if (!cert) return;
+bool KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, QString passToStore) {
+   if (!cert) return false;
 
 KSimpleConfig cfg("ksslcertificates", false);
 
@@ -80,8 +80,30 @@ KSimpleConfig cfg("ksslcertificates", false);
    cfg.writeEntry("PKCS12Base64", cert->toString());
    cfg.writeEntry("Password", passToStore);
    cfg.sync();
+return true;
 }
 
+bool KSSLCertificateHome::deleteCertificate(const QString &filename, const QString &password) {
+KSSLPKCS12 *pkcs = KSSLPKCS12::loadCertFile(filename, password);
+
+   if (!pkcs) return false;
+
+   bool ok = deleteCertificate(pkcs);
+   delete pkcs;
+
+return ok;
+}
+
+bool KSSLCertificateHome::deleteCertificate(KSSLPKCS12 *cert) {
+   if (!cert) return false;
+   
+KSimpleConfig cfg("ksslcertificates", false);
+
+   bool ok = cfg.deleteGroup(cert->name());
+   cfg.sync();
+
+return ok;
+}
 
 // KDE 4: make it const QString &
 KSSLPKCS12* KSSLCertificateHome::getCertificateByName(QString name, QString password) {

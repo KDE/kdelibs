@@ -31,6 +31,8 @@
 #include <ksimpleconfig.h>
 #include <ksslcertchain.h>
 #include <ksslcertificate.h>
+#include <ksslcertificatehome.h>
+#include <ksslpkcs12.h>
 #include <ksslx509map.h>
 #include <qptrlist.h>
 #include <sys/types.h>
@@ -203,7 +205,7 @@ QStringList groups = cfg->groupList();
 		n->permanent = cfg->readBoolEntry("Permanent");
 		n->expires = cfg->readDateTimeEntry("Expires");
 		n->hosts = cfg->readListEntry("Hosts");
-		newCert->chain().setChain(cfg->readListEntry("Chain"));
+		newCert->chain().setCertChain(cfg->readListEntry("Chain"));
 		certList.append(n); 
 		searchAddCert(newCert);
 	}
@@ -635,6 +637,78 @@ return true;
 }
 
 
+/**
+  * @internal
+  * Returns a list of certificates as QStrings read from the given file
+  */
+static QStringList caReadCerticatesFromFile(QString filename) {
+
+	QStringList certificates;
+	QString certificate, temp;
+	QFile file(filename);
+
+	if (!file.open(IO_ReadOnly))
+		return certificates;
+
+	while (!file.atEnd()) {
+		file.readLine(temp, 999);
+		if (temp.startsWith("-----BEGIN CERTIFICATE-----")) {
+			certificate = QString::null;
+			continue;
+		}
+
+		if (temp.startsWith("-----END CERTIFICATE-----")) {
+			certificates.append(certificate);
+			certificate = QString::null;
+			continue;
+		}
+
+		certificate += temp.stripWhiteSpace();
+	}
+
+	file.close();
+
+	return certificates;
+}
+
+bool KSSLD::caAddFromFile(QString filename, bool ssl, bool email, bool code) {
+
+	QStringList certificates;
+	certificates = caReadCerticatesFromFile(filename);
+	if (certificates.isEmpty())
+		return false;
+
+	bool ok = true;
+
+	for (QStringList::Iterator it = certificates.begin();
+					it != certificates.end(); ++it ) {
+		ok &= caAdd(*it, ssl, email, code);
+	}
+
+	return ok;
+}
+
+bool KSSLD::caRemoveFromFile(QString filename) {
+
+	QStringList certificates;
+	certificates = caReadCerticatesFromFile(filename);
+	if (certificates.isEmpty())
+		return false;
+
+	bool ok = true;
+
+	for (QStringList::Iterator it = certificates.begin();
+					it != certificates.end(); ++it ) {
+		QString certificate = *it;
+		KSSLCertificate *x = KSSLCertificate::fromString(certificate.local8Bit());
+		ok &= x && caRemove(x->getSubject());
+		delete x;
+	}
+
+	return ok;
+}
+
+
 QStringList KSSLD::caList() {
 QStringList x;
 KConfig cfg("ksslcalist", true, false);
@@ -810,7 +884,37 @@ KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 
 ///////////////////////////////////////////////////////////////////////////
 
+//
+//  Certificate Home methods
+//
 
+QStringList KSSLD::getHomeCertificateList() {
+	return KSSLCertificateHome::getCertificateList();
+}
+
+bool KSSLD::addHomeCertificateFile(QString filename, QString password, bool storePass) {
+	return KSSLCertificateHome::addCertificate(filename, password, storePass);
+}
+
+bool KSSLD::addHomeCertificatePKCS12(QString base64cert, QString passToStore) {
+	bool ok;
+	KSSLPKCS12 *pkcs12 = KSSLPKCS12::fromString(base64cert, passToStore);
+	ok = KSSLCertificateHome::addCertificate(pkcs12, passToStore);
+	delete pkcs12;
+	return ok;
+}
+
+bool KSSLD::deleteHomeCertificateFile(QString filename, QString password) {
+	return KSSLCertificateHome::deleteCertificate(filename, password);
+}
+
+bool KSSLD::deleteHomeCertificatePKCS12(QString base64cert, QString password) {
+	bool ok;
+	KSSLPKCS12 *pkcs12 = KSSLPKCS12::fromString(base64cert, password);
+	ok = KSSLCertificateHome::deleteCertificate(pkcs12);
+	delete pkcs12;
+	return ok;
+}
 
 
 
