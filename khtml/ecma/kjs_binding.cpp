@@ -39,48 +39,6 @@
 
 using namespace KJS;
 
-extern "C" {
-  // initialize HTML module
-  KJSProxy *kjs_html_init(KHTMLPart *khtml)
-  {
-    KJScript *script = new KJScript();
-    script->enableDebug();
-
-    KJS::Global global(Global::current());
-    DOM::HTMLDocument doc;
-    doc = khtml->htmlDocument();
-    global.put("document", KJSO(new KJS::HTMLDocument(doc)));
-    global.put("window", KJSO(new KJS::Window(khtml->view())));
-    global.put("navigator", KJSO(new Navigator()));
-    global.put("Image", KJSO(new ImageObject(global)));
-
-    // this is somewhat ugly. But the only way I found to control the
-    // dlopen'ed interpreter (*no* linking!) were callback functions.
-    return new KJSProxy(script, &kjs_eval, &kjs_clear,
-			&kjs_special, &kjs_destroy);
-  }
-  // evaluate code
-  bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
-  {
-    return script->evaluate(c, len);
-  }
-  // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script)
-  {
-    script->clear();
-  }
-  // for later extensions.
-  const char *kjs_special(KJScript *, const char *)
-  {
-    // return something like a version number for now
-    return "1";
-  }
-  void kjs_destroy(KJScript *script)
-  {
-    delete script;
-  }
-};
-
 KJSO DOMObject::get(const UString &p) const
 {
   KJSO result;
