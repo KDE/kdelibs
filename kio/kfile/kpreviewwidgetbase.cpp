@@ -7,6 +7,7 @@
  */
 
 #include "kpreviewwidgetbase.h"
+#include <qstringlist.h>
 
 class KPreviewWidgetBase::KPreviewWidgetBasePrivate
 {
