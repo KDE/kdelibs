@@ -35,18 +35,13 @@ static const char daemonName[] = "knotify";
 
 static bool canAvoidStartupEvent( const QString& event, const QString& appname, int present )
 {
-    static int checkAvoid = -1;
+    static bool checkAvoid = true;
+    if( !checkAvoid )
+        return false;
     if(( appname != "kwin" && appname != "ksmserver" ) || present > 0 ) {
-        checkAvoid = 0;
+        checkAvoid = false;
         return false;
     }
-    if( checkAvoid == -1 ) {
-        KConfig cfg( "knotifyrc", true );
-        cfg.setGroup( "Startup" );
-        checkAvoid = cfg.readBoolEntry( "DelayedStartup", false ) ? 1 : 0;
-    }
-    if( checkAvoid != 1 )
-        return false;
     // startkde event is in global events file
     static KConfig* configfile = appname != "ksmserver"
         ? new KConfig( appname + ".eventsrc", true, false )
@@ -61,7 +56,7 @@ static bool canAvoidStartupEvent( const QString& event, const QString& appname, 
     if(( ev1 == -2 && ev2 == -2 ) // unknown
         || ev1 > 0 // configured to have presentation
         || ( ev1 == -2 && ev2 > 0 )) { // not configured, has default presentation
-        checkAvoid = 0;
+        checkAvoid = false;
         return false;
     }
     return true;
