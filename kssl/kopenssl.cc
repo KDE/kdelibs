@@ -110,6 +110,13 @@ static EVP_MD* (*K_EVP_md5)() = NULL;
 static void (*K_ASN1_INTEGER_free)(ASN1_INTEGER *) = NULL;
 static int (*K_OBJ_obj2nid)(ASN1_OBJECT *) = NULL;
 static const char * (*K_OBJ_nid2ln)(int) = NULL;
+static int (*K_X509_get_ext_count)(X509*) = NULL;
+static int (*K_X509_get_ext_by_NID)(X509*, int, int) = NULL;
+static int (*K_X509_get_ext_by_OBJ)(X509*,ASN1_OBJECT*,int) = NULL;
+static X509_EXTENSION *(*K_X509_get_ext)(X509*, int loc) = NULL;
+static X509_EXTENSION *(*K_X509_delete_ext)(X509*, int) = NULL;
+static int (*K_X509_add_ext)(X509*, X509_EXTENSION*, int) = NULL;
+static void *(*K_X509_get_ext_d2i)(X509*, int, int*, int*) = NULL;
 #endif    
 };
 
@@ -207,15 +214,25 @@ KConfig *cfg;
             << "";
 
 // FIXME: #define here for the various OS types to optimize
-   libnamess << "libssl.so.0"
+   libnamess 
+	     #ifdef hpux
+             << "libssl.sl"
+             #else
+	     << "libssl.so.0"
              << "libssl.so"
 	     << "libssl.so.0.9.6"
-             << "libssl.sl";
+             #endif
+	     ;
 
-   libnamesc << "libcrypto.so.0"
+   libnamesc 
+             #ifdef hpux
+             << "libcrypto.sl"
+	     #else
+	     << "libcrypto.so.0"
              << "libcrypto.so"
 	     << "libcrypto.so.0.9.6"
-             << "libcrypto.sl";
+             #endif
+	     ;
 
    for (QStringList::Iterator it = libpaths.begin();
                               it != libpaths.end();
@@ -286,6 +303,14 @@ KConfig *cfg;
       K_ASN1_INTEGER_free = (void (*)(ASN1_INTEGER *)) _cryptoLib->symbol("ASN1_INTEGER_free");
       K_OBJ_obj2nid = (int (*)(ASN1_OBJECT *)) _cryptoLib->symbol("OBJ_obj2nid");
       K_OBJ_nid2ln = (const char *(*)(int)) _cryptoLib->symbol("OBJ_nid2ln");
+      K_X509_get_ext_count = (int (*)(X509*)) _cryptoLib->symbol("X509_get_ext_count");
+      K_X509_get_ext_by_NID = (int (*)(X509*,int,int)) _cryptoLib->symbol("X509_get_ext_by_NID");
+      K_X509_get_ext_by_OBJ = (int (*)(X509*,ASN1_OBJECT*,int)) _cryptoLib->symbol("X509_get_ext_by_OBJ");
+      K_X509_get_ext = (X509_EXTENSION* (*)(X509*,int)) _cryptoLib->symbol("X509_get_ext");
+      K_X509_delete_ext = (X509_EXTENSION* (*)(X509*,int)) _cryptoLib->symbol("X509_delete_ext");
+      K_X509_add_ext = (int (*)(X509*,X509_EXTENSION*,int)) _cryptoLib->symbol("X509_add_ext");
+      K_X509_get_ext_d2i = (void* (*)(X509*,int,int*,int*)) _cryptoLib->symbol("X509_get_ext_d2i");
+
 #endif
    }
 
@@ -856,6 +881,48 @@ int KOpenSSLProxy::OBJ_obj2nid(ASN1_OBJECT *o) {
 
 const char * KOpenSSLProxy::OBJ_nid2ln(int n) {
    if (K_OBJ_nid2ln) return (K_OBJ_nid2ln)(n);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::X509_get_ext_count(X509 *x) {
+   if (K_X509_get_ext_count) return (K_X509_get_ext_count)(x);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_get_ext_by_NID(X509 *x, int nid, int lastpos) {
+   if (K_X509_get_ext_by_NID) return (K_X509_get_ext_by_NID)(x,nid,lastpos);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_get_ext_by_OBJ(X509 *x,ASN1_OBJECT *obj,int lastpos) {
+   if (K_X509_get_ext_by_OBJ) return (K_X509_get_ext_by_OBJ)(x,obj,lastpos);
+   else return -1;
+}
+
+
+X509_EXTENSION *KOpenSSLProxy::X509_get_ext(X509 *x, int loc) {
+   if (K_X509_get_ext) return (K_X509_get_ext)(x,loc);
+   else return NULL;
+}
+
+
+X509_EXTENSION *KOpenSSLProxy::X509_delete_ext(X509 *x, int loc) {
+   if (K_X509_delete_ext) return (K_X509_delete_ext)(x,loc);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::X509_add_ext(X509 *x, X509_EXTENSION *ex, int loc) {
+   if (K_X509_add_ext) return (K_X509_add_ext)(x,ex,loc);
+   else return -1;
+}
+
+
+void *KOpenSSLProxy::X509_get_ext_d2i(X509 *x, int nid, int *crit, int *idx) {
+   if (K_X509_get_ext_d2i) return (K_X509_get_ext_d2i)(x,nid,crit,idx);
    else return NULL;
 }
 

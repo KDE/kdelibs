@@ -536,6 +536,43 @@ public:
     */
    const char * OBJ_nid2ln(int n);
 
+   /*
+    * get the number of extensions
+    */
+   int X509_get_ext_count(X509 *x);
+
+   /*
+    * 
+    */
+   int X509_get_ext_by_NID(X509 *x, int nid, int lastpos);
+
+   /*
+    *
+    */
+   int X509_get_ext_by_OBJ(X509 *x,ASN1_OBJECT *obj,int lastpos);
+
+   /*
+    *
+    */
+   X509_EXTENSION *X509_get_ext(X509 *x, int loc);
+
+   /*
+    *
+    */
+   X509_EXTENSION *X509_delete_ext(X509 *x, int loc);
+
+   /*
+    *
+    */
+   int X509_add_ext(X509 *x, X509_EXTENSION *ex, int loc);
+
+   /*
+    *
+    */
+   void *X509_get_ext_d2i(X509 *x, int nid, int *crit, int *idx);
+
+
+
 
 #endif
 
