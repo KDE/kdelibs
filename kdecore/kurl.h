@@ -119,7 +119,7 @@ public:
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL. If the URL does not have a protocol part, 
+   * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    * @param encoding_hint MIB of original encoding of URL.
    * @see QTextCodec::mibEnum()
@@ -129,7 +129,7 @@ public:
    * Constructor taking a QCString @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL. If the URL does not have a protocol part, 
+   * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    * @param encoding_hint MIB of original encoding of URL.
    * @see QTextCodec::mibEnum()
@@ -198,7 +198,7 @@ public:
    * Sets the password (corresponding to @ref user()) included in the URL.
    *
    * Special characters in the password will appear encoded in the URL.
-   * Note that a password can only appear in a URL string if you also set 
+   * Note that a password can only appear in a URL string if you also set
    * a user.
    * @param _txt the password to set or QString::null to remove the password
    * @see #setUser
@@ -231,7 +231,7 @@ public:
 
   /**
    * Returns the port number included in the URL.
-   * @return the port number. If there is no port number specified in the 
+   * @return the port number. If there is no port number specified in the
    *         URL, returns 0.
    **/
   unsigned short int port() const { return m_iPort; }
@@ -243,8 +243,8 @@ public:
 
   /**
    * Returns the current decoded path. This does @em not include the query.
-   * @return the path of the URL (without query), or QString::null if no 
-   *         path set. 
+   * @return the path of the URL (without query), or QString::null if no
+   *         path set.
    */
   QString path() const  { return m_strPath; }
 
@@ -266,7 +266,7 @@ public:
   /**
    * Sets the path of the URL. The query is not changed by this function.
    *
-   * @param path The new path. This is considered to be decoded. This 
+   * @param path The new path. This is considered to be decoded. This
    *             means: %3f does not become decoded
    *             and the ? does not indicate the start of the query part.
    *             Can be QString::null to delete the path.
@@ -397,7 +397,7 @@ public:
   /**
    * Sets the HTML-style reference.
    *
-   * @param _ref The new reference. This is considered to be @em not encoded in 
+   * @param _ref The new reference. This is considered to be @em not encoded in
    *         contrast to @ref setRef(). Use QString::null to remove it.
    * @see htmlRef()
    */
@@ -431,7 +431,7 @@ public:
   /**
    * Adds encoding information to url by adding a "charset" parameter. If there
    * is already a charset parameter, it will be replaced.
-   * @param encoding the encoding to add or QString::null to remove the 
+   * @param encoding the encoding to add or QString::null to remove the
    *                 encoding.
    */
   void setFileEncoding(const QString &encoding);
@@ -495,22 +495,22 @@ public:
 
   /**
    * Sets the filename of the path.
-   * In comparison to @ref addPath() this function does not assume that the current 
+   * In comparison to @ref addPath() this function does not assume that the current
    * path is a directory. This is only assumed if the current path ends with '/'.
    *
    * Any reference is reset.
    *
-   * @param _txt The filename to be set. It is considered to be decoded. If the 
-   *             current path ends with '/' then @p _txt int just appended, otherwise 
-   *             all text behind the last '/' in the current path is erased and 
-   *             @p _txt is appended then. It does not matter whether @p _txt starts 
+   * @param _txt The filename to be set. It is considered to be decoded. If the
+   *             current path ends with '/' then @p _txt int just appended, otherwise
+   *             all text behind the last '/' in the current path is erased and
+   *             @p _txt is appended then. It does not matter whether @p _txt starts
    *             with '/' or not.
    */
   void setFileName( const QString&_txt );
 
   /**
    * Returns the filename of the path.
-   * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should 
+   * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should
    *        be ignored. This means that the function would return "torben" for
    *        <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
    *        If the flag is set to false, then everything behind the last '/'
@@ -571,8 +571,8 @@ public:
    * characters.
    */
   QString prettyURL( int _trailing = 0) const;
-  
-  
+
+
   /**
    * Returns the URL as string, escaped for HTML.
    * @return A human readable URL, with no non-necessary encodings/escaped
@@ -580,7 +580,7 @@ public:
    * rich text.
    */
   QString htmlURL() const;
-  
+
   /**
    * Returns the URL as string, escaped for HTML.
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
@@ -638,7 +638,7 @@ public:
   bool equals( const KURL &u, bool ignore_trailing = false ) const;
 
   /**
-   * Checks whether the given URL is parent of this URL. 
+   * Checks whether the given URL is parent of this URL.
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
    * @return true if this url is a parent of @p u (or the same URL as @p u)
    */
@@ -688,6 +688,19 @@ public:
   static KURL join( const List& _list );
 
   /**
+   * Creates a KURL object from a QString representing either an absolute path
+   * or a real URL. Use this method instead of 
+   * <code>
+   * QString someDir = ...
+   * KURL url = someDir;
+   * </code>
+   *
+   * Otherwise some characters (e.g. the '#') won't be encoded properly.
+   * @since 3.1
+   */
+  static KURL fromPathOrURL( const QString& text );
+    
+/**
    * Convenience function.
    *
    * Convert unicoded string to local encoding and use %-style

@@ -181,7 +181,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
 
   if (!textCodec)
       textCodec = QTextCodec::codecForLocale();
-      
+
   if (!textCodec->canEncode(segment))
       textCodec = codecForHint( 106 ); // Fall back to utf-8 if it doesn't fit.
 
@@ -1807,4 +1807,19 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
   if (!m_strQuery_encoded.isEmpty())
      m_strQuery_encoded += '&';
   m_strQuery_encoded += item + value;
+}
+
+// static
+KURL KURL::fromPathOrURL( const QString& text )
+{
+    if ( text.isEmpty() )
+        return KURL();
+    
+    KURL url;
+    if ( text[0] == '/' )
+        url.setPath( text );
+    else
+        url = text;
+
+    return url;
 }
