@@ -179,7 +179,7 @@ void KIO::SessionData::AuthDataList::purgeCachedData()
 }
 
 /*********************** KIO::SessionData::CookieDataList ****************************/
-class KIO::SessionData::CookieDataList : public QList<CookieData>
+class KIO::SessionData::CookieDataList : public QList<KIO::SessionData::CookieData>
 {
 public:
     CookieDataList() { setAutoDelete(true); }
