@@ -111,7 +111,11 @@ class kdbgstream {
       *this << string.data();
       return *this;
     }
-    kdbgstream& operator<<(void * p) {
+    kdbgstream& operator<<(const void * p) {
+    form("%p", p);
+    return *this;
+    }
+    kdbgstream& operator<<(void * p) { // ### remove for KDE3
 	form("%p", p);
 	return *this;
     }
