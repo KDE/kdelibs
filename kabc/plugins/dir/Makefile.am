@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/kabc $(all_includes)
+INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_builddir) $(all_includes)
 
 # these are the headers for your project
 noinst_HEADERS   = resourcedir.h resourcedirconfig.h

@@ -1,7 +1,11 @@
 #!/usr/bin/perl
 
-if (!open( ENTRIES, "entrylist" ) ) {
-  print "Can't open entrylist\n";
+my $srcdir;
+$srcdir = `dirname $0` || die "Can't determine \$srcdir.";
+chomp $srcdir;
+
+if (!open( ENTRIES, "$srcdir/entrylist" ) ) {
+  print "Can't open $srcdir/entrylist\n";
   exit 1;
 }
 
@@ -20,11 +24,11 @@ if (!open( ENTRIES, "entrylist" ) ) {
 
 close ENTRIES;
 
-if (!open( H_IN, "addressee.src.h" ) ) {
-  print "Can't open addressee.src.h\n";
+if (!open( H_IN, "$srcdir/addressee.src.h" ) ) {
+  print "Can't open $srcdir/addressee.src.h\n";
   exit 1;
 }
-if (!open( H_OUT, ">../addressee.h" ) ) {
+if (!open( H_OUT, ">addressee.h" ) ) {
   print "Can't open addressee.h\n";
   exit 1;
 }
@@ -60,11 +64,11 @@ if (!open( H_OUT, ">../addressee.h" ) ) {
 close H_OUT;
 close H_IN;
 
-if (!open( CPP_IN, "addressee.src.cpp" ) ) {
-  print "Can't open addressee.src.cpp\n";
+if (!open( CPP_IN, "$srcdir/addressee.src.cpp" ) ) {
+  print "Can't open $srcdir/addressee.src.cpp\n";
   exit 1;
 }
-if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
+if (!open( CPP_OUT, ">addressee.cpp" ) ) {
   print "Can't open addressee.cpp\n";
   exit 1;
 }
@@ -131,11 +135,11 @@ if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
 close CPP_OUT;
 close CPP_IN;
 
-if (!open( CPP_IN, "field.src.cpp" ) ) {
-  print "Can't open field.src.cpp\n";
+if (!open( CPP_IN, "$srcdir/field.src.cpp" ) ) {
+  print "Can't open $srcdir/field.src.cpp\n";
   exit 1;
 }
-if (!open( CPP_OUT, ">../field.cpp" ) ) {
+if (!open( CPP_OUT, ">field.cpp" ) ) {
   print "Can't open field.cpp\n";
   exit 1;
 }
