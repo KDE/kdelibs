@@ -298,7 +298,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 
 static DOMString getValue( const QChar *curP, const QChar *endP, const QChar *&endVal)
 {
-    QString selecString( curP, endP - curP );
+    //QString selecString( curP, endP - curP );
     //kdDebug( 6080 ) << "getValue = \"" << selecString << "\"" << endl;
     endVal = curP;
     endVal++; // ignore first char (could be the ':' form the pseudo classes)
@@ -320,7 +320,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
     kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 #endif
     const QChar *endVal = 0;
-    
+
     if (*curP == '#' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
@@ -489,8 +489,8 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
    if( endVal ) {
        // lets be recursive
        stack = parseSelector2(endVal, endP, stack, relation);
-   }   
-       
+   }
+
    return(stack);
 }
 
@@ -690,8 +690,8 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
         if (!curP)
             curP = endP;
 
-        QString propVal( startP , curP - startP );
 #ifdef CSS_DEBUG
+        QString propVal( startP , curP - startP );
         kdDebug( 6080 ) << "Property = \"" << propVal.latin1() << "\"" << endl;
 #endif
 
