@@ -31,7 +31,16 @@
 
 #include <qobject.h>
 #include <sys/types.h>
+// we define STRICT_ANSI to get rid of some warnings in glibc
+#ifndef __STRICT_ANSI__
+#define __STRICT_ANSI__
+#define _WE_DEFINED_IT_
+#endif
 #include <sys/socket.h>
+#ifdef _WE_DEFINED_IT_
+#undef __STRICT_ANSI__
+#undef _WE_DEFINED_IT_
+#endif
 #include <sys/un.h>
 #include <netinet/in.h>
 class QSocketNotifier;
