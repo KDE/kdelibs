@@ -35,8 +35,60 @@ using namespace Arts;
 
 static void printInterface(InterfaceDef id)
 {
+	string inherit;
+	if(id.inheritedInterfaces.size())
+	{
+		vector<string>::iterator ii;
+		bool first = true;
+		inherit = ": ";
+		for(ii = id.inheritedInterfaces.begin(); ii != id.inheritedInterfaces.end(); ii++)
+		{
+			if(!first) inherit +=",";
+			first = false;
+			inherit += (*ii)+" ";
+		}
+	}
+	printf("interface %s %s{\n",id.name.c_str(),inherit.c_str());
+	// attributes, streams
+	vector<AttributeDef>::iterator ai;
+	for(ai = id.attributes.begin(); ai != id.attributes.end(); ai++)
+	{
+		const AttributeDef& ad = *ai;
+		if(ad.flags & attributeAttribute)
+		{
+			/* readwrite */
+			if(ad.flags & (streamOut|streamIn) == (streamOut|streamIn))
+			{
+				printf("  attribute %s %s;\n",ad.type.c_str(), ad.name.c_str());
+			}
+			else
+			{
+				if(ad.flags & streamOut)  /* readable from outside */
+				{
+					printf("  readonly attribute %s %s;\n",
+									ad.type.c_str(), ad.name.c_str());
+				}
+				if(ad.flags & streamIn)  /* writeable from outside */
+				{
+					printf("  ?writeonly? attribute %s %s;\n",
+									ad.type.c_str(), ad.name.c_str());
+				}
+			}
+		}
+		if(ad.flags & attributeStream)
+		{
+			const char *dir = (ad.flags & streamOut)?"out":"in";
+			const char *async = (ad.flags & streamAsync)?"async ":"";
+			string type = ad.type;
+			if(type == "float" && !(ad.flags & streamAsync)) type = "audio";
+
+			printf("  %s%s %s stream %s;\n",async,dir,
+									type.c_str(),ad.name.c_str());
+		}
+	}
+
+	// methods
 	vector<MethodDef>::iterator mi;
-	printf("interface %s {\n",id.name.c_str());
 	for(mi = id.methods.begin();mi != id.methods.end(); mi++)
 	{
 		MethodDef& md = *mi;
