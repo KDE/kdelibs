@@ -37,7 +37,6 @@ public:
 
   KSSLCertificate& getPeerCertificate();
   bool certMatchesAddress();
-  Q_UINT32 getPeerIP();
   QString getPeerAddress();
   
  
@@ -45,8 +44,7 @@ protected:
   KSSLPeerInfo();
 
   KSSLCertificate m_cert;
-  void setPeerAddress(QString& addr);
-  void setPeerIP(Q_UINT32 ip);
+  void setPeerAddress(QString addr);
 
 private:
   KSSLPeerInfoPrivate *d;

@@ -173,7 +173,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     struct stat sb;
     QString _j = (*j)+"caroot/ca-bundle.crt";
     if (-1 == stat(_j.ascii(), &sb)) continue;
-    kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
+    //kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
 
     certStore = d->kossl->X509_STORE_new();
     if (!certStore)
@@ -189,7 +189,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
       continue;
     }
 
-    kdDebug() << "KSSL about to load file" << endl;
+    //kdDebug() << "KSSL about to load file" << endl;
     if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
       // error accessing directory and loading pems
       kdDebug() << "KSSL couldn't read CA root: " << _j << endl;
@@ -210,13 +210,13 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
       continue;
     }
 
-    kdDebug() << "KSSL Initializing the certificate store context" << endl;
+    //kdDebug() << "KSSL Initializing the certificate store context" << endl;
     d->kossl->X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
 
     // FIXME: do all the X509_STORE_CTX_set_flags(); here
     //   +----->  Note that this is for 0.9.6 or better ONLY!
 
-    kdDebug() << "KSSL verifying.............." << endl;
+    //kdDebug() << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
     int errcode = certStoreCTX->error;
@@ -227,9 +227,9 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     //
 
     ksslv = processError(errcode);
-    kdDebug() << "KSSL Validation procedure RC: " << rc << endl;
-    kdDebug() << "KSSL Validation procedure errcode: " << errcode << endl;
-    kdDebug() << "KSSL Validation procedure RESULTS: " << ksslv << endl;
+    //kdDebug() << "KSSL Validation procedure RC: " << rc << endl;
+    //kdDebug() << "KSSL Validation procedure errcode: " << errcode << endl;
+    //kdDebug() << "KSSL Validation procedure RESULTS: " << ksslv << endl;
 
     if (ksslv != NoCARoot && ksslv != InvalidCA) {
       d->m_stateCached = true;

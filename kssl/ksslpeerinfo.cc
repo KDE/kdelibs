@@ -26,15 +26,12 @@
 #include <qstring.h>
 #include <kdebug.h>
 
-#ifdef HAVE_SSL
-#include <netdb.h>
-#endif
+#include <ksockaddr.h>
 
 #include "ksslx509map.h"
 
 class KSSLPeerInfoPrivate {
 public:
-  Q_UINT32 ip;
   QString host;
 };
 
@@ -42,6 +39,7 @@ public:
 
 KSSLPeerInfo::KSSLPeerInfo() {
   d = new KSSLPeerInfoPrivate;
+  d->host = "";
 }
 
 KSSLPeerInfo::~KSSLPeerInfo() {
@@ -52,37 +50,26 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 
-void KSSLPeerInfo::setPeerAddress(QString& addr) {
+void KSSLPeerInfo::setPeerAddress(QString addr) {
   d->host = addr;
-kdDebug() << "setPeerAddress(" << addr << ")" << endl;
 }
 
-void KSSLPeerInfo::setPeerIP(Q_UINT32 ip) {
-  d->ip = ip;
-kdDebug() << "setPeerIP(" << ip << ")" << endl;
-}
 
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
   KSSLX509Map certinfo(m_cert.getSubject());
-  char **addrList;
-  struct hostent *he;
+  KInetSocketAddress kisa1(d->host, 0, -1);
+  KInetSocketAddress kisa2(certinfo.getValue("CN").latin1(), 0, -1);
 
-  he = gethostbyname(certinfo.getValue("CN").latin1());
-  if (!he) return false;
+  kdDebug() << "d->host is: " << kisa1.pretty()
+            << " while the CN is: " << kisa2.pretty()
+            << endl;
+  kdDebug() << "The original ones were: " << d->host
+            << " and: " << certinfo.getValue("CN").latin1()
+            << endl;
 
-  addrList = he->h_addr_list;
-  // kdDebug() << "Looking for " << d->ip << endl;
-  for (int i = 0; addrList[i]; i++) {
-    Q_UINT32 thisAddr;
-    thisAddr = (addrList[i][0] << 24)
-              +(addrList[i][1] << 16)
-              +(addrList[i][2] << 8)
-              + addrList[i][3];
-    // kdDebug() << "       -- found: " << thisAddr << endl;
+  if (kisa1.isCoreEqual(kisa2)) return true;
 
-    if (thisAddr == d->ip) return true;
-  }
 #endif
   return false;
 }

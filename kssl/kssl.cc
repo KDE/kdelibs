@@ -41,7 +41,7 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 #include <ksock.h>
-//#include <ksockaddr.h>
+#include <ksockaddr.h>
 
 #include <kopenssl.h>
 
@@ -346,13 +346,8 @@ void KSSL::setPeerInfo(int sock) {
 
   if (rc != -1) {
     QString haddr;
-    Q_UINT32 iaddr = ntohl(sa.sin_addr.s_addr);
-    haddr.sprintf("%u.%u.%u.%u", (iaddr >> 24) &0xff,
-                                 (iaddr >> 16) &0xff,
-                                 (iaddr >> 8)  &0xff,
-                                 (iaddr)       &0xff);
-    m_pi.setPeerAddress(haddr);
-    m_pi.setPeerIP(iaddr);
+    KInetSocketAddress x(&sa, nl);
+    m_pi.setPeerAddress(x.prettyHost());
   }
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
 #endif
