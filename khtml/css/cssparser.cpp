@@ -558,23 +558,26 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         if (!colon)
             return;
     }
+    curP = colon+1;
     // remove space in front of the value
-    curP = parseSpace(colon+1, endP);
-    if (!curP)
+    while(curP < endP && *curP == ' ')
+	curP++;
+    if ( curP >= endP )
         return;
 
     // search for !important
     const QChar *exclam = parseToChar(curP, endP, '!', false);
     if(exclam)
     {
-	const QChar *imp = parseSpace(exclam+1, endP);
-	QString s(imp, endP - imp);
+	//const QChar *imp = parseSpace(exclam+1, endP);
+	QString s(exclam+1, endP - exclam - 1);
+	s = s.stripWhiteSpace();
 	s.lower();
-	if(!s.contains("important"))
+	if(s != "important")
 	    return;
 	important = true;
-	endP = exclam - 1;
-	//kdDebug( 6080 ) << "important property!" << endl;
+	endP = exclam;
+	kdDebug( 6080 ) << "important property!" << endl;
     }
 
     // remove space after the value;
@@ -1463,7 +1466,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
     bool comment = false;
     bool escape = false;
     bool firstChar = false;
-    
+
     const QChar *ch = str.unicode();
     const QChar *last = str.unicode()+str.length();
     while(ch <= last) {
