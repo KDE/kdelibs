@@ -15,7 +15,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
 	x-tzo.desktop x-lzop.desktop x-applix.desktop \
-	x-truetype-font.desktop
+	x-truetype-font.desktop msexcel2.desktop
 
 datadir = $(kde_mimedir)/application
 
