@@ -62,6 +62,9 @@ cvs-local:
 	automake --gnits --add-missing && \
 	autoconf
 
+cvs-dist-local:
+	cd libltdl && automake --gnits --add-missing -i &&  autoconf
+
 kde_conf_DATA = kde-config
 
 kdedoc:
