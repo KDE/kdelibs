@@ -48,15 +48,16 @@ KSycoca::KSycoca() : DCOPObject("ksycoca")
    m_lstFactories->setAutoDelete( true );
    _self = this;
 
-#if 0 //// DISABLED !!
    // Register app as able to receive DCOP messages
-   kapp->dcopClient()->attach();
+   if (!kapp->dcopClient()->isAttached())
+   {
+      kapp->dcopClient()->attach();
+   }
    if (!kapp->dcopClient()->isRegistered())
    {
-     debug("registering as dcopclient...");
-     kapp->dcopClient()->registerAs( kapp->name() ); 
+      debug("registering as dcopclient...");
+      kapp->dcopClient()->registerAs( kapp->name() ); 
    }
-#endif
 }
 
 // Read-write constructor - only for KBuildSycoca
