@@ -111,20 +111,28 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" </qt>" );
 	QString whatsThisPrinterSelect = i18n(  " <qt><b>Printer Selection Menu:</b> "
 						" <p>Use this combo box to select the printer to which you want to print."
-						" If you only find the <em>KDE special printers</em> -- which save"
-						" jobs to disk (as PostScript- or PDF-files), or deliver jobs via"
+						" Initially (if you run KDEPrint for the first time), you may only find the "
+						"  <em>KDE special printers</em> (which save"
+						" jobs to disk [as PostScript- or PDF-files], or deliver jobs via"
 						" email (as a PDF"
-						" attachment) -- but are missing a real printer, you need to..."
+						" attachment). If you are missing a real printer, you need to..."
 						" <ul>"
 						" <li>...either create a local printer with the help of the <em>KDE Add"
-						" Printer Wizard</em> which is available for the CUPS and RLPR printing"
-						" systems (click button to the left of the 'Properties' button),</li>"
-						" <li>...or you can try to connect to a remote"
-						" CUPS print server by clicking the <em>System Options</em> button"
-						" below. A new dialog opens: click on the <em>CUPS server</em>"
-						" icon and fill in the information required to use the remote"
-						" server.</li>"
+						" Printer Wizard</em>. The Wizard is available for the CUPS and RLPR printing"
+						" systems (click button to the left of the <em>'Properties'</em> button),</li>"
+						" <li>...or try to connect to an existing remote"
+						" CUPS print server. You can connect by clicking the <em>'System Options'</em> button"
+						" below. A new dialog opens: click on the <em>'CUPS server'</em>"
+						" icon: Fill in the information required to use the remote"
+						" server. </li> "
 						" </ul>"
+						" <p><b>Note:</b> It may happen that you successfully connected to a remote CUPS "
+						" server and still do not get a printer list. If this happens: force KDEPrint to "
+						" re-load its configuration files."
+						" To reload the configuration files, either start kprinter again, or use the "
+						" switch the print system away from CUPS and back again once. The print system switch "
+						" can be made through a selection in th dropdown menu at bottom of this dialog when "
+						" fully expanded). </p> "
 						" </qt>" );
 	QString whatsThisPrintJobProperties = i18n( " <qt><b>Print Job Properties:</b> "
 						" <p>This button opens a dialog where you can make decisions"
@@ -135,26 +143,32 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" to a shorter, more convenient, pre-defined list.</p>"
 						" <p>This is particularly useful in enterprise environments"
 						" with lots of printers. The default is to show <b>all</b> printers.</p>"
-						" <p>To create a personal \"selective view list\", click on the"
-						" <em>\"System Options</em>\" button at the bottom of this dialog."
-						" Then, in the new dialog, select <em>\"Filter\"</em> (left column in the"
+						" <p>To create a personal <em>'selective view list'</em>, click on the"
+						" <em>'System Options'</em> button at the bottom of this dialog."
+						" Then, in the new dialog, select <em>'Filter'</em> (left column in the"
 						" <em>KDE Print Configuration</em> dialog) and setup your selection..</p>"
+						" <p><b>Warning:</b> Clicking this button without prior creation of a personal "
+						" <em>'selective view list'</em> will make all printers dissappear from the "
+						" view. (To re-enable all printers, just click this button again.) </p> "
 						" </qt>" );
 	QString whatsThisAddPrinterWizard = i18n( "<qt><b>KDE Add Printer Wizard</b>"
-						" <p>This button starts the <em>KDE Add Printer Wizard</em>."
-						" (<b>NOT</b> if you use <em>\"Generic LPD</em>\""
-						" or <em>\"LPRng\"</em>, or <em>\"Print Through an External Program</em>\".)"
-						" Use the Wizard (with <em>\"CUPS\"</em> or <em>\"RLPR\"</em>) to add locally"
-						" defined printers to your system."
+						" <p>This button starts the <em>KDE Add Printer Wizard</em>.</p>"
+						" <p>Use the Wizard (with <em>\"CUPS\"</em> or <em>\"RLPR\"</em>) to add locally"
+						" defined printers to your system. </p>"
+						" <p><b>Note:</b> The <em>KDE Add Printer Wizard</em> does <b>not</b> work, "
+						" and this button is disabled if you use "
+						" <em>\"Generic LPD</em>\", <em>\"LPRng\"</em>, or <em>\"Print Through "
+						" an External Program</em>\".) </p> " 
 						" </qt>" );
 	QString whatsThisExternalPrintCommand = i18n( " <qt><b>External Print Command</b>"
 						" <p>Here you can enter any command that would also print for you in "
-						" a <em>konsole</em> window. <br>"
+						" a <em>konsole</em> window. </p>"
 						" <b>Example:</b> <pre>a2ps -P &lt;printername&gt; --medium=A3</pre>."
 						" </qt>" );
 	QString whatsThisOptions = i18n( " <qt><b>Additional Print Job Options</b>"
 						" <p>This button shows or hides additional printing options.</qt>" );
-	QString whatsThisSystemOptions = i18n(  " <qt><b>Location:</b>  This button starts a new dialog where you can adjust various"
+	QString whatsThisSystemOptions = i18n(  " <qt><b>System Options:</b> "
+						" <p>This button starts a new dialog where you can adjust various"
   						" settings of your printing system. Amongst them:"
 						" <ul><li> Should KDE"
 						" applications embed all fonts into the PostScript they"
@@ -219,28 +233,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" system."
 						" </ul>"
 					        " </qt>" );
-
-/* Definitions are not used,,, weird. Temporarily commented out to find whats wrong with it.
-
-	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
-						" list of files to be printed."
-					        " </qt>" );
-
-	QString whatsThisOpenFileButton = i18n( " <qt> This button tries to open the highlighted file, so"
-						" you can view or edit it before you send it to the printing"
-						" system."
-					        " </qt>" );
-
-	QString whatsThisMoveFileUpButton = i18n(" <qt> This button moves the highlighted file up in the list"
-						" of files to be printed. (In effect, this changes the order"
-						" of the files' printout.)"
-					        " </qt>" );
-
-	QString whatsThisMoveFileDownButton = i18n(" <qt> This button moves the highlighted file down in the list"
-						" of files to be printed. (In effect, this changes the order"
-						" of the files' printout.)"
-					        " </qt>" );
-*/
 
 	QString whatsThisPreviewCheckBox = i18n(" <qt><b>Print Preview</b>"
 						" Enable this checkbox if you want to see a preview of"
