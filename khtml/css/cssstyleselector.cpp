@@ -525,6 +525,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         case CSS_PROP_FONT_SIZE:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
+	    case CSS_PROP_BACKGROUND_IMAGE:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
             break;
@@ -564,7 +565,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 // ident only properties
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-        kdDebug(0) << "background attachment" << endl;
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
@@ -578,7 +578,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             {
                 style->setBackgroundAttachment(false);
                 DocumentImpl *doc = e->ownerDocument();
-                if(doc && doc->view())
+		// only use slow repaints if we actually have a background pixmap
+                if(doc && doc->view() && style->backgroundImage() )
                     doc->view()->useSlowRepaints();
                 break;
             }
@@ -603,7 +604,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_REPEAT:
             r = REPEAT; break;
         case CSS_VAL_REPEAT_X:
-	  kdDebug() << "repeat-x!!!!!!!!!!!" << endl;
             r = REPEAT_X; break;
         case CSS_VAL_REPEAT_Y:
             r = REPEAT_Y; break;
