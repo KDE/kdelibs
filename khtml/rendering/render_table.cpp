@@ -1026,7 +1026,8 @@ void RenderTable::calcWidth()
     }
 
     int borderWidth = borderLeft() + borderRight();
-    int availableWidth = containingBlockWidth() - borderWidth;
+    RenderObject *cb = containingBlock();
+    int availableWidth = cb->contentWidth() - borderWidth;
 
 
     LengthType widthType = style()->width().type;
@@ -1042,6 +1043,10 @@ void RenderTable::calcWidth()
         m_width = KMIN(short( availableWidth ),m_maxWidth);
     }
 
+    // restrict width to what we really have in case we flow around floats
+    if ( style()->flowAroundFloats() && cb->isFlow() )
+	m_width = QMIN( static_cast<RenderFlow *>(cb)->lineWidth( m_y ) - borderWidth, m_width );
+    
     m_width = KMAX (m_width, m_minWidth);
 
     m_marginRight=0;
