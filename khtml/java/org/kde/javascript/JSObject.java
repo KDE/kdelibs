@@ -33,41 +33,43 @@ public class JSObject extends netscape.javascript.JSObject {
         return id;
     }
 
-    private Object evaluate(String _script, boolean global) throws netscape.javascript.JSException {
-        Main.info("evaluate (\"" + _script + "\")");
-        if (!applet.isActive()) {
-            Main.debug("evaluate on not active applet");
-            return null;
-        }
+    private String escapeString(String string) {
         // the following line only works from java 1.4 on
-        //String script = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
-        
+        //String string = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
+
         // and this is the replacement for older versions:
         StringBuffer sb = new StringBuffer();
         int idx;
         int off;
-        String script = _script;
-        
-        for (off = 0; (idx = script.indexOf("\\", off)) >= 0; off = idx + 1) {
-            sb.append(script.substring(off, idx));
+
+        for (off = 0; (idx = string.indexOf("\\", off)) >= 0; off = idx + 1) {
+            sb.append(string.substring(off, idx));
             sb.append("\\\\");
         }
-        sb.append(script.substring(off, script.length()));
-        script = sb.toString();
+        sb.append(string.substring(off, string.length()));
+        string = sb.toString();
         sb = new StringBuffer();
-        for (off = 0; (idx = script.indexOf("\"", off)) >= 0; off = idx + 1) {
-            sb.append(script.substring(off, idx));
+        for (off = 0; (idx = string.indexOf("\"", off)) >= 0; off = idx + 1) {
+            sb.append(string.substring(off, idx));
             sb.append("\\\"");
         }
-        sb.append(script.substring(off, script.length()));
-        script = sb.toString();
+        sb.append(string.substring(off, string.length()));
         // end of replacement
+        return sb.toString();
+    }
+
+    private Object evaluate(String script, boolean global) throws netscape.javascript.JSException {
+        Main.info("evaluate (\"" + script + "\")");
+        if (!applet.isActive()) {
+            Main.debug("evaluate on not active applet");
+            return null;
+        }
          
         KJASAppletContext kc = (KJASAppletContext) applet.getAppletContext();
         //String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
 
-        kc.evaluateJavaScript("window.__lc[1](" + id + ",\"" + script + "\",this" + (global ? ",true)" : ")"), appletID, this);
+        kc.evaluateJavaScript("window.__lc[1](" + id + ",\"" + escapeString(script) + "\",this" + (global ? ",true)" : ")"), appletID, this);
         boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);
@@ -117,15 +119,13 @@ public class JSObject extends netscape.javascript.JSObject {
         return new JSObject(applet, value, Integer.parseInt(type));
     }
     private String convertValueJ2JS(Object o) {
-        /* FIXME: escape strings: ' -> \'
-         */
         if (o == null)
             return new String("null");
         if (o instanceof java.lang.Number || o instanceof java.lang.Boolean)
             return o.toString();
         if (o instanceof netscape.javascript.JSObject)
             return new String("window.__lc[0][" + ((JSObject)o).getId() + "]");
-        return new String("'" + o.toString() + "'");
+        return new String("\"" + escapeString(o.toString()) + "\"");
     }
     public Object call(String func, Object [] args) throws netscape.javascript.JSException {
         Main.info("JSObject.call: " + jsobject + "." + func);
