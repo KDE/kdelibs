@@ -112,9 +112,9 @@ public:
     /**
     * Returns the current mode
     * @see KFileDialog::mode()
+    * @since 3.3
     */
     unsigned int mode() const;
-
 
     /**
      * Sets the filter for the file dialog.
@@ -125,6 +125,7 @@ public:
     /**
     * Returns the current filter for the file dialog.
     * @see KFileDialog::filter()
+    * @since 3.3
     */
     QString filter() const;
 
