@@ -229,7 +229,7 @@ public:
 				QStringList dashList = QStringList::split(reg, m_dashes);
 
 				double *dashes = new double[dashList.count()];
-				for(int i = 0; i < dashList.count(); i++)
+				for(unsigned int i = 0; i < dashList.count(); i++)
 					dashes[i] = dashList[i].toDouble();
 
 				ArtVpathDash dash;
