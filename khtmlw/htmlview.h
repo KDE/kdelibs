@@ -458,6 +458,12 @@ public:
     virtual bool URLVisited( const char * /*_url*/ ) { return false; }
 
     /**
+     *
+     * Sets charset for the View
+     */
+    void setCharset( const char *_c); 
+    
+    /**
      * For internal use only.
      *
      * @see #cookie
@@ -473,6 +479,7 @@ public:
 	{ printf("Setting cookie '%s'\n",_c); cookie = _c; }
 
     void cancelAllRequests();
+
 
 signals:
     /**

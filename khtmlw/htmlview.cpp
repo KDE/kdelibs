@@ -620,5 +620,10 @@ bool KHTMLView::gotoAnchor(const char* anchor)
     return view->gotoAnchor(anchor);
 }
 
+void KHTMLView::setCharset( const char *_c)
+{
+    view->setCharset(_c);
+}
+
 #include "htmlview.moc"
 

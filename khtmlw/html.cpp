@@ -4536,14 +4536,15 @@ bool KHTMLWidget::setCharset(const char *name){
 		if (charsetConverter) delete charsetConverter;
 	        charsetConverter=0;
 		if (!charset.isAvailable()){
-			warning("Charset not available");
+			warning("Charset %s not available",name);
 			return FALSE;
 		}
 		debugM("Initializing conversion from %s\n",charset.name());
 		charsetConverter=new KCharsetConverter(charset
 				,KCharsetConverter::AMP_SEQUENCES);
 		if (!charsetConverter->ok()){
-			warning("Couldn't initialize converter");
+			warning("Couldn't initialize converter from %s",
+			          name);
 			delete charsetConverter;
 			charsetConverter=0;
 			return FALSE;
