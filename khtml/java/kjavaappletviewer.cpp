@@ -67,29 +67,29 @@ static KJavaServerMaintainer * serverMaintainer = 0;
 class KJavaServerMaintainer {
 public:
     KJavaServerMaintainer () { }
-    ~KJavaServerMaintainer () {
-        serverMaintainer = 0;
-    }
-    KJavaAppletContext * getContext (QObject*);
-    void releaseContext (QObject*);
+
+    KJavaAppletContext * getContext (QObject*, const QString &);
+    void releaseContext (QObject*, const QString &);
 public:
-    typedef QMap<QObject*, QPair<KJavaAppletContext*, int> > ContextMap;
+    typedef QMap <QPair <QObject*, QString>, QPair <KJavaAppletContext*, int> >
+            ContextMap;
     ContextMap m_contextmap;
 };
 
-KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w) {
-    ContextMap::iterator it = m_contextmap.find (w);
+KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w, const QString & doc) {
+    ContextMap::key_type key = qMakePair (w, doc);
+    ContextMap::iterator it = m_contextmap.find (key);
     if (it != m_contextmap.end ()) {
         (*it).second++;
         return (*it).first;
     }
     KJavaAppletContext * context = new KJavaAppletContext ();
-    m_contextmap.insert (w, qMakePair(context, 1));
+    m_contextmap.insert (key, qMakePair(context, 1));
     return context;
 }
 
-void KJavaServerMaintainer::releaseContext (QObject * w) {
-    ContextMap::iterator it = m_contextmap.find (w);
+void KJavaServerMaintainer::releaseContext (QObject * w, const QString & doc) {
+    ContextMap::iterator it = m_contextmap.find (qMakePair (w, doc));
     if (it != m_contextmap.end () && --(*it).second <= 0) {
         kdDebug(6100) << "KJavaServerMaintainer::releaseContext" << endl;
         (*it).first->deleteLater ();
@@ -153,18 +153,18 @@ void AppletParameterDialog::slotClose () {
 KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                  QObject * parent, const char * name, const QStringList & args)
  : KParts::ReadOnlyPart (parent, name),
-   m_browserextension (new KJavaAppletViewerBrowserExtension (this)) {
+   m_browserextension (new KJavaAppletViewerBrowserExtension (this))
+{
     if (!serverMaintainer) {
-        serverMaintainer = new KJavaServerMaintainer;
-        serverMaintainerDeleter.setObject (serverMaintainer);
+        serverMaintainerDeleter.setObject (serverMaintainer,
+                                           new KJavaServerMaintainer);
     }
-    m_view = new KJavaAppletViewerWidget (serverMaintainer->getContext (parent),
-                                    wparent);
-    QString classname, classid, codebase, baseurl;
+    m_view = new KJavaAppletViewerWidget (wparent);
+
+    QString classname, classid, codebase;
     int width = -1;
     int height = -1;
     KJavaApplet * applet = m_view->applet ();
-    insertChild (applet->getLiveConnectExtension ()); // hack
     QStringList::const_iterator it = args.begin ();
     for ( ; it != args.end (); ++it) {
         int equalPos = (*it).find("=");
@@ -215,11 +215,13 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         else if (classname.isEmpty () && classid.startsWith ("java:"))
             classname = classid.mid(5);
     }
+
     if (width > 0 && height > 0)
         applet->setSize (QSize(width, height));
     applet->setBaseURL (baseurl);
     applet->setCodeBase (codebase);
     applet->setAppletClass (classname);
+    applet->setAppletContext (serverMaintainer->getContext (parent, baseurl));
 
     KIO::AuthInfo info;
     QString errorMsg;
@@ -247,6 +249,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
 
     setInstance (KJavaAppletViewerFactory::instance ());
     KParts::Part::setWidget (m_view);
+    insertChild (applet->getLiveConnectExtension ()); // hack
 
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
     connect (applet->getContext(), SIGNAL(showDocument(const QString&, const QString&)), m_browserextension, SLOT(showDocument(const QString&, const QString&)));
@@ -254,8 +257,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
 }
 
 KJavaAppletViewer::~KJavaAppletViewer () {
-    m_view = 0L; // already destroyed
-    serverMaintainer->releaseContext (parent ());
+    delete m_view;
+    serverMaintainer->releaseContext (parent(), baseurl);
     delete m_browserextension;
 }
 
@@ -363,9 +366,8 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
 //-----------------------------------------------------------------------------
 // TODO move this to kjavaappletwidget
 
-KJavaAppletViewerWidget::KJavaAppletViewerWidget(KJavaAppletContext* context,
-        QWidget* parent, const char* name)
-  : KJavaAppletWidget(context, parent, name) {}
+KJavaAppletViewerWidget::KJavaAppletViewerWidget(QWidget* parent, const char* name)
+  : KJavaAppletWidget(parent, name) {}
 
 void KJavaAppletViewerWidget::showEvent (QShowEvent * e) {
     KJavaAppletWidget::showEvent(e);

@@ -39,13 +39,12 @@ private:
 
 int KJavaAppletWidget::appletCount = 0;
 
-KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
-                                      QWidget* parent, const char* name )
+KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
    : QXEmbed ( parent, name)
 {
     setProtocol(QXEmbed::XPLAIN);
 
-    m_applet = new KJavaApplet( this, context );
+    m_applet = new KJavaApplet( this );
     d        = new KJavaAppletWidgetPrivate;
     m_kwm    = new KWinModule( this );
 

@@ -79,8 +79,7 @@ class KJavaAppletWidget : public QXEmbed
 {
     Q_OBJECT
 public:
-    KJavaAppletWidget( KJavaAppletContext* context,
-                       QWidget* parent=0, const char* name=0 );
+    KJavaAppletWidget( QWidget* parent=0, const char* name=0 );
 
    ~KJavaAppletWidget();
 

@@ -92,6 +92,11 @@ public:
     ~KJavaApplet();
 
     /**
+     * Set the applet context'.
+     */
+    void setAppletContext( KJavaAppletContext* _context );
+
+    /**
      * Specify the name of the class file to run. For example 'Lake.class'.
      */
     void setAppletClass( const QString& clazzName );

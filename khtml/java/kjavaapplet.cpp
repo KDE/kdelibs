@@ -47,7 +47,7 @@ public:
 
 KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
                           KJavaAppletContext* _context )
-    : params(), liveconnect( new KJavaLiveConnect( _context, this ) )
+    : params()
 {
     d = new KJavaAppletPrivate;
 
@@ -56,12 +56,9 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
     d->failed = false;
 
     if( _context )
-        context = _context;
-    else
-        context = new KJavaAppletContext();
+        setAppletContext( _context );
 
     d->reallyExists = false;
-    context->registerApplet(this);
 }
 
 KJavaApplet::~KJavaApplet()
@@ -76,6 +73,13 @@ KJavaApplet::~KJavaApplet()
 bool KJavaApplet::isCreated()
 {
     return d->reallyExists;
+}
+
+void KJavaApplet::setAppletContext( KJavaAppletContext* _context )
+{
+    context = _context;
+    context->registerApplet( this );
+    liveconnect = new KJavaLiveConnect( _context, this );
 }
 
 void KJavaApplet::setAppletClass( const QString& _className )

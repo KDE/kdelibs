@@ -30,12 +30,12 @@
 #include <kurl.h>
 #include <qobject.h>
 #include <qstringlist.h>
+#include <qguardedptr.h>
 
 #include "kjavaappletwidget.h"
 
 class QTable;
 class KJavaProcess;
-class KJavaAppletWidget;
 class KJavaAppletViewer;
 class KAboutData;
 class KInstance;
@@ -44,8 +44,7 @@ class KConfig;
 /* FIXME: merge with KJavaAppletWidget */
 class KJavaAppletViewerWidget : public KJavaAppletWidget {
 public:
-    KJavaAppletViewerWidget (KJavaAppletContext* context,
-                            QWidget* parent=0, const char* name=0);
+    KJavaAppletViewerWidget (QWidget* parent=0, const char* name=0);
 protected:
     void showEvent (QShowEvent *);
 };
@@ -82,10 +81,11 @@ public slots:
 protected:
     bool openFile();
 private:
-    KJavaAppletWidget * m_view;
+    QGuardedPtr <KJavaAppletWidget> m_view;
     KConfig * m_config;
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
+    QString baseurl;
 };
 
 class KJavaAppletViewerFactory : public KParts::Factory {
