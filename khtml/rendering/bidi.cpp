@@ -928,6 +928,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    int strlen = t->length();
 	    int len = strlen - pos;
 	    QChar *str = t->text();
+#if 0
 	    if ( ( !firstLine || !t->firstLine() ) && !t->hasReturn() && t->maxWidth() + w + tmpW < width ) {
 		// the rest of the object fits completely
 // 		kdDebug() << "RenderFlow::findNextLineBreak object fits completely, max=" << t->maxWidth()
@@ -949,6 +950,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 // 			  <<" end=" << t->width( lastSpace, strlen-lastSpace, firstLine)
 // 			  << endl; 
 	    } else {
+#endif
 	    QFontMetrics fm = t->metrics( firstLine );
 	    // proportional font, needs a bit more work.
 	    int lastSpace = pos;
@@ -977,7 +979,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		len--;
 	    }
 	    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
-	    }
+//	    }
         } else
             assert( false );
 

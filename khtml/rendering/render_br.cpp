@@ -30,6 +30,7 @@ using namespace khtml;
 RenderBR::RenderBR()
     : RenderText(new DOM::DOMStringImpl(QChar('\n')))
 {
+    m_hasReturn = true;
 }
 
 RenderBR::~RenderBR()

@@ -624,6 +624,8 @@ void RenderText::calcMinMaxWidth()
     
     QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
+    if ( len == 1 && str->s->latin1() == '\n' )
+	m_hasReturn = true;
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
