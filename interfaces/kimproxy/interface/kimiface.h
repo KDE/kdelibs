@@ -1,6 +1,6 @@
 /*
     kimiface.h - KDE Instant Messenger DCOP Interface
-	
+
 	Copyright (c) 2004    Will Stephenson	 <lists@stevello.free-online.co.uk>
 
     This library is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@
  *
  * If you are implementing this interface, note that your application must have the following information in its
  * desktop file, so that it can be identified as providing KIMIface at runtime:
- * X-DCOP-ServiceName=<application name>
+ * X-DCOP-ServiceName=\<application name\>
  * ServiceTypes=DCOP/InstantMessenger
  * and the class implementing KIMIface must pass "KIMIface" to the DCOPObject constructor.
  *
@@ -48,19 +48,19 @@ k_dcop:
 // ACCESSORS
 // contact list
 	/**
-	 * Obtain a list of IM-contactable entries in the KDE 
+	 * Obtain a list of IM-contactable entries in the KDE
 	 * address book.
 	 * @return a list of KABC uids.
 	 */
 	virtual QStringList allContacts() = 0;
 	/**
-	 * Obtain a list of  KDE address book entries who are 
+	 * Obtain a list of  KDE address book entries who are
 	 * currently reachable.
 	 * @return a list of KABC uids who can receive a message, even if online.
 	 */
 	virtual QStringList reachableContacts() = 0;
 	/**
-	 * Obtain a list of  KDE address book entries who are 
+	 * Obtain a list of  KDE address book entries who are
 	 * currently online.
 	 * @return a list of KABC uids who are online with unspecified presence.
 	 */
@@ -71,9 +71,9 @@ k_dcop:
 	 * @return a list of KABC uids capable of file transfer.
 	 */
 	virtual QStringList fileTransferContacts() = 0;
-	
+
 // individual
-	/** 
+	/**
 	 * Confirm if a given KABC uid is known to KIMProxy
 	 * @param uid the KABC uid you are interested in.
 	 * @return whether one of the chat programs KIMProxy talks to knows of this KABC uid.
@@ -82,7 +82,7 @@ k_dcop:
 	/**
 	 * Obtain the IM app's idea of the contact's display name
 	 * Useful if KABC lookups may be too slow
-	 * @param KABC uid.
+	 * @param uid the KABC uid you are interested in.
 	 * @return The corresponding display name.
 	 */
 	virtual QString displayName( const QString & uid ) = 0;
@@ -99,12 +99,12 @@ k_dcop:
 	 */
 	virtual int presenceStatus( const QString & uid ) = 0;
 	/**
-	 * Indicate if a given uid can receive files 
+	 * Indicate if a given uid can receive files
 	 * @param uid the KABC uid you are interested in.
 	 * @return Whether the specified addressee can receive files.
 	 */
 	virtual bool canReceiveFiles( const QString & uid ) = 0;
-	/** 
+	/**
 	 * Some media are unidirectional (eg, sending SMS via a web interface).
 	 * This refers to the contact's ability to respond as defined by the medium, not by their presence.
 	 * Someone may appear offline (SMS has no presence) to you but in fact be able to respond.
@@ -114,9 +114,9 @@ k_dcop:
 	virtual bool canRespond( const QString & uid ) = 0;
 	/**
 	 * Get the KABC uid corresponding to the supplied IM address
-	 * Protocols should be 
+	 * Protocols should be
 	 * @param contactId the protocol specific identifier for the contact, eg UIN for ICQ, screenname for AIM, nick for IRC.
-	 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol", 
+	 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol",
 	 * @return a KABC uid or null if none found/
 	 */
 	virtual QString locate( const QString & contactId, const QString & protocol ) = 0;
@@ -128,7 +128,7 @@ k_dcop:
 	 */
 	virtual QPixmap icon( const QString & uid ) = 0;
 	/**
-	 * Get the supplied addressee's current context (home, work, or any).  
+	 * Get the supplied addressee's current context (home, work, or any).
 	 * @param uid the KABC uid you want the context for.
 	 * @return A QString describing the context, or null if not supported.
 	 */
@@ -139,11 +139,11 @@ k_dcop:
 	 * @return the set of protocols that the application supports
 	 */
 	virtual QStringList protocols() = 0;
-	
+
 // ACTORS
 	/**
 	 * Send a single message to the specified addressee
-	 * Any response will be handled by the IM client as a normal 
+	 * Any response will be handled by the IM client as a normal
 	 * conversation.
 	 * @param uid the KABC uid you want to chat with.
 	 * @param message the message to send them.
@@ -164,7 +164,7 @@ k_dcop:
 	/**
 	 * Send the file to the contact
 	 * @param uid the KABC uid you are sending to.
-	 * @param sourceURL a @ref KURL to send.
+	 * @param sourceURL a @see KURL to send.
 	 * @param altFileName an alternate filename describing the file
 	 * @param fileSize file size in bytes
 	 */

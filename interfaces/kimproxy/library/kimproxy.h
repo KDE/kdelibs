@@ -1,8 +1,8 @@
-/*    
+/*
 	kimproxy.h
-	
+
 	IM service library for KDE
-	
+
 	Copyright (c) 2004 Will Stephenson   <lists@stevello.free-online.co.uk>
 
     This library is free software; you can redistribute it and/or
@@ -47,18 +47,18 @@ typedef QMap<int, QString> PresenceStringMap;
 
 /**
  * This class provides an easy-to-use interface to any instant messengers or chat programs
- * that you have installed that implement @ref KIMIface
+ * that you have installed that implement @see KIMIface
  *
- * It works simultaneously with any running programs that implement the @ref ServiceType DCOP/InstantMessenger
+ * It works simultaneously with any running programs that implement the @see ServiceType DCOP/InstantMessenger
  * If a UID is reachable with more than one program, KIMProxy aggregates the available information and presents
- * the 'best' presence.  For example, for a contact who can be seen to be Away in IRC on program A but Online using 
- * ICQ on program B, the information from program B will be used.  KIMProxy is designed for simple information in 
+ * the 'best' presence.  For example, for a contact who can be seen to be Away in IRC on program A but Online using
+ * ICQ on program B, the information from program B will be used.  KIMProxy is designed for simple information in
  * a wide number of cases, not for detailed messaging.
- * 
- * Most operations work in terms of uids belonging to @ref KABC::Addressee, but use of the
- * address book is optional.  You can get a list of known contacts with @ref imAddresseeUids
- * and then check their presence using the various accessor methods @ref presenceString, @ref presenceNumeric
- * and display the IM programs' display names for them using @ref displayName.
+ *
+ * Most operations work in terms of uids belonging to @see KABC::Addressee, but use of the
+ * address book is optional.  You can get a list of known contacts with @see imAddresseeUids
+ * and then check their presence using the various accessor methods @see presenceString, @see presenceNumeric
+ * and display the IM programs' display names for them using @see displayName.
  *
  * To use, just get an instance using @ref instance.
  *
@@ -75,10 +75,10 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 	public:
 		/**
 		 * Obtain an instance of KIMProxy.
-		 * Note, if you share this @ref DCOPClient with your own app,
-		 * that kimproxy uses DCOPClient::setNotifications() to make sure 
-		 * it updates its information when the IM application it is interfacing to 
-		 * exits.  
+		 * Note, if you share this @see DCOPClient with your own app,
+		 * that kimproxy uses DCOPClient::setNotifications() to make sure
+		 * it updates its information when the IM application it is interfacing to
+		 * exits.
 		 * @param client your app's DCOP client.
 		 * @return The singleton instance of this class.
 		 */
@@ -92,21 +92,21 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		bool initialize();
 
 		/**
-		 * Obtain a list of IM-contactable entries in the KDE 
+		 * Obtain a list of IM-contactable entries in the KDE
 		 * address book.
 		 * @return a list of KABC uids.
 		 */
 		QStringList allContacts();
 
 		/**
-		 * Obtain a list of  KDE address book entries who are 
+		 * Obtain a list of  KDE address book entries who are
 		 * currently reachable.
 		 * @return a list of KABC uids who can receive a message, even if online.
 		 */
 		QStringList reachableContacts();
 
 		/**
-		 * Obtain a list of  KDE address book entries who are 
+		 * Obtain a list of  KDE address book entries who are
 		 * currently online.
 		 * @return a list of KABC uids who are online with unspecified presence.
 		 */
@@ -119,7 +119,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		 */
 		QStringList fileTransferContacts();
 
-		/** 
+		/**
 		 * Confirm if a given KABC uid is known to KIMProxy
 		 * @param uid the KABC uid you are interested in.
 		 * @return whether one of the chat programs KIMProxy talks to knows of this KABC uid.
@@ -129,11 +129,11 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Obtain the IM app's idea of the contact's display name
 		 * Useful if KABC lookups may be too slow
-		 * @param KABC uid.
+		 * @param uid the KABC uid you are interested in.
 		 * @return The corresponding display name.
 		 */
 		QString displayName( const QString& uid );
-        
+
 		/**
 		 * Obtain the IM presence as a number (see KIMIface) for the specified addressee
 		 * @param uid the KABC uid you want the presence for.
@@ -156,13 +156,13 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		QPixmap presenceIcon( const QString& uid );
 
 		/**
-		 * Indicate if a given uid can receive files 
+		 * Indicate if a given uid can receive files
 		 * @param uid the KABC uid you are interested in.
 		 * @return Whether the specified addressee can receive files.
 		 */
 		bool canReceiveFiles( const QString & uid );
 
-		/** 
+		/**
 		 * Some media are unidirectional (eg, sending SMS via a web interface).
 		 * @param uid the KABC uid you are interested in.
 		 * @return Whether the specified addressee can respond.
@@ -171,15 +171,15 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 
 		/**
 		 * Get the KABC uid corresponding to the supplied IM address
-		 * Protocols should be 
+		 * Protocols should be
 		 * @param contactId the protocol specific identifier for the contact, eg UIN for ICQ, screenname for AIM, nick for IRC.
-		 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol", 
+		 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol",
 		 * @return a KABC uid or null if none found/
 		 */
 		QString locate( const QString & contactId, const QString & protocol );
 
 		/**
-		 * Get the supplied addressee's current context (home, work, or any).  
+		 * Get the supplied addressee's current context (home, work, or any).
 		 * @param uid the KABC uid you want the context for.
 		 * @return A QString describing the context, or null if not supported.
 		 */
@@ -193,7 +193,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 
 		/**
 		 * Send a single message to the specified addressee
-		 * Any response will be handled by the IM client as a normal 
+		 * Any response will be handled by the IM client as a normal
 		 * conversation.
 		 * @param uid the KABC uid you want to chat with.
 		 * @param message the message to send them.
@@ -203,7 +203,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Send the file to the contact
 		 * @param uid the KABC uid you are sending to.
-		 * @param sourceURL a @ref KURL to send.
+		 * @param sourceURL a @see KURL to send.
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */
@@ -212,7 +212,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Add a contact to the contact list
 		 * @param contactId the protocol specific identifier for the contact, eg UIN for ICQ, screenname for AIM, nick for IRC.
-		 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol", 
+		 * @param protocol the protocol, eg one of "AIMProtocol", "MSNProtocol", "ICQProtocol",
 		 * @return whether the add succeeded.  False may signal already present, protocol not supported, or add operation not supported.
 		 */
 		bool addContact( const QString &contactId, const QString &protocol );
@@ -243,18 +243,18 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		 * @param uid the KABC uid whose presence changed.
 		 */
 		void sigContactPresenceChanged( const QString &uid );
-		
+
 		/**
 		 * Indicates that the sources of presence information have changed
 		 * so any previously supplied presence info is invalid.
 		 */
 		void sigPresenceInfoExpired();
 	protected:
-		/** 
+		/**
 		 * Bootstrap our presence data by polling all known apps
 		 */
 		void pollAll( const QString &uid );
-		
+
 		/**
 		 * Update our records with the given data
 		 */
@@ -264,14 +264,14 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		 * Get the name of the user's IM weapon of choice
 		 */
 		QString preferredApp();
-		
+
 		/**
 		 * Get the app stub best able to reach this uid
 		 */
 		KIMIface_stub * stubForUid( const QString &uid );
 
 		/**
-		 * Get the app stub for this protocol.  
+		 * Get the app stub for this protocol.
 		 * Take the preferred app first, then any other.
 		 */
 		KIMIface_stub * stubForProtocol( const QString &protocol );
