@@ -22,7 +22,7 @@ the specification, becomes simpler.
 1. Basic format of the file
 ---------------------------
 
-Thes desktop entry files should have an extension of ".desktop" or
+The desktop entry files should have an extension of ".desktop" or
 ".kdelnk".  ".kdelnk" is deprecated, and is only maintained for
 backwards compatibility.  Determining file type on basis fo extension
 makes determining the file type very easy and quick.  When no file
