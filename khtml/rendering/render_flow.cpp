@@ -202,7 +202,9 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     for ( ; (r = it.current()); ++it ) {
         // A special object may be registered with several different objects... so we only print the
         // object if we are it's containing block
- 	if (!r->noPaint) {
+       if (r->node->isPositioned() && r->node->containingBlock() == this) {
+           r->node->print(p, x, y, w, h, tx , ty);
+       } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
 	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos(), ty + r->startY - r->node->yPos() );
  	}
 #ifdef FLOAT_DEBUG
