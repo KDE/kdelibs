@@ -6,7 +6,7 @@ INCLUDES = \
 lib_LTLIBRARIES = libvcard.la
 
 libvcard_la_SOURCES = vCard-all.cpp
-libvcard_la_LIBADD = $(top_builddir)/kdecore/libkdecore.la
+libvcard_la_LIBADD = $(LIB_KDECORE)
 
 check_PROGRAMS = testwrite testread
 

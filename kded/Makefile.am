@@ -22,13 +22,13 @@ INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 lib_LTLIBRARIES = kded.la kbuildsycoca.la
 
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_la_LIBADD = $(top_builddir)/kio/libkio.la
+kded_la_LIBADD = $(LIB_KIO)
 kded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp \
 			kbuildservicegroupfactory.cpp kdedmodule.cpp
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kbuildsycoca_la_LIBADD = $(top_builddir)/kio/libkio.la
+kbuildsycoca_la_LIBADD = $(LIB_KIO)
 kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp \
 				kbuildservicegroupfactory.cpp \
@@ -47,7 +47,7 @@ kbuildsycoca_LDADD = kbuildsycoca.la
 kbuildsycoca_SOURCES = dummy.cpp
 
 kdontchangethehostname_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kdontchangethehostname_LDADD = $(top_builddir)/kdecore/libkdecore.la 
+kdontchangethehostname_LDADD = $(LIB_KDECORE) 
 kdontchangethehostname_SOURCES = khostname.cpp
 
 METASOURCES = AUTO

@@ -31,7 +31,7 @@ kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub \
 	renamedlg.cpp skipdlg.cpp
-kio_uiserver_la_LIBADD = $(top_builddir)/kio/libkio.la
+kio_uiserver_la_LIBADD = $(LIB_KIO)
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
 observer_DIR = $(top_srcdir)/kio/kio
@@ -44,11 +44,11 @@ dummy.cpp: uiserver.kidl
 	echo > dummy.cpp
 
 kmailservice_SOURCES = kmailservice.cpp
-kmailservice_LDADD = $(top_builddir)/kdecore/libkdecore.la
+kmailservice_LDADD = $(LIB_KDECORE)
 kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 ktelnetservice_SOURCES = ktelnetservice.cpp
-ktelnetservice_LDADD = $(top_builddir)/kdecore/libkdecore.la
+ktelnetservice_LDADD = $(LIB_KDECORE)
 ktelnetservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol

@@ -8,6 +8,6 @@ INCLUDES=	$(all_includes)
 bin_PROGRAMS = kcookiejartest
 
 kcookiejartest_SOURCES = kcookiejartest.cpp 
-kcookiejartest_LDADD   = $(top_builddir)/kio/libkio.la
+kcookiejartest_LDADD   = $(LIB_KIO)
 kcookiejartest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 

@@ -24,7 +24,7 @@ AM_CXXFLAGS = -DQT_PLUGIN
 INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
 kde_widget_LTLIBRARIES = kdewidgets.la
 kdewidgets_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
-kdewidgets_la_LIBADD = $(top_builddir)/kio/libkio.la
+kdewidgets_la_LIBADD = $(LIB_KIO)
 kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp 
 
 make-kdewidgets: kde.widgets

@@ -20,7 +20,7 @@ libksmartcard_la_SOURCES = \
 				kcardimplementation.cc
 
 libksmartcard_la_LDFLAGS = $(all_libraries) $(PCSC_LDFLAGS) -version-info 1:0 -no-undefined
-libksmartcard_la_LIBADD = $(top_builddir)/kio/libkio.la
+libksmartcard_la_LIBADD = $(LIB_KIO)
 
 bin_PROGRAMS = testkdepcsc
 testkdepcsc_SOURCES = teste.cc

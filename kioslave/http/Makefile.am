@@ -14,7 +14,7 @@ kde_module_LTLIBRARIES = kio_http.la
 
 kio_http_la_SOURCES = http.cc httpfilter.cc
 kio_http_la_METASOURCES = AUTO
-kio_http_la_LIBADD = $(top_builddir)/kio/libkio.la $(LIBZ)
+kio_http_la_LIBADD = $(LIB_KIO) $(LIBZ)
 kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 kio_http_cache_cleaner_SOURCES = dummy.cpp
@@ -22,7 +22,7 @@ kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
 kio_http_cache_cleaner_LDFLAGS = $(KDE_RPATH)
 
 kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
-kio_http_cache_cleaner_la_LIBADD  = $(top_builddir)/kio/libkio.la
+kio_http_cache_cleaner_la_LIBADD  = $(LIB_KIO)
 kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 
 noinst_HEADERS = http.h

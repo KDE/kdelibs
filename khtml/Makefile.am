@@ -44,8 +44,8 @@ libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
 	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la $(LIBKJAVA) \
-	$(top_builddir)/kio/libkio.la \
-	$(top_builddir)/kparts/libkparts.la \
+	$(LIB_KIO) \
+	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la 
 
 khtmlimagepart_la_SOURCES = khtmlimage.cpp

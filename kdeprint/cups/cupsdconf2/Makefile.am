@@ -18,7 +18,7 @@ libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdpage.cpp cupsdcomme
 			  qdirmultilineedit.cpp
 libcupsdconf_la_METASOURCES = AUTO
 libcupsdconf_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-libcupsdconf_la_LIBADD = $(top_builddir)/kio/libkio.la $(LIB_CUPS)
+libcupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
 
 noinst_HEADERS = cupsdconf.h cupsdpage.h cupsddialog.h cupsdcomment.h cupsdsplash.h \
 		 cupsdserverpage.h cupsdlogpage.h cupsdjobspage.h cupsdfilterpage.h \

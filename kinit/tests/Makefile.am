@@ -6,5 +6,5 @@ INCLUDES=	-I$(srcdir)/../.. $(all_includes)
 check_PROGRAMS = klaunchertest
 
 klaunchertest_SOURCES = klaunchertest.cpp 
-klaunchertest_LDADD   = $(top_builddir)/kio/libkio.la
+klaunchertest_LDADD   = $(LIB_KIO)
 

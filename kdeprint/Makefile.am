@@ -10,7 +10,7 @@ INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_inclu
 kde_module_LTLIBRARIES = kded_kdeprintd.la
 
 kded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
-kded_kdeprintd_la_LIBADD = $(top_builddir)/kio/libkio.la
+kded_kdeprintd_la_LIBADD = $(LIB_KIO)
 kded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
 #kded_kdeprintd_la_METASOURCES = AUTO
 
