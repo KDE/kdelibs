@@ -1765,6 +1765,18 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
+NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name, NodeImpl::Id tagIdMask )
+    : TagNodeListImpl( n, tagId, tagIdMask ), nodeName( name )
+{
+}
+
+bool NamedTagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+{
+    return TagNodeListImpl::nodeMatches( testNode )
+        && static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
+}
+
+
 // ---------------------------------------------------------------------------
 
 NamedNodeMapImpl::NamedNodeMapImpl()
