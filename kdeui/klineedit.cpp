@@ -558,7 +558,6 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
   KShortcut scKey;
 
   KKey key( e );
-  bool override = false;
   KeyBindingMap keys = getKeyBindings();
 
   if (keys[TextCompletion].isNull())
@@ -566,29 +565,35 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
   else
     scKey = keys[TextCompletion];
 
-  override |= scKey.contains (key);
+  if (scKey.contains( key ))
+    return true;
 
   if (keys[NextCompletionMatch].isNull())
     scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
   else
     scKey = keys[NextCompletionMatch];
 
-  override |= scKey.contains (key);
+  if (scKey.contains( key ))
+    return true;
 
   if (keys[PrevCompletionMatch].isNull())
     scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
    else
     scKey = keys[PrevCompletionMatch];
 
-  override |= scKey.contains (key);
+  if (scKey.contains( key ))
+    return true;
 
-  override |= KStdAccel::deleteWordBack().contains( key );
-  override |= KStdAccel::deleteWordForward().contains( key );
+  if (KStdAccel::deleteWordBack().contains( key ))
+    return true;
+  if (KStdAccel::deleteWordForward().contains( key ))
+    return true;
 
   if (d->completionBox && d->completionBox->isVisible ())
-    override |= (e->key () == Key_Backtab);
+    if (e->key () == Key_Backtab)
+      return true;
 
-  return override;
+  return false;
 }
 
 void KLineEdit::setCompletedItems( const QStringList& items )
