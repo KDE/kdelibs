@@ -65,7 +65,7 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kservice.h>
-#include <kio/slavewrapper.h>
+//#include <kio/slavewrapper.h>
 
 using namespace KIO;
 
