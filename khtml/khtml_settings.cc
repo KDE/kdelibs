@@ -29,8 +29,35 @@
 #include <kdebug.h>
 #include <qregexp.h>
 
+/**
+ * @internal
+ * Contains all settings which are both available globally and per-domain
+ */
+struct KPerDomainSettings {
+    bool m_bEnableJava : 1;
+    bool m_bEnableJavaScript : 1;
+    bool m_bEnablePlugins : 1;
+    // don't forget to maintain the bitfields as the enums grow
+    KHTMLSettings::KJSWindowOpenPolicy m_windowOpenPolicy : 2;
+    KHTMLSettings::KJSWindowStatusPolicy m_windowStatusPolicy : 1;
+    KHTMLSettings::KJSWindowFocusPolicy m_windowFocusPolicy : 1;
+    KHTMLSettings::KJSWindowMovePolicy m_windowMovePolicy : 1;
+    KHTMLSettings::KJSWindowResizePolicy m_windowResizePolicy : 1;
 
-typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
+    void dump(const QString &infix = QString::null) const {
+      kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
+      kdDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
+      kdDebug() << "  m_bEnableJavaScript: " << m_bEnableJavaScript << endl;
+      kdDebug() << "  m_bEnablePlugins: " << m_bEnablePlugins << endl;
+      kdDebug() << "  m_windowOpenPolicy: " << m_windowOpenPolicy << endl;
+      kdDebug() << "  m_windowStatusPolicy: " << m_windowStatusPolicy << endl;
+      kdDebug() << "  m_windowFocusPolicy: " << m_windowFocusPolicy << endl;
+      kdDebug() << "  m_windowMovePolicy: " << m_windowMovePolicy << endl;
+      kdDebug() << "  m_windowResizePolicy: " << m_windowResizePolicy << endl;
+    }
+};
+
+typedef QMap<QString,KPerDomainSettings> PolicyMap;
 
 class KHTMLSettingsPrivate
 {
@@ -39,13 +66,13 @@ public:
     bool m_bBackRightClick : 1;
     bool m_underlineLink : 1;
     bool m_hoverLink : 1;
+    bool m_bEnableJavaScriptDebug : 1;
     bool enforceCharset : 1;
     bool m_bAutoLoadImages : 1;
-    bool m_bEnableJava : 1;
-    bool m_bEnableJavaScript : 1;
-    bool m_bEnableJavaScriptDebug : 1;
-    bool m_bEnablePlugins : 1;
     bool m_formCompletionEnabled : 1;
+
+    // the virtual global "domain"
+    KPerDomainSettings global;
 
     int m_fontSize;
     int m_minFontSize;
@@ -59,11 +86,30 @@ public:
     QColor m_linkColor;
     QColor m_vLinkColor;
 
-    QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaDomainPolicy;
-    QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaScriptDomainPolicy;
+    PolicyMap domainPolicy;
     QStringList fonts;
     QStringList defaultFonts;
 };
+
+
+/** Returns a writeable per-domains settings instance for the given domain
+  * or a deep copy of the global settings if not existent.
+  */
+static KPerDomainSettings &setup_per_domain_policy(
+				KHTMLSettingsPrivate *d,
+				const QString &domain) {
+  if (domain.isEmpty()) {
+    kdWarning() << "setup_per_domain_policy: domain is empty" << endl;
+  }
+  QString ldomain = domain.lower();
+  PolicyMap::iterator it = d->domainPolicy.find(ldomain);
+  if (it == d->domainPolicy.end()) {
+    // simply copy global domain settings (they should have been initialized
+    // by this time)
+    it = d->domainPolicy.insert(ldomain,d->global);
+  }
+  return *it;
+}
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
@@ -119,6 +165,74 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
                                                               adviceString.length() ) );
         }
     }
+}
+
+void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
+	bool global, KPerDomainSettings &pd_settings) {
+  QString jsPrefix = global ? QString::null
+  				: QString::fromLatin1("javascript.");
+  QString javaPrefix = global ? QString::null
+  				: QString::fromLatin1("java.");
+  QString pluginsPrefix = global ? QString::null
+  				: QString::fromLatin1("plugins.");
+
+  // The setting for Java
+  QString key = javaPrefix + QString::fromLatin1("EnableJava");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_bEnableJava = config->readBoolEntry( key, false );
+  else if ( !global )
+    pd_settings.m_bEnableJava = d->global.m_bEnableJava;
+
+  // The setting for Plugins
+  key = pluginsPrefix + QString::fromLatin1("EnablePlugins");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_bEnablePlugins = config->readBoolEntry( key, true );
+  else if ( !global )
+    pd_settings.m_bEnablePlugins = d->global.m_bEnablePlugins;
+
+  // The setting for JavaScript
+  key = jsPrefix + QString::fromLatin1("EnableJavaScript");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_bEnableJavaScript = config->readBoolEntry( key, true );
+  else if ( !global )
+    pd_settings.m_bEnableJavaScript = d->global.m_bEnableJavaScript;
+
+  // window property policies
+  key = jsPrefix + QString::fromLatin1("WindowOpenPolicy");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_windowOpenPolicy = (KJSWindowOpenPolicy)
+    		config->readUnsignedNumEntry( key, KJSWindowOpenAllow );
+  else if ( !global )
+    pd_settings.m_windowOpenPolicy = d->global.m_windowOpenPolicy;
+
+  key = jsPrefix + QString::fromLatin1("WindowMovePolicy");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_windowMovePolicy = (KJSWindowMovePolicy)
+    		config->readUnsignedNumEntry( key, KJSWindowMoveAllow );
+  else if ( !global )
+    pd_settings.m_windowMovePolicy = d->global.m_windowMovePolicy;
+
+  key = jsPrefix + QString::fromLatin1("WindowResizePolicy");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_windowResizePolicy = (KJSWindowResizePolicy)
+    		config->readUnsignedNumEntry( key, KJSWindowResizeAllow );
+  else if ( !global )
+    pd_settings.m_windowResizePolicy = d->global.m_windowResizePolicy;
+
+  key = jsPrefix + QString::fromLatin1("WindowStatusPolicy");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_windowStatusPolicy = (KJSWindowStatusPolicy)
+    		config->readUnsignedNumEntry( key, KJSWindowStatusAllow );
+  else if ( !global )
+    pd_settings.m_windowStatusPolicy = d->global.m_windowStatusPolicy;
+
+  key = jsPrefix + QString::fromLatin1("WindowFocusPolicy");
+  if ( (global && reset) || config->hasKey( key ) )
+    pd_settings.m_windowFocusPolicy = (KJSWindowFocusPolicy)
+    		config->readUnsignedNumEntry( key, KJSWindowFocusAllow );
+  else if ( !global )
+    pd_settings.m_windowFocusPolicy = d->global.m_windowFocusPolicy;
+
 }
 
 
@@ -264,25 +378,34 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   {
     config->setGroup( "Java/JavaScript Settings" );
 
-    // The global setting for Java
-    if ( reset || config->hasKey( "EnableJava" ) )
-      d->m_bEnableJava = config->readBoolEntry( "EnableJava", false );
-
-    // The global setting for JavaScript
-    if ( reset || config->hasKey( "EnableJavaScript" ) )
-      d->m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", true );
-
     // The global setting for JavaScript debugging
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
       d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
 
-    // The global setting for Plugins (there's no local setting yet)
-    if ( reset || config->hasKey( "EnablePlugins" ) )
-      d->m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", true );
+    // Read options from the global "domain"
+    readDomainSettings(config,reset,true,d->global);
+    d->global.dump("init global");
 
     // The domain-specific settings.
+    bool check_old_java_script_settings = true;
+    if ( reset || config->hasKey("DomainSettings") ) {
+      check_old_java_script_settings = false;
+      QStringList domainList = config->readListEntry( "DomainSettings" );
+      QString js_group_save = config->group();
+      for ( QStringList::ConstIterator it = domainList.begin();
+                it != domainList.end(); ++it)
+      {
+        QString domain = (*it).lower();
+	config->setGroup(domain);
+        readDomainSettings(config,reset,false,d->domainPolicy[domain]);
+	d->domainPolicy[domain].dump("init "+domain);
+      }
+      config->setGroup(js_group_save);
+    }
+
     bool check_old_java = true;
-    if( reset || config->hasKey( "JavaDomainSettings" ) )
+    if( ( reset || config->hasKey( "JavaDomainSettings" ) )
+    	&& check_old_java_script_settings )
     {
       check_old_java = false;
       QStringList domainList = config->readListEntry( "JavaDomainSettings" );
@@ -293,12 +416,15 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-        d->javaDomainPolicy[domain] = javaAdvice;
+        setup_per_domain_policy(d,domain).m_bEnableJava =
+		javaAdvice == KJavaScriptAccept;
+	setup_per_domain_policy(d,domain).dump("JavaDomainSettings 4 "+domain);
       }
     }
 
     bool check_old_ecma = true;
-    if( reset || config->hasKey( "ECMADomainSettings" ) )
+    if( ( reset || config->hasKey( "ECMADomainSettings" ) )
+    	&& check_old_java_script_settings )
     {
       check_old_ecma = false;
       QStringList domainList = config->readListEntry( "ECMADomainSettings" );
@@ -309,12 +435,15 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-        d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
+        setup_per_domain_policy(d,domain).m_bEnableJavaScript =
+			javaScriptAdvice == KJavaScriptAccept;
+	setup_per_domain_policy(d,domain).dump("ECMADomainSettings 4 "+domain);
       }
     }
 
-    if( reset || config->hasKey( "JavaScriptDomainAdvice" )
-             && ( check_old_java || check_old_ecma ) )
+    if( ( reset || config->hasKey( "JavaScriptDomainAdvice" ) )
+             && ( check_old_java || check_old_ecma )
+	     && check_old_java_script_settings )
     {
       QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
       for ( QStringList::ConstIterator it = domainList.begin();
@@ -325,12 +454,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         if( check_old_java )
-          d->javaDomainPolicy[domain] = javaAdvice;
+          setup_per_domain_policy(d,domain).m_bEnableJava =
+	  		javaAdvice == KJavaScriptAccept;
         if( check_old_ecma )
-          d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
+          setup_per_domain_policy(d,domain).m_bEnableJavaScript =
+	  		javaScriptAdvice == KJavaScriptAccept;
+	setup_per_domain_policy(d,domain).dump("JavaScriptDomainAdvice 4 "+domain);
       }
 
       //save all the settings into the new keywords if they don't exist
+#if 0
       if( check_old_java )
       {
         QStringList domainConfig;
@@ -356,30 +489,36 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         }
         config->writeEntry( "ECMADomainSettings", domainConfig );
       }
+#endif
     }
   }
   config->setGroup(group_save);
 }
 
 
-// Local helper for isJavaEnabled & isJavaScriptEnabled.
-static bool lookup_hostname_policy(const QString& hostname,
-                                   const PolicyMap& policy,
-                                   const bool default_retval)
+/** Local helper for retrieving per-domain settings.
+  *
+  * In case of doubt, the global domain is returned.
+  */
+static const KPerDomainSettings &lookup_hostname_policy(
+			const KHTMLSettingsPrivate *d,
+			const QString& hostname)
 {
+  kdDebug() << "lookup_hostname_policy(" << hostname << ")" << endl;
   if (hostname.isEmpty()) {
-    return default_retval;
+    d->global.dump("global");
+    return d->global;
   }
 
+  PolicyMap::const_iterator notfound = d->domainPolicy.end();
+
   // First check whether there is a perfect match.
-  if( policy.contains( hostname ) ) {
+  PolicyMap::const_iterator it = d->domainPolicy.find(hostname);
+  if( it != notfound ) {
+    kdDebug() << "perfect match" << endl;
+    (*it).dump(hostname);
     // yes, use it (unless dunno)
-    KHTMLSettings::KJavaScriptAdvice adv = policy[ hostname ];
-    if( adv == KHTMLSettings::KJavaScriptReject ) {
-      return false;
-    } else if( adv == KHTMLSettings::KJavaScriptAccept ) {
-      return true;
-    }
+    return *it;
   }
 
   // Now, check for partial match.  Chop host from the left until
@@ -388,20 +527,21 @@ static bool lookup_hostname_policy(const QString& hostname,
   int dot_idx = -1;
   while( (dot_idx = host_part.find(QChar('.'))) >= 0 ) {
     host_part.remove(0,dot_idx);
-    if( policy.contains( host_part ) ) {
-      KHTMLSettings::KJavaScriptAdvice adv = policy[ host_part ];
-      if( adv == KHTMLSettings::KJavaScriptReject ) {
-        return false;
-      } else if( adv == KHTMLSettings::KJavaScriptAccept ) {
-        return true;
-      }
+    it = d->domainPolicy.find(host_part);
+    Q_ASSERT(notfound == d->domainPolicy.end());
+    if( it != notfound ) {
+      kdDebug() << "partial match" << endl;
+      (*it).dump(host_part);
+      return *it;
     }
     // assert(host_part[0] == QChar('.'));
     host_part.remove(0,1); // Chop off the dot.
   }
 
-  // No domain-specific entry, or was dunno: use global setting
-  return default_retval;
+  // No domain-specific entry: use global domain
+  kdDebug() << "no match" << endl;
+  d->global.dump("global");
+  return d->global;
 }
 
 bool KHTMLSettings::isBackRightClickEnabled()
@@ -411,12 +551,14 @@ bool KHTMLSettings::isBackRightClickEnabled()
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname.lower(), d->javaDomainPolicy, d->m_bEnableJava);
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_bEnableJava;
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname.lower(), d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_bEnableJavaScript;
 }
 
 bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
@@ -425,10 +567,40 @@ bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
   return d->m_bEnableJavaScriptDebug;
 }
 
-bool KHTMLSettings::isPluginsEnabled( const QString& /* hostname */ )
+bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
 {
-  // FIXME: hostname is ignored (dnaber, 2001-01-03)
-  return d->m_bEnablePlugins;
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_bEnablePlugins;
+}
+
+KHTMLSettings::KJSWindowOpenPolicy KHTMLSettings::windowOpenPolicy(
+				const QString& hostname) const {
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_windowOpenPolicy;
+}
+
+KHTMLSettings::KJSWindowMovePolicy KHTMLSettings::windowMovePolicy(
+				const QString& hostname) const {
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_windowMovePolicy;
+}
+
+KHTMLSettings::KJSWindowResizePolicy KHTMLSettings::windowResizePolicy(
+				const QString& hostname) const {
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_windowResizePolicy;
+}
+
+KHTMLSettings::KJSWindowStatusPolicy KHTMLSettings::windowStatusPolicy(
+				const QString& hostname) const {
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_windowStatusPolicy;
+}
+
+KHTMLSettings::KJSWindowFocusPolicy KHTMLSettings::windowFocusPolicy(
+				const QString& hostname) const {
+  kdDebug() << k_funcinfo << endl;
+  return lookup_hostname_policy(d,hostname.lower()).m_windowFocusPolicy;
 }
 
 int KHTMLSettings::mediumFontSize() const

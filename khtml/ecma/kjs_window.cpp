@@ -46,6 +46,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtml_settings.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_documentimpl.h"
@@ -699,13 +700,19 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
 #endif
     switch( entry->value ) {
     case Status: {
+      if (m_part->settings()->windowStatusPolicy(m_part->url().host())
+		== KHTMLSettings::KJSWindowStatusAllow) {
       String s = value.toString(exec);
       m_part->setJSStatusBarText(s.value().qstring());
+      }
       return;
     }
     case DefaultStatus: {
+      if (m_part->settings()->windowStatusPolicy(m_part->url().host())
+		== KHTMLSettings::KJSWindowStatusAllow) {
       String s = value.toString(exec);
       m_part->setJSDefaultStatusBarText(s.value().qstring());
+      }
       return;
     }
     case _Location: {
@@ -1058,24 +1065,22 @@ Value Window::openWindow(ExecState *exec, const List& args)
   UString s = v.toString(exec);
   QString str = s.qstring();
 
-  KConfig *config = new KConfig("konquerorrc");
-  config->setGroup("Java/JavaScript Settings");
-  int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 ); // 0=allow, 1=ask, 2=deny, 3=smart
-  delete config;
-  if ( policy == 1 ) {
+  KHTMLSettings::KJSWindowOpenPolicy policy =
+		m_part->settings()->windowOpenPolicy(m_part->url().host());
+  if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
     if ( KMessageBox::questionYesNo(widget,
                                     i18n( "This site is trying to open up a new browser "
                                           "window using JavaScript.\n"
                                           "Do you want to allow this?" ),
                                     i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
-      policy = 0;
-  } else if ( policy == 3 ) // smart
+      policy = KHTMLSettings::KJSWindowOpenAllow;
+  } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
     // window.open disabled unless from a key/mouse event
     if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
-      policy = 0;
+      policy = KHTMLSettings::KJSWindowOpenAllow;
   }
-  if ( policy != 0 ) {
+  if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
     return Undefined();
   } else {
     KParts::WindowArgs winargs;
@@ -1259,8 +1264,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(args.size() == 2 && widget)
       widget->setContentsPos(args[0].toInt32(exec), args[1].toInt32(exec));
     return Undefined();
-  case Window::MoveBy:
-    if(args.size() == 2 && widget)
+  case Window::MoveBy: {
+    KHTMLSettings::KJSWindowMovePolicy policy =
+		part->settings()->windowMovePolicy(part->url().host());
+    if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
 	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
@@ -1272,8 +1279,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         tl->move( dest );
     }
     return Undefined();
-  case Window::MoveTo:
-    if(args.size() == 2 && widget)
+  }
+  case Window::MoveTo: {
+    KHTMLSettings::KJSWindowMovePolicy policy =
+		part->settings()->windowMovePolicy(part->url().host());
+    if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
 	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
@@ -1285,20 +1295,29 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         tl->move( dest );
     }
     return Undefined();
-  case Window::ResizeBy:
-    if(args.size() == 2 && widget)
+  }
+  case Window::ResizeBy: {
+    KHTMLSettings::KJSWindowResizePolicy policy =
+		part->settings()->windowResizePolicy(part->url().host());
+    if(policy == KHTMLSettings::KJSWindowResizeAllow
+    		&& args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
       window->resizeTo( tl, tl->width() + args[0].toInt32(exec), tl->height() + args[1].toInt32(exec) );
     }
     return Undefined();
-  case Window::ResizeTo:
-    if(args.size() == 2 && widget)
+  }
+  case Window::ResizeTo: {
+    KHTMLSettings::KJSWindowResizePolicy policy =
+               part->settings()->windowResizePolicy(part->url().host());
+    if(policy == KHTMLSettings::KJSWindowResizeAllow
+               && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
       window->resizeTo( tl, args[0].toInt32(exec), args[1].toInt32(exec) );
     }
     return Undefined();
+  }
   case Window::SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
@@ -1346,10 +1365,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::ClearInterval:
     (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
     return Undefined();
-  case Window::Focus:
-    if (widget)
+  case Window::Focus: {
+    KHTMLSettings::KJSWindowFocusPolicy policy =
+		part->settings()->windowFocusPolicy(part->url().host());
+    if(policy == KHTMLSettings::KJSWindowFocusAllow && widget)
       widget->setActiveWindow();
     return Undefined();
+  }
   case Window::Blur:
     // TODO
     return Undefined();
