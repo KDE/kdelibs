@@ -1312,7 +1312,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef TABLE_DEBUG
     kdDebug(300) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
-    if (!containsPositioned())
+    if (!containsPositioned() && !isRelPositioned() && !isPositioned())
     {
     	if((_ty > _y + _h) || (_ty + height() < _y)) return;
     	if((_tx > _x + _w) || (_tx + width() < _x)) return;
