@@ -73,6 +73,9 @@ public:
   QString fsType() const { return type; };
   bool mounted() const { return isMounted; };
   int kBSize() const { return size; };
+
+  QString discType();  
+
   QString iconName();
   QString realIconName() { return icoName; };
   QString prettyKBSize() const { return KIO::convertSizeFromKB(size); };

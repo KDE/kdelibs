@@ -14,4 +14,4 @@ kdelnk_DATA = mycomputer.protocol
 kdelnkdir = $(kde_servicesdir)
 
 
-subdirs=. kdedmodule mimetypes
+SUBDIRS=. kdedmodule mimetypes

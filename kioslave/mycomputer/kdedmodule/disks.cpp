@@ -210,6 +210,35 @@ QString DiskEntry::guessIconName()
   return iconName;
 };
 
+QString DiskEntry::discType()
+{
+  QString typeName;
+    // try to be intelligent
+    if (-1!=mountPoint().find("cdrom",0,FALSE)) typeName="kdedevice/cdrom";
+    else if (-1!=deviceName().find("cdrom",0,FALSE)) typeName="kdedevice/cdrom";
+    else if (-1!=mountPoint().find("writer",0,FALSE)) typeName="kdedevice/cdwriter";
+    else if (-1!=deviceName().find("writer",0,FALSE)) typeName="kdedevice/cdwriter";
+    else if (-1!=mountPoint().find("mo",0,FALSE)) typeName="kdedevice/mo";
+    else if (-1!=deviceName().find("mo",0,FALSE)) typeName="kdedevice/mo";
+    else if (-1!=deviceName().find("fd",0,FALSE)) {
+            if (-1!=deviceName().find("360",0,FALSE)) typeName="kdedevice/floppy5";
+            if (-1!=deviceName().find("1200",0,FALSE)) typeName="kdedevice/floppy5";
+            else typeName+="kdedevice/floppy";
+         }
+    else if (-1!=mountPoint().find("floppy",0,FALSE)) typeName="kdedevice/floppy";
+    else if (-1!=mountPoint().find("zip",0,FALSE)) typeName+="kdedevice/zip";
+    else if (-1!=fsType().find("nfs",0,FALSE)) typeName="kdedevice/nfs";
+    else typeName="kdedevice/hdd";
+//    if ( -1==mountOptions().find("user",0,FALSE) )
+//      iconName.prepend("root_"); // special root icon, normal user can´t mount
+
+    //debug("device %s is %s",deviceName().latin1(),iconName.latin1());
+
+    //emit iconNameChanged();
+  return typeName;
+
+
+}
 
 /***************************************************************************
   * starts a command on the underlying system via /bin/sh

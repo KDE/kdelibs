@@ -27,6 +27,7 @@
 	bool deviceMounted(int);
 	QString mountPoint(const QString dev);
 	QString mountPoint(int);
+	QString deviceType(int);
   };
   
   extern "C" {
@@ -206,6 +207,26 @@ QString HelloProtocol::mountPoint(int id)
 }
 
 
+
+QString HelloProtocol::deviceType(int id)
+{
+        QByteArray data;
+        QByteArray param;
+        QCString retType;
+        QString retVal;
+        QDataStream streamout(param,IO_WriteOnly);
+        streamout<<id;
+        if ( m_dcopClient->call( "kded",
+                 "mountwatcher", "type(int)", param,retType,data,false ) )
+      {
+        QDataStream streamin(data,IO_ReadOnly);
+        streamin>>retVal;
+      }
+      return retVal;
+}
+
+
+
 void HelloProtocol::listRoot()
 {
 	KIO::UDSEntry   entry;
@@ -217,9 +238,9 @@ void HelloProtocol::listRoot()
 	{
 		QString device=deviceNode(i);
 		if (deviceMounted(i))
-		        createFileEntry(entry, i18n("%1 mounted at %2").arg(deviceNode(i)).arg(mountPoint(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=true", "kdedevice/floppy_mounted");
+		        createFileEntry(entry, i18n("%1 mounted at %2").arg(deviceNode(i)).arg(mountPoint(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=true", deviceType(i)+"_mounted");
 		else
-		        createFileEntry(entry, i18n("%1 (not mounted)").arg(deviceNode(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=false", "kdedevice/floppy_unmounted");
+		        createFileEntry(entry, i18n("%1 (not mounted)").arg(deviceNode(i)), QString("mycomputer:/entries?dev=")+deviceNode(i)+"&mp="+mountPoint(i)+"&mounted=false", deviceType(i)+"_unmounted");
         	listEntry(entry, false);
 		
 	}

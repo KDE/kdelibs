@@ -70,7 +70,8 @@ QString  MountWatcherModule::devicenode(int id)
 
 QString  MountWatcherModule::type(int id)
 {
-	return (id==1)?"kdedevice/floppy_unmounted":"kdedevice/floppy_mounted";
+	return mDiskList.at(id)->discType();
+//	return (id==1)?"kdedevice/floppy_unmounted":"kdedevice/floppy_mounted";
 }
 
 bool   MountWatcherModule::mounted(int id)
