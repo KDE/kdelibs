@@ -107,7 +107,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         if (KStandardDirs::exists(cDir))
         {
             themeDirs += cDir;
-	    if (mDir.isEmpty() 
+	    if (mDir.isEmpty()
 		    && KStandardDirs::exists( cDir + "index.desktop"))
 		mDir = cDir;
         }
@@ -225,19 +225,30 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
     KIconThemeDir *dir;
 
     // Try to find exact match
+    QStringList result;
     for ( ; dirs.current(); ++dirs)
     {
         dir = dirs.current();
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
-        if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
-            return dir->iconList();
+        if ((dir->type() == KIcon::Fixed) && (dir->size() == size)) 
+        {
+            result += dir->iconList();
+            continue;
+        }
         if ((dir->type() == KIcon::Scalable) &&
-                (size >= dir->minSize()) && (size <= dir->maxSize()))
-            return dir->iconList();
-	if (dir->type() == KIcon::Threshold) return dir->iconList();
+            (size >= dir->minSize()) && (size <= dir->maxSize())) 
+        {
+            result += dir->iconList();
+            continue;
+        }
+	if ((dir->type() == KIcon::Threshold) &&
+            (abs(size-dir->size())<dir->threshold()))
+            result+=dir->iconList();
     }
 
+    return result;
+        
     dirs.toFirst();
 
     // Find close match
