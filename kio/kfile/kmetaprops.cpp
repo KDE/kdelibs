@@ -113,6 +113,17 @@ void KFileMetaPropsPlugin::createLayout()
     if ( !d->m_info.isValid() || (d->m_info.preferredKeys()).isEmpty() )
         return;
 
+    // now get a list of groups
+    KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
+    QStringList groupList = d->m_info.preferredGroups();
+
+    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
+    if (!mtinfo) 
+    {
+        kdDebug(7034) << "no mimetype info there\n";
+        return;
+    }
+
     // let the dialog create the page frame
     QFrame* topframe = properties->dialog()->addPage(i18n("&Meta Info"));
     topframe->setFrameStyle(QFrame::NoFrame);
@@ -128,29 +139,26 @@ void KFileMetaPropsPlugin::createLayout()
     QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
 
-    // now get a list of groups
-    KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
-    QStringList groupList = d->m_info.preferredGroups();
-
-    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
-    if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
-
-    for (QStringList::Iterator git=groupList.begin(); git!=groupList.end(); ++git)
+    for (QStringList::Iterator git=groupList.begin(); 
+            git!=groupList.end(); ++git)
     {
         kdDebug(7033) << *git << endl;
 
-        QStringList itemList=d->m_info.group(*git).preferredKeys();
+        QStringList itemList = d->m_info.group(*git).preferredKeys();
         if (itemList.isEmpty())
             continue;
 
-        QGroupBox *groupBox = new QGroupBox(2, Qt::Horizontal, QStyleSheet::escape(*git), d->m_frame);
+        QGroupBox *groupBox = new QGroupBox(2, Qt::Horizontal, 
+            QStyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()), 
+            d->m_frame);
 
         toplayout->addWidget(groupBox);
 
         QValueList<KFileMetaInfoItem> readItems;
         QValueList<KFileMetaInfoItem> editItems;
 
-        for (QStringList::Iterator iit = itemList.begin(); iit!=itemList.end(); ++iit)
+        for (QStringList::Iterator iit = itemList.begin(); 
+                iit!=itemList.end(); ++iit)
         {
             KFileMetaInfoItem item = d->m_info[*git][*iit];
             if ( !item.isValid() ) continue;
@@ -165,7 +173,8 @@ void KFileMetaPropsPlugin::createLayout()
 
         KFileMetaInfoWidget* w = 0L;
         // then first add the editable items to the layout
-        for (QValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); iit!=editItems.end(); ++iit)
+        for (QValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); 
+                iit!=editItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
@@ -176,7 +185,8 @@ void KFileMetaPropsPlugin::createLayout()
         }
 
         // and then the read only items
-        for (QValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); iit!=readItems.end(); ++iit)
+        for (QValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); 
+                iit!=readItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
             (new KFileMetaInfoWidget(*iit, 0L, groupBox));
