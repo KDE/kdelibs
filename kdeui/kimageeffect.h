@@ -148,6 +148,18 @@ public:
      */
     static QImage& intensity(QImage &image, float percent);
 
+    /**
+     * Converts an image to grayscale.
+     *
+     * The formula used in the conversion is (r+b+g)/3.  This may not
+     * be the best way to do the conversion from an aesthetics point
+     * of view.  It is, however, very optimized and very fast.
+     *
+     * @param image The QImage to process.
+     * @return Returns the @ref #image, provided for convenience.
+     */
+    static QImage& toGray(QImage &image);
+
 private:
 
     /**

@@ -165,6 +165,18 @@ public:
      * @return Returns the @ref #pixmap, provided for convenience.
      */
     static KPixmap& fade(KPixmap& pixmap, double val, const QColor &color);
+
+    /**
+     * Converts a pixmap to grayscale.
+     *
+     * The formula used in the conversion is (r+b+g)/3.  This may not
+     * be the best way to do the conversion from an aesthetics point
+     * of view.  It is, however, very optimized and very fast.
+     *
+     * @param pixmap The pixmap to process.
+     * @return Returns the @ref #pixmap, provided for convenience.
+     */
+    static KPixmap& toGray(KPixmap& pixmap);
 };
 
 

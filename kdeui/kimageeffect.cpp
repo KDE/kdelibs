@@ -1119,3 +1119,49 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
 
     return img;
 }
+
+//======================================================================
+//
+// Color effects
+//
+//======================================================================
+
+// This code is adapted from code (C) Rik Hemsley <rik@kde.org>
+//
+// The formula used (r + b + g) /3 is different from the qGray formula
+// used by Qt.  This is because our formula is much much faster.  If,
+// however, it turns out that this is producing sub-optimal images,
+// then it will have to change (kurt)
+QImage& KImageEffect::toGray(QImage &img)
+{
+    if (img.depth() == 32) {
+        register uchar * r(img.bits());
+        register uchar * g(img.bits() + 1);
+        register uchar * b(img.bits() + 2);
+
+        uchar * end(img.bits() + img.numBytes());
+
+        while (r != end) {
+         
+          *r = *g = *b = (((*r + *g) >> 1) + *b) >> 1; // (r + b + g) / 3
+
+          r += 4;
+          g += 4;
+          b += 4;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < img.numColors(); i++)
+        {
+            register uint r = qRed(img.color(i));
+            register uint g = qGreen(img.color(i));
+            register uint b = qBlue(img.color(i));
+
+            register uint gray = (((r + g) >> 1) + b) >> 1;
+            img.setColor(i, qRgb(gray, gray, gray));
+        }
+    }
+
+    return img;
+}
