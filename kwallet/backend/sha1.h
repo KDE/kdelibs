@@ -26,45 +26,45 @@
 /* @internal
  */
 class SHA1 {
-   public:
-     SHA1();
-     virtual ~SHA1();
+	public:
+		SHA1();
+		virtual ~SHA1();
 
-     /*
-      *  The number of bits in the hash generated.
-      */
-     virtual int size();
+		/*
+		 *  The number of bits in the hash generated.
+		 */
+		virtual int size() const;
 
-     /*
-      *  True if all settings are good and we are ready to hash.
-      */
-     virtual bool readyToGo();
+		/*
+		 *  True if all settings are good and we are ready to hash.
+		 */
+		virtual bool readyToGo() const;
 
-     /*
-      *  Process a block of data for the hash function.
-      */
-     virtual int process(const void *block, int len);
-     
-     /*
-      *  Return the digest as a 20 byte array reference.
-      *  Calling this makes readyToGo() == false.
-      */
-     virtual const unsigned char *getHash();
+		/*
+		 *  Process a block of data for the hash function.
+		 */
+		virtual int process(const void *block, int len);
 
-     /*
-      *  Reset the digest so a new one can be calculated.
-      */
-     virtual int reset();
-     
-   protected:
-     int _hashlen;
-     bool _init;
+		/*
+		 *  Return the digest as a 20 byte array reference.
+		 *  Calling this makes readyToGo() == false.
+		 */
+		virtual const unsigned char *hash();
 
-     long _h0, _h1, _h2, _h3, _h4;
-     long _nblocks;
-     int _count;
-     unsigned char _buf[64];
-     void transform(void *data);
+		/*
+		 *  Reset the digest so a new one can be calculated.
+		 */
+		virtual int reset();
+
+	protected:
+		int _hashlen;
+		bool _init;
+
+		long _h0, _h1, _h2, _h3, _h4;
+		long _nblocks;
+		int _count;
+		unsigned char _buf[64];
+		void transform(void *data);
 };
 
 

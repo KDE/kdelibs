@@ -34,29 +34,29 @@
  */
 
 class CipherBlockChain : public BlockCipher {
-  public:
-    CipherBlockChain(BlockCipher *cipher);
-    ~CipherBlockChain();
+	public:
+		CipherBlockChain(BlockCipher *cipher);
+		virtual ~CipherBlockChain();
 
-    bool setKey(void *key, int bitlength);
- 
-    int getKeyLen();
- 
-    bool variableKeyLen();
- 
-    bool readyToGo();
- 
-    int encrypt(void *block, int len);
- 
-    int decrypt(void *block, int len);
+		virtual bool setKey(void *key, int bitlength);
 
-  private: 
-    BlockCipher *_cipher;
-    void *_register;
-    void *_next;
-    int _len;
-    int _reader, _writer;
-    
+		virtual int keyLen() const;
+
+		virtual bool variableKeyLen() const;
+
+		virtual bool readyToGo() const;
+
+		virtual int encrypt(void *block, int len);
+
+		virtual int decrypt(void *block, int len);
+
+	private: 
+		BlockCipher *_cipher;
+		void *_register;
+		void *_next;
+		int _len;
+		int _reader, _writer;
+
 };
 
 #endif

@@ -22,7 +22,7 @@
 
 
 BlockCipher::BlockCipher() {
-  _blksz = -1;
+	_blksz = -1;
 }
 
 
@@ -31,7 +31,7 @@ BlockCipher::~BlockCipher() {
 
 
 int BlockCipher::blockSize() const {
-  return _blksz;
+	return _blksz;
 }
 
 

@@ -8,7 +8,6 @@ libkwalletbackend_la_LIBADD = $(LIB_QT) ../../kdecore/libkdecore.la
 libkwalletbackend_la_SOURCES = blockcipher.cc		\
 			       blowfish.cc		\
 			       cbc.cc			\
-			       hashbase.cc		\
 			       sha1.cc			\
 			       kwalletentry.cc		\
 			       kwalletbackend.cc
@@ -18,7 +17,6 @@ libkwalletbackend_la_METASOURCES = AUTO
 
 noinst_HEADERS = blowfishtables.h	\
 		 cbc.h			\
-		 hashbase.h		\
 		 sha1.h			\
 		 blockcipher.h		\
 		 kwalletentry.h		\

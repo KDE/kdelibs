@@ -132,7 +132,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	// To make brute force take longer
 	for (int i = 0; i < 2000; i++) {
-		memcpy(block1.data(), sha.getHash(), shasz);
+		memcpy(block1.data(), sha.hash(), shasz);
 		sha.reset();
 		sha.process(block1.data(), shasz);
 	}
@@ -144,7 +144,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 		QByteArray block2(shasz);
 		// To make brute force take longer
 		for (int i = 0; i < 2000; i++) {
-			memcpy(block2.data(), sha.getHash(), shasz);
+			memcpy(block2.data(), sha.hash(), shasz);
 			sha.reset();
 			sha.process(block2.data(), shasz);
 		}
@@ -157,7 +157,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 			QByteArray block3(shasz);
 			// To make brute force take longer
 			for (int i = 0; i < 2000; i++) {
-				memcpy(block3.data(), sha.getHash(), shasz);
+				memcpy(block3.data(), sha.hash(), shasz);
 				sha.reset();
 				sha.process(block3.data(), shasz);
 			}
@@ -170,7 +170,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 				QByteArray block4(shasz);
 				// To make brute force take longer
 				for (int i = 0; i < 2000; i++) {
-					memcpy(block4.data(), sha.getHash(), shasz);
+					memcpy(block4.data(), sha.hash(), shasz);
 					sha.reset();
 					sha.process(block4.data(), shasz);
 				}
@@ -307,7 +307,7 @@ int Backend::open(const QByteArray& password) {
 	}
 
 	// Decrypt the encrypted data
-	passhash.resize(bf.getKeyLen()/8);
+	passhash.resize(bf.keyLen()/8);
 	password2hash(password, passhash);
 
 	bf.setKey((void *)passhash.data(), passhash.size()*8);
@@ -346,7 +346,7 @@ int Backend::open(const QByteArray& password) {
 	// compute the hash ourself
 	SHA1 sha;
 	sha.process(t, fsize);
-	const char *testhash = (const char *)sha.getHash();
+	const char *testhash = (const char *)sha.hash();
 
 	// compare hashes
 	int sz = encrypted.size();
@@ -527,7 +527,7 @@ int Backend::sync(const QByteArray& password) {
 		wholeFile[(int)(i+blksz+4+decrypted.size())] = randBlock[(int)(i+blksz)];
 	}
 
-	const char *hash = (const char *)sha.getHash();
+	const char *hash = (const char *)sha.hash();
 	for (int i = 0; i < 20; i++) {
 		wholeFile[(int)(newsize-20+i)] = hash[i];
 	}

@@ -26,36 +26,35 @@
 /* @internal
  */
 class BlowFish : public BlockCipher {
-   public:
-     BlowFish();
-     ~BlowFish();
+	public:
+		BlowFish();
+		virtual ~BlowFish();
 
-     bool setKey(void *key, int bitlength);
+		virtual bool setKey(void *key, int bitlength);
 
-     int getKeyLen();
+		virtual int keyLen() const;
 
-     bool variableKeyLen();
+		virtual bool variableKeyLen() const;
 
-     bool readyToGo();
+		virtual bool readyToGo() const;
 
-     int encrypt(void *block, int len);
+		virtual int encrypt(void *block, int len);
 
-     int decrypt(void *block, int len);
+		virtual int decrypt(void *block, int len);
 
-   private:
-     unsigned long _S[4][256];
-     unsigned long _P[18];
+	private:
+		unsigned long _S[4][256];
+		unsigned long _P[18];
 
-     void *_key;
-     int _keylen;  // in bits
+		void *_key;
+		int _keylen;  // in bits
 
-     bool _init;
- 
-     bool init();
-     unsigned long F(unsigned long x);
-     void encipher(unsigned long *xl, unsigned long *xr);
-     void decipher(unsigned long *xl, unsigned long *xr);
+		bool _init;
 
+		bool init();
+		unsigned long F(unsigned long x);
+		void encipher(unsigned long *xl, unsigned long *xr);
+		void decipher(unsigned long *xl, unsigned long *xr);
 };
 
 #endif
