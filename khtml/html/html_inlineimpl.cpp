@@ -82,6 +82,8 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
         if ( k ) {
             if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) {
+                if (k->qKeyEvent)
+                    k->qKeyEvent->ignore();
                 HTMLElementImpl::defaultEventHandler(evt);
                 return;
             }
