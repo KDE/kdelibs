@@ -99,7 +99,7 @@ namespace KJS {
      * set by Object() so that the collector is allowed to delete us
      */
     void setGcAllowed();
-    
+
     // Will crash if called on a simple number.
     void setGcAllowedFast() { _flags |= VI_GCALLOWED; }
 
@@ -313,7 +313,7 @@ namespace KJS {
   };
 
   /**
-   * Represents an primitive Null value
+   * Represents an primitive Boolean value
    */
   class Boolean : public Value {
   public:
@@ -337,7 +337,7 @@ namespace KJS {
   };
 
   /**
-   * Represents an primitive Null value
+   * Represents an primitive String value
    */
   class String : public Value {
   public:
