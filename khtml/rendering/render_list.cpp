@@ -81,6 +81,10 @@ void RenderListItem::setStyle(RenderStyle *style)
     RenderFlow::setStyle(style);
     if(!m_marker) {
 	RenderStyle *newStyle = new RenderStyle(style);
+	if(newStyle->direction() == LTR)
+	    newStyle->setFloating(FLEFT);
+	else
+	    newStyle->setFloating(FRIGHT);
 	m_marker = new RenderListMarker();
 	m_marker->setStyle(newStyle);
 	addChild(m_marker);
@@ -155,14 +159,14 @@ RenderListMarker::~RenderListMarker()
 	listImage->deref(this);
 }
 
-void RenderListMarker::setStyle(RenderStyle *s) 
+void RenderListMarker::setStyle(RenderStyle *s)
 {
     RenderBox::setStyle(s);
-    
+
     if(listImage)
 	listImage->deref(this);
     listImage = m_style->listStyleImage();
-    if(listImage) 
+    if(listImage)
 	listImage->ref(this);
 }
 
@@ -184,20 +188,27 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
 
+#ifdef BOX_DEBUG
+    p->setPen( QColor("red") );
+    QCOORD points[] = { _tx,_ty, _tx+offset,_ty, _tx+offset,_ty+offset, _tx,_ty+offset, _tx,_ty };
+    QPointArray a( 5, points );
+    p->drawPolyline( a );
+#endif
+    
     int xoff = 0;
-    int yoff = fm.ascent() - offset/2;
+    int yoff = fm.ascent() - offset;
 
     if(m_style->listStylePosition() != INSIDE) {
-	    xoff = -7 - offset;
+	xoff = -7 - offset;
 	if(m_style->direction() == RTL)
 	    xoff = -xoff + m_parent->width();
     }
 
     if ( listImage ) {
-	p->drawPixmap( QPoint( _tx + xoff, _ty + yoff ), listImage->pixmap());
- 	return; 
+	p->drawPixmap( QPoint( _tx + xoff, _ty ), listImage->pixmap());
+ 	return;
     }
-    
+
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
 
@@ -222,12 +233,12 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     }
     default:
 	if(item != QString::null) {
-	    _ty += fm.ascent() - fm.height()/2 + 1;
+	    //_ty += fm.ascent() - fm.height()/2 + 1;
 	    if(m_style->listStylePosition() == INSIDE) {
 		if(m_style->direction() == LTR)
-		    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-		else
 		    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+		else
+		    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
 	    } else {
 		if(m_style->direction() == LTR)
 		    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
@@ -280,7 +291,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o, bool *manua
     else
     {
 	repaintRectangle(0, 0, m_width, m_height);
-    }  
+    }
 }
 	
 void RenderListMarker::calcMinMaxWidth()
@@ -288,10 +299,11 @@ void RenderListMarker::calcMinMaxWidth()
     m_width = 0;
 
     if(listImage) {
-	m_width = listImage->pixmap().width();
+	if(m_style->listStylePosition() == INSIDE)
+	    m_width = listImage->pixmap().width();
 	return;
     }
-    
+
     switch(m_style->listStyleType())
     {
     case DISC:

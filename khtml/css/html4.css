@@ -97,6 +97,8 @@
       OL              { list-style-type: decimal }
       OL UL, UL OL,
       UL UL, OL OL    { margin-top: 0; margin-bottom: 0 }
+      LI > P          { margin-top: 0; margin-bottom: 0 }
+      LI > DIV        { margin-top: 0; margin-bottom: 0 }
       U, INS          { text-decoration: underline }
       CENTER          { text-align: center; }
       CENTER > *      { margin-left: auto; margin-right: auto; text-align: justify; } /* center all children of CENTER */

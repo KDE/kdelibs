@@ -281,7 +281,8 @@ RenderObject *RenderObject::containingBlock() const
     // this is just to make sure we return a valid element.
     // the case below should never happen...
     if(!o) {
-	kdDebug( 6040 ) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0" << endl;
+	if(!isRoot())
+	    kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
 	return const_cast<RenderObject *>(this);
     } else
 	return o;

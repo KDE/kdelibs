@@ -66,7 +66,7 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         return;
     }
-    
+
     // Image dimensions have been changed, recalculate layout
     kdDebug( 6040 ) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
@@ -78,12 +78,9 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 	layout();
     	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
 	// the updateSize() call should trigger a repaint too
-        if (manualUpdate)
-        {
+        if (manualUpdate) {
            *manualUpdate = true;
-        }
-        else
-        {
+        } else {
 	    containingBlock()->updateSize();	
 	    repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         }

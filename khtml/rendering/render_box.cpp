@@ -309,7 +309,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
+    //kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -334,7 +334,7 @@ void RenderBox::updateSize()
 
 void RenderBox::updateHeight()
 {
-//    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
+    //kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 
     if (parsing())
     {
