@@ -27,6 +27,16 @@
 
 #include <kstddirs.h>
 
+#include <sys/types.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
 #ifdef HAVE_SSL
@@ -145,7 +155,6 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
   QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
 
   if (qsl.isEmpty()) {
-    X509_STORE_free(certStore);
     return KSSLCertificate::NoCARoot;
   }
 
@@ -153,7 +162,9 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
   for (QValueListIterator<QString> j = qsl.begin();
                                    j != qsl.end(); ++j) {
-    QString _j = (*j)+"caroot/";
+    struct stat sb;
+    QString _j = (*j)+"caroot/ca-bundle.crt";
+    if (-1 == stat(_j.ascii(), &sb)) continue;
     kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
 
     certStore = X509_STORE_new();
@@ -162,15 +173,15 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
     X509_STORE_set_verify_cb_func(certStore, X509Callback);
 
-    certLookup = X509_STORE_add_lookup(certStore, X509_LOOKUP_hash_dir());
+    certLookup = X509_STORE_add_lookup(certStore, X509_LOOKUP_file());
     if (!certLookup) {
-      kdDebug() << "KSSL error adding lookup hash directory" << endl;
+      kdDebug() << "KSSL error adding lookup file" << endl;
       ksslv = KSSLCertificate::Unknown;
       X509_STORE_free(certStore);
       continue;
     }
 
-    if (!X509_LOOKUP_add_dir(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
+    if (!X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
       // error accessing directory and loading pems
       kdDebug() << "KSSL couldn't read CA root: " << _j << endl;
       ksslv = KSSLCertificate::ErrorReadingRoot;
