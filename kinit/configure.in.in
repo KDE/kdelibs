@@ -27,13 +27,11 @@ fi
 
 KDE_FIND_PATH(freetype-config, KDEINIT_FREETYPE_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin])
 if test -n "$KDEINIT_FREETYPE_CONFIG"; then
-   if test -n "$KDEINIT_FREETYPE_CONFIG"; then
-      KDEINIT_XFT_INCLUDES="`$KDEINIT_FREETYPE_CONFIG --cflags` $FONTCONFIG_CFLAGS"
-      kdeinit_cppflags=$CPPFLAGS
-      CPPFLAGS="$CPPFLAGS $KDEINIT_XFT_INCLUDES $FONTCONFIG_CFLAGS"
-      KDE_CHECK_HEADER(X11/Xft/Xft.h,[],[KDEINIT_USE_XFT=])
-      CPPFLAGS=$kdeinit_cppflags
-   fi
+    KDEINIT_XFT_INCLUDES="`$KDEINIT_FREETYPE_CONFIG --cflags` $FONTCONFIG_CFLAGS"
+    kdeinit_cppflags=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $KDEINIT_XFT_INCLUDES $FONTCONFIG_CFLAGS"
+    KDE_CHECK_HEADER(X11/Xft/Xft.h,[],[KDEINIT_USE_XFT=])
+    CPPFLAGS=$kdeinit_cppflags
 else
     KDEINIT_USE_XFT=
 fi
