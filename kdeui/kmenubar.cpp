@@ -214,8 +214,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       setMargin( d->margin );
       setMinimumSize( 0, 0 );
       setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-      menuContentsChanged(); // trigger invalidating calculated size
-      resize( sizeHint());   // and resize to preferred size
+      updateMenuBarSize();
       if ( parentWidget() )
           reparent( parentWidget(), QPoint(0,0), !isHidden());
   }
@@ -316,9 +315,9 @@ void KMenuBar::updateFallbackSize()
         {
             d->fallback_mode = false;
 //            KWin::setStrut( winId(), 0, 0, 0, 0 ); KWin will set strut as it will see fit
+            setMinimumSize( 0, 0 );
             setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-            menuContentsChanged();
-            resize( sizeHint());
+            updateMenuBarSize();
         }
 	return;
     }
@@ -408,7 +407,7 @@ void KMenuBar::checkSize( int& w, int& h )
 	h = s.height();
 	--block_resize;
     }
-    // This is not done as setMinimumSize(), becase that would set the minimum
+    // This is not done as setMinimumSize(), because that would set the minimum
     // size in WM_NORMAL_HINTS, and KWin would not allow changing to smaller size
     // anymore
     w = KMAX( w, d->min_size.width());
@@ -427,13 +426,18 @@ bool KMenuBar::x11Event( XEvent* ev )
         // KMenuBar keep the size it wants
 	d->min_size = QSize( ev->xclient.data.l[ 1 ], ev->xclient.data.l[ 2 ] );
 //        kdDebug() << "MINSIZE:" << d->min_size << endl;
-        menuContentsChanged();
-        resize( sizeHint());
+        updateMenuBarSize();
 	return true;
     }
     return QMenuBar::x11Event( ev );
 }
 #endif
+
+void KMenuBar::updateMenuBarSize()
+    {
+    menuContentsChanged(); // trigger invalidating calculated size
+    resize( sizeHint());   // and resize to preferred size
+    }
 
 void KMenuBar::setFrameStyle( int style )
 {

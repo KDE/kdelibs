@@ -100,6 +100,7 @@ private slots:
     void selectionTimeout();
 private:
     void setTopLevelMenuInternal(bool top_level);
+    void updateMenuBarSize();
     void checkSize( int& w, int& h );
     static int block_resize;
 protected:
