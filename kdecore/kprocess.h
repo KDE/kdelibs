@@ -40,12 +40,14 @@
 class KProcessPrivate;
 
 /**
- *  Child process invocation, monitoring and control.
+ * Child process invocation, monitoring and control.
  *
- * @sect General usage and features
+  * @sect General usage and features
  *
  *This class allows a KDE application to start child processes without having
  *to worry about UN*X signal handling issues and zombie process reaping.
+ *
+ *@see KProcIO
  *
  *Basically, this class distinguishes three different ways of running
  *child processes:
