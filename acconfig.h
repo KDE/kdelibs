@@ -95,6 +95,3 @@
 /* Define if you have an HP like STL implementation */
 #undef HAVE_HP_STL
 
-/* Define if compiled symbols have a leading underscore */
-#undef WITH_SYMBOL_UNDERSCORE
-
