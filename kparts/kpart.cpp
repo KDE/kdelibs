@@ -281,16 +281,12 @@ bool ReadWritePart::saveAs( const KURL & kurl )
 {
   if (kurl.isMalformed())
       return false;
-  if ( !m_bReadWrite )
-      return false; // should we display a warning ?
   m_url = kurl; // Store where to upload in saveToURL
   return save() && saveToURL(); // Save local file and upload local file
 }
 
 bool ReadWritePart::saveToURL()
 {
-  if ( !m_bReadWrite )
-      return false; // should we display a warning ?
   if ( m_url.isLocalFile() )
   {
     m_bModified = false;
