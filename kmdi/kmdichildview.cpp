@@ -500,7 +500,7 @@ void KMdiChildView::slot_childDestroyed()
    // child and its children
    const QObject* pLostChild = QObject::sender();
    if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
-      QObjectList *list = ((QObject*)(pLostChild))->queryList();
+      QObjectList *list = ((QObject*)(pLostChild))->queryList("QWidget");
       list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
       QObjectListIt it( *list );          // iterate over all lost child widgets
       QObject * obj;
