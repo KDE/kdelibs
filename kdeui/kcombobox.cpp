@@ -357,6 +357,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
     if ( o == m_pEdit )
     {
         KCursor::autoHideEventFilter( m_pEdit, ev );
+
         int type = ev->type();
         if (  type == QEvent::KeyPress )
         {
@@ -418,8 +419,11 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
                 KGlobalSettings::Completion oldMode = completionMode();
                 int result = d->popupMenu->exec( e->globalPos() );
-                if ( !d->hasReference )
+
+                if ( !d->hasReference ) {
                   delete d->popupMenu;
+		  d->popupMenu = 0L;
+		}
 
                 if ( result == Cut )
                     m_pEdit->cut();
