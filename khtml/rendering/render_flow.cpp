@@ -263,7 +263,7 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline()) {
         // ### make bidi resumeable so that we can get rid of this ugly hack
-        if (!m_blockBidi)
+         if (!m_blockBidi)
             layoutInlineChildren();
     }
     else
@@ -1219,9 +1219,12 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 #endif
     setLayouted( false );
 
+    if ( newChild->isPositioned() ) {
+	m_blockBidi = false;
+    }
     if (m_blockBidi)
-        newChild->setBlockBidi();
-
+	    newChild->setBlockBidi();
+    
     RenderStyle* pseudoStyle=0;
     if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
