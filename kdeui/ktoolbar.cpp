@@ -1330,6 +1330,7 @@ void KToolBar::ButtonToggled( int id )
 void KToolBar::ButtonHighlighted(int id, bool on )
 {
   emit highlighted(id, on);
+  emit highlighted( id );
 }
 
 

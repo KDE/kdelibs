@@ -942,6 +942,16 @@ signals:
     void highlighted(int id, bool isHighlighted);
 
     /**
+     * This signal is emitted when item id gets highlighted/unhighlighted
+     * (i.e when mouse enters/exits).
+     *
+     * Note that this signal is emitted from
+     * all buttons (normal, disabled and toggle) even when there is no visible
+     * change in buttons (i.e., buttons do not raise when mouse enters).
+     */
+    void highlighted(int id );
+
+    /**
      * Emitted when toolbar changes position, or when
      * an item is removed from toolbar.
      *

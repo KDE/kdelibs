@@ -226,28 +226,28 @@ bool KAction::isPlugged() const
 bool KAction::isPlugged( QWidget *container, int id ) const
 {
   int i = findContainer( container );
-  
+
   if ( i == -1 )
     return false;
-  
+
   if ( menuId( i ) != id )
     return false;
-  
+
   return true;
-} 
+}
 
 bool KAction::isPlugged( QWidget *container, QWidget *_representative ) const
 {
   int i = findContainer( container );
-  
+
   if ( i == -1 )
     return false;
-  
+
   if ( representative( i ) != _representative )
     return false;
-  
+
   return true;
-} 
+}
 
 QObject* KAction::component()
 {
@@ -355,7 +355,7 @@ QString KAction::shortText() const
 int KAction::plug( QWidget *w, int index )
 {
   KActionCollection *p = parentCollection();
- 
+
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = (QPopupMenu*)w;
@@ -384,7 +384,7 @@ int KAction::plug( QWidget *w, int index )
 
     if ( p )
       p->connectHighlight( menu, this );
-    
+
     return d->m_containers.count() - 1;
   }
   else if ( w->inherits( "KToolBar" ) )
@@ -408,7 +408,7 @@ int KAction::plug( QWidget *w, int index )
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-    
+
     if ( p )
       p->connectHighlight( bar, this );
 
@@ -420,7 +420,7 @@ int KAction::plug( QWidget *w, int index )
 
 void KAction::unplug( QWidget *w )
 {
-  KActionCollection *p = parentCollection(); 
+  KActionCollection *p = parentCollection();
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = (QPopupMenu*)w;
@@ -745,15 +745,15 @@ void KAction::slotKeycodeChanged()
 KActionCollection *KAction::parentCollection() const
 {
   QObject *p = parent();
-  
+
   if ( !p )
     return 0;
-  
+
   if ( !p->inherits( "KActionCollection" ) )
     return 0;
-  
+
   return static_cast<KActionCollection *>( p );
-} 
+}
 
 class KToggleAction::KToggleActionPrivate
 {
@@ -2380,42 +2380,37 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
 {
   if ( !d->m_highlight )
     return;
- 
+
   QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
-  
+
   if ( !actionList )
   {
     actionList = new QList<KAction>;
-    
-    // ugly hack ;-(
-    if ( container->inherits( "KToolBar" ) )
-      connect( container, SIGNAL( highlighted( int, bool ) ),
-	       this, SLOT( slotHighlighted( int ) ) );
-    else
-      connect( container, SIGNAL( highlighted( int ) ),
-	       this, SLOT( slotHighlighted( int ) ) );
-    
+
+    connect( container, SIGNAL( highlighted( int ) ),
+	     this, SLOT( slotHighlighted( int ) ) );
+
     connect( container, SIGNAL( destroyed() ),
 	     this, SLOT( slotDestroyed() ) );
-    
+
     d->m_dctHighlightContainers.insert( container, actionList );
   }
-  
+
   actionList->append( action );
-} 
+}
 
 void KActionCollection::disconnectHighlight( QWidget *container, KAction *action )
 {
   if ( !d->m_highlight )
     return;
- 
+
   QList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
-  
+
   if ( !actionList )
     return;
-  
+
   actionList->removeRef( action );
-  
+
   if ( actionList->count() == 0 )
     d->m_dctHighlightContainers.remove( container );
 }
@@ -2424,21 +2419,21 @@ void KActionCollection::slotHighlighted( int id )
 {
   if ( !d->m_highlight )
     return;
- 
+
   const QWidget *container = (const QWidget *)sender();
-  
+
   QList<KAction> *actionList = d->m_dctHighlightContainers[ (void *)container  ];
-  
+
   if ( !actionList )
     return;
 
   //  qDebug( "highlight -- id is %i", id );
-  
+
   QListIterator<KAction> it( *actionList );
   for (; it.current(); ++it )
     if ( it.current()->isPlugged( (QWidget *)container, id ) )
     {
-    //      qDebug( "action highlighted: %s", it.current()->name() );
+      // qDebug( "action highlighted: %s", it.current()->name() );
       emit actionHighlighted( it.current() );
       return;
     }
@@ -2447,7 +2442,7 @@ void KActionCollection::slotHighlighted( int id )
 void KActionCollection::slotDestroyed()
 {
   d->m_dctHighlightContainers.remove( (void *)sender() );
-} 
+}
 
 #include "kaction.moc"
 
