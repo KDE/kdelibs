@@ -32,7 +32,7 @@
     remain so).
     For instance:
 
-      <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
 
     and use kde.cat as the catalogue file.
 -->
@@ -63,22 +63,8 @@
 <!-- ============================================================= -->
 <!--		    Extensions to the DocBook DTD		   -->
 <!-- ============================================================= -->
-<!-- E.g. KDE specific entities (see also dbgenent.mod for this)   -->
-<!-- Extensions with general entities here are allowed, so not
-     removed -->
+<!-- Defining additional general entities is allowed.              -->
 
-<!-- Legal texts we put in a specific place
-     so that we don't need to cut'n'paste them to every doc
- -->
-<!ENTITY GPL		    PUBLIC
-  "-//GNU//DOCUMENT GNU General Public License V2//EN"
-  CDATA SGML		   -- http://www.gnu.org/copyleft/gpl.html -->
-<!ENTITY GPLNotice	    PUBLIC
-  "-//GNU//DOCUMENT GNU General Public License Notice//EN"
-  CDATA SGML							     >
-<!ENTITY LGPL		    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN" 
-  CDATA SGML		-- http://www.gnu.org/copyleft/lesser.html -->
-<!ENTITY LGPLNotice	    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License Notice//EN"
-  CDATA SGML							     >
+<!ENTITY % kde.general.entities	PUBLIC
+  "-//KDE//ENTITIES KDE DocBook General Entity Declarations V1.0//EN">
+%kde.general.entities;
