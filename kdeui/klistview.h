@@ -150,7 +150,7 @@ public:
   /**
    * @return a list containing the currently selected items.
    */
-  QPtrList<QListViewItem> selectedItems() const;
+  QPtrList<QListViewItem> selectedItems() const; // ### BIC: KDE 4: use an implicitly shared class! (QValueList?)
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
