@@ -357,24 +357,24 @@ bool _IPmatchesCN;
            int result;
              do {
                 if (ksv == KSSLCertificate::Ok && !_IPmatchesCN) {
+                  QString msg = i18n("The IP address of the host %1 does not "
+                               "match the one the certificate was issued to.");
                    result = messageBox( WarningYesNoCancel,
-                              i18n("The IP address of the host does not match "
-                                   "the one the certificate was issued to."),
+                              msg.arg(d->host),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
                 } else {
+                   QString msg = i18n("The server certificate failed the "
+                                      "authenticity test (%1).");
                    result = messageBox( WarningYesNoCancel,
-                              i18n("The server's certificate failed the "
-                                   "authenticity test."),
+                              msg.arg(d->host),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
                 }
 
                 if (result == KMessageBox::Yes) {
-                   //sendMetaData();
-                   //messageBox( SSLMessageBox, theurl );
                    if (!d->dcc) {
                       d->dcc = new DCOPClient;
                       d->dcc->attach();
