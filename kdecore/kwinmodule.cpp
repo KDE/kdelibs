@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.10  1999/11/14 06:08:20  ettrich
+    track icon changes as well
+
     Revision 1.9  1999/11/12 04:25:52  ettrich
     less badwindow errors
 
@@ -512,7 +515,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
  	emit module->workspaceAreaChanged();
     }
 
-    return TRUE;
+    return FALSE; // no not hide clientmessages from other filters (for example Qt ;-)
 }
 
 
