@@ -341,11 +341,6 @@ void KURL::parse( const QString& _url )
       }
     }
   }
-  else if (!KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
-  {
-    debug("Unknown protocol %s", m_strProtocol.data() );
-    m_bIsMalformed = true;
-  }
   return;
 
  NodeErr:
