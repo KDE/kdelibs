@@ -105,10 +105,9 @@ namespace
         {
             KToggleToolBarAction *action = new KToggleToolBarAction(
                 toolBar,
-                i18n( "Show %1" ).arg( toolBar->label() ),
+                toolBar->label(),
                 m_actionCollection,
                 toolBar->name() );
-            action->setCheckedState( i18n( "Hide %1" ).arg( toolBar->label() ) );
             // ## tooltips, whatsthis?
             m_toolBarActions.append( action );
         }
