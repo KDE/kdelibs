@@ -360,9 +360,13 @@
 20011        KDB (Connection)
 20012        KDB (plugin)
 
+#kfilereplace
+23000 	     KFileReplace (kfilereplacepart)
 
 # Quanta
 24000        Quanta
+
+
 
 # kafka
 25000        Kafka (kafkapp)
