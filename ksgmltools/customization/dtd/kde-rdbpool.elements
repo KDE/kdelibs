@@ -140,45 +140,4 @@ zh      Chinese
                 %local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
 
-<!-- Compulsory ID for sections and chapters must be declared in 
-     kde-rdbhier2.elements -->
-<!-- There is no redeclaration slot between declaration of 
-     role.attrib/idreq.common.attrib and qand(set|adiv).attlist 
-     such that it cannot be redefined without copying most of the DTD
-     or changing the source.  This might be a bug (what is the point 
-     of treating qandasets different from sections?)  -->
-<![ IGNORE -- %kde.compulsory.id; -- [
-<!ENTITY % qandset.content.module "INCLUDE">
-<![ %qandset.content.module; [
-<!ENTITY % qandset.module "INCLUDE">
-<![ %qandset.module; [
-<!ENTITY % local.qandset.attrib "">
-<!ENTITY % qandset.role.attrib "%role.attrib;">
-<!ENTITY % qandset.attlist "IGNORE">
-<!ENTITY % kde.qandset.attlist "INCLUDE">
-<![ %kde.qandset.attlist; [
-<!ATTLIST QandASet
-                DefaultLabel    (qanda|number|none)       #IMPLIED
-                %idreq.common.attrib; -- ID is required for KDE --
-                %qandset.role.attrib;
-                %local.qandset.attrib;>
-<!--end of kde.qandset.attlist-->]]>
-<!--end of qandset.module-->]]>
-
-<!ENTITY % qandadiv.module "INCLUDE">
-<![ %qandadiv.module; [
-<!ENTITY % local.qandadiv.attrib "">
-<!ENTITY % qandadiv.role.attrib "%role.attrib;">
-<!ENTITY % qandadiv.attlist "IGNORE">
-<!ENTITY % kde.qandadiv.attlist "INCLUDE">
-<![ %kde.qandadiv.attlist; [
-<!ATTLIST QandADiv
-                %idreq.common.attrib; -- ID is required for KDE --
-                %qandadiv.role.attrib;
-                %local.qandadiv.attrib;>
-<!--end of kde.qandadiv.attlist-->]]>
-<!--end of qandadiv.module-->]]>
-<!--end of qandset.content.module-->]]>
-<!-- End of kde.compulsory.id -->]]>
-
 <!-- End of kde.pool        -->]]>
