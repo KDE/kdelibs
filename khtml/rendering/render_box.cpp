@@ -293,7 +293,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         int sx = 0;
         int sy = 0;
-	    int cw,ch;
+        int cw,ch;
         int cx,cy;
         int vpab = borderRight() + borderLeft();
         int hpab = borderTop() + borderBottom();
@@ -305,23 +305,37 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         if (sptr->backgroundAttachment())
         {
             //scroll
-            int pw = m_width - vpab;
-            int ph = m_height - hpab;
+            int pw = w - vpab;
+            int ph = h - hpab;
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
+            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
-                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
+                int xp = sptr->backgroundXPosition().minWidth(pw-pixw);
+                if ( xp >= 0 )
+                    cx = _tx + xp;
+                else {
+                    cx = _tx;
+                    sx = -xp;
+                    cw += xp;
+                }
             } else {
                 cw = w-vpab;
                 cx = _tx;
-                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
+                sx =  pixw ? pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
             }
 
             cx += borderLeft();
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
-                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
+                int yp = sptr->backgroundYPosition().minWidth(ph-pixh);
+                if ( yp >= 0 )
+                    cy = _ty + yp;
+                else {
+                    cy = _ty;
+                    sy = -yp;
+                    ch += yp;
+                }
             } else {
                 ch = h-hpab;
                 cy = _ty;
@@ -340,22 +354,22 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             int ph = vr.height();
 
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
+            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
                 cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw);
             } else {
                 cw = pw;
                 cx = vr.x();
-                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
+                sx =  pixw ? pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
             }
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
                 cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh);
             } else {
                 ch = ph;
                 cy = vr.y();
-                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
+                sy = pixh ? pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh ) : 0;
             }
 
             QRect fix(cx,cy,cw,ch);
@@ -369,7 +383,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         }
 
 
-        ////kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
+        //kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
 	int diff = clipy - cy;
 	if ( diff > 0 ) {
 	    cy += diff;
@@ -1023,11 +1037,12 @@ void RenderBox::calcAbsoluteVertical()
     int pab = borderTop()+borderBottom()+paddingTop()+paddingBottom();
 
     RenderObject* cb = containingBlock();
+
     Length hl = cb->style()->height();
     if (hl.isFixed())
         ch = hl.value() + cb->paddingTop() + cb->paddingBottom()
 	     + cb->borderTop() + cb->borderBottom();
-    else if (cb->isRoot())
+    else if (cb->isCanvas())
         ch = cb->availableHeight();
     else
         ch = cb->height();
@@ -1163,7 +1178,7 @@ void RenderBox::calcAbsoluteVertical()
     m_marginBottom = mb;
     m_y = t + mt;
 
-    //printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
+    //qDebug("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d",h,t,b,mt,mb,m_y);
 
 }
 
@@ -1221,8 +1236,8 @@ void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width
             // we don't know our absolute position, and there is no point returning
             // just a relative one
             _x = _y = -1;
-        }/*end if*/
-    }/*end if*/
+        }
+    }
 }
 
 #undef DEBUG_LAYOUT

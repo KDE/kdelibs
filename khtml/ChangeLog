@@ -1,5 +1,13 @@
 2003-10-22  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_box.cpp (calcAbsoluteHorizontal): fixed containing block
+	height calculation for position:fixed.
+	(paintBackground): fix negative backgroundx/y positioning. fix 
+	background-attachment: fixed (http://placenamehere.com/safari/fixedbgtest.html)
+	avoid division by zero. fix table background positioning (#49336).
+	http://c133.org/testcase1.html, http://c133.org/testcase2.html,
+	http://c133.org/testcase3.html
+
 	* misc/loader.cpp (pixmap_size/valid_rect): return useful values for the error image
 	to avoid that its shown as null pixmap (#42233).
 
