@@ -222,7 +222,7 @@ void KMDIGUIClient::setupActions()
 void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva) {
 	kdDebug(760)<<"*****void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva)*****"<<endl;
 	KAction *a=new ToggleToolViewAction(i18n("Show %1").arg(mtva->wrappedWidget()->caption()),
-		QString::null,dynamic_cast<KDockWidget*>(mtva->wrapperWidget()),m_mdiMainFrm,actionCollection(),"nothing");
+		QString::null,dynamic_cast<KDockWidget*>(mtva->wrapperWidget()),m_mdiMainFrm,actionCollection() );
 	connect(a,SIGNAL(destroyed(QObject*)),this,SLOT(actionDeleted(QObject*)));
 	m_toolViewActions.append(a);
 	m_toolMenu->insert(a);
