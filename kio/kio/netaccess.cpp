@@ -223,8 +223,8 @@ QString NetAccess::mimetypeInternal( const KURL & url )
   KIO::Job * job = KIO::mimetype( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
-  connect( job, SIGNAL( mimetype (KIO::Job *, const QString &type) ),
-           this, SLOT( slotMimetype (KIO::Job *, const QString &type) ) );
+  connect( job, SIGNAL( mimetype (KIO::Job *, const QString &) ),
+           this, SLOT( slotMimetype (KIO::Job *, const QString &) ) );
   enter_loop();
   return m_mimetype;
 }
