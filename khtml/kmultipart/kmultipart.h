@@ -73,6 +73,7 @@ private:
     KParts::BrowserExtension* m_extension;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     bool m_isHTMLPart;
+    bool m_partIsLoading;
     KIO::Job* m_job;
     QCString m_boundary;
     int m_boundaryLength;

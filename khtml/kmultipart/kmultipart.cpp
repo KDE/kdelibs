@@ -371,6 +371,7 @@ void KMultiPart::setPart( const QString& mimeType )
     }
 
     m_isHTMLPart = ( mimeType == "text/html" );
+    m_partIsLoading = false;
     // Load the part's plugins too.
     // ###### This is a hack. The bug is that KHTMLPart doesn't load its plugins
     // if className != "Browser/View".
@@ -414,7 +415,10 @@ void KMultiPart::startOfData()
         htmlPart->begin( url() );
     }
     else
+    {
+        // ###### TODO use a QByteArray and a data: URL instead
         m_tempFile = new KTempFile;
+    }
 }
 
 void KMultiPart::sendData( const QByteArray& line )
@@ -452,10 +456,21 @@ void KMultiPart::endOfData()
     } else if ( m_tempFile )
     {
         m_tempFile->close();
-        kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
-        KURL url;
-        url.setPath( m_tempFile->name() );
-        (void) m_part->openURL( url );
+        if ( m_partIsLoading )
+        {
+            // The part is still loading the last data! Let it proceed then
+            // Otherwise we'd keep cancelling it, and nothing would ever show up...
+            kdDebug() << "KMultiPart::endOfData part isn't ready, skipping frame" << endl;
+            m_tempFile->setAutoDelete( true );
+        }
+        else
+        {
+            kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
+            KURL url;
+            url.setPath( m_tempFile->name() );
+            m_partIsLoading = true;
+            (void) m_part->openURL( url );
+        }
         delete m_tempFile;
         m_tempFile = 0L;
     }
@@ -470,6 +485,7 @@ void KMultiPart::slotPartCompleted()
         Q_ASSERT( m_part->url().isLocalFile() );
 	kdDebug() << "slotPartCompleted deleting " << m_part->url().path() << endl;
         (void) unlink( QFile::encodeName( m_part->url().path() ) );
+        m_partIsLoading = false;
         // Do not emit completed from here.
     }
 }
