@@ -28,360 +28,92 @@
 #include <kapp.h>
 
 
-bool AddressBook::getEntry(const string& key, 
-			   Section*& data)
-{
-  ID(bool GUARD=false);
-  LG(GUARD, "AddressBook::getEntry[as a map]: called.\n");
-  // ########################################################
-  Section* entries;
-  Section* entry;
-  // -----
-  if(noOfEntries()==0)
-    {
-      LG(GUARD, "AddressBook::getEntry[as a map]: "
-	 "no entries.\n");
-      return false;
-    }
-  entries=entrySection();
-  CHECK(entries!=0);
-  if(entries->find(key, entry))
-    {
-      LG(GUARD, "AddressBook::getEntry[as a map]: "
-	 "entry %s found.\n", key.c_str());
-      data=entry;
-      LG(GUARD, "AddressBook::getEntry[as a map]: done.\n");
-      return true;
-    } else {
-      LG(GUARD, "AddressBook::getEntry[as a map]: "
-	 "no such entry.\n");
-      return false;
-    }
-  // ########################################################
-}
-
-bool AddressBook::getEntry(const string& key, Entry& ref)
-{
-  ID(bool GUARD=false);
-  LG(GUARD, "AddressBook::getEntry: called.\n");
-  // ########################################################
-  Section* section;
-  // -----
-  if(!getEntry(key, section))
-    {
-      LG(GUARD, "AddressBook::getEntry: no such entry %s.\n",
-	 key.c_str());
-      return false;
-    } else {
-      if(!makeEntryFromSection(*section, ref))
-	{ // ----- may simply not happen:
-	  CHECK(false);
-	}
-      LG(GUARD, "AddressBook::getEntry: done.\n");
-      return true;
-    }
-  // ########################################################
-}
-
-void AddressWidget::copy()
-{
-  // ########################################################
-  //       an array containing the keys for all fields:
-//   const char* Fields[]= {
-//     "name", "firstname", "additionalName",
-//     "namePrefix", "fn", "comment", "org", 
-//     "orgUnit", "orgSubUnit", "title", "role", 
-//     "birthday", "talk", "deliveryLabel", "emails", 
-//     "address", "town", "telephone", "fax", "modem", "URL" } ;
-//   int NoOfFields=sizeof(Fields)/sizeof(Fields[0]);
-  StringListSelectSetDialog dialog(this);
-  int index;
-  list<string> fields;
-  list<string>::iterator fpos; // selects a field
-  list<int> indizes;
-  list<int>::iterator ipos;
-  Section* section;
-  KeyValueMap* keys;
-  StringStringMap::iterator epos; // selects an entry
-  string data, text, temp;
-  // ----- select fields to copy:
-  for(index=0; index<NoOfFields; index++)
-    { // translate field keys into texts:
-      if(!nameOfField(Fields[index], text))
-	{
-	  CHECK(false); // should not happen
-	}
-      fields.push_back(text);
-    }
-  dialog.setValues(fields);
-  dialog.setCaption(i18n("kab: Select fields to copy"));
-  if(!dialog.exec())
-    {
-      emit(setStatus(i18n("Rejected.")));
-      qApp->beep();
-      return;
-    }
-  dialog.getSelection(indizes);
-  if(indizes.size()==0)
-    {
-      emit(setStatus(i18n("Nothing selected.")));
-      qApp->beep();
-      return;
-    } else { // put selected keys in fields:
-      fields.erase(fields.begin(), fields.end());
-      for(ipos=indizes.begin(); ipos!=indizes.end(); ipos++)
-	{
-	  CHECK(*ipos>-1 && *ipos<NoOfFields);
-	  fields.push_back(Fields[*ipos]);
-	}
-      CHECK(fields.size()==indizes.size());
-    }
-  // ----- add the headers:
-  for(fpos=fields.begin(); fpos!=fields.end(); fpos++)
-    {
-      temp="";
-      nameOfField(*fpos, temp);
-      CHECK(nameOfField(*fpos, temp));
-      data+=temp+"\t";
-    }
-  data+="\n";
-  // ----- add all entries:
-  for(epos=entries.begin(); epos!=entries.end(); epos++)
-    { //       for all entries in current sorting order do:
-      // ----- get the entry as an key-value-map
-      getEntry((*epos).second, section);
-      CHECK(getEntry((*epos).second, section));
-      keys=section->getKeys();
-      for(fpos=fields.begin(); fpos!=fields.end(); fpos++)
-	{ //       for all selected fields do:
-	  if(*fpos=="emails")
-	    {
-	      if(emailAddress((*epos).second, text, false))
-		{
-		  data+=text;
-		}
-	      data+="\t";
-	      continue;
-	    }
-	  if(keys->get(*fpos /* the field key */, text))
-	    {
-	      data+=text;
-	    }
-	  data+="\t";
-	}
-      data+="\n";
-    }
-  // ----- copy data to the clipboard:
-  QApplication::clipboard()->setText(data.c_str());
-  // ########################################################
-}
-
-void AddressWidget::exportHTML()
+void AddressWidget::print()
 {
   ID(bool GUARD=true);
-  LG(GUARD, "AddressWidget::exportHTML: called.\n");
   // ########################################################
-  const string background=card->getBackground();;
-  const string title=i18n("KDE addressbook overview");
-  string header=
-    (string)"<html>\n<head>\n"
-    +(string)"<title>"+(string)title+(string)"</title>\n"
-    +(string)"</head>\n"
-    +(string)"<body background=\""+background+(string)"\">\n"
-    +(string)"<h1>"+title+(string)"</h1>";
-  string footer="</body>\n</html>";
-  string logo;
-  string kdelabel;
-  string alignment="center";
-  string body;
-  string home;
-  string file;
-  string temp;
-  QString dummy; // string objects crash on 0 pointers
-  list<int> indizes;
-  list<int>::iterator ipos;
-  list<string> fields; // the fields in the table
-  list<string>::iterator fieldPos;
-  StringListSAndRSetDialog pDialog(this);
-  Section* entry;
-  StringStringMap::iterator pos;
-  KeyValueMap* keys;
-  int i;
-  // ----- preparation:
+  LG(GUARD, "AddressWidget::print: printing database.\n");
+  QPrinter prt;
+  int temp;
+  string text;
+  list<string> keys;
+  StringListSAndRSetDialog dialog(this);
+  PrintDialog printDialog(this);
+  list<int> indizes; // selected fields
+  list<int>::iterator pos;
+  // ----- setup QPrinter object:
   if(noOfEntries()==0)
     {
-      emit(setStatus(i18n("No entries.")));
-      qApp->beep();
+      setStatus(i18n("No entries."));
       return;
     }
-  // ----- create the table:
-  body+=(string)"<"+alignment+(string)">"
-    +(string)"<table border>\n";
-  //       select what fields to add to the table:
-  // fields.erase(fields.begin(), fields.end());
-  for(i=0; i<NoOfFields; i++)
+  if(!prt.setup(this)) 
     {
-      if(!nameOfField(Fields[i], temp))
+      emit(setStatus(i18n("Printing cancelled.")));
+      return;
+    }
+  prt.setCreator("KDE Addressbook");
+  prt.setDocName("address database overview");
+  // ----- set dialog textes, abusing "keys":
+  for(temp=0; temp<NoOfFields; temp++)
+    {
+      if(nameOfField(Fields[temp], text))
 	{
+	  keys.push_back(text);
+	} else {
 	  CHECK(false);
 	}
-      fields.push_back(temp.c_str());
     }
-  fields.push_front(i18n("Name-Email-Link (recommended!)"));
-  pDialog.selector()->setValues(fields);
-  pDialog.setCaption(i18n("Select table columns"));
-  if(pDialog.exec())
+  dialog.setCaption(i18n("kab: Select columns for printing"));
+  dialog.selector()->setValues(keys);
+  keys.erase(keys.begin(), keys.end());
+  // ----- query fields to print:
+  if(!dialog.exec())
     {
-      if(!pDialog.selector()->getSelection(indizes))
-	{
-	  emit(setStatus(i18n("Nothing to export.")));
-	  qApp->beep();
-	  return;
-	}	
-      fields.erase(fields.begin(), fields.end());
-      CHECK(fields.size()==0);
-      for(ipos=indizes.begin(); ipos!=indizes.end(); ipos++)
-	{
-	  if(*ipos==0) // the name-email-link
-	    {
-	      // WORK_TO_DO: query settings for name style here
-	      fields.push_back("name-email-link");
-	    } else {
-	      CHECK(*ipos<=NoOfFields && *ipos>0);
-	      // remove the leading pseudo-field
-	      fields.push_back(Fields[*ipos-1]);
-	    }
-	}
-    } else {
+      LG(GUARD, "AddressWidget::print: "
+	 "could not query fields to print.\n");
       emit(setStatus(i18n("Rejected.")));
-      qApp->beep();
       return;
     }
-  //       create table headers:
-  body+="<tr>\n";
-  for(fieldPos=fields.begin(); 
-      fieldPos!=fields.end();
-      fieldPos++)
+  if(!dialog.selector()->getSelection(indizes))
     {
-      if(*fieldPos=="name-email-link")
-	{
-	  temp=i18n("Email link");
-	} else {
-	  if(!nameOfField(*fieldPos, temp))
-	    {
-	      L("AddressWidget::exportHTML: "
-		"could not get name for field %s.\n",
-		(*fieldPos).c_str());
-	      temp="(unknown field name)";
-	    }
-	}
-      body+=(string)"<th>"+temp+"\n";
-    }
-  body+="</tr>\n";
-  //       create table, linewise:
-  for(pos=entries.begin(); pos!=entries.end(); pos++)
-    {
-      getEntry((*pos).second, entry); // the section
-      CHECK(getEntry((*pos).second, entry));
-      keys=entry->getKeys();
-      CHECK(keys!=0);
-      body+="<tr>\n";
-      for(fieldPos=fields.begin(); 
-	  fieldPos!=fields.end();
-	  fieldPos++)
-	{
-	  if(*fieldPos=="birthday")
-	    {
-	      Entry dummy;
-	      getEntry((*pos).second, dummy);
-	      CHECK(getEntry((*pos).second, dummy));
-	      if(dummy.birthday.isValid())
-		{
-		  temp=dummy.birthday.toString();
-		} else {
-		  temp="";
-		}
-	      //       insert a non-breaking space - mozilla 
-	      //       displays this better (hint from Thomas 
-	      //       Stinner <thomas@roedgen.pop-siegen.de>
-	      if(temp.empty()) temp="&nbsp;";
-	      body+=(string)"<td>"+temp+"\n";
-	      continue;
-	    }
-	  if(*fieldPos=="name-email-link")
-	    {
-	      Entry dummy;
-	      getEntry((*pos).second, dummy);
-	      CHECK(getEntry((*pos).second, dummy));
-	      string mail;
-	      string name;
-	      emailAddress((*pos).second, mail, false);
-	      literalName((*pos).second, name);
-	      if(mail.empty())
-		{
-		  body+=(string)"<td>"+name+(string)"\n";
-		} else {
-		  body+=(string)"<td> <a href=mailto:\""+
-		    mail+(string)"\">"+name+(string)"</a>\n";
-		}
-	      continue;
-	    }
-	  if(!keys->get(*fieldPos, temp))
-	    {
-	      L("AddressWidget::exportHTML: "
-		"could not get data for key %s.\n",
-		(*fieldPos).c_str());
-	      temp="";
-	    }
-	  if(temp.empty()) temp="&nbsp;";
-	  body+=(string)"<td>"+temp+"\n";
-	}
-      body+="</tr>\n";
-    }
-  body+="</table>\n"
-    +(string)"</"+alignment+(string)">";
-  // ----- get a filename:
-  if(!getHomeDirectory(home))
-    {
-      QMessageBox::information
-	(this, i18n("Sorry"),
-	 i18n("Could not find the users home directory."));
-      emit(setStatus(i18n("Intern error!"))); 
-      qApp->beep();
+      emit(setStatus
+	   (i18n("Nothing to print.")));
       return;
     }
-  dummy=KFileDialog::getOpenFileName
-    (home.c_str(), "*html", this);
-  if(!dummy.isEmpty())
+  // ----- find selected keys:
+  for(pos=indizes.begin(); 
+      pos!=indizes.end(); pos++)
     {
-      file=dummy;
-      LG(GUARD, "AddressWidget::exportHTML: "
-	 "filename is %s.\n", file.c_str());
-    } else {
-      emit(setStatus(i18n("Cancelled.")));
-      qApp->beep();
+      CHECK((*pos)<NoOfFields);
+      keys.push_back(Fields[*pos]);
+    }
+  // ----- now configure the printing:
+  printDialog.setHeadline(i18n("KDE addressbook overview"));
+  printDialog.setRightFooter(i18n("Page <p>"));
+  printDialog.setLeftFooter(i18n("KDE - the professionals choice."));
+  if(!printDialog.exec())
+    {
+      LG(GUARD, "AddressWidget::print: "
+	 "printing setup rejected\n");
+      emit(setStatus(i18n("Rejected.")));
       return;
     }
-  // ----- create HTML file:
-  ofstream stream(file.c_str());
-  if(!stream.good())
-    {
-      QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("Could not open the file to create the HTML "
-	      "table."));
-    }
-  LG(GUARD, "AddressWidget::exportHTML: writing the file.\n");
-  //        htmlizeString is n.i., but may already be called:
-  if(htmlizeString(header, temp)) header=temp;
-  if(htmlizeString(body, temp)) body=temp;
-  if(htmlizeString(footer, temp)) footer=temp;
-  stream << header << endl 
-	 << body << endl 
-	 << footer << endl;
-  LG(GUARD, "AddressWidget::exportHTML: done.\n");
-  // ########################################################
-}
- 
+  // ----- call the printing subroutines:
+  if(!print(prt, keys, 
+	    printDialog.getHeadline(),
+	    printDialog.getLeftFooter(),
+	    printDialog.getRightFooter()))
+     {
+       QMessageBox::information
+	 (this, i18n("Error"),
+	  i18n("Printing failed!"));
+     }
+       emit(setStatus
+	    (i18n("Printing finished successfully.")));
+       // ########################################################
+       }
+
 #include "widgets.moc"
 
+  

@@ -1436,3 +1436,58 @@ bool AddressBook::birthDay
   // ########################################################  
 }
 
+bool AddressBook::getEntry(const string& key, 
+			   Section*& data)
+{
+  ID(bool GUARD=false);
+  LG(GUARD, "AddressBook::getEntry[as a map]: called.\n");
+  // ########################################################
+  Section* entries;
+  Section* entry;
+  // -----
+  if(noOfEntries()==0)
+    {
+      LG(GUARD, "AddressBook::getEntry[as a map]: "
+	 "no entries.\n");
+      return false;
+    }
+  entries=entrySection();
+  CHECK(entries!=0);
+  if(entries->find(key, entry))
+    {
+      LG(GUARD, "AddressBook::getEntry[as a map]: "
+	 "entry %s found.\n", key.c_str());
+      data=entry;
+      LG(GUARD, "AddressBook::getEntry[as a map]: done.\n");
+      return true;
+    } else {
+      LG(GUARD, "AddressBook::getEntry[as a map]: "
+	 "no such entry.\n");
+      return false;
+    }
+  // ########################################################
+}
+
+bool AddressBook::getEntry(const string& key, Entry& ref)
+{
+  ID(bool GUARD=false);
+  LG(GUARD, "AddressBook::getEntry: called.\n");
+  // ########################################################
+  Section* section;
+  // -----
+  if(!getEntry(key, section))
+    {
+      LG(GUARD, "AddressBook::getEntry: no such entry %s.\n",
+	 key.c_str());
+      return false;
+    } else {
+      if(!makeEntryFromSection(*section, ref))
+	{ // ----- may simply not happen:
+	  CHECK(false);
+	}
+      LG(GUARD, "AddressBook::getEntry: done.\n");
+      return true;
+    }
+  // ########################################################
+}
+
