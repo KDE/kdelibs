@@ -1970,7 +1970,7 @@ void ListJob::slotRedirection( const KURL & url )
     m_redirectionURL = url; // We'll remember that when the job finishes
     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
-    emit redirection( this, url );
+    emit redirection( this, m_redirectionURL );
 }
 
 void ListJob::slotFinished()
