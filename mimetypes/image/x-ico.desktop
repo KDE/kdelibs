@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=image/x-ico
+Icon=image
+Patterns=*.ico;*.ICO;
+Comment=MSWindows Icons
+Comment[da]=MSWindows Ikoner
+Comment[el]=Εικονίδια MSWindows
+Comment[eo]=Vindozaj piktogramoj
+Comment[es]=Icono de MS Windows
+Comment[he]=Windows ילמס
+Comment[hu]=MS Windows ikonok
+Comment[ja]=MSウィンドウズのアイコン
+Comment[nl]=MSWindows-pictogrammen
+Comment[pt_BR]=Ícones do MS-Windows
+Comment[ro]=Iconiţe MS Windows
+Comment[ru]=Пиктограммы MSWindows
