@@ -221,14 +221,14 @@ if test "$qt_includes" = "$x_includes"; then
  QT_INCLUDES="";
 else
  QT_INCLUDES="-I$qt_includes"
- all_includes="$all_includes $QT_INCLUDES"
+ all_includes="$QT_INCLUDES $all_includes"
 fi
 
 if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else
  QT_LDFLAGS="-L$qt_libraries"
- all_libraries="$all_libraries $QT_LDFLAGS"
+ all_libraries="$QT_LDFLAGS $all_libraries"
 fi
 
 AC_SUBST(QT_INCLUDES)
@@ -304,14 +304,14 @@ if test "$kde_includes" = "$x_includes" || test "$kde_includes" = "$qt_includes"
  KDE_INCLUDES=""
 else
  KDE_INCLUDES="-I$kde_includes"
- all_includes="$all_includes $KDE_INCLUDES"
+ all_includes="$KDE_INCLUDES $all_includes"
 fi
 
 if test "$kde_libraries" = "$x_libraries" || test "$kde_libraries" = "$qt_libraries" ; then
  KDE_LDFLAGS=""
 else
  KDE_LDFLAGS="-L$kde_libraries"
- all_libraries="$all_libraries $KDE_LDFLAGS"
+ all_libraries="$KDE_LDFLAGS $all_libraries"
 fi
 
 AC_SUBST(KDE_LDFLAGS)
@@ -431,24 +431,42 @@ AC_DEFUN(AC_CHECK_BOOL,
         fi 
 ])
 
+AC_DEFUN(AC_CHECK_WITH_GCC,
+[
+AC_ARG_WITH(gcc-flags,[  --without-gcc-flags     don't use gcc flags [default=no]])
+if test "x$with_gcc_flags" = "xno"; then
+  ac_use_gcc_flags="no"
+ else
+  ac_use_gcc_flags="yes"
+ fi
+])
+
+
 AC_DEFUN(AC_SET_DEBUG,
 [
+if  test "x$ac_use_gcc_flags" = "xyes"; then
  test "$CFLAGS" = "" && CFLAGS="-g -Wall" 
  test "$CXXFLAGS" = "" && CXXFLAGS="-g -Wall"
- test "$LDFLAGS" = "" && LDFLAGS="" dnl looks stupid
+ test "$LDFLAGS" = "" && LDFLAGS="" 
+fi
 ])
 
 AC_DEFUN(AC_SET_NODEBUG,
 [
+if  test "x$ac_use_gcc_flags" = "xyes"; then
  test "$CFLAGS" = "" && CFLAGS="-O2 -Wall"
  test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
  test "$LDFLAGS" = "" && LDFLAGS="-s"
+fi
 ])
 
 AC_DEFUN(AC_CHECK_DEBUG,
-[AC_ARG_ENABLE(debug,[  --enable-debug 	  creates debugging code [default=no]],
-[ if test $enableval = "no"; then AC_SET_NODEBUG
-else AC_SET_DEBUG 
+[
+AC_ARG_ENABLE(debug,[  --enable-debug 	  creates debugging code [default=no]],
+[ 
+if test $enableval = "no"; dnl 
+  then AC_SET_NODEBUG 
+  else AC_SET_DEBUG 
 fi
 ],
 AC_SET_NODEBUG)
@@ -457,6 +475,7 @@ AC_SET_NODEBUG)
 dnl just a test
 AC_DEFUN(AC_CHECK_FLAGS, 
 [
+AC_REQUIRE([AC_CHECK_WITH_GCC])
 AC_REQUIRE([AC_CHECK_DEBUG])
 AC_SUBST(CXXFLAGS)
 AC_SUBST(CFLAGS)
