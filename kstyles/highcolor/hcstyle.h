@@ -50,14 +50,18 @@ public:
     ~HCAniMenu();
 protected:
     void scrollIn();
+    void scrollOut();
 protected slots:
     void slotDestroyFake();
     void slotFinished();
 private:
     bool eventFilter(QObject *obj, QEvent *ev);
 
+    QPixmap bgPix;
+    QPixmap mnuPix;
     QPopupMenu *mnu;
     QWidget *widget;
+    int animationDelay;
 };
 
 class HCStyle : public KStyle

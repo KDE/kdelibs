@@ -49,18 +49,25 @@
 #include <qtimer.h>
 #include <kimageeffect.h>
 #include <ktoolbar.h>
+#include <qdrawutil.h>
 #include <unistd.h>
 #include "paperbits.h"
 
 #include "bitmaps.h"
 
 HCAniMenu::HCAniMenu(QPopupMenu *menu)
-    : QObject()
+  : QObject(menu), mnu(menu), widget(0L)
 {
-    mnu = menu;
-    widget = NULL;
-    menu->installEventFilter(this);
-    connect(mnu, SIGNAL(destroyed()), this, SLOT(slotFinished()));
+  KConfig *config = KGlobal::config();
+  QString oldGrp = config->group();
+  config->setGroup("B2");
+  animationDelay = config->readNumEntry("MenuAnimationDelay", 3);
+  config->setGroup(oldGrp);
+
+  menu->installEventFilter(this);
+
+  // We should be cleaned up when the menu is destroyed..
+//     connect(mnu, SIGNAL(destroyed()), this, SLOT(slotFinished()));
 }
 
 HCAniMenu::~HCAniMenu()
@@ -71,40 +78,80 @@ HCAniMenu::~HCAniMenu()
 
 bool HCAniMenu::eventFilter(QObject *, QEvent *ev)
 {
-    if(ev->type() == QEvent::Show)
-        scrollIn();
-    else if(ev->type() == QEvent::Hide){
-        ;
-    }
-    return(false);
+  if(ev->type() == QEvent::Show)
+    scrollIn();
+  else if(ev->type() == QEvent::Hide){
+    scrollOut();
+  }
+  return(false);
 }
 
 void HCAniMenu::scrollIn()
 {
-    int w = mnu->width();
-    int h = mnu->height();
-    
-    QPixmap bgPix(QPixmap::grabWindow(QApplication::desktop()->winId(),
-                                      mnu->x(), mnu->y(), w, h));
-    QPixmap mnuPix;
+  QTime t;
+  int w = mnu->width();
+  int h = mnu->height();
+  int steps = QMIN(w, h) / 10;
+  
+  bgPix = QPixmap::grabWindow(QApplication::desktop()->winId(),
+				    mnu->x(), mnu->y(), w, h);
 
-    mnuPix.resize(w, h);
-    mnuPix.fill(mnu->colorGroup().color(QColorGroup::Background));
-    QPainter::redirect(mnu, &mnuPix);
-    mnu->repaint(false);
-    QPainter::redirect(mnu, 0);
-    if(!widget)
-        widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
-                        WStyle_Tool);
-    widget->move(mnu->x(), mnu->y());
-    widget->resize(w, h);
-    widget->setBackgroundMode(QWidget::NoBackground);
-    widget->show();
-    bitBlt(widget, 0, 0, &bgPix);
-    int x;
-    for(x = 0; x <= w-3; x+=2)
-        bitBlt(widget, x, 0, &mnuPix, x, 0, x+2, h);
-    QTimer::singleShot(1, this, SLOT(slotDestroyFake()));
+  mnuPix.resize(w, h);
+  mnuPix.fill(mnu->colorGroup().color(QColorGroup::Background));
+  QPainter::redirect(mnu, &mnuPix);
+  mnu->repaint(false);
+  QPainter::redirect(mnu, 0);
+  if(!widget)
+    widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
+			 WStyle_Tool | WType_Popup );
+  widget->setFocusPolicy(QWidget::StrongFocus);
+  widget->move(mnu->x(), mnu->y());
+  widget->resize(w, h);
+  widget->setBackgroundMode(QWidget::NoBackground);
+  widget->show();
+  bitBlt(widget, 0, 0, &bgPix);
+
+  for(int x = 1; x <= steps; x++)
+    {
+      t.start();
+      while(t.elapsed() <= animationDelay );
+      
+      int howMuch = (int)(float(x) / float(steps) * w);
+
+      bitBlt(widget, 0, 0, &mnuPix, w - howMuch, 0, howMuch, h);
+      kapp->syncX();
+    }
+  QTimer::singleShot(1, this, SLOT(slotDestroyFake()));
+}
+
+void HCAniMenu::scrollOut()
+{
+  QTime t;
+  int w = mnu->width();
+  int h = mnu->height();
+  int steps = QMIN(w, h) / 10;
+     
+  if(!widget)
+    widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
+			 WStyle_Tool | WType_Popup );
+  widget->move(mnu->x(), mnu->y());
+  widget->resize(w, h);
+  widget->setBackgroundMode(QWidget::NoBackground);
+  widget->show();
+  bitBlt(widget, 0, 0, &mnuPix);
+
+  for(int x = steps; x >= 0; x--)
+    {
+      t.start();
+      while(t.elapsed() <= animationDelay );
+
+      int howMuch = (int)(float(x) / float(steps) * w);
+
+      bitBlt(widget, 0 + howMuch, 0, &bgPix, 0 + howMuch, 0, w - howMuch, h);
+      bitBlt(widget, 0, 0, &mnuPix, w - howMuch, 0, howMuch, h);
+      kapp->syncX();
+    }
+  QTimer::singleShot(1, this, SLOT(slotDestroyFake()));
 }
 
 void HCAniMenu::slotDestroyFake()
@@ -118,7 +165,8 @@ void HCAniMenu::slotFinished()
 {
     if(widget)
         delete(widget);
-    delete this;
+    // We'll be deleted when the menu is destroyed..
+//     delete this;
 }
 
 
@@ -1477,9 +1525,14 @@ void HCStyle::drawFocusRect(QPainter *p, const QRect &r,
 
 void HCStyle::polishPopupMenu(QPopupMenu *mnu)
 {
+    KConfig *config = KGlobal::config();
+    QString oldGrp = config->group();
+    config->setGroup("B2");
+
     KStyle::polishPopupMenu(mnu);
-    // disabled for now because it breaks kicker
-    // (void)new HCAniMenu(mnu); 
+    if (config->readBoolEntry("AnimateMenus", false))
+      (void)new HCAniMenu(mnu); 
+    config->setGroup(oldGrp);
 }
 
 /*
