@@ -2584,7 +2584,7 @@ void CopyJob::deleteNextDir()
         // Finished - tell the world
         KDirNotify_stub allDirNotify("*", "KDirNotify*");
         KURL url( m_dest );
-        if ( destinationState != DEST_IS_DIR )
+        if ( destinationState != DEST_IS_DIR || m_asMethod )
             url.setPath( url.directory() );
         //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
         allDirNotify.FilesAdded( url );
