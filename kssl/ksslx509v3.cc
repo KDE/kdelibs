@@ -50,9 +50,22 @@ bool KSSLX509V3::trustCompatible() {
 }
 
 
+/* When reading this, please remember that
+ * !A || B    is logically equivalent to   A => B
+ */
+
 bool KSSLX509V3::certTypeCA() {
 #ifdef HAVE_SSL
-	return (((_flags & EXFLAG_CA) && (_flags & EXFLAG_BCONS)) || ((_flags & V1_ROOT) == V1_ROOT) || (_flags & EXFLAG_KUSAGE)) ? true : false;
+	return (((_flags & EXFLAG_CA) && (_flags & EXFLAG_BCONS)) ||
+		((_flags & V1_ROOT) == V1_ROOT) ||
+		(_flags & EXFLAG_KUSAGE) ||
+		(!(_flags & EXFLAG_BCONS) && 
+		  (_flags & EXFLAG_NSCERT) && 
+		  (_flags & EXFLAG_SS) /*&& 
+		  (_nsCert & (NS_OBJSIGN_CA|NS_SMIME_CA|NS_SSL_CA))*/
+		)
+	       ) 
+		? true : false;
 #endif
 	return false;
 }
@@ -61,8 +74,8 @@ bool KSSLX509V3::certTypeCA() {
 bool KSSLX509V3::certTypeSSLCA() {
 #ifdef HAVE_SSL
 	return (certTypeCA() &&
-		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_SSL_CA) &&
-		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage & (XKU_SSL_SERVER|XKU_SSL_CLIENT))) ? true : false;
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & (NS_SSL_CA|NS_SSL_CLIENT|NS_SSL_SERVER)) &&
+		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage == 0 || _xKeyUsage & (XKU_SSL_SERVER|XKU_SSL_CLIENT))) ? true : false;
 #endif
 	return false;
 }
@@ -71,8 +84,8 @@ bool KSSLX509V3::certTypeSSLCA() {
 bool KSSLX509V3::certTypeEmailCA() {
 #ifdef HAVE_SSL
 	return (certTypeCA() &&
-		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_SMIME_CA) &&
-		(!(_flags & EXFLAG_XKUSAGE) ||_xKeyUsage & XKU_SMIME)) ? true : false;
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & (NS_SMIME_CA|NS_SMIME)) &&
+		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage == 0 || _xKeyUsage & XKU_SMIME)) ? true : false;
 #endif
 	return false;
 }
@@ -81,8 +94,8 @@ bool KSSLX509V3::certTypeEmailCA() {
 bool KSSLX509V3::certTypeCodeCA() {
 #ifdef HAVE_SSL
 	return (certTypeCA() &&
-		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_OBJSIGN_CA) &&
-		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage & XKU_CODE_SIGN)) ? true : false;
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & (NS_OBJSIGN_CA|NS_OBJSIGN)) &&
+		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage == 0 || _xKeyUsage & XKU_CODE_SIGN)) ? true : false;
 #endif
 	return false;
 }

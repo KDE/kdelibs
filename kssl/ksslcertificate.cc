@@ -357,6 +357,7 @@ void KSSLCertificate::setChain(void *c) {
 void KSSLCertificate::setCert(X509 *c) {
 #ifdef HAVE_SSL
   d->m_cert = c;
+  d->_extensions.setFlags(0,0,0,0);
   if (c) {
 	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
@@ -373,6 +374,14 @@ void KSSLCertificate::setCert(X509 *c) {
 	  }
 #endif
 
+	kdDebug(7029) << "---------------- Certificate ------------------" 
+		      << endl;
+	kdDebug(7029) << getSubject() << endl;
+	kdDebug(7029) << "flags: " << QString::number(c->ex_flags, 2)
+		      << " keyusage: " << QString::number(c->ex_kusage, 2)
+		      << " xkeyusage: " << QString::number(c->ex_xkusage, 2)
+		      << " nscert: " << QString::number(c->ex_nscert, 2)
+		      << endl;
 	if (c->ex_flags & EXFLAG_KUSAGE)
 		kdDebug(7029) << "     --- Key Usage extensions found" << endl;
 	if (c->ex_flags & EXFLAG_XKUSAGE)
@@ -402,6 +411,8 @@ void KSSLCertificate::setCert(X509 *c) {
 		kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
 	if (d->_extensions.certTypeCRLSign())
 		kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
+	kdDebug(7029) << "-----------------------------------------------" 
+		      << endl;
   }
 #endif
   d->m_stateCached = false;
@@ -724,6 +735,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
      return i18n("Signature test failed.");
   case KSSLCertificate::Rejected:
   case KSSLCertificate::InvalidPurpose:
+     return i18n("Rejected, possibly due to an invalid purpose.");
   break;
   case KSSLCertificate::PrivateKeyFailed:
      return i18n("Private key test failed.");
@@ -853,7 +865,7 @@ return d->_extensions;
 
 
 bool KSSLCertificate::isSigner() {
-return false;
+return d->_extensions.certTypeCA();
 }
 
 
