@@ -259,6 +259,8 @@ class FlowSystemReceiver;
 class FlowSystem;
 class GlobalComm;
 class TmpGlobalComm;
+class TraderOffer;
+class TraderQuery;
 
 class InterfaceRepo_base : virtual public Arts::Object_base {
 public:
@@ -825,6 +827,190 @@ public:
 	inline void erase(const std::string& variable);
 };
 
+class TraderOffer_base : virtual public Arts::Object_base {
+public:
+	static unsigned long _IID; // interface ID
+
+	static TraderOffer_base *_create(const std::string& subClass = "Arts::TraderOffer");
+	static TraderOffer_base *_fromString(std::string objectref);
+	static TraderOffer_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
+
+	inline TraderOffer_base *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
+
+	void *_cast(unsigned long iid);
+
+	virtual std::string interfaceName() = 0;
+	virtual std::vector<std::string> * getProperty(const std::string& name) = 0;
+};
+
+class TraderOffer_stub : virtual public TraderOffer_base, virtual public Arts::Object_stub {
+protected:
+	TraderOffer_stub();
+
+public:
+	TraderOffer_stub(Arts::Connection *connection, long objectID);
+
+	std::string interfaceName();
+	std::vector<std::string> * getProperty(const std::string& name);
+};
+
+class TraderOffer_skel : virtual public TraderOffer_base, virtual public Arts::Object_skel {
+public:
+	TraderOffer_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
+	void _buildMethodTable();
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
+};
+
+};
+#include "reference.h"
+namespace Arts {
+class TraderOffer : public Arts::Object {
+private:
+	static Arts::Object_base* _Creator();
+	TraderOffer_base *_cache;
+	inline TraderOffer_base *_method_call() {
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(TraderOffer_base *)_pool->base->_cast(TraderOffer_base::_IID);
+			assert(_cache);
+		}
+		return _cache;
+	}
+
+protected:
+	inline TraderOffer(TraderOffer_base* b) : Object(b), _cache(0) {}
+
+
+public:
+	typedef TraderOffer_base _base_class;
+
+	inline TraderOffer() : Arts::Object(_Creator), _cache(0) {}
+	inline TraderOffer(const Arts::SubClass& s) :
+		Arts::Object(TraderOffer_base::_create(s.string())), _cache(0) {}
+	inline TraderOffer(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(TraderOffer_base::_fromString(r.string())):(TraderOffer_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline TraderOffer(const Arts::DynamicCast& c) : Arts::Object(TraderOffer_base::_fromString(c.object().toString())), _cache(0) {}
+	inline TraderOffer(const TraderOffer& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline TraderOffer(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
+	inline static TraderOffer null() {return TraderOffer((TraderOffer_base*)0);}
+	inline static TraderOffer _from_base(TraderOffer_base* b) {return TraderOffer(b);}
+	inline TraderOffer& operator=(const TraderOffer& target) {
+		if (_pool == target._pool) return *this;
+		_pool->Dec();
+		_pool = target._pool;
+		_cache = target._cache;
+		_pool->Inc();
+		return *this;
+	}
+	inline TraderOffer_base* _base() {return _cache?_cache:_method_call();}
+
+	inline std::string interfaceName();
+	inline std::vector<std::string> * getProperty(const std::string& name);
+};
+
+class TraderQuery_base : virtual public Arts::Object_base {
+public:
+	static unsigned long _IID; // interface ID
+
+	static TraderQuery_base *_create(const std::string& subClass = "Arts::TraderQuery");
+	static TraderQuery_base *_fromString(std::string objectref);
+	static TraderQuery_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
+
+	inline TraderQuery_base *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
+
+	void *_cast(unsigned long iid);
+
+	virtual void supports(const std::string& property, const std::string& value) = 0;
+	virtual std::vector<Arts::TraderOffer> * query() = 0;
+};
+
+class TraderQuery_stub : virtual public TraderQuery_base, virtual public Arts::Object_stub {
+protected:
+	TraderQuery_stub();
+
+public:
+	TraderQuery_stub(Arts::Connection *connection, long objectID);
+
+	void supports(const std::string& property, const std::string& value);
+	std::vector<Arts::TraderOffer> * query();
+};
+
+class TraderQuery_skel : virtual public TraderQuery_base, virtual public Arts::Object_skel {
+public:
+	TraderQuery_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
+	void _buildMethodTable();
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
+};
+
+};
+#include "reference.h"
+namespace Arts {
+class TraderQuery : public Arts::Object {
+private:
+	static Arts::Object_base* _Creator();
+	TraderQuery_base *_cache;
+	inline TraderQuery_base *_method_call() {
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(TraderQuery_base *)_pool->base->_cast(TraderQuery_base::_IID);
+			assert(_cache);
+		}
+		return _cache;
+	}
+
+protected:
+	inline TraderQuery(TraderQuery_base* b) : Object(b), _cache(0) {}
+
+
+public:
+	typedef TraderQuery_base _base_class;
+
+	inline TraderQuery() : Arts::Object(_Creator), _cache(0) {}
+	inline TraderQuery(const Arts::SubClass& s) :
+		Arts::Object(TraderQuery_base::_create(s.string())), _cache(0) {}
+	inline TraderQuery(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(TraderQuery_base::_fromString(r.string())):(TraderQuery_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline TraderQuery(const Arts::DynamicCast& c) : Arts::Object(TraderQuery_base::_fromString(c.object().toString())), _cache(0) {}
+	inline TraderQuery(const TraderQuery& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline TraderQuery(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
+	inline static TraderQuery null() {return TraderQuery((TraderQuery_base*)0);}
+	inline static TraderQuery _from_base(TraderQuery_base* b) {return TraderQuery(b);}
+	inline TraderQuery& operator=(const TraderQuery& target) {
+		if (_pool == target._pool) return *this;
+		_pool->Dec();
+		_pool = target._pool;
+		_cache = target._cache;
+		_pool->Inc();
+		return *this;
+	}
+	inline TraderQuery_base* _base() {return _cache?_cache:_method_call();}
+
+	inline void supports(const std::string& property, const std::string& value);
+	inline std::vector<Arts::TraderOffer> * query();
+};
+
 // Forward wrapper calls to _base classes:
 
 inline long Arts::InterfaceRepo::insertModule(const Arts::ModuleDef& newModule)
@@ -915,6 +1101,26 @@ inline std::string Arts::TmpGlobalComm::get(const std::string& variable)
 inline void Arts::TmpGlobalComm::erase(const std::string& variable)
 {
 	 _cache?static_cast<GlobalComm_base*>(_cache)->erase(variable):static_cast<GlobalComm_base*>(_method_call())->erase(variable);
+}
+
+inline std::string Arts::TraderOffer::interfaceName()
+{
+	return _cache?static_cast<TraderOffer_base*>(_cache)->interfaceName():static_cast<TraderOffer_base*>(_method_call())->interfaceName();
+}
+
+inline std::vector<std::string> * Arts::TraderOffer::getProperty(const std::string& name)
+{
+	return _cache?static_cast<TraderOffer_base*>(_cache)->getProperty(name):static_cast<TraderOffer_base*>(_method_call())->getProperty(name);
+}
+
+inline void Arts::TraderQuery::supports(const std::string& property, const std::string& value)
+{
+	 _cache?static_cast<TraderQuery_base*>(_cache)->supports(property, value):static_cast<TraderQuery_base*>(_method_call())->supports(property, value);
+}
+
+inline std::vector<Arts::TraderOffer> * Arts::TraderQuery::query()
+{
+	return _cache?static_cast<TraderQuery_base*>(_cache)->query():static_cast<TraderQuery_base*>(_method_call())->query();
 }
 
 };

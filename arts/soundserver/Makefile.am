@@ -62,28 +62,5 @@ kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 
 kmedia2.cc: kmedia2.h
 
-##
-## MP3 stuff (experimental)
-##
-#
-#SUBDIRS = players
-#
-#lib_LTLIBRARIES = libsoundserver_idl.la libkmedia2_idl.la libmp3playobject.la
-#artsd_LDADD = libmp3playobject.la libsoundserver_idl.la $(FLOWLIBS)
-#
-#libmp3playobject_la_SOURCES = mp3playobject.cc mp3playobject_impl.cpp artsPlugin.cpp
-#libmp3playobject_la_LIBADD =  $(FLOWLIBS) \
-    #players/inputPlugin/libinputplugin.la \
-    #players/outPlugin/liboutplugin.la \
-    #players/playerPlugin/libplayerplugin.la \
-    #players/mpegplay/libmpegplay.la \
-    #players/mpgplayer/libmpgplayer.la \
-    #players/tplay/libtplay.la \
-    #players/splay/libsplay.la \
-    #players/audio/libaudio.la \
-    #-lXext -lX11 -lpthread
-
-#mp3playobject.h: $(top_srcdir)/arts/soundserver/mp3playobject.idl $(MCOPIDL)
-	#$(MCOPIDL) $(MCOPINC) $(top_srcdir)/arts/soundserver/mp3playobject.idl
-
-#mp3playobject.cc: mp3playobject.h
+mcopclassdir = $(libdir)/Arts
+mcopclass_DATA = WavPlayObject.mcopclass

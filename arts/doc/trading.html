@@ -1,0 +1,168 @@
+<HTML>
+<TITLE>
+Trading
+</TITLE>
+<BODY bgcolor="#EAEEEE">
+<h3>Trading interfaces</h3>
+<p>
+aRts/MCOP heavily relies on splitting up things into small components. This
+makes things very flexible, as you can extend the system easily by adding new
+components, which implement new effects, fileformats, oscillators, gui elements,
+... - as almost everything is a component, almost everything can be extended
+easily, without changing existing sources. New components can be simply loaded
+dynamically to enhance already existing applications.
+<p>
+However, to make this work, two things are required:
+<p>
+<ul>
+<li>components must advertize themselves - they must describe what great things
+    they offer, so that applications will be able to use them
+<li>applications must actively look for components that they could use, instead
+    of using always the same thing for some task
+</ul>
+<p>
+The combination of this: components which say "here I am, I am cool, use me",
+and applications (or if you like, other components) which go out and look which
+component they could use to get a thing done, is called trading.
+<p>
+<h4>How components describe themselves</h4>
+<p>
+In aRts, components describe themselves by specifying values that they "support"
+for properties. A typical property for a file-loading component could be the
+extension of the files that it can process. Typical values could be "wav",
+"aiff" or "mp3". In fact, every component may choose to offer many different
+values for one property. So one single component could offer reading both,
+"wav" and "aiff" files, by specifying that it supports these values for the
+property "Extension".
+<p>
+To do so, a component has to place a .mcopclass file at an appropriate place,
+containing the properties it supports, for our example, this could look like
+this (and would be installed in &lt;componentdir&gt;/Arts/WavPlayObject.mcopclass):
+<p>
+<pre>
+Interface=Arts::WavPlayObject,Arts::PlayObject,Arts::SynthModule,Arts::Object
+Author="Stefan Westerfeld &lt;stefan@space.twc.de&gt;"
+URL="http://www.arts-project.org"
+Extension=wav,aiff
+MimeType=audio/x-wav,audio/x-aiff
+</pre>
+<p>
+It is important that the filename of the .mcopclass-file also says what the
+interface of the component is called like. The trader doesn't look at the
+contents at all, if the file (like here) is called Arts/WavPlayObject.mcopclass,
+the component interface is called Arts::WavPlayObject (modules map to
+directories).
+<p>
+<h4>How to look for components</h4>
+<p>
+To look for components, there are two interfaces (which are defined in core.idl,
+so you have them in every application), called Arts::TraderQuery and
+Arts::TraderOffer. You to go on a "shopping tour" for components like this:
+<p>
+<ol>
+<li>Create a query object:
+<p><pre>
+    Arts::TraderQuery query;
+</pre><p>
+<li>Specify what you want. As you saw above, components describe themselves
+    using properties, for which they offer certain values. So specifying what
+    you want is done by selecting components that support a certain value for
+    a property. This is done using the supports method of a TraderQuery.
+<p><pre>
+    query.supports("Interface","Arts::PlayObject");
+    query.supports("Extension","wav");
+</pre><p>
+<li>Finally, perform the query using the query method. Then, you'll (hopefully)
+    get some offers.
+<p><pre>
+    vector&lt;Arts::TraderOffer&gt; *offers = query.query();
+</pre><p>
+<li>Now you can examine what you found. Important is the interfaceName method
+    of TraderOffer, which will tell you the name of the component, that matched
+    the query. You can also find out further properties by getProperty. The
+    following code will simply iterate through all components, print their
+    interface names (which could be used for creation), and delete the results
+    of the query again:
+<p><pre>
+    vector&lt;Arts::TraderOffer&gt;::iterator i;
+    for(i = offers-&gt;begin(); i != offers-&gt;end(); i++)
+        cout &lt;&lt; i-&gt;interfaceName() &lt;&lt; endl;
+    delete offers;
+</pre><p>
+</ol>
+<p>
+<h4>Conventions (usual properties)</h4>
+<p>
+For this kind of trading service to be useful, it is important to somehow
+agree on what kinds of properties components should usually define. It is
+essential that more or less all components in a certain area use the same
+set of properties to describe themselves (and the same set of values where
+applicable), so that applications (or other components) will be able to find
+them.
+<p>
+<table border=0 cellspacing=0 cellpadding=10 width=100%>
+<tr><th>property<th>type<th>use<th>description</tr>
+<tr valign=top><td>Author<td>string<td>optional<td>
+   This can be used to ultimately let the world know that you wrote something.
+   You can write anything you like in here, e-mail adress is of course helpful.
+</tr>
+<tr valign=top><td>Buildable<td>boolean<td>recommended<td>
+
+   This indicates whether the component is usable with RAD tools (such as Arts
+   Builder) which use components by assigning properties and connecting ports.
+   It is recommended to set this value to true for almost any signal processing
+   component (such as filters, effects, oscillators, ...), and for all other
+   things which can be used in RAD like fashion, but not for internal stuff
+   like for instance Arts::InterfaceRepo.
+
+</tr>
+<tr valign=top><td>Extension<td>string<td>where relevant<td>
+
+   Everything dealing with files should consider using this. You should put
+   the lowercase version of the file extension without the "." here, so
+   something like "wav" should be fine.
+
+</tr>
+<tr valign=top><td>Interface<td>string<td>required<td>
+
+   This should include the full list of (useful) interfaces your components
+   supports, probably including Arts::Object and if applicable
+   Arts::SynthModule.
+
+</tr>
+<tr valign=top><td>Language<td>string<td>recommended<td>
+
+   If you want your component to be dynamically loaded, you need to specify
+   the language here. Currently, the only allowed value is "C++", which means
+   the component was written using the normal C++ API. If you do so, you'll
+   also need to set the "Library" property below.
+
+</tr>
+<tr valign=top><td>Library<td>string<td>where relevant<td>
+
+   Components written in C++ can be dynamically loaded. To do so, you have
+   to compile them into a dynamically loadable libtool (.la) module. Here,
+   you can specify the name of the .la-File that contains your component.
+   Remember to use REGISTER_IMPLEMENTATION (as always).
+
+</tr>
+<tr valign=top><td>MimeType<td>string<td>where relevant<td>
+
+   Everything dealing with files should consider using this. You should put
+   the lowercase version of the standard mimetype here, for instance
+   "audio/x-wav".
+
+</tr>
+<tr valign=top><td>URL<td>string<td>optional<td>
+
+   If you like to let people know where they can find a new version of the
+   component (or a homepage or anything), you can do it here. This should
+   be standard http or ftp URL.
+
+</tr>
+</table>
+<p>
+<hr>
+<a href=index.html>back to index</a>
+</BODY>
+</HTML>

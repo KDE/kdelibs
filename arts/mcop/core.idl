@@ -416,6 +416,59 @@ interface GlobalComm {
 interface TmpGlobalComm : GlobalComm {
 };
 
+/*
+ * Trading interfaces follow - trading is used to locate objects with certain
+ * properties. This is especially recommended, if you want to allow that after
+ * your code has been released, people can extend it, without changing your
+ * code, by adding new components.
+ */
+
+/**
+ * TraderOffer - this contains an offer of an object (which is usually returned
+ * as result of a query.
+ */
+interface TraderOffer {
+	/**
+	 * You can use this interface name to create one of the objects that
+	 * fulfill your query
+	 */
+	readonly attribute string interfaceName;
+
+	/**
+	 * This allows you to query additional information about the offer,
+	 * such as the author of the plugin, the name of the library that
+	 * implements it (if it is a library) or similar.
+	 *
+	 * Since some properties support having multiple values, this always
+	 * returns a sequence<string>, which may be empty if the property isn't
+	 * present at all.
+	 */
+	sequence<string> getProperty(string name);
+};
+
+/**
+ * TraderQuery - this is a query against the trader. The idea is simple: you
+ * say what you need, and the trader offers you components that do what you
+ * want.
+ */
+interface TraderQuery {
+	/**
+	 * This restricts the query to only objects which support a "property"
+	 * with the value "value". For instance, you could say
+	 *
+	 *   aquery.supports("Interface","Arts::PlayObject");
+     *
+	 * to restrict the matching objects to only those that support the
+	 * interface Arts::PlayObject
+	 */
+	void supports(string property, string value);
+
+	/**
+	 * This performs the query, and returns a set of results
+	 */
+	sequence<TraderOffer> query();
+};
+
 // this is only (!) used for generation of the Object_stub stuff
 /*
 interface Object {

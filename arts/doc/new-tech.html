@@ -185,16 +185,6 @@ time stamps.
 <p>
 Audio should implicitely have time stamps, as it is synchronous.
 <p>
-<h4>masquerading streams</h4>
-<p>
-It would be nice if a module can say: I have a stream, but redirect the
-implementation (transparently to the user). E.g. a StereoEffectStack
-should be able to have inputs and outputs just as normal modules have.
-However its inputs would go to the first StereoEffect, and its outputs
-come from the last
-<p>
-See current StereoEffectStack interface to see that it is ugly currently ;-)
-<p>
 <h4>dynamic composition</h4>
 <p>
 It should be possible to say: An effect FX is composed out of these simpler

@@ -1723,6 +1723,321 @@ Arts::Object_base* Arts::TmpGlobalComm::_Creator() {
 
 unsigned long Arts::TmpGlobalComm_base::_IID = Arts::MCOPUtils::makeIID("Arts::TmpGlobalComm");
 
+Arts::TraderOffer_base *Arts::TraderOffer_base::_create(const std::string& subClass)
+{
+	Arts::Object_skel *skel = Arts::ObjectManager::the()->create(subClass);
+	assert(skel);
+	Arts::TraderOffer_base *castedObject = (Arts::TraderOffer_base *)skel->_cast(Arts::TraderOffer_base::_IID);
+	assert(castedObject);
+	return castedObject;
+}
+
+Arts::TraderOffer_base *Arts::TraderOffer_base::_fromString(std::string objectref)
+{
+	Arts::ObjectReference r;
+
+	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
+		return Arts::TraderOffer_base::_fromReference(r,true);
+	return 0;
+}
+
+Arts::TraderOffer_base *Arts::TraderOffer_base::_fromReference(Arts::ObjectReference r, bool needcopy)
+{
+	Arts::TraderOffer_base *result;
+	result = (Arts::TraderOffer_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::TraderOffer");
+	if(!result)
+	{
+		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new Arts::TraderOffer_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::TraderOffer")) {
+				result->_release();
+				return 0;
+			}
+		}
+	}
+	return result;
+}
+
+std::vector<std::string> Arts::TraderOffer_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
+	return ret;
+}
+std::vector<std::string> Arts::TraderOffer_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
+	return ret;
+}
+
+void *Arts::TraderOffer_base::_cast(unsigned long iid)
+{
+	if(iid == Arts::TraderOffer_base::_IID) return (Arts::TraderOffer_base *)this;
+	if(iid == Arts::Object_base::_IID) return (Arts::Object_base *)this;
+	return 0;
+}
+
+Arts::TraderOffer_stub::TraderOffer_stub()
+{
+	// constructor for subclasses (don't use directly)
+}
+
+Arts::TraderOffer_stub::TraderOffer_stub(Arts::Connection *connection, long objectID)
+	: Object_stub(connection, objectID)
+{
+	// constructor to create a stub for an object
+}
+
+std::vector<std::string> * Arts::TraderOffer_stub::getProperty(const std::string& name)
+{
+	long methodID = _lookupMethodFast("method:0c00000067657450726f706572747900080000002a737472696e6700020000000100000007000000737472696e6700050000006e616d6500");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->writeString(name);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	std::vector<std::string> *_returnCode = new std::vector<std::string>;
+	if(!result) return _returnCode; // error occured
+	result->readStringSeq(*_returnCode);
+	delete result;
+	return _returnCode;
+}
+
+std::string Arts::TraderOffer_stub::interfaceName()
+{
+	long methodID = _lookupMethodFast("method:130000005f6765745f696e746572666163654e616d650007000000737472696e67000200000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return""; // error occured
+	std::string returnCode;
+	result->readString(returnCode);
+	delete result;
+	return returnCode;
+}
+
+std::string Arts::TraderOffer_skel::_interfaceName()
+{
+	return "Arts::TraderOffer";
+}
+
+bool Arts::TraderOffer_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::TraderOffer") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
+}
+
+std::string Arts::TraderOffer_skel::_interfaceNameSkel()
+{
+	return "Arts::TraderOffer";
+}
+
+// getProperty
+static void _dispatch_Arts_TraderOffer_00(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	std::string name;
+	request->readString(name);
+	std::vector<std::string> *_returnCode = ((Arts::TraderOffer_skel *)object)->getProperty(name);
+	result->writeStringSeq(*_returnCode);
+	delete _returnCode;
+}
+
+// _get_interfaceName
+static void _dispatch_Arts_TraderOffer_01(void *object, Arts::Buffer *, Arts::Buffer *result)
+{
+	result->writeString(((Arts::TraderOffer_skel *)object)->interfaceName());
+}
+
+void Arts::TraderOffer_skel::_buildMethodTable()
+{
+	Arts::Buffer m;
+	m.fromString(
+        "MethodTable:0c00000067657450726f706572747900080000002a737472696e67"
+        "00020000000100000007000000737472696e6700050000006e616d650013000000"
+        "5f6765745f696e746572666163654e616d650007000000737472696e6700020000"
+        "0000000000",
+		"MethodTable"
+	);
+	_addMethod(_dispatch_Arts_TraderOffer_00,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_TraderOffer_01,this,Arts::MethodDef(m));
+}
+
+Arts::TraderOffer_skel::TraderOffer_skel()
+{
+}
+
+Arts::Object_base* Arts::TraderOffer::_Creator() {
+	return Arts::TraderOffer_base::_create();
+}
+
+unsigned long Arts::TraderOffer_base::_IID = Arts::MCOPUtils::makeIID("Arts::TraderOffer");
+
+Arts::TraderQuery_base *Arts::TraderQuery_base::_create(const std::string& subClass)
+{
+	Arts::Object_skel *skel = Arts::ObjectManager::the()->create(subClass);
+	assert(skel);
+	Arts::TraderQuery_base *castedObject = (Arts::TraderQuery_base *)skel->_cast(Arts::TraderQuery_base::_IID);
+	assert(castedObject);
+	return castedObject;
+}
+
+Arts::TraderQuery_base *Arts::TraderQuery_base::_fromString(std::string objectref)
+{
+	Arts::ObjectReference r;
+
+	if(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))
+		return Arts::TraderQuery_base::_fromReference(r,true);
+	return 0;
+}
+
+Arts::TraderQuery_base *Arts::TraderQuery_base::_fromReference(Arts::ObjectReference r, bool needcopy)
+{
+	Arts::TraderQuery_base *result;
+	result = (Arts::TraderQuery_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::TraderQuery");
+	if(!result)
+	{
+		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new Arts::TraderQuery_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::TraderQuery")) {
+				result->_release();
+				return 0;
+			}
+		}
+	}
+	return result;
+}
+
+std::vector<std::string> Arts::TraderQuery_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
+	return ret;
+}
+std::vector<std::string> Arts::TraderQuery_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
+	return ret;
+}
+
+void *Arts::TraderQuery_base::_cast(unsigned long iid)
+{
+	if(iid == Arts::TraderQuery_base::_IID) return (Arts::TraderQuery_base *)this;
+	if(iid == Arts::Object_base::_IID) return (Arts::Object_base *)this;
+	return 0;
+}
+
+Arts::TraderQuery_stub::TraderQuery_stub()
+{
+	// constructor for subclasses (don't use directly)
+}
+
+Arts::TraderQuery_stub::TraderQuery_stub(Arts::Connection *connection, long objectID)
+	: Object_stub(connection, objectID)
+{
+	// constructor to create a stub for an object
+}
+
+void Arts::TraderQuery_stub::supports(const std::string& property, const std::string& value)
+{
+	long methodID = _lookupMethodFast("method:09000000737570706f7274730005000000766f696400020000000200000007000000737472696e67000900000070726f70657274790007000000737472696e67000600000076616c756500");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->writeString(property);
+	request->writeString(value);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
+}
+
+std::vector<Arts::TraderOffer> * Arts::TraderQuery_stub::query()
+{
+	long methodID = _lookupMethodFast("method:06000000717565727900130000002a417274733a3a5472616465724f66666572000200000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	std::vector<Arts::TraderOffer> *_returnCode = new std::vector<Arts::TraderOffer>;
+	if(!result) return _returnCode; // error occured
+	readObjectSeq(*result,*_returnCode);
+	delete result;
+	return _returnCode;
+}
+
+std::string Arts::TraderQuery_skel::_interfaceName()
+{
+	return "Arts::TraderQuery";
+}
+
+bool Arts::TraderQuery_skel::_isCompatibleWith(const std::string& interfacename)
+{
+	if (interfacename == "Arts::TraderQuery") return true;
+	if (interfacename == "Arts::Object") return true;
+	return false;
+}
+
+std::string Arts::TraderQuery_skel::_interfaceNameSkel()
+{
+	return "Arts::TraderQuery";
+}
+
+// supports
+static void _dispatch_Arts_TraderQuery_00(void *object, Arts::Buffer *request, Arts::Buffer *)
+{
+	std::string property;
+	request->readString(property);
+	std::string value;
+	request->readString(value);
+	((Arts::TraderQuery_skel *)object)->supports(property,value);
+}
+
+// query
+static void _dispatch_Arts_TraderQuery_01(void *object, Arts::Buffer *, Arts::Buffer *result)
+{
+	std::vector<Arts::TraderOffer> *_returnCode = ((Arts::TraderQuery_skel *)object)->query();
+	writeObjectSeq(*result,*_returnCode);
+	delete _returnCode;
+}
+
+void Arts::TraderQuery_skel::_buildMethodTable()
+{
+	Arts::Buffer m;
+	m.fromString(
+        "MethodTable:09000000737570706f7274730005000000766f6964000200000002"
+        "00000007000000737472696e67000900000070726f706572747900070000007374"
+        "72696e67000600000076616c75650006000000717565727900130000002a417274"
+        "733a3a5472616465724f66666572000200000000000000",
+		"MethodTable"
+	);
+	_addMethod(_dispatch_Arts_TraderQuery_00,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_TraderQuery_01,this,Arts::MethodDef(m));
+}
+
+Arts::TraderQuery_skel::TraderQuery_skel()
+{
+}
+
+Arts::Object_base* Arts::TraderQuery::_Creator() {
+	return Arts::TraderQuery_base::_create();
+}
+
+unsigned long Arts::TraderQuery_base::_IID = Arts::MCOPUtils::makeIID("Arts::TraderQuery");
+
 static Arts::IDLFileReg IDLFileReg_core("core",
     "IDLFile:0100000000000000000400000012000000417274733a3a4865616465724d61"
     "67696300010000000b0000004d434f505f4d41474943004d434f501200000041727473"
@@ -1781,7 +2096,7 @@ static Arts::IDLFileReg IDLFileReg_core("core",
     "002a417274733a3a4d6f64756c6544656600080000006d6f64756c6573000f0000002a"
     "417274733a3a456e756d4465660006000000656e756d73000f0000002a417274733a3a"
     "547970654465660006000000747970657300140000002a417274733a3a496e74657266"
-    "616365446566000b000000696e7465726661636573000600000014000000417274733a"
+    "616365446566000b000000696e7465726661636573000800000014000000417274733a"
     "3a496e746572666163655265706f0000000000040000000d000000696e736572744d6f"
     "64756c6500050000006c6f6e6700020000000100000010000000417274733a3a4d6f64"
     "756c65446566000a0000006e65774d6f64756c65000d00000072656d6f76654d6f6475"
@@ -1821,4 +2136,13 @@ static Arts::IDLFileReg IDLFileReg_core("core",
     "6f696400020000000100000007000000737472696e6700090000007661726961626c65"
     "00000000000000000014000000417274733a3a546d70476c6f62616c436f6d6d000100"
     "000011000000417274733a3a476c6f62616c436f6d6d00000000000000000000000000"
+    "12000000417274733a3a5472616465724f666665720000000000010000000c00000067"
+    "657450726f706572747900080000002a737472696e6700020000000100000007000000"
+    "737472696e6700050000006e616d6500010000000e000000696e746572666163654e61"
+    "6d650007000000737472696e6700120000000000000012000000417274733a3a547261"
+    "646572517565727900000000000200000009000000737570706f727473000500000076"
+    "6f696400020000000200000007000000737472696e67000900000070726f7065727479"
+    "0007000000737472696e67000600000076616c75650006000000717565727900130000"
+    "002a417274733a3a5472616465724f6666657200020000000000000000000000000000"
+    "00"
 );

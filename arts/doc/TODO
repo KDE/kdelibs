@@ -9,33 +9,8 @@ One of the last big changes before the API is more or less frozen. This is
 currently mostly done. Remaining issues are:
 
 - writeObject/readObject need review/rewrite
-- check why
-
-     Foo f(SubClass("Bar"))
-
-  doesn't work, currently only
-
-    Foo f = SubClass("Bar");
-
-  the same is true for Reference()
-
-// This is not equivalent! The first is of type Foo()(SubClass) and the second
-// is the correct syntax for declaring an object of type Foo; (NB)
-
-I am still not quite sure about this. After all, you also write
-
-   string s("Hello World");
-
-to call the constructor at creation, and you may even write
-
-   string s(string("Hello World"));
-
-if you really want to. Why don't my examples work similar? (SW)
 
  => Other rough edges
-
-- make dynamic casting work properly for remote objects (see
-  examples/dcasttest.cc)
 
 - provide a way to detect whether clients like artscontrol have died, and
   remove their effects again

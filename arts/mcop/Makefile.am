@@ -13,7 +13,8 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 factory.cc idlfilereg.cc ifacerepo_impl.cc mcoputils.cc \
 	 startupmanager.cc md5.c md5auth.cc referenceclean.cc datapacket.cc \
 	 asyncstream.cc notification.cc flowsystem.cc extensionloader.cc \
-	 tmpglobalcomm.cc mcopconfig.cc connect.cc reference.cc type.cc
+	 tmpglobalcomm.cc mcopconfig.cc connect.cc reference.cc type.cc \
+	 trader_impl.cc
 
 libmcop_la_LIBADD = $(LIBSOCKET) $(top_builddir)/libltdl/libltdlc.la
 libmcop_la_LDFLAGS = -no-undefined 

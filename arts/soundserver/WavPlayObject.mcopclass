@@ -1,0 +1,5 @@
+Interface=Arts::WavPlayObject,Arts::PlayObject,Arts::SynthModule,Arts::Object
+Author="Stefan Westerfeld <stefan@space.twc.de>"
+URL="http://www.arts-project.org"
+Extension=wav
+MimeType=audio/x-wav

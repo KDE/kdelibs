@@ -266,21 +266,43 @@ void SimpleSoundServer_impl::notifyTime()
 
 PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 {
-	string extension="", objectType = "";
-	if(filename.size()>4)
-	{
-		extension = filename.substr(filename.size()-4);
-		for(int i=1;i<4;i++) extension[i] = toupper(extension[i]);
+	string objectType = "";
 
-		cout << "extension = " << extension << endl;
+	/*
+	 * figure out extension (as lowercased letters)
+	 */
+	string extension = "";
+	bool extensionok = false;
+	string::const_reverse_iterator i;
+	for(i = filename.rbegin(); i != filename.rend() && !extensionok; i++)
+	{
+		if(*i == '.')
+			extensionok = true;
+		else
+			extension = (char)tolower(*i) + extension;
 	}
 
-	if(extension == ".WAV")			objectType = "Arts::WavPlayObject";
-	/* TODO: write a service which can find out which object decodes what
-	else if(extension == ".MP3") 	objectType = "MP3PlayObject";
-	else if(extension == ".MPG")	objectType = "MP3PlayObject";
-	*/
+	/*
+	 * query trader for PlayObjects which support this
+	 */
+	if(extensionok)
+	{
+		cout << "extension = " << extension << endl;
 
+		TraderQuery query;
+		query.supports("Interface","Arts::PlayObject");
+		query.supports("Extension",extension);
+
+		vector<TraderOffer> *offers = query.query();
+		if(!offers->empty())
+			objectType = offers->front().interfaceName();	// first offer
+
+		delete offers;
+	}
+
+	/*
+	 * create a PlayObject and connect it
+	 */
 	if(objectType != "")
 	{
 		cout << "Creating " << objectType << " to play file." << endl;
