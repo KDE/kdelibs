@@ -45,6 +45,7 @@
 #include <qlist.h>
 #include <qstylesheet.h>
 #include <qpixmapcache.h>
+#include <qtooltip.h>
 
 #undef QT_NO_TRANSLATION
 #include <kapp.h>
@@ -1706,8 +1707,12 @@ void KApplication::propagateSettings(SettingsCategory arg)
     QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
     b = config->readBoolEntry("EffectAnimateCombo", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
+    b = config->readBoolEntry("EffectAnimateTooltip", false);
+    QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
     b = config->readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
+    if(config->readBoolEntry("EffectNoTooltip", false))
+		QToolTip::setEnabled(false);
 
     emit settingsChanged(arg);
 }
