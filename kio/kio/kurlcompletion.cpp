@@ -990,8 +990,10 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	     || ( !man_or_info
 	          && ( url_dir->directory(false,false).isEmpty()
 	               || ( isAutoCompletion()
-	                    && !d->url_auto_completion ) ) ) )
+	                    && !d->url_auto_completion ) ) ) ) {
+                delete url_dir;
 		return false;
+        }
 
 	url_dir->setFileName(""); // not really nesseccary, but clear the filename anyway...
 
