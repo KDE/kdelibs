@@ -44,8 +44,8 @@ KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
   // the difference between KConfig and KSimpleConfig is just that 
   // for KSimpleConfig an absolute filename is guaranteed
   if (pFileName[0] != '/') {
-     backEnd->changeFileName(KGlobal::dirs()->getSaveLocation("config")+
-	pFileName, false);
+     backEnd->changeFileName( KGlobal::dirs()->
+	getSaveLocation("config", QString::null, true)+pFileName, false);
   } else {
      backEnd->changeFileName(pFileName, false);
   }
