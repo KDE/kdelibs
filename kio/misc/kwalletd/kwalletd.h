@@ -64,6 +64,9 @@ class KWalletD : public KDEDModule {
 		// Does this wallet have this folder?
 		virtual bool hasFolder(int handle, const QString& folder);
 
+		// Create this folder
+		virtual bool createFolder(int handle, const QString& folder);
+
 		// Remove this folder
 		virtual bool removeFolder(int handle, const QString& folder);
 

@@ -311,6 +311,17 @@ return false;
 }
 
 
+bool KWalletD::createFolder(int handle, const QString& f) {
+KWallet::Backend *b;
+
+	if ((b = getWallet(handle))) {
+		return b->createFolder(f);
+	}
+
+return false;
+}
+
+
 QMap<QString,QString> KWalletD::readMap(int handle, const QString& folder, const QString& key) {
 KWallet::Backend *b;
 

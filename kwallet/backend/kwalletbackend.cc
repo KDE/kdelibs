@@ -499,6 +499,16 @@ return rc;
 }
 
 
+bool Backend::createFolder(const QString& f) {
+	if (_entries.contains(f)) {
+		return false;
+	}
+
+	_entries.insert(f, EntryMap());
+return true;
+}
+
+
 void Backend::writeEntry(Entry *e) {
 	if (!_open)
 		return;

@@ -209,6 +209,24 @@ return rc;
 }
 
 
+bool Wallet::createFolder(const QString& f) {
+bool rc = true;
+
+	if (_handle == -1) {
+		return false;
+	}
+
+	if (!hasFolder(f)) {
+		DCOPReply r = _dcopRef->call("createFolder", _handle, f);
+		if (r.isValid()) {
+			r.get(rc);
+		}
+	}
+
+return rc;
+}
+
+
 bool Wallet::setFolder(const QString& f) {
 bool rc = false;
 

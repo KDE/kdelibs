@@ -74,6 +74,8 @@ class Wallet : public QObject, public DCOPObject {
 
 		virtual bool removeFolder(const QString& f);
 
+		virtual bool createFolder(const QString& f);
+
 		virtual const QString& currentFolder() const;
 
 		// Entry management functions

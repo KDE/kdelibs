@@ -54,6 +54,9 @@ class Backend {
 		// The list of folders.
 		QStringList folderList() const;
 
+		// Force creation of a folder.
+		bool createFolder(const QString& f);
+
 		// Change the folder.
 		void setFolder(const QString& f) { _folder = f; }
 
