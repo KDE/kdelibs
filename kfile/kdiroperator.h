@@ -382,6 +382,10 @@ private slots:
     void slotIOFinished();
     void slotRedirected( const KURL& );
 
+//     void slotViewActionAdded( KAction * );
+//     void slotViewActionRemoved( KAction * );
+    void slotViewSortingChanged();
+
 signals:
     void urlEntered(const KURL& );
     void updateInformation(int files, int dirs);
@@ -390,7 +394,7 @@ signals:
 
     /**
      * Emitted whenever the current fileview is changed, either by an explicit
-     * call to @ref setView() or by the user selecting a different view thru 
+     * call to @ref setView() or by the user selecting a different view thru
      * the GUI.
      */
     void viewChanged( KFileView * newView );

@@ -38,6 +38,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kpopupmenu.h>
 #include <kprogress.h>
 #include <kstdaction.h>
 #include <kio/jobclasses.h>
@@ -62,8 +63,20 @@ KURL *KDirOperator::lastDirectory = 0; // to set the start path
 class KDirOperator::KDirOperatorPrivate
 {
 public:
+    KDirOperatorPrivate() {
+        onlyDoubleClickSelectsFiles = false;
+        progressDelayTimer = 0L;
+	// viewActionSeparator = new KActionSeparator;
+    }
+
+    ~KDirOperatorPrivate() {
+        delete progressDelayTimer;
+	// delete viewActionSeparator;
+    }
+
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
+    // KActionSeparator *viewActionSeparator;
 };
 
 KDirOperator::KDirOperator(const KURL& url,
@@ -75,7 +88,6 @@ KDirOperator::KDirOperator(const KURL& url,
     viewKind = KFile::Simple;
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
     d = new KDirOperatorPrivate;
-    d->onlyDoubleClickSelectsFiles = false;
 
     if (url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentDirPath();
@@ -133,7 +145,6 @@ KDirOperator::~KDirOperator()
     resetCursor();
     delete fileView;
     delete dir;
-    delete d->progressDelayTimer;
     delete d;
 }
 
@@ -172,6 +183,10 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::activatedMenu( const KFileViewItem * )
 {
+    // ### this should be invoked from a KFileView signal
+    // when the view changed the sorting.
+    slotViewSortingChanged();
+    
     actionMenu->popup( QCursor::pos() );
 }
 
@@ -605,7 +620,7 @@ void KDirOperator::setView( KFile::FileView view )
     KFileView *new_view = 0L;
 
     if (separateDirs) {
-        KCombiView *combi = new KCombiView(this, "combi view");
+        KCombiView *combi = new KCombiView( this, "combi view" );
         combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
         new_view = combi;
 
@@ -619,11 +634,11 @@ void KDirOperator::setView( KFile::FileView view )
 
     } else {
         if ( (view & KFile::Simple) == KFile::Simple && !preview ) {
-            new_view = new KFileIconView( this, "simple view" );
+            new_view = new KFileIconView( this, "simple view");
             new_view->setViewName( i18n("Short View") );
         }
         else if ( (view & KFile::Detail) == KFile::Detail && !preview )
-            new_view = new KFileDetailView( this, "detail view" );
+            new_view = new KFileDetailView( this,"detail view" );
 
         else { // preview
 	    KFileView *v; // will get reparented by KFilePreview
@@ -632,7 +647,7 @@ void KDirOperator::setView( KFile::FileView view )
 	    else
 	        v = new KFileDetailView( 0L, "detail view" );
 	
-            KFilePreview *tmp = new KFilePreview(v, this, "preview");
+            KFilePreview *tmp = new KFilePreview( v, this, "preview" );
            tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
             tmp->setPreviewWidget(myPreview, url());
             new_view=tmp;
@@ -672,6 +687,18 @@ void KDirOperator::connectView(KFileView *view)
 
     fileView = view;
     fileView->setOperator(this);
+//     KActionCollection *coll = fileView->actionCollection();
+//     if ( !coll->isEmpty() ) {
+// 	viewActionMenu->insert( d->viewActionSeparator );
+// 	for ( uint i = 0; i < coll->count(); i++ )
+// 	    viewActionMenu->insert( coll->action( i ));
+//     }
+
+//     connect( coll, SIGNAL( inserted( KAction * )),
+// 	     SLOT( slotViewActionAdded( KAction * )));
+//     connect( coll, SIGNAL( removed( KAction * )),
+// 	     SLOT( slotViewActionRemoved( KAction * )));
+
     if ( reverseAction->isChecked() != fileView->isReversed() )
         fileView->sortReversed();
 
@@ -714,13 +741,15 @@ void KDirOperator::setMode(KFile::Mode m)
 
 void KDirOperator::setView(KFileView *view)
 {
-    KFileView *oldView = fileView;
+    if ( view == fileView )
+        return;
+
     setFocusProxy(view->widget());
     view->setSorting( mySorting );
     view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
-    connectView(view);
-    if ( view != oldView )
-	emit viewChanged( view );
+    connectView(view); // also deletes the old view
+
+    emit viewChanged( view );
 }
 
 void KDirOperator::setFileReader( KFileReader *reader )
@@ -729,7 +758,6 @@ void KDirOperator::setFileReader( KFileReader *reader )
     dir = reader;
 }
 
-// files from a remote url won't get any mimetype-detection
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
 {
     if (newone.isEmpty())
@@ -920,7 +948,6 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-
     // insert them into the actionCollection
     myActionCollection = new KActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );
@@ -962,6 +989,8 @@ void KDirOperator::setupMenu()
     viewActionMenu->insert( actionSeparator );
     viewActionMenu->insert( showHiddenAction );
     viewActionMenu->insert( separateDirsAction );
+    // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
+    // when you add/remove actions here!
 
 
     // now plug everything into the popupmenu
@@ -991,6 +1020,9 @@ void KDirOperator::updateSortActions()
 
     dirsFirstAction->setChecked( KFile::isSortDirsFirst( mySorting ));
     caseInsensitiveAction->setChecked(KFile::isSortCaseInsensitive(mySorting));
+
+    if ( fileView )
+	reverseAction->setChecked( fileView->isReversed() );
 }
 
 void KDirOperator::updateViewActions()
@@ -1067,6 +1099,9 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
     if ( !group.isEmpty() )
         kc->setGroup( group );
 
+    // ### remove this when KFileView emits a sortingChanged() signal.
+    slotViewSortingChanged();
+    
     QString sortBy = QString::fromLatin1("Name");
     if ( KFile::isSortBySize( mySorting ) )
         sortBy = QString::fromLatin1("Size");
@@ -1171,6 +1206,30 @@ void KDirOperator::clearHistory()
     backAction->setEnabled( false );
     forwardStack.clear();
     forwardAction->setEnabled( false );
+}
+
+/*
+void KDirOperator::slotViewActionAdded( KAction *action )
+{
+    if ( viewActionMenu->popupMenu()->count() == 5 ) // need to add a separator
+	viewActionMenu->insert( d->viewActionSeparator );
+	
+    viewActionMenu->remove( action );
+}
+
+void KDirOperator::slotViewActionRemoved( KAction *action )
+{
+    viewActionMenu->remove( action );
+
+    if ( viewActionMenu->popupMenu()->count() == 6 ) // remove the separator
+	viewActionMenu->remove( d->viewActionSeparator );
+}
+*/
+
+void KDirOperator::slotViewSortingChanged()
+{
+    mySorting = fileView->sorting();
+    updateSortActions();
 }
 
 #include "kdiroperator.moc"
