@@ -184,8 +184,14 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     if (!details.isEmpty())
     {
        QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details:"), dialog);
-       QLabel *label3 = new QLabel(details, detailsGroup);
-       label3->setMinimumSize(label3->sizeHint());
+       if ( details.length() < 512 ) {
+         QLabel *label3 = new QLabel(details, detailsGroup);
+         label3->setMinimumSize(label3->sizeHint());
+       } else {
+         QTextEdit* te = new QTextEdit(details, QString::null, detailsGroup);
+         te->setReadOnly( true );
+         te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
+       }
        dialog->setDetailsWidget(detailsGroup);
     }
 
