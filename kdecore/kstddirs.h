@@ -84,7 +84,8 @@ class KStandardDirsPrivate;
 * @li sound - Application sounds.
 * @li templates - Templates
 * @li wallpaper - Wallpapers.
-* @li tmp - Temporary files (preferably a symlink to $TMPDIR/$USER)
+* @li tmp - Temporary files (specfic for both current host and current user)
+* @li socket - UNIX Sockets (specific for both current host and current user)
 *
 * A type that is added by the class KApplication if you use it, is
 * appdata. This one makes the use of the type data a bit easier as it

@@ -57,7 +57,7 @@ static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
 			      "wallpaper", "lib", "pixmap", "templates", 
-                              "tmp", 0};
+                              "tmp", "socket", 0};
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -615,7 +615,19 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "lib"))
 	return "lib/";
     if (!strcmp(type, "tmp"))
-	return "tmp/";
+    {
+        char hostname[256];
+        hostname[0] = 0;
+        gethostname(hostname, 255);
+	return QString("tmp-%1/").arg(hostname);
+    }
+    if (!strcmp(type, "socket"))
+    {
+        char hostname[256];
+        hostname[0] = 0;
+        gethostname(hostname, 255);
+	return QString("socket-%1/").arg(hostname);
+    }
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
