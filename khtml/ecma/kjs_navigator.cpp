@@ -2,6 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
  *  Copyright (c) 2000 Daniel Molkentin (molkentin@kde.org)
+ *  Copyright (c) 2000 Stefan Schimanski (1stein@gmx.de)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -184,8 +185,13 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "appVersion"){
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
+  } else if (p == "product") {
+      return String("Konqueror/khtml");
+  } else if (p == "vendor") {
+      return String("KDE");
   } else if (p == "language") {
-    return String(KGlobal::locale()->language() == "C" ? QString::fromLatin1("en") : KGlobal::locale()->language());
+    return String(KGlobal::locale()->language() == "C" ?
+                  QString::fromLatin1("en") : KGlobal::locale()->language());
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
