@@ -210,6 +210,7 @@ QString KCookieJar::findCookies(const QString &_url)
 
     KCookieList *cookieList = cookieDomains[domain];
 
+
     if (!cookieList)
 	return cookieStr; // No cookies for this domain    
 
@@ -375,12 +376,12 @@ static void stripDomain(const QString &_fqdn, QString &_domain)
         if (_domain.find('.', 1) == -1)
         {
            // Domain part should contain at least another '.'
-           // Use the host part instead, but add a '.' in front
-           _domain = ".";
-           _domain += _fqdn;
+           // Use the host part instead
+           _domain = _fqdn;
         }
     }
-
+    if ((_domain.length() < 1) || (_domain[0] != '.'))
+       _domain = '.' + _domain;
 }
 
 static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
@@ -545,6 +546,8 @@ bool KCookieJar::extractDomain(const QString &_url,
     _fqdn = kurl.host().lower();
     stripDomain(_fqdn, _domain);
     _path = kurl.path().lower();
+    if (_path.isEmpty())
+       _path = "/";
     return true;
 }
                                                    
