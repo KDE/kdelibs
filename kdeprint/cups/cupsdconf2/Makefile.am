@@ -15,7 +15,7 @@ libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdpage.cpp cupsdcomme
 			  qdirlineedit.cpp cupsddirpage.cpp portdialog.cpp cupsdnetworkpage.cpp \
 			  editlist.cpp cupsdbrowsingpage.cpp browsedialog.cpp cupsdsecuritypage.cpp \
 			  locationdialog.cpp addressdialog.cpp cups-util.c \
-			  qdirmultilineedit.cpp
+			  qdirmultilineedit.cpp sizewidget.cpp
 libcupsdconf_la_METASOURCES = AUTO
 libcupsdconf_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 libcupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
@@ -24,7 +24,8 @@ noinst_HEADERS = cupsdconf.h cupsdpage.h cupsddialog.h cupsdcomment.h cupsdsplas
 		 cupsdserverpage.h cupsdlogpage.h cupsdjobspage.h cupsdfilterpage.h \
 		 qdirlineedit.h cupsddirpage.h portdialog.h cupsdnetworkpage.h \
 		 editlist.h cupsdbrowsingpage.h browsedialog.h cupsdsecuritypage.h \
-		 locationdialog.h addressdialog.h cups-util.h qdirmultilineedit.h
+		 locationdialog.h addressdialog.h cups-util.h qdirmultilineedit.h \
+		 sizewidget.h
 
 # Data
 cupsdconfdata_DATA = kde_logo.png cups_logo.png cupsd.conf.template

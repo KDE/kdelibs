@@ -19,6 +19,7 @@
 
 #include "cupsdfilterpage.h"
 #include "cupsdconf.h"
+#include "sizewidget.h"
 
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -38,15 +39,9 @@ CupsdFilterPage::CupsdFilterPage(QWidget *parent, const char *name)
 
 	user_ = new QLineEdit(this);
 	group_ = new QLineEdit(this);
-	ripcache_ = new QLineEdit(this);
+	ripcache_ = new SizeWidget(this);
 	filterlimit_ = new KIntNumInput(this);
-	ripunit_ = new QComboBox(this);
 
-	ripcache_->setAlignment(Qt::AlignRight);
-	ripunit_->insertItem(i18n("KB"));
-	ripunit_->insertItem(i18n("MB"));
-	ripunit_->insertItem(i18n("GB"));
-	ripunit_->insertItem(i18n("Tiles"));
 	filterlimit_->setRange(0, 1000, 1, true);
 	filterlimit_->setSpecialValueText(i18n("Unlimited"));
 	filterlimit_->setSteps(1, 10);
@@ -65,10 +60,7 @@ CupsdFilterPage::CupsdFilterPage(QWidget *parent, const char *name)
 	m1->addWidget(l4, 3, 0, Qt::AlignRight);
 	m1->addWidget(user_, 0, 1);
 	m1->addWidget(group_, 1, 1);
-	QHBoxLayout	*m2 = new QHBoxLayout(0, 0, 7);
-	m1->addLayout(m2, 2, 1);
-	m2->addWidget(ripcache_, 1);
-	m2->addWidget(ripunit_, 0);
+	m1->addWidget(ripcache_, 2, 1);
 	m1->addWidget(filterlimit_, 3, 1);
 }
 
@@ -77,26 +69,17 @@ bool CupsdFilterPage::loadConfig(CupsdConf *conf, QString&)
 	conf_ = conf;
 	user_->setText(conf_->user_);
 	group_->setText(conf_->group_);
-	ripcache_->setText(QString::number(conf_->ripcache_));
-	ripunit_->setCurrentItem(conf_->ripunit_);
+	ripcache_->setSizeString(conf_->ripcache_);
 	filterlimit_->setValue(conf_->filterlimit_);
 
 	return true;
 }
 
-bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString& msg)
+bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString&)
 {
-	int	n = ripcache_->text().toInt();
-	if (n <= 0)
-	{
-		// FIXME: translate that string
-		msg = "Invalid RIP Cache";
-		return false;
-	}
 	conf->user_ = user_->text();
 	conf->group_ = group_->text();
-	conf->ripcache_ = n;
-	conf->ripunit_ = ripunit_->currentItem();
+	conf->ripcache_ = ripcache_->sizeString();
 	conf->filterlimit_ = filterlimit_->value();
 
 	return true;
@@ -107,6 +90,5 @@ void CupsdFilterPage::setInfos(CupsdConf *conf)
 	QWhatsThis::add(user_, conf->comments_.toolTip("user"));
 	QWhatsThis::add(group_, conf->comments_.toolTip("group"));
 	QWhatsThis::add(ripcache_, conf->comments_.toolTip("ripcache"));
-	QWhatsThis::add(ripunit_, conf->comments_.toolTip("ripcache"));
 	QWhatsThis::add(filterlimit_, conf->comments_.toolTip("filterlimit"));
 }

@@ -26,6 +26,7 @@ class KIntNumInput;
 class QCheckBox;
 class QComboBox;
 class EditList;
+class SizeWidget;
 
 class CupsdNetworkPage : public CupsdPage
 {
@@ -44,10 +45,11 @@ protected slots:
 	void slotDefaultList();
 
 private:
-	KIntNumInput	*keepalivetimeout_, *maxclients_, *maxrequestsize_, *clienttimeout_;
+	KIntNumInput	*keepalivetimeout_, *maxclients_, *clienttimeout_;
 	QComboBox	*hostnamelookup_;
 	QCheckBox	*keepalive_;
 	EditList	*listen_;
+	SizeWidget *maxrequestsize_;
 };
 
 #endif

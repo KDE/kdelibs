@@ -20,6 +20,7 @@
 #include "cupsdlogpage.h"
 #include "cupsdconf.h"
 #include "qdirlineedit.h"
+#include "sizewidget.h"
 
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -27,7 +28,6 @@
 #include <qwhatsthis.h>
 
 #include <klocale.h>
-#include <knuminput.h>
 #include <kfiledialog.h>
 
 CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
@@ -40,7 +40,7 @@ CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
 	accesslog_ = new QDirLineEdit(true, this);
 	errorlog_ = new QDirLineEdit(true, this);
 	pagelog_ = new QDirLineEdit(true, this);
-	maxlogsize_ = new KIntNumInput(this);
+	maxlogsize_ = new SizeWidget(this);
 	loglevel_ = new QComboBox(this);
 
 	loglevel_->insertItem(i18n("Detailed Debugging"));
@@ -50,10 +50,10 @@ CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
 	loglevel_->insertItem(i18n("Errors"));
 	loglevel_->insertItem(i18n("No Logging"));
 
-	maxlogsize_->setRange(0, 100, 1, true);
+	/*maxlogsize_->setRange(0, 100, 1, true);
 	maxlogsize_->setSteps(1, 5);
 	maxlogsize_->setSpecialValueText(i18n("Unlimited"));
-	maxlogsize_->setSuffix(i18n("MB"));
+	maxlogsize_->setSuffix(i18n("MB"));*/
 
 	QLabel *l1 = new QLabel(i18n("Access log:"), this);
 	QLabel *l2 = new QLabel(i18n("Error log:"), this);
@@ -84,7 +84,7 @@ bool CupsdLogPage::loadConfig(CupsdConf *conf, QString&)
 	accesslog_->setURL(conf_->accesslog_);
 	errorlog_->setURL(conf_->errorlog_);
 	pagelog_->setURL(conf_->pagelog_);
-	maxlogsize_->setValue(conf_->maxlogsize_);
+	maxlogsize_->setSizeString(conf_->maxlogsize_);
 	loglevel_->setCurrentItem(conf_->loglevel_);
 
 	return true;
@@ -95,7 +95,7 @@ bool CupsdLogPage::saveConfig(CupsdConf *conf, QString&)
 	conf->accesslog_ = accesslog_->url();
 	conf->errorlog_ = errorlog_->url();
 	conf->pagelog_ = pagelog_->url();
-	conf->maxlogsize_ = maxlogsize_->value();
+	conf->maxlogsize_ = maxlogsize_->sizeString();
 	conf->loglevel_ = loglevel_->currentItem();
 
 	return true;

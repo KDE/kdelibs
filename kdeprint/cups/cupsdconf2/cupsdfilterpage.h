@@ -22,9 +22,10 @@
 
 #include "cupsdpage.h"
 
-class KIntNumInput;
+class SizeWidget;
 class QLineEdit;
 class QComboBox;
+class KIntNumInput;
 
 class CupsdFilterPage : public CupsdPage
 {
@@ -36,9 +37,9 @@ public:
 	void setInfos(CupsdConf*);
 
 private:
-	QLineEdit	*user_, *group_, *ripcache_;
+	QLineEdit	*user_, *group_;
 	KIntNumInput	*filterlimit_;
-	QComboBox	*ripunit_;
+	SizeWidget	*ripcache_;
 };
 
 #endif

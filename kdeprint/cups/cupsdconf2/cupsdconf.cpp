@@ -96,7 +96,7 @@ CupsdConf::CupsdConf()
 	keepalive_ = true;
 	keepalivetimeout_ = 60;
 	maxclients_ = 100;
-	maxrequestsize_ = 0;
+	maxrequestsize_ = "0";
 	clienttimeout_ = 300;
 	// listenaddresses_
 	QString	logdir = findDir(QStringList("/var/log/cups")
@@ -105,7 +105,7 @@ CupsdConf::CupsdConf()
 	accesslog_ = logdir+"/access_log";
 	errorlog_ = logdir+"/error_log";
 	pagelog_ = logdir+"/page_log";
-	maxlogsize_ = 1;
+	maxlogsize_ = "1m";
 	loglevel_ = LOGLEVEL_INFO;
 	keepjobhistory_ = true;
 	keepjobfiles_ = false;
@@ -115,8 +115,7 @@ CupsdConf::CupsdConf()
 	maxjobsperuser_ = 0;
 	user_ = "lp";
 	group_ = "sys";
-	ripcache_ = 8;
-	ripunit_ = UNIT_MB;
+	ripcache_ = "8m";
 	filterlimit_ = 0;
 	browsing_ = true;
 	browseprotocols_ << "CUPS";
@@ -308,7 +307,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "MaxClients " << maxclients_ << endl;
 
 		t << endl << comments_["maxrequestsize"] << endl;
-		t << "MaxRequestSize " << maxrequestsize_ << "m" << endl;
+		t << "MaxRequestSize " << maxrequestsize_ << endl;
 
 		t << endl << comments_["timeout"] << endl;
 		t << "Timeout " << clienttimeout_ << endl;
@@ -328,7 +327,8 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "PageLog " << pagelog_ << endl;
 
 		t << endl << comments_["maxlogsize"] << endl;
-		t << "MaxLogSize " << maxlogsize_ << "m" << endl;
+		//t << "MaxLogSize " << maxlogsize_ << "m" << endl;
+		t << "MaxLogSize " << maxlogsize_ << endl;
 
 		t << endl << comments_["loglevel"] << endl;
 		t << "LogLevel ";
@@ -371,15 +371,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "Group " << group_ << endl;
 
 		t << endl << comments_["ripcache"] << endl;
-		t << "RIPCache " << ripcache_;
-		switch (ripunit_)
-		{
-			case UNIT_KB: t << "k" << endl; break;
-			default:
-			case UNIT_MB: t << "m" << endl; break;
-			case UNIT_GB: t << "g" << endl; break;
-			case UNIT_TILE: t << "t" << endl; break;
-		}
+		t << "RIPCache " << ripcache_ << endl;
 
 		t << endl << comments_["filterlimit"] << endl;
 		t << "FilterLimit " << filterlimit_ << endl;
@@ -574,18 +566,13 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "maxjobs") maxjobs_ = value.toInt();
 	else if (keyword == "maxjobsperprinter") maxjobsperprinter_ = value.toInt();
 	else if (keyword == "maxjobsperuser") maxjobsperuser_ = value.toInt();
-	else if (keyword == "maxrequestsize")
-	{
-		// FIXME: support for suffixes
-		int suffix;
-		splitSizeSpec( value, maxrequestsize_, suffix );
-	}
-	else if (keyword == "maxlogsize")
-	{
+	else if (keyword == "maxrequestsize") maxrequestsize_ = value;
+	else if (keyword == "maxlogsize") maxlogsize_ = value;
+	/*{
 		// FIXME: support for suffixes
 		int suffix;
 		splitSizeSpec( value, maxlogsize_, suffix );
-	}
+	}*/
 	else if (keyword == "pagelog") pagelog_ = value;
 	else if (keyword == "port") listenaddresses_.append("Listen *:"+value);
 	else if (keyword == "preservejobhistory") keepjobhistory_ = (value != "off");
@@ -594,10 +581,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "printcapformat") printcapformat_ = (value.lower() == "solaris" ? PRINTCAP_SOLARIS : PRINTCAP_BSD);
 	else if (keyword == "requestroot") requestdir_ = value;
 	else if (keyword == "remoteroot") remoteroot_ = value;
-	else if (keyword == "ripcache")
-	{
-		splitSizeSpec(value, ripcache_, ripunit_);
-	}
+	else if (keyword == "ripcache") ripcache_ = value;
 	else if (keyword == "serveradmin") serveradmin_ = value;
 	else if (keyword == "serverbin") serverbin_ = value;
 	else if (keyword == "servercertificate") encryptcert_ = value;

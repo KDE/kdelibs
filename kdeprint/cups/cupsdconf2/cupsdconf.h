@@ -87,7 +87,7 @@ struct CupsdConf
 	bool keepalive_;
 	int keepalivetimeout_;
 	int maxclients_;
-	int maxrequestsize_;
+	QString maxrequestsize_;
 	int clienttimeout_;
 	QStringList listenaddresses_;
 
@@ -95,7 +95,7 @@ struct CupsdConf
 	QString accesslog_;
 	QString errorlog_;
 	QString pagelog_;
-	int maxlogsize_;
+	QString maxlogsize_;
 	int loglevel_;
 
 	// Jobs
@@ -109,8 +109,7 @@ struct CupsdConf
 	// Filter
 	QString user_;
 	QString group_;
-	int ripcache_;
-	int ripunit_;
+	QString ripcache_;
 	int filterlimit_;
 
 	// Directories

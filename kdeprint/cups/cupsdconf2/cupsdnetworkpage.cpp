@@ -21,6 +21,7 @@
 #include "cupsdconf.h"
 #include "editlist.h"
 #include "portdialog.h"
+#include "sizewidget.h"
 
 #include <qlabel.h>
 #include <qcheckbox.h>
@@ -41,7 +42,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	keepalive_ = new QCheckBox(i18n("Keep alive"), this);
 	keepalivetimeout_ = new KIntNumInput(this);
 	maxclients_ = new KIntNumInput(this);
-	maxrequestsize_ = new KIntNumInput(this);
+	maxrequestsize_ = new SizeWidget(this);
 	clienttimeout_ = new KIntNumInput(this);
 	hostnamelookup_ = new QComboBox(this);
 	listen_ = new EditList(this);
@@ -53,12 +54,6 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 
 	maxclients_->setRange(1, 1000, 1, true);
 	maxclients_->setSteps(1, 10);
-
-	maxrequestsize_->setRange(0, 1000, 1, true);
-	maxrequestsize_->setSpecialValueText(i18n("Unlimited"));
-	maxrequestsize_->setSteps(1, 10);
-	maxrequestsize_->setSuffix(i18n("MB"));
-
 
 	clienttimeout_->setRange(0, 10000, 1, true);
 	clienttimeout_->setSteps(1, 10);
@@ -107,7 +102,7 @@ bool CupsdNetworkPage::loadConfig(CupsdConf *conf, QString&)
 	keepalive_->setChecked(conf_->keepalive_);
 	keepalivetimeout_->setValue(conf_->keepalivetimeout_);
 	maxclients_->setValue(conf_->maxclients_);
-	maxrequestsize_->setValue(conf_->maxrequestsize_);
+	maxrequestsize_->setSizeString(conf_->maxrequestsize_);
 	clienttimeout_->setValue(conf_->clienttimeout_);
 	listen_->insertItems(conf_->listenaddresses_);
 
@@ -120,7 +115,7 @@ bool CupsdNetworkPage::saveConfig(CupsdConf *conf, QString&)
 	conf->keepalive_ = keepalive_->isChecked();
 	conf->keepalivetimeout_ = keepalivetimeout_->value();
 	conf->maxclients_ = maxclients_->value();
-	conf->maxrequestsize_ = maxrequestsize_->value();
+	conf->maxrequestsize_ = maxrequestsize_->sizeString();
 	conf->clienttimeout_ = clienttimeout_->value();
 	conf->listenaddresses_ = listen_->items();
 

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2002 Michael Goffioul <goffioul@imec.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,28 +17,27 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef CUPSDLOGPAGE_H
-#define CUPSDLOGPAGE_H
+#ifndef SIZEWIDGET_H
+#define SIZEWIDGET_H
 
-#include "cupsdpage.h"
+#include <qwidget.h>
 
-class QDirLineEdit;
-class SizeWidget;
+class QSpinBox;
 class QComboBox;
 
-class CupsdLogPage : public CupsdPage
+class SizeWidget : public QWidget
 {
 public:
-	CupsdLogPage(QWidget *parent = 0, const char *name = 0);
+	SizeWidget( QWidget *parent = 0, const char *name = 0 );
 
-	bool loadConfig(CupsdConf*, QString&);
-	bool saveConfig(CupsdConf*, QString&);
-	void setInfos(CupsdConf*);
+	void setSizeString( const QString& sizeString );
+	QString sizeString() const;
+	void setValue( int sz );
+	int value() const;
 
 private:
-	QDirLineEdit	*accesslog_, *errorlog_, *pagelog_;
-	QComboBox	*loglevel_;
-	SizeWidget	*maxlogsize_;
+	QSpinBox *m_size;
+	QComboBox *m_unit;
 };
 
 #endif
