@@ -4530,28 +4530,40 @@ KHTMLWidget::~KHTMLWidget()
 bool KHTMLWidget::setCharset(const char *name){
 
 	KCharsets *charsets=kapp->getCharsets();
-	if (!charsets->isDisplayable(name)){
-		if (!charsets->isAvailable(name)){
+	KCharset charset;
+        if (!name || !name[0])
+          charset=charsets->defaultCharset();
+	else
+	  charset=KCharset(name);
+	if (!charset.isDisplayable()){
+		if (charsetConverter) delete charsetConverter;
+	        charsetConverter=0;
+		if (!charset.isAvailable()){
 			warning("Charset not available");
 			return FALSE;
 		}
-		if (charsetConverter) delete charsetConverter;
-		debugM("Initializing conversion from %s\n",name);
-		charsetConverter=new KCharsetConverter(name
-						,KCharsetConverter::AMP_SEQUENCES);
+		debugM("Initializing conversion from %s\n",charset.name());
+		charsetConverter=new KCharsetConverter(charset
+				,KCharsetConverter::AMP_SEQUENCES);
 		if (!charsetConverter->ok()){
 			warning("Couldn't initialize converter");
 			delete charsetConverter;
 			charsetConverter=0;
 			return FALSE;
 		}
-	        name=charsetConverter->outputCharset();
+	        charset=charsetConverter->outputCharset();
 	}
- 	debugM("Setting charset to: %s\n",name);
+	else{
+	  if (charsetConverter) delete charsetConverter;
+	  charsetConverter=0;
+	}  
+ 	debugM("Setting charset to: %s\n",charset.name());
         HTMLFont f( *font_stack.top());
-	debugM("Original font: face: %s qtCharset: %i\n",QFont(f).family(),(int)QFont(f).charSet());
-	f.setCharset(name);
-	debugM("Changed font: face: %s qtCharset: %i\n",QFont(f).family(),(int)QFont(f).charSet());
+	debugM("Original font: face: %s qtCharset: %i\n"
+	                            ,QFont(f).family(),(int)QFont(f).charSet());
+	f.setCharset(charset);
+	debugM("Changed font: face: %s qtCharset: %i\n"
+	                            ,QFont(f).family(),(int)QFont(f).charSet());
         const HTMLFont *fp = pFontManager->getFont( f );
 	debugM("Got font: %p\n",fp);
 	debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());

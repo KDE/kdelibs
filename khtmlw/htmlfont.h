@@ -48,7 +48,7 @@ public:
 		{	font.setStrikeOut( s ); }
 	void setTextColor( const QColor &col )
 		{	textCol = col; }
-	void setCharset( const KCharset &ch )
+	void setCharset( KCharset ch )
 		{	 chset=ch; chset.setQFont(font);}
 
 	const char *family() const

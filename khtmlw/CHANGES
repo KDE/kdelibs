@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.11 - 28 Feb. 1998 ( Jacek )
+---------------
+
+Fixed charset switching.
+charsetConverter wasn't destroyed even when it wasn't needed any more.
+It caused problems with kmail.
+
 Version 0.12.11 - 19 Feb. 1998 ( Torben )
 ---------------
 
