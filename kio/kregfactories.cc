@@ -277,3 +277,4 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
 }
 
 #include "kregfactories.moc"
+
