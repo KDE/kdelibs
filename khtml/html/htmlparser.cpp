@@ -413,6 +413,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 n->attach(HTMLWidget);
                 return;
             }
+            break;
         case ID_HTML:
             if (!current->isDocumentNode())
                 throw exception;
