@@ -43,6 +43,7 @@ public:
     virtual void parse() = 0;
     virtual QString findDefaultLocation(bool forSaving = false) const = 0;
 
+    // TODO - make this static?
     void setupSignalForwards(QObject *src, QObject *dst);
     static KBookmarkImporterBase *factory(const QString &type);
 
@@ -78,14 +79,14 @@ protected:
 /**
  * A class for importing XBEL files
  */
-class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, private KBookmarkGroupTraverser
+class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, protected KBookmarkGroupTraverser
 {
     Q_OBJECT
 public:
     KXBELBookmarkImporterImpl() {}
     virtual void parse();
     virtual QString findDefaultLocation(bool = false) const { return QString::null; }
-private:
+protected:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &);
     virtual void visitLeave(const KBookmarkGroup &);
