@@ -646,8 +646,8 @@ bool AccessorNode2::deref()
 Reference AccessorNode2::evaluateReference(ExecState *exec) const
 {
   Value v = expr->evaluate(exec);
-  assert(v.isValid());
   KJS_CHECKEXCEPTIONREFERENCE
+  assert(v.isValid());
 #ifndef NDEBUG
   // catch errors before being caught in toObject(). better error message.
   if (v.isA(UndefinedType) || v.isA(NullType)) {
