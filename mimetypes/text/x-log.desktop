@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=text/x-log
+Comment=Application log file
+Type=MimeType
+Patterns=*.log;
+Icon=log
