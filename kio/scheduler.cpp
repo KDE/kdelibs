@@ -511,6 +511,7 @@ if (!jobData)
        if (list)
        {
           assert(slave->isConnected());
+          assert(!coIdleSlaves->contains(slave));
           coIdleSlaves->append(slave);
           if (!list->isEmpty())
              coSlaveTimer.start(0, true);
@@ -637,6 +638,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
                 SLOT(slotSlaveError(int, const QString &)));
 
     coSlaves.insert(slave, new QList<SimpleJob>());
+    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
     return slave;
 }
 
@@ -656,6 +658,7 @@ Scheduler::slotScheduleCoSlave()
            SimpleJob *job = list->take(0);
            coIdleSlaves->removeRef(slave);
            kdDebug(7006) << "scheduler: job started " << job << endl;
+           assert(!coIdleSlaves->contains(slave));
  
            KURL url =job->url();
            QString host = url.host();
@@ -685,8 +688,10 @@ void
 Scheduler::slotSlaveConnected()
 {
     Slave *slave = (Slave *)sender();
+    kdDebug(7006) << "slotSlaveConnected( " << slave << ")" << endl;
     slave->setConnected(true);
     emit slaveConnected(slave);
+    assert(!coIdleSlaves->contains(slave));
     coIdleSlaves->append(slave);
     coSlaveTimer.start(0, true);
 }
@@ -705,6 +710,7 @@ Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 bool 
 Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
+    kdDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")" << endl;
     if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
         ||     
         (!newJobs.removeRef(job)))
@@ -746,6 +752,11 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
     }
     delete list;
     coIdleSlaves->removeRef(slave);
+    assert(!coIdleSlaves->contains(slave));
+    disconnect(slave, SIGNAL(connected()),
+               this, SLOT(slotSlaveConnected()));
+    disconnect(slave, SIGNAL(error(int, const QString &)),
+               this, SLOT(slotSlaveError(int, const QString &)));
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
