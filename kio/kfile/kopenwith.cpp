@@ -135,7 +135,7 @@ bool KAppTreeListItem::isDirectory()
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
-    : KListView( parent )
+    : KListView( parent ), currentitem(0)
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
