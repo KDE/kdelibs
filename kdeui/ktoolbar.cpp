@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.81  1998/10/09 12:42:19  radej
+// Revision 1.83  1998/11/05 18:23:31  radej
+// sven: new look for *Bar handles (unfinished)
+//
 // Revision 1.80  1998/10/05 15:09:53  kulow
 // purify (and me) likes initialized members, so I choose one (like the compiler
 // would do :)
@@ -607,11 +611,13 @@ void KToolBarButton::makeDisabledPixmap()
 void KToolBarButton::showMenu()
 {
   // calculate that position carefully!!
-  // Later
-  QPoint p (parentWidget->mapToGlobal(pos()));
-  p.setY(p.y()+height());
   raised = true;
   repaint (false);
+  QPoint p (parentWidget->mapToGlobal(pos()));
+  if (p.y() + height() + myPopup->height() > KApplication::desktop()->height())
+    p.setY(p.y() - myPopup->height());
+  else
+    p.setY(p.y()+height());
   myPopup->popup(p);
 }
     else
