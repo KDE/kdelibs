@@ -630,10 +630,14 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
     if ( !event )
         return; // very unlikely, but safety first
     
+    bool doShowAdvanced = false;
+    
     switch( col )
     {
         case COL_EXECUTE:
             m_execute->toggle();
+            m_executePath->setFocus();
+            doShowAdvanced = true;
             break;
         case COL_STDERR:
             m_stderr->toggle();
@@ -644,12 +648,20 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
             break;
         case COL_LOGFILE:
             m_logToFile->toggle();
+            m_logfilePath->setFocus();
+            doShowAdvanced = true;
             break;
         case COL_SOUND:
             m_playSound->toggle();
             break;
         default: // do nothing
             break;
+    }
+    
+    if ( doShowAdvanced && !m_logToFile->isVisible() )
+    {
+        showAdvanced( true );
+        m_listview->ensureItemVisible( m_listview->currentItem() );
     }
 }
 
