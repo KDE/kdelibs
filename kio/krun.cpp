@@ -38,6 +38,7 @@
 #include <kstddirs.h>
 #include <kprocess.h>
 #include <dcopclient.h>
+#include <qfile.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
@@ -156,7 +157,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // accepts only local files.
   if ( exec.find( "%f" ) == -1 && exec.find( "%u" ) == -1 && exec.find( "%n" ) == -1 &&
        exec.find( "%d" ) == -1 && exec.find( "%F" ) == -1 && exec.find( "%U" ) == -1 &&
-       exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 )
+       exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 && exec.find( "%v" ) == -1 )
     exec += " %f";
 
   // Can we pass multiple files on the command line or do we have to start the application for every single file ?
@@ -236,6 +237,15 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   while ( ( pos = exec.find( "%k" ) ) != -1 )
     exec.replace( pos, 2, _desktop_file );
 
+  while ( ( pos = exec.find( "%v" ) ) != -1 )
+  {
+      if ( QFile::exists( QFile::encodeName( _desktop_file ) ) )
+      {
+          KDesktopFile desktopFile(_desktop_file, true);
+          exec.replace( pos, 2, desktopFile.readEntry( "Dev" ) );
+      }
+  }
+
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
@@ -258,7 +268,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = exec.find( "%N" )) != -1 )
       exec.replace( pos, 2, N );
     while ( ( pos = exec.find( "%D" )) != -1 )
-      exec.replace( pos, 2, N );
+      exec.replace( pos, 2, D );
     while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 

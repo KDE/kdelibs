@@ -250,6 +250,10 @@ class KDEDesktopMimeType : public KMimeType
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
 		
+  /**
+   * Structure representing a service, in the list of services
+   * returned by builtinServices and userDefinedServices
+   */
   struct Service
   {
     Service() { m_display = true; }

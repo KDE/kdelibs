@@ -717,7 +717,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     KURL::List lst;
     lst.append( u );
     KRun::run( _service.m_strExec, lst, _service.m_strName, _service.m_strIcon,
-	       _service.m_strIcon );
+	       _service.m_strIcon, _url );
     return;
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
