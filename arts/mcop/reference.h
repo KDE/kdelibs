@@ -84,15 +84,15 @@ protected:
 	
 	// Pool of common variables for a bunch a wrappers
 	class Pool {
-		int count;
 		Object_base* (*creator)();
 		bool created;
+		int count;
 	public:
 		Object_base* base;
 		inline Pool(Object_base* b)
-			: creator(0), base(b), created(true), count(1) {}
+			: creator(0), created(true), count(1), base(b) {}
 		inline Pool(Object_base* (*cor)())
-			: creator(cor), base(0), created(false), count(1) {}
+			: creator(cor), created(false), count(1), base(0) {}
 		inline void Inc() {count++;}
 		inline bool Dec() {
 			if (--count==0) {delete this; return true;}
