@@ -43,6 +43,7 @@
 #include <kdialog.h>
 #include <ksystemtray.h>
 #include <kpopupmenu.h>
+#include <kaction.h>
 
 #include <qcheckbox.h>
 #include <qlabel.h>
@@ -96,7 +97,9 @@ class UIServerSystemTray:public KSystemTray
       {
          KPopupMenu* pop= contextMenu();
          pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
+         pop->insertItem(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
          setPixmap(UserIcon("I_need_an_icon"));
+         actionCollection()->action("file_quit")->setEnabled(false);
       }
 };
 
@@ -109,6 +112,7 @@ class ProgressConfigDialog:public KDialogBase
       bool isChecked(int i) const;
       friend UIServer;
    private:
+      QCheckBox *m_showSystemTrayCb;
       QCheckBox *m_keepOpenCb;
       QCheckBox *m_toolBarCb;
       QCheckBox *m_statusBarCb;
@@ -123,6 +127,7 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
              KDialogBase::Ok, parent, "configprog", false)
 {
    QVBoxLayout *layout=new QVBoxLayout(plainPage(),spacingHint());
+   m_showSystemTrayCb=new QCheckBox(i18n("Show system tray icon"), plainPage());
    m_keepOpenCb=new QCheckBox(i18n("Keep network operation window always open"), plainPage());
    m_headerCb=new QCheckBox(i18n("Show column headers"), plainPage());
    m_toolBarCb=new QCheckBox(i18n("Show toolbar"), plainPage());
@@ -145,6 +150,7 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
    m_items[ListProgress::TB_LOCAL_FILENAME] =new QCheckListItem(m_columns, i18n("Local Filename"), QCheckListItem::CheckBox);
    m_items[ListProgress::TB_OPERATION]      =new QCheckListItem(m_columns, i18n("Operation"), QCheckListItem::CheckBox);
 
+   layout->addWidget(m_showSystemTrayCb);
    layout->addWidget(m_keepOpenCb);
    layout->addWidget(m_headerCb);
    layout->addWidget(m_toolBarCb);
@@ -563,9 +569,6 @@ UIServer::UIServer()
 
   readSettings();
 
-  m_systemTray=new UIServerSystemTray(this);
-  m_systemTray->show();
-
   // setup toolbar
   toolBar()->insertButton("editdelete", TOOL_CANCEL,
                           SIGNAL(clicked()), this,
@@ -622,6 +625,17 @@ UIServer::~UIServer() {
 
 void UIServer::applySettings()
 {
+  if ((m_showSystemTray) && (m_systemTray==0))
+  {
+     m_systemTray=new UIServerSystemTray(this);
+     m_systemTray->show();
+  }
+  else if ((m_showSystemTray==false) && (m_systemTray!=0))
+  {
+     delete m_systemTray;
+     m_systemTray=0;
+  }
+
   if (m_showStatusBar==false)
      statusBar()->hide();
   else
@@ -645,6 +659,13 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem *item, const QPoint
    m_contextMenu->popup(pos);
 }
 
+void UIServer::slotRemoveSystemTrayIcon()
+{
+   m_showSystemTray=false;
+   applySettings();
+   writeSettings();
+}
+
 void UIServer::slotConfigure()
 {
    if (m_configDialog==0)
@@ -654,6 +675,7 @@ void UIServer::slotConfigure()
       connect(m_configDialog,SIGNAL(okClicked()), this, SLOT(slotApplyConfig()));
       connect(m_configDialog,SIGNAL(applyClicked()), this, SLOT(slotApplyConfig()));
    }
+   m_configDialog->m_showSystemTrayCb->setChecked(m_showSystemTray);
    m_configDialog->m_keepOpenCb->setChecked(m_keepListOpen);
    m_configDialog->m_toolBarCb->setChecked(m_showToolBar);
    m_configDialog->m_statusBarCb->setChecked(m_showStatusBar);
@@ -668,6 +690,7 @@ void UIServer::slotConfigure()
 
 void UIServer::slotApplyConfig()
 {
+   m_showSystemTray=m_configDialog->m_showSystemTrayCb->isChecked();
    m_keepListOpen=m_configDialog->m_keepOpenCb->isChecked();
    m_showToolBar=m_configDialog->m_toolBarCb->isChecked();
    m_showStatusBar=m_configDialog->m_statusBarCb->isChecked();
@@ -1239,6 +1262,7 @@ void UIServer::readSettings() {
   m_initWidth=config.readNumEntry("InitialWidth",460);
   m_initHeight=config.readNumEntry("InitialHeight",150);
   m_bShowList = config.readBoolEntry( "ShowList", false );
+  m_showSystemTray=config.readBoolEntry("ShowSystemTray", true);
 }
 
 void UIServer::writeSettings() {
@@ -1250,6 +1274,7 @@ void UIServer::writeSettings() {
   config.writeEntry("ShowToolBar", m_showToolBar);
   config.writeEntry("KeepListOpen", m_keepListOpen);
   config.writeEntry("ShowList", m_bShowList);
+  config.writeEntry("ShowSystemTray", m_showSystemTray);
 }
 
 
@@ -1320,7 +1345,7 @@ int main(int argc, char **argv)
     app.dcopClient()->setDaemonMode( true );
 
     uiserver = new UIServer();
-    app.setMainWidget( uiserver );
+//    app.setMainWidget( uiserver );
 
     return app.exec();
 }

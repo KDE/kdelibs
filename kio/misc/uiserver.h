@@ -353,6 +353,7 @@ k_dcop:
 
 public slots:
   void slotConfigure();
+  void slotRemoveSystemTrayIcon();
 protected slots:
 
   void slotUpdate();
@@ -396,6 +397,7 @@ private:
   bool m_showStatusBar;
   bool m_showToolBar;
   bool m_keepListOpen;
+  bool m_showSystemTray;
 
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
