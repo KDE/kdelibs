@@ -32,12 +32,20 @@
 #include "jobclasses.h"
 #include "defaultprogress.h"
 
+class DefaultProgress::DefaultProgressPrivate
+{
+public:
+  QString sourceLabelText;
+  QString destLabelText;
+  QFontMetrics *fontMetrics;
+};
 
 DefaultProgress::DefaultProgress( bool showNow )
   : ProgressBase( 0 ),
   m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
   m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
 {
+  d = new DefaultProgressPrivate;
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
                                             KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
@@ -49,17 +57,19 @@ DefaultProgress::DefaultProgress( bool showNow )
   // filenames or action name
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
 
+  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+
   sourceLabel = new QLabel(this);
+  sourceLabel->setSizePolicy(myLabelSizePolicy);
+  d->fontMetrics = new QFontMetrics(sourceLabel->font());
   grid->addWidget(sourceLabel, 0, 2);
 
   destInvite = new QLabel(i18n("Destination:"), this);
   grid->addWidget(destInvite, 1, 0);
 
   destLabel = new QLabel(this);
+  destLabel->setSizePolicy(myLabelSizePolicy);
   grid->addWidget(destLabel, 1, 2);
-
-// why include this waste of space?
-//  topLayout->addSpacing( 10 );
 
   progressLabel = new QLabel(this);
   grid->addWidget(progressLabel, 2, 2);
@@ -90,15 +100,17 @@ DefaultProgress::DefaultProgress( bool showNow )
   hBox->addWidget( pb );
 
   resize( sizeHint() );
-  setMaximumSize( sizeHint().width()+50, sizeHint().height()+30 );
-  kdDebug() << "DefaultProgress: max size: " << sizeHint().width()+50 << "," << sizeHint().height()+30 << endl;
-  kdDebug() << "DefaultProgress: size: " << width() << "," << height() << endl;
+  setMaximumHeight(sizeHint().height());
 
   if ( showNow ) {
     show();
   }
 }
 
+DefaultProgress::~DefaultProgress()
+{
+  delete d;
+}
 
 void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long bytes )
 {
@@ -195,11 +207,11 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
-  sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
-  QToolTip::add( sourceLabel, from.prettyURL() );
+  d->sourceLabelText = from.prettyURL();
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( true );
-  destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
-  QToolTip::add( destLabel, to.prettyURL() );
+  d->destLabelText = to.prettyURL();
+  squeezeStringToLabel( d->destLabelText, destLabel);
 }
 
 
@@ -207,11 +219,11 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Move file(s) progress"));
   mode = Move;
-  sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
-  QToolTip::add( sourceLabel, from.prettyURL() );
+  d->sourceLabelText = from.prettyURL();
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( true );
-  destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
-  QToolTip::add( destLabel, to.prettyURL() );
+  d->destLabelText = to.prettyURL();
+  squeezeStringToLabel( d->destLabelText, destLabel);
 }
 
 
@@ -219,8 +231,8 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
-  sourceLabel->setText( KStringHandler::csqueeze(dir.prettyURL()) );
-  QToolTip::add( sourceLabel, dir.prettyURL() );
+  d->sourceLabelText = dir.prettyURL();
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( false );
 }
 
@@ -229,30 +241,32 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
-  sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
-  QToolTip::add( sourceLabel, url.prettyURL() );
+  d->sourceLabelText = url.prettyURL();
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining file progress"));
-  sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
-  QToolTip::add( sourceLabel, url.prettyURL() );
+  d->sourceLabelText = url.prettyURL();
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
   setCaption(i18n("Mounting %1").arg(dev));
-  sourceLabel->setText( point );
+  d->sourceLabelText = point;
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
   setCaption(i18n("Unmounting"));
-  sourceLabel->setText( point );
+  d->sourceLabelText = point;
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
   setDestVisible( false );
 }
 
@@ -278,6 +292,26 @@ void DefaultProgress::setDestVisible( bool visible )
     destInvite->setText( QString::null );
     destLabel->setText( QString::null );
   }
+}
+
+void DefaultProgress::resizeEvent ( QResizeEvent * ) {
+  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  squeezeStringToLabel( d->destLabelText, destLabel);
+}
+
+void DefaultProgress::squeezeStringToLabel( QString text , QLabel *label) {
+  int labelWidth = label->size().width();
+  int textWidthInPixel = d->fontMetrics->width(text);
+  int textChars = text.length();
+  // squeeze text until it fits
+  QString squeezedText = text;
+  while (textWidthInPixel > labelWidth) {
+    textChars--;
+    squeezedText = KStringHandler::csqueeze(text, textChars);
+    textWidthInPixel = d->fontMetrics->width(squeezedText);
+  };
+  label->setText(squeezedText);
+  QToolTip::add( label, text );
 }
 
 #include "defaultprogress.moc"

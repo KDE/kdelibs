@@ -34,7 +34,7 @@ class DefaultProgress : public ProgressBase {
 public:
 
   DefaultProgress( bool showNow = true );
-  ~DefaultProgress() {}
+  ~DefaultProgress();
 
 public slots:
   virtual void slotTotalSize( KIO::Job*, unsigned long bytes );
@@ -61,6 +61,7 @@ public slots:
   void slotCanResume( KIO::Job*, unsigned long );
 
 protected:
+  void resizeEvent( QResizeEvent * );
   void setDestVisible( bool visible );
 
   QLabel* progressLabel;
@@ -86,6 +87,9 @@ protected:
 
   class DefaultProgressPrivate;
   DefaultProgressPrivate* d;
+
+private:
+  void squeezeStringToLabel( QString string , QLabel *label);
 };
 
 #endif // __defaultprogress_h__
