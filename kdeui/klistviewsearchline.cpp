@@ -214,8 +214,11 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     }
     else {
         for(int i = 0; i < item->listView()->columns(); i++) {
-            if(item->text(i).find(s, 0, d->caseSensitive) >= 0)
+            if(item->listView()->columnWidth(i) > 0 &&
+               item->text(i).find(s, 0, d->caseSensitive) >= 0)
+            {
                 return true;
+            }
         }
     }
 

@@ -69,7 +69,7 @@ public:
 
     /**
      * Returns the current list of columns that will be searched.  If the
-     * returned list is empty all columns will be searched.
+     * returned list is empty all visible columns will be searched.
      *
      * @see setSearchColumns
      */
@@ -118,7 +118,8 @@ public slots:
 
     /**
      * Sets the list of columns to be searched.  The default is to search all,
-     * which can be restored by passing \a columns as an empty list.
+     * visible columns which can be restored by passing \a columns as an empty
+     * list.
      *
      * @see searchColumns
      */
