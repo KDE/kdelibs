@@ -890,7 +890,7 @@ void Window::setCurrentEvent( DOM::Event *evt )
   //kdDebug() << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
-Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value WindowFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   Value result;
   QString str, str2;
@@ -1459,7 +1459,7 @@ String Location::toString(ExecState *) const
         return String(m_part->url().prettyURL());
 }
 
-Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value LocationFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   KHTMLPart *part = location->part();
   if (part) {
@@ -1521,7 +1521,7 @@ Value History::get(ExecState *exec, const UString &p) const
     return ObjectImp::get(exec, p);
 }
 
-Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value HistoryFunc::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   KParts::BrowserExtension *ext = history->part->browserExtension();
 

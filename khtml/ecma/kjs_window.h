@@ -168,7 +168,7 @@ namespace KJS {
 
   class Location : public ObjectImp {
   public:
-    ~Location() {}
+    ~Location();
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual Value toPrimitive(ExecState *exec, Type preferred) const;
