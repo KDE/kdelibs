@@ -212,7 +212,23 @@ public:
    */
   virtual void restoreState( QDataStream &stream );
 
+  /**
+   * Returns whether url drop handling is enabled.
+   * See @ref setURLDropHandlingEnabled for more information about this
+   * property.
+   */
   bool isURLDropHandlingEnabled() const;
+
+  /**
+   * Enables or disables url drop handling. URL drop handling is a property
+   * describing whether the hosting shell component is allowed to install an
+   * event filter on the part's widget, to listen for URI drop events.
+   * Set it to true if you are exporting a BrowserExtension implementation and
+   * do not provide any special URI drop handling. If set to false you can be
+   * sure to receive all those URI drop events unfiltered. Also note that the
+   * implementation as of Konqueror installs the even filter only on the part's
+   * widget itself, not on child widgets.
+   */
   void setURLDropHandlingEnabled( bool enable );
 
   void setBrowserInterface( BrowserInterface *impl );
