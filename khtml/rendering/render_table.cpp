@@ -1377,7 +1377,10 @@ void RenderTable::updateSize()
 {
 //    printf("RenderTable::updateSize()\n");
 
-    RenderBox::updateSize();
+//    setMinMaxKnown(false);
+//    setLayouted(false);
+//    parent()->updateSize();
+     RenderBox::updateSize();
 }
 
 
@@ -1500,15 +1503,15 @@ void RenderTableRow::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
     printf("%s(TableRow)::addChild( %s )\n",  renderName(), child->renderName());
-#endif
-
-    RenderObject::addChild(child);
+#endif    
 
     RenderTableCell *cell =
 	static_cast<RenderTableCell *>(child);
     cell->setTable(table);
     cell->setRowImpl(this);
     table->addCell(cell);
+    
+    RenderObject::addChild(child);
 }
 
 // -------------------------------------------------------------------------
@@ -1601,29 +1604,6 @@ void RenderTableCell::updateSize()
 //    printf("%s(RenderBox)::updateSize()\n", renderName());
 
     RenderFlow::updateSize();
-
-/*    int oldMin = m_minWidth;
-    int oldMax = m_maxWidth;
-    setMinMaxKnown(false);
-    calcMinMaxWidth();
-    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
-    	m_maxWidth != oldMax)
-    {    	
-	setLayouted(false);
-	if(containingBlock() != this) containingBlock()->updateSize();
-    }
-    else if(!isInline() || isReplaced())
-    {
-	int oldHeight = m_height;
-	setLayouted(false);
-   	layout(true);	
-	if(m_height != oldHeight)
-	{
-	    if(containingBlock() != this) containingBlock()->updateSize();
-	} else {
-	    repaint();
-	}
-    }*/
 
 }
 

@@ -158,7 +158,6 @@ void RenderRoot::close()
     updateSize();
     repaint();
 //    printTree();
-//    setSelection(this,-1,this,-1);
 }
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)

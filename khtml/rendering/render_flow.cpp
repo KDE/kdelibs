@@ -265,7 +265,7 @@ static int getIndent(RenderObject *child)
 
     // ### hack to make <td align=> work. maybe it should be done with
     //	   css class selectors or something?
-/*    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell())
+    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell())
     {
     	if (child->containingBlock()->style()->textAlign()==RIGHT)
     	{
@@ -276,7 +276,7 @@ static int getIndent(RenderObject *child)
 	    marginLeft.type=Variable;
 	    marginRight.type=Variable;
 	}
-    }*/
+    }
     if(marginLeft.type == Variable)
     {
 	if(marginRight.type == Variable)
@@ -329,15 +329,16 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
 	m_height += margin;
 
+	if(deep) child->layout(deep);
+	else if (!child->layouted())
+	    _layouted = false;
+
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
 	    child->setPos(leftMargin(m_height) + getIndent(child), m_height);
 	else
 	    child->setPos(xPos + getIndent(child), m_height);
 
-	if(deep) child->layout(deep);
-	else if (!child->layouted())
-	    _layouted = false;
 
 	m_height += child->height();
 	
