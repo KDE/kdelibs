@@ -457,7 +457,8 @@ static KCmdLineOptions options[] =
  { "o", 0, 0 },
  { "operation <operation>", "Operation (list,listrecursive,stat,get,put,copy,move,del,shred,mkdir)", "copy" },
  { "p", 0, 0 },
- { "progress <progress>", "Progress Type (none,default,status)", "default" }
+ { "progress <progress>", "Progress Type (none,default,status)", "default" },
+ { 0, 0, 0 }
 };
 
 int main(int argc, char **argv) {
