@@ -1092,10 +1092,15 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 
   QWidget* p = QApplication::widgetAt( pos );
   if ( !p ) return 0L;
+#ifdef _OS_WIN32_
+  p = p->topLevelWidget();
+#endif
   QWidget* w = 0L;
-  findChildDockWidget( w, p, p->mapFromParent(pos) );
+  findChildDockWidget( w, p, p->mapFromGlobal(pos) );
   if ( !w ){
-    if ( !p->inherits("KDockWidget") ) return 0L;
+    if ( !p->inherits("KDockWidget") ) {
+      return 0L;
+    }
     w = p;
   }
   if ( qt_find_obj_child( w, "KDockSplitter", "_dock_split_" ) ) return 0L;
@@ -1194,14 +1199,14 @@ void KDockManager::startDrag( KDockWidget* w )
 
 void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
 {
-	QPoint p = dw->mapToGlobal( dw->widget->pos() );
+  QPoint p = dw->mapToGlobal( dw->widget->pos() );
   KDockWidget::DockPosition oldPos = curPos;
 
   QSize r = dw->widget->size();
   if ( dw->parentTabGroup() ){
     curPos = KDockWidget::DockCenter;
-  	if ( oldPos != curPos ) {
-  	  d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
+  	 if ( oldPos != curPos ) {
+  	   d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
     }  	
     return;
   }
