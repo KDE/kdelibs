@@ -355,6 +355,7 @@ void KCompletionBox::setItems( const QStringList& items )
             tmp = item->next();
             delete item;
         }
+        triggerUpdate( false );
     }
 
     blockSignals( block );
