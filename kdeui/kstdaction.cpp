@@ -104,6 +104,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ KeyBindings,   KStdAccel::AccelNone, "options_configure_keybinding", I18N_NOOP("Configure S&hortcuts..."), 0,"configure_shortcuts" },
 	{ Preferences,   KStdAccel::AccelNone, "options_configure", I18N_NOOP("&Configure %1..."), 0, "configure" },
 	{ ConfigureToolbars, KStdAccel::AccelNone, "options_configure_toolbars", I18N_NOOP("Configure Tool&bars..."), 0,"configure_toolbars" },
+	{ ConfigureNotifications, KStdAccel::AccelNone, "options_configure_notifications", I18N_NOOP("Configure &Notifications..."), 0, "knotify" },
 
 	{ Help,          KStdAccel::Help, "help", 0, 0, "help" },
 	{ HelpContents,  KStdAccel::AccelNone, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "contents" },
@@ -315,6 +316,8 @@ KAction *preferences( const QObject *recvr, const char *slot, KActionCollection*
 	{ return KStdAction::create( Preferences, name, recvr, slot, parent ); }
 KAction *configureToolbars( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( ConfigureToolbars, name, recvr, slot, parent ); }
+KAction *configureNotifications( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return KStdAction::create( ConfigureNotifications, name, recvr, slot, parent ); }
 KAction *help( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( Help, name, recvr, slot, parent ); }
 KAction *helpContents( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )

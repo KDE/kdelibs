@@ -143,7 +143,10 @@ namespace KStdAction
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
-		Help, HelpContents, WhatsThis, TipofDay, ReportBug, AboutApp, AboutKDE
+		Help, HelpContents, WhatsThis, TipofDay, ReportBug, AboutApp, AboutKDE,
+
+		// Another settings menu item
+		ConfigureNotifications
 	};
 
 	/**
@@ -491,6 +494,14 @@ namespace KStdAction
 					const char *slot,
 					KActionCollection* parent,
 					const char *name = 0 );
+
+	/**
+	* The Configure Notifications dialog
+	*/
+	KAction *configureNotifications(const QObject *recvr,
+					const char *slot,
+					KActionCollection *parent,
+					const char *name = 0);
 
 	/**
 	* Display the help.
