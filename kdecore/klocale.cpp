@@ -1551,7 +1551,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
 // #### HPB: Deprecated. Remove in KDE 3
 QString KLocale::charset() const
 {
-  kdDebug(173) << "Using deprecated method setCharset()" << endl;
+  kdDebug(173) << "Using deprecated method charset()" << endl;
 
   return m_charset;
 }
@@ -1618,7 +1618,7 @@ void KLocale::initCatalogue( KCatalogue & catalogue )
 // #### HPB: Deprecated. Remove in KDE 3 after porting to Qt 3
 bool KLocale::setCharset(const QString & charset)
 {
-  kdDebug(173) << "Using deprecated method charset()" << endl;
+  kdDebug(173) << "Using deprecated method setCharset()" << endl;
 
   if ( charset.isEmpty() )
     return false;
