@@ -100,9 +100,13 @@ public:
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
-      mDropVisualizerWidth (4)
+      mDropVisualizerWidth (4),
+      paintAbove (0),
+      paintCurrent (0),
+      paintBelow (0),
+      painting (false)
   {
-      renameable += 0;
+      renameable.append(0);
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
   }
 
@@ -156,6 +160,11 @@ public:
   QRect mOldDropHighlighter;
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
+
+  QListViewItem *paintAbove;
+  QListViewItem *paintCurrent;
+  QListViewItem *paintBelow;
+  bool painting;
 
   QColor alternateBackground;
 };
@@ -233,7 +242,7 @@ QListViewItem *prevItem (QListViewItem *pi)
 	if (pa && pa->parent() == pi->parent())
 		return pa;
 
-	return NULL;
+	return 0;
 }
 
 QListViewItem *lastQChild (QListViewItem *pi)
@@ -1827,6 +1836,11 @@ int KListView::dropVisualizerWidth () const
 
 void KListView::viewportPaintEvent(QPaintEvent *e)
 {
+  d->paintAbove = 0;
+  d->paintCurrent = 0;
+  d->paintBelow = 0;
+  d->painting = true;
+
   QListView::viewportPaintEvent(e);
 
   if (d->mOldDropVisualizer.isValid() && e->rect().intersects(d->mOldDropVisualizer))
@@ -1848,6 +1862,7 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
                             QStyle::Style_FocusAtBorder);
 #endif
     }
+  d->painting = false;
 }
 
 void KListView::setFullWidth()
@@ -2039,8 +2054,46 @@ bool KListViewItem::isAlternate()
   KListView *lv = static_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    KListViewItem *above = 0;
-    above = dynamic_cast<KListViewItem *>(itemAbove());
+    KListViewItem *above;
+
+    // Ok, there's some weirdness here that requires explanation as this is a
+    // speed hack.  itemAbove() is a O(n) operation (though this isn't
+    // immediately clear) so we want to call it as infrequently as possible --
+    // especially in the case of painting a cell.
+    //
+    // So, in the case that we *are* painting a cell:  (1) we're assuming that
+    // said painting is happening top to bottem -- this assumption is present
+    // elsewhere in the implementation of this class, (2) itemBelow() is fast --
+    // roughly constant time.
+    // 
+    // Given these assumptions we can do a mixture of caching and telling the
+    // next item that the when that item is the current item that the now
+    // current item will be the item above it.
+    //
+    // Ideally this will make checking to see if the item above the current item
+    // is the alternate color a constant time operation rather than 0(n).
+
+    if (lv->d->painting) {
+      if (lv->d->paintCurrent != this)
+      {
+        lv->d->paintAbove = lv->d->paintBelow == this ? lv->d->paintCurrent : 0;
+        lv->d->paintCurrent = this;
+        lv->d->paintBelow = itemBelow();
+      }
+
+      above = dynamic_cast<KListViewItem *>(lv->d->paintAbove);
+
+      if (!above && !lv->d->paintAbove)
+      {
+        above = dynamic_cast<KListViewItem *>(itemAbove());
+        lv->d->paintAbove = above;
+      }
+    }
+    else
+    {
+      above = dynamic_cast<KListViewItem *>(itemAbove());
+    }
+
     m_known = above ? above->m_known : true;
     if (m_known)
     {
