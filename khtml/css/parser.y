@@ -114,6 +114,8 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %}
 
+%expect 12
+
 %token S SGML_CD
 %token INCLUDES
 %token DASHMATCH
@@ -638,14 +640,17 @@ declaration_list:
     | decl_list {
 	$$ = $1;
     }
-    | error invalid_block_list {
+    | error invalid_block_list error {
 	$$ = false;
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
 #endif
     }
     | error {
-	$$ = false
+	$$ = false;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipping all declarations" << endl;
+#endif
     }
     ;
 
@@ -659,12 +664,24 @@ decl_list:
 	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
 #endif
     }
+    | error invalid_block_list error ';' maybe_space {
+	$$ = false;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
+#endif
+    }
     | decl_list declaration ';' maybe_space {
 	$$ = $1;
 	if ( $2 )
 	    $$ = $2;
     }
     | decl_list error ';' maybe_space {
+	$$ = $1;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
+#endif
+    }
+    | decl_list error invalid_block_list error ';' maybe_space {
 	$$ = $1;
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
@@ -842,13 +859,13 @@ invalid_rule:
     ;
 
 invalid_block:
-    '{' error invalid_block_list '}'
+    '{' error invalid_block_list error '}'
   | '{' error '}'
     ;
 
 invalid_block_list:
-    invalid_block error
-  | invalid_block_list invalid_block error
+    invalid_block
+  | invalid_block_list error invalid_block
 ;
 
 %%
