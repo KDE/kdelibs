@@ -236,6 +236,7 @@ int KWalletD::internalOpen(const QString& wallet, bool isPath) {
 			_timeouts->addTimer(rc, _idleTime);
 		}
 		delete kpd;
+		KApplication::dcopClient()->resume();
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
 		ds << wallet;
@@ -246,7 +247,6 @@ int KWalletD::internalOpen(const QString& wallet, bool isPath) {
 		if (_wallets.count() == 1 && _launchManager) {
 			KApplication::startServiceByDesktopName("kwalletmanager");
 		}
-		KApplication::dcopClient()->resume();
 	} else {
 		int response = KMessageBox::Yes;
 
