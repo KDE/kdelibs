@@ -651,7 +651,28 @@ void KStandardDirs::createSpecialResource(const char *type)
    char link[1024];
    link[1023] = 0;
    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
-   if ((result == -1) && (errno == ENOENT))
+   bool relink = (result == -1) && (errno == ENOENT);
+   if ((result > 0) && (link[0] == '/'))
+   {
+      link[result] = 0;
+      struct stat stat_buf;
+      int res = lstat(link, &stat_buf);
+      if ((res == -1) && (errno == ENOENT))
+      {
+         relink = true;
+      }
+      else if ((res == -1) || (!S_ISDIR(stat_buf.st_mode)))
+      {
+         fprintf(stderr, "Error: \"%s\" is not a directory.\n", link);
+         relink = true;
+      }
+      else if (stat_buf.st_uid != getuid())
+      {
+         fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", link, stat_buf.st_uid, getuid());
+         relink = true;
+      }
+   }
+   if (relink)
    {
       QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
       if (srv.isEmpty())
