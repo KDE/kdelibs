@@ -25,6 +25,7 @@
 #include <qobjectlist.h>
 #include <qbuttongroup.h>
 #include <qcombobox.h>
+#include <qtimer.h>
 #include <qsqlpropertymap.h>
 #include <qmetaobject.h>
 
@@ -256,7 +257,7 @@ void KConfigDialogManager::updateWidgets()
   blockSignals(bSignalsBlocked);
 
   if (changed)
-    emit widgetModified();
+    QTimer::singleShot(0, this, SIGNAL(widgetModified()));
 }
 
 void KConfigDialogManager::updateWidgetsDefault()
