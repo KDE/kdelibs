@@ -196,7 +196,9 @@ private slots:
   void slotUpdateResult( KIO::Job *job );
 
 private:
-  KIO::ListJob *jobForUrl(const QString& _url);
+  KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
+  const KURL& joburl( KIO::ListJob *job );
+
   void killJob( KIO::ListJob *job );
 
   // check if _url is held by some lister and return true,

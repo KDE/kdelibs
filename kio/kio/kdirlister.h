@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
-                 2001, 2002, 2004 Michael Brade <brade@kde.org>
+                 2001, 2002, 2004, 2005 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -50,6 +50,7 @@ namespace KIO { class Job; class ListJob; }
  * without forgetting the ones previously read (e.g. for a tree view)
  *
  * @short Helper class for the kiojob used to list and update a directory.
+ * @author Michael Brade <brade@kde.org>
  */
 class KIO_EXPORT KDirLister : public QObject
 {
@@ -490,7 +491,7 @@ signals:
    *
    * ATTENTION: if @p _fileItem == rootItem() the directory this lister
    *            is holding was deleted and you HAVE to release especially the
-   * rootItem() of this lister, otherwise your app will CRASH!!
+   *            rootItem() of this lister, otherwise your app will CRASH!!
    *            The clear() signals have been emitted already.
    * @param _fileItem the fileItem to delete
    */
@@ -612,8 +613,10 @@ private slots:
   void slotSpeed( KIO::Job *, unsigned long );
 
 private:
-  void jobDone( KIO::ListJob * );
   void jobStarted( KIO::ListJob * );
+  void connectJob( KIO::ListJob * );
+  void jobDone( KIO::ListJob * );
+
   uint numJobs();
 
 private:
