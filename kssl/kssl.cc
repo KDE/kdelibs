@@ -242,8 +242,9 @@ int KSSL::connect(int sock) {
   if (rc == 1) {
     setConnectionInfo();
     setPeerInfo(sock);
-    // kdDebug() << "KSSL connected OK" << endl;
+    kdDebug() << "KSSL connected OK" << endl;
   } else {
+    kdDebug() << "KSSL connect failed - rc = " << rc << endl;
     if (m_cfg->sslv2() && m_cfg->sslv3()) {
       m_cfg->setSSLv2(true);
       m_cfg->setSSLv3(false);
@@ -262,7 +263,7 @@ int KSSL::connect(int sock) {
 	kdDebug() << "KSSL connect FAILED" << endl;
 	return -1;
       }
-    }
+    } else return -1;
   }
   return rc;
 #else
