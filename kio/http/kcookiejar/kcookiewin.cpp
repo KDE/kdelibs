@@ -72,10 +72,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     KWin::setState( winId(), NET::StaysOnTop );
     KWin::setOnDesktop(winId(), KWin::currentDesktop());
-#endif
     setCaption( i18n("Cookie Alert") );
     setIcon( SmallIcon("cookie") );
-
+#endif
     // Main widget's layout manager...
     QVBoxLayout* vlayout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
     vlayout->setResizeMode( QLayout::Fixed );
@@ -165,7 +164,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     btn = new QPushButton( i18n("&Reject"), bbox );
     connect( btn, SIGNAL(clicked()), SLOT(reject()) );
     bbLay->addWidget( btn );
-    bbLay->addStretch( 1 );    
+    bbLay->addStretch( 1 );
     m_button = new QPushButton( bbox );
     m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
     connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
@@ -174,7 +173,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     QAccel* a = new QAccel( this );
     a->connectItem( a->insertItem(Qt::Key_Escape), btn, SLOT(animateClick()) );
 #endif
-    
+
 
 #ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( btn, i18n("See or modify the cookie information") );

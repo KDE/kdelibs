@@ -20,7 +20,11 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <qdatastream.h>
 #include <qdatetime.h>
 #include <qmap.h>
