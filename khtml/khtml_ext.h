@@ -81,7 +81,9 @@ public:
   KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
   virtual ~KHTMLPopupGUIClient();
 
-  static void saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter = QString::null, long cacheId = 0 );
+  static void saveURL( QWidget *parent, const QString &caption, const KURL &url,
+                       const QString &filter = QString::null, long cacheId = 0,
+                       const QString &suggestedFilename = QString::null );
 
 private slots:
   void slotSaveLinkAs();

@@ -364,7 +364,7 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter, long cacheId )
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter, long cacheId, const QString & suggestedFilename )
 {
   KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
 
@@ -372,7 +372,9 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
 
   dlg->setCaption( caption );
 
-  if (!url.fileName().isEmpty())
+  if (!suggestedFilename.isEmpty())
+    dlg->setSelection( suggestedFilename );
+  else if (!url.fileName().isEmpty())
     dlg->setSelection( url.fileName() );
   else
     dlg->setSelection( QString::fromLatin1("index.html") );

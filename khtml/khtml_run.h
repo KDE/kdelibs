@@ -51,7 +51,7 @@ protected:
 
   bool allowExecution( const QString &serviceType, const KURL &url );
   bool isExecutable( const QString &serviceType );
-  bool askSave( const KURL & url, KService::Ptr offer );
+  bool askSave( const KURL & url, KService::Ptr offer, const QString & suggestedFilename );
 
 protected slots:
   void slotKHTMLScanFinished(KIO::Job *job);
@@ -61,6 +61,7 @@ private:
   KHTMLPart *m_part;
   KParts::URLArgs m_args;
   khtml::ChildFrame *m_child;
+  QString m_suggestedFilename;
 };
 
 #endif
