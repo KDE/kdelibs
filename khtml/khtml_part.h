@@ -969,7 +969,7 @@ public slots:
   /**
    * Sets the focused node of the document to the specified node. If the node is a form control, the control will
    * receive focus in the same way that it would if the user had clicked on it or tabbed to it with the keyboard. For
-   * most other types of elements, there is no visul indiction of whether or not they are focused.
+   * most other types of elements, there is no visual indication of whether or not they are focused.
    *
    * See activeNode
    *
