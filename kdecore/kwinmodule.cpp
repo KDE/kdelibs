@@ -190,7 +190,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
         unsigned long dirty[ 2 ];
 	ni.event( ev, dirty, 2 );
-	if ( !dirty[ 0 ] && !dirty[ 1 ] && ev->type ==PropertyNotify ) {
+	if ( ev->type ==PropertyNotify ) {
             if( ev->xproperty.atom == XA_WM_HINTS )
 	        dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
             else if( ev->xproperty.atom == XA_WM_NAME )
