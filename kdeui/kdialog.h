@@ -87,6 +87,10 @@ class KDialog : public QDialog
     static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
 
   public slots:
+    // If the dialog starts with focus in a QLineEdit child,
+    //  then call selectAll() on the child.
+    virtual void polish();
+
     /**
      * Make a KDE compliant caption.
      * 

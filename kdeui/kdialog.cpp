@@ -21,6 +21,7 @@
 #include <qabstractlayout.h> 
 #include <qobjectlist.h>
 #include <qguardedptr.h>
+#include <qlineedit.h>
 #include <qvaluelist.h>
 #include <qtimer.h>
 
@@ -87,6 +88,13 @@ int KDialog::marginHint()
 int KDialog::spacingHint()
 {
   return( mSpacingSize );
+}
+
+
+void KDialog::polish()
+{
+  if( focusWidget() && focusWidget()->inherits( "QLineEdit" ) )
+    ((QLineEdit*)focusWidget())->selectAll();
 }
 
 
