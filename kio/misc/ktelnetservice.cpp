@@ -77,10 +77,19 @@ int main(int argc, char **argv)
 		cmd << url.user();
 	}
 
+        QString host;
         if (!url.host().isEmpty())
-           cmd << url.host(); // telnet://host
+           host = url.host(); // telnet://host
         else if (!url.path().isEmpty())
-           cmd << url.path(); // telnet:host
+           host = url.path(); // telnet:host
+
+        if (host.isEmpty() || host.startsWith("-"))
+        {
+            kdError() << "Invalid hostname " << host << endl;
+            return 2;
+        }
+
+        cmd << host;
         
 	if (url.port()){
             if ( url.protocol() == "ssh" )
