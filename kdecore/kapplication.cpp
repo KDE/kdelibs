@@ -1951,19 +1951,19 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    {
      if ((*it).find("%t") >= 0)
        (*it).replace(QRegExp("%t"), to);
-     else
+
      if ((*it).find("%s") >= 0)
        (*it).replace(QRegExp("%s"), subject);
-     else
+
      if ((*it).find("%c") >= 0)
        (*it).replace(QRegExp("%c"), cc);
-     else
+
      if ((*it).find("%b") >= 0)
        (*it).replace(QRegExp("%b"), bcc);
-     else
+
      if ((*it).find("%B") >= 0)
        (*it).replace(QRegExp("%B"), body);
-     else
+
      if ((*it).find("%A") >= 0)
      {
          QStringList::ConstIterator urlit = attachURLs.begin();
