@@ -1158,9 +1158,12 @@ bool HTTPProtocol::http_open()
     header += cookieStr + "\r\n";
   }
 
-  if (m_request.method == HTTP_POST) {
-      header += metaData("content-type");
-      header += "\r\n";
+  if (m_request.method == HTTP_POST) 
+  {
+    QString contentType = metaData("content-type");
+
+    if (!contentType.isEmpty()) 
+      header += contentType + "\r\n";
   }
 
   // Check the cache if it is not a re-authentication request.
