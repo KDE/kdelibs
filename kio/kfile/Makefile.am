@@ -40,7 +40,7 @@ noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h
 
 libkfile_la_SOURCES = kfiledialogconf.cpp \
-	booktoken.cpp kfilefiltercombo.cpp \
+	kfilefiltercombo.cpp \
 	kfileview.cpp kfileiconview.cpp  \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
