@@ -29,21 +29,16 @@
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qstrlist.h>
-#include <qapplication.h>
 #include <qkeycode.h>
 #include <qaccel.h>
-#include <qregexp.h>
-#include <qobject.h>
 #include <qmultilinedit.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qfiledialog.h>
 #include <qcheckbox.h>
 #include <qmessagebox.h>
-#include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
-#include <qregexp.h>
 #include <qtextstream.h>
 #include <qkeycode.h>
 #include <qfileinfo.h>
@@ -231,31 +226,26 @@ public:
 	   OPEN_INSERT 		= 4 };
 
 
-    /// Opens a new untitled document in the text widget
       /** Opens a new untitled document in the text widget The user is given
           a chance to save the current document if the current document has
 	  been modified.
        */
     int  	newFile();
 
-    /// Saves the file if necessary under the current file name
       /** Saves the file if necessary under the current file name. If the current file
 	name is Untitled, as it is after a call to newFile(), this routing will
 	call saveAs().
        */
     int 	doSave();
 
-    /// Saves the file as filename
-      /** Saves the file as filename
-       */
+    /** Saves the file as filename
+     */
     int 	doSave( const QString& filename );
 
-    /// Allows the user to save the file under a new name
-	  /** Allows the user to save the file under a new name
-	   */
+    /** Allows the user to save the file under a new name
+     */
     int 	saveAs();
 
-    /// Let the user open an new file
     /** This will present an open file dialog and open  the file specified by the user,
         if possible. The return codes are KEDIT_OK, KEDIT_USER_CANCEL and
 	KEDIT_OS_ERROR. The user will be given a chance to save the current file if
@@ -265,159 +255,132 @@ public:
      */
     int 	openFile( int mode );
 
-    /// Lets the user insert a file at the current cursor position
     /** Calling this method will let the user insert a file at the current cursor
         position. Return codes are KEDIT_OK, KEDIT_USER_CANCEL, KDEDIT_OS_ERROR.
     */
     int 	insertFile();
 
-    /// Loads the file filemane in the editor
-	/** Loads the file filename into editor. The possible modes are
-            OPEN_READONLY, OPEN_READWRITE, OPEN_INSERT.
-	    OPEN_READONLY means  that the user will not be able to insert characters
-	    into the document. OPEN_INSERT means that the file will be inserted
-	    into the current document at the current cursor position.
-	   */
+    /** Loads the file filename into editor. The possible modes are
+        OPEN_READONLY, OPEN_READWRITE, OPEN_INSERT.
+        OPEN_READONLY means  that the user will not be able to insert characters
+        into the document. OPEN_INSERT means that the file will be inserted
+        into the current document at the current cursor position.
+    */
     int 	loadFile( QString filename , int mode );
 
 
-    /// Returns the filename of the current file.
     /** Returns the filename of the currnet file. You can use setName() to set the
         filename of the current file
     */
     QString getName();
 
-    /// Sets the filename of the current file.
     /** Sets the filename of the currnet file. You can use getName() to set the
         filename of the current file
     */
     void 	setName( const QString&_name );
 
-    /// Returns the currently marked text.
     /** Returns the currently marked text.
      */
     QString 	markedText();
 
-    /// Lets the user select a font and sets the font of the textwidget.
     /** Lets the user select a font and sets the font of the textwidget to that
         selected font.
     */
     void 	selectFont();
 
-    /// Presents a search dialog to the user
     /** Presents a search dialog to the user
      */
     void 	Search();
 
-    /// Repeats the last search specified on the search dialog.
     /** Repeasts the last search specified on the search dialog. If the user
         hasn't searched for anything until now, this method will simply return
 	without doing anything.
     */
     int 	repeatSearch();
 
-    /// Presents a Search and Replace Dialog to the User.
     /**  Presents a Search and Replace Dialog to the User.
      */
     void 	Replace();
 
-    /// Presents a "Goto Line" dialog to the User
     /** Presents a "Goto Line" dialog to the User
      */
     void 	doGotoLine();
 
-    /// Returns true if the document has been modified.
     /**Returns true if the document has been modified.
     */
     bool 	isModified();
 
-    /// Toggles the modification status of the document
     /** Toggles the modification status of the document. TRUE = Modified,
         FALSE = UNMODIFIED. Methods such as doSave() rely on this to see whether
 	the document needs to be saved.
     */
     void 	toggleModified( bool );
 
-    ///  Sets Indent Mode
     /**  Sets the Indent Mode. TRUE = Indent  mode on, FALSE = Indent mode off.
      */
     void 	setAutoIndentMode( bool );
 
-    /// Returns the Indent Mode
     /** Returns the Indent Mode. TRUE = Indent  mode on, FALSE = Indent mode off.
      */
     bool        AutoIndentMode(){ return autoIndentMode; };
 
-    /// Install a Popup Menue for KEdit.
     /** Install a Popup Menue for KEdit. The Popup Menu will be activated on
         a right mouse button press event.
      */
     void 	installRBPopup( QPopupMenu* );
 
-    /// Return the current Line number
-	  /** Returns the current line number, that is the line the cursor is on.
-	   */
+    /** Returns the current line number, that is the line the cursor is on.
+     */
     int 	currentLine();
 
-    /// Returns the current Column number
-	  /** This returns the actual column number the cursor is on. This call differs
-	    from QMultiLineEdit::getCursorPosition in that it returns the actual cursor
-	    position and not the character position. Use currentLine() and currentColumn()
-	    if you want to display the current line or column in the status bar for
-	    example.
-	    */
+    /** This returns the actual column number the cursor is on. This call differs
+        from QMultiLineEdit::getCursorPosition in that it returns the actual cursor
+        position and not the character position. Use currentLine() and currentColumn()
+        if you want to display the current line or column in the status bar for
+        example.
+    */
     int 	currentColumn();
 
-    /// Returns TRUE if word wrap is on
-	   /** Returns TRUE if word wrap is on. You also need to specify the fill column
-	       with setFillColumnMode() otherwise wordwrap is not in effect.
-	       */
+    /** Returns TRUE if word wrap is on. You also need to specify the fill column
+        with setFillColumnMode() otherwise wordwrap is not in effect.
+    */
     bool 	WordWrap();
 
-    /// Turn word wrap mode on or off.
-	   /** You also need to specify the fill column
-	       with setFillColumnMode() otherwise wordwrap is not in effect.
-	       */
+    /** You also need to specify the fill column
+        with setFillColumnMode() otherwise wordwrap is not in effect.
+    */
     void 	setWordWrap(bool );
 
-    /// Returns TRUE if fill column mode is on
-	   /**  Returns TRUE if fill column mode is on, that is if the line will
-	        be broken automatically when if a character is to be inserted past
-		this position.
-		*/
+    /**  Returns TRUE if fill column mode is on, that is if the line will
+         be broken automatically when if a character is to be inserted past
+         this position.
+    */
     bool 	FillColumnMode();
 
-    /// Set the fill column to column col if line is strictly larger than 0.
-	   /**  Set the fill column to column col, if col is strictly larger than 0.
-	        If col  is 0, fill column mode is turned off.
-	        In fill column mode, the line will
-	        be broken automatically at column col, when a character is
-		inserted past column col..
-		*/
+    /**  Set the fill column to column col, if col is strictly larger than 0.
+         If col  is 0, fill column mode is turned off.
+         In fill column mode, the line will
+         be broken automatically at column col, when a character is
+         inserted past column col..
+    */
     void  	setFillColumnMode(int line, bool set);
 
-    /// save a backup copy
-	  /** If copy is TRUE KEdit will make a backup copy of the document that
-	      is being edited on opening it. The backup copy will receive the
-	      suffix ~. The default is TRUE.
-	    */
+    /** If copy is TRUE KEdit will make a backup copy of the document that
+        is being edited on opening it. The backup copy will receive the
+        suffix ~. The default is TRUE.
+    */
     void       saveBackupCopy(bool copy);
 
-    /// set the name of the file
-	  /** Sets the name of the file if a file is open.
-	    */
+    /** Sets the name of the file if a file is open.
+     */
     void       setFileName(const QString& name);
 
-    /// save the current file as 'name'
-	  /** saves the current file as 'name'
-	    */
-
-
+    /** saves the current file as 'name'
+     */
     void       saveasfile(const QString& name);
 
-    /// remove tabs and whitespace on the end of lines during a justify operation
-	  /** remove tabs and whitespace on the end of lines during a justify operation
-	    */
+    /** remove tabs and whitespace on the end of lines during a justify operation
+     */
     void       setReduceWhiteOnJustify(bool reduce);
 
     bool 	format(QStrList& );
@@ -427,36 +390,31 @@ public:
 
 signals:
 
-    /// This signal is emitted when the document in the textwidget has changed
-	  /** This signal is emitted when the document in the textwidget has changed
-	   */
+    /** This signal is emitted when the document in the textwidget has changed
+     */
     void 	fileChanged();
 
-    ///  This signal is emitted whenever the cursor position changed.
-	   /** This signal is emitted whenever the cursor position changed.
-	       Use this in conjunction with currentLine(), currentColumn()
-	       if you need to know the cursor position.
-	       */
+    /** This signal is emitted whenever the cursor position changed.
+        Use this in conjunction with currentLine(), currentColumn()
+        if you need to know the cursor position.
+    */
     void 	CursorPositionChanged();
 
-    /// This signal is emitted just before saving a file.
-	  /** This signal is emitted just before saving a file. Since KEdit calls
-	      kapp->processEvents(), you have a chance to let the user know what's 	
-	      going to happen.
-	   */
+    /** This signal is emitted just before saving a file. Since KEdit calls
+        kapp->processEvents(), you have a chance to let the user know what's
+        going to happen.
+    */
     void 	saving();
 
-    /// This signal is emitted just before loading a file.
-	  /** This signal is emitted just before loading a file. Since KEdit calls
-	      kapp->processEvents(), you have a chance to let the user know what's 	
-	      going to happen.
-	   */
+    /** This signal is emitted just before loading a file. Since KEdit calls
+        kapp->processEvents(), you have a chance to let the user know what's
+        going to happen.
+    */
     void 	loading();
 
-    /// This signal is emitted if the user toggles from overwrite to insert mode
-	 /** This signal is emitted if the user toggles from overwrite to insert mode.
-	     He can do so by pressing the "Insert" Button on a PC keyboard.
-	     */
+    /** This signal is emitted if the user toggles from overwrite to insert mode.
+        He can do so by pressing the "Insert" Button on a PC keyboard.
+    */
     void 	toggle_overwrite_signal();
 
 
@@ -485,9 +443,7 @@ public slots:
 
 
 protected:
-#if QT_VERSION >= 142
     QTimer* repaintTimer;
-#endif
 
     int 	saveFile();
 

@@ -27,10 +27,8 @@
 
   */
 
-#include "keditcl.h"
 #include <klocale.h>
 #include <kapp.h>
-
 
 #include "keditcl.h"
 
@@ -46,10 +44,8 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
 
 
     // fancy optimized refreshing (Matthias and Paul)
-#if QT_VERSION >= 142
     repaintTimer = new QTimer(this);
     connect(repaintTimer, SIGNAL(timeout()), this, SLOT(repaintAll()));
-#endif
 
     // set some defaults
 
@@ -330,12 +326,8 @@ int KEdit::loadFile(QString name, int mode){
     }
 
     setAutoUpdate(TRUE);
-#if QT_VERSION < 142
-    repaint();
-#else
     if (!repaintTimer->isActive())
 	repaintTimer->start(0,TRUE);
-#endif
 
     connect(this, SIGNAL(textChanged()), this, SLOT(setModified()));
 
@@ -722,12 +714,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	// setCursorPosition(templine,tempcol); Matthias: do the next line instead
 	setCursorPosition(cursorline, cursorcol); //Matthias
 
-#if QT_VERSION < 142
-	repaint();
-#else
 	if (!repaintTimer->isActive())
 	    repaintTimer->start(0,TRUE);
-#endif
 
 	computePosition();
 	setModified();
@@ -800,19 +788,6 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	  num_of_rows = par.count();
 	  par.clear();
 
-	  /*
-	    Matthias: no longer necessary
-	  if(col_pos +1 > fill_column_value){
-	    setCursorPosition(templine+1,cursor_offset);
-	    //	    printf("SETCURSOR1 %d %d\n",templine +1,cursor_offset);
-	  }
-	  else{
-	      setCursorPosition(templine,tempcol);
-	    //	    printf("SETCURSOR2 %d %d\n",templine ,tempcol);
-
-	  }
-	  */
-	  // do this instead:
 	  setCursorPosition(cursorline, cursorcol); //Matthias
 	}
 
@@ -821,26 +796,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	// Let's try to reduce flicker by updating only what we need to update
 	// printf("NUMOFROWS %d\n",num_of_rows);
 
-	if(did_break){
-#if QT_VERSION < 142
-	  int y1  = -1;
-	  int y2  = -1;
-
-	  rowYPos(templine,&y1);
-	  rowYPos(templine + num_of_rows ,&y2);
-
-	  if(y1 == -1)
-	    y1 = 0;
-
-	  //if(y2 == -1)
-	    y2 = this->height();
-
-	  repaint(0,y1,this->width(),y2);
-#else
-	if (!repaintTimer->isActive())
+	if(did_break && !repaintTimer->isActive())
 	    repaintTimer->start(0,TRUE);
-#endif
-	}
 
 	computePosition();
 	setModified();
@@ -987,11 +944,6 @@ bool KEdit::format(QStrList& par){
 
     if( l <= fill_column_value)
       break;
-
-    //mstring = pstring.left( k ); //Matthias no longer needed
-    //space_pos = mstring.findRev( " ", -1, TRUE );//Matthias no longer needed
-//     if(space_pos == -1) // well let try to find a TAB then ..//Matthias no longer needed
-//           space_pos = mstring.findRev( "\t", -1, TRUE );//Matthias no longer needed
 
     right = col_pos - space_pos - 1;
 
@@ -1167,11 +1119,6 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
     if( l <= fill_column_value)
       continue;
-
-//     mstring = pstring.left( k );
-//     space_pos = mstring.findRev( " ", -1, TRUE ); // Matthias: no longer needed
-//     if(space_pos == -1) // well let try to find a TAB then ..// Matthias: no longer needed
-//           space_pos = mstring.findRev( "\t", -1, TRUE );// Matthias: no longer needed
 
     right = col_pos - space_pos - 1;
 

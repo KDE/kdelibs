@@ -119,7 +119,7 @@ again:
 					   srchdialog,
 					   i18n("Find"), 
 					   i18n("Beginning of document reached.\n"\
-							      "Continue from the end?"), 
+                                                "Continue from the end?"), 
 					   i18n("Yes"),
 					   i18n("No"),
 					   "",
@@ -359,7 +359,7 @@ again:
 				   replace_dialog,
 				   i18n("Find"), 
 				   i18n("End of document reached.\n"\
-						      "Continue from the beginning?"), 
+                                        "Continue from the beginning?"), 
 				   i18n("Yes"),
 				   i18n("No"),
 				   "",
@@ -376,7 +376,7 @@ again:
 				   replace_dialog,
 				   i18n("Find"), 
 				   i18n("Beginning of document reached.\n"\
-						      "Continue from the end?"), 
+                                        "Continue from the end?"), 
 				   i18n("Yes"),
 				   i18n("No"),
 				   "",
@@ -422,7 +422,7 @@ void KEdit::replace_search_slot(){
 			 replace_dialog,
 			 i18n("Replace"), 
 			 i18n("Beginning of document reached.\n"\
-					    "Continue from the end?"), 
+                              "Continue from the end?"), 
 			 i18n("Yes"),
 			 i18n("No"),
 			 "",
@@ -452,7 +452,7 @@ again:
 				     replace_dialog,
 				     i18n("Replace"), 
 				     i18n("End of document reached.\n"\
-							"Continue from the beginning?"), 
+                                          "Continue from the beginning?"), 
 				     i18n("Yes"),
 				     i18n("No"),
 				     "",
@@ -469,7 +469,7 @@ again:
 					   replace_dialog,
 					   i18n("Replace"), 
 					   i18n("Beginning of document reached.\n"\
-							      "Continue from the end?"), 
+                                                "Continue from the end?"), 
 					   i18n("Yes"),
 					   i18n("No"),
 					   "",
@@ -675,12 +675,12 @@ KEdSrch::KEdSrch(QWidget *parent, const char *name)
     this->setFocusPolicy(QWidget::StrongFocus);
     frame1 = new QGroupBox(i18n("Find"), this, "frame1");
 
-    value = new QLineEdit( this, "value");
+    value = new QLineEdit( frame1, "value");
     value->setFocus();
     connect(value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
 
-    sensitive = new QCheckBox(i18n("Case Sensitive"), this, "case");
-    direction = new QCheckBox(i18n("Find Backwards"), this, "direction");
+    sensitive = new QCheckBox(i18n("Case Sensitive"), frame1, "case");
+    direction = new QCheckBox(i18n("Find Backwards"), frame1, "direction");
 
     ok = new QPushButton(i18n("Find"), this, "find");
     connect(ok, SIGNAL(clicked()), this, SLOT(ok_slot()));
@@ -767,21 +767,21 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
 
     frame1 = new QGroupBox(i18n("Find:"), this, "frame1");
 
-    value = new QLineEdit( this, "value");
+    value = new QLineEdit( frame1, "value");
     value->setFocus();
     connect(value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
 
-    replace_value = new QLineEdit( this, "replac_value");
+    replace_value = new QLineEdit( frame1, "replac_value");
     connect(replace_value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
 
     label = new QLabel(this,"Rlabel");
     label->setText(i18n("Replace with:"));
 
-    sensitive = new QCheckBox(i18n("Case Sensitive"), this, "case");
+    sensitive = new QCheckBox(i18n("Case Sensitive"), frame1, "case");
     sensitive->setChecked(TRUE);
 
     direction = new QCheckBox(i18n("Find Backwards")
-			      , this, "direction");
+			      ,frame1 , "direction");
     
     ok = new QPushButton(i18n("Find"), this, "find");
     connect(ok, SIGNAL(clicked()), this, SLOT(ok_slot()));
