@@ -83,17 +83,23 @@ RenderListItem::RenderListItem()
 void RenderListItem::setStyle(RenderStyle *_style)
 {
     RenderFlow::setStyle(_style);
+
     RenderStyle *newStyle = new RenderStyle();
     newStyle->inheritFrom(style());
-       if(newStyle->direction() == LTR)
-           newStyle->setFloating(FLEFT);
-       else
-           newStyle->setFloating(FRIGHT);
-       if(!m_marker && style()->listStyleType() != LNONE) {
+    if(newStyle->direction() == LTR)
+        newStyle->setFloating(FLEFT);
+    else
+        newStyle->setFloating(FRIGHT);
+
+    if(!m_marker && style()->listStyleType() != LNONE) {
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
         addChild(m_marker);
-    } else if ( m_marker ) {
+    } else if ( m_marker && style()->listStyleType() == LNONE) {
+        delete m_marker;
+        m_marker = 0;
+    }
+    else if ( m_marker ) {
         m_marker->setStyle(newStyle);
     }
 }
@@ -215,11 +221,9 @@ void RenderListMarker::setStyle(RenderStyle *s)
     RenderBox::setStyle(s);
 
     if ( listImage != style()->listStyleImage() ) {
-	if(listImage)
-	    listImage->deref(this);
+	if(listImage)  listImage->deref(this);
 	listImage = style()->listStyleImage();
-	if(listImage)
-	    listImage->ref(this);
+	if(listImage)  listImage->ref(this);
     }
 }
 
@@ -314,15 +318,15 @@ void RenderListMarker::layout()
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate)
 {
-    if (manualUpdate && *manualUpdate)
-    {
-        updateSize();
-        repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+    if(o != listImage) {
+        RenderBox::setPixmap(p, r, o, 0);
         return;
     }
 
-    if(o != listImage)
-        RenderBox::setPixmap(p, r, o, 0);
+    if (manualUpdate && *manualUpdate) {
+        updateSize();
+        return;
+    }
 
     if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
     {
@@ -330,20 +334,15 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         setMinMaxKnown(false);
         layout();
         // the updateSize() call should trigger a repaint too
-        if (manualUpdate)
-        {
+        if (manualUpdate) {
             *manualUpdate = true;
         }
-        else
-        {
+        else {
             updateSize();
-            repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         }
     }
     else
-    {
         repaintRectangle(0, 0, m_width, m_height);
-    }
 }
 
 void RenderListMarker::calcMinMaxWidth()
