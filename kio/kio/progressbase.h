@@ -147,21 +147,21 @@ public slots:
    * @param bytes the total size in bytes
    */
   virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t bytes ) { 
-    Q_UNUSED(job);Q_UNUSED(bytes)}
+    Q_UNUSED(job);Q_UNUSED(bytes);}
   /**
    * Called to set the total number of files.
    * @param job the KIO::Job
    * @param files the number of files
    */
   virtual void slotTotalFiles( KIO::Job* job, unsigned long files ) {
-    Q_UNUSED(job);Q_UNUSED(files)}
+    Q_UNUSED(job);Q_UNUSED(files);}
   /**
    * Called to set the total number of directories.
    * @param job the KIO::Job
    * @param dirs the number of directories
    */
   virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs ) {
-    Q_UNUSED(job);Q_UNUSED(dirs)}
+    Q_UNUSED(job);Q_UNUSED(dirs);}
 
   /**
    * Called to set the processed size.
@@ -169,21 +169,21 @@ public slots:
    * @param bytes the processed size in bytes
    */
   virtual void slotProcessedSize( KIO::Job* job, KIO::filesize_t bytes ) {
-    Q_UNUSED(job);Q_UNUSED(size)}
+    Q_UNUSED(job);Q_UNUSED(bytes);}
   /**
    * Called to set the number of processed files.
    * @param job the KIO::Job
    * @param files the number of files
    */
   virtual void slotProcessedFiles( KIO::Job* job, unsigned long files ) {
-    Q_UNUSED(job);Q_UNUSED(files)}
+    Q_UNUSED(job);Q_UNUSED(files);}
   /**
    * Called to set the number of processed directories.
    * @param job the KIO::Job
    * @param dirs the number of directories
    */
   virtual void slotProcessedDirs( KIO::Job* job, unsigned long dirs ) {
-    Q_UNUSED(job);Q_UNUSED(dirs)}
+    Q_UNUSED(job);Q_UNUSED(dirs);}
 
   /**
    * Called to set the speed. 
@@ -191,14 +191,14 @@ public slots:
    * @param speed the speed in bytes/second
    */
   virtual void slotSpeed( KIO::Job* job, unsigned long speed ) {
-    Q_UNUSED(job);Q_UNUSED(speed)}
+    Q_UNUSED(job);Q_UNUSED(speed);}
   /**
    * Called to set the percentage.
    * @param job the KIO::Job
    * @param percent the percentage
    */
   virtual void slotPercent( KIO::Job* job, unsigned long percent ) {
-    Q_UNUSED(job);Q_UNUSED(percent)}
+    Q_UNUSED(job);Q_UNUSED(percent);}
 
   /**
    * Called when the job is copying.
@@ -207,7 +207,7 @@ public slots:
    * @param dest the destination of the operation
    */
   virtual void slotCopying( KIO::Job* job, const KURL& src, const KURL& dest ) {
-    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest)}
+    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest);}
   /**
    * Called when the job is moving.
    * @param job the KIO::Job
@@ -215,21 +215,21 @@ public slots:
    * @param dest the destination of the operation
    */
   virtual void slotMoving( KIO::Job* job, const KURL& src, const KURL& dest ) {
-    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest)}
+    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest);}
   /**
    * Called when the job is deleting.
    * @param job the KIO::Job
    * @param url the URL to delete
    */
   virtual void slotDeleting( KIO::Job* job, const KURL& url) {
-    Q_UNUSED(job);Q_UNUSED(url)}
+    Q_UNUSED(job);Q_UNUSED(url);}
   /**
    * Called when the job is creating a directory.
    * @param job the KIO::Job
    * @param dir the URL of the directory to create
    */
   virtual void slotCreatingDir( KIO::Job* job, const KURL& dir ) {
-    Q_UNUSED(job);Q_UNUSED(dir)}
+    Q_UNUSED(job);Q_UNUSED(dir);}
 
   /**
    * Called when the job is resuming..
@@ -237,7 +237,7 @@ public slots:
    * @param from the position to resume from in bytes
    */
   virtual void slotCanResume( KIO::Job* job, KIO::filesize_t from) {
-    Q_UNUSED(job);Q_UNUSED(from)}
+    Q_UNUSED(job);Q_UNUSED(from);}
 
 signals:
   /**
