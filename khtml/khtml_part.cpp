@@ -6041,7 +6041,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
 
-    if( img ) {
+    if( img && img->complete()) {
       KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
       mdrag->addDragObject( new QImageDrag( img->currentImage(), 0L ) );
       mdrag->addDragObject( urlDrag );

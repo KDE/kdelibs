@@ -52,7 +52,15 @@ public:
     long height() const;
 
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
+    /** Return the image for this element.
+     *  This has to convert the pixmap into an image first.
+     *  This will return undefined results if complete() is not true.
+     */
     QImage currentImage() const;
+    /** Return the pixmap for this element.
+     *  This will return undefined results if complete() is not true.
+     */
+    QPixmap currentPixmap() const;
 
     DOMString altText() const;
 

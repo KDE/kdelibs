@@ -228,6 +228,15 @@ QImage HTMLImageElementImpl::currentImage() const
     return QImage();
 }
 
+QPixmap HTMLImageElementImpl::currentPixmap() const
+{
+    RenderImage *r = static_cast<RenderImage*>(renderer());
+
+    if(r)
+        return r->pixmap();
+
+    return QPixmap();
+}
 
 bool HTMLImageElementImpl::complete() const
 {
