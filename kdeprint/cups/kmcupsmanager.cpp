@@ -29,6 +29,7 @@
 #include "matic.h"
 #include "kmcupsconfig.h"
 #include "kmfactory.h"
+#include "kmdbentry.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -203,8 +204,18 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.local8Bit()));
 		if (ppd)
 		{
-			p->setManufacturer(QString::fromLocal8Bit(ppd->manufacturer));
-			p->setModel(QString::fromLocal8Bit(ppd->shortnickname));
+			KMDBEntry	entry;
+			// use the validation mechanism of KMDBEntry to
+			// fill possible missing entries like manufacturer
+			// or model.
+			entry.manufacturer = ppd->manufacturer;
+			entry.model = ppd->shortnickname;
+			entry.modelname = ppd->modelname;
+			// do not check the driver regarding the manager
+			entry.validate(false);
+			// update the KMPrinter object
+			p->setManufacturer(entry.manufacturer);
+			p->setModel(entry.model);
 			p->setDriverInfo(QString::fromLocal8Bit(ppd->nickname));
 			ppdClose(ppd);
 		}

@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <cups/language.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
 #include <cups/cups.h>
 
 void dumpRequest(ipp_t *req)
@@ -74,7 +76,8 @@ void IppRequest::init()
 		request_ = 0;
 	}
 	request_ = ippNew();
-	cups_lang_t*	lang = cupsLangDefault();
+	//kdDebug() << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
+	cups_lang_t*	lang = cupsLangGet(KGlobal::locale()->language().latin1());
 	// default charset to UTF-8 (ugly hack)
 	lang->encoding = CUPS_UTF8;
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_CHARSET, "attributes-charset", NULL, cupsLangEncoding(lang));
