@@ -1179,7 +1179,7 @@ QPixmap *Cache::brokenPixmap = 0;
 void Cache::init()
 {
     if ( !cache )
-        cache = new QDict<CachedObject>(401);
+        cache = new QDict<CachedObject>(401, true);
 
     if ( !lru )
         lru = new LRUList;
@@ -1205,8 +1205,7 @@ void Cache::clear()
     kdDebug( 6060 ) << "Cache: CLEAR!" << endl;
     statistics();
 #endif
-    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
-         removeCacheEntry(it.current());
+    cache->setAutoDelete( true );
     delete cache; cache = 0;
     delete lru;   lru = 0;
     delete nullPixmap; nullPixmap = 0;
