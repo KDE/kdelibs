@@ -27,6 +27,7 @@ XML:
 	* parsing
 	* entities
 	* style sheet processing instructions
+	* proper mimetype detection
 
 misc:
 	* <font size=+3> works as size=+1
