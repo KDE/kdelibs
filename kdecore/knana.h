@@ -37,6 +37,7 @@
 
 #endif
 
+#include <eiffel.h>
 #include <nana.h>
 
 #endif
