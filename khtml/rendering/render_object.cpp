@@ -828,33 +828,37 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     DOM::NodeImpl* lastNode = 0;
     for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off);
-        //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
+        //kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
         switch(pos) {
         case SelectionPointBeforeInLine:
         case SelectionPointAfterInLine:
         case SelectionPointInside:
+//            kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset << endl;
             node = nod;
             offset = off;
             return SelectionPointInside;
         case SelectionPointBefore:
             //x,y is before this element -> stop here
-            if ( lastNode) {
+            if ( lastNode ) {
                 node = lastNode;
                 offset = lastOffset;
-//                 kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child "
-//                               << node << "-> returning offset=" << offset << endl;
+//                kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before this child "
+//                              << node << "-> returning SelectionPointInside, offset=" << offset << endl;
                 return SelectionPointInside;
             } else {
-//                 kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
+                node = nod;
+                offset = off;
+//                kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset << endl;
                 return SelectionPointBefore;
             }
             break;
         case SelectionPointAfter:
-//             kdDebug(6030) << "ElementImpl::findSelectionNode: selection after: " << nod << " offset: " << off << endl;
+//            kdDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << endl;
             lastNode = nod;
             lastOffset = off;
         }
     }
+    //kdDebug(6030) << "fallback - SelectionPointAfter" << endl;
     node = lastNode;
     offset = lastOffset;
     return SelectionPointAfter;

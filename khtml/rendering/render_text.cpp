@@ -354,7 +354,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
-        } else if ( result == SelectionPointBefore ) {
+        } else if ( result == SelectionPointBefore || result == SelectionPointBeforeInLine ) {
             // x,y is before the textslave -> stop here
             if ( si > 0 && lastPointAfterInline ) {
                 offset = lastPointAfterInline->m_start + lastPointAfterInline->m_len;
