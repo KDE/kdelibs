@@ -76,7 +76,7 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
       _target = attr->value();
       break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -87,7 +87,7 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
     if(_href.length())
     {
       v->part()->setBaseURL( KURL( _href.string() ) );
-    }	
+    }
     if(_target.length())
     {
       v->part()->setBaseTarget(_target.string());
@@ -156,19 +156,19 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
 
     if(m_type == "text/css" && !rel.contains("alternate"))
     {
-	QString str = m_media.string().lower();
-	// no need to load style sheets which aren't for the screen output
-	// ### there may be in some situations e.g. for an editor or script to manipulate
-	if(m_media.isNull() || str.contains("screen") || str.contains("all"))
-	{
-	    m_loading = true;
-	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	    if (doc->docLoader())
-		m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
-	    else
-		m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
-	    m_cachedSheet->ref(this);
-	}
+        QString str = m_media.string().lower();
+        // no need to load style sheets which aren't for the screen output
+        // ### there may be in some situations e.g. for an editor or script to manipulate
+        if(m_media.isNull() || str.contains("screen") || str.contains("all"))
+        {
+            m_loading = true;
+            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+            if (doc->docLoader())
+                m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
+            else
+                m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
+            m_cachedSheet->ref(this);
+        }
     }
     NodeBaseImpl::attach( v );
 }
@@ -178,17 +178,17 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_REL:
-	m_rel = attr->value(); break;
+        m_rel = attr->value(); break;
     case ATTR_HREF:
-	m_url = attr->value(); break;
+        m_url = attr->value(); break;
     case ATTR_TYPE:
-	m_type = attr->value(); break;
+        m_type = attr->value(); break;
     case ATTR_MEDIA:
-	m_media = attr->value(); break;
+        m_media = attr->value(); break;
     case ATTR_DISABLED:
- 	// ###
+        // ###
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -248,7 +248,7 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
       _content = attr->value();
       break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -259,20 +259,28 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
     kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
     {
-	// get delay and url
-	QString str = _content.string();
-	int pos = str.find(QRegExp("[;,]"));
-	int delay = str.left(pos).toInt();
-	kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
-	pos++;
-	while(pos < (int)str.length() && str[pos].isSpace()) pos++;
-	if(pos < (int)str.length()) str = str.mid(pos);
-	if(strncasecmp(str, "url=", 4) == 0)
-	{
-	    str = str.mid(4).simplifyWhiteSpace();
-	    kdDebug( 6030 ) << "====> got redirect to " << str << endl;
-	    v->part()->scheduleRedirection(delay, str);
-	}
+        // get delay and url
+        QString str = _content.string();
+        int pos = str.find(QRegExp("[;,]"));
+        if (pos == -1) // There can be no url (David)
+        {
+            int delay = str.toInt();
+            kdDebug( 6030 ) << "delay = " << delay << endl;
+            kdDebug( 6030 ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
+            v->part()->scheduleRedirection(delay, v->part()->url().url());
+        } else {
+            int delay = str.left(pos).toInt();
+            kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
+            pos++;
+            while(pos < (int)str.length() && str[pos].isSpace()) pos++;
+            if(pos < (int)str.length()) str = str.mid(pos);
+            if(strncasecmp(str, "url=", 4) == 0)
+            {
+                str = str.mid(4).simplifyWhiteSpace();
+                kdDebug( 6030 ) << "====> got redirect to " << str << endl;
+                v->part()->scheduleRedirection(delay, str);
+            }
+        }
     }
     NodeBaseImpl::attach( v );
 }
@@ -325,11 +333,11 @@ void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_TYPE:
-	m_type = attr->value(); break;
+        m_type = attr->value(); break;
     case ATTR_MEDIA:
-	m_media = attr->value(); break;
+        m_media = attr->value(); break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -389,8 +397,8 @@ void HTMLTitleElementImpl::setTitle()
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();
     s.compose();
-    
-    
+
+
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
     emit d->view()->part()->setWindowCaption( s.visual() );
 }
