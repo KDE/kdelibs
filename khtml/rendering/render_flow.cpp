@@ -520,7 +520,7 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
     else {
 	// Don't insert the object again if it's already in the list
 	QPtrListIterator<SpecialObject> it(*specialObjects);
-	SpecialObject* f;
+	SpecialObject *f;
 	while ( (f = it.current()) ) {
 	    if (f->node == o) return;
 	    ++it;
@@ -529,7 +529,7 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
 
     // Create the special object entry & append it to the list
 
-    SpecialObject *newObj;
+    SpecialObject *newObj = 0;
     if (o->isPositioned()) {
 	// positioned object
 	newObj = new SpecialObject(SpecialObject::Positioned);
@@ -552,7 +552,7 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
     else {
 	// We should never get here, as insertSpecialObject() should only ever be called with positioned or floating
 	// objects.
-	KHTMLAssert(false);
+	KHTMLAssert(newObj);
     }
 
     newObj->count = specialObjects->count();
