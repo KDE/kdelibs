@@ -166,6 +166,7 @@ protected:
     void processListing(khtml::DOMStringIt list);
 
     void parseComment(khtml::DOMStringIt &str);
+    void parseServer(khtml::DOMStringIt &str);
     void parseText(khtml::DOMStringIt &str);
     void parseListing(khtml::DOMStringIt &str);
     void parseSpecial(khtml::DOMStringIt &str, bool begin);
@@ -301,6 +302,11 @@ protected:
     // was the previous character escaped ?
     bool escaped;
 
+    // are we in a server includes statement?
+    bool server;
+
+    bool brokenServer;
+
     // name of an unknown attribute
     QString attrName;
 
@@ -312,7 +318,7 @@ protected:
     int scriptCodeMaxSize;
     // resync point of script code size
     int scriptCodeResync;
-    
+
     // Stores characters if we are scanning for a string like "</script>"
     QChar searchBuffer[ 10 ];
     // Counts where we are in the string we are scanning for

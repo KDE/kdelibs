@@ -192,6 +192,7 @@ void HTMLTokenizer::begin()
     skipLF = false;
     select = false;
     comment = false;
+    server = false;
     textarea = false;
     startTag = false;
     tquote = NoQuote;
@@ -202,6 +203,7 @@ void HTMLTokenizer::begin()
     pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
+    brokenServer = false;
     lineno = 0;
     scriptStartLineno = 0;
     tagStartLineno = 0;
@@ -363,8 +365,9 @@ void HTMLTokenizer::scriptHandler()
     bool doScriptExec = false;
     if (!scriptSrc.isEmpty()) {
         // forget what we just got; load from src url instead
-        if ( !parser->skipMode() )
+        if ( !parser->skipMode() ) {
             cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, scriptSrcCharset);
+        }
         scriptSrc=QString::null;
     }
     else {
@@ -385,9 +388,9 @@ void HTMLTokenizer::scriptHandler()
     QString prependingSrc;
     if ( !parser->skipMode() ) {
         if (cachedScript ) {
-//             qDebug( "cachedscript extern!" );
-//             qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
-//             qDebug( "pending: *%s*", pendingSrc.latin1() );
+             //qDebug( "cachedscript extern!" );
+             //qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
+             //qDebug( "pending: *%s*", pendingSrc.latin1() );
             pendingSrc.prepend( QString(src.current(), src.length() ) );
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
@@ -461,6 +464,22 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
             }
             comment = false;
             return; // Finished parsing comment
+        }
+        ++src;
+    }
+}
+
+void HTMLTokenizer::parseServer(DOMStringIt &src)
+{
+    checkScriptBuffer(src.length());
+    while ( src.length() ) {
+        scriptCode[ scriptCodeSize++ ] = *src;
+        if (src->unicode() == '>' &&
+            scriptCodeSize > 1 && scriptCode[scriptCodeSize-2] == '%') {
+            ++src;
+            server = false;
+            scriptCodeSize = 0;
+            return; // Finished parsing server include
         }
         ++src;
     }
@@ -1226,6 +1245,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             parseSpecial(src, false);
         else if (comment)
             parseComment(src);
+        else if (server)
+            parseServer(src);
         else if (processingInstruction)
             parseProcessingInstruction(src);
         else if (tag)
@@ -1266,7 +1287,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
                 break;
             }
-
             case '?':
             {
                 // xml processing instruction
@@ -1277,7 +1297,15 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
                 break;
             }
-
+            case '%':
+                if (!brokenServer) {
+                    // <% server stuff, handle as comment %>
+                    server = true;
+                    tquote = NoQuote;
+                    parseServer(src);
+                    continue;
+                }
+                // else fall through
             default:
             {
                 if( ((cc >= 'a') && (cc <= 'z')) || ((cc >= 'A') && (cc <= 'Z')))
@@ -1447,10 +1475,13 @@ void HTMLTokenizer::end()
 void HTMLTokenizer::finish()
 {
     // do this as long as we don't find matching comment ends
-    while(comment && scriptCode && scriptCodeSize)
+    while((comment || server) && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
-        brokenComments = true;
+        if (comment)
+            brokenComments = true;
+        else
+            brokenServer = true;
         checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
@@ -1461,6 +1492,10 @@ void HTMLTokenizer::finish()
             if ( pos >= 0 )
                 food.setUnicode( scriptCode+pos, scriptCodeSize-pos ); // deep copy
         }
+        else if (server) {
+            food = "<";
+            food += QString(scriptCode, scriptCodeSize);
+        }
         else {
             pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
             food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
@@ -1468,7 +1503,7 @@ void HTMLTokenizer::finish()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
         scriptCode = 0;
         scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-        comment = false;
+        comment = server = false;
         if ( !food.isEmpty() )
             write(food, true);
     }
