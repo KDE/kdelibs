@@ -250,6 +250,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   : QWidget(parent),
     d(new KEditToolbarWidgetPrivate(instance()))
 {
+  actionCollection()->setWidget( this );
   // let's not forget the stuff that's not xml specific
   //d->m_collection = *collection;
   d->m_actionList = collection->actions();
@@ -297,6 +298,7 @@ KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
   QDomElement elem;
 
   setFactory( factory );
+  actionCollection()->setWidget( this );
 
   // add all of the client data
   QPtrList<KXMLGUIClient> clients(factory->clients());
