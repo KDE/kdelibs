@@ -37,7 +37,7 @@
 
 #include <unistd.h>
 
-QString instanceName(const QString& prname, const QString& instname)
+static QString instanceName(const QString& prname, const QString& instname)
 {
 	QString	str(prname);
 	if (!instname.isEmpty())

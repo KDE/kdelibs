@@ -78,7 +78,7 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
 
-QString testLogFile( const char *_filename );
+static QString testLogFile( const char *_filename );
 
 extern "C" { int kdemain(int argc, char **argv); }
 
@@ -1265,7 +1265,7 @@ void FileProtocol::unmount( const QString& _point )
  *
  *************************************/
 
-QString testLogFile( const char *_filename )
+static QString testLogFile( const char *_filename )
 {
     char buffer[ 1024 ];
     KDE_struct_stat buff;

@@ -46,8 +46,8 @@
 #include <klibloader.h>
 #include <kmessagebox.h>
 
-void dumpOptions(const QMap<QString,QString>& opts);
-void reportError(KPrinter*);
+static void dumpOptions(const QMap<QString,QString>& opts);
+static void reportError(KPrinter*);
 
 //**************************************************************************************
 // KPrinterWrapper class
@@ -731,7 +731,7 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 	}
 }
 
-QSize rangeToSize(const QString& s)
+static QSize rangeToSize(const QString& s)
 {
 	QString	range = s;
 	int	p(-1);
@@ -752,7 +752,7 @@ QSize rangeToSize(const QString& s)
 	return QSize(from,to);
 }
 
-void dumpOptions(const QMap<QString,QString>& opts)
+static void dumpOptions(const QMap<QString,QString>& opts)
 {
 	kdDebug(500) << "********************" << endl;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)

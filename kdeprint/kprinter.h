@@ -743,6 +743,5 @@ protected:
 
 KPrinter::PageSize pageNameToPageSize(const QString& name);
 const char* pageSizeToPageName(KPrinter::PageSize s);
-QSize rangeToSize(const QString& s);
 
 #endif

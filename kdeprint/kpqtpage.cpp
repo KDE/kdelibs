@@ -46,8 +46,6 @@
 #define NUP_4		2
 #define NUP_OTHER	3
 
-void radioCursor(QButtonGroup*);
-
 //*****************************************************************************************************
 
 KPQtPage::KPQtPage(QWidget *parent, const char *name)
@@ -118,9 +116,6 @@ void KPQtPage::init()
 	lay3->addMultiCellWidget(m_nuppix,0,3,1,1);
 
 	// initialization
-	radioCursor(m_orientbox);
-	radioCursor(m_colorbox);
-	radioCursor(m_nupbox);
 	m_portrait->setChecked(true);
 	slotOrientationChanged(0);
 	m_color->setChecked(true);

@@ -35,7 +35,7 @@ void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 KURL smbToUrl(const QString& s);
 QString urlToSmb(const KURL& url);
 
-static struct pagesizestruct
+static const struct pagesizestruct
 {
 	const char*	text;
 	int 	ID;

@@ -21,7 +21,7 @@
 
 #include "matic.h"
 
-MHash	*main_hash = 0;
+MHash	*main_hash;
 
 void MHash::addHash(MHash *hash)
 {
@@ -80,7 +80,7 @@ void MaticBlock::readMHash(MHash *h)
 	}
 }
 
-void cleanHash()
+static void cleanHash()
 {
 	if (main_hash)
 	{
@@ -89,7 +89,7 @@ void cleanHash()
 	}
 }
 
-MaticBlock* loadMaticData(const char *s)
+static MaticBlock* loadMaticData(const char *s)
 {
 	// just to be sure
 	cleanHash();

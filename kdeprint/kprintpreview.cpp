@@ -104,7 +104,7 @@ public:
 	bool			previewonly_;
 };
 
-KLibFactory* componentFactory()
+static KLibFactory* componentFactory()
 {
 	kdDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
@@ -124,7 +124,7 @@ KLibFactory* componentFactory()
 	return factory;
 }
 
-bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly)
+static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly)
 {
 	QString	msg(msg_);
 	if (previewOnly)

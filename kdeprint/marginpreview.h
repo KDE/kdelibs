@@ -22,8 +22,6 @@
 
 #include <qwidget.h>
 
-void draw3DPage(QPainter *p, QRect r);
-
 class MarginPreview : public QWidget
 {
 	Q_OBJECT

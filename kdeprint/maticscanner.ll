@@ -14,7 +14,7 @@ L	[a-zA-Z_]
 
 int line_count;
 
-void newStr(const char *_s, bool str = false)
+static void newStr(const char *_s, bool str = false)
 {
 	QString *s = new QString(_s);
 	if (str)

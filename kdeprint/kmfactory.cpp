@@ -48,10 +48,10 @@
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 
-void qt_generate_epsf( bool b );
+extern void qt_generate_epsf( bool b );
 
 KMFactory* KMFactory::m_self = 0;
-KStaticDeleter<KMFactory> s_kmfactorysd;
+static KStaticDeleter<KMFactory> s_kmfactorysd;
 
 KMFactory* KMFactory::self()
 {

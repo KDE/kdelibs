@@ -48,15 +48,7 @@
 #define NUP_2_ID	1
 #define NUP_4_ID	2
 
-void radioCursor(QButtonGroup *bg)
-{
-	QButton	*btn;
-	int	index(0);
-	while ((btn=bg->find(index++)) != 0)
-		btn->setCursor(KCursor::handCursor());
-}
-
-void initCombo(QComboBox *cb, DrListOption *opt)
+static void initCombo(QComboBox *cb, DrListOption *opt)
 {
 	cb->clear();
 	QPtrListIterator<DrBase>	it(*(opt->choices()));
@@ -68,7 +60,7 @@ void initCombo(QComboBox *cb, DrListOption *opt)
 	}
 }
 
-void setComboItem(QComboBox *cb, const QString& txt)
+static void setComboItem(QComboBox *cb, const QString& txt)
 {
 	for (int i=0;i<cb->count();i++)
 		if (cb->text(i) == txt)
@@ -78,7 +70,7 @@ void setComboItem(QComboBox *cb, const QString& txt)
 		}
 }
 
-int findOption(const char *strs[], int n, const QString& txt)
+static int findOption(const char *strs[], int n, const QString& txt)
 {
 	for (int i=0;i<n;i+=2)
 		if (txt == strs[i]) return (i/2);
@@ -210,9 +202,6 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	connect(m_orientbox,SIGNAL(clicked(int)),SLOT(slotOrientationChanged(int)));
 	connect(m_nupbox,SIGNAL(clicked(int)),SLOT(slotNupChanged(int)));
 	connect(m_duplexbox,SIGNAL(clicked(int)),SLOT(slotDuplexChanged(int)));
-	radioCursor(m_orientbox);
-	radioCursor(m_nupbox);
-	radioCursor(m_duplexbox);
 
 	// init
 	initialize();
