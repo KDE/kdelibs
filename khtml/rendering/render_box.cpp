@@ -271,6 +271,8 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
+//            p->drawTiledPixmap(cx, cy, cw, ch, bg->pixmap(), sx, sy);
+
     }
 }
 
@@ -715,16 +717,16 @@ void RenderBox::calcAbsoluteHorizontal()
     const int AUTO = -666666;
     int l,r,w,ml,mr,cw;
 
+    RenderObject* cb = containingBlock();
     int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
 
     l=r=ml=mr=w=AUTO;
-    cw = containingBlockWidth()
-        +containingBlock()->paddingLeft() +containingBlock()->paddingRight();
+    cw = containingBlockWidth()+cb->paddingLeft() +cb->paddingRight();
 
     if(!style()->left().isVariable())
-        l = style()->left().width(cw);
+        l = style()->left().width(cw) + cb->borderLeft();
     if(!style()->right().isVariable())
-        r = style()->right().width(cw);
+        r = style()->right().width(cw) - cb->borderRight();
     if(!style()->width().isVariable())
         w = style()->width().width(cw);
     else if (isReplaced())
@@ -748,11 +750,10 @@ void RenderBox::calcAbsoluteHorizontal()
 
         // all positioned elements are blocks, so that
         // would be at the left edge
-        RenderObject* po = parent();
-        while (po && po!=containingBlock()) {
-            static_distance+=po->xPos();
-            po=po->parent();
-        }
+        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
+            static_distance += po->xPos();
+
+        static_distance += parent()->paddingLeft() + parent()->borderLeft();
 
         if (l==AUTO || style()->left().isStatic())
             l = static_distance;
@@ -761,15 +762,12 @@ void RenderBox::calcAbsoluteHorizontal()
     else if ((style()->direction()==RTL && (l==AUTO && r==AUTO ))
             || style()->right().isStatic())
     {
-            RenderObject* po = parent();
+        static_distance = cw - parent()->width();
 
-            static_distance = cw - po->width();
+        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
+            static_distance -= po->xPos();
 
-            while (po && po!=containingBlock()) {
-                static_distance-=po->xPos();
-                po=po->parent();
-            }
-
+        static_distance -= parent()->paddingRight() + parent()->borderRight();
         if (r==AUTO || style()->right().isStatic())
             r = static_distance;
     }
@@ -852,7 +850,7 @@ void RenderBox::calcAbsoluteHorizontal()
     m_width = w + pab;
     m_marginLeft = ml;
     m_marginRight = mr;
-    m_x = l + ml + containingBlock()->borderLeft();
+    m_x = l + ml;
 
     //qDebug("h: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 }
@@ -873,18 +871,21 @@ void RenderBox::calcAbsoluteVertical()
     t=b=h=mt=mb=AUTO;
 
     int pab = borderTop()+borderBottom()+paddingTop()+paddingBottom();
+    RenderObject* cb = containingBlock();
 
-    Length hl = containingBlock()->style()->height();
+    Length hl = cb->style()->height();
     if (hl.isFixed())
-        ch = hl.value + containingBlock()->paddingTop()
-             + containingBlock()->paddingBottom();
+        ch = hl.value + cb->paddingTop()
+             + cb->paddingBottom();
+    else if (cb->isHtml())
+        ch = cb->availableHeight();
     else
-        ch = containingBlock()->height();
+        ch = cb->height();
 
     if(!style()->top().isVariable())
-        t = style()->top().width(ch);
+        t = style()->top().width(ch) + cb->borderTop();
     if(!style()->bottom().isVariable())
-        b = style()->bottom().width(ch);
+        b = style()->bottom().width(ch) - cb->borderBottom();
     if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
@@ -911,19 +912,20 @@ void RenderBox::calcAbsoluteVertical()
         while ( ro && ro->isPositioned())
             ro = ro->previousSibling();
 
-        if (ro) static_top = ro->yPos()+ro->marginBottom()+ro->height();
+        if (ro)
+            static_top = ro->yPos()+ro->marginBottom()+ro->height();
+        else {
+            // we're only dealing with blocklevel positioned elements
+            // currently, so this is easy
+            for (RenderObject* po = parent(); po && po != cb; po = po->parent())
+                static_top += po->yPos();
 
-        RenderObject* po = parent();
-        while (po && po!=containingBlock()) {
-            static_top+=po->yPos();
-            po=po->parent();
+            static_top += parent()->paddingTop() + parent()->borderTop();
         }
 
         if (h==AUTO || style()->top().isStatic())
             t = static_top;
     }
-
-
 
     if (t!=AUTO && h!=AUTO && b!=AUTO)
     {
@@ -999,7 +1001,7 @@ void RenderBox::calcAbsoluteVertical()
 
     m_marginTop = mt;
     m_marginBottom = mb;
-    m_y = t + mt + containingBlock()->borderTop();
+    m_y = t + mt;
 
     //printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
 
