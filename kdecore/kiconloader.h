@@ -2,7 +2,7 @@
    $Id$
    
    This file is part of the KDE libraries
-   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@boon.netsurf.de)
+   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@bonn.netsurf.de)
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.10  1998/06/16 06:03:22  kalle
+   Implemented copy constructors and assignment operators or disabled them
+
    Revision 1.9  1998/03/08 18:50:23  wuebben
    Bernd: fixed up the kiconloader class -- it was completely busted
 

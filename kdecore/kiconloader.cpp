@@ -2,7 +2,7 @@
    $Id$
    
    This file is part of the KDE libraries
-   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@boon.netsurf.de)
+   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@bonn.netsurf.de)
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.19  1998/06/15 12:49:32  kulow
+   applied patch to replace .kde with localkdedir()
+		addPath( *it );
    Revision 1.18  1998/04/25 13:15:28  mark
    MD: Added KPixmap and changed KIconLoader to use it.
 	/*
