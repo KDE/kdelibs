@@ -21,7 +21,7 @@
 #include <kcmdlineargs.h>
 #include <kapp.h>
 
-#include <kmdbase.h>
+#include <kmdcodec.h>
 
 #define TEST_BLOCK_LEN 1000             // Length of test blocks.
 #define TEST_BLOCK_COUNT 10000          // Number of test blocks.
@@ -164,7 +164,7 @@ void UUEncode( const char* msg, bool isFile )
     }
     else
         kdDebug() << "UUEncoded data: " << endl
-                  << KCodecs::uuencode( QString::fromLatin1(msg) ) << endl;
+                  << KCodecs::uuencode( QCString(msg) ) << endl;
 }
 
 void UUDecode( const char* msg, bool isFile )
@@ -191,7 +191,7 @@ void UUDecode( const char* msg, bool isFile )
     }
     else
         kdDebug() << "Decoded data (uudecode): " << endl
-                  << KCodecs::uudecode( QString::fromLatin1(msg) ) << endl;
+                  << KCodecs::uudecode( QCString(msg) ) << endl;
 }
 
 // Measures the time to digest TEST_BLOCK_COUNT TEST_BLOCK_LEN-byte blocks.
