@@ -32,6 +32,7 @@ template class QAsciiDict<KLibrary>;
 
 #include <qtimer.h>
 #include <qobjectdict.h>
+#include <stdlib.h> //getenv
 
 
 class KLibFactoryPrivate {
@@ -130,7 +131,10 @@ KLibFactory* KLibrary::factory()
 
     void* sym = symbol( symname );
     if ( !sym )
+    {
+        kdWarning(150) << "KLibrary: The library " << name() << " does not offer an init_" << name() << " function" << endl;
         return 0;
+    }
 
     typedef KLibFactory* (*t_func)();
     t_func func = (t_func)sym;
