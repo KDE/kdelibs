@@ -141,6 +141,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   language	Navigator::Language	DontDelete|ReadOnly
   userAgent	Navigator::UserAgent	DontDelete|ReadOnly
   userLanguage	Navigator::UserLanguage	DontDelete|ReadOnly
+  browserLanguage Navigator::BrowserLanguage	DontDelete|ReadOnly
   platform	Navigator::Platform	DontDelete|ReadOnly
   plugins	Navigator::_Plugins	DontDelete|ReadOnly
   mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
@@ -193,6 +194,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String("Konqueror/khtml");
   case Vendor:
     return String("KDE");
+  case BrowserLanguage:
   case Language:
   case UserLanguage:
     return String(KGlobal::locale()->language());
