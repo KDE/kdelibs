@@ -257,7 +257,7 @@ void HTMLTokenizer::parseListing( HTMLString &src)
 	    scriptCodeMaxSize += 1024;
         }
 
-        if ( ( src[0] == '>' ) && ( searchFor[ searchCount ] == '>'))
+	if ( ( src[0] == QChar('>') ) && ( searchFor[ searchCount ] == QChar('>')))
         {
 	    ++src;
 	    scriptCode[ scriptCodeSize ] = 0;
@@ -289,7 +289,7 @@ void HTMLTokenizer::parseListing( HTMLString &src)
         else if ( searchCount > 0 )
         {
 	    QChar cmp = src[0];
-	    if ( cmp == searchFor[ searchCount ] )
+	    if ( cmp.lower() == searchFor[ searchCount ] )
 	    {
 	        searchBuffer[ searchCount ] = src[0];
 	        searchCount++;
@@ -307,10 +307,10 @@ void HTMLTokenizer::parseListing( HTMLString &src)
 	    }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( src[0] == '<' )
+        else if ( src[0] == QChar('<') )
         {
 	    searchCount = 1;
-	    searchBuffer[ 0 ] = '<';
+	    searchBuffer[ 0 ] = QChar('<');
 	    ++src;
         }
         else
@@ -420,10 +420,10 @@ void HTMLTokenizer::parseEntity(HTMLString &src, bool start)
 	    charEntity = false;
 	    return;
 	}
-	if( (src[0] >= 'A' && src[0] <= 'Z') || 
-	    (src[0] >= 'a' && src[0] <= 'z') || 
-	    (src[0] >= '0' && src[0] <= '9') ||
-	    src[0] == '#' ) 
+	if( (src[0] >= QChar('A') && src[0] <= QChar('Z')) || 
+	    (src[0] >= QChar('a') && src[0] <= QChar('z')) || 
+	    (src[0] >= QChar('0') && src[0] <= QChar('9')) ||
+	    src[0] == QChar('#') ) 
 	{
 	    entityBuffer[entityPos] = src[0];
 	    entityPos++;
@@ -635,7 +635,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		if( (((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) ||
 		    ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) ||
 		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
-		    src[0] == '-') && !tquote ) 
+		    src[0] == QChar('-')) && !tquote ) 
 		{
 		    *dest = src[0].lower();
 		    dest++;
@@ -895,7 +895,7 @@ void HTMLTokenizer::addPending()
 {
     if ( tag || select)     
     {
-    	*dest++ = ' ';
+    	*dest++ = QChar(' ');
     }
     else if ( textarea )
     {
@@ -1023,18 +1023,18 @@ void HTMLTokenizer::write( const char *str)
 	else if ( startTag )
 	{
 	    startTag = false;
-	    if (src[0] == '/') 
+	    if (src[0] == QChar('/')) 
 	    {
 		// Start of an End-Tag 
 		if (pending == LFPending)
 		    pending = NonePending; // Ignore leading LFs
 	    }
-	    else if ( ((src[0] >= 'a') && (src[0] <='z')) || 
-	    	      ((src[0] >= 'A') && (src[0] <='Z')) )	    	    
+	    else if ( ((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) || 
+	    	      ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) )	    	    
 	    {
 		// Start of a Start-Tag
 	    }
-	    else if ( src[0] == '!')
+	    else if ( src[0] == QChar('!'))
 	    {
 		// <!-- comment -->
 	    }
@@ -1044,7 +1044,7 @@ void HTMLTokenizer::write( const char *str)
 		// Add as is
 		if (pending)
 		    addPending();
-		*dest = '<';
+		*dest = QChar('<');
 		dest++;
 		*dest++ = src[0];
 		++src;
@@ -1196,7 +1196,7 @@ void HTMLTokenizer::appendToken( const QChar *t, int len )
     {
         *next++ = *t++;
     }
-    *next++ = '\0';
+    *next++ = QChar('\0');
 }
 
 
@@ -1379,7 +1379,7 @@ void StringTokenizer::tokenize( HTMLString str, const QChar *_separators )
     for ( ; str.length(); ++str )
     {
 	QChar *x = ustrchr( _separators, str[0] );
-	if ( str[0] == '\"' )
+	if ( str[0] == QChar('\"') )
 	    quoted = !quoted;
 	else if ( x && !quoted )
 	    *end++ = 0;
