@@ -1,8 +1,0 @@
-[Desktop Entry]
-Icon=
-InitialPreference=8
-Name=CRAM-MD5 Authentication
-Name[es]=Autenticación CRAM-MD5
-ServiceTypes=KSASL/Module
-Type=Service
-X-KDE-Library=ksasl_auth_cram
