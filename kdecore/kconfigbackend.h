@@ -93,8 +93,15 @@ public:
    */
   void changeFileName(const QString &_fileName, 
 		      bool _useKderc) 
-    { fileName = _fileName; useKderc = _useKderc; }
-  
+      { fileName = _fileName; useKderc = _useKderc; }
+
+  /**
+   * Retrieve the state of the app-config object.
+   *
+   * @see KConfig::getConfigState
+   */
+  virtual KConfigBase::ConfigState getConfigState() const { return KConfig::NoAccess; }
+
 protected:
   KConfigBase *pConfig;
 
@@ -181,6 +188,13 @@ protected:
    *         files. 
    */
   bool writeConfigFile(QFile& rFile, bool bGlobal = false, bool bMerge = true);
+
+  /**
+   * Retrieve the state of the app-config object.
+   *
+   * @see KConfig::getConfigState
+   */
+  virtual KConfigBase::ConfigState getConfigState() const;
 };
 
 #endif

@@ -174,7 +174,7 @@ protected:
    * set to QString::null.
    */
   KEntryMap aEntryMap;
-
+    
 private:
   /**
    * indicates whether the internal data cache is full or empty.

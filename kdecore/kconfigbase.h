@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.29  1999/06/18 16:16:32  porten
+// made the ';' vs. ',' choice at consistent at least until we have a final solution.
+//
 // Revision 1.28  1999/06/08 22:03:55  pbrown
 // I'm now using the handy configuration checks HAVE_STRFMON and
 // HAVE_MONETARY_H to insure no compilation problems.
@@ -775,6 +778,27 @@ public:
    * @see #parseConfigFiles 
    */
   virtual void reparseConfiguration(void) = 0;
+
+  /**
+   * Possible return values for getConfigState().
+   *
+   * @see #getConfigState
+   */
+  enum ConfigState { NoAccess, ReadOnly, ReadWrite };
+
+  /**
+   * Retrieve the state of the app-config object.
+   *
+   * Possible return values
+   * are NoAccess (the application-specific config file could not be
+   * opened neither read-write nor read-only), ReadOnly (the
+   * application-specific config file is opened read-only, but not
+   * read-write) and ReadWrite (the application-specific config
+   * file is opened read-write).
+   *
+   * @see #ConfigState
+   */
+  ConfigState getConfigState() const;
 
 protected:
   /**

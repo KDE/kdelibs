@@ -961,7 +961,11 @@ void KConfigBase::sync()
   backEnd->sync(true);
   if (bDirty)
     rollback();
-}  
+}
+
+KConfigBase::ConfigState KConfigBase::getConfigState() const {
+    return backEnd->getConfigState();
+}
 
 #include "kconfigbase.moc"
 

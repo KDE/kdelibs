@@ -125,6 +125,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
     
     if (!fileName.isEmpty()) {
+
 	QStringList list = KGlobal::dirs()->
 	    findAllResources("config", fileName);
 
@@ -141,6 +142,25 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
     
     return true;
+}
+
+KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
+{
+    if (fileName.isEmpty())
+	return KConfigBase::NoAccess;
+
+    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
+    // Can we allow the write? We can, if the program
+    // doesn't run SUID. But if it runs SUID, we must
+    // check if the user would be allowed to write if
+    // it wasn't SUID.
+    if (checkAccess(aLocalFileName, W_OK|R_OK))
+	return KConfigBase::ReadWrite;
+    else 
+	if (checkAccess(aLocalFileName, R_OK))
+	    return KConfigBase::ReadOnly;
+    
+    return KConfigBase::NoAccess;
 }
 
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
@@ -236,22 +256,6 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.close();
     }
   }
-  /*
-    // If we could not write to the local app-specific config file,
-    // we can try the global app-specific one. This will only work
-    // as root, but is worth a try.
-    if (!bLocalGood) {
-    // Can we allow the write? (see above)
-    if (checkAccess( aGlobalFileName, W_OK )) {
-    // is it writable?
-    QFile aConfigFile( aGlobalFileName );
-    aConfigFile.open( IO_ReadWrite );
-    bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
-    bLocalGood = true;
-    aConfigFile.close();
-    }
-    }
-  */
 
   // only write out entries to the kderc file if there are any
   // entries marked global (indicated by bEntriesLeft) and
