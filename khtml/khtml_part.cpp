@@ -978,7 +978,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
       KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
-      dlg->addError(i18n("<b>Error</b>: %2: %1").arg(msg.qstring())).arg(filename);
+      dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
   }
 
