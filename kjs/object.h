@@ -348,7 +348,7 @@ namespace KJS {
      * @return Result of the function call.
      */
     KJSO executeCall(const KJSO &thisV, const List *args);
-    KJSO executeCall(const KJSO &thisV, const List *args, const List *extraScope);
+    KJSO executeCall(const KJSO &thisV, const List *args, const List *extraScope) const;
 
     /**
      * Set this object's constructor.

@@ -330,6 +330,9 @@ namespace KJS {
     bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
 		  bool onlyCheckSyntax = false);
     bool call(Imp *scope, const UString &func, const List &args);
+    bool call(const KJSO &func, const KJSO &thisV,
+	      const List &args, const List &extraScope);
+
   public:
     ProgramNode *progNode() const { return stack->progNode; }
     void setProgNode(ProgramNode *p) { stack->progNode = p; }

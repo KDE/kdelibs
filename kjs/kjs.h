@@ -117,6 +117,8 @@ public:
   bool call(const KJS::UString &func, const KJS::List &args);
   bool call(const KJS::KJSO &scope, const KJS::UString &func,
 	    const KJS::List &args);
+  bool call(const KJS::KJSO &func, const KJS::KJSO &thisV,
+	    const KJS::List &args, const KJS::List &extraScope );
   /**
    * Clear the interpreter's memory. Otherwise, function declarations
    * and global variables will be remembered after each invokation of

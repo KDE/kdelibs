@@ -96,6 +96,12 @@ bool KJScript::call(const KJSO &scope, const KJS::UString &func,
   return rep->call(scope.imp(), func, args);
 }
 
+bool KJScript::call(const KJS::KJSO &func, const KJSO &thisV,
+		    const KJS::List &args, const KJS::List &extraScope)
+{
+  return rep->call(func, thisV, args, extraScope);
+}
+
 void KJScript::clear()
 {
   rep->clear();

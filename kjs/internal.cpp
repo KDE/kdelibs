@@ -737,7 +737,27 @@ bool KJScriptImp::call(Imp *scope, const UString &func, const List &args)
       return false;
   }
   ConstructorImp *ctor = static_cast<ConstructorImp*>(v.imp());
+  running++;
+  recursion++;
   ctor->executeCall(scope, &args);
+  recursion--;
+  running--;
+  return !hadException();
+}
+
+bool KJScriptImp::call(const KJSO &func, const KJSO &thisV,
+		       const List &args, const List &extraScope)
+{
+  init();
+  if(!func.implementsCall())
+    return false;
+
+  running++;
+  recursion++;
+  func.executeCall(thisV, &args, &extraScope);
+  recursion--;
+  running--;
+
   return !hadException();
 }
 

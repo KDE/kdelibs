@@ -281,7 +281,7 @@ KJSO KJSO::executeCall(const KJSO &thisV, const List *args)
   return (static_cast<FunctionImp*>(rep))->executeCall(thisV.imp(), args);
 }
 
-KJSO KJSO::executeCall(const KJSO &thisV, const List *args, const List *extraScope)
+KJSO KJSO::executeCall(const KJSO &thisV, const List *args, const List *extraScope) const
 {
   assert(rep);
   assert(implementsCall());
@@ -951,7 +951,7 @@ void ObjectImp::mark(Imp*)
 HostImp::HostImp()
 {
     setPrototype(Global::current().objectPrototype());
-    //printf("HostImp::HostImp() %p\n",this); 
+    //printf("HostImp::HostImp() %p\n",this);
 }
 
 HostImp::~HostImp() { }
