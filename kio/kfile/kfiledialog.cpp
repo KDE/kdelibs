@@ -40,6 +40,7 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qwhatsthis.h>
+#include <qfiledialog.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -1405,12 +1406,17 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
+#ifdef Q_WS_WIN
+    return QFileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory", 
+                                             caption, true, true);
+#else
     KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
     if ( url.isValid() )
         return url.path();
 
     return QString::null;
+#endif
 }
 
 KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,

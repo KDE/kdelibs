@@ -847,6 +847,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QHBox *box = new QHBox(d->m_frame);
     l = new QLabel(mimeComment, box );
 
+#ifdef Q_WS_X11
+    //TODO: wrap for win32 or mac?
     QPushButton *button = new QPushButton(box);
 
     QIconSet iconSet = SmallIconSet(QString::fromLatin1("configure"));
@@ -859,6 +861,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     if (!kapp->authorizeKAction("editfiletype"))
        button->hide();
+#endif
 
     grid->addWidget(box, curRow++, 2);
   }
@@ -1020,11 +1023,14 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 
 void KFilePropsPlugin::slotEditFileType()
 {
+#ifdef Q_WS_X11
+    //TODO: wrap for win32 or mac?
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
                     + " " + KProcess::quote(d->mimeType),
                     keditfiletype, keditfiletype /*unused*/);
+#endif
 }
 
 void KFilePropsPlugin::slotIconChanged()

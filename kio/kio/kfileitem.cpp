@@ -698,10 +698,13 @@ QString KFileItem::getToolTipText(int maxcount)
            KIO::convertSize( size() ) + end;
 
   tip += start + i18n("Modified:") + mid +
-         timeString( KIO::UDS_MODIFICATION_TIME) + end +
-         start + i18n("Owner:") + mid + user() + " - " + group() + end +
+         timeString( KIO::UDS_MODIFICATION_TIME) + end
+#ifndef Q_WS_WIN //TODO: show win32-specific permissions
+         +start + i18n("Owner:") + mid + user() + " - " + group() + end +
          start + i18n("Permissions:") + mid +
-         parsePermissions(m_permissions) + end;
+         parsePermissions(m_permissions) + end
+#endif
+				 ;
 
   if (info.isValid() && !info.isEmpty() )
   {
@@ -733,8 +736,8 @@ QString KFileItem::getToolTipText(int maxcount)
 
       }
     }
-    tip += "</table>";
   }
+  tip += "</table>";
 
   //kdDebug() << "making this the tool tip rich text:\n";
   //kdDebug() << tip << endl;
