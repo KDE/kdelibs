@@ -18,6 +18,7 @@ Name[sk]=X PixMap obrázok
 Name[sr]=X PixMap slika
 Name[sv]=X pixmapp-bild
 Name[tr]=X Resim Dosyası
+Name[wa]=Imådje XPM
 Read=true
 Write=true
 Suffices=xpm,XPM

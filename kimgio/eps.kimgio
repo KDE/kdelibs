@@ -19,6 +19,7 @@ Name[sk]=Zapúzdrený PostScript obrázok
 Name[sr]=Učaurene PostScript slika
 Name[sv]=Inkapslad Postscript-bild
 Name[tr]=Encapsulated PostScript Görüntüsü
+Name[wa]=Imådje PostScript ecapsulêye
 Read=true
 Write=true
 Suffices=eps,EPS,epsi,EPSI,epsf,EPSF

@@ -18,6 +18,7 @@ Name[sk]=Portable Graymap obrázok
 Name[sr]=Portabl crno bela slika
 Name[sv]=Flyttbart gråskalefilformat
 Name[tr]=Taşınabilir Gri Resim Dosyası
+Name[wa]=Imådje PGM
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

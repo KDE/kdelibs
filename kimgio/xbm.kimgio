@@ -18,6 +18,7 @@ Name[sk]=X BitMap obrázok
 Name[sr]=X BitMap slika
 Name[sv]=X bitmapp-bild
 Name[tr]=X BitMap Resim Dosyası
+Name[wa]=Imådje XBM
 Read=true
 Write=true
 Suffices=xbm,XBM

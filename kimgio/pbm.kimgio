@@ -16,6 +16,7 @@ Name[sk]=Portable Bitmap obrázok
 Name[sr]=Portabl bitmapirana slika
 Name[sv]=Flyttbart bitmappsformat
 Name[tr]=Taşınabilir Bit Eşlem Resim Dosyası
+Name[wa]=Imådje PBM
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW
