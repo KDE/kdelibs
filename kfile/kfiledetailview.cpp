@@ -299,7 +299,9 @@ void KFileDetailView::slotSortingChanged( int col )
 	break;
     }
 
-    const KFileViewItem *current = ((KFileListViewItem*)currentItem())->fileInfo();
+    const KFileViewItem *current = 0L;
+    if ( currentItem() )
+        current = ((KFileListViewItem*)currentItem())->fileInfo();
 
     if ( sortSpec != -1 )
 	KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
