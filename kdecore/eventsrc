@@ -75,6 +75,11 @@ Comment[zh_CN]=KDE 系统通知
 Comment[zh_TW]=KDE 系統通知
 Comment[zu]=Izaziso Zesistimu ye-KDE
 
+[Trash: emptied]
+Name=Trash: emptied
+Comment=The trash has been emptied
+default_presentation=1
+
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
 Name[af]=Teksvoltooiïng: rotering
