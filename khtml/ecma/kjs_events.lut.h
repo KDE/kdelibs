@@ -1,4 +1,4 @@
-/* Automatically generated from kjs_events.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
+/* Automatically generated from kjs_events.cpp using create_hash_table. DO NOT EDIT ! */
 
 namespace KJS {
 
@@ -36,15 +36,16 @@ const struct HashEntry DOMEventTableEntries[] = {
    { "type", DOMEvent::Type, DontDelete|ReadOnly, 0, 0 },
    { "target", DOMEvent::Target, DontDelete|ReadOnly, 0, &DOMEventTableEntries[9] },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "returnValue", DOMEvent::ReturnValue, DontDelete, 0, &DOMEventTableEntries[11] },
    { "srcElement", DOMEvent::SrcElement, DontDelete|ReadOnly, 0, 0 },
    { "eventPhase", DOMEvent::EventPhase, DontDelete|ReadOnly, 0, &DOMEventTableEntries[8] },
    { "bubbles", DOMEvent::Bubbles, DontDelete|ReadOnly, 0, 0 },
    { "cancelable", DOMEvent::Cancelable, DontDelete|ReadOnly, 0, &DOMEventTableEntries[10] },
-   { "timeStamp", DOMEvent::TimeStamp, DontDelete|ReadOnly, 0, 0 }
+   { "timeStamp", DOMEvent::TimeStamp, DontDelete|ReadOnly, 0, 0 },
+   { "cancelBubble", DOMEvent::CancelBubble, DontDelete, 0, 0 }
 };
 
-const struct HashTable DOMEventTable = { 2, 11, DOMEventTableEntries, 7 };
+const struct HashTable DOMEventTable = { 2, 12, DOMEventTableEntries, 7 };
 
 }; // namespace
 

@@ -185,6 +185,8 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
   bubbles	DOMEvent::Bubbles	DontDelete|ReadOnly
   cancelable	DOMEvent::Cancelable	DontDelete|ReadOnly
   timeStamp	DOMEvent::TimeStamp	DontDelete|ReadOnly
+  returnValue   DOMEvent::ReturnValue   DontDelete
+  cancelBubble  DOMEvent::CancelBubble  DontDelete
 @end
 @begin DOMEventProtoTable 3
   stopPropagation 	DOMEvent::StopPropagation	DontDelete|Function 0
@@ -225,6 +227,7 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
   case EventPhase:
     return Number((unsigned int)event.eventPhase());
   case Bubbles:
+  case CancelBubble: // MSIE extension. not sure if readable. and returnValue ?
     return Boolean(event.bubbles());
   case Cancelable:
     return Boolean(event.cancelable());
@@ -233,6 +236,29 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
   default:
     kdWarning() << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
+  }
+}
+
+void DOMEvent::tryPut(ExecState *exec, const UString &propertyName,
+                      const Value& value, int attr = None)
+{
+  DOMObjectLookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
+                                          &DOMEventTable, this);
+}
+
+void DOMEvent::putValue(ExecState *exec, int token, const Value& value, int)
+{
+  switch (token) {
+  case ReturnValue:
+    if (value.toBoolean(exec))
+      event.preventDefault();
+    break;
+  case CancelBubble:
+    if (value.toBoolean(exec))
+      event.stopPropagation();
+    break;
+  default:
+    break;
   }
 }
 
