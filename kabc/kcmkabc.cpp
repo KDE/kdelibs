@@ -40,35 +40,29 @@
 #include "resourcefactory.h"
 #include "stdaddressbook.h"
 
-class ConfigViewItem : public QCheckListItem
-{
-public:
-  ConfigViewItem( QListView *parent, QString name, QString type,
-      QString identifier = QString::null );
-
-  void setStandard( bool value )
-  {
-    setText( 2, ( value ? i18n( "yes" ) : "" ) );
-    isStandard = value;
-  }
-
-  bool standard() { return isStandard; }
-
-  QString key;
-  QString type;
-  bool readOnly;
-
-private:
-  bool isStandard;
-};
-
 ConfigViewItem::ConfigViewItem( QListView *parent, QString name,
     QString type, QString )
-  : QCheckListItem( parent, name, CheckBox )
+  : QObject( 0, "" ), QCheckListItem( parent, name, CheckBox )
 {
   isStandard = false;
   readOnly = false;
   setText( 1, type );
+}
+
+void ConfigViewItem::setStandard( bool value )
+{
+  setText( 2, ( value ? i18n( "yes" ) : "" ) );
+  isStandard = value;
+}
+
+bool ConfigViewItem::standard()
+{
+  return isStandard;
+}
+
+void ConfigViewItem::stateChange( bool )
+{
+  emit changed( true );
 }
 
 ConfigPage::ConfigPage( QWidget *parent, const char *name )
@@ -142,6 +136,7 @@ void ConfigPage::load()
     ConfigViewItem *item = new ConfigViewItem( mListView,
     config->readEntry( "ResourceName" ),
     config->readEntry( "ResourceType" ) );
+    connect( item, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
 
     item->key = (*it);
     item->type = config->readEntry( "ResourceType" );
@@ -236,6 +231,7 @@ void ConfigPage::defaults()
   item->type = type;
   item->setStandard(true);
   item->setOn( true );
+  connect( item, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
 
   mLastItem = item;
 
@@ -272,6 +268,7 @@ void ConfigPage::slotAdd()
     item->type = type;
     item->readOnly = dlg.readOnly();
     item->setOn( true );
+    connect( item, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
 
     mLastItem = item;
 

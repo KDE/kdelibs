@@ -85,4 +85,30 @@ private:
   ConfigPage *mConfigPage;
 };
 
+class ConfigViewItem : public QObject, public QCheckListItem
+{
+  Q_OBJECT
+
+public:
+  ConfigViewItem( QListView *parent, QString name, QString type,
+      QString identifier = QString::null );
+
+  void setStandard( bool value );
+  bool standard();
+
+  QString key;
+  QString type;
+  bool readOnly;
+
+signals:
+  void changed( bool );
+
+protected:
+  void stateChange( bool value );
+
+private:
+  bool isStandard;
+};
+
+
 #endif
