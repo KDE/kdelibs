@@ -99,6 +99,41 @@ public:
     */
     bool isTabBarHidden() const;
 
+    /*!
+      Reimplemented for internal reasons.
+     */
+    virtual void insertTab( QWidget *, const QString &, int index = -1 );
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    virtual void insertTab( QWidget *, QTab *, int index = -1 );
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    void changeTab( QWidget *, const QString & );
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    void changeTab( QWidget *child, const QIconSet& iconset, const QString &label );
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    QString label( int ) const;
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    QString tabLabel( QWidget * ) const;
+
+    /*!
+      Reimplemented for internal reasons.
+    */
+    void setTabLabel( QWidget *, const QString & );
+
 public slots:
     /*!
       Move a widget's tab from first to second specified index and emit
@@ -144,15 +179,10 @@ public slots:
     void setTabCloseActivatePrevious( bool previous );
 
     /*!
-      sets the title of the tab holding widget sender then
-      resizes tabs to fit to tab bar width if automaticResizeTabs
-      is enabled.
-    */
-    void setTabLabel( QWidget* sender, const QString &title );
+      If \a enable is true, tabs will be resized to the width of the tab bar.
 
-    /*!
-      If \a enable is true, a call to setTitle() will also resize the
-      tabs to the width of the tab bar.
+      Does not work reliable with "QTabWidget* foo=new KTabWidget()" and if
+      you change tabs via the tabbar or by accessing tabs directly.
       @since 3.4
     */
     void setAutomaticResizeTabs( bool enable );
@@ -247,6 +277,8 @@ protected slots:
 
 private:
     bool isEmptyTabbarSpace( const QPoint & )  const;
+    void resizeTabs( int changedTabIndex = -1 );
+    void updateTab( int index );
 
     KTabWidgetPrivate *d;
 };
