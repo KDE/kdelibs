@@ -43,8 +43,8 @@ khtmlw has been replaced with khtml.
   is called knumlineedit.h, because it contains one additional class
   KFloatLineEdit. If you were using the former KIntLineEdit
   from keditcl.h or kintlineedit.h, no changes should be necessary
-  at all, althouth the (QWidget *parent) paramater is now required.
-  It is recommended to switch to the new include file, though.
+  at all, althouth the (QWidget *parent) parameter is now required.
+  It is necessary to switch to the new include file, though.
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale

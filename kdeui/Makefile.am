@@ -40,7 +40,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
-		kintlineedit.h qxembed.h knumvalidator.h knumlineedit.h \
+		qxembed.h knumvalidator.h knumlineedit.h \
 		kdialog.h
 
 # the order of the sources isn't randomly (at least not completly).
