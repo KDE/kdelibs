@@ -32,7 +32,7 @@ int main( int argc, char** argv )
 {
     KApplication app(argc, argv, "KSpell2Test");
 
-    Broker *broker = Broker::openBroker();
+    Broker::Ptr broker = Broker::openBroker();
 
     kdDebug()<< "Clients are "   << broker->clients()   << endl;
     kdDebug()<< "Languages are " << broker->languages() << endl;
