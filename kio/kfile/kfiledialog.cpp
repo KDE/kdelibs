@@ -301,60 +301,60 @@ void KFileDialog::slotOk()
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
-	    if ( !items || items->isEmpty() )
-	        return;
+            if ( !items || items->isEmpty() )
+                return;
 
-	    // weird case: the location edit is empty, but there are
-	    // highlighted files
-	    else {
+            // weird case: the location edit is empty, but there are
+            // highlighted files
+            else {
 
-		bool multi = (mode() & KFile::Files) != 0;
-	        KFileItemListIterator it( *items );
-		QString endQuote = QString::fromLatin1("\" ");
-		QString name, files;
-		while ( it.current() ) {
-		    name = (*it)->name();
-		    if ( multi ) {
-		        name.prepend( '"' );
-			name.append( endQuote );
-		    }
+                bool multi = (mode() & KFile::Files) != 0;
+                KFileItemListIterator it( *items );
+                QString endQuote = QString::fromLatin1("\" ");
+                QString name, files;
+                while ( it.current() ) {
+                    name = (*it)->name();
+                    if ( multi ) {
+                        name.prepend( '"' );
+                        name.append( endQuote );
+                    }
 
-		    files.append( name );
-		    ++it;
-		}
-		locationEdit->setEditText( files );
-		locationEdit->lineEdit()->setEdited( false );
-		return;
-	    }
-	}
+                    files.append( name );
+                    ++it;
+                }
+                locationEdit->setEditText( files );
+                locationEdit->lineEdit()->setEdited( false );
+                return;
+            }
+        }
     }
 
     bool dirOnly = ops->dirOnlyMode();
 
     // we can use our kfileitems, no need to parse anything
     if ( items && !locationEdit->lineEdit()->edited() &&
-	 !(items->isEmpty() && !dirOnly) ) {
+         !(items->isEmpty() && !dirOnly) ) {
 
-	d->urlList.clear();
-	d->filenames = QString::null;
+        d->urlList.clear();
+        d->filenames = QString::null;
 
-	if ( dirOnly ) {
-	    d->url = ops->url();
-	}
-	else {
-	    if ( !(mode() & KFile::Files) ) {// single selection
-		d->url = items->getFirst()->url();
-	    }
+        if ( dirOnly ) {
+            d->url = ops->url();
+        }
+        else {
+            if ( !(mode() & KFile::Files) ) {// single selection
+                d->url = items->getFirst()->url();
+            }
 
-	    else { // multi (dirs and/or files)
-		d->url = ops->url();
-		KFileItemListIterator it( *items );
-		while ( it.current() ) {
-		    d->urlList.append( (*it)->url() );
-		    ++it;
-		}
-	    }
-	}
+            else { // multi (dirs and/or files)
+                d->url = ops->url();
+                KFileItemListIterator it( *items );
+                while ( it.current() ) {
+                    d->urlList.append( (*it)->url() );
+                    ++it;
+                }
+            }
+        }
 
         if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
              !d->url.isLocalFile() ) {
@@ -365,25 +365,25 @@ void KFileDialog::slotOk()
             return;
         }
 
-	accept();
-	return;
+        accept();
+        return;
     }
 
 
     KURL selectedURL;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
-	if ( locationEdit->currentText().contains( '/' )) {
+        if ( locationEdit->currentText().contains( '/' )) {
 
-	    // relative path? -> prepend the current directory
-	    KURL u( ops->url(), locationEdit->currentText() );
-	    if ( !u.isMalformed() )
-		selectedURL = u;
-	    else
-		selectedURL = ops->url();
-	}
-	else // simple filename -> just use the current URL
-	    selectedURL = ops->url();
+            // relative path? -> prepend the current directory
+            KURL u( ops->url(), locationEdit->currentText() );
+            if ( !u.isMalformed() )
+                selectedURL = u;
+            else
+                selectedURL = ops->url();
+        }
+        else // simple filename -> just use the current URL
+            selectedURL = ops->url();
     }
 
     else {
@@ -1284,8 +1284,8 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
         QString complete = ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
-	    if(!base.endsWith("/"))
-	        base.append('/');
+            if(!base.endsWith("/"))
+                base.append('/');
             QString newText = base + complete;
             QString fileProt = QString::fromLatin1( "file:" );
 
@@ -1536,17 +1536,17 @@ QStringList KFileDialog::selectedFiles() const
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files ) {
             KURL::List urls = parseSelectedURLs();
-	    QValueListConstIterator<KURL> it = urls.begin();
-	    while ( it != urls.end() ) {
-		if ( (*it).isLocalFile() )
-		    list.append( (*it).path() );
-		++it;
-	    }
-	}
+            QValueListConstIterator<KURL> it = urls.begin();
+            while ( it != urls.end() ) {
+                if ( (*it).isLocalFile() )
+                    list.append( (*it).path() );
+                ++it;
+            }
+        }
 
         else { // single-selection mode
-	    if ( d->url.isLocalFile() )
-		list.append( d->url.path() );
+            if ( d->url.isLocalFile() )
+                list.append( d->url.path() );
         }
     }
 
