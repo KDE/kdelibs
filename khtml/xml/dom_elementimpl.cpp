@@ -228,6 +228,9 @@ bool AttrImpl::deleteMe()
 // DOM Section 1.1.1
 bool AttrImpl::childAllowed( NodeImpl *newChild )
 {
+    if(!newChild)
+	return false;
+	
     switch (newChild->nodeType()) {
 	case Node::TEXT_NODE:
 	case Node::ENTITY_REFERENCE_NODE:
