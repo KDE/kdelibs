@@ -315,6 +315,9 @@ int Lexer::lex()
       } else if (isOctalDigit(current)) {
 	record8(current);
 	state = InOctal;
+      } else if (isDecimalDigit(current)) {
+        record8(current);
+        state = InDecimal;
       } else {
 	setDone(Number);
       }
@@ -329,6 +332,10 @@ int Lexer::lex()
     case InOctal:
       if (isOctalDigit(current)) {
 	record8(current);
+      }
+      else if (isDecimalDigit(current)) {
+        record8(current);
+        state = InDecimal;
       } else
 	setDone(Octal);
       break;
