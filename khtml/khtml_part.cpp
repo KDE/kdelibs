@@ -3240,7 +3240,9 @@ QString KHTMLPart::selectedText() const
             text += "\n";
             hasNewLine = true;
             break;
-
+          case ID_IMG:
+	    text += static_cast<HTMLImageElementImpl*>(n.handle())->altText().string();
+	    break;
           case ID_TD:
 	    break;
           case ID_TH:
