@@ -38,16 +38,25 @@
 #include <qpushbutton.h>
 #include <kapplication.h>
 
+class KFileSharePropsPlugin::Private
+{
+public:
+    QVBox *m_vBox;
+};
+
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropsDlgPlugin( _props )
 {
-    QVBox *vBox = _props->addVBoxPage( i18n("Local Net Sharing") );
+    d = new Private;
+    d->m_vBox = _props->addVBoxPage( i18n("Local Net Sharing") );
     m_widget = 0L;
-    init( vBox );
+    init();
 }
 
 KFileSharePropsPlugin::~KFileSharePropsPlugin()
-{}
+{
+    delete d;
+}
 
 bool KFileSharePropsPlugin::supports( const KFileItemList& items )
 {
@@ -61,7 +70,7 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
     return true;
 }
 
-void KFileSharePropsPlugin::init( QVBox *parentVBox )
+void KFileSharePropsPlugin::init()
 {
     // We store the main widget, so that it's possible (later) to call init()
     // more than once, to update the page if something changed (e.g. after
@@ -69,7 +78,7 @@ void KFileSharePropsPlugin::init( QVBox *parentVBox )
     delete m_widget;
     m_rbShare = 0L;
     m_rbUnShare = 0L;
-    m_widget = new QWidget( parentVBox );
+    m_widget = new QWidget( d->m_vBox );
     QVBoxLayout * vbox = new QVBoxLayout( m_widget );
 
     switch ( KFileShare::authorization() ) {
@@ -207,9 +216,14 @@ bool KFileSharePropsPlugin::setShared( const QString& path, bool shared )
     return KFileShare::setShared( path, shared );
 }
 
+QWidget* KFileSharePropsPlugin::page() const
+{
+    return d->m_vBox;
+}
+
+#include "kfilesharedlg.moc"
+
 //TODO: do we need to monitor /etc/security/fileshare.conf ?
 // if the user is added to the 'fileshare' group, we wouldn't be notified
 // Of course the config module can notify us.
 // TODO: listen to such notifications ;)
-
-#include "kfilesharedlg.moc"

@@ -45,17 +45,21 @@ public:
 
     static bool supports( const KFileItemList& items );
 
+    QWidget* page() const;
+
 protected slots:
     void slotConfigureFileSharing();
 
 private:
-    void init( QVBox *parentVBox );
+    void init();
     bool setShared( const QString&path, bool shared );
 
     QWidget *m_widget;
     QRadioButton *m_rbShare;
     QRadioButton *m_rbUnShare;
     QPushButton *m_pbConfig;
+    class Private;
+    Private *d;
 };
 
 #endif

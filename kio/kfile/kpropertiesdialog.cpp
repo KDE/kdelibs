@@ -267,19 +267,17 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 
 void KPropertiesDialog::showFileSharingPage()
 {
-  KPropsDlgPlugin *it;
-  int i=0;
+    KPropsDlgPlugin *it;
 
-  for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
+    for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
     {
-      if(dynamic_cast<KFileSharePropsPlugin*>(it))
-   {
-     showPage(i);
-     break;
-   }
-      i++;
+        KFileSharePropsPlugin* plugin = dynamic_cast<KFileSharePropsPlugin*>(it);
+        if ( plugin )
+        {
+            showPage( pageIndex( plugin->page() ) );
+            break;
+        }
     }
-
 }
 
 void KPropertiesDialog::slotStatResult( KIO::Job * job )
