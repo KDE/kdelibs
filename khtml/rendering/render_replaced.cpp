@@ -33,7 +33,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
    _tx += m_x;
    _ty += m_y;
 
-   if((_ty > _y + _h) || (_ty + m_height < _y)) return;
+//   if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
    if(m_printSpecial) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
    printReplaced(p, _tx, _ty);
@@ -53,13 +53,12 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
-
 void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 {
     if(!(m_widget && m_view)) return;
 
     m_view->addChild(m_widget, _tx, _ty);
-
+    	    
     if(!m_widget->isVisible())
         m_widget->show();
 }

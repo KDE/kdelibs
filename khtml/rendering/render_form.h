@@ -276,6 +276,8 @@ public:
     virtual void reset();
 
     virtual void setValue(const DOMString &value);
+    
+    virtual const char *renderName() const { return "RenderLineEdit"; }
 
 protected:
 

@@ -1436,7 +1436,7 @@ CSSSelector::CSSSelector(void)
 {
     attr = 0;
     match = None;
-    relation = Descendant;
+    relation = Child;
 }
 
 CSSSelector::~CSSSelector(void)
@@ -1449,8 +1449,8 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-    //printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\" relation = %d\n",
-    //	tag, attr, value.string().data(), (int)relation);
+//    printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\" relation = %d\n",
+//    	tag, attr, value.string().data(), (int)relation);
 }
 
 int CSSSelector::specificity()

@@ -103,8 +103,11 @@ RenderFlow::~RenderFlow()
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
+
     if(!isInline())
     {
+    	if(!layouted())
+    	    return;
 	_tx += m_x;
 	_ty += m_y;
     }
@@ -196,13 +199,15 @@ void RenderFlow::layout( bool deep )
     calcWidth();
     // ### does not give correct results for fixed width paragraphs with
     // floats for some reason
-    //if(oldWidth == m_width && layouted()) return;
+    if(oldWidth == m_width && layouted()) return;
 
-#ifdef DEBUG_LAYOUT
+//#ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::layout(%d) width=%d, layouted=%d\n", renderName(), deep, m_width, layouted());
-    if(containingBlock() != static_cast<RenderObject *>(this))
+    if(containingBlock() == static_cast<RenderObject *>(this))
     	printf("%s: containingBlock == this\n", renderName());
-#endif
+//#endif
+
+    printf("this=%x\n", this);
 
     if(m_width<=0) return;
     clearFloats();
@@ -212,6 +217,7 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
+    printf("childrenInline()=%d\n",childrenInline());
     if(childrenInline())
 	layoutInlineChildren();
     else
@@ -240,6 +246,21 @@ static int getIndent(RenderObject *child)
 
     Length marginLeft = child->style()->marginLeft();
     Length marginRight = child->style()->marginRight();
+    
+    // ### hack to make <td align=> work. maybe it should be done with
+    //	   css class selectors or something?
+    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell()) 
+    {
+    	if (child->containingBlock()->style()->textAlign()==RIGHT)
+    	{
+    	    marginLeft.type=Variable;
+    	}
+	else if (child->containingBlock()->style()->textAlign()==CENTER) 
+	{
+	    marginLeft.type=Variable;
+	    marginRight.type=Variable;
+	}
+    }
     if(marginLeft.type == Variable)
     {
 	if(marginRight.type == Variable)
@@ -281,6 +302,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
     int prevMargin = 0;
     while( child != 0 )
     {
+//    	printf("loop %x, %d, %d\n",child, child->isInline(),child->layouted());
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -351,6 +373,9 @@ bool RenderFlow::checkClear(RenderObject *child)
 
 void RenderFlow::layoutInlineChildren()
 {
+#ifdef DEBUG_LAYOUT
+    printf("layoutInlineChildren\n");
+#endif
     int toAdd = 0;
     m_height = 0;
 
@@ -879,7 +904,7 @@ void RenderFlow::close()
 	    m_height += paddingBottom();
 	calcMinMaxWidth();
     }
-    if(containingBlockWidth() < m_minWidth && m_parent)
+//    if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
 
 #ifdef DEBUG_LAYOUT
@@ -910,7 +935,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	xPos += paddingLeft();
 
     int margin = 0;
-
+    
     if(m_last && !m_last->isInline() && !m_last->isFloating())
     {
 	m_height += m_last->height();
@@ -923,7 +948,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	// put all inline children we have up to now in a anonymous block box
 	if(m_last)
 	{
-	    //printf("no inline child, moving previous inline children!\n");
+//	    printf("no inline child, moving previous inline children!\n");
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(BLOCK);
 	    RenderFlow *newBox = new RenderFlow(newStyle);
@@ -952,7 +977,7 @@ void RenderFlow::addChild(RenderObject *newChild)
     {
 	if(newChild->isInline() || newChild->isFloating())
 	{
-	    //printf("adding inline child to anonymous box\n");
+//	    printf("adding inline child to anonymous box\n");
 	    if(!haveAnonymousBox())
 	    {
 		//printf("creating anonymous box\n");
@@ -979,16 +1004,16 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    m_last->layout();
 	    m_height += m_last->height();
 	    setHaveAnonymousBox(false);
-	    printf("closing anonymous box\n");
+//	    printf("closing anonymous box\n");
 	}
     }
     else if(!newChild->isInline() && !newChild->isFloating())
 	m_childrenInline = false;
 
-    if(!newChild->isInline())
+    if(!newChild->isInline() && !newChild->isFloating())
     {
 	newChild->setParent(this);
-	//printf("new child's margin = %d\n", newChild->marginTop());
+//	printf("new child's margin = %d\n", newChild->marginTop());
 	//### see comment in layoutBlockChildren
 	if(checkClear(newChild)) margin = 0;
 	margin = MAX(margin, newChild->marginTop());
@@ -998,7 +1023,13 @@ void RenderFlow::addChild(RenderObject *newChild)
 	newChild->calcWidth();
 	newChild->setPos(xPos + getIndent(newChild), m_height);
     }
+    
+    if(newChild->isFloating())
+    {
+    	insertFloat(newChild);
+    }
 
+    setLayouted(false);
     RenderObject::addChild(newChild);
     // ### care about aligned stuff
 }

@@ -64,8 +64,9 @@ public:
     virtual bool deleteMe();
 
     virtual const char *renderName() const { return "RenderObject"; }
+    virtual void printTree(int indent=0) const;
 
-    void setParent(RenderObject *parent) { m_parent = parent; }
+    void setParent(RenderObject *parent) { m_containingBlock=0; m_parent = parent; }
     RenderObject *parent() const { return m_parent; }
 
     RenderObject *previousSibling() const { return m_previous; }

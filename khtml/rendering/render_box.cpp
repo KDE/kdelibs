@@ -277,18 +277,22 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    printf("positionelement::updateSize()\n");
-    int oldMin = m_minWidth;
-    setLayouted(false);
+//    printf("%s(RenderBox)::updateSize()\n", renderName());
+
+    int oldMin = m_minWidth;    
+    int oldMax = m_maxWidth;
+    setMinMaxKnown(false);    
     calcMinMaxWidth();
-    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin)
-    {
-    	//printf("parent id=%d\n",_parent->id());
+    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin || 
+    	m_maxWidth != oldMax)
+    {    	
+	setLayouted(false);
 	if(containingBlock() != this) containingBlock()->updateSize();
     }
     else if(!isInline() || isReplaced())
     {
 	int oldHeight = m_height;
+	setLayouted(false);
    	layout(true);	
 	if(m_height != oldHeight)
 	{
@@ -296,7 +300,8 @@ void RenderBox::updateSize()
 	} else {
 	    repaint();
 	}
-    }
+    } 
+    
 }
 
 void RenderBox::position(int x, int y, int, int, int width, bool)
@@ -338,7 +343,7 @@ short RenderBox::baselineOffset() const
     switch(vAlign())
     {
     case BASELINE:
-	printf("aligned to baseline\n");
+//	printf("aligned to baseline\n");
 	return m_height;
     case SUB:
 	// ###

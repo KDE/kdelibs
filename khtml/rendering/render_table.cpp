@@ -1303,6 +1303,9 @@ void RenderTable::setAvailableWidth(int w)
 void RenderTable::print( QPainter *p, int _x, int _y,
 				  int _w, int _h, int _tx, int _ty)
 {
+
+    if(!layouted()) return;
+    
     _tx += xPos();
     _ty += yPos();
 
@@ -1315,8 +1318,6 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
      printf("RenderTable::print(2) %d/%d (%d/%d)\n", _tx, _ty, _x, _y);
 #endif
-
-//    if(!layouted()) return;
 
     printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
@@ -1374,7 +1375,7 @@ void RenderTable::updateSize()
 //    printf("RenderTable::updateSize()\n");
     if (parsing())
     {
-	if (!updateTimer.isNull() && updateTimer.elapsed()<200)
+	if (!updateTimer.isNull() && updateTimer.elapsed()<300)
 	{
 	    return;
 	}
@@ -1593,12 +1594,15 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     printf("%s(RenderTableCell)::print() w/h = (%d/%d)\n", renderName(), width(), height());
 #endif
 
+    if (!layouted())
+    	return;
+
     _tx += m_x;
     _ty += m_y + cellTopExtra();
 
     // check if we need to do anything at all...
-    if(!isInline() && ((_ty-_topExtra > _y + _h)
-    	|| (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
+    if((_ty-_topExtra > _y + _h)
+    	|| (_ty + m_height+_topExtra+_bottomExtra < _y)) return;
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }

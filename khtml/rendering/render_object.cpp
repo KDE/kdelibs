@@ -294,3 +294,16 @@ bool RenderObject::isSpecial() const
 {
     return (!isInline() || isReplaced() || isBR());
 }
+
+void RenderObject::printTree(int indent) const
+{
+    for (int i=0; i<indent; i++) printf(" ");	
+    printf("%s: %x il=%d fl=%d rp=%d laytd=%d\n",
+	renderName(),this,isInline(),isFloating(),isReplaced(),layouted());
+    RenderObject *child = firstChild();
+    while( child != 0 )
+    {    	
+	child->printTree(indent+2);
+	child = child->nextSibling();
+    }
+}

@@ -62,9 +62,11 @@ void RenderImage::setPixmap( const QPixmap &p )
 	// the updateSize() call should trigger a repaint too
 	if(m_parent) m_parent->updateSize();	
     }
-
-    pixmap = p;
-    repaintObject(this, 0, 0);
+    else
+    {
+    	pixmap = p;
+    	repaintObject(this, 0, 0);
+    }
 }
 
 void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
