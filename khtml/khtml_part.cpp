@@ -2571,6 +2571,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
+
+      connect( child->m_extension, SIGNAL( goHistory( int ) ),
+               d->m_extension, SIGNAL( goHistory( int ) ) );
+
     }
 
   }
