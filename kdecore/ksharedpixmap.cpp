@@ -11,7 +11,7 @@
  *
  * Shared pixmaps for KDE.
  *
- * $Id: $
+ * $Id$
  *
  * 1 Oct 99 Geert Jansen:      Initial implementation.
  */
@@ -115,15 +115,13 @@ KSharedPixmap::~KSharedPixmap()
 {
     if (mRefs.isEmpty())
 	return;
-    if (!mKeep)
-	unpublish();
+    unpublish();
 }
 
 
 /* private */
 void KSharedPixmap::init()
 {
-    mKeep = false;
     mProp = "KDE_SHARED_PIXMAPS";
 }
 
@@ -209,7 +207,6 @@ bool KSharedPixmap::copy(QString id, QRect rect)
 void KSharedPixmap::setKeepResources(bool keep)
 {
     XSetCloseDownMode(qt_xdisplay(), keep ? RetainTemporary : DestroyAll);
-    mKeep = keep;
 }
 
 

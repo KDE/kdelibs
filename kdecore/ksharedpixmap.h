@@ -19,28 +19,42 @@
 #include <kpixmap.h>
 
 /**
- * KSharedPixmap: A class for shared pixmap handling.
+ * Implements shared X pixmaps.
  *
  * A shared pixmap is a pixmap that resides only once in the X server.
  * Every shared pixmap is referenced by an ID string, which has to be
  * globally unique (unique among all X clients).
  *
  * You make a pixmap accessible to other X client by publishing it, using
- * KSharedPixmap::publish(). 
+ * publish().
  *
- * Normally, if an X client exists, all its resources (including pixmaps) 
- * are deleted. This might give undesireable effects in clients using that 
- * pixmap. If you want to keep the  pixmaps around, use 
- * KSharedPixmap::setKeepResources(). This will keep all this client's X 
- * recources in the server until it resets so don't use without thought.
+ * Normally, if an X client exits, all its resources (including pixmaps) 
+ * are deleted. This might give undesireable effects when other clients are 
+ * using that pixmap. If you want to keep the  pixmaps around, use 
+ * setKeepResources(). This will keep _all_ this client's X recources in 
+ * the server until it resets so don't use without thought.
  *
  * Even when you unpublish() a shared pixmap first, you should take special 
  * caution when deleting it. Clients might still have the handle around and 
  * try to access it. You're on you own here, KSharedPixmap doesn't provide
  * you with some kind of synchronisation mechanism.
  *
+ *  A simple example: share a pixmap.
+ * <pre>
+ *   KSharedPixmap pm;
+ *   pm.load("file.xpm");
+ *   pm.publish("pixmap_id");
+ * </pre>
+ *
+ * Get a shared pixmap:
+ * <pre>
+ *   KSharedPixmap pm("pixmap_id");
+ *   if (!pm.isNull())
+ *	use_pixmap();
+ * </pre>
+ *
  * @author Geert Jansen <g.t.jansen@stud.tue.nl>
- * @version $Id: $
+ * @version $Id$
  *
  */
 class KSharedPixmap: public KPixmap
@@ -53,7 +67,8 @@ public:
     KSharedPixmap();
 
     /**
-     * Constructs a pixmap from a shared pixmap using an efficient
+     * Constructs a pixmap from a shared pixmap reference. This pixmap will
+     * be a copy of the shared pixmap. The copy is done using an efficient
      * bit block transfer.
      *
      * @param id The shared pixmap id string.
@@ -67,8 +82,7 @@ public:
     KSharedPixmap(const QPixmap &pm);
 
     /**
-     * Destroys the pixmap. If it is published and setKeepResources()
-     * is set to false, this will unpublish the pixmap too.
+     * Destroys and unpublishes the pixmap.
      */
     ~KSharedPixmap();
 
@@ -77,7 +91,7 @@ public:
      * can use a non default value if you want a "privately shared" 
      * pixmap. The default is "KDE_SHARED_PIXMAPS".
      *
-     * @parm prop The name of the X property to use.
+     * @param prop The name of the X property to use.
      */
     void setProp(QString prop);
 
@@ -98,7 +112,7 @@ public:
     /**
      * Unpublish the pixmap.
      *
-     * @parm id A published id string. Use the default value to
+     * @param id A published id string. Use the default value to
      * unpublish all references.
      * @return True if successfull, False otherwise.
      */
@@ -117,15 +131,16 @@ public:
     /**
      * Set the X11 closedown mode.
      *
-     * This call uses XSetCloseDownMode to set the closedown mode of the X
-     * server. If set to true, all resources are kept in the X server until
-     * it resets. Normally they are deleted.
-     * IMPORTANT: If you want to use this, dynamically allocate a 
-     * KSharedPixmap using "new" and and don't delete it! Otherwise, 
-     * the QPixmap destructor will be called and this will delete the
-     * pixmap anyway.
+     * This call uses XSetCloseDownMode() to set the closedown mode of the X
+     * server. If set to true, all resources of the this client are kept in 
+     * the X server until it resets (normally they are deleted). Note that
+     * this is a global option!
      *
-     * @parm keep Set to true to keep resources, false to delete them when
+     * IMPORTANT: If you want to use this, make sure the QPixmap destructor
+     * doesn't get called, i.e. use "new" and don't "delete". Otherwise,
+     * said destructor will free the pixmap.
+     *
+     * @param keep Set to true to keep resources, false to delete them when
      * the display is closed.
      */
     void setKeepResources(bool keep=true);
@@ -134,7 +149,7 @@ public:
      * Query wether a shared pixmap exists.
      *
      * @param id The pixmap id string.
-     * @param prop The X property to use. @see setProp
+     * @param prop The X property to use.
      * @return The size of the pixmap if it's available, a zero size
      * otherwise.
      */
@@ -143,7 +158,7 @@ public:
     /**
      * List all available shared pixmaps.
      *
-     * @param prop The X property to use. @see publish.
+     * @param prop The X property to use.
      * @return A QStringList containing all the available pixmaps id's.
      */
     static QStringList list(QString prop=QString::null);
@@ -152,7 +167,6 @@ private:
     bool copy(QString id, QRect rect);
     void init();
 
-    bool mKeep;
     QString mProp;
     QStringList mRefs;
 };
