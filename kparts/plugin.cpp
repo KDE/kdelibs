@@ -93,7 +93,8 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 
   QValueList<PluginInfo> plugins;
 
-  QStringList pluginDocs = instance->dirs()->findAllResources(
+  // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
+  const QStringList pluginDocs = instance->dirs()->findAllResources(
     "data", instance->instanceName()+"/kpartplugins/*", true, false );
 
   QMap<QString,QStringList> sortedPlugins;
@@ -123,7 +124,7 @@ QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
       if ( info.m_absXMLFileName.isEmpty() )
           continue;
 
-      kdDebug( 1000 ) << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
+      kdDebug( 1000 ) << "found KParts Plugin : " << info.m_absXMLFileName << endl;
       info.m_relXMLFileName = "kpartplugins/";
       info.m_relXMLFileName += mapIt.key();
 
@@ -238,19 +239,33 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
             continue;
 
         // Check configuration
-        QString name = docElem.attribute( "name" );
-        QString desktopfile = instance->dirs()->findResource( "data",
-                QString( instance->instanceName() ) + "/kpartplugins/" + name +
-                ".desktop" );
-        kdDebug( 1000 ) << "loadPlugins found desktopfile for " << instance->instanceName() << ": " << desktopfile << endl;
-        if( ! desktopfile.isNull() )
+        const QString name = docElem.attribute( "name" );
+
+        bool pluginEnabled = enableNewPluginsByDefault;
+        if ( cfgGroup.hasKey( name + "Enabled" ) )
         {
-            KSimpleConfig desktop( desktopfile );
-            desktop.setGroup( "X-KDE Plugin Info" );
-            enableNewPluginsByDefault = desktop.readBoolEntry(
-                    "EnabledByDefault", enableNewPluginsByDefault );
+            pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled" );
         }
-        bool pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled", enableNewPluginsByDefault );
+        else
+        { // no user-setting, load plugin default setting
+            QString relPath = QString( instance->instanceName() ) + "/" + (*pIt).m_relXMLFileName;
+            relPath.truncate( relPath.findRev( '.' ) ); // remove extension
+            relPath += ".desktop";
+            //kdDebug(1000) << "looking for " << relPath << endl;
+            const QString desktopfile = instance->dirs()->findResource( "data", relPath );
+            if( !desktopfile.isEmpty() )
+            {
+                //kdDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
+                KSimpleConfig desktop( desktopfile, true );
+                desktop.setDesktopGroup();
+                pluginEnabled = desktop.readBoolEntry(
+                    "X-KDE-PluginInfo-EnabledByDefault", enableNewPluginsByDefault );
+            }
+            else
+            {
+                //kdDebug(1000) << "loadPlugins no desktop file found in " << relPath << endl;
+            }
+        }
 
         // search through already present plugins
         QObjectList *pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
