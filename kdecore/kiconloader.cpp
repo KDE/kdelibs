@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.64  1999/08/08 22:07:08  mosfet
+   CT: Uh, you may want to wait to switch to unknown.png from unknown.xpm until
+   unknown.png exists... Just because you are old doesn't mean you are right :P
+
    Revision 1.63  1999/08/08 19:58:12  tibirna
    CT: Mosfet, you should listen to elder people from time to time.
    	when I said put the .png recompose inside the "if", I also
@@ -331,11 +335,13 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
       if (path.right(4) == ".xpm") {
 	path.truncate(path.length() - 4); 
 	warning("stripping .xpm from icon %s", name.ascii());
-        full_path = locate(iconType, path + ".png");
-        if (full_path.isNull())
-            full_path = locate(iconType, path + ".xpm" );
       }
-      else full_path = locate(iconType, path);
+      full_path = locate(iconType, path + ".png");
+      if (full_path.isNull())
+          full_path = locate(iconType, path + ".xpm" );
+
+      if (full_path.isNull()) 
+	full_path = locate(iconType, path);
     }
     if (full_path.isNull() && always_valid)
 	full_path = locate(iconType, "unknown.xpm");
