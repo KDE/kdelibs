@@ -475,7 +475,18 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); )
 	{
 		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
-		if (mimeTypes.findIndex(mime) == -1)
+		if ( mime == "application/x-zerosize" )
+		{
+			// special case of empty file
+			KMessageBox::information( NULL,
+					i18n( "<qt>The print file is empty and will be ignored:<p>%1</p></qt>" ).arg( *it ),
+					QString::null, "emptyFileNotPrinted" );
+			if ( flag )
+				QFile::remove( *it );
+			it = files.remove( it );
+			continue;
+		}
+		else if (mimeTypes.findIndex(mime) == -1)
 		{
 			if ((result=KMessageBox::warningYesNoCancel(NULL,
 					       i18n("The file format %1 is not directly supported by the current print system. "
