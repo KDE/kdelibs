@@ -13,7 +13,7 @@ PNG	<read> <write, only with newer libraries>
 TIFF	<read>
 TGA	<read> <write>
 PCX	<read> <write>
-RGB	<read> <write>
+SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
 
 To use these formats, you only need to:
 
