@@ -615,6 +615,12 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   else
     m_iconCombo->setCurrentItem(2);
 
+  if ( position.isEmpty() && name == "mainToolBar" )
+  {
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver saver(config, QString::fromLatin1("Toolbar style"));
+    position = config->readEntry(QString::fromLatin1("Position")).lower();
+  }
   if (position == QString::fromLatin1("top"))
     m_posCombo->setCurrentItem(0);
   else if (position == QString::fromLatin1("left"))
