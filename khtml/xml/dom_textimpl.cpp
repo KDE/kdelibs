@@ -236,7 +236,9 @@ long CharacterDataImpl::minOffset() const
   if (!r || !r->isText()) return 0;
 
   // take :first-letter into consideration
+#ifdef __GNUC__
 #warning FIXME
+#endif
 #if 0
   if (r->forcedMinOffset()) {
     RenderFlow *firstLetter = static_cast<RenderFlow *>(r->previousSibling());
