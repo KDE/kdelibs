@@ -115,6 +115,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_BORDER:
 	addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
+        addCSSProperty(CSS_PROP_BORDER_STYLE, "solid", false);
 	break;
     case ATTR_VSPACE:
 	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
