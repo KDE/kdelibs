@@ -1242,7 +1242,7 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     int min = 0, max = 255;
 
     QRgb col;
-    
+
     // Get minimum and maximum greylevel.
     if (img.numColors()) {
 	// pseudocolor
@@ -1833,4 +1833,71 @@ bool KImageEffect::blendOnLower(
   }
 
   return true;
+}
+
+// For selected icons
+// Code added by David Faure - I couldn't find a similar effect
+// among the existing ones, but I may have overlooked...
+QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )
+{
+    if ( img.depth() != 32 ) {
+#ifndef NDEBUG
+        qDebug("KImageEffect::selectedImage converting to 32 bit");
+#endif
+	img = img.convertDepth(32); // is this ok?
+    }
+    int w = img.width();
+    int h = img.height();
+    //QImage outImg(w, h, 32);
+
+    if (img.isNull())
+        return img;
+
+#define PIX(x,y)  (*((QRgb*)img.scanLine(y)+x) & 0x00ffffff)
+
+    // Determine background color from the 4 borders,
+    // code taken from QPixmap::createHeuristicMask
+    QRgb background = PIX(0,0);
+    if ( background != PIX(w-1,0) &&
+	 background != PIX(0,h-1) &&
+	 background != PIX(w-1,h-1) ) {
+	background = PIX(w-1,0);
+	if ( background != PIX(w-1,h-1) &&
+	     background != PIX(0,h-1) &&
+	     PIX(0,h-1) == PIX(w-1,h-1) ) {
+	    background = PIX(w-1,h-1);
+	}
+    }
+#undef PIX
+    //qDebug("background: %s",QString::number(background,16).ascii());
+
+    img.setAlphaBuffer( true ); // just in case
+
+    // Apply an overlay made of the 'selection color' with 50% transparency
+    // (that overlay is a mask of the icon, transparent where the icon is transparent)
+    int red = col.red();
+    int green = col.green();
+    int blue = col.blue();
+    int alpha = 0x7f;
+
+    for ( int y = 0; y < h; y++ ) {
+        //QRgb *outp = (QRgb*)outImg.scanLine(y);
+        QRgb *p = (QRgb *)img.scanLine(y);
+        QRgb *end = p + w;
+        for ( ; p < end; p++ /*, outp++*/ ) {
+            QRgb pix = *p;
+            if ( (pix & 0x00ffffff) != background )
+            {
+                // Note that qAlpha(pix) isn't used
+                int r = ((0xff-alpha) * qRed(pix) + alpha * red) >> 8;
+                int g = ((0xff-alpha) * qGreen(pix) + alpha * green) >> 8;
+                int b = ((0xff-alpha) * qBlue(pix) + alpha * blue) >> 8;
+
+                *p = qRgba(r, g, b, alpha);
+            }
+            //else // transparent pixel, copy as is
+            //    *outp = pix;
+        }
+    }
+    return img;
 }

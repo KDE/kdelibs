@@ -146,7 +146,7 @@ public:
      */
     static KPixmap pattern(const KPixmap& pixmap, QSize size,
                    const QColor &ca, const QColor &cb, int ncols=8);
-    	
+
     /**
      * Recolors a pixmap.
      *
@@ -200,6 +200,14 @@ public:
      * @return Returns the @ref pixmap(), provided for convenience.
      */
     static KPixmap& dither(KPixmap &pixmap, const QColor *palette, int size);
+
+    /**
+     * Calculate a 'selected' pixmap, for instance a selected icon
+     * on the desktop.
+     * @param pixmap the pixmap to select
+     * @param col the selected color, usually from QColorGroup::highlight().
+     */
+    static KPixmap selectedPixmap( const KPixmap &pixmap, const QColor &col );
 };
 
 

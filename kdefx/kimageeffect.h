@@ -250,6 +250,14 @@ public:
      */
     static QImage& dither(QImage &img, const QColor *palette, int size);
 
+    /**
+     * Calculate the image for a selected image, for instance a selected icon
+     * on the desktop.
+     * @param img the QImage to select
+     * @param col the selected color, usually from QColorGroup::highlight().
+     */
+    static QImage& selectedImage( QImage &img, const QColor &col );
+
 private:
 
     /**
