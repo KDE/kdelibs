@@ -675,7 +675,6 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
         switch (kmenubar->menuBarPos())
         {
             case KMenuBar::Flat:   //ignore
-				break; // Rikkus: Ignore works better with a break
             case KMenuBar::Top:
                 entryList.append("Top");
                 break;
