@@ -14,6 +14,9 @@ BUGS
   (probably discarded because they are not related to an existing
   printer, then not reloaded)
 
+- maybe a configChanged() should be issued when saving the instances
+  file to force a printer reload in the print dialog.
+
 
 WISHES
 ------
