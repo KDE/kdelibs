@@ -2609,7 +2609,6 @@ bool HTTPProtocol::readHeader()
     }
     // Keep Alive
     else if (strncasecmp(buf, "Keep-Alive:", 11) == 0) {
-      m_bKeepAlive = true;
       QStringList options = QStringList::split(',',
                                      QString::fromLatin1(trimLead(buf+11)));
       for(QStringList::ConstIterator it = options.begin();
