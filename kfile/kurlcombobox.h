@@ -191,7 +191,7 @@ private:
 private:
     class KURLComboBoxPrivate;
     KURLComboBoxPrivate *d;
-
+    virtual void init() { KComboBox::init(); }
 };
 
 

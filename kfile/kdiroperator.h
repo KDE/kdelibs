@@ -194,6 +194,9 @@ class KDirOperator : public QWidget {
      */
     bool onlyDoubleClickSelectsFiles() const;
 
+    /// @internal
+    virtual bool close(bool b) { return QWidget::close(b); }
+
 protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
