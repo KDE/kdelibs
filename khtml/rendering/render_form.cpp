@@ -614,11 +614,8 @@ void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
     _ty -= borderTopExtra();
 
     int my = QMAX(_ty,_y);
-    int mh;
-    if (_ty<_y)
-        mh= QMAX(0,h-(_y-_ty));
-    else
-        mh = QMIN(_h,h);
+    int end = QMIN( _y + _h,  _ty + h );
+    int mh = end - my;
 
     printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 

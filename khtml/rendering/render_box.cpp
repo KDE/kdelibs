@@ -155,11 +155,8 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     _ty -= borderTopExtra();
 
     int my = QMAX(_ty,_y);
-    int mh;
-    if (_ty<_y)
-        mh= QMAX(0,h-(_y-_ty));
-    else
-        mh = QMIN(_h,h);
+    int end = QMIN( _y + _h,  _ty + h );
+    int mh = end - my;
 
     printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
@@ -191,13 +188,13 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         // CSS2 chapter 14.2.1
 
+	int pixw = bg->pixmap_size().width();
+	int pixh = bg->pixmap_size().height();
         if (sptr->backgroundAttachment())
         {
             //scroll
             int pw = m_width - vpab;
             int ph = m_height - hpab;
-            int pixw = bg->pixmap_size().width();
-            int pixh = bg->pixmap_size().height();
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
@@ -228,8 +225,6 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             int pw = vr.width();
             int ph = vr.height();
 
-            int pixw = bg->pixmap_size().width();
-            int pixh = bg->pixmap_size().height();
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
@@ -258,7 +253,16 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         }
 
 
-//        kdDebug() << "cx="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
+//         kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
+	int diff = clipy - cy;
+	if ( diff > 0 ) {
+	    cy += diff;
+	    sy -= diff;
+	    sy %= pixh;
+	    ch -= diff;
+	}
+	ch = QMIN( ch, clipy + cliph - cy );
+// 	kdDebug() << "clip="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
 
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);

@@ -362,7 +362,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
     if(style()->visibility() == VISIBLE)
@@ -1393,7 +1393,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
 #endif
 
     if (!layouted()) return;
@@ -1419,13 +1419,6 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
-
-    int my = KMAX(_ty,_y);
-    int mh;
-    if (_ty<_y)
-        mh= KMAX(0,h-(_y-_ty));
-    else
-        mh = KMIN(_h,h);
 
     QColor c = style()->backgroundColor();
     if ( !c.isValid() && parent() ) // take from row
@@ -1465,6 +1458,10 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
 	    }
 	}
     }
+
+    int my = QMAX(_ty,_y);
+    int end = QMIN( _y + _h,  _ty + h );
+    int mh = end - my;
 
     if ( bg || c.isValid() )
 	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
