@@ -737,7 +737,7 @@ KAction *KStdAction::addBookmark(const QObject *recvr, const char *slot,
 KAction *KStdAction::editBookmarks(const QObject *recvr, const char *slot,
                                   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Edit Bookmarks..."), "bookmark", 0, recvr, slot, parent,
+    return new KAction(i18n("&Edit Bookmarks"), "bookmark", 0, recvr, slot, parent,
                        name ? name : stdName(EditBookmarks));
 }
 
