@@ -990,7 +990,16 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     if( startup_id == "0" )
         return;
     QCString wmclass;
-    if( service->property( "X-KDE-StartupNotify" ).isValid())
+    if( service->property( "StartupNotify" ).isValid())
+    {
+        if( !service->property( "StartupNotify" ).toBool())
+        {
+            cancel_service_startup_info( request, startup_id, envs );
+            return;
+        }
+        wmclass = service->property( "StartupWMClass" ).toString().latin1();
+    }
+    else if( service->property( "X-KDE-StartupNotify" ).isValid())
     {
         if( !service->property( "X-KDE-StartupNotify" ).toBool())
         {

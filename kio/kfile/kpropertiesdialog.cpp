@@ -2716,7 +2716,10 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   m_terminalOptionStr = config.readEntry( "TerminalOptions" );
   m_suidBool = config.readBoolEntry( "X-KDE-SubstituteUID" );
   m_suidUserStr = config.readEntry( "X-KDE-Username" );
-  m_startupBool = config.readBoolEntry( "X-KDE-StartupNotify", true );
+  if( config.hasKey( "StartupNotify" ))
+    m_startupBool = config.readBoolEntry( "StartupNotify", true );
+  else
+    m_startupBool = config.readBoolEntry( "X-KDE-StartupNotify", true );
   m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").lower();
 
   QStringList mimeTypes = config.readListEntry( "MimeType", ';' );
@@ -2949,7 +2952,7 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry("TerminalOptions", m_terminalOptionStr);
   config.writeEntry("X-KDE-SubstituteUID", m_suidBool);
   config.writeEntry("X-KDE-Username", m_suidUserStr);
-  config.writeEntry("X-KDE-StartupNotify", m_startupBool);
+  config.writeEntry("StartupNotify", m_startupBool);
   config.writeEntry("X-DCOP-ServiceType", m_dcopServiceType);
   config.sync();
 

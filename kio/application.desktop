@@ -7,11 +7,12 @@ Name[af]=Aansoek
 Name[ar]=تطبيق
 Name[az]=Proqram
 Name[be]=Дастасаваньне
-Name[bg]=Приложение
+Name[bg]=Програма
 Name[br]=Arload
 Name[bs]=Program
 Name[ca]=Aplicació
 Name[cs]=Aplikace
+Name[cy]=Cymhwysiad
 Name[da]=Program
 Name[de]=Programm
 Name[el]=Εφαρμογή
@@ -21,6 +22,7 @@ Name[et]=Rakendus
 Name[eu]=Aplikazioa
 Name[fa]=برنامه‌ی کاربردی
 Name[fi]=Sovellus
+Name[ga]=Feidhmchlár
 Name[gl]=Aplicación
 Name[he]=יישום
 Name[hr]=Program
@@ -34,6 +36,7 @@ Name[lt]=Programa
 Name[lv]=Aplikācija
 Name[mi]=Utauta
 Name[mk]=Апликација
+Name[mn]=Программ
 Name[mt]=Programm
 Name[nb]=Applikasjon
 Name[nl]=Applicatie
@@ -47,17 +50,19 @@ Name[ro]=Aplicaţie
 Name[ru]=Приложение
 Name[sk]=Aplikácia
 Name[sl]=Uporabniški program
-Name[sr]=Aplikacija
+Name[sr]=Програм
 Name[ss]=Sicelo
 Name[sv]=Program
 Name[ta]=¿¢Ãø
 Name[th]=แอพพลิเคชัน
 Name[tr]=Uygulama
 Name[uk]=Програма
+Name[uz]=Дастур
 Name[ven]=Apulifikhesheni
 Name[vi]=Chương trình 
 Name[wa]=Programe
 Name[xh]=Isicelo
+Name[xx]=xxApplicationxx
 Name[zh_CN]=应用程序
 Name[zh_TW]=應用程式
 Name[zu]=Umyaleli
@@ -73,6 +78,12 @@ Type=bool
 
 [PropertyDef::X-KDE-Username]
 Type=QString
+
+[PropertyDef::StartupWMClass]
+Type=QString
+
+[PropertyDef::StartupNotify]
+Type=bool
 
 [PropertyDef::X-KDE-WMClass]
 Type=QString

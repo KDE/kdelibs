@@ -488,7 +488,12 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   bool startup_notify = false;
   QCString wmclass;
   KStartupInfoId id;
-  if( service && service->property( "X-KDE-StartupNotify" ).isValid())
+  if( service && service->property( "StartupNotify" ).isValid())
+  {
+      startup_notify = service->property( "StartupNotify" ).toBool();
+      wmclass = service->property( "StartupWMClass" ).toString().latin1();
+  }
+  else if( service && service->property( "X-KDE-StartupNotify" ).isValid())
   {
       startup_notify = service->property( "X-KDE-StartupNotify" ).toBool();
       wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
