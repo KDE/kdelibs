@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=cdrom_unmount
+Type=MimeType
+MimeType=kdedevice/cdrom_unmounted
+Patterns=
+
+X-KDE-AutoEmbed=true
