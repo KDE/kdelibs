@@ -35,6 +35,7 @@
 #include "config.h"
 #endif
 
+#include "kentities.c"
 #include "htmltokenizer.h"
 #include "misc/loader.h"
 #include "khtmlview.h"
@@ -62,6 +63,29 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+
+// Partial support for MS Windows Latin-1 extensions
+// full list http://www.bbsinc.com/iso8859.html
+// There may be better equivalents
+#define fixUpChar(x) \
+            if (!x.row() ) { \
+                switch (x.cell()) \
+                { \
+                case 0x82: EntityChar = ','; break; \
+                case 0x84: EntityChar = '"'; break; \
+                case 0x8b: EntityChar = '<'; break; \
+                case 0x9b: EntityChar = '>'; break; \
+                case 0x91: EntityChar = '\''; break; \
+                case 0x92: EntityChar = '\''; break; \
+                case 0x93: EntityChar = '"'; break; \
+                case 0x94: EntityChar = '"'; break; \
+                case 0x95: EntityChar = 0xb7; break; \
+                case 0x96: EntityChar = '-'; break; \
+                case 0x97: EntityChar = '-'; break; \
+                case 0x98: EntityChar = '~'; break; \
+                default: break; \
+                } \
+            }
 
 // ----------------------------------------------------------------------------
 
@@ -141,7 +165,7 @@ void HTMLTokenizer::begin()
     startTag = false;
     tquote = NoQuote;
     searchCount = 0;
-    charEntity = false;
+    Entity = NoEntity;
     loadingExtScript = false;
     scriptSrc = "";
     pendingSrc = "";
@@ -158,6 +182,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
     if(!style) pre = true;
     prePos = 0;
 
+#if 1
     while ( list.length() )
     {
         checkBuffer();
@@ -221,6 +246,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
         addPending();
     }
     pending = NonePending;
+#endif
 
     currToken.text = new DOMStringImpl( buffer, dest-buffer);
     currToken.text->ref();
@@ -235,7 +261,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
     // We are inside a <script>, <style>, <textarea> . Look for the end tag
     // which is either </script>, </style> , </textarea> or -->
     // otherwise print out every received character
-    if (charEntity) {
+    if (Entity) {
         checkScriptBuffer();
         QChar *scriptCodeDest = scriptCode+scriptCodeSize;
         parseEntity(src,scriptCodeDest);
@@ -563,79 +589,123 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
     }
 }
 
+
 void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 {
     if( start )
     {
         entityPos = 0;
-        charEntity = true;
+        Entity = SearchEntity;
     }
 
     while( src.length() )
     {
-        char cc = src[0].lower().latin1();
-        if(entityPos > 8) {
-            checkBuffer(10);
-            // entity too long, ignore and insert as is
-            *dest++ = '&';
-            memcpy(dest, entityBuffer, entityPos*sizeof(QChar));
-            dest += entityPos;
-            if ( pre )
-                prePos += entityPos+1;
-            charEntity = false;
+        char cc = src[0].latin1();
+        switch(Entity) {
+        case NoEntity:
+            qDebug("NoEntity");
             return;
-        }
-        if( (entityPos && *entityBuffer == '#' && (cc >= '0' && cc <= '9')) || // numeric entity
-            (entityPos && *entityBuffer != '#' && (cc >= 'a' && cc <= 'z')) || // alpha entity
-            (!entityPos && ((cc >= 'a' && cc <= 'z') || (cc >= '0' && cc <= '9') || cc == '#')))  // first character
-        {
-            entityBuffer[entityPos] = src[0];
-            entityPos++;
-            ++src;
-        }
-        else
-        // end of entity... try to decode it
-        {
-            QChar res;
-            if(entityPos > 1)
-            {
-                QConstString cStr(entityBuffer, entityPos);
-                res = charsets->fromEntity(cStr.string());
 
-                //kdDebug( 6036 ) << "ENTITY " << res.unicode() << ", " << res << endl;
+            break;
+        case SearchEntity:
+            if(cc == '#') {
+                entityBuffer[entityPos++] = cc;
+                ++src;
+                Entity = NumericSearch;
+            }
+            else
+                Entity = EntityName;
 
-                if (tag && src[0] != ';' ) {
-                    // Don't translate entities in tags with a missing ';'
-                    res = QChar::null;
+            break;
+
+        case NumericSearch:
+            if(cc == 'x' || cc == 'X') {
+                entityBuffer[entityPos++] = cc;
+                ++src;
+                Entity = Hexadecimal;
+            }
+            else if(cc >= '0' && cc <= '9')
+                Entity = Decimal;
+            else
+                Entity = SearchSemicolon;
+
+            break;
+
+        case Hexadecimal:
+        {
+            int uc = EntityChar.unicode();
+            while(src.length()) {
+                QChar csrc(src[0].lower());
+                cc = src[0].cell();
+
+                if(csrc.row() || !((cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'f'))) {
+                    Entity = SearchSemicolon;
+                    break;
+                }
+                uc = uc*16 + (cc - ( cc < 'a' ? '0' : 'a' - 10));
+                ++src;
+            }
+            EntityChar = QChar(uc);
+
+            break;
+        }
+        case Decimal:
+        {
+            int uc = EntityChar.unicode();
+            while(src.length()) {
+                cc = src[0].cell();
+
+                if(src[0].row() || !(cc >= '0' && cc <= '9')) {
+                    Entity = SearchSemicolon;
+                    break;
                 }
 
-                // Partial support for MS Windows Latin-1 extensions
-                // full list http://www.bbsinc.com/iso8859.html
-                // There may be better equivalents
-                if ( res != QChar::null ) {
-                    switch (res.unicode())
-                    {
-                        case 0x82: res = ','; break;
-                        case 0x84: res = '"'; break;
-                        case 0x8b: res = '<'; break;
-                        case 0x9b: res = '>'; break;
-                        case 0x91: res = '\''; break;
-                        case 0x92: res = '\''; break;
-                        case 0x93: res = '"'; break;
-                        case 0x94: res = '"'; break;
-                        case 0x95: res = 0xb7; break;
-                        case 0x96: res = '-'; break;
-                        case 0x97: res = '-'; break;
-                        case 0x98: res = '~'; break;
-                        default: break;
-                    }
+                uc = uc * 10 + (cc - '0');
+                ++src;
+            }
+            EntityChar = QChar(uc);
+            break;
+        }
+        case EntityName:
+        {
+            int ll = QMIN(src.length(), 9-entityPos);
+            while(ll--) {
+                QChar csrc = src[0];
+                cc = csrc.cell();
+
+                if(csrc.row() || !((cc >= 'a' && cc <= 'z') ||
+                                   (cc >= '0' && cc <= '9') || (cc >= 'A' && cc <= 'Z'))) {
+                    Entity = SearchSemicolon;
+                    break;
+                }
+
+                entityBuffer[entityPos++] = cc;
+                ++src;
+            }
+            if(Entity == SearchSemicolon) {
+                if(entityPos > 1) {
+                    const entity *e = findEntity(entityBuffer, entityPos);
+                    if(e)
+                        EntityChar = e->code;
                 }
             }
+            else
+                break;
+        }
+        case SearchSemicolon:
+            //kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << ", " << res << endl;
 
-            if ( res != QChar::null ) {
+            if (tag && cc != ';' ) {
+                // Don't translate entities in tags with a missing ';'
+                EntityChar = QChar::null;
+            }
+
+            fixUpChar(EntityChar);
+
+            if ( EntityChar != QChar::null ) {
                 checkBuffer();
                 // Just insert it
-                *dest++ = res;
+                *dest++ = EntityChar;
                 if (pre)
                     prePos++;
                 if (src[0] == ';')
@@ -648,15 +718,18 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 checkBuffer(10);
                 // ignore the sequence, add it to the buffer as plaintext
                 *dest++ = '&';
-                memcpy(dest, entityBuffer, entityPos*sizeof(QChar));
+                for(unsigned int i = 0; i < entityPos; i++)
+                    dest[i] = entityBuffer[i];
                 dest += entityPos;
-                charEntity = false;
+                Entity = NoEntity;
                 if (pre)
                     prePos += entityPos+1;
             }
-            charEntity = false;
+
+            EntityChar = QChar::null;
+            Entity = NoEntity;
             return;
-        }
+        };
     }
 }
 
@@ -669,7 +742,7 @@ static inline bool isSeparator(char curchar)
 
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
-    if (charEntity)
+    if (Entity)
         parseEntity(src,dest);
 
     while ( src.length() )
@@ -677,6 +750,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         checkBuffer();
         char curchar = src[0].latin1();
 
+//         if(curchar == '>') {
+//             tag = NoTag;
+//             break;
+//         }
+//         else
+//             src++;
+#if 1
         if (( discard == AllDiscard &&
               ( curchar == ' ' || curchar == '\t' || curchar == '\n' || curchar == '\r' ) ) ||
             ( discard == SpaceDiscard && ( curchar == ' ' || curchar == '\t') ) ||
@@ -894,7 +974,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 {
                     ++src;
                     discard = NoneDiscard;
-                    charEntity = true;
                     parseEntity(src, dest, true);
                     break;
                 }
@@ -938,7 +1017,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( curchar == '&' )
                 {
                     ++src;
-                    charEntity = true;
                     parseEntity(src, dest, true);
                     break;
                 }
@@ -1106,6 +1184,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             } // end switch
         }
+#endif
     }
     return;
 }
@@ -1223,10 +1302,8 @@ void HTMLTokenizer::write( const QString &str )
     else if (processingInstruction)
         parseProcessingInstruction(src);
     else if (tag)
-    {
         parseTag(src);
-    }
-    else if (charEntity)
+    else if (Entity)
         parseEntity(src, dest);
 
     while ( src.length() )
@@ -1315,8 +1392,6 @@ void HTMLTokenizer::write( const QString &str )
             discard = NoneDiscard;
             if (pending)
                 addPending();
-
-            charEntity = true;
             parseEntity(src, dest, true);
         }
         else if ( chbegin == '<')

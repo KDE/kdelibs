@@ -213,28 +213,23 @@ protected:
 
     HTMLQuote tquote;
 
-    typedef enum
+    enum
     {
         NonePending = 0,
         SpacePending,
         LFPending,
         TabPending
-    } HTMLPendingType;
+    } pending;
 
-    // To avoid multiple spaces
-    HTMLPendingType pending;
-
-    typedef enum
+    // Discard line breaks immediately after start-tags
+    // Discard spaces after '=' within tags
+    enum
     {
         NoneDiscard = 0,
         SpaceDiscard,
         LFDiscard,
         AllDiscard  // discard all spaces, LF's etc until next non white char
-    } HTMLDiscardType;
-
-    // Discard line breaks immediately after start-tags
-    // Discard spaces after '=' within tags
-    HTMLDiscardType discard;
+    } discard;
 
     // Discard the LF part of CRLF sequence
     bool skipLF;
@@ -242,7 +237,9 @@ protected:
     // Flag to say that we have the '<' but not the character following it.
     bool startTag;
 
-    typedef enum {
+    // Flag to say, we are just parsing a tag, meaning, we are in the middle
+    // of <tag...
+    enum {
         NoTag = 0,
         TagName,
         SearchAttribute,
@@ -252,11 +249,20 @@ protected:
         QuotedValue,
         Value,
         SearchEnd
-    } HTMLTagParse;
+    } tag;
 
-    // Flag to say, we are just parsing a tag, meaning, we are in the middle
-    // of <tag...
-    HTMLTagParse tag;
+    // Are we in a &... character entity description?
+    enum {
+        NoEntity = 0,
+        SearchEntity,
+        NumericSearch,
+        Hexadecimal,
+        Decimal,
+        EntityName,
+        SearchSemicolon
+    } Entity;
+
+    QChar EntityChar;
 
     // Flag to say that we are just parsing an attribute
     bool parseAttr;
@@ -281,9 +287,6 @@ protected:
 
     // Are we in plain textmode ?
     bool plaintext;
-
-    // Are we in a &... character entity description?
-    bool charEntity;
 
     // XML processing instructions. Ignored at the moment
     bool processingInstruction;
@@ -330,7 +333,7 @@ protected:
 
     QString scriptOutput;
 
-    QChar entityBuffer[10];
+    char entityBuffer[10];
     uint entityPos;
 
     QString _src;
