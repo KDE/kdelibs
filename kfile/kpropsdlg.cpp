@@ -1233,6 +1233,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     KCompletion *kcom = new KCompletion;
     kcom->setItems(groupList);
     grpEdit->setCompletionObject(kcom, true);
+    grpEdit->setAutoDeleteCompletionObject( true );
     grpEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
     grpEdit->setText(strGroup);
     gl->addWidget(grpEdit, 2, 1);
@@ -1511,6 +1512,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   if (i < maxEntries)
   {
     suidEdit->setCompletionObject(kcom, true);
+    suidEdit->setAutoDeleteCompletionObject( true );
     suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
   }
   else
