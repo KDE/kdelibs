@@ -811,6 +811,9 @@ int main( int argc, char **argv )
   QString nameSpace = codegenConfig.readEntry("NameSpace");
   QString className = codegenConfig.readEntry("ClassName");
   QString inherits = codegenConfig.readEntry("Inherits");
+  QString visibility = codegenConfig.readEntry("Visibility");
+  kdError() << "VISIBILITY " <<  visibility << "\n";
+  if (!visibility.isEmpty()) visibility+=" ";
   bool singleton = codegenConfig.readBoolEntry("Singleton", false);
   bool staticAccessors = singleton;
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
@@ -963,7 +966,7 @@ int main( int argc, char **argv )
     h << "namespace " << nameSpace << " {" << endl << endl;
 
   // Class declaration header
-  h << "class " << className << " : public " << inherits << endl;
+  h << "class " << visibility << className << " : public " << inherits << endl;
   h << "{" << endl;
   h << "  public:" << endl;
 

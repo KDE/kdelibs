@@ -101,6 +101,13 @@ The following options are read from the kcfgc file:
   KConfigSkeleton.</td>
 </tr>
 <tr>
+  <td><b>Visibility</b></td>
+  <td>string</td>
+  <td>-</td>
+  <td>Inserts visibility directive (for example KDE_EXPORT) between "class" keyword and class 
+  name in header file</td>
+</tr>
+<tr>
   <td><b>Singleton</b></td>
   <td>bool</td>
   <td>false</td>
