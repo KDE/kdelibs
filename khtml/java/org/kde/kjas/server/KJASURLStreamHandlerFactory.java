@@ -118,7 +118,6 @@ class KIOConnection
             try {
                 Thread.currentThread().sleep(10000);
             } catch (InterruptedException ie) {
-                thread = null;
                 return getData();
             }
             thread = null;
@@ -210,20 +209,20 @@ class KIOConnection
             else
                 out = new KJASOutputStream();
             if (!haveError()) {
-                thread = null;
                 Main.debug ("connect(" + jobid + ") " + url);
                 return;
             }
         }
+        thread = null;
         synchronized (jobs) {
             jobs.remove(jobid);
         }
-        thread = null;
         if (connected) {
             connected = false;
-            Main.protocol.sendDataCmd(jobid, STOP);
+            if (!finished)
+                Main.protocol.sendDataCmd(jobid, STOP);
             Main.debug ("connect error(" + jobid + ") " + url);
-            throw new IOException("connection failed (not found)" + jobid);
+            throw new IOException("connection failed (not found)");
         }
         Main.debug ("connect timeout(" + jobid + ") " + url);
         throw new IOException("connection failed (timeout)");

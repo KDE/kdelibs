@@ -251,6 +251,8 @@ public class KJASProtocolHandler
                         try {
                             job.thread.interrupt();
                         } catch (SecurityException sex) {}
+                        job.thread = null;
+                        Thread.currentThread().yield();
                     }
                 }
             }
