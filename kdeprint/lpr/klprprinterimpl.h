@@ -17,39 +17,22 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "klprfactory.h"
-#include "kmlprmanager.h"
-#include "kmlpruimanager.h"
-#include "kmlprjobmanager.h"
-#include "klprprinterimpl.h"
+#ifndef KLPRPRINTERIMPL_H
+#define KLPRPRINTERIMPL_H
 
-extern "C"
+#include "kprinterimpl.h"
+
+class KLprPrinterImpl : public KPrinterImpl
 {
-	void* init_libkdeprint_lpr()
-	{
-		return new KLprFactory;
-	}
+public:
+	KLprPrinterImpl(QObject *parent = 0, const char *name = 0);
+	~KLprPrinterImpl();
+
+	bool setupCommand(QString&, KPrinter*);
+	void broadcastOption(const QString& key, const QString& value);
+
+private:
+	QString	m_exepath;
 };
 
-KLprFactory::KLprFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
-
-KLprFactory::~KLprFactory()
-{
-}
-
-QObject* KLprFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLprManager(parent,name);
-	else if (strcmp(classname, "KMUiManager") == 0)
-		return new KMLprUiManager(parent, name);
-	else if (strcmp(classname, "KMJobManager") == 0)
-		return new KMLprJobManager(parent, name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLprPrinterImpl(parent,name);
-	else
-		return NULL;
-}
+#endif

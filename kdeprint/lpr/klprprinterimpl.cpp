@@ -17,39 +17,40 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "klprfactory.h"
-#include "kmlprmanager.h"
-#include "kmlpruimanager.h"
-#include "kmlprjobmanager.h"
 #include "klprprinterimpl.h"
+#include "kprinter.h"
 
-extern "C"
+#include <kstandarddirs.h>
+#include <qfile.h>
+#include <stdlib.h>
+
+KLprPrinterImpl::KLprPrinterImpl(QObject *parent, const char *name)
+: KPrinterImpl(parent,name)
 {
-	void* init_libkdeprint_lpr()
+	m_exepath = KStandardDirs::findExe("lpr");
+}
+
+KLprPrinterImpl::~KLprPrinterImpl()
+{
+}
+
+bool KLprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
+{
+	// check printer object
+	if (!printer || m_exepath.isEmpty())
+		return false;
+
+	cmd = QString::fromLatin1("%1 -P %1").arg(m_exepath).arg(quote(printer->printerName()));
+	// something to do with options
+	return true;
+}
+
+void KLprPrinterImpl::broadcastOption(const QString& key, const QString& value)
+{
+	KPrinterImpl::broadcastOption(key,value);
+	if (key == "kde-pagesize")
 	{
-		return new KLprFactory;
+		QString	pagename = QString::fromLatin1(pageSizeToPageName((KPrinter::PageSize)value.toInt()));
+		KPrinterImpl::broadcastOption("PageSize",pagename);
 	}
-};
-
-KLprFactory::KLprFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
-
-KLprFactory::~KLprFactory()
-{
-}
-
-QObject* KLprFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLprManager(parent,name);
-	else if (strcmp(classname, "KMUiManager") == 0)
-		return new KMLprUiManager(parent, name);
-	else if (strcmp(classname, "KMJobManager") == 0)
-		return new KMLprJobManager(parent, name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLprPrinterImpl(parent,name);
-	else
-		return NULL;
 }
