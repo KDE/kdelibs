@@ -241,20 +241,20 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important)
+void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
-    m_styleDecls->setProperty(id, value, important);
+    m_styleDecls->setProperty(id, value, important, nonCSSHint);
 }
 
-void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important)
+void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
-    m_styleDecls->setLengthProperty(id, value, important);
+    m_styleDecls->setLengthProperty(id, value, important, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)

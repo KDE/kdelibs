@@ -138,15 +138,24 @@ void CSSStyleDeclarationImpl::setProperty( const DOMString &propName, const DOMS
     setProperty(id, value, important);
 }
 
-void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important)
+void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
-    if(!m_lstValues)
-    {
+    if(!m_lstValues) {
 	m_lstValues = new QList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
+    int pos = m_lstValues->count();
     parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
+
+    if(nonCSSHint) {
+	CSSProperty *p = m_lstValues->at(pos);
+	while ( p ) {
+	    p->nonCSSHint = true;
+	    p = m_lstValues->next();
+	}
+    }
 }
+
 
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
@@ -174,7 +183,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 }
 
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
-						bool important)
+						bool important, bool nonCSSHint)
 {
     if(!m_lstValues)
     {
@@ -200,7 +209,8 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
     prop->m_id = id;
     prop->setValue(v);
     prop->m_bImportant = important;
-
+    prop->nonCSSHint = nonCSSHint;
+    
     m_lstValues->append(prop);
 }
 

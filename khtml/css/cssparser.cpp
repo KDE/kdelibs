@@ -1622,6 +1622,7 @@ CSSSelector::CSSSelector(void)
     attr = 0;
     match = None;
     relation = Descendant;
+    nonCSSHint = false;
 }
 
 CSSSelector::~CSSSelector(void)
@@ -1639,6 +1640,9 @@ void CSSSelector::print(void)
 
 int CSSSelector::specificity()
 {
+    if ( nonCSSHint ) 
+	return 0;
+    
     int s = 0;
     if(tag != -1) s = 1;
     switch(match)

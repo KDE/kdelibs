@@ -107,6 +107,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
 	QString aStr = "a[href] { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
+	m_styleSheet->setNonCSSHints();
 	break;
     }
     case ATTR_VLINK:

@@ -103,11 +103,11 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
     HTMLElementImpl *e = doc->body();
     if(e && e->id() == ID_BODY)
     {
-	kdDebug( 6080 ) << "found body element" << endl;
+	//kdDebug( 6080 ) << "found body element" << endl;
 	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
 	if(body->sheet())
 	{
-	    kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
+	    //kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
 	    authorStyle->append(body->sheet());
 	}
     }

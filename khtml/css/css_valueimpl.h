@@ -57,10 +57,10 @@ public:
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
     void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value,
 		       const DOM::DOMString &priority );
-    void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false);
+    void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
     // needed for conversion of html attributes
-    void setLengthProperty(int id, const DOM::DOMString &value, bool important);
+    void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true);
 
     // add a whole, unparsed property
     void setProperty ( const DOMString &propertyString);

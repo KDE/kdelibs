@@ -279,6 +279,15 @@ void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
     if(m_style) m_style->ref();
 }
 
+void CSSStyleRuleImpl::setNonCSSHints()
+{
+    CSSSelector *s = m_selector->first();
+    while ( s ) {
+	s->nonCSSHint = true;
+	s = m_selector->next();
+    }
+}
+
 
 // --------------------------------------------------------------------------
 

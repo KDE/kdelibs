@@ -175,6 +175,8 @@ public:
     QList<CSSSelector> *selector() { return m_selector; }
     CSSStyleDeclarationImpl *declaration() { return m_style; }
 
+    void setNonCSSHints();
+    
 protected:
     CSSStyleDeclarationImpl *m_style;
     QList<CSSSelector> *m_selector;

@@ -151,7 +151,6 @@ public:
     ~CSSSelector(void);
     void print(void);
     // tag == -1 means apply to all elements (Selector = *)
-    int          tag;
 
     /* how the attribute value has to match.... Default is Exact */
     enum Match
@@ -164,10 +163,6 @@ public:
 	Pseudo
     };
 
-    Match 	 match;
-    int          attr;
-    DOM::DOMString value;
-
     enum Relation
     {
 	Descendant = 0,
@@ -175,7 +170,13 @@ public:
 	Sibling
     };
 
-    Relation relation;
+    Relation relation 	: 2;
+    Match 	 match 	: 3;
+    bool	nonCSSHint : 1;
+    int          attr;
+    int          tag;
+    DOM::DOMString value;
+
     CSSSelector *tagHistory;
 
     int specificity();
@@ -190,6 +191,7 @@ public:
 	m_id = -1;
 	m_value = 0;
 	m_bImportant = false;
+	nonCSSHint = false;
     }
     ~CSSProperty();
 
@@ -197,7 +199,8 @@ public:
     CSSValueImpl *value();
 
     int   m_id;
-    bool m_bImportant;
+    bool m_bImportant 	: 1;
+    bool nonCSSHint 	: 1;
 protected:
     CSSValueImpl *m_value;
 };

@@ -52,8 +52,8 @@ public:
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
 
-    void addCSSLength(int id, const DOMString &value, bool important);
-    void addCSSProperty(int id, const DOMString &value, bool important);
+    void addCSSLength(int id, const DOMString &value, bool important, bool nonCSSHint = true);
+    void addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint = true);
     void addCSSProperty(const DOMString &property);
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
