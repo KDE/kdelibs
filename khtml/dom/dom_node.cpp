@@ -285,6 +285,12 @@ DOMString Node::toHTML(DOMString _string)
     if(impl) return impl->toHTML(_string);
       return 0;
 }
+
+void Node::applyChanges()
+{
+    if(!impl) return;
+    impl->applyChanges();
+}
 //-----------------------------------------------------------------------------
 
 NodeList::NodeList()

@@ -207,7 +207,7 @@ public:
     
     virtual DOMString toHTML(DOMString _string);
     virtual DOMString innerHTML(DOMString _string);
-
+    virtual void applyChanges();
 protected:
     DocumentImpl *document;
     unsigned short flags;

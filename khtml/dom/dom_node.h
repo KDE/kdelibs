@@ -577,7 +577,7 @@ public:
      */
     unsigned long index() const;
     DOMString toHTML(DOMString _string);
-
+    virtual void applyChanges();
 
 protected:
     NodeImpl *impl;

@@ -266,6 +266,8 @@ public:
     virtual bool isHidden() const { return isFloating(); }
     virtual bool isSpecial() const;
 
+    virtual void styleChanged(RenderStyle *newStyle=0);
+    
 protected:
     // assumes (_tx/_ty) point to the upper left corner of the box
     virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}

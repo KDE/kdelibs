@@ -31,6 +31,9 @@
 using namespace DOM;
 using namespace khtml;
 
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+
 template class QList<Length>;
 
 DOMStringImpl::DOMStringImpl(QChar *str, uint len)
@@ -43,10 +46,10 @@ void DOMStringImpl::append(DOMStringImpl *str)
     if(str && str->l != 0)
     {
 	int newlen = l+str->l;
-	QChar *c = new QChar[newlen];
+	QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
 	memcpy(c, s, l*sizeof(QChar));
 	memcpy(c+l, str->s, str->l*sizeof(QChar));
-	if(s) delete [] s;
+	if(s) QT_DELETE_QCHAR_VEC(s);
 	s = c;
 	l = newlen;
     }
@@ -62,11 +65,11 @@ void DOMStringImpl::insert(DOMStringImpl *str, uint pos)
     if(str && str->l != 0)
     {
 	int newlen = l+str->l;
-	QChar *c = new QChar[newlen];
+	QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
 	memcpy(c, s, pos*sizeof(QChar));
 	memcpy(c+pos, str->s, str->l*sizeof(QChar));
 	memcpy(c+pos+str->l, s+pos, (l-pos)*sizeof(QChar));
-	if(s) delete [] s;
+	if(s) QT_DELETE_QCHAR_VEC(s);
 	s = c;
         l = newlen;
     }
@@ -76,15 +79,15 @@ void DOMStringImpl::truncate(int len)
 {
     if(len > (int)l) return;
 
-    QChar *c = new QChar[len];
+    QChar *c = QT_ALLOC_QCHAR_VEC(len);
     memcpy(c, s, len*sizeof(QChar));
-    if(s) delete [] s;
+    if(s) QT_DELETE_QCHAR_VEC(s);
     s = c;
 }
 
 DOMStringImpl *DOMStringImpl::copy() const
 {
-    QChar *c = new QChar[l];
+    QChar *c = QT_ALLOC_QCHAR_VEC(l);
     memcpy(c, s, l*sizeof(QChar));
     return new DOMStringImpl(c, l);
 }

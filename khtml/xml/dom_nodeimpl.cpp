@@ -181,6 +181,11 @@ DOMString NodeImpl::innerHTML(DOMString _string)
     return _string;
 }
 
+void NodeImpl::applyChanges()
+{
+    m_render->styleChanged();
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)

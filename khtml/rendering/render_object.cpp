@@ -34,6 +34,10 @@
 #include "qpainter.h"
 
 #include <stdio.h>
+#include <qpainter.h>
+#include <qcolor.h>
+#include <qpen.h>
+#include <qsize.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -362,3 +366,14 @@ bool RenderObject::printSelection( QPainter *p, int tx, int ty, RenderObject *en
     return true;
 }
 
+void RenderObject::styleChanged(RenderStyle *newStyle)
+{
+    if(newStyle)
+    {
+        if(m_style) delete m_style;
+        m_style = newStyle;
+    }
+    containingBlock()->updateSize();
+        
+        
+}
