@@ -84,6 +84,7 @@ protected:
         virtual void dropEvent( QDropEvent *);
         virtual void mousePressEvent( QMouseEvent *e );
         virtual void mouseMoveEvent( QMouseEvent *e);
+        virtual void keyPressEvent( QKeyEvent *e );
 private:
         QColor col;
         QPoint mPos;

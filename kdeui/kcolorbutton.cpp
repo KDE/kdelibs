@@ -23,8 +23,10 @@
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qapplication.h>
+#include <qclipboard.h>
 #include <qstyle.h>
 #include <kglobalsettings.h>
+#include <kstdaccel.h>
 #include "kcolordialog.h"
 #include "kcolorbutton.h"
 #include "kcolordrag.h"
@@ -132,6 +134,21 @@ void KColorButton::dropEvent( QDropEvent *event)
   QColor c;
   if( KColorDrag::decode( event, c)) {
     setColor(c);
+  }
+}
+
+void KColorButton::keyPressEvent( QKeyEvent *e )
+{
+  KKey key( e );
+
+  if ( KStdAccel::copy().contains( key ) ) {
+    QMimeSource* mime = new KColorDrag( color() );
+    QApplication::clipboard()->setData( mime, QClipboard::Clipboard );
+  }
+  else if ( KStdAccel::paste().contains( key ) ) {
+    QColor color;
+    KColorDrag::decode( QApplication::clipboard()->data( QClipboard::Clipboard ), color );
+    setColor( color );
   }
 }
 
