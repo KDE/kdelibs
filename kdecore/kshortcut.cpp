@@ -110,9 +110,9 @@ bool KKey::init( const QKeySequence& key )
 bool KKey::init( const QKeyEvent* pEvent )
 {
 	int keyQt = pEvent->key();
-	if( pEvent->state() & Qt::ShiftButton )   keyQt |= Qt::ALT;
+	if( pEvent->state() & Qt::ShiftButton )   keyQt |= Qt::SHIFT;
 	if( pEvent->state() & Qt::ControlButton ) keyQt |= Qt::CTRL;
-	if( pEvent->state() & Qt::AltButton )     keyQt |= Qt::SHIFT;
+	if( pEvent->state() & Qt::AltButton )     keyQt |= Qt::ALT;
 	return init( keyQt );
 }
 
