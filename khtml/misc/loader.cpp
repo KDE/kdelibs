@@ -1078,7 +1078,9 @@ void Loader::slotFinished( KIO::Job* job )
 
   if (j->error() || j->isErrorPage())
   {
+#ifdef CACHE_DEBUG
       kdDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage() << endl;
+#endif
       r->object->error( job->error(), job->errorText().ascii() );
       emit requestFailed( r->m_docLoader, r->object );
   }
@@ -1087,7 +1089,9 @@ void Loader::slotFinished( KIO::Job* job )
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
-kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << " expires " << ctime(&expireDate) << endl;
+#ifdef CACHE_DEBUG
+      kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << " expires " << ctime(&expireDate) << endl;
+#endif
       r->object->setExpireDate(expireDate, false);
   }
 
@@ -1144,7 +1148,9 @@ void Loader::cancelRequests( DocLoader* dl )
     {
         if ( pIt.current()->m_docLoader == dl )
         {
+#ifdef CACHE_DEBUG
             kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+#endif
             //emit requestFailed( dl, pIt.current()->object );
             Cache::removeCacheEntry( pIt.current()->object );
             m_requestsPending.remove( pIt );
