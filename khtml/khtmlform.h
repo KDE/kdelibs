@@ -28,6 +28,7 @@
 #define __HTMLFORM_H__
 
 #include <qwidget.h>
+#include <qmultilinedit.h>
 
 #include "khtmlobj.h"
 #include "khtmlfont.h"
@@ -118,6 +119,11 @@ public:
             int _height, int _tx, int _ty, bool toPrinter );
   	virtual void print( QPainter *, int, int );
 
+    // recursive function the widget itself and all child widgets
+    virtual void paintWidget( QWidget *widget );
+
+    virtual HTMLObject *mouseEvent( int _x, int _y, int button, int state );
+
     virtual const char * objectName() const { return "HTMLWidgetElement"; };
 
     void setWidget( QWidget *_w );
@@ -131,6 +137,10 @@ private:
 	// absolute position of this element in the page
 	int _absX;
 	int _absY;
+	
+	// relative position of this element in the page
+	int _relX;
+	int _relY;
 };
 
 //---------------------------------------------------------------------------

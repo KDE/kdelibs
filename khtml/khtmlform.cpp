@@ -27,6 +27,7 @@
 #include <strings.h>
 
 #include <qobject.h>
+#include <qobjectlist.h>
 #include <qlistbox.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
@@ -113,16 +114,18 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 	if ( w == 0L ) // CC: HTMLHidden does not have a widget...
 		return;
 
+        _relX = absX() - _x;
+	_relY = absY() - _y;
 
 	return;
 	if ( _y > absY() + ascent + descent || _y + _height < absY() )
 	{
-		w->hide();
+//		w->hide();
 	}
 	else
 	{
 		w->move( absX() - _x, absY() - _y );
-		w->show();
+		//w->show();
 	}
 }
 
@@ -147,18 +150,46 @@ bool HTMLWidgetElement::print( QPainter *_painter, int, int _y, int, int _height
 
 void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 {
+  if ( w == 0 || p == 0 || p->isNull() || w->isVisible())
     return;
-    printf("in print\n");
-    if ( w == 0 || p == 0 || p->isNull() )
-	return;
-    QPainter::redirect( w, p );
-    w->show();
-    // force a repaint
-    w->repaint( false );
-    w->hide();
 
-    printf("in print...\n");
-    _painter->drawPixmap( QPoint( _tx, _ty), *p );
+  paintWidget( w );
+
+  _painter->drawPixmap( QPoint( _tx, _ty ), *p );
+}
+
+void HTMLWidgetElement::paintWidget( QWidget *widget )
+{
+  QPainter::redirect( widget, p );
+  QPaintEvent pe( QRect(widget->pos().x(), widget->pos().y(), widget->width(), widget->height()) );
+  QApplication::sendEvent( widget, &pe );
+  QPainter::redirect( w, 0 );
+  
+  const QObjectList *childrenList = w->children();
+  if (childrenList)
+     {
+       QObjectListIt it( *childrenList );
+       for (; it.current(); ++it)
+         if (it.current()->isWidgetType())
+	    {
+	      QWidget *w = (QWidget *)it.current();
+	      if (w->parentWidget() == widget && w->isVisible())
+	        paintWidget( w );
+	    }
+     }  
+}
+
+HTMLObject *HTMLWidgetElement::mouseEvent( int _x, int _y, int button, int state )
+{
+  printf("HTMLObject *HTMLWidgetElement::mouseEvent( ... )\n");
+  if (!w->isVisible())
+     {
+       w->move( _relX, _relY );
+       w->show();
+     }
+  else w->hide();  
+//  w->grabKeyboard();
+  return 0L;
 }
 
 void HTMLWidgetElement::calcAbsolutePos( int _x, int _y )
