@@ -234,7 +234,10 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 
 ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
 {
-    return createHTMLElement(name);
+    ElementImpl *e = createHTMLElement(name);
+    if (!e)
+	e = DocumentImpl::createElement(name);
+    return e;
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()
