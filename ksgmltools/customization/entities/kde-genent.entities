@@ -235,10 +235,12 @@
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
+<!ENTITY Linux-Mandrake	"<trademark>Linux-Mandrake</trademark>">
 <!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
 <!ENTITY lskat	"<application>Lskat</application>">
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
+<!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
 <!ENTITY MIME	"<acronym>MIME</acronym>">
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
@@ -248,6 +250,7 @@
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
 <!ENTITY noatun "<application>Noatun</application>">
 <!ENTITY pixie	"<application>Pixie</application>">
+<!ENTITY PalmOS	'<trademark class="registered">Palm OS</trademark>'>
 <!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
@@ -261,6 +264,7 @@
 <!ENTITY URL	"<acronym>URL</acronym>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
+<!ENTITY XEmacs	"<application>XEmacs</application>">
 <!ENTITY X-Windows	'<trademark class="registered">X Windows</trademark>'>
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
