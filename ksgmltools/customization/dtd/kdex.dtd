@@ -25,11 +25,11 @@
 
     Refer to this DTD as
 
-      "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
+      "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
 
     For instance:
 
-      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN">
 
     and use catalog as the catalogue file.
 -->
@@ -77,7 +77,7 @@
 
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"         >
+  "docbook/xml-dtd-4.1.2/docbookx.dtd"         >
 %DocBookDTD;
 
 
@@ -87,7 +87,7 @@
 <!-- ONLY to supply declarations that were switched off in the 
      first "Modifications" section -->
 
-<!ENTITY % kde.modifications SYSTEM "kde-x-modifications.elements">
+<!ENTITY % kde.modifications SYSTEM "kdex-modifications.elements">
 %kde.modifications;
 
 
@@ -98,10 +98,10 @@
 
 <!ENTITY % kde.general.entities	PUBLIC
   "-//KDE//ENTITIES DocBook XML General Entity Declarations V2.0//EN"    
-  "../entities/kde-x-genent.entities"                                >
+  "../entities/kdex-genent.entities"                                >
 %kde.general.entities;
 
 <!ENTITY % kde.i18n.entities PUBLIC
   "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V2.0//EN"
-  "../entities/kde-x-l10n.entities">
+  "../entities/kdex-l10n.entities">
 %kde.i18n.entities;
