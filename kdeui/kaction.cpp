@@ -858,7 +858,8 @@ void KAction::updateText( int i )
   if ( w->inherits( "QPopupMenu" ) ) {
     int id = itemId( i );
     static_cast<QPopupMenu*>(w)->changeItem( id, d->text() );
-    updateShortcut( static_cast<QPopupMenu*>(w), id );
+    if (!d->m_cut.isNull())
+      updateShortcut( static_cast<QPopupMenu*>(w), id );
   }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
@@ -897,7 +898,8 @@ void KAction::updateIcon( int id )
   if ( w->inherits( "QPopupMenu" ) ) {
     int itemId_ = itemId( id );
     static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
-    updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
+    if (!d->m_cut.isNull())
+      updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
   }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
@@ -928,7 +930,8 @@ void KAction::updateIconSet( int id )
   {
     int itemId_ = itemId( id );
     static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
-    updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
+    if (!d->m_cut.isNull())
+      updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
   }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
