@@ -48,6 +48,7 @@ public:
   const T* operator->() const { return ptr; }
   T* operator->() { return ptr; }
 
+  uint count() const { return ptr->count; } // for debugging purposes
 private:
   T* ptr;
 };
