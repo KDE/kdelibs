@@ -127,13 +127,13 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 	}
 	
 	eventRunning=true;
-	if ((present & Sound) && (QFile(sound).isReadable()))
+	if ((present & KNotifyClient::Sound) && (QFile(sound).isReadable()))
 		notifyBySound(sound);
-	if (present & Messagebox)
+	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-	if (present & Logfile && (QFile(file).isReadable()))
+	if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
 		notifyByLogfile(text, file);
-	if (present & Stderr)
+	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);
 	eventRunning=false;
 }

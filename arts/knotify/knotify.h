@@ -22,6 +22,7 @@
 #define KNOTIFY_H
 
 #include <qobject.h>
+#include <knotifyclient.h>
 #include <dcopobject.h>
 
 class KNotify : public QObject, DCOPObject
@@ -32,15 +33,7 @@ K_DCOP
 public:
 	KNotify();
 //	~KNotify();
-	enum Presentation
-	{
-		Default=-1,
-		None=0,
-		Sound=1,
-		Messagebox=2,
-		Logfile=4,
-		Stderr=8
-	};
+	typedef KNotifyClient::Presentation Presentation;
 
 protected:
 	void processNotification(const QString &event, const QString &fromApp,
