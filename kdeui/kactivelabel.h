@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; version 2 
+    License as published by the Free Software Foundation; version 2
     of the License.
 
     This library is distributed in the hope that it will be useful,
@@ -65,7 +65,7 @@ public slots:
      *
      * If @p link starts with the text "whatsthis:" a QWhatsThis
      * box will appear and then display the rest of the text. The WhatsThis
-     * functionality is available since KDE 3.2. 
+     * functionality is available since KDE 3.2.
      */
     virtual void openLink(const QString & link);
 
@@ -79,6 +79,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
     virtual void focusInEvent( QFocusEvent* fe );
     virtual void focusOutEvent( QFocusEvent* fe );
+    virtual void keyPressEvent ( QKeyEvent * e );
 private:
     KActiveLabelPrivate *d;
 };
