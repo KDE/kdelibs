@@ -14,12 +14,14 @@ libqt_addon_la_LDFLAGS = $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -versi
 libqt_addon_la_LIBADD  = $(LIB_QT) $(LIB_IDN) $(LIB_SOCKET)
 libqt_addon_la_SOURCES = qresolver.cpp qresolvermanager.cpp qresolverworkerbase.cpp \
 		qsocketaddress.cpp qresolverstandardworkers.cpp \
+		qreverseresolver.cpp \
 		qsocketbase.cpp qsocketimpl.cpp qclientsocketbase.cpp \
 		qstreamsocket.cpp qbufferedsocket.cpp qserversocket.cpp \
 		qdatagramsocket.cpp qhttpproxysocketimpl.cpp
 
-qt_addon_HEADERS = qtaddon.h qresolver.h qsocketaddress.h qsocketbase.h \
-	qsocketimpl.h qclientsocketbase.h qstreamsocket.h qbufferedsocket.h \
+qt_addon_HEADERS = qtaddon.h qresolver.h qreverseresolver.h qsocketaddress.h 
+	qsocketbase.h qsocketimpl.h \
+	qclientsocketbase.h qstreamsocket.h \
 	qserversocket.h qdatagramsocket.h qmulticastsocketimpl.h qmulticastsocket.h \
 	qnetworkinterface.h qhttpproxysocketimpl.h
 noinst_HEADERS = qresolver_p.h qresolverworkerbase.h qresolverstandardworkers_p.h
