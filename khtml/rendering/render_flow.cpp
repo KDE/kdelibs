@@ -202,9 +202,9 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     for ( ; (r = it.current()); ++it ) {
         // A special object may be registered with several different objects... so we only print the
         // object if we are it's containing block
-	if (r->node->containingBlock() == this) {
-	    r->node->print(p, x, y, w, h, tx , ty);
-	}
+ 	if (!r->noPaint) {
+	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos(), ty + r->startY - r->node->yPos() );
+ 	}
 #ifdef FLOAT_DEBUG
 	p->save();
 	p->setPen( Qt::magenta );
@@ -553,7 +553,7 @@ void RenderFlow::positionNewFloats()
     while(1)
     {
         lastFloat = specialObjects->prev();
-        if(!lastFloat || (lastFloat->startY != -1 && lastFloat->type!=SpecialObject::Positioned)) {
+        if(!lastFloat || (lastFloat->startY != -1 && !(lastFloat->type==SpecialObject::Positioned) )) {
             specialObjects->next();
             break;
         }
@@ -760,7 +760,7 @@ RenderFlow::floatBottom() const
     SpecialObject* r;
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
-        if (r->endY>bottom && r->type <= SpecialObject::FloatRight)
+        if (r->endY>bottom && (int)r->type <= (int)SpecialObject::FloatRight)
             bottom=r->endY;
     return bottom;
 }
@@ -871,7 +871,7 @@ RenderFlow::clearFloats()
 	if( overhangingContents() ) {
             specialObjects->first();
             while ( specialObjects->current()) {
-		if ( specialObjects->current()->type != SpecialObject::Positioned )
+		if ( !(specialObjects->current()->type == SpecialObject::Positioned) )
 		    specialObjects->remove();
                 else
 		    specialObjects->next();
@@ -930,7 +930,7 @@ RenderFlow::clearFloats()
 void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, bool child )
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << (void *)this << ": adding overhanging floats offset=" << offset << " child=" << child << endl;
+    kdDebug( 6040 ) << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child << endl;
 #endif
     if ( !flow->specialObjects )
         return;
@@ -944,10 +944,13 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
     QPtrListIterator<SpecialObject> it(*flow->specialObjects);
     SpecialObject *r;
     for ( ; (r = it.current()); ++it ) {
-	if ( r->type <= SpecialObject::FloatRight &&
+	if ( (int)r->type <= (int)SpecialObject::FloatRight &&
 	     ( ( !child && r->endY > offset ) ||
 	       ( child && flow->yPos() + r->endY > height() ) ) ) {
 
+	    if ( child )
+		r->noPaint = true;
+	    
 	    SpecialObject* f = 0;
 	    // don't insert it twice!
 	    QPtrListIterator<SpecialObject> it(*specialObjects);
@@ -963,8 +966,10 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		special->left = r->left - xoff;
 		if (flow != parent())
 		    special->left += flow->marginLeft();
-		if ( !child )
+		if ( !child ) {
 		    special->left -= marginLeft();
+		    special->noPaint = true;
+		}
 		special->width = r->width;
 		special->node = r->node;
 		specialObjects->append(special);

@@ -154,8 +154,8 @@ protected:
         short left;
         short width;
         short count;
-        Type type; // left or right aligned
-        bool noPaint;
+        Type type : 2; // left or right aligned
+        bool noPaint : 1;
 
         bool operator==(const SpecialObject& ) const
         {
