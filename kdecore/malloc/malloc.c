@@ -5,6 +5,8 @@
 #define USE_MALLOC_LOCK
 #define INLINE __inline__
 /*#define INLINE*/
+#define USE_MEMCPY 0
+#define MMAP_CLEARS 1
 
 /*
   This is a version (aka dlmalloc) of malloc/free/realloc written by
@@ -683,7 +685,9 @@ extern Void_t*     sbrk();
 
 #ifndef HAVE_MMAP
 #define HAVE_MMAP 1
+#endif
 
+#if HAVE_MMAP
 /* 
    Standard unix mmap using /dev/zero clears memory so calloc doesn't
    need to.
@@ -1768,7 +1772,7 @@ do {                                                                          \
   }                                                                           \
 } while(0)
 
-define MALLOC_COPY(dest,src,nbytes)                                           \
+#define MALLOC_COPY(dest,src,nbytes)                                          \
 do {                                                                          \
   INTERNAL_SIZE_T* mcsrc = (INTERNAL_SIZE_T*) src;                            \
   INTERNAL_SIZE_T* mcdst = (INTERNAL_SIZE_T*) dest;                           \
@@ -3207,6 +3211,7 @@ static Void_t* sYSMALLOc(nb, av) INTERNAL_SIZE_T nb; mstate av;
         }
         else {
           p = (mchunkptr)mm;
+          p->prev_size = 0;
           set_head(p, size|IS_MMAPPED);
         }
         
@@ -4231,9 +4236,7 @@ Void_t* cALLOc(n_elements, elem_size) size_t n_elements; size_t elem_size;
   if (mem != 0) {
     p = mem2chunk(mem);
 
-#if MMAP_CLEARS
-    if (!chunk_is_mmapped(p)) /* don't need to clear mmapped space */
-#endif
+    if (!chunk_is_mmapped(p))
     {  
       /*
         Unroll clear of <= 36 bytes (72 if 8byte sizes)
@@ -4267,6 +4270,14 @@ Void_t* cALLOc(n_elements, elem_size) size_t n_elements; size_t elem_size;
         }
       }
     }
+#if ! MMAP_CLEARS
+    else
+    {
+      d = (INTERNAL_SIZE_T*)mem;
+      clearsize = chunksize(p) - 2 * SIZE_SZ;
+      MALLOC_ZERO(d, clearsize);
+    }
+#endif
   }
   return mem;
 }
