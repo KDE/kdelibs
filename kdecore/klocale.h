@@ -532,6 +532,11 @@ protected:
     QString _country; // Where the user lives
 
     /**
+     * @internal function used by readTime(const QString &) const.
+     */
+    QTime readTime(const QString &str, bool seconds) const;
+
+    /**
      * @internal function used by the constructor.
      */
     void setEncodingLang(const QString &_lang);

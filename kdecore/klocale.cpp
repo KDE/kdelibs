@@ -793,16 +793,29 @@ error:
 QTime KLocale::readTime(const QString &intstr) const
 {
   QTime _time;
+  _time = readTime(intstr, true);
+  if (_time.isValid()) return _time;
+  return readTime(intstr, false);
+}
+
+QTime KLocale::readTime(const QString &intstr, bool seconds) const
+{
+  QTime _time;
   QString str = intstr.simplifyWhiteSpace().lower();
   QString fmt = _timefmt.simplifyWhiteSpace();
+  if (!seconds)
+    fmt.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
 
-  int hour = -1, minute = -1, second = 0; // don't require seconds
+  kdDebug() << "fmt: " << fmt << endl;
+  int hour = -1, minute = -1, second = seconds ? -1 : 0; // don't require seconds
   bool _12h = false;
   bool pm = false;
   uint strpos = 0;
   uint fmtpos = 0;
 
-  while (fmt.length() > fmtpos && str.length() > strpos) {
+  while (fmt.length() > fmtpos || str.length() > strpos) {
+    if ( !(fmt.length() > fmtpos && str.length() > strpos) ) goto error;
+
     QChar c = fmt.at(fmtpos++);
 
     if (c != '%') {
@@ -880,11 +893,10 @@ QTime KLocale::readTime(const QString &intstr) const
       if (pm) hour += 12;
     }
 
-error:
-  _time.setHMS(hour, minute, second);
+  return QTime(hour, minute, second);
 
-  // if there was an error time will be zero, if not it would be ok
-  return _time;
+error:
+  return QTime(-1, -1, -1); // return invalid date if it didn't work
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
