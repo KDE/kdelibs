@@ -131,21 +131,19 @@ HCStyle::HCStyle()
     setButtonDefaultIndicatorWidth(0);
     if(QPixmap::defaultDepth() > 8){
         vSmall = new KPixmap;
-        vSmall->resize(20, 24);
+        vSmall->resize(18, 24);
         vMed = new KPixmap;
-        vMed->resize(20, 34);
+        vMed->resize(18, 34);
         vLarge = new KPixmap;
-        vLarge->resize(20, 64);
-        hSmall = new KPixmap;
-        hSmall->resize(24, 20);
+        vLarge->resize(18, 64);
         hMed = new KPixmap;
-        hMed->resize(34, 20);
+        hMed->resize(34, 18);
         hLarge = new KPixmap;
-        hLarge->resize(64, 20);
+        hLarge->resize(52, 18);
     }
     else{
         vSmall = vMed = vLarge = NULL;
-        hSmall = hMed = hLarge = NULL;
+        hMed = hLarge = NULL;
     }
 }
 
@@ -155,7 +153,6 @@ HCStyle::~HCStyle()
         delete vSmall;
         delete vMed;
         delete vLarge;
-        delete hSmall;
         delete hMed;
         delete hLarge;
     }
@@ -199,9 +196,6 @@ void HCStyle::polish(QPalette &pal)
         KPixmapEffect::gradient(*vLarge, g.midlight(),
                                 g.mid(),
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*hSmall, g.midlight(),
-                                g.mid(),
-                                KPixmapEffect::HorizontalGradient);
         KPixmapEffect::gradient(*hMed, g.midlight(),
                                 g.mid(),
                                 KPixmapEffect::HorizontalGradient);
@@ -589,11 +583,11 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         if(addPageR.width()){
             p->setPen(g.dark());
             if(horiz){
-                if(vSmall){
+                if(vMed){
                     p->drawTiledPixmap(addPageR.x(), addPageR.y()+1,
                                        addPageR.width(), addPageR.height()-2,
-                                       *vSmall, 0, activeControl==AddPage ? 0 :
-                                       vSmall->height()-(addPageR.height()-2));
+                                       *vMed, 0, activeControl==AddPage ? 0 :
+                                       vMed->height()-(addPageR.height()-2));
                     p->drawLine(addPageR.x(), addPageR.y(), addPageR.right(),
                                 addPageR.y());
                     p->drawLine(addPageR.x(), addPageR.bottom(), addPageR.right(),
@@ -613,11 +607,11 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                 }
             }
             else{
-                if(hSmall){
+                if(hMed){
                     p->drawTiledPixmap(addPageR.x()+1, addPageR.y(),
                                        addPageR.width()-2, addPageR.height(),
-                                       *hSmall, activeControl==AddPage ? 0 :
-                                       hSmall->width()-(addPageR.width()-2),
+                                       *hMed, activeControl==AddPage ? 0 :
+                                       hMed->width()-(addPageR.width()-2),
                                        0);
                     p->drawLine(addPageR.x(), addPageR.y(), addPageR.x(),
                                 addPageR.bottom());
@@ -643,11 +637,11 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         if(subPageR.height()){
             p->setPen(g.dark());
             if(horiz){
-                if(vSmall){
+                if(vMed){
                     p->drawTiledPixmap(subPageR.x(), subPageR.y()+1,
                                        subPageR.width(), subPageR.height()-2,
-                                       *vSmall, 0, activeControl==SubPage ? 0 :
-                                       vSmall->height()-(subPageR.height()-2));
+                                       *vMed, 0, activeControl==SubPage ? 0 :
+                                       vMed->height()-(subPageR.height()-2));
                     p->drawLine(subPageR.x(), subPageR.y(), subPageR.right(),
                                 subPageR.y());
                     p->drawLine(subPageR.x(), subPageR.bottom(), subPageR.right(),
@@ -669,11 +663,11 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                 }
             }
             else{
-                if(hSmall){
+                if(hMed){
                     p->drawTiledPixmap(subPageR.x()+1, subPageR.y(),
                                        subPageR.width()-2, subPageR.height(),
-                                       *hSmall, activeControl==SubPage ? 0 :
-                                       hSmall->width()-(subPageR.width()-2),
+                                       *hMed, activeControl==SubPage ? 0 :
+                                       hMed->width()-(subPageR.width()-2),
                                        0);
                     p->drawLine(subPageR.x(), subPageR.y(), subPageR.x(),
                                 subPageR.bottom());
@@ -1079,7 +1073,7 @@ void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
     else{
         int x2 = x+w-1;
         int y2 = y+h-1;
-        if(hSmall)
+        if(hMed)
             drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
         else
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
@@ -1202,7 +1196,7 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                 }
                 // See if we are in the gradient at all. Two rows always are
                 // large.
-                else if(btn->y() <= 64){
+                else if(btn->y() <= 52){
                     p->fillRect(x, y, w, h, g.mid());
                     p->drawTiledPixmap(x, y, w, 64-btn->y(),
                                        *vLarge, 0, btn->y());
@@ -1214,17 +1208,15 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             // vertical toolbar
             else{
                 if(btn->x() <= 3){
-                    if(toolbar->width() <= 24)
-                        p->drawTiledPixmap(x, y, w, h, *hSmall);
-                    else if(toolbar->width() <= 34)
+                    if(toolbar->width() <= 34)
                         p->drawTiledPixmap(x, y, w, h, *hMed);
                     else
                         p->drawTiledPixmap(x, y, w, h, *hLarge);
 
                 }
-                else if(btn->x() <= 64){
+                else if(btn->x() <= 52){
                     p->fillRect(x, y, w, h, g.mid());
-                    p->drawTiledPixmap(x, y, 64-btn->x(), h,
+                    p->drawTiledPixmap(x, y, 52-btn->x(), h,
                                        *hLarge, btn->x(), 0);
                 }
                 else
@@ -1651,13 +1643,10 @@ void HCStyle::drawVGradient(QPainter *p, const QBrush &fill, int x, int y,
 void HCStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
                             int w, int h)
 {
-    if(w <= 24){
-        p->drawTiledPixmap(x, y, w, h, *hSmall);
-    }
-    else if(w <= 34){
+    if(w <= 34){
         p->drawTiledPixmap(x, y, w, h, *hMed);
     }
-    else if(w <= 64){
+    else if(w <= 52){
         p->drawTiledPixmap(x, y, w, h, *hLarge);
     }
     else{
@@ -1668,29 +1657,25 @@ void HCStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
 
 void HCStyle::makeWallpaper(QPixmap &dest, const QColor &base)
 {
-    static QBitmap paper3(100, 100, paper_3_bits, true);
-    static QBitmap paper4(100, 100, paper_4_bits, true);
-    static QBitmap paper6(100, 100, paper_6_bits, true);
-    static QBitmap paper7(100, 100, paper_7_bits, true);
+    static QBitmap paper1(45, 45, paper_1_bits, true);
+    static QBitmap paper2(45, 45, paper_2_bits, true);
+    static QBitmap paper3(45, 45, paper_3_bits, true);
 
-    if(!paper3.mask()){
+    if(!paper1.mask()){
+        paper1.setMask(paper1);
+        paper2.setMask(paper2);
         paper3.setMask(paper3);
-        paper4.setMask(paper4);
-        paper6.setMask(paper6);
-        paper7.setMask(paper7);
     }
-    dest.resize(100, 100);
-    dest.fill(base); // paper5
+    dest.resize(45, 45);
+    dest.fill(base);
     QPainter p;
     p.begin(&dest);
     p.setPen(base.dark(104));
-    p.drawPixmap(0, 0, paper3);
-    p.setPen(base.dark(102));
-    p.drawPixmap(0, 0, paper4);
-    p.setPen(base.light(102));
-    p.drawPixmap(0, 0, paper6);
+    p.drawPixmap(0, 0, paper1);
     p.setPen(base.light(104));
-    p.drawPixmap(0, 0, paper7);
+    p.drawPixmap(0, 0, paper2);
+    p.setPen(base.light(106));
+    p.drawPixmap(0, 0, paper3);
     p.end();
 }
     

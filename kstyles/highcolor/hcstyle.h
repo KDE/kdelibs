@@ -169,7 +169,7 @@ protected:
                       bool down=false, bool fast = true);
 private:
     QColorGroup radioOnGrp;
-    KPixmap *vSmall, *vMed, *vLarge, *hSmall, *hMed, *hLarge;
+    KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge;
 };
 
 #endif
