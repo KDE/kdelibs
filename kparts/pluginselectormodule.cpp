@@ -43,20 +43,20 @@ PluginSelectorModule::PluginSelectorModule( KInstance * instance, QObject * pare
 			"input_devices_settings", parent, name )
 	, d( new PluginSelectorModulePrivate )
 {
-	kdDebug() << k_funcinfo << endl;
+	kdDebug( 1000 ) << k_funcinfo << endl;
 	d->instance = instance;
 	d->selector = 0;
 }
 
 PluginSelectorModule::~PluginSelectorModule()
 {
-	kdDebug() << k_funcinfo << endl;
+	kdDebug( 1000 ) << k_funcinfo << endl;
 	delete d;
 }
 
 void PluginSelectorModule::applyChanges()
 {
-	kdDebug() << k_funcinfo << endl;
+	kdDebug( 1000 ) << k_funcinfo << endl;
 	if( d->selector )
 	{
 		d->selector->save();
@@ -66,13 +66,13 @@ void PluginSelectorModule::applyChanges()
 
 void PluginSelectorModule::reset()
 {
-	kdDebug() << k_funcinfo << endl;
+	kdDebug( 1000 ) << k_funcinfo << endl;
 	// TODO
 }
 
 void PluginSelectorModule::createPage( QFrame * page )
 {
-	kdDebug() << k_funcinfo << endl;
+	kdDebug( 1000 ) << k_funcinfo << endl;
 	QBoxLayout * layout = new QVBoxLayout( page, 0, KDialog::spacingHint() );
 	layout->setAutoAdd( true );
 	d->selector = new KPluginSelector( d->instance, page );
