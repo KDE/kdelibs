@@ -289,7 +289,7 @@ void KAccel::readSettings(KConfig* config)
 	
             (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
             if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
-				kdDebug() << "insert " << (*it).descr << endl;
+				kdDebug(125) << "insert " << (*it).descr << endl;
                 QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
                                         (*it).member );
                 QAccel::removeItem( (*it).aAccelId );
