@@ -32,6 +32,7 @@ class KCookieList;
 class KCookieJar;
 class KCookie;
 class QTimer;
+class RequestList;
 
 class KCookieServer : public KUniqueApplication
 {
@@ -43,7 +44,8 @@ public:
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
 
-  void addCookies(QString url, QCString cookieHeader);
+  bool cookiesPending(const QString &url);
+  void addCookies(const QString &url, const QCString &cookieHeader);
   void checkCookies(KCookie *cookie, bool queue);
 
 public slots:
@@ -55,6 +57,7 @@ public slots:
 protected:
   KCookieJar *mCookieJar;
   KCookieList *mPendingCookies;
+  RequestList *mRequestList;
   QTimer *mTimer;
   bool mAdvicePending;
 };

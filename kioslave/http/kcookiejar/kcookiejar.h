@@ -79,6 +79,8 @@ public:
     int     protocolVersion(void) { return mProtocolVersion; }
     
     bool    isExpired(time_t currentDate);
+    bool    match(const QString &domain, const QString &fqdn, 
+                  const QString &path);
 
     KCookiePtr next() { return nextCookie; }
 };
@@ -244,17 +246,18 @@ public:
      * calling this function.
      */
     void eatCookie(KCookiePtr cookiePtr);
-protected:  
+
     /**
      * Parses _url and returns the FQDN (_fqdn) 
      * as well as the domain name without the hostname (_domain).
      */
-    bool extractDomain(const QString &_url,
-                       QString &_fqdn,
-                       QString &_domain,
-                       QString &_path);
+    static bool extractDomain(const QString &_url,
+                              QString &_fqdn,
+                              QString &_domain,
+                              QString &_path);
 
-	QDict<KCookieList> cookieDomains;
+protected:  
+    QDict<KCookieList> cookieDomains;
 
     QStringList domainList;
 

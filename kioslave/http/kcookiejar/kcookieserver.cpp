@@ -33,12 +33,28 @@
 #include <kstddirs.h>
 #include <qtimer.h>
 #include <unistd.h>
+#include <qlist.h>
+
+#include <dcopclient.h>
+
+class CookieRequest {
+public:
+   DCOPClientTransaction *transaction;
+   QString url;
+};
+
+class RequestList : public QList<CookieRequest>
+{
+public:
+   RequestList() : QList<CookieRequest>() { }
+};
 
 KCookieServer::KCookieServer(int argc, char *argv[]) 
   : KUniqueApplication( argc, argv, "kcookiejar" )
 {
    mCookieJar = new KCookieJar;
    mPendingCookies = new KCookieList;
+   mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = 0;
    mCookieJar->loadConfig( kapp->config());
@@ -68,6 +84,7 @@ KCookieServer::~KCookieServer()
    delete mPendingCookies;
 }
 
+
 bool 
 KCookieServer::process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData)
@@ -78,6 +95,15 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QString arg1;
         stream >> arg1;
         kdebug(KDEBUG_INFO, 7104, "got findCookies( %s )", arg1.ascii());
+        if (cookiesPending(arg1))
+        {
+           kdebug(KDEBUG_INFO, 7104, "Blocked on pending cookies.");
+           CookieRequest *request = new CookieRequest;
+           request->transaction = dcopClient()->beginTransaction();
+           request->url = arg1;
+           mRequestList->append( request );
+           return true; // Talk to you later :-)
+        }
         QString res = mCookieJar->findCookies(arg1); 
         QDataStream stream2(replyData, IO_WriteOnly);
         stream2 << res;
@@ -104,8 +130,27 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
     return false;
 }
 
+bool
+KCookieServer::cookiesPending( const QString &url )
+{
+  QString fqdn;
+  QString domain;
+  QString path;
+  // Check whether 'url' has cookies on the pending list
+  if (!KCookieJar::extractDomain( url, fqdn, domain, path))
+     return false;
+  for( KCookie *cookie = mPendingCookies->first();
+       cookie;
+       cookie = mPendingCookies->next())
+  {
+       if (cookie->match( domain, fqdn, path))
+          return true;
+  }
+  return false;  
+}
+
 void
-KCookieServer::addCookies(QString url, QCString cookieHeader)
+KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
 {
     KCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader);
 
@@ -149,9 +194,11 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
                 else
                 {
                     kdebug(KDEBUG_INFO, 7104, "Asking user for advice for cookie from %s", cookie->host().ascii());
+                    mPendingCookies->prepend(cookie);  
                     KCookieWin *kw = new KCookieWin( 0L, cookie);
 	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
 	            delete kw;
+                    mPendingCookies->take(0);  
 	            // Save the cookie config if it has changed
 	            mCookieJar->saveConfig( kapp->config() ); 
                 }
@@ -188,6 +235,31 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
                // Found a matching cookie, remove it from the pending list.
                cookie = mPendingCookies->take();
            }
+        }
+    }
+
+    // Check if we can handle any request
+    for( CookieRequest *request = mRequestList->first();
+         request;)
+    {
+        if (!cookiesPending( request->url ))
+        {
+           QCString replyType;
+           QByteArray replyData;
+           QString res = mCookieJar->findCookies( request->url ); 
+           QDataStream stream2(replyData, IO_WriteOnly);
+           stream2 << res;
+           replyType = "QString";
+           dcopClient()->endTransaction( request->transaction,
+                                       replyType, replyData);
+           CookieRequest *tmp = request;
+           request = mRequestList->next();
+           mRequestList->removeRef( tmp );
+           delete tmp;
+        }
+        else
+        {
+          request = mRequestList->next();
         }
     }
     if (mCookieJar->changed() && !mTimer)

@@ -114,6 +114,34 @@ QString KCookie::cookieStr(void)
     return result;
 }
 
+//
+// Returns whether this cookie should be send to this location.
+//
+bool KCookie::match(const QString &domain, const QString &fqdn, 
+                    const QString &path)
+{
+    if (!mDomain.isEmpty())
+    {
+        // Cookie has a domain set
+        if (domain != mDomain)
+            return false; // Domain of cookie does not match with host of URL
+    }     
+    else
+    {
+        // Cookie has no domain set
+        if (fqdn != mHost)
+            return false; // Host of cookie does not match with host of URL
+    }
+
+    if (!mPath.isEmpty())
+    {
+        // Cookie has a path set
+        if (path.find(mPath) != 0)
+            return false; // Path of URL does not start with cookie-path
+    }
+    return true;
+}
+
 // KCookieList
 ///////////////////////////////////////////////////////////////////////////
 
@@ -184,25 +212,9 @@ QString KCookieJar::findCookies(const QString &_url)
 
     for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
     {
-        if (!cookie->mDomain.isEmpty())
-        {
-            // Cookie has a domain set
-            if (domain != cookie->domain())
-                continue; // Domain of cookie does not match with host of URL
-	}        
-	else
-        {
-            // Cookie has no domain set
-            if (fqdn != cookie->host())
-                continue; // Host of cookie does not match with host of URL
-        }
+        if (!cookie->match( domain, fqdn, path))
+           continue;
 
-        if (!cookie->path().isEmpty())
-        {
-            // Cookie has a path set
-            if (path.find(cookie->path()) != 0)
-                continue; // Path of URL does not start with cookie-path
-	}
 	// Use first cookie to determine protocol version
 	if (cookieCount == 0)
 	{
