@@ -622,30 +622,34 @@ bool KHTMLView::gotoLink(bool forward)
 
     ElementImpl *currentNode = m_part->xmlDocImpl()->focusNode();
     ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(forward);
-    QRect nextRect;
-    if (!nextTarget)
-	nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
-    else if (!currentNode && !d->borderTouched)
+
+    if (!currentNode && !d->borderTouched)
     {
+	d->borderStart = forward;
+	d->borderTouched = true;
+
+	if (contentsY() != (forward?0:contentsHeight()))
+        {
 	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
-	    d->borderStart = forward;
-	    d->borderTouched = true;
-
-	    nextRect = nextTarget->getRect();
-
-	    if (nextRect.top()  < contentsY() ||
-		nextRect.bottom() > contentsY()+visibleHeight())
-		return true;
+	    if (nextTarget)
+	    {
+		QRect nextRect = nextTarget->getRect();
+		if (nextRect.top()  < contentsY() ||
+		    nextRect.bottom() > contentsY()+visibleHeight())
+		    return true;
+	    }
+	    else return true;
+	}
     }
-    else if ( !currentNode && d->borderTouched )
-    {
-	if (d->borderStart == forward)
-	    nextRect = nextTarget->getRect();
-	else
-	    nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
-    }
-    else
+
+    if (!nextTarget || (!currentNode && d->borderStart != forward))
+	nextTarget = 0;
+
+    QRect nextRect;
+    if (nextTarget)
 	nextRect = nextTarget->getRect();
+    else
+	nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
 
     if (scrollTo(nextRect))
     {
