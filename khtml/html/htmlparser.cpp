@@ -416,7 +416,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 discard_until = ID_TITLE + ID_CLOSE_TAG;
             // fall through
         case ID_HEAD:
-            throw exception;
+	    // ### alllow not having <HTML> in at all, as per HTML spec
+	    if (!current->isDocumentNode())
+		throw exception;
             break;
         case ID_HTML:
         case ID_BODY:
