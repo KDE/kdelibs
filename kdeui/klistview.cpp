@@ -459,8 +459,13 @@ KListView::~KListView()
 
 bool KListView::isExecuteArea( const QPoint& point )
 {
-  if ( itemAt( point ) )
+  QListViewItem* item = itemAt( point );
+  if ( item ) {
+    int offset = treeStepSize() * ( item->depth() + ( rootIsDecorated() ? 1 : 0) );
+    if (point.x() > (item->width( fontMetrics() , this, 0 ) + offset ))
+      return false;
     return isExecuteArea( point.x() );
+  }
 
   return false;
 }
