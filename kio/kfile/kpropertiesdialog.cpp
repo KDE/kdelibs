@@ -2727,12 +2727,13 @@ void KDesktopPropsPlugin::slotAddFiletype()
              this, SLOT(slotSelectMimetype()));
 
      QMap<QString,QListViewItem*> majorMap;
-
      QListViewItem *majorGroup;
      KMimeType::List mimetypes = KMimeType::allMimeTypes();
      QValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
      for (; it != mimetypes.end(); ++it) {
         QString mimetype = (*it)->name();
+        if (mimetype == "application/octet-stream")
+           continue;
         int index = mimetype.find("/");
         QString maj = mimetype.left(index);
         QString min = mimetype.mid(index+1);
@@ -2750,7 +2751,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         }
 
         QListViewItem *item = new QListViewItem(majorGroup, min, (*it)->comment());
-        item->setPixmap(0, (*it)->pixmap(KIcon::Small));
+        item->setPixmap(0, (*it)->pixmap(KIcon::Small, IconSize(KIcon::Small)));
      }
      QMapIterator<QString,QListViewItem*> mit = majorMap.find( "all" );
      if ( mit != majorMap.end())
