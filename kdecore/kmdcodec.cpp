@@ -341,21 +341,24 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     out.resize( out_len );
 
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-    while (sidx < len-2)
+    if ( len > 1 )
     {
-        if ( insertLFs )
+        while (sidx < len-2)
         {
-            if ( count && (count%76) == 0 )
-                out[didx++] = '\n';
-            count += 4;
+            if ( insertLFs )
+            {
+                if ( count && (count%76) == 0 )
+                    out[didx++] = '\n';
+                count += 4;
+            }
+            out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
+            out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
+                                       (buf[sidx] << 4) & 077];
+            out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
+                                       (buf[sidx+1] << 2) & 077];
+            out[didx++] = Base64EncMap[buf[sidx+2] & 077];
+            sidx += 3;
         }
-        out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
-        out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
-                                    (buf[sidx] << 4) & 077];
-        out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
-                                   (buf[sidx+1] << 2) & 077];
-        out[didx++] = Base64EncMap[buf[sidx+2] & 077];
-        sidx += 3;
     }
 
     if (sidx < len)
@@ -374,7 +377,8 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     }
 
     // Add padding
-    while (didx < out.size()) {
+    while (didx < out.size())
+    {
         out[didx] = '=';
         didx++;
     }
