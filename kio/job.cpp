@@ -806,14 +806,6 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
     QDataStream stream( m_packedArgs, IO_WriteOnly ); stream << u.path();
-
-    if (showProgressInfo)
-    {
-      connect( this, SIGNAL( processedSize ( KIO::Job *, unsigned long ) ),
-               Observer::self(), SLOT( slotProcessedSize( KIO::Job *, unsigned long ) ) );
-      connect( this, SIGNAL( totalSize ( KIO::Job *, unsigned long ) ),
-               Observer::self(), SLOT( slotTotalSize( KIO::Job *, unsigned long ) ) );
-    }
 }
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
@@ -922,8 +914,8 @@ void ListJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
 	     SLOT( slotListEntries( const KIO::UDSEntryList& )));
-    connect( slave, SIGNAL( totalEntries( unsigned long ) ),
-             SLOT( slotTotalEntries( unsigned long ) ) );
+    connect( slave, SIGNAL( totalSize( unsigned long ) ),
+             SLOT( slotTotalSize( unsigned long ) ) );
     SimpleJob::start(slave);
 }
 
