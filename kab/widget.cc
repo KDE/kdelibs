@@ -144,7 +144,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
 	 i18n("Kab could not convert your database to the\n"
 	      "current file format.\n"
 	      "You can use it, but not all features will be\n"
-	      "supported."));
+	      "supported."),
+	 i18n("OK"));
     }
   // get configuration keys for initialization:
   keys=configSection()->getKeys();
@@ -161,7 +162,8 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
 	     i18n("Error"),
 	     i18n("The application saved the last "
 		  "current entry,\nbut this entry "
-		  "does not exist anymore."));
+		  "does not exist anymore."),
+	     i18n("OK"));
 	}
     } else {
       LG(GUARD, "AddressWidget constructor: "
@@ -227,7 +229,8 @@ bool AddressWidget::updateDB()
 	      "for new versions. This error has been removed\n"
 	      "now and will not affect you anymore.\n"
 	      "All configuration values have been reset to\n"
-	      "its default settings."));
+	      "its default settings."),
+	 i18n("OK"));
     }          
   if((format==KAB_FILE_FORMAT)&&(kabVersion>=0.9))
     {
@@ -241,7 +244,8 @@ bool AddressWidget::updateDB()
 	{
 	  QMessageBox::information
 	    (this, i18n("File handling error"), 
-	     i18n("Unable to open database file r/w."));
+	     i18n("Unable to open database file r/w."),
+	     i18n("OK"));
 	  exit(-1);
 	}
     }
@@ -252,7 +256,8 @@ bool AddressWidget::updateDB()
 	(this, i18n("Email storage conversion"),
 	 i18n("Kab will move all your email addresses to\n"
 	      "the new style supporting unlimited numbers\n"
-	      "of email addresses per entry."));
+	      "of email addresses per entry."),
+	 i18n("OK"));
       for(pos=entrySection()->sectionsBegin();
 	  pos!=entrySection()->sectionsEnd(); 
 	  pos++)
@@ -291,7 +296,8 @@ bool AddressWidget::updateDB()
 	      "° the country field and\n"
 	      "° the postal code field.\n"
 	      "You will probably need to edit some of your\n"
-	      "entries to make use of it."));
+	      "entries to make use of it."),
+	 i18n("OK"));
     }
   // ----- set the new version:
   if(!keys->insert("FileFormat", KAB_FILE_FORMAT, true))
@@ -305,7 +311,8 @@ bool AddressWidget::updateDB()
     {
       QMessageBox::information
 	(this, i18n("File handling error"), 
-	 i18n("Could not save database after update."));
+	 i18n("Could not save database after update."),
+	 i18n("OK"));
       exit(-1);
     }
   // ----- switch back to r/o:
@@ -313,7 +320,8 @@ bool AddressWidget::updateDB()
     {
       QMessageBox::information
 	(this, i18n("File handling error"), 
-	 i18n("Unable to reopen database file r/o."));
+	 i18n("Unable to reopen database file r/o."),
+	 i18n("OK"));
       exit(-1);
     }      
   CHECK(isRO());
@@ -619,7 +627,9 @@ void AddressWidget::remove()
       if(query 
 	 ? (QMessageBox::information
 	    (this, i18n("Remove entry?"),
-	     i18n("Really remove this entry?"), 1, 2)==1)
+	     i18n("Really remove this entry?"),
+	     i18n("OK"),
+	     i18n("Cancel"))==0)
 	 : 1)
 	{
 	  LG(GUARD, " %i %s ... ", noOfEntries(),
@@ -829,7 +839,8 @@ void AddressWidget::save()
 		(this, i18n("Sorry"),
 		 i18n("The addressbook file is currently\n"
 		      "locked by another application.\n"
-		      "kab cannot save it."));
+		      "kab cannot save it."),
+		 i18n("OK"));
 	      return;
 	    }
 	} else {
@@ -1014,8 +1025,10 @@ void AddressWidget::search()
 	  initializeGeometry();
 	  searchResults->select(0);
 	} else {
-	  QMessageBox::information
-	    (this, i18n("Results"), i18n("No entry matches this."));
+	  QMessageBox::information(this,
+		       i18n("Results"),
+		       i18n("No entry matches this."),
+		       i18n("OK"));
 	  if(showSearchResults==true)
 	    {
 	      showSearchResults=false;
@@ -1139,13 +1152,15 @@ void AddressWidget::talk()
     {
       QMessageBox::information
 	(this, i18n("Error"), 
-	 i18n("The talk command must be configured before!"));
+	 i18n("The talk command must be configured before!"),
+	 i18n("OK"));
     }
   if(!keys->get("TalkParameters", params))
     {
       QMessageBox::information
 	(this, i18n("Talk configuration"),
-	 i18n("Please configure the parameters for the talk command."));
+	 i18n("Please configure the parameters for the talk command."),
+	 i18n("OK"));
       return;
     }
   if(!currentEntry(entry))
@@ -1195,8 +1210,10 @@ void AddressWidget::talk()
     }
   if(!found)
     {
-      QMessageBox::information
-	(this, i18n("Error"), i18n("The talk command parameters are wrong."));
+      QMessageBox::information(this,
+		   i18n("Error"),
+		   i18n("The talk command parameters are wrong."),
+		   i18n("OK"));
       return;
     }
   proc << command.c_str();
@@ -1209,7 +1226,8 @@ void AddressWidget::talk()
       QMessageBox::information
 	(this, i18n("Error"), 
 	 i18n("Talk command failed.\n"
-	      "Make sure you did setup your talk command and parameter!"));
+	      "Make sure you did setup your talk command and parameter!"),
+	 i18n("OK"));
     } else {
       emit(setStatus(i18n("Talk program started.")));
     }  
@@ -1889,8 +1907,10 @@ void AddressWidget::exportHTML()
   // ----- get a filename:
   if(!getHomeDirectory(home))
     {
-      QMessageBox::information
-	(this, i18n("Sorry"), i18n("Could not find the users home directory."));
+      QMessageBox::information(this,
+		   i18n("Sorry"),
+		   i18n("Could not find the users home directory."),
+		   i18n("OK"));
       emit(setStatus(i18n("Intern error!"))); 
       qApp->beep();
       return;
@@ -1909,9 +1929,10 @@ void AddressWidget::exportHTML()
   ofstream stream(file.c_str());
   if(!stream.good())
     {
-      QMessageBox::information
-	(this, i18n("Error"), 
-	 i18n("Could not open the file to create the HTML table."));
+      QMessageBox::information(this,
+		   i18n("Error"), 
+	 	   i18n("Could not open the file to create the HTML table."),
+		   i18n("OK"));
     }
   LG(GUARD, "AddressWidget::exportHTML: writing the file.\n");
   //        htmlizeString is n.i., but may already be called:
@@ -2002,7 +2023,10 @@ void AddressWidget::print()
 	    printDialog.getRightFooter()))
      {
        qApp->beep();
-       QMessageBox::information(this, i18n("Error"), i18n("Printing failed!"));
+       QMessageBox::information(this,
+		    i18n("Error"),
+		    i18n("Printing failed!"),
+		    i18n("OK"));
      }
   emit(setStatus(i18n("Printing finished successfully.")));
   // ############################################################################
@@ -2085,15 +2109,17 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
   // -----
   if(!keys->get("MailCommand", command))
     {
-      QMessageBox::information
-	(this, i18n("Error"), i18n
-	 ("The mail command must be configured before!"));
+      QMessageBox::information(this,
+		   i18n("Error"),
+		   i18n("The mail command must be configured before!"),
+		   i18n("OK"));
     }
   if(!keys->get("MailParameters", params))
     {
-      QMessageBox::information
-	(this, i18n("Mail configuration"),
-	 i18n("Please configure the parameters for the email command."));
+      QMessageBox::information(this,
+		   i18n("Mail configuration"),
+		   i18n("Please configure the parameters for the email command."),
+		   i18n("OK"));
       return false;
     } 
   LG(GUARD, "AddressWidget::mail: parsing mail parameters.\n");
@@ -2131,7 +2157,8 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
   if(!found) // subject param is mandatory
     {
       QMessageBox::information
-	(this, i18n("Error"), i18n("The email command parameters are wrong."));
+	(this, i18n("Error"), i18n("The email command parameters are wrong."),
+	       i18n("OK"));
       return false;
     }
   proc << command.c_str();
@@ -2141,10 +2168,11 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
     }
   if(proc.start(KProcess::DontCare)!=true)
     {
-      QMessageBox::information
-	(this, i18n("Error"), 
-	 i18n("Email command failed.\n"
-	      "Make sure you did setup your email command and parameter!"));
+      QMessageBox::information(this,
+		   i18n("Error"), 
+		   i18n("Email command failed.\n"
+			"Make sure you did setup your email command and parameter!"),
+		   i18n("OK"));
       return false;
     } else {
       emit(setStatus(i18n("Mail program started.")));

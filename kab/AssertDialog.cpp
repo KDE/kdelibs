@@ -213,12 +213,14 @@ void evaluate_assertion(bool condition, const char* file, int line,
 	    {
 	      QMessageBox::information
 		(0, i18n("Error handling error"),
-		 i18n("Could not send message."));
+		 i18n("Could not send message."),
+		 i18n("OK"));
 	    }
 	} else {
 	  QMessageBox::information
 	    (0, i18n("Error handling error"),
-	     i18n("The author did not publish an email address."));
+	     i18n("The author did not publish an email address."),
+	     i18n("OK"));
 	}
       break;
     }
@@ -256,6 +258,3 @@ const string& AssertDialog::getMailAddress()
 #include "AssertDialog.moc"
 #include "AssertDialogData.moc"
 // #############################################################################
-
-
-

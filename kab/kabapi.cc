@@ -136,8 +136,10 @@ KabAPI::ErrorCode KabAPI::add(const AddressBook::Entry& entry, string& key,
     }
   if(!widget->AddressBook::add(changed, dummy))
     {
-      QMessageBox::information
-	(this, i18n("Sorry"), i18n("Your new entry could not be added."));
+      QMessageBox::information(this,
+			  i18n("Sorry"),
+			  i18n("Your new entry could not be added."),
+			  i18n("OK"));
       return InternError;
     } else {
       widget->updateSelector();
@@ -280,4 +282,3 @@ KabAPI::ErrorCode KabAPI::sendEmail(const string& address, const string& subject
 // MOC OUTPUT FILES:
 #include "kabapi.moc"
 // #############################################################################
-
