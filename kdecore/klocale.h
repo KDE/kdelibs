@@ -72,7 +72,7 @@ public:
     
     /**
       * Creates an alias for the string text. It will be translated
-      + and stored under the integer constant index.
+      * and stored under the integer constant index.
       * This can help you to avoid repeated translation. 
       * Be aware, that this is only needed in cases, where you want
       * to translate it in loops or something like that.
