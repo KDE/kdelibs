@@ -1158,12 +1158,9 @@ bool HTTPProtocol::http_open()
     header += cookieStr + "\r\n";
   }
 
-  if (m_request.method == HTTP_POST) 
-  {
-    QString contentType = metaData("content-type");
-
-    if (!contentType.isEmpty()) 
-      header += contentType + "\r\n";
+  if (m_request.method == HTTP_POST) {
+      header += metaData("content-type");
+      header += "\r\n";
   }
 
   // Check the cache if it is not a re-authentication request.
@@ -1832,7 +1829,7 @@ bool HTTPProtocol::readHeader()
       }
       else
       {
-        msg = i18n( "<center>Authentication required to access<br/>"
+        msg = i18n( "<center>Authentication required to access<br>"
                     "<b>%1</b> at <b>%2</b></center>" ).arg( m_strRealm ).arg( m_request.hostname );
       }
     }
