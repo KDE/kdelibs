@@ -169,6 +169,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     d = new KHTMLViewPrivate;
     QScrollView::setVScrollBarMode(d->vmode);
     QScrollView::setHScrollBarMode(d->hmode);
+    connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
 
     // initialize QScrollview
     enableClipper(true);
@@ -892,6 +893,8 @@ void KHTMLView::print()
 
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
             p->translate(0,-(pageHeight-overlap));
+            if (top + pageHeight >= root->docHeight())
+                break; // Stop if we have printed everything
             top += (pageHeight-overlap);
         }
 
@@ -907,6 +910,20 @@ void KHTMLView::print()
         QApplication::restoreOverrideCursor();
     }
     delete printer;
+}
+
+void KHTMLView::slotPaletteChanged()
+{
+    if(!m_part->xmlDocImpl()) return;
+    DOM::DocumentImpl *document = m_part->xmlDocImpl();
+    if (!document->isHTMLDocument()) return;
+    khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(document->renderer());
+    if(!root) return;
+    root->style()->resetPalette();
+    NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
+    if(!body) return;
+    body->setChanged(true);
+    body->applyChanges();
 }
 
 void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
