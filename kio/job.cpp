@@ -543,7 +543,10 @@ void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.prettyURL() << ")" << endl;
 
-    if (m_redirectionList.contains(url) > 1)
+    // Some websites keep redirecting to themselves where each redirection
+    // acts as the stage in a state-machine. We define "endless redirections"
+    // as 5 redirections to the same URL.
+    if (m_redirectionList.contains(url) > 5)
     {
        kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
