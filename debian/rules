@@ -22,8 +22,8 @@ $(BUILDDIR)/build-stamp:
 	../configure --enable-debug --disable-rpath \
 	--libdir=$$libdir --includedir=$$includedir
 	## Temporary hack to allow building
-	#cp corba/kom/kom.idl build/corba/kom/
-	#cp corba/partsui/openparts_ui.idl build/corba/partsui/
+	cp corba/kom/kom.idl build/corba/kom/
+	cp corba/partsui/openparts_ui.idl build/corba/partsui/
 	make -C $(BUILDDIR)
 
 	touch $(BUILDDIR)/build-stamp

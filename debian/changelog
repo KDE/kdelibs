@@ -1,3 +1,10 @@
+kdelibs-cvs (4:2.0-19990620-1) experimental; urgency=low
+
+  * New upstream CVS version
+  * Migrating to /etc/kde from /etc/kde2
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 20 Jun 1999 11:00:28 -0400
+
 kdelibs-cvs (4:2.0-19990601-1) experimental; urgency=low
 
   * New upstream CVS version
