@@ -40,6 +40,8 @@
 
 #include <kdebug.h>
 #include <kstddirs.h>
+#include <ksock.h>
+#include <ksockaddr.h>
 
 class KSSLPrivate {
 public:
@@ -333,8 +335,8 @@ void KSSL::setPeerInfo(int sock) {
 #ifdef HAVE_SSL
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
-  struct sockaddr_in sa;
-  socklen_t nl = sizeof(struct sockaddr_in);
+  ksockaddr_in sa;
+  ksocklen_t nl = sizeof(ksockaddr_in);
   int rc = getpeername (sock, (sockaddr *)&sa, &nl);
 
   if (rc != -1) {
