@@ -171,7 +171,7 @@ zh      Chinese
 <!-- End of compulsory ReleaseInfo -->]]>
 
 <!ENTITY % olink.attlist "IGNORE">
-<!ENTITY % glossentry.attlist "IGNORE">
+<!-- ENTITY % glossentry.attlist "IGNORE" -->
 
 <!-- Temporary lifting of restriction (action to be added too?)-->
 <!ENTITY % local.smallcptr.char.mix "|envar">

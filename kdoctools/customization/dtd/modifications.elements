@@ -77,7 +77,7 @@
 >
 
 <!-- ID made compulsory -->
-<!--ATTLIST glossentry
+<!-- ATTLIST glossentry
 		sortas		CDATA		#IMPLIED
 		%idreq.common.attrib;
 		%glossentry.role.attrib;
