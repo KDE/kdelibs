@@ -724,7 +724,8 @@ protected:
 
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
-   **/
+   * ### for 3.0 : make this virtual
+   */
   void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
   /**

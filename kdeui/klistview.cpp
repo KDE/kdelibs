@@ -659,6 +659,8 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
     QListViewItem *afterFirst = i->itemAbove();
     moveItem(i, parent, afterme);
 
+    // ###### This should include the new parent !!! -> KDE 3.0
+    // If you need this right now, have a look at keditbookmarks.
     emit moved(i, afterFirst, afterme);
 
     items.append (i);
@@ -724,19 +726,30 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
   // Get the position to put it in
   QListViewItem *atpos = itemAt(p);
 
+  QListViewItem *above;
   if (!atpos) // put it at the end
-    after = lastItem();
+    above = lastItem();
   else
-  { // get the one closer to me..
-    // That is, the space between two listviewitems
-    // Since this aims to be user-friendly :)
-
-    after =
-      mapFromGlobal(p).y() - mapFromGlobal(itemRect(atpos).topLeft()).y() < (atpos->height()/2) ?
+  {
+    // Get the closest item before us ('atpos' or the one above)
+    above =
+      p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2) ?
       atpos->itemAbove() : atpos;
-
   }
 
+  // Now, we know we want to go after "above". But as a child or as a sibling ?
+  // We have to ask the "above" item if it accepts children.
+  if ( above->isExpandable() )
+  {
+      if (p.x() >= treeStepSize() * ( above->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin())
+      {
+          parent = above;
+          after = 0L;
+          return;
+      }
+  }
+  // set as sibling
+  after = above;
   parent = after ? after->parent() : 0L ;
 }
 
@@ -877,31 +890,41 @@ void KListView::setDropVisualizerWidth (int w)
   d->mDropVisualizerWidth = w > 0 ? w : 1;
 }
 
-QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
+QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
                                     QListViewItem *after)
 {
-  QRect insertmarker;
+    QRect insertmarker;
 
-  if (after)
+    if (after)
+    {
+        insertmarker = itemRect (after);
+
+        insertmarker.setLeft (0);
+        insertmarker.setRight (viewport()->width());
+        insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
+        insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
+    }
+    else
+    {
+        if (parent)
         {
-          insertmarker = itemRect (after);
+            insertmarker = itemRect (parent);
 
-          insertmarker.setLeft (0);
-          insertmarker.setRight (viewport()->width());
-          insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
-          insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
+            insertmarker.setLeft( treeStepSize() * ( parent->depth() + (rootIsDecorated() ? 1 : 0) ) + itemMargin() );
+            insertmarker.setRight (viewport()->width());
+            insertmarker.setTop (insertmarker.bottom() - d->mDropVisualizerWidth/2 + 1);
+            insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
         }
-  else
-        {
-          insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
-        }
+        else
+            insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
+    }
 
-  // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
-  // Remove for KDE 3.0.
-  if (p)
+    // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
+    // Remove for KDE 3.0.
+    if (p)
         p->fillRect(insertmarker, Dense4Pattern);
 
-  return insertmarker;
+    return insertmarker;
 }
 
 QRect KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
