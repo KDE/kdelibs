@@ -9,6 +9,7 @@ kde_style_LTLIBRARIES = keramik.la
 keramik_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 keramik_la_LIBADD = ../../kdefx/libkdefx.la
 keramik_la_SOURCES = keramik.cpp pixmaploader.cpp
+keramik_la_COMPILE_FIRST = keramikrc.h
 keramik_la_METASOURCES = AUTO
 
 noinst_PROGRAMS = genembed
@@ -16,8 +17,6 @@ noinst_PROGRAMS = genembed
 genembed_SOURCES = genembed.cpp
 genembed_LDADD = ../../kdefx/libkdefx.la
 genembed_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-
-pixmaploader.lo keramik.lo: pixmaps.keramik keramikrc.h
 
 pixmaps.keramik: pics/arrow.png pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-bc.png\
 	 pics/combobox-list-bl.png pics/combobox-list-br.png pics/combobox-list-cl.png pics/combobox-list-cr.png\
