@@ -49,7 +49,7 @@ void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, Ren
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len, 
+    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
     p->restore();
 }
@@ -250,21 +250,16 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     if ( style() != _style ) {
-	RenderObject::setStyle( _style );
-	m_lineHeight = RenderObject::lineHeight(false);
+        // ### fontvariant being implemented as text-transform: upper. sucks!
+        bool changedText = (!style() && (_style->fontVariant() != FVNORMAL || _style->textTransform() != TTNONE)) ||
+            ((style() && style()->textTransform() != _style->textTransform()) ||
+             (style() && style()->fontVariant() != _style->fontVariant()));
 
-	if ( style()->fontVariant() == SMALL_CAPS ) {
-	    setText( str->upper() );
-	} else {
-	    // ### does not work if texttransform is set to None again!
-	    switch(style()->textTransform()) {
-		case CAPITALIZE:  setText(str->capitalize());  break;
-		case UPPERCASE:   setText(str->upper());       break;
-		case LOWERCASE:   setText(str->lower());       break;
-		case NONE:
-		default:;
-	    }
-	}
+        RenderObject::setStyle( _style );
+        m_lineHeight = RenderObject::lineHeight(false);
+
+        if (changedText && element())
+            setText(element()->string(), changedText);
     }
 }
 
@@ -335,8 +330,9 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
 
     bool oldinside = mouseInside();
     setMouseInside(inside);
-    if (mouseInside() != oldinside && element())
-        element()->setChanged();
+// don't need this, no DOM Element associated with us
+//     if (mouseInside() != oldinside && element())
+//         element()->setChanged();
 
     return inside;
 }
@@ -346,7 +342,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 //     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                   << " _tx=" << _tx << " _ty=" << _ty << endl;
     TextSlave *lastPointAfterInline=0;
-    
+
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
@@ -377,7 +373,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         } else if ( result == SelectionPointAfterInLine ) {
 	    lastPointAfterInline = s;
 	}
-	
+
     }
 
     // set offset to max
@@ -511,7 +507,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         linerects.append(new QRect());
 
 	bool renderOutline = style()->outlineWidth()!=0;
-	
+
 	const Font *font = &style()->htmlFont();
 
         // run until we find one that is outside the range, then we
@@ -534,7 +530,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 p->setPen(_style->color());
 
 	    if (s->m_len > 0)
-		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len, 
+		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
             if(d != TDNONE)
@@ -708,11 +704,24 @@ const QFont &RenderText::font()
     return style()->font();
 }
 
-void RenderText::setText(DOMStringImpl *text)
+void RenderText::setText(DOMStringImpl *text, bool force)
 {
-    if( str == text ) return;
+    if( !force && str == text ) return;
     if(str) str->deref();
     str = text;
+
+    if ( style() ) {
+        if ( style()->fontVariant() == SMALL_CAPS )
+            str = str->upper();
+        else
+            switch(style()->textTransform()) {
+            case CAPITALIZE:   str = str->capitalize();  break;
+            case UPPERCASE:   str = str->upper();       break;
+            case LOWERCASE:  str = str->lower();       break;
+            case NONE:
+            default:;
+            }
+    }
     if(str) str->ref();
 
     // ### what should happen if we change the text of a
