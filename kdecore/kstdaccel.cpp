@@ -97,6 +97,9 @@ QString KStdAccel::action(StdAccel id)
      case WhatThis:         return "WhatThis";
      case Reload:           return "Reload";
      case SelectAll:        return "SelectAll";
+     case Up:               return "Up";
+     case Back:             return "Back";
+     case Forward:          return "Forward";
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -138,6 +141,9 @@ uint KStdAccel::defaultKey(StdAccel id)
      case WhatThis:         return Qt::SHIFT + Qt::Key_F1;
      case Reload:           return Qt::Key_F5;
      case SelectAll:        return Qt::CTRL + Qt::Key_A;
+     case Up:               return Qt::ALT + Qt::Key_Up;
+     case Back:             return Qt::ALT + Qt::Key_Left;
+     case Forward:          return Qt::ALT + Qt::Key_Right;
      case NB_STD_ACCELS:    return 0;
     }
     
@@ -180,6 +186,9 @@ QString KStdAccel::description(StdAccel id)
      case WhatThis:         return i18n("What's This");
      case Reload:           return i18n("Reload");
      case SelectAll:        return i18n("Select All");
+     case Up:               return i18n("Up");
+     case Back:             return i18n("Back");
+     case Forward:          return i18n("Forward");
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -351,4 +360,19 @@ uint KStdAccel::reload()
 uint KStdAccel::selectAll()
 {
   return key(SelectAll);
+}
+
+uint KStdAccel::up()
+{
+  return key(Up);
+}
+
+uint KStdAccel::back()
+{
+  return key(Back);
+}
+
+uint KStdAccel::forward()
+{
+  return key(Forward);
 }
