@@ -52,6 +52,9 @@ class KWinModule;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 11:20:55  rich
+ * Const clean and no longer needs KWMModuleApp
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:07  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -148,11 +151,11 @@ protected slots:
     // Stuff to do with swallowing the applets Frame
     //
 
-    void setWindow( Window w );
+    void setWindow( WId w );
     void showApplet();
 
 protected:
-   void swallowWindow( Window w );
+   void swallowWindow( WId w );
    //   void sendClientMessage( Window w, Atom a, long x );
    void focusInEvent( QFocusEvent * );
    void resizeEvent(QResizeEvent *);
@@ -168,7 +171,7 @@ private:
     KWinModule *kwm;
 
     // Swallowing info
-    Window window;
+    WId window;
     QString swallowTitle;
 };
 

@@ -130,8 +130,8 @@ void KJavaAppletWidget::showApplet()
    // Avoid flickering a la kwm! (ettrich)
    KWM::doNotManage( swallowTitle );
 
-   connect( kwm, SIGNAL( windowAdd( Window ) ),
-	    this, SLOT( setWindow( Window ) ) ); 
+   connect( kwm, SIGNAL( windowAdd( WId ) ),
+	    this, SLOT( setWindow( WId ) ) ); 
 
    applet->show( swallowTitle );
 }
@@ -146,7 +146,7 @@ void KJavaAppletWidget::stop()
    applet->stop();
 }
 
-void KJavaAppletWidget::setWindow( Window w )
+void KJavaAppletWidget::setWindow( WId w )
 {
    XTextProperty titleProperty;
 
@@ -158,15 +158,15 @@ void KJavaAppletWidget::setWindow( Window w )
          //setFocus(); //workaround (ettrich)
 	   
          // disconnect from KWM events
-         disconnect( kwm, SIGNAL( windowAdd( Window ) ),
-                     this, SLOT( setWindow( Window ) ) );
+         disconnect( kwm, SIGNAL( windowAdd( WId ) ),
+                     this, SLOT( setWindow( WId ) ) );
          //QTimer *t = new QTimer(this);
          //connect(t, SIGNAL(timeout()), SLOT(slotSave()));
          //t->start(5000);
        }
 }
 
-void KJavaAppletWidget::swallowWindow( Window w )
+void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
 
