@@ -107,7 +107,8 @@ public:
     double evaluate(QStrList &vars, const QArray<double> &vals,
 		    int *error = NULL, box *b = NULL);
     QSize size();
-
+    void makeDirty();
+    
     void setFont( const QFont &f ) {
 	if ( !font )
 	    font = new QFont;
@@ -132,14 +133,14 @@ public:
     QColor *getForeColor() const {
 	return foreColor;
     }
-    
+
 private:
     QArray<box *> boxes;
     int posx;
     int posy;
     QFont *font;
     QColor *backColor, *foreColor;
-    
+
 private:
     void parenthesize(QString &temp, int &i, QArray<charinfo> *info);
     box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);

@@ -348,6 +348,11 @@ QSize KFormula::size()
 	       boxes[boxes.size() - 1]->getRect().height() + 8);
 }
 
+void KFormula::makeDirty() 
+{
+    boxes[boxes.size() - 1]->makeDirty();
+}
+
 //--------------------------------REDRAW----------------------------
 //first call calculate, figure out the center, and draw the boxes
 void KFormula::redraw(QPainter &p)
@@ -355,14 +360,14 @@ void KFormula::redraw(QPainter &p)
 
   if(boxes.size() == 0) return;
   boxes[boxes.size() - 1]->calculate(p, p.font().pointSize(),
-				     getFont(), 
-				     getBackColor(), 
+				     getFont(),
+				     getBackColor(),
 				     getForeColor() );
   QRect tmp = boxes[boxes.size() - 1]->getRect();
   boxes[boxes.size() - 1]->draw(p, posx - tmp.center().x(),
 				posy - tmp.center().y(),
-				getFont(), 
-				getBackColor(), 
+				getFont(),
+				getBackColor(),
 				getForeColor() );
 
   return;
