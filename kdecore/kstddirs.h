@@ -92,7 +92,7 @@ class KStandardDirsPrivate;
 * appends the name of the application.
 * So while you had to @ref locate("data", "appname/filename") so you can
 * also write @ref locate("appdata", "filename") if your KApplication instance
-* is called "myapp". Please note though that you cannot use the "appdata"
+* is called "appname". Please note though that you cannot use the "appdata"
 * type if you intend to use it in an applet for Kicker because 'appname' would
 * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
 * to work around this by using @ref locate("data", "appletname/filename").
