@@ -159,6 +159,13 @@ bool Kded::process(const QCString &obj, const QCString &fun,
   return false;
 }
 
+QCStringList Kded::functions()
+{
+    QCStringList res = DCOPObject::functions();
+    res += "ASYNC recreate()";
+    return res;
+}
+
 void Kded::slotKDEDModuleRemoved()
 {
   KDEDModule *module = (KDEDModule *) sender();

@@ -57,6 +57,8 @@ public:
    bool process(const QCString &fun, const QByteArray &data, 
 		QCString &replyType, QByteArray &replyData);
 
+   virtual QCStringList functions();
+
 public slots:
 
    /**
