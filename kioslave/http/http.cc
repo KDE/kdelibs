@@ -135,10 +135,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
 
   m_pid = getpid();
-  m_dcopClient = new DCOPClient();
-
-  if (!m_dcopClient->attach())
-     kdDebug(7113) << "(" << m_pid << ") Can't connect with DCOP server." << endl;
 
   setMultipleAuthCaching( true );
   reparseConfiguration();
@@ -146,8 +142,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
 
 HTTPProtocol::~HTTPProtocol()
 {
-  delete m_dcopClient;
-  m_dcopClient = 0;
   httpClose(false);
 }
 
@@ -4271,7 +4265,7 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
    kdDebug(7113) << "(" << m_pid << ") " << "Window ID: "
                  << windowId << ", for host = " << url << endl;
 
-   if ( !m_dcopClient->send( "kded", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
+   if ( !dcopClient()->send( "kded", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
    {
       kdWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
    }
@@ -4289,7 +4283,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   QDataStream stream(params, IO_WriteOnly);
   stream << url << windowId;
 
-  if ( !m_dcopClient->call( "kded", "kcookiejar", "findCookies(QString,long int)",
+  if ( !dcopClient()->call( "kded", "kcookiejar", "findCookies(QString,long int)",
                             params, replyType, reply ) )
   {
      kdWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;

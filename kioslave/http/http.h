@@ -540,8 +540,6 @@ protected:
   // Indicates whether there was some connection error.
   bool m_bError;
 
-  DCOPClient *m_dcopClient;
-
   // Previous and current response codes
   unsigned int m_responseCode;
   unsigned int m_prevResponseCode;
