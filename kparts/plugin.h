@@ -42,7 +42,10 @@ namespace KParts
  * install the rc file under the directory
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
  * where instancename is the name of the part's instance.
- **/
+ *
+ * You should also install a "plugin info" .desktop file with the same name.
+ * \see KPluginInfo
+ */
 class KPARTS_EXPORT Plugin : public QObject, virtual public KXMLGUIClient
 {
     Q_OBJECT
