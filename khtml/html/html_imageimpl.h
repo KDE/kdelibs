@@ -89,6 +89,8 @@ public:
 
     virtual QRect getRect() const;
 
+    QRegion cachedRegion() const { return region; }
+
 protected:
     QRegion getRegion(int width_, int height) const;
     QRegion region;

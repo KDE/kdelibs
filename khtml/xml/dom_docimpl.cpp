@@ -1592,6 +1592,7 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
         RenderObject::NodeInfo renderInfo(readonly, ev->type == MousePress);
         bool isInside = m_render->layer()->nodeAtPoint(renderInfo, _x, _y);
         ev->innerNode = renderInfo.innerNode();
+	ev->innerNonSharedNode = renderInfo.innerNonSharedNode();
 
         if (renderInfo.URLElement()) {
             assert(renderInfo.URLElement()->isElementNode());

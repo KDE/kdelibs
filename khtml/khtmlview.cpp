@@ -132,7 +132,7 @@ public:
     };
 
     KHTMLViewPrivate()
-        : underMouse( 0 )
+        : underMouse( 0 ), underMouseNonShared( 0 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -157,6 +157,8 @@ public:
         delete postponed_autorepeat;
         if (underMouse)
 	    underMouse->deref();
+        if (underMouseNonShared)
+	    underMouseNonShared->deref();
 	delete tooltip;
 #ifndef KHTML_NO_CARET
 	delete m_caretViewContext;
@@ -168,6 +170,9 @@ public:
         if (underMouse)
 	    underMouse->deref();
 	underMouse = 0;
+        if (underMouseNonShared)
+	    underMouseNonShared->deref();
+	underMouseNonShared = 0;
         linkPressed = false;
         useSlowRepaints = false;
 	tabMovePending = false;
@@ -282,6 +287,7 @@ public:
     QPixmap  *paintBuffer;
     QPixmap  *vertPaintBuffer;
     NodeImpl *underMouse;
+    NodeImpl *underMouseNonShared;
 
     bool tabMovePending:1;
     bool lastTabbingDirection:1;
@@ -338,14 +344,65 @@ public:
 
 #ifndef QT_NO_TOOLTIP
 
-void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
+/** calculates the client-side image map rectangle for the given image element
+ * @param img image element
+ * @param scrollOfs scroll offset of viewport in content coordinates
+ * @param p position to be probed in viewport coordinates
+ * @param r returns the bounding rectangle in content coordinates
+ * @param s returns the title string
+ * @return true if an appropriate area was found -- only in this case r and
+ *	s are valid, false otherwise
+ */
+static bool findImageMapRect(HTMLImageElementImpl *img, const QPoint &scrollOfs,
+			const QPoint &p, QRect &r, QString &s)
 {
-    DOM::NodeImpl *node = m_viewprivate->underMouse;
+    HTMLMapElementImpl* map;
+    if (img && img->getDocument()->isHTMLDocument() &&
+        (map = static_cast<HTMLDocumentImpl*>(img->getDocument())->getMap(img->imageMap()))) {
+        RenderObject::NodeInfo info(true, false);
+        RenderObject *rend = img->renderer();
+        int ax, ay;
+        if (!rend || !rend->absolutePosition(ax, ay))
+            return false;
+        // we're a client side image map
+        bool inside = map->mapMouseEvent(p.x() - ax + scrollOfs.x(),
+                p.y() - ay + scrollOfs.y(), rend->contentWidth(),
+                rend->contentHeight(), info);
+        if (inside && info.URLElement()) {
+            HTMLAreaElementImpl *area = static_cast<HTMLAreaElementImpl *>(info.URLElement());
+            Q_ASSERT(area->id() == ID_AREA);
+            s = area->getAttribute(ATTR_TITLE).string();
+            QRegion reg = area->cachedRegion();
+            if (!s.isEmpty() && !reg.isEmpty()) {
+                r = reg.boundingRect();
+                r.moveBy(ax, ay);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void KHTMLToolTip::maybeTip(const QPoint& p)
+{
+    DOM::NodeImpl *node = m_viewprivate->underMouseNonShared;
     QRect region;
     while ( node ) {
         if ( node->isElementNode() ) {
-            QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
-            QRect r = node->getRect();
+            DOM::ElementImpl *e = static_cast<DOM::ElementImpl*>( node );
+            QRect r;
+            QString s;
+            bool found = false;
+            // for images, check if it is part of a client-side image map,
+            // and query the <area>s' title attributes, too
+            if (e->id() == ID_IMG && !e->getAttribute( ATTR_USEMAP ).isEmpty()) {
+                found = findImageMapRect(static_cast<HTMLImageElementImpl *>(e),
+                    		m_view->viewportToContents(QPoint(0, 0)), p, r, s);
+            }
+            if (!found) {
+                s = e->getAttribute( ATTR_TITLE ).string();
+                r = node->getRect();
+            }
             region |= QRect( m_view->contentsToViewport( r.topLeft() ), r.size() );
             if ( !s.isEmpty() ) {
                 tip( region, QStyleSheet::convertFromPlainText( s, QStyleSheetItem::WhiteSpaceNormal ) );
@@ -741,7 +798,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	d->clickY = ym;
     }
 
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
@@ -781,7 +838,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
@@ -831,7 +888,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 // 		  << " button " << _mouse->button()
 // 		  << " state " << _mouse->state() << endl;
 
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
     if (d->clickCount > 0 &&
@@ -937,14 +994,14 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
 	QMouseEvent me(d->isDoubleClick ? QEvent::MouseButtonDblClick : QEvent::MouseButtonRelease,
 		       _mouse->pos(), _mouse->button(), _mouse->state());
-	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),true,
+	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                            d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
     }
 
@@ -1604,6 +1661,11 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
     return d->underMouse;
+}
+
+DOM::NodeImpl *KHTMLView::nonSharedNodeUnderMouse() const
+{
+    return d->underMouseNonShared;
 }
 
 bool KHTMLView::scrollTo(const QRect &bounds)
@@ -2286,7 +2348,8 @@ bool KHTMLView::nonPasswordStorableSite(const QString& host) const
 }
 
 // returns true if event should be swallowed
-bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
+bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
+				   DOM::NodeImpl *targetNodeNonShared, bool cancelable,
 				   int detail,QMouseEvent *_mouse, bool setUnder,
 				   int mouseEventType)
 {
@@ -2295,6 +2358,12 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     d->underMouse = targetNode;
     if (d->underMouse)
 	d->underMouse->ref();
+
+    if (d->underMouseNonShared)
+	d->underMouseNonShared->deref();
+    d->underMouseNonShared = targetNodeNonShared;
+    if (d->underMouseNonShared)
+	d->underMouseNonShared->ref();
 
     int exceptioncode = 0;
     int pageX = 0;

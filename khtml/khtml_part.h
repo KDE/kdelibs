@@ -822,9 +822,22 @@ public:
   virtual void restoreState( QDataStream &stream );
 
   /**
-   * Returns the @p Node currently under the mouse
+   * Returns the @p Node currently under the mouse.
+   *
+   * The returned node may be a shared node (e. g. an <area> node if the
+   * mouse is hovering over an image map).
    */
   DOM::Node nodeUnderMouse() const;
+
+  /**
+   * Returns the @p Node currently under the mouse that is not shared.
+   *
+   * The returned node is always the node that is physically under the mouse
+   * pointer (irrespective of logically overlying elements like, e. g.,
+   * <area> on image maps).
+   * @since 3.3
+   */
+  DOM::Node nonSharedNodeUnderMouse() const;
 
   /**
    * @internal

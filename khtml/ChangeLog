@@ -1,3 +1,16 @@
+2004-07-28  Leo Savernik  <l.savernik@aon.at>
+
+	* khtmlview.{cpp,h} (KHTMLToolTip::maybeTip): Query <area> elements
+	of image maps.
+	(dispatchMouseEvent): Added parameter innerNonSharedNode.
+	* khtml_part.{cpp,h}: Added method nonSharedNodeUnderMouse.
+	* xml/dom_docimpl.cpp (prepareMouseEvent): Initialize
+	innerNonSharedNode in DOM mouse event.
+	* xml/dom_nodeimpl.h: Added innerNonSharedNode to
+	NodeImpl::MouseEvent.
+	* html/html_imageimpl.h: Added cachedRegion() for being able to
+	retrieve the region in KHTMLToolTip.
+
 2004-07-20  Stephan Kulow  <coolo@kde.org>
 
         * css/parser.y: catching imports that come between rules.

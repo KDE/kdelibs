@@ -160,11 +160,12 @@ public:
     {
         MouseEvent( int _button, MouseEventType _type,
                     const DOMString &_url = DOMString(), const DOMString& _target = DOMString(),
-                    NodeImpl *_innerNode = 0)
+                    NodeImpl *_innerNode = 0, NodeImpl *_innerNonSharedNode = 0)
             {
                 button = _button; type = _type;
                 url = _url; target = _target;
                 innerNode = _innerNode;
+		innerNonSharedNode = _innerNonSharedNode;
             }
 
         int button;
@@ -172,6 +173,7 @@ public:
         DOMString url; // url under mouse or empty
         DOMString target;
         Node innerNode;
+	Node innerNonSharedNode;
     };
 
     // for LINK and STYLE

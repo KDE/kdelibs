@@ -4967,6 +4967,11 @@ DOM::Node KHTMLPart::nodeUnderMouse() const
     return d->m_view->nodeUnderMouse();
 }
 
+DOM::Node KHTMLPart::nonSharedNodeUnderMouse() const
+{
+    return d->m_view->nonSharedNodeUnderMouse();
+}
+
 void KHTMLPart::emitSelectionChanged()
 {
   emit d->m_extension->enableAction( "copy", hasSelection() );
