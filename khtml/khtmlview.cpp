@@ -210,10 +210,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
-    int pbHeight = paintBuffer->height();
+    int pbHeight;
+    if(paintBuffer)
+	pbHeight = paintBuffer->height();
+    else
+	pbHeight = PAINT_BUFFER_HEIGHT;
     
     if(d->useSlowRepaints) {
-	kdDebug(0) << "using slow repaints" << endl;
+	//kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning
 	// #### flickers terribly, but that will need some support in Qt to work.
 #ifndef FIXED_POSITIONING
@@ -241,8 +245,8 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         qt.start();
 
     int py=0;
-    
-    kdDebug(0) << "pbHeight = " << pbHeight << endl;
+
+    //kdDebug(0) << "pbHeight = " << pbHeight << endl;
     while (py < eh) {
 	QPainter* tp = new QPainter;
 	tp->begin( paintBuffer );
@@ -258,7 +262,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
 	delete tp;
 
-	kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
+	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
 	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
 		
 	py += pbHeight;
