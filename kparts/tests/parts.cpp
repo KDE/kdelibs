@@ -26,8 +26,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
   setWidget( m_edit );
   setXMLFile( "kpartstest_part1.rc" );
 
-  KAction * paBlah = new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
-  paBlah->setIconSet(QIconSet(BarIcon("filemail")));
+  /*KAction * paBlah = */ new KAction( i18n( "Blah" ), "filemail", 0, actionCollection(), "p1_blah" );
 }
 
 Part1::~Part1()
