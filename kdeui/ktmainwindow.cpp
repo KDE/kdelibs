@@ -817,7 +817,7 @@ void KTMainWindow::appHelpActivated( void )
   if( mHelpMenu == 0 )
   {
     mHelpMenu = new KHelpMenu( this );
-    if( mHelpMenu == 0 ) { return( 0 ); }
+    if( mHelpMenu == 0 ) { return; }
   }
   mHelpMenu->appHelpActivated();
 }
