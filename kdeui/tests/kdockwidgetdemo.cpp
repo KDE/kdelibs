@@ -19,6 +19,7 @@
 #include <qmessagebox.h>
 #include <qmime.h>
 #include <qstrlist.h>
+#include <qpainter.h>
 
 #include <kconfig.h>
 #include <kapp.h>
