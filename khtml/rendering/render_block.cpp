@@ -1367,11 +1367,11 @@ void RenderBlock::positionNewFloats()
                 y = kMax( leftBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
-            int fx = leftRelOffset(y,lo, &heightRemainingLeft);
-            while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth)
+            int fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
+            while (rightRelOffset(y,ro, false, &heightRemainingRight)-fx < fwidth)
             {
                 y += kMin( heightRemainingLeft, heightRemainingRight );
-                fx = leftRelOffset(y,lo, &heightRemainingLeft);
+                fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
             }
             if (fx<0) fx=0;
             f->left = fx;
@@ -1384,11 +1384,11 @@ void RenderBlock::positionNewFloats()
                 y = kMax( rightBottom(), y );
             int heightRemainingLeft = 1;
             int heightRemainingRight = 1;
-            int fx = rightRelOffset(y,ro, &heightRemainingRight);
-            while (fx - leftRelOffset(y,lo, &heightRemainingLeft) < fwidth)
+            int fx = rightRelOffset(y,ro, false, &heightRemainingRight);
+            while (fx - leftRelOffset(y,lo, false, &heightRemainingLeft) < fwidth)
             {
                 y += kMin(heightRemainingLeft, heightRemainingRight);
-                fx = rightRelOffset(y,ro, &heightRemainingRight);
+                fx = rightRelOffset(y,ro, false, &heightRemainingRight);
             }
             if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
@@ -1438,7 +1438,7 @@ RenderBlock::leftOffset() const
 }
 
 int
-RenderBlock::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
+RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining ) const
 {
     int left = fixedOffset;
     if (m_floatingObjects) {
@@ -1457,9 +1457,9 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
         }
     }
 
-    if ( m_firstLine && style()->direction() == LTR ) {
+    if (applyTextIndent && m_firstLine && style()->direction() == LTR ) {
         int cw=0;
-        if (style()->textIndent().isPercent())
+        if (style()->textIxndent().isPercent())
             cw = containingBlock()->contentWidth();
         left += style()->textIndent().minWidth(cw);
     }
@@ -1478,7 +1478,7 @@ RenderBlock::rightOffset() const
 }
 
 int
-RenderBlock::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
+RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *heightRemaining ) const
 {
     int right = fixedOffset;
 
@@ -1498,7 +1498,7 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
         }
     }
 
-    if ( m_firstLine && style()->direction() == RTL ) {
+    if (applyTextIndent &&  m_firstLine && style()->direction() == RTL ) {
         int cw=0;
         if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
