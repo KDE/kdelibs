@@ -107,6 +107,14 @@ public:
   void setPixmap( int id, const QPixmap &pix );
 
   /**
+   * Sets a tooltip for the tab page with that id.
+   *
+   * @param id the identification number of that desired page
+   * @param toolTipStr the new tooltip
+   */
+  void setToolTip( int id, const QString &toolTipStr );
+
+  /**
    * Sets the text colour for the tab page with that id.
    *
    * @param id the identification number of that desired page
@@ -301,6 +309,12 @@ protected:
   virtual void mouseReleaseEvent ( QMouseEvent * );
 
   /**
+   * Handles mouse move events for this widgets
+   * Reimplemented from QWidget
+   */
+  virtual void mouseMoveEvent ( QMouseEvent * );
+
+  /**
    * Handles resize events for this widgets
    * Reimplemented from QWidget
    */
@@ -399,6 +413,14 @@ public:
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void setPixmap( int id, const QPixmap &pix ){ setPixmap( page(id), pix ); }
+
+  /**
+   * Sets a toolTip for the tab page (shown in the tab header).
+   *
+   * @param w the widget we want to give the tooltip
+   * @param toolTipStr the new tooltip string
+   */
+  void setToolTip( QWidget* w, const QString &toolTipStr );
 
   /**
    * Sets the text colour of the tab page.

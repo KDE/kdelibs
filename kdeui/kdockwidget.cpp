@@ -234,6 +234,7 @@ void KDockMainWindow::setView( QWidget *view )
   if ( view->isA("KDockWidget") ){
     if ( view->parent() != this ) ((KDockWidget*)view)->applyToWidget( this );
   }
+
   KTMainWindow::setView(view);
   updateRects();
 }
@@ -821,6 +822,8 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     parentTab->insertPage( this, caption() );
     parentTab->setPixmap( this, *pix );
     setDockTabName( parentTab );
+    if( !toolTipStr.isEmpty())
+      parentTab->setToolTip( this, toolTipStr);
 
     currentDockPos = KDockWidget::DockCenter;
     emit manager->change();
@@ -866,11 +869,16 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     target->applyToWidget( tab );
     applyToWidget( tab );
 
+
     tab->insertPage( target, target->caption() );
     tab->setPixmap( target, *(target->pix) );
+    if( !target->toolTipString().isEmpty())
+      tab->setToolTip( target, target->toolTipString());
 
     tab->insertPage( this, caption() );
     tab->setPixmap( this, *pix );
+    if( !toolTipString().isEmpty())
+      tab->setToolTip( this, toolTipString());
 
     setDockTabName( tab );
     tab->show();

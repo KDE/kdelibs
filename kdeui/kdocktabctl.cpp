@@ -23,11 +23,12 @@
 #include <qpainter.h>
 #include <qapp.h>
 #include <qwmatrix.h>
+#include <qtooltip.h>
 
 struct KDockTabCtl_Private
 {
   KDockTabCtl_Private( QWidget* _widget, int _id )
-  { widget = _widget; id = _id; enabled = true;  }
+  { widget = _widget; id = _id; enabled = true; }
   ~KDockTabCtl_Private(){;}
 
   QWidget* widget;
@@ -45,6 +46,7 @@ struct KDockTabBar_Private
     pix = 0L;
     enabled = true;
     textColor = Qt::black;
+    tooltipString = "";
   }
 
   ~KDockTabBar_Private()
@@ -57,6 +59,7 @@ struct KDockTabBar_Private
   QPixmap* pix;
   bool     enabled;
   QColor   textColor;
+  QString  tooltipString;
 };
 
 static const char* b_left_xpm[] = {
@@ -139,6 +142,14 @@ void KDockTabCtl::setPixmap( QWidget* widget, const QPixmap &pix )
   KDockTabCtl_Private* data = findData(widget);
   if ( data != 0L ){
     tabs->setPixmap( data->id, pix );
+  }
+}
+
+void KDockTabCtl::setToolTip( QWidget* widget, const QString &toolTipStr )
+{
+  KDockTabCtl_Private* data = findData(widget);
+  if ( data != 0L ){
+    tabs->setToolTip( data->id, toolTipStr );
   }
 }
 
@@ -409,11 +420,14 @@ const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
 }
 
 
+/***************************************************************************/
+
 KDockTabBarPainter::KDockTabBarPainter( KDockTabBar* parent )
 :QWidget( parent )
 {
   delta = 0;
   buffer = new QPixmap(0,0);
+  setMouseTracking( true);
 }
 
 KDockTabBarPainter::~KDockTabBarPainter()
@@ -731,6 +745,17 @@ void KDockTabBarPainter::mouseReleaseEvent( QMouseEvent* e )
   }
 }
 
+void KDockTabBarPainter::mouseMoveEvent( QMouseEvent* e )
+{
+  QPoint p = mapFromGlobal( e->globalPos());
+  int cur = findBarByPos( p.x(), p.y() );
+  if( cur == -1)
+    return;
+  QString tooltip = ((KDockTabBar*)parent())->findData(cur)->tooltipString;
+  QToolTip::remove(this);
+  QToolTip::add(this,tooltip);
+}
+
 /***************************************************************************/
 
 KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
@@ -873,6 +898,14 @@ void KDockTabBar::setPixmap( int id, const QPixmap &pix )
     data->pix = new QPixmap( pix );
     if ( iconShow ) data->width += 16 + 4;
     tabsRecreate();
+  }
+}
+
+void KDockTabBar::setToolTip( int id, const QString &toolTipStr )
+{
+  KDockTabBar_Private* data = findData( id );
+  if ( data != 0L ){
+    data->tooltipString = toolTipStr;
   }
 }
 

@@ -434,6 +434,22 @@ public:
   KDockManager* dockManager(){ return manager; }
 
   /**
+   * Stores a string for a tooltip.
+   * That tooltip string has only a meaning when this dockwidget is shown as tab page.
+   * In this case the tooltip is shown when one holds the mouse cursor on the tab page header.
+   * Such tooltip will for instance be useful, if you use only icons there.
+   * Note: Setting an empty string switches the tooltip off.
+   *
+   * @param ttStr a string for the tooltip on the tab
+   */
+  void setToolTipString(const QString& ttStr) { toolTipStr = ttStr; };
+
+  /**
+   * @return the tooltip string being shown on the appropriate tab page header when in dock-centered mode.
+   */
+  const QString& toolTipString() { return toolTipStr; };
+
+  /**
    * Catches and processes some QWidget events that are interesting for dockwidgets.
    */
   virtual bool event( QEvent * );
@@ -503,17 +519,24 @@ signals:
 	void iMBeingClosed();
 
 protected slots:
-  /** test */
+  /** Does several things here when it has noticed that the former brother widget (closest neighbor) gets lost.
+   * The former brother widget is needed for a possible dockback action, to speak with the Beatles:
+   * "To get back to where you once belonged" ;-)
+   */
   void loseFormerBrotherDockWidget();
 
-  /** test */
+  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
   void dockBack();
 
 protected:
-  /** test */
+  /** earlier closest neighbor widget, so it's possible to dock back to it. */
   KDockWidget* formerBrotherDockWidget;
+  /** the current dock position. */
   DockPosition currentDockPos;
+  /** the former dock position when it really was at another position before. */
   DockPosition formerDockPos;
+  /** a string used as tooltip for the tab page header when in dock-centered mode. */
+  QString toolTipStr;
 
 private:
   /** 
