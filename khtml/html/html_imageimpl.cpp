@@ -105,7 +105,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_SRC:
-	imageURL = attr->value();
+	imageURL = khtml::parseURL(attr->value());
 	break;
     case ATTR_WIDTH:
         addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
@@ -152,7 +152,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	{
 	    // ### we remove the part before the anchor and hope the map is on the same html page....
 	    KURL u( static_cast<HTMLDocumentImpl *>(document)->baseURL().string(), attr->value().string() );
-	    usemap = DOMString(u.url());
+	    usemap = khtml::parseURL(u.url());
 	}
     case ATTR_ISMAP:
 	ismap = true;
