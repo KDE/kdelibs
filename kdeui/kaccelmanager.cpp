@@ -202,7 +202,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
       }
       continue;
     }
-    if (!it->m_widget->setProperty("text", contents[cnt].accelerated()));
+    if (!it->m_widget->setProperty("text", contents[cnt].accelerated()))
       it->m_widget->setProperty("title", contents[cnt].accelerated());
   }
 
@@ -376,7 +376,7 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
         m_pureText.replace(orig_accel, 4, "&");
     orig_accel = m_accel = stripAccelerator(m_pureText);
 
-    kdDebug() << input << " " << orig_accel << " " << m_accel << " " << m_pureText << endl;
+    kdDebug(125) << input << " " << orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
