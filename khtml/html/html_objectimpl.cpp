@@ -357,6 +357,7 @@ void HTMLObjectElementImpl::attach()
           m_render = p;
           m_render->setStyle(m_style);
           r->addChild( m_render, nextRenderer() );
+          needWidgetUpdate = false;
       }
   }
 
