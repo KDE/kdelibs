@@ -126,7 +126,9 @@ QString KConfigBase::readEntry( const QString& aKey,
 	  } while ( aValue[nEndPos].isNumber()
 		    || aValue[nEndPos].isLetter() || nEndPos > aValue.length() );
 	  QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
-	  const char* pEnv = getenv( aVarName.ascii() );
+	  const char* pEnv = 0;
+	  if (!aVarName.isEmpty()) 
+	       pEnv = getenv( aVarName.ascii() );
 	  if( pEnv )
 	    aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
 	  else
