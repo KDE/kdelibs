@@ -170,7 +170,6 @@ namespace KIO {
     public slots:
         void accept(KSocket *socket);
 	void gotInput();
-	void gotAnswer();
 	void timeout();
     signals:
         void slaveDied(KIO::Slave *slave);

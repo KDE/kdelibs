@@ -75,6 +75,7 @@ void Slave::accept(KSocket *socket)
     slaveconn.init(socket);
     delete serv;
     serv = 0;
+    slaveconn.connect(this, SLOT(gotInput()));
     QCString filename = QFile::encodeName(m_socket);
     unlink(filename.data());
     m_socket = QString::null;
@@ -227,33 +228,6 @@ void Slave::gotInput()
     deref();
 }
 
-void Slave::gotAnswer()
-{
-    int cmd = 0;
-    QByteArray data;
-    bool ok = true;
-
-    ref();
-
-    if (slaveconn.read( &cmd, data ) == -1)
-	ok = false;
-
-    //kdDebug(7002) << "got answer " << cmd << endl;
-
-    if (ok)
-    {
-        dispatch(cmd, data);
-        slaveconn.connect(this, SLOT(gotInput()));
-    }
-    else
-    {
-        slaveconn.close();
-        // TODO: Report start up error to someone who is interested
-        dead = true;
-    }
-    deref();
-}
-
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
@@ -272,8 +246,6 @@ void Slave::setHost( const QString &host, int port,
     m_port = port;
     m_user = user;
     m_passwd = passwd;
-
-    slaveconn.connect(this, SLOT(gotAnswer()));
 
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
