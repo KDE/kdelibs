@@ -27,6 +27,7 @@
 #include <kconfig.h>
 
 #include <qfontinfo.h>
+#include <qstrlist.h>
 #include <qfontdatabase.h>
 #include <kdebug.h>
 
