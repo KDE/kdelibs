@@ -1173,14 +1173,14 @@ Value Window::openWindow(ExecState *exec, const List& args)
     uargs.frameName = args.size() > 1 ?
                       args[1].toString(exec).qstring()
                       : QString("_blank");
-    if ( uargs.frameName == "_top" )
+    if ( uargs.frameName.lower() == "_top" )
     {
       while ( p->parentPart() )
         p = p->parentPart();
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName == "_parent" )
+    if ( uargs.frameName.lower() == "_parent" )
     {
       if ( p->parentPart() )
         p = p->parentPart();
@@ -1208,7 +1208,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
         }
       }
       uargs.serviceType = QString::null;
-      if (uargs.frameName == "_blank")
+      if (uargs.frameName.lower() == "_blank")
         uargs.frameName = QString::null;
       if (!url.isEmpty())
         emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
