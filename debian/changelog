@@ -1,3 +1,11 @@
+kdelibs-cvs (4:2.0-19990822-1.1) experimental; urgency=low
+
+  * More CVS updates
+  * Adding in a process to the postinst to verify that /usr/doc/kde/HTML/default
+    is a link and not a directory
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Aug 1999 10:00:28 -0400
+
 kdelibs-cvs (4:2.0-19990822-1.0) experimental; urgency=low
 
   * Adding a link from /etc/kde2 to /usr/share/config until the proper
