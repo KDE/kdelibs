@@ -1150,6 +1150,7 @@ void HTMLInputElementImpl::select(  )
 void HTMLInputElementImpl::click()
 {
     QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,0, 1);
     dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
 
@@ -1580,15 +1581,41 @@ void HTMLLabelElementImpl::attach()
     HTMLElementImpl::attach();
 }
 
-#if 0
-ElementImpl *HTMLLabelElementImpl::formElement()
+NodeImpl* HTMLLabelElementImpl::getFormElement()
 {
-    DOMString formElementId = getAttribute(ATTR_FOR);
-    if (formElementId.isEmpty())
-        return 0;
-    return getDocument()->getElementById(formElementId);
+	    DOMString formElementId = getAttribute(ATTR_FOR);
+	    NodeImpl *newNode=0L;
+    	    if (!formElementId.isEmpty())
+	        newNode=getDocument()->getElementById(formElementId);
+    	    if (!newNode){
+    		uint children=childNodeCount();
+    		if (children>1) 
+    		    for (unsigned int i=0;i<children;i++){
+			uint nodeId=childNode(i)->id();
+			if (nodeId==ID_INPUT || nodeId==ID_SELECT || nodeId==ID_TEXTAREA){
+			    newNode=childNode(i);
+			    break;
+			}
+		    }
+		}
+return newNode;
 }
-#endif
+
+void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
+ {
+    if ( !m_disabled  && 
+        evt->isMouseEvent() && evt->id() == EventImpl::CLICK_EVENT){
+	    NodeImpl *formNode=getFormElement();
+	    if (formNode)
+	    {
+	        getDocument()->setFocusNode(formNode);
+		if (formNode->id()==ID_INPUT)
+    		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
+	    }
+		evt->setDefaultHandled();
+            }
+    HTMLGenericFormElementImpl::defaultEventHandler(evt);
+}
 
 // -------------------------------------------------------------------------
 

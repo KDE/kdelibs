@@ -319,6 +319,8 @@ public:
 
     virtual Id id() const;
     virtual void attach();
+    virtual void defaultEventHandler(EventImpl *evt);
+    NodeImpl* getFormElement();
 
  private:
     DOMString m_formElementID;

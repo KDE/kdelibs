@@ -1877,6 +1877,12 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
         if( node != NULL && node->hasOneRef())
             return true;
     }
+    if (node->id()==ID_LABEL)
+    {
+        // if Accesskey is a label, give focus to the label's referrer.
+        node=static_cast<ElementImpl *>(static_cast< HTMLLabelElementImpl* >( node )->getFormElement());
+        if (!node) return true;
+    }
     switch( node->id()) {
         case ID_A:
             static_cast< HTMLAnchorElementImpl* >( node )->click();
@@ -1889,9 +1895,6 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
           break;
         case ID_AREA:
             static_cast< HTMLAreaElementImpl* >( node )->click();
-          break;
-        case ID_LABEL:
-            // TODO should be click(), after it works for label
           break;
         case ID_TEXTAREA:
           break; // just focusing it is enough
