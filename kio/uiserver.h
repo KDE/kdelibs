@@ -88,6 +88,7 @@ public:
 
 public slots:
   void slotShowDefaultProgress();
+  void slotToggleDefaultProgress();
 
 protected slots:
   void slotCanceled();
@@ -268,7 +269,7 @@ protected slots:
 
   void cancelCurrent();
 
-  void slotDefaultProgress( QListViewItem * );
+  void slotToggleDefaultProgress( QListViewItem * );
   void slotSelection();
 
   void slotJobCanceled( ProgressItem * );

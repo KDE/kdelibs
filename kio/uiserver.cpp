@@ -256,6 +256,13 @@ void ProgressItem::slotShowDefaultProgress() {
     defaultProgress->show();
 }
 
+void ProgressItem::slotToggleDefaultProgress() {
+  if ( defaultProgress->isVisible() )
+    defaultProgress->hide();
+  else
+    defaultProgress->show();
+}
+
 void ProgressItem::setVisible( bool visible ) {
     m_visible = visible;
     if ( defaultProgress )
@@ -354,7 +361,7 @@ UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
   connect( listProgress, SIGNAL( selectionChanged() ),
 	   SLOT( slotSelection() ) );
   connect( listProgress, SIGNAL( executed( QListViewItem* ) ),
-	   SLOT( slotDefaultProgress( QListViewItem* ) ) );
+	   SLOT( slotToggleDefaultProgress( QListViewItem* ) ) );
 
   // setup animation timer
   updateTimer = new QTimer( this );
@@ -715,8 +722,8 @@ void UIServer::setListMode( bool list )
   }
 }
 
-void UIServer::slotDefaultProgress( QListViewItem *item ) {
-  ((ProgressItem*) item )->slotShowDefaultProgress();
+void UIServer::slotToggleDefaultProgress( QListViewItem *item ) {
+  ((ProgressItem*) item )->slotToggleDefaultProgress();
 }
 
 
