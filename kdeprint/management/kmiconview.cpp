@@ -217,7 +217,7 @@ void KMIconView::slotRightButtonClicked(QIconViewItem *item, const QPoint& p)
 void KMIconView::slotSelectionChanged()
 {
 	KMIconViewItem	*item = static_cast<KMIconViewItem*>(currentItem());
-	emit printerSelected((item && !item->isDiscarded() ? item->text() : QString::null));
+	emit printerSelected((item && !item->isDiscarded() && item->isSelected() ? item->text() : QString::null));
 }
 
 void KMIconView::setPrinter(const QString& prname)
