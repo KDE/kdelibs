@@ -116,11 +116,13 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name,
     // we prefer the correct size.. but we'll slum with a smaller size
     // if necessary
     Size current_size = size;
-    while (current_size >= Small)
+    bool not_done = true;
+    while ((current_size >= Small) && not_done)
     {
         switch (current_size) {
         case Small:
             path = "small/";
+            not_done = false;
             break;
         case Medium:
             path = "medium/";
