@@ -77,7 +77,10 @@ unsigned long CharacterDataImpl::length() const
 DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    checkCharDataOperation(offset, exceptioncode);
+    if ((long)count < 0)
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+    else
+	checkCharDataOperation(offset, exceptioncode);
     if (exceptioncode)
         return DOMString();
 
@@ -128,7 +131,10 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    checkCharDataOperation(offset, exceptioncode);
+    if ((long)count < 0)
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+    else
+	checkCharDataOperation(offset, exceptioncode);
     if (exceptioncode)
         return;
 
@@ -147,7 +153,10 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode )
 {
     exceptioncode = 0;
-    checkCharDataOperation(offset, exceptioncode);
+    if ((long)count < 0)
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+    else
+	checkCharDataOperation(offset, exceptioncode);
     if (exceptioncode)
         return;
 
