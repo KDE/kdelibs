@@ -342,10 +342,10 @@ void KBugReport::slotCancel()
 {
   if( m_lineedit->edited() || m_subject->edited() )
   {
-    int rc = KMessageBox::warningContinueCancel( this,
+    int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
-             i18n( "Close message" ), i18n( "&Discard" ) );
-    if( rc == KMessageBox::Cancel )
+             i18n( "Close message" ), i18n( "&Discard" ), i18n("&Continue") );
+    if( rc == KMessageBox::No )
       return;
   }
   KDialogBase::slotCancel();
