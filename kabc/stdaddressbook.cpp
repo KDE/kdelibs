@@ -24,7 +24,7 @@
 #include <kcrash.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kresources/resourcemanager.h>
+#include <kresources/manager.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>

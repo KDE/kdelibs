@@ -24,7 +24,7 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
-#include <kresources/resourcemanager.h>
+#include <kresources/manager.h>
 
 #include "addressee.h"
 #include "field.h"

@@ -24,7 +24,7 @@
 #include <qmap.h>
 
 #include <kdialogbase.h>
-#include <kresources/resourceconfigwidget.h>
+#include <kresources/configwidget.h>
 
 class QCheckBox;
 class QPushButton;

@@ -22,7 +22,7 @@
 
 #include <klocale.h>
 #include <kaboutdata.h>
-#include <kresources/resourcesconfigpage.h>
+#include <kresources/configpage.h>
 
 #include "kcmkabc.h"
 
