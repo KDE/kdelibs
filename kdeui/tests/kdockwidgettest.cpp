@@ -49,7 +49,7 @@ static const char*folder[]={
 "...........####."};
 
 DockApplication::DockApplication( const char* name )
-: KDockMainWindow( name )
+: KDockMainWindow( 0L, name )
 {
   QPixmap p(folder);
 
