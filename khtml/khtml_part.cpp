@@ -2713,7 +2713,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   KURL url( _url );
 
   // khtmlrun called us this way to indicate a loading error
-  if ( url.isEmpty() && mimetype.isEmpty() )
+  if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) )
   {
       checkEmitLoadEvent();
       child->m_bCompleted = true;
