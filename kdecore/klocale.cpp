@@ -523,20 +523,20 @@ QString KLocale::formatMoney(double num, const QString &symbol, int precision) c
 
     switch (signpos)
     {
-    case KLocale::ParensAround:
+    case ParensAround:
         res.prepend('(');
         res.append (')');
         break;
-    case KLocale::BeforeQuantityMoney:
+    case BeforeQuantityMoney:
         res.prepend(sign);
         break;
-    case KLocale::AfterQuantityMoney:
+    case AfterQuantityMoney:
         res.append(sign);
         break;
-    case KLocale::BeforeMoney:
+    case BeforeMoney:
         currency.prepend(sign);
         break;
-    case KLocale::AfterMoney:
+    case AfterMoney:
         currency.append(sign);
         break;
     }
