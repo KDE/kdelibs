@@ -129,6 +129,24 @@ Completion ArrayProtoFunc::execute(const List &args)
     }
     result = String(str);
     break;
+  case Pop:
+    if (length == 0) {
+      thisObj.put("length", Number(length));
+      result = Undefined();
+    } else {
+      str = UString::from(length - 1);
+      result = thisObj.get(str);
+      thisObj.deleteProperty(str);
+      thisObj.put("length", length - 1);
+    }
+    break;
+  case Push:
+    for (int n = 0; n < args.size(); n++)
+      thisObj.put(UString::from(length + n), args[n]);
+    length += args.size();
+    thisObj.put("length", length);
+    result = Number(length);
+    break;
     /* TODO */
   default:
     result = Undefined();
