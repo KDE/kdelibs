@@ -53,6 +53,7 @@ void KProcessController::deref()
 }
 
 KProcessController::KProcessController()
+  : needcheck( false )
 {
   if( pipe( fd ) )
   {
@@ -141,6 +142,29 @@ void KProcessController::theSigCHLDHandler( int arg )
   errno = saved_errno;
 }
 
+int KProcessController::notifierFd()
+{
+  return fd[0];
+}
+
+void KProcessController::unscheduleCheck()
+{
+  char dummy[16]; // somewhat bigger - just in case several have queued up
+  if( ::read( fd[0], dummy, sizeof(dummy) ) > 0 )
+    needcheck = true;
+}
+
+void
+KProcessController::rescheduleCheck()
+{
+  if( needcheck )
+  {
+    needcheck = false;
+    char dummy = 0;
+    ::write( fd[1], &dummy, 1 );
+  }
+}
+
 void KProcessController::slotDoHousekeeping()
 {
   char dummy[16]; // somewhat bigger - just in case several have queued up
@@ -180,15 +204,21 @@ bool KProcessController::waitForProcessExit( int timeout )
 {
   for(;;)
   {
-    struct timeval tv;
-    tv.tv_sec = timeout;
-    tv.tv_usec = 0;
+    struct timeval tv, *tvp;
+    if (timeout < 0)
+      tvp = 0;
+    else
+    {
+      tv.tv_sec = timeout;
+      tv.tv_usec = 0;
+      tvp = &tv;
+    }
 
     fd_set fds;
     FD_ZERO( &fds );
     FD_SET( fd[0], &fds );
 
-    switch( select( fd[0]+1, &fds, 0, 0, &tv ) )
+    switch( select( fd[0]+1, &fds, 0, 0, tvp ) )
     {
     case -1:
       if( errno == EINTR )

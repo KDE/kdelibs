@@ -73,12 +73,35 @@ public:
    * starting an event loop.
    * This function may cause KProcess to emit any of its signals.
    *
-   * @param timeout the timeout in seconds
+   * @param timeout the timeout in seconds. -1 means no timeout.
    * @return true if a process exited, false
    *         if no process exited within @p timeout seconds.
    * @since 3.1
    */
   bool waitForProcessExit(int timeout);
+
+  /**
+   * Call this function to defer processing of the data that became available
+   * on @ref notifierFd().
+   * @since 3.2
+   */
+  void unscheduleCheck();
+
+  /**
+   * This function @em must be called at some point after calling
+   * @ref unscheduleCheck().
+   * @since 3.2
+   */
+  void rescheduleCheck();
+
+  /*
+   * Obtain the file descriptor KProcessController uses to get notified
+   * about process exits. select() or poll() on it if you create a custom
+   * event loop that needs to act upon SIGCHLD.
+   * @return the file descriptor of the reading end of the notification pipe
+   * @since 3.2
+   */
+  int notifierFd();
 
   /**
    * @internal
@@ -100,6 +123,7 @@ private:
   friend class I_just_love_gcc;
 
   int fd[2];
+  bool needcheck;
   QSocketNotifier *notifier;
   QValueList<KProcess*> kProcessList;
   QValueList<int> unixProcessList;
