@@ -1,0 +1,6 @@
+[KDE Print Filter Entry]
+Name=psresize
+Require=exec:/psresize
+Comment=Scale print content to fit on another paper size
+MimeTypeIn=application/postscript
+MimeTypeOut=application/postscript

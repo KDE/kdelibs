@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<kprintfilter name="psresize">
+	<filtercommand data="psresize -p%psl %filterargs %filterinput %filteroutput" />
+	<filterargs>
+		<filterarg name="insize" description="Input paper size" format="-P%value" type="list" default="a4">
+			<value name="a3" description="A3" />
+			<value name="a4" description="A4" />
+			<value name="a5" description="A5" />
+			<value name="b5" description="B5" />
+			<value name="letter" description="US Letter" />
+			<value name="legal" description="US Legal" />
+			<value name="tabloid" description="Tabloid" />
+			<value name="executive" description="Executive" />
+		</filterarg>
+	</filterargs>
+	<filterinput>
+		<filterarg name="file" format="%in" />
+		<filterarg name="pipe" format="" />
+	</filterinput>
+	<filteroutput>
+		<filterarg name="file" format="> %out" />
+		<filterarg name="pipe" format="" />
+	</filteroutput>
+</kprintfilter>
