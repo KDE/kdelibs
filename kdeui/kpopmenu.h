@@ -31,7 +31,7 @@ a constant KPM_FirstItem so use one of those approaches instead of the above:
 <pre>
 [1] int move_item = menu->insertItem("Move");
     ...
-    menu->connectItem(menu_item, this, SLOT(moveWindow()));
+    menu->connectItem(move_item, this, SLOT(moveWindow()));
 
 [2] menu->insertItem("Move");
     ...
