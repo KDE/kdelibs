@@ -127,7 +127,7 @@ void MediatypesRead(FILE *fd)
 	  break;
 	}
       
-      // fprintf(stderr, "mediatypes_read(): %s\n", TempString);
+      /* fprintf(stderr, "mediatypes_read(): %s\n", TempString); */
     }
 
 }
