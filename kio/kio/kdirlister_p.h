@@ -167,6 +167,7 @@ private:
   bool killJob( const QString &_url );
   void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList *, bool really );
   void processPendingUpdates();
+  void forgetDirInternal( KDirLister *lister, const KURL &_url );
 
   struct DirItem
   {

@@ -392,74 +392,29 @@ void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
 void KDirListerCache::forgetDirs( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
-  DirItem* item;
-  QPtrList<KDirLister> *listers;
 
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
-    listers = urlsCurrentlyHeld[(*it).url()];
-    Q_ASSERT( listers );
-    listers->removeRef( lister );
-
-    if ( listers->isEmpty() )
-      urlsCurrentlyHeld.remove( (*it).url() );
-
-    item = itemsInUse[(*it).url()];
-
-    Q_ASSERT( item );
-    Q_ASSERT( item->count );
-
-    // one lister less holding this dir
-    item->count--;
-
-    if ( lister->d->autoUpdate && (*it).isLocalFile() && --item->autoUpdates == 0 )
-    {
-      kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << (*it).path() << endl;
-      kdirwatch->removeDir( (*it).path() );
-    }
-
-    // item not in use anymore -> move into cache if complete
-    if ( item->count == 0 )
-    {
-      Q_ASSERT( listers->isEmpty() );
-
-      itemsInUse.remove( (*it).url() );
-
-      // this job is a running update
-      if ( killJob( (*it).url() ) )
-      {
-        kdDebug(7004) << k_funcinfo << "Killing update job for " << (*it).url() << endl;
-
-        lister->d->numJobs--;
-
-        emit lister->canceled( *it );
-        if ( lister->d->numJobs == 0 )
-        {
-          lister->d->complete = true;
-          emit lister->canceled();
-        }
-      }
-
-      if ( item->complete )
-      {
-        kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << (*it).prettyURL() << endl;
-        itemsCached.insert( (*it).url(), item ); // TODO: may return false!!
-      }
-      else
-        delete item;
-    }
+    forgetDirInternal( lister, *it );
   }
 
   lister->d->lstDirs.clear();
   emit lister->clear();
 }
 
-// I *hate* code duplication! :-(
 void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
 {
   kdDebug(7004) << k_funcinfo << lister << " url: " << url.prettyURL() << endl;
 
+  forgetDirInternal( lister, url );
+
+  lister->d->lstDirs.remove( url.url() );
+  emit lister->clear( url );
+}
+
+void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
+{
   QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
   Q_ASSERT( listers );
   listers->removeRef( lister );
@@ -484,6 +439,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
   // item not in use anymore -> move into cache if complete
   if ( item->count == 0 )
   {
+    Q_ASSERT( listers->isEmpty() );
+
     itemsInUse.remove( url.url() );
 
     // this job is a running update
@@ -506,10 +463,9 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
       kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url.prettyURL() << endl;
       itemsCached.insert( url.url(), item ); // TODO: may return false!!
     }
+    else
+      delete item;
   }
-
-  lister->d->lstDirs.remove( url.url() );
-  emit lister->clear( url );
 }
 
 void KDirListerCache::updateDirectory( const KURL& _dir )
