@@ -66,6 +66,15 @@ int main(int argc, char *argv[])
     toplevel->setCentralWidget( doc->widget() );
     toplevel->setGeometry(366, 0, 640, 800);
 
+    QDomDocument d = doc->domDocument();
+    QDomElement viewMenu = d.documentElement().firstChild().childNodes().item( 2 ).toElement();
+    QDomElement e = d.createElement( "action" );
+    e.setAttribute( "name", "debugRenderTree" );
+    viewMenu.appendChild( e );
+    e = d.createElement( "action" );
+    e.setAttribute( "name", "debugDOMTree" );
+    viewMenu.appendChild( e );
+
     toplevel->guiFactory()->addClient( doc );
 
     doc->enableJScript(true);
