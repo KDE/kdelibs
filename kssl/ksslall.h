@@ -12,5 +12,6 @@
 #include <ksslcertificatecache.h>
 #include <ksslutils.h>
 #include <ksslpkcs12.h>
+#include <ksslcertchain.h>
 #endif
 

@@ -40,6 +40,7 @@ class KOpenSSLProxyPrivate;
 #include <openssl/pkcs7.h>
 #include <openssl/pkcs12.h>
 #include <openssl/evp.h>
+#include <openssl/stack.h>
 #undef crypt
 #endif
 
@@ -272,6 +273,12 @@ public:
 
 
    /*
+    *   X509_STORE_CTX_set_chain - set the certificate chain
+    */
+   void X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* x);
+
+
+   /*
     *   X509_verify_cert - verify the certificate
     */
    int X509_verify_cert(X509_STORE_CTX *v);
@@ -420,6 +427,24 @@ public:
     *   Free the Private Key
     */
    void EVP_PKEY_free(EVP_PKEY *x);
+
+
+   /* 
+    *   Free the stack
+    */
+   void sk_free(STACK *s);
+
+
+   /* 
+    *  Number of elements in the stack
+    */
+   int sk_num(STACK *s);
+
+
+   /* 
+    *  Value of element n in the stack
+    */
+   char *sk_value(STACK *s, int n);
 
 
 #endif

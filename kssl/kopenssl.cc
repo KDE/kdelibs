@@ -91,6 +91,10 @@ static int (*K_SSL_CTX_use_PrivateKey) (SSL_CTX*, EVP_PKEY*) = NULL;
 static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
 static int (*K_SSL_get_error) (SSL*, int) = NULL;
 static STACK_OF(X509)* (*K_SSL_get_peer_cert_chain) (SSL*) = NULL;
+static void (*K_X509_STORE_CTX_set_chain) (X509_STORE_CTX *, STACK_OF(X509)*) = NULL;
+static void (*K_sk_free) (STACK*) = NULL;
+static int (*K_sk_num) (STACK*) = NULL;
+static char* (*K_sk_value) (STACK*, int) = NULL;
 #endif    
 };
 
@@ -193,6 +197,10 @@ KConfig *cfg;
       K_PKCS12_parse = (int (*)(PKCS12*, const char *, EVP_PKEY**,
                 X509**, STACK_OF(X509)**)) _cryptoLib->symbol("PKCS12_parse");
       K_EVP_PKEY_free = (void (*) (EVP_PKEY *)) _cryptoLib->symbol("EVP_PKEY_free");
+      K_X509_STORE_CTX_set_chain = (void (*)(X509_STORE_CTX *, STACK_OF(X509)*)) _cryptoLib->symbol("X509_STORE_CTX_set_chain");
+      K_sk_free = (void (*) (STACK *)) _cryptoLib->symbol("sk_free");
+      K_sk_num = (int (*) (STACK *)) _cryptoLib->symbol("sk_num");
+      K_sk_value = (char* (*) (STACK *, int)) _cryptoLib->symbol("sk_value");
 #endif
    }
 
@@ -645,6 +653,28 @@ int KOpenSSLProxy::SSL_get_error(SSL *ssl, int rc) {
 STACK_OF(X509) *KOpenSSLProxy::SSL_get_peer_cert_chain(SSL *s) {
    if (K_SSL_get_peer_cert_chain) return (K_SSL_get_peer_cert_chain)(s);
    else return NULL;
+}
+
+
+void KOpenSSLProxy::sk_free(STACK *s) {
+   if (K_sk_free) (K_sk_free)(s);
+}
+
+
+int KOpenSSLProxy::sk_num(STACK *s) {
+   if (K_sk_num) return (K_sk_num)(s);
+   else return -1;
+}
+
+ 
+char *KOpenSSLProxy::sk_value(STACK *s, int n) {
+   if (K_sk_value) return (K_sk_value)(s, n);
+   else return NULL;
+}
+
+
+void KOpenSSLProxy::X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* x) {
+   if (K_X509_STORE_CTX_set_chain) (K_X509_STORE_CTX_set_chain)(v,x);
 }
 
 #endif

@@ -25,6 +25,7 @@
 
 #include "kssldefs.h"
 #include "ksslcertificate.h"
+#include "ksslcertchain.h"
 #include "ksslutils.h"
 
 #include <kstddirs.h>
@@ -72,6 +73,7 @@ public:
     X509 *m_cert;
   #endif
   KOSSL *kossl;
+  KSSLCertChain _chain;
 };
 
 KSSLCertificate::KSSLCertificate() {
@@ -90,6 +92,11 @@ KSSLCertificate::~KSSLCertificate() {
     d->kossl->X509_free(d->m_cert);
 #endif
   delete d;
+}
+
+
+KSSLCertChain& KSSLCertificate::chain() {
+  return d->_chain;
 }
 
 
@@ -139,6 +146,14 @@ QString rc = "";
 return rc;
 }
 
+void KSSLCertificate::setChain(void *c) {
+#ifdef HAVE_SSL
+  d->_chain.setChain(c);
+#endif
+  d->m_stateCached = false;
+  d->m_stateCache = KSSLCertificate::Unknown;
+}
+
 void KSSLCertificate::setCert(X509 *c) {
 #ifdef HAVE_SSL
   d->m_cert = c;
@@ -163,6 +178,7 @@ return 0;
 bool KSSLCertificate::isValid() {
   return (validate() == KSSLCertificate::Ok);
 }
+
 
 //
 // See apps/verify.c in OpenSSL for the source of most of this logic.
@@ -240,6 +256,8 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
     //kdDebug(7029) << "KSSL Initializing the certificate store context" << endl;
     d->kossl->X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
+    if (d->_chain.isValid())
+      d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
 
     // FIXME: do all the X509_STORE_CTX_set_flags(); here
     //   +----->  Note that this is for 0.9.6 or better ONLY!
@@ -271,6 +289,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 #endif
   return NoSSL;
 }
+
 
 
 KSSLCertificate::KSSLValidation KSSLCertificate::revalidate() {

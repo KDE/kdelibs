@@ -42,6 +42,7 @@ class QCString;
 class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
+class KSSLCertChain;
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -58,6 +59,7 @@ friend class KSSL;
 friend class KSSLCertificateHome;
 friend class KSSLCertificateFactory;
 friend class KSSLCertificateCache;
+friend class KSSLCertChain;
 friend class KSSLPeerInfo;
 friend class KSSLPKCS12;
 
@@ -99,6 +101,7 @@ public:
   bool isValid();
   KSSLValidation validate();
   KSSLValidation revalidate();
+  KSSLCertChain& chain();
 
   static QString verifyText(KSSLValidation x);
 
@@ -115,6 +118,7 @@ protected:
   KSSLCertificate();
 
   void setCert(X509 *c);
+  void setChain(void *c);
   X509 *getCert();
   KSSLValidation processError(int ec);
 };
