@@ -1,1 +1,15 @@
-This is the mediatool library
+aRts based mediatool replacement - prototype
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Always wanted to hear mp3's while having still KDE system sounds? Or using
+effects or equalizers on your system sounds?
+
+Here is a prototype. It's a drop-in replacement for mediatool in kdelibs.
+Just rename the old directory to mediatool.old, copy that in here. You need
+to add the file arts.idl from the kmusic/ksynth/src/common directory as well
+to this.
+
+After you recompiled and installed kdelibs, you need to recompile/reinstall
+kdebase, especially kwmsound/kcmsyssound. You need to make sure that they
+link against mico as well.
+
+Cu... Stefan <stefan@space.twc.de>

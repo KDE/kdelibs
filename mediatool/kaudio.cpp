@@ -1,239 +1,171 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Christian Esken (esken@kde.org)
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream.h>
 #include <unistd.h>
-#include <string.h>
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <fcntl.h>
 #include "kaudio.h"
 
-#ifdef HAVE_SYSENT_H
-#include <sysent.h>
-#endif
 
-
-#define maxFnameLen 256
-
-KAudio::KAudio() : QObject()
+KAudio::KAudio()
 {
-  char		ServerId[256];
-  char		KMServerCidFile[maxFnameLen];
-  const char    kasFileName[]="/.kaudioserver";
-  const char	*tmpadr;
-  FILE		*KMServerCidHandle;
-  MediaCon	m;
-
+  struct sockaddr_in socket_addr;
+  int curState = 1;
   ServerContacted = false;
-  WAVname         = 0L;
-  autosync        = false;
-  finishTimer     = 0;
+  bool l_b_contactError = false;
+  unsigned short int port = 5007;	// !!! Change this
+  const char* host = "131.188.30.233"; //"faui08j";	// !!! and this
 
-
-  /*********************************************************************************
-   * Read in audio player id (This is NOT a pid, but a communication connection id)
-   *********************************************************************************/
-  tmpadr= getenv("HOME");
-  int homePathLen = strlen(tmpadr);
-
-  // Patch for HP-UX root-user with "/"-Home-Directory (deller)
-  if (homePathLen==1) { homePathLen=0; tmpadr=""; }
-  
-  if ( (homePathLen+strlen(kasFileName)+1 ) >= maxFnameLen ) {
-    cerr <<  "HOME path too long.\n";
-    return;
+  // Create socket
+  sockFD = ::socket( AF_INET, SOCK_STREAM, 0 );
+  if ( sockFD < 0 ) {
+    cerr << "Unable to create socket\n";
+    l_b_contactError = true;
   }
-  strcpy(KMServerCidFile,tmpadr);
-  strcpy(KMServerCidFile+homePathLen,kasFileName);
-
-  KMServerCidHandle = fopen(KMServerCidFile,"r");
-  if (KMServerCidHandle == 0L)
-    {
-      cerr << "PID could not get read.\n";
-      return;
+  // Set socket parameters
+  if ( !l_b_contactError  &&
+       fcntl( sockFD, F_SETFD, FD_CLOEXEC ) < 0 ) {
+    cerr << "Unable to set socket parameter close-on-exex\n";
+    l_b_contactError = true;
+  }
+  if ( !l_b_contactError && setsockopt( sockFD, SOL_SOCKET, SO_REUSEADDR,
+				       &curState, sizeof(curState) ) < 0 ) {
+    cerr << "Unable to set socket option SO_REUSEADDR\n";
+    l_b_contactError = true;
+  }
+  if ( !l_b_contactError ) {
+    // Set connect information
+    socket_addr.sin_family = AF_INET;
+    socket_addr.sin_port = htons( port );
+    if( !inet_aton( host, &socket_addr.sin_addr )) {
+      cerr << "couldn't convert " << host << " to inet address\n";
+      l_b_contactError = true;
     }
+  }
+  if ( !l_b_contactError && ::connect( sockFD,
+				       (struct sockaddr *) &socket_addr,
+				       sizeof(struct sockaddr_in) ) < 0 ) {
+    cerr << "Unable to connect to server port " << socket_addr.sin_port << '\n';
+    l_b_contactError = true;
+  }
 
-  fscanf(KMServerCidHandle,"%s\n",ServerId);
-  fclose (KMServerCidHandle);
+  // If we encountered no error in the connection, everzthing went well.
+  // we can set the ServerContacted flag then
 
-  /************* connect audio player ******************************/
-  MdConnect(atoi(ServerId), &m);
-  if ( m.shm_adr == 0L )
-    {
-      cerr << "Could not find media master.\n";
-      return;
+  if (!l_b_contactError) {
+    int l_l_expected = 8;
+    int l_l_write = write(sockFD, "auth 42\n", l_l_expected);
+    if (l_l_write != l_l_expected)
+      cerr << "Failed sending AUTH\n";
+    else
+      ServerContacted = true;
+  }
+  if(ServerContacted) {
+    printf("Arts server CONTACTED\n");
+  }
+  else {
+      printf("Arts server NOT FOUND\n");
     }
-  /************* query for chunk adresses **************************/
-  FnamChunk = (MdCh_FNAM*)FindChunkData(m.shm_adr, "FNAM");
-  if (!FnamChunk)
-    {
-      cerr << "No FNAM chunk.\n";
-      return;
-    }
-  IhdrChunk = (MdCh_IHDR*)FindChunkData(m.shm_adr, "IHDR");
-  if (!IhdrChunk)
-    {
-      cerr << "No IHDR chunk.\n";
-      return;
-    }
-  KeysChunk = (MdCh_KEYS*)FindChunkData(m.shm_adr, "KEYS");
-  if (!KeysChunk)
-    {
-      cerr << "No KEYS chunk.\n";
-      return;
-    }
-  StatChunk = (MdCh_STAT*)FindChunkData(m.shm_adr, "STAT");
-  if (!StatChunk)
-    {
-      cerr << "No STAT chunk.\n";
-      return;
-    }
-
-
-  MdConnectInit();
-
-  ServerContacted = true;
 }
 
-
-
+KAudio::~KAudio()
+{
+  if(ServerContacted)
+    true;
+}
 
 bool KAudio::play()
 {
-  if (!ServerContacted)
-    return false;
+  if(!ServerContacted) return false;
+  printf("Arts server PLAY REQUEST %s (clientID=%d)\n",wavName.c_str(),clientID);
 
-  EventCounterRaise( &(KeysChunk->play) ,1);
-  KeysChunk->sync_id += 3; // sync helper (esp. for maudio)
-  if (autosync)
-    sync();
+  //execID = AudioManager->playWav(clientID,wavName.c_str());
+  if(autosync) sync();
   return true;
+}
+
+bool KAudio::play(const char *filename)
+{
+  setFilename(filename);
+  return play();
 }
 
 bool KAudio::play(QString& filename)
 {
-  if (!ServerContacted)
-    return false;
-
   setFilename(filename);
-  FileNameSet( FnamChunk, WAVname);
   return play();
 }
 
-
-bool KAudio::play(const char *filename)
+bool KAudio::setFilename(const char *filename)
 {
-  if (!ServerContacted)
-    return false;
+  int l_l_expected = strlen(filename) + 7;
+  char *l_s_WAVname = new char[l_l_expected];
+  strcpy(l_s_WAVname, "play ");
+  strcpy(l_s_WAVname+5, filename);
+  l_s_WAVname[l_l_expected - 2] = '\n';
+  l_s_WAVname[l_l_expected - 1] = 0;
 
-  setFilename(filename);
-  FileNameSet( FnamChunk, WAVname);
-  return play();
+#if 1
+  for (int i= 0; i< l_l_expected; i++)
+    cerr << "l_s_WAVname[" << i << "]= " << l_s_WAVname[i] << " \n";
+#endif 
+
+  // Write the name (but leave out trailing 0)
+  int l_l_write = write(sockFD, l_s_WAVname, l_l_expected-1);
+  if (l_l_write != l_l_expected-1)
+    cerr << "Failed sending PLAY\n";
+  else
+    cerr << "Asking ARTS to play " << l_s_WAVname ;
+
+  char l_s_artsAnswer[256];
+  
+
+
+  return true;
 }
 
 bool KAudio::setFilename(QString& filename)
 {
-  if (!ServerContacted)
-    return false;
-  if (WAVname  != 0L )
-    ::free(WAVname);
-  int fnlen= filename.length();
-  WAVname = (char *)malloc(fnlen+1);
-  strcpy(WAVname, filename.ascii());
+  return setFilename((const char *)filename);
 
-  return true;
-}
-bool KAudio::setFilename(const char *filename)
-{
-  if (!ServerContacted)
-    return false;
-  if (WAVname  != 0L )
-    free(WAVname);
-
-  char *myCopy = (char*)malloc(strlen(filename)+1);
-  strcpy(myCopy,filename);
-  WAVname = myCopy;
-
-  return true;
 }
 
-
-bool KAudio::stop()
-{
-  if (!ServerContacted)
-    return false;
-
-  EventCounterRaise(&(KeysChunk->stop) ,1);
-  return true;
-}
-
+/**
+  * If true is given, every play call is synced directly.
+  */
 void KAudio::setAutosync(bool autosync)
 {
   this->autosync = autosync;
 }
 
-void KAudio::sync()
+/** If you want to recieve a Qt signal when your media is finished, you must
+  *  call setSignals(true) before you play your media.
+  */
+void KAudio::setSignals(bool sigs=true)
 {
-  while ( StatChunk->sync_id != KeysChunk->sync_id )
-    usleep(10*1000);
 }
 
-int KAudio::serverStatus()
+/**
+  * Stop current media
+  */
+bool KAudio::stop()
+{
+  // Try to keep up semantics
+  if(!ServerContacted) return false;
+  return true;
+}
+
+/** Sync media. This effectively blocks the calling process until the
+  * media is played fully
+  */
+void KAudio::sync()
+{
+}
+
+/** Query Server status. 0 means OK. You MUST check server status after
+  * creating a KAudio object.
+  */
+int  KAudio::serverStatus()
 {
   return !ServerContacted;
 }
 
-void KAudio::setSignals(bool sigs)
-{
-  if (sigs) {
-    if (!finishTimer) {
-      finishTimer = new QTimer(this);
-      connect   ( finishTimer, SIGNAL(timeout()), this , SLOT(checkFinished()) );
-      finishTimer->start(100);
-      currentId = KeysChunk->sync_id;
-    }
-  }
-  else {
-    if (finishTimer) {
-      disconnect( finishTimer );
-      finishTimer->stop();
-      delete finishTimer;
-      finishTimer = 0;
-    }
-  }
-}
-
-void KAudio::checkFinished()
-{
-  if ( StatChunk->sync_id == currentId ) {
-    // There is no point in emitting a signal now.
-    // Either we played no sound after setSignals(true) or we signalled already
-    return;
-  }
-  if ( StatChunk->sync_id == KeysChunk->sync_id ) {
-    emit playFinished();
-    // Copy the sync_id, so we see, that we have signalled the id already
-    currentId = KeysChunk->sync_id;
-  }
-}
-
 #include "kaudio.moc"
-

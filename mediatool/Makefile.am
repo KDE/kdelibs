@@ -24,15 +24,13 @@ lib_LTLIBRARIES = libmediatool.la
 MEDIATOOLVERSION=	0.0
 MEDIATOOLPATCH	 =	91
 INCLUDES = $(all_includes) 
-libmediatool_la_SOURCES = chunk.c eventcounter.c \
-			connect.c filename.c playlist.c kaudio.cpp
+libmediatool_la_SOURCES = kaudio.cpp chunk.c connect.c eventcounter.c filename.c
 
-include_HEADERS= 	mediatool.h kaudio.h
-noinst_HEADERS = chunk.h playlist.h
+include_HEADERS= 	kaudio.h
 
 libmediatool_la_LDFLAGS = -version-info 3:0 $(all_libraries)
 libmediatool_la_LIBADD = $(LIB_QT) $(LIBCOMPAT)
 
 libmediatool_la_METASOURCES = kaudio.moc
 
-EXTRA_DIST = Documentation Header VERSION mediatool.lsm 
+kaudio.cpp:

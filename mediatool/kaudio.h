@@ -27,10 +27,14 @@
 
 #include <qobject.h>
 #include <qtimer.h>
-
-extern "C" {
-#include <mediatool.h>
-}
+#include <string>
+/* socket stuff */
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
 
 /**
   * The KAudio class is a very easy means to playback digital audio
@@ -79,6 +83,11 @@ public:
     * Create an Audio player
     */
   KAudio();
+
+  /**
+    * Destroy the Audio player again
+    */
+  ~KAudio();
 
   /**
     * Play the Wav last set via setFilename(filename) or play(filename)
@@ -143,21 +152,13 @@ signals:
 private:
   bool		ServerContacted;
   bool		autosync;
-  char		*WAVname;
-  MdCh_FNAM*	FnamChunk;
-  MdCh_KEYS*	KeysChunk;
-  MdCh_IHDR*	IhdrChunk;
-  MdCh_STAT*	StatChunk;
+  string	wavName;
+
+  long execID, clientID;
 
   QTimer        *finishTimer;
-  uint8		currentId;
+  int	sockFD;
 
-private slots:
-
-  /**
-    * Internal check for "finished play media", called upon finishTimer
-    */
-  void checkFinished();
 };
 
 #endif
