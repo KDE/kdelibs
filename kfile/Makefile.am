@@ -53,4 +53,4 @@ libkfile_la_LIBADD =  ../kdeui/libkdeui.la ../kio/libkio.la
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
-kfstest_LDADD = libkfile.la ../kio/libkio.la ../kdeutils/libkdeutil.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)
+kfstest_LDADD = libkfile.la
