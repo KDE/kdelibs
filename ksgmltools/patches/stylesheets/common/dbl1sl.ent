@@ -71,9 +71,17 @@
 <!ENTITY unsupported	"nepodprto">
 <!ENTITY xrefto		"xref na">         <!-- ? -->
 <!ENTITY unexpectedelementname	"Nepri&ccaron;akovano ime elementa">
+<!ENTITY Revisedby      "Revised by: ">
 
 <!ENTITY ListofTables "Seznam tabel">
 <!ENTITY ListofExamples "Seznam primerov">
 <!ENTITY ListofFigures "Seznam slik">
 <!ENTITY ListofEquations "Seznam ena&ccaron;b">
 <!ENTITY ListofUnknown "Seznam neznanih stvari">   <!-- ? -->
+
+<!ENTITY nav-prev		"Nazaj">
+<!ENTITY nav-prev-sibling		"Hitro nazaj">
+<!ENTITY nav-next-sibling		"Hitro naprej">
+<!ENTITY nav-next		"Naprej">
+<!ENTITY nav-up		"Gor">
+<!ENTITY nav-home		"Domov">
