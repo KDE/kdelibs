@@ -22,6 +22,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+// qt <-> dcop integration
+#include <qobjectlist.h>
+#include <qmetaobject.h>
+#include <qvariant.h>
+// end of qt <-> dcop integration
+
 #include <sys/types.h>
 #include <sys/file.h>
 
@@ -37,11 +43,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qapp.h>
 #include <qsocketnotifier.h>
 
-//#include <dcopserver.h>
 #include <dcopglobal.h>
 #include <dcopclient.h>
 #include <dcopobject.h>
 #include <dcopref.h>
+
 
 #include <X11/Xmd.h>
 extern "C" {
@@ -49,6 +55,7 @@ extern "C" {
 #include <X11/ICE/ICEutil.h>
 #include <X11/ICE/ICEmsg.h>
 #include <X11/ICE/ICEproto.h>
+
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -778,6 +785,225 @@ void DCOPClient::setNotifications(bool enabled)
 }
 
 
+
+/*
+  DCOP <-> Qt bridge
+
+  ********************************************************************************
+ */
+static void fillQtObjects( QCStringList& l, QObject* o, QCString path )
+{
+    if ( !path.isEmpty() )
+	path += '/';
+
+    int unnamed = 0;
+    const QObjectList *list = o ? o->children() : QObject::objectTrees();
+    if ( list ) {
+	QObjectListIt it( *list );
+	QObject *obj;
+	while ( (obj=it.current()) ) {
+	    ++it;
+ 	    QCString n = obj->name();
+ 	    if ( n == "unnamed" || n.isEmpty() ) 
+ 		n.sprintf("unnamed%d(%s)", ++unnamed, obj->className(), obj );
+ 	    QCString fn = path + n;
+ 	    qDebug("append %s", fn.data() );
+ 	    l.append( fn );
+ 	    if ( obj->children() )
+ 		fillQtObjects( l, obj, fn );
+	}
+    }
+}
+
+struct O
+{
+    O(): o(0) {}
+    O ( const QCString& str, QObject* obj ):s(str), o(obj){}
+    QCString s;
+    QObject* o;
+};
+
+static void fillQtObjectsEx( QValueList<O>& l, QObject* o, QCString path )
+{
+    if ( !path.isEmpty() )
+	path += '/';
+
+    int unnamed = 0;
+    const QObjectList *list = o ? o->children() : QObject::objectTrees();
+    if ( list ) {
+	QObjectListIt it( *list );
+	QObject *obj;
+	while ( (obj=it.current()) ) {
+	    ++it;
+	    QCString n = obj->name();
+	    if ( n == "unnamed" || n.isEmpty() )
+		n.sprintf("unnamed%d(%s)", ++unnamed, obj->className(), obj );
+	    QCString fn = path + n;
+	    l.append( O( fn, obj ) );
+	    if ( obj->children() )
+		fillQtObjectsEx( l, obj, fn );
+	}
+    }
+}
+
+
+static QObject* findQtObject( QCString id )
+{
+    QRegExp expr( id );
+    QValueList<O> l;
+    fillQtObjectsEx( l, 0, "qt" );
+    for ( QValueList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+ 	if ( (*it).s.contains( expr ) )
+	    return (*it).o;
+    }
+    return 0;
+}
+
+static QCStringList  findQtObjects( QCString id )
+{
+    QRegExp expr( id );
+    QValueList<O> l;
+    fillQtObjectsEx( l, 0, "qt" );
+    QCStringList result;
+    for ( QValueList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+ 	if ( (*it).s.contains( expr ) )
+	    result << (*it).s;
+    }
+    return result;
+}
+
+static bool receiveQtObject( const QCString &objId, const QCString &fun, const QByteArray &data,
+			    QCString& replyType, QByteArray &replyData)
+{
+    if  ( objId == "qt" ) {
+	if ( fun == "interfaces()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    l << "DCOPObject";
+	    l << "Qt";
+	    reply << l;
+	    return true;
+	} else if ( fun == "functions()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    l << "QCStringList functions()";
+	    l << "QCStringList interfaces()";
+	    l << "QCStringList objects()";
+	    l << "QCStringList find(QCString)";
+	    reply << l;
+	    return true;
+	} else if ( fun == "objects()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    fillQtObjects( l, 0, "qt" );
+	    reply << l;
+	    return true;
+	} else if ( fun == "find(QCString)" ) {
+	    QDataStream ds( data, IO_ReadOnly );
+	    QCString id;
+	    ds >> id ;
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    reply << findQtObjects( id ) ;
+	    return true;
+	}
+    } else if ( objId.left(3) == "qt/" ) {
+	QObject* o = findQtObject( objId );
+	if ( !o )
+	    return false;
+	if ( fun == "functions()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    l << "QCStringList functions()";
+	    l << "QCStringList interfaces()";
+	    l << "QCStringList properties()";
+	    l << "bool setProperty(QCString,QVariant)";
+	    l << "QVariant property(QCString)";
+	    QStrList lst = o->metaObject()->slotNames( true );
+	    int i = 0;
+	    for ( QListIterator<char> it( lst ); it.current(); ++it ) {
+		if ( o->metaObject()->slot_access( i++, true ) != QMetaData::Public )
+		    continue;
+		QCString slot = it.current();
+		if ( slot.contains( "()" ) ) {
+		    slot.prepend("void ");
+		    l <<  slot;
+		}
+	    }
+	    reply << l;
+	    return true;
+	} else if ( fun == "interfaces()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    QMetaObject *meta = o->metaObject();
+	    while ( meta ) {
+		l.prepend( meta->className() );
+		meta = meta->superClass();
+	    }
+	    reply << l;
+	    return true;
+	} else if ( fun == "properties()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    QStrList lst = o->metaObject()->propertyNames( true );
+	    for ( QListIterator<char> it( lst ); it.current(); ++it ) {
+		const QMetaProperty* p = o->metaObject()->property( it.current(), true );
+		if ( !p )
+		    continue;
+		QCString prop = p->type();
+		prop += ' ';
+		prop += p->name();
+		if ( !p->writeable() )
+		    prop += " readonly";
+		l << prop;
+	    }
+	    reply << l;
+	    return true;
+	} else if ( fun == "property(QCString)" ) {
+	    replyType = "QVariant";
+	    QDataStream ds( data, IO_ReadOnly );
+	    QCString name;
+	    ds >> name ;
+	    QVariant result = o->property(  name );
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    reply << result;
+	    return true;
+	} else if ( fun == "setProperty(QCString,QVariant)" ) {
+	    QDataStream ds( data, IO_ReadOnly );
+	    QCString name;
+	    QVariant value;
+	    ds >> name >> value;
+	    replyType = "bool";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    reply << (Q_INT32) o->setProperty( name, value );
+	    return true;
+	} else {
+	    QMetaData* slot = o->metaObject()->slot( fun, true );
+	    if ( slot ) {
+		replyType = "void";
+		(o->*(slot->ptr))();
+		return true;
+	    }
+	}
+	
+
+    }
+    return false;
+}
+
+
+/*
+  ********************************************************************************
+  End of DCOP <-> Qt bridge
+ */
+
+
 bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
@@ -818,6 +1044,9 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	if ( process( fun, data, replyType, replyData ) )
 	    return true;
 	// fall through and send to defaultObject if available
+	
+    } else if ( objId == "qt" || objId.left(3) == "qt/" ) { // dcop <-> qt bridge
+	return receiveQtObject( objId, fun, data, replyType, replyData );
     }
 
     if ( objId.isEmpty() || objId == "default" ) {

@@ -20,6 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qvariant.h>
 #include "../../kdecore/kdatastream.h"
 #include "../../kdecore/kdatastream.cpp"
 #include "../dcopclient.h"
@@ -77,6 +78,24 @@ bool mkBool( const QString& s )
 	return TRUE;
 
     return FALSE;
+}
+
+QPoint mkPoint( const QString& s )
+{
+    QStringList l = QStringList::split( ',', s.mid( 7, s.length() - 8 ) );
+    return QPoint( l[0].toInt(), l[1].toInt() );
+}
+
+QSize mkSize( const QString& s )
+{
+    QStringList l = QStringList::split( ',', s.mid( 6, s.length() - 7 ) );
+    return QSize( l[0].toInt(), l[1].toInt() );
+}
+
+QRect mkRect( const QString& s )
+{
+    QStringList l = QStringList::split( ',', s.mid( 6, s.length() - 7 ) );
+    return QRect( l[0].toInt(), l[1].toInt(), l[2].toInt(), l[3].toInt() );
 }
 
 void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
@@ -172,7 +191,18 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    arg << s;
 	else if ( type == "QCString" )
 	    arg << QCString( s.latin1() );
-	else
+	else if ( type == "QVariant" ) {
+	    if ( s == "true" || s == "false" )
+		arg << QVariant( mkBool( s ), 42 );
+	    else if ( s.left( 7 ) == "QPoint(" )
+		arg << QVariant( mkPoint( s ) );
+	    else if ( s.left( 6 ) == "QSize(" )
+		arg << QVariant( mkSize( s ) );
+	    else if ( s.left( 6 ) == "QRect(" )
+		arg << QVariant( mkRect( s ) );
+	    else 
+		arg << QVariant( s );
+	} else
 	    qFatal( "cannot handle datatype '%s'", type.latin1() );
     }
 
@@ -222,6 +252,26 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    reply >> l;
 	    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it )
 		fprintf( stdout, "%s\n", (*it).latin1() );
+	} else if (replyType == "QVariant") {
+	    QVariant v;
+	    reply >> v;
+	    if ( v.type() == QVariant::Bool ) 
+		fprintf( stdout, "%s\n", v.toBool() ? "true" : "false" );
+	    else if ( v.type() == QVariant::Rect ) {
+		QRect r = v.toRect();
+		fprintf( stdout, "QRect(%d,%d,%d,%d)\n", r.x(), r.y(), r.width(), r.height() );
+	    } else if ( v.type() == QVariant::Point ) {
+		QPoint p = v.toPoint();
+		fprintf( stdout, "QPoint(%d,%d)\n", p.x(), p.y() );
+	    } else if ( v.type() == QVariant::Size ) {
+		QSize s = v.toSize();
+		fprintf( stdout, "QSize(%d,%d)\n", s.width(), s.height() );
+	    } else if ( v.canCast( QVariant::Int ) ) 
+		fprintf( stdout, "%d\n", v.toInt() );
+	    else if ( !v.toString().isNull() )
+		fprintf( stdout, "%s\n", v.toString().latin1() );
+	    else
+		fprintf( stdout, "<%s>\n", QVariant::typeToName( v.type() ) );
 	}
     }
 }
