@@ -50,10 +50,10 @@ Window *KJS::newWindow(KHTMLPart *p)
     window_dict = new QPtrDict<Window>;
   else if ((w = window_dict->find(p)) != 0L)
     return w;
-  
+
   w = new Window(p);
   window_dict->insert(p, w);
-  
+
   return w;
 }
 
@@ -126,7 +126,7 @@ KJSO Window::get(const UString &p) const
   DOM::HTMLElement element = coll.namedItem(p.string());
   if (!element.isNull())
       return getDOMNode(element);
-  
+
   // we are looking for a frame by name here.
   // essentially a hack relying on the assumption that the ordering of
   // frameNames() is identical to frames()
@@ -140,7 +140,7 @@ KJSO Window::get(const UString &p) const
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
     return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
   }
-  
+
   return Imp::get(p);
 }
 
@@ -206,42 +206,41 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   case Open:
   {
-    int w_left = 0, w_top = 0, w_width = 330, w_height = 400;
     KParts::WindowArgs winargs;
 
     // scan feature argument
     v = args[2];
     QString features;
     if (!v.isA(UndefinedType)) {
-	features = v.toString().value().qstring();
-	QStringList flist = QStringList::split(',', features);
-	QStringList::ConstIterator it = flist.begin();
-	while (it != flist.end()) {
-	    int pos = (*it).find('=');
-	    if (pos >= 0) {
-		QString key = (*it).left(pos).stripWhiteSpace().lower();
-		QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
-		if (key == "left" || key == "screenx")
-		  w_left = val.toInt();
-		else if (key == "top" || key == "screeny")
-		  w_top = val.toInt();
-		else if (key == "height")
-		  w_height = val.toInt();
-		else if (key == "width")
-		  w_width = val.toInt();
-		else if (key == "menubar")
-		  winargs.menuBarVisible = (val == "1" || val == "yes");
-		else if (key == "toolbar")
-		  winargs.toolBarsVisible = (val == "1" || val == "yes");
-		else if (key == "status")
-		  winargs.statusBarVisible = (val == "1" || val == "yes");
-		else if (key == "resizable")
-		  winargs.resizable = (val == "1" || val == "yes");
-		else if (key == "fullscreen")
-		  winargs.fullscreen = (val == "1" || val == "yes");
-	    }
-	    it++;
-	}
+        features = v.toString().value().qstring();
+        QStringList flist = QStringList::split(',', features);
+        QStringList::ConstIterator it = flist.begin();
+        while (it != flist.end()) {
+            int pos = (*it).find('=');
+            if (pos >= 0) {
+                QString key = (*it).left(pos).stripWhiteSpace().lower();
+                QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
+                if (key == "left" || key == "screenx")
+                  winargs.x = val.toInt();
+                else if (key == "top" || key == "screeny")
+                  winargs.y = val.toInt();
+                else if (key == "height")
+                  winargs.height = val.toInt();
+                else if (key == "width")
+                  winargs.width = val.toInt();
+                else if (key == "menubar")
+                  winargs.menuBarVisible = (val == "1" || val == "yes");
+                else if (key == "toolbar")
+                  winargs.toolBarsVisible = (val == "1" || val == "yes");
+                else if (key == "status")
+                  winargs.statusBarVisible = (val == "1" || val == "yes");
+                else if (key == "resizable")
+                  winargs.resizable = (val == "1" || val == "yes");
+                else if (key == "fullscreen")
+                  winargs.fullscreen = (val == "1" || val == "yes");
+            }
+            it++;
+        }
     }
 
     // prepare arguments
@@ -249,21 +248,15 @@ Completion WindowFunc::tryExecute(const List &args)
     KParts::URLArgs uargs;
     uargs.frameName = args[1].toString().value().qstring();
     uargs.serviceType = "text/html";
-    // guarantee minimum size
-    if (w_width < 100)
-      w_width = 100;
-    if (w_height < 100)
-      w_height = 100;
-    winargs.geometry = QRect(w_left, w_top, w_width, w_height);
-    
+
     // request new window
     KParts::ReadOnlyPart *newPart = 0L;
     emit widget->part()->browserExtension()->createNewWindow(url, uargs,
-							     winargs, newPart);
+                                                             winargs, newPart);
     if (newPart && newPart->inherits("KHTMLPart"))
-	result = newWindow(static_cast<KHTMLPart*>(newPart));
+        result = newWindow(static_cast<KHTMLPart*>(newPart));
     else
-	result = Undefined();
+        result = Undefined();
     break;
   }
   case SetTimeout:
@@ -331,7 +324,7 @@ KJSO FrameArray::get(const UString &p) const
   int len = frames.count();
   if (p == "length")
     return Number(len);
-  
+
   const KParts::ReadOnlyPart *frame = 0L;
 
   // check for the name or number
@@ -346,7 +339,7 @@ KJSO FrameArray::get(const UString &p) const
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
     return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
   }
-  
+
   return Undefined();
 }
 
