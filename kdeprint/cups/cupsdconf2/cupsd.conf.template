@@ -22,7 +22,7 @@
 @@
 
 %%servername
-# <b>ServerName</b>
+# <b>Server name (ServerName)</b>
 # <p>
 # The hostname of your server, as advertised to the world.
 # By default CUPS will use the hostname of the system.</p>
@@ -35,7 +35,7 @@ $$
 @@
 
 %%serveradmin
-# <b>ServerAdmin</b>
+# <b>Server administrator (ServerAdmin)</b>
 # <p>
 # The email address to send all complaints or problems to.
 # By default CUPS will use "root@hostname".</p>
@@ -46,7 +46,7 @@ $$
 @@
 
 %%accesslog
-# <b>AccessLog</b>
+# <b>Access log (AccessLog)</b>
 # <p>
 # The access log file; if this does not start with a leading /
 # then it is assumed to be relative to ServerRoot.  By default set to
@@ -61,7 +61,7 @@ $$
 @@
 
 %%datadir
-# <b>DataDir</b>
+# <b>Data directory (DataDir)</b>
 # <p>
 # The root directory for the CUPS data files.
 # By default /usr/share/cups.</p>
@@ -72,7 +72,7 @@ $$
 @@
 
 %%defaultcharset
-# <b>DefaultCharset</b>
+# <b>Default character set (DefaultCharset)</b>
 # <p>
 # The default character set to use. If not specified,
 # defaults to utf-8.  Note that this can also be overridden in
@@ -84,7 +84,7 @@ $$
 @@
 
 %%defaultlanguage
-# <b>DefaultLanguage</b>
+# <b>Default language (DefaultLanguage)</b>
 # <p>
 # The default language if not specified by the browser.
 # If not specified, the current locale is used.</p>
@@ -95,7 +95,7 @@ $$
 @@
 
 %%documentroot
-# <b>DocumentRoot</b>
+# <b>Document directory (DocumentRoot)</b>
 # <p>
 # The root directory for HTTP documents that are served.
 # By default the compiled in directory.</p>
@@ -106,7 +106,7 @@ $$
 @@
 
 %%errorlog
-# <b>ErrorLog</b>
+# <b>Error log (ErrorLog)</b>
 # <p>
 # The error log file; if this does not start with a leading /
 # then it is assumed to be relative to ServerRoot.  By default set to
@@ -121,7 +121,7 @@ $$
 @@
 
 %%fontpath
-# <b>FontPath</b>
+# <b>Font path (FontPath)</b>
 # <p>
 # The path to locate all font files (currently only for pstoraster)
 # By default /usr/share/cups/fonts.</p>
@@ -132,7 +132,7 @@ $$
 @@
 
 %%loglevel
-# <b>LogLevel</b>
+# <b>Log level (LogLevel)</b>
 # <p>
 # Controls the number of messages logged to the ErrorLog
 # file and can be one of the following:</p>
@@ -150,7 +150,7 @@ $$
 @@
 
 %%maxlogsize
-# <b>MaxLogSize</b>
+# <b>Max log size (MaxLogSize)</b>
 # <p>
 # Controls the maximum size of each log file before they are
 # rotated.  Defaults to 1048576 (1MB).  Set to 0 to disable log rotating.</p>
@@ -161,7 +161,7 @@ $$
 @@
 
 %%pagelog
-# <b>PageLog</b>
+# <b>Page log (PageLog)</b>
 # <p>
 # The page log file; if this does not start with a leading /
 # then it is assumed to be relative to ServerRoot.  By default set to
@@ -176,7 +176,7 @@ $$
 @@
 
 %%preservejobhistory
-# <b>PreserveJobHistory</b>
+# <b>Preserve job history (PreserveJobHistory)</b>
 # <p>
 # Whether or not to preserve the job history after a
 # job is completed, cancelled, or stopped.  Default is Yes.</p>
@@ -187,7 +187,7 @@ $$
 @@
 
 %%preservejobfiles
-# <b>PreserveJobFiles</b>
+# <b>Preserver job files (PreserveJobFiles)</b>
 # <p>
 # Whether or not to preserve the job files after a
 # job is completed, cancelled, or stopped.  Default is No.</p>
@@ -198,7 +198,7 @@ $$
 @@
 
 %%printcap
-# <b>Printcap</b>
+# <b>Printcap file (Printcap)</b>
 # <p>
 # The name of the printcap file.  Default is no filename.
 # Leave blank to disable printcap file generation.</p>
@@ -209,7 +209,7 @@ $$
 @@
 
 %%requestroot
-# <b>RequestRoot</b>
+# <b>Request directory (RequestRoot)</b>
 # <p>
 # The directory where request files are stored.
 # By default /var/spool/cups.</p>
@@ -220,7 +220,7 @@ $$
 @@
 
 %%remoteroot
-# <b>RemoteRoot</b>
+# <b>Remote root user (RemoteRoot)</b>
 # <p>
 # The name of the user assigned to unauthenticated accesses
 # from remote systems.  By default "remroot".</p>
@@ -231,7 +231,7 @@ $$
 @@
 
 %%serverbin
-# <b>ServerBin</b>
+# <b>Server binaries (ServerBin)</b>
 # <p>
 # The root directory for the scheduler executables.
 # By default /usr/lib/cups or /usr/lib32/cups (IRIX 6.5).</p>
@@ -242,7 +242,7 @@ $$
 @@
 
 %%serverroot
-# <b>ServerRoot</b>
+# <b>Server files (ServerRoot)</b>
 # <p>
 # The root directory for the scheduler.
 # By default /etc/cups.</p>
@@ -253,7 +253,7 @@ $$
 @@
 
 %%user
-# <b>User</b>
+# <b>User (User)</b>
 # <p>
 # The user the server runs under.  Normally this
 # must be <b>lp</b>, however you can configure things for another user
@@ -269,7 +269,7 @@ $$
 @@
 
 %%group
-# <b>Group</b>
+# <b>Group (Group)</b>
 # <p>
 # The group the server runs under.  Normally this
 # must be <b>sys</b>, however you can configure things for another
@@ -281,7 +281,7 @@ $$
 @@
 
 %%ripcache
-# <b>RIPCache</b>
+# <b>RIP cache (RIPCache)</b>
 # <p>
 # The amount of memory that each RIP should use to cache
 # bitmaps.  The value can be any real number followed by "k" for
@@ -294,7 +294,7 @@ $$
 @@
 
 %%tempdir
-# <b>TempDir</b>
+# <b>Temporary files (TempDir)</b>
 # <p>
 # The directory to put temporary files in. This directory must be
 # writable by the user defined above!  Defaults to "/var/spool/cups/tmp" or
@@ -306,7 +306,7 @@ $$
 @@
 
 %%filterlimit
-# <b>FilterLimit</b>
+# <b>Filter limit (FilterLimit)</b>
 # <p>
 # Sets the maximum cost of all job filters that can be run
 # at the same time.  A limit of 0 means no limit.  A typical job may need
@@ -321,7 +321,7 @@ $$
 @@
 
 %%listen
-# <b>Ports/Addresses</b>
+# <b>Listen to (Port/Listen)</b>
 # <p>
 # Ports/addresses that we listen to.  The default port 631 is reserved
 # for the Internet Printing Protocol (IPP) and is what we use here.</p>
@@ -347,7 +347,7 @@ $$
 @@
 
 %%hostnamelookups
-# <b>HostNameLookups</b>
+# <b>Hostname lookups (HostNameLookups)</b>
 # <p>
 # Whether or not to do lookups on IP addresses to get a
 # fully-qualified hostname.  This defaults to Off for performance reasons...</p>
@@ -358,7 +358,7 @@ $$
 @@
 
 %%keepalive
-# <b>KeepAlive</b>
+# <b>Keep alive (KeepAlive)</b>
 # <p>
 # Whether or not to support the Keep-Alive connection
 # option.  Default is on.</p>
@@ -369,7 +369,7 @@ $$
 @@
 
 %%keepalivetimeout
-# <b>KeepAliveTimeout</b>
+# <b>Keep-alive timeout (KeepAliveTimeout)</b>
 # <p>
 # The timeout (in seconds) before Keep-Alive connections are
 # automatically closed.  Default is 60 seconds.</p>
@@ -380,7 +380,7 @@ $$
 @@
 
 %%maxclients
-# <b>MaxClients</b>
+# <b>Max clients (MaxClients)</b>
 # <p>
 # Controls the maximum number of simultaneous clients that
 # will be handled.  Defaults to 100.</p>
@@ -391,7 +391,7 @@ $$
 @@
 
 %%maxrequestsize
-# <b>MaxRequestSize</b>
+# <b>Max request size (MaxRequestSize)</b>
 # <p>
 # Controls the maximum size of HTTP requests and print files.
 # Set to 0 to disable this feature (defaults to 0).</p>
@@ -402,7 +402,7 @@ $$
 @@
 
 %%timeout
-# <b>Timeout</b>
+# <b>Client timeout (Timeout)</b>
 # <p>
 # The timeout (in seconds) before requests time out.  Default is 300 seconds.</p>
 # <p>
@@ -412,7 +412,7 @@ $$
 @@
 
 %%browsing
-# <b>Browsing</b>
+# <b>Use browsing (Browsing)</b>
 # <p>
 # Whether or not to <b>listen</b> to printer 
 # information from other CUPS servers.  
@@ -432,7 +432,7 @@ $$
 @@
 
 %%browseshortnames
-# <b>BrowseShortNames</b>
+# <b>Use short names (BrowseShortNames)</b>
 # <p>
 # Whether or not to use "short" names for remote printers
 # when possible (e.g. "printer" instead of "printer@host").  Enabled by
@@ -444,7 +444,7 @@ $$
 @@
 
 %%browseaddress
-# <b>BrowseAddress</b>
+# <b>Browse addresses (BrowseAddress)</b>
 # <p>
 # Specifies a broadcast address to be used.  By
 # default browsing information is broadcast to all active interfaces.</p>
@@ -460,7 +460,7 @@ $$
 @@
 
 %%browseallow
-# <b>BrowseAllow/BrowseDeny</b>
+# <b>Browse allow/deny (BrowseAllow/BrowseDeny)</b>
 # <p>
 # <u>BrowseAllow</u>: specifies an address mask to allow for incoming browser
 # packets. The default is to allow packets from all addresses.</p>
@@ -491,7 +491,7 @@ $$
 @@
 
 %%browseinterval
-# <b>BrowseInterval</b>
+# <b>Browse interval (BrowseInterval)</b>
 # <p>
 # The time between browsing updates in seconds.  Default
 # is 30 seconds.</p>
@@ -508,7 +508,7 @@ $$
 @@
 
 %%browseorder
-# <b>BrowseOrder</b>
+# <b>Browse order (BrowseOrder)</b>
 # <p>
 # Specifies the order of BrowseAllow/BrowseDeny comparisons.</p>
 # <p>
@@ -519,7 +519,7 @@ $$
 @@
 
 %%browsepoll
-# <b>BrowsePoll</b>
+# <b>Browse poll (BrowsePoll)</b>
 # <p>
 # Poll the named server(s) for printers.</p>
 # <p>
@@ -529,7 +529,7 @@ $$
 @@
 
 %%browseport
-# <b>BrowsePort</b>
+# <b>Browse port (BrowsePort)</b>
 # <p>
 # The port used for UDP broadcasts.  By default this is
 # the IPP port; if you change this you need to do it on all servers.
@@ -541,7 +541,7 @@ $$
 @@
 
 %%browserelay
-# <b>BrowseRelay</b>
+# <b>Browse relay (BrowseRelay)</b>
 # <p>
 # Relay browser packets from one address/network to another.</p>
 # <p>
@@ -551,7 +551,7 @@ $$
 @@
 
 %%browsetimeout
-# <b>BrowseTimeout</b>
+# <b>Browse timeout (BrowseTimeout)</b>
 # <p>
 # The timeout (in seconds) for network printers - if we don't
 # get an update within this time the printer will be removed
@@ -565,7 +565,7 @@ $$
 @@
 
 %%implicitclasses
-# <b>ImplicitClasses</b>
+# <b>Implicit classes (ImplicitClasses)</b>
 # <p>
 # Whether or not to use implicit classes.</p>
 # <p>
@@ -586,7 +586,7 @@ $$
 @@
 
 %%systemgroup
-# <b>SystemGroup</b>
+# <b>System group (SystemGroup)</b>
 # <p>
 # The group name for "System" (printer administration)
 # access.  The default varies depending on the operating system, but
@@ -598,7 +598,7 @@ $$
 @@
 
 %%servercertificate
-# <b>ServerCertificate</b>
+# <b>Encryption certificate (ServerCertificate)</b>
 # <p>
 # The file to read containing the server's certificate.
 # Defaults to "/etc/cups/ssl/server.crt".</p>
@@ -609,7 +609,7 @@ $$
 @@
 
 %%serverkey
-# <b>ServerKey</b>
+# <b>Encryption key (ServerKey)</b>
 # <p>
 # The file to read containing the server's key.
 # Defaults to "/etc/cups/ssl/server.key".</p>
@@ -706,7 +706,7 @@ $$
 @@
 
 %%authtype
-# <b>AuthType</b>
+# <b>Authentification (AuthType)</b>
 # <p>
 # The authorization to use:<p>
 # <ul type=circle>
@@ -720,7 +720,7 @@ $$
 @@
 
 %%authclass
-# <b>AuthClass</b>
+# <b>Class (AuthClass)</b>
 # <p>
 # The authorization class; currently only <i>Anonymous</i>, <i>User</i>,
 # <i>System</i> (valid user belonging to group SystemGroup), and <i>Group</i>
@@ -733,7 +733,7 @@ $$
 @@
 
 %%satisfy
-# <b>Satisfy</b>
+# <b>Satisfy (Satisfy)</b>
 # <p>
 #  This directive controls whether all specified conditions must
 #  be satisfied to allow access to the resource. If set to "all",
@@ -752,13 +752,13 @@ $$
 @@
 
 %%authgroupname
-# <b>AuthGroupName</b>
+# <b>Authentification group name (AuthGroupName)</b>
 # <p>
 # The group name for <i>Group</i> authorization.</p>
 @@
 
 %%order
-# <b>Order</b>
+# <b>ACL order (Order)</b>
 # <p>
 # The order of Allow/Deny processing.</p>
 @@
@@ -786,7 +786,7 @@ $$
 @@
 
 %%allowdeny
-# <b>Allow/Deny</b>
+# <b>ACL addresses (Allow/Deny)</b>
 # <p>
 # Allows/Denies access from the specified hostname, domain, IP address, or
 # network. Possible values are:</p>
@@ -808,7 +808,7 @@ $$
 @@
 
 %%encryption
-# <b>Encryption</b>
+# <b>Encryption (Encryption)</b>
 # <p>
 # Whether or not to use encryption; this depends on having
 # the OpenSSL library linked into the CUPS library and scheduler.</p>
@@ -831,7 +831,7 @@ $$
 @@
 
 %%autopurgejobs
-# <b>AutoPurgeJobs</b>
+# <b>Auto purge jobs (AutoPurgeJobs)</b>
 # <p>
 # Automatically purge jobs when not needed for quotas.
 # Default is No.</p>
@@ -840,7 +840,7 @@ $$
 @@
 
 %%browseprotocols
-# <b>BrowseProtocols</b>
+# <b>Browse protocols (BrowseProtocols)</b>
 # <p>
 # Which protocols to use for browsing.  Can be
 # any of the following separated by whitespace and/or commas:</p>
@@ -861,7 +861,7 @@ $$
 @@
 
 %%classification
-# <b>Classification</b>
+# <b>Classification (Classification)</b>
 # <p>
 # The classification level of the server.  If set, this
 # classification is displayed on all pages, and raw printing is disabled.
@@ -873,7 +873,7 @@ $$
 @@
 
 %%classifyoverride
-# <b>ClassifyOverride</b>
+# <b>Allow overrides (ClassifyOverride)</b>
 # <p>
 # Whether to allow users to override the classification
 # on printouts. If enabled, users can limit banner pages to before or
@@ -886,7 +886,7 @@ $$
 @@
 
 %%hideimplicitmembers
-# <b>HideImplicitMembers</b>
+# <b>Hide implicit members (HideImplicitMembers)</b>
 # <p>
 # Whether or not to show the members of an
 # implicit class.</p>
@@ -902,7 +902,7 @@ $$
 @@
 
 %%implicitanyclasses
-# <b>ImplicitAnyClasses</b>
+# <b>Use &quot;any&quot; classes (ImplicitAnyClasses)</b>
 # <p>
 # Whether or not to create <b>AnyPrinter</b> implicit
 # classes.</p>
@@ -920,7 +920,7 @@ $$
 @@
 
 %%maxjobs
-# <b>MaxJobs</b>
+# <b>Max jobs (MaxJobs)</b>
 # <p>
 # Maximum number of jobs to keep in memory (active and completed.)
 # Default is 0 (no limit.)</p>
@@ -929,7 +929,7 @@ $$
 @@
 
 %%maxjobsperuser
-# <b>MaxJobsPerUser</b>
+# <b>Max jobs per user (MaxJobsPerUser)</b>
 # <p>
 # The MaxJobsPerUser directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each user. Once a user reaches the limit, new
@@ -944,7 +944,7 @@ $$
 @@
 
 %%maxjobsperprinter
-# <b>MaxJobsPerPrinter</b>
+# <b>Max jobs per printer (MaxJobsPerPrinter)</b>
 # <p>
 # The MaxJobsPerPrinter directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each printer or class. Once a printer or class
