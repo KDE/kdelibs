@@ -216,7 +216,8 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
   QIconViewItem* item = findItem( e->pos() );
 
-  emit doubleClicked( item, e->globalPos() );
+  if( item )
+    emit doubleClicked( item, e->globalPos() );
 
   if( (e->button() == LeftButton) && !m_bUseSingle )
     emitExecute( item, e->globalPos() );
