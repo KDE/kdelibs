@@ -1281,6 +1281,32 @@ public:
     Window groupLeader() const;
     
     /**
+     * Returns the class component of the window class for the window
+     * (i.e. WM_CLASS property).
+     * @since 3.3
+     */
+    const char* windowClassClass() const;
+
+    /**
+     * Returns the name component of the window class for the window
+     * (i.e. WM_CLASS property).
+     * @since 3.3
+     */
+    const char* windowClassName() const;
+
+    /**
+     * Returns the window role for the window (i.e. WM_WINDOW_ROLE property).
+     * @since 3.3
+     */
+    const char* windowRole() const;
+
+    /**
+     * Returns the client machine for the window (i.e. WM_CLIENT_MACHINE property).
+     * @since 3.3
+     */
+    const char* clientMachine() const;
+
+    /**
        Places the window frame geometry in frame, and the application window
        geometry in window.  Both geometries are relative to the root window.
 

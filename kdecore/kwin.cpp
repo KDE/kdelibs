@@ -1027,6 +1027,50 @@ WId KWin::WindowInfo::groupLeader() const
 #endif
 }
 
+QCString KWin::WindowInfo::windowClassClass() const
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+        << "Pass NET::WM2WindowClass to KWin::windowInfo()" << endl;
+    return d->info->windowClassClass();
+#else
+    return 0;
+#endif
+}
+
+QCString KWin::WindowInfo::windowClassName() const
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+        << "Pass NET::WM2WindowClass to KWin::windowInfo()" << endl;
+    return d->info->windowClassName();
+#else
+    return 0;
+#endif
+}
+
+QCString KWin::WindowInfo::windowRole() const
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
+        << "Pass NET::WM2WindowRole to KWin::windowInfo()" << endl;
+    return d->info->windowRole();
+#else
+    return 0;
+#endif
+}
+
+QCString KWin::WindowInfo::clientMachine() const
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
+        << "Pass NET::WM2ClientMachine to KWin::windowInfo()" << endl;
+    return d->info->clientMachine();
+#else
+    return 0;
+#endif
+}
+
 bool KWin::WindowInfo::actionSupported( NET::Action action ) const
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY

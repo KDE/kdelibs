@@ -621,6 +621,36 @@ public:
     WId groupLeader() const;
 
     /**
+     * Returns the class component of the window class for the window
+     * (i.e. WM_CLASS property).
+     * Requires NET::WM2WindowClass passed to KWin::windowInfo().
+     * @since 3.3
+     */
+    QCString windowClassClass() const;
+
+    /**
+     * Returns the name component of the window class for the window
+     * (i.e. WM_CLASS property).
+     * Requires NET::WM2WindowClass passed to KWin::windowInfo().
+     * @since 3.3
+     */
+    QCString windowClassName() const;
+
+    /**
+     * Returns the window role for the window (i.e. WM_WINDOW_ROLE property).
+     * Requires NET::WM2WindowRole passed to KWin::windowInfo().
+     * @since 3.3
+     */
+    QCString windowRole() const;
+
+    /**
+     * Returns the client machine for the window (i.e. WM_CLIENT_MACHINE property).
+     * Requires NET::WMClientMachine passed to KWin::windowInfo().
+     * @since 3.3
+     */
+    QCString clientMachine() const;
+
+    /**
      * Returns true if the given action is currently supported for the window
      * by the window manager.
      * Requires NET::WM2AllowedActions passed to KWin::windowInfo().

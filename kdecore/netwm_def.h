@@ -556,6 +556,9 @@ public:
         @li WM2MoveResizeWindow
         @li WM2ExtendedStrut
         @li WM2TemporaryRules internal, for kstart
+        @li WM2WindowClass  WM_CLASS
+        @li WM2WindowRole   WM_WINDOW_ROLE
+        @li WM2ClientMachine WM_CLIENT_MACHINE
         
         @since 3.2
 
@@ -570,7 +573,10 @@ public:
         WM2MoveResizeWindow    = 1<<6,
         WM2ExtendedStrut       = 1<<7,
         WM2TakeActivity        = 1<<8,
-        WM2KDETemporaryRules   = 1<<9  // NOT STANDARD
+        WM2KDETemporaryRules   = 1<<9,  // NOT STANDARD
+        WM2WindowClass         = 1<<10, ///< @since 3.3
+        WM2WindowRole          = 1<<11, ///< @since 3.3
+        WM2ClientMachine       = 1<<12  ///< @since 3.3
     };
 
     /**

@@ -139,6 +139,7 @@ struct NETWinInfoPrivate {
     char* startup_id;
     Window transient_for, window_group;
     unsigned long allowed_actions;
+    char* class_class, *class_name, *role, *client_machine;
 
     unsigned long properties[ 2 ];
     bool has_net_support;

@@ -79,6 +79,7 @@ static Atom net_wm_user_time         = 0;
 static Atom net_wm_handled_icons     = 0;
 static Atom net_startup_id           = 0;
 static Atom net_wm_allowed_actions   = 0;
+static Atom wm_window_role           = 0;
 
 // KDE extensions
 static Atom kde_net_system_tray_windows       = 0;
@@ -226,7 +227,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 74;
+static const int netAtomCount = 75;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -266,6 +267,7 @@ static void create_atoms(Display *d) {
             "_NET_WM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
             "_NET_WM_TAKE_ACTIVITY",
+            "WM_WINDOW_ROLE",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
@@ -351,6 +353,7 @@ static void create_atoms(Display *d) {
             &net_wm_allowed_actions,
 	    &net_wm_ping,
             &net_wm_take_activity,
+            &wm_window_role,
 
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
@@ -2598,6 +2601,10 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
+    p->class_class = (char*) 0;
+    p->class_name = (char*) 0;
+    p->role = (char*) 0;
+    p->client_machine = (char*) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2656,6 +2663,10 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
+    p->class_class = (char*) 0;
+    p->class_name = (char*) 0;
+    p->role = (char*) 0;
+    p->client_machine = (char*) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -3519,6 +3530,12 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
                 dirty2 |= WM2GroupLeader;
             else if (pe.xproperty.atom == XA_WM_TRANSIENT_FOR)
                 dirty2 |= WM2TransientFor;
+            else if (pe.xproperty.atom == XA_WM_CLASS)
+                dirty2 |= WM2WindowClass;
+            else if (pe.xproperty.atom == wm_window_role)
+                dirty2 |= WM2WindowRole;
+            else if (pe.xproperty.atom == XA_WM_CLIENT_MACHINE)
+                dirty2 |= WM2ClientMachine;
 	    else {
 
 #ifdef    NETWMDEBUG
@@ -4037,7 +4054,50 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
             XFree( reinterpret_cast< char* >( hints ));
         }
     }
+    
+    if( dirty2 & WM2WindowClass ) {
+        delete[] p->class_class;
+        delete[] p->class_name;
+        p->class_class = NULL;
+        p->class_name = NULL;
+        XClassHint hint;
+        if( XGetClassHint( p->display, p->window, &hint )) {
+            p->class_class = strdup( hint.res_class );
+            p->class_name = strdup( hint.res_name );
+            XFree( hint.res_class );
+            XFree( hint.res_name );
+        }
+    }
 
+    if( dirty2 & WM2WindowRole ) {
+        delete[] p->role;
+        p->role = NULL;
+	if (XGetWindowProperty(p->display, p->window, wm_window_role, 0l,
+			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+		p->role = nstrndup((const char *) data_ret, nitems_ret);
+	    }
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
+
+    if( dirty2 & WM2ClientMachine ) {
+        delete[] p->client_machine;
+        p->client_machine = NULL;
+	if (XGetWindowProperty(p->display, p->window, XA_WM_CLIENT_MACHINE, 0l,
+			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+		p->client_machine = nstrndup((const char *) data_ret, nitems_ret);
+	    }
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
 }
 
 
@@ -4149,6 +4209,22 @@ Window NETWinInfo::transientFor() const {
 
 Window NETWinInfo::groupLeader() const {
     return p->window_group;
+}
+
+const char* NETWinInfo::windowClassClass() const {
+    return p->class_class;
+}
+
+const char* NETWinInfo::windowClassName() const {
+    return p->class_name;
+}
+
+const char* NETWinInfo::windowRole() const {
+    return p->role;
+}
+
+const char* NETWinInfo::clientMachine() const {
+    return p->client_machine;
 }
 
 Bool NETWinInfo::handledIcons() const {
