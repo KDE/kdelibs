@@ -9,7 +9,6 @@
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
-    kdDebug() << "KIconView: KIconView()" << endl;
     //initializing that checkSettings() actually does something
     m_bUseSingle = !KGlobalSettings::singleClick();
     checkSettings();
@@ -35,18 +34,14 @@ void KIconView::checkSettings()
 {
   if( m_bUseSingle != KGlobalSettings::singleClick() ) {
     m_bUseSingle = KGlobalSettings::singleClick();
-    if( m_bUseSingle ) {
-      debug("SET SINGLE CLICK");
+    if( m_bUseSingle )
       connect( this, SIGNAL( clicked( QIconViewItem * ) ),
 	       this, SIGNAL( executed( QIconViewItem * ) ) );
-    }
-    else {
-      debug("SET DOUBLE CLICK");
+    else
       connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
 	       this, SIGNAL( executed( QIconViewItem * ) ) );
-    }
   }
-
+  
   m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
   m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
@@ -60,7 +55,7 @@ void KIconView::slotOnItem( QIconViewItem *item )
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
 
-    if ( item && m_autoSelectDelay ) {
+    if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
       m_pAutoSelect->start( m_autoSelectDelay, true ); 
       m_pCurrentItem = item;
     }
