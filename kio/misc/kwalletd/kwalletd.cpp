@@ -436,18 +436,31 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			KApplication::startServiceByDesktopName("kwalletmanager-kwalletd");
 		}
 	} else {
-		int response = KMessageBox::Yes;
+		int response = KDialogBase::Yes;
 
 		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
+			KDialogBase *dialog = new KDialogBase(
+					i18n("KDE Wallet Service"),
+					KDialogBase::Yes
+					| KDialogBase::No
+					| KDialogBase::Cancel,
+					KDialogBase::Yes, KDialogBase::Cancel,
+					0, "questionYesNoCancel", true, true,
+					KGuiItem(i18n("Allow &Once")),
+					KGuiItem(i18n("Allow &Always")),
+					KGuiItem(i18n("&Deny")));
+			XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
+			KWin::setState(dialog->winId(), NET::KeepAbove);
+			KWin::setOnAllDesktops(dialog->winId(), true);
+
 			if (appid.isEmpty()) {
-				response = KMessageBox::questionYesNoCancelWId(w, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)),
-						i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+				response = KMessageBox::createKMessageBox(dialog, QMessageBox::Information, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)), QStringList(), QString::null, 0L, 0);
 			} else {
-				response = KMessageBox::questionYesNoCancelWId(w, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+				response = KMessageBox::createKMessageBox(dialog, QMessageBox::Information, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), QStringList(), QString::null, 0L, 0);
 			}
 		}
 
-		if (response == KMessageBox::Yes || response == KMessageBox::No) {
+		if (response == KDialogBase::Yes || response == KDialogBase::No) {
 			_handles[appid].append(rc);
 			_wallets.find(rc)->ref();
 			if (response == KMessageBox::No) {
