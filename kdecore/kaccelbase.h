@@ -348,7 +348,7 @@ class KAccelActions
 	void init( KAccelBase* );
 	KAccelActions& operator =( KAccelActions& );
 
-	friend KAccelBase;
+	friend class KAccelBase;
 };
 
 typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
@@ -527,7 +527,7 @@ class KAccelBase
 
 	KAccelBase& operator =( const KAccelBase& );
 
-	friend KAccelActions;
+	friend class KAccelActions;
 };
 
 #endif // _KACCELBASE_H
