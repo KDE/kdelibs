@@ -440,7 +440,7 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   gzwrite( m_f, (void*)data, size );
 
   // Write alignment
-  int rest = size % 200;
+  int rest = size % 0x200;
   if ( rest )
   {
     for( uint i = 0; i < 0x200; ++i )
