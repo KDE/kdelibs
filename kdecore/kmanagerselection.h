@@ -55,6 +55,7 @@ class KDECORE_EXPORT KSelectionOwner
          * operation on the selection.
          *
          * @param selection atom representing the manager selection
+         * @param parent parent object, or NULL if there is none
          */
         KSelectionOwner( Atom selection, int screen = -1, QObject* parent = NULL );
         /**
@@ -63,6 +64,7 @@ class KDECORE_EXPORT KSelectionOwner
          * for it automatically.
          *
          * @param selection name of the manager selection
+         * @param parent parent object, or NULL if there is none
          */
         KSelectionOwner( const char* selection, int screen = -1, QObject* parent = NULL );
         /**
@@ -174,6 +176,7 @@ class KDECORE_EXPORT KSelectionWatcher
          * operation on the selection.
          *
          * @param selection_P atom representing the manager selection
+         * @param parent parent object, or NULL if there is none
          */
         KSelectionWatcher( Atom selection_P, int screen_P = -1, QObject* parent = NULL );
         /**
@@ -182,6 +185,7 @@ class KDECORE_EXPORT KSelectionWatcher
          * for it automatically.
          *
          * @param selection_P name of the manager selection
+         * @param parent parent object, or NULL if there is none
          */
         KSelectionWatcher( const char* selection_P, int screen_P = -1, QObject* parent = NULL );
 	virtual ~KSelectionWatcher();

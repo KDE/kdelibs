@@ -959,7 +959,7 @@ public:
 private:
 #endif
   /**
-   * @depreciated change code to call fileName()
+   * @deprecated change code to call fileName()
    */
 	QString filename( bool _ignore_trailing_slash_in_path = true ) const
   {

@@ -425,7 +425,7 @@ public:
     /**
        Sets the list of KDE system tray windows on the root window.
 
-       @param window The array of window id's
+       @param windows The array of window id's
 
        @param count The number of windows in the array.
     **/
@@ -610,8 +610,7 @@ protected:
        
        @param window the id of the window to add
     **/
-    // virtual void addClient(Window window) { }
-    virtual void addClient(Window) { }
+    virtual void addClient(Window window) { Q_UNUSED(window); }
 
     /**
        A Client should subclass NETRootInfo and reimplement this function when
@@ -619,8 +618,7 @@ protected:
 
        @param window the id of the window to remove
     **/
-    // virtual void removeClient(Window window) { }
-    virtual void removeClient(Window) { }
+    virtual void removeClient(Window window) { Q_UNUSED(window); }
 
     /**
        A Client should subclass NETRootInfo and reimplement this function when
@@ -629,8 +627,7 @@ protected:
 
        @param window the id of the window to add
     **/
-    // virtual void addSystemTrayWin(Window window) { }
-    virtual void addSystemTrayWin(Window) { }
+    virtual void addSystemTrayWin(Window window) { Q_UNUSED(window); }
 
     /**
        A Client should subclass NETRootInfo and reimplement this function when
@@ -639,8 +636,7 @@ protected:
        
        @param the id of the window to remove
     **/
-    // virtual void removeSystemTrayWin(Window window) { }
-    virtual void removeSystemTrayWin(Window) { }
+    virtual void removeSystemTrayWin(Window window) { Q_UNUSED(window); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -649,8 +645,7 @@ protected:
 
        @param numberOfDesktops the new number of desktops
     **/
-    // virtual void changeNumberOfDesktops(int numberOfDesktops) { }
-    virtual void changeNumberOfDesktops(int) { }
+    virtual void changeNumberOfDesktops(int numberOfDesktops) { Q_UNUSED(numberOfDesktops); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -661,8 +656,7 @@ protected:
 
        @param geom the new size
     **/
-    // virtual void changeDesktopGeometry(int desktop, const NETSize &geom) { }
-    virtual void changeDesktopGeometry(int, const NETSize &) { }
+    virtual void changeDesktopGeometry(int desktop, const NETSize &geom) { Q_UNUSED(desktop); Q_UNUSED(geom); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -673,8 +667,7 @@ protected:
 
        @param viewport the new position of the viewport
     **/
-    // virtual void changeDesktopViewport(int desktop, const NETPoint &viewport) { }
-    virtual void changeDesktopViewport(int, const NETPoint &) { }
+    virtual void changeDesktopViewport(int desktop, const NETPoint &viewport) { Q_UNUSED(desktop); Q_UNUSED(viewport); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -683,8 +676,7 @@ protected:
 
        @param desktop the number of the desktop
     **/
-    // virtual void changeCurrentDesktop(int desktop) { }
-    virtual void changeCurrentDesktop(int) { }
+    virtual void changeCurrentDesktop(int desktop) { Q_UNUSED(desktop); }
 
     /**
        @deprecated Use NETRootInfo2::changeActiveWindow() instead.
@@ -695,8 +687,7 @@ protected:
 
        @param window the id of the window to activate
     **/
-    // virtual void changeActiveWindow(Window window) { }
-    virtual KDE_DEPRECATED void changeActiveWindow(Window) { }
+    virtual KDE_DEPRECATED void changeActiveWindow(Window window) { Q_UNUSED(window); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -704,8 +695,7 @@ protected:
 
        @param window the id of the window to close
     **/
-    // virtual void closeWindow(Window window) { }
-    virtual void closeWindow(Window) { }
+    virtual void closeWindow(Window window) { Q_UNUSED(window); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -720,9 +710,8 @@ protected:
        @param direction One of NET::Direction (see base class documentation for
        a description of the different directions).
     **/
-    // virtual void moveResize(Window window, int x_root, int y_root,
-    // 			    unsigned long direction) { }
-    virtual void moveResize(Window, int, int, unsigned long) { }
+    virtual void moveResize(Window window, int x_root, int y_root,
+    			    unsigned long direction) { Q_UNUSED(window); Q_UNUSED(x_root); Q_UNUSED(y_root); Q_UNUSED(direction); }
 
 
 private:
@@ -778,9 +767,8 @@ protected:
        @param timestamp the timestamp of the user action causing this request
        @param active_window active window of the requesting application, if any
     **/
-    // virtual void changeActiveWindow(Window window,NET::RequestSource src,
-    //     Time timestamp, Window active_window ) { }
-    virtual void changeActiveWindow(Window,NET::RequestSource,Time,Window) { }
+    virtual void changeActiveWindow(Window window,NET::RequestSource src,
+        Time timestamp, Window active_window ) { Q_UNUSED(window); Q_UNUSED(src); Q_UNUSED(timestamp); Q_UNUSED(active_window);}
     /**
        A Window Manager should subclass NETRootInfo2 and reimplement this function
        when it wants to know when a Client made a request to restack a window.
@@ -790,8 +778,7 @@ protected:
        @param above other window in the restack request
        @param detail restack detail
     **/
-    // virtual void restackWindow(Window window, Window above, int detail) { }
-    virtual void restackWindow(Window, Window, int) { }
+    virtual void restackWindow(Window window, Window above, int detail) { Q_UNUSED(window); Q_UNUSED(above); Q_UNUSED(detail); }
 
     /**
        A Window Manager should subclass NETRootInfo2 and reimplement this function
@@ -800,8 +787,7 @@ protected:
 
        @param window the id of the window to more/resize
     **/
-    // virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { }
-    virtual void moveResizeWindow( Window, int, int, int, int, int ) { }
+    virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { Q_UNUSED(window); Q_UNUSED(flags); Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(width); Q_UNUSED(height); }
 
 // no private data, use NETRootInfoPrivate
 };
@@ -840,9 +826,8 @@ protected:
        @param detail restack detail
        @param timestamp the timestamp of the request
     **/
-    // virtual void restackWindow(Window window, RequestSource source,
-    //        Window above, int detail, Time timestamp) { }
-    virtual void restackWindow(Window, RequestSource, Window, int, Time) { }
+    virtual void restackWindow(Window window, RequestSource source,
+           Window above, int detail, Time timestamp) { Q_UNUSED(window); Q_UNUSED(source); Q_UNUSED(above); Q_UNUSED(detail); Q_UNUSED(timestamp); }
     /**
        A Window Manager should subclass NETRootInfo3 and reimplement this function
        when it wants to receive replies to the _NET_WM_TAKE_ACTIVITY protocol.
@@ -850,8 +835,7 @@ protected:
        @param timestamp timestamp of the ping
        @param flags flags passed in the original message
      */
-    //virtual void gotTakeActivity(Window, Time timestamp, long flags ) {}
-    virtual void gotTakeActivity(Window, Time, long ) {}
+    virtual void gotTakeActivity(Window window, Time timestamp, long flags ) { Q_UNUSED(window); Q_UNUSED(timestamp); Q_UNUSED(flags); }
 // no private data, use NETRootInfoPrivate
 };
 
@@ -1172,7 +1156,7 @@ public:
        For Window Managers only: set the visible iconic name ( i.e. xterm, xterm <2>,
        xterm <3>, ... )
 
-       @param visibleName the new visible iconic name
+       @param name the new visible iconic name
     **/
     void setVisibleIconName(const char *name);
 
@@ -1363,8 +1347,7 @@ protected:
 
        @param desktop the number of the desktop
     **/
-    // virtual void changeDesktop(int desktop) { }
-    virtual void changeDesktop(int) { }
+    virtual void changeDesktop(int desktop) { Q_UNUSED(desktop); }
 
     /**
        A Window Manager should subclass NETWinInfo and reimplement this function when
@@ -1375,7 +1358,7 @@ protected:
 
        @param mask the mask for the state
     **/
-    virtual void changeState(unsigned long /*state*/, unsigned long /*mask*/) { }
+    virtual void changeState(unsigned long state, unsigned long mask) { Q_UNUSED(state); Q_UNUSED(mask); }
 
 private:
     void update( const unsigned long[] );
