@@ -2080,7 +2080,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       connect( child->m_extension, SIGNAL( openURLNotify() ),
                d->m_extension, SIGNAL( openURLNotify() ) );
 
-      connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+      connect( child->m_extension, SIGNAL( openURLRequestDelayed( const KURL &, const KParts::URLArgs & ) ),
                this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
 
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
