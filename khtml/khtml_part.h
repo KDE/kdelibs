@@ -179,7 +179,6 @@ namespace KWallet
  *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
- * @version $Id$
  *
  */
 class KHTMLPart : public KParts::ReadOnlyPart
