@@ -1,0 +1,12 @@
+[Desktop Entry]
+Icon=crypto
+Type=Application
+Exec=kcmshell Personalization/crypto
+
+X-KDE-ModuleType=Library
+X-KDE-Library=crypto
+
+Name=Crypto
+Comment=Configure your identity, e-mail addresses, mail servers, etc.
+Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers
+
