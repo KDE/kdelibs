@@ -1245,14 +1245,9 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     return;
   }
 
-  // Take into account the window frame - so that (width,height) is the external window size
-  // ### (is that correct? for window.open it's the size of the HTML area...)
-  int deltaWidth = tl->frameGeometry().width() - tl->width();
-  int deltaHeight = tl->frameGeometry().height() - tl->height();
+  kdDebug(6070) << "resizing to " << width << "x" << height << endl;
 
-  kdDebug() << "resizing to " << width - deltaWidth << "x" << height - deltaHeight << endl;
-
-  emit ext->resizeTopLevelWidget( width - deltaWidth, height - deltaHeight );
+  emit ext->resizeTopLevelWidget( width, height );
 
   // If the window is out of the desktop, move it up/left
   // (maybe we should use workarea instead of sg, otherwise the window ends up below kicker)
