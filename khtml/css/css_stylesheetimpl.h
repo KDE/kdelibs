@@ -54,21 +54,20 @@ public:
     StyleSheetImpl(StyleSheetImpl *parentSheet, DOM::DOMString href = DOMString());
     StyleSheetImpl(StyleBaseImpl *owner, DOM::DOMString href  = DOMString());
     StyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = DOMString());
-
     virtual ~StyleSheetImpl();
 
     virtual bool isStyleSheet() const { return true; }
 
     virtual DOM::DOMString type() const { return DOMString(); }
 
-    bool disabled() const;
-    void setDisabled( bool );
+    bool disabled() const { return m_disabled; }
+    void setDisabled( bool disabled ) { m_disabled = disabled; }
 
-    DOM::NodeImpl *ownerNode() const;
+    DOM::NodeImpl *ownerNode() const { return m_parentNode; }
     StyleSheetImpl *parentStyleSheet() const;
-    DOM::DOMString href() const;
-    DOM::DOMString title() const;
-    MediaListImpl *media() const;
+    DOM::DOMString href() const { return m_strHref; }
+    DOM::DOMString title() const { return m_strTitle; }
+    MediaListImpl *media() const { return m_media; }
     void setMedia( MediaListImpl *media );
 
 protected:
@@ -88,8 +87,6 @@ public:
     // clone from a cached version of the sheet
     CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig);
-
-    virtual ~CSSStyleSheetImpl();
 
     virtual bool isCSSStyleSheet() const { return true; }
 
@@ -119,7 +116,7 @@ protected:
 class StyleSheetListImpl : public khtml::Shared<StyleSheetListImpl>
 {
 public:
-    StyleSheetListImpl();
+    StyleSheetListImpl() {}
     ~StyleSheetListImpl();
 
     // the following two ignore implicit stylesheets
@@ -138,23 +135,22 @@ class MediaListImpl : public StyleBaseImpl
 {
 public:
     MediaListImpl()
-	: StyleBaseImpl( 0 ) {};
-    MediaListImpl( CSSStyleSheetImpl *parentSheet );
+	: StyleBaseImpl( 0 ) {}
+    MediaListImpl( CSSStyleSheetImpl *parentSheet )
+        : StyleBaseImpl(parentSheet) {}
     MediaListImpl( CSSStyleSheetImpl *parentSheet,
                    const DOM::DOMString &media );
-    MediaListImpl( CSSRuleImpl *parentRule );
+    //MediaListImpl( CSSRuleImpl *parentRule );
     MediaListImpl( CSSRuleImpl *parentRule, const DOM::DOMString &media );
-
-    virtual ~MediaListImpl();
 
     virtual bool isMediaList() { return true; }
 
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;
-    unsigned long length() const;
-    DOM::DOMString item ( unsigned long index ) const;
+    unsigned long length() const { return m_lstMedia.count(); }
+    DOM::DOMString item ( unsigned long index ) const { return m_lstMedia[index]; }
     void deleteMedium ( const DOM::DOMString &oldMedium );
-    void appendMedium ( const DOM::DOMString &newMedium );
+    void appendMedium ( const DOM::DOMString &newMedium ) { m_lstMedia.append(newMedium); }
 
     DOM::DOMString mediaText() const;
     void setMediaText(const DOM::DOMString &value);

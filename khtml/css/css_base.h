@@ -214,6 +214,6 @@ namespace DOM {
 
     int getPropertyID(const char *tagStr, int len);
 
-};
+}
 
 #endif

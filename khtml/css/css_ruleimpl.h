@@ -33,7 +33,7 @@
 
 namespace khtml {
     class CachedCSSStyleSheet;
-};
+}
 
 namespace DOM {
 
@@ -231,6 +231,6 @@ public:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif
