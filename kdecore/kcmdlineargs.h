@@ -47,9 +47,96 @@ class KAboutData;
  *  This class is used in @ds main() via the static method
  *   @ref init().
  *
+ *  A typical KDE application should look like this:
+ *
+ *  int main(int argc, char *argv[])
+ *  {
+ *     // Initialize command line args
+ *     KCmdLineArgs::init(argc, argv, appName, description, version);
+ *
+ *     // Tell which options are supported
+ *     KCmdLineArgs::addCmdLineOptions( options );
+ *
+ *     // Add options from other components
+ *     KUniqueApplication::addCmdLineOptions();
+ *
+ *     ....
+ *
+ *     // Create application object without passing 'argc' and 'argv' again.
+ *     KUniqueApplication app;
+ *
+ *     ....
+ *
+ *     // Handle our own options/argments
+ *     // A KApplication will usually do this in main but this is not
+ *     // necassery.
+ *     // A KUniqueApplication might want to handle it in newInstance().
+ *
+ *     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+ *
+ *     // A binary option (on / off)
+ *     if (args->isSet("some-option"))
+ *        ....
+ *
+ *     // An option which takes an additional argument
+ *     QCString anotherOptionArg = args->getOption("another-option");
+ *
+ *     // Arguments (e.g. files to open)
+ *     for(int i = 0; i < args->count(); i++) // Counting start at 0! 
+ *     {
+ *        // don't forget to convert to Unicode!        
+ *        openFile( QFile::decodeFile( args->arg(i)));
+ *     }
+ *
+ *     args->clear(); // Free up some memory. 
+ *     ....
+ *  }
+ *
+ *  options are defined as follow
+ *
+ *  static KCmdLineOptions options[] = 
+ *  {
+ *     { "a", I18N_NOOP("A short binary option."), 0 },
+ *     { "b <file>", I18N_NOOP("A short option which takes an argument."), 0 },
+ *     { "c <speed>", I18N_NOOP("As above but with a default value."), "9600" },
+ *     { "option1", I18N_NOOP("A long binary option, off by default."), 0 },
+ *     { "nooption2", I18N_NOOP("A long binary option, on by default."), 0 },
+ *     { "option3 <file>", I18N_NOOP("A long option which takes an argument."), 0 },
+ *     { "option3 <speed>", I18N_NOOP("As above with 9600 as default."), "9600" },
+ *     { "d", 0, 0 },
+ *     { "option4", I18N_NOOP("A long option which has a short option as alias."), 0 }, 
+ *     { "e", 0, 0 },
+ *     { "nooption5", I18N_NOOP("Another long option with an alias."), 0 },
+ *     { "f", 0, 0 },
+ *     { "option6 <speed>", I18N_NOOP("'--option6 speed' is same a '-f speed'"), 0 },
+ *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
+ *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
+ *     { 0, 0, 0 } // End of options.
+ *  }
+ *
+ *  The I18N_NOOP macro is used to indicate that these strings should be
+ *  marked for translation. The actual translation is done by KCmdLineArgs.
+ *  You can't use i18n() here because we are setting up a static data 
+ *  structure and can't do translations at compile time.
+ *
+ *  Note that a program should define the options before any arguments.
+ *
+ *  When a long option has a short option as alias. A program should
+ *  only check for the long option.
+ *
+ *  With the above options a command line could look like:
+ *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file 
+ *
+ *  Long binary options can be in the form 'option' and 'nooption'.
+ *  A command line may contain the same binary option multiple times,
+ *  the last option determines the outcome:
+ *     myapp --nooption4 --option4 --nooption4
+ *  is the same as:
+ *     myapp --nooption4
+ *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
- *  @version 0.0.1
+ *  @version 0.0.2
  */
 class KCmdLineArgs
 {

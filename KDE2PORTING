@@ -114,11 +114,33 @@ khtmlw has been replaced with khtml.
   appHelpActivated() have all been removed See section for KTMainWindow
   for more info.
 
-  The third argument for KApplication used to be optional. But as it's
-  value is important for more things in KDE 2.0 (like DCOP), we decided
-  to make it's importance more clear and make it mandatory. Just add the
-  application name - preferably the name of the binary.
+  The KApplication constructor has changed. Command line arguments and
+  program name should no longer be passed to KApplication but to 
+  KCmdLineArgs. KCmdLineArgs performs command line parsing and a command
+  line help. See kdelibs/kdecore/kcmdlineargs for more info.
 
+//////////////////////////////////////////////////////////////////////
+// * KCmdLineArgs
+
+  KCmdLineArgs is a new class that handles command line parsing and
+  command line help. It is now required that your application
+  specifies at least:
+  - It's name.
+  - A short description what it does. (e.g. 1 line)
+  - A version.
+  - All command line options that it supports.
+
+  KCmdLineArgs itself will add the command line options supported by Qt 
+  and KApplication.
+
+  You can also use the KAboutData class to specify name, description and 
+  version.
+
+  In return for this information you can query KCmdLineArgs whether an 
+  certain option was specified on the command line and your application 
+  now automatically supports --help and --version. It aborts with a
+  usefull error message when the command line contains a syntax error.
+  See kdelibs/kdecore/kcmdlineargs for more info.
 
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h
@@ -251,13 +273,6 @@ KDialog is no longer defined in kwizard.h. Include kdialog.h instead.
 view_* public variables do no longer exist. There is really no reason
 for an app to use this information. If you do need it anyway, use
 mainViewGeometry() instead.
-
-////////////////////////////////////////////////////////////////////////
-// * KStartParams
-
-KStartParams is a new class for easy command-line argument parsing.
-It's included in kdecore and defined in kstartparams.h. See
-html-documentation for further informations about using.
 
 ////////////////////////////////////////////////////////////////////////
 // * automoc
