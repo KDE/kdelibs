@@ -124,9 +124,19 @@ void KHTMLWidget::setFollowsLinks( bool follow )
     _followLinks = follow;
 }
 
-bool KHTMLWidget::followsLinks() 
+bool KHTMLWidget::followsLinks()
 {
-    return _followLinks; 
+    return _followLinks;
+}
+
+void KHTMLWidget::enableImages( bool enable )
+{
+    m_bEnableImages = enable;
+}
+
+bool KHTMLWidget::imagesEnabled() const
+{
+    return m_bEnableImages;
 }
 
 KHTMLWidget* KHTMLWidget::topView()
@@ -544,9 +554,9 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   if(!_followLinks)
   {
       emit urlClicked( url, _target, _button );
-      return; 
+      return;
   }
-  
+
   if ( !_target.isNull() && !_target.isEmpty() && _button == LeftButton )
   {
     if ( strcmp( _target, "_parent" ) == 0 )
@@ -614,7 +624,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       QString anchor = u1.htmlRef();
       kdebug(0,1202,"Going to anchor %s", anchor.ascii());
       // ###
-      //gotoAnchor( anchor );
+      gotoAnchor( anchor );
       emit urlClicked( url, _target, _button );
       return;
     }
@@ -1126,9 +1136,9 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if ( m_strSelectedURL.isNull() )
 	return;
 
-    // if ( m_strSelectedURL.data()[0] == '#' )
-    //	gotoAnchor( m_strSelectedURL.data() + 1 );
-    // else
+     if ( m_strSelectedURL.data()[0] == '#' )
+    	gotoAnchor( m_strSelectedURL.data() + 1 );
+     else
     if ( _mouse->button() != RightButton )
     {
 	printf("m_strSelectedURL='%s'\n",m_strSelectedURL.data());
@@ -1178,4 +1188,10 @@ void
 KHTMLWidget::setUnderlineLinks( bool ul )
 {
     defaultSettings->underlineLinks = ul;
+}
+
+bool
+KHTMLWidget::gotoAnchor( const QString &/*_name*/ )
+{
+    // ### FIXME
 }

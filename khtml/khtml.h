@@ -34,7 +34,6 @@
 #include <qstring.h>
 
 class QPainter;
-class KBrowser;
 class KHTMLDecoder;
 class HTMLSettings;
 
@@ -77,7 +76,7 @@ public:
      */
     void setFollowsLinks( bool follow );
     bool followsLinks();
-    
+
     void enableImages( bool enable );
     bool imagesEnabled() const;
 
@@ -243,7 +242,7 @@ public:
      * been found. If the anchor could not be found it is retried when a
      * new part of the document arrives.
      */
-    //virtual bool gotoAnchor( const QString &_name );
+    virtual bool gotoAnchor( const QString &_name );
 
     /**
      * Causes the widget contents to scroll automatically.  Call
