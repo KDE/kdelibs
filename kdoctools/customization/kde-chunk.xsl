@@ -31,6 +31,7 @@
 
 <xsl:param name="use.id.as.filename">1</xsl:param>
 <xsl:param name="generate.section.toc">1</xsl:param>
+<xsl:param name="use.extensions">0</xsl:param>
 
 <xsl:template name="dbhtml-filename">
 <xsl:choose>
@@ -43,6 +44,5 @@
       </xsl:otherwise>
 </xsl:choose>
 </xsl:template>
-
 
 </xsl:stylesheet>
