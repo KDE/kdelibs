@@ -44,7 +44,7 @@ public:
 			DispatchFunction dispatcher;
 			OnewayDispatchFunction onewayDispatcher;
 			DynamicDispatchFunction dynamicDispatcher;
-		};
+		} dispFunc;
 		enum { dfNormal, dfOneway, dfDynamic } dispatchStyle;
 		void *object;
 		MethodDef methodDef;
@@ -220,13 +220,13 @@ void Object_skel::_defaultNotify(const Notification& notification)
 					{
 						if(mti->dispatchStyle == MTE::dfNormal)
 						{
-							mti->dispatcher(mti->object, &params, &result);
+							mti->dispFunc.dispatcher(mti->object, &params, &result);
 						}
 						else if(mti->dispatchStyle == MTE::dfDynamic)
 						{
 							long methodID;
 							methodID = mti - _internalData->methodTable.begin();
-							mti->dynamicDispatcher(mti->object, methodID,
+							mti->dispFunc.dynamicDispatcher(mti->object, methodID,
 												   &params, &result);
 						}
 						else
@@ -778,7 +778,7 @@ void Object_skel::_addMethod(DispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
 	Arts::ObjectInternalData::MethodTableEntry me;
-	me.dispatcher = disp;
+	me.dispFunc.dispatcher = disp;
 	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfNormal;
 	me.object = obj;
 	me.methodDef = md;
@@ -789,7 +789,7 @@ void Object_skel::_addMethod(OnewayDispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
 	Arts::ObjectInternalData::MethodTableEntry me;
-	me.onewayDispatcher = disp;
+	me.dispFunc.onewayDispatcher = disp;
 	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfOneway;
 	me.object = obj;
 	me.methodDef = md;
@@ -800,7 +800,7 @@ void Object_skel::_addMethod(DynamicDispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
 	Arts::ObjectInternalData::MethodTableEntry me;
-	me.dynamicDispatcher = disp;
+	me.dispFunc.dynamicDispatcher = disp;
 	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfDynamic;
 	me.object = obj;
 	me.methodDef = md;
@@ -819,7 +819,7 @@ long Object_skel::_addCustomMessageHandler(OnewayDispatchFunction handler,
 		_internalData->methodTableInit = true;
 	}
 	Arts::ObjectInternalData::MethodTableEntry me;
-	me.onewayDispatcher = handler;
+	me.dispFunc.onewayDispatcher = handler;
 	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfOneway;
 	me.object = obj;
 	me.methodDef.name = "_userdefined_customdatahandler";
@@ -841,9 +841,9 @@ void Object_skel::_dispatch(Buffer *request, Buffer *result,long methodID)
 				= _internalData->methodTable[methodID];
 	
 	if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfNormal)
-		me.dispatcher(me.object, request, result);
+		me.dispFunc.dispatcher(me.object, request, result);
 	else if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfDynamic)
-		me.dynamicDispatcher(me.object, methodID, request, result);
+		me.dispFunc.dynamicDispatcher(me.object, methodID, request, result);
 	else
 	{
 		arts_assert(0);
@@ -863,9 +863,9 @@ void Object_skel::_dispatch(Buffer *request,long methodID)
 				= _internalData->methodTable[methodID];
 
 	if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfOneway)
-		me.onewayDispatcher(me.object, request);
+		me.dispFunc.onewayDispatcher(me.object, request);
 	else if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfDynamic)
-		me.dynamicDispatcher(me.object, methodID, request, 0);
+		me.dispFunc.dynamicDispatcher(me.object, methodID, request, 0);
 	else
 	{
 		arts_assert(0);
