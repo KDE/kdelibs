@@ -33,6 +33,7 @@
 #include "misc/htmlhashes.h"
 
 #include "kdebug.h"
+#include "css_valueimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -273,6 +274,7 @@ ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 
     has_tabindex=false;
     tabindex=0;
+    m_styleDecls = 0;
 }
 
 ElementImpl::~ElementImpl()
@@ -282,6 +284,11 @@ ElementImpl::~ElementImpl()
 
     namedAttrMap->detachFromElement();
     namedAttrMap->deref();
+
+    if (m_styleDecls) {
+	m_styleDecls->setNode(0);
+	m_styleDecls->deref();
+    }
 }
 
 bool ElementImpl::isInline() const

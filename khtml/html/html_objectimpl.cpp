@@ -299,6 +299,7 @@ void HTMLEmbedElementImpl::detach()
 
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
+    needWidgetUpdate = false;
 }
 
 HTMLObjectElementImpl::~HTMLObjectElementImpl()
@@ -332,9 +333,11 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       pos = serviceType.find( ";" );
       if ( pos!=-1 )
           serviceType = serviceType.left( pos );
+      needWidgetUpdate = true;
       break;
     case ATTR_DATA:
       url = val;
+      needWidgetUpdate = true;
       break;
     case ATTR_WIDTH:
       addCSSLength( CSS_PROP_WIDTH, attr->value());
@@ -344,6 +347,8 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       break;
     case ATTR_CLASSID:
       classId = val;
+      needWidgetUpdate = true;
+      break;
 //    case ATTR_TABINDEX:
         // ###
     default:
@@ -365,9 +370,19 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
     m_render = p;
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
+    p->updateWidget();
   }
 
   NodeBaseImpl::attach( w );
+}
+
+void HTMLObjectElementImpl::applyChanges(bool top, bool force)
+{
+    if (needWidgetUpdate) {
+	static_cast<RenderPartObject*>(m_render)->updateWidget();
+	needWidgetUpdate = false;
+    }
+    HTMLElementImpl::applyChanges(top,force);
 }
 
 // -------------------------------------------------------------------------

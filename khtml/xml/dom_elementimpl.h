@@ -167,6 +167,8 @@ public:
     virtual short tabIndex() const;
     virtual void setTabIndex( short );
 
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return m_styleDecls; }
+
 protected: // member variables
 
     friend class NodeImpl;
@@ -176,6 +178,7 @@ protected: // member variables
     // for setting this according to the corresponding element description
     // in the DTD
     virtual khtml::AttributeList *defaultMap() const;
+    DOM::CSSStyleDeclarationImpl *m_styleDecls;
 };
 
 

@@ -95,8 +95,6 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = getString(node.localName());
   else if (p == "ownerDocument")
     result = getDOMNode(node.ownerDocument());
-  else if (p == "style")
-    result = KJSO(new Style(node));
   // methods
   else if (p == "insertBefore")
     result = new DOMNodeFunc(node, DOMNodeFunc::InsertBefore);
@@ -419,6 +417,10 @@ KJSO DOMElement::tryGet(const UString &p) const
     return new DOMElementFunction(element, DOMElementFunction::GetElementsByTagName);
   else if (p == "normalize") // this is moved to Node in DOM2
     return new DOMElementFunction(element, DOMElementFunction::Normalize);
+  else if (p == "style")
+//    result = KJSO(new Style(node));
+    return getDOMCSSStyleDeclaration(element.style());
+//    return new DOMCSSStyleDeclaration(element.style()));
 /*  else if (p == "getAttributeNS") // new for DOM2 - not yet in khtml
     return new DOMElementFunction(element, DOMElementFunction::GetAttributeNS);
   else if (p == "setAttributeNS") // new for DOM2 - not yet in khtml

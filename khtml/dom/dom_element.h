@@ -31,6 +31,7 @@
 #define _DOM_ELEMENT_h_
 
 #include <dom/dom_node.h>
+#include <dom/css_value.h>
 
 namespace DOM {
 
@@ -373,6 +374,14 @@ public:
      *
      */
     void normalize (  );
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentRange interface
+     *
+     * The style attribute
+     */
+    CSSStyleDeclaration style (  );
 
     /**
      * @internal

@@ -138,6 +138,7 @@ public:
     virtual void setSize( int w, int h );
 
     virtual void layout( );
+    virtual void updateWidget();
 
     DOM::HTMLElementImpl *m_obj;
 

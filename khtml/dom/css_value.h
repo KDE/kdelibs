@@ -216,6 +216,13 @@ public:
      */
     DOM::DOMString item ( unsigned long index );
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    CSSStyleDeclarationImpl *handle() const;
+    bool isNull() const;
+
 protected:
     CSSStyleDeclarationImpl *impl;
 };

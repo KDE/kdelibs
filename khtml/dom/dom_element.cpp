@@ -199,3 +199,12 @@ bool Element::isHTMLElement() const
     if(!impl) return false;
     return ((ElementImpl *)impl)->isHTMLElement();
 }
+
+CSSStyleDeclaration Element::style()
+{
+    if (impl) return ((ElementImpl *)impl)->styleRules();
+    return 0;
+}
+
+
+

@@ -113,9 +113,12 @@ public:
 
     virtual void attach(KHTMLView *w);
 
+    virtual void applyChanges(bool = true, bool = true);
+
     QString serviceType;
     QString url;
     QString classId;
+    bool needWidgetUpdate;
 };
 
 // -------------------------------------------------------------------------

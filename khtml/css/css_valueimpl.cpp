@@ -28,6 +28,7 @@
 #include "dom_exception.h"
 #include "dom_string.h"
 #include "dom_stringimpl.h"
+#include "dom_nodeimpl.h"
 
 #include "misc/loader.h"
 
@@ -41,17 +42,20 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
 {
     m_lstValues = 0;
+    m_node = 0;
 }
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QList<CSSProperty> *lstValues)
     : StyleBaseImpl(parent)
 {
     m_lstValues = lstValues;
+    m_node = 0;
 }
 
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
     delete m_lstValues;
+    // we don't use refcounting for m_node, to avoid cyclic references (see ElementImpl)
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
@@ -91,15 +95,20 @@ DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName
 DOMString CSSStyleDeclarationImpl::removeProperty(int id)
 {
     if(!m_lstValues) return 0;
+    DOMString value;
 
     QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     lstValuesIt.toLast();
     while (lstValuesIt.current() && lstValuesIt.current()->m_id != id)
         --lstValuesIt;
-    if (lstValuesIt.current())
+    if (lstValuesIt.current()) {
+	value = lstValuesIt.current()->value()->cssText();
         m_lstValues->removeRef(lstValuesIt.current());
+    }
+    if (m_node)
+	m_node->setChanged(true);
 
-    return 0;
+    return value;
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyPriority( const DOMString &propertyName )
@@ -162,6 +171,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	}
     } else if(pos == m_lstValues->count() )
 	kdDebug() << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << "value: " << value.string() << endl;
+    if (m_node)
+	m_node->setChanged(true);
 }
 
 
@@ -191,6 +202,8 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 	i++;
     }
     delete props;
+    if (m_node)
+	m_node->setChanged(true);
 }
 
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,

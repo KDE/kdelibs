@@ -22,10 +22,12 @@
 
 #include <dom/dom_node.h>
 #include <kjs/object.h>
+#include <dom/css_value.h>
+#include "kjs_binding.h"
 
 namespace KJS {
 
-  class Style : public HostImp {
+/*  class Style : public HostImp {
   public:
     Style(const DOM::Node &n) : node(n) { }
     virtual KJSO get(const UString &p) const;
@@ -33,6 +35,33 @@ namespace KJS {
   private:
     DOM::Node node;
   };
+*/
+
+  class DOMCSSStyleDeclaration : public DOMObject {
+  public:
+    DOMCSSStyleDeclaration(DOM::CSSStyleDeclaration s) : styleDecl(s) { }
+    ~DOMCSSStyleDeclaration();
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+  protected:
+    DOM::CSSStyleDeclaration styleDecl;
+  };
+
+  class DOMCSSStyleDeclarationFunc : public DOMFunction {
+    friend class DOMNode;
+  public:
+    DOMCSSStyleDeclarationFunc(DOM::CSSStyleDeclaration s, int i) : styleDecl(s), id(i) { }
+    Completion tryExecute(const List &);
+    enum { GetPropertyValue, GetPropertyCSSValue, RemoveProperty, GetPropertyPriority,
+           SetProperty, Item };
+  private:
+    DOM::CSSStyleDeclaration styleDecl;
+    int id;
+  };
+
+  KJSO getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration n);
 
 }; // namespace
 

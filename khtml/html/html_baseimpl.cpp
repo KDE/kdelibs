@@ -507,6 +507,7 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameEleme
     frameBorder = false;
     marginWidth = 0;
     marginHeight = 0;
+    needWidgetUpdate = false;
 }
 
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
@@ -534,6 +535,10 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
       break;
     case ATTR_HEIGHT:
       addCSSLength( CSS_PROP_HEIGHT, attr->value() );
+      break;
+    case ATTR_SRC:
+      needWidgetUpdate = true; // ### do this for scrolling, margins etc?
+      HTMLFrameElementImpl::parseAttribute( attr );
       break;
     default:
       HTMLFrameElementImpl::parseAttribute( attr );
@@ -568,8 +573,17 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   m_render = renderFrame;
   m_render->setStyle(m_style);
   r->addChild( m_render, _next ? _next->renderer() : 0 );
+  renderFrame->updateWidget();
 
 
   NodeBaseImpl::attach( w );
 }
 
+void HTMLIFrameElementImpl::applyChanges(bool top, bool force)
+{
+    if (needWidgetUpdate) {
+	static_cast<RenderPartObject*>(m_render)->updateWidget();
+	needWidgetUpdate = false;
+    }
+    HTMLElementImpl::applyChanges(top,force);
+}

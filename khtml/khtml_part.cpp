@@ -1039,11 +1039,23 @@ void KHTMLPart::clear()
     ConstFrameIt end = d->m_frames.end();
     for(; it != end; ++it )
     {
-      // Stop HTMLRun jobs.
+      // Stop HTMLRun jobs for frames
       if ( (*it).m_run )
         delete (*it).m_run;
     }
   }
+
+  {
+    QValueList<khtml::ChildFrame>::ConstIterator it = d->m_objects.begin();
+    QValueList<khtml::ChildFrame>::ConstIterator end = d->m_objects.end();
+    for(; it != end; ++it )
+    {
+      // Stop HTMLRun jobs for objects
+      if ( (*it).m_run )
+        delete (*it).m_run;
+    }
+  }
+
 
   findTextBegin(); // resets d->m_findNode and d->m_findPos
 

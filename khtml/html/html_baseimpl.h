@@ -205,6 +205,9 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
+    virtual void applyChanges(bool = true, bool = true);
+protected:
+    bool needWidgetUpdate;
 };
 
 

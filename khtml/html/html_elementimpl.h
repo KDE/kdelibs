@@ -47,8 +47,6 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return m_styleDecls; }
-
     void addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint = true);
     void addCSSLength(int id, const DOMString &value);
     void addCSSProperty(int id, const DOMString &value);
@@ -65,8 +63,6 @@ public:
 protected:
     // strips away anything after [0-9.%*]
     DOMString stripAttributeGarbage( const DOMString &value );
-
-    DOM::CSSStyleDeclarationImpl *m_styleDecls;
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl

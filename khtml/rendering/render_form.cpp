@@ -167,6 +167,10 @@ void RenderButton::layout()
         s = m_widget->sizeHint();
 
     applyLayout(s.width(), s.height());
+    if (isPositioned()) {
+	calcAbsoluteHorizontal();
+	calcAbsoluteVertical();
+    }
 
     setLayouted();
 }
@@ -510,6 +514,10 @@ void RenderLineEdit::layout()
     edit->setReadOnly(m_element->readOnly());
 
     applyLayout(s.width(), s.height());
+    if (isPositioned()) {
+	calcAbsoluteHorizontal();
+	calcAbsoluteVertical();
+    }
     setLayouted();
 }
 
@@ -631,6 +639,10 @@ void RenderFileButton::layout( )
     m_edit->setReadOnly(m_element->readOnly());
 
     applyLayout(s.width(), s.height());
+    if (isPositioned()) {
+	calcAbsoluteHorizontal();
+	calcAbsoluteVertical();
+    }
     setLayouted();
 }
 

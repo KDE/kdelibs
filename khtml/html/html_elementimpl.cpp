@@ -49,17 +49,10 @@ using namespace khtml;
 
 HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 {
-    m_styleDecls = 0;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
 {
-//     if ( m_styleDecls ) {
-// 	m_styleDecls->setParent( 0 );
-// 	m_styleDecls->deref();
-//     }
-    delete m_styleDecls;
-    //kdDebug( 6030 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 
@@ -195,37 +188,38 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document )
+static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document, NodeImpl *node )
 {
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     CSSStyleDeclarationImpl *m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->ref();
+    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->setNode(node);
     m_styleDecls->setStrictParsing( document->parseMode() == DocumentImpl::Strict );
     return m_styleDecls;
 }
 
 void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint)
 {
-    if(!m_styleDecls) m_styleDecls = createDecl( document );
+    if(!m_styleDecls) m_styleDecls = createDecl( document, this );
     m_styleDecls->setProperty(property, value, false, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
-    if(!m_styleDecls) m_styleDecls = createDecl( document );
+    if(!m_styleDecls) m_styleDecls = createDecl( document, this );
     m_styleDecls->setProperty(id, value, false, true);
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 {
-    if(!m_styleDecls) m_styleDecls = createDecl( document );
+    if(!m_styleDecls) m_styleDecls = createDecl( document, this );
     m_styleDecls->setLengthProperty(id, stripAttributeGarbage( value ), false, true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
 {
-    if(!m_styleDecls) m_styleDecls = createDecl( document );
+    if(!m_styleDecls) m_styleDecls = createDecl( document, this );
     m_styleDecls->setProperty(property);
 }
 

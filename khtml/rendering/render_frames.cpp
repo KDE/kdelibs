@@ -525,6 +525,10 @@ void RenderPart::layout( )
 {
   if ( m_widget )
     m_widget->resize( m_width, m_height );
+  if (isPositioned()) {
+    calcAbsoluteHorizontal();
+    calcAbsoluteVertical();
+  }
 }
 
 void RenderPart::partLoadingErrorNotify()
@@ -597,7 +601,7 @@ RenderPartObject::~RenderPartObject()
 {
 }
 
-void RenderPartObject::close()
+void RenderPartObject::updateWidget()
 {
   QString url;
   QString serviceType;
@@ -722,7 +726,13 @@ void RenderPartObject::close()
       KHTMLView *v = static_cast<KHTMLView *>(m_view);
       v->part()->requestFrame( this, url, o->name.string(), QStringList(), true );
   }
+  setLayouted(false);
 
+}
+
+void RenderPartObject::close()
+{
+  updateWidget();
   layout();
 
   RenderPart::close();

@@ -120,6 +120,15 @@ CSSRule CSSStyleDeclaration::parentRule() const
     return static_cast<CSSStyleDeclarationImpl *>(impl)->parentRule();
 }
 
+CSSStyleDeclarationImpl *CSSStyleDeclaration::handle() const
+{
+    return impl;
+}
+
+bool CSSStyleDeclaration::isNull() const
+{
+    return (impl == 0);
+}
 
 // ----------------------------------------------------------
 

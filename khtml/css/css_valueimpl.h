@@ -38,6 +38,7 @@ namespace DOM {
 
 class CSSRuleImpl;
 class CSSValueImpl;
+class NodeImpl;
 
 
 class CSSStyleDeclarationImpl : public StyleBaseImpl
@@ -78,9 +79,11 @@ public:
     bool getPropertyPriority( int propertyID );
 
     QList<CSSProperty> *values() { return m_lstValues; }
+    void setNode(NodeImpl *_node) { m_node = _node; }
 
 protected:
     QList<CSSProperty> *m_lstValues;
+    NodeImpl *m_node;
 };
 
 class CSSValueImpl : public StyleBaseImpl
