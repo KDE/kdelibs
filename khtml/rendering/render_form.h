@@ -36,7 +36,7 @@ class QLineEdit;
 class QListboxItem;
 
 #include <qmultilineedit.h>
-#include <qlineedit.h>
+#include <klineedit.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
@@ -300,11 +300,12 @@ public slots:
 
 // -------------------------------------------------------------------------
 
-class LineEditWidget : public QLineEdit
+class LineEditWidget : public KLineEdit
 {
     Q_OBJECT
 public:
-    LineEditWidget(QWidget *parent) : QLineEdit(parent) {}
+    LineEditWidget(QWidget *parent)
+        : KLineEdit(parent) {}
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
@@ -354,7 +355,7 @@ public slots:
 protected:
     bool m_clicked;
     bool m_haveFocus;
-    QLineEdit   *m_edit;
+    KLineEdit   *m_edit;
     QPushButton *m_button;
 };
 

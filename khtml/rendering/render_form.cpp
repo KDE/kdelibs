@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kapp.h>
+#include <kcursor.h>
 
 #include <qcombobox.h>
 #include "misc/helper.h"
@@ -423,30 +424,30 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
-    return QLineEdit::event( e );
+    return KLineEdit::event( e );
 }
 
 void LineEditWidget::focusInEvent(QFocusEvent* e)
 {
-    QLineEdit::focusInEvent(e);
+    KLineEdit::focusInEvent(e);
     emit focused();
 }
 
 void LineEditWidget::focusOutEvent(QFocusEvent* e)
 {
-    QLineEdit::focusOutEvent(e);
+    KLineEdit::focusOutEvent(e);
     emit blurred();
 }
 
 void LineEditWidget::keyPressEvent(QKeyEvent* e)
 {
-    QLineEdit::keyPressEvent(e);
+    KLineEdit::keyPressEvent(e);
     emit onKeyDown();
 }
 
 void LineEditWidget::keyReleaseEvent(QKeyEvent* e)
 {
-    QLineEdit::keyReleaseEvent(e);
+    KLineEdit::keyReleaseEvent(e);
     emit onKeyUp();
 }
 
@@ -478,7 +479,7 @@ void RenderLineEdit::layout()
     QFontMetrics fm = fontMetrics( m_widget->font() );
     QSize s;
 
-    QLineEdit *edit = static_cast<QLineEdit*>(m_widget);
+    KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
 
     int size = input->size();
@@ -1086,6 +1087,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         clearTableFlags(Tbl_autoScrollBars);
         setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
     }
+    KCursor::setAutoHideCursor(this, true);
     setAutoMask(true);
 }
 
