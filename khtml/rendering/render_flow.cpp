@@ -130,9 +130,8 @@ void RenderFlow::setStyle(RenderStyle *style)
 	    }
 	    child = child->nextSibling();
 	}
-        
+
     }
-    m_isAnonymous = false;
 }
 
 RenderFlow::~RenderFlow()
@@ -163,7 +162,7 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
     {
 	int h = m_height;
 	if(specialObjects && floatBottom() > h) h = floatBottom();
-	if((_ty > _y + _h) || (_ty + h < _y)) 
+	if((_ty > _y + _h) || (_ty + h < _y))
 	{
 //	    kdDebug( 6040 ) << "cut!" << endl;
 	    return;
@@ -842,7 +841,7 @@ RenderFlow::clearFloats()
     }
 
     RenderObject *prev = m_previous;
-    
+
     while (prev && prev->isTable())
 	    prev = prev->previousSibling();
 

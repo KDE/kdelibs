@@ -111,7 +111,8 @@ RenderObject::RenderObject()
     m_relPositioned = false;
     m_printSpecial = false;
     m_containsPositioned = false;
-
+    m_isAnonymous = false;
+    
     m_containingBlock = 0;
     m_bgImage = 0;
 }
@@ -189,7 +190,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	    kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
 	}
     }
-    
+
     if ( needsTable ) {
 	RenderTable *table;
 	if( !beforeChild )
