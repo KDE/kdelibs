@@ -176,6 +176,7 @@
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY dpi            	'<acronym>dpi</acronym>'>
 <!ENTITY Echap          	'<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
+<!ENTITY Enter			'<keycap>Entrée</keycap>'>
 <!ENTITY etc            	"<abbrev>etc.</abbrev>">
 <!ENTITY FAQ            	'<acronym>FAQ</acronym>'>
 <!ENTITY mi			"messagerie instantanée">
