@@ -1748,6 +1748,11 @@ bool Ftp::ftpReadDir(FtpEntry& de)
     const char* buffer = m_data->textLine();
     kdDebug(7102) << "dir > " << buffer << endl;
 
+    //Normally the listing looks like
+    // -rw-r--r--   1 dfaure   dfaure        102 Nov  9 12:30 log
+    // but on Netware servers like ftp://ci-1.ci.pwr.wroc.pl/ it looks like (#76442)
+    // d [RWCEAFMS] Admin                     512 Oct 13  2004 PSI
+
     // we should always get the following 5 fields ...
     const char *p_access, *p_junk, *p_owner, *p_group, *p_size;
     if( (p_access = strtok((char*)buffer," ")) == 0) continue;
@@ -1756,180 +1761,182 @@ bool Ftp::ftpReadDir(FtpEntry& de)
     if( (p_group = strtok(NULL," ")) == 0) continue;
     if( (p_size  = strtok(NULL," ")) == 0) continue;
 
-    // try to parse it as a directory entry ...
+    //kdDebug(7102) << "p_access=" << p_access << " p_junk=" << p_junk << " p_owner=" << p_owner << " p_group=" << p_group << " p_size=" << p_size << endl;
+
+    de.access = 0;
+    if ( strlen( p_access ) == 1 && p_junk[0] == '[' ) { // Netware
+      de.access = S_IRWXU | S_IRWXG | S_IRWXO; // unknown -> give all permissions
+    }
+
     const char *p_date_1, *p_date_2, *p_date_3, *p_name;
 
-            // A special hack for "/dev". A listing may look like this:
-            // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
-            // So we just ignore the number in front of the ",". Ok, its a hack :-)
-            if ( strchr( p_size, ',' ) != 0L )
-            {
-              //kdDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)" << endl;
-              if ((p_size = strtok(NULL," ")) == 0)
-                continue;
-            }
+    // A special hack for "/dev". A listing may look like this:
+    // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
+    // So we just ignore the number in front of the ",". Ok, its a hack :-)
+    if ( strchr( p_size, ',' ) != 0L )
+    {
+      //kdDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)" << endl;
+      if ((p_size = strtok(NULL," ")) == 0)
+        continue;
+    }
 
-            // Check whether the size we just read was really the size
-            // or a month (this happens when the server lists no group)
-            // Test on sunsite.uio.no, for instance
-            if ( !isdigit( *p_size ) )
-            {
-              p_date_1 = p_size;
-              p_size = p_group;
-              p_group = 0;
-              //kdDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
-            }
-            else
-            {
-              p_date_1 = strtok(NULL," ");
-              //kdDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
-            }
+    // Check whether the size we just read was really the size
+    // or a month (this happens when the server lists no group)
+    // Used to be the case on sunsite.uio.no, but not anymore
+    // This is needed for the Netware case, too.
+    if ( !isdigit( *p_size ) )
+    {
+      p_date_1 = p_size;
+      p_size = p_group;
+      p_group = 0;
+      //kdDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
+    }
+    else
+    {
+      p_date_1 = strtok(NULL," ");
+      //kdDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
+    }
 
-            if ( p_date_1 != 0 )
-              if ((p_date_2 = strtok(NULL," ")) != 0)
-                if ((p_date_3 = strtok(NULL," ")) != 0)
-                  if ((p_name = strtok(NULL,"\r\n")) != 0)
-                  {
+    if ( p_date_1 != 0 &&
+         (p_date_2 = strtok(NULL," ")) != 0 &&
+         (p_date_3 = strtok(NULL," ")) != 0 &&
+         (p_name = strtok(NULL,"\r\n")) != 0 )
+    {
+      {
+        QCString tmp( p_name );
+        if ( p_access[0] == 'l' )
+        {
+          int i = tmp.findRev( " -> " );
+          if ( i != -1 ) {
+            de.link = remoteEncoding()->decode(p_name + i + 4);
+            tmp.truncate( i );
+          }
+          else
+            de.link = QString::null;
+        }
+        else
+          de.link = QString::null;
 
-                    {
-                       QCString tmp( p_name );
-                       if ( p_access[0] == 'l' )
-                       {
-                         int i = tmp.findRev( " -> " );
-                         if ( i != -1 ) {
-                           de.link = remoteEncoding()->decode(p_name + i + 4);
-                           tmp.truncate( i );
-                         }
-                         else
-                           de.link = QString::null;
-                       }
-                       else
-                         de.link = QString::null;
+        if ( tmp[0] == '/' ) // listing on ftp://ftp.gnupg.org/ starts with '/'
+          tmp.remove( 0, 1 );
 
-                       if ( tmp[0] == '/' ) // listing on ftp://ftp.gnupg.org/ starts with '/'
-                         tmp.remove( 0, 1 );
+        if (tmp.find('/') != -1)
+          continue; // Don't trick us!
+        // Some sites put more than one space between the date and the name
+        // e.g. ftp://ftp.uni-marburg.de/mirror/
+        de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
+      }
 
-                       if (tmp.find('/') != -1)
-                         continue; // Don't trick us!
-                       // Some sites put more than one space between the date and the name
-                       // e.g. ftp://ftp.uni-marburg.de/mirror/
-                       de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
-                    }
+      de.type = S_IFREG;
+      switch ( p_access[0] ) {
+      case 'd':
+        de.type = S_IFDIR;
+        break;
+      case 's':
+        de.type = S_IFSOCK;
+        break;
+      case 'b':
+        de.type = S_IFBLK;
+        break;
+      case 'c':
+        de.type = S_IFCHR;
+        break;
+      case 'l':
+        de.type = S_IFREG;
+        // we don't set S_IFLNK here.  de.link says it.
+        break;
+      default:
+        break;
+      }
 
-                    de.access = 0;
-                    de.type = S_IFREG;
-                    switch ( p_access[0] ) {
-                        case 'd':
-                            de.type = S_IFDIR;
-                            break;
-                        case 's':
-                            de.type = S_IFSOCK;
-                            break;
-                        case 'b':
-                            de.type = S_IFBLK;
-                            break;
-                        case 'c':
-                            de.type = S_IFCHR;
-                            break;
-                        case 'l':
-                            de.type = S_IFREG;
-                            // we don't set S_IFLNK here.  de.link says it.
-                            break;
-                        default:
-                            break;
-                    }
+      if ( p_access[1] == 'r' )
+        de.access |= S_IRUSR;
+      if ( p_access[2] == 'w' )
+        de.access |= S_IWUSR;
+      if ( p_access[3] == 'x' || p_access[3] == 's' )
+        de.access |= S_IXUSR;
+      if ( p_access[4] == 'r' )
+        de.access |= S_IRGRP;
+      if ( p_access[5] == 'w' )
+        de.access |= S_IWGRP;
+      if ( p_access[6] == 'x' || p_access[6] == 's' )
+        de.access |= S_IXGRP;
+      if ( p_access[7] == 'r' )
+        de.access |= S_IROTH;
+      if ( p_access[8] == 'w' )
+        de.access |= S_IWOTH;
+      if ( p_access[9] == 'x' || p_access[9] == 't' )
+        de.access |= S_IXOTH;
+      if ( p_access[3] == 's' || p_access[3] == 'S' )
+        de.access |= S_ISUID;
+      if ( p_access[6] == 's' || p_access[6] == 'S' )
+        de.access |= S_ISGID;
+      if ( p_access[9] == 't' || p_access[9] == 'T' )
+        de.access |= S_ISVTX;
 
-                    if ( p_access[1] == 'r' )
-                      de.access |= S_IRUSR;
-                    if ( p_access[2] == 'w' )
-                      de.access |= S_IWUSR;
-                    if ( p_access[3] == 'x' || p_access[3] == 's' )
-                      de.access |= S_IXUSR;
-                    if ( p_access[4] == 'r' )
-                      de.access |= S_IRGRP;
-                    if ( p_access[5] == 'w' )
-                      de.access |= S_IWGRP;
-                    if ( p_access[6] == 'x' || p_access[6] == 's' )
-                      de.access |= S_IXGRP;
-                    if ( p_access[7] == 'r' )
-                      de.access |= S_IROTH;
-                    if ( p_access[8] == 'w' )
-                      de.access |= S_IWOTH;
-                    if ( p_access[9] == 'x' || p_access[9] == 't' )
-                      de.access |= S_IXOTH;
-                    if ( p_access[3] == 's' || p_access[3] == 'S' )
-                      de.access |= S_ISUID;
-                    if ( p_access[6] == 's' || p_access[6] == 'S' )
-                      de.access |= S_ISGID;
-                    if ( p_access[9] == 't' || p_access[9] == 'T' )
-                      de.access |= S_ISVTX;
+      de.owner    = remoteEncoding()->decode(p_owner);
+      de.group    = remoteEncoding()->decode(p_group);
+      de.size     = charToLongLong(p_size);
 
-                    // maybe fromLocal8Bit would be better in some cases,
-                    // but what proves that the ftp server is in the same encoding
-                    // than the user ??
-                    de.owner    = remoteEncoding()->decode(p_owner);
-                    de.group    = remoteEncoding()->decode(p_group);
-                    de.size     = charToLongLong(p_size);
+      // Parsing the date is somewhat tricky
+      // Examples : "Oct  6 22:49", "May 13  1999"
 
-                    // Parsing the date is somewhat tricky
-                    // Examples : "Oct  6 22:49", "May 13  1999"
+      // First get current time - we need the current month and year
+      time_t currentTime = time( 0L );
+      struct tm * tmptr = gmtime( &currentTime );
+      int currentMonth = tmptr->tm_mon;
+      //kdDebug(7102) << "Current time :" << asctime( tmptr ) << endl;
+      // Reset time fields
+      tmptr->tm_sec = 0;
+      tmptr->tm_min = 0;
+      tmptr->tm_hour = 0;
+      // Get day number (always second field)
+      tmptr->tm_mday = atoi( p_date_2 );
+      // Get month from first field
+      // NOTE : no, we don't want to use KLocale here
+      // It seems all FTP servers use the English way
+      //kdDebug(7102) << "Looking for month " << p_date_1 << endl;
+      static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+      for ( int c = 0 ; c < 12 ; c ++ )
+        if ( !strcmp( p_date_1, s_months[c]) )
+        {
+          //kdDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
+          tmptr->tm_mon = c;
+          break;
+        }
 
-                    // First get current time - we need the current month and year
-                    time_t currentTime = time( 0L );
-                    struct tm * tmptr = gmtime( &currentTime );
-                    int currentMonth = tmptr->tm_mon;
-                    //kdDebug(7102) << "Current time :" << asctime( tmptr ) << endl;
-                    // Reset time fields
-                    tmptr->tm_sec = 0;
-                    tmptr->tm_min = 0;
-                    tmptr->tm_hour = 0;
-                    // Get day number (always second field)
-                    tmptr->tm_mday = atoi( p_date_2 );
-                    // Get month from first field
-                    // NOTE : no, we don't want to use KLocale here
-                    // It seems all FTP servers use the English way
-                    //kdDebug(7102) << "Looking for month " << p_date_1 << endl;
-                    static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-                    for ( int c = 0 ; c < 12 ; c ++ )
-                      if ( !strcmp( p_date_1, s_months[c]) )
-                      {
-                        //kdDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
-                        tmptr->tm_mon = c;
-                        break;
-                      }
+      // Parse third field
+      if ( strlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
+        tmptr->tm_year = atoi( p_date_3 ) - 1900;
+      else
+      {
+        // otherwise, the year is implicit
+        // according to man ls, this happens when it is between than 6 months
+        // old and 1 hour in the future.
+        // So the year is : current year if tm_mon <= currentMonth+1
+        // otherwise current year minus one
+        // (The +1 is a security for the "+1 hour" at the end of the month issue)
+        if ( tmptr->tm_mon > currentMonth + 1 )
+          tmptr->tm_year--;
 
-                    // Parse third field
-                    if ( strlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
-                      tmptr->tm_year = atoi( p_date_3 ) - 1900;
-                    else
-                    {
-                      // otherwise, the year is implicit
-                      // according to man ls, this happens when it is between than 6 months
-                      // old and 1 hour in the future.
-                      // So the year is : current year if tm_mon <= currentMonth+1
-                      // otherwise current year minus one
-                      // (The +1 is a security for the "+1 hour" at the end of the month issue)
-                      if ( tmptr->tm_mon > currentMonth + 1 )
-                        tmptr->tm_year--;
+        // and p_date_3 contains probably a time
+        char * semicolon;
+        if ( ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
+        {
+          *semicolon = '\0';
+          tmptr->tm_min = atoi( semicolon + 1 );
+          tmptr->tm_hour = atoi( p_date_3 );
+        }
+        else
+          kdWarning(7102) << "Can't parse third field " << p_date_3 << endl;
+      }
 
-                      // and p_date_3 contains probably a time
-                      char * semicolon;
-                      if ( ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
-                      {
-                        *semicolon = '\0';
-                        tmptr->tm_min = atoi( semicolon + 1 );
-                        tmptr->tm_hour = atoi( p_date_3 );
-                      }
-                      else
-                        kdWarning(7102) << "Can't parse third field " << p_date_3 << endl;
-                    }
-
-                    //kdDebug(7102) << asctime( tmptr ) << endl;
-                    de.date = mktime( tmptr );
-                    return true;
-                  }
-  }
+      //kdDebug(7102) << asctime( tmptr ) << endl;
+      de.date = mktime( tmptr );
+      return true;
+    }
+  } // line invalid, loop to get another line
   return false;
 }
 
