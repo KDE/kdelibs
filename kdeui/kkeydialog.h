@@ -114,7 +114,8 @@ class KKeyChooser : public QWidget
 	enum { NoKey = 1, DefaultKey, CustomKey };
 
 	void initGUI( ActionType type, bool bAllowLetterShortcuts );
-	bool insert( KAccelActions&, bool bGlobal );
+	bool insert( KAccel* );
+	bool insert( KGlobalAccel* );
 	bool insert( KShortcutList* );
 	void buildListView( uint iList );
 

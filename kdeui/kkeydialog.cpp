@@ -138,18 +138,18 @@ KKeyChooser::KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowL
 	insert( coll );
 }
 
-KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts )
+KKeyChooser::KKeyChooser( KAccel* pAccel, QWidget* parent, bool bAllowLetterShortcuts )
 : QWidget( parent )
 {
 	initGUI( Application, bAllowLetterShortcuts );
-	insert( actions->actions(), false );
+	insert( pAccel );
 }
 
-KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent )
+KKeyChooser::KKeyChooser( KGlobalAccel* pAccel, QWidget* parent )
 : QWidget( parent )
 {
 	initGUI( ApplicationGlobal, false );
-	insert( actions->actions(), true );
+	insert( pAccel );
 }
 
 KKeyChooser::KKeyChooser( KShortcutList* pList, QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
@@ -172,7 +172,7 @@ KKeyChooser::KKeyChooser( KAccel* actions, QWidget* parent,
 		type = Application;
 
 	initGUI( type, bAllowLetterShortcuts );
-	insert( actions->actions(), false );
+	insert( actions );
 }
 
 KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
@@ -188,7 +188,7 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 		type = Application;
 
 	initGUI( type, bAllowLetterShortcuts );
-	insert( actions->actions(), true );
+	insert( actions );
 }
 
 KKeyChooser::~KKeyChooser()
@@ -208,13 +208,18 @@ bool KKeyChooser::insert( KActionCollection* pColl )
 	return true;
 }
 
-bool KKeyChooser::insert( KAccelActions& actions, bool bGlobal )
+bool KKeyChooser::insert( KAccel* pAccel )
 {
-	KShortcutList* pList = new KAccelShortcutList( actions, bGlobal );
+	KShortcutList* pList = new KAccelShortcutList( pAccel );
 	d->rgpListsAllocated.append( pList );
-	d->rgpLists.append( pList );
-	buildListView( d->rgpLists.count() - 1 );
-	return true;
+	return insert( pList );
+}
+
+bool KKeyChooser::insert( KGlobalAccel* pAccel )
+{
+	KShortcutList* pList = new KAccelShortcutList( pAccel );
+	d->rgpListsAllocated.append( pList );
+	return insert( pList );
 }
 
 bool KKeyChooser::insert( KShortcutList* pList )
@@ -809,14 +814,14 @@ void KKeyDialog::commitChanges()
 int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( parent );
-	dlg.m_pKeyChooser->insert( keys->actions(), true );
+	dlg.m_pKeyChooser->insert( keys );
 	return dlg.configure( bSaveSettings );
 }
 
 int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( parent );
-	dlg.m_pKeyChooser->insert( keys->actions(), true );
+	dlg.m_pKeyChooser->insert( keys );
 	return dlg.configure( bSaveSettings );
 }
 
