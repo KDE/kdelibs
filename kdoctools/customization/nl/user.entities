@@ -33,7 +33,7 @@
 <!ENTITY Niels.Luten        '<othercredit role="translator"><firstname>Niels</firstname><surname>Luten</surname><affiliation><address><email>mail@niels1.tmfweb.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Rik.van.Achterberg '<othercredit role="translator"><firstname>Rik</firstname><surname>van Achterberg</surname><affiliation><address><email>rikratva@xs4all.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Daniel.Huisman	    '<othercredit role="translator"><firstname>Daniel</firstname><surname>Huisman</surname><affiliation><address><email>phptesten@lycos.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Sander.Koning      '<othercredit role="translator"><firstname>Alexander</firstname><surname>S. Koning</surname><affiliation><address><email>skoning@ch.its.tudelft.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Sander.Koning      '<othercredit role="translator"><firstname>Alexander</firstname><surname>S. Koning</surname><affiliation><address><email>sanderkoning@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
