@@ -1664,7 +1664,8 @@ QString KApplication::randomString(int length)
       length=random();
 
    char *string=new char[length+1];	
-   while (length--)
+   string[length] = '\0';
+   while (--length)
    {
       int r=random() % 62;
       r+=48;
