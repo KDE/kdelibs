@@ -981,6 +981,7 @@ void KDirOperator::selectDir(const KFileItem *item)
 
 void KDirOperator::itemDeleted(KFileItem *item)
 {
+    pendingMimeTypes.removeRef( item );
     fileView->removeItem( static_cast<KFileItem *>( item ));
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
@@ -1481,13 +1482,9 @@ bool KDirOperator::dirHighlighting() const
 void KDirOperator::slotProperties()
 {
     if ( fileView ) {
-        KFileItemList list; // now this sucks :(
-        KFileItemListIterator it( *fileView->selectedItems() );
-        for ( ; it.current(); ++it )
-            list.append( it.current() );
-
-        if ( !list.isEmpty() )
-            (void) new KPropertiesDialog( list, this, "props dlg", true );
+        const KFileItemList *list = fileView->selectedItems();
+        if ( !list->isEmpty() )
+            (void) new KPropertiesDialog( *list, this, "props dlg", true );
     }
 }
 
