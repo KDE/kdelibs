@@ -340,16 +340,14 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 
   //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
 
-  KServiceType::Ptr ptr = KServiceType::serviceType( _servicetype );
-  if ( !ptr ) return false;
-
   // For each service type we are associated with, if it doesn't
   // match then we try its parent service types.
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
       //kdDebug(7012) << "    has " << (*it) << endl;
-      if ( ptr->inherits( *it ) )
+      KServiceType::Ptr ptr = KServiceType::serviceType( *it );
+      if ( ptr && ptr->inherits( _servicetype ) )
           return true;
   }
   return false;
