@@ -54,7 +54,7 @@ struct KKeyEntry {
 /**
  * Handle keyboard accelerators.
  *
- * Allowe a user to configure
+ * Allow an user to configure
  * key bindings through application configuration files or through the
  * @ref KKeyChooser GUI.
  *
