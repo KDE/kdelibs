@@ -132,6 +132,18 @@ struct ContainerNode
 typedef QPtrList<ContainerNode> ContainerNodeList;
 typedef QPtrListIterator<ContainerNode> ContainerNodeListIt;
 
+struct BuildState
+{
+    BuildState() : guiClient( 0 ) {}
+
+    QString clientName;
+
+    QString actionListName;
+    ActionList actionList;
+
+    KXMLGUIClient *guiClient;
+};
+
 };
 
 #endif

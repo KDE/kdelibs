@@ -44,7 +44,7 @@ using namespace KXMLGUI;
  * TODO:     - make more use of QValueList instead of QPtrList
  */
 
-class KXMLGUIFactoryPrivate
+class KXMLGUIFactoryPrivate : public BuildState
 {
 public:
     KXMLGUIFactoryPrivate()
@@ -66,8 +66,6 @@ public:
 
     ContainerNode *m_rootNode;
 
-    QString m_clientName;
-
     QString m_defaultMergingName;
 
     /*
@@ -84,16 +82,6 @@ public:
      * List of all clients
      */
     QPtrList<KXMLGUIClient> m_clients;
-
-    /*
-     * Contains the name of the actionlist currently plugged/unplugged in ::plugActionList
-     * and ::unplugActionList .
-     */
-    QString m_actionListName;
-    /*
-     * Similar to m_actionListName.
-     */
-    ActionList m_actionList;
 
     QString tagActionList;
 
@@ -268,7 +256,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     // cache some variables
 
-    d->m_clientName = docElement.attribute( d->attrName );
+    d->clientName = docElement.attribute( d->attrName );
     d->m_clientBuilder = client->clientBuilder();
 
     if ( d->m_clientBuilder )
@@ -304,7 +292,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     // reset some variables, for safety
     m_client = 0L;
-    d->m_clientName = QString::null;
+    d->clientName = QString::null;
     d->m_clientBuilder = 0L;
 
     emit clientAdded( client );
@@ -344,7 +332,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // cache some variables
 
     m_client = client;
-    d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
+    d->clientName = client->domDocument().documentElement().attribute( d->attrName );
     d->m_clientBuilder = client->clientBuilder();
 
     client->setFactory( 0L );
@@ -365,7 +353,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // reset some variables
     m_client = 0L;
     d->m_clientBuilder = 0L;
-    d->m_clientName = QString::null;
+    d->clientName = QString::null;
 
     emit clientRemoved( client );
 }
@@ -584,7 +572,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element,
                                              QString::null /* ### allow group for <merge/> ? */ ,
                                              mIt, ignoreDefaultMergingIndex );
             newIdx.mergingName = mergingName;
-            newIdx.clientName = d->m_clientName;
+            newIdx.clientName = d->clientName;
 
             // if that merging index is "inside" another one, then append it right after the "parent" .
             if ( mIt != parentNode->mergingIndices.end() )
@@ -802,7 +790,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUI::ContainerNo
     // remove all merging indices the client defined
     MergingIndexList::Iterator cmIt = node->mergingIndices.begin();
     while ( cmIt != node->mergingIndices.end() )
-        if ( (*cmIt).clientName == d->m_clientName )
+        if ( (*cmIt).clientName == d->clientName )
             cmIt = node->mergingIndices.remove( cmIt );
         else
             ++cmIt;
@@ -869,7 +857,7 @@ int KXMLGUIFactory::calcMergingIndex( KXMLGUI::ContainerNode *node,
     // if we are not looking for a special merging name (like a group or an actionlist name) ,
     // then use the client's name, to get the match between <Merge name="blah" /> and the client name.
     if ( mergingName.isEmpty() )
-        mergingIt = node->findIndex( d->m_clientName );
+        mergingIt = node->findIndex( d->clientName );
     else
         mergingIt = node->findIndex( mergingName );
 
@@ -962,29 +950,29 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
                                      const QPtrList<KAction> &actionList )
 {
     m_client = client;
-    d->m_actionListName = name;
-    d->m_actionList = actionList;
-    d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
+    d->actionListName = name;
+    d->actionList = actionList;
+    d->clientName = client->domDocument().documentElement().attribute( d->attrName );
 
     plugActionListRecursive( d->m_rootNode );
 
     m_client = 0;
-    d->m_actionListName = QString::null;
-    d->m_actionList = QPtrList<KAction>();
-    d->m_clientName = QString::null;
+    d->actionListName = QString::null;
+    d->actionList = QPtrList<KAction>();
+    d->clientName = QString::null;
 }
 
 void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &name )
 {
     m_client = client;
-    d->m_actionListName = name;
-    d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
+    d->actionListName = name;
+    d->clientName = client->domDocument().documentElement().attribute( d->attrName );
 
     unplugActionListRecursive( d->m_rootNode );
 
     m_client = 0;
-    d->m_actionListName = QString::null;
-    d->m_clientName = QString::null;
+    d->actionListName = QString::null;
+    d->clientName = QString::null;
 }
 
 void KXMLGUIFactory::plugActionListRecursive( KXMLGUI::ContainerNode *node )
@@ -1000,19 +988,19 @@ void KXMLGUIFactory::plugActionListRecursive( KXMLGUI::ContainerNode *node )
 
         k = k.mid( d->tagActionList.length() );
 
-        if ( (*mIt).clientName != d->m_clientName )
+        if ( (*mIt).clientName != d->clientName )
             continue;
 
-        if ( k != d->m_actionListName )
+        if ( k != d->actionListName )
             continue;
 
         ContainerClient *client = node->findChildContainerClient( m_client, QString::null, node->mergingIndices.end() );
 
-        client->actionLists.insert( k, d->m_actionList );
+        client->actionLists.insert( k, d->actionList );
 
-        d->m_actionList.plug( node->container, (*mIt).value );
+        d->actionList.plug( node->container, (*mIt).value );
 
-        node->adjustMergingIndices( d->m_actionList.count(), mIt );
+        node->adjustMergingIndices( d->actionList.count(), mIt );
     }
 
     QPtrListIterator<ContainerNode> childIt( node->children );
@@ -1033,10 +1021,10 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUI::ContainerNode *node )
 
         k = k.mid( d->tagActionList.length() );
 
-        if ( (*mIt).clientName != d->m_clientName )
+        if ( (*mIt).clientName != d->clientName )
             continue;
 
-        if ( k != d->m_actionListName )
+        if ( k != d->actionListName )
             continue;
 
         ContainerClient *client = node->findChildContainerClient( m_client, QString::null, node->mergingIndices.end() );
