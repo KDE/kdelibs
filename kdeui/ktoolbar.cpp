@@ -1828,8 +1828,9 @@ KPopupMenu *KToolBar::contextMenu()
   if ( context )
     return context;
 
-  // construct our context popup menu
-  context = new KPopupMenu( this, "context" );
+  // Construct our context popup menu. Name it qt_dockwidget_internal so it 
+  // won't be deleted by QToolBar::clear().
+  context = new KPopupMenu( this, "qt_dockwidget_internal" );
   context->insertTitle(i18n("Toolbar Menu"));
 
   KPopupMenu *orient = new KPopupMenu( context, "orient" );
