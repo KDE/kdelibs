@@ -16,13 +16,14 @@ public:
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   /**
-   * Call this to add a Part to the manager
-   * Sets it to the active part automatically
+   * Call this to add a Part to the manager.
+   * Sets it to the active part automatically.
    */
   virtual void addPart( KPart *part );
   /**
    * Call this to remove a part
-   * Set the active part to 0
+   *
+   * Sets the active part to 0 if @p part is the @ref activePart.
    */
   virtual void removePart( KPart *part );
 
