@@ -588,14 +588,14 @@ QString KLocale::translate( const char *singular, const char *plural,
         else
             return put_n_in( forms[2], n);
         break;
-    case 4: // Russian
+    case 4: // Russian, corrected by mok
         EXPECT_LENGTH( 3 );
-        if ( n == 1 )
-            return put_n_in( forms[0], n);
-        else if ( n%10 >= 2 && n%10 <=4 )
-            return put_n_in( forms[1], n);
+        if ( n%10 == 1  &&  n%100 != 11)
+            return put_n_in( forms[0], n); // odin fail
+        else if (( n%10 >= 2 && n%10 <=4 ) && (n%100<10 || n%100>20))
+            return put_n_in( forms[1], n); // dva faila
         else
-            return put_n_in( forms[2], n);
+            return put_n_in( forms[2], n); // desyat' failov
         break;
     case 5: // Polish
         EXPECT_LENGTH( 3 );
