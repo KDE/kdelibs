@@ -33,8 +33,8 @@
 #include "kbookmarkmanager.h"
 
 class QString;
-class QGridLayout;
 class QPopupMenu;
+class QPushButton;
 class QListView;
 class KLineEdit;
 class KBookmark;
@@ -166,6 +166,9 @@ protected:
   QString m_parentAddress;
 };
 
+
+// TODO fix indentation
+
 /**
  * A class connected to KNSBookmarkImporter, to fill KActionMenus.
  */
@@ -204,12 +207,15 @@ public:
 protected slots:
     void slotOk();
     void slotCancel();
+    void slotInsertFolder();
 
 private:
     QWidget * m_main;
     QListView * m_folderTree;
-    KLineEdit * m_field1;
-    KLineEdit * m_field2;
+    KLineEdit * m_url;
+    KLineEdit * m_title;
+    QPushButton * m_button;
+    KBookmarkManager * m_mgr;
 };
 
 #endif

@@ -39,6 +39,7 @@
 #include <qlabel.h>
 #include <kdialogbase.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 #include "klineedit.h"
 
@@ -399,7 +400,7 @@ void KBookmarkMenu::slotAddBookmark()
   KBookmarkGroup parentBookmark;
 
   KGlobal::config()->setGroup( "Settings" );
-  bool autoPick = KGlobal::config()->readBoolEntry( "AutoPick", true );
+  bool autoPick = !KGlobal::config()->readBoolEntry( "AdvancedAddBookmark", false );
 
   if (autoPick) 
   {
@@ -445,9 +446,9 @@ void KBookmarkMenu::slotAddBookmark()
       return;
     }
 
-    kdDebug(7043) << "DEBUG! " << dlg->finalAddress() 
-                       << ", " << dlg->finalUrl() 
-                       << ", " << dlg->finalTitle() << endl;
+    kdDebug(7043) << "DEBUG! addr == "  << dlg->finalAddress() 
+                       << ", url == "   << dlg->finalUrl() 
+                       << ", title == " << dlg->finalTitle() << endl;
 
     parentBookmark = m_pManager->findByAddress( dlg->finalAddress() ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
@@ -553,44 +554,57 @@ BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkMana
                                        QWidget * parent, const char * name)
   : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
 {
-  m_main = new QWidget(this);
-  setMainWidget(m_main);
+  m_mgr = mgr;
 
-  QBoxLayout *vert = new QVBoxLayout(m_main);
+  m_main = new QWidget( this );
+  setMainWidget( m_main );
 
-  vert->addWidget(new QLabel("url", m_main));
+  QBoxLayout *vert = new QVBoxLayout( m_main );
 
-  m_field1 = new KLineEdit(m_main);
-  m_field1->setText(title);
-  vert->addWidget(m_field1);
+  vert->addWidget( new QLabel( "Location", m_main ) );
+  m_url = new KLineEdit( m_main );
+  m_url->setText( title );
+  vert->addWidget( m_url );
 
-  vert->addWidget(new QLabel("title", m_main));
+  vert->addWidget( new QLabel( "Name", m_main ) );
+  m_title = new KLineEdit( m_main );
+  m_title->setText( url );
+  vert->addWidget( m_title );
 
-  m_field2 = new KLineEdit(m_main);
-  m_field2->setText(url);
-  vert->addWidget(m_field2);
+  m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+  m_folderTree->setMinimumSize( 60, 100 );
+  vert->addWidget( m_folderTree );
 
-  m_folderTree = KBookmarkFolderTree::createTree(mgr, m_main, name);
-  m_folderTree->setMinimumSize(60,100);
-  vert->addWidget(m_folderTree);
+  m_button = new QPushButton( "Insert Folder...", m_main );
+  vert->addWidget( m_button );
+  connect( m_button, SIGNAL( clicked() ), this, SLOT( slotInsertFolder() ) );
 }
 
 void BookmarkEditDialog::slotOk() { accept(); }
 void BookmarkEditDialog::slotCancel() { reject(); } 
 
-QString BookmarkEditDialog::finalUrl()
-{
-  return m_field1->text();
+QString BookmarkEditDialog::finalAddress()
+{ 
+  return KBookmarkFolderTree::selectedAddress( m_folderTree ); 
 }
 
-QString BookmarkEditDialog::finalTitle()
-{
-  return m_field2->text();
-}
+QString BookmarkEditDialog::finalUrl() { return m_url->text(); }
+QString BookmarkEditDialog::finalTitle() { return m_title->text(); }
 
-QString BookmarkEditDialog::finalAddress() 
+void BookmarkEditDialog::slotInsertFolder()
 {
-  return KBookmarkFolderTree::selectedAddress( m_folderTree );
+  kdDebug(7043) << "BookmarkEditDialog::slotInsertFolder" << endl;
+  QString address = KBookmarkFolderTree::selectedAddress( m_folderTree ); 
+  if ( address.isNull() ) return;
+  KBookmarkGroup parentBookmark = m_mgr->findByAddress( address ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+  KBookmarkGroup group = parentBookmark.createNewFolder( m_mgr );
+  if ( !group.isNull() )
+  {
+    KBookmarkGroup parentGroup = group.parentGroup();
+    m_mgr->emitChanged( parentGroup );
+  }
+  // KBookmarkFolderTree::recreateTree(m_folderTree, m_mgr, m_main, name);
 }
 
 #include "kbookmarkmenu.moc"
