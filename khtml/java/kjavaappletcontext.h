@@ -45,7 +45,7 @@ class KJavaAppletContextPrivate;
 class DCOPObject;
 
 typedef 
-enum { JError=0, JBoolean, JFunction, JNumber, JObject, JString, JVoid } JType;
+enum { JError=0, JArray, JBoolean, JFunction, JNull, JNumber, JObject, JString, JVoid } JType;
 
 class KJavaAppletContext : public QObject
 {
@@ -96,8 +96,13 @@ public:
      */
     void processCmd( QString cmd, QStringList args );
 
+    /**
+     * LiveConnect functions
+     */
     bool getMember(KJavaApplet *, const QString &, JType &, QString &);
+    bool putMember(KJavaApplet *, const QString &, const QString &);
     bool callMember(KJavaApplet *, const QString &, const QStringList &, JType &, QString &);
+    void derefObject(KJavaApplet *,const int id);
 
     DCOPObject * getBrowserObject();
 signals:

@@ -135,7 +135,9 @@ public:
      * Get a member value of this applet, return true on success
      */
     bool getMember(const QString & name, JType & type, QString & value);
+    bool putMember(const QString & name, const QString & value);
     bool callMember(const QString &, const QStringList &, JType &, QString &);
+    void derefObject(const int id);
 
     /**
      * Set the window title for swallowing

@@ -51,7 +51,9 @@ public:
     virtual void attach();
 
     bool getMember(const QString &, JType &, QString &);
+    bool putMember(const QString &, const QString &);
     bool callMember(const QString &, const QStringList &, JType &, QString &);
+    void derefObject(const int);
 protected:
     khtml::VAlign valign;
 };

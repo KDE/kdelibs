@@ -21,18 +21,19 @@ public class KJASAppletContext implements AppletContext
     private String myID;
     private KJASAppletClassLoader loader;
     private boolean active;
-
-    // we need a mapping JS referenced Java objects
-    // for now, remember only the last one
-    private Object get_member_obj = null;
+    private int refcounter = 0;
+    // a mapping JS referenced Java objects
+    private Hashtable jsReferencedObjects;
 
     private final static int JError    = 0;
-    private final static int JBoolean  = 1;
-    private final static int JFunction = 2;
-    private final static int JNumber   = 3;
-    private final static int JObject   = 4;
-    private final static int JString   = 5;
-    private final static int JVoid     = 6;
+    private final static int JArray    = 1;
+    private final static int JBoolean  = 2;
+    private final static int JFunction = 3;
+    private final static int JNull     = 4;
+    private final static int JNumber   = 5;
+    private final static int JObject   = 6;
+    private final static int JString   = 7;
+    private final static int JVoid     = 8;
 
     /**
      * Create a KJASAppletContext
@@ -42,6 +43,7 @@ public class KJASAppletContext implements AppletContext
         stubs  = new Hashtable();
         images = new Hashtable();
         streams = new Hashtable();
+        jsReferencedObjects = new Hashtable();
         myID   = _contextID;
         active = true;
     }
@@ -305,57 +307,138 @@ public class KJASAppletContext implements AppletContext
         }
         return null;
     }
-    private int findMember(Class c, Object obj, String name, StringBuffer value)
-    {
+    private int getTypedValue(Object obj, StringBuffer value) {
+        String val = obj.toString();
+        int jtype;
+        String type = obj.getClass().getName();
+        if (type.equals("boolean") || type.equals("java.lang.Boolean"))
+            jtype = JBoolean;
+        else if (type.equals("int") || type.equals("long") || 
+                type.equals("float") || type.equals("double") ||
+                type.equals("byte") || obj instanceof java.lang.Number)
+            jtype = JNumber;
+        else if (type.equals("java.lang.String"))
+            jtype = JString;
+        else {
+            jtype = JObject;
+            val = Integer.toString(++refcounter);
+            jsReferencedObjects.put(new Integer(refcounter), obj);
+        }
+        value.insert(0, val);
+        return jtype;
+    }
+    private int getMemberAux(Class c, Object obj, String name, StringBuffer value) {
         if (c == null)
             return JError;
         try {
-            try {
-                Field field = c.getField(name);
-                Object fo = field.get(obj);
-                value.insert(0, fo.toString());
-                String type = field.getType().getName();
-                if (type.equals("boolean") || type.equals("java.lang.Boolean"))
-                    return JBoolean;
-                if (type.equals("int") || type.equals("long") || 
-                    type.equals("float") || type.equals("double") ||
-                    fo instanceof java.lang.Number)
-                    return JNumber;
-                if (type.equals("java.lang.String"))
-                    return JString;
-                get_member_obj = fo;
-                return JObject;
-            } catch (Exception ex) {
-                Method [] m = c.getDeclaredMethods();
-                for (int i = 0; i < m.length; i++)
-                    if (m[i].getName().equals(name)) {
-                        return JFunction;
-                    }
-                return findMember(c.getSuperclass(), obj, name, value);
-            }
-        } catch (Exception e) {
-            Main.debug("findMember throwed exception: " + e.toString());
+            Field field = c.getField(name);
+            return getTypedValue(field.get(obj), value);
+        } catch (Exception ex) {
+            Method [] m = c.getDeclaredMethods();
+            for (int i = 0; i < m.length; i++)
+                if (m[i].getName().equals(name)) {
+                    return JFunction;
+                }
+            return getMemberAux(c.getSuperclass(), obj, name, value);
         }
-        return JError;
     }
-    public int getMember(String appletID, String name, StringBuffer value)
-    {
+    private Object [] getObjectField(String appletID, String name) {
+        Object [] ret = new Object[2];
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
         if(stub == null) {
             Main.debug( "could not get value of applet: " + appletID );
-            return 0;
+            return null;
         }
-        Main.debug("getMember: " + name);
-        Object obj;
         int basename = name.lastIndexOf('.');
         if (basename > -1) {
-            obj = get_member_obj;
-            name = name.substring(basename + 1);
-            Main.debug("getMember basename: " + name);
+            ret[0] = jsReferencedObjects.get(new Integer(name.substring(0, basename)));
+            if (ret[0] == null) {
+                Main.debug( "could not get referenced object" );
+                return null;
+            }
+            ret[1] = name.substring(basename + 1);
         } else {
-            obj = stub.getApplet();
+            ret[0] = stub.getApplet();
+            ret[1] = name;
         }
-        return findMember(obj.getClass(), obj, name, value);
+        Main.debug("getObjectField basename: " + (String) ret[1]);
+        return ret;
+    }
+    public int getMember(String appletID, String name, StringBuffer value)
+    {
+        Main.debug("getMember: " + name);
+        Object [] objs = getObjectField(appletID, name);
+        if(objs == null)
+            return JError;
+        return getMemberAux(objs[0].getClass(), objs[0], (String) objs[1], value);
+    }
+    private Field findField(Class c, String name) {
+        if (c == null)
+            return null;
+        try {
+            return c.getField(name);
+        } catch (Exception e) {
+            return findField(c.getSuperclass(), name);
+        }
+    }
+    public boolean putMember(String appletID, String name, String value)
+    {
+        Object [] objs = getObjectField(appletID, name);
+        if(objs == null) {
+            Main.debug("Error in putValue: applet " + appletID + " not found");
+            return false;
+        }
+        Field f = findField(objs[0].getClass(), (String) objs[1]);
+        if (f == null) {
+            Main.debug("Error in putValue: " + name + " not found");
+            return false;
+        }
+        try {
+            String type = f.getType().getName();
+            Main.debug("putValue: (" + type + ")" + name + "=" + value);
+            if (type.equals("boolean"))
+                f.setBoolean(objs[0], Boolean.getBoolean(value));
+            else if (type.equals("java.lang.Boolean"))
+                f.set(objs[0], Boolean.valueOf(value));
+            else if (type.equals("int"))
+                f.setInt(objs[0], Integer.parseInt(value));
+            else if (type.equals("java.lang.Integer"))
+                f.set(objs[0], Integer.valueOf(value));
+            else if (type.equals("byte"))
+                f.setByte(objs[0], Byte.parseByte(value));
+            else if (type.equals("java.lang.Byte"))
+                f.set(objs[0], Byte.valueOf(value));
+            else if (type.equals("char"))
+                f.setChar(objs[0], value.charAt(0));
+            else if (type.equals("java.lang.Character"))
+                f.set(objs[0], new Character(value.charAt(0)));
+            else if (type.equals("double"))
+                f.setDouble(objs[0], Double.parseDouble(value));
+            else if (type.equals("java.lang.Double"))
+                f.set(objs[0], Double.valueOf(value));
+            else if (type.equals("float"))
+                f.setFloat(objs[0], Float.parseFloat(value));
+            else if (type.equals("java.lang.Float"))
+                f.set(objs[0], Float.valueOf(value));
+            else if (type.equals("long"))
+                f.setLong(objs[0], Long.parseLong(value));
+            else if (type.equals("java.lang.Long"))
+                f.set(objs[0], Long.valueOf(value));
+            else if (type.equals("short"))
+                f.setShort(objs[0], Short.parseShort(value));
+            else if (type.equals("java.lang.Short"))
+                f.set(objs[0], Short.valueOf(value));
+            else if (type.equals("java.lang.String"))
+                f.set(objs[0], value);
+            else {
+                Main.debug("Error putValue: unsupported type: " + type);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            Main.debug("Exception in putValue: " + e.getMessage());
+            return false;
+        }
     }
     private Method findMethod(Class c, String name, Class [] argcls) {
         if (c == null)
@@ -367,49 +450,37 @@ public class KJASAppletContext implements AppletContext
             return findMethod(c.getSuperclass(), name, argcls);
         }
     }
+
     public int callMember(String appletID, String name, StringBuffer value, java.util.List args)
     {
-        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
-        if(stub == null) {
-            Main.debug( "could not get value of applet: " + appletID );
+        Object [] objs = getObjectField(appletID, name);
+        if(objs == null)
             return JError;
-        }
         try {
             Main.debug("callMember: " + name);
             Object obj;
-            int basename = name.lastIndexOf('.');
-            if (basename > -1) {
-                obj = get_member_obj;
-                name = name.substring(basename + 1);
-                Main.debug("callMember basename: " + name);
-            } else {
-                obj = stub.getApplet();
-            }
-	    Class c = obj.getClass();
+            Class c = objs[0].getClass();
             String type;
             Class [] argcls = new Class[args.size()];
             for (int i = 0; i < args.size(); i++)
                 argcls[i] = name.getClass(); // String for now
-            Method m = findMethod(c, name, argcls);
+            Method m = findMethod(c, (String) objs[1], argcls);
             Object [] argobj = new Object[args.size()];
             for (int i = 0; i < args.size(); i++)
                 argobj[i] = args.get(i); //for now
-            type = m.getReturnType().getName();
-            Object retval =  m.invoke(obj, argobj);
+            Object retval =  m.invoke(objs[0], argobj);
             if (retval == null)
                 return JVoid; // void
-            value.insert(0, retval.toString());
-            Main.debug( "Call value of object: " + value + " " + type );
-            if (type.equals("boolean") || type.equals("java.lang.Boolean"))
-                return JBoolean;
-            if (type.equals("int") || type.equals("java.lang.Integer"))
-                return JNumber;
-            return JString;
+            return getTypedValue(retval, value);
         } catch (Exception e) {
             Main.debug("callMember throwed exception: " + e.toString());
             e.printStackTrace();
         }
         return JError;
+    }
+    public void derefObject(int objid) {
+        if (jsReferencedObjects.remove(new Integer(objid)) == null)
+            Main.debug("couldn't remover referenced object");
     }
 
     public void setStream(String key, InputStream stream) throws IOException {

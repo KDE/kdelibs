@@ -152,8 +152,16 @@ bool KJavaAppletContext::getMember(KJavaApplet * applet, const QString & name, J
     return server->getMember(id, applet->appletId(), name, type, value);
 }
 
+bool KJavaAppletContext::putMember(KJavaApplet * applet, const QString & name, const QString & value) {
+    return server->putMember(id, applet->appletId(), name, value);
+}
+
 bool KJavaAppletContext::callMember(KJavaApplet * applet, const QString & name, const QStringList & args, JType & type, QString & value) {
     return server->callMember(id, applet->appletId(), name, args, type, value);
+}
+
+void KJavaAppletContext::derefObject(KJavaApplet * applet,const int jobjid) {
+    server->derefObject(id, applet->appletId(), jobjid);
 }
 
 DCOPObject * KJavaAppletContext::getBrowserObject() {

@@ -129,8 +129,9 @@ public:
     QString appletLabel();
 
     bool getMember(int contextId, int appletId, const QString &, JType &, QString &);
+    bool putMember(int contextId, int appletId, const QString &, const QString &);
     bool callMember(int contextId, int appletId, const QString &, const QStringList &, JType &, QString &);
-
+    void derefObject(int contextId, int appletId, const int id);
 protected:
     void setupJava( KJavaProcess* p );
 

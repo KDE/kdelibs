@@ -153,6 +153,28 @@ bool HTMLAppletElementImpl::callMember(const QString & name, const QStringList &
     return false;
 #endif
 }
+
+bool HTMLAppletElementImpl::putMember(const QString & name, const QString & val) {
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
+    if ( !m_render || !m_render->isApplet() )
+        return false;
+    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
+    return (w && w->applet() && w->applet()->putMember(name, val));
+#else
+    return false;
+#endif
+}
+
+void HTMLAppletElementImpl::derefObject(const int id) {
+#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
+    if ( !m_render || !m_render->isApplet() )
+        return;
+    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
+    if (w && w->applet())
+        w->applet()->derefObject(id);
+#endif
+}
+
 // -------------------------------------------------------------------------
 
 HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)

@@ -30,6 +30,8 @@ public class KJASProtocolHandler
     private static final int EvalulateJavaScript = 15;
     private static final int GetMember           = 16;
     private static final int CallMember          = 17;
+    private static final int PutMember           = 18;
+    private static final int DerefObject         = 19;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -263,6 +265,19 @@ public class KJASProtocolHandler
             Main.debug( "GetMember " + name);
             sendMemberValue(contextID, GetMember, value.toString(), type); 
         } else
+        if (cmd_code_value == PutMember)
+        {
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            String name  = getArg( command );
+            String value  = getArg( command );
+            boolean ret = false;
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                ret = context.putMember(appletID, name, value);
+            Main.debug( "PutMember " + name + "=" + value);
+            sendPutMember(contextID, ret); 
+        } else
         if (cmd_code_value == CallMember)
         {
             String contextID = getArg( command );
@@ -285,6 +300,16 @@ public class KJASProtocolHandler
                 type = context.callMember(appletID, name, value, args);
             Main.debug( "CallMember " + name);
             sendMemberValue(contextID, CallMember, value.toString(), type); 
+        } else
+        if (cmd_code_value == DerefObject)
+        {
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            String objid  = getArg( command );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                context.derefObject(Integer.parseInt(objid));
+            Main.debug( "DerefObject " + objid);
         }
  
         else
@@ -522,6 +547,33 @@ public class KJASProtocolHandler
         chars[index++] = sep;
 
         tmpchar = strtype.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+    public void sendPutMember( String contextID, boolean success )
+    {
+        Main.debug("sendPutMember, contextID = " + contextID + " success = " + success);
+
+        String strret = new String(success ? "1" : "0");
+        int length = contextID.length() + strret.length() + 4;
+        char[] chars = new char[ length + 8 ]; //for length of message
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) PutMember;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = strret.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;

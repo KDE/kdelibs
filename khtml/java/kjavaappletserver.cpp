@@ -34,6 +34,8 @@
 #define KJAS_EVALUATE_JAVASCRIPT   (char)15
 #define KJAS_GET_MEMBER        (char)16
 #define KJAS_CALL_MEMBER       (char)17
+#define KJAS_PUT_MEMBER        (char)18
+#define KJAS_DEREF_OBJECT      (char)19
 
 // For future expansion
 class KJavaAppletServerPrivate
@@ -400,6 +402,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                           << " code: " << args[0] << endl;
             break;
         case KJAS_GET_MEMBER:
+        case KJAS_PUT_MEMBER:
         case KJAS_CALL_MEMBER:
             kdDebug(6100) << "Error: Missed return member data" << endl;
             break;
@@ -453,6 +456,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdError(6100) << "no context object for this id" << endl;
     }
 }
+
 bool KJavaAppletServer::getMember(int contextId, int appletId, const QString & name, JType & type, QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
@@ -492,6 +496,43 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const QString & n
     return !!t;
 }
 
+bool KJavaAppletServer::putMember(int contextId, int appletId, const QString & name, const QString & value) {
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+    args.append( name );
+    args.append( value );
+
+    //dirty sync
+    extern QApplication *qApp;
+    int count = 0;
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(50);
+    }
+    if (d->wait_command)
+        kdError(6100) << "Error: something still waiting for member return data" << endl;
+    count = 0;
+
+    d->wait_command = KJAS_PUT_MEMBER;
+    process->send( KJAS_PUT_MEMBER, args );
+
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(100);
+    }
+    if (d->wait_command) {
+        kdError(6100) << "Error: timeout on Java member return data" << endl;
+        d->wait_command = 0;
+        return false;
+    }
+
+    bool ok;
+    int ret = d->wait_args[0].toInt(&ok);
+    if (!ok)
+        return false;
+    return !!ret;
+}
 
 bool KJavaAppletServer::callMember(int contextId, int appletId, const QString & name, const QStringList & fargs, JType & type, QString & value) {
     QStringList args;
@@ -534,4 +575,12 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const QString & 
     return !!t;
 }
 
+void KJavaAppletServer::derefObject(int contextId, int appletId, const int id) {
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+    args.append( QString::number(id) );
+
+    process->send( KJAS_DEREF_OBJECT, args );
+}
 #include "kjavaappletserver.moc"
