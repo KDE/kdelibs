@@ -78,7 +78,7 @@ public:
      * @param modal specifies whether the filedialog should be opened as modal
      * or not.
      */
-    KURLRequester( QWidget *editWidget, QWidget *parent=0, const char *name=0,
+    KURLRequester( QWidget *editWidget, QWidget *parent, const char *name=0,
 		   bool modal = true );
 
     /**
