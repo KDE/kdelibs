@@ -691,6 +691,8 @@ void KJScriptImp::mark()
   NullImp::staticNull->mark();
   BooleanImp::staticTrue->mark();
   BooleanImp::staticFalse->mark();
+  if (glob.imp())
+    glob.imp()->mark();
 }
 
 void KJScriptImp::init()
