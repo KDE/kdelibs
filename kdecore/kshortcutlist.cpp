@@ -109,7 +109,7 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 
 	// If it has the depricated group [Keys], remove it
 	if( pConfig->hasGroup( "Keys" ) )
-		pConfig->deleteGroup( "Keys" );
+		pConfig->deleteGroup( "Keys", true );
 
 	KConfigGroupSaver cs( pConfig, sGroup );
 
@@ -126,15 +126,13 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 				if( s.isEmpty() )
 					s = "none";
 				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
-				// Is passing bGlobal irrelevant, since if it's true,
-				//  then we're using the global config anyway? --ellis
 				pConfig->writeEntry( sName, s, true, bGlobal );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
 				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
-				pConfig->deleteEntry( sName, bGlobal );
+				pConfig->deleteEntry( sName, false, bGlobal );
 			}
 		}
 	}
