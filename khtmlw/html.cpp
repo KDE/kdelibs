@@ -969,6 +969,7 @@ void KHTMLWidget::getSelectedText( QString &_str )
 //
 void KHTMLWidget::print()
 {
+    float scalers[] = { 1.1, 1.0, 0.9, 0.75, 0.6, 0.4 };
     QPrinter printer;
 
     if ( printer.setup( 0 ) )
@@ -1014,8 +1015,17 @@ void KHTMLWidget::print()
 	pgWidth -= ( 2*PRINTING_MARGIN );
 	pgHeight -= ( 2*PRINTING_MARGIN );
 
+	pgWidth = (int) ((float)pgWidth / scalers[ settings->fontBaseSize ] );
+	pgHeight = (int) ((float)pgHeight / scalers[ settings->fontBaseSize ] );
+
+	int margin = (int)((float)PRINTING_MARGIN /
+		scalers[ settings->fontBaseSize ] );
+
 	QPainter prPainter;
 	prPainter.begin( &printer );
+
+	prPainter.scale( scalers[ settings->fontBaseSize ],
+		scalers[ settings->fontBaseSize ] );
 
 	clue->recalcBaseSize( &prPainter );
 	clue->reset();
@@ -1051,7 +1061,7 @@ void KHTMLWidget::print()
 	    else
 		printHeight = pgHeight;
 	    clue->print( &prPainter, 0, breaks[b], pgWidth, printHeight,
-	    PRINTING_MARGIN, PRINTING_MARGIN-breaks[b], true );
+	    margin, margin-breaks[b], true );
 	    if ( b < numBreaks - 1 )
 	    {
 		printer.newPage();
