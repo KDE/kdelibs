@@ -72,11 +72,17 @@ public:
 
     /**
      * Turns spell checking for this text edit on or off.
+     *
+     * @see checkSpellingEnabled()
+     * @since 3.2
      */
     void setCheckSpellingEnabled( bool check );
 
     /**
      * Returns true if spell checking is enabled for this text edit.
+     *
+     @ see setCheckSpellingEnabled()
+     * @since 3.2
      */
     bool checkSpellingEnabled() const;
 
@@ -86,6 +92,8 @@ public slots:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
      * until spell checking has been completed.
+     *
+     * @since 3.2
      */
     void checkSpelling();
 
