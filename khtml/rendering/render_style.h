@@ -908,7 +908,7 @@ public:
 
 
     ContentData* contentData() const { return content; }
-
+    bool contentDataEquivalent(RenderStyle* otherStyle);
     void setContent(DOM::DOMStringImpl* s, bool add);
     void setContent(CachedObject* o, bool add);
 

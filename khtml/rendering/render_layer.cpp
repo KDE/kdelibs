@@ -587,6 +587,9 @@ void RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
     if (m_vBar)
         m_vBar->paint(p, damageRect);
 #else
+    if (!m_object->element())
+       return;
+
     QScrollView* scrollView = m_object->element()->getDocument()->view();
     if (m_hBar) {
 	int x = m_hBar->x();

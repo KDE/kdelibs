@@ -1,3 +1,8 @@
+2004-02-16  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_container.cpp (updatePseudoChild): merge more 
+	code for content generated elements
+
 2004-02-15  Zack Rusin  <zack@kde.org>
 
 	*  xml/dom2_viewsimpl.cpp (getComputedStyle): implementing 

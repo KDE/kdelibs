@@ -197,6 +197,8 @@ private:
 public:
     RenderArena* renderArena() const;
     virtual RenderFlow* continuation() const { return 0; }
+    virtual bool isInlineContinuation() const { return false; }
+
 
     bool isRoot() const;
     // some helper functions...

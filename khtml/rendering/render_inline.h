@@ -42,6 +42,8 @@ public:
     virtual bool isInlineFlow() const { return true; }
     virtual bool childrenInline() const { return true; }
 
+    virtual bool isInlineContinuation() const;
+
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
 
     virtual void setStyle(RenderStyle* _style);
@@ -68,11 +70,17 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
+protected:
+    static RenderInline* cloneInline(RenderFlow* src);
+
 private:
     void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
                       RenderObject* beforeChild, RenderFlow* oldCont);
     void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
                    RenderObject* newChild, RenderFlow* oldCont);
+
+private:
+    bool m_isContinuation : 1; // Whether or not we're a continuation of an inline.
 
 };
 
