@@ -260,8 +260,11 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="russian") {
     lname="ru"; hname=i18n("Russian");
   }
-  else if (fname=="slovensko") {
+  else if (fname=="slovak") {
     lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
+  }
+  else if (fname=="slovensko") {
+    lname="sl"; hname=i18n("Slovenian"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="czech") {
     lname="cs"; hname=i18n("Czech"); sChangeEncoding(KS_E_LATIN2);
@@ -280,7 +283,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
   else if (fname=="francais" || fname=="french") {
     lname="fr"; hname=i18n("French");
-  } 
+  }
   else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
     lname="be"; hname=i18n("Belarusian");
   }
