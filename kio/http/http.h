@@ -186,7 +186,6 @@ protected:
   bool readHeader();
   bool sendBody();
   bool readBody();
-  size_t sendData();
 
   /**
    * Send a cookie to the cookiejar
@@ -334,7 +333,7 @@ protected:
   // Language/Encoding
   QStringList m_qTransferEncodings;
   QStringList m_qContentEncodings;
-  QByteArray big_buffer;
+  QByteArray m_bufEncodedData;
   QString m_sContentMD5;
   QString m_strMimeType;
   QString m_strCharset;
@@ -372,14 +371,11 @@ protected:
   bool m_bUseCookiejar;
   enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;
 
-  // Flag that indicates whether there was some connection
-  // error...
+  // Indicates whether there was some connection error.
   bool m_bError;
 
-  // Flag that indicates application prefers errorPage() instead over error.
+  // Indicates whether an error-page or error-msg should is preferred.
   bool m_bErrorPage;
-
-  bool m_bNeedSSLTunnel;
 
   DCOPClient *m_dcopClient;
 

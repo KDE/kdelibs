@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /*
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
@@ -24,8 +23,16 @@
 
 #include <config.h>
 
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>         // Needed on some systems.
+#endif
+
 #ifdef HAVE_LIBZ
 #define DO_GZIP
+#endif
+
+#ifdef DO_GZIP
+#include <zlib.h>
 #endif
 
 #include <sys/time.h>
@@ -33,7 +40,6 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-
 #include <assert.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -42,15 +48,6 @@
 #include <utime.h>
 #include <errno.h>
 #include <netdb.h>
-
-
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>         // Needed on some systems.
-#endif
-
-#ifdef DO_GZIP
-#include <zlib.h>
-#endif
 
 #include <qregexp.h>
 
@@ -74,7 +71,6 @@
 #include <kprotocolmanager.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
-
 
 #include "http.h"
 
@@ -275,8 +271,9 @@ void HTTPProtocol::setHost( const QString& host, int port,
     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
 
-  if ( m_bIsSSL )
-    setEnableSSLTunnel( m_bIsSSL && m_bUseProxy );
+
+  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
+    setEnableSSLTunnel( true );
 
   // Obtain the proxy and remote server timeout values
   m_proxyConnTimeout = proxyConnectTimeout();
@@ -330,6 +327,8 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
     {
         // Do not save authorization if the current response code is
         // 4xx (client error) or 5xx (server error).
+        kdDebug(7113) << "Previous Response: " << m_prevResponseCode << endl
+                      << "Current Response: " << m_responseCode << endl;
         if ( m_responseCode < 400 &&
             (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
             saveAuthorization();
@@ -443,24 +442,22 @@ void HTTPProtocol::post( const KURL& url)
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
   int bytes_sent = 0;
-
   while ( nbytes > 0 ) {
     int n = Write(buf, nbytes);
 
     if ( n <= 0 ) {
+      // remote side closed connection ?
+      if ( n == 0 )
+        break;
+      // a valid exception(s) occured, let's retry...
       if (n < 0 && ((errno == EINTR) || (errno == EAGAIN)))
         continue;
-
-      // remote side closed connection?
-      if ( n == 0 )
-        return bytes_sent;
-
-      // some other error occured
+      // some other error occured ?
       return -1;
     }
 
     nbytes -= n;
-    (const char *) buf += n;
+    static_cast<const char *>(buf) += n;
     bytes_sent += n;
   }
 
@@ -1932,7 +1929,7 @@ void HTTPProtocol::decodeDeflate()
   // TODO: Need sanity check here. Doing no error checking when writing
   // to HD cannot be good :))  What if the target is bloody full or it
   // for some reason could not be written to ?? (DA)
-  ::write(fd, big_buffer.data(), big_buffer.size()); // Write data into file
+  ::write(fd, m_bufEncodedData.data(), m_bufEncodedData.size()); // Write data into file
   lseek(fd, 0, SEEK_SET);
   FILE* fin = fdopen( fd, "rb" );
 
@@ -1978,11 +1975,11 @@ void HTTPProtocol::decodeDeflate()
     ::fclose( fin );
   ::unlink(filename); // Bye bye to beloved temp file.  We will miss you!!
 
-  // Replace big_buffer with the
+  // Replace m_bufEncodedData with the
   // "decoded" data.
-  big_buffer.resize(0);
-  big_buffer = tmp_buf;
-  big_buffer.detach();
+  m_bufEncodedData.resize(0);
+  m_bufEncodedData = tmp_buf;
+  m_bufEncodedData.detach();
 #endif
 }
 
@@ -2007,7 +2004,7 @@ void HTTPProtocol::decodeGzip()
   // gunzipping, this should suffice.  It just writes out
   // the gzip'd data to a file.
   fd=mkstemp(filename);
-  ::write(fd, big_buffer.data(), big_buffer.size());
+  ::write(fd, m_bufEncodedData.data(), m_bufEncodedData.size());
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
   unlink(filename); // If you want to inspect the raw data, comment this line out
@@ -2021,49 +2018,12 @@ void HTTPProtocol::decodeGzip()
   }
   gzclose(gzf);
 
-  // And then we replace big_buffer with
+  // And then we replace m_bufEncodedData with
   // the "decoded" data.
-  big_buffer.resize(0);
-  big_buffer=ar;
-  big_buffer.detach();
+  m_bufEncodedData.resize(0);
+  m_bufEncodedData=ar;
+  m_bufEncodedData.detach();
 #endif
-}
-
-
-size_t HTTPProtocol::sendData( )
-{
-  // This was rendered necesary b/c
-  // the IPC stuff can't handle
-  // chunks much larger than 2048.
-
-  size_t sent=0;
-  size_t bufferSize = MAX_IPC_SIZE;
-  size_t sz = big_buffer.size();
-  processedSize(sz);
-  totalSize(sz);
-  QByteArray array;
-  while (sent+bufferSize < sz)
-  {
-    array.setRawData( big_buffer.data()+sent, bufferSize);
-    data( array );
-    array.resetRawData( big_buffer.data()+sent, bufferSize);
-    sent+=bufferSize;
-  }
-  if (sent < sz)
-  {
-    array.setRawData( big_buffer.data()+sent, sz-sent);
-    data( array );
-    array.resetRawData( big_buffer.data()+sent, sz-sent);
-  }
-
-  if (m_bCachedWrite &&  m_fcache)
-  {
-     writeCacheEntry(big_buffer.data(), big_buffer.size());
-     closeCacheEntry();
-  }
-
-  data( QByteArray() );
-  return sz;
 }
 
 /**
@@ -2169,7 +2129,7 @@ int HTTPProtocol::readUnlimited()
  * (meaning that the client is done sending data) or by 'http_open()'
  * (if we are in the process of a PUT/POST request).
  */
-bool HTTPProtocol::readBody( )
+bool HTTPProtocol::readBody()
 {
   // Check if we need to decode the data.
   // If we are in copy mode, then use only transfer decoding.
@@ -2183,17 +2143,22 @@ bool HTTPProtocol::readBody( )
   time_t t_last = t_start;
 
   // Deal with the size of the file.
-
   long sz = m_request.offset;
-  if ( sz ) { m_iSize += sz; }
+  if ( sz )
+    m_iSize += sz;
 
-  totalSize( (m_iSize > -1) ? m_iSize : 0 );
+  // Update the application with total size except when
+  // it is compressed.  Then we have to wait until we
+  // uncompress to find out the actual data.
+  if ( !decode )
+    totalSize( (m_iSize > -1) ? m_iSize : 0 );
+
   infoMessage( i18n( "Retrieving data from "
                      "<b>%1</b>" ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {
-     kdDebug( 7113 ) << "HTTPProtocol::readBody: read data from cache!" << endl;
+    kdDebug( 7113 ) << "HTTPProtocol::readBody: read data from cache!" << endl;
 
      char buffer[ MAX_IPC_SIZE ];
      // Jippie! It's already in the cache :-)
@@ -2234,7 +2199,7 @@ bool HTTPProtocol::readBody( )
   KMD5 context;
   bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
-  big_buffer.resize(0);
+  m_bufEncodedData.resize(0);
 
   while (!m_bEOF)
   {
@@ -2335,9 +2300,9 @@ bool HTTPProtocol::readBody( )
       {
         // nope.  slap this all onto the end of a big buffer for later use
         unsigned int old_len = 0;
-        old_len = big_buffer.size();
-        big_buffer.resize(old_len + bytesReceived);
-        memcpy( big_buffer.data() + old_len, m_bufReceive.data(),
+        old_len = m_bufEncodedData.size();
+        m_bufEncodedData.resize(old_len + bytesReceived);
+        memcpy( m_bufEncodedData.data() + old_len, m_bufReceive.data(),
                 bytesReceived );
       }
     }
@@ -2346,9 +2311,9 @@ bool HTTPProtocol::readBody( )
       break;
   }
 
-  // if we have something in big_buffer, then we know that we have
+  // if we have something in m_bufEncodedData, then we know that we have
   // encoded data.  of course, we need to do something about this
-  if (!big_buffer.isNull())
+  if (!m_bufEncodedData.isNull())
   {
     // decode all of the transfer encodings
     while (!m_qTransferEncodings.isEmpty())
@@ -2368,7 +2333,7 @@ bool HTTPProtocol::readBody( )
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
     if ( useMD5 )
-        context.update( big_buffer );
+      context.update( m_bufEncodedData );
 
     // now decode all of the content encodings
     // -- Why ?? We are not
@@ -2386,9 +2351,40 @@ bool HTTPProtocol::readBody( )
         decodeGzip();
       else if ( enc == "deflate" )
         decodeDeflate();
-
     }
-    sz = sendData();
+
+    int bytesReceived = m_bufEncodedData.size();
+    int bytesToSend = MAX_IPC_SIZE;
+    totalSize( bytesReceived );
+    if ( bytesReceived > bytesToSend )
+    {
+      sz = 0;
+      QByteArray array;
+      while ( 1 )
+      {
+        array.setRawData( m_bufEncodedData.data()+sz, bytesToSend);
+        data( array );
+        array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
+        sz += bytesToSend;
+        processedSize( sz );
+        if ( sz >= bytesReceived )
+          break;
+        if ( bytesReceived-sz < bytesToSend )
+          bytesToSend = bytesReceived-sz;
+      }
+    }
+    else
+    {
+      sz = bytesReceived;
+      data( m_bufEncodedData );
+      processedSize( bytesReceived );
+    }
+
+    if ( m_bCachedWrite &&  m_fcache )
+    {
+      writeCacheEntry(m_bufEncodedData.data(), m_bufEncodedData.size());
+      closeCacheEntry();
+    }
   }
 
   if ( useMD5 )
