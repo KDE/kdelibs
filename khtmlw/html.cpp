@@ -3903,7 +3903,7 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
 	if ( !formSelect )
 		return;
 
-	QString value = "";
+	QString value = 0;
 	bool selected = false;
 
 	stringTok->tokenize( str + 7, " >" );
