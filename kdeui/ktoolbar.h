@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.41  1998/10/09 12:42:21  radej
+// sven: New: (un) highlight sugnals, Autorepeat buttons, button down when
+//       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
+//
 // Revision 1.40  1998/09/15 05:56:47  antlarr
 // I've added a setIconText function to change the state of a variable
 // in KToolBar
@@ -60,6 +64,8 @@
 #include <qbutton.h>
 #include <qfont.h>
 #include <qsize.h>
+#include <qintdict.h>
+
 //#include <qiconset.h>
 
 #ifdef HAVE_CONFIG_H
@@ -73,10 +79,6 @@ class KToolBar;
 class KToolBoxManager;
 
 #define Item QWidget
-
-// I will undefine this when I insert radiogroup - sven
-// for now it is used only in kwindowtest (if present)
-//#define _HAVE_RADIOGROUP
 
 enum itemType {
     ITEM_LINED = 0,
@@ -149,6 +151,7 @@ class KToolBarButton : public QButton
    QPopupMenu *popup () {return myPopup;};
    void setPopup (QPopupMenu *p);
    void setDelayedPopup (QPopupMenu *p);
+   void setRadio(bool f);
    
  public slots:
    void modeChange();
@@ -179,8 +182,7 @@ class KToolBarButton : public QButton
    QPopupMenu *myPopup;
    bool delayPopup;
    QTimer *delayTimer;
-//   QIconSet *iconSet;
-//   QIconSet::Size iconSize;
+   bool radio;
    
  protected slots:
      void ButtonClicked();
@@ -233,6 +235,8 @@ class KToolBarButton : public QButton
   Q_OBJECT
 
   friend class KToolBarButton;
+  friend class KRadioGroup;
+  
 public:
   enum BarStatus{Toggle, Show, Hide};
   enum BarPosition{Top, Left, Bottom, Right, Floating};
@@ -841,5 +845,58 @@ private:
    QSize szh;      // Size for sizeHint
    bool fixed_size; // do not change the toolbar size
    bool transparent; // type of moving
+  };
+
+
+/*************************************************************************
+ *                          KRadioGroup                                  *
+ *************************************************************************/
+ /**
+  * KRadioGroup is class for group of radio butons in toolbar.
+  * Take toggle buttons which you already inserted into toolbar, and add
+  * them here. All buttons will emit signals toggled(bool) (or you can
+  * use sitgnal toggled (int id) from toolbar). When one button is set
+  * down, all others are unset. All buttons emit signals. Sory for bad
+  * docs, but time is like fuse, short and burning fast...
+  * @author radej@kde.org
+  * @short Class for group of radio butons in toolbar.
+  */
+class KRadioGroup : public QObject
+{
+  Q_OBJECT
+
+public:
+  /**
+   * Constructor. Parent must be @ref KToolBar .
+   */
+  KRadioGroup (QWidget *_parent, const char *_name=0);
+  /**
+   * Destructor.
+   */
+  ~KRadioGroup () {};
+
+  /**
+   * Adds button to group. Button cannot be unset by mouse clicks (you
+   * must press some other button to pop this one up)
+   */
+  void addButton (int id);
+
+  /**
+   * Removes button from group, making it again normal toggle button (i.e.
+   * You can unset it with mouse).
+   */
+  void removeButton (int id);
+
+public slots:
+  /**
+   * Internal - nothing for you here.
+   */
+  void slotToggled (int);
+
+private:
+  QIntDict<KToolBarButton> buttons;
+  KToolBar *tb;
 };
+
+
 #endif

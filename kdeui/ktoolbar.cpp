@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.83  1998/11/05 18:23:31  radej
+// sven: new look for *Bar handles (unfinished)
+//
 // Revision 1.82  1998/10/10 11:28:53  radej
 // sven: Fixed popup position (if too close to bottom of screen, pops above)
 //
@@ -211,6 +214,7 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
   resize(6,6);
   hide();
   youreSeparator();
+  radio = false;
 }
 
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
@@ -223,7 +227,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   parentWidget = (KToolBar *) _parent;
   raised = false;
   myPopup = 0L;
-  
+  radio = false;
   toolBarButton = !_mb;
   
   setFocusPolicy( NoFocus );
@@ -275,7 +279,7 @@ void KToolBarButton::toggle()
 }
 void KToolBarButton::setText( const char *text)
 {
-  btext = text;;
+  btext = text;
   modeChange();
   repaint (false);
 }
@@ -344,8 +348,25 @@ void KToolBarButton::enterEvent(QEvent *)
   emit highlighted (id, true);
 }
 
+void KToolBarButton::setRadio (bool f)
+{
+  if (f && !radio)  // if was not and now is
+    installEventFilter(this);
+  else if (!f && radio) // if now isn't and was (man!)
+    removeEventFilter(this);
+
+  radio = f;
+
+};
+
 bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 {
+  if ((KToolBarButton *) o == this)
+    if ((ev->type() == Event_MouseButtonPress ||
+         ev->type() == Event_MouseButtonRelease ||
+         ev->type() == Event_MouseButtonDblClick) && radio && isOn())
+      return false;
+
   if ((QPopupMenu *) o != myPopup)
     return false; // just in case
   
@@ -1259,47 +1280,70 @@ void KToolBar::paintEvent(QPaintEvent *)
         while (a <= h+5)
         {
           paint->drawLine(0, h-a, h, 0-a);
-          //paint.drawLine(0, h-a+1, h, 0-a+1);
-          a +=4;
+          paint->drawLine(0, h-a+1, h, 0-a+1);
+          a +=6;
         }
         a=0-w;
         paint->setPen( g.dark() );
         while (a <= h+5)
         {
           paint->drawLine(0, h-a+2, h, 0-a+2);
-          //paint.drawLine(0, h-a+3, h, 0-a+3);
-          a +=4;
+          paint->drawLine(0, h-a+3, h, 0-a+3);
+          a +=6;
         }
-
-
-        
       }
-
     }
     else // vertical
     {
       if (style() == MotifStyle)
+      {
         qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
                          g , false, 1, &b);
-      else
-        qDrawPlainRect( paint, 0, 0, toolbarWidth, 9,
-                         g.mid(), 1, &b);
-
-      paint->setPen( g.light() );
-      if (style() == MotifStyle)
-        paint->drawLine( 0, 9, toolbarWidth, 9);
-      stipple_height = 3;
-      while ( stipple_height < toolbarWidth-4 ) {
-        paint->drawPoint( stipple_height+1, 1);
-        paint->drawPoint( stipple_height, 4 );
-        stipple_height+=3;
+      
+        paint->setPen( g.light() );
+        if (style() == MotifStyle)
+          paint->drawLine( 0, 9, toolbarWidth, 9);
+        stipple_height = 3;
+        while ( stipple_height < toolbarWidth-4 ) {
+          paint->drawPoint( stipple_height+1, 1);
+          paint->drawPoint( stipple_height, 4 );
+          stipple_height+=3;
+        }
+        paint->setPen( g.dark() );
+        stipple_height = 4;
+        while ( stipple_height < toolbarWidth-4 ) {
+          paint->drawPoint( stipple_height+1, 2 );
+          paint->drawPoint( stipple_height, 5);
+          stipple_height+=3;
+        }
       }
-      paint->setPen( g.dark() );
-      stipple_height = 4;
-      while ( stipple_height < toolbarWidth-4 ) {
-        paint->drawPoint( stipple_height+1, 2 );
-        paint->drawPoint( stipple_height, 5);
-        stipple_height+=3;
+      else
+      {
+        qDrawPlainRect( paint, 0, 0, toolbarWidth, 9,
+                        g.mid(), 0, &b);
+        int w = toolbarWidth;
+        int h = 9;
+        paint->setClipRect(0, 0, w, h);
+
+        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
+                         g.mid(), 0, &b);
+
+        paint->setPen( g.light() );
+        int a=0-h;
+        while (a <= w+5)
+        {
+          paint->drawLine(w-a, h, h-a, 0);
+          paint->drawLine(w-a+1, h, h-a+1, 0);
+          a +=6;
+        }
+        a=0-h;
+        paint->setPen( g.dark() );
+        while (a <= w+5)
+        {
+          paint->drawLine(w-a+2, h, h-a+2, 0);
+          paint->drawLine(w-a+3, h, h-a+3, 0);
+          a +=6;
+        }
       }
 
     }
@@ -2102,6 +2146,51 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent * )
 //  else
 //    debug ("KToolBar: mouseRelease event (no mgr)");
 }
+
+    setBarPos(lastPosition);
+    enableFloating(true);
+    emit moved (position); // KTM will call this->updateRects
+  }
+}
+KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
+: QObject(_parent, _name)
+{
+  buttons.setAutoDelete(false);
+  tb = (KToolBar *)_parent;
+  connect (tb, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
+}
+KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
+void KRadioGroup::addButton (int id)
+{
+  for (KToolBarItem *b = tb->items.first(); b; b=tb->items.next())
+    if (b->ID() == id )
+    {
+      buttons.insert(id, (KToolBarButton *) b->getItem());
+      ((KToolBarButton *) b->getItem())->setRadio(true);
+    }
+}
+  for (KToolBarItem *b = tb->items.first(); b; b=tb->items.next())
+void KRadioGroup::removeButton (int id)
+{
+  buttons[id]->setRadio(false);
+  buttons.remove(id);
+}
+}
+void KRadioGroup::slotToggled(int id)
+{
+  if (buttons[id] && buttons[id]->isOn())
+  {
+    QIntDictIterator<KToolBarButton> it(buttons);
+    while (it.current())
+    {
+      if (it.currentKey() != id)
+        it.current()->on(false);
+      ++it;
+    }
+  }
+}
+        it.current()->on(false);
+
 
 // sven
 #include <ktoolbar.moc>
