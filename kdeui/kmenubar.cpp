@@ -54,6 +54,8 @@
  - every toplevel must have at most one matching topmenu
  - embedder won't allow shrinking below a certain size
  - must have WM_TRANSIENT_FOR pointing the its mainwindow
+     - the exception is desktop's menubar, which can be transient for root window
+       because of using root window as the desktop window
  - Fitts' Law
 
 */
@@ -168,7 +170,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       d->margin = margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false );
+      reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_NoBorder, QPoint(0,0), false );
 #ifndef Q_WS_QWS //FIXME
       KWin::setType( winId(), NET::TopMenu );
 #endif
