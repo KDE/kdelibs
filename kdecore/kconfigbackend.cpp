@@ -186,7 +186,7 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
-  if (!pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK)) 
+  if (!mLocalFileName.isEmpty() && pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK)) 
      mConfigState = KConfigBase::ReadWrite;
   else
      mConfigState = KConfigBase::ReadOnly;
