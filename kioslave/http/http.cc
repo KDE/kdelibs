@@ -1422,6 +1422,9 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 		// The Dialog should have checked this.
 		if ( u.isMalformed() )
 		  assert( "The URL is malformed, something fucked up, you should never see this!" );
+
+		renamed( u.path( -1 ) ); // emit signal
+
 		// Change the destination name of the current file
 		// 	    l = lst;
 		// 	    l.getLast()->addPath( filename.c_str() );
