@@ -202,7 +202,7 @@ void KLocale::setEncodingLang(const QString &_lang)
       delete [] buf;
     }
   }
-  // default to us-ascii
+  // default to ISO 8859-1
   if (!codec)
   {
     debug("charset file invalide or not found. Defaulting to latin 1");
