@@ -20,6 +20,8 @@
 
 #include <kpixmap.h>
 
+#include <X11/X.h>
+
 class KSharedPixmapPrivate;
 
 /**
