@@ -80,11 +80,6 @@ DIV.INFORMALEXAMPLE { border-style: dotted;
 
 .shadow, .headline, .bulb, .end  { padding: 0px; }
 
-/* tile the lines on the bottom image */
-
-.navfootertable { background: url("common/bottom1.png"); repeat-x ;
-                  } 
-
 TABLE.programlisting
 TABLE.screen { border-style: none;
                background-color: rgb(224,224,224);
