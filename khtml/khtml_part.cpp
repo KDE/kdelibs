@@ -2093,15 +2093,18 @@ void KHTMLPart::findTextNext()
         if ( obj == end )
           obj = 0L;
         else
+        {
           // Move on to next object (note: if we found a \n already, then obj (and lastNode)
           // will point to the _next_ object, i.e. they are in advance.
-          obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
-
-        if ( obj ) {
-          DOM::NodeImpl* node = obj->element();
-          if (node)
-            lastNode = node;
+          do {
+            // We advance until the next RenderObject that has a NodeImpl as its element().
+            // Otherwise (if we keep the 'last node', and it has a '\n') we might be stuck
+            // on that object forever...
+            obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
+          } while ( obj && !obj->element() );
         }
+        if ( obj )
+          lastNode = obj->element();
         else
           lastNode = 0;
       } // end while
