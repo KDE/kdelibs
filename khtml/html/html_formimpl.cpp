@@ -2065,8 +2065,11 @@ void HTMLTextAreaElementImpl::attach()
 {
     assert(!attached());
     assert(!m_render);
+    assert(parentNode());
 
-    m_render = new RenderTextArea(this);
+    if (parentNode()->renderer())
+        m_render = new RenderTextArea(this);
+
     HTMLGenericFormElementImpl::attach();
 }
 
