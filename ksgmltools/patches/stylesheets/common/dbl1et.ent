@@ -60,18 +60,18 @@
 
 <!ENTITY TableofContents	"Sisukord">
 <!ENTITY in		"in">
-<!ENTITY by		"poolt">
-<!ENTITY Edited		"Redigeerinud">
-<!ENTITY Editedby	"&Edited; &by;">
+<!ENTITY by		"autor">
+<!ENTITY Edited		"Redigeeritud">
+<!ENTITY Editedby	"&Redaktsiooni; &autor;">
 <!ENTITY and		"ja">
 <!ENTITY Notes		"Märkused">
 <!ENTITY TableNotes     "Märkused">
 <!ENTITY nonexistantelement	"Mitte eksisteeriv element">
 <!ENTITY Pgs 		"Lk.">
 <!ENTITY unsupported	"toetuseta">
-<!ENTITY xrefto		"xref to"> <!-- ?? -->
+<!ENTITY xrefto		"viide"> <!-- ?? -->
 <!ENTITY unexpectedelementname	"Ootamatu elemendi nimi">
-<!ENTITY Revisedby      "Revised by: "> <!-- ?? -->
+<!ENTITY Revisedby      "Üle vaadatanud: "> <!-- ?? -->
 
 <!ENTITY ListofTables "Tabelite nimekiri">
 <!ENTITY ListofExamples "Näidiste nimekiri">
@@ -85,3 +85,4 @@
 <!ENTITY nav-next		"Järgmine">
 <!ENTITY nav-up		"Üles">
 <!ENTITY nav-home		"Koju">
+
