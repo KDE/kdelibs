@@ -85,9 +85,6 @@ KAnimWidget::~KAnimWidget()
 
 void KAnimWidget::start()
 {
-  if(!isVisible())
-    return;
-
   d->iter   = d->pixmaps.begin();
   d->pixmap = *d->iter;
   d->timer.start( 50 );
@@ -168,7 +165,6 @@ void KAnimWidget::slotTimerUpdate()
   d->pixmap = *d->iter;
 
   ++d->iter;
-
   repaint(false);
 }
 
