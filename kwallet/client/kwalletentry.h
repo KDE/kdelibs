@@ -26,19 +26,28 @@
 #include <qcstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qptrlist.h>
 #include <qpair.h>
 #include <qmap.h>
 
 namespace KWallet {
 
+class Entry;
+
 typedef QPair<const QString,QString> NVPair;
 typedef QMap<QString,QString> Key;
 typedef QByteArray Value;
+typedef Entry *(*EntryFactory)(const QString &type,
+			       const Key &key, 
+			       const Value &value);
 
 class Entry {
 	public:
 		Entry();
-		~Entry();
+		Entry(const QString &type,
+		      const Key &key, 
+		      const Value &value);
+		virtual ~Entry();
 		
 		bool isDirty() const;
 		void clearDirty();
@@ -52,6 +61,12 @@ class Entry {
 		void addKey(const QString& name, const QString& value);
 
 		virtual QString type() const;
+
+		// should be moved to Wallet
+		static QPtrList<Entry> getEntries(const QString& type = QString::null,
+						  EntryFactory factory = 0,
+						  const QString& keyName = QString::null, 
+						  const QString& keyValue = QString::null);
 	private:
 		class EntryPrivate;
 		EntryPrivate *d;

@@ -29,6 +29,16 @@ Entry::Entry() {
 }
 
 
+Entry::Entry(const QString &type,
+	     const Key &key, 
+	     const Value &value)  :
+	_type(type), 
+	_dirty(false),
+	_key(key), 
+	_value(value) {
+}
+
+
 Entry::~Entry() {
 	_value.fill(0);
 }
@@ -80,6 +90,17 @@ void Entry::addKey(const QString& name, const QString& value) {
 	_dirty = true;
 }
 
+
 QString Entry::type() const {
 	return _type;
 }
+
+
+QPtrList<Entry> Entry::getEntries(const QString& type, 
+				  EntryFactory factory,
+				  const QString& keyName,
+				  const QString& keyValue) {
+	// TODO: get list of entries (using the backend)
+	return QPtrList<Entry>();
+}
+
