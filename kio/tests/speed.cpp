@@ -62,9 +62,14 @@ int main(int argc, char **argv) {
       url = "file:" + QDir::currentDirPath();
     args->clear();
 
-    fprintf(stderr, "%s is probably %s mounted\n", url.url().local8Bit().data(), KIO::probably_slow_mounted(url.path()) ? "slow" : "normal");
-    SpeedTest test( url );
-    app.exec();
+    kdDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
+    QString mp = KIO::findDeviceMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for " << url.url() << endl;
+    // SpeedTest test( url );
+    // app.exec();
 
 }
 
