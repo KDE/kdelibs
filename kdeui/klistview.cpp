@@ -70,6 +70,31 @@ void KListView::Tooltip::maybeTip (const QPoint&)
 class KListView::KListViewPrivate
 {
 public:
+  KListViewPrivate (KListView* listview)
+    : pCurrentItem (0L),
+      oldCursor (listview->viewport()->cursor()),
+      validDrag (false),
+      dragDelay (KGlobalSettings::dndEventDelay()),
+      editor (new KListViewLineEdit (listview)),
+      itemsMovable (true),
+      itemsRenameable (false),
+      dragEnabled (false),
+      autoOpen (true),
+      dropVisualizer (true),
+      createChildren (true),
+      tooltipColumn (0),
+      selectionMode (Single),
+      contextMenuKey (KGlobalSettings::contextMenuKey()),
+      showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
+      mDropVisualizerWidth (4)
+  {
+	connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
+  }
+  
+  ~KListViewPrivate ()
+  {
+  }
+  
   bool bUseSingle;
   bool bChangeCursorOverItem;
 
@@ -167,29 +192,10 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 
 KListView::KListView( QWidget *parent, const char *name )
   : QListView( parent, name ),
-	d (new KListViewPrivate())
+	d (new KListViewPrivate (this))
 {
-  {
-	d->editor=new KListViewLineEdit(this);
-	d->itemsMovable=true;
-	d->itemsRenameable=false;
-	d->dragEnabled=false;
-	d->autoOpen=true;
-	d->tooltipColumn=0;
-	d->dropVisualizer=true;
-	d->dropHighlighter=true;
-	d->createChildren=true;
-	d->selectionMode = Single;
-	d->contextMenuKey = KGlobalSettings::contextMenuKey ();
-	d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
-	d->validDrag = false;
-    d->dragDelay = KGlobalSettings::dndEventDelay();
-	d->mDropVisualizerWidth=4;
-	connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
-  }
-
   setDragAutoScroll(true);
-  d->oldCursor = viewport()->cursor();
+
   connect( this, SIGNAL( onViewport() ),
 		   this, SLOT( slotOnViewport() ) );
   connect( this, SIGNAL( onItem( QListViewItem * ) ),
@@ -201,8 +207,6 @@ KListView::KListView( QWidget *parent, const char *name )
   slotSettingsChanged(KApplication::SETTINGS_MOUSE);
   connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
   kapp->addKipcEventMask( KIPC::SettingsChanged );
-
-  d->pCurrentItem = 0L;
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
 		  this, SLOT( slotAutoSelect() ) );
@@ -227,7 +231,6 @@ KListView::KListView( QWidget *parent, const char *name )
 
 KListView::~KListView()
 {
-  delete d->editor;
   delete d;
 }
 
@@ -281,21 +284,9 @@ void KListView::slotSettingsChanged(int category)
     disconnect(this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
                this, SLOT (slotMouseButtonClicked (int, QListViewItem*, const QPoint &, int)));
 	
-//  disconnect(this, SIGNAL( doubleClicked( QListViewItem *,
-//             const QPoint &, int ) ),
-// 	           this, SLOT( slotExecute( QListViewItem *,
-//             const QPoint &, int ) ) );
-	
     if( d->bUseSingle )
       connect (this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
                this, SLOT (slotMouseButtonClicked( int, QListViewItem*, const QPoint &, int)));
-    else
-    {
-//    connect(this, SIGNAL( doubleClicked( QListViewItem *,
-//            const QPoint &, int ) ),
-//            this, SLOT( slotExecute( QListViewItem *,
-//            const QPoint &, int ) ) );
-    }
 	
     d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
     d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
@@ -799,7 +790,7 @@ void KListView::setDropVisualizerWidth (int w)
 }
 
 QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
-								   QListViewItem *after)
+                                    QListViewItem *after)
 {
   QRect insertmarker;
 
