@@ -417,9 +417,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   // check to see if we use konsole if not disable the nocloseonexit
   // because we don't know how to do this on other terminal applications
-  KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
-  conf.setGroup(QString::fromLatin1("General"));
-  QString preferredTerminal = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+  KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
 
   if (bReadOnly || preferredTerminal != "konsole")
      nocloseonexit->hide();
@@ -591,9 +590,8 @@ void KOpenWithDlg::slotOK()
 
   if (terminal->isChecked())
   {
-    KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
-    conf.setGroup(QString::fromLatin1("General"));
-    preferredTerminal = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+    KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+    preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
     m_command = preferredTerminal;
     // only add --noclose when we are sure it is konsole we're using
     if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
