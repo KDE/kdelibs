@@ -92,7 +92,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
     struct stat buff;
     if ( stat( u.path().ascii(), &buff ) == 0 )
     {
-      QString tmp = i18n("The file %s does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
+      QString tmp = i18n("The file %1 does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
       if ( QMessageBox::critical( 0L, i18n("Warning"), tmp,i18n("Yes"), i18n("No") ) == 1 )
 	return;
     }
