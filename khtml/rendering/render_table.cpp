@@ -144,6 +144,15 @@ RenderTable::~RenderTable()
     delete [] cells;
 }
 
+inline void
+RenderTable::ColInfo::update()
+{
+    if (minCell)
+        min = minCell->minWidth();
+    if (maxCell)
+        max = maxCell->maxWidth();
+}
+
 void RenderTable::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
@@ -1389,16 +1398,6 @@ void RenderTable::repaintRectangle(int x, int y, int w, int h)
     // we had an update timer, which might have blocked some of the updates,
     // so we rather repaint the whole table
     m_parent->repaintRectangle(0, 0, m_width, m_height);
-}
-
-
-inline void
-RenderTable::ColInfo::update()
-{
-    if (minCell)
-    	min = minCell->minWidth();
-    if (maxCell)
-    	max = maxCell->maxWidth();
 }
 
 

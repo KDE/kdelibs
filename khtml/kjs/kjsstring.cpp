@@ -37,7 +37,7 @@
 
 using namespace KJS;
 
-string s;
+std::string s;
 
 CString::CString()
 {

@@ -81,7 +81,7 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
 {
     int id = getPropertyID(propertyName.string().lower().ascii(), propertyName.length());
-    removeProperty(id);
+    return removeProperty(id);
 }
 
 DOMString CSSStyleDeclarationImpl::removeProperty( int id)

@@ -625,6 +625,7 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
 
 bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
+    return false;
     // ###
 }
 
@@ -736,6 +737,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
     }
     return false;
 #endif
+    return false;
 }
 
 
