@@ -1513,7 +1513,7 @@ void KHTMLPart::slotProgressUpdate()
   if( d->m_bComplete )
     emit d->m_extension->infoMessage( i18n( "Page loaded." ));
   else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-    emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded.", "%1 of %n Images loaded...", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
+    emit d->m_extension->infoMessage( i18n( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects).arg(d->m_totalObjectCount) );
 
   emit d->m_extension->loadingProgress( percent );
 }
