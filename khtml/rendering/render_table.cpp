@@ -59,13 +59,14 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     frame = Void;
     has_col_elems = false;
     needSectionRecalc = false;
+    padding = 0;
 
     columnPos.resize( 2 );
     columnPos.fill( 0 );
     columns.resize( 1 );
     columns.fill( ColumnStruct() );
 
-    columnPos[0] = spacing;
+    columnPos[0] = 0;
 }
 
 RenderTable::~RenderTable()
@@ -84,6 +85,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     setReplaced(style()->display()==INLINE_TABLE);
 
     spacing = style()->borderSpacing();
+    columnPos[0] = spacing;
 
     if ( !tableLayout || style()->tableLayout() != oldTableLayout ) {
 	delete tableLayout;
