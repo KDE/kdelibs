@@ -618,12 +618,27 @@ void RenderBox::calcHeight()
         if (isTable())
             return;
 
-        if (h.isFixed())
-            m_height = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
-        else if (h.isPercent()) {
-	        Length ch = containingBlock()->style()->height();
-            if (ch.isFixed())
-                m_height = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+        if (!h.isVariable())
+        {
+            int fh=-1;
+            if (h.isFixed())
+                fh = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+            else if (h.isPercent()) {
+	            Length ch = containingBlock()->style()->height();
+                if (ch.isFixed())
+                    fh = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();                
+            }
+            if (fh!=-1)
+            {
+                    //containsPositioned needs a less misleading name
+                if (fh<m_height && !containsPositioned() && style()->overflow()==OVISIBLE)
+                {
+                    setContainsPositioned(true);
+                }
+
+                m_height = fh;
+            }
+
         }
     }
 }
@@ -960,7 +975,7 @@ int RenderBox::lowestPosition() const
 
 int RenderBox::rightmostPosition() const
 {
-    return m_width + marginLeft();
+    return m_width;
 }
 
 #undef DEBUG_LAYOUT
