@@ -52,5 +52,17 @@
   </span>
 </xsl:template>
 
+<xsl:template match="mediaobject|mediaobjectco">
+  <div class="{name(.)}">
+    <xsl:if test="@id">
+      <a name="{@id}"/>
+    </xsl:if>
+	<hr/>
+    <xsl:call-template name="select.mediaobject"/>
+    <xsl:apply-templates select="caption"/>
+	<hr/>
+  </div>
+</xsl:template>
+
 
 </xsl:stylesheet>
