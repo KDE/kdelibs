@@ -1884,22 +1884,6 @@ bool HTTPProtocol::readHeader()
     kdDebug(7113) << "request.url: " << m_request.url.url() << endl
                   << "LocationStr: " << locationStr.data() << endl;
 
-    // Workaround for "BRAIN-DEAD" server implementation where
-    // they expect the client to know that a re-direction to
-    // "//www.somehost.tld" actually means
-    // "current_protocol:// www.somehost.tld". For the record
-    // the spec states (RFC 2616 section 14.30)
-    // Location = "Location" ":" absoluteURI.  BTW, this workaround
-    // will not tamper with someone doing //mydir/mydir2 to specify
-    // a VALID relative URL...
-    if( locationStr.find("//", 0) == 0 )
-    {
-      QCString temp =  m_protocol + ':' + locationStr;
-      KURL u( temp.data() );
-      if( !u.isMalformed() )
-        locationStr = temp;
-    }
-
     KURL u(m_request.url, locationStr);
     if(u.isMalformed() || u.isLocalFile() )
     {
