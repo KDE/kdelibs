@@ -93,7 +93,7 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		return false;
 
 	if ( !qt_try_modal(kapp->focusWidget(), pEvent) )
-	        return true;
+	        return false;
 
 	if( pEvent->type == XKeyPress ) {
 		KKeyNative keyNative( pEvent );
