@@ -47,6 +47,7 @@
 #include <assert.h>
 #include "khtmlview.h"
 #include "render_block.h"
+#include "render_replaced.h"
 #include "render_arena.h"
 #include "xml/dom_docimpl.h"
 
@@ -465,13 +466,15 @@ RenderLayer::positionScrollbars(int tx,  int ty)
     int sw = b->style().pixelMetric(QStyle::PM_ScrollBarExtent);
 
     if (m_vBar) {
-        m_vBar->resize(sw, h - (m_hBar ? sw : 0) + 1);
-        scrollView->addChild(m_vBar, tx + w - sw + 1, ty);
+	vBarRect = QRect(tx + w - sw + 1, ty, sw, h - (m_hBar ? sw : 0) + 1);
+        m_vBar->resize(vBarRect.width(), vBarRect.height());
+        scrollView->addChild(m_vBar, vBarRect.x(), vBarRect.y());
     }
 
     if (m_hBar) {
-        m_hBar->resize(w - (m_vBar ? sw : 0) + 1, sw);
-        scrollView->addChild(m_hBar, tx, ty + h - sw + 1);
+	hBarRect = QRect(tx, ty + h - sw + 1, w - (m_vBar ? sw : 0) + 1, sw);
+        m_hBar->resize(hBarRect.width(), hBarRect.height());
+        scrollView->addChild(m_hBar, hBarRect.x(), hBarRect.y());
     }
 }
 
@@ -685,12 +688,26 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionForeground);
 		if (lclip)
 		    restoreClip(p);
+		if (l->m_hBar)
+		    RenderWidget::paint(p, l->m_hBar, x, y, w, h,
+					l->hBarRect.x(), l->hBarRect.y());
+		if (m_vBar)
+		    RenderWidget::paint(p, l->m_vBar, x, y, w, h,
+					l->vBarRect.x(), l->vBarRect.y());
 	    }
 	}
     }
+
+
     if (clip)
 	restoreClip(p);
 
+    if (m_hBar)
+	RenderWidget::paint(p, m_hBar, x, y, w, h,
+			    hBarRect.x(), hBarRect.y());
+    if (m_vBar)
+	RenderWidget::paint(p, m_vBar, x, y, w, h,
+			    vBarRect.x(), vBarRect.y());
 }
 
 void

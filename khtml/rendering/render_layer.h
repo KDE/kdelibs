@@ -209,6 +209,8 @@ protected:
     // For layers with overflow, we have a pair of scrollbars.
     QScrollBar* m_hBar;
     QScrollBar* m_vBar;
+    QRect hBarRect;
+    QRect vBarRect;
     RenderScrollMediator* m_scrollMediator;
     struct PositionedLayer {
 	RenderLayer *layer;

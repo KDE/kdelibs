@@ -460,7 +460,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
     connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
 
-    // initialize QScrollview
+    // initialize QScrollView
     enableClipper(true);
     // hack to get unclipped painting on the viewport.
     static_cast<KHTMLView *>(static_cast<QWidget *>(viewport()))->setWFlags(WPaintUnclipped);
@@ -1303,28 +1303,23 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		QMouseEvent *me = static_cast<QMouseEvent *>(e);
-		if (me->pos().x() > w->width() || me->pos().y() > w->height()) {
-		    // we sometimes seem to get bogus mouse events.
-		    block = true;
-		    break;
-		}
-// 		qDebug("me: %d/%d, w=%d/%d", me->pos().x(), me->pos().y(), w->pos().x(), w->pos().y());
-		QPoint pt = (me->pos() + w->pos());
-// 		qDebug("    trnslated: %d/%d",  pt.x(), pt.y());
-		QMouseEvent me2(me->type(), pt, me->button(), me->state());
+		if (!w->inherits("QScrollBar")) {
+		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
+		    QPoint pt = (me->pos() + w->pos());
+		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
 
-		if (e->type() == QEvent::MouseMove)
-		    viewportMouseMoveEvent(&me2);
-		else if(e->type() == QEvent::MouseButtonPress)
-		    viewportMousePressEvent(&me2);
-		else if(e->type() == QEvent::MouseButtonRelease)
-		    viewportMouseReleaseEvent(&me2);
-		else
-		    viewportMouseDoubleClickEvent(&me2);
-		block = me2.isAccepted();
-		break;
+		    if (e->type() == QEvent::MouseMove)
+			viewportMouseMoveEvent(&me2);
+		    else if(e->type() == QEvent::MouseButtonPress)
+			viewportMousePressEvent(&me2);
+		    else if(e->type() == QEvent::MouseButtonRelease)
+			viewportMouseReleaseEvent(&me2);
+		    else
+			viewportMouseDoubleClickEvent(&me2);
+		    block = me2.isAccepted();
 		}
+		break;
+	    }
 	    default:
 		break;
 	    }
