@@ -62,6 +62,8 @@ public:
   /**
    * Same as above but takes a @ref KService::Ptr as argument.
    *
+   * @note @p moduleInfo must be a valid pointer.
+   *
    * @param moduleInfo specifies the module
    */
   KCModuleInfo( KService::Ptr moduleInfo );

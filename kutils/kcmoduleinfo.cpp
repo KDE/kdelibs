@@ -36,7 +36,7 @@ class KCModuleInfo::KCModuleInfoPrivate
   public:
     KCModuleInfoPrivate() :
       testModule( false )
-      { };
+    {};
 
     QString factoryName;
     bool testModule;
@@ -46,12 +46,11 @@ class KCModuleInfo::KCModuleInfoPrivate
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   : _fileName(desktopFile)
 {
-  _allLoaded = false;
-
   KService::Ptr sptr = KService::serviceByStorageId(desktopFile);
   if ( !sptr )
   {
-    kdWarning() << "Could not find the service " << desktopFile << endl;
+    kdDebug(712) << "Could not find the service " << desktopFile << 
+      ". This will crash." << endl;
     return;
   }
   init( sptr );
@@ -60,9 +59,6 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile)
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
   : _fileName( moduleInfo->desktopEntryPath() )
 {
-  kdDebug() << k_funcinfo << _fileName << endl;
-  _allLoaded = false;
-
   init(moduleInfo);
 }
 
@@ -121,6 +117,8 @@ KCModuleInfo::~KCModuleInfo()
 
 void KCModuleInfo::init(KService::Ptr s)
 {
+  _allLoaded = false;
+
   d = new KCModuleInfoPrivate;
 
   if ( !s )
@@ -161,14 +159,18 @@ KCModuleInfo::loadAll()
   setNeedsRootPrivileges( tmp.isValid() ? tmp.toBool() : false );
 
   // does the module need to be shown to root only?
-  // Deprecated !
+  // Deprecated ! KDE 4
   tmp = _service->property( "X-KDE-IsHiddenByDefault", QVariant::Bool );
   setIsHiddenByDefault( tmp.isValid() ? tmp.toBool() : false );
 
   // get the documentation path
   setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
 
-  setNeedsTest( _service->property( "X-KDE-Test-Module", QVariant::Bool).toBool() );
+  //kdDebug(712) << "FOO" << endl;
+  //tmp = _service->property( "X-KDE-Test-Module", QVariant::Bool );
+  //bool test = ( tmp.isValid() ? tmp.asBool() : false );
+  //setNeedsTest( test );
+  //kdDebug(712) << "BAR" << endl;
 }
 
 QString
