@@ -79,9 +79,9 @@ int main(int argc, char *argv[])
   lst.clear();
   lst = KURL::split( u3 );
   check("KURL::split()", lst.count()==1 ? "1" : "error", "1");
-  check("KURL::split()", lst.getFirst().url(), "ftp://host/dir1/dir2/myfile.txt");
+  check("KURL::split()", lst.first().url(), "ftp://host/dir1/dir2/myfile.txt");
   // cdUp code
-  KURL lastUrl = lst.getLast();
+  KURL lastUrl = lst.last();
   QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
 
