@@ -702,7 +702,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location:
-      goURL(Window::retrieveActive(exec), value.toString(exec).qstring());
+      goURL(exec, value.toString(exec).qstring());
       return;
     case Onabort:
       if (isSafeScript(exec))
@@ -981,19 +981,24 @@ void Window::setCurrentEvent( DOM::Event *evt )
   //kdDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
-void Window::goURL(Window* active, const QString& url)
+void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
 {
-  // No isSafeScript here, it's not a security problem to redirect another window
-  // (tested in other browsers)
+  Window* active = Window::retrieveActive(exec);
   // Complete the URL using the "active part" (running interpreter)
   if (active->part()) {
     QString dstUrl = active->part()->htmlDocument().completeURL(url).string();
     kdDebug() << "Window::goURL dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
     // Check if the URL is the current one. No [infinite] redirect in that case.
-    if ( !m_part->url().cmp( KURL(dstUrl), true ) )
+    if ( m_part->url().cmp( KURL(dstUrl), true ) )
+        return;
+
+    // check if we're allowed to inject javascript
+    // SYNC check with khtml_part.cpp::slotRedirect!
+    if ( isSafeScript(exec) ||
+            dstUrl.find(QString::fromLatin1("javascript:"), 0, false) != 0 )
       m_part->scheduleRedirection(-1,
                                 dstUrl,
-                                  false /*don't lock history*/);
+                                  lockHistory);
   }
 }
 
@@ -1168,14 +1173,14 @@ Value Window::openWindow(ExecState *exec, const List& args)
     {
       while ( p->parentPart() )
         p = p->parentPart();
-      p->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
+      Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
     if ( uargs.frameName == "_parent" )
     {
       if ( p->parentPart() )
         p = p->parentPart();
-      p->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
+      Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
     uargs.serviceType = "text/html";
@@ -1684,12 +1689,19 @@ Value Location::get(ExecState *exec, const UString &p) const
 
   if (m_part.isNull())
     return Undefined();
-  Window* window = Window::retrieveWindow( m_part );
+
+  const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
+
+  // properties that work on all Location objects
+  if ( entry && entry->value == Replace )
+      return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+
+  // XSS check
+  const Window* window = Window::retrieveWindow( m_part );
   if ( !window || !window->isSafeScript(exec) )
     return Undefined();
 
   KURL url = m_part->url();
-  const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
   if (entry)
     switch (entry->value) {
     case Hash:
@@ -1728,7 +1740,7 @@ Value Location::get(ExecState *exec, const UString &p) const
   if (val)
     return Value(val);
   if (entry && (entry->attr & Function))
-  	return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+    return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   return Undefined();
 }
@@ -1739,6 +1751,11 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
   kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
 #endif
   if (m_part.isNull())
+    return;
+
+  // XSS check
+  const Window* window = Window::retrieveWindow( m_part );
+  if ( !window || !window->isSafeScript(exec) )
     return;
 
   QString str = v.toString(exec).qstring();
@@ -1787,7 +1804,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-  m_part->scheduleRedirection(-1, url.url(), false /*don't lock history*/);
+  Window::retrieveWindow(m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
@@ -1817,28 +1834,25 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
 
-  if (part) {
-    Window* window = Window::retrieveWindow(part);
-    switch (id) {
-    case Location::Assign:
-    case Location::Replace:
-    {
-      QString str = args[0].toString(exec).qstring();
-      KHTMLPart* p = Window::retrieveActive(exec)->part();
-      bool lockHistory = id == Location::Replace;
-      if ( p )
-        part->scheduleRedirection(-1, p->htmlDocument().completeURL(str).string(), lockHistory);
-      break;
-    }
-    case Location::Reload:
-      part->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
-      break;
-    case Location::ToString:
-      if (window->isSafeScript(exec))
-        return String(location->toString(exec));
-    }
-  } else
-    kdDebug(6070) << "LocationFunc::tryExecute - no part!" << endl;
+  if (!part) return Undefined();
+
+  Window* window = Window::retrieveWindow(part);
+
+  if ( !window->isSafeScript(exec) && id != Location::Replace)
+      return Undefined();
+
+  switch (id) {
+  case Location::Assign:
+  case Location::Replace:
+    Window::retrieveWindow(part)->goURL(exec, args[0].toString(exec).qstring(), 
+            id == Location::Replace);
+    break;
+  case Location::Reload:
+    part->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
+    break;
+  case Location::ToString:
+    return String(location->toString(exec));
+  }
   return Undefined();
 }
 
