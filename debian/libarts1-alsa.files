@@ -1,8 +1,0 @@
-usr/lib/kde/libmcop.so.*
-usr/lib/kde/libmcop_mt.so.*
-usr/lib/kde/mcop/*
-usr/lib/kde/libarts*.so.*
-usr/lib/kde/libkmedia2_idl.so.*
-usr/lib/kde/libkmedia2.so.*
-usr/lib/kde/libsoundserver_idl.so.*
-usr/lib/kde/libx11globalcomm.so.*
