@@ -1522,15 +1522,45 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     if ( tCaption )
         tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
 
-    // draw the cells
-    FOR_EACH_CELL(r, c, cell)
-    {
-#ifdef DEBUG_LAYOUT
-        kdDebug( 6040 ) << "printing cell " << r << "/" << c << endl;
-#endif
-        cell->print( p, _x, _y, _w, _h, _tx, _ty);
+    // check which rows and cols are visible and only print these
+    // ### fixme: could use a binary search here
+    int startrow = 0;
+    int endrow = totalRows;
+    for ( ; startrow < totalRows; startrow++ ) {
+	if ( _ty + rowHeights[startrow+1] > _y ) 
+	    break;
     }
-    END_FOR_EACH
+    for ( ; endrow > 0; endrow-- ) {
+	if ( _ty + rowHeights[endrow-1] < _y + _h )
+	    break;
+    }
+    int startcol = 0;
+    int endcol = totalCols;
+    for ( ; startcol < totalCols; startcol++ ) {
+	if ( _tx + columnPos[startcol+1] > _x ) 
+	    break;
+    }
+    for ( ; endcol > 0; endcol-- ) {
+	if ( _tx + columnPos[endcol-1] < _x + _w )
+	    break;
+    }
+    
+    // draw the cells
+    for ( unsigned int r = startrow; r < endrow; r++ ) {
+        for ( unsigned int c = startcol; c < endcol; c++ ) {
+            RenderTableCell *cell = cells[r][c];
+            if (!cell)
+                continue;
+            if ( (c < endcol - 1) && (cell == cells[r][c+1]) )
+                continue;
+            if ( (r < endrow - 1) && (cells[r+1][c] == cell) )
+                continue;
+#ifdef DEBUG_LAYOUT
+	    kdDebug( 6040 ) << "printing cell " << r << "/" << c << endl;
+#endif
+	    cell->print( p, _x, _y, _w, _h, _tx, _ty);
+	}
+    }
 
     if ( specialObjects )
 	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
