@@ -46,7 +46,8 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_TYPE:
-	addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
+        addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -56,7 +57,7 @@ void HTMLUListElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
     style()->setFlowAroundFloats(true);
-}	
+}
 
 // -------------------------------------------------------------------------
 
@@ -112,18 +113,18 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
-	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
         else if ( strcmp( attr->value(), "A" ) == 0 )
-	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
         else if ( strcmp( attr->value(), "i" ) == 0 )
-	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
         else if ( strcmp( attr->value(), "I" ) == 0 )
-	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
         else if ( strcmp( attr->value(), "1" ) == 0 )
-	    addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
         break;
     case ATTR_START:
-	// ###
+        // ###
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }
@@ -148,18 +149,33 @@ ushort HTMLLIElementImpl::id() const
 }
 
 
-void HTMLLIElementImpl::parseAttribute(AttrImpl *attr) {
-
+void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
+{
     switch(attr->attrId)
     {
     case ATTR_VALUE:
-	if(m_render && m_render->isListItem())
-	{
-	    RenderListItem *list = static_cast<RenderListItem *>(m_render);
-	    // ### work out what to do when attribute removed - use default of some sort?
-	    long v = attr->val() ? attr->val()->toInt() : 0;
-	    list->setValue(v);
-	}
+        if(m_render && m_render->isListItem())
+        {
+            RenderListItem *list = static_cast<RenderListItem *>(m_render);
+            // ### work out what to do when attribute removed - use default of some sort?
+            long v = attr->val() ? attr->val()->toInt() : 0;
+            list->setValue(v);
+        }
+        break;
+    case ATTR_TYPE:
+        if ( strcmp( attr->value(), "a" ) == 0 )
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
+        else if ( strcmp( attr->value(), "A" ) == 0 )
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
+        else if ( strcmp( attr->value(), "i" ) == 0 )
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
+        else if ( strcmp( attr->value(), "I" ) == 0 )
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
+        else if ( strcmp( attr->value(), "1" ) == 0 )
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
+        else
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
