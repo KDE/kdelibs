@@ -6,5 +6,5 @@
 </screen>
 
 <para>Dado que o &kappname; usa o <command>autoconf</command> e o
-<command>automake</command> não deve ter qualquer problema a compilá-lo. Se tiver, comunique-os para as listas do &kde;.</para>
+<command>automake</command> não deve ter quaisquer problemas a compilá-lo. Se tiver, comunique-os para as listas do &kde;.</para>
 

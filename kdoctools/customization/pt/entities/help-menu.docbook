@@ -6,7 +6,7 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Conteúdo...</guimenuitem>
+<guimenuitem>Manual do &kappname;</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Invoca a ajuda do KDE</action>, aberta na documentação do &kappname;. (este documento).</para></listitem>
@@ -27,7 +27,7 @@
 <varlistentry>
 <term><menuchoice>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Comunicar Erro...</guimenuitem>
+<guimenuitem>Comunicar um Erro...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Abre a janela de Relato de Erros</action> onde pode
 comunicar um erro ou <quote>pedir</quote> uma funcionalidade.</para></listitem>
