@@ -256,7 +256,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
 
 void Ftp::openConnection()
 {
-  kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " " << m_pass << endl;
+  kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " [password hidden]" << endl;
 
   infoMessage( i18n("Opening connection to host %1").arg(m_host) );
 
@@ -357,7 +357,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  */
 bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 {
-  kdDebug(7102) << "ftpLogin " << user << _pass << endl;
+  kdDebug(7102) << "ftpLogin " << user << " [password hidden]" << endl;
   infoMessage( i18n("Sending login information") );
 
   assert( !m_bLoggedOn );
@@ -465,7 +465,8 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   QCString buf = cmd;
   buf += "\r\n";
 
-  kdDebug(7102) << cmd.data() << endl;
+  if ( cmd.left(4).lower() != "pass" ) // don't print out the password
+    kdDebug(7102) << cmd.data() << endl;
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     error( ERR_COULD_NOT_WRITE, "" );
