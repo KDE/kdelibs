@@ -51,7 +51,7 @@ class QIconViewItem;
  * @see KFileDetailView
  * @see KDirOperator
  */
-class KCombiView : public QSplitter,
+class KIO_EXPORT KCombiView : public QSplitter,
 		   public KFileView
 {
     Q_OBJECT

@@ -30,6 +30,8 @@
 
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
+
 /**
  * The goal of this class is to make sure that, when the user needs to 
  * specify a file via the file selection dialog, this dialog will start 
@@ -45,7 +47,7 @@
  * a single ':' the file-class is specific to the current application.
  * If the file-class starts with '::' it is global to all applications.
  */
-class KRecentDirs
+class KIO_EXPORT KRecentDirs
 {
 public:
     /**

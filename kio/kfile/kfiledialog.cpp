@@ -310,7 +310,7 @@ KURL KFileDialog::getCompleteURL(const QString &_url)
 
     if ( KURL::isRelativeURL(url) ) // only a full URL isn't relative. Even /path is.
     {
-        if (!url.isEmpty() && url[0] == '/' ) // absolute path
+        if (!url.isEmpty() && !QDir::isRelativePath(url) ) // absolute path
             u.setPath( url );
         else
         {
@@ -863,8 +863,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
-
-    u.setPath( "/tmp" );
 
     d->url = getStartURL( startDir, d->fileClass );
     d->selection = d->url.url();

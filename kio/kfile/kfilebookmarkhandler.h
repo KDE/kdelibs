@@ -25,7 +25,8 @@
 class QTextStream;
 class KPopupMenu;
 
-class KFileBookmarkHandler : public QObject, public KBookmarkOwner
+
+class KIO_EXPORT KFileBookmarkHandler : public QObject, public KBookmarkOwner
 {
     Q_OBJECT
 

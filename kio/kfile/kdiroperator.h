@@ -26,9 +26,7 @@
 
 #include <kaction.h>
 #include <kcompletion.h>
-
 #include <kdirlister.h>
-
 #include <kfileview.h>
 #include <kfileitem.h>
 #include <kfile.h>
@@ -95,7 +93,7 @@ namespace KIO {
  * @short A widget for displaying files and browsing directories.
  * @author Stephan Kulow <coolo@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDirOperator : public QWidget
+class KIO_EXPORT KDirOperator : public QWidget
 {
     Q_OBJECT
 

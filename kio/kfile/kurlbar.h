@@ -39,7 +39,7 @@ class KURLBar;
  * @see KURLBar
  * @see KURLBarListBox
  */
-class KURLBarItem : public QListBoxPixmap
+class KIO_EXPORT KURLBarItem : public QListBoxPixmap
 {
 public:
     /**
@@ -227,7 +227,7 @@ class KURLBarListBox;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A URL-bar widget, as used in the KFileDialog
  */
-class KURLBar : public QFrame
+class KIO_EXPORT KURLBar : public QFrame
 {
     Q_OBJECT
 
@@ -488,7 +488,7 @@ class KURLBarToolTip;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KURLBarListBox : public KListBox
+class KIO_EXPORT KURLBarListBox : public KListBox
 {
     Q_OBJECT
 
@@ -561,7 +561,7 @@ class KURLRequester;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KURLBarItemDialog : public KDialogBase
+class KIO_EXPORT KURLBarItemDialog : public KDialogBase
 {
     Q_OBJECT
 

@@ -29,12 +29,10 @@ class QRadioButton;
 class KProgress;
 class KIconLoader;
 
-
-
 /**
  * Icon canvas for KIconDialog.
  */
-class KIconCanvas: public KIconView
+class KIO_EXPORT KIconCanvas: public KIconView
 {
     Q_OBJECT
 
@@ -90,7 +88,7 @@ private:
  *
  * @short An icon selection dialog.
  */
-class KIconDialog: public KDialogBase
+class KIO_EXPORT KIconDialog: public KDialogBase
 {
     Q_OBJECT
 
@@ -251,7 +249,7 @@ private:
  * @see KIconDialog
  * @short A push button that allows selection of an icon.
  */
-class KIconButton: public QPushButton
+class KIO_EXPORT KIconButton: public QPushButton
 {
     Q_OBJECT
 

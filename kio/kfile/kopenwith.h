@@ -24,7 +24,6 @@
 
 #include <kurl.h>
 #include <krun.h>
-
 #include <kservice.h>
 
 class KApplicationTree;
@@ -44,7 +43,7 @@ class KOpenWithDlgPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KOpenWithDlg : public QDialog //#TODO: Use KDialogBase for KDE4
+class KIO_EXPORT KOpenWithDlg : public QDialog //#TODO: Use KDialogBase for KDE4
 {
     Q_OBJECT
 public:
@@ -190,7 +189,7 @@ protected:
  *
  *
  */
-class KFileOpenWithHandler : public KOpenWithHandler
+class KIO_EXPORT KFileOpenWithHandler : public KOpenWithHandler
 {
 public:
   KFileOpenWithHandler() : KOpenWithHandler() {}

@@ -24,6 +24,8 @@
 #include <qptrdict.h>
 #include <qwidget.h>
 
+#include <kdelibs_export.h>
+
 class KURL;
 
 /**
@@ -39,7 +41,7 @@ class KURL;
  * @short Abstract baseclass for all preview widgets.
  * @author Frerich Raabe <raabe@kde.org>
  */
-class KPreviewWidgetBase : public QWidget
+class KIO_EXPORT KPreviewWidgetBase : public QWidget
 {
     Q_OBJECT
 

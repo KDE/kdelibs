@@ -23,23 +23,21 @@
 #ifndef _KFILEPREVIEW_H
 #define _KFILEPREVIEW_H
 
+#include <qsplitter.h>
+#include <qwidget.h>
+#include <qstring.h>
+
+#include <kurl.h>
 #include <kfileitem.h>
 #include <kfilepreview.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
 #include <kfile.h>
 
-#include <qsplitter.h>
-#include <qwidget.h>
-
-#include <qstring.h>
-
-#include <kurl.h>
-
 /*!
  * This KFileView is an empbedded preview for some file types.
  */
-class KFilePreview : public QSplitter, public KFileView
+class KIO_EXPORT KFilePreview : public QSplitter, public KFileView
 {
     Q_OBJECT
 

@@ -29,13 +29,15 @@
 #include <qobject.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KProcess;
 
 /**
  * This class parses the output of "df" to find the disk usage
  * information for a given partition (mount point).
  */
-class KDiskFreeSp : public QObject
+class KIO_EXPORT KDiskFreeSp : public QObject
 {  Q_OBJECT
 public:
    KDiskFreeSp( QObject *parent=0, const char *name=0 );

@@ -15,7 +15,7 @@
 #include <kpreviewwidgetbase.h>
 #include <kurl.h>
 
-class KFileMetaPreview : public KPreviewWidgetBase
+class KIO_EXPORT KFileMetaPreview : public KPreviewWidgetBase
 {
     Q_OBJECT
 

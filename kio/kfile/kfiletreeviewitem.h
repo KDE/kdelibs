@@ -37,7 +37,7 @@ class KFileTreeItem;
 /**
  * An item for a KFileTreeView that knows about its own KFileItem.
  */
-class KFileTreeViewItem : public KListViewItem
+class KIO_EXPORT KFileTreeViewItem : public KListViewItem
 {
 public:
    KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );

@@ -30,7 +30,7 @@ class QPushButton;
  * @author David Faure <david@mandrakesoft.com>
  * @since 3.1
  */
-class KFileSharePropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KFileSharePropsPlugin : public KPropsDlgPlugin
 {
     Q_OBJECT
 public:

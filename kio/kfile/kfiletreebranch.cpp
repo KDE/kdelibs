@@ -22,6 +22,7 @@
 
 #include <kfileitem.h>
 #include <kdebug.h>
+#include <kde_file.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -199,8 +200,8 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
              *  count only contains directory links. Thus, this method only seem
              * to work in dir-only mode */
             kdDebug(250) << "Doing stat on " << filename << endl;
-            struct stat statBuf;
-            if( stat( QFile::encodeName( filename ), &statBuf ) == 0 )
+            KDE_struct_stat statBuf;
+            if( KDE_stat( QFile::encodeName( filename ), &statBuf ) == 0 )
             {
                 int hardLinks = statBuf.st_nlink;  /* Count of dirs */
                 kdDebug(250) << "stat succeeded, hardlinks: " << hardLinks << endl;

@@ -28,7 +28,6 @@
 #include <qstring.h>
 
 #include <kdialogbase.h>
-
 #include <kfile.h>
 #include <kurl.h>
 #include <kmimetype.h>
@@ -75,7 +74,7 @@ struct KFileDialogPrivate;
  *
  * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KFileDialog : public KDialogBase
+class KIO_EXPORT KFileDialog : public KDialogBase
 {
     Q_OBJECT
 

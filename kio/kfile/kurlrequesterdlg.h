@@ -35,7 +35,7 @@ class KFileDialog;
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
  */
-class KURLRequesterDlg : public KDialogBase
+class KIO_EXPORT KURLRequesterDlg : public KDialogBase
 {
     Q_OBJECT
 

@@ -29,14 +29,13 @@ class QLabel;
 #include <kiconloader.h>
 #include <kfileview.h>
 #include <kmimetyperesolver.h>
-
 #include <kfile.h>
 
 /**
  * An item for the iconview, that has a reference to its corresponding
  * KFileItem.
  */
-class KFileIconViewItem : public KIconViewItem
+class KIO_EXPORT KFileIconViewItem : public KIconViewItem
 {
 public:
     KFileIconViewItem( QIconView *parent, const QString &text,
@@ -79,7 +78,7 @@ namespace KIO {
  * @see KCombiView
  * @see KFileDetailView
  */
-class KFileIconView : public KIconView, public KFileView
+class KIO_EXPORT KFileIconView : public KIconView, public KFileView
 {
     Q_OBJECT
 

@@ -23,7 +23,7 @@
 
 class KConfig;
 
-class KFileSpeedBar : public KURLBar
+class KIO_EXPORT KFileSpeedBar : public KURLBar
 {
     Q_OBJECT
 public:

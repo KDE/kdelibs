@@ -31,7 +31,7 @@ class KConfigBase;
   * @version $Id$
   * @since 3.1
   */
-class KCustomMenuEditor : public KDialogBase
+class KIO_EXPORT KCustomMenuEditor : public KDialogBase
 {
     Q_OBJECT
 public:

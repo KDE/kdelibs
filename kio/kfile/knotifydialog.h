@@ -20,7 +20,6 @@
 #define KNOTIFYDIALOG_H
 
 #include <klistview.h>
-
 #include <kdialogbase.h>
 #include <kinstance.h>
 #include <kglobal.h>
@@ -50,7 +49,7 @@ namespace KNotify
  * @since 3.1
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KNotifyDialog : public KDialogBase
+class KIO_EXPORT KNotifyDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -149,7 +148,7 @@ namespace KNotify
     /**
      * @internal
      */
-    class Application
+    class KIO_EXPORT Application
     {
     public:
         Application( const QString &path );
@@ -174,7 +173,7 @@ namespace KNotify
     };
 
 
-    class ApplicationList : public QPtrList<Application>
+    class KIO_EXPORT ApplicationList : public QPtrList<Application>
     {
         virtual int compareItems ( QPtrCollection::Item item1,
                                    QPtrCollection::Item item2 )
@@ -187,7 +186,7 @@ namespace KNotify
     /**
      * @internal
      */
-    class KNotifyWidget : public KNotifyWidgetBase
+    class KIO_EXPORT KNotifyWidget : public KNotifyWidgetBase
     {
         Q_OBJECT
 

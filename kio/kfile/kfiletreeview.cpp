@@ -629,7 +629,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
    {
       KURL url = brnch->rootUrl();
 
-      if( ! relUrl.isEmpty() && relUrl != QString::fromLatin1("/") )
+      if( ! relUrl.isEmpty() && QDir::isRelativePath(relUrl) )
       {
          QString partUrl( relUrl );
 

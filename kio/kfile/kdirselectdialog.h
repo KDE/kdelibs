@@ -36,7 +36,7 @@ class KToggleAction;
  * @author Michael Jarrett <michaelj@corel.com>
  * @see KFileDialog
  */
-class KDirSelectDialog : public KDialogBase
+class KIO_EXPORT KDirSelectDialog : public KDialogBase
 {
     Q_OBJECT
 

@@ -36,7 +36,7 @@ class     KEncodingFileDialogPrivate;
  * can easily add children that will be incorporated into the layout.
  */
 
-class KEncodingFileDialog : public KFileDialog
+class KIO_EXPORT KEncodingFileDialog : public KFileDialog
 {
     Q_OBJECT
 

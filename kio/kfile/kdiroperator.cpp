@@ -50,6 +50,7 @@
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
 #include <kstdaccel.h>
+#include <kde_file.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -1592,9 +1593,9 @@ bool KDirOperator::isReadable( const KURL& url )
     if ( !url.isLocalFile() )
 	return true; // what else can we say?
 
-    struct stat buf;
+    KDE_struct_stat buf;
     QString ts = url.path(+1);
-    bool readable = ( ::stat( QFile::encodeName( ts ), &buf) == 0 );
+    bool readable = ( KDE_stat( QFile::encodeName( ts ), &buf) == 0 );
     if (readable) { // further checks
 	DIR *test;
 	test = opendir( QFile::encodeName( ts )); // we do it just to test here

@@ -45,6 +45,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         u.setPath( KGlobalSettings::desktopPath() );
         insertItem( u, i18n("Desktop"), false );
 
+//TODO: win32
         if ((KGlobalSettings::documentPath() != (QDir::homeDirPath()+"/")) && 
             QDir(KGlobalSettings::documentPath()).exists())
         {

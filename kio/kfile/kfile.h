@@ -26,7 +26,7 @@
  * construct a KFile object itself.
  */
 
-class KFile
+class KIO_EXPORT KFile
 {
 public:
     /**

@@ -28,7 +28,7 @@
 /*!
  * A widget to display file meta infos (like id3 for mp3)
  */
-class KFileMetaInfoWidget: public QWidget
+class KIO_EXPORT KFileMetaInfoWidget: public QWidget
 {
     Q_OBJECT
 public:

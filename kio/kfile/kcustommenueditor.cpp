@@ -21,6 +21,7 @@
 #include <qregexp.h>
 #include <qimage.h>
 #include <qpushbutton.h>
+#include <qdir.h>
 
 #include <kbuttonbox.h>
 #include <klocale.h>
@@ -163,7 +164,7 @@ KCustomMenuEditor::save(KConfigBase *cfg)
    {
       i++;
       QString path = item->s->desktopEntryPath();
-      if (!path.startsWith("/") || !KGlobal::dirs()->relativeLocation("xdgdata-apps", path).startsWith("/"))
+      if (QDir::isRelativePath(path) || QDir::isRelativePath(KGlobal::dirs()->relativeLocation("xdgdata-apps", path)))
          path = item->s->desktopEntryName();
       cfg->writePathEntry(QString("Item%1").arg(i), path);
       item = (Item *) item->nextSibling();

@@ -28,7 +28,7 @@
 
 class KFileFilterComboPrivate;
 
-class KFileFilterCombo : public KComboBox
+class KIO_EXPORT KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 
