@@ -143,6 +143,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   userLanguage	Navigator::UserLanguage	DontDelete|ReadOnly
   browserLanguage Navigator::BrowserLanguage	DontDelete|ReadOnly
   platform	Navigator::Platform	DontDelete|ReadOnly
+  cpuClass      Navigator::CpuClass     DontDelete|ReadOnly
   plugins	Navigator::_Plugins	DontDelete|ReadOnly
   mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
   product	Navigator::Product	DontDelete|ReadOnly
@@ -216,6 +217,15 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
         else // can't happen
             return String(QString::fromLatin1("Unix X11"));
     }
+  case CpuClass:
+  {
+    struct utsname name;
+    int ret = uname(&name);
+    if ( ret >= 0 )
+      return String(name.machine);
+    else // can't happen
+      return String("x86");
+  }
   case _Plugins:
     return Value(new Plugins(exec));
   case _MimeTypes:
