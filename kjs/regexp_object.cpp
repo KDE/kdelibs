@@ -227,8 +227,22 @@ bool RegExpObjectImp::implementsConstruct() const
 // ECMA 15.10.4
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
-  UString p = args.isEmpty() ? UString("") : args[0].toString(exec);
+  UString p;
   UString flags = args[1].toString(exec);
+  if (args.isEmpty()) {
+      p = "";
+  } else {
+    Value a0 = args[0];
+    if (a0.isA(ObjectType) && a0.toObject(exec).inherits(&RegExpImp::info)) {
+      // It's a regexp. Check that no flags were passed.
+      if (args.size() > 1 && args[1].type() != UndefinedType) {
+          Object err = Error::create(exec,TypeError);
+          exec->setException(err);
+          return err;
+      }
+    }
+    p = a0.toString(exec);
+  }
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());
   RegExpImp *dat = new RegExpImp(proto);
