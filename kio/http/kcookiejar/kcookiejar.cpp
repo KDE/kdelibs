@@ -907,26 +907,28 @@ void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
     }
 }
 
+void KCookieJar::eatCookiesForDomain(const QString &domain)
+{
+   KHttpCookieList *cookieList = cookieDomains[domain];
+   if (cookieList->isEmpty()) return;
+
+   cookieList->clear();
+   if (cookieList->getAdvice() == KCookieDunno)
+   {
+       // This deletes cookieList!
+       cookieDomains.remove(domain);
+       domainList.remove(domain);
+   }
+   cookiesChanged = true;    
+}
+
 void KCookieJar::eatAllCookies()
 {
     for ( QStringList::Iterator it=domainList.begin();
     	  it != domainList.end();)
     {
-        const QString &domain = *it++;
-
-	KHttpCookieList *cookieList = cookieDomains[domain];
-        cookieList->clear();
-
-        if ((cookieList->isEmpty()) &&
-            (cookieList->getAdvice() == KCookieDunno))
-        {
-            // This deletes cookieList!
-            cookieDomains.remove(domain);
-
-            domainList.remove(domain);
-        }
+        eatCookiesForDomain(*it++);
     }
-    cookiesChanged = true;
 }
 
 //

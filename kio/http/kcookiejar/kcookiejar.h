@@ -253,6 +253,11 @@ public:
     void eatCookie(KHttpCookiePtr cookiePtr);
 
     /**
+     * Remove & delete all cookies for @p domain.
+     */
+    void eatCookiesForDomain(const QString &domain);
+    
+    /**
      * Remove & delete all cookies
      */
     void eatAllCookies();

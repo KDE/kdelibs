@@ -102,6 +102,11 @@ KCookieServer::newInstance()
         mCookieJar->eatAllCookies();
         slotSave();
    }
+   if (args->isSet("remove"))
+   {
+        mCookieJar->eatCookiesForDomain(args->getOption("remove"));
+        slotSave();
+   }
 
    if (args->isSet("shutdown"))
    {
