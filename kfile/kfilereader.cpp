@@ -415,7 +415,11 @@ bool KFileReader::startLoading()
 		    SLOT(slotIOError(int, int, const char * )));
 	    connect(myJob, SIGNAL(sigListEntry(int, const KUDSEntry&)),
 		    SLOT(slotListEntry(int, const KUDSEntry&)));
+#ifdef AFTER_KRASH_API
 	    myJob->listDir(*this);
+#else
+	    myJob->listDir(url().ascii());
+#endif
 	    return true;
 	    //	}
     }

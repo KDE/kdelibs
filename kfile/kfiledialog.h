@@ -47,10 +47,6 @@ class KDirOperator;
 class KFileComboBox;
 struct KFileDialogPrivate;
 
-#ifndef AFTER_KRASH_API
-#define AFTER_KRASH_API 1
-#endif
-
 /**
  * The KFileDialog widget provides a user (and developer) friendly way to
  * select files. The widget can be used as a drop in replacement for the
