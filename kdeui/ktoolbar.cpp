@@ -123,6 +123,7 @@ public:
   QString      m_xmlFile;
   QDomDocument m_xml;
   bool         m_stateChanged;
+  QString      m_sText;
 };
 
 // this should be adjustable (in faar future... )
@@ -2751,5 +2752,17 @@ void KToolBar::setXML(const QString& xmlfile, const QDomDocument& xml)
   d->m_xmlFile = xmlfile;
   d->m_xml     = xml;
 }
+
+void KToolBar::setText( const QString & txt )
+{
+  d->m_sText = txt;
+  // TODO use it in the tooltip for the handle
+}
+ 
+const QString & KToolBar::text()
+{
+  return d->m_sText;
+}
+ 
 
 #include "ktoolbar.moc"

@@ -883,6 +883,17 @@ public:
 
   void show();
 
+  /**
+   * Assign a (translated) text to this toolbar. This is used
+   * for the tooltip on the handle, and when listing the toolbars.
+   */
+  void setText( const QString & txt );
+
+  /**
+   * @return the toolbar's text.
+   */
+  const QString & text();
+
 signals:
     /**
      * Emitted when button @p id is clicked.

@@ -66,7 +66,7 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
 
   d->attrLineSeparator = QString::fromLatin1( "lineseparator" );
-  
+
   d->m_instance = 0;
 }
 
@@ -153,7 +153,14 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == d->tagToolBar )
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
+
     KToolBar *bar = new KToolBar( d->m_widget, element.attribute( "name" ).utf8(), honor);
+    
+    QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
+    if (text.isEmpty())  // try with capital T
+      text = i18n(element.namedItem( "Text" ).toElement().text().utf8());
+    if (!text.isEmpty())
+      bar->setText( text );
 
     if ( d->m_widget->inherits( "KTMainWindow" ) )
       static_cast<KTMainWindow *>(d->m_widget)->addToolBar( bar );
@@ -281,9 +288,9 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
     else if ( parent->inherits( "KToolBar" ) )
     {
       KToolBar *bar = static_cast<KToolBar *>( parent );
-    
+
       bool isLineSep = false;
-      
+
       QDomNamedNodeMap attributes = element.attributes();
       unsigned int i = 0;
       for (; i < attributes.length(); i++ )
@@ -297,10 +304,10 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
 	  break;
 	}
       }
-      
+
       if ( isLineSep )
         return bar->insertLineSeparator( index );
-      
+
       return bar->insertSeparator( index );
     }
   }
