@@ -102,7 +102,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     viewport()->show();
 
-    setVScrollBarMode(Auto);
+    setVScrollBarMode(AlwaysOn);
     setHScrollBarMode(Auto);
 
     d = new KHTMLViewPrivate;
@@ -155,7 +155,7 @@ void KHTMLView::clear()
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
-    setVScrollBarMode(Auto);
+    setVScrollBarMode(AlwaysOn);
     setHScrollBarMode(Auto);
 
     if(d->useSlowRepaints) {

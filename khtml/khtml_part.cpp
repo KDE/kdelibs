@@ -984,6 +984,15 @@ void KHTMLPart::slotFinishedParsing()
 
   if (!d->m_view)
     return; // We are probably being destructed.
+  
+  int ow = d->m_view->visibleWidth();
+  d->m_view->setVScrollBarMode(QScrollView::Auto);
+  if (d->m_view->visibleWidth() != ow)
+  {
+    d->m_view->layout();
+    d->m_view->updateContents(d->m_view->contentsX(),d->m_view->contentsY(),
+            d->m_view->visibleWidth(),d->m_view->visibleHeight());    
+  }
 
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
