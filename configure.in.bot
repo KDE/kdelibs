@@ -81,6 +81,17 @@ if test -z "$jpeg_incdir" || test -z "$LIBJPEG" ; then
   all_tests=bad
 fi 
 
+if test "$kde_supports_versionmaps" != "yes"; then
+  echo ""
+  echo "Your ld doesn't support unversioned version scripts."
+  echo "KDE will continue to build, but you might have a slight performance penality."
+  echo ""
+  echo "If you're running Linux, your binutils are probably too old."
+  echo "If you're running non-linux, support for your platform might not be implemented."
+  echo ""
+  all_tests=bad
+fi
+
 if test "$ac_use_cups" != "yes"; then
   if test "$ac_have_new_cups" != "yes"; then
     echo ""

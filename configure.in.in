@@ -283,3 +283,4 @@ AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distributio
 AC_MSG_RESULT($kde_distribution_text)
 
 KDE_INIT_DOXYGEN([The KDE API Reference], [Version $VERSION])
+KDE_CHECK_BINUTILS

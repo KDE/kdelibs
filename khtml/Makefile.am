@@ -40,7 +40,11 @@ include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtml
 noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_ext.h \
 		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h
 
-libkhtml_la_LDFLAGS = -version-info 6:0:2 -module -no-undefined -Wl,--version-script=$(srcdir)/libkhtml.map $(all_libraries)
+if include_VERSION_SCRIPT
+VSCRIPT='-Wl,--version-script=$(srcdir)/libkhtml.map'
+endif
+
+libkhtml_la_LDFLAGS = -version-info 6:0:2 -module -no-undefined $(VSCRIPT) $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
