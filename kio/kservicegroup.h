@@ -111,7 +111,13 @@ public:
    * @return the descriptive comment for the group, if there is one.
    */
   QString comment() const { return m_strComment; }
-
+  
+  /**
+   * @return the total number of displayable services in this group and
+   * any of its subgroups.
+   */
+  int childCount(); 
+  
   /**
    * @internal
    * Load the service from a stream.
@@ -169,5 +175,6 @@ protected:
   List m_serviceList;
   bool m_bDeep;
   QString m_strBaseGroupName;
+  int m_childCount;
 };
 #endif

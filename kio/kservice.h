@@ -213,6 +213,11 @@ public:
    * The bigger the value, the most preferred the service is.
    */
   int initialPreference() const { return m_initialPreference; }
+  
+  /**
+   * Whether the entry should be suppressed in menus.
+   */
+  bool noDisplay() const; 
 
   /**
    * Returns the requested properties. Some often used properties

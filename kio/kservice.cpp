@@ -494,3 +494,17 @@ QString KService::username() const {
   return v.isValid() ? v.toString() : QString::null;
 }
 
+bool KService::noDisplay() const {
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "NoDisplay" );
+  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
+  {
+     return false;
+  }  
+
+  QString aValue = it.data().toString();
+  if (aValue == "true" || aValue == "on" || aValue == "yes")
+     return true;
+  else
+     return false;
+}
+

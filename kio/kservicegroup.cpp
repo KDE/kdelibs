@@ -31,7 +31,7 @@
 
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(_relpath)
+ : KSycocaEntry(_relpath), m_childCount(-1)
 {
   m_bDeleted = false;
 
@@ -72,12 +72,39 @@ KServiceGroup::~KServiceGroup()
 {
 }
 
+int KServiceGroup::childCount()
+{
+  if (m_childCount == -1)
+  {
+     m_childCount = 0;
+
+     for( List::ConstIterator it = m_serviceList.begin();
+          it != m_serviceList.end(); it++)
+     {
+        KSycocaEntry *p = (*it);
+        if (p->isType(KST_KService))
+        {
+           KService *service = static_cast<KService *>(p);
+           if (!service->noDisplay())
+              m_childCount++;
+        }
+        else if (p->isType(KST_KServiceGroup))
+        {
+           KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+           m_childCount += serviceGroup->childCount();
+        }
+     }
+  }
+  return m_childCount;
+}
+
+
 void KServiceGroup::load( QDataStream& s )
 {
   QStringList groupList;
 
   s >> m_strCaption >> m_strIcon >>
-       m_strComment >> groupList >> m_strBaseGroupName;
+       m_strComment >> groupList >> m_strBaseGroupName >> m_childCount;
 
   if (m_bDeep)
   {
@@ -131,8 +158,10 @@ void KServiceGroup::save( QDataStream& s )
      }
   }
 
+  (void) childCount();
+
   s << m_strCaption << m_strIcon <<
-       m_strComment << groupList << m_strBaseGroupName;
+       m_strComment << groupList << m_strBaseGroupName << m_childCount;
 }
 
 KServiceGroup::List
@@ -189,7 +218,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
         if (excludeNoDisplay)
         {
            KService *service = (KService *)((KSycocaEntry *)(*it));
-           if (service->property("NoDisplay").asBool())
+           if (service->noDisplay())
               continue;
         }
         lsort.append(it.data());
