@@ -325,7 +325,7 @@ void HTMLTokenizer::write( const char *str )
 		else if (res)
 		{
 		    // insert the characters, assuming iso-8859-1
-		    memcpy(dest,(const char *)res,res.length());
+		    memcpy(dest, res.data(), res.length());
 		    dest += res.length();
 		}
 		else if ((searchBuffer[1] == '#') && (entityValue > 0)) 
@@ -411,7 +411,6 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncmp( buffer+2, "textarea", 8 ) == 0 )
 	    {
 		textarea = true;
-		discardCR = true;
 	    }
 	    else if ( strncmp( buffer+2, "/textarea", 9 ) == 0 )
 	    {
@@ -503,6 +502,10 @@ void HTMLTokenizer::write( const char *str )
 			dest = buffer;
 			pre_pos = 0; 
 		    }
+		}
+		else if (textarea)
+		{
+		    *dest++ = '\n';
 		}
 		else if ( !space )
 		{
