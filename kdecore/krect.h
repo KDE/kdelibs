@@ -1,5 +1,5 @@
 // KRect - (c) by Reginald Stadlbauer 1998 <reggie@kde.org>
-// Version: 0.0.1
+// Version: $Id$
 
 #ifndef krect_h
 #define krect_h
@@ -11,10 +11,10 @@ class QRect;
 
 /**
  * Class for reperesenting a rect by its X,Y, WIDTH and HEIGHT. It's source compatible
- * to the Qt class QRect, but Krect uses 32 bit integers for the x/y/width/height.
+ * to the Qt class QRect, but KRect uses 32 bit integers for the x/y/width/height.
  * @short Class for representing a rect by (x,y,width,height)
  * @author Reginald Stadlbauer <reggie@kde.org>
- * @version 0.0.1
+ * @version $Id$
  */
 
 class KRect
