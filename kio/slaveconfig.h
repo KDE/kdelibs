@@ -41,7 +41,7 @@ namespace KIO {
         static SlaveConfig *self();
         ~SlaveConfig();
         /**
-         * Configure slaves of type @protocol by setting @p key to @p value.
+         * Configure slaves of type @p protocol by setting @p key to @p value.
          * If @p host is specified the configuration only applies when dealing
          * with @p host.
          *
@@ -51,7 +51,7 @@ namespace KIO {
         void setConfigData(const QString &protocol, const QString &host, const QString &key, const QString &value );
         
         /**
-         * Configure slaves of type @protocol with @p config.
+         * Configure slaves of type @p protocol with @p config.
          * If @p host is specified the configuration only applies when dealing
          * with @p host.
          *

@@ -136,7 +136,7 @@ namespace KIO {
 	static Slave* createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text );
 
         /**
-         * @obsolete FIXME KDE 3.0: remove me
+         * @deprecated FIXME KDE 3.0: remove me
          */
 	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
 

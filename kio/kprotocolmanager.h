@@ -89,22 +89,22 @@ public:
   static QString userAgentForHost( const QString& );
 
   /**
-   * @obsolete
+   * @deprecated
    * TODO KDE 3.0: remove me
    */
   static void setUserAgentList( const QStringList& /*agentlist*/ );
 
   /**
-   * @obsolete
+   * @deprecated
    * TODO KDE 3.0: remove me
    */
   static QStringList userAgentList();
 
 
-  //**************************************** TIMEOUT CONFIG ***************************************/
+  /**************************************** TIMEOUT CONFIG ***************************************/
 
   /**
-   * Returns the preffered timeout value for reading from
+   * Returns the preferred timeout value for reading from
    * remote connections in secs.
    *
    * The minimum value that is accept
@@ -117,7 +117,7 @@ public:
   static int readTimeout();
 
   /**
-   * Returns the preffered timeout value for remote connections
+   * Returns the preferred timeout value for remote connections
    * in secs.
    *
    * The maximum value that can be set by the user is 6
@@ -131,7 +131,7 @@ public:
   static int connectTimeout();
 
   /**
-   * Returns the preffered timeout value for proxy connections
+   * Returns the preferred timeout value for proxy connections
    * in secs.
    *
    * The maximum value that can be set by the user is 2
@@ -145,7 +145,7 @@ public:
   static int proxyConnectTimeout();
 
   /**
-   * Returns the preffered response timeout value for
+   * Returns the preferred response timeout value for
    * remote connecting in secs.
    *
    * The maximum value that can be set by the user is 6
@@ -223,7 +223,7 @@ public:
   static void setResponseTimeout( int timeout );
 
 
-  //**************************************** PROXY CONFIG *****************************************/
+  /**************************************** PROXY CONFIG *****************************************/
 
   /**
    * Returns whether or not the user specified the
@@ -367,7 +367,7 @@ public:
   static void setProxyConfigScript( const QString & /* url */ );
 
 
-  //**************************************** CACHE CONFIG *****************************************/
+  /**************************************** CACHE CONFIG *****************************************/
 
   /**
    * Returns true/false to indicate whether a cache
@@ -407,7 +407,7 @@ public:
   static void setCacheControl(KIO::CacheControl);
 
 
-  //**************************************** DOWNLOAD CONFIG ***************************************/
+  /**************************************** DOWNLOAD CONFIG ***************************************/
 
   static bool autoResume();
 
@@ -455,7 +455,7 @@ public:
   static void setPersistentConnections( bool _mode );
 
 
-  //**************************************** OTHERS *****************************************/
+  /**************************************** OTHERS *****************************************/
 
   /**
    * Force a reload of the general config file of
