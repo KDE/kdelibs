@@ -169,7 +169,7 @@ void ConfigPage::load()
           } else if ( family == "calendar" && QFile::exists( configDir + "/kcalrc" ) ) {
             info.mConfig = new KConfig( locateLocal( "config", "kcalrc" ) );
           } else {
-            QString configFile = locateLocal( "config", QString( "kresources/%1/stdrc" ).arg( family ) );
+            QString configFile = KRES::ManagerImpl::defaultConfigFile( family );
             info.mConfig = new KConfig( configFile );
           }
           info.mManager->readConfig( info.mConfig );

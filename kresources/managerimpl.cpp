@@ -79,8 +79,7 @@ ManagerImpl::~ManagerImpl()
 void ManagerImpl::createStandardConfig()
 {
   if ( !mStdConfig ) {
-    QString file = locateLocal( "data", QString( kapp->aboutData()->appName() )
-                                + "/kresources/" + mFamily + "rc" );
+    QString file = defaultConfigFile( mFamily );
     mStdConfig = new KConfig( file );
   }
   
@@ -428,6 +427,12 @@ Resource* ManagerImpl::getResource( const QString& identifier )
       return *it;
   }
   return 0;
+}
+
+QString ManagerImpl::defaultConfigFile( const QString &family )
+{
+  return locateLocal( "config",
+                      QString( "kresources/%1/stdrc" ).arg( family ) );
 }
 
 #include "managerimpl.moc"

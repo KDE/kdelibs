@@ -73,6 +73,8 @@ class ManagerImpl : public QObject, virtual public ManagerIface
 
     void setListener( ManagerImplListener *listener );
 
+    static QString defaultConfigFile( const QString &family );
+
   public slots:
     void resourceChanged( Resource *resource );
 
