@@ -4,6 +4,7 @@ Comment=Generic Font files
 Comment[de]=Allgemeine Fontdateien
 Comment[nl]=Algemeen-lettertype bestand
 Comment[pl]=Czcionka Tex'a
+Comment[fi]=Yleiset kirjasintiedostot
 Icon=gf.xpm
 Type=MimeType
 Mimetype=application/x-tex-gf

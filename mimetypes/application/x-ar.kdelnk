@@ -3,6 +3,7 @@
 Mimetype=application/x-ar
 Comment=Ar Archives
 Comment[pl]=Archiwum Ar
+Comment[fi]=Ar paketti
 DefaultApp=Zip
 Icon=unzip.xpm
 Type=MimeType

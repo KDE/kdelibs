@@ -4,6 +4,7 @@ Comment=Packed Font file
 Comment[de]=Komprimierte Fontdatei
 Comment[nl]=Gecomprimeerd lettertypebestand
 Comment[pl]=Spakowana czcionka Tex'a
+Comment[fi]=Pakattu kirjasin
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk

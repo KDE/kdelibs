@@ -9,3 +9,4 @@ Type=MimeType
 Patterns=*.gz;*.tgz;
 Comment[de]=GZip Datei
 Comment[pl]=Plik GZip
+Comment[fi]=Gzip paketti

@@ -3,6 +3,7 @@
 Comment=Pipe
 Comment[de]=Pipe
 Comment[pl]=Kolejka
+Comment[fi]=Putki
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

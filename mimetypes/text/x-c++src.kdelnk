@@ -4,6 +4,7 @@ Comment=C++ sources
 Comment[de]=C++ Quelldatei
 Comment[nl]=C++ bronbestand
 Comment[pl]=¬ród³o C++
+Comment[fi]=C++ lähdekoodi
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-c++src

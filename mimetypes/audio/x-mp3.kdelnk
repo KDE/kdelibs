@@ -8,3 +8,4 @@ Type=MimeType
 Patterns=*.mp3;*.MP3;
 Comment[de]=MPEG komprimierte Musik Datei
 Comment[pl]=Plik d¿wiêkowy MPEG III
+Comment[fi]=MPEG musiikki

@@ -4,6 +4,7 @@ Comment=Tcl file
 Comment[de]=TcL Programm
 Comment[nl]=Tcl bestand
 Comment[pl]=Program Tcl
+Comment[fi]=Tcl ohjelma
 Icon=unknown.xpm
 Type=MimeType
 MimeType=text/x-tcl

@@ -5,6 +5,7 @@ Comment=Qt Meta Object File
 Comment[de]=Qt Meta Object Datei   
 Comment[nl]=Qt-metaobject bestand 
 Comment[pl]=Metaobjekt Qt
+Comment[fi]=Qt Meta-objektitiedosto
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType

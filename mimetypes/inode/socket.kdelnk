@@ -3,6 +3,7 @@
 Comment=Socket
 Comment[de]=Socket
 Comment[pl]=Gniazdko
+Comment[fi]=Pistoke
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

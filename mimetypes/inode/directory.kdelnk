@@ -3,6 +3,7 @@
 Comment=Directory
 Comment[de]=Ordner
 Comment[pl]=Katalog
+Comment[fi]=Hakemisto
 Icon=folder.xpm
 Type=MimeType
 MimeType=inode/directory
