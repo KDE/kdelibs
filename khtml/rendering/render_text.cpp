@@ -275,12 +275,28 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
 
-        // alpha map
-        unsigned char* map = new unsigned char[h*w];
-        memset(map, 0, h*w);
+        // blur map (optimization)
+        int bmapw = 2*thickness+1;
+        float *bmap = new float[bmapw*bmapw];
         float md = thickness*thickness; // max-dist²
-        float strength = 1.0/(log10(thickness*10));
+        float strength = 1.0/(1+2*log10(thickness));
         if (strength > 1.0) strength = 1.0;
+        for(int n=-thickness; n<thickness; n++) {
+            for(int m=-thickness; m<thickness; m++) {
+                float f, d = (m*m+n*n); // dist²
+                if (d >= md)
+                    f = 0.0;
+                else {
+                    f = (md-d)/md;
+                    f = f*f*f*f; // square-root of distance
+                }
+                bmap[(m+thickness)+(n+thickness)*bmapw] = f*strength;;
+            }
+        }
+
+        // alpha map
+        unsigned char* amap = new unsigned char[h*w];
+        memset(amap, 0, h*w);
         for(int j=thickness; j<h-thickness; j++) {
             for(int i=thickness; i<w-thickness; i++) {
                 QRgb col= img.pixel(i,j);
@@ -292,13 +308,10 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     g = g/gray;
                 for(int n=-thickness; n<thickness; n++) {
                     for(int m=-thickness; m<thickness; m++) {
-                        float d = (m*m+n*n); // dist²
-                        if (d >= md) continue;
-                        float f = (md-d)/md;
-                        f = f*f*f*f; // square-root of distance
-                        unsigned int anew = (unsigned int)(f*g*255*strength);
-                        unsigned int aold = map[(i+m)+(j+n)*w];
-                        if (aold < anew) map[(i+m)+(j+n)*w] = anew;
+                        float f = bmap[(m+thickness)+(n+thickness)*bmapw];
+                        unsigned int anew = (unsigned int)(f*g*255);
+                        unsigned int aold = amap[(i+m)+(j+n)*w];
+                        if (aold < anew) amap[(i+m)+(j+n)*w] = anew;
                     }
                 }
             }
@@ -312,15 +325,16 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
 
         for(int j=0; j<h; j++) {
             for(int i=0; i<w; i++) {
-                res.setPixel(i,j, qRgba(r,g,b,map[i+j*w]));
+                res.setPixel(i,j, qRgba(r,g,b,amap[i+j*w]));
             }
         }
-        delete[] map;
+        delete[] amap;
+        delete[] bmap;
 
         pt->drawImage(x-thickness, y-thickness, res, 0, 0, -1, -1, Qt::DiffuseAlphaDither | Qt::ColorOnly | Qt::PreferDither);
     }
     // Paint next shadow effect
-    if (shadow->next) paintShadow(pt, f, _tx-m_x, _ty-m_y, shadow->next);
+    if (shadow->next) paintShadow(pt, f, _tx, _ty, shadow->next);
 }
 
 /**
