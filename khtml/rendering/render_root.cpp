@@ -29,8 +29,6 @@ using namespace khtml;
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
-    m_root = this;
-
     // init RenderObject attributes
     setInline(false);
 

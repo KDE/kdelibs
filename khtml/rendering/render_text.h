@@ -194,8 +194,8 @@ public:
 protected:
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
-
-    DOM::DOMStringImpl *str;
+    QFontMetrics *fm;
+    DOM::DOMStringImpl *str; //
 
     int m_contentHeight;
     short m_minWidth;
@@ -204,9 +204,6 @@ protected:
     SelectionState m_selectionState : 3 ;
     bool hasFirstLine : 1;
     bool m_hasReturn : 1;
-private:
-    QFontMetrics *fm;
-    // the one for the first line
 };
 
 

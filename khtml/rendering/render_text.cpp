@@ -52,7 +52,6 @@ TextSlave::~TextSlave()
         QT_DELETE_QCHAR_VEC(m_text);
 }
 
-
 void TextSlave::print( QPainter *p, int _tx, int _ty)
 {
     if (!m_text || m_len <= 0)
@@ -291,11 +290,23 @@ RenderText::RenderText(DOMStringImpl *_str)
 
 void RenderText::setStyle(RenderStyle *_style)
 {
+    bool fontchanged = ( !style() || style()->font() != _style->font() );
     RenderObject::setStyle(_style);
     hasFirstLine = (style()->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
-    if ( fm ) delete fm;
-    fm = new QFontMetrics( style()->font() );
+    if ( !fm || fontchanged ) {
+        if ( fm ) delete fm;
+        fm = new QFontMetrics( style()->font() );
+    }
     m_contentHeight = style()->lineHeight().width(metrics().height());
+
+    // ### does not work if texttransform is set to None again!
+    switch(style()->textTransform()) {
+       case CAPITALIZE:  setText(str->capitalize());  break;
+       case UPPERCASE:   setText(str->upper());       break;
+       case LOWERCASE:   setText(str->lower());       break;
+       case NONE:
+       default:;
+    }
 }
 
 RenderText::~RenderText()
@@ -718,10 +729,11 @@ void RenderText::setText(DOMStringImpl *text)
     assert(!str->l || str->s);
 
     setLayouted(false);
-    if (containingBlock()!=this)
+    RenderObject* cb = containingBlock();
+    if ( cb != this )
     {
-        containingBlock()->setLayouted(false);
-        containingBlock()->layout();
+        cb->setLayouted(false);
+        cb->layout();
     }
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
