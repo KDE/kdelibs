@@ -67,9 +67,9 @@ bool KSSLPeerInfo::certMatchesAddress() {
 KSSLX509Map certinfo(m_cert.getSubject());
 QString cn = certinfo.getValue("CN").stripWhiteSpace().lower();
 QRegExp rx;
-bool isIPAddress;
 
-	kdDebug(7029) << "Matching CN=[" << cn << "] to [" 
+
+	kdDebug(7029) << "Matching CN=[" << cn << "] to ["
 		      << d->peerHost << "]" << endl;
 
 	// Check for invalid characters
@@ -88,11 +88,13 @@ bool isIPAddress;
 
 	// Check for IPv4 address
 	rx.setPattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-	isIPAddress = rx.exactMatch(d->peerHost);
+	if (rx.exactMatch(d->peerHost))
+    return d->peerHost == cn;
 
 	// Check for IPv6 address here...
 	rx.setPattern("^\\[.*\\]$");
-	isIPAddress |= rx.exactMatch(d->peerHost);
+	if (rx.exactMatch(d->peerHost))
+    return d->peerHost == cn;
 
 	if (cn.contains('*') && !isIPAddress) {
 		QStringList parts = QStringList::split('.', cn, false);
@@ -118,7 +120,6 @@ bool isIPAddress;
 	// (note we already did .lower())
 	if (cn == d->peerHost)
 		return true;
-
 #endif
 return false;
 }
