@@ -215,7 +215,7 @@ public:
    *
    */
   KFontDialog( QWidget *parent = 0L, const char *name = 0,
-	       bool modal = false, bool onlyFixed = false,
+	       bool onlyFixed = false, bool modal = false,
 	       const QStringList &fontlist = QStringList(),
 	       bool makeFrame = true );
 
