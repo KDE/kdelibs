@@ -21,8 +21,8 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-//#define DEBUG
-//#define DEBUG_LAYOUT
+#define DEBUG
+#define DEBUG_LAYOUT
 #undef PAR_DEBUG
 
 #include "dom_string.h"
@@ -251,7 +251,7 @@ void HTMLElementImpl::updateSize()
 //    printf("element::updateSize()\n");
     setLayouted(false);
     calcMinMaxWidth();
-    if(_parent)
+    if(_parent) 
     	_parent->updateSize();
 }
 
@@ -510,12 +510,12 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 {
     _tx += x;
     _ty += y;
-
+    
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
-
+    
 
     // default implementation. Just pass things through to the children
     // and paint paragraphs (groups of inline elements)
@@ -557,9 +557,9 @@ void HTMLBlockElementImpl::layout( bool deep )
     printf("%s(BlockElement)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
 #endif
 
-    if(!width) return;
+    if(width<=0) return;
     clearMargins();
-
+    
     bool layouted_ = true;
 
     // Block elements usually just have descent.
@@ -608,7 +608,7 @@ void HTMLBlockElementImpl::layout( bool deep )
 	    descent += child->getDescent();
 	    child = child->nextSibling();
 	}
-    }
+    }    
     setLayouted(layouted_);
 }
 
@@ -772,19 +772,26 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    current = current->nextSibling();
 	    continue;
 	}
-	else if(current->isRendered())
+	else if(current->isFloating())
 	{
-	    renderedNodes.append(current);	
+	    renderedNodes.append(current);
+	    current = current->nextSibling();
+	    continue;
 	}
-#ifdef DEBUG // ### debugging...
 	else if(!current->isInline())
 	{
+#ifdef DEBUG // ### debugging...	
 	    if(!nodeStack.isEmpty())
 		printf("Error in calcParagrph!\n");
+#endif		
 	    retval = current;
 	    break;
 	}
-#endif
+	else if(current->isRendered())
+	{
+	    renderedNodes.append(current);	
+	}	
+
 	NodeImpl *child = current->firstChild();
 	if(child)
 	{	
@@ -1291,7 +1298,7 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 
     minWidth = 0;
     maxWidth = 0;
-
+    
     int inlineMax=0;
 
     NodeImpl *child = firstChild();
@@ -1315,11 +1322,11 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 	    w = child->getMaxWidth();
 	    if(maxWidth < w) maxWidth = w;
 	    if(maxWidth < inlineMax) maxWidth = inlineMax;
-            inlineMax=0;
+            inlineMax=0;                                    
 	}
 	child = child->nextSibling();
     }
-     if(maxWidth < inlineMax) maxWidth = inlineMax;
+     if(maxWidth < inlineMax) maxWidth = inlineMax; 
     if(maxWidth < minWidth) maxWidth = minWidth;
 
 //    if(availableWidth && minWidth > availableWidth)
