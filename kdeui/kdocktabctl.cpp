@@ -264,7 +264,7 @@ void KDockTabCtl::showPage( QWidget* widget, bool allowDisable )
   KDockTabCtl_Private* data = findData( widget );
   if ( data != 0L ) tabs->setCurrentTab( data->id, allowDisable );
 
-  widget->show();
+//  widget->show();
   emit pageSelected( widget );
 }
 
