@@ -49,7 +49,6 @@ public:
     {
         completionBox = 0L;
         handleURLDrops = true;
-        smartTextUpdate = false;
         grabReturnKeyEvents = false;
     }
     ~KLineEditPrivate()
@@ -60,9 +59,8 @@ public:
     int squeezedEnd;
     int squeezedStart;
     bool handleURLDrops;
-    bool smartTextUpdate;
     bool grabReturnKeyEvents;
-
+    BackgroundMode bgMode;
     QString squeezedText;
     KCompletionBox *completionBox;
 };
@@ -89,6 +87,7 @@ void KLineEdit::init()
 {
     d = new KLineEditPrivate;
     possibleTripleClick = false;
+    d->bgMode = backgroundMode ();
 
     // Enable the context menu by default.
     setContextMenuEnabled( true );
@@ -178,27 +177,26 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::setReadOnly(bool readOnly)
 {
-    QPalette p = palette();
+    // Do not do anything if nothing changed...
+    if (readOnly == isReadOnly ())
+      return;
+      
+    QLineEdit::setReadOnly (readOnly); 
+    
     if (readOnly)
     {
-        QColor color = p.color(QPalette::Disabled, QColorGroup::Background);
-        p.setColor(QColorGroup::Base, color);
-        p.setColor(QColorGroup::Background, color);
+        d->bgMode = backgroundMode ();
+        setBackgroundMode (Qt::PaletteBackground);
     }
     else
     {
-        QColor color = p.color(QPalette::Normal, QColorGroup::Base);
-        p.setColor(QColorGroup::Base, color);
-        p.setColor(QColorGroup::Background, color);
         if (!d->squeezedText.isEmpty())
         {
            setText(d->squeezedText);
            d->squeezedText = QString::null;
         }
+        setBackgroundMode (d->bgMode);
     }
-    setPalette(p);
-
-    QLineEdit::setReadOnly (readOnly);
 }
 
 void KLineEdit::setSqueezedText( const QString &text)
