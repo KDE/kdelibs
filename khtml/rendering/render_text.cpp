@@ -690,7 +690,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
 unsigned int RenderText::width( int from, int len) const
 {
-    if(!str->s) return 0;
+    if(!str->s || from > str->l ) return 0;
+
+    if ( from + len > str->l ) len = str->l - from;
 
     int w;
     if( len == 1)

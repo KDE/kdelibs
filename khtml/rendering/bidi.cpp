@@ -136,7 +136,10 @@ const QChar &BidiIterator::current()
 QChar::Direction BidiIterator::direction()
 {
     if(!obj || !obj->isText() || obj->length() <= 0) return QChar::DirON;
-    return static_cast<RenderText *>(obj)->text()[pos].direction();
+    RenderText *renderTxt = static_cast<RenderText *>( obj );
+    if ( pos >= renderTxt->length() )
+        return QChar::DirON;
+    return renderTxt->text()[pos].direction();
 }
 
 inline bool operator==( const BidiIterator &it1, const BidiIterator &it2 )
