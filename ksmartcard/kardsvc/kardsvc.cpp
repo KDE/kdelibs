@@ -35,6 +35,7 @@
 #include <kpcsc.h>
 #include <kcardreader.h>
 #include <kcardstatus.h>
+#include <kcarddb.h>
 
 #include <qapplication.h>       // for beep();
 
@@ -126,10 +127,18 @@ QStringList newReaders = _pcsc->listReaders(&err);
 
 		if (changed) {
 			if (!wasPresent && _states[*s].isPresent()) {
+				KCardDB cdb;
 				kdDebug() << "kardsvc: card inserted in slot " 
 					  << *s << endl;
 				if (_beepOnEvent)
 					QApplication::beep();
+
+				QString handler = cdb.getModuleName(getCardATR(*s));
+
+				if (handler.length() <= 0) {
+					KCardDB::launchSelector(*s, getCardATR(*s));
+				} else {
+				}
 			} else if (wasPresent && !_states[*s].isPresent()){
 				kdDebug() << "kardsvc: card removed from slot " 
 					  << *s << endl;
