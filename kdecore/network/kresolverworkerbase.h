@@ -65,6 +65,8 @@ class KResolverWorkerBase
    * 
    * @author Luís Pedro Coelho
    */
+public:
+
   class ResolverLocker
   {
   public:
