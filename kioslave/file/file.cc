@@ -1173,7 +1173,8 @@ void FileProtocol::unmount( const QString& _point )
 		 *  from eject(1): exit status == 0 => need to manually eject
 		 *                 exit status == 4 => media was ejected
 		 */
-		if( WEXITSTATUS( system( buffer.local8Bit() )) == 4 ) {
+//		if( WEXITSTATUS( system( buffer.local8Bit() )) == 4 ) {
+		if( WEXITSTATUS( system( buffer.data() )) == 4 ) {  // Fix for QString -> QCString?
 			/*
 			 *  this is not an error, so skip "testLogFile()"
 			 *  to avoid wrong/confusing error popup

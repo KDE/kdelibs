@@ -45,6 +45,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifdef USE_SOLARIS
+#include <strings.h>
+#endif
+
 #include <stdlib.h>
 
 //#include <netinet/in.h>

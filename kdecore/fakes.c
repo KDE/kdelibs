@@ -51,6 +51,10 @@ int setenv(const char *name, const char *value, int overwrite) {
 
 #ifndef HAVE_UNSETENV
 
+#ifdef USE_SOLARIS
+extern char ** environ;
+#endif
+
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
