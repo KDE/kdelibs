@@ -1,19 +1,47 @@
-#include "kio/slave.h"
-#include <ksock.h>
-#include <time.h>
-#include <kdebug.h>
-#include <klocale.h>
-#include <dcopclient.h>
-#include <kio/global.h>
-#include <stdlib.h>
-#include <kapp.h>
-#include <stdio.h>
-#include "kio/kservice.h"
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
+ *                2000 Stephan Kulow <coolo@kde.org>
+ *
+ * $Id$
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 
 #include <config.h>
+
+#include <time.h>
 #include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <sys/types.h>
+
+#include <qfile.h>
+
+#include <dcopclient.h>
+#include <kdebug.h>
+#include <klocale.h>
+#include <kapp.h>
+#include <ktempfile.h>
+#include <ksock.h>
+
+#include "kio/slave.h"
+#include "kio/kservice.h"
+#include <kio/global.h>
+
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -27,23 +55,27 @@ using namespace KIO;
 
 void Slave::accept(KSocket *socket)
 {
-    kDebugInfo("got a socket");
+    kDebugInfo("slave has connected to application");
     slaveconn.init(socket);
     delete serv;
     serv = 0;
+    QCString filename = QFile::encodeName(m_socket);
+    unlink(filename.data());
+    m_socket = QString::null;
 }
 
-Slave::Slave(KServerSocket *socket, const QString &protocol)
+Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
   : SlaveInterface(&slaveconn), serv(socket), contacted(false)
 {
     m_protocol = protocol;
+    m_socket = socketname;
     dead = false;
     contact_started = time(0);
     connect(serv, SIGNAL(accepted( KSocket* )),
 	    SLOT(accept(KSocket*) ) );
 }
 
-void Slave::gotInput( int )
+void Slave::gotInput()
 {
     if (!dispatch())
     {
@@ -55,7 +87,7 @@ void Slave::gotInput( int )
     }
 }
 
-void Slave::gotAnswer( int )
+void Slave::gotAnswer()
 {
     int cmd;
     QByteArray data;
@@ -72,7 +104,7 @@ void Slave::gotAnswer( int )
 	    emit connected();
 	else
 	    dispatch(cmd, data);
-        slaveconn.connect(this, SLOT(gotInput(int)));
+        slaveconn.connect(this, SLOT(gotInput()));
     }
     else
     {
@@ -95,7 +127,7 @@ void Slave::openConnection( const QString &host, int port,
     m_user = user;
     m_passwd = passwd;
 
-    slaveconn.connect(this, SLOT(gotAnswer(int)));
+    slaveconn.connect(this, SLOT(gotAnswer()));
 
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
@@ -116,11 +148,10 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isApplicationRegistered( "kioslave" ))
     {
         kDebugInfo("Trying to start kioslave");
-#if 0 // doesn't work with the new split. Better use klauncher I'd say (David)
         // Launch the kioslave service
         QString error;
         QCString dcopName;
-        if (KService::startServiceByDesktopName( "kioslave",
+        if (KApplication::startServiceByDesktopName( "kioslave",
 		QString::null, dcopName, error))
         {
            kDebugError("Can't launch kioslave: '%s'", error.ascii());
@@ -132,59 +163,27 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 		dcopName.data(), "kioslave");
            return 0;
         }
-#else
-        system("kioslave");
-#endif
     }
+
+    KTempFile socketfile(QString::null, QString::fromLatin1(".slave-socket"));
+
+    KServerSocket *kss = new KServerSocket(socketfile.name());
+
+    Slave *slave = new Slave(kss, url.protocol(), socketfile.name());
 
     QByteArray params, reply;
     QCString replyType;
     QDataStream stream(params, IO_WriteOnly);
-    stream << url.protocol();
+    stream << url.protocol() << url.host() << socketfile.name();
 
-    if (!client->call("kioslave", "kioslave", "createSlave(QString)", params, replyType, reply)) {
+    if (!client->call("kioslave", "kioslave", "requestSlave(QString,QString,QString)", params, replyType, reply)) {
 	error_text = i18n("can't talk to kioslave");
 	error = KIO::ERR_INTERNAL;
+        delete slave;
 	return 0;
     }
 
-    QDataStream output(reply, IO_ReadOnly);
-    QString ticket;
-    output >> ticket;
-
-    if (ticket.left(5) == QString::fromLatin1("error")) {
-	error_text = ticket.mid(6);
-	error = KIO::ERR_INTERNAL;
-	return 0;
-    }
-
-    QCString domainname;
-    domainname.sprintf(_PATH_TMP"/kio_%i_XXXXXX", (int)getuid());
-
-    // If your plattform doesn't know mkstemp create a static function in KTempFile and
-    // let this code use it
-    if (mkstemp(domainname.data()) == -1) {
-	error_text = strerror(errno);
-	error = KIO::ERR_INTERNAL;
-	return 0;
-    }
-
-    KServerSocket *kss = new KServerSocket(domainname);
-    stream.device()->reset(); // flushes the buffer
-
-    stream << ticket;
-
-    // may crunch it - but what for? The user is the only one to write to the socket
-    stream << QString::fromLatin1(domainname);
-
-    // send it the data and let it connect to us as soon as we're back in the event loop
-    if (!client->send("kioslave", "kioslave", "connectSlave(QString,QString)", params)) {
-	error_text = i18n("can't talk to kioslave");
-	error = KIO::ERR_INTERNAL;
-	return 0;
-    }
-
-    return new Slave(kss, url.protocol());
+    return slave;
 }
 
 #include "slave.moc"

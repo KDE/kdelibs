@@ -1,92 +1,186 @@
-#include "kioslave.h"
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
+ *
+ * $Id$
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
 #include <stdio.h>
-#include <dcopclient.h>
 #include <unistd.h>
 #include <time.h>
-#include <sys/types.h>
-#include <ksock.h>
-#include <sys/socket.h>
-#include <kdebug.h>
-#include <time.h>
-#include <kstddirs.h>
 #include <ltdl.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <qfile.h>
+
+#include <dcopclient.h>
+#include <kdebug.h>
+#include <ksock.h>
 #include <klibloader.h>
+#include <kstddirs.h>
+#include <ktempfile.h>
+#include <klocale.h>
+
 #include "kio/global.h"
 #include "kio/connection.h"
 #include "kio/slavewrapper.h"
+#include "kio/slaveinterface.h"
 
 #include <X11/Xlib.h>
 
+#include "kioslave.h"
+
 using namespace KIO;
 
-struct SlaveEntry {
-    QString ticket;
-    KIO::Connection conn;
-};
+IdleSlave::IdleSlave(KSocket *socket)
+{
+   mConn.init(socket);
+   mConn.connect(this, SLOT(gotInput()));
+   mConn.send( CMD_SLAVE_STATUS );
+   // Timeout!
+}
 
-template class QList<SlaveEntry>;
+void
+IdleSlave::gotInput()
+{
+   int cmd;
+   QByteArray data;
+   if (mConn.read( &cmd, data) == -1)
+   {
+      // Communication problem with slave. 
+      kDebugInfo(7016, "SlavePool: No communication with slave.");
+      delete this;
+   }
+   else if (cmd == MSG_SLAVE_ACK)
+   {
+      kDebugInfo(7016, "SlavePool: Slave is connecting to app.");
+      delete this;
+   }
+   else if (cmd != MSG_SLAVE_STATUS)
+   {
+      kDebugInfo(7016, "SlavePool: Unexpected data from slave.");
+      delete this;
+   }
+   else 
+   {   
+      QDataStream stream( data, IO_ReadOnly );
+      QCString protocol;
+      QString host;
+      Q_INT8 b;
+      stream >> protocol >> host >> b;
+      mConnected = (b != 0);
+      mProtocol = protocol;
+      mHost = host;
+      kDebugInfo(7016, "SlavePool: SlaveStatus = %s %s %s",
+           mProtocol.data(), mHost.ascii(), 
+           mConnected ? "Connected" : "Not connected");
+   }
+}
+
+void
+IdleSlave::connect(const QString &app_socket)
+{
+   kDebugInfo(7016, "SlavePool: New mission for slave (%s %s %s)",
+           mProtocol.data(), mHost.ascii(), 
+           mConnected ? "Connected" : "Not connected");
+   QByteArray data;
+   QDataStream stream( data, IO_WriteOnly);
+   stream << app_socket;
+   mConn.send( CMD_SLAVE_CONNECT, data );
+   // Timeout!
+}
+
+bool
+IdleSlave::match(const QString &protocol, const QString &host, bool connected)
+{
+   if (protocol != mProtocol) return false;
+   if (host.isEmpty()) return true;
+   if (host != mHost) return false;
+   if (!connected) return true;
+   if (!mConnected) return false;
+   return true;
+}
 
 KIODaemon::KIODaemon(int &argc, char **argv) :
     KUniqueApplication(argc, argv, "kioslave", false)
 {
+    KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
+    mPoolSocketName = domainname.name();
+    mPoolSocket = new KServerSocket(mPoolSocketName);
+    connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
+            SLOT(acceptSlave(KSocket *)));
 }
 
-QString KIODaemon::createTicket()
+void
+KIODaemon::acceptSlave(KSocket *slaveSocket)
 {
-    bool ok;
-    QString tmp;
-    do {
-	tmp = "kioXXXXXX";
-	for (int i = 3; i < 9; i++) {
-	    int ran = random() % 36;
-	    if (ran < 10)
-		tmp.at(i) = '0' + ran;
-	    else
-		tmp.at(i) = 'a' + ran - 10;
-	}
-	ok = true;
-	QListIterator<SlaveEntry> it(pendingSlaves);
-	while (it.current()) {
-	    if (tmp == it.current()->ticket) { // this is _soo_ unlikly ...
-		ok = false;
-		break;
-	    }
-	    ++it;
-	}
-    } while (!ok);
-
-    return tmp;
+    kDebugInfo(7016, "SlavePool: accepSlave(...)");
+    IdleSlave *slave = new IdleSlave(slaveSocket);
+    // Send it a SLAVE_STATUS command.
+    mSlaveList.append(slave);
+    connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
 }
 
-void KIODaemon::connectSlave(const QString& ticket, const QString& path)
+void
+KIODaemon::slotSlaveGone()
 {
-    SlaveEntry *theone = 0;
+    kDebugInfo(7016, "SlavePool: slotSlaveGone(...)");
+    IdleSlave *slave = (IdleSlave *) sender();
+    mSlaveList.removeRef(slave);
+}
 
-    QListIterator<SlaveEntry> it(pendingSlaves);
-    while (it.current()) {
-	if (it.current()->ticket == ticket) {
-	    theone = it.current();
-	    pendingSlaves.remove(it.current());
-	    break;
-	}
-	++it;
+QString 
+KIODaemon::requestSlave(const QString &protocol, 
+                        const QString &host,
+                        const QString &app_socket)
+{
+    IdleSlave *slave;
+    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    {
+        if (slave->match(protocol, host, true))
+           break;
+    }
+    if (!slave)
+    {
+       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       {
+          if (slave->match(protocol, host, false))
+             break;
+       }
+    }
+    if (!slave)
+    {
+       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       {
+          if (slave->match(protocol, QString::null, false))
+             break;
+       }
+    }
+    if (slave)
+    {
+       mSlaveList.removeRef(slave);
+       slave->connect(app_socket);
+       return QString::null;
     }
 
-    if (!theone) {
-	kDebugInfo(7016, "there is no such slave pending for %s", ticket.ascii());
-	return;
-    }
-
-    QByteArray data;
-    QDataStream str(data, IO_WriteOnly);
-    str << path;
-
-    theone->conn.send('C', data);
-}
-
-QString KIODaemon::createSlave(const QString& protocol)
-{
+    kDebugInfo(7016, "requestSlave( %s, %s, %s)",
+		protocol.ascii(), host.ascii(), app_socket.ascii());
     QString protocol_library = QString::fromLatin1("%1/.libs/kio_%2.la").arg(protocol).arg(protocol);
     if (!QFile::exists(protocol_library))
 	 protocol_library = locate("lib", QString("kio_%1.la").arg(protocol));
@@ -134,7 +228,11 @@ QString KIODaemon::createSlave(const QString& protocol)
 
 	void* sym = lib->symbol( symname );
 	if ( !sym )
-	    exit(1);
+        {
+	    kDebugInfo(7016, "KLibrary: The library does not offer a KDE compatible factory");
+	    ::write(fd[1], errors + ERR_LOADING, 1);
+	    exit(0);
+        }
 
 	typedef SlaveBase* (*t_func)();
 	t_func func = (t_func)sym;
@@ -142,14 +240,14 @@ QString KIODaemon::createSlave(const QString& protocol)
 	
 	if( !serv ) {
 	    kDebugInfo(7016, "KLibrary: The library does not offer a KDE compatible factory");
-	    exit(1); // that was it
+	    ::write(fd[1], errors + ERR_LOADING, 1);
+	    exit(0);
 	}
 
-	if (::write(fd[1], errors + ERR_OK, 1) != 1) {
-	  perror("write");
-	}
+	::write(fd[1], errors + ERR_OK, 1);
+        ::close(fd[1]);
 	
-	SlaveWrapper *ksw = new SlaveWrapper(serv, fd[1]);
+	SlaveWrapper *ksw = new SlaveWrapper(serv, mPoolSocketName, app_socket);
 	ksw->dispatchLoop();
 
 	exit(0);
@@ -163,22 +261,16 @@ QString KIODaemon::createSlave(const QString& protocol)
 	char result;
 	if (::read(fd[0], &result, 1) != 1) {
 	    perror("read");
-	    return "error: pipe broken";
+            ::close(fd[0]);
+	    return i18n("error: io-slave crashed");
+	}
+        ::close(fd[0]);
+
+	if (result != errors[ERR_OK]) {
+	    return i18n("error: loading failed");
 	}
 
-	if (result == errors[ERR_OK]) {
-	    SlaveEntry *slave = new SlaveEntry;
-	    slave->ticket = createTicket();
-	    slave->conn.init(fd[0], fd[0]);
-	    pendingSlaves.append(slave);
-	    return slave->ticket;
-	}
-
-	if (result == errors[ERR_LOADING]) {
-	    return "error: loading failed";
-	}
-
-	// how can gcc know there are no more :/
+        // Success
 	return QString::null;
     }
 }
@@ -192,21 +284,17 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
     QDataStream stream(data, IO_ReadOnly);
     QDataStream output(replyData, IO_WriteOnly);
 
-    if (fun == "createSlave(QString)") {
+    if (fun == "requestSlave(QString,QString,QString)") {
 	QString protocol;
-	stream >> protocol;
+        QString host;
+        QString app_socket;
+	stream >> protocol >> host >> app_socket;
 	replyType = "QString";
-	protocol = createSlave(protocol);
-	output << protocol;
+	QString reply = requestSlave(protocol, host, app_socket);
+	output << reply;
 	return true;
     }
-
-    if (fun == "connectSlave(QString,QString)") {
-	QString ticket, path;
-	stream >> ticket >> path;
-	connectSlave(ticket, path);
-	return true;
-    }
+    fprintf(stderr, "Unknown function '%s'\n", fun.data());
 
     return false;
 }

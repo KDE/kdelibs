@@ -1,4 +1,25 @@
 // -*- c++ -*-
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
+ *                2000 Stephan Kulow <coolo@kde.org>
+ *
+ * $Id$
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
@@ -19,7 +40,8 @@ namespace KIO {
 	Q_OBJECT
 	
     public:
-	Slave(KServerSocket *unixdomain, const QString &protocol);
+	Slave(KServerSocket *unixdomain, 
+	      const QString &protocol, const QString &socketname);
 
 	/**
 	 * Force termination
@@ -86,8 +108,8 @@ namespace KIO {
 
     public slots:
         void accept(KSocket *socket);
-	void gotInput(int socket);
-	void gotAnswer(int socket);
+	void gotInput();
+	void gotAnswer();
     signals:
         void slaveDied(KIO::Slave *slave);
 	
@@ -98,6 +120,7 @@ namespace KIO {
         QString m_user;
         QString m_passwd;
 	KServerSocket *serv;
+	QString m_socket;
 	bool contacted;
 	bool dead;
 	time_t contact_started;

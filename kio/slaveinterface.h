@@ -35,6 +35,7 @@ class Connection;
    CMD_CONNECT = '0', //
    CMD_DISCONNECT = '1',
    CMD_SLAVE_STATUS = '2',
+   CMD_SLAVE_CONNECT = '3',
    CMD_NONE = 'A',
    CMD_TESTDIR = 'B',
    CMD_GET = 'C',
@@ -91,7 +92,8 @@ class Connection;
    MSG_LIST_ENTRIES,
    MSG_RENAMED,
    MSG_RESUME,
-   MSG_SLAVE_STATUS
+   MSG_SLAVE_STATUS,
+   MSG_SLAVE_ACK
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
