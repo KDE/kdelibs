@@ -389,7 +389,7 @@ bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 void KHTMLSettings::resetFontSizes()
 {
     m_fontSizes.clear();
-    int sizeAdjust = m_fontSize + lookupFont(m_charset,6).toInt() + 4;
+    int sizeAdjust = m_fontSize + lookupFont(m_charset,6).toInt() + 3;
     if ( sizeAdjust < 0 )
 	sizeAdjust = 0;
     if ( sizeAdjust > 9 )
