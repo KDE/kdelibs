@@ -2,6 +2,7 @@ SUBDIRS = libxslt
 
 INCLUDES= $(all_includes) $(LIBXML_CFLAGS)
 LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIBXML_RPATH)
+AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
 ####### Files
 

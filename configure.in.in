@@ -46,7 +46,7 @@ DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
 MCOPIDL="compiled"
 ARTSCCONFIG="compiled"
-KDB2HTML="compiled"
+MEINPROC="compiled"
 KDECONFIG="compiled"
 
 dnl Checks for libraries etc
@@ -177,9 +177,9 @@ LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
 AC_SUBST(LIB_DCOP)
 LIB_KSSL='$(top_builddir)/kssl/libkssl.la'
 AC_SUBST(LIB_KSSL)
-KDB2HTML_UNINSTALLED='$(SHELL) $(top_srcdir)/ksgmltools/kdb2html_uninstalled $(top_builddir)/ksgmltools/kdb2html'
-AC_SUBST(KDB2HTML_UNINSTALLED)
 
+MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
+AC_SUBST(MEINPROC)
 AC_SUBST(EXTRA_SUBDIRS)
 
 AC_MSG_CHECKING(if malloc debugging is wanted)

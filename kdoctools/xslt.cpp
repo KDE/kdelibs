@@ -14,6 +14,7 @@
 #include <kfilterbase.h>
 #include <kfilterdev.h>
 #include <qtextcodec.h>
+#include <stdlib.h>
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
@@ -209,7 +210,9 @@ QString splitOut(const QString &parsed, int index)
 }
 
 void fillInstance(KInstance &ins) {
-    ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2/");
+    if ( !getenv( "KDELIBS_UNINSTALLED" ) )
+        ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2/");
+    ins.dirs()->addResourceDir( "dtd", SRCDIR );
 }
 
 bool saveToCache( const QString &contents, const QString &filename )
