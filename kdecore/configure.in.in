@@ -72,8 +72,7 @@ kde_safe_LIBS="$LIBS"
 LIBS="$LIBS $LIBSOCKET"
 AC_CHECK_FUNCS([getaddrinfo],
   [
-    dnl Even though we now know that getaddrinfo is
-there, make sure getnameinfo is there too
+    dnl Even though we now know that getaddrinfo is there, make sure getnameinfo is there too
     kde_gai_ok=true
     AC_CHECK_FUNCS([freeaddrinfo getnameinfo gai_strerror], : , 
     [
