@@ -108,7 +108,6 @@ public:
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
-    void ref() { _ref++; /*qDebug( "ref(%p): width get count is %d", this, _ref);*/ }
     void deref();
 
     static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
@@ -131,6 +130,8 @@ protected:
 
     QWidget *m_widget;
     KHTMLView* m_view;
+
+    bool m_resizePending;
 
 public:
     class EventPropagator : public QWidget {

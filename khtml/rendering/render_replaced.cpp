@@ -116,6 +116,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
     m_view = node->getDocument()->view();
+    m_resizePending = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -164,11 +165,12 @@ public:
 void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
-         // its bigger )
+    // its bigger )
     h = kMin( h, 3072 );
     w = kMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
+        m_resizePending = !strcmp(m_widget->name(), "__khtml");
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -180,8 +182,10 @@ void  RenderWidget::resizeWidget( int w, int h )
 bool RenderWidget::event( QEvent *e )
 {
     if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
+        m_resizePending = false;
         QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
         m_widget->resize( re->w,  re->h );
+        repaint();
     }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
     if ( ::qt_cast<KHTMLView *>( m_widget ) )
@@ -222,6 +226,8 @@ void RenderWidget::setQWidget(QWidget *widget)
         }
         m_view->setWidgetVisible(this, false);
         m_view->addChild( m_widget, 0, -500000);
+        if ( m_widget ) m_widget->hide();
+        m_resizePending = false;
     }
 }
 
@@ -336,8 +342,7 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
         return;
 
     // not visible or not even once layouted
-    if (style()->visibility() != VISIBLE || m_y <=  -500000) {
-        m_widget->hide();
+    if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending ) {
         return;
     }
 
