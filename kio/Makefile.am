@@ -57,10 +57,9 @@ libkio_la_SOURCES = \
 	slave.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
-	slavebase.cpp passdlg.cpp
-
-# progressbase.cpp simpleprogress_dlg.cpp
-# littleprogress_dlg.cpp listprogressdlg.cpp
+	slavebase.cpp passdlg.cpp \
+	progressbase.cpp defaultprogress.cpp \
+	statusbarprogress.cpp #listprogressdlg.cpp
 
 METASOURCES = AUTO
 
@@ -68,22 +67,21 @@ kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h renamedlg.h \
         filter.h skipdlg.h slaveinterface.h \
         global.h passdlg.h netaccess.h job.h \
-        jobclasses.h paste.h slavebase.h
-
-# progressbase.h simpleprogressdlg.h
-# littleprogress_dlg.h listprogressdlg.h
+        jobclasses.h paste.h slavebase.h \
+	progressbase.h defaultprogress.h \
+	statusbarprogress.h #listprogressdlg.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
-	ktraderparse.h ktraderparsetree.h yacc.h 
+	ktraderparse.h ktraderparsetree.h yacc.h
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = kurifilterplugin.desktop
 
 parserfiles = yacc.y lex.l
 
-EXTRA_DIST = $(kde_mime_DATA) $(parserfiles) 
+EXTRA_DIST = $(kde_mime_DATA) $(parserfiles)
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\

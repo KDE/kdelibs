@@ -64,7 +64,7 @@ public:
    * @param  stop   if true - KIOJob will be killed.
    *                if false - Dialog will be closed without killing the job ( IO will continue ).
    */
-  void iconify( bool );
+  //  void iconify( bool );
 
   /**
    * Use this method to get the values from KIOJob and refill the fields.

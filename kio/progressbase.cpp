@@ -93,7 +93,7 @@ void KIOProgressBase::refill() {
 }
 
 
-void KIOProgressBase::setJob( KIOJob *job ) {
+void KIOProgressBase::setJob( KIO::Job *job ) {
   if ( m_pJob ) {
     disconnect( m_pJob ); // completely forget about that job
   }
@@ -102,11 +102,11 @@ void KIOProgressBase::setJob( KIOJob *job ) {
   Connect();
 }
 
-
+/*
 void KIOProgressBase::iconify( bool mode ) {
   KWM::setIconify( this->winId(), mode );
 }
-
+*/
 
 void KIOProgressBase::closeEvent( QCloseEvent* ) {
   if ( m_bStopOnClose ) {
@@ -117,12 +117,11 @@ void KIOProgressBase::closeEvent( QCloseEvent* ) {
     } else {
       delete this;
       if ( m_pJob ) {
-	m_pJob->m_pProgressDlg = 0L;
+          //	m_pJob->m_pProgressDlg = 0L;
       }
     }
   }
 }
-
 
 // this will kill job and subsequently also delete or clean this dialog
 void KIOProgressBase::stop() {

@@ -89,7 +89,7 @@ void DefaultProgress::slotTotalDirs( int, unsigned long _dirs )
 
 void DefaultProgress::slotPercent( int, unsigned long _percent )
 {
-  QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIOJob::convertSize(m_iTotalSize)));
+  QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIO::convertSize(m_iTotalSize)));
   m_pProgressBar->setValue( _percent );
   switch(mode) {
   case Copy:
@@ -116,7 +116,7 @@ void DefaultProgress::slotPercent( int, unsigned long _percent )
 void DefaultProgress::slotProcessedSize( int, unsigned long _bytes ) {
   QString tmp;
 
-  tmp = i18n( "%1 of %2 ").arg( KIOJob::convertSize(_bytes) ).arg( KIOJob::convertSize(m_iTotalSize));
+  tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(_bytes) ).arg( KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
 
@@ -150,7 +150,7 @@ void DefaultProgress::slotSpeed( int, unsigned long _bytes_per_second )
   if ( _bytes_per_second == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
   } else {
-    speedLabel->setText( i18n( "%1/s %2").arg( KIOJob::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
+      // TODO    speedLabel->setText( i18n( "%1/s %2").arg( KIO::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
   }
 }
 
@@ -206,4 +206,4 @@ void DefaultProgress::slotCanResume( int, bool _resume )
 }
 
 
-#include "simpleprogressdlg.moc"
+#include "defaultprogress.moc"

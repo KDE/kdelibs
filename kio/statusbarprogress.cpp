@@ -43,7 +43,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 }
 
 
-void StatusbarProgress::setJob( KIOJob *job ) {
+void StatusbarProgress::setJob( KIO::Job *job ) {
   KIOProgressBase::setJob( job );
 
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
@@ -104,7 +104,7 @@ void StatusbarProgress::slotSpeed( int, unsigned long _bytes_per_second ) {
   if ( _bytes_per_second == 0 ) {
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
-    m_pLabel->setText( i18n( " %1/s %2 ").arg( KIOJob::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
+      // TODO    m_pLabel->setText( i18n( " %1/s %2 ").arg( KIO::convertSize( _bytes_per_second )).arg( m_pJob->getRemainingTime().toString()) );
   }
 }
 
@@ -133,4 +133,4 @@ bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
 }
 
 
-#include "littleprogressdlg.moc"
+#include "statusbarprogress.moc"
