@@ -269,13 +269,19 @@ void DownloadDialog::slotResult(KIO::Job *job)
 int DownloadDialog::installStatus(Entry *entry)
 {
   QDate date;
+  QString datestring;
   int installed;
  
   kapp->config()->setGroup("KNewStuffStatus");
-  date = QDate::fromString(kapp->config()->readEntry(entry->name()));
-  if(!date.isValid()) installed = 0;
-  else if(date < entry->releaseDate()) installed = -1;
-  else installed = 1;
+  datestring = kapp->config()->readEntry(entry->name());
+  if(datestring.isNull()) installed = 0;
+  else
+  {
+    date = QDate::fromString(datestring, Qt::ISODate);
+    if(!date.isValid()) installed = 0;
+    else if(date < entry->releaseDate()) installed = -1;
+    else installed = 1;
+  }
 
   return installed;
 }
@@ -393,7 +399,7 @@ void DownloadDialog::slotInstall()
 void DownloadDialog::install(Entry *e)
 {
   kapp->config()->setGroup("KNewStuffStatus");
-  kapp->config()->writeEntry(m_entryname, e->releaseDate().toString());
+  kapp->config()->writeEntry(m_entryname, e->releaseDate().toString(Qt::ISODate));
   kapp->config()->sync();
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
@@ -405,7 +411,7 @@ void DownloadDialog::install(Entry *e)
   if(m_entryitem) m_entryitem->setPixmap(0, pix);
 
  
-  QPushButton *de, *in;
+  QPushButton *in;
   in = *(m_buttons[m_page]->at(0));
   if(in) in->setEnabled(false);
 }

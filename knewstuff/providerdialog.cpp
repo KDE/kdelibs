@@ -74,6 +74,11 @@ void ProviderDialog::clear()
 void ProviderDialog::addProvider( Provider *provider )
 {
   new ProviderItem( mListView, provider );
+  if ( mListView->childCount() == 1 ) {
+    mListView->setSelected(mListView->firstChild(), true);
+  } else if (mListView->childCount() > 1) {
+    mListView->setSelected(mListView->firstChild(), false);
+  }
 }
 
 void ProviderDialog::slotOk()

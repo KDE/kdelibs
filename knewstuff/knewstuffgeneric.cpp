@@ -21,6 +21,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qdir.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -73,6 +74,7 @@ bool KNewStuffGeneric::createUploadFile( const QString & /*fileName*/ )
 
 QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
 {
+  QString path;
   QString target = entry->fullName();
   QString res = mConfig->readEntry( "StandardResource" );
   if ( res.isEmpty() )
@@ -84,9 +86,15 @@ QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
       target.append("/" + entry->fullName());
     }
   }
-  if ( res.isEmpty() ) return KNewStuff::downloadDestination( entry );
+  if ( res.isEmpty() )
+  {
+    path = mConfig->readEntry( "InstallPath" );
+  }
+  if ( res.isEmpty() && path.isEmpty() ) return KNewStuff::downloadDestination( entry );
 
-  QString file = locateLocal( res.utf8() , target );
+  QString file;
+  if ( !path.isEmpty() ) file = QDir::home().path() + "/" + path + "/" + entry->fullName();
+  else file = locateLocal( res.utf8() , target );
   if ( KStandardDirs::exists( file ) ) {
     int result = KMessageBox::questionYesNo( parentWidget(),
         i18n("The file '%1' already exists. Do you want to override it?")

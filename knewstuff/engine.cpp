@@ -261,7 +261,7 @@ void Engine::upload( Entry *entry )
 {
   if ( mUploadFile.isNull()) {
     mUploadFile = entry->fullName();
-    mUploadFile = locateLocal( "data", "korganizer/upload/" + mUploadFile );
+    mUploadFile = locateLocal( "data", QString(kapp->instanceName()) + "/upload/" + mUploadFile );
 
     if ( !mNewStuff->createUploadFile( mUploadFile ) ) {
       KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
@@ -276,11 +276,13 @@ void Engine::upload( Entry *entry )
   if ( !createMetaFile( entry ) ) return;
 
   QString text = i18n("The files to be uploaded have been created at:\n");
-  text.append( mUploadFile + "\n" );
+  text.append( i18n("Data file: %1\n").arg( mUploadFile) );
   if (!mPreviewFile.isEmpty()) {
-    text.append( mPreviewFile + "\n" );
+    text.append( i18n("Preview image: %1\n").arg( mPreviewFile) );
   }
-  text.append( mUploadMetaFile + "\n" );
+  text.append( i18n("Content information: %1\n").arg( mUploadMetaFile) );
+  text.append( i18n("Those files can now be uploaded.\n") );
+  text.append( i18n("Beware that any people might have access to them at any time.") );
 
   QString caption = i18n("Upload Files");
 
@@ -327,7 +329,7 @@ bool Engine::createMetaFile( Entry *entry )
 
   if ( mUploadMetaFile.isNull() ) {
     mUploadMetaFile = entry->fullName() + ".meta";
-    mUploadMetaFile = locateLocal( "data", "korganizer/upload/" + mUploadMetaFile );
+    mUploadMetaFile = locateLocal( "data", QString(kapp->instanceName()) + "/upload/" + mUploadMetaFile );
   }
 
   QFile f( mUploadMetaFile );
