@@ -129,7 +129,7 @@ void KMWDriverTest::slotTest()
 		if (KMFactory::self()->manager()->testPrinter(m_printer))
 			KMessageBox::information(this,i18n("<p>Test page successfully sent to printer. Wait until printing is complete, then click the <b>OK</b> button.</p>"));
 		else
-			KMessageBox::error(this,i18n("Unable to test printer."));
+			KMessageBox::error(this,i18n("Unable to test printer: ")+KMFactory::self()->manager()->errorMsg());
 		if (!KMFactory::self()->manager()->removePrinter(m_printer))
 			KMessageBox::error(this,i18n("Unable to remove temporary printer."));
 	}
