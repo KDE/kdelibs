@@ -731,8 +731,8 @@ bool KDirOperator::checkPreviewSupport()
 
                 QStringList result = mimeTypes.grep( r );
                 if ( !result.isEmpty() ) { // matches! -> we want previews
-                    enable = true;
-                    break;
+                    previewAction->setEnabled( true );
+                    return true;
                 }
             }
         }
@@ -743,7 +743,8 @@ bool KDirOperator::checkPreviewSupport()
             QStringList::Iterator it1 = nameFilter.begin();
             for ( ; it1 != nameFilter.end(); ++it1 ) {
                 if ( (*it1) == "*" ) {
-                    continue;
+                    enable = true;
+                    break;
                 }
 
                 KMimeType *mt = fac->findFromPattern( *it1 );
