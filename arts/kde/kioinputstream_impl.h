@@ -58,7 +58,7 @@ private:
 	KURL m_url;
 	KIO::TransferJob *m_job;
 	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
-	mcopbyte *m_data;
+	QByteArray m_data;
 	bool m_finished;
 	unsigned int m_size;
 	unsigned int m_position;

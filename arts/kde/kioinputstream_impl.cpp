@@ -19,14 +19,14 @@
 
 	*/
 
-#include <kio/jobclasses.h>
-#include <kio/job.h>
-#include <kdebug.h>
-#include <qtimer.h>
-#include <kio/kmimetype.h>
 #include <kapp.h>
+#include <kdebug.h>
+#include <kio/job.h>
+#include <kio/kmimetype.h>
+#include <kio/jobclasses.h>
+#include <qtimer.h>
+#include <qdatastream.h>
 #include "kioinputstream_impl.moc"
-#include <stdlib.h>
 
 using namespace Arts;
 
@@ -94,11 +94,10 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 {
 	if(m_finished)
 	    m_finished = false;
-	char *newdata = new char[m_size + data.size()];
-	memcpy(newdata, m_data, m_size);
-	memcpy(newdata, data.data(), data.size());
 
-	m_data = (mcopbyte *) newdata;
+	QDataStream dataStream(m_data, IO_WriteOnly | IO_Append);
+	dataStream << data;
+	
 	m_size += data.size();
 
 	if(!m_sendqueue.empty())
@@ -134,6 +133,9 @@ long KIOInputStream_impl::seek(long)
 
 void KIOInputStream_impl::processQueue()
 {
+	// Last part of flow control
+	// CRASHES! :(
+	/*
 	if(m_sendqueue.size() > 10)
 	    m_job->suspend();
 	else if(m_sendqueue.size() < 10)
@@ -141,7 +143,7 @@ void KIOInputStream_impl::processQueue()
 	    if(m_job->isSuspended())
 		m_job->resume();
 	}
-
+	*/
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
 	    if(m_position < m_size)
@@ -150,18 +152,15 @@ void KIOInputStream_impl::processQueue()
 		m_sendqueue.pop();
 		
 		packet->size = std::min(PACKET_SIZE, m_size - m_position);
-		memcpy(packet->contents, m_data + m_position, packet->size);
+		memcpy(packet->contents, m_data.data() + m_position, packet->size);
 		m_position += packet->size;
 		packet->send();
 	    }
-	    else
-		kdDebug() << "BIG ERROR!!" << endl;
 	}
 }
 
 void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
 {
-	kdDebug() << "RECEIVE!" << endl;
 	m_sendqueue.push(packet);
 	processQueue();
 }
