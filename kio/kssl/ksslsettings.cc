@@ -39,7 +39,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #undef crypt
@@ -124,7 +124,7 @@ bool KSSLSettings::tlsv1() const {
 //        empty list.  This behaviour is not confirmed though.
 QString KSSLSettings::getCipherList() {
 QString clist = "";
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
     QString tcipher;
     bool firstcipher = true;
     SSL_METHOD *meth;
@@ -257,7 +257,7 @@ void KSSLSettings::load() {
   d->m_bSendX509 = ("send" == m_cfg->readEntry("AuthMethod", ""));
   d->m_bPromptX509 = ("prompt" == m_cfg->readEntry("AuthMethod", ""));
 
-  #ifdef HAVE_SSL
+  #ifdef KSSL_HAVE_SSL
 
 
 
@@ -310,7 +310,7 @@ void KSSLSettings::save() {
 
   // FIXME - ciphers
 #if 0
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   m_cfg->setGroup("SSLv2");
   for (unsigned int i = 0; i < v2ciphers.count(); i++) {
     QString ciphername;

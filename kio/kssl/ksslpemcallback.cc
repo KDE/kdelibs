@@ -18,14 +18,19 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <kpassdlg.h>
 #include <klocale.h>
 #include "ksslpemcallback.h"
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	QCString pass;
+	Q_UNUSED(userdata);
+	Q_UNUSED(rwflag);
 
 	if (!buf) return -1;
 	int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password"));
@@ -35,8 +40,18 @@ int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 		pass.truncate((unsigned int)size-1);
 
 	qstrncpy(buf, pass.data(), size-1);
+	for (unsigned int i = 0; i < pass.length(); i++)
+		pass[i] = 0;
+	// To be sure that it doesn't optimise the previous loop away
+	for (unsigned int i = 0; i < pass.length(); i++)
+		pass[i] = pass[i];
+	buf[size-1] = 0;
 	return (int)pass.length();
 #else
+	Q_UNUSED(buf);
+	Q_UNUSED(size);
+	Q_UNUSED(rwflag);
+	Q_UNUSED(userdata);
 	return -1;
 #endif
 }

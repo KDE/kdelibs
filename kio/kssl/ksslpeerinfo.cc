@@ -63,7 +63,7 @@ void KSSLPeerInfo::setPeerHost(QString realHost) {
 }
 
 bool KSSLPeerInfo::certMatchesAddress() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 KSSLX509Map certinfo(m_cert.getSubject());
 QStringList cns = QStringList::split(QRegExp("[ \n\r]"), certinfo.getValue("CN"));
 
@@ -79,7 +79,7 @@ return false;
 
 
 bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 QRegExp rx;
 
 
