@@ -254,7 +254,7 @@ bool KDesktopFile::tryExec() const
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
-      if (::access(QFile::encodeName(te), R_OK | X_OK))
+      if (::access(QFile::encodeName(te), X_OK))
 	return false;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
@@ -265,7 +265,7 @@ bool KDesktopFile::tryExec() const
       bool match = false;
       for (; it != dirs.end(); ++it) {
 	QString fName = *it + "/" + te;
-	if (::access(QFile::encodeName(fName), R_OK | X_OK) == 0)
+	if (::access(QFile::encodeName(fName), X_OK) == 0)
 	{
 	  match = true;
 	  break;
