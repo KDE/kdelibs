@@ -2681,7 +2681,7 @@ void KHTMLView::slotScrollBarMoved()
         khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>( m_part->xmlDocImpl()->renderer() );
         if (root && root->needsLayout()) {
             unscheduleRelayout();
-            root->layout();
+            layout();
         }
     }
     if (!d->scrollingSelf) {

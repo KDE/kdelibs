@@ -70,7 +70,7 @@ static const char textareaEnd [] = "</textarea";
 static const char titleEnd [] = "</title";
 
 #define KHTML_ALLOC_QCHAR_VEC( N ) (QChar*) malloc( sizeof(QChar)*( N ) )
-#define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
+#define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) realloc(P, sizeof(QChar)*( N ))
 #define KHTML_DELETE_QCHAR_VEC( P ) free((char*)( P ))
 
 // Full support for MS Windows extensions to Latin-1.
@@ -1637,7 +1637,7 @@ void HTMLTokenizer::enlargeBuffer(int len)
     int newsize = kMax(size*2, size+len);
     int oldoffs = (dest - buffer);
 
-    buffer = (QChar*)realloc(buffer, newsize*sizeof(QChar));
+    buffer = KHTML_REALLOC_QCHAR_VEC(buffer, newsize);
     dest = buffer + oldoffs;
     size = newsize;
 }
@@ -1645,7 +1645,7 @@ void HTMLTokenizer::enlargeBuffer(int len)
 void HTMLTokenizer::enlargeScriptBuffer(int len)
 {
     int newsize = kMax(scriptCodeMaxSize*2, scriptCodeMaxSize+len);
-    scriptCode = (QChar*)realloc(scriptCode, newsize*sizeof(QChar));
+    scriptCode = KHTML_REALLOC_QCHAR_VEC(scriptCode, newsize);
     scriptCodeMaxSize = newsize;
 }
 
@@ -1689,6 +1689,11 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
 bool HTMLTokenizer::isWaitingForScripts() const
 {
     return cachedScript.count();
+}
+
+bool HTMLTokenizer::isExecutingScript() const
+{
+    return (m_executingScript > 0);
 }
 
 void HTMLTokenizer::setSrc(const QString& source)
