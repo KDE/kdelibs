@@ -30,6 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $Id$
 
 #include <math.h>
+#include <assert.h>
 
 #include <qimage.h>
 #include <stdlib.h>
@@ -49,8 +50,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  endif
 #endif
 
+//======================================================================
+//
+// Utility stuff for effects ported from ImageMagick to QImage
+//
+//======================================================================
 #define MaxRGB 255L
 #define DegreesToRadians(x) ((x)*M_PI/180.0)
+#define MagickSQ2PI 2.50662827463100024161235523934010416269302368164062
+#define MagickEpsilon  1.0e-12
+#define MagickPI  3.14159265358979323846264338327950288419716939937510
 
 static inline unsigned int intensityValue(unsigned int color)
 {
@@ -58,6 +67,31 @@ static inline unsigned int intensityValue(unsigned int color)
                            0.587*qGreen(color) +
                            0.1140000000000001*qBlue(color))));
 }
+
+static inline void liberateMemory(void **memory)
+{
+    assert(memory != (void **)NULL);
+    if(*memory == (void *)NULL) return;
+    free(*memory);
+    *memory=(void *) NULL;
+}
+
+struct double_packet
+{
+    double red;
+    double green;
+    double blue;
+    double alpha;
+};
+
+struct short_packet
+{
+    unsigned short int red;
+    unsigned short int green;
+    unsigned short int blue;
+    unsigned short int alpha;
+};
+
 
 //======================================================================
 //
@@ -2495,210 +2529,9 @@ QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )
 //
 // ===================================================================
 // Effects originally ported from ImageMagick for PixiePlus, plus a few
-// new ones. (mosfet 12/29/01)
+// new ones. (mosfet 05/26/2003)
 // ===================================================================
 //
-
-void KImageEffect::normalize(QImage &img)
-{
-    int *histogram, threshold_intensity, intense;
-    int x, y, i;
-
-    unsigned int gray_value;
-    unsigned int *normalize_map;
-    unsigned int high, low;
-
-    // allocate histogram and normalize map
-    histogram = (int *)calloc(MaxRGB+1, sizeof(int));
-    normalize_map = (unsigned int *)malloc((MaxRGB+1)*sizeof(unsigned int));
-    if(!normalize_map || !histogram){
-        qWarning("Unable to allocate normalize histogram and map");
-        free(normalize_map);
-        free(histogram);
-        return;
-    }
-
-    // form histogram
-    if(img.depth() > 8){  // DirectClass
-        unsigned int *data;
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned int *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                gray_value = intensityValue(data[x]);
-                histogram[gray_value]++;
-            }
-        }
-    }
-    else{ // PsudeoClass
-        unsigned char *data;
-        unsigned int *cTable = img.colorTable();
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned char *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                gray_value = intensityValue(*(cTable+data[x]));
-                histogram[gray_value]++;
-            }
-        }
-    }
-
-    // find histogram boundaries by locating the 1 percent levels
-    threshold_intensity = (img.width()*img.height())/100;
-    intense = 0;
-    for(low=0; low < MaxRGB; ++low){
-        intense+=histogram[low];
-        if(intense > threshold_intensity)
-            break;
-    }
-    intense=0;
-    for(high=MaxRGB; high != 0; --high){
-        intense+=histogram[high];
-        if(intense > threshold_intensity)
-            break;
-    }
-
-    if (low == high){
-        // Unreasonable contrast;  use zero threshold to determine boundaries.
-        threshold_intensity=0;
-        intense=0;
-        for(low=0; low < MaxRGB; ++low){
-            intense+=histogram[low];
-            if(intense > threshold_intensity)
-                break;
-        }
-        intense=0;
-        for(high=MaxRGB; high != 0; --high)
-        {
-            intense+=histogram[high];
-            if(intense > threshold_intensity)
-                break;
-        }
-        if(low == high)
-            return;  // zero span bound
-    }
-
-    // Stretch the histogram to create the normalized image mapping.
-    for(i=0; i <= MaxRGB; i++){
-        if (i < (int) low)
-            normalize_map[i]=0;
-        else{
-            if(i > (int) high)
-                normalize_map[i]=MaxRGB;
-            else
-                normalize_map[i]=(MaxRGB-1)*(i-low)/(high-low);
-        }
-    }
-    // Normalize
-    if(img.depth() > 8){ // DirectClass
-        unsigned int *data;
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned int *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                data[x] = qRgba(normalize_map[qRed(data[x])],
-                                normalize_map[qGreen(data[x])],
-                                normalize_map[qBlue(data[x])],
-                                qAlpha(data[x]));
-            }
-        }
-    }
-    else{ // PsudeoClass
-        int colors = img.numColors();
-        unsigned int *cTable = img.colorTable();
-        for(i=0; i < colors; ++i){
-            cTable[i] = qRgba(normalize_map[qRed(cTable[i])],
-                              normalize_map[qGreen(cTable[i])],
-                              normalize_map[qBlue(cTable[i])],
-                              qAlpha(cTable[i]));
-        }
-    }
-    free(histogram);
-    free(normalize_map);
-}
-
-
-void KImageEffect::equalize(QImage &img)
-{
-    int *histogram, *map, *equalize_map;
-    int x, y, i, j;
-
-    unsigned int high, low;
-
-    // allocate histogram and maps
-    histogram = (int *)calloc(MaxRGB+1, sizeof(int));
-    map = (int *)malloc((MaxRGB+1)*sizeof(unsigned int));
-    equalize_map  = (int *)malloc((MaxRGB+1)*sizeof(unsigned int));
-
-    if(!histogram || !map || !equalize_map){
-        qWarning("Unable to allocate equalize histogram and maps");
-        free(histogram);
-        free(map);
-        free(equalize_map);
-        return;
-    }
-    // form histogram
-    if(img.depth() > 8){ // DirectClass
-        unsigned int *data;
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned int *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                histogram[intensityValue(data[x])]++;
-            }
-        }
-    }
-    else{ // PsudeoClass
-        unsigned char *data;
-        unsigned int *cTable = img.colorTable();
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned char *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                histogram[intensityValue(*(cTable+data[x]))]++;
-            }
-        }
-    }
-
-    // integrate the histogram to get the equalization map.
-    j=0;
-    for(i=0; i <= MaxRGB; i++){
-        j+=histogram[i];
-        map[i]=j;
-    }
-    free(histogram);
-    if(map[MaxRGB] == 0){
-        free(equalize_map);
-        free(map);
-        return;
-    }
-    // equalize
-    low=map[0];
-    high=map[MaxRGB];
-    for(i=0; i <= MaxRGB; i++)
-        equalize_map[i]=(unsigned int)
-            ((((double) (map[i]-low))*MaxRGB)/QMAX(high-low,1));
-    free(map);
-    // stretch the histogram
-    if(img.depth() > 8){ // DirectClass
-        unsigned int *data;
-        for(y=0; y < img.height(); ++y){
-            data = (unsigned int *)img.scanLine(y);
-            for(x=0; x < img.width(); ++x){
-                data[x] = qRgba(equalize_map[qRed(data[x])],
-                                equalize_map[qGreen(data[x])],
-                                equalize_map[qBlue(data[x])],
-                                qAlpha(data[x]));
-            }
-        }
-    }
-    else{ // PsudeoClass
-        int colors = img.numColors();
-        unsigned int *cTable = img.colorTable();
-        for(i=0; i < colors; ++i){
-            cTable[i] = qRgba(equalize_map[qRed(cTable[i])],
-                              equalize_map[qGreen(cTable[i])],
-                              equalize_map[qBlue(cTable[i])],
-                              qAlpha(cTable[i]));
-        }
-    }
-    free(equalize_map);
-}
 
 QImage KImageEffect::sample(QImage &src, int w, int h)
 {
@@ -2713,7 +2546,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
     x_offset = (double *)malloc(w*sizeof(double));
     y_offset = (double *)malloc(h*sizeof(double));
     if(!x_offset || !y_offset){
-        qWarning("Unable to allocate pixels buffer");
+        qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
         free(x_offset);
         free(y_offset);
         return(src);
@@ -2731,7 +2564,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         unsigned int *pixels;
         pixels = (unsigned int *)malloc(src.width()*sizeof(unsigned int));
         if(!pixels){
-            qWarning("Unable to allocate pixels buffer");
+            qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
             free(pixels);
             free(x_offset);
             free(y_offset);
@@ -2759,7 +2592,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         unsigned char *pixels;
         pixels = (unsigned char *)malloc(src.width()*sizeof(unsigned char));
         if(!pixels){
-            qWarning("Unable to allocate pixels buffer");
+            qWarning("KImageEffect::sample(): Unable to allocate pixels buffer");
             free(pixels);
             free(x_offset);
             free(y_offset);
@@ -2807,18 +2640,6 @@ void KImageEffect::threshold(QImage &img, unsigned int threshold)
     }
     for(i=0; i < count; ++i)
         data[i] = intensityValue(data[i]) < threshold ? Qt::black.rgb() : Qt::white.rgb();
-}
-
-QImage KImageEffect::charcoal(QImage &src, double factor)
-{
-    QImage dest(src);
-    dest.detach();
-    toGray(dest);
-    dest = edge(dest, factor);
-    dest = blur(dest, factor);
-    normalize(dest);
-    dest.invertPixels(false);
-    return(dest);
 }
 
 void KImageEffect::hull(const int x_offset, const int y_offset,
@@ -3594,427 +3415,875 @@ QImage KImageEffect::wave(QImage &src, double amplitude, double wavelength,
     return(dest);
 }
 
-QImage KImageEffect::oilPaint(QImage &src, int radius)
-{
-    // TODO 8bpp src!
-    if(src.depth() < 32){
-        qWarning("Oil Paint source image < 32bpp. Convert before using!");
-        return(src);
-    }
-    int j, k, i, x, y;
-    unsigned int *histogram;
-    unsigned int *s;
-    unsigned int count;
-
-    unsigned int *srcData, *destData;
-
-    QImage dest(src);
-    dest.detach();
-    histogram = (unsigned int *) malloc((MaxRGB+1)*sizeof(unsigned int));
-    if(!histogram)
-        return(src);
-    // paint each row
-    k=0;
-    for(y = radius; y < src.height(); ++y){
-        srcData = (unsigned int *)src.scanLine(y-radius);
-        destData = (unsigned int *)dest.scanLine(y);
-        srcData += radius*src.width()+radius;
-        destData += radius;
-        for(x=radius; x < src.width()-radius; ++x){
-            // determine most frequent color
-            count = 0;
-            for(i=0; i < MaxRGB+1; ++i)
-                histogram[i] = 0;
-            for(i=0; i < radius; ++i){
-                s = srcData-(radius-1)*src.width()-i-1;
-                for(j =0; j < (2*i+1); ++j){
-                    k = intensityValue(*s);
-                    histogram[k]++;
-                    if(histogram[k] > count){
-                        *destData = *s;
-                        count = histogram[k];
-                    }
-                    ++s;
-                }
-                s = srcData+(radius-i)*src.width()-i-1;
-                for(j =0; j < (2*i+1); ++j){
-                    k = intensityValue(*s);
-                    histogram[k]++;
-                    if(histogram[k] > count){
-                        *destData = *s;
-                        count = histogram[k];
-                    }
-                    ++s;
-                }
-            }
-            s = srcData-radius;
-            for(j =0; j < (2*i+1); ++j){
-                k = intensityValue(*s);
-                histogram[k]++;
-                if(histogram[k] > count){
-                    *destData = *s;
-                    count = histogram[k];
-                }
-                ++s;
-            }
-            ++srcData;
-            ++destData;
-        }
-    }
-    free(histogram);
-    return(dest);
-}
-
 //
 // The following methods work by computing a value from neighboring pixels
-// (mosfet 12/28/01)
+// (mosfet 05/26/03)
 //
 
-QImage KImageEffect::edge(QImage &src, double factor)
+// New algorithms based on ImageMagick 5.5.6 (05/26/03)
+
+QImage KImageEffect::oilPaint(QImage &src, int /*radius*/)
 {
-#define Edge(weight) \
-    total_red+=(weight)*qRed(*s); \
-    total_green+=(weight)*qGreen(*s); \
-    total_blue+=(weight)*qBlue(*s); \
-    total_opacity+=(weight)*qAlpha(*s); \
-    s++;
+    /* binary compat method - remove me when possible! */
+    return(oilPaintConvolve(src, 0));
+}
 
-#define Edge256(weight) \
-    total_red+=(weight)*qRed(*(cTable+(*s))); \
-    total_green+=(weight)*qGreen(*(cTable+(*s))); \
-    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
-    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
-    s++;
+QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
+{
+    unsigned long count, *histogram;
+    unsigned int k;
+    int width;
+    int x, y, mx, my, sx, sy;
+    int mcx, mcy;
+    unsigned int *s=0, *q;
 
-    if(src.width() < 3 || src.height() < 3)
-        return(src);
+    if(src.depth() < 32)
+        src.convertDepth(32);
+    QImage dest(src);
+    dest.detach();
 
-    double total_blue, total_green, total_opacity, total_red, weight;
+    width = getOptimalKernelWidth(radius, 0.5);
+    if(src.width() < width){
+        qWarning("KImageEffect::oilPaintConvolve(): Image is smaller than radius!");
+        return(dest);
+    }
+    histogram = (unsigned long *)malloc(256*sizeof(unsigned long));
+    if(!histogram){
+        qWarning("KImageEffect::oilPaintColvolve(): Unable to allocate memory!");
+        return(dest);
+    }
 
-    int x, y;
+    unsigned int **jumpTable = (unsigned int **)src.jumpTable();
+    for(y=0; y < dest.height(); ++y){
+        sy = y-(width/2);
+        q = (unsigned int *)dest.scanLine(y);
+        for(x=0; x < dest.width(); ++x){
+            count = 0;
+            memset(histogram, 0, 256*sizeof(unsigned long));
+            sy = y-(width/2);
+            for(mcy=0; mcy < width; ++mcy, ++sy){
+                my = sy < 0 ? 0 : sy > src.height()-1 ?
+                    src.height()-1 : sy;
+                sx = x+(-width/2);
+                for(mcx=0; mcx < width; ++mcx, ++sx){
+                    mx = sx < 0 ? 0 : sx > src.width()-1 ?
+                        src.width()-1 : sx;
 
-    unsigned int *q;
-
-    QImage dest(src.width(), src.height(), 32);
-    weight=factor/8.0;
-    if(src.depth() > 8){ // DirectClass source image
-        unsigned int *p, *s;
-        for(y=0; y < src.height(); ++y){
-            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
-            q = (unsigned int *)dest.scanLine(y);
-            // edge detect this row of pixels.
-            *q++=(*(p+src.width()));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Edge(-weight/8); Edge(-weight/8) Edge(-weight/8);
-                s=p+src.width();
-                Edge(-weight/8); Edge(weight); Edge(-weight/8);
-                s=p+2*src.width();
-                Edge(-weight/8); Edge(-weight/8); Edge(-weight/8);
-                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
-                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
-                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
-                           (unsigned char)((total_opacity < 0) ? 0 : (total_opacity > MaxRGB) ? MaxRGB : total_opacity));
-                p++;
-                q++;
+                    k = intensityValue(jumpTable[my][mx]);
+                    if(k > 255){
+                        qWarning("KImageEffect::oilPaintConvolve(): k is %d",
+                                 k);
+                        k = 255;
+                    }
+                    histogram[k]++;
+                    if(histogram[k] > count){
+                        count = histogram[k];
+                        s = jumpTable[my]+mx;
+                    }
+                }
             }
-            p++;
-            *q++=(*p);
+            *q++ = (*s);
         }
     }
-    else{ // PsudeoClass source image
-        unsigned char *p, *p2, *p3, *s;
-        unsigned int *cTable = src.colorTable();
-        int scanLineIdx;
-        for(y=0; y < src.height(); ++y){
-            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
-            p = (unsigned char *)src.scanLine(scanLineIdx);
-            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
-            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
-            q = (unsigned int *)dest.scanLine(y);
-            // edge detect this row of pixels.
-            *q++=(*(cTable+(*p2)));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Edge256(-weight/8); Edge256(-weight/8) Edge256(-weight/8);
-                s=p2;
-                Edge256(-weight/8); Edge256(weight); Edge256(-weight/8);
-                s=p3;
-                Edge256(-weight/8); Edge256(-weight/8); Edge256(-weight/8);
-                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
-                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
-                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
-                           (unsigned char)((total_opacity < 0) ? 0 : (total_opacity > MaxRGB) ? MaxRGB : total_opacity));
-                p++;
-                p2++;
-                p3++;
-                q++;
-            }
-            p++;
-            *q++=(*(cTable+(*p)));
-        }
-    }
+    liberateMemory((void **)histogram);
     return(dest);
 }
 
-QImage KImageEffect::sharpen(QImage &src, double factor)
+QImage KImageEffect::charcoal(QImage &src, double /*factor*/)
 {
-#define Sharpen(weight) \
-    total_red+=(weight)*qRed(*s); \
-    total_green+=(weight)*qGreen(*s); \
-    total_blue+=(weight)*qBlue(*s); \
-    total_opacity+=(weight)*qAlpha(*s); \
-    s++;
+    /* binary compat method - remove me when possible! */
+    return(charcoal(src, 0, 1));
+}
 
-#define Sharpen256(weight) \
-    total_red+=(weight)*qRed(*(cTable+(*s))); \
-    total_green+=(weight)*qGreen(*(cTable+(*s))); \
-    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
-    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
-    s++;
+QImage KImageEffect::charcoal(QImage &src, double radius, double sigma)
+{
+    QImage img(edge(src, radius));
+    img = blur(img, radius, sigma);
+    normalize(img);
+    img.invertPixels(false);
+    KImageEffect::toGray(img);
+    return(img);
+}
 
-    if(src.width() < 3 || src.height() < 3)
-        return(src);
-
-    double total_blue, total_green, total_opacity, total_red;
-    double quantum, weight;
+void KImageEffect::normalize(QImage &image)
+{
+    struct double_packet high, low, intensity, *histogram;
+    struct short_packet *normalize_map;
+    long long number_pixels;
+    int x, y;
+    unsigned int *p, *q;
+    register long i;
+    unsigned long threshold_intensity;
     unsigned char r, g, b, a;
 
+    if(image.depth() < 32) // result will always be 32bpp
+        image = image.convertDepth(32);
+
+    histogram = (struct double_packet *)
+        malloc(256*sizeof(struct double_packet));
+    normalize_map = (struct short_packet *)
+        malloc(256*sizeof(struct short_packet));
+
+    if(!histogram || !normalize_map){
+        if(histogram)
+            liberateMemory((void **) &histogram);
+        if(normalize_map)
+            liberateMemory((void **) &normalize_map);
+        qWarning("KImageEffect::normalize(): Unable to allocate memory!");
+    }
+
+    /*
+    Form histogram.
+    */
+    memset(histogram, 0, 256*sizeof(struct double_packet));
+    for(y=0; y < image.height(); ++y){
+        p = (unsigned int *)image.scanLine(y);
+        for(x=0; x < image.width(); ++x){
+            histogram[(unsigned char)(qRed(*p))].red++;
+            histogram[(unsigned char)(qGreen(*p))].green++;
+            histogram[(unsigned char)(qBlue(*p))].blue++;
+            histogram[(unsigned char)(qAlpha(*p))].alpha++;
+            p++;
+        }
+    }
+
+    /*
+    Find the histogram boundaries by locating the 0.1 percent levels.
+    */
+    number_pixels = (long long)image.width()*image.height();
+    threshold_intensity = number_pixels/1000;
+
+    /* red */
+    memset(&intensity, 0, sizeof(struct double_packet));
+    for(high.red=255; high.red != 0; high.red--){
+        intensity.red+=histogram[(unsigned char)high.red].red;
+        if(intensity.red > threshold_intensity)
+            break;
+    }
+    if(low.red == high.red){
+        threshold_intensity = 0;
+        memset(&intensity, 0, sizeof(struct double_packet));
+        for(low.red=0; low.red < 255; low.red++){
+            intensity.red+=histogram[(unsigned char)low.red].red;
+            if(intensity.red > threshold_intensity)
+                break;
+        }
+        memset(&intensity, 0, sizeof(struct double_packet));
+        for(high.red=255; high.red != 0; high.red--){
+            intensity.red+=histogram[(unsigned char)high.red].red;
+            if(intensity.red > threshold_intensity)
+                break;
+        }
+    }
+
+    /* green */
+    memset(&intensity, 0, sizeof(struct double_packet));
+    for(high.green=255; high.green != 0; high.green--){
+        intensity.green+=histogram[(unsigned char)high.green].green;
+        if(intensity.green > threshold_intensity)
+            break;
+    }
+    if(low.green == high.green){
+        threshold_intensity = 0;
+        memset(&intensity, 0, sizeof(struct double_packet));
+        for(low.green=0; low.green < 255; low.green++){
+            intensity.green+=histogram[(unsigned char)low.green].green;
+            if(intensity.green > threshold_intensity)
+                break;
+        }
+        memset(&intensity,0,sizeof(struct double_packet));
+        for(high.green=255; high.green != 0; high.green--){
+            intensity.green+=histogram[(unsigned char)high.green].green;
+            if(intensity.green > threshold_intensity)
+                break;
+        }
+    }
+
+    /* blue */
+    memset(&intensity, 0, sizeof(struct double_packet));
+    for(high.blue=255; high.blue != 0; high.blue--){
+        intensity.blue+=histogram[(unsigned char)high.blue].blue;
+        if(intensity.blue > threshold_intensity)
+            break;
+    }
+    if(low.blue == high.blue){
+        threshold_intensity = 0;
+        memset(&intensity, 0, sizeof(struct double_packet));
+        for(low.blue=0; low.blue < 255; low.blue++){
+            intensity.blue+=histogram[(unsigned char)low.blue].blue;
+            if(intensity.blue > threshold_intensity)
+                break;
+        }
+        memset(&intensity,0,sizeof(struct double_packet));
+        for(high.blue=255; high.blue != 0; high.blue--){
+            intensity.blue+=histogram[(unsigned char)high.blue].blue;
+            if(intensity.blue > threshold_intensity)
+                break;
+        }
+    }
+
+    /* alpha */
+    memset(&intensity, 0, sizeof(struct double_packet));
+    for(high.alpha=255; high.alpha != 0; high.alpha--){
+        intensity.alpha+=histogram[(unsigned char)high.alpha].alpha;
+        if(intensity.alpha > threshold_intensity)
+            break;
+    }
+    if(low.alpha == high.alpha){
+        threshold_intensity = 0;
+        memset(&intensity, 0, sizeof(struct double_packet));
+        for(low.alpha=0; low.alpha < 255; low.alpha++){
+            intensity.alpha+=histogram[(unsigned char)low.alpha].alpha;
+            if(intensity.alpha > threshold_intensity)
+                break;
+        }
+        memset(&intensity,0,sizeof(struct double_packet));
+        for(high.alpha=255; high.alpha != 0; high.alpha--){
+            intensity.alpha+=histogram[(unsigned char)high.alpha].alpha;
+            if(intensity.alpha > threshold_intensity)
+                break;
+        }
+    }
+    liberateMemory((void **) &histogram);
+
+    /*
+     Stretch the histogram to create the normalized image mapping.
+     */
+
+    // should the maxes be 65535?
+    memset(normalize_map, 0 ,256*sizeof(struct short_packet));
+    for(i=0; i <= (long) 255; i++){
+        if(i < (long) low.red)
+            normalize_map[i].red=0;
+        else if (i > (long) high.red)
+            normalize_map[i].red=65535;
+        else if (low.red != high.red)
+            normalize_map[i].red =
+                (unsigned short)((65535*(i-low.red))/(high.red-low.red));
+
+        if(i < (long) low.green)
+            normalize_map[i].green=0;
+        else if (i > (long) high.green)
+            normalize_map[i].green=65535;
+        else if (low.green != high.green)
+            normalize_map[i].green =
+                (unsigned short)((65535*(i-low.green))/(high.green-low.green));
+
+        if(i < (long) low.blue)
+            normalize_map[i].blue=0;
+        else if (i > (long) high.blue)
+            normalize_map[i].blue=65535;
+        else if (low.blue != high.blue)
+            normalize_map[i].blue =
+                (unsigned short)((65535*(i-low.blue))/(high.blue-low.blue));
+
+        if(i < (long) low.alpha)
+            normalize_map[i].alpha=0;
+        else if (i > (long) high.alpha)
+            normalize_map[i].alpha=65535;
+        else if (low.alpha != high.alpha)
+            normalize_map[i].alpha =
+                (unsigned short)((65535*(i-low.alpha))/(high.alpha-low.alpha));
+
+    }
+
+    for(y=0; y < image.height(); ++y){
+        q = (unsigned int *)image.scanLine(y);
+        for(x=0; x < image.width(); ++x){
+            if(low.red != high.red)
+                r = (normalize_map[(unsigned short)(qRed(q[x]))].red)/257;
+            else
+                r = qRed(q[x]);
+            if(low.green != high.green)
+                g = (normalize_map[(unsigned short)(qGreen(q[x]))].green)/257;
+            else
+                g = qGreen(q[x]);
+            if(low.blue != high.blue)
+                b = (normalize_map[(unsigned short)(qBlue(q[x]))].blue)/257;
+            else
+                b = qBlue(q[x]);
+            if(low.alpha != high.alpha)
+                a = (normalize_map[(unsigned short)(qAlpha(q[x]))].alpha)/257;
+            else
+                a = qAlpha(q[x]);
+            q[x] = qRgba(r, g, b, a);
+        }
+    }
+    liberateMemory((void **) &normalize_map);
+}
+
+void KImageEffect::equalize(QImage &image)
+{
+    struct double_packet high, low, intensity, *map, *histogram;
+    struct short_packet *equalize_map;
     int x, y;
-    unsigned int *q;
+    unsigned int *p, *q;
+    long i;
+    unsigned char r, g, b, a;
 
-    QImage dest(src.width(), src.height(), 32);
-    weight = ((100.0-factor)/2.0+13.0);
-    quantum = QMAX(weight-12.0, 1.0);
-    if(src.depth() > 8){ // DirectClass source image
-        unsigned int *p, *s;
-        for(y=0; y < src.height(); ++y){
-            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
-            q = (unsigned int *)dest.scanLine(y);
-            // sharpen this row of pixels.
-            *q++=(*(p+src.width()));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Sharpen(-1); Sharpen(-2); Sharpen(-1);
-                s=p+src.width();
-                Sharpen(-2); Sharpen(weight); Sharpen(-2);
-                s=p+2*src.width();
-                Sharpen(-1); Sharpen(-2); Sharpen(-1);
-                if(total_red < 0)
-                    r=0;
-                else if(total_red > (int)(MaxRGB*quantum))
-                    r = (unsigned char)MaxRGB;
-                else
-                    r = (unsigned char)((total_red+(quantum/2.0))/quantum);
+    if(image.depth() < 32) // result will always be 32bpp
+        image = image.convertDepth(32);
 
-                if(total_green < 0)
-                    g = 0;
-                else if(total_green > (int)(MaxRGB*quantum))
-                    g = (unsigned char)MaxRGB;
-                else
-                    g = (unsigned char)((total_green+(quantum/2.0))/quantum);
+    histogram=(struct double_packet *) malloc(256*sizeof(struct double_packet));
+    map=(struct double_packet *) malloc(256*sizeof(struct double_packet));
+    equalize_map=(struct short_packet *)malloc(256*sizeof(struct short_packet));
+    if(!histogram || !map || !equalize_map){
+        if(histogram)
+            liberateMemory((void **) &histogram);
+        if(map)
+            liberateMemory((void **) &map);
+        if(equalize_map)
+            liberateMemory((void **) &equalize_map);
+        qWarning("KImageEffect::equalize(): Unable to allocate memory!");
+        return;
+    }
 
-                if(total_blue < 0)
-                    b = 0;
-                else if(total_blue > (int)(MaxRGB*quantum))
-                    b = (unsigned char)MaxRGB;
-                else
-                    b = (unsigned char)((total_blue+(quantum/2.0))/quantum);
-
-                if(total_opacity < 0)
-                    a = 0;
-                else if(total_opacity > (int)(MaxRGB*quantum))
-                    a = (unsigned char)MaxRGB;
-                else
-                    a= (unsigned char)((total_opacity+(quantum/2.0))/quantum);
-
-                *q = qRgba(r, g, b, a);
-
-                p++;
-                q++;
-            }
+    /*
+    Form histogram.
+    */
+    memset(histogram, 0, 256*sizeof(struct double_packet));
+    for(y=0; y < image.height(); ++y){
+        p = (unsigned int *)image.scanLine(y);
+        for(x=0; x < image.width(); ++x){
+            histogram[(unsigned char)(qRed(*p))].red++;
+            histogram[(unsigned char)(qGreen(*p))].green++;
+            histogram[(unsigned char)(qBlue(*p))].blue++;
+            histogram[(unsigned char)(qAlpha(*p))].alpha++;
             p++;
-            *q++=(*p);
         }
     }
-    else{ // PsudeoClass source image
-        unsigned char *p, *p2, *p3, *s;
-        unsigned int *cTable = src.colorTable();
-        int scanLineIdx;
-        for(y=0; y < src.height(); ++y){
-            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
-            p = (unsigned char *)src.scanLine(scanLineIdx);
-            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
-            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
-            q = (unsigned int *)dest.scanLine(y);
-            // sharpen this row of pixels.
-            *q++=(*(cTable+(*p2)));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Sharpen256(-1); Sharpen256(-2); Sharpen256(-1);
-                s=p2;
-                Sharpen256(-2); Sharpen256(weight); Sharpen256(-2);
-                s=p3;
-                Sharpen256(-1); Sharpen256(-2); Sharpen256(-1);
-                if(total_red < 0)
-                    r=0;
-                else if(total_red > (int)(MaxRGB*quantum))
-                    r = (unsigned char)MaxRGB;
-                else
-                    r = (unsigned char)((total_red+(quantum/2.0))/quantum);
+    /*
+     Integrate the histogram to get the equalization map.
+     */
+    memset(&intensity, 0 ,sizeof(struct double_packet));
+    for(i=0; i <= 255; ++i){
+        intensity.red += histogram[i].red;
+        intensity.green += histogram[i].green;
+        intensity.blue += histogram[i].blue;
+        intensity.alpha += histogram[i].alpha;
+        map[i]=intensity;
+    }
+    low=map[0];
+    high=map[255];
+    memset(equalize_map, 0, 256*sizeof(short_packet));
+    for(i=0; i <= 255; ++i){
+        if(high.red != low.red)
+            equalize_map[i].red=(unsigned short)
+                ((65535*(map[i].red-low.red))/(high.red-low.red));
+        if(high.green != low.green)
+            equalize_map[i].green=(unsigned short)
+                ((65535*(map[i].green-low.green))/(high.green-low.green));
+        if(high.blue != low.blue)
+            equalize_map[i].blue=(unsigned short)
+                ((65535*(map[i].blue-low.blue))/(high.blue-low.blue));
+        if(high.alpha != low.alpha)
+            equalize_map[i].alpha=(unsigned short)
+                ((65535*(map[i].alpha-low.alpha))/(high.alpha-low.alpha));
+    }
+    liberateMemory((void **) &histogram);
+    liberateMemory((void **) &map);
 
-                if(total_green < 0)
-                    g = 0;
-                else if(total_green > (int)(MaxRGB*quantum))
-                    g = (unsigned char)MaxRGB;
-                else
-                    g = (unsigned char)((total_green+(quantum/2.0))/quantum);
-
-                if(total_blue < 0)
-                    b = 0;
-                else if(total_blue > (int)(MaxRGB*quantum))
-                    b = (unsigned char)MaxRGB;
-                else
-                    b = (unsigned char)((total_blue+(quantum/2.0))/quantum);
-
-                if(total_opacity < 0)
-                    a = 0;
-                else if(total_opacity > (int)(MaxRGB*quantum))
-                    a = (unsigned char)MaxRGB;
-                else
-                    a = (unsigned char)((total_opacity+(quantum/2.0))/quantum);
-
-                *q = qRgba(r, g, b, a);
-
-                p++;
-                p2++;
-                p3++;
-                q++;
-            }
-            p++;
-            *q++=(*(cTable+(*p)));
+    /*
+     Stretch the histogram.
+     */
+    for(y=0; y < image.height(); ++y){
+        q = (unsigned int *)image.scanLine(y);
+        for(x=0; x < image.width(); ++x){
+            if(low.red != high.red)
+                r = (equalize_map[(unsigned short)(qRed(q[x]))].red/257);
+            else
+                r = qRed(q[x]);
+            if(low.green != high.green)
+                g = (equalize_map[(unsigned short)(qGreen(q[x]))].green/257);
+            else
+                g = qGreen(q[x]);
+            if(low.blue != high.blue)
+                b = (equalize_map[(unsigned short)(qBlue(q[x]))].blue/257);
+            else
+                b = qBlue(q[x]);
+            if(low.alpha != high.alpha)
+                a = (equalize_map[(unsigned short)(qAlpha(q[x]))].alpha/257);
+            else
+                a = qAlpha(q[x]);
+            q[x] = qRgba(r, g, b, a);
         }
     }
+    liberateMemory((void **) &equalize_map);
+
+}
+
+QImage KImageEffect::edge(QImage &image, double radius)
+{
+    double *kernel;
+    int width;
+    register long i;
+    QImage dest;
+
+    if(radius == 50.0){
+        /* For binary compatability! Remove me when possible! This used to
+         * take a different parameter, a factor, and this was the default
+         * value */
+        radius = 0.0;
+    }
+
+    width = getOptimalKernelWidth(radius, 0.5);
+    if(image.width() < width || image.height() < width){
+        qWarning("KImageEffect::edge(): Image is smaller than radius!");
+        return(dest);
+    }
+    kernel= (double *)malloc(width*width*sizeof(double));
+    if(!kernel){
+        qWarning("KImageEffect::edge(): Unable to allocate memory!");
+        return(dest);
+    }
+    for(i=0; i < (width*width); i++)
+        kernel[i]=(-1.0);
+    kernel[i/2]=width*width-1.0;
+    convolveImage(&image, &dest, width, kernel);
+    liberateMemory((void **)&kernel);
     return(dest);
 }
 
 QImage KImageEffect::emboss(QImage &src)
 {
-#define Emboss(weight) \
-    total_red+=(weight)*qRed(*s); \
-    total_green+=(weight)*qGreen(*s); \
-    total_blue+=(weight)*qBlue(*s); \
-    s++;
+    /* binary compat method - remove me when possible! */
+    return(emboss(src, 0, 1));
+}
 
-#define Emboss256(weight) \
-    total_red+=(weight)*qRed(*(cTable+(*s))); \
-    total_green+=(weight)*qGreen(*(cTable+(*s))); \
-    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
-    s++;
+QImage KImageEffect::emboss(QImage &image, double radius, double sigma)
+{
+    double alpha, *kernel;
+    int j, width;
+    register long i, u, v;
+    QImage dest;
 
-    if(src.width() < 3 || src.height() < 3)
-        return(src);
-
-    double total_blue, total_green, total_red;
-    int x, y;
-    unsigned int *q;
-
-    QImage dest(src.width(), src.height(), 32);
-    if(src.depth() > 8){ // DirectClass source image
-        unsigned int *p, *s;
-        for(y=0; y < src.height(); ++y){
-            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
-            q = (unsigned int *)dest.scanLine(y);
-            // emboss this row of pixels.
-            *q++=(*(p+src.width()));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                s=p;
-                Emboss(-1); Emboss(-2); Emboss( 0);
-                s=p+src.width();
-                Emboss(-2); Emboss( 0); Emboss( 2);
-                s=p+2*src.width();
-                Emboss( 0); Emboss( 2); Emboss( 1);
-                total_red += (MaxRGB+1)/2;
-                total_green += (MaxRGB+1)/2;
-                total_blue += (MaxRGB+1)/2;
-                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
-                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
-                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
-                           255);
-                p++;
-                q++;
-            }
-            p++;
-            *q++=(*p);
-        }
+    if(sigma == 0.0){
+        qWarning("KImageEffect::emboss(): Zero sigma is not permitted!");
+        return(dest);
     }
-    else{ // PsudeoClass source image
-        unsigned char *p, *p2, *p3, *s;
-        unsigned int *cTable = src.colorTable();
-        int scanLineIdx;
-        for(y=0; y < src.height(); ++y){
-            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
-            p = (unsigned char *)src.scanLine(scanLineIdx);
-            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
-            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
-            q = (unsigned int *)dest.scanLine(y);
-            // emboss this row of pixels.
-            *q++=(*(cTable+(*p2)));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                s=p;
-                Emboss256(-1); Emboss256(-2); Emboss256(0);
-                s=p2;
-                Emboss256(-2); Emboss256(0); Emboss256(2);
-                s=p3;
-                Emboss256(0); Emboss256(2); Emboss256(1);
-                total_red += (MaxRGB+1)/2;
-                total_green += (MaxRGB+1)/2;
-                total_blue += (MaxRGB+1)/2;
-                *q = qRgba((unsigned char)((total_red < 0) ? 0 : (total_red > MaxRGB) ? MaxRGB : total_red),
-                           (unsigned char)((total_green < 0) ? 0 : (total_green > MaxRGB) ? MaxRGB : total_green),
-                           (unsigned char)((total_blue < 0) ? 0 : (total_blue > MaxRGB) ? MaxRGB : total_blue),
-                           255);
-                p++;
-                p2++;
-                p3++;
-                q++;
-            }
-            p++;
-            *q++=(*(cTable+(*p)));
-        }
+
+    width = getOptimalKernelWidth(radius, sigma);
+    if(image.width() < width || image.height() < width){
+        qWarning("KImageEffect::emboss(): Image is smaller than radius!");
+        return(dest);
     }
-    toGray(dest);
-    normalize(dest);
+    kernel= (double *)malloc(width*width*sizeof(double));
+    if(!kernel){
+        qWarning("KImageEffect::emboss(): Unable to allocate memory!");
+        return(dest);
+    }
+    if(image.depth() < 32)
+        image = image.convertDepth(32);
+
+    i=0;
+    j=width/2;
+    for(v=(-width/2); v <= (width/2); v++){
+        for(u=(-width/2); u <= (width/2); u++){
+            alpha=exp(-((double) u*u+v*v)/(2.0*sigma*sigma));
+            kernel[i]=((u < 0) || (v < 0) ? -8.0 : 8.0)*alpha/
+                (2.0*MagickPI*sigma*sigma);
+            if (u == j)
+                kernel[i]=0.0;
+            i++;
+        }
+        j--;
+    }
+    convolveImage(&image, &dest, width, kernel);
+    liberateMemory((void **)&kernel);
+
+    equalize(dest);
     return(dest);
 }
+
+void KImageEffect::blurScanLine(double *kernel, int width,
+                                unsigned int *src, unsigned int *dest,
+                                int columns)
+{
+    register double *p;
+    unsigned int *q;
+    register int x;
+    register long i;
+    double red, green, blue, alpha;
+    double scale = 0.0;
+
+    if(width > columns){
+        for(x=0; x < columns; ++x){
+            scale = 0.0;
+            red = blue = green = alpha = 0.0;
+            p = kernel;
+            q = src;
+            for(i=0; i < columns; ++i){
+                if((i >= (x-width/2)) && (i <= (x+width/2))){
+                    red += (*p)*(qRed(*q)*257);
+                    green += (*p)*(qGreen(*q)*257);
+                    blue += (*p)*(qBlue(*q)*257);
+                    alpha += (*p)*(qAlpha(*q)*257);
+                }
+                if(((i+width/2-x) >= 0) && ((i+width/2-x) < width))
+                    scale+=kernel[i+width/2-x];
+                p++;
+                q++;
+            }
+            scale = 1.0/scale;
+            red = scale*(red+0.5);
+            green = scale*(green+0.5);
+            blue = scale*(blue+0.5);
+            alpha = scale*(alpha+0.5);
+
+            red = red < 0 ? 0 : red > 65535 ? 65535 : red;
+            green = green < 0 ? 0 : green > 65535 ? 65535 : green;
+            blue = blue < 0 ? 0 : blue > 65535 ? 65535 : blue;
+            alpha = alpha < 0 ? 0 : alpha > 65535 ? 65535 : alpha;
+
+            dest[x] = qRgba((unsigned char)(red/257UL),
+                            (unsigned char)(green/257UL),
+                            (unsigned char)(blue/257UL),
+                            (unsigned char)(alpha/257UL));
+        }
+        return;
+    }
+
+    for(x=0; x < width/2; ++x){
+        scale = 0.0;
+        red = blue = green = alpha = 0.0;
+        p = kernel+width/2-x;
+        q = src;
+        for(i=width/2-x; i < width; ++i){
+            red += (*p)*(qRed(*q)*257);
+            green += (*p)*(qGreen(*q)*257);
+            blue += (*p)*(qBlue(*q)*257);
+            alpha += (*p)*(qAlpha(*q)*257);
+            scale += (*p);
+            p++;
+            q++;
+        }
+        scale=1.0/scale;
+
+        red = scale*(red+0.5);
+        green = scale*(green+0.5);
+        blue = scale*(blue+0.5);
+        alpha = scale*(alpha+0.5);
+
+        red = red < 0 ? 0 : red > 65535 ? 65535 : red;
+        green = green < 0 ? 0 : green > 65535 ? 65535 : green;
+        blue = blue < 0 ? 0 : blue > 65535 ? 65535 : blue;
+        alpha = alpha < 0 ? 0 : alpha > 65535 ? 65535 : alpha;
+
+        dest[x] = qRgba((unsigned char)(red/257UL),
+                        (unsigned char)(green/257UL),
+                        (unsigned char)(blue/257UL),
+                        (unsigned char)(alpha/257UL));
+    }
+
+    for(; x < columns-width/2; ++x){
+        red = blue = green = alpha = 0.0;
+        p = kernel;
+        q = src+(x-width/2);
+        for (i=0; i < (long) width; ++i){
+            red += (*p)*(qRed(*q)*257);
+            green += (*p)*(qGreen(*q)*257);
+            blue += (*p)*(qBlue(*q)*257);
+            alpha += (*p)*(qAlpha(*q)*257);
+            p++;
+            q++;
+        }
+        red = scale*(red+0.5);
+        green = scale*(green+0.5);
+        blue = scale*(blue+0.5);
+        alpha = scale*(alpha+0.5);
+
+        red = red < 0 ? 0 : red > 65535 ? 65535 : red;
+        green = green < 0 ? 0 : green > 65535 ? 65535 : green;
+        blue = blue < 0 ? 0 : blue > 65535 ? 65535 : blue;
+        alpha = alpha < 0 ? 0 : alpha > 65535 ? 65535 : alpha;
+
+        dest[x] = qRgba((unsigned char)(red/257UL),
+                        (unsigned char)(green/257UL),
+                        (unsigned char)(blue/257UL),
+                        (unsigned char)(alpha/257UL));
+    }
+
+    for(; x < columns; ++x){
+        red = blue = green = alpha = 0.0;
+        scale=0;
+        p = kernel;
+        q = src+(x-width/2);
+        for(i=0; i < columns-x+width/2; ++i){
+            red += (*p)*(qRed(*q)*257);
+            green += (*p)*(qGreen(*q)*257);
+            blue += (*p)*(qBlue(*q)*257);
+            alpha += (*p)*(qAlpha(*q)*257);
+            scale += (*p);
+            p++;
+            q++;
+        }
+        scale=1.0/scale;
+        red = scale*(red+0.5);
+        green = scale*(green+0.5);
+        blue = scale*(blue+0.5);
+        alpha = scale*(alpha+0.5);
+
+        red = red < 0 ? 0 : red > 65535 ? 65535 : red;
+        green = green < 0 ? 0 : green > 65535 ? 65535 : green;
+        blue = blue < 0 ? 0 : blue > 65535 ? 65535 : blue;
+        alpha = alpha < 0 ? 0 : alpha > 65535 ? 65535 : alpha;
+
+        dest[x] = qRgba((unsigned char)(red/257UL),
+                        (unsigned char)(green/257UL),
+                        (unsigned char)(blue/257UL),
+                        (unsigned char)(alpha/257UL));
+    }
+}
+
+int KImageEffect::getBlurKernel(int width, double sigma, double **kernel)
+{
+#define KernelRank 3
+    double alpha, normalize;
+    register long i;
+    int bias;
+
+    assert(sigma != 0.0);
+    if(width == 0)
+        width = 3;
+    *kernel=(double *)malloc(width*sizeof(double));
+    if(*kernel == (double *)NULL)
+        return(0);
+    memset(*kernel, 0, width*sizeof(double));
+    bias = KernelRank*width/2;
+    for(i=(-bias); i <= bias; i++){
+        alpha=exp(-((double) i*i)/(2.0*KernelRank*KernelRank*sigma*sigma));
+        (*kernel)[(i+bias)/KernelRank]+=alpha/(MagickSQ2PI*sigma);
+    }
+    normalize=0;
+    for(i=0; i < width; i++)
+        normalize+=(*kernel)[i];
+    for(i=0; i < width; i++)
+        (*kernel)[i]/=normalize;
+
+    return(width);
+}
+
+QImage KImageEffect::blur(QImage &src, double /*factor*/)
+{
+    /* binary compat method - remove me when possible! */
+    return(blur(src, 0, 1));
+}
+
+QImage KImageEffect::blur(QImage &src, double radius, double sigma)
+{
+    double *kernel;
+    QImage dest;
+    int width;
+    int x, y;
+    unsigned int *scanline, *temp;
+    unsigned int *p, *q;
+
+    if(sigma == 0.0){
+        qWarning("KImageEffect::blur(): Zero sigma is not permitted!");
+        return(dest);
+    }
+    if(src.depth() < 32)
+        src = src.convertDepth(32);
+
+    kernel=(double *) NULL;
+    if(radius > 0)
+        width=getBlurKernel((int) (2*ceil(radius)+1),sigma,&kernel);
+    else{
+        double *last_kernel;
+        last_kernel=(double *) NULL;
+        width=getBlurKernel(3,sigma,&kernel);
+
+        while ((long) (MaxRGB*kernel[0]) > 0){
+            if(last_kernel != (double *)NULL){
+                liberateMemory((void **) &last_kernel);
+            }
+            last_kernel=kernel;
+            kernel = (double *)NULL;
+            width = getBlurKernel(width+2, sigma, &kernel);
+        }
+        if(last_kernel != (double *) NULL){
+            liberateMemory((void **) &kernel);
+            width-=2;
+            kernel = last_kernel;
+        }
+    }
+
+    if(width < 3){
+        qWarning("KImageEffect::blur(): Kernel radius is too small!");
+        liberateMemory((void **) &kernel);
+        return(dest);
+    }
+
+    dest.create(src.width(), src.height(), 32);
+
+    scanline = (unsigned int *)malloc(sizeof(unsigned int)*src.height());
+    temp = (unsigned int *)malloc(sizeof(unsigned int)*src.height());
+    for(y=0; y < src.height(); ++y){
+        p = (unsigned int *)src.scanLine(y);
+        q = (unsigned int *)dest.scanLine(y);
+        blurScanLine(kernel, width, p, q, src.width());
+    }
+
+    unsigned int **srcTable = (unsigned int **)src.jumpTable();
+    unsigned int **destTable = (unsigned int **)dest.jumpTable();
+    for(x=0; x < src.width(); ++x){
+        for(y=0; y < src.height(); ++y){
+            scanline[y] = srcTable[y][x];
+        }
+        blurScanLine(kernel, width, scanline, temp, src.height());
+        for(y=0; y < src.height(); ++y){
+            destTable[y][x] = temp[y];
+        }
+    }
+    liberateMemory((void **) &scanline);
+    liberateMemory((void **) &temp);
+    liberateMemory((void **) &kernel);
+    return(dest);
+}
+
+bool KImageEffect::convolveImage(QImage *image, QImage *dest,
+                                 const unsigned int order,
+                                 const double *kernel)
+{
+    long width;
+    double red, green, blue, alpha;
+    double normalize, *normal_kernel;
+    register const double *k;
+    register unsigned int *q;
+    int x, y, mx, my, sx, sy;
+    long i;
+    int mcx, mcy;
+
+    width = order;
+    if((width % 2) == 0){
+        qWarning("KImageEffect: Kernel width must be an odd number!");
+        return(false);
+    }
+    normal_kernel = (double *)malloc(width*width*sizeof(double));
+    if(!normal_kernel){
+        qWarning("KImageEffect: Unable to allocate memory!");
+        return(false);
+    }
+    dest->reset();
+    dest->create(image->width(), image->height(), 32);
+    if(image->depth() < 32)
+        *image = image->convertDepth(32);
+
+    normalize=0.0;
+    for(i=0; i < (width*width); i++)
+        normalize += kernel[i];
+    if(fabs(normalize) <= MagickEpsilon)
+        normalize=1.0;
+    normalize=1.0/normalize;
+    for(i=0; i < (width*width); i++)
+        normal_kernel[i] = normalize*kernel[i];
+
+    unsigned int **jumpTable = (unsigned int **)image->jumpTable();
+    for(y=0; y < dest->height(); ++y){
+        sy = y-(width/2);
+        q = (unsigned int *)dest->scanLine(y);
+        for(x=0; x < dest->width(); ++x){
+            k = normal_kernel;
+            red = green = blue = alpha = 0;
+            sy = y-(width/2);
+            for(mcy=0; mcy < width; ++mcy, ++sy){
+                my = sy < 0 ? 0 : sy > image->height()-1 ?
+                    image->height()-1 : sy;
+                sx = x+(-width/2);
+                for(mcx=0; mcx < width; ++mcx, ++sx){
+                    mx = sx < 0 ? 0 : sx > image->width()-1 ?
+                        image->width()-1 : sx;
+                    red += (*k)*(qRed(jumpTable[my][mx])*257);
+                    green += (*k)*(qGreen(jumpTable[my][mx])*257);
+                    blue += (*k)*(qBlue(jumpTable[my][mx])*257);
+                    alpha += (*k)*(qAlpha(jumpTable[my][mx])*257);
+                    ++k;
+                }
+            }
+
+            red = red < 0 ? 0 : red > 65535 ? 65535 : red+0.5;
+            green = green < 0 ? 0 : green > 65535 ? 65535 : green+0.5;
+            blue = blue < 0 ? 0 : blue > 65535 ? 65535 : blue+0.5;
+            alpha = alpha < 0 ? 0 : alpha > 65535 ? 65535 : alpha+0.5;
+
+            *q++ = qRgba((unsigned char)(red/257UL),
+                         (unsigned char)(green/257UL),
+                         (unsigned char)(blue/257UL),
+                         (unsigned char)(alpha/257UL));
+        }
+    }
+    free(normal_kernel);
+    return(true);
+
+}
+
+int KImageEffect::getOptimalKernelWidth(double radius, double sigma)
+{
+    double normalize, value;
+    long width;
+    register long u;
+
+    assert(sigma != 0.0);
+    if(radius > 0.0)
+        return((int)(2.0*ceil(radius)+1.0));
+    for(width=5; ;){
+        normalize=0.0;
+        for(u=(-width/2); u <= (width/2); u++)
+            normalize+=exp(-((double) u*u)/(2.0*sigma*sigma))/(MagickSQ2PI*sigma);
+        u=width/2;
+        value=exp(-((double) u*u)/(2.0*sigma*sigma))/(MagickSQ2PI*sigma)/normalize;
+        if((long)(65535*value) <= 0)
+            break;
+        width+=2;
+    }
+    return((int)width-2);
+}
+
+QImage KImageEffect::sharpen(QImage &src, double /*factor*/)
+{
+    /* binary compat method - remove me when possible! */
+    return(sharpen(src, 0, 1));
+}
+
+QImage KImageEffect::sharpen(QImage &image, double radius, double sigma)
+{
+    double alpha, normalize, *kernel;
+    int width;
+    register long i, u, v;
+    QImage dest;
+
+    if(sigma == 0.0){
+        qWarning("KImageEffect::sharpen(): Zero sigma is not permitted!");
+        return(dest);
+    }
+    width = getOptimalKernelWidth(radius, sigma);
+    if(image.width() < width){
+        qWarning("KImageEffect::sharpen(): Image is smaller than radius!");
+        return(dest);
+    }
+    kernel = (double *)malloc(width*width*sizeof(double));
+    if(!kernel){
+        qWarning("KImageEffect::sharpen(): Unable to allocate memory!");
+        return(dest);
+    }
+
+    i = 0;
+    normalize=0.0;
+    for(v=(-width/2); v <= (width/2); v++){
+        for(u=(-width/2); u <= (width/2); u++){
+            alpha=exp(-((double) u*u+v*v)/(2.0*sigma*sigma));
+            kernel[i]=alpha/(2.0*MagickPI*sigma*sigma);
+            normalize+=kernel[i];
+            i++;
+        }
+    }
+    kernel[i/2]=(-2.0)*normalize;
+    convolveImage(&image, &dest, width, kernel);
+    liberateMemory((void **) &kernel);
+    return(dest);
+}
+
+// End of new algorithms
 
 QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
              double elevation)
@@ -4145,104 +4414,6 @@ QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
                 q++;
             }
             *q++=(*(cTable+(*s1)));
-        }
-    }
-    return(dest);
-}
-
-QImage KImageEffect::blur(QImage &src, double factor)
-{
-
-#define Blur(weight) \
-    total_red+=(weight)*qRed(*s); \
-    total_green+=(weight)*qGreen(*s); \
-    total_blue+=(weight)*qBlue(*s); \
-    total_opacity+=(weight)*qAlpha(*s); \
-    s++;
-
-#define Blur256(weight) \
-    total_red+=(weight)*qRed(*(cTable+(*s))); \
-    total_green+=(weight)*qGreen(*(cTable+(*s))); \
-    total_blue+=(weight)*qBlue(*(cTable+(*s))); \
-    total_opacity+=(weight)*qAlpha(*(cTable+(*s))); \
-    s++;
-
-    if(src.width() < 3 || src.height() < 3)
-        return(src);
-
-    double quantum, total_blue, total_green, total_opacity, total_red, weight;
-
-    int x, y;
-    unsigned int *q;
-
-    QImage dest(src.width(), src.height(), 32);
-    weight=((100.0-factor)/2)+1;
-    quantum = QMAX(weight+12.0, 1.0);
-    if(src.depth() > 8){ // DirectClass source image
-        unsigned int *p, *s;
-        for(y=0; y < src.height(); ++y){
-            p = (unsigned int *)src.scanLine(QMIN(QMAX(y-1,0),src.height()-3));
-            q = (unsigned int *)dest.scanLine(y);
-            // blur this row of pixels.
-            *q++=(*(p+src.width()));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Blur(1); Blur(2); Blur(1);
-                s=p+src.width();
-                Blur(2); Blur(weight); Blur(2);
-                s=p+2*src.width();
-                Blur(1); Blur(2); Blur(1);
-                *q = qRgba((unsigned char)((total_red+(quantum/2))/quantum),
-                           (unsigned char)((total_green+(quantum/2))/quantum),
-                           (unsigned char)((total_blue+(quantum/2))/quantum),
-                           (unsigned char)((total_opacity+(quantum/2))/quantum));
-                p++;
-                q++;
-            }
-            p++;
-            *q++=(*p);
-        }
-    }
-    else{ // PsudeoClass source image
-        unsigned char *p, *p2, *p3, *s;
-        unsigned int *cTable = src.colorTable();
-        int scanLineIdx;
-        for(y=0; y < src.height(); ++y){
-            scanLineIdx = QMIN(QMAX(y-1,0),src.height()-3);
-            p = (unsigned char *)src.scanLine(scanLineIdx);
-            p2 = (unsigned char *)src.scanLine(scanLineIdx+1);
-            p3 = (unsigned char *)src.scanLine(scanLineIdx+2);
-            q = (unsigned int *)dest.scanLine(y);
-            // blur this row of pixels.
-            *q++=(*(cTable+(*p2)));
-            for(x=1; x < src.width()-1; ++x){
-                // compute weighted average of target pixel color components.
-                total_red=0.0;
-                total_green=0.0;
-                total_blue=0.0;
-                total_opacity=0.0;
-                s=p;
-                Blur256(1); Blur256(2); Blur256(1);
-                s=p2;
-                Blur256(2); Blur256(weight); Blur256(2);
-                s=p3;
-                Blur256(1); Blur256(2); Blur256(1);
-                *q = qRgba((unsigned char)((total_red+(quantum/2))/quantum),
-                           (unsigned char)((total_green+(quantum/2))/quantum),
-                           (unsigned char)((total_blue+(quantum/2))/quantum),
-                           (unsigned char)((total_opacity+(quantum/2))/quantum));
-                p++;
-                p2++;
-                p3++;
-                q++;
-            }
-            p++;
-            *q++=(*(cTable+(*p)));
         }
     }
     return(dest);

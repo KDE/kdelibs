@@ -386,7 +386,16 @@ public:
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
+     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * sure.
      * @return The embossed image. The original is not changed.
+     */
+    static QImage emboss(QImage &src, double radius, double sigma);
+
+    /**
+     * Convenience method.
      */
     static QImage emboss(QImage &src);
 
@@ -405,10 +414,19 @@ public:
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
-     * @param factor The factor for detecting lines (0-99.0).
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
+     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * sure.
      * @return The charcoal image. The original is not changed.
      */
-    static QImage charcoal(QImage &src, double factor=50.0);
+    static QImage charcoal(QImage &src, double radius, double sigma);
+
+    /**
+     * This is provided for binary compatability only! Use the above method
+     * with a radius and sigma instead!
+     */
+     static QImage charcoal(QImage &src, double factor=50.0);
 
     /**
      * Rotates the image by the specified amount
@@ -448,8 +466,17 @@ public:
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
-     * @param factor The percent weight to give to the center pixel.
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
+     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * sure.
      * @return The blurred image. The original is not changed.
+     */
+    static QImage blur(QImage &src, double radius, double sigma);
+
+    /**
+     * This is provided for binary compatability only! Use the above method
+     * with a radius and sigma instead!
      */
     static QImage blur(QImage &src, double factor=50.0);
 
@@ -459,10 +486,11 @@ public:
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
-     * @param factor The percent weight to give to the center pixel.
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
      * @return The image with edges detected. The original is not changed.
      */
-    static QImage edge(QImage &src, double factor=50.0);
+    static QImage edge(QImage &src, double radius);
 
     /**
      * Implodes an image by a specified percent.
@@ -476,14 +504,21 @@ public:
      */
     static QImage implode(QImage &src, double factor=30.0,
                    unsigned int background = 0xFFFFFFFF);
+
     /**
      * Produces an oil painting effect.
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
-     * @param radius The radius of the pixel neighborhood used in applying the
-     * effect.
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
      * @return The new image. The original is not changed.
+     */
+    static QImage oilPaintConvolve(QImage &src, double radius);
+
+    /**
+     * This is provided for binary compatability only! Use the above method
+     * instead!
      */
     static QImage oilPaint(QImage &src, int radius=3);
 
@@ -492,8 +527,17 @@ public:
      *
      * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
-     * @param factor The percent weight to give to the center pixel.
+     * @param radius The radius of the gaussian not counting the
+     * center pixel. Use 0 and a suitable radius will be automatically used.
+     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * sure.
      * @return The sharpened image. The original is not changed.
+     */
+    static QImage sharpen(QImage &src, double radius, double sigma);
+
+    /**
+     * This is provided for binary compatability only! Use the above method
+     * instead!
      */
     static QImage sharpen(QImage &src, double factor=30.0);
 
@@ -564,6 +608,15 @@ private:
     static unsigned int generateNoise(unsigned int pixel, NoiseType type);
     static unsigned int interpolateColor(QImage *image, double x, double y,
                                          unsigned int background);
+    /* Various convolve routines */
+    static int getOptimalKernelWidth(double radius, double sigma);
+    static bool convolveImage(QImage *image, QImage *dest,
+                              const unsigned int order,
+                              const double *kernel);
+    static void blurScanLine(double *kernel, int width,
+                             unsigned int *src, unsigned int *dest,
+                             int columns);
+    static int getBlurKernel(int width, double sigma, double **kernel);
 };
 
 #endif
