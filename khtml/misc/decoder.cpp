@@ -72,6 +72,11 @@ void Decoder::setEncoding(const char *_encoding, bool force)
         m_codec = QTextCodec::codecForName("iso8859-8-i");
         visualRTL = true;
     }
+
+    // just to be safe
+    if( !m_codec )
+	m_codec = QTextCodec::codecForName("ISO 8859-1");
+	
     kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
 }
 
@@ -191,7 +196,7 @@ QString Decoder::decode(const char *data, int len)
                 else
                     ptr++;
             }
-            return QString::fromLatin1(data, len);
+            return QString::null;
         }
     }
 
@@ -235,6 +240,10 @@ QString Decoder::decode(const char *data, int len)
     return out;
 }
 
+QString Decoder::flush()
+{
+    return m_codec->toUnicode(buffer);
+}
 
 // -----------------------------------------------------------------------------
 #undef DECODE_DEBUG

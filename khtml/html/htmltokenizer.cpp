@@ -274,6 +274,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
             else if (style)
             {
+                    kdDebug( 6036 ) << "---START STYLE---" << endl;
+                    kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
+                    kdDebug( 6036 ) << "---END STYLE---" << endl;
                 // just add it. The style element will get a DOM::TextImpl passed, which it will
                 // convert into a StyleSheet.
                 addListing(DOMStringIt(scriptCode, scriptCodeSize));

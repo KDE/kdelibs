@@ -1085,10 +1085,7 @@ void KHTMLPart::write( const QString &str )
 void KHTMLPart::end()
 {
     // make sure nothing's left in there...
-    if(d->m_decoder && !d->m_decoder->encoding()) {
-        d->m_decoder->setEncoding("iso8859-1");
-        write(" ");
-    }
+    write(d->m_decoder->flush());
     d->m_doc->finishParsing();
 }
 
@@ -1118,13 +1115,6 @@ void KHTMLPart::slotFinishedParsing()
   else if (d->m_view->contentsY()==0) // check that the view has not been moved by the use
   {
     d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-  }
-
-  if ( !d->m_redirectURL.isEmpty() )
-  {
-  //    QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-    return;
   }
 
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
@@ -1201,6 +1191,14 @@ void KHTMLPart::checkCompleted()
   if (!parentPart())
     emit setStatusBarText(i18n("Done."));
 
+  if ( !d->m_redirectURL.isEmpty() )
+  {
+  //    QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    return;
+  }
+
+
   emit completed();
 }
 
@@ -1255,7 +1253,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
   d->m_delayRedirect = delay;
   d->m_redirectURL = url;
-  if(!d->m_bParsing)
+  if(!d->m_bComplete)
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 }
 

@@ -44,6 +44,9 @@ public:
     bool visuallyOrdered() { return visualRTL; }
 
     const QTextCodec *codec() const { return m_codec; }
+
+    QString flush();
+    
 protected:
     // codec used for decoding. default is Latin1.
     QTextCodec *m_codec;
