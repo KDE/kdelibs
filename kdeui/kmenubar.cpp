@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.46  1998/11/21 20:25:41  ettrich
+// small fix
+//
 // Revision 1.45  1998/11/18 01:00:03  radej
 // sven: set*BarPos(Flat) works now (I hope)
 //
@@ -160,7 +163,7 @@ int KMenuBar::heightForWidth ( int max_width ) const
   return menu->heightForWidth( max_width - 9);
 }
 
-  
+
      frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()));
      menu->resize(frame->width(), frame->height());
      handle->setGeometry(0,0,9,height());
@@ -281,7 +284,7 @@ void KMenuBar::slotReadConfig ()
   }
     menu->setFrameStyle(NoFrame);
     // menu->setStyle(style()); TODO: port to real Styles
-  
+  config->setGroup("KDE");//CT as Sven asked
   }
   //else if was and now is - nothing;
   //else if was not and now is not - nothing;
@@ -364,7 +367,7 @@ void KMenuBar::leaveEvent (QEvent *e){
 }
       Parent->removeEventFilter(this); //One time only
       return false;
-  
+  }
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
@@ -438,7 +441,7 @@ void KMenuBar::leaveEvent (QEvent *e){
         b = QWidget::backgroundColor();
       if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
         b = colorGroup().highlight();  // this is much more logical then
-      
+                                             colorGroup(), true);
 
           return(true);
       }
@@ -463,7 +466,7 @@ void KMenuBar::leaveEvent (QEvent *e){
 	  }
 	  paint.drawLine( 1, 9, w, 9);
           return true;
-        
+        }
         qDrawShadePanel( &paint, 0, 0, 9, h,
                            g , FALSE, 1, &b );
 
@@ -558,7 +561,8 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, FALSE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
+	KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::standaloneMenuBar);
+	//KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
@@ -723,13 +727,13 @@ void KMenuBar::slotHighlighted (int id)
   emit highlighted (id);
 }
 
-  
+void KMenuBar::setFlat (bool flag)
   if (flag && (position == Floating && position == Flat))
 
   if (!flag && (position != Flat))
 
   if (position == Floating  || position == FloatingSystem)
-  
+
     return;
   if ( flag == (position == Flat))
 
