@@ -944,7 +944,6 @@ KCmdLineArgs::setOption(const QCString &opt, bool enabled)
           arg += "no";
       arg += opt;
       addArgument(arg);
-      return;
    }
    if (!parsedOptionList) {
  	parsedOptionList = new KCmdLineParsedOptions;
@@ -973,7 +972,6 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
       {
          setenv(DISPLAY, value, true);
       }
-      return;
    }
    if (!parsedOptionList) {
 	parsedOptionList = new KCmdLineParsedOptions;
