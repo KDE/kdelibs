@@ -195,7 +195,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 // returnPressed(const QString&) and returnPressed() signals
                 emit returnPressed();
                 emit returnPressed( currentText() );
-                if ( d->klineEdit && d->klineEdit->completionBox(false) && 
+                if ( d->klineEdit && d->klineEdit->completionBox(false) &&
                      d->klineEdit->completionBox()->isVisible() )
                     d->klineEdit->completionBox()->hide();
 
@@ -267,6 +267,24 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     QComboBox::setLineEdit( edit );
     d->klineEdit = dynamic_cast<KLineEdit*>( edit );
     setDelegate( d->klineEdit );
+
+    // forward some signals. We only emit returnPressed() ourselves.
+    if ( d->klineEdit ) {
+        connect( d->klineEdit, SIGNAL( completion( const QString& )),
+                 SIGNAL( completion( const QString& )) );
+        connect( d->klineEdit, SIGNAL( substringCompletion( const QString& )),
+                 SIGNAL( substringCompletion( const QString& )) );
+        connect( d->klineEdit, 
+                 SIGNAL( textRotation( KCompletionBase::KeyBindingType )),
+                 SIGNAL( textRotation( KCompletionBase::KeyBindingType )) );
+        connect( d->klineEdit, 
+                 SIGNAL( completionModeChanged( KGlobalSettings::Completion )),
+                 SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
+        
+        connect( d->klineEdit, 
+                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
+                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
+    }
 }
 
 // Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
