@@ -20,7 +20,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = $(all_includes) $(LIBART_CFLAGS) 
+INCLUDES = -I$(top_srcdir)/kdefx $(all_includes) $(LIBART_CFLAGS)
 
 if include_SVGICONS
 SVGICONS=svgicons
@@ -55,7 +55,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 5:0:1
-libkdefakes_la_LIBADD  = $(LIBSOCKET)
+libkdefakes_la_LIBADD  = $(LIBSOCKET) ../kdefx/libkdefx.la
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
@@ -90,7 +90,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kdeversion.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 5:0:1 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS)
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) ../kdefx/libkdefx.la
 
 libkdecore_la_METASOURCES = AUTO
 
