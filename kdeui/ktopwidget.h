@@ -12,26 +12,41 @@
 #include <kstatusbar.h>
 #include <kconfig.h>
 
-         /**
-          * A Widget that provides toolbars, a status line and a frame.
-          * It should be used as a toplevel (parent-less) widget and
-          * manages the geometry for all its children, including your
-          * main widget (set with @ref ::setView ).
-	  *
-          * Normally, you will inherit from KTopLevelWidget (further: KTW). 
-	  * You have to
-          * follow some simple rules. First, @ref ::updateRects is the function
- 	  * that calculates the layout of all elements (toolbars, statusbar, 
-	  * main widget, etc).
-          * It is called from @ref ::resizeEvent, and signals that indicate 
-	  * changing position
-          * of toolbars and menubar are connected to it. If you reimplement
-          * resizeEvent you have to call this function. KTW now handles 
-	  * fixed-size main views
-          * properly. Just setFixedSize on your main widget.
-          * @short KDE top level widget
-          * @author Maintained by Sven Radej (a9509961@unet.univie.ac.at)
-          */
+ // $Id$
+ // $Log$
+
+ /**
+  * A Widget that provides toolbars, a status line and a frame.
+  * It should be used as a toplevel (parent-less) widget and
+  * manages the geometry for all its children, including your
+  * main widget.
+  *
+  * Normally, you will inherit from KTopLevelWidget (further: KTW).
+  * Then you must construct (or use some existing) widget that will be
+  * your main view. You set that main view only once with @ref #setView .
+  *
+  * Adding and controll of toolbar(s) is done  with function @ref #toolBar .
+  * Menubar is added or handled with function @ref #menuBar , and statusbar
+  * with function @ref #statusBar .
+  * Toolbars and menubars are handled internaly and you must not delete them on
+  * exit. Function bool @ref #confirmExit () is called from closeEvent.
+  * Reimplement @ref #confirmExit if you need to control over close events.
+  *
+  *
+  * @ref #updateRects is the function that calculates the layout of all
+  * elements (toolbars, statusbar, main widget, etc). It is called from
+  * @ref #resizeEvent, and signals that indicate changing position
+  * of toolbars and menubar are connected to it. If you reimplement
+  * resizeEvent you have to call this function. KTW now handles fixed-size
+  * and Y-fixed main views properly. Just @ref QWidget::setFixedSize or
+  * @ref QWidget::setFixedHeight on your main view. You can change it runtime,
+  * the changes will take effect on next @ref updateRects call. Do not set
+  * fixed size on window! You may set minimum or maximum size on window, but
+  * only if main view is freely resizable. Minimum width can also be set if main
+  * view is Y-fixed.
+  * @short KDE top level widget
+  * @author Stephan Kullow (coolo@kde.org) Maintained by Sven Radej (sven@lisa.exp.univie.ac.at)
+  */
 class KTopLevelWidget : public QWidget {
     Q_OBJECT
 
@@ -43,8 +58,7 @@ public:
      */
     KTopLevelWidget( const char *name = 0L );
     /**
-     * Destructor. Do not forget to delete all toolbars in destructor of your
-     * reimplementation
+     * Destructor.
      */
     ~KTopLevelWidget();
 
@@ -60,7 +74,7 @@ public:
      * This is the main widget for your application; it's geometry
      * will be automatically managed by KTopLevelWidget to fit the
      * client area, constrained by the positions of the menu, toolbars
-     * and status bar. It can be fixed-width.
+     * and status bar. It can be fixed-width or Y-fixed.
      *
      * Only one client widget can be handled at a time; multiple calls
      * of setView will cause only the last widget to be added to be
@@ -99,61 +113,62 @@ public:
 
     /**
      * Set the width of the view frame.
-     * If you request a frame around your view with setView(...,TRUE),
+     * If you request a frame around your view with @ref #setView (...,TRUE),
      * you can use this function to set the border width of the frame.
      * The default is 1 pixel. You should call this function before
-     * setView().
+     * @ref #setView().
      */
     void setFrameBorderWidth( int );
 
     /**
      * Returns a pointer to the toolbar with the specified ID. 
-     * If there is no such tool bar yet, it will be generated
+     * If there is no such tool bar yet, it will be generated.
+     * Do not delete toolbars.
      */
     KToolBar *toolBar( int ID = 0 );
 
     /**
      * Returns a pointer to the menu bar. If there is no
-     * menu bar yet, it will be generated
+     * menu bar yet, it will be generated. Do not delete menubar.
      */
     KMenuBar *menuBar();
 
     /**
      * Returns a pointer to the status bar. If there is no
-     * status bar yet, it will be generated
+     * status bar yet, it will be generated.
      */
     KStatusBar *statusBar();
 
     /**
      * Shows toplevel widget. Reimplemented from QWidget, and calls
-     * @ref updateRects. Therefore, it is now enough just to show KTW.
+     * @ref #updateRects . Therefore, it is enough just to show KTW.
      */
     virtual void show ();
 
     /**
      * Distance from top of window to top of main view,
-     * Computed in @ref updateRects. Changing of this variable
+     * Computed in @ref #updateRects. Changing of this variable
      * has no effect. Avoid using it, it might be removed in future.
      */
     int view_top;
 
     /**
      * Distance from top of window to bottom of main view.
-     * Computed in @ref updateRects. Changing of this variable
+     * Computed in @ref #updateRects. Changing of this variable
      * has no effect. Avoid using it, it might be removed in future.
      */
     int view_bottom;
 
     /**
      * Distance from left edge of window to left border of main view.
-     * Computed in @ref updateRects. Changing of this variable
+     * Computed in @ref #updateRects. Changing of this variable
      * has no effect. Avoid using it, it might be removed in future.
      */
     int view_left;
 
     /**
      * Distance from left edge of window to right edge of main view.
-     * Computed in @ref updateRects. Changing of this variable
+     * Computed in @ref #updateRects. Changing of this variable
      * has no effect. Avoid using it, it might be removed in future.
      */
     int view_right;
@@ -231,7 +246,7 @@ public:
 
 
 protected:
-    /** Default implementation calls @ref updateRects if main widget
+  /** Default implementation calls @ref #updateRects if main widget
      * is resizable. If mainWidget is not resizable it does
      * nothing. You shouldn't need to override this function.  
      */
@@ -248,7 +263,9 @@ protected:
     /** 
       * This is called when the widget is closed.
       * The default implementation will also destroy the
-      * widget.(Matthias)
+      * widget. (Matthias)
+      * If you reimplement this function, delete the widget if
+      * event is accepted. (sven)
       */
     virtual void closeEvent ( QCloseEvent *);
 
@@ -285,7 +302,7 @@ protected slots:
      * Updates child widget geometry. This function is now virtual
      * This is automatically called when the widget is created,
      * new components are added or the widget is resized, or showed.
-     * updateRects handles fixed-size widgets properly.
+     * updateRects handles fixed-size and Y-fixed widgets properly.
      *
      * Override it if you intend to manage the children yourself.
      * You normally do not need to do this.
@@ -302,9 +319,9 @@ protected slots:
 
 private:
 
-  /** 
-	* List of members of KTopLevelWidget class
-	*/
+    /**
+     * List of members of KTopLevelWidget class
+     */
   static QList<KTopLevelWidget>* memberList;
 
     /**
@@ -313,9 +330,9 @@ private:
     QList <KToolBar> toolbars;
 
     /**
-     * Main widget. If you want fixed-widget just call setFixedSize(w.h)
-     * on your mainwidget.
-     * You should not setFixedSize on KTopLevelWidget..
+     * Main widget. If you want fixed-size or Y-fixed widget just call
+     * setFixedSize(w.h) or setFixedWidth (h) on your mainwidget.
+     * You should not setFixedSize on KTopLevelWidget.
      */
     QWidget *kmainwidget;
 
@@ -338,6 +355,8 @@ private:
      * Stores the width of the view frame
      */
     int borderwidth;
+
+    // this is for binary compatibility
 #ifndef KTW_BINCOMPAT
     bool usesNewStyle;
 #endif
