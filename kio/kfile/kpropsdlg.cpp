@@ -206,7 +206,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
   assert(!m_singleUrl.isEmpty());
 
   // Create the KFileItem for the _template_ file, in order to read from it.
-  m_items.append( new KFileItem( (unsigned) -1, (unsigned) -1, m_singleUrl ) );
+  m_items.append( new KFileItem( KFileItem::Unknown, KFileItem::Unknown, m_singleUrl ) );
   init (modal, autoShow);
 }
 

@@ -515,7 +515,7 @@ PreviewJob *KIO::filePreview( const KURL::List &items, int width, int height,
 {
     KFileItemList fileItems;
     for (KURL::List::ConstIterator it = items.begin(); it != items.end(); ++it)
-        fileItems.append(new KFileItem(-1, -1, *it, true));
+        fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
     return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
                           scale, save, enabledPlugins, true);
 }
