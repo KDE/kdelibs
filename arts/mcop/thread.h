@@ -68,11 +68,10 @@ public:
 	virtual ~SystemThreads();
 
 	/**
-	 * Returns the current thread handle into the thread identifier pointed
-	 * by id. The size of the area pointed by id is OS-specific. Usually, do
-	 * not use this function.
+	 * Returns a pointer to the current thread, or a null pointer if
+	 * we're the main thread (isMainThread() is true).
 	 */
-	virtual void getCurrentThread(void *id) = 0;
+	virtual Thread *getCurrentThread() = 0;
 };
 
 /**

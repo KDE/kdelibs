@@ -77,7 +77,7 @@ public:
 	void unlock() {};
 };
 
-static long systemThreadsNoneLevel = 0;
+static Thread *systemThreadsNoneCurrent = 0;
 
 class SystemThreadsNoThread_impl : public Thread_impl {
 private:
@@ -86,9 +86,11 @@ public:
 	SystemThreadsNoThread_impl(Thread *thread) : thread(thread) {}
 	void setPriority(int) {}
 	void start() {
-		systemThreadsNoneLevel++;
+		Thread *oldCurrent = systemThreadsNoneCurrent;
+
+		systemThreadsNoneCurrent = thread;
 		thread->run();
-		systemThreadsNoneLevel--;
+		systemThreadsNoneCurrent = oldCurrent;
 	}
 	void waitDone() {}
 };
@@ -111,7 +113,7 @@ public:
 class SystemThreadsNone : public SystemThreads {
 public:
 	bool isMainThread() {
-		return (systemThreadsNoneLevel == 0);
+		return (systemThreadsNoneCurrent == 0);
 	}
 	Mutex_impl *createMutex_impl() {
 		return new SystemThreadsNoMutex_impl();
@@ -125,11 +127,8 @@ public:
 	ThreadCondition_impl *createThreadCondition_impl() {
 		return new SystemThreadsNoThreadCondition_impl();
 	}
-	void getCurrentThread(void *id) {
-#define ARTS_SIZEOF_THREAD_ID 4 /* <- needs a configure check */
-		/* doesn't generate more than 256 distinct thread identifiers - but
-		 * that should be enough, considering we run no threads here */
-		memset(id,1+systemThreadsNoneLevel,ARTS_SIZEOF_THREAD_ID);
+	Thread *getCurrentThread() {
+		return systemThreadsNoneCurrent;
 	}
 	Semaphore_impl *createSemaphore_impl(int, int) {
 		return new SystemThreadsNoSemaphore_impl();

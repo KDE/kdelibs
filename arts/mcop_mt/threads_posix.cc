@@ -166,14 +166,9 @@ public:
 };
 
 
-static void *threadStartInternal(void *object)
-{
-    ((Thread *)object)->run();
-    return 0;
-}
-
 class Thread_impl : public Arts::Thread_impl {
 protected:
+	friend class PosixThreads;
 	pthread_t pthread;
 	Thread *thread;
 
@@ -186,14 +181,24 @@ public:
 		if (pthread_setschedparam(pthread, SCHED_FIFO, &sp))
 			arts_debug("Thread::setPriority: sched_setscheduler failed");
 	}
+	static pthread_key_t privateDataKey;
+	static void *threadStartInternal(void *impl)
+	{
+		pthread_setspecific(privateDataKey, impl);
+
+    	((Thread_impl *)impl)->thread->run();
+    	return 0;
+	}
 	void start() {
-		pthread_create(&pthread,0,threadStartInternal,thread);
+		pthread_create(&pthread,0,threadStartInternal,this);
 	}
 	void waitDone() {
     	void *foo;
     	pthread_join(pthread,&foo);
 	}
 };
+
+pthread_key_t Thread_impl::privateDataKey;
 
 class ThreadCondition_impl : public Arts::ThreadCondition_impl {
 protected:
@@ -283,9 +288,13 @@ public:
 	Arts::ThreadCondition_impl *createThreadCondition_impl() {
 		return new ThreadCondition_impl();
 	}
-	void getCurrentThread(void *id) {
-		pthread_t *result = static_cast<pthread_t*>(id);
-		*result = pthread_self();
+	Thread *getCurrentThread() {
+		void *data = pthread_getspecific(Thread_impl::privateDataKey);
+
+		if(data)
+			return ((Thread_impl *)data)->thread;
+		else
+			return 0; /* main thread */
 	}
 	Arts::Semaphore_impl *createSemaphore_impl(int shared, int count) {
 		return new Semaphore_impl(shared, count);
@@ -298,8 +307,19 @@ private:
 	PosixThreads posixThreads;
 
 public:
-	SetSystemThreads() { SystemThreads::init(&posixThreads); }
-	~SetSystemThreads() { SystemThreads::init(0); }
+	SetSystemThreads() {
+		if(pthread_key_create(&Thread_impl::privateDataKey, 0))
+			arts_debug("SystemThreads init: pthread_key_create failed");
+
+		SystemThreads::init(&posixThreads);
+
+	}
+	~SetSystemThreads() {
+		SystemThreads::init(0);
+
+		if(pthread_key_delete(Thread_impl::privateDataKey))
+			arts_debug("SystemThreads init: pthread_key_delete failed");
+	}
 } initOnStartup;
 
 }
