@@ -111,9 +111,33 @@ public:
   static QString remoteFileProtocol();
 
   static bool useProxy();
+  
+  /*
+  * This method has been deprecated, please
+  * use @ref proxyFor.
+  *
+  * @deprecated
+  */  
   static QString ftpProxy();
+  
+  /*
+  * This method has been deprecated, please
+  * use @ref proxyFor.
+  *
+  * @deprecated
+  */
   static QString httpProxy();
+  
   static QString noProxyFor();
+  
+  /*
+  * Returns the proxy server address for a given
+  * protocol
+  * 
+  * @param protocol the protocol whose proxy info is needed
+  * @return the proxy server address if one is available
+  */
+  static QString proxyFor( const QString& /* protocol */);
 
   static bool useCache();
   static int maxCacheAge();  // Maximum cache age in seconds.
@@ -197,14 +221,37 @@ public:
   /**
    * Set the proxy for FTP transfer.
    *
+   * This method has been deprecated, please
+   * use @ref setProxyFor.
+   *
+   * @deprecated   
    */
   static void setFtpProxy( const QString& _proxy );
 
   /**
    * Set the proxy for HTTP transfer
+   * 
+   * This method has been deprecated, please
+   * use @ref setProxyFor.
    *
+   * @deprecated
    */
   static void setHttpProxy( const QString& _proxy );
+  
+  /*
+  * Sets the proxy for the protocol given by @p protocol.
+  *
+  * When setting the proxy for a given protocol, do not
+  * include any separator characters.  For example, to
+  * set the proxy info for the "ftp" protocol , simply
+  * use "ftp" and not "ftp://". However, the case does
+  * not matter as it is always converted to lower
+  * characters.
+  *
+  * @param protocol type of protocol to set proxy for
+  * @param _proxy the proxy server address
+  */
+  static void setProxyFor( const QString& /* protocol */, const QString& /* _proxy */ );
 
 
   /**

@@ -405,23 +405,38 @@ int KProtocolManager::maxCacheSize()
 
 QString KProtocolManager::ftpProxy()
 {
-  KConfig config("kioslaverc", true, false);
-  config.setGroup( "Proxy Settings" );
-  return config.readEntry( "FtpProxy" );
+    return proxyFor( "ftp" );
 }
 
 QString KProtocolManager::httpProxy()
 {
-  KConfig config("kioslaverc", true, false);
-  config.setGroup( "Proxy Settings" );
-  return config.readEntry( "HttpProxy" );
+    return proxyFor( "http" );
 }
 
 QString KProtocolManager::noProxyFor()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
-  return config.readEntry( "NoProxyFor" );
+  if( config.hasKey( "NoProxyFor" ) )  
+  {
+    return config.readEntry( "NoProxyFor" );
+  }
+  config.setGroup( QString::null );
+  return config.readEntry( "NoProxyFor" );    
+}
+
+QString KProtocolManager::proxyFor( const QString& protocol )
+{
+  QString key = protocol.lower();
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Proxy Settings" );
+  if( key =="http" || key == "ftp" &&
+     !config.hasKey( key + "Proxy" ) )
+  {
+    KConfigGroupSaver saver( &config, QString::null );
+    return ( key == "http" ) ? config.readEntry( "HttpProxy" ) : config.readEntry( "FtpProxy" );
+  }  
+  return config.readEntry( key + "Proxy" );    
 }
 
 QString KProtocolManager::remoteFileProtocol()
@@ -475,46 +490,59 @@ void KProtocolManager::setPersistentConnections( bool _mode )
   config.sync();
 }
 
-
-void KProtocolManager::setUseProxy( bool _mode )
-{
-  KConfig config("kioslaverc", false, false);
-  config.setGroup( QString::null );
-  config.writeEntry( "UseProxy", _mode );
-  config.sync();
-}
-
-
-void KProtocolManager::setFtpProxy( const QString& _proxy )
-{
-  KConfig config("kioslaverc", false, false);
-  config.setGroup( QString::null );
-  config.writeEntry( "FtpProxy", _proxy );
-  config.sync();
-}
-
-
-void KProtocolManager::setHttpProxy( const QString& _proxy )
-{
-  KConfig config("kioslaverc", false, false);
-  config.setGroup( QString::null );
-  config.writeEntry( "HttpProxy", _proxy );
-  config.sync();
-}
-
-
-void KProtocolManager::setNoProxyFor( const QString& _noproxy )
-{
-  KConfig config("kioslaverc", false, false);
-  config.setGroup( QString::null );
-  config.writeEntry( "NoProxyFor", _noproxy );
-  config.sync();
-}
-
 void KProtocolManager::setRemoteFileProtocol(const QString &remoteFileProtocol)
 {
   KConfig config("kioslaverc", false, false);
   config.setGroup( QString::null );
   config.writeEntry( "RemoteFileProtocol", remoteFileProtocol );
+  config.sync();
+}
+
+void KProtocolManager::setUseProxy( bool _mode )
+{
+  KSimpleConfig config("kioslaverc", false );
+  config.setGroup( QString::null );
+  if( config.hasKey( "UseProxy" ) )
+    config.deleteEntry( "UseProxy", true );
+  config.setGroup( "Proxy Settings" );
+  config.writeEntry( "UseProxy", _mode );
+  config.sync();
+}
+
+void KProtocolManager::setFtpProxy( const QString& _proxy )
+{
+    setProxyFor( "ftp", _proxy );
+}
+
+void KProtocolManager::setHttpProxy( const QString& _proxy )
+{
+    setProxyFor( "http", _proxy );
+}
+
+void KProtocolManager::setNoProxyFor( const QString& _noproxy )
+{
+  KSimpleConfig config( "kioslaverc", false );
+  config.setGroup( QString::null );
+  if( config.hasKey( "NoProxyFor" ) )
+    config.deleteEntry( "NoProxyFor", true );
+  config.setGroup( "Proxy Settings" );
+  config.writeEntry( "NoProxyFor", _noproxy );
+  config.sync();
+}
+
+void KProtocolManager::setProxyFor( const QString& protocol, const QString& _proxy )
+{
+  QString key = protocol.lower();
+  KSimpleConfig config( "kioslaverc", false );
+  config.setGroup( "Proxy Settings" );
+  if( key == "http" || key == "ftp" )
+  {
+    KConfigGroupSaver saver( &config, QString::null );
+    if( config.hasKey( "HttpProxy" ) )
+      config.deleteEntry( "HttpProxy", true );
+    else if( config.hasKey( "FtpProxy" ) )
+      config.deleteEntry( "FtpProxy", true );
+  }
+  config.writeEntry( key + "Proxy", _proxy );
   config.sync();
 }
