@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.61  1999/08/07 18:56:59  kulow
+   strip away the extension if it's .xpm and look for .png first and then .xpm
+
    Revision 1.60  1999/06/27 17:33:28  waba
    WABA: Updated docu, fixed directory scan order
 
@@ -318,10 +321,10 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
       if (path.right(4) == ".xpm") {
 	path.truncate(path.length() - 4); 
 	warning("stripping .xpm from icon %s", name.ascii());
+        full_path = locate(iconType, path + ".png");
+        if (full_path.isNull())
+            full_path = locate(iconType, path + ".xpm" );
       }
-      full_path = locate(iconType, path + ".png");
-      if (full_path.isNull())
-	full_path = locate(iconType, path + ".xpm" );
     }
     if (full_path.isNull() && always_valid)
 	full_path = locate(iconType, "unknown.xpm");
