@@ -51,9 +51,6 @@ public:
 	 * checks if eventname is a global event (exists in config/eventsrc)
 	 **/
 	bool isGlobal(const QString &eventname);
-	
-private:
-	Arts::SimpleSoundServer server;
 };
 
 

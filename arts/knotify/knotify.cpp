@@ -39,6 +39,31 @@
 #include <iostream.h>
 #include <qtextstream.h>
 
+/*
+ * This is global because it needs to be initialized *before* the KNotify
+ * DCOP object will accept requests (otherwise there may be reentrancy issues
+ * and race conditions
+ */
+
+Arts::SimpleSoundServer server;
+
+bool connectSoundServer()
+{
+	/*
+	 * obtain an object reference to the soundserver - retry sometimes, so
+	 * it will work during the startup sequence, even if artsd is started
+	 * some time after the first process requests knotify to do some
+	 * notifications
+	 */
+	for(int tries = 0; tries < 10; tries++)
+	{
+		server = Arts::Reference("global:Arts_SimpleSoundServer");
+		if(!server.isNull()) return true;
+		sleep(1);
+	}
+
+	return false;
+}
 
 int main(int argc, char **argv)
 {
@@ -63,6 +88,8 @@ int main(int argc, char **argv)
 	Arts::QIOManager qiomanager;
 	Arts::Dispatcher dispatcher(&qiomanager);
 
+	if(!connectSoundServer())
+		cerr << "artsd is not running, there will be no sound notifications.\n";
 
 	(void) new KNotify;
 
@@ -71,10 +98,6 @@ int main(int argc, char **argv)
 
 KNotify::KNotify() : QObject(), DCOPObject("Notify")
 {
-	// obtain an object reference to the soundserver
-	server = Arts::Reference("global:Arts_SimpleSoundServer");
-	if(server.isNull())
-		cerr << "artsd is not running, there will be no sound notifications.\n";
 }
 
 void KNotify::notify(const QString &event, const QString &fromApp,
