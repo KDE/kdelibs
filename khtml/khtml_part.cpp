@@ -99,7 +99,7 @@ namespace khtml
       enum Type { Frame, IFrame, Object };
 
       ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
-      
+
       ~ChildFrame() {  delete (KHTMLRun*) m_run; }
 
     RenderPart *m_frame;
@@ -1056,13 +1056,17 @@ void KHTMLPart::clear()
   {
     kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
     d->m_doc->detach();
-    d->m_doc->deref();
   }
-  d->m_doc = 0;
 
   // Moving past doc so that onUnload works.
   if ( d->m_jscript )
     d->m_jscript->clear();
+
+  // do not dereference the document before the jscript is cleared, as some destructors
+  // might still try to access the document.
+  if ( d->m_doc )
+    d->m_doc->deref();
+  d->m_doc = 0;
 
   delete d->m_decoder;
 
