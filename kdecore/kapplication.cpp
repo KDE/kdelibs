@@ -1941,7 +1941,7 @@ QPalette KApplication::createApplicationPalette()
 QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
 {
     QColor kde31Background( 238, 238, 230 );
-    QColor kde31Beige( 255,221,118 );
+    QColor kde31Beige( 103,141,178 );
 
     QColor kde31Button;
     if ( QPixmap::defaultDepth() > 8 )
