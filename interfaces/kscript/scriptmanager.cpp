@@ -45,9 +45,9 @@ bool KScriptManager::addScript( const QString &scriptDesktopFile)
 		KDesktopFile desktop(scriptDesktopFile, true);
 		m_scripts.insert(desktop.readName(), new ScriptInfo());
 		m_scripts[desktop.readName()]->scriptType = desktop.readType();
-		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readPath();
+		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readType();
 		m_scripts[desktop.readName()]->scriptFile = locate("data", localpath);
-#warning FIX ME
+#warning FIX ME - we need to decide where we will set the method for the script.
 //		m_scripts[desktop.readName()]->scriptMethod = tmpScriptMethod;
 		success = true;
 	}

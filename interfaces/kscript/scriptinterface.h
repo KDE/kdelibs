@@ -71,6 +71,7 @@ class KScriptClientInterface;
 		*	Abort the scripts run
 		**/
 		virtual void kill() =0;
+	protected:
 		/**
 		*	This is the method for sending feedback to applications.
 		*	example of how this works:
