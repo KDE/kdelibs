@@ -37,7 +37,6 @@ class QStringList;
   * may be used to indicate the end of a paragraph.
   *
   * @author Waldo Bastian (bastian@kde.org)
-  * @version $Id$
   */
 class KMessageBox
 {

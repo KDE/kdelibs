@@ -16,10 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/*
- * $Id$
- *
- */
+
 #include <qcheckbox.h>
 #include <qguardedptr.h>
 #include <qhbox.h>
@@ -54,7 +51,6 @@
   * as well as audible notification via @ref KNotifyClient
   *
   * @author Waldo Bastian (bastian@kde.org)
-  * @version $Id$
   */
 
 #ifdef __GNUC__
@@ -107,7 +103,10 @@ static QString qrichtextify( const QString& text )
   return lines.join(QString::null);
 }
 
-static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn, int options, const QString &details=QString::null)
+static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
+                             const QString &text, const QStringList &strlist,
+                             const QString &ask, bool *checkboxReturn,
+                             int options, const QString &details=QString::null)
 {
     QVBox *topcontents = new QVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
@@ -390,26 +389,8 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &dontAskAgainName,
                           int options)
 {
-    ButtonCode res;
-    if ( !shouldBeShownYesNo(dontAskAgainName, res) )
-        return res;
-
-    KDialogBase *dialog= new KDialogBase(
-                       caption.isEmpty() ? i18n("Warning") : caption,
-                       KDialogBase::Yes | KDialogBase::No,
-                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
-                       parent, "warningYesNo", true, true,
-                       buttonYes, buttonNo);
-
-    bool checkboxResult = false;
-    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(),
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
-                       &checkboxResult, options);
-    res = (result==KDialogBase::Yes ? Yes : No);
-
-    if (checkboxResult)
-        saveDontShowAgainYesNo(dontAskAgainName, res);
-    return res;
+   return warningYesNoList(parent, text, QStringList(), caption,
+                       buttonYes, buttonNo, dontAskAgainName, options);
 }
 
 int
@@ -673,7 +654,9 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
-int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption, const KGuiItem &buttonYes, const KGuiItem &buttonNo, int options )
+int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text,
+                             const QString &caption, const KGuiItem &buttonYes,
+                             const KGuiItem &buttonNo, int options )
 {
     switch (type) {
         case QuestionYesNo:
