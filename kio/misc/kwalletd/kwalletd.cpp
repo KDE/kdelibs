@@ -134,6 +134,12 @@ int KWalletD::open(const QString& wallet) {
 			cfg.writeEntry("Use One Wallet", !wiz->_networkWallet->isChecked());
 			cfg.sync();
 			reconfigure();
+
+			if (!wiz->_useWallet->isChecked()) {
+				delete wiz;
+				return -1;
+			}
+
 			// Create the wallet
 			KWallet::Backend *b = new KWallet::Backend(KWallet::Wallet::LocalWallet());
 			QByteArray p;
