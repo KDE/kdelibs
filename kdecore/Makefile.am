@@ -40,7 +40,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kckey.cpp kaccel.cpp kglobalaccel.cpp 
 
 
-libkdecore_la_LDFLAGS = -version-info 1:0
+libkdecore_la_LDFLAGS = -version-info 2:0
 libkdecore_la_LIBADD = 
 
 BUILT_SOURCES = ksock.moc drag.moc  kapp.moc kprocess.moc	\

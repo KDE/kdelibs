@@ -24,7 +24,7 @@ EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -version-info 1:0  
+libkdeui_la_LDFLAGS = -version-info 2:0  
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \

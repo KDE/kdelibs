@@ -25,8 +25,8 @@ lib_LTLIBRARIES = libjscript.la
 YACC		= bison -y
 LEX		= flex
 YFLAGS 		= -d -p yyjscript
-SOMAJOR 	= 0
-SOMINOR 	= 1
+SOMAJOR 	= 2
+SOMINOR 	= 0
 
 ####### Files
 

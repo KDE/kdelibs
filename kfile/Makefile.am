@@ -48,7 +48,7 @@ EXTRA_DIST = configure.xpm
 toolbardir = $(kde_toolbardir)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
-libkfile_la_LDFLAGS = -version-info 1:0 $(LDFLAGS)
+libkfile_la_LDFLAGS = -version-info 2:0 $(LDFLAGS)
 libkfile_la_LIBADD = -lqt -lXext -lX11 $(LIBSOCKET)
 
 check_PROGRAMS = kfstest
