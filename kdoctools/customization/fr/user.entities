@@ -6,6 +6,17 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!-- ROLES_OF_TRANSLATORS -->
+<!ENTITY roleChristopheDioux    '<othercredit role="translator"><firstname>Christophe</firstname><surname>Dioux</surname><affiliation><address><email>chdioux@club-internet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY roleEricBischoff       '<othercredit role="translator"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY roleGerardDelafond     '<othercredit role="translator"><firstname>Gérard</firstname><surname>Delafond</surname><affiliation><address><email>g.delafond@medsyn.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+
+<!-- CREDITS FOR TRANSLATORS -->
+<!ENTITY creditChristopheDioux  '<para>Traduction française par Christophe Dioux <email>chdioux@club-internet.fr</email>.</para>'>
+<!ENTITY creditEricBischoff     '<para>Traduction française par Éric Bischoff <email>e.bischoff@noos.fr</email>.</para>'>
+<!ENTITY creditGerardDelafond   '<para>Traduction française par Gérard Delafond <email>g.delafond@medsyn.fr</email>.</para>'>
+
+<!-- OTHER USER ENTITIES -->
 <!ENTITY Alt			"<keycap>Alt</keycap>">
 <!ENTITY Correction     	"<keycap>Correction</keycap>">                            <!-- English: &Backspace; -->	
 <!ENTITY BGS            	"bouton <mousebutton>gauche</mousebutton> de la souris">  <!-- English: &LMB; -->
