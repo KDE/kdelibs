@@ -199,7 +199,7 @@ void Ftp::closeConnection()
 
   m_bLoggedOn = false;
   m_bFtpStarted = false;
-  ready();
+  //ready()
 }
 
 /*
@@ -1236,8 +1236,6 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
 
   m_bytesLeft = m_size - offset;
 
-  ready();
-  // TODO gettingFile( usrc );
   totalSize( m_size );
   int processed_size = 0;
   time_t t_start = time( 0L );
@@ -1360,11 +1358,6 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
 
   if (! openCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
     return;
-
-  // We are ready for receiving data
-  ready();
-
-  kDebugInfo( 7102, "Put: Ready" );
 
   int result;
   // Loop until we got 'dataEnd'
