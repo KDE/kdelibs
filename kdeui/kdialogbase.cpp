@@ -940,7 +940,10 @@ void KDialogBase::setButtonTip( ButtonCode id, const QString &text )
   QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
-    QToolTip::add( pb, text );
+    if (text.isEmpty())
+      QToolTip::remove( pb );
+    else
+      QToolTip::add( pb, text );
   }
 }
 
@@ -950,7 +953,10 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
   QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
-    QWhatsThis::add( pb, text );
+    if (text.isEmpty())
+      QWhatsThis::remove( pb );
+    else
+      QWhatsThis::add( pb, text );
   }
 }
 
