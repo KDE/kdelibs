@@ -478,13 +478,7 @@ RenderFlow::insertFloat(RenderObject *o)
     QListIterator<SpecialObject> it(*specialObjects);
     SpecialObject* f;
     while ( (f = it.current()) ) {
-        if (f->node == o)
-        {
-            f->width = o->width() + o->marginLeft() + o->marginRight();
-            f->startY = -1;
-            f->endY = -1;
-            return;
-        }
+        if (f->node == o) return;
         ++it;
     }
 
