@@ -822,7 +822,7 @@ void KHistoryCombo::clearHistory()
 
 void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
 {
-    if ( menu )
+    if ( menu && !lineEdit()->text().isEmpty())
     {
         menu->insertSeparator();
         menu->insertItem( i18n("Empty contents"), this, SLOT( slotClear()));
