@@ -5,7 +5,7 @@ set -e           # exit on error
 set -x           # be verbose 
 rm -rf java-build-dir/*
 mkdir -p java-build-dir/images
-cp images/*.gif java-build-dir/images/
+cp images/*.gif images/*.png java-build-dir/images/
 pwd=`pwd`;
 javac -d java-build-dir -deprecation -target 1.2 `find org/kde netscape -name *.java` \
  && cd java-build-dir && jar c0vf $pwd/kjava.jar images `find org/kde netscape -name *.class`
