@@ -255,7 +255,13 @@ KCursorPrivateAutoHideEventFilter::KCursorPrivateAutoHideEventFilter( QWidget* w
 
 KCursorPrivateAutoHideEventFilter::~KCursorPrivateAutoHideEventFilter()
 {
-    m_widget->setMouseTracking( m_wasMouseTracking );
+    if( m_widget != NULL )
+        m_widget->setMouseTracking( m_wasMouseTracking );
+}
+
+void KCursorPrivateAutoHideEventFilter::resetWidget()
+{
+    m_widget = NULL;
 }
 
 void KCursorPrivateAutoHideEventFilter::hideCursor()
@@ -417,6 +423,7 @@ void KCursorPrivate::slotWidgetDestroyed( QObject* o )
 
     Q_ASSERT( filter != NULL );
 
+    filter->resetWidget(); // so that dtor doesn't access it
     delete filter;
 }
 

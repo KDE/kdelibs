@@ -45,6 +45,8 @@ public:
     ~KCursorPrivateAutoHideEventFilter();
 
     virtual bool eventFilter( QObject *o, QEvent *e );
+    
+    void resetWidget();
 
 private slots:
     void hideCursor();
