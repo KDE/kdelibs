@@ -19,7 +19,7 @@ kcatalogue.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp
 kckey.cpp
 kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>
-kcompletion.cpp
+kcompletion.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 kcompletionbase.cpp
 kconfig.cpp		Waldo Bastian <bastian@kde.org>
 kconfigbackend.cpp	Waldo Bastian <bastian@kde.org>
@@ -51,7 +51,7 @@ kmimesourcefactory.cpp
 kmultipledrag.cpp
 knotifyclient.cpp
 kpalette.cpp		Waldo Bastian <bastian@kde.org>
-kpixmapprovider.cpp
+kpixmapprovider.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
 kprocctrl.cpp		Waldo Bastian <bastian@kde.org>
 kprocess.cpp		Waldo Bastian <bastian@kde.org>
 kprocio.cpp		Waldo Bastian <bastian@kde.org>
