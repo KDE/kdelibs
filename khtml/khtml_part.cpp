@@ -2549,7 +2549,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if ( url.isEmpty() && mimetype.isEmpty() )
   {
       child->m_bCompleted = true;
-      return; 
+      return true; 
   }
 
   if (child->m_bNotify)
