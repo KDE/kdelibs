@@ -691,8 +691,10 @@ void KHTMLView::print()
         QApplication::setOverrideCursor( waitCursor );
         // set up QPrinter
         printer->setFullPage(false);
-        printer->setCreator("KDE 2.0 HTML Library");
-        //printer->setDocName(m_part->url());
+        printer->setCreator("KDE 2.1 HTML Library");
+        QString docname = m_part->xmlDocImpl()->URL().string();
+        if ( !docname.isEmpty() )
+	    printer->setDocName(docname);
 
         QPainter *p = new QPainter;
         p->begin( printer );
@@ -736,7 +738,7 @@ void KHTMLView::print()
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
         // We print the bottom 'overlap' units again at the top of the next page.
-        int overlap = 10;
+        int overlap = 30;
         p->setClipRect(0,0, pageWidth, pageHeight);
         if(root->docWidth() > metrics.width()) {
             double scale = ((double) metrics.width())/((double) root->docWidth());
