@@ -282,6 +282,10 @@ public:
      */
     virtual bool isFile() const { return true; }
 
+    /**
+     * Extracts the file to the directory @p dest
+     * @since 3.1
+     */
     void copyTo(const QString& dest) const;
 
 private:
@@ -331,7 +335,13 @@ public:
      */
     virtual bool isDirectory() const { return true; }
 
-    void copyTo(const QString& dest, bool recursive = true) const;
+    /**
+     * Extracts all entries in this archive directory to the directory
+     * @p dest. If @p recursive is true, subdirectories are extracted
+     * as well.
+     * @since 3.1
+     */
+     void copyTo(const QString& dest, bool recursive = true) const;
 
 private:
     QDict<KArchiveEntry> m_entries;
