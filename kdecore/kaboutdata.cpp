@@ -77,17 +77,24 @@ public:
     KAboutDataPrivate()
         : translatorName("_: NAME OF TRANSLATORS\nYour names")
         , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails")
-        {};
+        , productName(0)
+        , programLogo(0)
+        {}
+    ~KAboutDataPrivate()
+        {
+             delete programLogo;
+        }
     const char *translatorName;
     const char *translatorEmail;
     const char *productName;
+    QImage* programLogo;
 };
 
 
 
 KAboutData::KAboutData( const char *appName,
                         const char *programName,
-			const char *version,
+                        const char *version,
                         const char *shortDescription,
 			int licenseType,
 			const char *copyrightStatement,
@@ -105,7 +112,6 @@ KAboutData::KAboutData( const char *appName,
   mBugEmailAddress( bugsEmailAddress )
 {
    d = new KAboutDataPrivate;
-   d->productName = 0;
 
    if( appName ) {
      const char *p = strrchr(appName, '/');
@@ -241,6 +247,21 @@ KAboutData::programName() const
       return QString::null;
 }
 
+QImage
+KAboutData::programLogo() const
+{
+    return d->programLogo ? (*d->programLogo) : QImage();
+}
+
+void
+KAboutData::setProgramLogo(const QImage& image)
+{
+    if (!d->programLogo)
+       d->programLogo = new QImage( image );
+    else
+       *d->programLogo = image;
+}
+
 QString
 KAboutData::version() const
 {
@@ -355,7 +376,7 @@ KAboutData::license() const
   QString result;
   if (!copyrightStatement().isEmpty())
     result = copyrightStatement() + "\n\n";
-  
+
   QString l;
   QString f;
   switch ( mLicenseKey )
@@ -392,7 +413,7 @@ KAboutData::license() const
                    "Please check the documentation or the source for any\n"
                    "licensing terms.\n");
        return result;
-  }
+      }
 
   if (!l.isEmpty())
      result += i18n("This program is distributed under the terms of the %1.").arg( l );

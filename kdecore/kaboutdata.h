@@ -21,6 +21,7 @@
 
 #include <qvaluelist.h>
 #include <qstring.h>
+#include <qimage.h>
 #include <klocale.h>
 
 #ifndef _KABOUTDATA_H_
@@ -48,7 +49,7 @@ class KAboutDataPrivate;
  *                   "joe.user@host.org", 0);
  *   KCmdLineArgs::init(argc, argv, &about);
  */
-class KAboutPerson
+class KDECORE_EXPORT KAboutPerson
 {
 public:
     /**
@@ -128,7 +129,7 @@ class KAboutTranslatorPrivate;
  * translator information is generated dynamically from the translation
  * of a dummy string.
 */
-class KAboutTranslator
+class KDECORE_EXPORT KAboutTranslator
 {
 public:
     /**
@@ -177,7 +178,7 @@ private:
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  * @version $Id$
  */
-class KAboutData
+class KDECORE_EXPORT KAboutData
 {
   public:
   /**
@@ -359,7 +360,18 @@ class KAboutData
      *        Example: I18N_NOOP("Advanced Text Editor").
      */
     void setProgramName( const char* programName );
-    
+
+    /**
+     * Defines the program logo.
+     * Use this if you need to have application logo 
+     * in AboutData other than application icon.
+     *
+     * @param image logo image.
+     * @see programLogo()
+     * @since 3.4
+    */
+    void setProgramLogo(const QImage& image);
+
     /**
      * Defines the program version string.
      *
@@ -443,11 +455,20 @@ class KAboutData
      * @return the product name.
      */
     const char *productName() const;
+
     /**
      * Returns the translated program name.
      * @return the program name (translated).
      */
     QString programName() const;
+
+    /**
+     * Returns the program logo image. 
+     * @return the program logo data or null image if there is 
+     * no custom application logo defined.
+     * @since 3.4
+     */
+    QImage programLogo() const;
 
     /**
      * Returns the program's version.
