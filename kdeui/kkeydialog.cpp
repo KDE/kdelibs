@@ -848,7 +848,7 @@ void KKeyChooser::altClicked()
 void KKeyChooser::changeKey()
 {
     d->bChange->setEditing(true);
-    d->lInfo->setText( i18n("Press the wanted key") );
+    d->lInfo->setText( i18n("Press the desired key") );
     d->lInfo->setEnabled( true );
 
     d->bKeyIntercept = true;

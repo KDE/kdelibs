@@ -397,8 +397,8 @@ void KBugReport::slotOk( void )
                 "Please note that this severity is intended only for bugs that</p>"
                 "<ul><li>make unrelated software on the system (or the whole system) break</li>"
                 "<li>cause serious data loss</li>"
-                "<li>introdruce a security hole on the system where the affected package is installed</li></ul>\n"
-                "<p>Does the bug you are reporting cause any of the above damages? "
+                "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
+                "<p>Does the bug you are reporting cause any of the above damage? "
                 "If it does not, please select a lower severity. Thank you!</p>" ) ) == KMessageBox::No )
                 return;
             break;
@@ -408,8 +408,8 @@ void KBugReport::slotOk( void )
                 "Please note that this severity is intended only for bugs that</p>"
                 "<ul><li>make the package in question unusable or mostly so</li>"
                 "<li>cause data loss</li>"
-                "<li>introdruce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
-                "<p>Does the bug you are reporting cause any of the above damages? "
+                "<li>introduce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
+                "<p>Does the bug you are reporting cause any of the above damage? "
                 "If it does not, please select a lower severity. Thank you!</p>" ) ) == KMessageBox::No )
                 return;
             break;
