@@ -13,9 +13,9 @@ kimg_tiff_la_SOURCES = tiffr.cpp
 kimg_tiff_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
 kimg_tiff_la_LIBADD = $(LIBTIFF) 
 
-kimg_g3_la_SOURCES = g3r.cpp
-kimg_g3_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
-kimg_g3_la_LIBADD = $(LIBTIFF)   
+#kimg_g3_la_SOURCES = g3r.cpp
+#kimg_g3_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
+#kimg_g3_la_LIBADD = $(LIBTIFF)   
 
 kimg_xview_la_SOURCES = xview.cpp
 kimg_xview_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
