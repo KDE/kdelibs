@@ -356,7 +356,7 @@ void HTMLFormElementImpl::prepareReset()
 #endif
 
     dispatchHTMLEvent(EventImpl::RESET_EVENT,true,false);
-	
+
     reset();
 }
 
@@ -1195,33 +1195,23 @@ void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->id() == EventImpl::DOMACTIVATE_EVENT) {
-	if (!m_form)
-	    return;
-	
-	// ### should this be done on click instead? what about keyboard activation of control?
-	if (m_type == SUBMIT) {
-	    m_activeSubmit = true;
-	    m_form->prepareSubmit();
-	    m_activeSubmit = false; // in case we were canceled
-	}
-	else if (m_type == RESET)
-	    m_form->prepareReset();
-    }
-
-    if (evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE) {
+    if (evt->id() == EventImpl::CLICK_EVENT &&
+        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)) {
 	if (!m_form || !m_render)
 	    return;
-	
+
 	// ### actually submit image on DOMActivate event?
 	MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
 	int offsetX, offsetY;
 	m_render->absolutePosition(offsetX,offsetY);
 	xPos = me->clientX()-offsetX;
 	yPos = me->clientY()-offsetY;
-	
+
 	m_clicked = true;
-	m_form->prepareSubmit();
+        if(m_type == RESET)
+            m_form->prepareReset();
+        else
+            m_form->prepareSubmit();
     }
 }
 
