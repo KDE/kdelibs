@@ -1496,7 +1496,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
   QString str = intstr.simplifyWhiteSpace().lower();
   QString Format = timeFormat().simplifyWhiteSpace();
   if (flags & WithoutSeconds)
-    Format.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
+    Format.remove(QRegExp(".%S"));
 
   int hour = -1, minute = -1;
   int second = ( flags & WithoutSeconds == 0 ) ? -1 : 0; // don't require seconds
