@@ -804,7 +804,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
             }
         }
 
-	if (evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
+	if (evt->id() == EventImpl::KHTML_KEYPRESS_EVENT) {
 	    TextEventImpl * k = static_cast<TextEventImpl *>(evt);
 	    int key = k->qKeyEvent ? k->qKeyEvent->key() : 0;
 	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
