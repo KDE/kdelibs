@@ -40,139 +40,146 @@
 typedef QMap<QString, QString> ViewMap;
 
 // KDE 4.0: remove this BC keeping stub
-void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ ) {
+void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ ) 
+{
     ;
 }
 
 /* antlarr: KDE 4: Make it const QString & */
-ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( QString filename, bool del ) {
+ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( QString filename, bool del ) 
+{
     QFile f( filename );
     ViewMap views;
 
-    if ( f.open( IO_ReadOnly ) ) {
+    if ( !f.open( IO_ReadOnly ) )
+        return views;
 
-        QCString s(4096);
+    QCString s( 4096 );
 
-        QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
-        Q_ASSERT( codec );
-        if ( !codec ) 
-           return views;
+    QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
+    Q_ASSERT( codec );
+    if ( !codec ) 
+        return views;
 
-        while ( f.readLine(s.data(), LINELIMIT) >=0 ) {
-            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than LINELIMIT. Skipping.
-            {
-               kdWarning() << "Crash bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
-               continue;
-            }
-            // KStringHandler::csqueeze()
-            QString t = codec->toUnicode( s.stripWhiteSpace() );
-            QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
-            rx.setMinimal( TRUE );
-            if ( rx.exactMatch(t) ) {
-               if ( rx.cap(1) == "opened" )
-                  views[rx.cap(2)] = rx.cap(3);
-               else if ( rx.cap(1) == "close" )
-                  views.remove( rx.cap(2) );
-            }
+    while ( f.readLine( s.data(), LINELIMIT ) >=0 ) 
+    {
+        if ( s[s.length()-1] != '\n' )
+        {
+            kdWarning() << "Crash bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
+            continue;
         }
-
-        f.close();
-
-        if ( del ) 
-           f.remove();
+        QString t = codec->toUnicode( s.stripWhiteSpace() );
+        QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
+        rx.setMinimal( TRUE );
+        if ( rx.exactMatch( t ) ) 
+        {
+            if ( rx.cap(1) == "opened" )
+                views[rx.cap(2)] = rx.cap(3);
+            else if ( rx.cap(1) == "close" )
+                views.remove( rx.cap(2) );
+        }
     }
+
+    f.close();
+
+    if ( del ) 
+        f.remove();
 
     return views;
 }
 
-QStringList KCrashBookmarkImporter::getCrashLogs() {
+QStringList KCrashBookmarkImporter::getCrashLogs() 
+{
+    QMap<QString, bool> activeLogs;
 
-   QMap<QString, bool> activeLogs;
+    DCOPClient* dcop = kapp->dcopClient();
 
-   DCOPClient* dcop = kapp->dcopClient();
+    QCStringList apps = dcop->registeredApplications();
+    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it ) 
+    {
+        QCString &clientId = *it;
 
-   QCStringList apps = dcop->registeredApplications();
-   for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it ) {
-      QCString &clientId = *it;
+        if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
+            continue;
 
-      if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
-         continue;
+        QByteArray data, replyData;
+        QCString replyType;
+        QDataStream arg( data, IO_WriteOnly );
 
-      QByteArray data, replyData;
-      QCString replyType;
-      QDataStream arg( data, IO_WriteOnly );
+        if ( !dcop->call( clientId.data(), "KonquerorIface", 
+                          "crashLogFile()", data, replyType, replyData) ) 
+        {
+            kdWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
+            continue;
+        }
 
-      if ( !dcop->call( clientId.data(), "KonquerorIface", "crashLogFile()", data, replyType, replyData) ) {
-         kdWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
-
-      } else {
-         QDataStream reply( replyData, IO_ReadOnly );
-
-         if ( replyType == "QString" ) {
+        QDataStream reply( replyData, IO_ReadOnly );
+        if ( replyType == "QString" ) 
+        {
             QString ret;
             reply >> ret;
             activeLogs[ret] = true;
-         }
-      }
-   }
+        }
+    }
 
-   QDir d( crashBookmarksDir() );
-   d.setSorting( QDir::Time );
-   d.setFilter( QDir::Files );
-   d.setNameFilter( "konqueror-crash-*.log" );
+    QDir d( crashBookmarksDir() );
+    d.setSorting( QDir::Time );
+    d.setFilter( QDir::Files );
+    d.setNameFilter( "konqueror-crash-*.log" );
 
-   const QFileInfoList *list = d.entryInfoList();
-   QFileInfoListIterator it( *list );
+    const QFileInfoList *list = d.entryInfoList();
+    QFileInfoListIterator it( *list );
 
-   QFileInfo *fi;
-   QStringList crashFiles;
+    QFileInfo *fi;
+    QStringList crashFiles;
 
-   int count = 0;
-   for ( ; ( fi = it.current() ) != 0; ++it ) {
-      bool dead = !activeLogs.contains( fi->absFilePath() );
-      if ( dead )
-         crashFiles << fi->absFilePath();
-      if ( count++ > 20 )
-         break;
-   }
+    int count = 0;
+    for ( ; ( fi = it.current() ) != 0; ++it ) 
+    {
+        bool dead = !activeLogs.contains( fi->absFilePath() );
+        if ( dead )
+            crashFiles << fi->absFilePath();
+        if ( count++ > 20 )
+            break;
+    }
 
-   return crashFiles;
+    return crashFiles;
 }
 
 void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) {
-   QStringList crashFiles = KCrashBookmarkImporter::getCrashLogs();
-   int outerFolder = (crashFiles.count() > 1);
-   int n = 1;
-   for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) {
-      ViewMap views;
-      views = parseCrashLog_noemit( *it, del );
-      if (outerFolder && (views.count() > 0))
-         emit newFolder( QString("Konqueror Window %1").arg(n++), false, "" );
-      for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) {
-          emit newBookmark( it.data(), it.data().latin1(), QString("") );
-      }
-      if (outerFolder && (views.count() > 0))
-         emit endFolder();
-   }
+    QStringList crashFiles = KCrashBookmarkImporter::getCrashLogs();
+    int outerFolder = ( crashFiles.count() > 1 );
+    int n = 1;
+    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) {
+        ViewMap views;
+        views = parseCrashLog_noemit( *it, del );
+        if ( outerFolder && (views.count() > 0) )
+            emit newFolder( QString("Konqueror Window %1").arg(n++), false, "" );
+        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) {
+            emit newBookmark( it.data(), it.data().latin1(), QString("") );
+        }
+        if ( outerFolder && (views.count() > 0) )
+            emit endFolder();
+    }
 }
 
 QString KCrashBookmarkImporter::crashBookmarksDir() {
-   static KCrashBookmarkImporterImpl importer;
-   return importer.findDefaultLocation();
+    static KCrashBookmarkImporterImpl importer;
+    return importer.findDefaultLocation();
 }
 
 void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete ) {
-   m_shouldDelete = shouldDelete;
+    m_shouldDelete = shouldDelete;
 }
 
 void KCrashBookmarkImporterImpl::parse() {
-   KCrashBookmarkImporter importer( QString::null );
-   setupSignalForwards( &importer, this );
-   importer.parseCrashBookmarks( m_shouldDelete );
+    KCrashBookmarkImporter importer( QString::null );
+    setupSignalForwards( &importer, this );
+    importer.parseCrashBookmarks( m_shouldDelete );
 }
 
 QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const {
-   return locateLocal( "tmp", "" );
+    return locateLocal( "tmp", "" );
 }
 
 #include "kbookmarkimporter_crash.moc"
