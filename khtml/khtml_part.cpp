@@ -1521,25 +1521,29 @@ void KHTMLPart::slotFinishedParsing()
 
 void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObject *obj )
 {
-  if ( obj && obj->type() == khtml::CachedObject::Image ) {
-    d->m_totalObjectCount++;
-    KHTMLPart* p = parentPart();
-    if ( p )
-      p->slotLoaderRequestStarted( dl, obj );
-    else if ( d->m_loadedObjects <= d->m_totalObjectCount )
-        QTimer::singleShot( 200, this, SLOT( slotProgressUpdate() ) );
+  if ( obj && obj->type() == khtml::CachedObject::Image && d->m_doc && d->m_doc->docLoader() == dl ) {
+    KHTMLPart* p = this;
+    while ( p ) {
+      KHTMLPart* op = p;
+      p->d->m_totalObjectCount++;
+      p = p->parentPart();
+      if ( !p && d->m_loadedObjects <= d->m_totalObjectCount )
+        QTimer::singleShot( 200, op, SLOT( slotProgressUpdate() ) );
+    }
   }
 }
 
 void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject *obj )
 {
-  if ( obj && obj->type() == khtml::CachedObject::Image ) {
-    d->m_loadedObjects++;
-    KHTMLPart* p = parentPart();
-    if ( p )
-      p->slotLoaderRequestDone( dl, obj );
-    else if ( d->m_loadedObjects <= d->m_totalObjectCount && d->m_jobPercent >= 100 )
-        QTimer::singleShot( 200, this, SLOT( slotProgressUpdate() ) );
+  if ( obj && obj->type() == khtml::CachedObject::Image && d->m_doc && d->m_doc->docLoader() == dl ) {
+    KHTMLPart* p = this;
+    while ( p ) {
+      KHTMLPart* op = p;
+      p->d->m_loadedObjects++;
+      p = p->parentPart();
+      if ( !p && d->m_loadedObjects <= d->m_totalObjectCount && d->m_jobPercent >= 100 )
+        QTimer::singleShot( 200, op, SLOT( slotProgressUpdate() ) );
+    }
   }
 
   checkCompleted();
@@ -1553,17 +1557,16 @@ void KHTMLPart::slotProgressUpdate()
   else
     percent = d->m_jobPercent;
 
-  if ( d->m_loadedObjects <= d->m_totalObjectCount )
+  if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
     emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded", "%1 of %n Images loaded", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
-
-  if ( percent >= 100 && !parentPart())
-      emit setStatusBarText(i18n("Done."));
 
   emit d->m_extension->loadingProgress( percent );
 }
 
 void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
 {
+  qDebug( "slotJobSpeed: %d", speed );
+
   emit d->m_extension->speedProgress( speed );
 }
 
@@ -1571,7 +1574,8 @@ void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
 {
   d->m_jobPercent = percent;
 
-  QTimer::singleShot( 0, this, SLOT( slotProgressUpdate() ) );
+  if ( !parentPart() )
+    QTimer::singleShot( 0, this, SLOT( slotProgressUpdate() ) );
 }
 
 void KHTMLPart::checkCompleted()
@@ -1683,7 +1687,6 @@ void KHTMLPart::checkEmitLoadEvent()
 void KHTMLPart::emitLoadEvent()
 {
   d->m_bLoadEventEmitted = true;
-  kdDebug(6050) << "KHTMLPart::emitLoadEvent " << this << endl;
 
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
@@ -1762,7 +1765,7 @@ void KHTMLPart::slotRedirect()
   QString target;
   u = splitUrlTarget( u, &target );
   KParts::URLArgs args;
-  args.reload = true; 
+  args.reload = true;
   args.setLockHistory( true );
   urlSelected( u, 0, 0, target, args );
 }
