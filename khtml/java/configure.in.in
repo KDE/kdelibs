@@ -1,4 +1,5 @@
 dnl don't remove
 dnl AC_OUTPUT(khtml/java/kjava.policy)
-KDE_EXPAND_MAKEVAR(${kde_datadir}/kjava/-, KJAVA_POLICYPATH)
+KJAVA_POLICYPATH=${kde_datadir}/kjava/-
+KDE_EXPAND_MAKEVAR(KJAVA_POLICYPATH, KJAVA_POLICYPATH)
 AC_SUBST(KJAVA_POLICYPATH)
