@@ -5,7 +5,7 @@ Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
 Standards-Version: 3.1.1
 
-Package: kdelibs3-nossl
+Package: kdelibs3
 Architecture: any
 Section: non-US/main
 Replaces: kdelibs3-cvs, kdelibs3-nossl
@@ -26,7 +26,7 @@ Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
  is needed for developing KDE related packages.
 
-Package: kdelibs3-nossl-dev
+Package: kdelibs3-dev
 Architecture: any
 Section: non-US/main
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev
