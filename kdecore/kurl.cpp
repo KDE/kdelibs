@@ -183,7 +183,7 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
   while( i < old_length )
   {
     unsigned int character = segment[ i++ ].unicode();
-    if ((character == ' ') || (character > 255))
+    if ((character <= ' ') || (character > 255))
        bKeepEncoded = false;
     if (character == '%' )
     {
