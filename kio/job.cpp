@@ -402,10 +402,15 @@ void TransferJob::slotFinished()
                 int specialcmd;
                 istream >> specialcmd;
                 assert(specialcmd == 1); // you have to switch() here if other cmds are added
-                istream >> dummyStr >> dummyStr;
-                m_packedArgs.truncate(0);
-                QDataStream stream( m_packedArgs, IO_WriteOnly );
-                stream << specialcmd << m_url.path() << m_url.query();
+                if (specialcmd == 1) // Assume HTTP POST
+                {
+                   istream >> dummyStr >> dummyStr;
+                   Q_INT8 iReload = 1;
+                   m_packedArgs.truncate(0);
+                   QDataStream stream( m_packedArgs, IO_WriteOnly );
+                   stream << m_url.path() << m_url.query() << iReload;
+                   m_command = CMD_GET;
+                }
                 break;
             }
         }
