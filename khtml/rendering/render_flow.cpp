@@ -281,7 +281,7 @@ void RenderFlow::layout()
     }
 
     layoutSpecialObjects();
-    
+
     setLayouted();
 }
 
@@ -710,13 +710,37 @@ RenderFlow::floatBottom()
 int
 RenderFlow::lowestPosition()
 {
-    if (!specialObjects) return m_height;
-    int bottom=m_height;
-    SpecialObject* r;	
-    QListIterator<SpecialObject> it(*specialObjects);
-    for ( ; (r = it.current()); ++it )
-	if (r->type <= SpecialObject::FloatRight && r->endY>bottom)
-	    bottom=r->endY;
+    int bottom = m_height + marginBottom();
+    int lp = 0;
+    if ( !m_childrenInline ) {
+	RenderObject *last = lastChild();
+	while( last && (last->isPositioned() || last->isFloating()) )
+	    last = last->previousSibling();
+	if( last )
+	    lp = yPos() + last->lowestPosition();
+    }
+    
+    if(  lp > bottom ) 
+	bottom = lp;
+	
+    //kdDebug(0) << renderName() << " bottom = " << bottom << endl;
+
+    if (specialObjects) {
+	SpecialObject* r;	
+	QListIterator<SpecialObject> it(*specialObjects);
+	for ( ; (r = it.current()); ++it ) {
+	    lp = 0;
+	    if ( r->type < SpecialObject::Positioned ) {
+		lp = r->startY + r->node->lowestPosition();
+		//kdDebug(0) << r->node->renderName() << " lp = " << lp << "startY=" << r->startY << endl;
+	    } else if ( r->type <= SpecialObject::RelPositioned ) {
+		lp = r->node->yPos() + r->node->lowestPosition();
+	    }
+	    if( lp > bottom)
+		bottom = lp;
+	}
+    }
+    //kdDebug(0) << renderName() << " bottom = " << bottom << endl;
     return bottom;
 }
 

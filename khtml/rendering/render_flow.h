@@ -134,6 +134,8 @@ protected:
 	SpecialObject() {
 	    count = 0;
 	    noPaint = false;
+	    startY = 0;
+	    endY = 0;
 	}
 	enum Type {
 	    FloatLeft,

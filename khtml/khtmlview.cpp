@@ -217,7 +217,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
 	pbHeight = PAINT_BUFFER_HEIGHT;
     }
-    
+
     if(d->useSlowRepaints) {
 	//kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning

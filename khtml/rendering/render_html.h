@@ -39,6 +39,7 @@ namespace khtml {
 	virtual void setStyle(RenderStyle *style);	
 	virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
 	virtual void repaint();
+	virtual void layout();
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);

@@ -59,14 +59,14 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
     QColor c = m_style->backgroundColor();
     CachedImage *bg = m_bgImage;
-    
+
     if( firstChild() ) {
 	if( !c.isValid() )
 	    c = firstChild()->style()->backgroundColor();
 	if( !bg )
 	    bg = firstChild()->backgroundImage();
     }
-    
+
     int w = width();
     int h = height();
 
@@ -157,4 +157,16 @@ void RenderHtml::repaint()
     int bw = m_width + marginLeft() + marginRight() + borderLeft() + borderRight();
     int bh = m_height + marginTop() + marginBottom() + borderTop() + borderBottom();
     repaintRectangle(bx, by, bw, bh);
+}
+
+void RenderHtml::layout()
+{
+    RenderFlow::layout();
+    
+    //kdDebug(0) << renderName() << " height = " << m_height << endl;
+    int lp = lowestPosition();
+    if( m_height < lp )
+	m_height = lp;
+
+    //kdDebug(0) << "docHeight = " << m_height << endl;
 }
