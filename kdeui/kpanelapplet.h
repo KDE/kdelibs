@@ -341,6 +341,7 @@ protected:
      * Register widgets that can receive keyboard focus with this this method
      * This call results in an eventFilter being places on the widget.
      * @param widget the widget to watch for keyboard focus
+     * @param watch whether to start watching the widget, or to stop doing so
      * @since 3.4
      */
     void watchForFocus(QWidget* widget, bool watch = true);
