@@ -80,7 +80,7 @@
 
 # OGG files
 0       string          OggS            application/x-ogg
->103    string          vorbis          audio/x-ogg-vorbis
+>103    string          vorbis          audio/x-vorbis
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV

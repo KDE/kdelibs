@@ -9,6 +9,6 @@ Comment[ja]=Ogg Vorbis オーディオ
 Comment[pt_BR]=Áudio Ogg Vorbis
 Comment[sv]=Ogg Vorbis-ljud
 Comment[tr]=Ogg Vorbis Ses Dosyası
-MimeType=audio/x-ogg-vorbis
+MimeType=audio/x-vorbis
 Icon=sound
 Patterns=*.ogg;*.OGG;
