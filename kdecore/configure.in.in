@@ -184,63 +184,29 @@ case "$target" in
 esac
 LIBS="$my_LIBS"
 
-AC_MSG_CHECKING([if struct sockaddr has member sa_len])
-AC_TRY_COMPILE(
-  [
-    #include <sys/types.h>
-    #include <sys/socket.h>
-  ],
-  [
-    struct sockaddr sa;
-    sa.sa_len = sizeof(sa);
-  ],
-  [
-    AC_DEFINE(HAVE_SOCKADDR_SA_LEN,1,[Define if struct sockaddr has member sa_len])
-    AC_MSG_RESULT(yes)
-  ],
-  AC_MSG_RESULT(no)
-)
+AC_CHECK_MEMBERS([struct sockaddr.sa_len],,,[#include <sys/socket.h>])
 
 AC_CHECK_HEADERS(netinet/in.h,
   [
 
     dnl Check for sockaddr_in6. We don't have to check for in6_addr
     dnl if sockaddr_in6 is there, so is in6_addr
-    AC_MSG_CHECKING([for struct sockaddr_in6])
-    AC_TRY_COMPILE(
-      [
-	#include <sys/types.h>
-	#include <stdlib.h>
-	#include <netinet/in.h>
-      ],
-      [
-	struct sockaddr_in6 sin6;
-      ],
+    AC_CHECK_TYPE(
+      [struct sockaddr_in6],
       [
 	AC_DEFINE(HAVE_SOCKADDR_IN6,1,[Define if we have struct sockaddr_in6 in netinet/in.h])
-	AC_MSG_RESULT(yes)
 
 	dnl Check if this system's sockaddr_in6 already supports sin6_scope_id
 	dnl All systems should support it, but some still don't
-	AC_MSG_CHECKING([if struct sockaddr_in6 has member sin6_scope_id])
-	AC_TRY_COMPILE(
-	  [
-	    #include <sys/types.h>
-	    #include <stdlib.h>
-	    #include <netinet/in.h>
-	  ],
-	  [
-	    struct sockaddr_in6 sin6;
-	    sin6.sin6_scope_id = 0;
-	  ],
+	AC_CHECK_MEMBER(
+	  [struct sockaddr_in6.sin6_scope_id],
 	  [
 	    AC_DEFINE(HAVE_SOCKADDR_IN6_SCOPE_ID,1,[Define if this system already has sin6_scope_id in sockaddr_in6])
-	    AC_MSG_RESULT(yes)
-	  ],
-	  AC_MSG_RESULT(no)
+	  ], ,
+	  [#include <netinet/in.h>],
 	)
-      ],
-      AC_MSG_RESULT(no)
+      ], ,
+      [#include <netinet/in.h>]
     )
   ]
 )
