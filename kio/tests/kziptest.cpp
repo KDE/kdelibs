@@ -71,6 +71,7 @@ int main( int argc, char** argv )
  " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
  " ./kziptest print file.zip                        prints contents of all files.\n"
  " ./kziptest print2 file.zip filename              prints contents of one file.\n"
+ " ./kziptest update file.zip filename              updates contents of one file.\n"
  " ./kziptest transfer file.zip newfile.zip         complete transfer.\n"
  " ./kziptest iodevice /path/to/existing_file.zip   tests KArchiveFile::device()\n");
     return 1;
@@ -262,6 +263,42 @@ int main( int argc, char** argv )
     QString str( arr );
 //    printf("DATA=%s\n", str.latin1());
     printf("%s", str.latin1());
+    zip.close();
+
+    return 0;
+
+  }
+  else if (command == "update" )
+  {
+    if (argc != 4)
+    {
+        printf("usage: kziptest.cpp update archivename filename");
+       return 1;
+    }
+    KZip zip( argv[2] );
+    if ( !zip.open( IO_ReadWrite ) )
+    {
+      printf("Could not open %s for read/write\n", argv[2] );
+      return 1;
+    }
+    const KArchiveEntry* e = zip.directory()->entry( argv[3] );
+//    Q_ASSERT( e && e->isFile() );
+//    const KArchiveFile* f = (KArchiveFile*)e;
+
+//    QCString data( "This is some new data that goes into " );
+  //  data += argv[3];
+    QFile f ( argv[3] );
+    if (!f.open( IO_ReadOnly )) 
+    {
+      printf("Could not open %s for reading\n", argv[2] );
+      return 1;
+    }
+    	
+    QDataStream s( &f );
+    
+    
+//    zip.writeFile( argv[3], "", "", data.size(), data.data() );
+    zip.writeFile( argv[3], "", "", f.size(), f.readAll() );
     zip.close();
 
     return 0;
