@@ -326,14 +326,14 @@ QString KStringHandler::lPixelSqueeze(const QString& s, const QFontMetrics& fm, 
   }
 
   unsigned int leftIdx = 0, rightIdx = length;
-  unsigned int leftWidth = fm.width( s[ leftIdx++ ] );
-  unsigned int rightWidth = fm.width( s[ --rightIdx ] );
+  unsigned int leftWidth = fm.charWidth( s, leftIdx++ );
+  unsigned int rightWidth = fm.charWidth( s, --rightIdx );
   while ( leftWidth + rightWidth < maxWidth ) {
     while ( leftWidth <= rightWidth && leftWidth + rightWidth < maxWidth ) {
-      leftWidth += fm.width( s[ leftIdx++ ] );
+      leftWidth += fm.charWidth( s, leftIdx++ );
     }
     while ( rightWidth <= leftWidth && leftWidth + rightWidth < maxWidth ) {
-      rightWidth += fm.width( s[ --rightIdx ] );
+      rightWidth += fm.charWidth( s, --rightIdx );
     }
   }
 
