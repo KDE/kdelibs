@@ -31,7 +31,7 @@ class KJScript;
 class QString;
 class QConstString;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && (__GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 96))
 #define KJS_PACKED __attribute__((__packed__))
 #else
 #define KJS_PACKED
