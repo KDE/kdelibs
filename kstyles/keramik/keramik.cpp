@@ -258,7 +258,7 @@ void KeramikStyle::polish(QWidget* widget)
 	if ( widget->inherits( "QPushButton" ))
 	{
 		widget->installEventFilter(this);
-		widget->setBackgroundMode( NoBackground );
+//		widget->setBackgroundMode( NoBackground );
 	}	 
 	else if (widget->inherits( "QComboBox" ) )
 	{
@@ -303,7 +303,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 {
 	if ( widget->inherits( "QPushButton" ) )
 	{
-		widget->setBackgroundMode( PaletteBase );
+//		widget->setBackgroundMode( PaletteBase );
 		widget->removeEventFilter(this);
 		
 	}	 
