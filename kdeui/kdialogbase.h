@@ -748,7 +748,7 @@ class KDialogBase : public KDialog
      * (that is, if no parameters are given) the standard texts are set:
      * The button shows "OK", the tooltip contains "Accept settings."
      * (internationalized) and the quickhelp text explains the standard
-     * behavior of the OK button in dialogs.
+     * behavior of the OK button in settings dialogs.
      *
      * @param text Button text.
      * @param tooltip Tooltip text.
@@ -765,7 +765,7 @@ class KDialogBase : public KDialog
      * used (that is, if no parameters are given) the standard texts are set:
      * The button shows "Apply", the tooltip contains "Apply settings."
      * (internationalized) and the quickhelp text explains the standard
-     * behavior of the apply button in dialogs.
+     * behavior of the apply button in settings dialogs.
      *
      * @param text Button text.
      * @param tooltip Tooltip text.
@@ -780,9 +780,7 @@ class KDialogBase : public KDialog
      *
      *  If the default parameters are
      * used (that is, if no parameters are given) the standard texts are set:
-     * The button shows "Cancel", the tooltip contains "Cancel settings."
-     * (internationalized) and the quickhelp text explains the standard
-     * behaviour of the cancel button in dialogs.
+     * The button shows "Cancel", everything else will not be set.
      *
      * @param text Button text.
      * @param tooltip Tooltip text.

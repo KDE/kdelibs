@@ -633,16 +633,9 @@ void KDialogBase::setButtonCancelText( const QString& text,
     return;
   }
 
-  const QString whatsThis = i18n( ""
-    "If you press the <b>Cancel</b> button, all changes\n"
-    "you made will be abandoned and the dialog\n"
-    "will be closed.\n"
-    "The program will be in the state before\n"
-    "opening the dialog.");
-
   pb->setText( text.isEmpty() ? i18n("&Cancel") : text );
-  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Cancel settings") : tooltip);
-  QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
+  QToolTip::add( pb, tooltip );
+  QWhatsThis::add( pb, quickhelp );
 }
 
 
