@@ -1753,7 +1753,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    config.setGroup("ClientInfo");
    QString command = config.readEntry("EmailClient");
    if (command.isEmpty() || command == QString::fromLatin1("kmail"))
-     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B %t");
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
@@ -1763,7 +1763,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    if (config.readBoolEntry("TerminalClient", false))
       command = "konsole -e " + command;
 
-   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
+   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
      if ((*it).startsWith("subject="))
@@ -1777,6 +1777,9 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      else
      if ((*it).startsWith("body="))
        body = KURL::decode_string((*it).mid(5));
+     else
+     if ((*it).startsWith("attach="))
+       body = KURL::decode_string((*it).mid(7));
 
 
    // WARNING: This will only work as long as the path of the
@@ -1802,7 +1805,10 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      else
      if ((*it).find("%B") >= 0)
        (*it).replace(QRegExp("%B"), body);
-
+     else
+     if ((*it).find("%A") >= 0)
+       (*it).replace(QRegExp("%A"), attach);
+   
    QString error;
 
    if (kdeinitExec(cmd, cmdTokens, &error))
