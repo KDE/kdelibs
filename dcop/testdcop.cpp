@@ -23,41 +23,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************
 */
 
-#include <kapp.h>
-#include <qbitarray.h>
-#include <dcopclient.h>
-#include <dcopobject.h>
-
-#include <qobject.h>
-
-#include <stdio.h>
-/**
- $QTDIR/bin/moc testdcop.cpp -o testdcop.moc
- g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore -ldl
-
-**/
-
-
-class MyDCOPObject : public QObject, public DCOPObject
-{
-  Q_OBJECT
-public:
-  MyDCOPObject(const QCString &name) : DCOPObject(name) {}
-  bool process(const QCString &fun, const QByteArray &data,
-	       QCString& replyType, QByteArray &replyData);
-  void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d",arg1.data(), arg2); }
-public slots:
-  void registered(const QCString &appName)
-     { printf("REGISTER: %s\n", appName.data()); }
-
-  void unregistered(const QCString &appName)
-     { printf("UNREGISTER: %s\n", appName.data()); }
-};
+#include <testdcop.h>
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QCString& replyType, QByteArray &replyData)
 {
-  qDebug("in MyDCOPObject::process");
+  qDebug("in MyDCOPObject::process, fun = %s", fun.data());
   
   // note "fun" is normlized here (i.e. whitespace clean)
   if (fun == "aFunction(QString,int)") {
@@ -67,6 +38,12 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     args >> arg1 >> arg2;
     function(arg1, arg2);
     replyType = "void";
+    return true;
+  }
+  if (fun == "canLaunchRockets()") {
+    replyType = "bool";
+    QDataStream reply( replyData, IO_WriteOnly );
+    reply << (Q_INT8) 1;
     return true;
   }
 
@@ -113,6 +90,25 @@ int main(int argc, char **argv)
 
   // Enable the above signals
   client->setNotifications( true );
+
+  QCString foundApp;
+  QCString foundObj;
+
+  // Find a object called "object1" in any application that
+  // meets the criteria "canLaunchRockets()"
+  bool boolResult = client->findObject( "", "object1", "canLaunchRockets()", data, foundApp, foundObj);
+  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+	foundApp.data(), foundObj.data());
+
+  // Find an application that matches with "konqueror*"
+  boolResult = client->findObject( "konqueror*", "", "", data, foundApp, foundObj);
+  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+	foundApp.data(), foundObj.data());
+
+  // Find an object called "object1" in any application.
+  boolResult = client->findObject( "", "object1", "", data, foundApp, foundObj);
+  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+	foundApp.data(), foundObj.data());
 
   return app.exec();
 

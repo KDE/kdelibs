@@ -35,6 +35,7 @@
 #define DCOPReplyWait 5
 #define DCOPReplyDelayed 6
 #define DCOPCallRejected 7
+#define DCOPFind 8
 
 /**
  * DCOP Protocol description
@@ -61,6 +62,12 @@
  * DCOPReplyDelayed is the successfull reply to a DCOPCall message
  * after a DCOPReplyWait message.
  * data: << fromId << toId << transactionId << replyType << replyData
+ *
+ * DCOPFind is a message much like a "call" message. It can however
+ * be send to multiple objects within a client. If a function in a 
+ * object that is being called returns a boolean with the value "true",
+ * a DCOPReply will be send back containing the DCOPRef of the object 
+ * who returned "true".
  *
  * All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
  * their respective  length as 32 bit unsigned integer first:

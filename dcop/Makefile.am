@@ -27,6 +27,7 @@ INCLUDES=  $(all_includes)
 LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
+check_PROGRAMS = testdcop 
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la libDCOPC.la
 libDCOP_la_LIBADD = $(LIBSM) -lICE  $(LIB_QT)
@@ -36,7 +37,7 @@ libDCOPC_la_LIBADD = -lICE $(LIBDL)
 libDCOPC_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
-noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h
+noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h
 
 METASOURCES = AUTO
 
@@ -52,3 +53,5 @@ dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
 dcopserver_LDADD   = libDCOP.la
 
+testdcop_SOURCES = testdcop.cpp
+testdcop_LDADD = ../kdecore/libkdecore.la

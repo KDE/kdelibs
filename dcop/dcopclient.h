@@ -212,6 +212,45 @@ class DCOPClient : public QObject
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData, bool fast=false);
 
+  /**
+   * Searches for an object which matches a criteria.
+   *
+   * @param remApp The remote application id.
+   * @param remObj The name of the remote object.
+   * @param remFun The remote function in the specified object to call.
+   *               This function should return a bool and is used as 
+   *               criteria. 
+   * @param data The data to provide to the remote function.
+   * @param foundApp The remote application id that matched the criteria.
+   * @param foundObj The remote object that matched the criteria.
+   * @param fast Tf set to @p true, a "fast" form of IPC will be used.
+   *        Fast connections are not guaranteed to be implemented, but
+   *        if they are they work only on the local machine, not across
+   *        the network.  "fast" is only a hint not an order.
+   *
+   * findObject calls @p remFun in the applications and objects identified
+   * by @p remApp and @remObj until @p remFun returns @p true. The name of 
+   * the application and object that returned @p true are returned in
+   * @p foundApp and @p foundObj respectively.
+   *
+   * If @p remFun is empty a default function is called in the object 
+   * which always returns @p true/.
+   *
+   * @return @p true is returned when an object was found for which @remFun
+   * returned @p true. If no such object is the function returns @p false.
+   *
+   * A findObject blocks the application until the process receives the
+   * answer, for a maximum of 1/10 of a second. If the call was not
+   * answered by then, the client opens a local event loop in order to
+   * keep the user interface updated (by processing paint events and
+   * such) until the answer message finally drops in.
+   *
+   * @see send()
+   */
+  bool findObject(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
+	    QCString &foundApp, QCString &foundObj,
+	    bool fast=false);
 
   /**
    * Reimplement to handle app-wide function calls unassociated w/an object.
@@ -262,9 +301,9 @@ class DCOPClient : public QObject
   QCStringList registeredApplications();
 
   /**
-   * Receives a piece of data from the server.
+   * Receives a DCOPSend or DCOPCall message from the server.
    *
-   * @param app The application the data was intended for.  Should be
+   * @param app The application the message was intended for.  Should be
    *        equal to our appId that we passed when the @ref DCOPClient was
    *        created.
    * @param obj The name of the object to pass the data on to.
@@ -275,6 +314,21 @@ class DCOPClient : public QObject
   bool receive(const QCString &app, const QCString &obj,
 	       const QCString &fun, const QByteArray& data,
 	       QCString& replyType, QByteArray &replyData);
+
+  /**
+   * Receives a DCOPFind message from the server.
+   *
+   * @param app The application the message was intended for.  Should be
+   *        equal to our appId that we passed when the @ref DCOPClient was
+   *        created.
+   * @param obj The name of the object to pass the data on to.
+   * @param fun The name of the function in the object to call.
+   * @param data The arguments for the function.
+   * @internal
+   */
+  bool find(const QCString &app, const QCString &obj,
+	    const QCString &fun, const QByteArray& data,
+	    QCString& replyType, QByteArray &replyData);
 
 
 
@@ -385,7 +439,10 @@ public slots:
 
     bool attachInternal( bool registerAsAnonymous = TRUE );
 
-
+    bool callInternal(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
+	    QCString& replyType, QByteArray &replyData, 
+	    bool fast, int minor_opcode);
 };
 
 #endif

@@ -415,6 +415,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	}
 	break;
     case DCOPCall:
+    case DCOPFind:
 	{
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -439,7 +440,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	
 	    if ( target ) {
 		target->waitingForReply.append( iceConn );
-		IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
+		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->time = ++time;
 		target->time = pMsg->time;
@@ -449,7 +450,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		QCString replyType;
 		QByteArray replyData;
 		bool b = FALSE;
-		if ( app == "DCOPServer" ) {
+                // DCOPServer itself does not do DCOPFind.
+		if ( (opcode == DCOPCall) && (app == "DCOPServer") ) {
 		    QCString obj, fun;
 		    QByteArray data;
 		    ds >> obj >> fun >> data;
