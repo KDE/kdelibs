@@ -1116,13 +1116,11 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     if ( frame )
     {
       requestObject( frame, cURL, args );
-    } else {
-	emit d->m_extension->createNewWindow( cURL, args );
+      return;
     }
-    return;
   }
 
-  if ( !d->m_bComplete )
+  if ( !d->m_bComplete && !hasTarget )
     closeURL();
 
   emit d->m_extension->openURLRequest( cURL, args );
