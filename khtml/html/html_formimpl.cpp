@@ -676,27 +676,26 @@ ushort HTMLFieldSetElementImpl::id() const
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
-    m_type = TEXT;
-    m_checked = false;
-    m_maxLen = -1;
-    m_size = 20;
-    m_clicked = false;
-    m_filename = "";
-    m_haveType = false;
-
-    view = 0;
+    init();
 }
 
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
+    init();
+}
+
+void HTMLInputElementImpl::init()
+{
     m_type = TEXT;
-    m_checked = false;
     m_maxLen = -1;
     m_size = 20;
     m_clicked = false;
+    m_defaultChecked = false;
+    m_checked = false;
     m_filename = "";
     m_haveType = false;
+    m_firstAttach = true;
 
     view = 0;
 }
@@ -883,6 +882,12 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 {
     setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
+
+    if(m_firstAttach) {
+        m_defaultChecked = m_checked;
+        m_defaultValue = m_value;
+        m_firstAttach = false;
+    }
 
     khtml::RenderObject *r = _parent ? _parent->renderer() : 0;
     if(r)
@@ -1098,8 +1103,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 void HTMLInputElementImpl::reset()
 {
-    setValue(getAttribute(ATTR_VALUE));
-    setChecked(getAttribute(ATTR_CHECKED) != 0);
+    setValue(m_defaultValue);
+    setChecked(m_defaultChecked);
     if ((m_type == SUBMIT || m_type == RESET || m_type == BUTTON || m_type == IMAGE) && m_render)
         static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 }

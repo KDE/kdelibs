@@ -307,6 +307,11 @@ protected:
     bool m_defaultChecked : 1;
     bool m_checked : 1;
     bool m_haveType : 1;
+    bool m_firstAttach : 1;
+
+private:
+
+    void init();
 };
 
 // -------------------------------------------------------------------------
