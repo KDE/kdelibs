@@ -134,6 +134,9 @@ public:
    */
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
+  /// destructor
+  ~KEditToolbar();
+
 protected slots:
   /**
    * Overridden in order to save any changes made to the toolbars
@@ -143,6 +146,11 @@ protected slots:
    * idem
    */
   virtual void slotApply();
+
+  /** should OK really save?
+  * @internal
+  **/
+  void acceptOK(bool b);
 
 private:
   void init();

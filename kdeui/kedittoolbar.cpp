@@ -173,18 +173,24 @@ public:
   XmlDataList m_xmlFiles;
 
   QLabel * m_helpArea;
+
+};
+
+class KEditToolbarPrivate {
+public:
+    bool m_accept;
 };
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Cancel, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
       m_widget(new KEditToolbarWidget(collection, file, global, this))
 {
     init();
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Cancel, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
       m_widget(new KEditToolbarWidget(factory, this))
 {
     init();
@@ -192,21 +198,37 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char*
 
 void KEditToolbar::init()
 {
+    d = new KEditToolbarPrivate();
+    d->m_accept = false;
+
     setMainWidget(m_widget);
 
     connect(m_widget, SIGNAL(enableOk(bool)),
-            this,     SLOT(enableButtonOK(bool)));
+            this,     SLOT(acceptOK(bool)));
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonApply(bool)));
-    enableButtonOK(false);
     enableButtonApply(false);
     incInitialSize( QSize( 200, 200 ) );
 }
 
+KEditToolbar::~KEditToolbar()
+{
+    delete d;
+}
+
+void KEditToolbar::acceptOK(bool b)
+{
+    enableButtonOK(b);
+    d->m_accept = b;
+}
+
 void KEditToolbar::slotOk()
 {
-  // just the fact that we got here means that we've been modified.
-  // so we save
+  if (!d->m_accept) {
+      reject();
+      return;
+  }
+
   if (!m_widget->save())
   {
     // some error box here is needed
