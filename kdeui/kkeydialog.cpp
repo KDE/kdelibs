@@ -216,7 +216,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			bool check_against_std_keys)
     : QDialog( parent, 0, TRUE )
 {
-	setCaption("Configure key bindings");
+	setCaption( i18n("Configure key bindings") );
 	setFocusPolicy( QWidget::StrongFocus );
 	
 	QBoxLayout *topLayout = new QVBoxLayout( this, 10 );
@@ -362,7 +362,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	fCArea = new QGroupBox( this );
 	topLayout->addWidget( fCArea, 1 );
 	
-	fCArea->setTitle( "Choose a key for the selected action" );
+	fCArea->setTitle( i18n("Choose a key for the selected action") );
 	fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 	
 	// CHOOSE KEY GROUP LAYOUT MANAGER
@@ -468,9 +468,9 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	lNotConfig->setAlignment( AlignCenter );
 	lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	if ( wList->count()==0 )
-		lNotConfig->setText("No keys defined");
+		lNotConfig->setText( i18n("No keys defined") );
 	else {
-		lNotConfig->setText("Not configurable");
+		lNotConfig->setText( i18n("Not configurable") );
 		lNotConfig->hide();
 	}
 	lNotConfig->hide();
@@ -525,7 +525,7 @@ void KKeyChooser::readGlobalKeys()
 	// Insert all global keys into globalDict
 	int *keyCode;
 	KConfig pConfig;
-	KEntryIterator *gIt = pConfig.entryIterator( "Global Keys" );
+	KEntryIterator *gIt = pConfig.entryIterator( i18n("Global Keys") );
 	if (gIt){
 	  gIt->toFirst();
 	  while ( gIt->current() ) {
@@ -557,7 +557,7 @@ void KKeyChooser::readStdKeys()
 	// Insert all standard keys into globalDict
 	int *keyCode;
 	KConfig pConfig;
-	KEntryIterator *sIt = pConfig.entryIterator( "Keys" );
+	KEntryIterator *sIt = pConfig.entryIterator( i18n("Keys") );
 	if (sIt){
 	  sIt->toFirst();
 	  while ( sIt->current() ) {
@@ -632,7 +632,7 @@ void KKeyChooser::toChange( int index )
 		//bChange->setEnabled( TRUE ); //bDefault->setEnabled( TRUE );
 		
 		if ( isKeyPresent() ) {
-			lInfo->setText("Attention : key already used");
+			lInfo->setText(i18n("Attention : key already used") );
 		}
 		
 		if ( kbMode == DefaultKey ) {
@@ -915,7 +915,7 @@ void KKeyChooser::altClicked()
 void KKeyChooser::changeKey()
 {
 	bChange->setEdit( TRUE );
-	lInfo->setText("Press the wanted key");
+	lInfo->setText( i18n("Press the wanted key") );
 	lInfo->setEnabled( TRUE );
 	/* give the focus to the widget */
 	
@@ -938,7 +938,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
 	   if it is a non existent key (=0) : keep the old value and say
 	   what happened. */
 	if ( keyToString(kCode).isNull() ) {
-		lInfo->setText("Undefined key");
+		lInfo->setText( i18n("Undefined key") );
 		return;
 	}
 	
@@ -965,7 +965,7 @@ void KKeyChooser::setKey( uint kCode)
 	pEntry->aConfigKeyCode = kCode;
 	
 	if ( isKeyPresent() ) {
-		lInfo->setText("Attention : key already used");
+		lInfo->setText( i18n("Attention : key already used") );
 		return;
 	}
 	
@@ -987,7 +987,7 @@ void KKeyChooser::setKey( uint kCode)
 void KKeyChooser::editKey()
 {
 	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE );
-	lInfo->setText("Return to end edition");
+	lInfo->setText( i18n("Return to end edition") );
 }
 
 void KKeyChooser::editEnd()
@@ -997,7 +997,7 @@ void KKeyChooser::editEnd()
 	//uint kCode = stringToKey(eKey->text());
 	uint kCode = 0;
 	if ( kCode==0 || (kCode & (SHIFT | CTRL | ALT)) ) {
-		lInfo->setText("Incorrect key");
+		lInfo->setText( i18n("Incorrect key") );
 		return;
 	}
 	setKey(kCode);
@@ -1022,12 +1022,12 @@ bool KKeyChooser::isKeyPresent()
 			QString keyName = keyToString( *gIt.current() );
 			
 			QString str;
-			str.sprintf(
-				"The %s key combination has already been allocated\nto the global %s action.\n\nPlease choose a unique key combination.",
+			str.sprintf( i18n(
+				"The %s key combination has already been allocated\nto the global %s action.\n\nPlease choose a unique key combination."),
 				keyName.data(),
 				actionName.data() );
 				
-			QMessageBox::warning( this, "Global key conflict", str.data() );
+			QMessageBox::warning( this, i18n("Global key conflict"), str.data() );
 			
 			return TRUE;
 		}
@@ -1049,12 +1049,12 @@ bool KKeyChooser::isKeyPresent()
 			QString keyName = keyToString( *sIt.current() );
 			
 			QString str;
-			str.sprintf(
-				"The %s key combination has already been allocated\nto the standard %s action.\n\nPlease choose a unique key combination.",
+			str.sprintf( i18n(
+				"The %s key combination has already been allocated\nto the standard %s action.\n\nPlease choose a unique key combination."),
 				keyName.data(),
 				actionName.data() );
 				
-			QMessageBox::warning( this, "Standard key conflict", str.data() );
+			QMessageBox::warning( this, i18n("Standard key conflict"), str.data() );
 			
 			return TRUE;
 		}
@@ -1073,12 +1073,12 @@ bool KKeyChooser::isKeyPresent()
 			QString keyName = keyToString( aIt->current()->aConfigKeyCode );
 			
 			QString str;
-			str.sprintf(
-				"The %s key combination has already been allocated\nto the %s action.\n\nPlease choose a unique key combination.",
+			str.sprintf( i18n(
+				"The %s key combination has already been allocated\nto the %s action.\n\nPlease choose a unique key combination."),
 				keyName.data(),
 				actionName.data() );
 				
-			QMessageBox::warning( this, "Key conflict", str.data() );
+			QMessageBox::warning( this, i18n("Key conflict"), str.data() );
 			
 			return TRUE;
 		}
