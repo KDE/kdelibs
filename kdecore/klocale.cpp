@@ -718,7 +718,7 @@ QDate KLocale::readDate(const QString &str) const
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
-				i += str.at(strpos) - '0';
+				i += str.at(strpos).digitValue();
 			}
 			if (i > 31)
 				goto error;
@@ -737,7 +737,7 @@ QDate KLocale::readDate(const QString &str) const
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
-				i += str.at(strpos) - '0';
+				i += str.at(strpos).digitValue();
 			}
 			if (i < 1 || i > 12)
 				goto error;
@@ -759,7 +759,7 @@ QDate KLocale::readDate(const QString &str) const
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
-				i += str.at(strpos) - '0';
+				i += str.at(strpos).digitValue();
 			}
 			if (c == 'y') {
 				if (i < 69) i += 100;
