@@ -31,6 +31,11 @@ namespace KJS {
 
   class JSEventListener : public DOM::EventListener {
   public:
+    /**
+     * @param _listener the function object, that will be called when the event is emitted
+     * @param _win Window object, for memory management and caching.
+     * Never create a JSEventListener directly, use Window::getJSEventListener.
+     */
     JSEventListener(Object _listener, const Object &_win, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
