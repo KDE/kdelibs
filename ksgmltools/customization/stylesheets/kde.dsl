@@ -199,7 +199,17 @@
 ;(define %guilabel-font-family% "\textsf")
 ; Localised? - to country
 (define %paper-type% "A4")
-    </STYLE-SPECIFICATION-BODY>
+
+;; Adds the KDE logo to printed versions (thanks to Éric Bischoff)
+;; From: print/dbcompon.dsl
+;; It is probably too forceful, but it's a beginning
+;; Here is also better than in a LaTeX style file, as it will also work for RTF
+(define ($center-header$ #!optional (gi (gi)))
+  (make external-graphic
+    entity-system-id: "kde.eps"
+    notation-system-id: "EPS"))
+
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
   <STYLE-SPECIFICATION ID="KDE-DOCBOOK-PRINT-BOOK" USE="KDE-DOCBOOK-PRINT">
@@ -283,6 +293,8 @@
       (("zh_cn") (error "L10N ERROR: use zh-CN instead of zh_CN"))
       (("zh_cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh_CN.GB2312"))
       (("zh-cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh-CN.GB2312"))
+      (("zh_tw.big5") (error "L10N ERROR: use zh-TW instead of zh_TW.BIG5"))
+      (("zh-tw.big5") (error "L10N ERROR: use zh-TW instead of zh-TW.BIG5"))
       (else (empty-sosofo)))
     ; == derived from dbhtml.dsl $standard-html-headers$
     (let ((nl (select-elements (descendants (info-element)) 
