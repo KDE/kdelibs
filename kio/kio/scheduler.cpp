@@ -223,7 +223,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
     return;
 }
     QString protocol = jobData->protocol;
-    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
+//    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
     
