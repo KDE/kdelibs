@@ -381,6 +381,7 @@ static void init_signals()
   act.sa_handler=sig_child_handler;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
+  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0L);
   act.sa_flags = SA_NOCLDSTOP;
 
   // CC: take care of SunOS which automatically restarts interrupted system
@@ -394,6 +395,7 @@ static void init_signals()
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
+  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0L);
   act.sa_flags = 0;
   sigaction( SIGPIPE, &act, 0L);
 }
