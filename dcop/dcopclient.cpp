@@ -521,6 +521,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 		return false;
 	    }
 	    QTextStream t(&f);
+	    t.setEncoding( QTextStream::Latin1 );
 	    dcopSrv = t.readLine();
 	}
 	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
