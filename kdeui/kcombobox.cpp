@@ -27,68 +27,54 @@
 #include "kcombobox.moc"
 
 
-KComboBox::KComboBox( QWidget *parent, const char *name, bool hsig )
+KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
     m_pEdit = 0;
     m_pContextMenu = 0;
-    m_bEnableMenu = false;
     m_bShowModeChanger = false;
-    init( hsig );
+    init();
 }
 
-KComboBox::KComboBox( bool rw, QWidget *parent, const char *name, bool hsig )
+KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
           :QComboBox( rw, parent, name )
 {
     if ( rw )
     {
-        QObjectList *list = queryList( "QLineEdit" );
-        QObjectListIt it ( *list );
-        m_pEdit = (QLineEdit*) it.current();
+        m_pEdit = QComboBox::lineEdit();
         connect( m_pEdit, SIGNAL( returnPressed() ), this, SIGNAL( returnPressed() ) );
         connect( m_pEdit, SIGNAL( returnPressed() ), this, SLOT( returnKeyPressed() ) );
         m_pEdit->installEventFilter( this );
-        list = queryList( "QPopupMenu" );
-        it = QObjectListIt( *list );
+        QObjectList *list = queryList( "QPopupMenu" );
+        QObjectListIt it ( *list );
         m_pContextMenu = (QPopupMenu*) it.current();
-        m_bEnableMenu = true;
         delete list;
     }
     else
     {
         m_pEdit = 0;
         m_pContextMenu = 0;
-        m_bEnableMenu = false;
         m_bShowModeChanger = false;
     }
-    init( hsig );
+    init();
 }
 
 KComboBox::~KComboBox()
 {
-    if( m_pEdit != 0 )
+    if( m_pEdit )
         m_pEdit->removeEventFilter( this );
 
     delete m_pEdit;
     delete m_pSubMenu;
-    if( m_bAutoDelCompObj )
-        delete m_pCompObj;
 }
 
-void KComboBox::init( bool hsig )
+void KComboBox::init()
 {
     // Permanently set some parameters in the parent object.
     setAutoCompletion( false );
 
-    // Determines whether the completion object should
-    // be deleted or not.
-    m_bAutoDelCompObj = false;
-
-    // Initialize all key-bindings to 0 by default so that
-    // the event filter will use the global settings.
-    m_iCompletionKey = 0;
-    m_iRotateUpKey = 0;
-    m_iRotateDnKey = 0;
+    // Hide menu by default
+    m_bEnableMenu = false;
 
     // Initalize Variables used in auto-completion mode.
     // These values greatly simplify the logic used to
@@ -102,27 +88,6 @@ void KComboBox::init( bool hsig )
     m_pSubMenu = 0;
     m_iSubMenuId = -1;
 
-    // Assign the default completion type to use.
-    m_iCompletionMode = KGlobal::completionMode();
-
-    // Initialize the pointer to the completion object.
-    m_pCompObj = 0;
-
-    // By default emit completion signal
-    m_bEmitCompletion = true;
-    // By default emit rotation signals
-    m_bEmitRotation = true;
-
-    // Do not handle rotation & completion signals
-    // internally by default.  It will be enabled below
-    // based on the value of "hsig".
-    m_bHandleCompletion = false; //do not remove
-    m_bHandleRotation = false; //do not remove
-    if( hsig )
-    {
-        setHandleCompletion ( true );
-        setHandleRotation ( true );
-    }
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
     connect( listBox(), SIGNAL( returnPressed( QListBoxItem* ) ), this, SLOT( itemSelected( QListBoxItem* ) ) );
@@ -133,96 +98,41 @@ void KComboBox::setAutoCompletion( bool autocomplete )
     m_iCompletionMode = autocomplete ? KGlobal::CompletionAuto : KGlobal::completionMode();
 }
 
-void KComboBox::setCompletionObject( KCompletion* obj, bool autoDelete )
+void KComboBox::setCompletionObject( KCompletion* obj )
 {
     if( m_pCompObj != 0 )
         disconnect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
 
     m_pCompObj = obj;
-    m_bAutoDelCompObj = autoDelete;
+    m_bAutoDelCompObj = false;
 
     if( m_pCompObj != 0 )
     {
         setCompletionMode( m_iCompletionMode );
         connect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
+        setHandleSignals( true ); // handle signals internally now.
+        m_bEmitSignals = true;
     }
+    else
+        m_bEmitSignals = false; //no completion object.
 }
 
-void KComboBox::setHandleCompletion( bool complete )
+void KComboBox::setHandleSignals( bool handle )
 {
-    if( m_pCompObj == 0 && complete )
-        setCompletionObject ( new KCompletion(), true );
-
-    if( complete && !m_bHandleCompletion )
+    if( handle && !m_bHandleSignals )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletion = complete;
-    }
-    else if( !complete && m_bHandleCompletion )
-    {
-        disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletion = complete;
-    }
-}
-
-void KComboBox::setHandleRotation( bool rotate )
-{
-    if( m_pCompObj == 0 && rotate )
-        setCompletionObject ( new KCompletion(), true );
-
-    if( rotate && !m_bHandleRotation )
-    {
         connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotation = true;
+        m_bHandleSignals = handle;
     }
-    else if( !rotate && m_bHandleRotation )
+    else if( !handle && m_bHandleSignals )
     {
+        disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotation = false;
+        m_bHandleSignals = handle;
     }
-}
-
-void KComboBox::setCompletionMode( KGlobal::Completion mode )
-{
-    m_iCompletionMode = mode;
-    // Always sync up KCompletion mode with ours as long as we
-    // are performing completions.
-    if( m_pCompObj != 0 && m_iCompletionMode != KGlobal::CompletionNone )
-        m_pCompObj->setCompletionMode( m_iCompletionMode );
-}
-
-bool KComboBox::setCompletionKey( int ckey )
-{
-    if( m_pEdit != 0 && ( ckey >= 0 && ckey != m_iRotateDnKey && ckey != m_iRotateUpKey) )
-    {
-        m_iCompletionKey = ckey;
-        return true;
-    }
-    return false;
-}
-
-bool KComboBox::setRotateUpKey( int rUpKey )
-{
-    if( m_pEdit != 0 && rUpKey == 0 ||
-        (rUpKey > 0 && rUpKey != m_iRotateDnKey && rUpKey != m_iCompletionKey) )
-    {
-        m_iRotateUpKey = rUpKey;
-        return true;
-    }
-    return false;
-}
-
-bool KComboBox::setRotateDownKey( int rDnKey )
-{
-    if ( m_pEdit != 0 && rDnKey == 0 ||
-        (rDnKey > 0 && rDnKey != m_iRotateUpKey && rDnKey != m_iCompletionKey) )
-    {
-        m_iRotateDnKey = rDnKey;
-        return true;
-    }
-    return false;
 }
 
 void KComboBox::setEnableContextMenu( bool showMenu, bool showChanger )
@@ -273,7 +183,9 @@ void KComboBox::setEditText( const QString& text )
         m_pEdit->validateAndSet( text, pos, 0, text.length() );
     }
     else
+    {
         QComboBox::setEditText( text );
+    }
 }
 
 void KComboBox::aboutToShowMenu()
@@ -313,7 +225,7 @@ void KComboBox::aboutToShowSubMenu( int itemID )
 
 void KComboBox::entryChanged( const QString& text )
 {
-    if( m_bEmitCompletion &&
+    if( m_bEmitSignals &&
         m_iCompletionMode == KGlobal::CompletionAuto )
     {
         int pos = cursorPosition();
@@ -359,15 +271,12 @@ void KComboBox::makeCompletion( const QString& text )
     }
 }
 
-void KComboBox::multipleCompletions( const QStringList& )
-{
-    //TODO: POP-UP LISTBOX FOR MULTIPLE MATCHES
-}
-
 void KComboBox::returnKeyPressed()
 {
     if( m_pEdit && m_pEdit->text().length() != 0 )
+    {
         emit returnPressed( m_pEdit->text() );
+    }
 }
 
 void KComboBox::rotateText( const QString& input )
@@ -395,7 +304,9 @@ void KComboBox::rotateText( const QString& input )
     {
         int index = listBox()->index( listBox()->findItem( input ) );
         if( index >= 0 )
+        {
             setCurrentItem( index );
+        }
     }
 }
 
@@ -450,7 +361,7 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
         {
             QKeyEvent *e = (QKeyEvent *) ev;
             int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : m_iCompletionKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitCompletion )
+            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
             {
                 // Emit completion if the completion mode is NOT
                 // CompletionAuto and if the mode is CompletionShell,
@@ -465,14 +376,14 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             }
             // Handles rotateUp.
             key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : m_iRotateUpKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitRotation )
+            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
             {
                 emit rotateUp ();
                 return true;
             }
             // Handles rotateDown.
             key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : m_iRotateDnKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitRotation )
+            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
             {
                 emit rotateDown();
                 return true;
