@@ -978,10 +978,10 @@ KURL KURL::upURL( bool _zapRef ) const
   QString old = m_strPath;
 
   KURL u( *this );
-  u.cd("..");
+  u.cd("..", false /*don't zap ref yet*/);
 
   // Did we change the directory ? => job done
-  if ( ( u.path() != old ) && ( KProtocolManager::self().inputType( u.protocol() ) != KProtocolManager::T_STREAM ) )
+  if ( ( u.path() != old ) && ( KProtocolManager::self().inputType( u.protocol() ) != KProtocolManager::T_STREAM ) ) // Bug (with tar:/) - will fix (David)
   {
     if ( _zapRef )
       u.setHTMLRef( QString::null );
@@ -1071,6 +1071,8 @@ bool KURL::hasHTMLRef() const
 
 void KURL::setPath( const QString & path )
 {
+  if (isEmpty())
+    m_bIsMalformed = false;
   if (m_strProtocol.isEmpty())
     m_strProtocol = "file";
   m_strPath = path;
