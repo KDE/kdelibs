@@ -77,33 +77,13 @@ public:
   void jobFinished( int progressId );
 
   /**
-   * Prompts the user for authorization info( login & password ).
-   *
-   * Note this function simply forwards the request to @ref UIServer::openPassDlg
-   * and returns the result of that function call...
-   *
-   * @param prompt      the resource the requires authorization
-   * @param user        the user to be allowed authorized access
-   * @param pass        the password of the authorized user
-   * @param caption
-   * @param comment
-   * @param label
-   * @param readOnly    makes username field read-only.
-   * @param keep
-   *
-   * @return true if authorization was sucessfully obtained.
+   * @deprecated.
    */
-   bool openPassDlg( const QString& prompt, QString& user, QString& pass,
-                     const QString& caption, const QString& comment,
-                     const QString& label, bool readOnly, bool* keep = 0L );
+  bool openPassDlg( const QString& prompt, QString& user, QString& pass,
+                    const QString& caption, const QString& comment,
+                    const QString& label, bool readOnly, bool* keep = 0L ){};
 
-  /**
-   * Same as the above method except in the arguments it accepts.
-   *
-   * @return true if authorization was sucessfully obtained.
-   */
-   bool openPassDlg( const QString& msg, QString& user, QString& pass,
-                     bool lockUserName );
+  bool openPassDlg( KIO::AuthInfo& info );
 
   /**
    * Popup a message box. See @ref SlaveBase.

@@ -203,53 +203,34 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
   m_uiserver->unmounting( job->progressId(), point );
 }
 
-bool Observer::openPassDlg( const QString& prompt, QString& user,
-                            QString& pass, const QString& caption,
-                            const QString& comment, const QString& label,
-                            bool readOnly, bool* keep )
+bool Observer::openPassDlg( KIO::AuthInfo& info )
 {
-  kdDebug(7007) << "Observer: User= " << user << ", Message= " << prompt << endl;
-  QByteArray data, replyData;
+  kdDebug(7007) << "Observer::openPassDlg: User= " << info.username
+                << ", Message= " << info.prompt << endl;
   QCString replyType;
+  QByteArray data, replyData;
   QDataStream stream( data, IO_WriteOnly );
-  stream << prompt << user << caption << comment << label << readOnly;
-  bool result = kapp->dcopClient()->call( "kio_uiserver", "UIServer",
-                                          "openPassDlg(QString,QString,QString,QString,QString,bool)",
-                                          data, replyType, replyData, true );
-
-  if ( result && replyType == "QByteArray" )
+  stream << info;
+  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer",
+                                 "openPassDlg(KIO::AuthInfo)",
+                                 data, replyType, replyData, true ) &&
+       replyType == "QByteArray" )
   {
-    QString u, p;
-    Q_UINT8 authorized, keepPasswd;
-
+    AuthInfo res_auth;
     QByteArray wrapper_data;
     QDataStream wrapper_stream( replyData, IO_ReadOnly );
     wrapper_stream >> wrapper_data;
-
     QDataStream data_stream( wrapper_data, IO_ReadOnly );
-    data_stream >> authorized >> u >> p >> keepPasswd;
-
-    if ( authorized )
+    data_stream >> res_auth;
+    if( res_auth.isModified() )
     {
-      user = u;
-      pass = p;
-      if ( keep ) { (*keep) = keepPasswd ? true : false; }
-      kdDebug(7007) << "Observer::openPassDlg got:" << endl
-                    << "  User= " << user << endl
-                    << "  Password= [hidden]" << endl
-                    << "  KeepPassword = " << ((keepPasswd) ? true : false )<< endl;
+      info.username = res_auth.username;
+      info.password = res_auth.password;
       return true;
     }
   }
   kdDebug(7007) << "Observer::openPassDlg call failed!" << endl;
   return false;
-}
-
-bool Observer::openPassDlg( const QString& msg, QString& user,
-                            QString& pass, bool lockUserName )
-{
-    return openPassDlg( msg, user, pass, QString::null, QString::null,
-                        QString::null, lockUserName );
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text,

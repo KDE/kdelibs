@@ -171,7 +171,7 @@ signals:
     void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
-    void authenticationKey( const QCString &, const QCString & );
+    void authenticationKey( const QCString &, const QCString &, bool );
 
 protected:
     /////////////////
@@ -182,21 +182,60 @@ protected:
     virtual bool dispatch( int _cmd, const QByteArray &data );
 
     /**
-     * Prompt user for authentication info (login & password).
+    * Prompt the user for authrization info (login & password).
      *
-     * @param prompt        i18n'ed message to explain the dialog box
-     * @param user          user name if one is already supplied
-     * @param caption
-     * @param comment
-     * @param label
-     * @param readOnly      enable/disable the username field
+    * Use this function to request authorization info from the
+    * the end user. For example to open an empty password dialog
+    * using default values:
      *
-     * @return @p true if sucessfully, false otherwise
+    * <pre>
+    * KIO::AuthInfo authInfo;
+    * bool result = openPassDlg( authInfo );
+    * if ( result )
+    * {
+    *    printf( "Username: %s", result.username.latin1() );
+    *    printf( "Username: %s", result.username.latin1() );
+    * }
+    * </pre>
+    *
+    * You can also pre-set some values like the username before hand
+    * if it is known as well as the comment and caption to be displayed:
+    *
+    * <pre>
+    * authInfo.comment= "Enter username and password to access acmeone";
+    * authInfo.caption= "Acme Password Dialog";
+    * authInfo.username= "Wily E. kaiody";
+    * bool result = openPassDlg( authInfo );
+    * if ( result )
+    * {
+    *    printf( "Username: %s", result.username.latin1() );
+    *    printf( "Username: %s", result.username.latin1() );
+    * }
+    * </pre>
+    *
+    * NOTE: A call to this function can also fail and result
+    * in a return value of @p false, if the UIServer could not
+    * be started for whatever reason.
+     *
+     * @param       See @ref AuthInfo.
+     * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
      */
+    void openPassDlg( KIO::AuthInfo& info );
+
+   /**
+    * Same as above except in the argument it accepts.
+    *
+    * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
+    */
     void openPassDlg( const QString& prompt, const QString& user,
                       const QString& caption, const QString& comment,
                       const QString& label, bool readOnly );
 
+   /**
+    * Same as above except in the argument it accepts.
+    *
+    * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
+    */
     void openPassDlg( const QString& prompt, const QString& user, bool readOnly );
 
     void messageBox( int type, const QString &text, const QString &caption,

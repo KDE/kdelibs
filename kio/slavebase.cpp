@@ -107,67 +107,68 @@ void SlaveBase::dispatchLoop()
     int retval;
 
     while (true) {
-	FD_ZERO(&rfds);
+    FD_ZERO(&rfds);
 
-	if (appconn->inited())
-	  FD_SET(appconn->fd_from(), &rfds);
+    if (appconn->inited())
+      FD_SET(appconn->fd_from(), &rfds);
 
-	/* Wait up to 30 seconds. */
-	tv.tv_sec = 30;
-	tv.tv_usec = 0;
+    /* Wait up to 30 seconds. */
+    tv.tv_sec = 30;
+    tv.tv_usec = 0;
 
-	retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
-	/* Don't rely on the value of tv now! */
-
-	if (retval > 0)
+    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
+    /* Don't rely on the value of tv now! */
+    if (retval > 0)
+    {
+      if (FD_ISSET(appconn->fd_from(), &rfds))
+      { // dispatch application messages
+        int cmd;
+        QByteArray data;
+        if ( appconn->read(&cmd, data) != -1 )
         {
-	    if (FD_ISSET(appconn->fd_from(), &rfds))
-            { // dispatch application messages
-		int cmd;
-		QByteArray data;
-                if ( appconn->read(&cmd, data) != -1 )
-                {
-                  if (cmd == CMD_SLAVE_CONNECT)
-                  {
-                     QString app_socket;
-                     QDataStream stream( data, IO_ReadOnly);
-                     stream >> app_socket;
-                     kdDebug(7019) << "slavewrapper: Connecting to new app (" << app_socket << ")." << endl;
-                     appconn->send( MSG_SLAVE_ACK );
-                     disconnectSlave();
-                     mConnectedToApp = true;
-                     connectSlave(app_socket);
-                  }
-                  else
-                  {
-                     dispatch(cmd, data);
-                  }
-                }
-                else // some error occured, perhaps no more application
-                {
-// When the app exits, should the slave be put back in the pool ?
-                  if (mConnectedToApp)
-                  {
-                     kdDebug(7019) << "slavewrapper: Communication with app lost. Returning to slave pool." << endl;
-                     disconnectSlave();
-                     mConnectedToApp = false;
-                     closeConnection();
-                     connectSlave(mPoolSocket);
-                  }
-                  else
-                  {
-                     kdDebug(7019) << "slavewrapper: Communication with pool lost. Exiting." << endl;
-                     exit(0);
-                  }
-                }
-	    }
-	}
-        else if (retval == -1) // error
-        {
-          kdDebug(7019) << "slavewrapper: select returned error " << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown") << " (" << errno << ")" << endl;
-          exit(0);
+          if (cmd == CMD_SLAVE_CONNECT)
+          {
+            QString app_socket;
+            QDataStream stream( data, IO_ReadOnly);
+            stream >> app_socket;
+            kdDebug(7019) << "slavewrapper: Connecting to new app (" << app_socket << ")." << endl;
+            appconn->send( MSG_SLAVE_ACK );
+            disconnectSlave();
+            mConnectedToApp = true;
+            connectSlave(app_socket);
+          }
+          else
+          {
+            dispatch(cmd, data);
+          }
         }
+        else // some error occured, perhaps no more application
+        {
+          // When the app exits, should the slave be put back in the pool ?
+          if (mConnectedToApp)
+          {
+            kdDebug(7019) << "slavewrapper: Communication with app lost. Returning to slave pool." << endl;
+            disconnectSlave();
+            mConnectedToApp = false;
+            closeConnection();
+            connectSlave(mPoolSocket);
+          }
+          else
+          {
+            kdDebug(7019) << "slavewrapper: Communication with pool lost. Exiting." << endl;
+            exit(0);
+          }
+        }
+      }
     }
+    else if (retval == -1) // error
+    {
+      kdDebug(7019) << "slavewrapper: select returned error "
+                    << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
+                    << " (" << errno << ")" << endl;
+       exit(0);
+    }
+  }
 }
 
 void SlaveBase::connectSlave(const QString& path)
@@ -371,9 +372,9 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
     static const int minimum_updatetime = (maximum_updatetime * 3) / 4;
 
     if (!_ready) {
-	pendingListEntries.append(entry);
+    pendingListEntries.append(entry);
 
-	if (pendingListEntries.count() > listEntryCurrentSize) {
+    if (pendingListEntries.count() > listEntryCurrentSize) {
 
             gettimeofday(&tp, 0);
 
@@ -382,22 +383,22 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
             if (diff > maximum_updatetime) {
                 listEntryCurrentSize = listEntryCurrentSize * 3 / 4;
-		_ready = true;
+                _ready = true;
             } else if (diff < minimum_updatetime) {
                 listEntryCurrentSize = listEntryCurrentSize * 5 / 4;
             } else {
-		_ready = true;
-	    }
+                _ready = true;
+            }
         }
     }
 
     if (_ready) { // may happen when we started with !ready
-	gettimeofday(&tp, 0);
-	listEntry_sec = tp.tv_sec;
-	listEntry_usec = tp.tv_usec;
+    gettimeofday(&tp, 0);
+    listEntry_sec = tp.tv_sec;
+    listEntry_usec = tp.tv_usec;
 
-	listEntries( pendingListEntries );
-	pendingListEntries.clear();
+    listEntries( pendingListEntries );
+    pendingListEntries.clear();
     }
 }
 
@@ -409,13 +410,15 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     UDSEntryListConstIterator it = list.begin();
     UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it)
-	stream << *it;
+      stream << *it;
     m_pConnection->send( MSG_LIST_ENTRIES, data);
 }
 
-void SlaveBase::sendAuthenticationKey( const QCString& key, const QCString& group )
+void SlaveBase::sendAuthenticationKey( const QCString& key,
+                                       const QCString& group,
+                                       bool keepPass )
 {
-    KIO_DATA << key << group;
+    KIO_DATA << key << group << keepPass;
     m_pConnection->send( MSG_AUTH_KEY, data );
 }
 
@@ -492,32 +495,12 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( AuthInfo& info )
-{
-    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
-    KIO_DATA << info.prompt << info.username << info.caption
-             << info.comment << info.commentLabel << info.readOnly;
-    int cmd;
-    m_pConnection->send( INF_NEED_PASSWD, data );
-    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data, &cmd ) != -1 && cmd == CMD_USERPASS )
-    {
-        QDataStream stream( data, IO_ReadOnly );
-        stream >> info.username >> info.password; // >> info.keepPassword;
-        kdDebug(7019) << "SlaveBase::openPassDlg got:" << endl
-                      << " User= " << info.username << endl
-                      << " Password= [hidden]" << endl
-                      << " KeepPassword= " << info.keepPassword << endl;
-        return true;
-    }
-    return false;
-}
-
-bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName )
+bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lock )
 {
     AuthInfo info;
     info.prompt = msg;
     info.username = user;
-    info.readOnly = lockUserName;
+    info.readOnly = lock;
     bool result = openPassDlg( info );
     if ( result )
     {
@@ -525,6 +508,29 @@ bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd,
         passwd = info.password;
     }
     return result;
+}
+
+bool SlaveBase::openPassDlg( AuthInfo& info )
+{
+    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
+    int cmd;
+    KIO_DATA << info;
+    m_pConnection->send( INF_NEED_PASSWD, data );
+    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data, &cmd ) != -1 && cmd == CMD_USERPASS )
+    {
+       AuthInfo res_info;
+        QDataStream stream( data, IO_ReadOnly );
+        stream >> res_info;
+       info.username = res_info.username;
+       info.password = res_info.password;
+       info.keepPassword = res_info.keepPassword;
+        kdDebug(7019) << "SlaveBase::openPassDlg got:" << endl
+                      << " User= " << info.username << endl
+                      << " Password= [hidden]" << endl
+                      << " KeepPassword= " << info.keepPassword << endl;
+        return true;
+    }
+    return false;
 }
 
 int SlaveBase::messageBox( int type, const QString &text, const QString &caption,
@@ -759,7 +765,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                                           QString& passwd,
                                           QString& realm,
                                           QString& extra,
-                                          bool verify_path )
+                                          bool verify )
 {
     AuthInfo info;
     info.url = url;
@@ -767,7 +773,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
     info.password = passwd;
     info.realmValue = realm;
     info.digestInfo = extra;
-    info.verifyPath = verify_path;
+    info.verifyPath = verify;
     return checkCachedAuthentication( info );
 }
 
@@ -852,7 +858,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
                     // testing whether the directiory of the new URL contains
                     // the stored_one.  If it does, then we have a match...
                     int last_slash = new_path.findRev( '/' );
-                    if ( last_slash > 0 )
+                    if ( last_slash >= 0 )
                         new_path.truncate(last_slash);
 
                     uint slen;
@@ -862,7 +868,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
                     {
                         str = mit.key();
                         last_slash = str.findRev( '/' );
-                        if ( last_slash > 0 )
+                        if ( last_slash >= 0 )
                             str.truncate(last_slash);
                         slen = str.length();
                         if ( new_path.startsWith(str) &&
@@ -942,7 +948,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
                           << "  Password= [hidden]" << endl
                           << "  Realm= " << info.realmValue << endl
                           << "  Extra= " << info.digestInfo << endl;
-            sendAuthenticationKey( auth_key, grp_key );
+            sendAuthenticationKey( auth_key, grp_key, info.keepPassword );
             return true;
         }
     }
@@ -981,92 +987,32 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
         return false;
 
     KDEsuClient client;
-    bool isCached = false;
     kdDebug(7019) << "Caching Authentication for: " << auth_key << endl;
     if ( !info.realmValue.isEmpty() )
     {
-        QString stored_value;
-        AuthKeysList list = client.getKeys(auth_key);
-        if ( list.count() > 0 )
-        {
-            AuthKeysList::Iterator it = list.begin();
-            for ( ; it != list.end(); ++it )
-            {
-                stored_value = QString::fromUtf8( client.getVar((*it) + "-realm") );
-                if ( stored_value == info.realmValue )
-                {
-                    auth_key = (*it);
-                    isCached = true;
-                    break;
-                }
-            }
-        }
-
-        // We now have to check and see if we truly have an already cached
-        // entry by comparing the values of the username.  If that does not
-        // match, then we overwrite the previously cached authentication info
-        // with the newer one!  That is the last username used to access the
-        // "Realm" (protection space) wins.
-        if ( isCached )
-        {
-            stored_value = QString::fromUtf8( client.getVar(auth_key + "-user") );
-            if ( info.username != stored_value )
-                isCached = false;
-        }
-        else
-        {
-            // We only get here if the "Realm" is NOT cached!! Thus
-            // we append the realm value to the new entry...
-            auth_key += ':';
-            auth_key += info.realmValue.utf8();
-        }
+      auth_key += ':';
+      auth_key += info.realmValue.utf8();
     }
-    else
+    // Add the new Authentication entry...
+    client.setVar( (auth_key+"-user"), info.username.utf8(), 0, grp_key );
+    client.setVar( (auth_key+"-pass"), info.password.utf8(), 0, grp_key );
+    if ( !info.realmValue.isEmpty() )
     {
-        // None realm based protocol autorization...
-        QString stored_value = QString::fromUtf8( client.getVar(auth_key + "-user") );
-        if ( info.username == stored_value )
-            isCached = true;
+      client.setVar( (auth_key + "-realm"), info.realmValue.utf8(), 0, grp_key );
+      QString new_path = info.url.path();
+      if( new_path.isEmpty() )
+        new_path = '/';
+      client.setVar( (auth_key+"-path"), new_path.utf8(), 0, grp_key );
     }
+    if ( !info.digestInfo.isEmpty() )
+      client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
 
-    // If we have a cached copy already, just update the
-    // extra fields if needed.
-    if ( isCached )
-    {
-        kdDebug(7019) << "Found cached copy for: " << auth_key << endl;
-        if ( !info.digestInfo.isEmpty() )
-        {
-            QString e = QString::fromUtf8( client.getVar(auth_key + "-extra") );
-            if ( e != info.digestInfo )
-            {
-                kdDebug(7019) << "Updating digest info: "
-                              << info.digestInfo << endl;
-                client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
-            }
-        }
-    }
-    // Add a new Authentication entry...
-    else
-    {
-        client.setVar( (auth_key+"-user"), info.username.utf8(), 0, grp_key );
-        client.setVar( (auth_key+"-pass"), info.password.utf8(), 0, grp_key );
-        if ( !info.realmValue.isEmpty() )
-        {
-            client.setVar( (auth_key + "-realm"), info.realmValue.utf8(), 0, grp_key );
-            QString new_path = info.url.path();
-            if( new_path.isEmpty() )
-                new_path = '/';
-            client.setVar( (auth_key+"-path"), new_path.utf8(), 0, grp_key );
-        }
-        if ( !info.digestInfo.isEmpty() )
-            client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
+    kdDebug(7019) << "Cached new authentication for: " << auth_key << endl
+                  << "  User= " << info.username << endl
+                  << "  Password= [hidden]" << endl
+                  << "  Realm= " << info.realmValue << endl
+                  << "  Extra= " << info.digestInfo << endl;
 
-        kdDebug(7019) << "Cached new authentication for: " << auth_key << endl
-                      << "  User= " << info.username << endl
-                      << "  Password= [hidden]" << endl
-                      << "  Realm= " << info.realmValue << endl
-                      << "  Extra= " << info.digestInfo << endl;
-        sendAuthenticationKey (auth_key, grp_key);
-    }
+    sendAuthenticationKey (auth_key, grp_key, info.keepPassword );
     return true;
 }

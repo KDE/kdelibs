@@ -29,63 +29,6 @@ class Connection;
 class SlaveBasePrivate;
 
 /**
- * Structure to hold all authorization information.
- *
- * @param url               url for which authentication is stored. [required]
- *
- * @param username          name as supplied and/or specified by user. [required for caching]
- *
- * @param password          password specified by user. [required for caching, but can be empty]
- *
- * @param prompt            information to display to user in password dialog. [optional]
- *
- * @param caption           text displayed in the title bar of password dialog. [optional]
- *
- * @param comment           Additional comment to show to user. [optional]
- *
- * @param commentLabel      Label to for additional comment (ex:"Command:"). [optional]
- *
- * @param realmValue        optional field to specify "REALM" value for protocols that
- *                          use/support digest authentication (RFC 2617).[optional]
- *
- * @param digestInfo        optional field to store any extra authorization string for
- *                          protocols that use/support digest authentication (RFC 2617). [optional]
- *
- * @param verifyPath        flag that indicates whether we should attempt to match the
- *                          path of the requested URI to find a cached authentication.
- *                          This is only useful for protocols that use/support digest
- *                          or basic authenitcaiton protocol (RFC 2617). [optional]
- *
- * @param readOnly          flag that forces the username field to be read-only if true.
- *                          This is set to false by default. [optional]
- *
- * @param keepPassword      flag that forces the password to be cached for the duration of
- *                          the KDE session instead of it being automatically removed when
- *                          the application is terminated.  NOT YET IMPLEMENTED!! [optional]
- */
-struct AuthInfo
-{
-    AuthInfo() {
-        verifyPath = false;
-        readOnly = false;
-        keepPassword = false;
-    }
-
-    KURL url;
-    QString username;
-    QString password;
-    QString prompt;
-    QString caption;
-    QString comment;
-    QString commentLabel;
-    QString realmValue;
-    QString digestInfo;
-    bool verifyPath;
-    bool readOnly;
-    bool keepPassword;
-};
-
-/**
  * There are two classes that specifies the protocol between application (job)
  * and kioslave. SlaveInterface is the class to use on the application end,
  * SlaveBase is the one to use on the slave end.
@@ -500,101 +443,164 @@ protected:
     bool pingCacheDaemon() const;
 
     /**
-     * Prompts the user for Authentication info (login & password).
+     * Prompt the user for Authrization info (login & password).
      *
-     * This function attempts to prompt the user for a password
-     * and returns true if the user complies (clicks OK) or
-     * false otherwise (clicks Cancel).
+     * Use this function to request authorization info from the
+     * the end user. For example to open an empty password dialog
+     * using default values:
      *
-     * Exception: A call to this function can also fail, result
-     * in @p false, if the UIServer could not be started for some
-     * reason.
+     * <pre>
+     * KIO::AuthInfo authInfo;
+     * bool result = openPassDlg( authInfo );
+     * if ( result )
+     * {
+     *    printf( "Username: %s", result.username.latin1() );
+     *    printf( "Username: %s", result.username.latin1() );
+     * }
+     * </pre>
+     *
+     * You can also pre-set some values like the username before hand
+     * if it is known as well as the comment and caption to be displayed:
+     *
+     * <pre>
+     * authInfo.comment= "Enter username and password to access acmeone";
+     * authInfo.caption= "Acme Password Dialog";
+     * authInfo.username= "Wily E. kaiody";
+     * bool result = openPassDlg( authInfo );
+     * if ( result )
+     * {
+     *    printf( "Username: %s", result.username.latin1() );
+     *    printf( "Username: %s", result.username.latin1() );
+     * }
+     * </pre>
+     *
+     * NOTE: A call to this function can also fail and result
+     * in a return value of @p false, if the UIServer could not
+     * be started for whatever reason.
+     *
+     * @param       See @ref AuthInfo.
+     * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
+     */
+    bool openPassDlg( KIO::AuthInfo& info );
+
+    /**
+     * Same as above except in the arguments it accepts.
+     *
+     * @deprecated.  Use @ref openPassDlg( AuthInfo& ) instead.
      *
      * @param msg     i18n'ed message to explain the dialog box
      * @param user    user name, in and out
      * @param pass    password, in and out
-     * @param lockUserName flag used to enable/disable the username field.
-     *
-     * @return        @p true on if successful, @p false otherwise
+     * @param lock    flag used to make the username field read-only.
      */
     bool openPassDlg( const QString& msg, QString& user,
-                      QString& passwd, bool lockUserName = false );
-
+                      QString& passwd, bool lock = false );
     /**
-     * Same as above except in the arguments it takes.
+     * Checks for cached authentication based on paramters
+     * given by @p info.
      *
-     * See @ref AuthInfo.
+     * Use this function to check if any cached password exists
+     * for the @p URL given by @p info.  If @p AuthInfo::realValue
+     * is present and/or the @p AuthInfo::verifyPath flag is set,
+     * then they will also be factored in determining the presence
+     * of a cached password.  Note that @p Auth::url is a required
+     * parameter when attempting to check for cached authorization
+     * info. Here is a simple example:
+     *
+     * <pre>
+     * AuthInfo info;
+     * info.url = KURL("http://www.foobar.org/foo/bar");
+     * bool result = openPassDlg( info );
+     * </pre>
+     *
+     * If the protocol allows multiple resources within the same
+     * location to be protected by different passwords, then to
+     * determine the correct password and still be able to send the
+     * correct password pre-emtively, i.e. before the other end requires
+     * it, you can use one or both of the following methods: set the
+     * unique identifier using @p AuthInfo::realValue or require that
+     * a path match be performed using @p AuthInfo::verifyPath.
+     *
+     * <pre>
+     * info.url = KURL("http://www.foobar.org/foo/bar");
+     * info.verifyPath = true;
+     * info.realmValue = "unique_identifier";
+     * </pre>
+     *
+     * NOTE: A call to this function can also fail and result
+     * in a return value of @p false, if "kdesud" could not be
+     * started for whatever reason or if no URL was supplied.
+     *
+     * @param       See @ref AuthInfo.
+     * @return      @p TRUE if cached Authorization is found, false otherwise.
      */
-    bool openPassDlg( AuthInfo& info );
+    bool checkCachedAuthentication( AuthInfo& info );
+
 
     /**
-     * Checks for cached authentication for the url given by @p url.
+     * Same as above except in the number of arguments it accepts.
+     *
+     * @deprecated.  Use @checkCachedAuthentication( AuthInfo& ) instead.
      *
      * @param url           url for which to check cached Authentication.
      * @param user          cached user name.
      * @param passw         cached password.
      * @param realm         unique key to distinguish protection spaces (ex: HTTP Realm values)
      * @param extra         extra info to store (ex: Authentication strings in Digest Authentication )
-     * @param verify_path   if true, check new url contains cached url (== same protection space)
-     *
-     * @return              @p true if a cached Authentication is found
+     * @param verify    if true, check new url contains cached url (== same protection space)
      */
     bool checkCachedAuthentication( const KURL& url,
                                     QString& user,
                                     QString& passwd,
                                     QString& realm,
                                     QString& extra,
-                                    bool verify_path = true );
+                                    bool verify = true );
 
     /**
      * Same as above except in the number of arguments it takes.
      *
-     * This is a convenience method for protocols that have simple
-     * Authentication and do not require complex caching schemes
-     * such as ftp
+     * @deprecated.  Use @checkCachedAuthentication( AuthInfo& ) instead.
      *
      * @param url           url for which to check cached Authentication.
      * @param user          cached user name.
      * @param passw         cached password.
-     *
-     * @return              @p true if cached Authentication if found
      */
     bool checkCachedAuthentication( const KURL& url,
                                     QString& user,
                                     QString& passwd);
 
+
+    /**
+     * Caches authentication information in "kdesud".
+     *
+     * Use this function to cache correct authorization information
+     * so that you will not have to request it again from the end
+     * user.  By default is automatically deleted if the application
+     * that cached it is shutdown properly. You can change this by
+     * setting the @AuthInfo::keepPassword flag so that the password
+     * is cached for the duration of the current KDE session or the
+     * end-user manually does "kdesu -s" to stop the running "kdesud"
+     * process.  Additionally, this function does not check whether
+     * the provided authorization info is already cached and will
+     * simply overwrite it.
+     *
+     * NOTE: A call to this function can also fail and result
+     * in a return value of @p false, if "kdesud" could not be
+     * started for whatever reason or when no URL was supplied.
+     * Additionally, if application that cached the password
+     * crashes, the password will be kept for the duration of
+     * the current KDE session.
+     *
+     * @param       See @ref AuthInfo.
+     * @return      @p TRUE if the authorization info was sucessfully cached.
+     */
+    bool cacheAuthentication( const AuthInfo& info );
+
+
     /**
      * Same as above except in the number of arguments it takes.
      *
-     * See @ref AuthInfo for details.
-     *
-     * @return              @p true if cached Authentication if found
-     */
-    bool checkCachedAuthentication( AuthInfo& info );
-
-    /**
-     * Caches authentication information in the kdesu daemon.
-     *
-     * Authentication caching is based on the following criteria:
-     *
-     *    Use the protocol as part of the key generation.  This will
-     *    reduce the chances of inadvertantly sending password to the
-     *    incorrect server. Thus, http://www.foobar.org and
-     *    ftp://www.foobar.org are treated as different request sites
-     *    even if the same Authentication is assigned to the user for
-     *    accessing both locations.
-     *
-     *    Allow separate entries for different servers on the the same
-     *    host but with different port numbers. For example, one might
-     *    have multiple web-based admin tools, such as Webmin and SWAT,
-     *    on the same server with different port numbers.
-     *
-     *    Allow password caching for the same host based on "protection
-     *    space" scheme. This enables protocols like HTTP that use RFC
-     *    2617 to correctly store authentication information for multiple
-     *    password protected content within the same site.  Refer to
-     *    RFC 2617 for further details.
-     *
+     * @deprecated.  Use @cacheAuthentication( AuthInfo& ) instead.
      *
      * @param url       url for which Authentication is to be cached.
      * @param user      user name to be cached.
@@ -611,21 +617,14 @@ protected:
                               const QString& extra = QString::null );
 
     /**
-     * Same as above except in the number of arguments it takes.
-     *
-     * See @ref AuthInfo for details.
-     *
-     * @return          @p true if Authentication was sucessfully cached
-     */
-    bool cacheAuthentication( const AuthInfo& info );
-
-    /**
      * Creates a basic key to be used to cache the password.
-     *
-     * @param url   URL for which a caching key should be generated.
-     * @return      NULL if @p url is malformed, otherwise the generated key.
      */
     QString createAuthCacheKey( const KURL& url );
+
+    /**
+     * Sends the authentication key to the application.
+     */
+    void sendAuthenticationKey( const QCString&, const QCString&, bool );
 
     /**
      * Used by the slave to check if it can connect
@@ -672,14 +671,6 @@ protected:
      * Internal function to transmit meta data to the application.
      */
     void sendMetaData();
-
-    /**
-     * Internal function to transmit authentication key to the application.
-     *
-     * @param key       the authorization key matched or created
-     * @param group     the authorization group-key matched or created
-     */
-    void sendAuthenticationKey( const QCString&, const QCString& );
 
     /*
      * @deprecated.  Added only for BC with KDE 2.0

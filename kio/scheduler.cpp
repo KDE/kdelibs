@@ -262,7 +262,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 
     if (!slave)
     {
-       if (protInfo->activeSlaves.count() < protInfo->maxSlaves)
+       if ( protInfo->maxSlaves > static_cast<int>(protInfo->activeSlaves.count()) )
        {
           newSlave = true;
           slave = createSlave(protInfo, job);
@@ -344,7 +344,7 @@ bool Scheduler::startJobDirect()
     return true;
 }
 
-Slave *Scheduler::findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job)
+Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job)
 {
     Slave *slave = 0;
     if (slaveOnHold)
@@ -423,8 +423,8 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job)
                 SLOT(slotSlaveDied(KIO::Slave *)));
       connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
-      connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&)),
-                SLOT(slotAuthenticationKey(const QCString&, const QCString&)));
+      connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&, bool)),
+                SLOT(slotAuthenticationKey(const QCString&, const QCString&, bool)));
    }
    else
    {
@@ -466,7 +466,9 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     }
 }
 
-void Scheduler::slotAuthenticationKey( const QCString& key, const QCString& group )
+void Scheduler::slotAuthenticationKey( const QCString& key,
+                                       const QCString& group,
+                                       bool keep )
 {
     AuthKey* auth_key = cachedAuthKeys.first();
     for( ; auth_key !=0 ; auth_key=cachedAuthKeys.next() )
@@ -477,7 +479,7 @@ void Scheduler::slotAuthenticationKey( const QCString& key, const QCString& grou
             return ;
     }
 
-    cachedAuthKeys.append( new AuthKey (key, group, false) );
+    cachedAuthKeys.append( new AuthKey (key, group, keep) );
     regCachedAuthKey( key, group );
 }
 

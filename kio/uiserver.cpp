@@ -763,29 +763,22 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
-QByteArray UIServer::openPassDlg( const QString& msg, const QString& user,
-                                  bool lockUserName )
+QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
 {
-    return openPassDlg( msg, user, QString::null, QString::null,
-                        QString::null, lockUserName );
-}
-
-QByteArray UIServer::openPassDlg( const QString& prompt, const QString& user,
-                                  const QString& caption, const QString& comment,
-                                  const QString& label, bool readOnly )
-{
-    kdDebug(7024) << "User= " << user << ", Message= " << prompt << endl;
-    bool keep;
-    QString usr = user, pass;
-    int res = KIO::PasswordDialog::getNameAndPassword( usr, pass, &keep, prompt,
-                                                       readOnly, caption, comment,
-                                                       label );
+    kdDebug(7024) << "UIServer::openPassDlg: User= " << info.username
+                  << ", Msg= " << info.prompt << endl;
+    KIO::AuthInfo inf(info);
+    int result = KIO::PasswordDialog::getNameAndPassword( inf.username, inf.password,
+                                                          &inf.keepPassword, inf.prompt,
+                                                          inf.readOnly, inf.caption,
+                                                          inf.comment, inf.commentLabel );
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
-    if ( res == QDialog::Accepted )
-        stream << Q_UINT8(1) << usr << pass << (keep ? Q_UINT8(1):Q_UINT8(0));
+    if ( result == QDialog::Accepted )
+        inf.setModified( true );
     else
-        stream << Q_UINT8(0) << QString::null << QString::null << Q_UINT8(0);
+        inf.setModified( false );
+    stream << inf;
     return data;
 }
 

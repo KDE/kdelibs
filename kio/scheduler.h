@@ -72,7 +72,7 @@ namespace KIO {
     protected slots:
         void startStep();
         void slotCleanIdleSlaves();
-        void slotAuthenticationKey( const QCString&, const QCString& );
+        void slotAuthenticationKey( const QCString&, const QCString&, bool keep );
 
     protected:
         bool startJobScheduled(ProtocolInfo *protInfo);

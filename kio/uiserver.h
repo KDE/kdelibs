@@ -224,32 +224,18 @@ k_dcop:
   ASYNC canResume( int id, unsigned long offset );
 
   /**
-   * Prompts the user for authorization information ( login & password ).
+   * Prompts the user for authorization info.
    *
-   * @param prompt
-   * @param user
-   * @param caption
-   * @param comment
-   * @param label
-   * @param readonly
-   *
-   * @return serialized autorization info: (bool authorized, QString user, QString password, bool keepPassword)
+   * @prompt    See @p AuthInfo in kio/global.cpp.
+   * @return    @p a modified and seralized authorization info object.
    */
-   QByteArray openPassDlg( const QString& prompt, const QString& user,
-                           const QString& caption, const QString& comment,
-                           const QString& label, bool readOnly );
+  QByteArray openPassDlg( const KIO::AuthInfo &info );
 
   /**
-   * Same as above except in the number of parameters it takes.
-   *
-   * @return serialized autorization info: (bool authorized, QString user, QString password, bool keepPassword)
+   * Popup a message box.
    */
-   QByteArray openPassDlg( const QString& msg, const QString& user, bool lockUserName );
-
-  /**
-   * Popup a message box
-   */
-  int messageBox( int id, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
+  int messageBox( int id, int type, const QString &text, const QString &caption,
+                  const QString &buttonYes, const QString &buttonNo );
 
   /**
    * See renamedlg.h

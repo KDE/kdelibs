@@ -68,7 +68,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     int i;
     Q_INT8 b;
     unsigned long ul;
-	bool f;
 
     switch( _cmd ) {
     case MSG_DATA:
@@ -170,10 +169,9 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	emit warning( str1 );
 	break;
     case INF_NEED_PASSWD: {
-	kdDebug(7007) << "needs passwd\n";
-	QString user, caption, comment, label;
-	stream >> str1 >> user >> caption >> comment >> label >> f;
-	openPassDlg( str1, user, caption, comment, label, f );
+        AuthInfo info;
+       	stream >> info;
+	openPassDlg( info );
 	break;
     }
     case INF_MESSAGEBOX: {
@@ -215,11 +213,13 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     case MSG_AUTH_KEY: {
+        bool keep;
         QCString key, group;
-        stream >> key >> group;
-        kdDebug(7007) << "Got auth-key: " << key << ": and group-key: "
-                      << group << ":" << endl;
-        authenticationKey( key, group );
+        stream >> key >> group >> keep;
+        kdDebug(7007) << "Got auth-key:      " << key << endl
+                      << "    group-key:     " << group << endl
+                      << "    keep password: " << keep << endl;
+        authenticationKey( key, group, keep );
         break;
     }
     default:
@@ -251,27 +251,43 @@ void SlaveInterface::sendResumeAnswer( bool resume )
 
 void SlaveInterface::openPassDlg( const QString& prompt, const QString& user, bool readOnly )
 {
-    openPassDlg( prompt, user, QString::null, QString::null, QString::null, readOnly );
+    AuthInfo info;
+    info.prompt = prompt;
+    info.username = user;
+    info.readOnly = readOnly;
+    return openPassDlg( info );
 }
 
 void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
                                   const QString& caption, const QString& comment,
                                   const QString& label, bool readOnly )
 {
-    kdDebug(7007) << "SlaveInterface: User= " << user << ", Message= " << prompt << endl;
-    bool keep;
-    QString u = user, p;
-    bool result = Observer::self()->openPassDlg( prompt, u , p, caption, comment, label, readOnly, &keep );
+    AuthInfo info;
+    info.prompt = prompt;
+    info.username = user;
+    info.caption = caption;
+    info.comment = comment;
+    info.commentLabel = label;
+    info.readOnly = readOnly;
+    return openPassDlg( info );
+}
+
+void SlaveInterface::openPassDlg( AuthInfo& info )
+{
+    kdDebug(7007) << "SlaveInterface::openPassDlg: "
+                  << "User= " << info.username
+                  << ", Message= " << info.prompt << endl;
+    bool result = Observer::self()->openPassDlg( info );
     if ( m_pConnection )
     {
         QByteArray data;
         QDataStream stream( data, IO_WriteOnly );
         if ( result )
         {
-            stream << u << p << keep;
-            kdDebug(7007) << "SlaveInterface:::openPassDlg got:" << endl
-                          << "  User= " << u << endl
-                          << "  Password= [hidden]" << endl;
+            stream << info;
+            kdDebug(7007) << "SlaveInterface:::openPassDlg got: "
+                          << "User= " << info.username
+                          << ", Password= [hidden]" << endl;
             m_pConnection->sendnow( CMD_USERPASS, data );
         }
         else
