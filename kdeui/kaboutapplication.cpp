@@ -112,7 +112,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   if (creditsCount)
   {
     KAboutContainer *creditsPage = 
-      addScrolledContainerPage( i18n("&Thanks to") );
+      addScrolledContainerPage( i18n("&Thanks To") );
     QValueList<KAboutPerson>::ConstIterator it;
     for (it = aboutData->credits().begin();
 	 it != aboutData->credits().end(); ++it)
@@ -143,7 +143,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
   if (!aboutData->license().isEmpty() )
   {
-    addLicensePage( i18n("&License agreement"), aboutData->license() );
+    addLicensePage( i18n("&License Agreement"), aboutData->license() );
   }
 
   //

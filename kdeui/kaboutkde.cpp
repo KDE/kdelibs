@@ -69,8 +69,8 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
   setTitle(i18n("K Desktop Environment. Release %1").
 	   arg(QString::fromLatin1(KDE_VERSION_STRING)) );
   addTextPage( i18n("About KDE","&About"), text1, true );
-  addTextPage( i18n("&Report bugs or wishes"), text2, true );
-  addTextPage( i18n("&Join the KDE team"), text3, true );
+  addTextPage( i18n("&Report Bugs or Wishes"), text2, true );
+  addTextPage( i18n("&Join the KDE Team"), text3, true );
   setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
   setImageBackgroundColor( white );
 }

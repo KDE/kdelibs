@@ -272,7 +272,7 @@ void KPasswordDialog::init()
     if ((m_Type == Password) && m_Keep) {
 	m_pGrid->addRowSpacing(8, 10);
 	m_pGrid->setRowStretch(8, 12);
-	QCheckBox *cb = new QCheckBox(i18n("&Keep Password"), m_pMain);
+	QCheckBox *cb = new QCheckBox(i18n("&Keep password"), m_pMain);
 	cb->setFixedSize(cb->sizeHint());
 	if (m_Keep > 1)
 	    cb->setChecked(true);

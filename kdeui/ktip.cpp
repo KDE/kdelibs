@@ -196,7 +196,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     QHBoxLayout *hbox2 = new QHBoxLayout(vbox, 4);
 
-    _tipOnStart = new QCheckBox(i18n("&Show Tips on Startup"), this);
+    _tipOnStart = new QCheckBox(i18n("&Show tips on startup"), this);
     hbox2->addWidget(_tipOnStart, 1);
 
     QPushButton *prev = new QPushButton(i18n("&Previous"), this);
