@@ -110,6 +110,22 @@ class KGlobalSettings
     static int autoSelectDelay();
 
     /**
+     * Returns the KDE setting for the shortcut key to open
+     * context menus.
+     *
+     * @return the key that pops up context menus.
+     */
+    static uint contextMenuKey ();
+
+    /**
+     * Returns the KDE setting for context menus.
+     *
+     * @return whether context menus should be shown on button press
+     * or button release (click).
+     */
+    static bool showContextMenusOnPress ();
+
+    /**
      * Retrieve the configured completion mode.
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html

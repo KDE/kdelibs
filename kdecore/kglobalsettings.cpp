@@ -23,6 +23,7 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kcharsets.h>
+#include <kaccel.h>
 #include <qfontinfo.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
@@ -81,6 +82,22 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
 	completion = (int) CompletionShell; // Default
       }
   return (Completion) completion;
+}
+
+bool KGlobalSettings::showContextMenusOnPress ()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs (c, "ContextMenus");
+    
+    return cgs.config()->readBoolEntry("ShowOnPress", true);
+}
+
+uint KGlobalSettings::contextMenuKey ()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs (c, "Keys");
+
+    return KAccel::stringToKey (cgs.config()->readEntry ("PopupContextMenu", "Menu"));
 }
 
 bool KGlobalSettings::honorGnome()
