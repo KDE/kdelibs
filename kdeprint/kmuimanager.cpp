@@ -34,6 +34,7 @@
 #include "kmfiltermanager.h"
 
 #include <klocale.h>
+#include <kdebug.h>
 
 KMUiManager::KMUiManager(QObject *parent, const char *name)
 : QObject(parent,name)
@@ -60,7 +61,7 @@ void KMUiManager::setupConfigDialog(KMConfigDialog*)
 
 int KMUiManager::copyFlags(KPrinter *pr, bool usePlugin)
 {
-	int	fl(0);
+	int	fl(0), pcap(pluginPageCap());
 	if (KMFactory::self()->settings()->pageSelection == KPrinter::ApplicationSide)
 	{
 		if (pr)
@@ -69,8 +70,11 @@ int KMUiManager::copyFlags(KPrinter *pr, bool usePlugin)
 			if (pr->minPage() > 0 && pr->maxPage() > 0)
 				fl |= (Range|PageSet|Order);
 		}
-		else fl = CopyAll;
-		if (pluginPageCap() & NoAutoCollate) fl |= NoAutoCollate;
+		//else fl = CopyAll;
+		if (usePlugin)
+			fl |= (pcap & (Collate|NoAutoCollate));
+		else
+			fl |= NoAutoCollate;
 	}
 	else if (usePlugin)
 		// in this case, we want page capabilities with plugin, it means

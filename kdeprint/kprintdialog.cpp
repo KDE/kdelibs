@@ -226,6 +226,10 @@ bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent, const QStrin
 	if (printer)
 	{
 		KPrintDialog	dlg(parent);
+		// needs to set the printer before setting up the
+		// print dialog as some additional pages may need it.
+		// Real initialization comes after.
+		dlg.m_printer = printer;
 		KMFactory::self()->uiManager()->setupPrintDialog(&dlg);
 		dlg.initialize(printer);
 		if (!caption.isEmpty())
