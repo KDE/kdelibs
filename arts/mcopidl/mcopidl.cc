@@ -675,7 +675,8 @@ string createTypeCode(string type, const string& name, long model,
 	}
 	else
 	{
-		fprintf(stderr,"warning: undefined type %s occured\n",type.c_str());
+		fprintf(stderr,"error: undefined type %s occured\n",type.c_str());
+		exit(1);
 	}
 
 	if((model & ~MODEL_SEQ) == MODEL_MEMBER
@@ -2554,4 +2555,6 @@ int main(int argc, char **argv)
 		moveIfChanged(string(prefix)+".mcoptype");
 		moveIfChanged(string(prefix)+".mcopclass");
 	}
+
+	return 0;
 }
