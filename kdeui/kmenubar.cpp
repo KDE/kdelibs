@@ -278,7 +278,7 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, TRUE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), FALSE);
+	KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
@@ -289,8 +289,8 @@ void KMenuBar::enableMoving(bool flag)
 	  s.append(" [menu]");
 	  setCaption(s);
 	}
-	setFrameStyle( QFrame::Panel | QFrame::Raised );
-	menu->setFrameStyle( QFrame::Panel | QFrame::Raised );
+	setFrameStyle( NoFrame);
+	menu->setFrameStyle( NoFrame) ;
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 		*miniGo = px;
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));

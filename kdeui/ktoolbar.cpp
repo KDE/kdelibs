@@ -299,7 +299,7 @@ void KToolBar::init()
   
   position = Top;
   moving = TRUE;
-  setFrameStyle( QFrame::Panel | QFrame::Raised );
+  setFrameStyle(NoFrame);
   setLineWidth( 1 );
   resize( width(), TOOLBARHEIGHT );
   items.setAutoDelete(TRUE);
@@ -715,7 +715,8 @@ void KToolBar::paintEvent(QPaintEvent *)
 
 #ifdef TOOLBAR_IS_RAISED
 
-  qDrawShadePanel(paint, 0, 0, width(), height(), g , FALSE, 1);
+  if (position != Floating)
+    qDrawShadePanel(paint, 0, 0, width(), height(), g , FALSE, 1);
 	
 #else
 
@@ -1303,7 +1304,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         recreate(0, 0,
                  p, TRUE);
 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), FALSE);
+	KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
