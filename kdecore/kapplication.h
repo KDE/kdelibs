@@ -231,6 +231,11 @@ public:
    * Retrieve a pointer to a @ref DCOPClient for the application.
    */
   virtual DCOPClient *dcopClient();
+  
+  /**
+   * Disable automatic dcop registration
+   */
+  void disableAutoDcopRegistration();
 
   /**
    * Get the application icon.
@@ -552,6 +557,12 @@ public:
    */
   void setStartupId( const QCString& startup_id );
 
+    /**
+    * Returns the argument to --geometry if any, so the geometry can be set
+    * wherever necessary
+    */
+  QString geometryArgument() const;
+
 public slots:
   /**
    * Tell KApplication about one more operation that should be finished
@@ -567,19 +578,12 @@ public slots:
    */
   void deref();
 
-    /**
-    * Returns the argument to --geometry if any, so the geometry can be set
-    * wherever necessary
-    */
-  QString geometryArgument() const;
-
 protected:
 #ifdef Q_WS_X11
   /**
    * Used to catch X11 events
    */
   bool x11EventFilter( XEvent * );
-
 
   Display *display;
 #endif
@@ -594,6 +598,7 @@ private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
+  void dcopAutoRegistration();
 
 private:
   KApplicationPrivate* d;

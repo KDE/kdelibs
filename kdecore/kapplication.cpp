@@ -43,6 +43,7 @@
 #include <qmenubar.h>
 #include <qsessionmanager.h>
 #include <qlist.h>
+#include <qtimer.h>
 #include <qstylesheet.h>
 #include <qpixmapcache.h>
 #include <qtooltip.h>
@@ -429,6 +430,7 @@ public:
     checkAccelerators = 0;
     styleFile="kstylerc";
     startup_id = "0";
+    autoDcopRegistration = true;
   }
 
   ~KApplicationPrivate()
@@ -444,8 +446,9 @@ public:
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
   QString styleFile;
-   QString geometry_arg;
+  QString geometry_arg;
   QCString startup_id;
+  bool autoDcopRegistration;
 };
 
 
@@ -745,6 +748,8 @@ void KApplication::init(bool GUIenabled)
 #endif
 
   d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
+
+  QTimer::singleShot(0, this, SLOT(dcopAutoRegistration()));
 }
 
 static int my_system (const char *command) {
@@ -781,7 +786,22 @@ DCOPClient *KApplication::dcopClient()
           SLOT(dcopBlockUserInput(bool)) );
 
   DCOPClient::setMainClient( pDCOPClient );
+  if (d->autoDcopRegistration)
+  {
+     pDCOPClient->registerAs(name());
+  }
   return pDCOPClient;
+}
+
+void KApplication::dcopAutoRegistration()
+{
+  if (d->autoDcopRegistration)
+     (void) dcopClient();
+}
+
+void KApplication::disableAutoDcopRegistration()
+{
+  d->autoDcopRegistration = false;
 }
 
 KConfig* KApplication::sessionConfig()
