@@ -29,8 +29,8 @@
 #include <klistview.h>
 #include <kdirnotify.h>
 #include <kio/job.h>
+#include <kfiletreeviewitem.h>
 
-class KFileTreeViewItem;
 class KFileTreeBranch;
 class QTimer;
 
@@ -122,6 +122,10 @@ public:
     */
    KFileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
    
+   /**
+    * @returns a flag indicating if extended folder pixmaps are displayed or not.
+    */
+   bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; };
    
 public slots:
    /**
@@ -131,10 +135,16 @@ public slots:
     */
    void populateBranch( KFileTreeBranch *brnch );
 
-   void slotNewTreeViewItem( KFileTreeViewItem *it );
-      
-   void slotSetNextUrlToSelect( const KURL &url )
-      { m_nextUrlToSelect = url; }
+   
+   /**
+    * set the flag to show 'extended' folder icons on or off. If switched on, folders will
+    * have an open folder pixmap displayed if their children are visible, and the standard
+    * closed folder pixmap (from mimetype folder) if they are closed.
+    * If switched off, the plain mime pixmap is displayed.
+    * @param showIt = false displays mime type pixmap only
+    */
+   void setShowFolderOpenPixmap( bool showIt = true )
+      { m_wantOpenFolderPixmaps = showIt; }
    
 protected:
     virtual QDragObject * dragObject();
@@ -152,12 +162,20 @@ protected:
 
     virtual void leaveEvent( QEvent * );
 
+protected slots:
+    virtual void slotNewTreeViewItems( KFileTreeBranch*,
+				       const KFileTreeViewItemList& );
 
-   QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
+    virtual void slotSetNextUrlToSelect( const KURL &url )
+      { m_nextUrlToSelect = url; }
+
+    virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
+   
 private slots:
     void slotExecuted( QListViewItem * );
     void slotExpanded( QListViewItem * );
-
+    void slotCollapsed( QListViewItem *item );
+   
     void slotMouseButtonPressed(int _button, QListViewItem* _item, const QPoint&, int col);
     void slotSelectionChanged();
 
@@ -210,10 +228,12 @@ private:
     QPoint m_dragPos;
     bool m_bDrag;
 
+   bool m_wantOpenFolderPixmaps; // Flag weather the folder should have open-folder pixmaps
+   
     QListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
     QListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
     QStrList m_lstDropFormats;
-
+   QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
 
     KFileTreeViewToolTip m_toolTip;

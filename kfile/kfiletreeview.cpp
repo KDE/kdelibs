@@ -18,15 +18,12 @@
 */
 
 #include <qheader.h>
-#include <qdir.h>
-#include <qfile.h>
 #include <qtimer.h>
 #include <kdebug.h>
 #include <kdirnotify_stub.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
 #include <kio/global.h>
-#include <kiconloader.h>
 #include <kmimetype.h>
 #include <kstddirs.h>
 #include <kurldrag.h>
@@ -36,6 +33,8 @@
 #include <kio/job.h>
 #include <kio/global.h>
 #include <kurldrag.h>
+#include <kiconloader.h>
+
 
 #include "kfiletreeview.h"
 #include "kfiletreebranch.h"
@@ -46,6 +45,7 @@ static const int autoOpenTimeout = 750;
 
 KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     : KListView( parent, name ),
+      m_wantOpenFolderPixmaps( true ),
       m_toolTip( this )
 {
     setAcceptDrops( true );
@@ -60,9 +60,6 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     m_currentBeforeDropItem = 0;
     m_dropItem = 0;
 
-    addColumn( QString::null );
-    header()->hide();
-
     m_autoOpenTimer = new QTimer( this );
     connect( m_autoOpenTimer, SIGNAL( timeout() ),
              this, SLOT( slotAutoOpenFolder() ) );
@@ -72,6 +69,9 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
              this, SLOT( slotExecuted( QListViewItem * ) ) );
     connect( this, SIGNAL( expanded ( QListViewItem *) ),
     	     this, SLOT( slotExpanded( QListViewItem *) ));
+    connect( this, SIGNAL( collapsed( QListViewItem *) ),
+	     this, SLOT( slotCollapsed( QListViewItem* )));
+    
     /* connections from the konqtree widget */
     connect( this, SIGNAL( mouseButtonPressed(int, QListViewItem*, const QPoint&, int)),
              this, SLOT( slotMouseButtonPressed(int, QListViewItem*, const QPoint&, int)) );
@@ -85,6 +85,8 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
 	     
     m_bDrag = false;
     m_branches.setAutoDelete( true );
+
+    m_openFolderPixmap = SmallIcon( "folder_open" );
 }
 
 KFileTreeView::~KFileTreeView()
@@ -270,26 +272,40 @@ void KFileTreeView::leaveEvent( QEvent *e )
 
 }
 
+
+void KFileTreeView::slotCollapsed( QListViewItem *item )
+{
+   KFileTreeViewItem *kftvi = static_cast<KFileTreeViewItem*>(item);
+
+   if( kftvi->isDir())
+   {
+      item->setPixmap( 0, itemIcon(kftvi));
+   }
+   
+}
+
 void KFileTreeView::slotExpanded( QListViewItem *item )
 {
    kdDebug(1201) << "slotExpanded here !" << endl;
 
-#if 0
-   if( !item->isOpen() )
-#endif
-   {
-      KFileTreeViewItem *it = static_cast<KFileTreeViewItem*>(item);
-      KFileTreeBranch *branch = it->branch();
+   KFileTreeViewItem *it = static_cast<KFileTreeViewItem*>(item);
+   KFileTreeBranch *branch = it->branch();
 
-      if( branch )
-      {
-	 kdDebug(1201 ) << "starting to open " << it->url().prettyURL() << endl;
-	 KFileTreeViewItem *currItem = static_cast<KFileTreeViewItem*>(currentItem());
-	 startAnimation( currItem );
-	 branch->populate( it->url(), currItem);
-      }
+   /* Start the animation for the branch object */
+   if( branch )
+   {
+      kdDebug(1201 ) << "starting to open " << it->url().prettyURL() << endl;
+      KFileTreeViewItem *currItem = static_cast<KFileTreeViewItem*>(currentItem());
+      startAnimation( currItem );
+      branch->populate( it->url(), currItem);
    }
-   // item->setOpen( !item->isOpen() );
+
+   /* set a pixmap 'open folder' */
+   if( it->isDir() && isOpen( item ) )
+   {
+      kdDebug(28000)<< "Setting open Pixmap" << endl;
+      item->setPixmap( 0, itemIcon( it )); // 0, m_openFolderPixmap );
+   }
 }
 
 
@@ -389,9 +405,11 @@ KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name
    connect( newBranch, SIGNAL(populateFinished( KFileTreeViewItem* )),
 	    this, SLOT( slotPopulateFinished( KFileTreeViewItem* )));
 
-   connect( newBranch, SIGNAL( newKFileTreeViewItem( KFileTreeViewItem* )),
-	    this, SLOT( slotNewTreeViewItem( KFileTreeViewItem * )) );
-	    
+   connect( newBranch, SIGNAL( newTreeViewItems( KFileTreeBranch*,
+						 const KFileTreeViewItemList& )),
+	    this, SLOT( slotNewTreeViewItems( KFileTreeBranch*,
+					      const KFileTreeViewItemList& )));
+   
 
    m_branches.append( newBranch );
    return( newBranch );
@@ -445,11 +463,11 @@ void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
     stopAnimation( it );
 }
 
-void KFileTreeView::slotNewTreeViewItem( KFileTreeViewItem *it )
+void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTreeViewItemList& itemList )
 {
-   kdDebug(1201) << "Hitting slotNewTreeViewItem" << endl;
-   if( ! it ) return;
-
+   if( ! branch ) return;
+   kdDebug(28000) << "hitting slotNewTreeViewItems" << endl;
+   
    /* Sometimes it happens that new items should become selected, i.e. if the user
     * creates a new dir, he probably wants it to be selected. This can not be done
     * right after creating the directory or file, because it takes some time until
@@ -459,11 +477,19 @@ void KFileTreeView::slotNewTreeViewItem( KFileTreeViewItem *it )
     */
    if( ! m_nextUrlToSelect.isEmpty() )
    {
-      KURL url = it->url();
-      if( m_nextUrlToSelect == url )
+      KFileTreeViewItemListIterator it( itemList );
+      
+      bool end = false;
+      for( ; !end && it.current(); ++it )
       {
-	 setCurrentItem( static_cast<QListViewItem*>(it) );
-	 m_nextUrlToSelect = KURL();
+	 KURL url = (*it)->url();
+	 
+	 if( m_nextUrlToSelect == url )
+	 {
+	    setCurrentItem( static_cast<QListViewItem*>(*it) );
+	    m_nextUrlToSelect = KURL();
+	    end = true;
+	 }
       }
    }
 }
@@ -489,17 +515,23 @@ bool KFileTreeView::checkOnFilter( QString& fi )
 
 QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 {
+   QPixmap pix;
+   
    if( item )
    {
-      /* Check on it's own pixmap */
-       const QPixmap *cp = item->pixmap( gap );
-       if( cp )
-           return *cp;
-       else
-           return item->fileItem()->pixmap( KIcon::Small, KIcon::DefaultState);
-   }
+      // TODO: different modes, user Pixmaps ?
+      pix = item->fileItem()->pixmap( KIcon::SizeSmall ); // , KIcon::DefaultState);
 
-   return QPixmap();
+      /* Only if it is a dir and the user wants open dir pixmap and it is open,
+       * change the fileitem's pixmap to the open folder pixmap. */
+      if( item->isDir() && m_wantOpenFolderPixmaps )
+      {
+	 if( isOpen( static_cast<QListViewItem*>(item)))
+	     pix = m_openFolderPixmap;
+      }
+   }
+   
+   return pix;
 }
 
 
@@ -530,7 +562,6 @@ void KFileTreeView::startAnimation( KFileTreeViewItem * item, const char * iconB
       return;
    }
 
-   KIconLoader *loader = KGlobal::iconLoader();
    m_mapCurrentOpeningFolders.insert( item,
                                       AnimationInfo( iconBaseName,
                                                      iconCount,
@@ -544,9 +575,16 @@ void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
     MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
     if ( it != m_mapCurrentOpeningFolders.end() )
     {
-       item->setPixmap( 0, it.data().originalPixmap );
-       // TODO set pix here.
-        m_mapCurrentOpeningFolders.remove( item );
+       if( item->isDir() && isOpen(static_cast<QListViewItem*>(item)))
+       {
+	  kdDebug(28000) << "Setting folder open pixmap !" << endl;
+	  item->setPixmap( 0, itemIcon( item ));
+       }
+       else
+       {
+	  item->setPixmap( 0, it.data().originalPixmap );
+       }
+       m_mapCurrentOpeningFolders.remove( item );
     }
     if (m_mapCurrentOpeningFolders.isEmpty())
         m_animationTimer->stop();
@@ -561,7 +599,7 @@ KURL KFileTreeView::currentURL() const
 {
     KFileTreeViewItem *item = currentKFileTreeViewItem();
     if ( item )
-        currentKFileTreeViewItem()->url();
+        return currentKFileTreeViewItem()->url();
     else
         return KURL();
 }
