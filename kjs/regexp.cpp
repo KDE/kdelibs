@@ -21,6 +21,7 @@
 
 #include "regexp.h"
 
+#include "lexer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,43 @@ using namespace KJS;
 RegExp::RegExp(const UString &p, int f)
   : pattern(p), flgs(f), m_notEmpty(false)
 {
+  // JS regexps can contain Unicode escape sequences (\uxxxx) which
+  // are rather uncommon elsewhere. As our regexp libs don't understand
+  // them we do the unescaping ourselves internally.
+  UString intern;
+  if (p.find('\\') >= 0) {
+    bool escape = false;
+    for (int i = 0; i < p.size(); ++i) {
+      UChar c = p[i];
+      if (escape) {
+        escape = false;
+        // we only care about \uxxxx
+        if (c == 'u' && i + 4 < p.size()) {
+          int c0 = p[i+1].unicode();
+          int c1 = p[i+2].unicode();
+          int c2 = p[i+3].unicode();
+          int c3 = p[i+4].unicode();
+          if (Lexer::isHexDigit(c0) && Lexer::isHexDigit(c1) &&
+              Lexer::isHexDigit(c2) && Lexer::isHexDigit(c3)) {
+            c = Lexer::convertUnicode(c0, c1, c2, c3);
+            intern += UString(&c, 1);
+            i += 4;
+            continue;
+          }
+        }
+        intern += UString('\\');
+        intern += UString(&c, 1);
+      } else {
+        if (c == '\\')
+          escape = true;
+        else
+          intern += UString(&c, 1);
+      }
+    }
+  } else {
+    intern = p;
+  }
+
 #ifdef HAVE_PCREPOSIX
   int pcreflags = 0;
   const char *perrormsg;
@@ -41,7 +79,7 @@ RegExp::RegExp(const UString &p, int f)
   if (flgs & Multiline)
     pcreflags |= PCRE_MULTILINE;
 
-  pcregex = pcre_compile(p.ascii(), pcreflags,
+  pcregex = pcre_compile(intern.ascii(), pcreflags,
 			 &perrormsg, &errorOffset, NULL);
 #ifndef NDEBUG
   if (!pcregex)
@@ -72,7 +110,7 @@ RegExp::RegExp(const UString &p, int f)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  if (regcomp(&preg, p.ascii(), regflags) != 0) {
+  if (regcomp(&preg, intern.ascii(), regflags) != 0) {
     /* TODO: throw JS exception */
     regcomp(&preg, "", regflags);
   }
@@ -121,7 +159,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
       // We set m_notEmpty ourselves, to look for a non-empty match
       // (see man pcretest or pcretest.c for details).
       // So we don't stop here, we want to try again at i+1.
+#ifndef NDEBUG
       fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
+#endif
       m_notEmpty = 0;
       if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i+1, 0,
                     ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)

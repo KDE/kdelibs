@@ -117,10 +117,10 @@ namespace KJS {
   };
 
   // helper functions
-  Value parseDate(const UString &u);
+  double parseDate(const UString &u);
   double KRFCDate_parseDate(const UString &_date);
-  Value timeClip(const Value &t);
-  Number makeTime(struct tm *t, int milli, bool utc);
+  double timeClip(double t);
+  double makeTime(struct tm *t, int milli, bool utc);
 
 } // namespace
 
