@@ -17,6 +17,10 @@ BUGS
 - maybe a configChanged() should be issued when saving the instances
   file to force a printer reload in the print dialog.
 
+- fix conflicting/not working shortcuts:
+	. Properties.. (kprintdialog.cpp)
+	. Other (kpqtpage.cpp)
+
 
 WISHES
 ------
