@@ -163,7 +163,7 @@ void KWin::setDockWindow(WId dockWin, WId forWin ){
 }
 
 
-bool KWin::isDockWindow( WId dockWin, WId *forWin = 0 )
+bool KWin::isDockWindow( WId dockWin, WId *forWin )
 {
     createAtoms();
     Atom type;
