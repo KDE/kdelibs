@@ -58,6 +58,7 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
     setViewMode( QIconSet::Large );
     connect( this, SIGNAL( currentChanged( QIconViewItem * ) ),
 	     this, SLOT( slotCurrentChanged( QIconViewItem * ) ) );
+    setWordWrapIconText( FALSE );
 }
 
 KIconLoaderCanvas::~KIconLoaderCanvas()
@@ -67,6 +68,7 @@ KIconLoaderCanvas::~KIconLoaderCanvas()
 
 void KIconLoaderCanvas::loadDir( QString dirname, QString filter_ )
 {
+    clear();
     dir_name = dirname;
     filter = filter_;
     loadTimer->start( 0, TRUE );
