@@ -653,21 +653,19 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
 void KBookmarkMenu::slotAddBookmark()
 {
   QString url = m_pOwner->currentURL();
+  QString title = m_pOwner->currentTitle();
+  QString parentBookmarkAddress = m_parentAddress;
+
   if (url.isEmpty())
   {
     KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
     return;
   }
-  QString title = m_pOwner->currentTitle();
+
   if (title.isEmpty())
     title = url;
 
-  QString parentBookmarkAddress;
-  if ( !KBookmarkSettings::self()->m_advanced ) 
-  {
-    parentBookmarkAddress = m_parentAddress;
-  } 
-  else 
+  if ( KBookmarkSettings::self()->m_advanced ) 
   {
     KBookmarkEditDialog dlg( title, url, m_pManager );
     if ( dlg.exec() != KDialogBase::Accepted )
