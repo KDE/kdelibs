@@ -73,7 +73,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
     bool inside = HTMLElementImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev);
 
     // ### ev->noHref obsolete now ? ( Dirk )
-    if ( inside && ev->url==0 && !ev->noHref
+    if ( inside && ev->url.isNull() && !ev->noHref
          && m_render && m_render->style() && m_render->style()->visiblity() != HIDDEN )
     {
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
@@ -278,7 +278,7 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_SIZE:
     {
         DOMString s = attr->value();
-        if(s != 0) {
+        if(!s.isNull()) {
             int num = s.toInt();
             if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
                 num += 3;
