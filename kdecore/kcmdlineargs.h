@@ -156,6 +156,16 @@ public:
   static KCmdLineArgs *parsedArgs(const char *id=0);
 
   /**
+   * Get the CWD (Current Working Directory) associated with the
+   * current command line arguments.
+   *
+   * Typically this is needed in KUniqueApplication::newInstance()
+   * since the CWD of the process may be different from the CWD
+   * where the user started a second instance.
+   **/
+  static QString cwd();
+
+  /**
    * Print the usage help to @ds stdout and exit.
    *
    * @param complete If true, print all available options.
@@ -354,6 +364,7 @@ protected:
   static int argc; // The original argc
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
+  static char *mCwd; // Current working directory. Important for KUnqiueApp!  
 };
 
 #endif

@@ -27,7 +27,10 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/param.h>
 #include <qlist.h>
+#include <qfile.h>
 #include <qasciidict.h>
 #include <qstrlist.h>
 
@@ -88,6 +91,7 @@ public:
 KCmdLineArgsList *KCmdLineArgs::argsList = 0;
 int KCmdLineArgs::argc = 0;
 char **KCmdLineArgs::argv = 0;
+char *KCmdLineArgs::mCwd = 0;
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 
@@ -114,8 +118,15 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    argv = _argv;
    about = _about;
    parsed = false;
+   mCwd = new char [PATH_MAX+1];
+   getcwd(mCwd, PATH_MAX);
    if (!noKApp)
       KApplication::addCmdLineOptions();
+}
+
+QString KCmdLineArgs::cwd()
+{
+   return QFile::decodeName(QCString(mCwd));
 }
 
 void
@@ -160,6 +171,9 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
+   QCString qCwd = mCwd;
+   ds << qCwd;
+
    uint count = argsList ? argsList->count() : 0;
    ds << count;
 
@@ -187,6 +201,14 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
          args->clear();
       }
    }
+
+   QCString qCwd;
+   ds >> qCwd;
+   if (mCwd)
+      delete [] mCwd;
+   
+   mCwd = new char[qCwd.length()+1];
+   strncpy(mCwd, qCwd.data(), qCwd.length()+1);
 
    uint count;
    ds >> count;
