@@ -130,15 +130,6 @@ KMListView::~KMListView()
 {
 }
 
-void KMListView::resizeEvent(QResizeEvent *e)
-{
-	QListView::resizeEvent(e);
-	int	w = width()-2*frameWidth();
-	if (verticalScrollBar()->isVisible())
-		w -= verticalScrollBar()->sizeHint().width();
-	setColumnWidth(0,w);
-}
-
 void KMListView::slotRightButtonClicked(QListViewItem *item, const QPoint& p, int)
 {
 	KMListViewItem	*citem = dynamic_cast<KMListViewItem*>(item);

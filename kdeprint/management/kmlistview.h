@@ -49,7 +49,6 @@ protected slots:
 	void slotOnViewport();
 
 protected:
-	void resizeEvent(QResizeEvent*);
 	KMListViewItem* findItem(KMPrinter*);
 
 private:
