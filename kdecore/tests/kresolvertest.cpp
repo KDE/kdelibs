@@ -20,13 +20,17 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
 #include <unistd.h>
 
 #include <qlist.h>
