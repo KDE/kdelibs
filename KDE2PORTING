@@ -110,10 +110,10 @@ khtmlw has been replaced with khtml.
   The methods tempSaveName() and checkRecoverFile() return QString
   now. The returned values must _not_ be free()d.
 
-  helpMenu() has been moved to KTMainWindow. aboutKDE(), aboutApp() and 
-  appHelpActivated() have all been removed See section about ktmainwindow 
+  helpMenu() has been moved to KTMainWindow. aboutKDE(), aboutApp() and
+  appHelpActivated() have all been removed See section about ktmainwindow
   for more info.
-  
+
   The third argument for KApplication used to be optional. But as it's
   value is important for more things in KDE 2.0 (like DCOP), we decided
   to make it's importance more clear and make it mandatory. Just add the
@@ -465,7 +465,7 @@ KIOConnectionSignals <- ConnectionSignals;
 KIOConnectionSlots <- ConnectionSlots;
 KIOJobBase <- IOJob;
 KIOSlave <- Slave;
-KIOFilter <- Filter; 
+KIOFilter <- Filter;
 
 ////////////////////////////////////////////////////////////////////////
 // * kstring.h / KString
@@ -528,21 +528,26 @@ Please adjust your code to it.
 
 helpMenu() has been moved to KTMainWindow from kapp (KApplication).
 
-Both the "About KDE" and the "About <Application>" dialog boxes 
+Both the "About KDE" and the "About <Application>" dialog boxes
 are now modeless. "About KDE" is a completely new widget.
 
-If you in the toplevel window (that is based on KTMainWindow) have used 
-"kapp->helpMenu( bool, QString )" to get the help menu you must now 
-change to "helpMenu( QString )". The QString defaults to QString::null 
+If you in the toplevel window (that is based on KTMainWindow) have used
+"kapp->helpMenu( bool, QString )" to get the help menu you must now
+change to "helpMenu( QString )". The QString defaults to QString::null
 so it is sufficient to write helpMenu()
 
 The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
 has been removed. If you need direct access to these or need access
-to a help menu in a class that is not derived from KTMainWindow then 
-allocate an instance of the new class KHelpMenu. See docs or 
-khelpmenu.h (kdeui) for more info. 
+to a help menu in a class that is not derived from KTMainWindow then
+allocate an instance of the new class KHelpMenu. See docs or
+khelpmenu.h (kdeui) for more info.
 
 Espen Sand <espen@kde.org>
 
+////////////////////////////////////////////////////////////////////////
+// * KPixmap, KPixmapEffect
 
+KPixmap::gradientFill, KPixmap::patternFill, KPixmap::tile and 
+KPixmap::mapFill have been moved to KPixmapEffect, which is now part 
+of libkdeui. 
 
