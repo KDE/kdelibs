@@ -132,7 +132,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %no-lines
 %verbose
 
-%expect 18
+%expect 17
 
 %token S SGML_CD
 
@@ -144,13 +144,13 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %token <string> STRING
 
-%token <string> IDENT
+%right <string> IDENT
 
 %token <string> HASH
 %token ':'
 %token '.'
 %token '['
-%token '|'
+%left '|'
 %token '*'
 
 %token IMPORT_SYM
