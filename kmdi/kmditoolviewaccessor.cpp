@@ -23,6 +23,7 @@
 #include "kmditoolviewaccessor.h"
 #include "kmditoolviewaccessor.moc"
 #include "kmditoolviewaccessor_p.h"
+#include "kmdiguiclient.h"
 #include "kmdimainfrm.h"
 #include <kmdidockwidget.h>
 #include <kdebug.h>
@@ -54,20 +55,23 @@ KMdiToolViewAccessor::~KMdiToolViewAccessor() {
 	delete d;
 }
 
-QWidget *KMdiToolViewAccessor::widgetContainer() {
-	if (!d->widgetContainer)
-		d->widgetContainer=mdiMainFrm->createDockWidget( "KdiToolViewAccessor::null",QPixmap());	
+QWidget *KMdiToolViewAccessor::wrapperWidget() {
+	if (!d->widgetContainer) {
+		d->widgetContainer=mdiMainFrm->createDockWidget( "KMdiToolViewAccessor::null",QPixmap());	
+		connect(d->widgetContainer,SIGNAL(widgetSet(QWidget*)),this,SLOT(setWidgetToWrap(QWidget*)));
+	}
 	return d->widgetContainer;
 }
 
-QWidget *KMdiToolViewAccessor::widget() {
+QWidget *KMdiToolViewAccessor::wrappedWidget() {
 	return d->widget;
 }
 
 
-void KMdiToolViewAccessor::setWidget(QWidget *widgetToWrap) {
+void KMdiToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap) {
 	Q_ASSERT(!(d->widget));
 	Q_ASSERT(!widgetToWrap->inherits("KDockWidget"));
+	disconnect(d->widgetContainer,SIGNAL(widgetSet(QWidget*)),this,SLOT(setWidgetToWrap(QWidget*)));
 	delete d->widget;
         d->widget=widgetToWrap;
 	KDockWidget *tmp=d->widgetContainer;
@@ -87,6 +91,8 @@ void KMdiToolViewAccessor::setWidget(QWidget *widgetToWrap) {
 	}
 	tmp->setWidget(widgetToWrap);
 	mdiMainFrm->m_pToolViews.insert(widgetToWrap,this);
+	if (mdiMainFrm->m_mdiGUIClient)
+		mdiMainFrm->m_mdiGUIClient->addToolView(this);
 }
 
 

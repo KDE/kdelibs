@@ -162,8 +162,10 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
 
 void KMdiDockContainer::changeOverlapMode() {
 	const KDockButton_Private *btn=dynamic_cast<const KDockButton_Private*>(sender());
+	kdDebug()<<"KMdiDockContainer::changeOverlapMode: button=="<<btn<<endl;
 	if (!btn) return;
 	if (!btn->isOn()) {
+		kdDebug()<<"KMdiDockContainer::changeOverlapMode: activateOverlapMode"<<endl;
 		if (m_vertical) {
 			activateOverlapMode(m_tb->width());
 		}
@@ -172,6 +174,7 @@ void KMdiDockContainer::changeOverlapMode() {
 			activateOverlapMode(m_tb->height());
 		}
 	} else {
+		kdDebug()<<"KMdiDockContainer::changeOverlapMode: deactivateOverlapMode"<<endl;
 		deactivateOverlapMode();
 	}
 	

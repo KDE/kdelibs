@@ -59,6 +59,10 @@ class QMenuBar;
 class QToolButton;
 class KMdiMainFrmPrivate;
 
+namespace KMDIPrivate {
+	class KMDIGUIClient;
+}
+
 /**
  * @short Internal class
  *
@@ -259,8 +263,10 @@ protected:
    KMdiDockWidget*         m_topContainer;
    KMdiDockWidget*         m_bottomContainer;
 
+
 private:
    KMdiMainFrmPrivate*     d;
+   KMDIPrivate::KMDIGUIClient*	   m_mdiGUIClient;
 
 // methods
 public:
@@ -272,6 +278,8 @@ public:
    * Destructor.
    */
    virtual ~KMdiMainFrm();
+
+   void setStandardMDIMenuEnabled();
    /**
    * Returns whether the application's MDI views are in maximized state or not.
    */
@@ -453,7 +461,7 @@ public slots:
    * Usually called from addWindow() when adding a tool view window. It reparents the given widget
    * as toplevel and stay-on-top on the application's main widget.
    */
-   virtual void addToolWindow( QWidget* pWnd, KMdiDockWidget::DockPosition pos = KMdiDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+   virtual KMdiToolViewAccessor *addToolWindow( QWidget* pWnd, KMdiDockWidget::DockPosition pos = KMdiDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
    /**
     * Using this method you have to use the setWidget method of the access object, and it is very recommendet, that you use
     * the widgetContainer() method for the parent of your newly created widget

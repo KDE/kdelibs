@@ -62,6 +62,7 @@
 #include "kmdichildarea.h"
 #include "kmdichildview.h"
 #include "kmdidockcontainer.h"
+#include "kmdiguiclient.h"
 
 #include "win_undockbutton.xpm"
 #include "win_minbutton.xpm"
@@ -143,6 +144,7 @@ KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
    ,m_rightContainer(0)
    ,m_topContainer(0)
    ,m_bottomContainer(0)
+   ,m_mdiGUIClient(0)
 {
    // Create the local lists of windows
    m_pDocumentViews = new QPtrList<KMdiChildView>;
@@ -192,6 +194,11 @@ KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
    connect(m_pDragEndTimer, SIGNAL(timeout()), this, SLOT(dragEndTimeOut()));
 }
 
+void KMdiMainFrm::setStandardMDIMenuEnabled() {
+	setMenuForSDIModeSysButtons(menuBar());
+	m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this);
+}
+
 //============ ~KMdiMainFrm ============//
 KMdiMainFrm::~KMdiMainFrm()
 {
@@ -215,6 +222,7 @@ KMdiMainFrm::~KMdiMainFrm()
    delete m_pTaskBarPopup;
    delete m_pWindowPopup;
    delete m_pWindowMenu;
+   delete m_mdiGUIClient;
 }
 
 //============ applyOptions ============//
@@ -430,7 +438,7 @@ KMdiToolViewAccessor *KMdiMainFrm::createToolWindow()
 }
 
 //============ addWindow ============//
-void KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
+KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
 {
    QRect r=pWnd->geometry();
    KMdiToolViewAccessor *mtva=new KMdiToolViewAccessor(this,pWnd);
@@ -471,7 +479,7 @@ void KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, Q
       }
    }
 
-
+   return mtva;
   
 #if 0
    KMdiChildView* pToolView = 0L;

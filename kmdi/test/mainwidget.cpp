@@ -41,7 +41,7 @@ MainWidget::MainWidget()
    addToolWindow( mle4, KDockWidget::DockNone, mle, 70);
 
    KMdiToolViewAccessor *tva=createToolWindow();
-   tva->setWidget(new QMultiLineEdit(tva->widgetContainer(),"theMultiLineEditWidget5"));
+   tva->setWidgetToWrap(new QMultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
    tva->show(KDockWidget::DockCenter,mle,70);   
 
    QListView* lv = new QListView(0L,"theListViewWidget");
