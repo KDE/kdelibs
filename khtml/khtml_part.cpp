@@ -1375,6 +1375,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   else
       hasTarget = true;
 
+  static QString javascript = QString::fromLatin1("javascript:");
+  if ( url.left(11) == javascript )
+  {
+    executeScript( url.right( url.length() - 11) );
+    return;
+  }
+
   KURL cURL = completeURL( url );
 
   kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
