@@ -25,6 +25,7 @@
 using namespace KJS;
 
 Debugger::Debugger(KJScript *engine)
+  : eng(0L)
 {
   attach(engine);
 }
@@ -38,18 +39,25 @@ void Debugger::attach(KJScript *e)
 {
   dmode = Disabled;
   if (e) {
-    eng = e->rep;
-    eng->attachDebugger(this);
+    if (!eng || e->rep != eng->rep) {
+      eng = e;
+      eng->rep->attachDebugger(this);
+    }
   } else {
     eng = 0L;
   }
+}
+
+KJScript *Debugger::engine() const
+{
+  return eng;
 }
 
 void Debugger::detach()
 {
   if (!eng)
     return;
-  eng->attachDebugger(0L);
+  eng->rep->attachDebugger(0L);
   eng = 0L;
 }
 

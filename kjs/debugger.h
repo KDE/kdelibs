@@ -24,6 +24,12 @@
 
 namespace KJS {
 
+  //
+  // NOTE: this interface is not ready, yet. Do not use unless you
+  // don't mind source and binary incompatible changes that may arise
+  // before the final version is released.
+  //
+
 #ifdef KJS_DEBUGGER
   class Debugger {
     friend class KJScriptImp;
@@ -47,7 +53,12 @@ namespace KJS {
      */
     void attach(KJScript *e);
     /**
-     * Detach he debugger from any scripting engine.
+     * Returns the engine the interpreter is currently attached to. Null
+     * if there isn't any.
+     */
+    KJScript* engine() const;
+    /**
+     * Detach the debugger from any scripting engine.
      */
     void detach();
     /**
@@ -74,7 +85,7 @@ namespace KJS {
   private:
     bool hit(int line);
 
-    KJScriptImp *eng;
+    KJScript *eng;
     Mode dmode;
   };
 #endif
