@@ -529,6 +529,8 @@ void KJScriptImp::mark()
     exVal->mark();
   if (retVal && !retVal->marked())
     retVal->mark();
+  if (glob.imp())
+    glob.imp()->mark();
   UndefinedImp::staticUndefined->mark();
   NullImp::staticNull->mark();
   BooleanImp::staticTrue->mark();
