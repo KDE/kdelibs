@@ -1555,6 +1555,9 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     bool applyIconText = !xmlgui; // if xmlgui is used, global defaults won't apply
     bool applyIconSize = !xmlgui;
 
+    int iconSize = d->IconSizeDefault;
+    QString iconText = d->IconTextDefault;
+
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
     { // start block for KConfigGroupSaver
@@ -1574,6 +1577,9 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         // Use the default icon size for toolbar icons.
         d->IconSizeDefault = gconfig->readNumEntry(attrIconSize, d->IconSizeDefault);
 
+        iconSize = d->IconSizeDefault;
+        iconText = d->IconTextDefault;
+    
         if ( !forceGlobal && config->hasGroup(configGroup) )
         {
             config->setGroup(configGroup);
@@ -1584,14 +1590,14 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // read in the IconText property
             if ( config->hasKey( attrIconText ) ) {
-                d->IconTextDefault = config->readEntry(attrIconText);
+                iconText = config->readEntry(attrIconText);
                 applyIconText = true;
                 //kdDebug(220) << name() << " read icontext=" << d->IconTextDefault << ", that will be the default" << endl;
             }
 
             // now get the size
             if ( config->hasKey( attrIconSize ) ) {
-                d->IconSizeDefault = config->readNumEntry(attrIconSize);
+                iconSize = config->readNumEntry(attrIconSize);
                 applyIconSize = true;
             }
         }
@@ -1602,11 +1608,11 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     bool doUpdate = false;
 
     IconText icon_text;
-    if ( d->IconTextDefault == "IconTextRight" )
+    if ( iconText == "IconTextRight" )
         icon_text = IconTextRight;
-    else if ( d->IconTextDefault == "IconTextBottom" )
+    else if ( iconText == "IconTextBottom" )
         icon_text = IconTextBottom;
-    else if ( d->IconTextDefault == "TextOnly" )
+    else if ( iconText == "TextOnly" )
         icon_text = TextOnly;
     else
         icon_text = IconOnly;
@@ -1619,8 +1625,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     }
 
     // ...and check if the icon size has changed
-    if (d->IconSizeDefault != d->m_iconSize && applyIconSize) {
-        setIconSize(d->IconSizeDefault, false);
+    if (iconSize != d->m_iconSize && applyIconSize) {
+        setIconSize(iconSize, false);
         doUpdate = true;
     }
 
