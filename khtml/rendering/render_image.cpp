@@ -80,7 +80,6 @@ void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
-    setInline( style()->display()==INLINE );
     //setOverhangingContents(style()->height().isPercent());
     setShouldPaintBackgroundOrBorder(true);
 }
@@ -150,6 +149,9 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         // lets see if we need to relayout at all..
         int oldwidth = m_width;
         int oldheight = m_height;
+         int oldminwidth = m_minWidth;
+         m_minWidth = 0;
+
         if ( parent() ) {
         calcWidth();
         calcHeight();
@@ -158,6 +160,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         if(iwchanged || m_width != oldwidth || m_height != oldheight)
             needlayout = true;
 
+         m_minWidth = oldminwidth;
         m_width = oldwidth;
         m_height = oldheight;
     }
@@ -168,9 +171,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 
     if(needlayout)
     {
-        setLayouted(false);
         setMinMaxKnown(false);
-
+        setLayouted(false);
 //         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
 //         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
     }
