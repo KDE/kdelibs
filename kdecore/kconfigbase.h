@@ -35,6 +35,7 @@
 
 #include "kconfigdata.h"
 
+class KConfigBackEnd;
 class KConfigBasePrivate;
 
 /**
