@@ -22,6 +22,10 @@
 #include "kprintpreview.h"
 #include "kmfactory.h"
 
+#include <qfile.h>
+#include <qlayout.h>
+#include <qvbox.h>
+
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kapplication.h>
@@ -32,8 +36,6 @@
 #include <kconfig.h>
 #include <kprocess.h>
 #include <kdialogbase.h>
-#include <qlayout.h>
-#include <qvbox.h>
 
 KPreviewProc::KPreviewProc()
 : KProcess()
@@ -112,7 +114,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
-		KLibFactory	*factory = KLibLoader::self()->factory(service->library().latin1());
+		KLibFactory	*factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
 		if (factory)
 		{
 			gvpart_ = (KParts::ReadOnlyPart*)factory->create(this, "gvpart", "KParts::ReadOnlyPart");
