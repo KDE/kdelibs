@@ -2033,12 +2033,16 @@ class KConfigGroupSaverPrivate;
   * one group (including the creation of the KConfigGroupSaver object)
   * in one block.
   *
+  * @deprecated This class is deprecated and will be removed in KDE 4.
+  * KConfigGroup provides similar functionality in a more object oriented
+  * way.
+  *
   * @author Matthias Kalle Dalheimer <kalle@kde.org>
-  * @see KConfigBase, KConfig, KSimpleConfig
+  * @see KConfigBase, KConfig, KSimpleConfig, KConfigGroup
   * @short Helper class for easier use of KConfig/KSimpleConfig groups
   */
 
-class KConfigGroupSaver
+class KConfigGroupSaver // KDE4 remove
 {
 public:
   /**
