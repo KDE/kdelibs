@@ -66,6 +66,7 @@ class GlobalFunc : public InternalFunctionImp {
 public:
   GlobalFunc(int i) : id(i) { }
   Completion execute(const List &c);
+  virtual CodeType codeType() const;
   enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape };
 private:
   int id;
@@ -210,6 +211,11 @@ void GlobalImp::put(const UString &p, const KJSO& v)
     filter->put(p, v);
   else
     Imp::put(p, v);
+}
+
+CodeType GlobalFunc::codeType() const
+{
+  return id == Eval ? EvalCode : InternalFunctionImp::codeType();
 }
 
 Completion GlobalFunc::execute(const List &args)
