@@ -25,9 +25,13 @@ KMExtUiManager::KMExtUiManager(QObject *parent, const char *name)
 : KMUiManager(parent,name)
 {
 	m_printdialogflags |= KMUiManager::PrintCommand;
-	m_copyflags |= KMUiManager::NoAutoCollate;
 }
 
 KMExtUiManager::~KMExtUiManager()
 {
+}
+
+int KMExtUiManager::pluginPageCap()
+{
+	return KMUiManager::NoAutoCollate;
 }

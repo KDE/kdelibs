@@ -34,6 +34,7 @@ public:
 	void setupWizard(KMWizard*);
 	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 	void setupConfigDialog(KMConfigDialog*);
+	int pluginPageCap();
 };
 
 #endif

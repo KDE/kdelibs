@@ -31,6 +31,7 @@
 #include "kprinterpropertydialog.h"
 #include "plugincombobox.h"
 #include "kfilelist.h"
+#include "kpcopiespage.h"
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
@@ -400,9 +401,9 @@ void KPrintDialog::enableSpecial(bool on)
 	m_default->setDisabled(on);
 	m_cmdlabel->setDisabled(on);
 	m_cmd->setDisabled(on);
-	KPrintDialogPage	*copypage = (KPrintDialogPage*)child("CopiesPage","KPrintDialogPage");
-	if (copypage && m_printer && m_printer->pageSelection() == KPrinter::SystemSide)
-		copypage->setDisabled(on);
+	KPCopiesPage	*copypage = (KPCopiesPage*)child("CopiesPage","KPCopiesPage");
+	if (copypage)
+		copypage->initialize(!on);
 }
 
 void KPrintDialog::setOutputFileExtension(const QString& ext)

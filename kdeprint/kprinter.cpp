@@ -219,6 +219,9 @@ void KPrinter::translateQtOptions()
 	m_wrapper->setOutputToFile(true);
 	m_wrapper->setOutputFileName(m_tmpbuffer);
 	m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
+	// for special printers, copies are handled by Qt
+	if (option("kde-isspecial") == "1")
+		m_wrapper->setNumCopies(numCopies());
 }
 
 bool KPrinter::printFiles(const QStringList& l, bool flag)
@@ -226,17 +229,16 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	QStringList	files(l);
 	bool		status(true);
 
-	// First apply possible filters
-	if (!option("_kde-filters").isEmpty())
+	// First apply possible filters, and update "remove" flag if filters has
+	// been applied (result == 0, means nothing happened).
+	int	fresult = d->m_impl->filterFiles(this, files, flag);
+	if (fresult == -1)
 	{
-		if (!d->m_impl->filterFiles(this,files,flag))
-		{
-			reportError(this);
-			status = false;
-		}
-		else
-			flag = true;
+		reportError(this);
+		status = false;
 	}
+	else if (fresult == 1)
+		flag = true;
 
 	// Continue if status is OK (filtering succeeded) and no output-to-file
 	if (status)

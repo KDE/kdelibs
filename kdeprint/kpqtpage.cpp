@@ -158,7 +158,7 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 		m_pagesize->insertItem(i18n(page_sizes[i].text));
 	m_pagesize->setCurrentItem(findIndex(KPrinter::A4));	// default to A4
 
-	if (KMFactory::self()->filterManager()->filterList().findIndex("psnup") == -1)
+	if (!KMFactory::self()->filterManager()->checkFilter("psnup"))
 		m_nupbox->setEnabled(false);
 
 	// connections

@@ -42,7 +42,11 @@ public:
 	virtual void broadcastOption(const QString& key, const QString& value);
 
 	bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
-	bool filterFiles(KPrinter*, QStringList&, bool removeflag = false);
+	// result:
+	//	-1	->	error
+	//	0	->	nothing happened
+	//	1	->	files filterd
+	int filterFiles(KPrinter*, QStringList&, bool removeflag = false);
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();

@@ -66,6 +66,18 @@ QStringList KMFilterManager::filterList()
 	return m_flist;
 }
 
+bool KMFilterManager::checkFilter(const QString& filtername)
+{
+	QString	path = locate("data", QString::fromLatin1("kdeprint/filters/%1.desktop").arg(filtername));
+	if (!path.isEmpty())
+	{
+		KSimpleConfig	conf(path);
+		conf.setGroup("KDE Print Filter Entry");
+		return KdeprintChecker::check(&conf);
+	}
+	return false;
+}
+
 int KMFilterManager::insertFilter(QStringList& list, const QString& filtername, bool defaultToStart)
 {
 	int	pos(0);

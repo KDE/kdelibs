@@ -23,6 +23,7 @@
 #include "kprinter.h"
 #include "kmfactory.h"
 #include "kmmanager.h"
+#include "kmuimanager.h"
 #include "kmfiltermanager.h"
 #include "kmthreadjob.h"
 #include "kmprinter.h"
@@ -38,6 +39,7 @@
 
 #include <stdlib.h>
 
+void dumpOptions(const QMap<QString,QString>&);
 void initEditPrinter(KMPrinter *p)
 {
 	if (!p->isEdited())
@@ -189,18 +191,52 @@ QString KPrinterImpl::tempFile()
 	return f;
 }
 
-bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
+int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 {
 	QStringList	flist = QStringList::split(',',printer->option("_kde-filters"),false);
+	QMap<QString,QString>	opts = printer->options();
+
+	// generic page selection mechanism (using psselect filter)
+	// do it only if:
+	//	- using system-side page selection
+	//	- special printer or regular printer without page selection support in current plugin
+	//	- one of the page selection option has been selected to non default value
+	// Action -> add the psselect filter to the filter chain.
+	if (printer->pageSelection() == KPrinter::SystemSide &&
+	    (printer->option("kde-isspecial") == "1" || !(KMFactory::self()->uiManager()->pluginPageCap() & KMUiManager::PSSelect)) &&
+	    (printer->pageOrder() == KPrinter::LastPageFirst ||
+	     !printer->option("kde-range").isEmpty() ||
+	     printer->pageSet() != KPrinter::AllPages))
+	{
+		if (flist.findIndex("psselect") == -1)
+		{
+			int	index = KMFactory::self()->filterManager()->insertFilter(flist, "psselect", false);
+			if (index == -1 || !KMFactory::self()->filterManager()->checkFilter("pselect"))
+			{
+				printer->setErrorMessage(i18n("<p>Unable to perform the requested page selection. The filter <b>psselect</b> "
+							      "cannot be inserted in the current filter chain. See <b>Filter</b> tab in the "
+							      "printer properties dialog for further information.</p>"));
+				return -1;
+			}
+		}
+		if (printer->pageOrder() == KPrinter::LastPageFirst)
+			opts["_kde-psselect-order"] = "r";
+		if (!printer->option("kde-range").isEmpty())
+			opts["_kde-psselect-range"] = printer->option("kde-range");
+		if (printer->pageSet() != KPrinter::AllPages)
+			opts["_kde-psselect-set"] = (printer->pageSet() == KPrinter::OddPages ? "-o" : "-e");
+	}
+
+	// nothing to do
 	if (flist.count() == 0)
-		return true;
+		return 0;
 
 	QString	filtercmd;
 	KMFilterManager	*fmgr = KMFactory::self()->filterManager();
 	for (uint i=0;i<flist.count();i++)
 	{
 		KPrintFilter	*filter = fmgr->filter(flist[i]);
-		QString		subcmd = filter->buildCommand(printer->options(),(i>0),(i<(flist.count()-1)));
+		QString		subcmd = filter->buildCommand(opts,(i>0),(i<(flist.count()-1)));
 		if (!subcmd.isEmpty())
 		{
 			filtercmd.append(subcmd);
@@ -210,7 +246,7 @@ bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 		else
 		{
 			printer->setErrorMessage(i18n("Error while reading filter description for <b>%1</b>. Empty command line received.").arg(filter->idName()));
-			return false;
+			return -1;
 		}
 	}
 	kdDebug() << "kdeprint: filter command: " << filtercmd << endl;
@@ -227,12 +263,12 @@ bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 		if (system(cmd.latin1()) != 0)
 		{
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
-			return false;
+			return -1;
 		}
 		if (flag) QFile::remove(*it);
 		*it = tmpfile;
 	}
-	return true;
+	return 1;
 }
 
 bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringList& files)

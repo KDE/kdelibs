@@ -53,7 +53,6 @@ KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name)
 : KMUiManager(parent,name)
 {
 	m_printdialogflags |= KMUiManager::Options;
-	m_copyflags = (KMUiManager::CopyAll & ~KMUiManager::Current);
 }
 
 KMCupsUiManager::~KMCupsUiManager()
@@ -139,4 +138,9 @@ void KMCupsUiManager::setupConfigDialog(KMConfigDialog *dlg)
 {
 	dlg->addConfigPage(new KMConfigCups(dlg));
 	dlg->addConfigPage(new KMConfigCupsDir(dlg));
+}
+
+int KMCupsUiManager::pluginPageCap()
+{
+	return (KMUiManager::CopyAll & ~KMUiManager::Current);
 }

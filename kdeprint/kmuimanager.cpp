@@ -31,6 +31,7 @@
 #include "kpdriverpage.h"
 #include "kpqtpage.h"
 #include "kpfilterpage.h"
+#include "kmfiltermanager.h"
 
 #include <klocale.h>
 
@@ -39,7 +40,6 @@ KMUiManager::KMUiManager(QObject *parent, const char *name)
 {
 	m_printdialogflags = (KMUiManager::PrintDialogAll & ~KMUiManager::Options);
 	m_printdialogpages.setAutoDelete(false);
-	m_copyflags = 0;
 }
 
 KMUiManager::~KMUiManager()
@@ -58,7 +58,7 @@ void KMUiManager::setupConfigDialog(KMConfigDialog*)
 {
 }
 
-int KMUiManager::copyFlags(KPrinter *pr)
+int KMUiManager::copyFlags(KPrinter *pr, bool usePlugin)
 {
 	int	fl(0);
 	if (KMFactory::self()->settings()->pageSelection == KPrinter::ApplicationSide)
@@ -70,9 +70,17 @@ int KMUiManager::copyFlags(KPrinter *pr)
 				fl |= (Range|PageSet|Order);
 		}
 		else fl = CopyAll;
-		if (m_copyflags & NoAutoCollate) fl |= NoAutoCollate;
+		if (pluginPageCap() & NoAutoCollate) fl |= NoAutoCollate;
 	}
-	else fl = m_copyflags;
+	else if (usePlugin)
+		// in this case, we want page capabilities with plugin, it means
+		// for a regular real printer.
+		fl = pageCap();
+	else
+		// int this case, we want page capabilities for non standard
+		// printer, set auto-collate to false as copies will be handled
+		// by Qt
+		fl = systemPageCap() | NoAutoCollate;
 	return fl;
 }
 
@@ -131,4 +139,24 @@ void KMUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	if (KMFactory::self()->settings()->application == KPrinter::Dialog)
 		dlg->addPage(new KPQtPage(dlg,"QtPage"));
+}
+
+int KMUiManager::pageCap()
+{
+	int	val = systemPageCap();
+	val |= pluginPageCap();
+	return val;
+}
+
+int KMUiManager::systemPageCap()
+{
+	int	val(0);
+	if (KMFactory::self()->filterManager()->checkFilter("psselect"))
+		val |= KMUiManager::PSSelect;
+	return val;
+}
+
+int KMUiManager::pluginPageCap()
+{
+	return 0;
 }

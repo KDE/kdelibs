@@ -23,6 +23,7 @@
 #include "kmfactory.h"
 #include "kmuimanager.h"
 #include "kprinter.h"
+#include "kmfiltermanager.h"
 
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -42,6 +43,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
 	m_printer = prt;
+	m_useplugin = true;
 
 	setTitle(i18n("Copies"));
 	setId(KPrinter::CopiesPage);
@@ -104,7 +106,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	// some initialization
 	m_all->setChecked(true);
 	m_copies->setValue(1);
-	initialize();
+	initialize(m_useplugin);
 	slotCollateClicked();
 
 	// connections
@@ -130,9 +132,10 @@ void KPCopiesPage::slotCollateClicked()
 	m_collatepix->setPixmap(UserIcon(s));
 }
 
-void KPCopiesPage::initialize()
+void KPCopiesPage::initialize(bool usePlugin)
 {
-	int	f = KMFactory::self()->uiManager()->copyFlags(m_printer);
+	m_useplugin = usePlugin;
+	int	f = KMFactory::self()->uiManager()->copyFlags(m_printer, m_useplugin);
 
 	m_current->setEnabled((f & KMUiManager::Current));
 	m_range->setEnabled((f & KMUiManager::Range));
@@ -157,7 +160,7 @@ void KPCopiesPage::setOptions(const QMap<QString,QString>& options)
 	if (m_order->isEnabled()) m_order->setChecked(value == "Reverse");
 	// collate
 	value = options["kde-collate"];
-	if (m_collate->isEnabled()) m_collate->setChecked(value == "Collate");
+	if (m_collate->isEnabled()) m_collate->setChecked(!(value == "Uncollate"));
 	// update pixmap
 	slotCollateClicked();
 	// page ranges
@@ -196,7 +199,7 @@ void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool)
 
 void KPCopiesPage::reload()
 {
-	initialize();
+	initialize(m_useplugin);
 }
 
 #include "kpcopiespage.moc"

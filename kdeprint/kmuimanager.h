@@ -56,6 +56,7 @@ public:
 		Order         = 0x008,
 		PageSet       = 0x010,
 		CopyAll       = 0x0FF,
+		PSSelect      = Range|Order|PageSet,
 		NoAutoCollate = 0x100
 	};
 
@@ -69,7 +70,7 @@ public:
 
 	// print dialog
 	void addPrintDialogPage(KPrintDialogPage *page)		{ m_printdialogpages.append(page); }
-	int copyFlags(KPrinter *pr = 0);
+	int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
 	int dialogFlags();
 	void setupPrintDialog(KPrintDialog*);
 
@@ -77,9 +78,13 @@ public:
 	void setupPropertyDialog(KPrinterPropertyDialog*);
 	virtual void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 
+	// page processing capabilities
+	int systemPageCap();
+	virtual int pluginPageCap();
+	int pageCap();
+
 protected:
 	int			m_printdialogflags;
-	int 			m_copyflags;
 	QList<KPrintDialogPage>	m_printdialogpages;
 };
 

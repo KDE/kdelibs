@@ -40,17 +40,15 @@ public:
 	KPCopiesPage(KPrinter *prt = 0, QWidget *parent = 0, const char *name = 0);
 	~KPCopiesPage();
 
-	void setFlags(int f, KPrinter *prt = 0);
-
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	void initialize(bool usePlugin = true);
 
 protected slots:
 	void slotRangeEntered();
 	void slotCollateClicked();
 
 protected:
-	void initialize();
 	void reload();
 
 protected:
@@ -60,6 +58,7 @@ protected:
 	QCheckBox	*m_collate, *m_order;
 	QSpinBox	*m_copies;
 	QLabel		*m_collatepix;
+	bool		m_useplugin;
 
 	KPrinter	*m_printer;
 };
