@@ -219,6 +219,11 @@ int ioctl (int fd, ioctl_request_t request, ...)
           settings |= 4;
           break;
 
+        case SNDCTL_DSP_CHANNELS:
+          channels = (*arg);
+          settings |= 4;
+          break;
+
         case SNDCTL_DSP_GETBLKSIZE:
           *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
           break;
