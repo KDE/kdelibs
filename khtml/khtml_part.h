@@ -866,6 +866,10 @@ private slots:
   /**
    * @internal
    */
+  void slotMimeType( KIO::Job*, const QString& );
+  /**
+   * @internal
+   */
   void slotData( KIO::Job*, const QByteArray &data );
   /**
    * @internal
