@@ -226,11 +226,11 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->d->complete = false;
 
       KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
-      lister->jobStarted(job);
+      lister->jobStarted( job );
       jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
-      if (lister->d->window)
-        job->setWindow(lister->d->window);
+      if ( lister->d->window )
+        job->setWindow( lister->d->window );
 
       connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
                this, SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
@@ -257,17 +257,17 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
   }
   else
   {
-    kdDebug(7004) << k_funcinfo << "Entry currently being listed: " << _url << endl;
+    kdDebug(7004) << "listDir: Entry currently being listed: " << _url << endl;
 
     emit lister->started( _url );
 
     lister->d->complete = false;
     urlsCurrentlyListed[urlStr]->append( lister );
 
-    KIO::ListJob *job = jobForUrl(urlStr);
-    Q_ASSERT(job);
+    KIO::ListJob *job = jobForUrl( urlStr );
+    Q_ASSERT( job );
 
-    lister->jobStarted(job);
+    lister->jobStarted( job );
     connect( job, SIGNAL( infoMessage( KIO::Job *, const QString& ) ),
              lister, SLOT( slotInfoMessage( KIO::Job *, const QString& ) ) );
     connect( job, SIGNAL( percent( KIO::Job *, unsigned long ) ),
@@ -312,9 +312,10 @@ void KDirListerCache::stop( KDirLister *lister )
 
       //kdDebug(7004) << k_funcinfo << " found lister in list - for " << url << endl;
       bool ret = listers->removeRef( lister );
-      Q_ASSERT(ret);
-      KIO::ListJob *job = jobForUrl(url);
-      lister->jobDone(job);
+      Q_ASSERT( ret );
+      
+      KIO::ListJob *job = jobForUrl( url );
+      lister->jobDone( job );
 
       // move lister to urlsCurrentlyHeld
       QPtrList<KDirLister> *holders = urlsCurrentlyHeld[url];
@@ -376,8 +377,8 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
   else
     holders->append( lister );
 
-  KIO::ListJob *job = jobForUrl(urlStr);
-  lister->jobDone(job);
+  KIO::ListJob *job = jobForUrl( urlStr );
+  lister->jobDone( job );
   emit lister->canceled( _url );
 
   if ( listers->isEmpty() )   // kill the job
@@ -451,10 +452,10 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
       itemsInUse.remove( urlStr );
 
       // this job is a running update
-      KIO::ListJob *job = jobForUrl(urlStr);
+      KIO::ListJob *job = jobForUrl( urlStr );
       if ( job )
       {
-        lister->jobDone(job);
+        lister->jobDone( job );
         killJob( job );
         kdDebug(7004) << k_funcinfo << "Killing update job for " << urlStr << endl;
 
@@ -483,7 +484,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         const bool isLocal = item->url.isLocalFile();
         const bool isManuallyMounted = isLocal && KIO::manually_mounted( item->url.path() );
         bool containsManuallyMounted = false;
-        if ( !isManuallyMounted && item->lstItems && isLocal ) {
+        if ( !isManuallyMounted && item->lstItems && isLocal ) 
+        {
           // Look for a manually-mounted directory inside
           // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
           // I hope this isn't too slow (manually_mounted caches the last device so most
@@ -493,10 +495,11 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
             if ( (*kit)->isDir() && KIO::manually_mounted( (*kit)->url().path() ) )
               containsManuallyMounted = true;
         }
-        if ( isManuallyMounted || containsManuallyMounted ) {
+
+        if ( isManuallyMounted || containsManuallyMounted ) 
+        {
           kdDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
-            ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" )
-                        << endl;
+            ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" ) << endl;
           item->complete = false; // set to "dirty"
         }
         else
@@ -539,11 +542,11 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
      killJob( job );
      if ( listers )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-           kdl->jobDone(job);
+           kdl->jobDone( job );
 
      if ( holders )
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-           kdl->jobDone(job);
+           kdl->jobDone( job );
   }
   kdDebug(7004) << k_funcinfo << "Killed = " << killed << endl;
 
@@ -962,7 +965,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     kdl->emitItems();
 }
 
-void KDirListerCache::slotResult( KIO::Job* j )
+void KDirListerCache::slotResult( KIO::Job *j )
 {
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
@@ -992,7 +995,7 @@ void KDirListerCache::slotResult( KIO::Job* j )
   {
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
-      kdl->jobDone(job);
+      kdl->jobDone( job );
       kdl->handleError( job );
       emit kdl->canceled( jobUrl );
       if ( kdl->numJobs() == 0 )
@@ -1010,7 +1013,7 @@ void KDirListerCache::slotResult( KIO::Job* j )
 
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
-      kdl->jobDone(job);
+      kdl->jobDone( job );
       emit kdl->completed( jobUrl );
       if ( kdl->numJobs() == 0 )
       {
@@ -1045,6 +1048,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
   // Am I wrong here? And even if so, we don't need to delete them, right?
   // DF: redirection happens before listDir emits any item. Makes little sense otherwise.
 
+  // oldUrl cannot be in itemsCached because only completed items are moved there
   DirItem *dir = itemsInUse.take( oldUrl.url() );
   Q_ASSERT( dir );
 
@@ -1135,7 +1139,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
       }
       emitRedirections( oldDirUrl, newDirUrl );
     }
-    if (goNext)
+    if ( goNext )
       ++itu;
   }
 
@@ -1151,8 +1155,8 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
   QString oldUrlStr = oldUrl.url(-1);
   QString urlStr = url.url(-1);
 
-  KIO::ListJob *job = jobForUrl(oldUrlStr);
-  if (job)
+  KIO::ListJob *job = jobForUrl( oldUrlStr );
+  if ( job )
      killJob( job );
 
   // Check if we were listing this dir. Need to abort and restart with new name in that case.
@@ -1162,7 +1166,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
     // Tell the world that the job listing the old url is dead.
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
     {
-       kdl->jobDone(job);
+       kdl->jobDone( job );
        emit kdl->canceled( oldUrl );
     }
 
@@ -1175,12 +1179,12 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
   if ( holders )
   {
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-       kdl->jobDone(job);
+       kdl->jobDone( job );
 
     urlsCurrentlyHeld.insert( urlStr, holders );
   }
 
-  if (listers)
+  if ( listers )
   {
     updateDirectory( url );
 
@@ -1189,7 +1193,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
       emit kdl->started( url );
   }
 
-  if (holders)
+  if ( holders )
   {
     // And notify the dirlisters of the redirection
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
@@ -1261,7 +1265,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   {
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
-      kdl->jobDone(job);
+      kdl->jobDone( job );
 
       //don't bother the user
       //kdl->handleError( job );
@@ -1391,7 +1395,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   {
     kdl->emitItems();
 
-    kdl->jobDone(job);
+    kdl->jobDone( job );
 
     emit kdl->completed( jobUrl );
     if ( kdl->numJobs() == 0 )
@@ -1408,17 +1412,15 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
 // private
 
-KIO::ListJob *KDirListerCache::jobForUrl(const QString& _url)
+KIO::ListJob *KDirListerCache::jobForUrl( const QString& url )
 {
   KIO::ListJob *job;
   QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = jobs.begin();
   while ( it != jobs.end() )
   {
     job = it.key();
-    if ( job->url().url(-1) == _url )
-    {
+    if ( job->url().url(-1) == url )
        return job;
-    }
     ++it;
   }
   return 0;
@@ -2211,13 +2213,13 @@ uint KDirLister::numJobs()
   return d->jobData.count();
 }
 
-void KDirLister::jobDone(KIO::ListJob *job)
+void KDirLister::jobDone( KIO::ListJob *job )
 {
-  if (job)
-     d->jobData.remove(job);
+  if ( job )
+     d->jobData.remove( job );
 }
 
-void KDirLister::jobStarted(KIO::ListJob *job)
+void KDirLister::jobStarted( KIO::ListJob *job )
 {
   KDirListerPrivate::JobData jobData;
   jobData.speed = 0;
@@ -2225,10 +2227,10 @@ void KDirLister::jobStarted(KIO::ListJob *job)
   jobData.processedSize = 0;
   jobData.totalSize = 0;
 
-  d->jobData.insert(job, jobData);
+  d->jobData.insert( job, jobData );
 }
 
-void KDirLister::setMainWindow(QWidget *window)
+void KDirLister::setMainWindow( QWidget *window )
 {
   d->window = window;
 }
@@ -2243,7 +2245,7 @@ KFileItemList KDirLister::items( WhichItems which ) const
     return itemsForDir( url(), which );
 }
 
-KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
+KFileItemList KDirLister::itemsForDir( const KURL& dir, WhichItems which ) const
 {
     KFileItemList result;
     KFileItemList *allItems = s_pCache->itemsForDir( dir );
@@ -2252,7 +2254,6 @@ KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
 
     if ( which == AllItems )
         result = *allItems; // shallow copy
-
     else // only items passing the filters
     {
         for ( KFileItemListIterator kit( *allItems ); kit.current(); ++kit )
