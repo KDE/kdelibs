@@ -1,3 +1,10 @@
+Fri Mar 27 16:49:49 1998    <weis@snoopy.rz.uni-frankfurt.de>
+
+	* kconfigbase.cpp (readEntry): Returns a copy
+	  of a string now. Now it is impossible to modify
+	  internal data of kconfig. This bug was introduced by
+	  returning QString instead of "const char*".
+
 Thu Mar 26 22:51:27 1998  Torben Weis  <weis@localhost>
 
 	* kurl.cpp: Fixed little bug. Copy constructor did

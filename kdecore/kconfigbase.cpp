@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.20  1998/03/11 11:23:28  kulow
+// if the color entry starts with a '#', use QColor::setNamedColor
+//
 // Revision 1.19  1998/03/05 19:45:18  wuebben
 // Bernd: several methods in kconfigbase.cpp did not the provided default
 // values on parse error. -- fixed.
@@ -290,7 +293,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 	  }
 	  nDollarPos = aValue.find( '$', nDollarPos+2 );
 	};
-  return aValue;
+  return aValue.copy();
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
