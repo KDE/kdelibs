@@ -55,6 +55,7 @@ protected slots:
 	void slotWizard();
 	void slotExtensionClicked();
 	void slotToggleFilter(bool);
+	void slotHelp();
 
 protected:
 	bool checkOutputFile();
