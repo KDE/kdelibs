@@ -57,6 +57,6 @@ Type=QString
 [PropertyDef::X-KDE-RootOnly]
 Type=bool
 
-[PropertyDef::X-KDE-KCDParents]
+[PropertyDef::X-KDE-ParentComponents]
 Type=QStringList
 
