@@ -1864,9 +1864,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ElementClassName:
     return getString(element.className());
   case ElementInnerHTML:
-    return getString(element.innerHTML());
+    return String(element.innerHTML());
   case ElementInnerText:
-    return getString(element.innerText());
+    return String(element.innerText());
   case ElementDocument:
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
