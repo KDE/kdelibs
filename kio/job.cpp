@@ -132,14 +132,15 @@ void Job::emitPercent( unsigned long processedSize, unsigned long totalSize )
   else
     m_percent = (unsigned long)(( (float)(processedSize) / (float)(totalSize) ) * 100.0);
 
-  if ( m_percent != ipercent ) {
+  if ( m_percent != ipercent || m_percent == 100 /* for those buggy total sizes that grow */ ) {
     emit percent( this, m_percent );
-    kdDebug(7007) << "Job::emitPercent - percent =  " << (unsigned int) m_percent << endl;
+    //kdDebug(7007) << "Job::emitPercent - percent =  " << (unsigned int) m_percent << endl;
   }
 }
 
 void Job::emitSpeed( unsigned long bytes_per_second )
 {
+  //kdDebug(7007) << "Job " << this << " emitSpeed " << bytes_per_second << endl;
   if ( !m_speedTimer )
   {
     m_speedTimer = new QTimer();
@@ -177,7 +178,7 @@ void Job::slotResult( Job *job )
 
 void Job::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 {
-  //kdDebug(7007) << "Job::slotSpeed " << (unsigned int) bytes_per_second << endl;
+  //kdDebug(7007) << "Job::slotSpeed " << bytes_per_second << endl;
   emitSpeed( bytes_per_second );
 }
 
@@ -188,6 +189,7 @@ void Job::slotInfoMessage( KIO::Job*, const QString & msg )
 
 void Job::slotSpeedTimeout()
 {
+  //kdDebug(7007) << "slotSpeedTimeout()" << endl;
   // send 0 and stop the timer
   // timer will be restarted only when we receive another speed event
   emit speed( this, 0 );
@@ -334,14 +336,17 @@ void SimpleJob::slotTotalSize( unsigned long size )
 
 void SimpleJob::slotProcessedSize( unsigned long size )
 {
-    kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
+    //kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
     emit processedSize( this, size );
+    if ( size > m_totalSize )
+      slotTotalSize(size); // safety
 
     emitPercent( size, m_totalSize );
 }
 
 void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 {
+    //kdDebug(7007) << "SimpleJob::slotSpeed( " << bytes_per_second << " )" << endl;
     emitSpeed( bytes_per_second );
 }
 
@@ -781,6 +786,8 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 void FileCopyJob::slotProcessedSize( KIO::Job *, unsigned long size )
 {
     emit processedSize( this, size );
+    if ( size > m_totalSize )
+         slotTotalSize( this, size ); // safety
     emitPercent( size, m_totalSize );
 }
 
@@ -1318,6 +1325,8 @@ void CopyJob::startNextJob()
         kdDebug(7007) << "KIO::stat on " << (*it).url() << endl;
         state = STATE_STATING;
         addSubjob(job);
+        if ( m_progressId ) // Did we get an ID from the observer ?
+          Observer::self()->slotCopying( this, *it, m_dest ); // show asap
         // keep src url in the list, just in case we need it later
     } else
     {
@@ -1897,13 +1906,12 @@ void CopyJob::copyNextFile()
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
-            Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+            if ( m_progressId ) // Did we get an ID from the observer ?
+              Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
          }
         addSubjob(newjob);
 	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
 		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-	connect( newjob, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-		 this, SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
     else
     {
@@ -1943,8 +1951,12 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   m_fileProcessedSize = data_size;
 
   kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
+  if ( m_processedSize + m_fileProcessedSize > m_totalSize )
+  {
+    m_totalSize = m_processedSize + m_fileProcessedSize;
+    emit totalSize( this, m_totalSize ); // safety
+  }
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
-
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
 
@@ -2155,6 +2167,8 @@ void DeleteJob::startNextJob()
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).url() << endl;
         state = STATE_STATING;
         addSubjob(job);
+        if ( m_progressId ) // Did we get an ID from the observer ?
+          Observer::self()->slotDeleting( this, *it ); // show asap
         m_srcList.remove(it);
     } else
     {
