@@ -494,6 +494,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         // maybe newurl is a file? check its parent directory
         newurl.cd(QString::fromLatin1(".."));
         if ( !isReadable( newurl ) ) {
+            resetCursor();
             KMessageBox::error(viewWidget(),
                                i18n("The specified directory does not exist "
                                     "or was not readable."));
@@ -748,7 +749,7 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
         new_view = new KFileIconView( parent, "simple view");
         new_view->setViewName( i18n("Short View") );
     }
-    
+
     return new_view;
 }
 
@@ -1473,7 +1474,7 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
 {
     if ( !m_fileView )
         return;
-    
+
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
         m_fileView->updateView( it.current() );

@@ -22,7 +22,8 @@ INCLUDES = $(all_includes)
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
-                 kopenwithtest kdirselectdialogtest kicondialogtest
+                 kopenwithtest kdirselectdialogtest kicondialogtest \
+                 knotifytest
 
 # noinst_HEADERS = 
 
@@ -35,4 +36,5 @@ kfiletreeviewtest_SOURCES = kfiletreeviewtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kdirselectdialogtest_SOURCES = kdirselectdialogtest.cpp
 kicondialogtest_SOURCES = kicondialogtest.cpp
+knotifytest_SOURCES = knotifytest.cpp
 
