@@ -259,7 +259,14 @@ public:
    * e.g. when the mouse is over this item
    */
   QString getStatusBarInfo();
-
+  
+  /**
+   * @return the string to be displayed in the tool tip when the mouse
+   * is over this item. This may load a plugin to determine additional
+   * information specific to the mimetype of the file
+   */
+  QString getToolTipText();
+  
   /**
    * Returns true if files can be dropped over this item.
    * Contrary to popular belief, not only dirs will return true :)

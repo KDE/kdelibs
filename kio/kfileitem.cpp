@@ -32,6 +32,7 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qmap.h>
+#include <qstylesheet.h>
 
 #include <klargefile.h>
 #include <kiconloader.h>
@@ -40,6 +41,7 @@
 #include <klocale.h>
 #include <kmimetype.h>
 #include <krun.h>
+#include <kfilemetainfo.h>
 
 class KFileItem::KFileItemPrivate
 {
@@ -561,6 +563,93 @@ QString KFileItem::getStatusBarInfo()
       text += comment;
     }
     return text;
+}
+
+QString KFileItem::getToolTipText()
+{
+  // we can return QString::null if no tool tip should be shown
+#ifdef _GNUC  
+#waring move that tool tip maxcout elsewhere (make it configurable?)
+#endif
+  const int maxcount = 5;
+
+  QString tip;
+  KFileMetaInfo* info = 0L;
+  
+  if ( m_url.isLocalFile() ) 
+  {
+    KFileMetaInfoProvider *prov = KFileMetaInfoProvider::self();
+    if ( !d->metaInfo )
+    {
+      info = prov->metaInfo( m_url.path() );
+      d->metaInfo = info;
+    }
+    else
+      info = d->metaInfo;
+  }
+
+  // if we got no info, show a default tip
+  if ( !info )
+  {
+    kdDebug() << "Found no meta info" << endl;
+    tip  = "<nobr><b><center>"+ m_url.fileName() + "</center></b>";
+    tip += i18n("Type: ");
+        
+    KMimeType::Ptr mimetype = determineMimeType();
+    if ( m_bLink )
+      tip += i18n("Link to %1<br>").arg(mimetype->comment());
+    else
+      tip += mimetype->comment() + "<br>";
+
+    if ( !S_ISDIR ( m_fileMode ) )
+      tip += i18n("Size: ") + KIO::convertSize( size() ) + "<br>";
+
+    tip += i18n("Modified: ") + 
+                timeString( KIO::UDS_MODIFICATION_TIME) + "<br>" +
+           i18n("Permissions: ") + parsePermissions(m_permissions) +"</nobr>";
+  }
+  else
+  {
+    // first the title in bold and centered
+    KFileMetaInfoItem *item;
+    
+    // if we don't find a title, show the file name instead
+    if (! (item = info->item("Title")) && ! (item = info->item("Name")))
+      tip = "<nobr><b><center>"+ QStyleSheet::escape(m_url.fileName()) +
+                "</center></b>";
+    else
+      tip = "<nobr><b><center>" + QStyleSheet::escape(item->value().toString())+
+            "</center></b>";
+      
+    // now the rest
+    QStringList l = info->preferredKeys();
+    
+    QStringList::Iterator it = l.begin();
+    for (int count = 0; it!=l.end() && count<=maxcount; ++it)
+    {
+      item = info->item(*it);
+      if ( item && (item->key() != "Title") && (item->key() != "Name") )
+      {
+        QString s;
+        if ( item->value().type() == QVariant::Bool )
+          s = item->value().toBool() ? i18n("Yes") : i18n("No");
+        else
+          s = item->value().toString();
+      
+        if ( (s != QString::null) && ! s.isEmpty() )
+        {
+          count++;
+          tip += QStyleSheet::escape( item->translatedKey() ) + ": " +
+                 item->prefix() + QStyleSheet::escape( s ) + item->postfix();
+          
+          if ( (item->key()!=l.last()) && (count<=maxcount) ) tip += "<br>";
+        }
+
+      }
+    }
+    tip += "</nobr>";
+  }
+  return tip;
 }
 
 void KFileItem::run()
