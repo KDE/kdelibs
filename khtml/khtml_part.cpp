@@ -1629,7 +1629,7 @@ KURL KHTMLPart::completeURL( const QString &url )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-//    kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+    //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
 
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
@@ -1665,7 +1665,8 @@ void KHTMLPart::slotRedirect()
     args.reload = true;
 
   args.setLockHistory( d->m_redirectLockHistory );
-  urlSelected( u, 0, 0, QString::null, args );
+  // _self: make sure we don't use any <base target=>'s
+  urlSelected( u, 0, 0, "_self", args );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
