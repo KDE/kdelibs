@@ -61,7 +61,7 @@ binary-arch:  build
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/$(kde_confdir)" >> $$debianrc ;\
 	echo "dir_html=/$(kde_htmldir)" >> $$debianrc ;\
-	echo "dir_apps=/$(kde_appsdir)/applnk" >> $$debianrc 
+	echo "dir_apps=/$(kde_appsdir)" >> $$debianrc 
 	cp debian/tmp/$(kde_confdir)/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules kdelibs3
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
