@@ -87,49 +87,4 @@ private:
   T* ptr;
 };
 
-
-/**
- * Can be used to control the lifetime of an object
- * that has derived @ref QShared. As long a someone holds
- * a QSharedPtr on some QShared object it won't become
- * deleted but is deleted once its reference count is 0.
- * This struct emulates C++ pointers perfectly. So just use
- * it like a simple C++ pointer.
- */
-template< class T >
-struct QSharedPtr
-{
-public:
-  QSharedPtr() { ptr = 0; }
-  QSharedPtr( T* t ) { ptr = t; }
-  QSharedPtr( const QSharedPtr& p ) { ptr = p.ptr; if ( ptr ) ptr->ref(); }
-  ~QSharedPtr() { if ( ptr && ptr->deref() ) delete ptr; }
-
-  QSharedPtr<T>& operator= ( const QSharedPtr<T>& p ) {
-    if ( ptr && ptr->deref() ) delete ptr;
-    ptr = p.ptr; if ( ptr ) ptr->ref();
-    return *this;
-  }
-  QSharedPtr<T>& operator= ( T* p ) {
-    if ( ptr && ptr->deref() ) delete ptr;
-    ptr = p;
-    return *this;
-  }
-  bool operator== ( const QSharedPtr<T>& p ) const { return ( ptr == p.ptr ); }
-  bool operator!= ( const QSharedPtr<T>& p ) const { return ( ptr != p.ptr ); }
-  bool operator== ( const T* p ) const { return ( ptr == p ); }
-  bool operator!= ( const T* p ) const { return ( ptr != p ); }
-  bool operator!() const { return ( ptr == 0 ); }
-  operator T*() const { return ptr; }
-
-  const T& operator*() const { return *ptr; }
-  T& operator*() { return *ptr; }
-  const T* operator->() const { return ptr; }
-  T* operator->() { return ptr; }
-
-  uint count() const { return ptr->count; } // for debugging purposes
-private:
-  T* ptr;
-};
-
 #endif
