@@ -78,6 +78,7 @@ class KPluginInfo::KPluginInfoPrivate
         m_propertymap = file.entryMap( "X-KDE Plugin Info" );
         m_propertymap[ "Name" ] = file.readEntry( "Name" );
         m_propertymap[ "Comment" ] = file.readEntry( "Comment" );
+        m_propertymap[ "Icon" ] = file.readEntry( "Icon" );
 
         file.setGroup( "X-KDE Plugin Info" );
         d->requirements = file.readListEntry( "Require" );
@@ -93,6 +94,7 @@ class KPluginInfo::KPluginInfoPrivate
         m_propertymap[ "Website" ] = file.readEntry( "Site" );
         //m_propertymap[ "Email" ] = file.readEntry( "Email" );
         m_propertymap[ "Category" ] = file.readEntry( "Type" );
+        m_propertymap[ "Icon" ] = file.readEntry( "Icon" );
         //m_propertymap[ "License" ] = file.readEntry( "License" );
         d->requirements = file.readListEntry( "Require" );
     }
