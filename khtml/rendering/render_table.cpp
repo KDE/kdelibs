@@ -917,7 +917,8 @@ void RenderTable::calcColMinMax()
     {
         //kdDebug( 6040 ) << "2 percentWidest=" << percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
         int tot = KMIN(99,int( totalPercent ));
-        m_width = KMIN(availableWidth, (minVar + minRel)*100/(100-tot) );
+        int w = minVar+minRel > 0 ? minVar+minRel : availableWidth;
+        m_width = KMIN( availableWidth, w*100/(100-tot ) );
     }
     else if (hasPercent && hasFixed)
     {
