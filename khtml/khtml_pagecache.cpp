@@ -36,7 +36,7 @@
 #define KHTML_PAGE_CACHE_SIZE 12
 #endif
 
-template class QList<KHTMLPageCacheDelivery>;
+template class QPtrList<KHTMLPageCacheDelivery>;
 
 class KHTMLPageCacheEntry
 {
@@ -66,8 +66,8 @@ class KHTMLPageCachePrivate
 public:
   long newId;
   QIntDict<KHTMLPageCacheEntry> dict;
-  QList<KHTMLPageCacheDelivery> delivery;
-  QList<KHTMLPageCacheEntry> expireQueue;
+  QPtrList<KHTMLPageCacheDelivery> delivery;
+  QPtrList<KHTMLPageCacheEntry> expireQueue;
   bool deliveryActive;
 };
 

@@ -477,7 +477,7 @@ QStringList KHTMLPartBrowserHostExtension::frameNames() const
   return m_part->frameNames();
 }
 
-const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
+const QPtrList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
 {
   return m_part->frames();
 }

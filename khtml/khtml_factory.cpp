@@ -36,7 +36,7 @@
 
 #include <kdebug.h>
 
-template class QList<KHTMLPart>;
+template class QPtrList<KHTMLPart>;
 
 extern "C"
 {
@@ -63,7 +63,7 @@ unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
-QList<KHTMLPart> *KHTMLFactory::s_parts = 0;
+QPtrList<KHTMLPart> *KHTMLFactory::s_parts = 0;
 
 KHTMLFactory::KHTMLFactory( bool clone )
 {
@@ -145,7 +145,7 @@ void KHTMLFactory::deref()
 void KHTMLFactory::registerPart( KHTMLPart *part )
 {
     if ( !s_parts )
-        s_parts = new QList<KHTMLPart>;
+        s_parts = new QPtrList<KHTMLPart>;
 
     if ( !s_parts->containsRef( part ) )
     {

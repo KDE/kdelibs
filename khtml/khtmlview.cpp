@@ -56,9 +56,9 @@
 
 #define PAINT_BUFFER_HEIGHT 128
 
-template class QList<KHTMLView>;
+template class QPtrList<KHTMLView>;
 
-QList<KHTMLView> *KHTMLView::lstViews = 0L;
+QPtrList<KHTMLView> *KHTMLView::lstViews = 0L;
 
 using namespace DOM;
 using namespace khtml;
@@ -222,7 +222,7 @@ KHTMLView::~KHTMLView()
 void KHTMLView::init()
 {
     if ( lstViews == 0L )
-        lstViews = new QList<KHTMLView>;
+        lstViews = new QPtrList<KHTMLView>;
     lstViews->setAutoDelete( FALSE );
     lstViews->append( this );
 
