@@ -630,14 +630,7 @@ QString newItem( const QString &type, const QString &name, const QString &key,
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
               "( currentGroup(), " + key + ", " + varName( name ) + param;
   if ( type == "Enum" ) t += ", values" + name;
-  if ( !defaultValue.isEmpty() ) {
-    t += ", ";
-    if ( type == "String" ) {
-      t += "QString::fromLatin1( " + defaultValue + " )";
-    } else {
-      t += defaultValue;
-    }
-  }
+  if ( !defaultValue.isEmpty() ) t += ", " + defaultValue;
   t += " );";
 
   return t;
