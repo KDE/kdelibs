@@ -656,7 +656,7 @@ int AutoTableLayout::calcEffectiveWidth()
 // 		    qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d accroding to fixed sum %d", col, lastCol-1, cMinWidth, minWidth, fixedWidth );
 		    for ( unsigned int pos = col; fixedWidth > 0 && pos < lastCol; pos++ ) {
 			int w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].width.value / fixedWidth );
-			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
+// 			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 			fixedWidth -= layoutStruct[pos].width.value;
 			cMinWidth -= w;
 			layoutStruct[pos].effMinWidth = w;

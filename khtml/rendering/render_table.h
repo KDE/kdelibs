@@ -137,7 +137,7 @@ public:
     int colToEffCol( int col ) const {
 	int c = 0;
 	int i = 0;
-	while ( c < col ) {
+	while ( c < col && i < columns.size() ) {
 	    c += columns[i].span;
 	    i++;
 	}
