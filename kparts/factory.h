@@ -82,6 +82,12 @@ public:
       */
      const KInstance *partInstance();
 
+     /**
+      * A convenience method for @ref partInstance that takes care of retrieving
+      * the factory for a given library name and calling partInstance on it.
+      */
+     static const KInstance *partInstanceFromLibrary( const QCString &libraryName );
+
 protected:
 
     /**

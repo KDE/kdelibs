@@ -55,6 +55,20 @@ const KInstance *Factory::partInstance()
     return params.instance;
 }
 
+const KInstance *Factory::partInstanceFromLibrary( const QCString &libraryName )
+{
+    KLibrary *library = KLibLoader::self()->library( libraryName );
+    if ( !library )
+        return 0;
+    KLibFactory *factory = library->factory();
+    if ( !factory )
+        return 0;
+    KParts::Factory *pfactory = dynamic_cast<KParts::Factory *>( factory );
+    if ( !factory )
+        return 0;
+    return pfactory->partInstance();
+}
+
 Part *Factory::createPartObject( QWidget *, const char *, QObject *, const char *, const char *, const QStringList & )
 {
     return 0;
