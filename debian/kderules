@@ -15,8 +15,9 @@ sub docwanted {
 	if ($File::Find::dir =~ /debian/) { return 0 ; }
 	/debian/ or /INSTALL/ and return 0 ;
 	/COPYING/ and return ;
-	if (/^[A-Z]*$/ or /README/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
-	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/)
+	if ( (! /CVS/ )
+	and ( /^[A-Z]*$/ or /README/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
+	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/ ) )
 	{	push @docs, "$File::Find::dir/$_" ;
 	}
 }
