@@ -58,6 +58,9 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <kapplication.h>
+#include <kio/renamedlg.h>
+
+#include <time.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
 
@@ -464,6 +467,19 @@ void KPrintDialog::done(int result)
 		KDialog::done(result);
 }
 
+static time_t qtToTime_t( const QDateTime& dt )
+{
+	struct tm t;
+	t.tm_sec = dt.time().second();
+	t.tm_min = dt.time().minute();
+	t.tm_hour = dt.time().hour();
+	t.tm_mday = dt.date().day();
+	t.tm_mon = dt.date().month();
+	t.tm_year = dt.date().year() - 1900;
+	t.tm_isdst = -1;
+	return mktime( &t );
+}
+
 bool KPrintDialog::checkOutputFile()
 {
 	bool	value(false);
@@ -475,7 +491,27 @@ bool KPrintDialog::checkOutputFile()
 		if (f.exists())
 		{
 			if (f.isWritable())
-				value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
+			{
+				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
+				time_t mtimeDest = qtToTime_t( f.lastModified() );
+				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->lineEdit()->text(),
+						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, qtToTime_t( f.created() ), mtimeDest+1, mtimeDest, true );
+				int result = dlg.exec();
+				switch ( result )
+				{
+					case KIO::R_OVERWRITE:
+						value = true;
+						break;
+					default:
+					case KIO::R_CANCEL:
+						value = false;
+						break;
+					case KIO::R_RENAME:
+						d->m_file->lineEdit()->setText( dlg.newDestURL().path() );
+						value = true;
+						break;
+				}
+			}
 			else
 				KMessageBox::error(this,i18n("You don't have write permissions to this file."));
 		}
