@@ -64,10 +64,10 @@ public:
  IconPath() : QString ()
  { }
 
- bool operator== (const IconPath &ip)
+ bool operator== (const IconPath &ip) const
  { return m_iconName == ip.m_iconName; }
 
- bool operator< (const IconPath &ip)
+ bool operator< (const IconPath &ip) const
  { return m_iconName < ip.m_iconName; }
 
 };
@@ -173,6 +173,7 @@ class KIconDialog::KIconDialogPrivate
     KIconDialogPrivate() { m_bStrictIconSize = true; }
     ~KIconDialogPrivate() {}
     bool m_bStrictIconSize;
+    QString custom;
 };
 
 /*
@@ -302,6 +303,8 @@ QString KIconDialog::selectIcon(int group, int context, bool user)
 
     if (result() == Accepted)
     {
+        if (!d->custom.isNull())
+            return d->custom;
 	QString name = mpCanvas->getCurrent();
 	if (name.isEmpty() || (mType == 1))
 	    return name;
@@ -335,9 +338,9 @@ void KIconDialog::slotButtonClicked(int id)
 	file = KFileDialog::getOpenFileName(QString::null,
 		i18n("*.png *.xpm|Icon Files (*.png *.xpm)"), this);
 	if (!file.isEmpty())
-	{
-	    mFileList += file;
-	    showIcons();
+        {
+            d->custom = file;
+            accept();
 	}
 	break;
     }
