@@ -216,7 +216,14 @@ bool KURL::isRelativeURL(const QString &_url)
   {
      char c = str[i].latin1(); // Note: non-latin1 chars return 0!
      if (c == ':')
-        return false; // URL starts with "xxx:" -> absolute URL
+     {
+        // URL starts with "xxx:" -> absolute URL
+        // Check for "xxx::yyy" -> not an absolute URL!!
+        i++;
+        if ((i < len) && (str[i].latin1() != ':'))
+           return false; 
+        return true; // "xxx:" or "xxx::yyy"
+     }
 
      // Protocol part may only contain alpha, digit, + or -
      if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-'))
