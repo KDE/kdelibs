@@ -29,8 +29,8 @@ CopyWidget=HScrollGroove
 
 [Splitter]
 Gradient=Horizontal
-GradientHigh=154,180,201 
-GradientLow=174,200,221
+GradientHigh=150,150,150
+GradientLow=170,170,170 
 Width=6
 
 [SliderGroove]
