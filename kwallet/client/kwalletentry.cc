@@ -80,3 +80,6 @@ void Entry::addKey(const QString& name, const QString& value) {
 	_dirty = true;
 }
 
+QString Entry::type() const {
+	return _type;
+}

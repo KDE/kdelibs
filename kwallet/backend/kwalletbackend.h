@@ -57,9 +57,9 @@ class Backend {
 		// remove
 
 		//
-		const QPtrList<Entry>& getEntriesByApp(const QString& app) const;
+		const QPtrList<Entry>& getEntriesByType(const QString& type) const;
 
-		const QStringList getAppList() const;
+		const QStringList getTypeList() const;
 
 	private:
 		class BackendPrivate;

@@ -399,12 +399,12 @@ bool Backend::changeWallet(const QString& name) {
 }
 
 
-const QPtrList<Entry>& Backend::getEntriesByApp(const QString& app) const {
-	return _entries[app];
+const QPtrList<Entry>& Backend::getEntriesByType(const QString& type) const {
+	return _entries[type];
 }
 
 
-const QStringList Backend::getAppList() const {
+const QStringList Backend::getTypeList() const {
 QStringList list;
 
 	for (QMap< QString, QPtrList< Entry > >::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {

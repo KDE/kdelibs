@@ -51,10 +51,11 @@ class Entry {
 		void addKey(NVPair& key);
 		void addKey(const QString& name, const QString& value);
 
+		virtual QString type() const;
 	private:
 		class EntryPrivate;
 		EntryPrivate *d;
-		QString _app;
+		QString _type;
 		bool _dirty;
 		Key _key;
 		Value _value;
