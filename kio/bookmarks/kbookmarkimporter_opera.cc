@@ -110,35 +110,53 @@ QString KOperaBookmarkImporterImpl::findDefaultLocation(bool) const
 class OperaExporter : private KBookmarkGroupTraverser {
 public:
     OperaExporter();
-    QString generate( const KBookmarkGroup &grp ) { traverse(grp); return m_out; };
+    QString generate( const KBookmarkGroup &grp ) { traverse(grp); return m_string; };
 private:
     virtual void visit( const KBookmark & );
     virtual void visitEnter( const KBookmarkGroup & );
     virtual void visitLeave( const KBookmarkGroup & );
 private:
-    QString m_out;
+    QString m_string;
+    QTextStream m_out;
 };
 
-OperaExporter::OperaExporter() {
-    m_out = "";
+OperaExporter::OperaExporter() : m_out(&m_string, IO_WriteOnly) {
+    ;
 }
 
 void OperaExporter::visit( const KBookmark &bk ) {
     kdDebug() << "visit(" << bk.text() << ")" << endl;
+    m_out << "#URL" << endl;
+    m_out << "\tNAME=" << bk.fullText() << endl;
+    m_out << "\tURL=" << bk.url().url().utf8() << endl;
+    m_out << endl;
 }
 
 void OperaExporter::visitEnter( const KBookmarkGroup &grp ) {
     kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    m_out << "#FOLDER" << endl;
+    m_out << "\tNAME="<< grp.fullText() << endl;
+    m_out << endl;
 }
 
 void OperaExporter::visitLeave( const KBookmarkGroup & ) {
     kdDebug() << "visitLeave()" << endl;
+    m_out << endl;
+    m_out << "-" << endl;
+    m_out << endl;
 }
 
 void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
     OperaExporter exporter;
     QString content = exporter.generate( parent );
-    // write out file
+    QFile file(m_fileName);
+    if (!file.open(IO_WriteOnly)) {
+       kdError(7043) << "Can't write to file " << m_fileName << endl;
+       return;
+    }
+    QTextStream fstream(&file);
+    fstream.setEncoding(QTextStream::UnicodeUTF8);
+    fstream << content;
 }
 
 #include "kbookmarkimporter_opera.moc"
