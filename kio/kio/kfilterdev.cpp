@@ -183,11 +183,12 @@ QIODevice::Offset KFilterDev::at() const
 
 bool KFilterDev::at( QIODevice::Offset pos )
 {
-    Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
     if ( ioIndex == pos )
         return true;
+
+    Q_ASSERT ( filter->mode() == IO_ReadOnly );
 
     if ( pos == 0 )
     {
