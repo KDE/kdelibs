@@ -94,3 +94,40 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 18/10/2001 Michael Goffioul <goffioul@imec.be>
   * kdeprintfax: don't hardcode program path, use the $PATH variable
     first to find the program. Default to /usr/bin if not found.
+
+02/11/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin:
+  	. fix for remote printers when there's also a local
+	  printer with the same name: the printer-uri-supported
+	  is not used by default anymore
+	. implementation of IPP report for installed printers
+	  as well as detected IPP printers on the network (in
+	  the wizard)
+
+05/11/2001 Michael Goffioul <goffioul@imec.be>
+  * kdeprintfax: added possibility to view files being faxed and
+    file action (remove and view) are enabled only when needed.
+  * KPrinter: when printing to a file, support encoding and spaces
+    in file names + system --> KProcess.
+
+07/11/2001 Michael Goffioul <goffioul@imec.be>
+  * kdeprint: fixed some problems:
+	. collate entirely handled by kdeprint, even in the case
+	  of page selection on application-side.
+	. set KPrinter object in KPrintDialog before adding other
+	  dialog pages (some pages may need it)
+  * wizard: changed button layout and added a side graphic. Not
+    commited as the graphic comes from HP driver (copyright).
+
+08/11/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin:
+  	. complete IPP report for job added
+	. implementation of dynamically added plugin menus for
+	  jobs in the job viewer (used for IPP report)
+	. printer infos are now retrieved from the correct host
+	  for remote printers and classes (idem for IPP report)
+  * general: implementation of a DCOP signal communication to
+    synchronize all kdeprint apps, a plugin change in one app is
+    notified to all other opened apps (via DCOP).
+  * kicker extension: made extension aware of plugin change in
+    other apps (using new DCOP signal comm).
