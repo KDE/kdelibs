@@ -364,9 +364,11 @@ void KeramikStyle::unPolish(QWidget* widget)
 	KStyle::unPolish(widget);
 }
 
-void KeramikStyle::polish( QPalette& palette )
+void KeramikStyle::polish( QPalette& )
 {
-//	Keramik::PixmapLoader::the().setColor( palette.color( QPalette::Normal, QColorGroup::Button ) );
+	// Using QApplication::palette, because we follow the main palette, not the one set for
+	// only some classes (e.g. tooltips)
+	Keramik::PixmapLoader::the().setColor( QApplication::palette().color( QPalette::Active, QColorGroup::Button ) );
 }
 
 // This function draws primitive elements as well as their masks.

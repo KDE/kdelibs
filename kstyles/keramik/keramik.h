@@ -48,7 +48,7 @@ public:
 
 	void polish( QWidget* widget );
 	void unPolish( QWidget* widget );
-	void polish( QPalette& palette );
+	void polish( QPalette& );
 
 	void drawKStylePrimitive( KStylePrimitive kpe,
 	                          QPainter* p,
