@@ -30,7 +30,7 @@ include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 	booktoken.h kfiledetailview.h kcombiview.h \
 	kfileiconview.h kfilefilter.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
-	kurlcombobox.h kurlrequesterdlg.h kopenwith.h
+	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h
 kfstest_SOURCES =  kfstest.cpp
@@ -40,7 +40,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
-	kopenwith.cpp
+	kopenwith.cpp kpropsdlg.cpp
 
 kde_toolbar_DATA = configure.png
 
