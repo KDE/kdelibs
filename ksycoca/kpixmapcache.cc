@@ -1,4 +1,4 @@
-#include "kmimetypes.h"
+#include "kmimetype.h"
 
 #include <qpixmapcache.h>
 #include <qpixmap.h>

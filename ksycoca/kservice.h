@@ -31,6 +31,7 @@
 #include <ksimpleconfig.h>
 #include <ksharedptr.h>
 
+#include "ksycocaentry.h"
 #include "ksycocatype.h"
 
 /**
@@ -54,7 +55,7 @@
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KService : public KShared
+class KService : public KShared, KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry );
 
@@ -114,7 +115,7 @@ public:
    * @return the command that the CORBA based service executes.
    *         (usually something like "myapp --server" )
    */
-  QString CORBAExec() const { return m_strCORBAExec; }
+  //  QString CORBAExec() const { return m_strCORBAExec; }
   /**
    * @return the name of the library that contains the services
    *         implementation.
@@ -172,7 +173,6 @@ public:
    * @return the filename of the desktop entry file responsible for
    *         these services.
    */
-  // QString file() const { return m_strFile; };
   QStringList serviceTypes() const { return m_lstServiceTypes; }
   /**
    * @param _service is the name of the service type you are
@@ -263,6 +263,12 @@ private:
   bool m_bValid;
 
   static QList<KService>* s_lstServices;
+};
+
+class KServiceList : public QList<KService>
+{
+public:
+   KServiceList() { };
 };
 
 QDataStream& operator>>( QDataStream& _str, KService& s );

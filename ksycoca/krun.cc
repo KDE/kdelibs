@@ -20,7 +20,7 @@
 #include "kio_job.h"
 #include "krun.h"
 #include "kuserprofile.h"
-#include "kmimetypes.h"
+#include "kmimetype.h"
 #include "kmimemagic.h"
 #include "kio_error.h"
 #include "kio_openwith.h"

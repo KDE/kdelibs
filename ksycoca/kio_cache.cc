@@ -1,6 +1,6 @@
 #include "kio_cache.h"
 #include "kpixmapcache.h"
-#include "kmimetypes.h"
+#include "kmimetype.h"
 
 #include <time.h>
 #include <stdlib.h>

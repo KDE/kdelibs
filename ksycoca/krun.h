@@ -27,7 +27,7 @@
 #include <qtimer.h>
 #include <qstring.h>
 
-#include "kservices.h"
+#include "kservice.h"
 
 /** 
  * Implements a generic runner, i.e. the 'exec' functionality of KDE

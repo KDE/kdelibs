@@ -31,7 +31,7 @@
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
 #include "kmimemagic.h"
-#include "kservices.h"
+#include "kservice.h"
 #include "krun.h"
 #include "kautomount.h"
 
