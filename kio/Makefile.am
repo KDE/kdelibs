@@ -19,7 +19,7 @@
 INCLUDES=  -I$(srcdir)/.. $(all_includes) $(SSL_INCLUDES)
 
 SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac \
-	ksasl gzip $(BZIP2DIR)
+	gzip $(BZIP2DIR)
 
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice
