@@ -286,7 +286,6 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     setQWidget(p, false);
     p->setMouseTracking(true);
     p->installEventFilter(this);
-    p->setBackgroundColor(element->style()->backgroundColor());
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -388,7 +387,6 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 {
     LineEditWidget *edit = new LineEditWidget(view->viewport());
     edit->installEventFilter(this);
-    edit->setBackgroundColor(element->style()->backgroundColor());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
@@ -494,7 +492,6 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     m_edit = new LineEditWidget(w);
 
     m_edit->installEventFilter(this);
-    m_edit->setBackgroundColor(element->style()->backgroundColor());
 
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -659,8 +656,6 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
         setQWidget(createListBox(), false);
     else
 	setQWidget(createComboBox(), false);
-
-    m_widget->installEventFilter(this);
 }
 
 void RenderSelect::layout( )
@@ -704,48 +699,50 @@ void RenderSelect::layout( )
     HTMLSelectElementImpl *select = static_cast<HTMLSelectElementImpl*>(m_element);
 
     // update contents listbox/combobox based on options in m_element
-    // ### check if we actually need to do this
-    QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
-    int listIndex;
+    if ( m_optionsChanged ) {
+        QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+        int listIndex;
 
-    if(m_useListBox)
-        static_cast<KListBox*>(m_widget)->clear();
-    else
-        static_cast<KComboBox*>(m_widget)->clear();
+        if(m_useListBox)
+            static_cast<KListBox*>(m_widget)->clear();
+        else
+            static_cast<KComboBox*>(m_widget)->clear();
 
-    for (listIndex = 0; listIndex < int(listItems.size()); listIndex++) {
-        if (listItems[listIndex]->id() == ID_OPTGROUP) {
-            DOMString text = listItems[listIndex]->getAttribute(ATTR_LABEL);
-            if (text.isNull())
-                text = "";
+        for (listIndex = 0; listIndex < int(listItems.size()); listIndex++) {
+            if (listItems[listIndex]->id() == ID_OPTGROUP) {
+                DOMString text = listItems[listIndex]->getAttribute(ATTR_LABEL);
+                if (text.isNull())
+                    text = "";
 
-            if(m_useListBox) {
-                QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l).visual());
-                static_cast<KListBox*>(m_widget)
-                    ->insertItem(item, listIndex);
-                item->setSelectable(false);
+                if(m_useListBox) {
+                    QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l).visual());
+                    static_cast<KListBox*>(m_widget)
+                        ->insertItem(item, listIndex);
+                    item->setSelectable(false);
+                }
+                else
+                    static_cast<KComboBox*>(m_widget)
+                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
+            }
+            else if (listItems[listIndex]->id() == ID_OPTION) {
+                DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
+                if (text.isNull())
+                    text = "";
+                if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
+                    text = DOMString("    ")+text;
+
+                if(m_useListBox)
+                    static_cast<KListBox*>(m_widget)
+                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
+                else
+                    static_cast<KComboBox*>(m_widget)
+                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
             }
             else
-                static_cast<KComboBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
+                assert(false);
+            m_selectionChanged = true;
         }
-        else if (listItems[listIndex]->id() == ID_OPTION) {
-            DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
-            if (text.isNull())
-                text = "";
-            if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
-                text = DOMString("    ")+text;
-
-            if(m_useListBox)
-                static_cast<KListBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-            else
-                static_cast<KComboBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-        }
-        else
-            assert(false);
-        m_selectionChanged = true;
+        m_optionsChanged = false;
     }
 
     // update selection
@@ -771,7 +768,6 @@ void RenderSelect::layout( )
     }
 
     // calculate size
-
     if(m_useListBox) {
         KListBox* w = static_cast<KListBox*>(m_widget);
 
@@ -789,8 +785,7 @@ void RenderSelect::layout( )
 
         applyLayout(width, height);
     }
-    else
-    {
+    else {
         QSize s(m_widget->sizeHint());
 
         applyLayout(s.width(), s.height());
@@ -876,10 +871,9 @@ void RenderSelect::slotSelectionChanged()
 }
 
 
-void RenderSelect::setOptionsChanged(bool /*ptionsChanged*/)
+void RenderSelect::setOptionsChanged(bool _optionsChanged)
 {
-    // ###
-//    m_optionsChanged = _optionsChanged;
+    m_optionsChanged = _optionsChanged;
 }
 
 KListBox* RenderSelect::createListBox()
@@ -1051,7 +1045,6 @@ void RenderTextArea::select()
 {
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
 }
-
 
 // ---------------------------------------------------------------------------
 

@@ -332,6 +332,7 @@ protected:
     bool m_useListBox;
     bool m_selectionChanged;
     bool m_ignoreSelectEvents;
+    bool m_optionsChanged;
 
 protected slots:
     void slotSelected(int index);
