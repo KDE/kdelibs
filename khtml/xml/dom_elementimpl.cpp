@@ -318,7 +318,7 @@ DOMString ElementImpl::getAttribute( const DOMString &name ) const
 DOMString ElementImpl::getAttribute( int id )
 {
     // search in already set attributes first
-    if(!namedAttrMap) return 0;
+    if(!namedAttrMap) return DOMString();
     AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getIdItem(id));
     if (attr) return attr->value();
 
@@ -327,7 +327,7 @@ DOMString ElementImpl::getAttribute( int id )
     if(!dm) return 0;
 
     AttrImpl* defattr = static_cast<AttrImpl*>(dm->getIdItem(id));
-    if(!defattr) return 0;
+    if(!defattr) return DOMString();
 
     return defattr->value();
 }
@@ -418,7 +418,7 @@ NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 
     // clone attributes
     if(namedAttrMap)
-        *(newImpl->attributes()) = *namedAttrMap;
+        *(static_cast<NamedAttrMapImpl*>(newImpl->attributes())) = *namedAttrMap;
 
     if (deep)
         cloneChildNodes(newImpl,exceptioncode);
@@ -642,7 +642,7 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
     if(inside) kdDebug( 6030 ) << nodeName().string() << "    --> inside" << endl;
 #endif
 
-#if 0 
+#if 0
     // #############
     if(inside || mouseInside())
         if  ( ! (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
@@ -651,7 +651,7 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
             // ### mouseEventHandler(ev, inside);
         }
 #endif
-    
+
     bool oldinside=mouseInside();
 
     setMouseInside(inside);
@@ -665,8 +665,8 @@ bool ElementImpl::prepareMouseEvent( int _x, int _y,
     } else if ( m_active ) {
 	m_active = false;
     }
-	    
-    
+
+
     if ( (oldinside != inside && m_style->hasHover()) ||
 	 ( oldactive != m_active && m_style->hasActive() ) )
         applyChanges(true,false);
