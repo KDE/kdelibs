@@ -228,8 +228,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             else if (mtimeDest == mtimeSrc)
                 sentence1 = i18n("A similar file named '%1' already exists.");
             else
-                sentence1 = i18n("A newer item named '%1' already exists.");            
-            
+                sentence1 = i18n("A newer item named '%1' already exists.");
+
             QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest), this );
             gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
@@ -299,20 +299,17 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     }
     else
     {
-        // I wonder when this happens. And 'dest' isn't shown at all here...
-        // Sounds like the case where we don't want to allow overwriting, the existing
-        // file must be preserved. This doesn't happen in KIO though. (David)
+        // This is the case where we don't want to allow overwriting, the existing
+        // file must be preserved (e.g. when renaming).
         QString sentence1;
         if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("An older item than '%1' already exists.\n");
+            sentence1 = i18n("An older item named '%1' already exists.");
         else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("A similar file named '%1' already exists.\n");
+            sentence1 = i18n("A similar file named '%1' already exists.");
         else
-            sentence1 = i18n("A newer item than '%1' already exists.\n");
-        
-        sentence1 +=  i18n("Do you want to use another file name?");            
-        
-        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->src), this );
+            sentence1 = i18n("A newer item named '%1' already exists.");
+
+        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->dest), this );
         d->m_pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
