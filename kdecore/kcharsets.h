@@ -48,6 +48,7 @@ public:
   QFont::CharSet qtCharset();
   int bits();
   operator const KCharsetEntry *();
+  bool isprint(int chr);
   
 private:
    const KCharsetEntry *entry;

@@ -181,6 +181,17 @@ KCharset::operator const KCharsetEntry *(){
   return entry;
 }
 
+bool KCharset::isprint(int chr){
+
+  if (!entry) return FALSE;
+  if (entry->toUnicode)
+    if (entry->toUnicode[chr]!=0) return TRUE;
+    else;
+  else if (entry->toUnicodeDict)
+    if ((*entry->toUnicodeDict)[chr]!=0) return TRUE;
+  return FALSE;
+}
+
 /////////////////////////////////////////////////////////////////
 	
 KCharsetConverter::KCharsetConverter(const char * inputCharset
