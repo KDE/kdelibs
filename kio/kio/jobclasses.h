@@ -1030,11 +1030,6 @@ namespace KIO {
 
         void deleting( KIO::Job *, const KURL& file );
 
-    protected:
-        void statNextSrc();
-        void deleteNextFile();
-        void deleteNextDir();
-
     protected slots:
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -1045,6 +1040,11 @@ namespace KIO {
          */
         void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
         void slotReport();
+
+    private:
+        void statNextSrc();
+        void deleteNextFile();
+        void deleteNextDir();
 
     private:
         enum { STATE_STATING, STATE_LISTING,
