@@ -91,14 +91,14 @@ void KAccel::connectItem( const QString& action,
                        << " which is not in the object dictionary" << endl;
         return;
     }
-	
+
     KKeyEntry entry = aKeyMap[action];
     entry.receiver = receiver;
     entry.member = member;
     entry.aAccelId = aAvailableId;
     aKeyMap[action] = entry; // reassign
     aAvailableId++;
-	
+
     // Qt does strange things if a QAccel contains a accelerator
     // with key code 0, so leave it out here.
     if (entry.aCurrentKeyCode) {
@@ -225,12 +225,12 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	QString s = menu->text( id );
 	if ( s.isNull() ) return;
 	if (action.isNull()) return;
-	
+
 	int i = s.find('\t');
-	
+
 	QString k = keyToString( currentKey( action), true );
 	if( k.isNull() ) return;
-	
+
 	if ( i >= 0 )
 		s.replace( i+1, s.length()-i, k );
 	else {
@@ -282,12 +282,12 @@ void KAccel::readSettings(KConfig* config)
 	for (KKeyEntryMap::Iterator it = aKeyMap.begin();
              it != aKeyMap.end(); ++it) {
             s = pConfig->readEntry(it.key());
-		
+
             if ( s.isNull() )
                 (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
             else
                 (*it).aConfigKeyCode = stringToKey( s );
-	
+
             (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
             if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
                 kdDebug(125) << "insert " << (*it).descr << " " << (*it).bEnabled << endl;
@@ -316,7 +316,7 @@ void KAccel::removeItem( const QString& action )
                                 entry.member);
         QAccel::removeItem( entry.aAccelId );
     }
-	
+
     aKeyMap.remove( action );
 }
 
@@ -331,7 +331,7 @@ void KAccel::setEnabled( bool activate )
 }
 
 void KAccel::setItemEnabled( const QString& action, bool activate )
-{	
+{
     QAccel::setItemEnabled( aKeyMap[action].aAccelId, activate );
     aKeyMap[action].bEnabled = activate;
 }
@@ -350,12 +350,12 @@ bool KAccel::setKeyDict( const KKeyEntryMap& nKeyDict )
                 QAccel::removeItem( (*it).aAccelId );
             }
 	}
-	
+
 	// Clear the dictionary
 	aKeyMap = nKeyDict;
-	
+
 	kdDebug(125) << "Insert new items" << endl;
-	
+
 	// Insert the new items into the dictionary and reconnect if neccessary
 	// Note also swap config and current key codes !!!!!!
         for (KKeyEntryMap::Iterator it = aKeyMap.begin();
@@ -486,7 +486,7 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 QString KAccel::keyToString( int keyCode, bool i18_n )
 {
 	QString res = "";
-	
+
 	if ( keyCode == 0 ) return res;
 	if ( keyCode & Qt::SHIFT ){
 		if (i18_n) res += i18n("Shift");
@@ -509,13 +509,13 @@ QString KAccel::keyToString( int keyCode, bool i18_n )
 	for (int i=0; i<NB_KEYS; i++) {
 	  if ( kCode == (int)KKEYS[i].code ) {
 	    if (i18_n)
-	      res += i18n("key accelerator", KKEYS[i].name);
+	      res += i18n("QAccel", KKEYS[i].name);
 	    else
 	      res += KKEYS[i].name;
 	    return res;
 	  }
 	}
-	
+
 	return QString::null;
 }
 
@@ -544,7 +544,7 @@ int KAccel::stringToKey(const QString& key)
 	} while ( plus!=-1 );
 	tokens.resize(k+1);
 	tokens[k] = key.length() + 1;
-	
+
 	// we have k tokens.
 	// find a keycode (only one)
 	// the other tokens are accelerators (SHIFT, CTRL & ALT)
