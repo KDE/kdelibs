@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
+#include <kdebug.h>
 
 KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)

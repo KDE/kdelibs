@@ -365,13 +365,17 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 
 void KXmlCommand::setOptions(const QMap<QString,QString>& opts)
 {
-	if (d->m_driver)
+	if (opts.count() == 0)
+		return;
+	// force loading the driver if needed
+	if (driver())
 		d->m_driver->setOptions(opts);
 }
 
 void KXmlCommand::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	if (d->m_driver)
+	// force loading the driver
+	if (driver())
 		d->m_driver->getOptions(opts, incldef);
 }
 
