@@ -1,3 +1,6 @@
+#ifndef TYPE_H
+#define TYPE_H
+
 #include <qtextstream.h>
 #include <qdom.h>
 
@@ -16,3 +19,4 @@ static QString writeType( QTextStream& str, const QDomElement& r )
   return t;
 }
 
+#endif
