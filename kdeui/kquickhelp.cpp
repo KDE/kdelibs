@@ -190,7 +190,10 @@ KQuickHelp::KQuickHelp() : QObject(0) {
 }
 
 
-void KQuickHelp::add(QWidget *w, QString s) {  
+const char *KQuickHelp::add(QWidget *w, const char *s) {
+  if(!s)
+    return 0;
+
   if(w != 0) {
     // make sure we have  a class instance running
     if(instance == 0) {
@@ -208,13 +211,14 @@ void KQuickHelp::add(QWidget *w, QString s) {
     KQuickTip *qt = new KQuickTip;
     qt->widget = w;
     qt->txt = s;
-    qt->txt.detach();
     tips.append(qt);
     connect(w, SIGNAL(destroyed()),
 	    instance, SLOT(widgetDestroyed()));
 
     w->installEventFilter(instance);
   }
+
+  return s;
 }
 
 
@@ -241,23 +245,21 @@ void KQuickHelp::hyperlinkRequested(QString link) {
       // hmm, seems I have to do it myself :-(
       QString fname = "", anchor = "";
       int idx;
-      
-      if((idx = link.find('#')) == 0)
+
+      if((idx = link.find('#')) == -1)
 	fname = link;
-      else if(*link.data() == '#')
-	anchor = link;
       else {
-	fname = link.left(idx);
-        anchor = link.mid(idx+1, 1024);
+	if(*link.data() == '#') {
+	  anchor = link.mid(1, 255);
+	  fname = kapp->appName() + ".html";
+	} else {
+	  fname = link.left(idx);
+	  anchor = link.mid(idx+1, 1024);
+	}
       }
       
-      kapp->invokeHTMLHelp(fname, anchor);
+      kapp->invokeHTMLHelp((kapp->appName() +  "/" + fname), anchor);
     }
-}
-
-
-void KQuickHelp::add(QWidget *w, const char *s) {
-  KQuickHelp::add(w, QString(s));
 }
 
 
@@ -627,3 +629,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
   p->fillRect(0, h - Y_SHADOW, w, h, QBrush(QColor(black)));
   p->fillRect(w - X_SHADOW, 0, w, h, QBrush(QColor(black)));
 }
+
+
+
+

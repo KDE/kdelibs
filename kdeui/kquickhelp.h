@@ -145,8 +145,7 @@ class KQuickHelp : public QObject {
 public:  
   KQuickHelp();
   
-  static void add(QWidget *, QString);
-  static void add(QWidget *, const char *);
+  static const char *add(QWidget *, const char *);
   static void remove(QWidget *);
 
 private:
