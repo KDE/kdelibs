@@ -302,16 +302,20 @@ public:
    * windows. If you create them with Qt (new QWidget()->winId()) be
    * sure not to pass any parent. Modules get the following client
    * messages from kwm. Argument is either a window ((Window)
-   * XClientMessageEvent.data.l[0]) or nothing.
+   * XClientMessageEvent.data.l[0]), a (long) number or nothing.
    *
-   * KWM_MODULE_INIT             - initinalization
+   * KWM_MODULE_INIT             - initinalization starts
+   * KWM_MODULE_INITIALIZED      - initialization is complete
    * KWM_MODULE_DESKTOP_CHANGE   - new current virtual desktop
+   * KWM_MODULE_DESKTOP_NAME_CHANGE   - a desktop got a new name
+   * KWM_MODULE_DESKTOP_NUMBER_CHANGE - the number of desktop changed
    * KWM_MODULE_WIN_ADD          - new window
    * KWM_MODULE_WIN_REMOVE       - remove window
    * KWM_MODULE_WIN_CHANGE       - size, properties, map state etc.
    * KWM_MODULE_WIN_RAISE        - raise and lower allow a module (for example
    * KWM_MODULE_WIN_LOWER          a pager) to keep the stacking order
    * KWM_MODULE_WIN_ACTIVATE     - new active (focus) window
+   * KWM_MODULE_WIN_ICON_CHANGE  - window got a (new) icon
    *
    * KDE_SOUND_EVENT             - a sound event
    * KDE_REGISTER_SOUND_EVENT    - registration of a new sound event
@@ -320,6 +324,7 @@ public:
    * Please check out the KWMModuleApplication class which gives you easy
    * access to all these messages via Qt signals and slots. It also keeps
    * automatically a list of windows in both stacking and creation order.
+   *
    */
   static void setKWMModule(Window w);
   /**
