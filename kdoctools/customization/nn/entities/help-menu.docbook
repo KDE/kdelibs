@@ -9,8 +9,8 @@
 <guimenuitem>Innhald ...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Startar hjelpesystemet i KDE</action> ved hjelpesidene 
-til &kappname; (dette dokumentet).</para></listitem>
+<listitem><para><action>Startar hjelpesystemet i KDE</action> med
+hjelpesidene til &kappname; framme (dette dokumentet).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -22,8 +22,8 @@ til &kappname; (dette dokumentet).</para></listitem>
 <guimenuitem>Kva er dette?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Endrar musepeikaren til ei pil med 
-spørjeteikn.</action>  Når du klikkar på element i &kappname;, får du sjå ei 
+<listitem><para><action>Endrar musepeikaren til ei pil med
+spørjeteikn.</action>  Når du klikkar på element i &kappname;, får du sjå ei
 hjelperute (dersom det finst) med informasjon om elementet.</para></listitem>
 </varlistentry>
 
@@ -33,7 +33,7 @@ hjelperute (dersom det finst) med informasjon om elementet.</para></listitem>
 <guimenu>Hjelp</guimenu>
 <guimenuitem>Rapporter feil ...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opnar dialogen for feilrapport</action> der du kan 
+<listitem><para><action>Opnar dialogen for feilrapport</action> der du kan
 rapportera om feil eller senda inn ønskje om nye funksjonar.</para></listitem>
 </varlistentry>
 
@@ -42,7 +42,7 @@ rapportera om feil eller senda inn ønskje om nye funksjonar.</para></listitem>
 <guimenu>Hjelp</guimenu>
 <guimenuitem>Om &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Viser informasjon om programversjon og 
+<listitem><para><action>Viser informasjon om programversjon og
 utviklarar.</action></para></listitem>
 </varlistentry>
 
@@ -51,7 +51,7 @@ utviklarar.</action></para></listitem>
 <guimenu>Hjelp</guimenu>
 <guimenuitem>Om KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Viser KDE-versjonen og annan grunnleggjande 
+<listitem><para><action>Viser KDE-versjonen og anna grunnleggjande
 informasjon.</action></para></listitem>
 </varlistentry>
 </variablelist>

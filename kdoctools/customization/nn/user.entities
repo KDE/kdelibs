@@ -14,14 +14,14 @@
 <!ENTITY omsetjarLarsNestasMathisen        '<othercredit role="translator"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
 <!ENTITY sprakvaskLarsNestasMathisen       '<othercredit role="reviewer"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
 
-<!ENTITY omsetjarHavardKorsvoll            '<othercredit role="translator"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>gaute@verdsveven.com</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
-<!ENTITY sprakvaskHavardKorsvoll           '<othercredit role="reviewer"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>korsvoll@stud.ntnu.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
+<!ENTITY omsetjarHavardKorsvoll            '<othercredit role="translator"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>korsvoll@skulelinux.no</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
+<!ENTITY sprakvaskHavardKorsvoll           '<othercredit role="reviewer"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>korsvoll@skulelinux.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
 
 <!-- CREDITS FOR TRANSLATORS -->
 
 <!ENTITY GauteHvoslefKvalnes      'Gaute Hvoslef Kvalnes <email>gaute@verdsveven.com</email>'>
 <!ENTITY LarsNestasMathisen       'Lars Nestås Mathisen <email>orvarodd@start.no</email>'>
-<!ENTITY HavardKorsvoll           'Håvard Korsvoll <email>korsvoll@stud.ntnu.no</email>'>
+<!ENTITY HavardKorsvoll           'Håvard Korsvoll <email>korsvoll@skulelinux.no</email>'>
 
 <!-- OTHER USER ENTITIES -->
 
@@ -34,7 +34,9 @@
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY FAQ	'<acronym>OSS</acronym>'>
+<!ENTITY FSF	"Free Software Foundation"><!-- The name of Free Software Foundation -->
+<!ENTITY GPL	"General Public License"><!-- Name of the GPL license -->
 <!ENTITY ie     "<abbrev>dvs.</abbrev>">
 <!ENTITY infocenter	"<application>Infosenter</application>">
 <!ENTITY kcontrolcenter	"<application>&kde; Kontrollsenter</application>">
@@ -44,9 +46,10 @@
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon> icon"><!-- if image is localised, then entityref should be used 
+</guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> meny">
+<!ENTITY LGPL	"Lesser General Public License"><!-- Name of LGPL license -->
 <!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknapp">
 <!ENTITY MMB    "<mousebutton>midtre</mousebutton> museknapp">
 <!ENTITY OS	"operativ system"><!-- <acronym>OS</acronym>-->
