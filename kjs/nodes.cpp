@@ -1743,6 +1743,9 @@ Value VarDeclNode::evaluate(ExecState *exec)
       val = Undefined();
   }
   variable.put(exec,ident, val, DontDelete);
+#ifdef KJS_VERBOSE
+  printInfo(exec, ident.cstring().c_str(), val);
+#endif
 
   return String(ident);
 }
