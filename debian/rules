@@ -91,8 +91,8 @@ binary-arch:  build
 	make -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl \
 		--includedir=/usr/include/kde
-	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	make -C libkmid/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
 	# messy cleanup
 	-rm -rf debian/libarts-alsa/usr/include build-stamp 
