@@ -38,6 +38,8 @@
 
 #include "ksocketaddress.h"
 
+#include "netsupp.h"
+
 using namespace KNetwork;
 
 #if 0
