@@ -417,12 +417,12 @@ QString KProtocolManager::noProxyFor()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
-  if( config.hasKey( "NoProxyFor" ) )  
+  if( config.hasKey( "NoProxyFor" ) )
   {
     return config.readEntry( "NoProxyFor" );
   }
   config.setGroup( QString::null );
-  return config.readEntry( "NoProxyFor" );    
+  return config.readEntry( "NoProxyFor" );
 }
 
 QString KProtocolManager::proxyFor( const QString& protocol )
@@ -433,10 +433,9 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   if( key =="http" || key == "ftp" &&
      !config.hasKey( key + "Proxy" ) )
   {
-    KConfigGroupSaver saver( &config, QString::null );
     return ( key == "http" ) ? config.readEntry( "HttpProxy" ) : config.readEntry( "FtpProxy" );
-  }  
-  return config.readEntry( key + "Proxy" );    
+  }
+  return config.readEntry( key + "Proxy" );
 }
 
 QString KProtocolManager::remoteFileProtocol()
