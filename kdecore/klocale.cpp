@@ -364,7 +364,7 @@ QStrList KLocale::languageList()const{
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( const QString& ) 
+KLocale::KLocale( const char * ) 
 {
 }
 
@@ -382,12 +382,12 @@ QString KLocale::directory()
     return KApplication::kde_localedir();
 }
 
-void KLocale::aliasLocale(const QString& text, long int index)
+void KLocale::aliasLocale(const char *text, long int index)
 {
     aliases.insert(index, text);
 }
 
-const QString KLocale::getLocale(QString ){
+const QString KLocale::getLocale(const QString& ){
     return "C";
 }
 
