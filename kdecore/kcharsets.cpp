@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #define CHARSETS_COUNT 23
-static char *charsetsStr[CHARSETS_COUNT]={
+static const char *charsetsStr[CHARSETS_COUNT]={
     "unicode",
     "iso-8859-1",
     "iso-8859-2",
@@ -55,7 +55,7 @@ static char *charsetsStr[CHARSETS_COUNT]={
     "set-zh-tw",
     "Any"
 };
-static char *xNames[CHARSETS_COUNT]={
+static const char *xNames[CHARSETS_COUNT]={
     "iso10646-1",
     "iso8859-1",
     "iso8859-2",
@@ -274,7 +274,7 @@ QStringList KCharsets::availableCharsetNames(QString family)
     return chList;
 }
 
-QFont KCharsets::fontForChar( const QChar &ch, const QFont &f ) const
+QFont KCharsets::fontForChar( const QChar &, const QFont &f ) const
 {
     QFontInfo fi(f);
 

@@ -167,7 +167,7 @@ void KControlApplication::help()
   if (dialog)
     name = helpNames.at(dialog->tabBar()->currentTab());
 
-  kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->appName()+"/"+name, "");
+  kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->name()+"/"+name, "");
 }
 
 #include "kcontrol.moc"

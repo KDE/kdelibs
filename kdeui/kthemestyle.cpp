@@ -847,7 +847,7 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
     return(h);
 }
 
-void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw,
+void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int /*maxpmw*/,
                                     int tab, QMenuItem *mi, const QPalette &pal,
                                     bool act, bool enabled, int x, int y, int w,
                                     int h)

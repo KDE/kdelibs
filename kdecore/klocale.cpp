@@ -79,7 +79,7 @@ char *k_bindtextdomain (const char* __domainname,
 #define SYSTEM_MESSAGES "kdelibs"
 
 #ifdef ENABLE_NLS
-static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
+static const char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
 #endif
 

@@ -590,7 +590,7 @@ void KTMainWindow::setUnsavedData( bool b){
 }
 
 
-void KTMainWindow::resizeEvent(QResizeEvent *ev)
+void KTMainWindow::resizeEvent(QResizeEvent *)
 {
 	/*
 	 * This is an ugly hack to work around a Qt layout management

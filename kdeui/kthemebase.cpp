@@ -24,7 +24,7 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
-static char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
+static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
 "PushButton", "ExIndicatorOn", "ExIndicatorOff", "ComboBox", "ScrollBarSlider",
 "Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
@@ -37,7 +37,7 @@ static char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 
 #define OPTIONS 16
 
-static char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
+static const char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
 "ShadeStyle", "RoundButton", "RoundCombo", "RoundSlider", "FrameWidth",
 "ButtonXShift", "ButtonYShift", "SliderLength", "SplitterHandle", "Name",
 "Description", "CacheSize", "SmallSliderGroove"};
@@ -49,7 +49,7 @@ OptCacheSize, OptSmallGroove};
 
 #define WGROUPS 9
 
-static char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
+static const char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
 "Gradient Highcolor", "Extended Background", "Extended Foreground", "Borders",
 "Highlights", "Pixmaps"};
 

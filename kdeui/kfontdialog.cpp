@@ -135,7 +135,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeListBox = new QListBox(box1, "sizeListBox");
   box1Layout->addWidget(sizeListBox, 2, 5);
 
-  char *c[] = {"4",  "5",  "6",  "7",
+  const char *c[] = {"4",  "5",  "6",  "7",
 	       "8",  "9",  "10", "11",
 	       "12", "13", "14", "15",
 	       "16", "17", "18", "19",
@@ -486,6 +486,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.40  1999/06/12 21:43:58  knoll
+* kapp->xxxFont() -> KGlobal::xxxFont()
+*
 * Revision 1.39  1999/06/11 20:01:33  knoll
 * changes to make it working with new kcharsets
 *

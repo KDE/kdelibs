@@ -334,10 +334,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	selColor = darkCyan;
 	selColor.hsv( &h, &s, &v );
-	QString st;
-	if(kapp->appName().length() > 0)
-	  st = kapp->appName() + ": ";
-	st =  i18n("Select Color");
+	QString st = i18n("%1: Select Color").arg(kapp->name());
 	setCaption( st );
 	
 	// create a toplevel layout

@@ -256,14 +256,14 @@ void KQuickHelp::hyperlinkRequested(QString link) {
       else {
 	if(*link.data() == '#') {
 	  anchor = link.mid(1, 255);
-	  fname = kapp->appName() + ".html";
+	  fname = QString(kapp->name()) + ".html";
 	} else {
 	  fname = link.left(idx);
 	  anchor = link.mid(idx+1, 1024);
 	}
       }
       
-      kapp->invokeHTMLHelp((kapp->appName() +  "/" + fname), anchor);
+      kapp->invokeHTMLHelp(QString(kapp->name()) +  "/" + fname, anchor);
     }
 }
 
