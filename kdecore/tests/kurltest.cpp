@@ -43,6 +43,9 @@ int main(int argc, char *argv[])
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
 
+  KURL fileURL = "file:/";
+  check( "KURL::isEmpty()", fileURL.isEmpty() ? "TRUE":"FALSE", "FALSE");
+
   KURL baseURL ("hTTp://www.foo.bar:80" );
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::protocol()", baseURL.protocol(), "http"); // lowercase
@@ -63,6 +66,9 @@ int main(int argc, char *argv[])
   baseURL = "http://www.foo.bar";
   KURL rel_url2( baseURL, "mailto:bastian@kde.org" );
   check( "KURL::url()", rel_url2.url(), "mailto:bastian@kde.org" );
+
+  baseURL = "mailto:bastian@kde.org?subject=hello";
+  check( "KURL::url()", baseURL.url(), "mailto:bastian@kde.org?subject=hello" );
 
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KURL url2( baseURL, "../../////kdebase/konqueror" );
@@ -662,7 +668,7 @@ int main(int argc, char *argv[])
 
   KURL local_file_5;
   local_file_5.setPath("/foo?bar");
-  check("local_file_5.url()", local_file_5.url() == QString::fromLatin1("file:/foo%3Fbar") ? "true" : "false", "true");
+  check("local_file_5.url()", local_file_5.url(), "file:/foo%3Fbar");
 
   QString basePath = "/home/bastian";
   
