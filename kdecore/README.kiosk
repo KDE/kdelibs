@@ -235,6 +235,8 @@ lock_screen
         - defines whether the user will be able to lock the screen.
 run_command
         - defines whether the "Run Command" (Alt-F2) option is available.
+movable_toolbars
+        - define whether toolbars may be moved around by the user.
 
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
