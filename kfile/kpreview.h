@@ -1,8 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
-    Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
+    Copyright (C) 1997, 1998 Daniel Grana <grana@ie.iwi.unibe.ch>
                   1998 Stephan Kulow <coolo@kde.org>
-                  1998 Daniel Grana <grana@ie.iwi.unibe.ch>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,8 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KPREVIEW_H
-#define KPREVIEW_H
+#ifndef __KPREVIEW_H__
+#define __KPREVIEW_H__
 
 #include <qpixmap.h>
 #include <qgrpbox.h>
@@ -34,7 +33,20 @@
 #include "kfiledialog.h"
 
 class KPreviewObject;
-
+/**
+ * The KPreview widget displays previews of a file. Two possible previews 
+ * are possible, either some text or a pixmap.
+ *
+ * The widget has been designed to allow the uses to easily add new
+ * custom preview modules. For that use the static method 
+ * KPreview::registerPreviewModule.
+ *
+ * @short A file preview widget
+ *
+ * @author Daniel Grana grana@ie.iwi.unibe.ch
+ *
+ * @version $Id$
+ */
 class KPreview : public QWidget {
 
     Q_OBJECT
@@ -69,8 +81,5 @@ private:
     KPreview *_myKPreview;    
 
 };
-
-
-#define KPreviewer (*KPreview::getKPreview())
 
 #endif

@@ -31,11 +31,10 @@ class KFilePreview: protected KNewPanner, public KFileInfoContents
     Q_OBJECT
 	
 public:
-    // typedef enum { SimpleView, DetailView, DirList, Custom } PreFileView;
 
     KFilePreview( KDir *inDir, bool s, QDir::SortSpec sorting,
 		QWidget * parent=0, const char * name=0 );
-    ~KFilePreview() {};
+    ~KFilePreview();
     
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);
@@ -44,8 +43,8 @@ public:
 
     virtual QString findCompletion( const char *base, bool activateFound );
 
-    virtual bool acceptsFiles() { return true; };
-    virtual bool acceptsDirs() { return true; };
+    virtual bool acceptsFiles() { return true; }
+    virtual bool acceptsDirs() { return true; }
 
     void registerPreviewModule( const char * format, PreviewHandler readPreview,
                                 PreviewType inType);

@@ -1,3 +1,15 @@
+Thu Apr 16 10:51:24 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+	* kfiledialog.*: some small fixes concerning preview
+        
+        * kfileinfocontents.cpp: fixed sorting bug in preview
+        
+        * kfilepreview.*: small bug fixes
+        
+        * kpreview.*: small bug fixes
+        
+        * added some documentation
+
 1998-04-15  Stephan Kulow  <coolo@kde.org>
 
 	* kfilepreview.cpp: use a list box instead of simple view

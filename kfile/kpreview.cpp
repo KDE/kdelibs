@@ -255,7 +255,7 @@ KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
 void KPreview::registerPreviewModule(const char * format, PreviewHandler readPreview,
                                      PreviewType inType)
 {   
-    // debug("registering preview module (%s)",format);
+    //debug("registering preview module (%s)",format);
     if ( !myTextPreviewerStorage ) {
 	initHandlers();
     }
@@ -312,7 +312,9 @@ void KPreview::previewFile(const KFileInfo *i)
                 found = true;
                 if ( showedText ) {
                     showedText = false;
-                    myPreviewPicture->raise();
+                    // myPreviewPicture->raise();
+                    myPreviewText->hide();
+                    myPreviewPicture->show();
                 }
             }
             ++lPictIterator;
@@ -325,7 +327,9 @@ void KPreview::previewFile(const KFileInfo *i)
                 found = true;
                 if ( !showedText ) {
                     showedText = true;
-                    myPreviewText->raise();
+                    // myPreviewText->raise();
+                    myPreviewPicture->hide();
+                    myPreviewText->show();
                 }
             }
             ++lTextIterator;

@@ -105,12 +105,6 @@ public:
       */
     void rereadDir();
     
-   
-
-
-    static QString getDirectory(const char *url, QWidget *parent = 0,  
-				const char *name = 0);
-
     /**
       * Go back to the previous directory if this is not the first.
       */
@@ -156,6 +150,18 @@ public:
       */
     bool isMultiSelection() const { return false; }
     
+    /**
+      * This method creates a modal directory dialog and returns the selected 
+      * directory or an empty string if none was chosen. Note that with 
+      * this method the user must select an existing directory.
+      *
+      * @param url This specifies the path the dialog will start in.
+      * @param parent The widget the dialog will be centered on initially.
+      * @param name The name of the dialog widget.
+      */
+    static QString getDirectory(const char *url, QWidget *parent = 0,  
+				const char *name = 0);
+
     /**
       * This a multiple selection version of getOpenFileURL().
       */
@@ -290,24 +296,24 @@ protected:
     void initGUI();
 
     /**
-     * Makes a new directory in current directory after asking user
-     * for a name
-     */
+      * Makes a new directory in current directory after asking user
+      * for a name
+      */
     void mkdir();
 
     /**
-     * takes action on the new location. If it's a directory, change
-     * into it, if it's a file, correct the name, etc.
-     * @param takeFiles if set to true, if will close the dialog, if
-     * txt is a file name
-     */
+      * takes action on the new location. If it's a directory, change
+      * into it, if it's a file, correct the name, etc.
+      * @param takeFiles if set to true, if will close the dialog, if
+      * txt is a file name
+      */
     void checkPath(const char *txt, bool takeFiles = false);
 
     /**
-     * this functions must be called by the constructor of a derived
-     * class. 
-     **/
-     void init();
+      * this functions must be called by the constructor of a derived
+      * class. 
+      **/
+    void init();
 
 protected slots:
     void pathChanged();
@@ -345,9 +351,11 @@ protected slots:
     void fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id );
 
 private:
+    //
     // the father of the widget. By default itself, but
     // to make it customable, this can be overriden by 
-    // overriding 
+    // overriding swallower()
+    //
     QWidget *wrapper;
     QStrList *filters;
 
@@ -371,6 +379,20 @@ private:
     
 };
 
+/**
+ * The KDirDialog widget provides a user (and developer) friendly way to
+ * select directories. It is a specalised KFileDialog.
+ *
+ * You will usually want to use one of the two static methods
+ * KFileDialog::getDirectory. 
+ *
+ * Being a subclass of KFileKFileBaseDialog, it can therefore be easily
+ * customised.
+ *
+ * @short A directory selection dialog
+ *
+ * @version $Id$
+ */
 class KDirDialog : public KFileBaseDialog
 {
 public:
@@ -436,15 +458,32 @@ protected:
 };
 
 
-
 typedef bool (*PreviewHandler)( const KFileInfo *, const QString fileName,
                                        QString &, QPixmap & );
 
-
+/**
+  * Preview modules are of one of these types, which means their preview is either
+  * text or an pixmap (image).
+  */
 enum PreviewType { PreviewText = 0x001,
                    PreviewPixmap = 0x002 };
 
 
+/**
+ * The KFilePreviewDialog widget provides a user (and developer) friendly way to
+ * select files while showing a preview.
+ *
+ * You will usually want to use one of the static methods
+ * KFilePreviewDialog::get[Open|Save][Name|URL](...) which are the same
+ * as the KFileDialog ones. 
+ *
+ * Being a subclass of KFileKFileBaseDialog, it can therefore be easily
+ * customised.
+ *
+ * @short A file selection dialog with preview
+ *
+ * @version $Id$
+ */
 class KFilePreviewDialog : public KFileBaseDialog
 {
 public:
@@ -452,6 +491,7 @@ public:
     KFilePreviewDialog(const char *dirName, const char *filter= 0,
 		       QWidget *parent= 0, const char *name= 0, 
 		       bool modal = false, bool acceptURLs = true);
+    ~KFilePreviewDialog() {}
 
     static QString getOpenFileName(const char *dir= 0, const char *filter= 0,
 				   QWidget *parent= 0, const char *name= 0);
@@ -461,9 +501,17 @@ public:
 				  QWidget *parent= 0, const char *name= 0);
     static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
 				  QWidget *parent= 0, const char *name= 0);
-                                  
+
+    /**
+      * This is a static method which allow a user to define a new preview dialog module.
+      *
+      * @param format This identifies the module e.g. "JPG" or "PNG".
+      * @param readPreview This is the function which generates the preview
+      * @param type This is the type of the preview module
+      * @see PreviewType
+      */
     static void registerPreviewModule( const char * format, PreviewHandler readPreview,
-                                PreviewType inType);
+                                PreviewType type);
 
     
 protected:

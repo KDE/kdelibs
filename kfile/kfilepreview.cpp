@@ -61,6 +61,12 @@ KFilePreview::KFilePreview(
     fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
 }
 
+KFilePreview::~KFilePreview()
+{
+    delete fileList;
+    delete myPreview;
+}
+
 void KFilePreview::registerPreviewModule( const char * format, PreviewHandler readPreview,
                                           PreviewType inType)
 {

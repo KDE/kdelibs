@@ -189,9 +189,9 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
             isDir = !isDir;
         
         if ( mySorting & QDir::DirsFirst )
-            keepDirsFirst = 1;
+            keepDirsFirst = true;
         else
-            keepDirsFirst = 0;
+            keepDirsFirst = false;
 
 	if ( keepDirsFirst ) {
             pos = isDir ? 0 : firstfile;

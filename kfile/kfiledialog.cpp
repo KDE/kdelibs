@@ -199,7 +199,7 @@ void KFileBaseDialog::init()
     toolbar->adjustSize();
     setMinimumWidth(toolbar->width());
     
-    if ( c->readNumEntry("KeepDirsFirst", 1) )
+    if ( c->readBoolEntry("KeepDirsFirst", true) )
         dir->setSorting( QDir::Name | QDir::DirsFirst);
     else
         dir->setSorting( QDir::Name );
@@ -1068,7 +1068,7 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
                                                       
     if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", true))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
-    
+
     dir->setSorting(sort);    
 
     if (!mixDirsAndFiles)
@@ -1293,6 +1293,15 @@ KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
 {
     bool useSingleClick = 
 	kapp->getConfig()->readNumEntry("SingleClick",1);
+
+    QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
+                                                      QDir::SortByMask);
+                                                      
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", true))
+        sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
+
+    dir->setSorting(sort);    
+
     return new KFilePreview( dir, useSingleClick, dir->sorting(), parent, "_prev" );
 
 }
