@@ -1045,7 +1045,7 @@ void RenderSelect::layout( )
     m_widget->setEnabled(foundOption && ! element()->disabled());
 }
 
-void RenderSelect::slotSelected(int index)
+void RenderSelect::slotSelected(int index) // emitted by the combobox only
 {
     if ( m_ignoreSelectEvents ) return;
 
@@ -1078,24 +1078,37 @@ void RenderSelect::slotSelected(int index)
         }
 
         if ( found ) {
-            if ( index != static_cast<ComboBoxWidget*>( m_widget )->currentItem() )
-                static_cast<ComboBoxWidget*>( m_widget )->setCurrentItem( index );
+            bool changed = false;
 
             for ( unsigned int i = 0; i < listItems.size(); ++i )
                 if ( listItems[i]->id() == ID_OPTION && i != (unsigned int) index )
-                    static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = false;
+                {
+                    HTMLOptionElementImpl* opt = static_cast<HTMLOptionElementImpl*>( listItems[i] );
+                    changed |= (opt->m_selected == true);
+                    opt->m_selected = false;
+                }
 
-            static_cast<HTMLOptionElementImpl*>(listItems[index])->m_selected = true;
+            HTMLOptionElementImpl* opt = static_cast<HTMLOptionElementImpl*>(listItems[index]);
+            changed |= (opt->m_selected == false);
+            opt->m_selected = true;
+
+            if ( index != static_cast<ComboBoxWidget*>( m_widget )->currentItem() )
+                static_cast<ComboBoxWidget*>( m_widget )->setCurrentItem( index );
+
+            // When selecting an optgroup item, and we move forward to we
+            // shouldn't emit onChange. Hence this bool, the if above doesn't do it.
+            if ( changed )
+            {
+                ref();
+                element()->onChange();
+                deref();
+            }
         }
     }
-
-    ref();
-    element()->onChange();
-    deref();
 }
 
 
-void RenderSelect::slotSelectionChanged()
+void RenderSelect::slotSelectionChanged() // emitted by the listbox only
 {
     if ( m_ignoreSelectEvents ) return;
 
