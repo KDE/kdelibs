@@ -636,7 +636,6 @@ bool HTTPProtocol::readHeader()
   // to get rid of those "Open with" dialogs...
   // however at least extensions should be checked
   m_strMimeType = "text/html";
-
   // read in 1024 bytes at a time
   int len = 1;
   char buffer[1024];
@@ -732,6 +731,11 @@ bool HTTPProtocol::readHeader()
       configAuth(trimLead(buffer + 19), true);
     }
 
+    // content?
+    else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0) {
+      addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
+    }
+
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
@@ -743,7 +747,7 @@ bool HTTPProtocol::readHeader()
 	}
 	
       }
-      
+      			
       // what kind of encoding do we have?  transfer?
       else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0) {
 	// If multiple encodings have been applied to an entity, the
@@ -751,12 +755,7 @@ bool HTTPProtocol::readHeader()
 	// were applied.
 	addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
       }
-      
-      // content?
-      else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0) {
-	addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
-      }
-			
+    
       // md5 signature
       else if (strncasecmp(buffer, "Content-MD5:", 12) == 0) {
 	m_sContentMD5 = strdup(trimLead(buffer + 12));
@@ -1289,9 +1288,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
       job.clearError();
 
       m_bIgnoreErrors = true;
-      qDebug( "slotCopy 0");
       if ( !http_open( u1, 0, false, offset ) ) {
-	qDebug( "slotCopy 1");
 	m_bIgnoreErrors = false;
 	/* if ( !m_bGUI )
 	{
@@ -1307,9 +1304,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	QStringList::Iterator tmpit = fit;
 	tmpit++;
 	if( tmpit == _source.end() ) {
-	  qDebug( "slotCopy 12");
 	  open_CriticalDlg( "Error", tmp.latin1(), "Cancel" );
-	  qDebug( "slotCopy 13");
 	  http_close();
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
@@ -1317,7 +1312,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	  return;
 	}
 	
-	qDebug( "slotCopy 2");
 	if ( !open_CriticalDlg( "Error", tmp.latin1(), "Continue", "Cancel" ) ) {
 	  http_close();
 	  clearError();
@@ -1335,7 +1329,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 
       if ( readHeader() )
 	{
-	  qDebug( "slotCopy 3");
 	  // This is a hack, since total size should be the size of all files together
 	  // while we transmit only the size of the current file here.
 	  //	  totalSize( m_iSize + offset);
@@ -1609,7 +1602,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 			enc = m_qTransferEncodings.pop();
 			if (!enc)
 				break;
-			if (strncasecmp(enc, "gzip", 4)==0)
+			if ( strstr(enc, "gzip") )
 				decodeGzip();
 			else if (strncasecmp(enc, "chunked", 7)==0) {
 				decodeChunked();
@@ -1632,7 +1625,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 			enc = m_qContentEncodings.pop();
 			if (!enc)
 				break;
-			if (strncasecmp(enc, "gzip", 4)==0)
+			if ( strstr(enc, "gzip") )
 				decodeGzip();
 			else if (strncasecmp(enc, "chunked", 7)==0) {
 				decodeChunked();
