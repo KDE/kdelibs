@@ -2407,8 +2407,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
 
   label = new QLabel( d->m_frame );
   label->setText( devices.count()==0 ?
-                      i18n("Mount Point (/mnt/floppy):") : // old style
-                      i18n("Mount Point:")); // new style (combobox)
+                      i18n("Mount point (/mnt/floppy):") : // old style
+                      i18n("Mount point:")); // new style (combobox)
   layout->addWidget(label, 2, 0);
 
   mountpoint = new QLabel( d->m_frame, "LineEdit_mountpoint" );
