@@ -25,6 +25,7 @@
 // Torben: Priority for local icons, added full KDEFSSTD to ~/.kde
 //         /share/icons is exclusively searched in if you want to
 //        load an applications icon.
+// Matthias: hopefully completed Torben's atempt.
 	if (result.isNull() && !canReturnNull) {
 #include <qapp.h>
 #include <qdir.h>
@@ -46,21 +47,18 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
 {
   config = conf;
   config->setGroup(app_name);
-QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
   config->readListEntry( var_name, pixmap_dirs, ':' );
+QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
   QString temp = KApplication::kdedir();
-  /*  pixmap_dirs.insert( 0, temp + "/share/icons" );
-  pixmap_dirs.insert( 1, temp + "/share/toolbar" );
-  pixmap_dirs.insert( 2, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
-  pixmap_dirs.insert( 3, temp + "/share/apps/" + kapp->appName() + "/pics" );
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/icons" ); */
-  // Torben
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/toolbar" ); 
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
-  pixmap_dirs.append( temp + "/share/toolbar" );
-  pixmap_dirs.append( temp + "/share/apps/" + kapp->appName() + "/toolbar" );
-  pixmap_dirs.append( temp + "/share/apps/" + kapp->appName() + "/pics" );
+
+  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/pics" );
+  pixmap_dirs.insert(0, temp + "/share/toolbar" );
+  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/toolbar" ); 
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
+
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
@@ -71,15 +69,17 @@ KIconLoader::KIconLoader( )
   config = KApplication::getKApplication()->getConfig();
   config->setGroup("KDE Setup");
   config->readListEntry( "IconPath", pixmap_dirs, ':' );
+
   QString temp = KApplication::kdedir();
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/toolbar" ); 
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
-  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
-  pixmap_dirs.append( temp + "/share/toolbar" );
-  pixmap_dirs.append( temp + "/share/apps/" + kapp->appName() + "/toolbar" );
-  pixmap_dirs.append( temp + "/share/apps/" + kapp->appName() + "/pics" );
-  // pixmap_dirs.append( QDir::homeDirPath() + "/.kde/icons" );
-  // Torben
+  
+  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/pics" );
+  pixmap_dirs.insert(0, temp + "/share/toolbar" );
+  pixmap_dirs.insert(0, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/toolbar" ); 
+  pixmap_dirs.insert(0, QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/toolbar" ); 
+
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
@@ -111,17 +111,19 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 
 QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
-  pixmap_dirs.insert( 0, KApplication::kdedir() + "/share/icons" );
-  pixmap_dirs.insert( 0, QDir::homeDirPath() + "/.kde/share/icons" );
+  pixmap_dirs.insert(0,KApplication::kdedir() + "/share/icons" );
+  pixmap_dirs.insert(0,QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadIcon(name, w, h);
+  pixmap_dirs.remove((unsigned int) 0);
   pixmap_dirs.remove((unsigned int) 0);
   return result;
 }
 
 QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h ){
-  pixmap_dirs.insert( 0, KApplication::kdedir() + "/share/icons" );
-  pixmap_dirs.insert( 0, QDir::homeDirPath() + "/.kde/share/icons" );
+  pixmap_dirs.insert(0,KApplication::kdedir() + "/share/icons" );
+  pixmap_dirs.insert(0,QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadMiniIcon(name, w, h);
+  pixmap_dirs.remove((unsigned int) 0);
   pixmap_dirs.remove((unsigned int) 0);
   return result;
 }

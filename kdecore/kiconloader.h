@@ -99,18 +99,6 @@ public:
   */
   QPixmap loadIcon( const QString &name, int w = 0, int h = 0 );
 
-  /// Insert directory into searchpath
-  /**
-         This functions inserts a new directory into the searchpath at position index.
-	 It returns TRUE if successful, or FALSE if index is out of range.
-	 Note that the default searchpath looks like this:
-	 index 0:      $KDEDIR/share/toolbar
-	 index 1:      $KDEDIR/apps/<appName>/toolbar
-	 index 2:      $KDEDIR/apps/<appName>/pics
-	 index 3 to n: a list of directories in [KDE Setup]:IconPath=...
-	 index n+1:    $HOME/.kde/icons
-  */
-
   /// Load an mini icon from disk
   /**
 	 Same like loadIcon, but looks for "mini/name" first.
@@ -120,7 +108,7 @@ public:
   /* 
    * The loadApplication-Icon functions are similar to the 
    * usual loadIcon functions except that they look in
-   * $KDEDIR/share/icon first.
+   * kdedir()/share/icon first.
    *
    * These function should be used if you are loading the
    * application icons. Normally KApplication does this for
@@ -130,6 +118,25 @@ public:
   QPixmap loadApplicationIcon( const QString &name, int w = 0, int h = 0 );
   QPixmap loadApplicationMiniIcon( const QString &name, int w = 0, int h = 0 );
 
+
+  /// Insert directory into searchpath
+  /**
+         This functions inserts a new directory into the searchpath at 
+	 position index.
+	 It returns TRUE if successful, or FALSE if index is out of range.
+	 Note that the default searchpath looks like this:
+
+	       0: kdedir()/share/apps/<appName>/toolbar
+	       1: kdedir()/share/toolbar
+	       2: kdedir()/share/apps/<appName>/pics
+
+	       3: $HOME/.kde/share/apps/<appName>/toolbar
+	       4: $HOME/.kde/share/toolbar
+	       5: $HOME/.kde/share/apps/<appName>/pics
+
+	     6-x: list of directories in [KDE Setup]:IconPath=...
+
+  */
 
   bool insertDirectory( int index, const QString &dir_name ) {
     return pixmap_dirs.insert( index, dir_name ); }
