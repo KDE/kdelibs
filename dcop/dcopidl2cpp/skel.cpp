@@ -160,9 +160,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	
 	    str << "#include <kdatastream.h>" << endl;
-#ifdef QT_VERSION >= 300
-		str << "#include <qstringlist.h>" << endl;
-#endif
 
 	    bool useHashing = functions.count() > 7;
 	    if ( useHashing ) {
