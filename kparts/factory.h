@@ -20,7 +20,6 @@
 #ifndef __kparts_factory_h__
 #define __kparts_factory_h__
 
-#include <config.h>
 #include <klibloader.h>
 
 class QWidget;
