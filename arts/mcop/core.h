@@ -19,8 +19,6 @@ public:
 	Header(Arts::Buffer& stream);
 	Header(const Header& copyType);
 	Header& operator=(const Header& assignType);
-	virtual ~Header();
-
 	Arts::HeaderMagic magic;
 	long messageLength;
 	Arts::MessageType messageType;
@@ -37,8 +35,6 @@ public:
 	Invocation(Arts::Buffer& stream);
 	Invocation(const Invocation& copyType);
 	Invocation& operator=(const Invocation& assignType);
-	virtual ~Invocation();
-
 	long requestID;
 	long objectID;
 	long methodID;
@@ -55,8 +51,6 @@ public:
 	OnewayInvocation(Arts::Buffer& stream);
 	OnewayInvocation(const OnewayInvocation& copyType);
 	OnewayInvocation& operator=(const OnewayInvocation& assignType);
-	virtual ~OnewayInvocation();
-
 	long objectID;
 	long methodID;
 
@@ -72,8 +66,6 @@ public:
 	ServerHello(Arts::Buffer& stream);
 	ServerHello(const ServerHello& copyType);
 	ServerHello& operator=(const ServerHello& assignType);
-	virtual ~ServerHello();
-
 	std::string serverID;
 	std::vector<std::string> authProtocols;
 	std::string authSeed;
@@ -90,8 +82,6 @@ public:
 	ClientHello(Arts::Buffer& stream);
 	ClientHello(const ClientHello& copyType);
 	ClientHello& operator=(const ClientHello& assignType);
-	virtual ~ClientHello();
-
 	std::string serverID;
 	std::string authProtocol;
 	std::string authData;
@@ -108,8 +98,6 @@ public:
 	ObjectReference(Arts::Buffer& stream);
 	ObjectReference(const ObjectReference& copyType);
 	ObjectReference& operator=(const ObjectReference& assignType);
-	virtual ~ObjectReference();
-
 	std::string serverID;
 	long objectID;
 	std::vector<std::string> urls;
@@ -126,8 +114,6 @@ public:
 	ParamDef(Arts::Buffer& stream);
 	ParamDef(const ParamDef& copyType);
 	ParamDef& operator=(const ParamDef& assignType);
-	virtual ~ParamDef();
-
 	std::string type;
 	std::string name;
 
@@ -139,16 +125,14 @@ public:
 class MethodDef : public Arts::Type {
 public:
 	MethodDef();
-	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef *>& signature);
+	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef>& signature);
 	MethodDef(Arts::Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
-	virtual ~MethodDef();
-
 	std::string name;
 	std::string type;
 	Arts::MethodType flags;
-	std::vector<Arts::ParamDef *> signature;
+	std::vector<Arts::ParamDef> signature;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -162,8 +146,6 @@ public:
 	AttributeDef(Arts::Buffer& stream);
 	AttributeDef(const AttributeDef& copyType);
 	AttributeDef& operator=(const AttributeDef& assignType);
-	virtual ~AttributeDef();
-
 	std::string name;
 	std::string type;
 	Arts::AttributeType flags;
@@ -176,16 +158,14 @@ public:
 class InterfaceDef : public Arts::Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef *>& methods, const std::vector<Arts::AttributeDef *>& attributes, const std::vector<std::string>& defaultPorts);
+	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef>& methods, const std::vector<Arts::AttributeDef>& attributes, const std::vector<std::string>& defaultPorts);
 	InterfaceDef(Arts::Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
-	virtual ~InterfaceDef();
-
 	std::string name;
 	std::vector<std::string> inheritedInterfaces;
-	std::vector<Arts::MethodDef *> methods;
-	std::vector<Arts::AttributeDef *> attributes;
+	std::vector<Arts::MethodDef> methods;
+	std::vector<Arts::AttributeDef> attributes;
 	std::vector<std::string> defaultPorts;
 
 // marshalling functions
@@ -200,8 +180,6 @@ public:
 	TypeComponent(Arts::Buffer& stream);
 	TypeComponent(const TypeComponent& copyType);
 	TypeComponent& operator=(const TypeComponent& assignType);
-	virtual ~TypeComponent();
-
 	std::string type;
 	std::string name;
 
@@ -213,14 +191,12 @@ public:
 class TypeDef : public Arts::Type {
 public:
 	TypeDef();
-	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent *>& contents);
+	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent>& contents);
 	TypeDef(Arts::Buffer& stream);
 	TypeDef(const TypeDef& copyType);
 	TypeDef& operator=(const TypeDef& assignType);
-	virtual ~TypeDef();
-
 	std::string name;
-	std::vector<Arts::TypeComponent *> contents;
+	std::vector<Arts::TypeComponent> contents;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -234,8 +210,6 @@ public:
 	EnumComponent(Arts::Buffer& stream);
 	EnumComponent(const EnumComponent& copyType);
 	EnumComponent& operator=(const EnumComponent& assignType);
-	virtual ~EnumComponent();
-
 	std::string name;
 	long value;
 
@@ -247,14 +221,12 @@ public:
 class EnumDef : public Arts::Type {
 public:
 	EnumDef();
-	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent *>& contents);
+	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent>& contents);
 	EnumDef(Arts::Buffer& stream);
 	EnumDef(const EnumDef& copyType);
 	EnumDef& operator=(const EnumDef& assignType);
-	virtual ~EnumDef();
-
 	std::string name;
-	std::vector<Arts::EnumComponent *> contents;
+	std::vector<Arts::EnumComponent> contents;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -264,17 +236,15 @@ public:
 class ModuleDef : public Arts::Type {
 public:
 	ModuleDef();
-	ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef *>& modules, const std::vector<Arts::EnumDef *>& enums, const std::vector<Arts::TypeDef *>& types, const std::vector<Arts::InterfaceDef *>& interfaces);
+	ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef>& modules, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces);
 	ModuleDef(Arts::Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
-	virtual ~ModuleDef();
-
 	std::string moduleName;
-	std::vector<Arts::ModuleDef *> modules;
-	std::vector<Arts::EnumDef *> enums;
-	std::vector<Arts::TypeDef *> types;
-	std::vector<Arts::InterfaceDef *> interfaces;
+	std::vector<Arts::ModuleDef> modules;
+	std::vector<Arts::EnumDef> enums;
+	std::vector<Arts::TypeDef> types;
+	std::vector<Arts::InterfaceDef> interfaces;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -311,8 +281,8 @@ public:
 
 	virtual long insertModule(const Arts::ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
-	virtual Arts::InterfaceDef* queryInterface(const std::string& name) = 0;
-	virtual Arts::TypeDef* queryType(const std::string& name) = 0;
+	virtual Arts::InterfaceDef queryInterface(const std::string& name) = 0;
+	virtual Arts::TypeDef queryType(const std::string& name) = 0;
 };
 
 class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Arts::Object_stub {
@@ -324,8 +294,8 @@ public:
 
 	long insertModule(const Arts::ModuleDef& newModule);
 	void removeModule(long moduleID);
-	Arts::InterfaceDef* queryInterface(const std::string& name);
-	Arts::TypeDef* queryType(const std::string& name);
+	Arts::InterfaceDef queryInterface(const std::string& name);
+	Arts::TypeDef queryType(const std::string& name);
 };
 
 class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Arts::Object_skel {
@@ -392,8 +362,8 @@ public:
 
 	inline long insertModule(const Arts::ModuleDef& newModule);
 	inline void removeModule(long moduleID);
-	inline Arts::InterfaceDef* queryInterface(const std::string& name);
-	inline Arts::TypeDef* queryType(const std::string& name);
+	inline Arts::InterfaceDef queryInterface(const std::string& name);
+	inline Arts::TypeDef queryType(const std::string& name);
 };
 
 class FlowSystemSender_base : virtual public Arts::Object_base {
@@ -915,12 +885,12 @@ inline void Arts::InterfaceRepo::removeModule(long moduleID)
 	 _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);
 }
 
-inline Arts::InterfaceDef* Arts::InterfaceRepo::queryInterface(const std::string& name)
+inline Arts::InterfaceDef Arts::InterfaceRepo::queryInterface(const std::string& name)
 {
 	return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);
 }
 
-inline Arts::TypeDef* Arts::InterfaceRepo::queryType(const std::string& name)
+inline Arts::TypeDef Arts::InterfaceRepo::queryType(const std::string& name)
 {
 	return _cache?_cache->queryType(name):_method_call()->queryType(name);
 }

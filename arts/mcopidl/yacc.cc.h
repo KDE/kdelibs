@@ -9,23 +9,23 @@ typedef union
   vector<char*> *_strs;
 
   // types
-  vector<TypeComponent *> *_typeComponentSeq;
+  vector<TypeComponent> *_typeComponentSeq;
   TypeComponent* _typeComponent;
 
   // enums
-  vector<EnumComponent *> *_enumComponentSeq;
+  vector<EnumComponent> *_enumComponentSeq;
 
   // interfaces
   InterfaceDef *_interfaceDef;
 
   ParamDef* _paramDef;
-  vector<ParamDef *> *_paramDefSeq;
+  vector<ParamDef> *_paramDefSeq;
 
   MethodDef* _methodDef;
-  vector<MethodDef *> *_methodDefSeq;
+  vector<MethodDef> *_methodDefSeq;
 
   AttributeDef* _attributeDef;
-  vector<AttributeDef *> *_attributeDefSeq;
+  vector<AttributeDef> *_attributeDefSeq;
 } YYSTYPE;
 #define	T_STRUCT	257
 #define	T_ENUM	258

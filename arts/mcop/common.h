@@ -90,26 +90,18 @@ namespace Arts {
 /* some marshalling helpers */
 
 template<class T>
-void freeTypeSeq(std::vector<T *>& sequence) {
-	for(unsigned long l=0;l<sequence.size();l++)
-		delete sequence[l];
-
+void readTypeSeq(Buffer& stream, std::vector<T>& sequence) {
 	sequence.clear();
-}
-
-template<class T>
-void readTypeSeq(Buffer& stream, std::vector<T *>& sequence) {
-	freeTypeSeq(sequence);
 
 	unsigned long l = stream.readLong();
-	while(l--) sequence.push_back(new T(stream));
+	while(l--) sequence.push_back(T(stream));
 }
 
 template<class T>
-void writeTypeSeq(Buffer& stream, const std::vector<T *>& sequence) {
+void writeTypeSeq(Buffer& stream, const std::vector<T>& sequence) {
 	stream.writeLong(sequence.size());
 	for(unsigned long l=0;l<sequence.size();l++)
-		sequence[l]->writeType(stream);
+		sequence[l].writeType(stream);
 }
 
 template<class T>

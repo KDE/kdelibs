@@ -55,8 +55,8 @@ public:
 
 	long insertModule(const ModuleDef& newModule);
 	void removeModule(long moduleID);
-	InterfaceDef* queryInterface(const std::string& name);
-	TypeDef* queryType(const std::string& name);
+	InterfaceDef queryInterface(const std::string& name);
+	TypeDef queryType(const std::string& name);
 };
 };
 #endif /* IFACEREPO_H */

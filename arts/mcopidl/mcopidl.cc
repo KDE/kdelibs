@@ -45,9 +45,9 @@ string idl_filename;
  */
 stack<pair<int,string> > idl_include_stack;
 
-list<EnumDef *> enums;
-list<TypeDef *> structs;
-list<InterfaceDef *> interfaces;
+list<EnumDef> enums;
+list<TypeDef> structs;
+list<InterfaceDef> interfaces;
 list<string> packetTypes;		// just an evil hack to get experimental video
 list<string> customIncludes;	// just an evil hack to get experimental video
 list<string> includes;		// files to include
@@ -58,47 +58,44 @@ list<string> includedNames;
 
 ModuleDef module;
 
-void addEnumTodo( EnumDef *edef )
+void addEnumTodo( const EnumDef& edef )
 {
 	enums.push_back(edef);
 
 	if(idl_in_include)
 	{
-		includedNames.push_back(edef->name);
+		includedNames.push_back(edef.name);
 	}
 	else
 	{
-		// TODO: memory management? Will be freed twice now?
 		module.enums.push_back(edef);
 	}
 }
 
-void addStructTodo( TypeDef *type )
+void addStructTodo( const TypeDef& type )
 {
 	structs.push_back(type);
 
 	if(idl_in_include)
 	{
-		includedNames.push_back(type->name);
+		includedNames.push_back(type.name);
 	}
 	else
 	{
-		// TODO: memory management? Will be freed twice now?
 		module.types.push_back(type);
 	}
 }
 
-void addInterfaceTodo( InterfaceDef *iface )
+void addInterfaceTodo( const InterfaceDef& iface )
 {
 	interfaces.push_back(iface);
-	
+
 	if(idl_in_include)
 	{
-		includedNames.push_back(iface->name);
+		includedNames.push_back(iface.name);
 	}
 	else
 	{
-		// TODO: memory management? Will be freed twice now?
 		module.interfaces.push_back(iface);
 	}
 }
@@ -153,30 +150,30 @@ bool isPacketType( string type )
 
 bool isStruct( string type )
 {
-	list<TypeDef *>::iterator i;
+	list<TypeDef>::iterator i;
 
 	for(i=structs.begin();i != structs.end(); i++)
-		if((*i)->name == type) return true;
+		if(i->name == type) return true;
 
 	return false;
 }
 
 bool isEnum( string type )
 {
-	list<EnumDef *>::iterator i;
+	list<EnumDef>::iterator i;
 
 	for(i=enums.begin();i != enums.end(); i++)
-		if((*i)->name == type) return true;
+		if(i->name == type) return true;
 
 	return false;
 }
 
 bool isInterface( string type )
 {
-	list<InterfaceDef *>::iterator i;
+	list<InterfaceDef>::iterator i;
 
 	for(i=interfaces.begin();i != interfaces.end(); i++)
-		if((*i)->name == type) return true;
+		if(i->name == type) return true;
 
 	return (type == "object");
 }
@@ -529,12 +526,12 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_MEMBER)
 			result = type;
 		if(model==MODEL_MEMBER_SEQ)
-			result = "std::vector<"+type+" *>";
+			result = "std::vector<"+type+">";
 
 		if(model==MODEL_ARG)	
 			result = "const "+type+"&";
 		if(model==MODEL_ARG_SEQ)
-			result = "const std::vector<"+type+" *>&";
+			result = "const std::vector<"+type+">&";
 
 		if(model==MODEL_READ)
 			result = name+".readType(stream)";
@@ -555,22 +552,21 @@ string createTypeCode(string type, const string& name, long model,
 			result = "writeTypeSeq(*request,"+name+")";
 
 		if(model==MODEL_INVOKE)
-			result = indent + type + " *_returnCode = "+name+";\n"
-			       + indent + "_returnCode->writeType(*result);\n"
-				   + indent + "delete _returnCode;\n";
+			result = indent + type + " _returnCode = "+name+";\n"
+			       + indent + "_returnCode.writeType(*result);\n";
 
 		// if(model==MODEL_INVOKE_SEQ) TODO
 		if(model==MODEL_RES_READ)
 		{
 			result = indent +
-					"if(!result) return new "+type+"(); // error occured\n";
-			result += indent+ type + " *_returnCode = new "+type+"(*result);\n";
+					"if(!result) return "+type+"(); // error occured\n";
+			result += indent+ type + " _returnCode(*result);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return _returnCode;\n";
 		}
 
-		if(model==MODEL_RESULT)		result = type+"*";
-		if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+" *> *";
+		if(model==MODEL_RESULT)		result = type;
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 	} else if(isEnum(type)) {
 		if(model==MODEL_MEMBER)		result = type;
 		if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
@@ -785,46 +781,46 @@ void doIncludeHeader(FILE *header)
 
 void doEnumHeader(FILE *header)
 {
-	list<EnumDef *>::iterator edi;
-	vector<EnumComponent *>::iterator i;
+	list<EnumDef>::iterator edi;
+	vector<EnumComponent>::iterator i;
 	NamespaceHelper nspace(header);
 
 	for(edi = enums.begin();edi != enums.end(); edi++)
 	{
-		EnumDef *ed = *edi;
+		EnumDef& ed = *edi;
 
-		if(fromInclude(ed->name)) continue; // should come from the include
+		if(fromInclude(ed.name)) continue; // should come from the include
 
-		nspace.setFromSymbol(ed->name);
-		string ename = nspace.printableForm(ed->name);
+		nspace.setFromSymbol(ed.name);
+		string ename = nspace.printableForm(ed.name);
 		if(ename == "_anonymous_") ename = "";	
 
 		fprintf(header,"enum %s {",ename.c_str());
 		int first = 0;
-		for(i=ed->contents.begin();i != ed->contents.end();i++)
+		for(i=ed.contents.begin();i != ed.contents.end();i++)
 		{
 			if(first != 0) fprintf(header,", ");
 			first++;
-			fprintf(header,"%s = %ld",(*i)->name.c_str(),(*i)->value);
-		}
+			fprintf(header,"%s = %ld",i->name.c_str(),i->value);
+		}	
 		fprintf(header,"};\n");
 	}
 }
 
 void doStructHeader(FILE *header)
 {
-	list<TypeDef *>::iterator csi;
-	vector<TypeComponent *>::iterator i;
+	list<TypeDef>::iterator csi;
+	vector<TypeComponent>::iterator i;
 	NamespaceHelper nspace(header);
 
 	for(csi = structs.begin();csi != structs.end(); csi++)
 	{
-		TypeDef *d = *csi;
+		TypeDef& d = *csi;
 
-		if(fromInclude(d->name)) continue; // should come from the include
+		if(fromInclude(d.name)) continue; // should come from the include
 
-		nspace.setFromSymbol(d->name.c_str());
-		string tname = nspace.printableForm(d->name);
+		nspace.setFromSymbol(d.name.c_str());
+		string tname = nspace.printableForm(d.name);
 
 		fprintf(header,"class %s : public Arts::Type {\n",tname.c_str());
 		fprintf(header,"public:\n");
@@ -835,9 +831,9 @@ void doStructHeader(FILE *header)
 		/** constructor with arguments **/
 		fprintf(header,"\t%s(",tname.c_str());
 		int first = 0;
-		for(i=d->contents.begin();i != d->contents.end();i++)
+		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string name = createTypeCode((*i)->type,(*i)->name,MODEL_ARG);
+			string name = createTypeCode(i->type,i->name,MODEL_ARG);
 			if(first != 0) fprintf(header,", ");
 			first++;
 			fprintf(header,"%s",name.c_str());
@@ -855,13 +851,10 @@ void doStructHeader(FILE *header)
 		fprintf(header,"\t%s& operator=(const %s& assignType);\n",
 			tname.c_str(),tname.c_str());
 
-		/** virtual destuctor (removes many annoying compiler warnings) **/
-		fprintf(header,"\tvirtual ~%s();\n\n",tname.c_str());
-
 		/** data members **/
-		for(i=d->contents.begin();i != d->contents.end();i++)
+		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string name = createTypeCode((*i)->type,(*i)->name,MODEL_MEMBER);
+			string name = createTypeCode(i->type,i->name,MODEL_MEMBER);
 			fprintf(header,"\t%s;\n",name.c_str());
 		}
 
@@ -878,43 +871,43 @@ void doStructHeader(FILE *header)
 
 void doStructSource(FILE *source)
 {
-	list<TypeDef *>::iterator csi;
-	vector<TypeComponent *>::iterator i;
+	list<TypeDef>::iterator csi;
+	vector<TypeComponent>::iterator i;
 
 	fprintf(source,"// Implementation\n");
 	for(csi = structs.begin();csi != structs.end(); csi++)
 	{
-		TypeDef *d = *csi;
+		TypeDef& d = *csi;
 
-		if(fromInclude(d->name)) continue; // should come from the include
+		if(fromInclude(d.name)) continue; // should come from the include
 
-		string tname = NamespaceHelper::nameOf(d->name);
+		string tname = NamespaceHelper::nameOf(d.name);
 
-		fprintf(source,"%s::%s()\n{\n}\n\n",d->name.c_str(),tname.c_str());
+		fprintf(source,"%s::%s()\n{\n}\n\n",d.name.c_str(),tname.c_str());
 
-		fprintf(source,"%s::%s(",d->name.c_str(),tname.c_str());
+		fprintf(source,"%s::%s(",d.name.c_str(),tname.c_str());
 		int first = 0;
-		for(i=d->contents.begin();i != d->contents.end();i++)
+		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string name = createTypeCode((*i)->type,(*i)->name,MODEL_ARG);
+			string name = createTypeCode(i->type,i->name,MODEL_ARG);
 			if(first != 0) fprintf(source,", ");
 			first++;
 			fprintf(source,"%s",name.c_str());
 		}
 		fprintf(source,")\n{\n");
-		for(i=d->contents.begin();i != d->contents.end();i++)
-			fprintf(source,"\tthis->%s = %s;\n",(*i)->name.c_str(),(*i)->name.c_str());
+		for(i=d.contents.begin();i != d.contents.end();i++)
+			fprintf(source,"\tthis->%s = %s;\n",i->name.c_str(),i->name.c_str());
 		fprintf(source,"}\n\n");
 
 		/** constructor from stream **/
-		fprintf(source,"%s::%s(Arts::Buffer& stream)\n{\n",d->name.c_str(),tname.c_str());
+		fprintf(source,"%s::%s(Arts::Buffer& stream)\n{\n",d.name.c_str(),tname.c_str());
 		fprintf(source,"\treadType(stream);\n");
 		fprintf(source,"}\n\n");
 
 		/** copy constructor **/
 
 		fprintf(source,"%s::%s(const %s& copyType) : Arts::Type(copyType)\n{\n",
-			d->name.c_str(),tname.c_str(),d->name.c_str());
+			d.name.c_str(),tname.c_str(),d.name.c_str());
 		fprintf(source,"\tArts::Buffer buffer;\n");
 		fprintf(source,"\tcopyType.writeType(buffer);\n");
 		fprintf(source,"\treadType(buffer);\n");
@@ -922,15 +915,16 @@ void doStructSource(FILE *source)
 
 		/** assignment operator **/
 		fprintf(source,"%s& %s::operator=(const %s& assignType)\n{\n",
-			d->name.c_str(),d->name.c_str(),d->name.c_str());
+			d.name.c_str(),d.name.c_str(),d.name.c_str());
 		fprintf(source,"\tArts::Buffer buffer;\n");
 		fprintf(source,"\tassignType.writeType(buffer);\n");
 		fprintf(source,"\treadType(buffer);\n");
 		fprintf(source,"\treturn *this;\n");
 		fprintf(source,"}\n\n");
-	
+
+#if 0 /* not needed if types use vector<Type> instead of vector<Type *> */
 		/** virtual destuctor: free type contents **/
-		fprintf(source,"%s::~%s()\n{\n",d->name.c_str(),tname.c_str());
+		fprintf(source,"%s::~%s()\n{\n",d.name.c_str(),tname.c_str());
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
 			string stype = (*i)->type;
@@ -941,42 +935,42 @@ void doStructSource(FILE *source)
 			}
 		}
 		fprintf(source,"}\n\n");
-	
+#endif	
 		/** marshalling function for reading from stream **/
-		fprintf(source,"void %s::readType(Arts::Buffer& stream)\n{\n",d->name.c_str());
-		for(i=d->contents.begin();i != d->contents.end();i++)
+		fprintf(source,"void %s::readType(Arts::Buffer& stream)\n{\n",d.name.c_str());
+		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string code = createTypeCode((*i)->type,(*i)->name,MODEL_READ);
+			string code = createTypeCode(i->type,i->name,MODEL_READ);
 			fprintf(source,"\t%s;\n",code.c_str());
 		}
 		fprintf(source,"}\n\n");
 
 		/** marshalling function for writing to stream **/
-		fprintf(source,"void %s::writeType(Arts::Buffer& stream) const\n{\n",d->name.c_str());
-		for(i=d->contents.begin();i != d->contents.end();i++)
+		fprintf(source,"void %s::writeType(Arts::Buffer& stream) const\n{\n",d.name.c_str());
+		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string code = createTypeCode((*i)->type,(*i)->name,MODEL_WRITE);
+			string code = createTypeCode(i->type,i->name,MODEL_WRITE);
 			fprintf(source,"\t%s;\n",code.c_str());
 		}
 		fprintf(source,"}\n\n");
 	}
 }
 
-string createReturnCode(MethodDef *md)
+string createReturnCode(const MethodDef& md)
 {
-	return createTypeCode(md->type,"",MODEL_RESULT,"");
+	return createTypeCode(md.type,"",MODEL_RESULT,"");
 }
 
-string createParamList(MethodDef *md)
+string createParamList(const MethodDef& md)
 {
 	string result;
 	int first = 0;
-	vector<ParamDef *>::iterator pi;
+	vector<ParamDef>::const_iterator pi;
 
-	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	for(pi = md.signature.begin(); pi != md.signature.end(); pi++)
 	{
-		ParamDef *pd = *pi;
-		string p = createTypeCode(pd->type,pd->name,MODEL_ARG,"");
+		const ParamDef& pd = *pi;
+		string p = createTypeCode(pd.type,pd.name,MODEL_ARG,"");
 
 		if(first != 0) result += ", ";
 		first++;
@@ -985,36 +979,37 @@ string createParamList(MethodDef *md)
 	return result;
 }
 
-string createCallParamList(MethodDef *md)
+string createCallParamList(const MethodDef& md)
 {
 	string result;
 	bool first = true;
-	vector<ParamDef *>::iterator pi;
+	vector<ParamDef>::const_iterator pi;
 
-	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	for(pi = md.signature.begin(); pi != md.signature.end(); pi++)
 	{
 		if (!first) result += ", ";
 		first = false;
-		result += (*pi)->name;
+		result += pi->name;
 	}
 	return result;
 }
 
-void createStubCode(FILE *source, string iface, string method, MethodDef *md)
+void createStubCode(FILE *source, string iface, string method,
+					const MethodDef& md)
 {
 	string rc = createReturnCode(md);
 	string params = createParamList(md);
-	vector<ParamDef *>::iterator pi;
+	vector<ParamDef>::const_iterator pi;
 
 	Buffer b;
-	md->writeType(b);
+	md.writeType(b);
 
 	fprintf(source,"%s %s_stub::%s(%s)\n",rc.c_str(),iface.c_str(),
 				method.c_str(), params.c_str());
 	fprintf(source,"{\n");
 	fprintf(source,"\tlong methodID = _lookupMethodFast(\"%s\");\n",
 											b.toString("method").c_str());
-	if(md->flags & methodTwoway)
+	if(md.flags & methodTwoway)
 	{
 		fprintf(source,"\tlong requestID;\n");
 		fprintf(source,"\tArts::Buffer *request, *result;\n");
@@ -1027,43 +1022,43 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md)
 				"createOnewayRequest(_objectID,methodID);\n");
 	}
 
-	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	for(pi = md.signature.begin(); pi != md.signature.end(); pi++)
 	{
-		ParamDef *pd = *pi;
+		const ParamDef& pd = *pi;
 		string p;
-		p = createTypeCode(pd->type,pd->name,MODEL_REQ_WRITE);
+		p = createTypeCode(pd.type,pd.name,MODEL_REQ_WRITE);
 		fprintf(source,"\t%s;\n",p.c_str());
 	}
 	fprintf(source,"\trequest->patchLength();\n");
 	fprintf(source,"\t_connection->qSendBuffer(request);\n\n");
 
-	if(md->flags & methodTwoway)
+	if(md.flags & methodTwoway)
 	{
 		fprintf(source,"\tresult = "
 			"Arts::Dispatcher::the()->waitForResult(requestID,_connection);\n");
 
 		fprintf(source,"%s",
-			createTypeCode(md->type,"",MODEL_RES_READ,"\t").c_str());
+			createTypeCode(md.type,"",MODEL_RES_READ,"\t").c_str());
 	}
 	fprintf(source,"}\n\n");
 }
 
-bool haveStreams(InterfaceDef *d)
+bool haveStreams(const InterfaceDef& d)
 {
-	vector<AttributeDef *>::iterator ai;
+	vector<AttributeDef>::const_iterator ai;
 
-	for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
-		if((*ai)->flags & attributeStream) return true;
+	for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
+		if(ai->flags & attributeStream) return true;
 
 	return false;
 }
 
-bool haveAsyncStreams(InterfaceDef *d)
+bool haveAsyncStreams(const InterfaceDef& d)
 {
-	vector<AttributeDef *>::iterator ai;
+	vector<AttributeDef>::const_iterator ai;
 
-	for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
-		if(((*ai)->flags & attributeStream) && ((*ai)->flags & streamAsync))
+	for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
+		if((ai->flags & attributeStream) && (ai->flags & streamAsync))
 			return true;
 
 	return false;
@@ -1084,74 +1079,74 @@ string dispatchFunctionName(string interface, long mcount)
 }
 
 void createDispatchFunction(FILE *source, long mcount,
-								InterfaceDef *d, MethodDef *md,string name)
+					const InterfaceDef& d, const MethodDef& md,string name)
 {
 	/** calculate signature (prevents unused argument warnings) **/
 	string signature = "void *object, ";
 
-	if(md->signature.size() == 0)
+	if(md.signature.size() == 0)
 		signature += "Arts::Buffer *";
 	else
 		signature += "Arts::Buffer *request";
 
-	if(md->flags & methodTwoway)
+	if(md.flags & methodTwoway)
 	{
-		if(md->type == "void")
+		if(md.type == "void")
 			signature += ", Arts::Buffer *";
 		else
 			signature += ", Arts::Buffer *result";
 	}
 	else
 	{
-		if(md->type != "void")
+		if(md.type != "void")
 		{
-			cerr << "method " << md->name << " in interface " << d->name <<
+			cerr << "method " << md.name << " in interface " << d.name <<
 			   " is declared oneway, but not void" << endl;
 			exit(1);
 		}
 	}
 
-	fprintf(source,"// %s\n",md->name.c_str());
+	fprintf(source,"// %s\n",md.name.c_str());
 	fprintf(source,"static void %s(%s)\n",
-			dispatchFunctionName(d->name,mcount).c_str(), signature.c_str());
+			dispatchFunctionName(d.name,mcount).c_str(), signature.c_str());
 	fprintf(source,"{\n");
 
-	string call = "(("+d->name+"_skel *)object)->"+name + "(";
+	string call = "(("+d.name+"_skel *)object)->"+name + "(";
 	int first = 1;
-	vector<ParamDef *>::iterator pi;
-	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	vector<ParamDef>::const_iterator pi;
+	for(pi = md.signature.begin(); pi != md.signature.end(); pi++)
 	{
-		ParamDef *pd = *pi;
+		const ParamDef& pd = *pi;
 		string p;
 
 		if(!first) call += ",";
 		first = 0;
-		call += pd->name;
-		p = createTypeCode(pd->type,pd->name,MODEL_REQ_READ, "\t");
+		call += pd.name;
+		p = createTypeCode(pd.type,pd.name,MODEL_REQ_READ, "\t");
 		fprintf(source,"%s",p.c_str());
 	}
 	call += ")";
-	string invoke = createTypeCode(md->type,call,MODEL_INVOKE,"\t");
+	string invoke = createTypeCode(md.type,call,MODEL_INVOKE,"\t");
 	fprintf(source,"%s",invoke.c_str());
 	fprintf(source,"}\n\n");
 }
 
 // generate a list of all parents. There can be repetitions
-vector<std::string> allParents(InterfaceDef& iface)
+vector<std::string> allParents(const InterfaceDef& iface)
 {
 	vector<std::string> ret;
-	list<InterfaceDef *>::iterator interIt;
-	vector<std::string>::iterator si;
+	list<InterfaceDef>::iterator interIt;
+	vector<std::string>::const_iterator si;
 	// For all inherited interfaces
 	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
 	{
 		ret.push_back(*si);
 		// Find the corresponding interface definition
 		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
-			InterfaceDef *parent = *interIt;
-			if (parent->name == (*si)) {
+			InterfaceDef& parent = *interIt;
+			if (parent.name == (*si)) {
 				// Now add this parent's parents
-				vector<std::string> ppar = allParents(*parent);
+				vector<std::string> ppar = allParents(parent);
 				ret.insert(ret.end(), ppar.begin(), ppar.end());
 				break;
 			}
@@ -1161,7 +1156,7 @@ vector<std::string> allParents(InterfaceDef& iface)
 }
 
 // generate a list of all parents - without repetitions
-vector<string> allParentsUnique(InterfaceDef& iface)
+vector<string> allParentsUnique(const InterfaceDef& iface)
 {
 	map<string,bool> done;
 	vector<string> parents = allParents(iface),result;
@@ -1180,7 +1175,7 @@ vector<string> allParentsUnique(InterfaceDef& iface)
 	return result;
 }
 
-InterfaceDef mergeAllParents(InterfaceDef& iface)
+InterfaceDef mergeAllParents(const InterfaceDef& iface)
 {
 	InterfaceDef result = iface;
 
@@ -1191,23 +1186,25 @@ InterfaceDef mergeAllParents(InterfaceDef& iface)
 	{
 		string parent = *pi;
 
-		list<InterfaceDef *>::iterator i;
+		list<InterfaceDef>::iterator i;
 		for(i=interfaces.begin();i != interfaces.end(); i++)
 		{
-			InterfaceDef *d = *i;
-			if(d->name == parent)
+			const InterfaceDef& d = *i;
+			if(d.name == parent)
 			{
 				/* merge attributes */
-				vector<AttributeDef *>::iterator ai;
+				vector<AttributeDef>::const_iterator ai;
 
-				for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
-					result.attributes.push_back(new AttributeDef(**ai));
+				for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
+					result.attributes.push_back(*ai);
 
 				/* merge methods */
-				vector<MethodDef *>::iterator mi;
+				vector<MethodDef>::const_iterator mi;
 
-				for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
-					result.methods.push_back(new MethodDef(**mi));
+				for(mi = d.methods.begin(); mi != d.methods.end(); mi++)
+				{
+					result.methods.push_back(*mi);
+				}
 			}
 		}
 	}
@@ -1221,9 +1218,9 @@ struct ForwardCode {
 
 void doInterfacesHeader(FILE *header)
 {
-	list<InterfaceDef *>::iterator ii;
-	vector<MethodDef *>::iterator mi;
-	vector<AttributeDef *>::iterator ai;
+	list<InterfaceDef>::iterator ii;
+	vector<MethodDef>::iterator mi;
+	vector<AttributeDef>::iterator ai;
 	string inherits;
 	NamespaceHelper nspace(header);
 	list<ForwardCode> forwardCode;
@@ -1234,35 +1231,35 @@ void doInterfacesHeader(FILE *header)
 	 */
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
-		InterfaceDef *d = *ii;
-		if(!fromInclude(d->name))
+		InterfaceDef& d = *ii;
+		if(!fromInclude(d.name))
 		{
-			nspace.setFromSymbol(d->name);
-			fprintf(header,"class %s;\n",nspace.printableForm(d->name).c_str());
+			nspace.setFromSymbol(d.name);
+			fprintf(header,"class %s;\n",nspace.printableForm(d.name).c_str());
 		}
 	}
 	fprintf(header,"\n");
 
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
-		InterfaceDef *d = *ii;
+		InterfaceDef& d = *ii;
 		string iname;
-		string fullifacename = d->name;
+		string fullifacename = d.name;
 
-		if(fromInclude(d->name)) continue; // should come from the include
+		if(fromInclude(d.name)) continue; // should come from the include
 
 		// create abstract interface
-		inherits = buildInheritanceList(*d,"_base");
+		inherits = buildInheritanceList(d,"_base");
 		if(inherits == "") inherits = "virtual public Arts::Object_base";
 
-		nspace.setFromSymbol(d->name);
-		iname = nspace.printableForm(d->name);
+		nspace.setFromSymbol(d.name);
+		iname = nspace.printableForm(d.name);
 
 		fprintf(header,"class %s_base : %s {\n",iname.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
 		fprintf(header,"\tstatic unsigned long _IID; // interface ID\n\n");
 		fprintf(header,"\tstatic %s_base *_create(const std::string& subClass"
-						" = \"%s\");\n", iname.c_str(),d->name.c_str());
+						" = \"%s\");\n", iname.c_str(),d.name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
 														iname.c_str());
 		fprintf(header,"\tstatic %s_base *_fromReference(Arts::ObjectReference ref,"
@@ -1284,42 +1281,42 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tvoid *_cast(unsigned long iid);\n\n");
 
 		/* attributes (not for streams) */
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
-			string rc = createTypeCode(ad->type,"",MODEL_RESULT);
-			string pc = createTypeCode(ad->type,"newValue",MODEL_ARG);
+			AttributeDef& ad = *ai;
+			string rc = createTypeCode(ad.type,"",MODEL_RESULT);
+			string pc = createTypeCode(ad.type,"newValue",MODEL_ARG);
 
-			if(ad->flags & attributeAttribute)
+			if(ad.flags & attributeAttribute)
 			{
-				if(ad->flags & streamOut)  /* readable from outside */
+				if(ad.flags & streamOut)  /* readable from outside */
 				{
 					fprintf(header,"\tvirtual %s %s() = 0;\n",rc.c_str(),
-						ad->name.c_str());
+						ad.name.c_str());
 				}
-				if(ad->flags & streamIn)  /* writeable from outside */
+				if(ad.flags & streamIn)  /* writeable from outside */
 				{
 					fprintf(header,"\tvirtual void %s(%s) = 0;\n",
-						ad->name.c_str(), pc.c_str());
+						ad.name.c_str(), pc.c_str());
 				}
 			}
 		}
 		
 		/* methods */
-		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+		for(mi = d.methods.begin(); mi != d.methods.end(); mi++)
 		{
-			MethodDef *md = *mi;
+			MethodDef& md = *mi;
 			string rc = createReturnCode(md);
 			string params = createParamList(md);
 
 			fprintf(header,"\tvirtual %s %s(%s) = 0;\n",rc.c_str(),
-				md->name.c_str(), params.c_str());
+				md.name.c_str(), params.c_str());
 		}		
 		fprintf(header,"};\n\n");
 
 		// create stub
 
-		inherits = buildInheritanceList(*d,"_stub");
+		inherits = buildInheritanceList(d,"_stub");
 		if(inherits == "") inherits = "virtual public Arts::Object_stub";
 
 		fprintf(header,"class %s_stub : virtual public %s_base, %s {\n",
@@ -1331,52 +1328,52 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t%s_stub(Arts::Connection *connection, long objectID);\n\n",
 			iname.c_str());
 			/* attributes (not for streams) */
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
-			string rc = createTypeCode(ad->type,"",MODEL_RESULT);
-			string pc = createTypeCode(ad->type,"newValue",MODEL_ARG);
+			AttributeDef& ad = *ai;
+			string rc = createTypeCode(ad.type,"",MODEL_RESULT);
+			string pc = createTypeCode(ad.type,"newValue",MODEL_ARG);
 
-			if(ad->flags & attributeAttribute)
+			if(ad.flags & attributeAttribute)
 			{
-				if(ad->flags & streamOut)  /* readable from outside */
+				if(ad.flags & streamOut)  /* readable from outside */
 				{
 					fprintf(header,"\t%s %s();\n",rc.c_str(),
-						ad->name.c_str());
+						ad.name.c_str());
 				}
-				if(ad->flags & streamIn)  /* writeable from outside */
+				if(ad.flags & streamIn)  /* writeable from outside */
 				{
 					fprintf(header,"\tvoid %s(%s);\n",
-						ad->name.c_str(), pc.c_str());
+						ad.name.c_str(), pc.c_str());
 				}
 			}
 		}
 			/* methods */
-		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+		for(mi = d.methods.begin(); mi != d.methods.end(); mi++)
 		{
-			MethodDef *md = *mi;
+			MethodDef& md = *mi;
 			string rc = createReturnCode(md);
 			string params = createParamList(md);
 
 			fprintf(header,"\t%s %s(%s);\n",rc.c_str(),
-				md->name.c_str(), params.c_str());
+				md.name.c_str(), params.c_str());
 		}
 		fprintf(header,"};\n\n");
 
 		// create skeleton
 
-		inherits = buildInheritanceList(*d,"_skel");
+		inherits = buildInheritanceList(d,"_skel");
 		if(inherits == "") inherits = "virtual public Arts::Object_skel";
 
 		fprintf(header,"class %s_skel : virtual public %s_base,"
 			" %s {\n",iname.c_str(),iname.c_str(),inherits.c_str());
 
 		bool firstStream = true;
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
+			AttributeDef& ad = *ai;
 
-			if(ad->flags & attributeStream)
+			if(ad.flags & attributeStream)
 			{
 				if(firstStream)
 				{
@@ -1388,19 +1385,19 @@ void doInterfacesHeader(FILE *header)
 				/** generate declaration of the variable: multi stream? **/
 				string decl;
 
-				if(ad->flags & streamMulti)
+				if(ad.flags & streamMulti)
 				{
-					if(ad->flags & streamAsync)
-						decl = createTypeCode(ad->type,ad->name,MODEL_AMSTREAM);
+					if(ad.flags & streamAsync)
+						decl = createTypeCode(ad.type,ad.name,MODEL_AMSTREAM);
 					else
-						decl = createTypeCode(ad->type,ad->name,MODEL_MSTREAM);
+						decl = createTypeCode(ad.type,ad.name,MODEL_MSTREAM);
 				}
 				else
 				{
-					if(ad->flags & streamAsync)
-						decl = createTypeCode(ad->type,ad->name,MODEL_ASTREAM);
+					if(ad.flags & streamAsync)
+						decl = createTypeCode(ad.type,ad.name,MODEL_ASTREAM);
 					else
-						decl = createTypeCode(ad->type,ad->name,MODEL_STREAM);
+						decl = createTypeCode(ad.type,ad.name,MODEL_STREAM);
 				}
 
 				decl += ";";
@@ -1408,8 +1405,8 @@ void doInterfacesHeader(FILE *header)
 				/** write to source **/
 				string comment;
 
-				if(ad->flags & streamIn) comment = "incoming stream";
-				if(ad->flags & streamOut) comment = "outgoing stream";
+				if(ad.flags & streamIn) comment = "incoming stream";
+				if(ad.flags & streamOut) comment = "outgoing stream";
 
 				fprintf(header,"\t%-40s  // %s\n",decl.c_str(),comment.c_str());
 			}
@@ -1418,11 +1415,11 @@ void doInterfacesHeader(FILE *header)
 
 		bool haveAsyncStreams = false;
 
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
+			AttributeDef& ad = *ai;
 
-			if((ad->flags & attributeStream) && (ad->flags & streamAsync))
+			if((ad.flags & attributeStream) && (ad.flags & streamAsync))
 			{
 				if(!haveAsyncStreams)
 				{
@@ -1431,17 +1428,17 @@ void doInterfacesHeader(FILE *header)
 				}
 
 				string ptype =
-					createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+					createTypeCode(ad.type,"",MODEL_ASTREAM_PACKETPTR);
 
-				if(ad->flags & streamIn)
+				if(ad.flags & streamIn)
 				{
 					fprintf(header,"\tvirtual void process_%s(%s) = 0;\n",
-										ad->name.c_str(),ptype.c_str());
+										ad.name.c_str(),ptype.c_str());
 				}
 				else
 				{
 					fprintf(header,"\tvirtual void request_%s(%s);\n",
-										ad->name.c_str(),ptype.c_str());
+										ad.name.c_str(),ptype.c_str());
 				}
 			}
 		}
@@ -1474,7 +1471,7 @@ void doInterfacesHeader(FILE *header)
 		}
 		fprintf(header,"\n");
 */
-		nspace.setFromSymbol(d->name);
+		nspace.setFromSymbol(d.name);
 
 		inherits = ": public Arts::Object";
 
@@ -1552,7 +1549,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t}\n");
 
 		// casts to parent interfaces
-		vector<string> parents = allParentsUnique(*d);
+		vector<string> parents = allParentsUnique(d);
 		for (vector<std::string>::iterator si = parents.begin();
 												si != parents.end(); si++)
 		{
@@ -1565,36 +1562,35 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",iname.c_str());
 		fprintf(header,"\n");
 
-		InterfaceDef allMerged = mergeAllParents(*d);
-		d = &allMerged;
+		InterfaceDef allMerged = mergeAllParents(d);
 
 		/* attributes */
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = allMerged.attributes.begin();ai != allMerged.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
+			AttributeDef& ad = *ai;
 			ForwardCode fc;
 			fc.fullifacename = fullifacename;
 			fc.constructor = false;
-			fc.mname = ad->name;
+			fc.mname = ad.name;
 
-			if(ad->flags & attributeAttribute)
+			if(ad.flags & attributeAttribute)
 			{
-				if(ad->flags & streamOut)  /* readable from outside */
+				if(ad.flags & streamOut)  /* readable from outside */
 				{
 					fc.params = "";
 					fc.callparams = "";
-					fc.result = createTypeCode(ad->type,"",MODEL_RESULT);
+					fc.result = createTypeCode(ad.type,"",MODEL_RESULT);
 					fprintf(header,"\tinline %s %s();\n",
 						fc.result.c_str(), fc.mname.c_str());
 					forwardCode.push_back(fc);
 					/*
 					fprintf(header,"\tinline %s %s() {return _cache?_cache->%s():_method_call()->%s();}\n",
-						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
+						rc.c_str(), ad.name.c_str(), ad.name.c_str(), ad.name.c_str());
 					*/
 				}
-				if(ad->flags & streamIn)  /* writeable from outside */
+				if(ad.flags & streamIn)  /* writeable from outside */
 				{
-					fc.params = createTypeCode(ad->type,"_newValue",MODEL_ARG);
+					fc.params = createTypeCode(ad.type,"_newValue",MODEL_ARG);
 					fc.callparams = "_newValue";
 					fc.result="void";
 					fprintf(header,"\tinline void %s(%s);\n",
@@ -1602,32 +1598,32 @@ void doInterfacesHeader(FILE *header)
 					forwardCode.push_back(fc);
 					/*
 					fprintf(header,"\tinline void %s(%s) {_cache?_cache->%s(newValue):_method_call()->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), ad->name.c_str(), ad->name.c_str());
+						ad.name.c_str(), pc.c_str(), ad.name.c_str(), ad.name.c_str());
 					*/
 				}
 			}
 		}
 
 		/* methods */
-		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+		for(mi = allMerged.methods.begin(); mi != allMerged.methods.end(); mi++)
 		{
-			MethodDef *md = *mi;
+			MethodDef& md = *mi;
 			ForwardCode fc;
 			fc.fullifacename = fullifacename;
 			fc.result = createReturnCode(md);
 			fc.params = createParamList(md);
 			fc.callparams = createCallParamList(md);
-			fc.constructor = (md->name == "constructor");
+			fc.constructor = (md.name == "constructor");
 
 			// map constructor methods to the real things
-			if (md->name == "constructor") {
+			if (md.name == "constructor") {
 				fc.mname = iname;
 				fprintf(header,"\tinline %s(%s);\n",
 											iname.c_str(),fc.params.c_str());
 			} else {
-				fc.mname = md->name;
+				fc.mname = md.name;
 				fprintf(header,"\tinline %s %s(%s);\n",fc.result.c_str(),
-											md->name.c_str(),fc.params.c_str());
+											md.name.c_str(),fc.params.c_str());
 			}
 
 			forwardCode.push_back(fc);
@@ -1680,22 +1676,25 @@ bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& por
 
 bool addDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirection dir)
 {
-	vector<AttributeDef *>::iterator ai;
+	vector<AttributeDef>::iterator ai;
 	vector<std::string>::iterator di;
 	bool hasDefault = false;
 	// Go through the default ports of this interface
 	for (di = iface.defaultPorts.begin(); di != iface.defaultPorts.end(); di++) {
 		bool foundIn = false, foundOut = false;
 		// Find the corresponding attribute definition
-		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++) {
-			if (((*ai)->flags & attributeStream) && ((*di)==(*ai)->name)) {
+		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++)
+		{
+			AttributeDef& ad = *ai;
+
+			if ((ad.flags & attributeStream) && ((*di)==ad.name)) {
 				// Add this port to the list
-				if ((*ai)->flags & streamIn) {
+				if (ad.flags & streamIn) {
 					foundIn=true;
 					if (dir==defaultIn) ports.push_back(*di);
 				}
 				// Add this port to the list
-				if ((*ai)->flags & streamOut) {
+				if (ad.flags & streamOut) {
 					foundOut=true;
 					if (dir==defaultOut) ports.push_back(*di);
 				}
@@ -1716,19 +1715,21 @@ bool addDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirecti
 	// Still have no default?
 	// If we have only one stream in a given direction, make it default.
 	if (!hasDefault) {
-		vector<AttributeDef *>::iterator foundPos;
+		vector<AttributeDef>::iterator foundPos;
 		int found = 0;
-		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++) {
-			if ((*ai)->flags & attributeStream) {
-				if (((*ai)->flags & streamIn) && (dir == defaultIn)) {
+		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++)
+		{
+			AttributeDef& ad = *ai;
+			if (ad.flags & attributeStream) {
+				if ((ad.flags & streamIn) && (dir == defaultIn)) {
 					found++; foundPos=ai;
 				}
-				if (((*ai)->flags & streamOut) && (dir == defaultOut)) {
+				if ((ad.flags & streamOut) && (dir == defaultOut)) {
 					found++; foundPos=ai;
 				}
 			}
 		}
-		if (found == 1) {hasDefault=true; ports.push_back((*foundPos)->name);}
+		if (found == 1) {hasDefault=true; ports.push_back(foundPos->name);}
 	}
 	return hasDefault;
 }
@@ -1736,7 +1737,7 @@ bool addDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirecti
 
 bool addParentDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirection dir)
 {
-	list<InterfaceDef *>::iterator interIt;
+	list<InterfaceDef>::iterator interIt;
 	vector<std::string>::iterator si;
 	bool hasDefault = false;
 	// For all inherited interfaces
@@ -1744,10 +1745,10 @@ bool addParentDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultD
 	{
 		// Find the corresponding interface definition
 		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
-			InterfaceDef *parent = *interIt;
-			if (parent->name == (*si)) {
+			InterfaceDef& parent = *interIt;
+			if (parent.name == (*si)) {
 				// Now add the default ports of this parent
-				bool b = addDefaults(*parent, ports, dir);
+				bool b = addDefaults(parent, ports, dir);
 				if (b) hasDefault = true;
 				break;
 			}
@@ -1758,30 +1759,30 @@ bool addParentDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultD
 
 bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& ports, DefaultDirection dir)
 {
-	list<InterfaceDef *>::iterator interIt;
-	vector<AttributeDef *>::iterator ai;
+	list<InterfaceDef>::iterator interIt;
+	vector<AttributeDef>::iterator ai;
 	vector<std::string>::iterator si;
 	// For all inherited interfaces
 	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
 	{
 		// Find the corresponding interface definition
 		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
-			InterfaceDef *parent = *interIt;
-			if (parent->name == (*si)) {
+			InterfaceDef& parent = *interIt;
+			if (parent.name == (*si)) {
 				// Now look at the ports of this parent
-				vector<AttributeDef *>::iterator foundPos;
+				vector<AttributeDef>::iterator foundPos;
 				bool found = false;
-				for (ai = parent->attributes.begin(); ai != parent->attributes.end(); ai++) {
-					if (((*ai)->flags & attributeStream) && ((*ai)->name==port)){
-						if ((((*ai)->flags & streamIn) && (dir == defaultIn))
-						|| (((*ai)->flags & streamOut) && (dir == defaultOut))) {
+				for (ai = parent.attributes.begin(); ai != parent.attributes.end(); ai++) {
+					if ((ai->flags & attributeStream) && (ai->name==port)){
+						if (((ai->flags & streamIn) && (dir == defaultIn))
+						|| ((ai->flags & streamOut) && (dir == defaultOut))) {
 							found = true; foundPos=ai; break;
 						}
 					}
 				}
 				if (found) {ports.push_back(port); return true;}
 				// Not found, look recursively at the parent ancestors
-				bool b = lookupParentPort(*parent, port, ports, dir);
+				bool b = lookupParentPort(parent, port, ports, dir);
 				if (b) return true; // done
 				break;
 			}
@@ -1792,53 +1793,53 @@ bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& por
 
 void doInterfacesSource(FILE *source)
 {
-	list<InterfaceDef *>::iterator ii;
-	vector<MethodDef *>::iterator mi;
-	vector<AttributeDef *>::iterator ai;
+	list<InterfaceDef>::iterator ii;
+	vector<MethodDef>::iterator mi;
+	vector<AttributeDef>::iterator ai;
 
 	long mcount;
 
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
-		InterfaceDef *d = *ii;
+		InterfaceDef& d = *ii;
 
-		if(fromInclude(d->name)) continue; // should come from the include
+		if(fromInclude(d.name)) continue; // should come from the include
 
-		string iname = NamespaceHelper::nameOf(d->name);
+		string iname = NamespaceHelper::nameOf(d.name);
 
 		// create static functions
 
 		fprintf(source,"%s_base *%s_base::_create(const std::string& subClass)\n",
-											d->name.c_str(),d->name.c_str());
+											d.name.c_str(),d.name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tArts::Object_skel *skel = "
 							"Arts::ObjectManager::the()->create(subClass);\n");
 		fprintf(source,"\tassert(skel);\n");
 		fprintf(source,"\t%s_base *castedObject = "
 							"(%s_base *)skel->_cast(%s_base::_IID);\n",
-							d->name.c_str(),d->name.c_str(),d->name.c_str());
+							d.name.c_str(),d.name.c_str(),d.name.c_str());
 		fprintf(source,"\tassert(castedObject);\n");
 		fprintf(source,"\treturn castedObject;\n");
 		fprintf(source,"}\n\n");
 
 	
 		fprintf(source,"%s_base *%s_base::_fromString(std::string objectref)\n",
-											d->name.c_str(),d->name.c_str());
+											d.name.c_str(),d.name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tArts::ObjectReference r;\n\n");
 		fprintf(source,"\tif(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))\n");
 		fprintf(source,"\t\treturn %s_base::_fromReference(r,true);\n",
-															d->name.c_str());
+															d.name.c_str());
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"%s_base *%s_base::_fromReference(Arts::ObjectReference r,"
-		               " bool needcopy)\n",d->name.c_str(),d->name.c_str());
+		               " bool needcopy)\n",d.name.c_str(),d.name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\t%s_base *result;\n",d->name.c_str());
+		fprintf(source,"\t%s_base *result;\n",d.name.c_str());
 		fprintf(source,
 		"\tresult = (%s_base *)Arts::Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
-										d->name.c_str(),d->name.c_str());
+										d.name.c_str(),d.name.c_str());
 		fprintf(source,"\tif(!result)\n");
 		fprintf(source,"\t{\n");
 		fprintf(source,"\t\tArts::Connection *conn = "
@@ -1846,14 +1847,13 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t\tif(conn)\n");
 		fprintf(source,"\t\t{\n");
 		fprintf(source,"\t\t\tresult = new %s_stub(conn,r.objectID);\n",
-										d->name.c_str());
+										d.name.c_str());
 		// Type checking
 		fprintf(source,"\t\t\tif (!result->_isCompatibleWith(\"%s\")) {\n",
-			d->name.c_str());
+			d.name.c_str());
 		fprintf(source,"\t\t\tresult->_release();\n");
 		fprintf(source,"\t\t\treturn 0;\n");
 		fprintf(source,"\t\t\t}\n");
-		
 		fprintf(source,"\t\t\tif(needcopy) result->_copyRemote();\n");
 		fprintf(source,"\t\t\tresult->_useRemote();\n");
 		fprintf(source,"\t\t}\n");
@@ -1865,11 +1865,11 @@ void doInterfacesSource(FILE *source)
 		// Default I/O info
 		vector<std::string> portsIn, portsOut;
 		vector<std::string>::iterator si, di;
-		addDefaults(*d, portsIn, defaultIn);
-		addDefaults(*d, portsOut, defaultOut);
+		addDefaults(d, portsIn, defaultIn);
+		addDefaults(d, portsOut, defaultOut);
 		
 		vector<std::string> done; // don't repeat values
-		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsIn() const {\n",d->name.c_str());
+		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsIn() const {\n",d.name.c_str());
 		fprintf(source,"\tstd::vector<std::string> ret;\n");
 		// Loop through all the values
 		for (si = portsIn.begin(); si != portsIn.end(); si++)
@@ -1885,7 +1885,7 @@ void doInterfacesSource(FILE *source)
 		}
 		fprintf(source,"\treturn ret;\n}\n");
 		done.clear();
-		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsOut() const {\n",d->name.c_str());
+		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsOut() const {\n",d.name.c_str());
 		fprintf(source,"\tstd::vector<std::string> ret;\n");
 		// Loop through all the values
 		for (si = portsOut.begin(); si != portsOut.end(); si++)
@@ -1902,13 +1902,13 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\treturn ret;\n}\n\n");
 
 		/** _cast operation **/
-		vector<std::string> parentCast = allParentsUnique(*d);
+		vector<std::string> parentCast = allParentsUnique(d);
 
 		fprintf(source,"void *%s_base::_cast(unsigned long iid)\n",
-			d->name.c_str());
+			d.name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tif(iid == %s_base::_IID) return (%s_base *)this;\n",
-			d->name.c_str(),d->name.c_str());
+			d.name.c_str(),d.name.c_str());
 
 		vector<std::string>::iterator pci;
 		for(pci = parentCast.begin(); pci != parentCast.end();pci++)
@@ -1924,14 +1924,14 @@ void doInterfacesSource(FILE *source)
 		// create stub
 
 		/** constructors **/
-		fprintf(source,"%s_stub::%s_stub()\n" ,d->name.c_str(),iname.c_str());
+		fprintf(source,"%s_stub::%s_stub()\n" ,d.name.c_str(),iname.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor for subclasses"
 										" (don't use directly)\n");
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"%s_stub::%s_stub(Arts::Connection *connection, "
-						"long objectID)\n",d->name.c_str(),iname.c_str());
+						"long objectID)\n",d.name.c_str(),iname.c_str());
 		fprintf(source,"	: Object_stub(connection, objectID)\n");
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor to create a stub for an object\n");
@@ -1940,37 +1940,37 @@ void doInterfacesSource(FILE *source)
 		/** stub operations **/
 
 			/** stub operations for object methods **/
-		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+		for(mi = d.methods.begin(); mi != d.methods.end(); mi++)
 		{
-			MethodDef *md = *mi;
-			createStubCode(source,d->name.c_str(),md->name.c_str(),md);
+			MethodDef& md = *mi;
+			createStubCode(source,d.name.c_str(),md.name.c_str(),md);
 		}
 
 			/** stub operations for attributes **/
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
+			AttributeDef& ad = *ai;
 
-			if(ad->flags & attributeAttribute)
+			if(ad.flags & attributeAttribute)
 			{
 				MethodDef md;
-				if(ad->flags & streamOut)  /* readable from outside */
+				if(ad.flags & streamOut)  /* readable from outside */
 				{
-					md.name = "_get_"+ad->name;
-					md.type = ad->type;
+					md.name = "_get_"+ad.name;
+					md.type = ad.type;
 					md.flags = methodTwoway;
 					/* no parameters (don't set md.signature) */
 
-					createStubCode(source,d->name.c_str(),ad->name.c_str(),&md);
+					createStubCode(source,d.name.c_str(),ad.name.c_str(),md);
 				}
-				if(ad->flags & streamIn)  /* writeable from outside */
+				if(ad.flags & streamIn)  /* writeable from outside */
 				{
-					md.name = "_set_"+ad->name;
+					md.name = "_set_"+ad.name;
 					md.type = "void";
 					md.flags = methodTwoway;
-					md.signature.push_back(new ParamDef(ad->type,"newValue"));
+					md.signature.push_back(ParamDef(ad.type,"newValue"));
 
-					createStubCode(source,d->name.c_str(),ad->name.c_str(),&md);
+					createStubCode(source,d.name.c_str(),ad.name.c_str(),md);
 				}
 			}
 		}
@@ -1979,17 +1979,17 @@ void doInterfacesSource(FILE *source)
 
 		/** _interfaceName **/
 		fprintf(source,"std::string %s_skel::_interfaceName()\n",	
-													d->name.c_str());
+													d.name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s\";\n",d.name.c_str());
 		fprintf(source,"}\n\n");
 
 		// Run-time type compatibility check
 		fprintf(source,"bool %s_skel::_isCompatibleWith(const std::string& interfacename)\n",
-			d->name.c_str());
+			d.name.c_str());
 		fprintf(source,"{\n");
 		// Interface is compatible with itself!
-		fprintf(source,"\tif (interfacename == \"%s\") return true;\n",d->name.c_str());
+		fprintf(source,"\tif (interfacename == \"%s\") return true;\n",d.name.c_str());
 		// It also provides the parent interfaces
 		for(pci = parentCast.begin(); pci != parentCast.end();pci++)
 		{
@@ -2001,9 +2001,9 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"}\n\n");
 		
 		fprintf(source,"std::string %s_skel::_interfaceNameSkel()\n",	
-													d->name.c_str());
+													d.name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s\";\n",d.name.c_str());
 		fprintf(source,"}\n\n");
 
 		/** dispatch operations **/
@@ -2011,42 +2011,42 @@ void doInterfacesSource(FILE *source)
 
 			/** dispatch operations for object methods **/
 		mcount = 0;
-		for(mi = d->methods.begin(); mi != d->methods.end(); mi++, mcount++)
+		for(mi = d.methods.begin(); mi != d.methods.end(); mi++, mcount++)
 		{
-			MethodDef *md = *mi;
-			md->writeType(methodTable);
+			MethodDef& md = *mi;
+			md.writeType(methodTable);
 
-			createDispatchFunction(source,mcount,d,md,md->name);
+			createDispatchFunction(source,mcount,d,md,md.name);
 		}
 
 			/** dispatch operations for attributes **/
 
-		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		for(ai = d.attributes.begin();ai != d.attributes.end();ai++)
 		{
-			AttributeDef *ad = *ai;
+			AttributeDef& ad = *ai;
 
-			if(ad->flags & attributeAttribute)
+			if(ad.flags & attributeAttribute)
 			{
 				MethodDef md;
-				if(ad->flags & streamOut)  /* readable from outside */
+				if(ad.flags & streamOut)  /* readable from outside */
 				{
-					md.name = "_get_"+ad->name;
-					md.type = ad->type;
+					md.name = "_get_"+ad.name;
+					md.type = ad.type;
 					md.flags = methodTwoway;
 					/* no parameters (don't set md.signature) */
 
 					md.writeType(methodTable);
-					createDispatchFunction(source,mcount++,d,&md,ad->name);
+					createDispatchFunction(source,mcount++,d,md,ad.name);
 				}
-				if(ad->flags & streamIn)  /* writeable from outside */
+				if(ad.flags & streamIn)  /* writeable from outside */
 				{
-					md.name = "_set_"+ad->name;
+					md.name = "_set_"+ad.name;
 					md.type = "void";
 					md.flags = methodTwoway;
-					md.signature.push_back(new ParamDef(ad->type,"newValue"));
+					md.signature.push_back(ParamDef(ad.type,"newValue"));
 
 					md.writeType(methodTable);
-					createDispatchFunction(source,mcount++,d,&md,ad->name);
+					createDispatchFunction(source,mcount++,d,md,ad.name);
 				}
 			}
 		}
@@ -2056,7 +2056,7 @@ void doInterfacesSource(FILE *source)
 		string methodTableString = formatMultiLineString(
 			methodTable.toString("MethodTable"),"        ");
 
-		fprintf(source,"void %s_skel::_buildMethodTable()\n",d->name.c_str());
+		fprintf(source,"void %s_skel::_buildMethodTable()\n",d.name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tArts::Buffer m;\n");
 		fprintf(source,"\tm.fromString(\n");
@@ -2067,10 +2067,10 @@ void doInterfacesSource(FILE *source)
 		long i;
 		for(i=0;i<mcount;i++)
 			fprintf(source,"\t_addMethod(%s,this,Arts::MethodDef(m));\n",
-							dispatchFunctionName(d->name,i).c_str());
+							dispatchFunctionName(d.name,i).c_str());
 
-		vector<string>::iterator ii = d->inheritedInterfaces.begin();
-		while(ii != d->inheritedInterfaces.end())
+		vector<string>::iterator ii = d.inheritedInterfaces.begin();
+		while(ii != d.inheritedInterfaces.end())
 		{
 			fprintf(source,"\t%s_skel::_buildMethodTable();\n",
 				ii->c_str());
@@ -2078,15 +2078,15 @@ void doInterfacesSource(FILE *source)
 		}
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"%s_skel::%s_skel()\n", d->name.c_str(),iname.c_str());
+		fprintf(source,"%s_skel::%s_skel()\n", d.name.c_str(),iname.c_str());
 		fprintf(source,"{\n");
-		for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+		for(ai = d.attributes.begin(); ai != d.attributes.end(); ai++)
 		{
-			AttributeDef *ad = *ai;
-			if((ad->flags & attributeStream) == attributeStream)
+			AttributeDef& ad = *ai;
+			if((ad.flags & attributeStream) == attributeStream)
 			{
 				fprintf(source,"\t_initStream(\"%s\",&%s,%d);\n",
-							ad->name.c_str(),ad->name.c_str(),ad->flags);
+							ad.name.c_str(),ad.name.c_str(),ad.flags);
 			}
 		}
 		fprintf(source,"}\n\n");
@@ -2095,23 +2095,23 @@ void doInterfacesSource(FILE *source)
 		if(haveAsyncStreams(d))
 		{
 			fprintf(source,"void %s_skel::notify(const Arts::Notification "
-			               "&notification)\n", d->name.c_str());
+			               "&notification)\n", d.name.c_str());
 			fprintf(source,"{\n");
-			for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+			for(ai = d.attributes.begin(); ai != d.attributes.end(); ai++)
 			{
-				AttributeDef *ad = *ai;
-				if((ad->flags & (attributeStream|streamAsync))
+				AttributeDef& ad = *ai;
+				if((ad.flags & (attributeStream|streamAsync))
 								== (attributeStream|streamAsync))
 				{
-					const char *fname=(ad->flags&streamIn)?"process":"request";
+					const char *fname=(ad.flags&streamIn)?"process":"request";
 					string packettype =
-						createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+						createTypeCode(ad.type,"",MODEL_ASTREAM_PACKETPTR);
 
 					fprintf(source,"\tif(%s.notifyID() == notification.ID)\n",
-							ad->name.c_str());
+							ad.name.c_str());
 					fprintf(source,
 					   "\t\t%s_%s((%s)notification.data);\n",
-						fname,ad->name.c_str(),packettype.c_str());
+						fname,ad.name.c_str(),packettype.c_str());
 				}
 			}
 			fprintf(source,"}\n\n");
@@ -2120,16 +2120,16 @@ void doInterfacesSource(FILE *source)
 			 * create empty request_ methods for output streams
 			 * (not everybody uses requesting)
 			 */
-			for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+			for(ai = d.attributes.begin(); ai != d.attributes.end(); ai++)
 			{
-				AttributeDef *ad = *ai;
-				if((ad->flags & (attributeStream|streamAsync|streamOut))
+				AttributeDef& ad = *ai;
+				if((ad.flags & (attributeStream|streamAsync|streamOut))
 								== (attributeStream|streamAsync|streamOut))
 				{
 					string packettype =
-						createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+						createTypeCode(ad.type,"",MODEL_ASTREAM_PACKETPTR);
 					fprintf(source,"void %s_skel::request_%s(%s)\n",
-						d->name.c_str(),ad->name.c_str(),packettype.c_str());
+						d.name.c_str(),ad.name.c_str(),packettype.c_str());
 					fprintf(source,"{\n");
 					fprintf(source,"	assert(false); // this default is for "
 					               "modules who don't want requesting\n");
@@ -2140,13 +2140,13 @@ void doInterfacesSource(FILE *source)
 		
 		// Smartwrapper statics
 		// _Creator
-		fprintf(source,"Arts::Object_base* %s::_Creator() {\n",d->name.c_str());
-		fprintf(source,"\treturn %s_base::_create();\n",d->name.c_str());
+		fprintf(source,"Arts::Object_base* %s::_Creator() {\n",d.name.c_str());
+		fprintf(source,"\treturn %s_base::_create();\n",d.name.c_str());
 		fprintf(source,"}\n\n");
 
 		// IID
 		fprintf(source,"unsigned long %s_base::_IID = "
-			"Arts::MCOPUtils::makeIID(\"%s\");\n\n",d->name.c_str(),d->name.c_str());
+			"Arts::MCOPUtils::makeIID(\"%s\");\n\n",d.name.c_str(),d.name.c_str());
 	}
 }
 

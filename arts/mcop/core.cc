@@ -34,10 +34,6 @@ Arts::Header& Arts::Header::operator=(const Arts::Header& assignType)
 	return *this;
 }
 
-Arts::Header::~Header()
-{
-}
-
 void Arts::Header::readType(Arts::Buffer& stream)
 {
 	magic = (Arts::HeaderMagic)stream.readLong();
@@ -81,10 +77,6 @@ Arts::Invocation& Arts::Invocation::operator=(const Arts::Invocation& assignType
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::Invocation::~Invocation()
-{
 }
 
 void Arts::Invocation::readType(Arts::Buffer& stream)
@@ -131,10 +123,6 @@ Arts::OnewayInvocation& Arts::OnewayInvocation::operator=(const Arts::OnewayInvo
 	return *this;
 }
 
-Arts::OnewayInvocation::~OnewayInvocation()
-{
-}
-
 void Arts::OnewayInvocation::readType(Arts::Buffer& stream)
 {
 	objectID = stream.readLong();
@@ -176,10 +164,6 @@ Arts::ServerHello& Arts::ServerHello::operator=(const Arts::ServerHello& assignT
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::ServerHello::~ServerHello()
-{
 }
 
 void Arts::ServerHello::readType(Arts::Buffer& stream)
@@ -227,10 +211,6 @@ Arts::ClientHello& Arts::ClientHello::operator=(const Arts::ClientHello& assignT
 	return *this;
 }
 
-Arts::ClientHello::~ClientHello()
-{
-}
-
 void Arts::ClientHello::readType(Arts::Buffer& stream)
 {
 	stream.readString(serverID);
@@ -274,10 +254,6 @@ Arts::ObjectReference& Arts::ObjectReference::operator=(const Arts::ObjectRefere
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::ObjectReference::~ObjectReference()
-{
 }
 
 void Arts::ObjectReference::readType(Arts::Buffer& stream)
@@ -324,10 +300,6 @@ Arts::ParamDef& Arts::ParamDef::operator=(const Arts::ParamDef& assignType)
 	return *this;
 }
 
-Arts::ParamDef::~ParamDef()
-{
-}
-
 void Arts::ParamDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(type);
@@ -344,7 +316,7 @@ Arts::MethodDef::MethodDef()
 {
 }
 
-Arts::MethodDef::MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef *>& signature)
+Arts::MethodDef::MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef>& signature)
 {
 	this->name = name;
 	this->type = type;
@@ -370,11 +342,6 @@ Arts::MethodDef& Arts::MethodDef::operator=(const Arts::MethodDef& assignType)
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::MethodDef::~MethodDef()
-{
-	freeTypeSeq(signature);
 }
 
 void Arts::MethodDef::readType(Arts::Buffer& stream)
@@ -424,10 +391,6 @@ Arts::AttributeDef& Arts::AttributeDef::operator=(const Arts::AttributeDef& assi
 	return *this;
 }
 
-Arts::AttributeDef::~AttributeDef()
-{
-}
-
 void Arts::AttributeDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
@@ -446,7 +409,7 @@ Arts::InterfaceDef::InterfaceDef()
 {
 }
 
-Arts::InterfaceDef::InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef *>& methods, const std::vector<Arts::AttributeDef *>& attributes, const std::vector<std::string>& defaultPorts)
+Arts::InterfaceDef::InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef>& methods, const std::vector<Arts::AttributeDef>& attributes, const std::vector<std::string>& defaultPorts)
 {
 	this->name = name;
 	this->inheritedInterfaces = inheritedInterfaces;
@@ -473,12 +436,6 @@ Arts::InterfaceDef& Arts::InterfaceDef::operator=(const Arts::InterfaceDef& assi
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::InterfaceDef::~InterfaceDef()
-{
-	freeTypeSeq(methods);
-	freeTypeSeq(attributes);
 }
 
 void Arts::InterfaceDef::readType(Arts::Buffer& stream)
@@ -529,10 +486,6 @@ Arts::TypeComponent& Arts::TypeComponent::operator=(const Arts::TypeComponent& a
 	return *this;
 }
 
-Arts::TypeComponent::~TypeComponent()
-{
-}
-
 void Arts::TypeComponent::readType(Arts::Buffer& stream)
 {
 	stream.readString(type);
@@ -549,7 +502,7 @@ Arts::TypeDef::TypeDef()
 {
 }
 
-Arts::TypeDef::TypeDef(const std::string& name, const std::vector<Arts::TypeComponent *>& contents)
+Arts::TypeDef::TypeDef(const std::string& name, const std::vector<Arts::TypeComponent>& contents)
 {
 	this->name = name;
 	this->contents = contents;
@@ -573,11 +526,6 @@ Arts::TypeDef& Arts::TypeDef::operator=(const Arts::TypeDef& assignType)
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::TypeDef::~TypeDef()
-{
-	freeTypeSeq(contents);
 }
 
 void Arts::TypeDef::readType(Arts::Buffer& stream)
@@ -622,10 +570,6 @@ Arts::EnumComponent& Arts::EnumComponent::operator=(const Arts::EnumComponent& a
 	return *this;
 }
 
-Arts::EnumComponent::~EnumComponent()
-{
-}
-
 void Arts::EnumComponent::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
@@ -642,7 +586,7 @@ Arts::EnumDef::EnumDef()
 {
 }
 
-Arts::EnumDef::EnumDef(const std::string& name, const std::vector<Arts::EnumComponent *>& contents)
+Arts::EnumDef::EnumDef(const std::string& name, const std::vector<Arts::EnumComponent>& contents)
 {
 	this->name = name;
 	this->contents = contents;
@@ -668,11 +612,6 @@ Arts::EnumDef& Arts::EnumDef::operator=(const Arts::EnumDef& assignType)
 	return *this;
 }
 
-Arts::EnumDef::~EnumDef()
-{
-	freeTypeSeq(contents);
-}
-
 void Arts::EnumDef::readType(Arts::Buffer& stream)
 {
 	stream.readString(name);
@@ -689,7 +628,7 @@ Arts::ModuleDef::ModuleDef()
 {
 }
 
-Arts::ModuleDef::ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef *>& modules, const std::vector<Arts::EnumDef *>& enums, const std::vector<Arts::TypeDef *>& types, const std::vector<Arts::InterfaceDef *>& interfaces)
+Arts::ModuleDef::ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef>& modules, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces)
 {
 	this->moduleName = moduleName;
 	this->modules = modules;
@@ -716,14 +655,6 @@ Arts::ModuleDef& Arts::ModuleDef::operator=(const Arts::ModuleDef& assignType)
 	assignType.writeType(buffer);
 	readType(buffer);
 	return *this;
-}
-
-Arts::ModuleDef::~ModuleDef()
-{
-	freeTypeSeq(modules);
-	freeTypeSeq(enums);
-	freeTypeSeq(types);
-	freeTypeSeq(interfaces);
 }
 
 void Arts::ModuleDef::readType(Arts::Buffer& stream)
@@ -841,7 +772,7 @@ void Arts::InterfaceRepo_stub::removeModule(long moduleID)
 	if(result) delete result;
 }
 
-Arts::InterfaceDef* Arts::InterfaceRepo_stub::queryInterface(const std::string& name)
+Arts::InterfaceDef Arts::InterfaceRepo_stub::queryInterface(const std::string& name)
 {
 	long methodID = _lookupMethodFast("method:0f0000007175657279496e746572666163650013000000417274733a3a496e7465726661636544656600020000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
@@ -852,13 +783,13 @@ Arts::InterfaceDef* Arts::InterfaceRepo_stub::queryInterface(const std::string& 
 	_connection->qSendBuffer(request);
 
 	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return new Arts::InterfaceDef(); // error occured
-	Arts::InterfaceDef *_returnCode = new Arts::InterfaceDef(*result);
+	if(!result) return Arts::InterfaceDef(); // error occured
+	Arts::InterfaceDef _returnCode(*result);
 	delete result;
 	return _returnCode;
 }
 
-Arts::TypeDef* Arts::InterfaceRepo_stub::queryType(const std::string& name)
+Arts::TypeDef Arts::InterfaceRepo_stub::queryType(const std::string& name)
 {
 	long methodID = _lookupMethodFast("method:0a000000717565727954797065000e000000417274733a3a5479706544656600020000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
@@ -869,8 +800,8 @@ Arts::TypeDef* Arts::InterfaceRepo_stub::queryType(const std::string& name)
 	_connection->qSendBuffer(request);
 
 	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return new Arts::TypeDef(); // error occured
-	Arts::TypeDef *_returnCode = new Arts::TypeDef(*result);
+	if(!result) return Arts::TypeDef(); // error occured
+	Arts::TypeDef _returnCode(*result);
 	delete result;
 	return _returnCode;
 }
@@ -911,9 +842,8 @@ static void _dispatch_Arts_InterfaceRepo_02(void *object, Arts::Buffer *request,
 {
 	std::string name;
 	request->readString(name);
-	Arts::InterfaceDef *_returnCode = ((Arts::InterfaceRepo_skel *)object)->queryInterface(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
+	Arts::InterfaceDef _returnCode = ((Arts::InterfaceRepo_skel *)object)->queryInterface(name);
+	_returnCode.writeType(*result);
 }
 
 // queryType
@@ -921,9 +851,8 @@ static void _dispatch_Arts_InterfaceRepo_03(void *object, Arts::Buffer *request,
 {
 	std::string name;
 	request->readString(name);
-	Arts::TypeDef *_returnCode = ((Arts::InterfaceRepo_skel *)object)->queryType(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
+	Arts::TypeDef _returnCode = ((Arts::InterfaceRepo_skel *)object)->queryType(name);
+	_returnCode.writeType(*result);
 }
 
 void Arts::InterfaceRepo_skel::_buildMethodTable()

@@ -23,17 +23,54 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include "buffer.h"
+
 namespace Arts {
 
+/**
+ * Base class for the IDL mapping of struct-like types
+ */
 class Type {
+private:
+	static long _staticTypeCount;
+
 public:
+	inline static long _typeCount() { return _staticTypeCount; }
+	/**
+	 * constructor
+	 */
+	inline Type()
+	{
+		_staticTypeCount++;
+	}
+
+	/**
+	 * copy constructor
+	 */
+	inline Type(const Type&)
+	{
+		_staticTypeCount++;
+	}
+
+	/**
+	 * virtual destructor (since we have virtual functions and this stuff
+	 */
+	virtual ~Type();
+
 	// FIXME:
 	//
 	// How exactly should error handling for marshalling look? Is asking
 	// the stream wether a read error occured after demarshalling a type
 	// enough?
 
+	/**
+	 * read the type from a stream
+	 */
 	virtual void readType(Buffer& stream) = 0;
+
+	/**
+	 * write the type to a stream
+	 */
 	virtual void writeType(Buffer& stream) const = 0;
 };
 

@@ -50,13 +50,13 @@ public:
 	void description(const string &) {
 	}
 
-	poTime *currentTime() {
+	poTime currentTime() {
 	}
 
 	void currentTime(const class poTime &) {
 	}
 
-    poTime *overallTime() {
+    poTime overallTime() {
 	}
 
 	poCapabilities capabilities() {

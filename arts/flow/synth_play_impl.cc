@@ -22,7 +22,6 @@
 
 #include "artsflow.h"
 #include "debug.h"
-#include "artsserver_impl.h"
 #include "convert.h"
 #include "objectmanager.h"
 #include "audiosubsys.h"

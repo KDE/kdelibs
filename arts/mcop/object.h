@@ -106,8 +106,8 @@ public:
 	 */
 	virtual long _lookupMethod(const Arts::MethodDef &) = 0;
 	virtual std::string _interfaceName() = 0;
-	virtual class InterfaceDef* _queryInterface(const std::string& name) = 0;
-	virtual class TypeDef* _queryType(const std::string& name) = 0;
+	virtual class InterfaceDef _queryInterface(const std::string& name) = 0;
+	virtual class TypeDef _queryType(const std::string& name) = 0;
 	virtual std::string _toString() = 0;
 
 	/*
@@ -241,8 +241,8 @@ public:
 	 * to inspect the (remote) object interface
 	 */
 	virtual std::string _interfaceName();
-	InterfaceDef* _queryInterface(const std::string& name);
-	TypeDef* _queryType(const std::string& name);
+	InterfaceDef _queryInterface(const std::string& name);
+	TypeDef _queryType(const std::string& name);
 	virtual std::string _toString();
 	
 	// Run-time type compatibility check
@@ -281,8 +281,8 @@ public:
 	 * to inspect the (remote) object interface
 	 */
 	std::string _interfaceName();
-	InterfaceDef* _queryInterface(const std::string& name);
-	TypeDef* _queryType(const std::string& name);
+	InterfaceDef _queryInterface(const std::string& name);
+	TypeDef _queryType(const std::string& name);
 	std::string _toString();
 
 	/*

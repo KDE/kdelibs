@@ -400,12 +400,12 @@ bool Object_skel::_isCompatibleWith(const std::string& interfacename)
 	return false;
 }
 
-InterfaceDef* Object_skel::_queryInterface(const string& name)
+InterfaceDef Object_skel::_queryInterface(const string& name)
 {
 	return Dispatcher::the()->interfaceRepo().queryInterface(name);
 }
 
-TypeDef* Object_skel::_queryType(const string& name)
+TypeDef Object_skel::_queryType(const string& name)
 {
 	return Dispatcher::the()->interfaceRepo().queryType(name);
 }
@@ -523,9 +523,8 @@ static void _dispatch_Arts_Object_02(void *object, Arts::Buffer *request, Arts::
 {
 	std::string name;
 	request->readString(name);
-	Arts::InterfaceDef *_returnCode = ((Arts::Object_skel *)object)->_queryInterface(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
+	Arts::InterfaceDef _returnCode = ((Arts::Object_skel *)object)->_queryInterface(name);
+	_returnCode.writeType(*result);
 }
 
 // _queryType
@@ -533,9 +532,8 @@ static void _dispatch_Arts_Object_03(void *object, Arts::Buffer *request, Arts::
 {
 	std::string name;
 	request->readString(name);
-	Arts::TypeDef *_returnCode = ((Arts::Object_skel *)object)->_queryType(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
+	Arts::TypeDef _returnCode = ((Arts::Object_skel *)object)->_queryType(name);
+	_returnCode.writeType(*result);
 }
 
 // _toString
@@ -736,7 +734,7 @@ string Object_stub::_interfaceName()
 	return returnCode;
 }
 
-InterfaceDef* Object_stub::_queryInterface(const string& name)
+InterfaceDef Object_stub::_queryInterface(const string& name)
 {
 	long requestID;
 	Buffer *request, *result;
@@ -747,13 +745,13 @@ InterfaceDef* Object_stub::_queryInterface(const string& name)
 	_connection->qSendBuffer(request);
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return new InterfaceDef(); // error
-	InterfaceDef *_returnCode = new InterfaceDef(*result);
+	if(!result) return InterfaceDef(); // error
+	InterfaceDef _returnCode(*result);
 	delete result;
 	return _returnCode;
 }
 
-TypeDef* Object_stub::_queryType(const string& name)
+TypeDef Object_stub::_queryType(const string& name)
 {
 	long requestID;
 	Buffer *request, *result;
@@ -764,8 +762,8 @@ TypeDef* Object_stub::_queryType(const string& name)
 	_connection->qSendBuffer(request);
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return new TypeDef(); // error
-	TypeDef *_returnCode = new TypeDef(*result);
+	if(!result) return TypeDef(); // error
+	TypeDef _returnCode(*result);
 	delete result;
 	return _returnCode;
 }

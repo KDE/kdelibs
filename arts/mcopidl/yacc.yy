@@ -35,9 +35,9 @@ extern string idl_filename;
 
 extern int yylex();
 extern void mcopidlInitFlex( const char *_code );
-extern void addEnumTodo( EnumDef *edef );
-extern void addStructTodo( TypeDef *type );
-extern void addInterfaceTodo( InterfaceDef *iface );
+extern void addEnumTodo( const EnumDef& edef );
+extern void addStructTodo( const TypeDef& type );
+extern void addInterfaceTodo( const InterfaceDef& iface );
 
 void yyerror( const char *s )
 {
@@ -59,23 +59,23 @@ void yyerror( const char *s )
   vector<char*> *_strs;
 
   // types
-  vector<TypeComponent *> *_typeComponentSeq;
+  vector<TypeComponent> *_typeComponentSeq;
   TypeComponent* _typeComponent;
 
   // enums
-  vector<EnumComponent *> *_enumComponentSeq;
+  vector<EnumComponent> *_enumComponentSeq;
 
   // interfaces
   InterfaceDef *_interfaceDef;
 
   ParamDef* _paramDef;
-  vector<ParamDef *> *_paramDefSeq;
+  vector<ParamDef> *_paramDefSeq;
 
   MethodDef* _methodDef;
-  vector<MethodDef *> *_methodDefSeq;
+  vector<MethodDef> *_methodDefSeq;
 
   AttributeDef* _attributeDef;
-  vector<AttributeDef *> *_attributeDefSeq;
+  vector<AttributeDef> *_attributeDefSeq;
 }
 
 %token T_STRUCT T_ENUM T_INTERFACE T_MODULE T_VOID
@@ -124,14 +124,15 @@ definitions: epsilon | definition definitions ;
 definition: structdef | interfacedef | moduledef | enumdef ;
 
 structdef:
-	  T_STRUCT T_IDENTIFIER { ModuleHelper::define($2); } 
+	  T_STRUCT T_IDENTIFIER { ModuleHelper::define($2); } T_SEMICOLON
+	| T_STRUCT T_IDENTIFIER { ModuleHelper::define($2); } 
 	    T_LEFT_CURLY_BRACKET
 	  	  structbody
 	    T_RIGHT_CURLY_BRACKET
 	  T_SEMICOLON
 	  {
         char *qualified = ModuleHelper::qualify($2);
-		addStructTodo(new TypeDef(qualified,*$5));
+		addStructTodo(TypeDef(qualified,*$5));
 		free(qualified);
 	    free($2);
 	  }
@@ -145,7 +146,7 @@ enumdef:
 	  T_SEMICOLON
 	  {
 	    char *qualified = ModuleHelper::qualify($2);
-	  	addEnumTodo(new EnumDef(qualified,*$5));
+	  	addEnumTodo(EnumDef(qualified,*$5));
 		free(qualified);
 		free($2);
 		delete $5;
@@ -157,33 +158,34 @@ enumname: T_IDENTIFIER { $$ = $1; } | epsilon { $$ = strdup("_anonymous_"); };
 enumbody:
       T_IDENTIFIER
 	  {
-	  	$$ = new vector<EnumComponent *>;
-		$$->push_back(new EnumComponent($1,0));
+	  	$$ = new vector<EnumComponent>;
+		$$->push_back(EnumComponent($1,0));
 		free($1);
 	  }
 	| T_IDENTIFIER T_EQUAL T_INTEGER_LITERAL
 	  {
-	  	$$ = new vector<EnumComponent *>;
-		$$->push_back(new EnumComponent($1,$3));
+	  	$$ = new vector<EnumComponent>;
+		$$->push_back(EnumComponent($1,$3));
 		free($1);
 	  }
 	| enumbody T_COMMA T_IDENTIFIER
 	  {
-	  	EnumComponent *last = (*$1)[$1->size()-1];
+	  	EnumComponent& last = (*$1)[$1->size()-1];
 
 		$$ = $1;
-		$$->push_back(new EnumComponent($3,last->value+1));
+		$$->push_back(EnumComponent($3,last.value+1));
 		free($3);
 	  }
 	| enumbody T_COMMA T_IDENTIFIER T_EQUAL T_INTEGER_LITERAL
 	  {
 		$$ = $1;
-		$$->push_back(new EnumComponent($3,$5));
+		$$->push_back(EnumComponent($3,$5));
 		free($3);
 	  };
 
 interfacedef:
-	  T_INTERFACE T_IDENTIFIER { ModuleHelper::define($2); } inheritedinterfaces
+	  T_INTERFACE T_IDENTIFIER { ModuleHelper::define($2); } T_SEMICOLON
+	| T_INTERFACE T_IDENTIFIER { ModuleHelper::define($2); } inheritedinterfaces
 	    T_LEFT_CURLY_BRACKET
 	  	  classbody
 	    T_RIGHT_CURLY_BRACKET
@@ -200,7 +202,8 @@ interfacedef:
 		$6->name = qualified;
 		free(qualified);
 		free($2);
-	  	addInterfaceTodo($6);
+	  	addInterfaceTodo(*$6);
+		delete $6;
 	  }
 	;
 
@@ -223,16 +226,17 @@ classbody:
 	| methoddef classbody
 	  {
 		$$ = $2;
-		$$->methods.insert($$->methods.begin(),$1);
+		$$->methods.insert($$->methods.begin(),*$1);
+		delete $1;
 	  }
 	| attributedef classbody
 	  {
 	    $$ = $2;
 	    $$->attributes.insert($$->attributes.begin(),$1->begin(),$1->end());
-	    if (((*$1)[0])->flags & streamDefault) {
+	    if ((*$1)[0].flags & streamDefault) {
 	      vector<std::string> sv;
-	      for (vector<AttributeDef *>::iterator i=$1->begin(); i!=$1->end(); i++)
-	        sv.push_back((*i)->name);
+	      for (vector<AttributeDef>::iterator i=$1->begin(); i!=$1->end(); i++)
+	        sv.push_back(i->name);
 	      $$->defaultPorts.insert($$->defaultPorts.begin(),sv.begin(),sv.end());
 	    }
 	  }
@@ -249,10 +253,10 @@ attributedef:
 	  {
 	    // 16 == attribute
 		vector<char *>::iterator i;
-		$$ = new vector<AttributeDef *>;
+		$$ = new vector<AttributeDef>;
 		for(i=$4->begin();i != $4->end();i++)
 		{
-	  	  $$->push_back(new AttributeDef((*i),$3,(AttributeType)($1 + 16)));
+	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)($1 + 16)));
 		  free(*i);
 		}
 		delete $4;
@@ -278,10 +282,10 @@ streamdef: maybedefault direction type T_STREAM identifierlist T_SEMICOLON
 	  {
 	    // 8 == stream
 		vector<char *>::iterator i;
-		$$ = new vector<AttributeDef *>;
+		$$ = new vector<AttributeDef>;
 		for(i=$5->begin();i != $5->end();i++)
 		{
-	  	  $$->push_back(new AttributeDef((*i),$3,(AttributeType)(($2|$1) + 8)));
+	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)(($2|$1) + 8)));
 		  free(*i);
 		}
 		delete $5;
@@ -317,24 +321,26 @@ methoddef:
 paramdefs:
       epsilon
 	  {
-	  	$$ = new vector<ParamDef *>;
+	  	$$ = new vector<ParamDef>;
 	  }
 	| paramdef paramdefs1
 	  {
 	  	$$ = $2;
-		$$->insert($$->begin(),$1);
+		$$->insert($$->begin(),*$1);
+		delete $1;
 	  };
 
 // at least one parameter (ex:  "long a" or "long a, long b, string c")
 paramdefs1:
 	  epsilon
 	  {
-	  	$$ = new vector<ParamDef *>;
+	  	$$ = new vector<ParamDef>;
 	  }
 	| paramdefs1 T_COMMA paramdef
 	  {
 	  	$$ = $1;
-		$$->push_back($3);
+		$$->push_back(*$3);
+		delete $3;
 		//$$->insert($$->begin(),$3);
 	  }
 	;
@@ -375,7 +381,7 @@ interfacelistelem: T_IDENTIFIER {
 
 structbody: epsilon {
 		// is empty by default
-		$$ = new vector<TypeComponent *>;
+		$$ = new vector<TypeComponent>;
 	  }
 	| type identifierlist T_SEMICOLON structbody {
 	    $$ = $4;
@@ -384,7 +390,7 @@ structbody: epsilon {
 		{
 		  char *identifier = *i;
 
-		  $$->insert($$->begin(),new TypeComponent($1,identifier));
+		  $$->insert($$->begin(),TypeComponent($1,identifier));
 		  free(identifier);
 		}
 		delete $2;

@@ -34,21 +34,21 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 {
 	long moduleID = nextModuleID++;
 
-	vector<InterfaceDef *>::const_iterator ii;
+	vector<InterfaceDef>::const_iterator ii;
 	for(ii=newModule.interfaces.begin();
 		ii != newModule.interfaces.end();ii++)
 	{
 		Buffer b;
-		(*ii)->writeType(b);
+		ii->writeType(b);
 		interfaces.push_back(new InterfaceEntry(b,moduleID));
 	}
 
-	vector<TypeDef *>::const_iterator ti;
+	vector<TypeDef>::const_iterator ti;
 	for(ti=newModule.types.begin();
 		ti != newModule.types.end();ti++)
 	{
 		Buffer b;
-		(*ti)->writeType(b);
+		ti->writeType(b);
 		types.push_back(new TypeEntry(b,moduleID));
 	}
 
@@ -87,7 +87,7 @@ void InterfaceRepo_impl::removeModule(long moduleID)
 	}
 }
 
-InterfaceDef* InterfaceRepo_impl::queryInterface(const string& name)
+InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 {
 	list<InterfaceEntry *>::iterator ii;
 
@@ -97,15 +97,15 @@ InterfaceDef* InterfaceRepo_impl::queryInterface(const string& name)
 		{
 			Buffer b;
 			(*ii)->writeType(b);
-			return new InterfaceDef(b);
+			return InterfaceDef(b);
 		}
 	}
 	/* TODO: what happens here? */
 	assert(false);
-	return 0;
+	return InterfaceDef();
 }
 
-TypeDef* InterfaceRepo_impl::queryType(const string& name)
+TypeDef InterfaceRepo_impl::queryType(const string& name)
 {
 	list<TypeEntry *>::iterator ti;
 
@@ -115,11 +115,11 @@ TypeDef* InterfaceRepo_impl::queryType(const string& name)
 		{
 			Buffer b;
 			(*ti)->writeType(b);
-			return new TypeDef(b);
+			return TypeDef(b);
 		}
 	}
 
 	/* TODO: what happens here? */
 	assert(false);
-	return 0;
+	return TypeDef();
 }

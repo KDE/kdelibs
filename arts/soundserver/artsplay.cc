@@ -42,7 +42,8 @@ int main(int argc, char **argv)
 	}
 
 	Dispatcher dispatcher;
-	SimpleSoundServer server(Reference("global:Arts_SimpleSoundServer"));
+	SimpleSoundServer server;
+	server = Arts::Reference("global:Arts_SimpleSoundServer");
 
 	if(server.isNull())
 	{

@@ -218,11 +218,17 @@ Dispatcher::~Dispatcher()
 	if(Object_base::_objectCount())
 	{
 		cerr << "warning: leaving MCOP Dispatcher and still "
-			 << Object_base::_objectCount() << " objects alive." << endl;
+			 << Object_base::_objectCount() << " object references alive." << endl;
 		list<Object_skel *> which = objectPool.enumerate();
 		list<Object_skel *>::iterator i;
 		for(i = which.begin(); i != which.end();i++)
 			cerr << "  - " << (*i)->_interfaceName() << endl;
+	}
+
+	if(Type::_typeCount())
+	{
+		cerr << "warning: leaving MCOP Dispatcher and still "
+			 << Type::_typeCount() << " types alive." << endl;
 	}
 
 	/* private data pointer */
@@ -520,9 +526,8 @@ void Dispatcher::removeObject(long objectID)
 void Dispatcher::generateServerID()
 {
 	char buffer[4096];
-	const char *hostname = MCOPUtils::getFullHostname().c_str();
-
-	sprintf(buffer,"%s-%04x-%08lx",hostname,getpid(),time(0));
+	sprintf(buffer,"%s-%04x-%08lx",MCOPUtils::getFullHostname().c_str(),
+									getpid(),time(0));
 	serverID = buffer;
 }
 

@@ -210,12 +210,12 @@ public:
 		assert(_pool->base);
 		return _pool->base->_interfaceName();
 	}
-	inline InterfaceDef* _queryInterface(const std::string& name) const {
+	inline InterfaceDef _queryInterface(const std::string& name) const {
 		_pool->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_queryInterface(name);
 	}
-	inline TypeDef* _queryType(const std::string& name) const {
+	inline TypeDef _queryType(const std::string& name) const {
 		_pool->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_queryType(name);
