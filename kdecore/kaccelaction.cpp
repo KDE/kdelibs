@@ -1,8 +1,8 @@
 /*
-    Copyright (c) 2001 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997-2000 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
+    Copyright (c) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -139,9 +139,9 @@ uint KAccelAction::sequenceCount() const
 
 void KAccelAction::setName( const QString& s )
 	{ m_sName = s; }
-void KAccelAction::setDesc( const QString& s )
+void KAccelAction::setLabel( const QString& s )
 	{ m_sLabel = s; }
-void KAccelAction::setHelpext( const QString& s )
+void KAccelAction::setWhatsThis( const QString& s )
 	{ m_sWhatsThis = s; }
 
 bool KAccelAction::setShortcut( const KShortcut& cut )

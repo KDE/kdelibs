@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -82,7 +82,7 @@ class KAccelAction
 
 	uint sequenceCount() const;
 	const QString& name() const                { return m_sName; }
-	const QString& desc() const                { return m_sLabel; }
+	const QString& label() const               { return m_sLabel; }
 	const QString& whatsThis() const           { return m_sWhatsThis; }
 	const KShortcut& shortcut() const          { return m_cut; }
 	const KShortcut& shortcutDefault() const;
@@ -94,8 +94,8 @@ class KAccelAction
 	bool isEnabled() const                     { return m_bEnabled; }
 
 	void setName( const QString& );
-	void setDesc( const QString& );
-	void setHelpext( const QString& );
+	void setLabel( const QString& );
+	void setWhatsThis( const QString& );
 	bool setShortcut( const KShortcut& rgCuts );
 	void setSlot( const QObject* pObjSlot, const char* psMethodSlot );
 	void setConfigurable( bool );
@@ -127,8 +127,7 @@ class KAccelAction
 	bool m_bConfigurable,
 	     m_bEnabled;
 
-	int m_nIDAccel;//, m_nIDMenu;
-	//QPopupMenu* m_pMenu;
+	int m_nIDAccel;
 
 	KShortcut m_cut;
 
