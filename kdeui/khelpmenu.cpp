@@ -149,7 +149,7 @@ void KHelpMenu::aboutKDE( void )
     mAboutKDE->addTextPage( i18n("&About"), text1, true );
     mAboutKDE->addTextPage( i18n("&Report bugs or wishes"), text2, true );
     mAboutKDE->addTextPage( i18n("&Join the KDE team"), text3, true );
-    mAboutKDE->setImage( locate( "icon", "aboutkde.png") );
+    mAboutKDE->setImage( locate( "data", "kdeui/pics/aboutkde.png") );
     mAboutKDE->setImageBackgroundColor( white );
   }
 
@@ -157,3 +157,4 @@ void KHelpMenu::aboutKDE( void )
 }
 
 #include "khelpmenu.moc"
+
