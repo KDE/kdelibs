@@ -51,9 +51,12 @@ RenderWidget::RenderWidget(QScrollView *view)
 RenderWidget::~RenderWidget()
 {
     assert(!deleted);
-    disconnect( m_widget, SIGNAL( destroyed()), 
+    if (m_widget)
+    {
+       disconnect( m_widget, SIGNAL( destroyed()), 
              this, SLOT( slotWidgetDestructed()));
-    delete m_widget;
+       delete m_widget;
+    }
     deleted = true;
 }
 
