@@ -18,6 +18,7 @@
 */
 
 #include <unistd.h>
+#include <signal.h>
 
 #include <kmessagebox.h>
 #include <kstddirs.h>
@@ -95,6 +96,7 @@ int main(int argc, char **argv)
 
 	(void) new KNotify;
 
+//	signal(SIGCLD, SIG_IGN); // don't wait() for fork
 	return app.exec();
 }
 
@@ -166,7 +168,7 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
 		return false;
 		
 	
-	if (!fork())
+//	if (!fork())
 	{
 		switch(level)
 		{
@@ -183,7 +185,7 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
 		case(KNotifyClient::Catastrophe):
 			KMessageBox::error(0, text, i18n("Catastrophe!"), false);
 		};
-		_exit(0);
+//		_exit(0);
 	}
 	
 	return true;
