@@ -28,6 +28,9 @@
 #include <qlist.h>
 #include <qasciidict.h>
 
+template class QAsciiDict<char>;
+template class QList<KCmdLineArgs>;
+
 class KCmdLineParsedArgs : public QAsciiDict<char>
 {
 public:

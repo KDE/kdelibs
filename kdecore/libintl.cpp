@@ -1467,7 +1467,7 @@ k_nl_load_domain (struct loaded_l10nfile *domain_file)
       /* The magic number is wrong: not a message catalog file.  */
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
       if (use_mmap)
-	munmap ((void *) data, st.st_size);
+	munmap ((char *) data, st.st_size);
       else
 #endif
 	free (data);
@@ -1500,7 +1500,7 @@ k_nl_load_domain (struct loaded_l10nfile *domain_file)
       /* This is an illegal revision.  */
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
       if (use_mmap)
-	munmap ((void *) data, st.st_size);
+	munmap ((char *) data, st.st_size);
       else
 #endif
 	free (data);
