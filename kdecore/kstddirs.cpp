@@ -54,7 +54,7 @@ template class QDict<QStringList>;
 
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
-			      "servicetypes", "cgi", "config", "exe",
+			      "servicetypes", "config", "exe",
 			      "wallpaper", "lib", "pixmap", "templates", 0};
 
 static int tokenize( QStringList& token, const QString& str,
@@ -546,7 +546,7 @@ static int tokenize( QStringList& tokens, const QString& str,
 
 QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "data"))
-	return "share/apps/";
+	return "share/kde-apps/";
     if (!strcmp(type, "html"))
 	return "share/doc/HTML/";
     if (!strcmp(type, "icon"))
