@@ -164,7 +164,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
 
   static QString aAreaName;
-  static int oldarea = 0;
+  static unsigned int oldarea = 0;
   if (debug_Config && oldarea != nArea) {
     debug_Config->setGroup( QString::number(static_cast<int>(nArea)) );
     oldarea = nArea;
