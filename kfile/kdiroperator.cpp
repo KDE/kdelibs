@@ -484,6 +484,7 @@ void KDirOperator::pathChanged()
     if (!fileView)
         return;
 
+    pendingMimeTypes.clear();
     fileView->clear();
     myCompletion.clear();
     myDirCompletion.clear();
@@ -780,6 +781,7 @@ void KDirOperator::selectFile(const KFileViewItem *item)
 
 void KDirOperator::filterChanged()
 {
+    pendingMimeTypes.clear();
     fileView->clear();
     myCompletion.clear();
     myDirCompletion.clear();
