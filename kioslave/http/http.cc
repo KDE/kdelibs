@@ -81,8 +81,6 @@ int kdemain( int argc, char **argv )
   KInstance instance( "kio_http" );
   ( void ) KGlobal::locale();
 
-  kdDebug(7113) << "Starting : " << getpid() << endl;
-
   if (argc != 4)
   {
      fprintf(stderr, "Usage: kio_http protocol domain-socket1 domain-socket2\n");
@@ -200,9 +198,9 @@ void HTTPProtocol::resetSessionSettings()
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
 
-    kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
-    kdDebug(7113) << "(" << m_pid << ")   URL: " << m_proxyURL.url() << endl;
-    kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strProxyRealm << endl;
+    kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << 
+                                              " URL: " << m_proxyURL.url() <<
+                                            " Realm: " << m_strProxyRealm << endl;
   }  
 
   m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", false);
@@ -1676,17 +1674,17 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
 void HTTPProtocol::httpCheckConnection()
 {
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCheckConnection: " << endl;
-  kdDebug(7113) << "(" << m_pid << ")   Socket status: " << m_iSock << endl;
-  kdDebug(7113) << "(" << m_pid << ")   Keep Alive: " << m_bKeepAlive << endl;
-  kdDebug(7113) << "(" << m_pid << ")   First: " << m_bFirstRequest << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCheckConnection: " <<
+                                   " Socket status: " << m_iSock <<
+                                      " Keep Alive: " << m_bKeepAlive << 
+                                           " First: " << m_bFirstRequest << endl;
 
   if ( !m_bFirstRequest && (m_iSock != -1) )
   {
      bool closeDown = false;
      if ( !isConnectionValid())
      {
-  kdDebug(7113) << "(" << m_pid << ") Connection lost!" << endl;
+        kdDebug(7113) << "(" << m_pid << ") Connection lost!" << endl;
         closeDown = true;
      }
      else if ( m_request.method != HTTP_GET )
@@ -1803,7 +1801,6 @@ bool HTTPProtocol::httpOpenConnection()
   // Set our special socket option!!
   int on = 1;
   (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on) );
-  kdDebug(7113) << "(" << m_pid << ") Sending connected @ " << time(0L) << endl;
 
   m_bFirstRequest = true;
 
@@ -2319,10 +2316,10 @@ bool HTTPProtocol::readHeader()
         return false;
      }
 
-     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
-                   << "data mimetype: " << buffer << endl;
-
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
+
+     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
+                   << "data mimetype: " << m_strMimeType << endl;
 
      if (!fgets(buffer, 4096, m_request.fcache) )
      {
@@ -3633,7 +3630,7 @@ int HTTPProtocol::readChunked()
            kdDebug(7113) << "(" << m_pid << ") gets() failure on Chunk trailer" << endl;
            return -1;
          }
-         kdDebug(7113) << "(" << m_pid << ") Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
+         // kdDebug(7113) << "(" << m_pid << ") Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
        }
        while (strlen(m_bufReceive.data()) != 0);
 
@@ -3756,7 +3753,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (m_request.bCachedRead)
   {
-    kdDebug(7113) << "HTTPProtocol::readBody: read data from cache!" << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: read data from cache!" << endl;
     m_request.bCachedWrite = false;
     
     char buffer[ MAX_IPC_SIZE ];
@@ -3863,9 +3860,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        bytesReceived = readUnlimited();
 
     // make sure that this wasn't an error, first
-    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " 
-                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " 
-                  << m_bChunked << endl;
+//    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " 
+//                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " 
+//                  << m_bChunked << endl;
     
     if (bytesReceived == -1)
     {
