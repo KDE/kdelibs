@@ -259,9 +259,11 @@ Q_LONG KTar::readHeader(char *buffer,QString &name,QString &symlink) {
 
   // if not result of longlink, read names directly from the header
   if (name.isEmpty())
-    name = QFile::decodeName(buffer);
+    // there are names that are exactly 100 bytes long
+    // and neither longlink nor \0 terminated (bug:101472)
+    name = QFile::decodeName(QCString(buffer, 101));
   if (symlink.isEmpty())
-    symlink = QFile::decodeName(buffer + 0x9d);
+    symlink = QFile::decodeName(QCString(buffer + 0x9d, 101));
 
   return 0x200;
 }
