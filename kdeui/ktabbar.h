@@ -23,6 +23,7 @@
 
 #include <qtabbar.h>
 
+class QToolButton;
 class KTabBarPrivate;
 
 class KTabBar: public QTabBar
@@ -38,6 +39,9 @@ public:
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
+    void setHoverCloseButton( bool );
+    bool hoverCloseButton() const;
+
 signals:
     void contextMenu( const int, const QPoint & );
     void mouseDoubleClick( const int );
@@ -45,6 +49,7 @@ signals:
     void dragInitiated( const int );
     void receivedDropEvent( const int, QDropEvent * );
     void moveTab( const int, const int );
+    void closeRequest( const int );
 
 protected:
     virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
@@ -56,12 +61,17 @@ protected slots:
     virtual void mouseReleaseEvent( QMouseEvent *e );
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );
-
+    virtual void closeButtonClicked();
+    virtual void onLayoutChange();
+    
 private:
     QPoint mDragStart;
     int    reorderStartTab, previousTabIndex;
     QMap<int, QColor> tabColors;
     bool mTabReordering;
+    QTab *btab;
+    QToolButton *b;
+    bool mHoverCloseButton;
 
     KTabBarPrivate * d;
 };

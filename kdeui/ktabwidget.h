@@ -47,6 +47,9 @@ public:
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
+    void setHoverCloseButton( bool );
+    bool hoverCloseButton() const;
+
 protected slots:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
@@ -58,6 +61,7 @@ protected slots:
     virtual void contextMenu( const int, const QPoint & );
     virtual void mouseDoubleClick( const int );
     virtual void mouseMiddleClick( const int );
+    virtual void closeRequest( const int );
 
 signals:
     void tabbarContextMenu( const QPoint & );
@@ -69,6 +73,7 @@ signals:
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
     void mouseMiddleClick( QWidget * );
+    void closeRequest( QWidget * );
 
 private:
     bool isEmptyTabbarSpace( const QPoint & );

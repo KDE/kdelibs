@@ -24,6 +24,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), SLOT(tabbarContextMenu( const QPoint & )));
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
+  connect( mWidget, SIGNAL( closeRequest( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), SLOT(dragInitiated( QWidget * )));
@@ -69,10 +70,10 @@ Test::Test( QWidget* parent, const char *name )
   gridlayout->addWidget( tabshape, 3, 1 );
   connect( tabshape, SIGNAL( toggled(bool) ), SLOT( toggleTabShape(bool) ) );
 
-  QCheckBox *tabClose = new QCheckBox( "Close buttons on tabs", grid );
-  tabClose->setEnabled( false );
+  QCheckBox *tabClose = new QCheckBox( "Close button on icon hover", grid );
   gridlayout->addWidget( tabClose, 4, 0 );
   connect( tabClose, SIGNAL( toggled(bool) ), SLOT( toggleCloseButtons(bool) ) );
+  tabClose->setChecked(true);
 }
 
 void Test::currentChanged(QWidget* w)
@@ -82,7 +83,7 @@ void Test::currentChanged(QWidget* w)
 
 void Test::addTab()
 {
-  mWidget->addTab( new QWidget( mWidget ), QString("Tab %1").arg( mWidget->count()+1 ) );
+  mWidget->addTab( new QWidget( mWidget ), SmallIcon( "konsole" ), QString("Tab %1").arg( mWidget->count()+1 ) );
 }
 
 void Test::receivedDropEvent( QDropEvent *e )
@@ -230,7 +231,7 @@ void Test::toggleTabShape(bool state)
 
 void Test::toggleCloseButtons(bool state)
 {
-//  mWidget->setCloseButtons( state );
+  mWidget->setHoverCloseButton( state );
 }
 
 void Test::contextMenu(QWidget *w, const QPoint &p)

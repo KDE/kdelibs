@@ -20,16 +20,21 @@
 
 #include <qpainter.h>
 #include <qstyle.h>
+#include <qtoolbutton.h>
 
 #include <kglobalsettings.h>
+#include <kiconloader.h>
 
 #include "ktabbar.h"
 #include "ktabwidget.h"
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
-    : QTabBar( parent, name ), reorderStartTab( -1 ), previousTabIndex( -1 )
+    : QTabBar( parent, name ), reorderStartTab( -1 ), previousTabIndex( -1 ), b( 0 ), btab( 0 ), mHoverCloseButton( false )
 {
-    setAcceptDrops(TRUE);
+    setAcceptDrops( true );
+    setMouseTracking( true );
+
+    connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
 }
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
@@ -100,6 +105,42 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             }
         }
     }
+
+    if ( mHoverCloseButton ) {
+        QTab *t = selectTab( e->pos() );
+        if( t && t->iconSet() ) {
+            if ( b ) {
+                if ( btab == t )
+                    return;
+                delete b;
+            }
+            b = new QToolButton( this );
+            QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
+            b->setFixedSize( pixmap.width() + 4, pixmap.height() );
+            b->setIconSet( SmallIcon( "fileclose" ) );
+            int xoff = 0, yoff = 0;
+
+            // The additional offsets were found by try and error, TODO: find the rational behind them
+            if ( t == tab( currentTab() ) ) {
+                xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
+                yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 1;
+            }
+            else {
+                xoff = 5;
+                yoff = 1;
+            }
+            b->move( t->rect().left() + 2 + xoff, t->rect().center().y()-pixmap.height()/2 + yoff );
+            b->show();
+            btab = t;
+            connect( b, SIGNAL( clicked() ), SLOT( closeButtonClicked() ) );
+            return;
+        }
+        if ( b ) {
+            delete b;
+            b = 0;
+        }
+    }
+
     QTabBar::mouseMoveEvent( e );
 }
 
@@ -208,6 +249,30 @@ bool KTabBar::isTabReorderingEnabled() const
 void KTabBar::setTabReorderingEnabled( bool on )
 {
     mTabReordering = on;
+}
+
+void KTabBar::closeButtonClicked()
+{
+    emit closeRequest( indexOf( btab->identifier() ) );
+}
+
+void KTabBar::setHoverCloseButton( bool button )
+{
+    mHoverCloseButton = button;
+    if ( !button )
+        onLayoutChange();
+}
+
+bool KTabBar::hoverCloseButton() const
+{
+    return mHoverCloseButton;
+}
+
+void KTabBar::onLayoutChange()
+{
+    delete b;
+    b = 0;
+    btab = 0;
 }
 
 #include "ktabbar.moc"

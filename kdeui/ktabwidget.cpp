@@ -35,6 +35,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     connect(tabBar(), SIGNAL(dragInitiated( const int )), SLOT(dragInitiated( const int )));
     connect(tabBar(), SIGNAL(receivedDropEvent( const int, QDropEvent * )), SLOT(receivedDropEvent( const int, QDropEvent * )));
     connect(tabBar(), SIGNAL(moveTab( const int, const int )), SLOT(moveTab( const int, const int )));
+    connect(tabBar(), SIGNAL(closeRequest( const int )), SLOT(closeRequest( const int )));
 }
 
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
@@ -149,6 +150,21 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
             return true;
     }
     return false;
+}
+
+void KTabWidget::setHoverCloseButton( bool button )
+{
+    ( (KTabBar*)tabBar() )->setHoverCloseButton( button );
+}
+
+bool KTabWidget::hoverCloseButton() const
+{
+    return ( (KTabBar*)tabBar() )->hoverCloseButton();
+}
+
+void KTabWidget::closeRequest( const int index )
+{
+    emit( closeRequest( page( index ) ) );
 }
 
 #include "ktabwidget.moc"
