@@ -38,8 +38,7 @@
 #define LINELIMIT 4096
 
 /* antlarr: KDE 4: Make it const QString & */
-void KCrashBookmarkImporter::parseCrashLog( QString filename, bool del )
-{
+void KCrashBookmarkImporter::parseCrashLog( QString filename, bool del ) {
     QFile f( filename );
 
     if ( f.open( IO_ReadOnly ) ) {
@@ -89,8 +88,7 @@ QStringList KCrashBookmarkImporter::getCrashLogs() {
    DCOPClient* dcop = kapp->dcopClient();
 
    QCStringList apps = dcop->registeredApplications();
-   for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
-   {
+   for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it ) {
       QCString &clientId = *it;
 
       if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
@@ -106,8 +104,7 @@ QStringList KCrashBookmarkImporter::getCrashLogs() {
       } else {
          QDataStream reply( replyData, IO_ReadOnly );
 
-         if ( replyType == "QString" )
-         {
+         if ( replyType == "QString" ) {
             QString ret;
             reply >> ret;
             activeLogs[ret] = true;
@@ -131,15 +128,14 @@ QStringList KCrashBookmarkImporter::getCrashLogs() {
       bool dead = !activeLogs.contains( fi->absFilePath() );
       if ( dead )
          crashFiles << fi->absFilePath();
-      if (count++ > 20)
+      if ( count++ > 20 )
          break;
    }
 
    return crashFiles;
 }
 
-void KCrashBookmarkImporter::parseCrashBookmarks( bool del )
-{
+void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) {
    QStringList crashFiles = KCrashBookmarkImporter::getCrashLogs();
    int len = crashFiles.count();
    int n = 1;
@@ -153,8 +149,7 @@ void KCrashBookmarkImporter::parseCrashBookmarks( bool del )
    }
 }
 
-QString KCrashBookmarkImporter::crashBookmarksDir()
-{
+QString KCrashBookmarkImporter::crashBookmarksDir() {
    static KCrashBookmarkImporterImpl importer;
    return importer.findDefaultLocation();
 }
