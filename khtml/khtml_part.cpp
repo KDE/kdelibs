@@ -1119,7 +1119,9 @@ void KHTMLPart::write( const QString &str )
 void KHTMLPart::end()
 {
     // make sure nothing's left in there...
-    write(d->m_decoder->flush());
+    if(d->m_decoder) {
+        write(d->m_decoder->flush());
+    }
     d->m_doc->finishParsing();
 }
 
