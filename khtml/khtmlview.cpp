@@ -638,6 +638,7 @@ bool KHTMLView::gotoLink(bool forward)
 		    nextRect.bottom() > contentsY()+visibleHeight())
 		    return true;
 	    }
+	    else return true;
 	}
     }
 
