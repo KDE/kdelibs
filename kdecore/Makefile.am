@@ -31,13 +31,13 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kstdaccel.h kwinmodule.h kwm.h krootprop.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h ltdl.h \
 	kprotocolmanager.h kregexp.h kstyle.h \
-	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h qvariant.h \
+	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h \
 	kstartparams.h kallocator.h kautoarray.h ksharedpixmap.h \
 	klibglobal.h
 
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
-libkdecore_la_SOURCES = kstddirs.cpp qvariant.cpp   \
+libkdecore_la_SOURCES = kstddirs.cpp  \
 	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kapp.cpp ksock.cpp\
@@ -51,7 +51,7 @@ libkdecore_la_SOURCES = kstddirs.cpp qvariant.cpp   \
 	klibglobal.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
-libkdecore_la_LIBADD = -lXext $(LIB_QT) $(LIBDL) $(LIB_DMALLOC)
+libkdecore_la_LIBADD = -lXext qk/libqk.la $(LIBDL) $(LIB_DMALLOC)
 
 libkdecore_la_METASOURCES = kapp.moc \
 	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \

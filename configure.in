@@ -188,6 +188,8 @@ AC_SUBST(LIB_DMALLOC)
 
 AC_OUTPUT(Makefile \
 	kdecore/Makefile \
+	kdecore/qk/Makefile \
+	kdecore/tests/Makefile \
 	kdeui/Makefile \
 	kimgio/Makefile \
 	khtml/Makefile \
