@@ -299,7 +299,7 @@ QString KCalendarSystemHebrew::monthName(int month, bool shortName) const
 QString KCalendarSystemHebrew::monthNamePossessive(int month,
                                                   bool shortName) const
 {
-  return "of " + monthNamePossessive(month, shortName);
+  return "of " + monthName(month, shortName);
 }
 
 bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
