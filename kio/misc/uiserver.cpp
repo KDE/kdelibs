@@ -1322,7 +1322,7 @@ UIServer* UIServer::createInstance()
 
 //------------------------------------------------------------
 
-int main(int argc, char **argv)
+extern "C" int kdemain(int argc, char **argv)
 {
     KLocale::setMainCatalogue("kdelibs");
     //  GS 5/2001 - I changed the name to "KDE" to make it look better
