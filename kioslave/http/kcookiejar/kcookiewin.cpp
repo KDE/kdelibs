@@ -147,7 +147,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     if ( defaultButton > -1 && defaultButton < 3 )
         m_btnGrp->setButton( defaultButton );
     else
-        m_btnGrp->setButton( 0 );
+        m_btnGrp->setButton( 1 );
 
     // Accept/Reject buttons
     QWidget* bbox = new QWidget( this );
