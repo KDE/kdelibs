@@ -498,6 +498,7 @@ trans_mkdir(char *path, int mode)
 		    if (fstat(fd, &fbuf) == -1) {
 			PRMSG(1, "mkdir: fstat failed for %s (%d)\n",
 			      path, errno, 0);
+			close(fd);
 			return -1;
 		    }
 		    /*
@@ -509,6 +510,7 @@ trans_mkdir(char *path, int mode)
 			buf.st_ino != fbuf.st_ino) {
 			PRMSG(1, "mkdir: inode for %s changed\n",
 			      path, 0, 0);
+			close(fd);
 			return -1;
 		    }
 		    if (updateOwner && fchown(fd, 0, 0) == 0)
