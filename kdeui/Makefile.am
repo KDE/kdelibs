@@ -30,7 +30,8 @@ libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kmsgbox.h kpopmenu.h \
 		ktabctl.h ktreelist.h kstatusbar.h ktopwidget.h \
-		ktmainwindow.h ktoolbar.h kmenubar.h kbutton.h kslider.h \
+		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
+		kbutton.h kslider.h \
 		kseparator.h klined.h kcombo.h krestrictedline.h \
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
@@ -50,7 +51,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp \
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
-		kmenubar.cpp kbutton.cpp kslider.cpp \
+		ktmlayout.cpp kmenubar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp kcombo.cpp krestrictedline.cpp \
 		kspinbox.cpp kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
 		knewpanner.cpp keditcl1.cpp keditcl2.cpp \

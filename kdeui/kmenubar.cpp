@@ -43,6 +43,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.74  1999/05/11 23:39:47  dfaure
+// Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
+//  connected it to updateRects in KTMainWindow.
+// Implemented KMenuBar::enable, for consistency with other *bars.
+//
 // Revision 1.73  1999/05/08 18:26:21  ssk
 // Removed KChildMenu altogether. All it was doing was setting the line width
 // anyway.
@@ -278,6 +283,8 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   if (height() != heightForWidth(width()))
   {
     resize(width(), heightForWidth(width()));
+	// set fixed height so KTMainWindow geometry management will work
+	setFixedHeight(heightForWidth(width()));
     return;
   }
 }
@@ -327,7 +334,10 @@ void KMenuBar::init()
 
   setLineWidth( 0 );
 
-  resize( Parent->width(), menu->height());
+//  resize( Parent->width(), menu->height());
+  // set fixed height so KTMainWindow geometry management will work
+  setFixedHeight(menu->height());
+
   enableFloating (TRUE);
   connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
   slotReadConfig();
@@ -885,17 +895,17 @@ int KMenuBar::insertItem(const QString& text,
                const QObject *receiver, const char *member,
                int accel)
 {
-  return menu->insertItem(text, receiver, member, accel);
+	return menu->insertItem(text, receiver, member, accel);
 }
 
 int KMenuBar::insertItem( const QString& text, int id, int index)
 {
-  return menu->insertItem(text, id, index);
+	return menu->insertItem(text, id, index);
 }
 int KMenuBar::insertItem( const QString& text, QPopupMenu *popup,
                           int id, int index)
 {
-  return menu->insertItem(text, popup, id, index);
+	return menu->insertItem(text, popup, id, index);
 }
 /* Later - should be virtual and I can't do it right now - sven
 int KMenuBar::insertItem (const QPixmap &pixmap, const QObject *receiver,
@@ -907,6 +917,12 @@ int KMenuBar::insertItem (const QPixmap &pixmap, const QObject *receiver,
 void KMenuBar::insertSeparator(int index)
 {
   menu->insertSeparator(index);
+  /*
+   * This show() seems to be necessary, otherwise the only the first
+   * submenu is visible. It should probably be fixed somewhere else but this
+   * solves the problem for the time beeing. CS
+   */
+  show();
 }
 
 void KMenuBar::removeItem( int id )
@@ -979,6 +995,8 @@ void KMenuBar::setFlat (bool flag)
     //debug ("Flat");
     position = Flat;
     resize(30, 10);
+	// set fixed height so KTMainWindow geometry management will work
+	setFixedHeight(10);
     handle->resize(30, 10);
     frame->move(100, 100); // move menubar out of sight
     enableFloating(false);
@@ -989,8 +1007,11 @@ void KMenuBar::setFlat (bool flag)
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
     //debug ("Unflat");
     setMenuBarPos(lastPosition);
+	// set fixed height so KTMainWindow geometry management will work
+	setFixedHeight(menu->height());
     enableFloating(true);
     emit moved (position); // KTM will call this->updateRects
   }
 }
 #include "kmenubar.moc"
+

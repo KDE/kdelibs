@@ -25,6 +25,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.20  1999/05/11 23:39:45  dfaure
+// Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
+//  connected it to updateRects in KTMainWindow.
+// Implemented KMenuBar::enable, for consistency with other *bars.
+//
 // Revision 1.19  1999/03/01 23:35:15  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -134,6 +139,7 @@ void KStatusBar::init()
   insert_order = KStatusBar::LeftToRight;
   setFrameStyle( QFrame::NoFrame );
   resize( width(), fieldheight + 2* borderwidth);
+  setFixedHeight(fieldheight + 2* borderwidth);
   tempWidget=0;
   tempMessage=0;
 
@@ -146,7 +152,7 @@ void KStatusBar::setHeight(int h){
 
   fieldheight = h - 2* borderwidth;
   resize( width(),h);
-  
+  setFixedHeight(h);
 }
 
 
@@ -154,7 +160,7 @@ void KStatusBar::setBorderWidth(int b){
   
   borderwidth = b;
   resize( width(),height() + 2* borderwidth);
-  
+  setFixedHeight(height() + 2* borderwidth);
 }
 
 void KStatusBar::resizeEvent( QResizeEvent * ) {

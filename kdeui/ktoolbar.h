@@ -22,6 +22,12 @@
 
 // $Id$
 // $Log$
+// Revision 1.56  1999/06/04 15:43:55  pbrown
+// improved KLineEdit to have a right popup menu with cut, copy, past, clear
+// etc. like newer windows (heh) applications have.  Renamed class from
+// KLined to KLineEdit for consistency -- provided a #define for backwards
+// comptability, but I am working on stamping the old class name out now.
+//
 // Revision 1.55  1999/05/28 10:17:21  kulow
 // several fixes to make --enable-final work. Most work is done by changing
 // the order of the files in _SOURCES
@@ -147,14 +153,14 @@ public:
   void setEnabled (bool enable) { item->setEnabled(enable); };
   bool isEnabled () { return item->isEnabled(); };
   int ID() { return id; };
-  bool isRight () { return right; };
+  bool isRight () const { return right; };
   void alignRight  (bool flag) { right = flag; };
   void autoSize (bool flag) { autoSized = flag; };
-  bool isAuto ()  { return autoSized; };
-  int width() { return item->width(); };
-  int height() { return item->height(); };
-  int x() { return item->x(); };
-  int y() { return item->y(); };
+  bool isAuto () const { return autoSized; };
+  int width() const { return item->width(); };
+  int height() const { return item->height(); };
+  int x() const { return item->x(); };
+  int y() const { return item->y(); };
   int winId () { return item->winId(); };
 
   Item *getItem() { return item; };
@@ -706,6 +712,9 @@ public:
   bool enable(BarStatus stat);
 
   /**
+   * This function is no longer needed since it makes no sense with
+   * Qt layout management. CS
+   *
    * Sets maximal height of vertical (Right or Left) toolbar. You normaly
    * do not have to call it, since it's called from
    * @ref KTopLevelWidget#updateRects
@@ -718,6 +727,9 @@ public:
   void setMaxHeight (int h);  // Set max height for vertical toolbars
 
   /**
+   * This function is no longer needed since it makes no sense with
+   * Qt layout management. CS
+   *
    * Sets maximal width of horizontal (top or bottom) toolbar. This works
    * only for horizontal toolbars (at Top or Bottom), and has no effect
    * otherwise. Has no effect when toolbar is floating.
@@ -749,44 +761,46 @@ public:
   void setIconText(int it);
 
   /**
-   * Redraw toolbar and resize it if resize is true.
-   * You normaly don't have to call it, since it's called from
-   * @ref KTopLevelWidget#updateRects or from resizeEvent. You can call it
-   * if you manualy change width of inserted frame, or if you wish to force
-   * toolbar to recalculate itself.
-   *
-   * You don't want to fiddle with this.
-   * @ref KtopLevelWidget works closely with toolbar. If you want to
-   * subclass KTopLevelWidget to change its resize policy, hear this:
-   *
-   * resizeEvent() in KTopLevelWidget just calls updateRects, which handles
-   * children sizes. Call updateRects when you're done with your things.
-   * 
-   * If you want to handle everything yourself:
-   * 
-   * KToolBar manages itself by calling toolbar->@ref #updateRects (true).
-   * It will autosize itself, but won't move itself.
-   * You have to do the moving.
-   * First setup & move anything that is above toolbars (menus...). Then
-   * setup statusbars and other horizontal things on bottom. Then loop through
-   * all HORIZONTAL toolbars, call their updateRects(true), _then_ take their
-   * size, an move them (note that they size themselves according to parent
-   * width()). After  you have looped through HORIZONTAL toolbars, calculate
-   * the maximum height that vertical toolbars may have (this is your free
-   * area height). Then loop through vertical toolbars,
-   *
-   * @ref #setMaxHeight (calculated_max_height) on them,
-   * call their updateRects(true), and _then_ move them to their locations.
-   * In 0xFE cases out of 0xFF you don't need to use this function.
-   * @see KtopLevelWidget#updateRects
+   * updateRects() arranges the toolbar items and calculates their
+   * position and size. Most of the work is done by layoutHorizontal()
+   * and layoutVertical() though. In some cases it may be desirable to
+   * trigger a resize operation, then set resize to true. Do not call
+   * updateRects(true) within a resize event processing, this will start
+   * an infinite recursion!
    */
   void updateRects(bool resize = false);
 
   /**
-     * Returns minimal width for top-level window, so that toolbar
-     * has only one row.
-     */
-  QSize sizeHint();
+   * This function is required for the Qt layout management to work. It
+   * returns the preferred size.
+   */
+  virtual QSize sizeHint() const;
+
+  /**
+   * This function is required for the Qt layout management to work. It
+   * returns the preferred size.
+   */
+  virtual QSize minimumSizeHint() const;
+
+  /**
+   * This function is required for the Qt layout management to work. It
+   * return the minimum width for a given height. It makes only sense for
+   * vertical tool bars.
+   */
+  virtual int widthForHeight(int height) const;
+
+  /**
+   * This function is required for the Qt layout management to work. It
+   * return the minimum height for a given width. It makes only sense for
+   * horizontal tool bars.
+   */
+  virtual int heightForWidth(int width) const;
+
+  /**
+   * This function is required for the Qt layout management to work. It
+   * returns information about the size policy.
+   */
+  virtual QSizePolicy KToolBar::sizePolicy() const;
 
   void setFlat (bool flag);
 
@@ -876,6 +890,9 @@ private:
   int oldY;
   int oldWFlags;
 
+  int min_width;
+  int min_height;
+
   int max_width;
   int max_height;
 
@@ -901,8 +918,8 @@ protected:
   void mouseMoveEvent ( QMouseEvent *);
   void mouseReleaseEvent ( QMouseEvent *);
   void init();
-  void layoutVertical ();
-  void layoutHorizontal ();
+  void layoutVertical(int maxHeight);
+  void layoutHorizontal(int maxWidth);
   void leaveEvent (QEvent *e);
 
 
