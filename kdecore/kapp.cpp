@@ -1016,7 +1016,7 @@ void KApplication::dcopFailure(const QString &msg)
         srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
      if (srv.isEmpty())
         return;
-     my_system(QFile::encodeName(srv));
+     my_system(QFile::encodeName(srv)+" --suicide");
      return;
   }
   if (failureCount == 2)
