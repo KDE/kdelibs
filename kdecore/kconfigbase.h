@@ -80,6 +80,13 @@ public:
   virtual ~KConfigBase();
 
   /**
+   * detect whether the enconding of the given char. is
+   * utf-8 or not.
+   */
+  // int isUtf8(const QCString &str);
+  bool isUtf8(const char *buf) const;
+
+  /**
    * Specify the group in which keys will be searched.
    *
    *  Subsequent
