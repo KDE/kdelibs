@@ -106,31 +106,31 @@ QCString demarshal( QDataStream &stream, const QString &type )
     {
         int i;
         stream >> i;
-        result.sprintf( "%d", i );
+        result.setNum( i );
     } else if ( type == "uint" || type == "Q_UINT32" )
     {
         uint i;
         stream >> i;
-        result.sprintf( "%d", i );
+        result.setNum( i );
     } else if ( type == "long" )
     {
         long l;
         stream >> l;
-        result.sprintf( "%ld", l );
+        result.setNum( l );
     } else if ( type == "float" )
     {
         float f;
         stream >> f;
-        result.sprintf( "%f", (double)f );
+        result.setNum( f, 'f' );
     } else if ( type == "double" )
     {
         double d;
         stream >> d;
-        result.sprintf( "%f", d );
+        result.setNum( d, 'f' );
     } else if ( type == "Q_UINT64" ) {
         Q_UINT64 i;
         stream >> i;
-        result.sprintf( "%ld", i );
+        result.sprintf( "%llu", i );
     } else if ( type == "bool" )
     {
         bool b;
