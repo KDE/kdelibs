@@ -198,9 +198,9 @@ void KLocale::setCharsetLang(const QString &_lang)
   if (!location.isNull())
   {
     QFile f(location);
-    if (f.exists() && f.open(IO_ReadOnly))
+    if (f.open(IO_ReadOnly))
     {
-      char *buf=new char[256]; 
+      char *buf=new char[256];
       int l=f.readLine(buf,256);
       if (l>0)
       {
@@ -911,8 +911,8 @@ void KLocale::insertCatalogue( const QString& ) {
 }
 
 void KLocale::setLanguage(
-  const QString & /* _lang */, const QString & /* _langs */, 
-  const QString & /* _number */, const QString & /* _money */, 
+  const QString & /* _lang */, const QString & /* _langs */,
+  const QString & /* _number */, const QString & /* _money */,
   const QString & /* _time */)
 {
 }
