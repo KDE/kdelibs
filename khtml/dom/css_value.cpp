@@ -318,7 +318,7 @@ unsigned short CSSPrimitiveValue::primitiveType() const
 void CSSPrimitiveValue::setFloatValue( unsigned short unitType, float floatValue )
 {
     if(!impl) return;
-    int exceptioncode;
+    int exceptioncode = 0;
     ((CSSPrimitiveValueImpl *)impl)->setFloatValue( unitType, floatValue, exceptioncode );
     if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
 	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );

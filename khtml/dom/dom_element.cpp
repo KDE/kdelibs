@@ -135,24 +135,48 @@ DOMString Element::tagName() const
 
 DOMString Element::getAttribute( const DOMString &name )
 {
-    if (impl) return ((ElementImpl *)impl)->getAttribute(name);
-    return DOMString();
+    if (!impl)
+        return DOMString(); // ### throw exception
+
+    int exceptioncode = 0;
+    DOMString r = ((ElementImpl *)impl)->getAttribute(name, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 void Element::setAttribute( const DOMString &name, const DOMString &value )
 {
-    if (impl) ((ElementImpl *)impl)->setAttribute(name, value);
+    if (!impl)
+        return;
+
+    int exceptioncode = 0;
+    ((ElementImpl *)impl)->setAttribute(name, value, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 void Element::removeAttribute( const DOMString &name )
 {
-    if (impl) ((ElementImpl *)impl)->removeAttribute(name);
+    if (!impl)
+        return; // ### throw exception
+
+    int exceptioncode = 0;
+    ((ElementImpl *)impl)->removeAttribute(name, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 Attr Element::getAttributeNode( const DOMString &name )
 {
-    if (impl) return ((ElementImpl *)impl)->getAttributeNode(name);
-    return 0;
+    if (!impl)
+        return 0;
+
+    int exceptioncode = 0;
+    AttrImpl *r = ((ElementImpl *)impl)->getAttributeNode(name, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 Attr Element::setAttributeNode( const Attr &newAttr )
@@ -179,8 +203,14 @@ Attr Element::removeAttributeNode( const Attr &oldAttr )
 
 NodeList Element::getElementsByTagName( const DOMString &name )
 {
-    if (impl) return ((ElementImpl *)impl)->getElementsByTagName(name);
-    return 0;
+    if (!impl)
+        return 0; // ### throw exception
+
+    int exceptioncode = 0;
+    NodeListImpl *r = ((ElementImpl *)impl)->getElementsByTagName(name, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 DOMString Element::getAttributeNS( const DOMString &namespaceURI,
@@ -261,8 +291,14 @@ NodeList Element::getElementsByTagNameNS( const DOMString &namespaceURI,
 
 bool Element::hasAttribute( const DOMString& name )
 {
-    if (impl) return ((ElementImpl *)impl)->hasAttribute(name);
-    return 0;
+    if (!impl)
+        return false; // ### throw exception
+
+    int exceptioncode = 0;
+    bool r = ((ElementImpl *)impl)->hasAttribute(name, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 bool Element::hasAttributeNS( const DOMString &namespaceURI,

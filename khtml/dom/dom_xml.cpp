@@ -26,6 +26,7 @@
 #include "dom_string.h"
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
+#include "dom_exception.h"
 using namespace DOM;
 
 
@@ -243,7 +244,13 @@ DOMString ProcessingInstruction::data() const
 
 void ProcessingInstruction::setData( const DOMString &_data )
 {
-    if (impl) ((ProcessingInstructionImpl*)impl)->setData(_data);
+    if (!impl)
+        return;
+
+    int exceptioncode = 0;
+    ((ProcessingInstructionImpl*)impl)->setData(_data, exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
 }
 
 ProcessingInstruction::ProcessingInstruction(ProcessingInstructionImpl *i) : Node(i)

@@ -101,6 +101,20 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         return false;
 }
 
+DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &/*qualifiedName*/, const DOMString &/*publicId*/, 
+                                                             const DOMString &/*systemId*/, int &/*exceptioncode*/ )
+{
+    // ## implement
+    return 0;
+}
+
+DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/, 
+                                                     const DOMString &/*doctype*/, int &/*exceptioncode*/ )
+{
+    // ## implement
+    return 0;
+}
+
 CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/)
 {
     return 0; // ###
@@ -170,14 +184,15 @@ DocumentImpl::~DocumentImpl()
     m_styleSheets->deref();
 }
 
-const DOMString DocumentImpl::nodeName() const
+
+DocumentTypeImpl *DocumentImpl::doctype() const
 {
-    return "#document";
+    return m_doctype;
 }
 
-unsigned short DocumentImpl::nodeType() const
+DOMImplementationImpl *DocumentImpl::implementation() const
 {
-    return Node::DOCUMENT_NODE;
+    return m_implementation;
 }
 
 ElementImpl *DocumentImpl::documentElement() const
@@ -193,8 +208,59 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
     return new XMLElementImpl( document, name.implementation() );
 }
 
+DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
+{
+    return new DocumentFragmentImpl( docPtr() );
+}
+
+TextImpl *DocumentImpl::createTextNode( const DOMString &data )
+{
+    return new TextImpl( docPtr(), data);
+}
+
+CommentImpl *DocumentImpl::createComment ( const DOMString &data )
+{
+    return new CommentImpl( docPtr(), data );
+}
+
+CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
+{
+    return new CDATASectionImpl( docPtr(), data );
+}
+
+ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
+{
+    return new ProcessingInstructionImpl( docPtr(),target,data);
+}
+
+AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
+{
+    AttrImpl *attr = new AttrImpl( docPtr(), name );
+    attr->setValue("");
+    return attr;
+}
+
+EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
+{
+    return new EntityReferenceImpl(docPtr(), name.implementation());
+}
+
+NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
+{
+    return new TagNodeListImpl( this, tagname );
+}
+
+NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
+                                           int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
 ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
+    // ### DOM2 Core 1.1.8 states that null can be supplied as the namespace URI, indicating the element has
+    // no namespace (also check this for Element.*attribute())
     ElementImpl *e = 0;
     // ### somehow set the namespace for html elements to http://www.w3.org/1999/xhtml ?
     if (_namespaceURI == "http://www.w3.org/1999/xhtml") {
@@ -205,6 +271,113 @@ ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, con
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
     return e;
+}
+
+AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, const DOMString &/*_qualifiedName*/ )
+{
+    // ### implement
+    return 0;
+}
+
+NodeListImpl *DocumentImpl::getElementsByTagNameNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
+                                                    int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
+{
+    QStack<NodeImpl> nodeStack;
+    NodeImpl *current = _first;
+
+    while(1)
+    {
+        if(!current)
+        {
+            if(nodeStack.isEmpty()) break;
+            current = nodeStack.pop();
+            current = current->nextSibling();
+        }
+        else
+        {
+            if(current->isElementNode())
+            {
+                ElementImpl *e = static_cast<ElementImpl *>(current);
+                if(e->getAttribute(ATTR_ID) == elementId)
+                    return e;
+            }
+
+            NodeImpl *child = current->firstChild();
+            if(child)
+            {
+                nodeStack.push(current);
+                current = child;
+            }
+            else
+            {
+                current = current->nextSibling();
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const DOMString DocumentImpl::nodeName() const
+{
+    return "#document";
+}
+
+unsigned short DocumentImpl::nodeType() const
+{
+    return Node::DOCUMENT_NODE;
 }
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
@@ -553,17 +726,6 @@ void DocumentImpl::applyChanges(bool,bool force)
     setChanged(false);
 }
 
-DocumentTypeImpl *DocumentImpl::doctype() const
-{
-    return m_doctype;
-}
-
-DOMImplementationImpl *DocumentImpl::implementation() const
-{
-    return m_implementation;
-}
-
-
 void DocumentImpl::setChanged(bool b)
 {
     if (b)
@@ -615,59 +777,6 @@ void DocumentImpl::recalcStyle()
     for (n = _first; n; n = n->nextSibling())
         n->recalcStyle();
     //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
-}
-
-
-
-// ------------------------------------------------------------------------
-
-DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
-{
-    return new DocumentFragmentImpl( docPtr() );
-}
-
-TextImpl *DocumentImpl::createTextNode( const DOMString &data )
-{
-    return new TextImpl( docPtr(), data);
-}
-
-CommentImpl *DocumentImpl::createComment ( const DOMString &data )
-{
-    return new CommentImpl( docPtr(), data );
-}
-
-CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
-{
-    return new CDATASectionImpl( docPtr(), data );
-}
-
-ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
-{
-    return new ProcessingInstructionImpl( docPtr(),target,data);
-}
-
-AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
-{
-    AttrImpl *attr = new AttrImpl( docPtr(), name );
-    attr->setValue("");
-    return attr;
-}
-
-AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, const DOMString &/*_qualifiedName*/ )
-{
-    // ###
-    return 0;
-}
-
-
-EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
-{
-    return new EntityReferenceImpl(docPtr(), name.implementation());
-}
-
-NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
-{
-    return new TagNodeListImpl( this, tagname );
 }
 
 void DocumentImpl::updateRendering()
@@ -829,44 +938,6 @@ void DocumentImpl::clear()
     m_tokenizer = 0;
 
     removeChildren();
-}
-
-ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
-{
-    QStack<NodeImpl> nodeStack;
-    NodeImpl *current = _first;
-
-    while(1)
-    {
-        if(!current)
-        {
-            if(nodeStack.isEmpty()) break;
-            current = nodeStack.pop();
-            current = current->nextSibling();
-        }
-        else
-        {
-            if(current->isElementNode())
-            {
-                ElementImpl *e = static_cast<ElementImpl *>(current);
-                if(e->getAttribute(ATTR_ID) == elementId)
-                    return e;
-            }
-
-            NodeImpl *child = current->firstChild();
-            if(child)
-            {
-                nodeStack.push(current);
-                current = child;
-            }
-            else
-            {
-                current = current->nextSibling();
-            }
-        }
-    }
-
-    return 0;
 }
 
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
@@ -1592,6 +1663,24 @@ NamedNodeMapImpl *DocumentTypeImpl::entities() const
 NamedNodeMapImpl *DocumentTypeImpl::notations() const
 {
     return m_notations;
+}
+
+DOMString DocumentTypeImpl::publicId() const
+{
+    // ### implement
+    return DOMString();
+}
+
+DOMString DocumentTypeImpl::systemId() const
+{
+    // ### implement
+    return DOMString();
+}
+
+DOMString DocumentTypeImpl::internalSubset() const
+{
+    // ### implement
+    return DOMString();
 }
 
 const DOMString DocumentTypeImpl::nodeName() const

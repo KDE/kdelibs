@@ -47,29 +47,30 @@ namespace khtml {
 
 namespace DOM {
 
-    class ElementImpl;
-    class DocumentFragmentImpl;
-    class TextImpl;
-    class CDATASectionImpl;
-    class CommentImpl;
-    class AttrImpl;
-    class EntityReferenceImpl;
-    class NodeListImpl;
-    class StyleSheetListImpl;
-    class RangeImpl;
-    class NodeIteratorImpl;
-    class TreeWalkerImpl;
-    class NodeFilterImpl;
-    class DocumentTypeImpl;
-    class GenericRONamedNodeMapImpl;
-    class ProcessingInstructionImpl;
-    class HTMLElementImpl;
-    class StyleSheetImpl;
-    class CSSStyleSheetImpl;
     class AbstractViewImpl;
+    class AttrImpl;
+    class CDATASectionImpl;
+    class CSSStyleSheetImpl;
+    class CommentImpl;
+    class DocumentFragmentImpl;
+    class DocumentImpl;
+    class DocumentTypeImpl;
+    class ElementImpl;
+    class EntityReferenceImpl;
     class EventImpl;
     class EventListener;
+    class GenericRONamedNodeMapImpl;
+    class HTMLElementImpl;
+    class NodeFilterImpl;
+    class NodeIteratorImpl;
+    class NodeListImpl;
+    class ProcessingInstructionImpl;
+    class RangeImpl;
     class RegisteredEventListener;
+    class StyleSheetImpl;
+    class StyleSheetListImpl;
+    class TextImpl;
+    class TreeWalkerImpl;
 
 class DOMImplementationImpl : public DomShared
 {
@@ -77,7 +78,15 @@ public:
     DOMImplementationImpl();
     ~DOMImplementationImpl();
 
+    // DOM methods
     bool hasFeature ( const DOMString &feature, const DOMString &version );
+
+    DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId, 
+                                          const DOMString &systemId, int &exceptioncode );
+
+    DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+                                  const DOMString &doctype, int &exceptioncode );
+
     CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media);
 };
 
@@ -92,13 +101,10 @@ public:
     DocumentImpl(KHTMLView *v=0);
     ~DocumentImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual unsigned short nodeType() const;
-    virtual bool isDocumentNode() const { return true; }
 
-    virtual bool isHTMLDocument() const { return false; }
 
-    virtual void applyChanges(bool top=true, bool force=true);
+
+    // DOM methods & attributes for Element
 
     DocumentTypeImpl *doctype() const;
 
@@ -107,8 +113,6 @@ public:
     ElementImpl *documentElement() const;
 
     virtual ElementImpl *createElement ( const DOMString &tagName );
-    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
-    virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
 
     DocumentFragmentImpl *createDocumentFragment ();
 
@@ -121,11 +125,36 @@ public:
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
 
     AttrImpl *createAttribute ( const DOMString &name );
-    AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
 
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
 
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
+
+    NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
+
+    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
+
+    AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
+
+    NodeListImpl *getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName, int &exceptioncode );
+
+    ElementImpl *getElementById ( const DOMString &elementId ) const;
+
+    // DOM methods overridden from  parent classes
+    virtual const DOMString nodeName() const;
+
+    virtual unsigned short nodeType() const;
+
+
+    // Other methods (not part of DOM)
+    virtual bool isDocumentNode() const { return true; }
+
+    virtual bool isHTMLDocument() const { return false; }
+
+    virtual void applyChanges(bool top=true, bool force=true);
+
+    virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
+
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     void createSelector();
@@ -176,8 +205,6 @@ public:
     void writeln ( const DOMString &text );
     void finishParsing (  );
     void clear();
-    // moved from HTMLDocument in DOM2
-    ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     QString URL() const { return m_url; }
     void setURL(QString url) { m_url = url; }
@@ -356,9 +383,25 @@ public:
 
     void setName( const QString& name ) { m_name = name; }
 
+    // DOM methods & attributes for DocumentType
     virtual const DOMString name() const;
+
     virtual NamedNodeMapImpl *entities() const;
+
     virtual NamedNodeMapImpl *notations() const;
+
+    virtual DOMString publicId() const;
+
+    virtual DOMString systemId() const;
+
+    virtual DOMString internalSubset() const;
+
+
+
+
+
+
+
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
 

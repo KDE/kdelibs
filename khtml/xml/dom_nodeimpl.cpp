@@ -161,14 +161,47 @@ NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
   return 0;
 }
 
+bool NodeImpl::hasChildNodes(  ) const
+{
+  return false;
+}
+
 bool NodeImpl::hasAttributes(  ) const
 {
   return false;
 }
 
-bool NodeImpl::hasChildNodes(  ) const
+void NodeImpl::normalize ( int &/*exceptioncode*/ )
 {
-  return false;
+    // ### implement
+}
+
+bool NodeImpl::isSupported( const DOMString &/*feature*/, const DOMString &/*version*/, int &/*exceptioncode*/ ) const
+{
+    // ### implement
+    return false;
+}
+
+DOMString NodeImpl::namespaceURI() const
+{
+    return DOMString();
+}
+
+DOMString NodeImpl::prefix() const
+{
+    // ### implement
+    return DOMString();
+}
+
+void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+}
+
+DOMString NodeImpl::localName() const
+{
+    // ### implement
+    return DOMString();
 }
 
 // helper functions not being part of the DOM
@@ -324,12 +357,6 @@ void NodeImpl::setChanged(bool b)
         ownerDocument()->changedNodes.remove(this);
     m_changed = b;
 }
-
-DOMString NodeImpl::namespaceURI() const
-{
-    return DOMString();
-}
-
 
 void NodeImpl::printTree(int indent)
 {
@@ -1822,11 +1849,6 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
     delete m_contents;
 }
 
-unsigned long GenericRONamedNodeMapImpl::length(int &/*exceptioncode*/) const
-{
-    return m_contents->count();
-}
-
 NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
 {
     QListIterator<NodeImpl> it(*m_contents);
@@ -1858,6 +1880,33 @@ NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index, int &/*exceptio
         return 0;
 
     return m_contents->at(index);
+}
+
+unsigned long GenericRONamedNodeMapImpl::length(int &/*exceptioncode*/) const
+{
+    return m_contents->count();
+}
+
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &/*namespaceURI*/,
+                                                     const DOMString &/*localName*/,
+                                                     int &/*exceptioncode*/ ) const
+{
+    // ### implement
+    return 0;
+}
+
+NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+NodeImpl *GenericRONamedNodeMapImpl::removeNamedItemNS( const DOMString &/*namespaceURI*/,
+                                                        const DOMString &/*localName*/,
+                                                        int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
 }
 
 void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)

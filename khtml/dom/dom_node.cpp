@@ -95,7 +95,7 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
 Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     Node r = impl->removeNamedItem(name,exceptioncode);
@@ -107,7 +107,7 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 Node NamedNodeMap::item( unsigned long index ) const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->item(index,exceptioncode);
@@ -116,10 +116,46 @@ Node NamedNodeMap::item( unsigned long index ) const
     return r;
 }
 
+Node NamedNodeMap::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName ) const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = impl->getNamedItemNS(namespaceURI, localName, exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+Node NamedNodeMap::setNamedItemNS( const Node &arg )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = impl->setNamedItemNS(arg.handle(), exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+Node NamedNodeMap::removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = impl->removeNamedItemNS(namespaceURI, localName, exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
 unsigned long NamedNodeMap::length() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     unsigned long r = impl->length(exceptioncode);
@@ -202,7 +238,7 @@ DOMString Node::nodeValue() const
 void Node::setNodeValue( const DOMString &_str )
 {
     if (!impl)
-	return; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     if(impl) impl->setNodeValue( _str,exceptioncode );
@@ -213,7 +249,7 @@ void Node::setNodeValue( const DOMString &_str )
 unsigned short Node::nodeType() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     unsigned short r = impl->nodeType();
@@ -225,7 +261,7 @@ unsigned short Node::nodeType() const
 Node Node::parentNode() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->parentNode();
@@ -237,7 +273,7 @@ Node Node::parentNode() const
 NodeList Node::childNodes() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeListImpl *r = impl->childNodes();
@@ -250,7 +286,7 @@ NodeList Node::childNodes() const
 Node Node::firstChild() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->firstChild();
@@ -262,7 +298,7 @@ Node Node::firstChild() const
 Node Node::lastChild() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->lastChild();
@@ -274,7 +310,7 @@ Node Node::lastChild() const
 Node Node::previousSibling() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->previousSibling();
@@ -286,7 +322,7 @@ Node Node::previousSibling() const
 Node Node::nextSibling() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->nextSibling();
@@ -298,7 +334,7 @@ Node Node::nextSibling() const
 NamedNodeMap Node::attributes() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NamedNodeMapImpl *r = impl->attributes();
@@ -310,7 +346,7 @@ NamedNodeMap Node::attributes() const
 Document Node::ownerDocument() const
 {
     if (!impl)
-	return Document(); // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return Document(); // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     DocumentImpl *r = impl->ownerDocument();
@@ -322,7 +358,7 @@ Document Node::ownerDocument() const
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->insertBefore( newChild.impl, refChild.impl, exceptioncode );
@@ -334,7 +370,7 @@ Node Node::insertBefore( const Node &newChild, const Node &refChild )
 Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
@@ -346,7 +382,7 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 Node Node::removeChild( const Node &oldChild )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->removeChild( oldChild.impl, exceptioncode );
@@ -358,7 +394,7 @@ Node Node::removeChild( const Node &oldChild )
 Node Node::appendChild( const Node &newChild )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->appendChild( newChild.impl, exceptioncode );
@@ -370,7 +406,7 @@ Node Node::appendChild( const Node &newChild )
 bool Node::hasAttributes()
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
     bool r = impl->hasAttributes();
     return r;
 }
@@ -378,7 +414,7 @@ bool Node::hasAttributes()
 bool Node::hasChildNodes(  )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     bool r = impl->hasChildNodes();
     return r;
@@ -387,13 +423,72 @@ bool Node::hasChildNodes(  )
 Node Node::cloneNode( bool deep )
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->cloneNode( deep, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;
+}
+
+void Node::normalize (  )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode;
+    impl->normalize(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+}
+
+bool Node::isSupported( const DOMString &feature,
+                        const DOMString &version ) const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode;
+    bool r = impl->isSupported(feature,version,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+DOMString Node::namespaceURI(  ) const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->namespaceURI();
+}
+
+DOMString Node::prefix(  ) const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->prefix();
+}
+
+void Node::setPrefix(const DOMString &prefix )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode;
+    impl->setPrefix(prefix,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+}
+
+DOMString Node::localName(  ) const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->localName();
 }
 
 void Node::addEventListener(const DOMString &type,
@@ -438,7 +533,7 @@ bool Node::dispatchEvent(const Event &evt)
 unsigned short Node::elementId() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     int r = impl->id();
@@ -450,7 +545,7 @@ unsigned short Node::elementId() const
 unsigned long Node::index() const
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     return impl->nodeIndex();
 }
@@ -458,7 +553,7 @@ unsigned long Node::index() const
 QString Node::toHTML()
 {
     if (!impl)
-	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     QString r = impl->toHTML();
@@ -470,7 +565,7 @@ QString Node::toHTML()
 void Node::applyChanges()
 {
     if (!impl)
-	return; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+	return; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     impl->applyChanges();

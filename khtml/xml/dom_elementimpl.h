@@ -98,23 +98,23 @@ public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
 
-    // DOM methods for Element
+    // DOM methods & attributes for Element
 
     DOMString tagName() const;
 
-    DOMString getAttribute ( const DOMString &name ) const;
+    DOMString getAttribute ( const DOMString &name, int &exceptioncode ) const;
 
-    void setAttribute ( const DOMString &name, const DOMString &value);
+    void setAttribute ( const DOMString &name, const DOMString &value, int &exceptioncode );
 
-    void removeAttribute ( const DOMString &name );
+    void removeAttribute ( const DOMString &name, int &exceptioncode );
 
-    AttrImpl *getAttributeNode ( const DOMString &name );
+    AttrImpl *getAttributeNode ( const DOMString &name, int &exceptioncode );
 
     Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
 
     Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
-    NodeListImpl *getElementsByTagName ( const DOMString &name );
+    NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
 
     DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                int &exceptioncode );
@@ -133,12 +133,20 @@ public:
     NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
                                            int &exceptioncode );
 
-    bool hasAttribute ( const DOMString &name ) const;
+    bool hasAttribute ( const DOMString &name, int &exceptioncode ) const;
 
     bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
                          int &exceptioncode );
 
-    // Other methods
+    // DOM methods overridden from  parent classes
+    void normalize ( int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    // convenience methods which ignore exceptions
+    DOMString getAttribute ( const DOMString &name ) const;
+    void setAttribute ( const DOMString &name, const DOMString &value);
 
     virtual bool isInline() const;
 
@@ -147,14 +155,6 @@ public:
 
     virtual bool isHTMLElement() const { return false; }
 
-
-
-
-
-
-    void normalize ( int &exceptioncode );
-
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual NamedNodeMapImpl *attributes();
     virtual bool hasAttributes() const;
 
@@ -257,6 +257,12 @@ public:
 
     NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
     NodeImpl *item ( unsigned long index ) const; // ### remove?
+
+    virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                      int &exceptioncode ) const;
+    virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode );
+    virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                         int &exceptioncode );
 
     Attr removeAttr( AttrImpl *oldAttr, int &exceptioncode );
 

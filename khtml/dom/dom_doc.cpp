@@ -78,6 +78,34 @@ bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &v
     return false;
 }
 
+DocumentType DOMImplementation::createDocumentType ( const DOMString &qualifiedName,
+                                                     const DOMString &publicId, 
+                                                     const DOMString &systemId )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    DocumentTypeImpl *r = impl->createDocumentType(qualifiedName, publicId, systemId, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
+
+Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
+                                             const DOMString &qualifiedName,
+                                             const DOMString &doctype )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    DocumentImpl *r = impl->createDocument(namespaceURI, qualifiedName, doctype, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
+
 CSSStyleSheet DOMImplementation::createCSSStyleSheet(const DOMString &title, const DOMString &media)
 {
     if (impl) return impl->createCSSStyleSheet(title.implementation(),media.implementation());
@@ -240,6 +268,30 @@ NodeList Document::getElementsByTagName( const DOMString &tagName )
     return 0;
 }
 
+Node Document::importNode( const Node & importedNode, bool deep )
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = static_cast<DocumentImpl*>(impl)->importNode(importedNode.handle(), deep, exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    NodeListImpl *r = static_cast<DocumentImpl*>(impl)->getElementsByTagNameNS(namespaceURI, localName, exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
 bool Document::isHTMLDocument() const
 {
     if (impl) return ((DocumentImpl *)impl)->isHTMLDocument();
@@ -251,43 +303,6 @@ Range Document::createRange()
     if (impl) return ((DocumentImpl *)impl)->createRange();
     return 0;
 }
-
-/*Range Document::createRange(const Node &sc, const long so, const Node &ec, const long eo)
-{
-// ### not part of the DOM
-    Range r;
-    r.setStart( sc, so );
-    r.setEnd( ec, eo );
-    return r;
-}*/
-
-/*NodeIterator Document::createNodeIterator()
-{
-// ### not part of the DOM
-//  return NodeIterator( *this );
-    return NodeIterator();
-}*/
-
-/*NodeIterator Document::createNodeIterator(long _whatToShow, NodeFilter *filter)
-{
-// ### not part of the DOM
-//  return NodeIterator( *this, _whatToShow, filter );
-    return NodeIterator();
-}*/
-
-/*TreeWalker Document::createTreeWalker()
-{
-// ### not part of the DOM
-//  return TreeWalker( *this );
-  return TreeWalker();
-}*/
-
-/*TreeWalker Document::createTreeWalker(long _whatToShow, NodeFilter *filter )
-{
-// ### not part of the DOM
-//  return TreeWalker( *this, _whatToShow, filter);
-  return TreeWalker();
-}*/
 
 NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
                                     NodeFilter filter, bool entityReferenceExpansion)
@@ -448,6 +463,30 @@ NamedNodeMap DocumentType::notations() const
     if (impl)
 	return static_cast<DocumentTypeImpl*>(impl)->notations();
     return 0;
+}
+
+DOMString DocumentType::publicId() const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->publicId();
+}
+
+DOMString DocumentType::systemId() const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->systemId();
+}
+
+DOMString DocumentType::internalSubset() const
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->internalSubset();
 }
 
 DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)

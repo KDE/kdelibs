@@ -111,7 +111,7 @@ public:
     virtual DOMString target() const;
     virtual DOMString data() const;
     virtual DOMString localHref() const;
-    virtual void setData( const DOMString &_data );
+    virtual void setData( const DOMString &_data, int &exceptioncode );
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     StyleSheetImpl *sheet() const;

@@ -310,7 +310,7 @@ DOMString ProcessingInstructionImpl::localHref() const
     return m_localHref;
 }
 
-void ProcessingInstructionImpl::setData( const DOMString &_data )
+void ProcessingInstructionImpl::setData( const DOMString &_data, int &/*exceptioncode*/ )
 {
     if (m_data)
         m_data->deref();

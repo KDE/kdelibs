@@ -292,14 +292,42 @@ DOMString ElementImpl::tagName() const
     return nodeName();
 }
 
-void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
+DOMString ElementImpl::getAttribute( const DOMString &name, int &exceptioncode ) const
 {
-    // ### check for invalid characters in value -> throw exception
-    int exceptioncode; // ### propogate
+  // search in already set attributes first
+    if(!namedAttrMap) return DOMString();
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+    if (attr) return attr->value();
+
+    // then search in default attr in case it is not yet set
+    NamedAttrMapImpl* dm = defaultMap();
+    if(!dm) return DOMString();
+    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
+    if(!defattr || exceptioncode) return DOMString();
+
+    return defattr->value();
+}
+
+void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, int &exceptioncode )
+{
+    // INVALID_CHARACTER_ERR: Raised if the specified name contains an illegal character.
+    if (!validAttrName(name)) {
+        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
     if(!namedAttrMap) {
         namedAttrMap = new NamedAttrMapImpl(this);
         namedAttrMap->ref();
     }
+
+    // Special case: if the value is null, remove the attribute - ### is this correct?
     if (value.isNull())
         namedAttrMap->removeNamedItem(name,exceptioncode);
     else {
@@ -312,17 +340,24 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
 }
 
 
-void ElementImpl::removeAttribute( const DOMString &name )
+void ElementImpl::removeAttribute( const DOMString &name, int &exceptioncode )
 {
-    int exceptioncode; // ### propogate
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
     if(!namedAttrMap) return;
     namedAttrMap->removeNamedItem(name,exceptioncode);
 }
 
-
-AttrImpl *ElementImpl::getAttributeNode ( int index ) const
+AttrImpl *ElementImpl::getAttributeNode( const DOMString &name, int &exceptioncode )
 {
-    return namedAttrMap ? namedAttrMap->getIdItem(index) : 0;
+    // ### do we return attribute node if it is in the default map but not specified?
+    if(!namedAttrMap) return 0;
+    return static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+
 }
 
 Attr ElementImpl::setAttributeNode( AttrImpl *newAttr, int &exceptioncode )
@@ -350,7 +385,7 @@ Attr ElementImpl::removeAttributeNode( AttrImpl *oldAttr, int &exceptioncode )
     return namedAttrMap->removeAttr(oldAttr, exceptioncode);
 }
 
-NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
+NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name, int &/*exceptioncode*/ )
 {
     return new TagNodeListImpl( this, name );
 }
@@ -387,19 +422,20 @@ AttrImpl *ElementImpl::setAttributeNodeNS ( AttrImpl */*newAttr*/, int &/*except
     return 0;
 }
 
-NodeListImpl *ElementImpl::getElementsByTagNameNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                                    int &/*exceptioncode*/ )
+NodeListImpl *ElementImpl::getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                                    int &exceptioncode )
 {
     // ### implement
     return 0;
 }
 
-bool ElementImpl::hasAttribute( const DOMString &name ) const
+bool ElementImpl::hasAttribute( const DOMString &name, int &exceptioncode ) const
 {
   // search in already set attributes first
-    int exceptioncode;
     if(!namedAttrMap) return false;
     AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+    if (exceptioncode)
+        return false;
     if (attr) return true;
 
     // then search in default attr in case it is not yet set
@@ -417,6 +453,18 @@ bool ElementImpl::hasAttributeNS( const DOMString &/*namespaceURI*/, const DOMSt
     return false;
 }
 
+DOMString ElementImpl::getAttribute ( const DOMString &name ) const
+{
+    int exceptioncode;
+    return getAttribute(name,exceptioncode);
+}
+
+void ElementImpl::setAttribute ( const DOMString &name, const DOMString &value)
+{
+    int exceptioncode;
+    setAttribute(name,value,exceptioncode);
+}
+
 bool ElementImpl::isInline() const
 {
     if(!m_style) return false;
@@ -426,23 +474,6 @@ bool ElementImpl::isInline() const
 unsigned short ElementImpl::nodeType() const
 {
     return Node::ELEMENT_NODE;
-}
-
-DOMString ElementImpl::getAttribute( const DOMString &name ) const
-{
-  // search in already set attributes first
-    int exceptioncode; // ### propogate
-    if(!namedAttrMap) return DOMString();
-    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
-    if (attr) return attr->value();
-
-    // then search in default attr in case it is not yet set
-    NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return DOMString();
-    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
-    if(!defattr || exceptioncode) return DOMString();
-
-    return defattr->value();
 }
 
 DOMString ElementImpl::getAttribute( int id ) const
@@ -538,13 +569,9 @@ bool ElementImpl::hasAttributes() const
     return namedAttrMap ? (namedAttrMap->length() > 0) : false;
 }
 
-AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
+AttrImpl *ElementImpl::getAttributeNode ( int index ) const
 {
-    int exceptioncode; // ### propogate
-    // ### do we return attribute node if it is in the default map but not specified?
-    if(!namedAttrMap) return 0;
-    return static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
-
+    return namedAttrMap ? namedAttrMap->getIdItem(index) : 0;
 }
 
 short ElementImpl::tabIndex() const
@@ -1137,6 +1164,28 @@ NodeImpl *NamedAttrMapImpl::item ( unsigned long index ) const
         return 0;
     else
         return attrs[index];
+}
+
+NodeImpl *NamedAttrMapImpl::getNamedItemNS( const DOMString &/*namespaceURI*/,
+                                            const DOMString &/*localName*/,
+                                            int &/*exceptioncode*/ ) const
+{
+    // ### implement
+    return 0;
+}
+
+NodeImpl *NamedAttrMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+NodeImpl *NamedAttrMapImpl::removeNamedItemNS( const DOMString &/*namespaceURI*/,
+                                               const DOMString &/*localName*/,
+                                               int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
 }
 
 void NamedAttrMapImpl::clearAttrs()

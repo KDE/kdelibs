@@ -102,6 +102,69 @@ public:
 
     /**
      * Introduced in DOM Level 2
+     * 
+     * Creates an empty DocumentType node. Entity declarations and notations
+     * are not made available. Entity reference expansions and default
+     * attribute additions do not occur. It is expected that a future version
+     * of the DOM will provide a way for populating a DocumentType.
+     * 
+     * HTML-only DOM implementations do not need to implement this method. 
+     * 
+     * @param qualifiedName The qualified name of the document type to be
+     * created.
+     * 
+     * @param publicId The external subset public identifier.
+     * 
+     * @param systemId The external subset system identifier.
+     * 
+     * @return A new DocumentType node with Node.ownerDocument set to null.
+     * 
+     * @exception DOMException
+     * INVALID_CHARACTER_ERR: Raised if the specified qualified name contains
+     * an illegal character.
+     * 
+     * NAMESPACE_ERR: Raised if the qualifiedName is malformed.
+     */
+    DocumentType createDocumentType ( const DOMString &qualifiedName,
+                                      const DOMString &publicId,
+                                      const DOMString &systemId );
+
+    /**
+     * Introduced in DOM Level 2
+     * 
+     * Creates an XML Document object of the specified type with its document
+     * element. HTML-only DOM implementations do not need to implement this
+     * method. 
+     * 
+     * @param namespaceURI The namespace URI of the document element to create.
+     * 
+     * @param qualifiedName The qualified name of the document element to be
+     * created.
+     * 
+     * @param doctype The type of document to be created or null. When doctype
+     * is not null, its Node.ownerDocument attribute is set to the document
+     * being created.
+     * 
+     * @return A new Document object.
+     * 
+     * @exception DOMException
+     * INVALID_CHARACTER_ERR: Raised if the specified qualified name contains
+     * an illegal character.
+     * 
+     * NAMESPACE_ERR: Raised if the qualifiedName is malformed, if the
+     * qualifiedName has a prefix and the namespaceURI is null, or if the
+     * qualifiedName has a prefix that is "xml" and the namespaceURI is
+     * different from "http://www.w3.org/XML/1998/namespace" [Namespaces].
+     * 
+     * WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a
+     * different document or was created from a different implementation.
+     */
+    Document createDocument ( const DOMString &namespaceURI,
+                              const DOMString &qualifiedName,
+                              const DOMString &doctype );
+
+    /**
+     * Introduced in DOM Level 2
      * This method is from the DOMImplementationCSS interface
      *
      * Creates a new CSSStyleSheet.
@@ -150,6 +213,7 @@ class Document : public Node
     friend class ::KHTMLView;
     friend class ::KHTMLPart;
     friend class AbstractView;
+    friend class DOMImplementation;
 public:
     Document();
     /**
@@ -296,7 +360,8 @@ public:
      * document.
      *
      */
-    ProcessingInstruction createProcessingInstruction ( const DOMString &target, const DOMString &data );
+    ProcessingInstruction createProcessingInstruction ( const DOMString &target,
+                                                        const DOMString &data );
 
     /**
      * Creates an <code> Attr </code> of the given name. Note that the
@@ -326,7 +391,8 @@ public:
      * @return A new Attr object with the following attributes:
      * Node.nodeName - qualifiedName
      * Node.namespaceURI - namespaceURI
-     * Node.prefix - prefix, extracted from qualifiedName, or null if there is no prefix
+     * Node.prefix - prefix, extracted from qualifiedName, or null if there is
+     * no prefix
      * Node.localName - local name, extracted from qualifiedName
      * Attr.name - qualifiedName
      * Node.nodeValue - the empty string
@@ -392,6 +458,119 @@ public:
     NodeList getElementsByTagName ( const DOMString &tagname );
 
     /**
+     * Introduced in DOM Level 2 
+     * 
+     * Imports a node from another document to this document. The returned node
+     * has no parent; (parentNode is null). The source node is not altered or
+     * removed from the original document; this method creates a new copy of
+     * the source node.
+     * 
+     * For all nodes, importing a node creates a node object owned by the
+     * importing document, with attribute values identical to the source node's
+     * nodeName and nodeType, plus the attributes related to namespaces
+     * (prefix, localName, and namespaceURI).
+     * 
+     * As in the cloneNode operation on a Node, the source node is not altered.
+     * Additional information is copied as appropriate to the nodeType,
+     * attempting to mirror the behavior expected if a fragment of XML or HTML
+     * source was copied from one document to another, recognizing that the two
+     * documents may have different DTDs in the XML case. The following list
+     * describes the specifics for each type of node.
+     * 
+     * ATTRIBUTE_NODE 
+     * The ownerElement attribute is set to null and the specified flag is set
+     * to true on the generated Attr. The descendants of the source Attr are
+     * recursively imported and the resulting nodes reassembled to form the
+     * corresponding subtree. Note that the deep parameter has no effect on
+     * Attr nodes; they always carry their children with them when imported. 
+     * 
+     * DOCUMENT_FRAGMENT_NODE 
+     * If the deep option was set to true, the descendants of the source
+     * element are recursively imported and the resulting nodes reassembled to
+     * form the corresponding subtree. Otherwise, this simply generates an
+     * empty DocumentFragment. 
+     * 
+     * DOCUMENT_NODE 
+     * Document nodes cannot be imported. 
+     * 
+     * DOCUMENT_TYPE_NODE 
+     * DocumentType nodes cannot be imported. 
+     * 
+     * ELEMENT_NODE 
+     * Specified attribute nodes of the source element are imported, and the
+     * generated Attr nodes are attached to the generated Element. Default
+     * attributes are not copied, though if the document being imported into
+     * defines default attributes for this element name, those are assigned. If
+     * the importNode deep parameter was set to true, the descendants of the
+     * source element are recursively imported and the resulting nodes
+     * reassembled to form the corresponding subtree. 
+     * 
+     * ENTITY_NODE 
+     * Entity nodes can be imported, however in the current release of the DOM
+     * the DocumentType is readonly. Ability to add these imported nodes to a
+     * DocumentType will be considered for addition to a future release of the
+     * DOM.
+     * On import, the publicId, systemId, and notationName attributes are
+     * copied. If a deep import is requested, the descendants of the the source
+     * Entity are recursively imported and the resulting nodes reassembled to
+     * form the corresponding subtree. 
+     * 
+     * ENTITY_REFERENCE_NODE Only the EntityReference itself is copied, even if
+     * a deep import is requested, since the source and destination documents
+     * might have defined the entity differently. If the document being
+     * imported into provides a definition for this entity name, its value is
+     * assigned. 
+     * 
+     * NOTATION_NODE 
+     * Notation nodes can be imported, however in the current release of the
+     * DOM the DocumentType is readonly. Ability to add these imported nodes to
+     * a DocumentType will be considered for addition to a future release of
+     * the DOM.
+     * On import, the publicId and systemId attributes are copied.
+     * Note that the deep parameter has no effect on Notation nodes since they
+     * never have any children. 
+     * 
+     * PROCESSING_INSTRUCTION_NODE 
+     * The imported node copies its target and data values from those of the
+     * source node. 
+     * 
+     * TEXT_NODE, CDATA_SECTION_NODE, COMMENT_NODE 
+     * These three types of nodes inheriting from CharacterData copy their data
+     * and length attributes from those of the source node. 
+     * 
+     * @paramimportedNode The node to import.
+     * 
+     * @param deep If true, recursively import the subtree under the specified
+     * node; if false, import only the node itself, as explained above. This
+     * has no effect on Attr, EntityReference, and Notation nodes.
+     * 
+     * @return The imported node that belongs to this Document.
+     * 
+     * @exception DOMException
+     * NOT_SUPPORTED_ERR: Raised if the type of node being imported is not
+     * supported.
+     */
+    Node importNode( const Node & importedNode, bool deep );
+
+    /**
+     * Introduced in DOM Level 2 
+     * 
+     * Returns a NodeList of all the Elements with a given local name and
+     * namespace URI in the order in which they are encountered in a preorder
+     * traversal of the Document tree. 
+     * 
+     * @param namespaceURI The namespace URI of the elements to match on. The
+     * special value "*" matches all namespaces.
+     * 
+     * @param localName The local name of the elements to match on. The special
+     * value "*" matches all local names.
+     * 
+     * @return A new NodeList object containing all the matched Elements.
+     */
+    NodeList getElementsByTagNameNS( const DOMString &namespaceURI,
+                                     const DOMString &localName );
+
+    /**
      * @internal
      * not part of the DOM
      */
@@ -438,7 +617,8 @@ public:
      * NOT_SUPPORTED_ERR: Raised if the specified root is null.
      */
     NodeIterator createNodeIterator(Node root, unsigned long whatToShow,
-                                    NodeFilter filter, bool entityReferenceExpansion);
+                                    NodeFilter filter,
+                                    bool entityReferenceExpansion);
 
     /**
      * Introduced in DOM Level 2
@@ -470,7 +650,8 @@ public:
      * @exception DOMException
      * NOT_SUPPORTED_ERR: Raised if the specified root is null.
      */
-    TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+    TreeWalker createTreeWalker(Node root, unsigned long whatToShow,
+                                NodeFilter filter,
                                 bool entityReferenceExpansion);
 
     /**
@@ -480,7 +661,8 @@ public:
      * The createEvent method is used in creating Events when it is either
      * inconvenient or unnecessary for the user to create an Event themselves.
      * In cases where the implementation provided Event is insufficient, users
-     * may supply their own Event implementations for use with the dispatchEvent method.
+     * may supply their own Event implementations for use with the
+     * dispatchEvent method.
      *
      * @param eventType The eventType parameter specifies the type of Event
      * interface to be created. If the Event interface specified is supported
@@ -496,7 +678,8 @@ public:
      * @return The newly created EventExceptions
      *
      * @exception DOMException
-     * NOT_SUPPORTED_ERR: Raised if the implementation does not support the type of Event interface requested
+     * NOT_SUPPORTED_ERR: Raised if the implementation does not support the
+     * type of Event interface requested
      */
     Event createEvent(const DOMString &eventType);
 
@@ -532,13 +715,15 @@ public:
      * This method is used to retrieve the override style declaration for a
      * specified element and a specified pseudo-element.
      *
-     * @param elt The element whose style is to be modified. This parameter cannot be null.
+     * @param elt The element whose style is to be modified. This parameter
+     * cannot be null.
      *
      * @param pseudoElt The pseudo-element or null if none.
      *
      * @return The override style declaration.
      */
-    CSSStyleDeclaration getOverrideStyle(const Element &elt, const DOMString &pseudoElt);
+    CSSStyleDeclaration getOverrideStyle(const Element &elt,
+                                         const DOMString &pseudoElt);
 
     /**
      * not part of the DOM
@@ -636,6 +821,7 @@ class DOMString;
 class DocumentType : public Node
 {
     friend class Document;
+    friend class DOMImplementation;
 public:
     DocumentType();
     DocumentType(const DocumentType &other);
@@ -680,6 +866,32 @@ public:
      *
      */
     NamedNodeMap notations() const;
+
+    /**
+     * Introduced in DOM Level 2 
+     * 
+     * The public identifier of the external subset.
+     */
+    DOMString publicId() const;
+
+    /**
+     * Introduced in DOM Level 2 
+     * 
+     * The system identifier of the external subset.
+     */
+    DOMString systemId() const;
+
+    /**
+     * Introduced in DOM Level 2 
+     * 
+     * The internal subset as a string. 
+     * 
+     * Note: The actual content returned depends on how much information is
+     * available to the implementation. This may vary depending on various
+     * parameters, including the XML processor used to build the document.
+     */
+    DOMString internalSubset() const;
+
 protected:
     DocumentType(DocumentTypeImpl *impl);
 };

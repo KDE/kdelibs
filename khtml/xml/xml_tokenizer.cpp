@@ -86,10 +86,13 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     else
         newElement = m_doc->document()->createElementNS(namespaceURI,qName);
 
-    // ### handle exceptions
     int i;
-    for (i = 0; i < atts.length(); i++)
-        newElement->setAttribute(atts.localName(i),atts.value(i));
+    for (i = 0; i < atts.length(); i++) {
+        int exceptioncode;
+        newElement->setAttribute(atts.localName(i),atts.value(i),exceptioncode);
+        if (exceptioncode) // exception setting attributes
+            return FALSE;
+    }
     if (m_currentNode->addChild(newElement)) {
         if (m_view)
             newElement->attach();

@@ -82,6 +82,7 @@ public:
     NodeImpl(DocumentPtr *doc);
     virtual ~NodeImpl();
 
+    // DOM methods & attributes for Node
     virtual const DOMString nodeName() const;
 
     virtual DOMString nodeValue() const;
@@ -89,12 +90,6 @@ public:
     virtual void setNodeValue( const DOMString &, int& exceptioncode );
 
     virtual unsigned short nodeType() const;
-
-    virtual bool isElementNode() const { return false; }
-    virtual bool isAttributeNode() const { return false; }
-    virtual bool isTextNode() const { return false; }
-    virtual bool isDocumentNode() const { return false; }
-    virtual bool isXMLElementNode() const { return false; }
 
     virtual NodeImpl *parentNode() const;
 
@@ -121,11 +116,31 @@ public:
 
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
-    virtual bool hasAttributes (  ) const;
-
     virtual bool hasChildNodes (  ) const;
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode ) = 0;
+
+    virtual void normalize ( int &exceptioncode );
+
+    virtual bool isSupported( const DOMString &feature, const DOMString &version, int &exceptioncode ) const;
+
+    virtual DOMString namespaceURI() const;
+
+    virtual DOMString prefix() const;
+
+    virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
+
+    virtual DOMString localName() const;
+
+    virtual bool hasAttributes (  ) const;
+
+    // Other methods (not part of DOM)
+
+    virtual bool isElementNode() const { return false; }
+    virtual bool isAttributeNode() const { return false; }
+    virtual bool isTextNode() const { return false; }
+    virtual bool isDocumentNode() const { return false; }
+    virtual bool isXMLElementNode() const { return false; }
 
     // helper functions not being part of the DOM
     // Attention: all these functions assume the caller did
@@ -254,8 +269,6 @@ public:
 
     virtual void recalcStyle() {}
 
-    virtual DOMString namespaceURI() const;
-
     virtual unsigned long nodeIndex() const;
 
     virtual DocumentImpl *getDocument()
@@ -296,6 +309,8 @@ public:
     DocumentPtr *docPtr() const { return document; }
 
     virtual khtml::RenderObject *nextRenderer();
+
+    static bool validAttrName(const DOMString &/*name*/) { return true; }
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
@@ -520,8 +535,6 @@ public:
     NamedNodeMapImpl();
     virtual ~NamedNodeMapImpl();
 
-    virtual unsigned long length(int &exceptioncode) const = 0;
-
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const = 0;
 
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
@@ -529,6 +542,16 @@ public:
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
 
     virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const = 0;
+
+    virtual unsigned long length(int &exceptioncode) const = 0;
+
+    virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                      int &exceptioncode ) const = 0;
+
+    virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode ) = 0;
+
+    virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                         int &exceptioncode ) = 0;
 };
 
 
@@ -540,8 +563,6 @@ public:
     GenericRONamedNodeMapImpl();
     virtual ~GenericRONamedNodeMapImpl();
 
-    virtual unsigned long length(int &exceptioncode) const;
-
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
 
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode );
@@ -549,6 +570,16 @@ public:
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode );
 
     virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
+
+    virtual unsigned long length(int &exceptioncode) const;
+
+    virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                      int &exceptioncode ) const;
+
+    virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode );
+
+    virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
+                                         int &exceptioncode );
 
     void addNode(NodeImpl *n);
 
