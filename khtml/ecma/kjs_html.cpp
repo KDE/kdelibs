@@ -1640,12 +1640,31 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName,
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
 #endif
-  // Shouldn't be necessary anymore since we have the hashtables.
-  // ### TODO: test whether we need to handle the dynamic cases, (see tryGet, e.g. form.<name>) here.
-  /*Value tmp = tryGet(exec, propertyName);
-    if (!tmp.isA(UndefinedType)) {
-      return true;
-    }*/
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  // First look at dynamic properties - keep this in sync with tryGet
+  switch (element.elementId()) {
+    case ID_FORM: {
+      DOM::HTMLFormElement form = element;
+      // Check if we're retrieving an element (by index or by name)
+      bool ok;
+      uint u = propertyName.toULong(&ok);
+      if (ok && !(form.elements().item(u).isNull()))
+        return true;
+      DOM::Node testnode = form.elements().namedItem(propertyName.string());
+      if (!testnode.isNull())
+        return true;
+    }
+    case ID_SELECT: {
+      DOM::HTMLSelectElement select = element;
+      bool ok;
+      uint u = propertyName.toULong(&ok);
+      if (ok && !(select.options().item(u).isNull()))
+        return true;
+    }
+    default:
+      break;
+  }
+
   return DOMElement::hasProperty(exec, propertyName, recursive);
 }
 
