@@ -182,6 +182,8 @@ void HTTPProtocol::resetResponseSettings()
   m_qTransferEncodings.clear();
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
+
+  setMetaData("request-id", m_request.id);
 }
 
 void HTTPProtocol::resetSessionSettings()
@@ -293,7 +295,6 @@ void HTTPProtocol::resetSessionSettings()
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
 
-  setMetaData("request-id", m_request.id);
   
   // Set the SSL meta-data here...
   setSSLMetaData();
@@ -1507,6 +1508,10 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
   kdDebug(7113) << "(" << m_pid << ") HTTPProtcool::multiGet n = " << n << endl;
 
+  HTTPRequest saveRequest;
+  if (m_bBusy)
+     saveRequest = m_request;
+
 //  m_requestQueue.clear();
   for(unsigned i = 0; i < n; i++)
   {
@@ -1534,6 +1539,9 @@ void HTTPProtocol::multiGet(const QByteArray &data)
      HTTPRequest *newRequest = new HTTPRequest(m_request);
      m_requestQueue.append(newRequest);
   }
+
+  if (m_bBusy)
+     m_request = saveRequest;
 
   if (!m_bBusy)
   {
@@ -3294,6 +3302,8 @@ bool HTTPProtocol::readHeader()
     QString tmp;
     tmp.setNum(expireDate);
     setMetaData("expire-date", tmp);
+    tmp.setNum(time(0)); // Cache entry will be created shortly.
+    setMetaData("cache-creation-date", tmp);
   }
 
   // Let the app know about the mime-type iff this is not
