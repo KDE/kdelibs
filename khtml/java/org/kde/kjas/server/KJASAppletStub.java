@@ -108,7 +108,11 @@ public class KJASAppletStub extends Frame
                 //to figure out- don't modify it unless there are
                 //real bug fixes
                 
-                synchronized( me ) {
+                // till 2002 09 18
+                // commented out the synchronized block because
+                // it leads to a deadlock of the JVM with
+                // j2re 1.4.1
+                //synchronized( me ) {
                     active = true;
                     try {
                         appletClass = loader.loadClass( className );
@@ -138,7 +142,7 @@ public class KJASAppletStub extends Frame
                         panel.showFailed();
                         return;
                     }
-                } // synchronized
+                //} // synchronized
                 app.setVisible(false);
                 Main.debug("panel.add( \"Center\", app );");                
                 panel.setApplet( app );
