@@ -339,6 +339,8 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // Trash Path
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
+    if ( (*s_trashPath)[0] != '/' )
+      s_trashPath->prepend( QDir::homeDirPath() + "/" );
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
         *s_trashPath += "/";
