@@ -399,23 +399,26 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 {
   if( mFace == Tabbed )
   {
-    page->setMargin (KDialog::marginHint());
+    //
+    // 2000-07-13 (espen). The below does not work. We dont get the margin. 
+    //page->setMargin (KDialog::marginHint());
+    //mTabControl->addTab (page, items.last());
+    //mPageList->append (page);
+    //
 
-    mTabControl->addTab (page, items.last());
-    mPageList->append (page);
-//     //
-//     // 2000-06-10 Espen Sand: The tab widget does not have a margin so we
-//     // need to add one. I make a new widget width layout manager and reparent
-//     // the page widget to be a child of the new widget.
-//     //
-//     QString itemName = items.last();
-//     QWidget *topWidget = new QWidget( mTabControl, "page" );
-//     mTabControl->addTab( topWidget, itemName );
-//     mPageList->append(topWidget);
+    //
+    // 2000-06-10 Espen Sand: The tab widget does not have a margin so we
+    // need to add one. I make a new widget width layout manager and reparent
+    // the page widget to be a child of the new widget.
+    //
+    QString itemName = items.last();
+    QWidget *topWidget = new QWidget( mTabControl, "page" );
+    mTabControl->addTab( topWidget, itemName );
+    mPageList->append(topWidget);
 
-//     page->reparent( topWidget, QPoint(0,0) );
-//     QVBoxLayout *vbox = new QVBoxLayout( topWidget, KDialog::spacingHint(), 0);
-//     vbox->addWidget( page, 1 );
+    page->reparent( topWidget, QPoint(0,0) );
+    QVBoxLayout *vbox = new QVBoxLayout( topWidget, KDialog::spacingHint(), 0);
+    vbox->addWidget( page, 1 );
   }
   else if( mFace == TreeList || mFace == IconList )
   {
