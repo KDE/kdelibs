@@ -27,6 +27,7 @@
 #include "css/css_ruleimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssparser.h"
+#include "css/cssproperties.h"
 #include "css/cssvalues.h"
 
 #include "xml/dom_stringimpl.h"
@@ -83,7 +84,137 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
     // we don't use refcounting for m_node, to avoid cyclic references (see ElementImpl)
 }
 
-CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
+DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
+{
+    if(!m_lstValues) return DOMString();
+
+    CSSValueImpl* value = getPropertyCSSValue( propertyID );
+    if ( value )
+        return value->cssText();
+
+    // Shorthand and 4-values properties
+    switch ( propertyID ) {
+    case CSS_PROP_BACKGROUND_POSITION:
+    {
+        // ## Is this correct? The code in cssparser.cpp is confusing
+        const int properties[2] = { CSS_PROP_BACKGROUND_POSITION_X,
+                                    CSS_PROP_BACKGROUND_POSITION_Y };
+        return getShortHandValue( properties, 2 );
+    }
+    case CSS_PROP_BACKGROUND:
+    {
+        const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
+                                    CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
+                                    CSS_PROP_BACKGROUND_COLOR };
+        return getShortHandValue( properties, 5 );
+    }
+    case CSS_PROP_BORDER:
+    {
+        const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE,
+                                    CSS_PROP_BORDER_COLOR };
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_BORDER_TOP:
+    {
+        const int properties[3] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE,
+                                    CSS_PROP_BORDER_TOP_COLOR};
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_BORDER_RIGHT:
+    {
+        const int properties[3] = { CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE,
+                                    CSS_PROP_BORDER_RIGHT_COLOR};
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_BORDER_BOTTOM:
+    {
+        const int properties[3] = { CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE,
+                                    CSS_PROP_BORDER_BOTTOM_COLOR};
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_BORDER_LEFT:
+    {
+        const int properties[3] = { CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE,
+                                    CSS_PROP_BORDER_LEFT_COLOR};
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_OUTLINE:
+    {
+        const int properties[3] = { CSS_PROP_OUTLINE_WIDTH, CSS_PROP_OUTLINE_STYLE,
+                                    CSS_PROP_OUTLINE_COLOR };
+        return getShortHandValue( properties, 3 );
+    }
+    case CSS_PROP_BORDER_COLOR:
+    {
+        const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
+                                    CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
+        return get4Values( properties );
+    }
+    case CSS_PROP_BORDER_WIDTH:
+    {
+        const int properties[4] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_RIGHT_WIDTH,
+                                    CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_LEFT_WIDTH };
+        return get4Values( properties );
+    }
+    case CSS_PROP_BORDER_STYLE:
+    {
+        const int properties[4] = { CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_RIGHT_STYLE,
+                                    CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_LEFT_STYLE };
+        return get4Values( properties );
+    }
+    case CSS_PROP_MARGIN:
+    {
+        const int properties[4] = { CSS_PROP_MARGIN_TOP, CSS_PROP_MARGIN_RIGHT,
+                                    CSS_PROP_MARGIN_BOTTOM, CSS_PROP_MARGIN_LEFT };
+        return get4Values( properties );
+    }
+    case CSS_PROP_PADDING:
+    {
+        const int properties[4] = { CSS_PROP_PADDING_TOP, CSS_PROP_PADDING_RIGHT,
+                                    CSS_PROP_PADDING_BOTTOM, CSS_PROP_PADDING_LEFT };
+        return get4Values( properties );
+    }
+    case CSS_PROP_LIST_STYLE:
+    {
+        const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
+                                    CSS_PROP_LIST_STYLE_IMAGE };
+        return getShortHandValue( properties, 3 );
+    }
+    }
+    //kdDebug() << k_funcinfo << "property not found:" << propertyID << endl;
+    return DOMString();
+}
+
+DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const
+{
+    DOMString res;
+    for ( int i = 0 ; i < 4 ; ++i ) {
+        CSSValueImpl* value = getPropertyCSSValue( properties[i] );
+        if ( !value ) { // apparently all 4 properties must be specified.
+            return DOMString();
+        }
+        if ( i > 0 )
+            res += " ";
+        res += value->cssText();
+    }
+    return res;
+}
+
+DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int number ) const
+{
+    DOMString res;
+    for ( int i = 0 ; i < number ; ++i ) {
+        CSSValueImpl* value = getPropertyCSSValue( properties[i] );
+        if ( value ) { // TODO provide default value if !value
+            if ( !res.isNull() )
+                res += " ";
+            res += value->cssText();
+        }
+    }
+    return res;
+}
+
+ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) const
 {
     if(!m_lstValues) return 0;
 
@@ -128,7 +259,7 @@ void CSSStyleDeclarationImpl::setChanged()
         }
 }
 
-bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
+bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 {
     if ( m_lstValues) {
 	QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);

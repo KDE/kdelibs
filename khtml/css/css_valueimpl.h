@@ -73,8 +73,9 @@ public:
 
     virtual bool parseString( const DOMString &string, bool = false );
 
-    CSSValueImpl *getPropertyCSSValue( int propertyID );
-    bool getPropertyPriority( int propertyID );
+    CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
+    DOMString getPropertyValue( int propertyID ) const;
+    bool getPropertyPriority( int propertyID ) const;
 
     QPtrList<CSSProperty> *values() { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
@@ -82,6 +83,9 @@ public:
     void setChanged();
 
 protected:
+    DOMString getShortHandValue( const int* properties, int number ) const;
+    DOMString get4Values( const int* properties ) const;
+
     QPtrList<CSSProperty> *m_lstValues;
     NodeImpl *m_node;
 
