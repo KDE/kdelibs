@@ -24,7 +24,7 @@
 #include "startupmanager.h"
 #include "extensionloader.h"
 #include <iostream>
-#include <cassert>
+#include <assert.h>
 
 using namespace std;
 using namespace Arts;

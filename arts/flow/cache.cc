@@ -25,7 +25,7 @@
 #include "iomanager.h"
 #include "dispatcher.h"
 #include <iostream>
-#include <cassert>
+#include <assert.h>
 
 using namespace std;
 using namespace Arts;

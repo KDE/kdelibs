@@ -20,7 +20,7 @@
 
 #include "connect.h"
 #include "flowsystem.h"
-//#include <cassert>
+#include <assert.h>
 
 // NDEBUG is the symbol name that can remove the assertions
 #ifdef NDEBUG

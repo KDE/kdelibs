@@ -22,7 +22,7 @@
 
 #include "buffer.h"
 #include "string.h"
-#include <cassert>
+#include <assert.h>
 
 using namespace std;
 using namespace Arts;

@@ -23,7 +23,7 @@
 #include <config.h>
 #include "extensionloader.h"
 #include "startupmanager.h"
-#include <cassert>
+#include <assert.h>
 
 using namespace std;
 using namespace Arts;

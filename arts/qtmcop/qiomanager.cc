@@ -26,7 +26,7 @@
 #include "qiomanager.h"
 #include <qsocketnotifier.h>
 #include <qapplication.h>
-#include <cassert>
+#include <assert.h>
 
 using namespace std;
 using namespace Arts;

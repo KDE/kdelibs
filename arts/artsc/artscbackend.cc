@@ -32,7 +32,7 @@
 #include <iostream>
 #include <math.h>
 #include <queue>
-#include <cassert>
+#include <assert.h>
 
 #define arts_backend_debug(x) ;
 

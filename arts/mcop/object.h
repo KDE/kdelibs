@@ -27,7 +27,7 @@
 #include "connection.h"
 #include "notification.h"
 
-#include <cassert>
+#include <assert.h>
 #include <map>
 #include <list>
 

@@ -1,4 +1,5 @@
 #include "core.h"
+#include <iostream>
 #include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
