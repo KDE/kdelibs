@@ -948,7 +948,7 @@ bool KEdit::format(QStrList& par){
     /*    if((int)pstring.length() <= fill_column_value)
       break;*/
 
-    for( k = 0, l = 0; k < (int) pstring.length() && l <= fill_column_value; k++){
+    for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){//Matthias: commented out
     
       if(pstring.data()[k] == '\t')
         l +=8 - l%8;
@@ -970,6 +970,7 @@ bool KEdit::format(QStrList& par){
     right = col_pos - space_pos - 1;
   
     if( space_pos == -1 ){ 
+      /* Matthias: commented it out. Was broken, unfortunately
 
       // no space to be found on line, just break, what else could we do?
       par.remove(i);
@@ -1000,6 +1001,7 @@ bool KEdit::format(QStrList& par){
 	  cursor_offset += prefixString(pstring).length();
 	//printf("CURSOROFFSET1 %d\n",cursor_offset);
       }
+      */
     }
     else{
     
@@ -1113,7 +1115,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     last_ok = 0;
     pstring = par.at(i);
 
-    for( k = 0, l = 0; k < (int) pstring.length() && l <= fill_column_value; k++){
+    for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){ //Matthias: commented out
     
       if(pstring.data()[k] == '\t')
         l +=8 - l%8;
@@ -1135,7 +1137,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     right = col_pos - space_pos - 1;
   
     if( space_pos == -1 ){ 
-
+      /* Matthias: commented it out. Was broken, unfortunately
       // no space to be found on line, just break, what else could we do?
       par.remove(i);
       par.insert(i,pstring.left(last_ok+1));
@@ -1166,6 +1168,8 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 	  cursor_offset += prefixString(pstring).length();
 	//printf("CURSOROFFSET1 %d\n",cursor_offset);
       }
+
+      */
     }
     else{
     
