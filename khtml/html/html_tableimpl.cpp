@@ -283,7 +283,10 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
         m_noBorder = !border;
         QString str;
         str.sprintf("%dpx", border);
-        addCSSProperty(CSS_PROP_BORDER_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, str);
 #if 0
         // wanted by HTML4 specs
         if(!border)
@@ -641,7 +644,10 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
         border = attr->val() ? attr->val()->toInt() : 0;
         QString str;
         str.sprintf("%dpx", border);
-        addCSSProperty(CSS_PROP_BORDER_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, str);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, str);
         break;
     }
     case ATTR_ROWSPAN:
@@ -694,11 +700,20 @@ void HTMLTableCellElementImpl::attach()
 
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
-
-        if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull())
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0px");
-        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull())
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+	/*
+        if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull()) {
+            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "0");
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, "0");
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, "0");
+            addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, "0");
+	}
+	*/
+        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull()) {
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+	}
     }
 
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
