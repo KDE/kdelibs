@@ -23,6 +23,7 @@
 #ifndef _DOM_DOMString_h_
 #define _DOM_DOMString_h_
 
+#include <kdebug.h>
 #include <qstring.h>
 
 namespace DOM {
@@ -115,6 +116,10 @@ public:
 protected:
     DOMStringImpl *impl;
 };
+
+inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) { 
+	return (stream << string.string());
+}
 
 bool operator==( const DOMString &a, const DOMString &b );
 bool operator==( const DOMString &a, const QString &b );
