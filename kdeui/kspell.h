@@ -470,7 +470,7 @@ protected:
   bool dialogsetup;
   bool autoDelete;
 
-    QString caption;
+  QString caption;
   QString orig;
   QString origbuffer;
   QString newbuffer;

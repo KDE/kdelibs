@@ -6,7 +6,7 @@
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -40,8 +40,8 @@ KSpellDlg::KSpellDlg(
   bool _modal
 )
   : KDialogBase(
-      parent, name, _modal, i18n("Check spelling"), Help|Cancel|User1, 
-      Cancel, true, i18n("&Stop")
+      parent, name, _modal, i18n("Check spelling"), Help|Cancel|User1,
+      Cancel, true, i18n("&Finished")
     ),
     progressbar(_progressbar)
 {
@@ -52,7 +52,7 @@ KSpellDlg::KSpellDlg(
   wordlabel->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
 
   editbox = new KLineEdit(w, "editbox");
- 
+
   listbox = new KListBox(w, "listbox");
 
   QLabel * l_misspelled =
@@ -60,11 +60,11 @@ KSpellDlg::KSpellDlg(
 
   QLabel * l_replacement =
     new QLabel(i18n("Replacement:"), w, "l_replacement");
-  
+
   QLabel * l_suggestions =
     new QLabel(i18n("Suggestions:"), w, "l_suggestions");
   l_suggestions->setAlignment(Qt::AlignLeft | Qt::AlignTop );
- 
+
   KButtonBox * buttonBox = new KButtonBox(w, Vertical);
 
   QPushButton * b = 0L;
@@ -106,7 +106,7 @@ KSpellDlg::KSpellDlg(
     layout =
       new QHBoxLayout(w, 0, KDialog::spacingHint());
   }
-  
+
   QGridLayout * leftGrid = new QGridLayout(layout);
 
   leftGrid->addWidget(l_misspelled,   0, 0);
@@ -134,7 +134,7 @@ KSpellDlg::KSpellDlg(
   }
 
   setHelp("spelldlg", "kspell");
-  
+
   emit(ready(false));
 }
 
@@ -147,7 +147,7 @@ KSpellDlg::init(const QString & _word, QStringList * _sugg)
   listbox->clear();
   listbox->insertStringList(*sugg);
 
-  kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl; 
+  kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
 
   emit(ready(true));
 
@@ -205,7 +205,7 @@ KSpellDlg::highlighted (int i)
 void
 KSpellDlg::closeEvent( QCloseEvent * )
 {
-	cancel();
+  cancel();
 }
 
 void

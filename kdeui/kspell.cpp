@@ -47,19 +47,19 @@
 #define MAXLINELENGTH 10000
 
 enum {
-	GOOD=     0,
-	IGNORE=   1,
-	REPLACE=  2,
-	MISTAKE=  3
+  GOOD=     0,
+  IGNORE=   1,
+  REPLACE=  2,
+  MISTAKE=  3
 };
 
 class KSpell::KSpellPrivate
 {
 public:
-    bool endOfResponse;
-    bool m_bIgnoreUpperWords;
-    bool m_bIgnoreTitleCase;
-    bool m_bNoMisspellingsEncountered;
+  bool endOfResponse;
+  bool m_bIgnoreUpperWords;
+  bool m_bIgnoreTitleCase;
+  bool m_bNoMisspellingsEncountered;
 };
 
 
@@ -90,7 +90,7 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc,
 		bool _progressbar, bool _modal)
 {
-  d=new KSpellPrivate;
+  d = new KSpellPrivate;
 
   d->m_bIgnoreUpperWords=false;
   d->m_bIgnoreTitleCase=false;
@@ -184,11 +184,12 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
 
   if ( obj && slot )
       // caller wants to know when kspell is ready
-      connect (this, SIGNAL (ready(KSpell *)), obj, slot);
+      connect( this, SIGNAL(ready(KSpell *)), obj, slot);
   else
       // Hack for modal spell checking
-      connect (this, SIGNAL (ready(KSpell *)), this, SLOT( slotModalReady() ) );
-  proc=new KProcIO(codec);
+      connect( this, SIGNAL(ready(KSpell *)), this, SLOT(slotModalReady()) );
+
+  proc = new KProcIO(codec);
 
   startIspell();
 }
@@ -205,48 +206,51 @@ KSpell::startIspell()
 {
 
   kdDebug(750) << "Try #" << trystart << endl;
-  if (trystart>0)
+
+  if ( trystart>0 )
     proc->resetAll();
-  switch (ksconfig->client())
-    {
-    case KS_CLIENT_ISPELL:
-      *proc << "ispell";
-      kdDebug(750) << "Using ispell" << endl;
-      break;
-    case KS_CLIENT_ASPELL:
-      *proc << "aspell";
-      kdDebug(750) << "Using aspell" << endl;
-      break;
-    case KS_CLIENT_HSPELL:
-      *proc << "hspell";
-      kdDebug(750) << "Using hspell" << endl;
-      break;
-    }
-  // TODO: add option -h to ignore HTML (XML) code
-  if (ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL)
+
+  switch ( ksconfig->client() )
   {
-  *proc << "-a" << "-S";
-  if (ksconfig->noRootAffix())
+  case KS_CLIENT_ISPELL:
+    *proc << "ispell";
+    kdDebug(750) << "Using ispell" << endl;
+    break;
+  case KS_CLIENT_ASPELL:
+    *proc << "aspell";
+    kdDebug(750) << "Using aspell" << endl;
+    break;
+  case KS_CLIENT_HSPELL:
+    *proc << "hspell";
+    kdDebug(750) << "Using hspell" << endl;
+    break;
+  }
+
+  // TODO: add option -h to ignore HTML (XML) code
+  if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL )
+  {
+    *proc << "-a" << "-S";
+    if (ksconfig->noRootAffix())
     {
       *proc<<"-m";
     }
-  if (ksconfig->runTogether())
+    if (ksconfig->runTogether())
     {
       *proc << "-B";
     }
-  else
+    else
     {
       *proc << "-C";
     }
 
-  if (trystart<2)
+    if (trystart<2)
     {
       if (! ksconfig->dictionary().isEmpty())
-	{
-	  kdDebug(750) << "using dictionary [" << ksconfig->dictionary() << "]" << endl;
-	  *proc << "-d";
-	  *proc << ksconfig->dictionary();
-	}
+      {
+        kdDebug(750) << "using dictionary [" << ksconfig->dictionary() << "]" << endl;
+        *proc << "-d";
+        *proc << ksconfig->dictionary();
+      }
     }
 
   //Note to potential debuggers:  -Tlatin2 _is_ being added on the
@@ -254,8 +258,8 @@ KSpell::startIspell()
   // option, so kspell tries again without it.  That's why as 'ps -ax'
   // shows "ispell -a -S ..." withou the "-Tlatin2" option.
 
-  if (trystart<1)
-    switch (ksconfig->encoding())
+    if ( trystart<1 ) {
+      switch ( ksconfig->encoding() )
       {
       case KS_E_LATIN1:
 	*proc << "-Tlatin1";
@@ -267,7 +271,7 @@ KSpell::startIspell()
         *proc << "-Tlatin3";
         break;
 
-      // add the other charsets here
+        // add the other charsets here
       case KS_E_LATIN4:
       case KS_E_LATIN5:
       case KS_E_LATIN7:
@@ -275,23 +279,17 @@ KSpell::startIspell()
       case KS_E_LATIN9:
       case KS_E_LATIN13:
       case KS_E_LATIN15:
-
 	// will work, if this is the default charset in the dictionary
 	kdError(750) << "charsets iso-8859-4 .. iso-8859-15 not supported yet" << endl;
 	break;
-
       case KS_E_UTF8:
         *proc << "-Tutf8";
         break;
-
       case KS_E_KOI8U:
 	*proc << "-w'"; // add ' as a word char
 	break;
-
       }
-
-
-
+    }
 
   /*
   if (ksconfig->personalDict()[0]!='\0')
@@ -301,8 +299,6 @@ KSpell::startIspell()
       *proc << ksconfig->personalDict();
     }
     */
-
-
   // -a : pipe mode
   // -S : sort suggestions by probable correctness
   }
@@ -310,284 +306,289 @@ KSpell::startIspell()
     *proc << "-a";
 
   if (trystart==0) //don't connect these multiple times
-    {
-      connect (proc, SIGNAL (  receivedStderr (KProcess *, char *, int)),
-	       this, SLOT (ispellErrors (KProcess *, char *, int)));
-
-
-      connect(proc, SIGNAL(processExited(KProcess *)),
-	      this, SLOT (ispellExit (KProcess *)));
-
-      OUTPUT(KSpell2);
-    }
-
-  if (proc->start ()==FALSE )
   {
-      m_status = Error;
-      QTimer::singleShot( 0, this, SLOT(emitDeath()));
+    connect( proc, SIGNAL(receivedStderr(KProcess *, char *, int)),
+             this, SLOT(ispellErrors(KProcess *, char *, int)) );
+
+    connect( proc, SIGNAL(processExited(KProcess *)),
+             this, SLOT(ispellExit (KProcess *)) );
+
+    OUTPUT(KSpell2);
+  }
+
+  if ( proc->start() == FALSE )
+  {
+    m_status = Error;
+    QTimer::singleShot( 0, this, SLOT(emitDeath()));
   }
 }
 
 void
-KSpell::ispellErrors (KProcess *, char *buffer, int buflen)
+KSpell::ispellErrors( KProcess *, char *buffer, int buflen )
 {
-  buffer [buflen-1] = '\0';
+  buffer[buflen-1] = '\0';
   //  kdDebug(750) << "ispellErrors [" << buffer << "]\n" << endl;
 }
 
-void KSpell::KSpell2 (KProcIO *)
+void KSpell::KSpell2( KProcIO * )
 
 {
-  kdDebug(750) << "KSpell::KSpell2" << endl;
-  trystart=maxtrystart;  //We've officially started ispell and don't want
-       //to try again if it dies.
   QString line;
 
-  if (proc->fgets (line, TRUE)==-1)
+  kdDebug(750) << "KSpell::KSpell2" << endl;
+
+  trystart = maxtrystart;  //We've officially started ispell and don't want
+                           //to try again if it dies.
+
+  if ( proc->fgets( line, true ) == -1 )
   {
-     QTimer::singleShot( 0, this, SLOT(emitDeath()));
+     QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
 
 
-  if (line[0]!='@') //@ indicates that ispell is working fine
+  if ( line[0] != '@' ) //@ indicates that ispell is working fine
   {
-     QTimer::singleShot( 0, this, SLOT(emitDeath()));
+     QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
 
   //We want to recognize KDE in any text!
-  if (ignore ("kde")==FALSE)
+  if ( ignore("kde") == FALSE)
   {
      kdDebug(750) << "@KDE was FALSE" << endl;
-     QTimer::singleShot( 0, this, SLOT(emitDeath()));
+     QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
 
   //We want to recognize linux in any text!
-  if (ignore ("linux")==FALSE)
+  if ( ignore("linux") == FALSE )
   {
      kdDebug(750) << "@Linux was FALSE" << endl;
-     QTimer::singleShot( 0, this, SLOT(emitDeath()));
+     QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
 
-  NOOUTPUT (KSpell2);
+  NOOUTPUT( KSpell2 );
 
   m_status = Running;
-  emit ready(this);
+  emit ready( this );
 }
 
 void
-KSpell::setUpDialog (bool reallyuseprogressbar)
+KSpell::setUpDialog( bool reallyuseprogressbar )
 {
-  if (dialogsetup)
+  if ( dialogsetup )
     return;
 
   //Set up the dialog box
-  ksdlg=new KSpellDlg (parent, "dialog",
-		       progressbar && reallyuseprogressbar, modaldlg );
-  ksdlg->setCaption (caption);
-  connect (ksdlg, SIGNAL (command (int)), this,
-		SLOT (slotStopCancel (int)) );
-  connect (this, SIGNAL ( progress (unsigned int) ),
-	   ksdlg, SLOT ( slotProgress (unsigned int) ));
+  ksdlg= new KSpellDlg( parent, "dialog",
+                        progressbar && reallyuseprogressbar, modaldlg );
+  ksdlg->setCaption( caption );
+
+  connect( ksdlg, SIGNAL(command(int)),
+           this, SLOT(slotStopCancel(int)) );
+  connect( this, SIGNAL(progress(unsigned int)),
+	   ksdlg, SLOT(slotProgress(unsigned int)) );
+
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
-  KWin::setIcons (ksdlg->winId(), kapp->icon(), kapp->miniIcon());
+  KWin::setIcons( ksdlg->winId(), kapp->icon(), kapp->miniIcon() );
 #endif
   if ( modaldlg )
-      ksdlg->setFocus();
-  dialogsetup = TRUE;
+    ksdlg->setFocus();
+  dialogsetup = true;
 }
 
-bool KSpell::addPersonal (const QString & word)
+bool KSpell::addPersonal( const QString & word )
 {
   QString qs = word.simplifyWhiteSpace();
 
   //we'll let ispell do the work here b/c we can
-  if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
-    return FALSE;
+  if ( qs.find(' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+    return false;
 
-  qs.prepend ("*");
-  personaldict=TRUE;
+  qs.prepend( "*" );
+  personaldict = true;
 
-  return proc->fputs(qs);
+  return proc->fputs( qs );
 }
 
-bool KSpell::writePersonalDictionary ()
+bool KSpell::writePersonalDictionary()
 {
-  return proc->fputs ("#");
+  return proc->fputs("#");
 }
 
-bool KSpell::ignore (const QString & word)
+bool KSpell::ignore( const QString & word )
 {
   QString qs = word.simplifyWhiteSpace();
 
   //we'll let ispell do the work here b/c we can
-  if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
-    return FALSE;
+  if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+    return false;
 
-  qs.prepend ("@");
+  qs.prepend( "@" );
 
-  return proc->fputs(qs);
+  return proc->fputs( qs );
 }
 
 bool
-KSpell::cleanFputsWord (const QString & s, bool appendCR)
+KSpell::cleanFputsWord( const QString & s, bool appendCR )
 {
   QString qs(s);
-  //bool firstchar = TRUE;
   bool empty = TRUE;
 
-  for (unsigned int i=0; i<qs.length(); i++)
+  for( unsigned int i = 0; i < qs.length(); i++ )
   {
     //we need some punctuation for ornaments
-    if (qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-'
-	&& qs[i].isPunct() || qs[i].isSpace())
+    if ( qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-'
+         && qs[i].isPunct() || qs[i].isSpace() )
     {
       qs.remove(i,1);
       i--;
     } else {
-      if (qs[i].isLetter()) empty=FALSE;
+      if ( qs[i].isLetter() )
+        empty=false;
     }
   }
 
   // don't check empty words, otherwise synchronisation will lost
-  if (empty) return FALSE;
+  if (empty)
+    return false;
 
-  return proc->fputs("^"+qs, appendCR);
+  return proc->fputs( "^"+qs, appendCR );
 }
 
 bool
-KSpell::cleanFputs (const QString & s, bool appendCR)
+KSpell::cleanFputs( const QString & s, bool appendCR )
 {
   QString qs(s);
   unsigned l = qs.length();
 
   // some uses of '$' (e.g. "$0") cause ispell to skip all following text
-  for(unsigned int i = 0; i < l; ++i)
+  for( unsigned int i = 0; i < l; ++i )
   {
-    if(qs[i] == '$')
+    if( qs[i] == '$' )
       qs[i] = ' ';
   }
 
-  if (l<MAXLINELENGTH)
-    {
-      if (qs.isEmpty())
-	qs="";
-
-      return proc->fputs ("^"+qs, appendCR);
-    }
+  if ( l<MAXLINELENGTH )
+  {
+    if ( qs.isEmpty() )
+      qs="";
+    return proc->fputs( "^"+qs, appendCR );
+  }
   else
-    return proc->fputs ("^\n",appendCR);
+    return proc->fputs( "^\n",appendCR );
 }
 
-bool KSpell::checkWord (const QString & buffer, bool _usedialog)
+bool KSpell::checkWord( const QString & buffer, bool _usedialog )
 {
   QString qs = buffer.simplifyWhiteSpace();
 
-  if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
-    return FALSE;
+  if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+    return false;
 
   ///set the dialog signal handler
-  dialog3slot = SLOT (checkWord3());
+  dialog3slot = SLOT(checkWord3());
 
   usedialog=_usedialog;
-  setUpDialog(FALSE);
-  if (_usedialog)
-    {
-      emitProgress();
-      ksdlg->show();
-    }
+  setUpDialog( false );
+
+  if ( _usedialog )
+  {
+    emitProgress();
+    ksdlg->show();
+  }
   else
     ksdlg->hide();
 
-  OUTPUT (checkWord2);
+  OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->fputs ("%"); // turn off terse mode
-  proc->fputs (buffer); // send the word to ispell
+  proc->fputs( "%" ); // turn off terse mode
+  proc->fputs( buffer ); // send the word to ispell
 
-  return TRUE;
+  return true;
 }
 
-void KSpell::checkWord2 (KProcIO *)
+void KSpell::checkWord2( KProcIO* )
 {
   QString word;
-
   QString line;
-  proc->fgets (line, TRUE); //get ispell's response
+
+  proc->fgets( line, true ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
    the input line." */
   QString blank_line;
-  proc->fgets(blank_line, TRUE); // eat the blank line
+  proc->fgets( blank_line, TRUE ); // eat the blank line
 
   NOOUTPUT(checkWord2);
 
-  bool mistake = (parseOneResponse(line, word, sugg) == MISTAKE);
+  bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
   if ( mistake && usedialog )
-    {
-      cwword=word;
-      dialog (word, sugg, SLOT (checkWord3()));
-      return;
-    }
+  {
+    cwword=word;
+    dialog( word, sugg, SLOT(checkWord3()) );
+    return;
+  }
   else if( mistake )
-    {
-      emit misspelling (word, sugg, lastpos);
-    }
+  {
+    emit misspelling( word, sugg, lastpos );
+  }
 
   //emits a "corrected" signal _even_ if no change was made
   //so that the calling program knows when the check is complete
-  emit corrected (word, word, 0L);
+  emit corrected( word, word, 0L );
 }
 
-void KSpell::checkWord3 ()
+void KSpell::checkWord3()
 {
-  disconnect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
+  disconnect( this, SIGNAL(dialog3()), this, SLOT(checkWord3()) );
 
-  emit corrected (cwword, replacement(), 0L);
+  emit corrected( cwword, replacement(), 0L );
 }
 
-QString KSpell::funnyWord (const QString & word)
+QString KSpell::funnyWord( const QString & word )
   // composes a guess from ispell to a readable word
   // e.g. "re+fry-y+ies" -> "refries"
 {
   QString qs;
   unsigned int i=0;
 
-  for (i=0; word [i]!='\0';i++)
+  for( i=0; word [i]!='\0';i++ )
+  {
+    if (word [i]=='+')
+      continue;
+    if (word [i]=='-')
     {
-      if (word [i]=='+')
-	continue;
-      if (word [i]=='-')
-	{
-	  QString shorty;
-	  unsigned int j;
-	  int k;
+      QString shorty;
+      unsigned int j;
+      int k;
 
-	  for (j=i+1;word [j]!='\0' && word [j]!='+' &&
-		 word [j]!='-';j++)
-	    shorty+=word [j];
-	  i=j-1;
+      for( j = i+1; word[j] != '\0' && word[j] != '+' && word[j] != '-'; j++ )
+        shorty += word[j];
 
-	  if ((k=qs.findRev (shorty))==0 || k!=-1)
-	    qs.remove (k,shorty.length());
-	  else
-	    {
-              qs+='-';
-              qs+=shorty;  //it was a hyphen, not a '-' from ispell
-            }
-	}
+      i = j-1;
+
+      if ( ( k = qs.findRev(shorty) ) == 0 || k != -1 )
+        qs.remove( k, shorty.length() );
       else
-	qs+=word [i];
+      {
+        qs += '-';
+        qs += shorty;  //it was a hyphen, not a '-' from ispell
+      }
     }
+    else
+      qs += word[i];
+  }
+
   return qs;
 }
 
 
-int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList & sugg)
+int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList & sugg )
   // buffer is checked, word and sugg are filled in
   // returns
   //   GOOD    if word is fine
@@ -600,87 +601,89 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
 
   sugg.clear();
 
-  if (buffer [0]=='*' || buffer[0] == '+' || buffer[0] == '-')
+  if ( buffer[0] == '*' || buffer[0] == '+' || buffer[0] == '-' )
+  {
+    return GOOD;
+  }
+
+  if ( buffer[0] == '&' || buffer[0] == '?' || buffer[0] == '#' )
+  {
+    int i,j;
+
+
+    word = buffer.mid( 2, buffer.find( ' ', 3 ) -2 );
+    //check() needs this
+    orig=word;
+
+    if( d->m_bIgnoreTitleCase && word == word.upper() )
+      return IGNORE;
+
+    if( d->m_bIgnoreUpperWords && word[0] == word[0].upper() )
     {
+      QString text = word[0] + word.right( word.length()-1 ).lower();
+      if( text == word )
+        return IGNORE;
+    }
+
+    /////// Ignore-list stuff //////////
+    //We don't take advantage of ispell's ignore function because
+    //we can't interrupt ispell's output (when checking a large
+    //buffer) to add a word to _it's_ ignore-list.
+    if ( ignorelist.findIndex( word.lower() ) != -1 )
+      return IGNORE;
+
+    //// Position in line ///
+    QString qs2;
+
+    if ( buffer.find( ':' ) != -1 )
+      qs2 = buffer.left( buffer.find(':') );
+    else
+      qs2 = buffer;
+
+    posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt()-1;
+
+    ///// Replace-list stuff ////
+    QStringList::Iterator it = replacelist.begin();
+    for( ;it != replacelist.end(); ++it, ++it ) // Skip two entries at a time.
+    {
+      if ( word == *it ) // Word matches
+      {
+        ++it;
+        word = *it;   // Replace it with the next entry
+        return REPLACE;
+      }
+    }
+
+    /////// Suggestions //////
+    if ( buffer[0] != '#' )
+    {
+      QString qs = buffer.mid( buffer.find(':')+2, buffer.length() );
+      qs += ',';
+      sugg.clear();
+      i = j = 0;
+
+      while( (unsigned int)i < qs.length() )
+      {
+        QString temp = qs.mid( i, (j=qs.find (',',i)) - i );
+        sugg.append( funnyWord(temp) );
+
+        i=j+2;
+      }
+    }
+
+    if ( (sugg.count()==1) && (sugg.first() == word) )
       return GOOD;
-    }
 
-  if (buffer [0]=='&' || buffer [0]=='?' || buffer [0]=='#')
-    {
-      int i,j;
-
-
-      word = buffer.mid (2,buffer.find (' ',3)-2);
-      //check() needs this
-      orig=word;
-
-      if(d->m_bIgnoreTitleCase && word==word.upper())
-          return IGNORE;
-
-      if(d->m_bIgnoreUpperWords && word[0]==word[0].upper())
-      {
-          QString text=word[0]+word.right(word.length()-1).lower();
-          if(text==word)
-              return IGNORE;
-      }
-
-      /////// Ignore-list stuff //////////
-      //We don't take advantage of ispell's ignore function because
-      //we can't interrupt ispell's output (when checking a large
-      //buffer) to add a word to _it's_ ignore-list.
-      if (ignorelist.findIndex(word.lower())!=-1)
-	return IGNORE;
-
-      //// Position in line ///
-      QString qs2;
-
-      if (buffer.find(':')!=-1)
-	qs2=buffer.left (buffer.find (':'));
-      else
-	qs2=buffer;
-
-      posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt()-1;
-
-      ///// Replace-list stuff ////
-      QStringList::Iterator it = replacelist.begin();
-      for(;it != replacelist.end(); ++it, ++it) // Skip two entries at a time.
-      {
-         if (word == *it) // Word matches
-         {
-            ++it;
-            word = *it;   // Replace it with the next entry
-            return REPLACE;
-	 }
-      }
-
-      /////// Suggestions //////
-      if (buffer [0] != '#')
-	{
-	  QString qs = buffer.mid(buffer.find(':')+2, buffer.length());
-	  qs+=',';
-	  sugg.clear();
-	  i=j=0;
-	  while ((unsigned int)i<qs.length())
-	    {
-	      QString temp = qs.mid (i,(j=qs.find (',',i))-i);
-	      sugg.append (funnyWord (temp));
-
-	      i=j+2;
-	    }
-	}
-
-      if ((sugg.count()==1) && (sugg.first() == word))
-	return GOOD;
-
-      return MISTAKE;
-    }
+    return MISTAKE;
+  }
 
 
   kdError(750) << "HERE?: [" << buffer << "]" << endl;
   kdError(750) << "Please report this to dsweet@kde.org" << endl;
   kdError(750) << "Thank you!" << endl;
-  emit done((bool)FALSE);
-  emit done (KSpell::origbuffer);
+
+  emit done( false );
+  emit done( KSpell::origbuffer );
   return MISTAKE;
 }
 
