@@ -31,7 +31,7 @@ QString KfmPaths::s_trashPath = QString::null;
 
 void KfmPaths::initStatic() 
 {
-  KSimpleConfig *config = new KSimpleConfig(kapp->kde_configdir()+"/kfmrc", true);
+  KSimpleConfig *config = new KSimpleConfig(kapp->localconfigdir()+"/kfmrc", true);
   config->setGroup( "Paths" );
 
   // Desktop Path
