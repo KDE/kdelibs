@@ -853,6 +853,8 @@ void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
     dir->rootItem->setURL( url );
     itemsInUse.insert( url.url(-1), dir );
     // Rename all items under there
+    // Theorically this can only happen when called by FileRenamed.
+    // A redirection in a list job happens before any items have been created yet.
     KFileItemListIterator kit( *dir->lstItems );
     for ( ; kit.current(); ++kit )
     {
@@ -890,13 +892,12 @@ void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
       {
         emit kdl->clear();
         emit kdl->redirection( url );
-        emit kdl->redirection( oldUrl, url );
       }
       else
       {
         emit kdl->clear( oldUrl );
-        emit kdl->redirection( oldUrl, url );
       }
+      emit kdl->redirection( oldUrl, url );
     }
     urlsCurrentlyListed.insert( url.url(-1), listers );
   }
@@ -912,14 +913,10 @@ void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
     if ( kdl->d->lstDirs.count() == 1 )
     {
       emit kdl->redirection( url );
-      emit kdl->redirection( oldUrl, url );
     }
-    else
-      emit kdl->redirection( oldUrl, url );
+    emit kdl->redirection( oldUrl, url );
   }
   // Is oldUrl a directory in the cache?
-  //dir = itemsCached.remove( oldUrlStr );
-  //if ( dir )
   // Remove any child of oldUrl from the cache - even if the renamed dir itself isn't in it!
   removeDirFromCache( oldUrl );
   // TODO rename, instead.
