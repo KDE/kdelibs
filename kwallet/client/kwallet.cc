@@ -160,9 +160,9 @@ int Wallet::deleteWallet(const QString& name) {
 
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 	if (ot == Asynchronous) {
-		Wallet *w = new Wallet(-1, name);
-		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, w->objId(), uint(w));
-		return w;
+		Wallet *wallet = new Wallet(-1, name);
+		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, wallet->objId(), uint(w));
+		return wallet;
 	}
 
 	bool isPath = ot == Path;
