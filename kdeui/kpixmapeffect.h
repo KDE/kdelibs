@@ -14,7 +14,7 @@ class KPixmapEffect
 {
 public:
     enum GradientType { PyramidGradient, RectangleGradient, ConicGradient };
-
+    enum RGBComponent { Red, Green, Blue };
     /**
      * Draws a pyramid, rectangle, or conic gradient from color ca to
      * color cb.
@@ -23,39 +23,49 @@ public:
                                  const QColor &cb, GradientType type,
                                  int ncols=3);
     /**
-     * Brightens the image by a specified percent. For example, .5 will
-     * brighten the image 50%.
+     * Either brightens or dims the image by a specified percent.
+     * For example, .5 will modify the colors by 50%. All percent values
+     * should be positive, use bool brighten to set if the image gets
+     * brightened or dimmed.
      */
-    static void brighten(QImage &image, float percent);
+    static void intensity(QImage &image, float percent, bool brighten=true);
     /**
-     * Brightens the pixmap by a specified percent.
+     * Either brightens or dims a pixmap by a specified percent.
      */
-    inline static void brighten(KPixmap &pixmap, float percent);
+    inline static void intensity(KPixmap &pixmap, float percent,
+                                 bool brighten = true);
     /**
-     * Dims the image by a specified percent. For example, .5 will
-     * dim the image 50%.
+     * Modifies the intensity of a image's RGB channel component.
      */
-    static void dim(QImage &image, float percent);
+    static void channelIntensity(QImage &image, float percent,
+                                 RGBComponent channel,
+                                 bool brighten = true);
     /**
-     * Dims the pixmap by a specified percent.
+     * Modifies the intensity of a pixmap's RGB channel component.
      */
-    inline static void dim(KPixmap &pixmap, float percent);
+    inline static void channelIntensity(KPixmap &pixmap, float percent,
+                                        RGBComponent channel,
+                                        bool brighten = true);
     
+
 };
 
-inline void KPixmapEffect::brighten(KPixmap &pixmap, float percent)
+inline void KPixmapEffect::intensity(KPixmap &pixmap, float percent,
+                                     bool brighten = true)
 {
     QImage image = pixmap.convertToImage();
-    brighten(image, percent);
+    intensity(image, percent, brighten);
     pixmap.convertFromImage(image);
 }
 
-inline void KPixmapEffect::dim(KPixmap &pixmap, float percent)
+inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
+                                            RGBComponent channel,
+                                            bool brighten = true)
 {
     QImage image = pixmap.convertToImage();
-    dim(image, percent);
+    channelIntensity(image, percent, channel, brighten);
     pixmap.convertFromImage(image);
 }
-    
+
 
 #endif

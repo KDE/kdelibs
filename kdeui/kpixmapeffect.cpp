@@ -93,13 +93,13 @@ void KPixmapEffect::advancedGradient(KPixmap &pixmap, const QColor &ca,
       pixmap.convertFromImage(image);
 }
 
-/* These two methods build a 256 byte unsigned char lookup table with all
+/* This builds a 256 byte unsigned char lookup table with all
  * the possible percent values prior to applying the effect, then uses
  * integer math for the pixels. For any image larger than 9x9 this will be
  * less expensive than doing a float operation on the 3 color components of
  * each pixel. (mosfet)
  */
-void KPixmapEffect::brighten(QImage &image, float percent)
+void KPixmapEffect::intensity(QImage &image, float percent, bool brighten)
 {
     int i, tmp, r, g, b;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
@@ -109,26 +109,52 @@ void KPixmapEffect::brighten(QImage &image, float percent)
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
         (unsigned int *)image.colorTable();
 
-    for(i=0; i < segColors; ++i){
-        tmp = (int)(i*percent);
-        if(tmp > 255)
-            tmp = 255;
-        segTbl[i] = tmp;
+    if(brighten){ // keep overflow check out of loops
+        for(i=0; i < segColors; ++i){
+            tmp = (int)(i*percent);
+            if(tmp > 255)
+                tmp = 255;
+            segTbl[i] = tmp;
+        }
     }
-    for(i=0; i < pixels; ++i){
-        r = qRed(data[i]);
-        g = qGreen(data[i]);
-        b = qBlue(data[i]);
-        r = r + segTbl[r] > 255 ? 255 : r + segTbl[r];
-        g = g + segTbl[g] > 255 ? 255 : g + segTbl[g];
-        b = b + segTbl[b] > 255 ? 255 : b + segTbl[b];
-        data[i] = qRgb(r, g, b);
+    else{
+        for(i=0; i < segColors; ++i){
+            tmp = (int)(i*percent);
+            if(tmp < 0)
+                tmp = 0;
+            segTbl[i] = tmp;
+        }
+    }
+
+    if(brighten){ // same here
+        for(i=0; i < pixels; ++i){
+            r = qRed(data[i]);
+            g = qGreen(data[i]);
+            b = qBlue(data[i]);
+            r = r + segTbl[r] > 255 ? 255 : r + segTbl[r];
+            g = g + segTbl[g] > 255 ? 255 : g + segTbl[g];
+            b = b + segTbl[b] > 255 ? 255 : b + segTbl[b];
+            data[i] = qRgb(r, g, b);
+        }
+    }
+    else{
+        for(i=0; i < pixels; ++i){
+            r = qRed(data[i]);
+            g = qGreen(data[i]);
+            b = qBlue(data[i]);
+            r = r - segTbl[r] < 0 ? 0 : r - segTbl[r];
+            g = g - segTbl[g] < 0 ? 0 : g - segTbl[g];
+            b = b - segTbl[b] < 0 ? 0 : b - segTbl[b];
+            data[i] = qRgb(r, g, b);
+        }
     }
 }
 
-void KPixmapEffect::dim(QImage &image, float percent)
+void KPixmapEffect::channelIntensity(QImage &image, float percent,
+                                     RGBComponent channel,
+                                     bool brighten)
 {
-    int i, tmp, r, g, b;
+    int i, tmp, c;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     unsigned char segTbl[segColors];
     int pixels = image.depth() > 8 ? image.width()*image.height() :
@@ -136,21 +162,69 @@ void KPixmapEffect::dim(QImage &image, float percent)
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
         (unsigned int *)image.colorTable();
 
-    for(i=0; i < segColors; ++i){
-        tmp = (int)(i*percent);
-        if(tmp < 0)
-            tmp = 0;
-        segTbl[i] = tmp;
+    if(brighten){ // keep overflow check out of loops
+        for(i=0; i < segColors; ++i){
+            tmp = (int)(i*percent);
+            if(tmp > 255)
+                tmp = 255;
+            segTbl[i] = tmp;
+        }
     }
-    for(i=0; i < pixels; ++i){
-        r = qRed(data[i]);
-        g = qGreen(data[i]);
-        b = qBlue(data[i]);
-        r = r - segTbl[r] < 0 ? 0 : r - segTbl[r];
-        g = g - segTbl[g] < 0 ? 0 : g - segTbl[g];
-        b = b - segTbl[b] < 0 ? 0 : b - segTbl[b];
-        data[i] = qRgb(r, g, b);
+    else{
+        for(i=0; i < segColors; ++i){
+            tmp = (int)(i*percent);
+            if(tmp < 0)
+                tmp = 0;
+            segTbl[i] = tmp;
+        }
     }
 
+    if(brighten){ // same here
+        if(channel == Red){ // and here ;-)
+            for(i=0; i < pixels; ++i){
+                c = qRed(data[i]);
+                c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
+                data[i] = qRgb(c, qGreen(data[i]), qBlue(data[i]));
+            }
+        }
+        if(channel == Green){
+            for(i=0; i < pixels; ++i){
+                c = qGreen(data[i]);
+                c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
+                data[i] = qRgb(qRed(data[i]), c, qBlue(data[i]));
+            }
+        }
+        else{
+            for(i=0; i < pixels; ++i){
+                c = qBlue(data[i]);
+                c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
+                data[i] = qRgb(qRed(data[i]), qGreen(data[i]), c);
+            }
+        }
+
+    }
+    else{
+        if(channel == Red){
+            for(i=0; i < pixels; ++i){
+                c = qRed(data[i]);
+                c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
+                data[i] = qRgb(c, qGreen(data[i]), qBlue(data[i]));
+            }
+        }
+        if(channel == Green){
+            for(i=0; i < pixels; ++i){
+                c = qGreen(data[i]);
+                c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
+                data[i] = qRgb(qRed(data[i]), c, qBlue(data[i]));
+            }
+        }
+        else{
+            for(i=0; i < pixels; ++i){
+                c = qBlue(data[i]);
+                c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
+                data[i] = qRgb(qRed(data[i]), qGreen(data[i]), c);
+            }
+        }
+    }
 }
 
