@@ -79,16 +79,16 @@ protected:
   /**
    * Set the instance (@ref KInstance) for this part.
    *
-   * Call this first in the inherited class constructor.
-   * (At least before @ref setXMLFile().)
+   * Call this *first* in the inherited class constructor,
+   * because it loads the i18n catalogues.
    */
   virtual void setInstance( KInstance *instance );
 
   /**
    * Set the instance (@ref KInstance) for this part.
    *
-   * Call this first in the inherited class constructor.
-   * (At least before @ref setXMLFile().)
+   * Call this *first* in the inherited class constructor,
+   * because it loads the i18n catalogues.
    */
   virtual void setInstance( KInstance *instance, bool loadPlugins );
 
