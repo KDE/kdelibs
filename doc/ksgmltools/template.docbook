@@ -1,9 +1,12 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
- <!ENTITY kapp "<application>Kapp</application>">
- <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
- <!ENTITY % addindex "IGNORE">
- <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
- %ents;
+  <!ENTITY kapp "<application>Kapp</application>">
+  <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
+  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+  %ents;
+  <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN">
+  %FDLNotice;
+  <!ENTITY % addindex "IGNORE">
+  <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 -->
 
