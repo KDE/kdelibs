@@ -148,7 +148,7 @@ Value Navigator::get(ExecState *exec, const UString &propertyName) const
 Value Navigator::getValue(ExecState *, int token) const
 {
 	KProtocolManager proto;
-	
+
   KURL url = m_part->url();
   QString userAgent = proto.userAgentForHost(url.host());
   switch (token) {
@@ -390,8 +390,13 @@ Value PluginsFunc::tryCall(ExecState *, Object &, const List &)
 }
 
 
-Value NavigatorFunc::tryCall(ExecState *, Object &thisObj, const List &)
+Value NavigatorFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
 {
+  if (!thisObj.inherits(&KJS::Navigator::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   Navigator *nav = static_cast<Navigator *>(thisObj.imp());
   // javaEnabled()
   return Boolean(nav->part()->javaEnabled());

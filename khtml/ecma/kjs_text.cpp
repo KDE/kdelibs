@@ -86,6 +86,11 @@ void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, cons
 
 Value DOMCharacterDataProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMCharacterData::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::CharacterData data = static_cast<DOMCharacterData *>(thisObj.imp())->toData();
   switch(id) {
     case DOMCharacterData::SubstringData:
@@ -137,6 +142,11 @@ Value DOMText::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMText::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::Text text = static_cast<DOMText *>(thisObj.imp())->toText();
   switch(id) {
     case DOMText::SplitText:

@@ -840,6 +840,11 @@ void Window::setCurrentEvent( DOM::Event *evt )
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&Window::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  } 
   Window *window = static_cast<Window *>(thisObj.imp());
   Value result;
   QString str, str2;
@@ -1446,6 +1451,11 @@ UString Location::toString(ExecState *) const
 
 Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&Location::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  } 
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
   if (part) {
@@ -1516,6 +1526,11 @@ Value History::getValue(ExecState *, int token) const
 
 Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&History::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  } 
   History *history = static_cast<History *>(thisObj.imp());
   KParts::BrowserExtension *ext = history->part->browserExtension();
 
@@ -1592,7 +1607,7 @@ Value Konqueror::get(ExecState *exec, const UString &p) const
   return /*Function*/( new KonquerorFunc(this, p.qstring().latin1() ) );
 }
 
-Value KonquerorFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
 {
   KParts::BrowserExtension *ext = konqueror->part->browserExtension();
 

@@ -176,12 +176,12 @@ namespace KJS {
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
            Replace, Reload, ToString };
     KHTMLPart *part() const { return m_part; }
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   private:
     friend class Window;
     Location(KHTMLPart *p);
     QGuardedPtr<KHTMLPart> m_part;
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
   };
 
 #ifdef Q_WS_QWS

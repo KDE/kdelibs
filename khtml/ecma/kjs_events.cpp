@@ -211,6 +211,11 @@ Value DOMEvent::getValue(ExecState *exec, int token) const
 
 Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMEvent::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::Event event = static_cast<DOMEvent *>( thisObj.imp() )->toEvent();
   switch (id) {
     case DOMEvent::StopPropagation:
@@ -322,6 +327,11 @@ Value DOMUIEvent::getValue(ExecState *exec, int token) const
 
 Value DOMUIEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMUIEvent::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::UIEvent uiEvent = static_cast<DOMUIEvent *>(thisObj.imp())->toUIEvent();
   switch (id) {
     case DOMUIEvent::InitUIEvent: {
@@ -417,6 +427,11 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
 
 Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMMouseEvent::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::MouseEvent mouseEvent = static_cast<DOMMouseEvent *>(thisObj.imp())->toMouseEvent();
   switch (id) {
     case DOMMouseEvent::InitMouseEvent:
@@ -515,6 +530,11 @@ Value DOMMutationEvent::getValue(ExecState *exec, int token) const
 
 Value DOMMutationEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMMutationEvent::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::MutationEvent mutationEvent = static_cast<DOMMutationEvent *>(thisObj.imp())->toMutationEvent();
   switch (id) {
     case DOMMutationEvent::InitMutationEvent:

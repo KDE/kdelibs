@@ -52,6 +52,11 @@ IMPLEMENT_PROTOFUNC(HTMLDocFunction)
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&HTMLDocument::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
   String s;
   DOM::HTMLElement element;
@@ -1704,6 +1709,11 @@ HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
 
 Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::HTMLElement::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   kdDebug() << "KJS::HTMLElementFunction::tryCall " << endl;
   DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
 
@@ -2620,6 +2630,8 @@ Value KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &ar
 Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   Q_ASSERT( thisObj.imp() == this ); // tell me if this is triggered (David)
+  // Also, do we need the TypeError test here ?
+
   if (args.size() == 1) {
     // support for document.all(<index>) etc.
     bool ok;
@@ -2677,6 +2689,11 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 
 Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::HTMLCollection::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj.imp())->toCollection();
 
   switch (id) {

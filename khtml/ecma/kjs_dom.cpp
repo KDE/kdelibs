@@ -409,6 +409,11 @@ List DOMNode::eventHandlerScope(ExecState *) const
 
 Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&DOMNode::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   switch (id) {
     case DOMNode::HasAttributes:
@@ -556,6 +561,11 @@ DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)
 // Not a prototype class currently, but should probably be converted to one
 Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMNodeList::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::NodeList list = static_cast<DOMNodeList *>(thisObj.imp())->nodeList();
   Value result;
 
@@ -698,6 +708,11 @@ Value DOMDocument::getValue(ExecState *exec, int token) const
 
 Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMNode::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   DOM::Document doc = static_cast<DOM::Document>(node);
   String str = args[0].toString(exec);
@@ -845,6 +860,11 @@ Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
 
 Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMNode::info)) { // node should be enough here, given the cast
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   DOM::Element element = static_cast<DOM::Element>(node);
 
@@ -915,6 +935,11 @@ DOMDOMImplementation::~DOMDOMImplementation()
 
 Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMDOMImplementation::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::DOMImplementation implementation = static_cast<DOMDOMImplementation *>( thisObj.imp() )->toImplementation();
 
   switch(id) {
@@ -1031,6 +1056,11 @@ Value DOMNamedNodeMap::tryGet(ExecState* exec, const UString &p) const
 
 Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  if (!thisObj.inherits(&KJS::DOMNamedNodeMap::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
   DOM::NamedNodeMap map = static_cast<DOMNamedNodeMap *>(thisObj.imp())->toMap();
 
   switch(id) {
