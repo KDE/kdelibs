@@ -23,13 +23,14 @@
 #ifndef _CSS_css_stylesheetimpl_h_
 #define _CSS_css_stylesheetimpl_h_
 
-#include <qlist.h>
 #include <qvaluelist.h>
 
 #include <dom_string.h>
 
 #include "cssparser.h"
 #include "misc/loader_client.h"
+
+#include <qlist.h>
 
 namespace khtml {
     class CachedCSSStyleSheet;

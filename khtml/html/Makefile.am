@@ -17,6 +17,8 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+KDE_CXXFLAGS = -UQT_NO_COMPAT
+
 noinst_LTLIBRARIES = libkhtmlhtml.la
 libkhtmlhtml_la_SOURCES = \
 	htmlparser.cpp         htmltokenizer.cpp \

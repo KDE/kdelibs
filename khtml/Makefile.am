@@ -25,12 +25,8 @@
 #AM_CXXFLAGS += -DTOKEN_DEBUG
 #AM_CXXFLAGS += -DPARSER_DEBUG
 #AM_CXXFLAGS += -DCACHE_DEBUG
-#AM_CXXFLAGS += -DDEBUG=1
 
-# for profiling.
-# command line for line by line profiling (into seperate files):
-# gprof -l -y
-# AM_CXXFLAGS += -pg
+KDE_CXXFLAGS = -UQT_NO_COMPAT
 
 SUBDIRS = misc dom css xml html rendering pics @DOJAVA@ . ecma
 
@@ -89,9 +85,10 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-check_PROGRAMS 	= testkhtml testcss testrender testkhtml_static test_regression
+check_PROGRAMS 	= testkhtml
+EXTRA_PROGRAMS = testcss testrender testkhtml_static test_regression
 testkhtml_SOURCES = testkhtml.cpp domtreeview.cpp
-testkhtml_LDADD = libkhtml.la
+testkhtml_LDADD = libkhtml.la 
 testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp $(libkhtml_la_SOURCES)
 testkhtml_static_LDADD = $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testcss_SOURCES = testcss.cpp

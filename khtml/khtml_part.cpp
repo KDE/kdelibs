@@ -60,7 +60,7 @@ using namespace DOM;
 #include <unistd.h>
 
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kio/job.h>
 #include <kparts/historyprovider.h>
 #include <kmimetype.h>
@@ -2494,8 +2494,12 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_bits.toInt(),
                (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
                d->m_ssl_good_from, d->m_ssl_good_until
+#ifdef Q_WS_QWS
+               , d->m_ssl_serial_num
+#else
 #if KDE_VERSION >= 290
                , d->m_ssl_serial_num
+#endif
 #endif
                );
   }
@@ -3588,10 +3592,9 @@ void KHTMLPart::reparseConfiguration()
 
   setAutoloadImages( settings->autoLoadImages() );
 
-  // PENDING(lars) Pass hostname to the following two methods.
-  d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
-  d->m_bJavaEnabled = settings->isJavaEnabled();
-  d->m_bPluginsEnabled = settings->isPluginsEnabled();
+  d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
+  d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
+  d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 

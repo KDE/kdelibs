@@ -47,7 +47,7 @@ using namespace DOM;
 #include "khtml_part.h"
 #include "khtml_settings.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <qfile.h>
@@ -262,16 +262,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
             while( ordprop ) {
                 RenderStyle *pseudoStyle;
                 pseudoStyle = style->getPseudoStyle(ordprop->pseudoId);
-                
+
                 if (!pseudoStyle)
                 {
                     pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
                     if (pseudoStyle && (ordprop->pseudoId==RenderStyle::BEFORE ||
                             ordprop->pseudoId==RenderStyle::AFTER))
-                        pseudoStyle->inheritFrom(e->parentNode()->style());                    
+                        pseudoStyle->inheritFrom(e->parentNode()->style());
                 }
-                
-                if ( pseudoStyle )                                     
+
+                if ( pseudoStyle )
                     applyRule(pseudoStyle, ordprop->prop, e);
 
                 ordprop = pseudoProps->next();
@@ -577,10 +577,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	    }
 	} else if ( value == "before" ) {
-            dynamicPseudo = RenderStyle::BEFORE; 
+            dynamicPseudo = RenderStyle::BEFORE;
             return true;
         } else if ( value == "after" ) {
-            dynamicPseudo = RenderStyle::AFTER; 
+            dynamicPseudo = RenderStyle::AFTER;
             return true;
         }
 	return false;
@@ -2153,13 +2153,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
     {
-        if (primitiveValue  && (style->styleType()==RenderStyle::BEFORE ||  
+        if (primitiveValue  && (style->styleType()==RenderStyle::BEFORE ||
                 style->styleType()==RenderStyle::AFTER))
         {
             if(primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
-            
-                style->setContent(primitiveValue->getStringValue());                   
+
+                style->setContent(primitiveValue->getStringValue());
             }
             else if (primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
@@ -2169,7 +2169,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         break;
     }
-        
+
     case CSS_PROP_COUNTER_INCREMENT:
         // list of CSS2CounterIncrement
     case CSS_PROP_COUNTER_RESET:

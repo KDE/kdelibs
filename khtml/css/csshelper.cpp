@@ -155,13 +155,20 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
 #if QT_VERSION < 300
     QFont::CharSet cs = s->charset();
     QString charset = KGlobal::charsets()->xCharsetName( cs );
-#else
-    QString charset;
 #endif
 
+#if QT_VERSION < 300
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
+#else
+    if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
+#endif
+
     {
+#if QT_VERSION < 300
         QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
+#else
+        QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+#endif
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         //kdDebug() << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;

@@ -28,8 +28,6 @@
 // qt includes and classes
 #include <qscrollview.h>
 
-#include <qlist.h> // ### replace when switching to qt3: template<class C> class QPtrList;
-
 class QPainter;
 class QRect;
 
@@ -153,8 +151,6 @@ public:
 
     void layout(bool force = false);
 
-    static const QList<KHTMLView> *viewList() { return lstViews; }
-
 signals:
     void cleared();
 
@@ -169,31 +165,13 @@ protected:
 
     virtual void viewportMousePressEvent( QMouseEvent * );
     virtual void focusOutEvent( QFocusEvent * );
-
-    /**
-     * This function emits the @ref doubleClick() signal when the user
-     * double clicks a <a href=...> tag.
-     */
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
-
-    /**
-     * This function is called when the user moves the mouse.
-     */
     virtual void viewportMouseMoveEvent(QMouseEvent *);
-
-    /**
-     * this function is called when the user releases a mouse button.
-     */
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
-
     virtual void viewportWheelEvent(QWheelEvent*);
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
-
-    /**
-     * Scroll the view
-     */
     void doAutoScroll();
 
 protected slots:
@@ -232,11 +210,6 @@ private:
 
     // ------------------------------------- member variables ------------------------------------
  private:
-    /**
-     * List of all open browsers.
-     */
-    static QList<KHTMLView> *lstViews;
-
     int _width;
     int _height;
 

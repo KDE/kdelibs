@@ -47,7 +47,7 @@ using namespace DOM;
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h> // For system fonts
-#include <kapp.h>
+#include <kapplication.h>
 
 #include "htmlhashes.h"
 #include "misc/helper.h"

@@ -37,7 +37,7 @@
 
 #include <kcursor.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kprinter.h>
 
 #include <qpixmap.h>
@@ -49,21 +49,12 @@
 #include <qdatetime.h>
 #include <qpaintdevicemetrics.h>
 #include <qtimer.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #include <kimageio.h>
 #include <kdebug.h>
 
 #define PAINT_BUFFER_HEIGHT 128
-
-#if QT_VERSION < 300
-template class QList<KHTMLView>;
-QList<KHTMLView> *KHTMLView::lstViews = 0L;
-#else
-template class QPtrList<KHTMLView>;
-QPtrList<KHTMLView> *KHTMLView::lstViews = 0L;
-#endif
-
 
 using namespace DOM;
 using namespace khtml;
@@ -218,41 +209,25 @@ KHTMLView::~KHTMLView()
         if (doc)
             doc->detach();
     }
-    lstViews->removeRef( this );
-    if(lstViews->isEmpty())
-    {
-        delete lstViews;
-        lstViews = 0;
-    }
-
     delete d; d = 0;
 }
 
 void KHTMLView::init()
 {
-    if ( lstViews == 0L )
-#if QT_VERSION < 300
-        lstViews = new QList<KHTMLView>;
-#else
-        lstViews = new QPtrList<KHTMLView>;
-#endif
-    lstViews->setAutoDelete( FALSE );
-    lstViews->append( this );
-
     if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
-   if(!d->tp) d->tp = new QPainter();
+    if(!d->tp) d->tp = new QPainter();
 
     setFocusPolicy(QWidget::StrongFocus);
     viewport()->setFocusPolicy( QWidget::WheelFocus );
     viewport()->setFocusProxy(this);
 
-  _marginWidth = -1; // undefined
-  _marginHeight = -1;
-  _width = 0;
-  _height = 0;
+    _marginWidth = -1; // undefined
+    _marginHeight = -1;
+    _width = 0;
+    _height = 0;
 
-  setAcceptDrops(true);
-  resizeContents(visibleWidth(), visibleHeight());
+    setAcceptDrops(true);
+    resizeContents(visibleWidth(), visibleHeight());
 }
 
 void KHTMLView::clear()
@@ -803,7 +778,7 @@ bool KHTMLView::gotoLink(bool forward)
     {
 	d->borderStart = forward;
 	d->borderTouched = true;
-        
+
 	if (contentsY() != (forward?0:(contentsHeight()-visibleHeight())))
         {
             if (d->scrollBarMoved)

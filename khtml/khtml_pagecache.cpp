@@ -22,7 +22,7 @@
 
 #include <kstaticdeleter.h>
 #include <ktempfile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include <qintdict.h>
 #include <qtimer.h>

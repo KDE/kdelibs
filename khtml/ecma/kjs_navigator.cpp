@@ -29,7 +29,7 @@
 #include <kjs/function.h>
 #include <kjs/operations.h>
 #include <kurl.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kdebug.h>

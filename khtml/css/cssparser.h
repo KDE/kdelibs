@@ -26,8 +26,8 @@
 
 #include "dom_string.h"
 #include "dom_misc.h"
-#include <qlist.h>
 #include <qdatetime.h> 
+#include <qlist.h>
 
 namespace DOM {
 

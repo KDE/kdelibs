@@ -21,7 +21,7 @@ INCLUDES = -I$(top_srcdir) \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
  $(all_includes)
 
-KDE_CXXFLAGS = $(USE_EXCEPTIONS)
+KDE_CXXFLAGS = $(USE_EXCEPTIONS) -UQT_NO_COMPAT
 
 kde_module_LTLIBRARIES = kjs_html.la
 
