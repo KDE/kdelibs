@@ -176,39 +176,41 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
 
   // Check for images with name==propertyName, return item or list if found
   // We don't use the images collection because
-  DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
-  int len = list->length();
+  DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
+  int len = list.length();
   if ( len == 1 ) {
-    Value v = getDOMNode( exec, list->item( 0 ) );
-    delete list;
-    return v;
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << " returning one image" << endl;
+#endif
+    return getDOMNode( exec, list.item( 0 ) );
   }
   else if ( len > 1 )
   {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << " returning a list of " << list.length() << " images" << endl;
+#endif
     // Get all the items with the same name
-    Value v = getDOMNodeList( exec, list );
-    delete list;
-    return v;
+    return getDOMNodeList( exec, list );
   }
 
   // Check for forms with name==propertyName, return item or list if found
   // Note that document.myform should only look at forms
-  delete list;
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
-  len = list->length();
+  len = list.length();
   if ( len == 1 ) {
-    Value v = getDOMNode( exec, list->item( 0 ) );
-    delete list;
-    return v;
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << " returning one form" << endl;
+#endif
+    return getDOMNode( exec, list.item( 0 ) );
   }
   else if ( len > 1 )
   {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << " returning a list of " << list.length() << " forms" << endl;
+#endif
     // Get all the items with the same name
-    Value v = getDOMNodeList( exec, list );
-    delete list;
-    return v;
+    return getDOMNodeList( exec, list );
   }
-  delete list;
 
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
 
