@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include "kstartupinfo.h"
+
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
@@ -222,7 +223,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
     if( !id_P.valid())
         return false;
     KXMessages msgs;
-    QString msg = QString::fromLatin1( "end: %1" ).arg( id_P.to_text());
+    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
     kdDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( KDE_STARTUP_INFO, msg );
     return true;
@@ -232,7 +233,7 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P )
     {
     if( !id_P.valid())
         return false;
-    QString msg = QString::fromLatin1( "end: %1" ).arg( id_P.to_text());
+    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
     kdDebug( 172 ) << "sending " << msg << endl;
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
