@@ -1032,6 +1032,14 @@ void NodeImpl::restoreState(const QString &/*state*/)
 {
 }
 
+void NodeImpl::insertedIntoDocument()
+{
+}
+
+void NodeImpl::removedFromDocument()
+{
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentPtr *doc) : NodeImpl(doc)
@@ -1384,30 +1392,9 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
         return 0;
     }
 
-    // Dispatch pre-removal mutation events
-    getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
-	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return 0;
-    }
-
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER)) {
-	// dispatch the DOMNOdeRemovedFromDocument event to all descendants
-	NodeImpl *p = this;
-	while (p->parentNode())
-	    p = p->parentNode();
-	if (p->nodeType() == Node::DOCUMENT_NODE) {
-	    NodeImpl *c;
-	    for (c = oldChild; c; c = c->traverseNextNode(oldChild)) {
-		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-		if (exceptioncode)
-		    return 0;
-	    }
-	}
-    }
+    dispatchChildRemovalEvents(oldChild,exceptioncode);
+    if (exceptioncode)
+	return 0;
 
     // Remove the child
     NodeImpl *prev, *next;
@@ -1594,6 +1581,9 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     {
         _first = _last = newChild;
     }
+
+    newChild->insertedIntoDocument();
+
     if(newChild->nodeType() == Node::ELEMENT_NODE)
         return newChild;
     return this;
@@ -1888,15 +1878,47 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 	    return;
     }
 
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER)) {
-	// dispatch the DOMNOdeInsertedInfoDocument event to all descendants
-	NodeImpl *p = this;
-	while (p->parentNode())
-	    p = p->parentNode();
-	if (p->nodeType() == Node::DOCUMENT_NODE) {
-	    NodeImpl *c;
-	    for (c = child; c; c = c->traverseNextNode(child)) {
+    // dispatch the DOMNOdeInsertedInfoDocument event to all descendants
+    bool hasInsertedListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
+    NodeImpl *p = this;
+    while (p->parentNode())
+	p = p->parentNode();
+    if (p->nodeType() == Node::DOCUMENT_NODE) {
+	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
+	    c->insertedIntoDocument();
+
+	    if (hasInsertedListeners) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+		if (exceptioncode)
+		    return;
+	    }
+	}
+    }
+}
+
+void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptioncode )
+{
+    // Dispatch pre-removal mutation events
+    getDocument()->notifyBeforeNodeRemoval(child); // ### use events instead
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
+	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+	if (exceptioncode)
+	    return;
+    }
+
+    bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
+
+    // dispatch the DOMNOdeRemovedFromDocument event to all descendants
+    NodeImpl *p = this;
+    while (p->parentNode())
+	p = p->parentNode();
+    if (p->nodeType() == Node::DOCUMENT_NODE) {
+	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
+	    c->removedFromDocument();
+	    if (hasRemovalListeners) {
+		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
 				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 		if (exceptioncode)
 		    return;

@@ -105,11 +105,14 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void init();
+    virtual void insertedIntoDocument();
+
+    void checkProcess();
 
 protected:
-    DOMString _equiv;
-    DOMString _content;
+    DOMString m_equiv;
+    DOMString m_content;
+    bool m_processed;
 };
 
 // -------------------------------------------------------------------------

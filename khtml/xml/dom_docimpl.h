@@ -343,6 +343,17 @@ public:
     int nodeAbsIndex(NodeImpl *node);
     NodeImpl *nodeWithAbsIndex(int absIndex);
 
+    /**
+     * Handles a HTTP header equivalent set by a meta tag using <meta http-equiv="..." content="...">. This is called
+     * when a meta tag is encountered during document parsing, and also when a script dynamically changes or adds a meta
+     * tag. This enables scripts to use meta tags to perform refreshes and set expiry dates in addition to them being
+     * specified in a HTML file.
+     * 
+     * @param equiv The http header name (value of the meta tag's "equiv" attribute)
+     * @param content The header value (value of the meta tag's "content" attribute)
+     */
+    void processHttpEquiv(const DOMString &equiv, const DOMString &content);
+
 signals:
     void finishedParsing();
 

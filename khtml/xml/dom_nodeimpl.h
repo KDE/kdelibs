@@ -346,6 +346,8 @@ public:
      */
     virtual void init();
 
+
+
     // Integration with rendering tree
 
     /**
@@ -368,6 +370,8 @@ public:
      * the node's rendering object from the rendering tree and delete it.
      */
     virtual void detach();
+
+
 
     // Methods for maintaining the state of the element between history navigation
 
@@ -394,6 +398,30 @@ public:
      * @param state A string representation of the node's previously-stored state
      */
     virtual void restoreState(const QString &state);
+
+
+
+    // Notification of document stucture changes
+
+    /**
+     * Notifies the node that it has been inserted into the document. This is called during document parsing, and also
+     * when a node is added through the DOM methods insertBefore(), appendChild() or replaceChild(). Note that this only
+     * happens when the node becomes part of the document tree, i.e. only when the document is actually an ancestor of
+     * the node.
+     * 
+     * This is similar to the DOMNodeInsertedIntoDocument DOM event, but does not require the overhead of event
+     * dispatching.
+     */
+    virtual void insertedIntoDocument();
+
+    /**
+     * Notifies the node that it is no longer part of the document tree, i.e. when the document is no longer an ancestor
+     * node.
+     *
+     * This is similar to the DOMNodeRemovedFromDocument DOM event, but does not require the overhead of event
+     * dispatching.
+     */
+    virtual void removedFromDocument();
 
 protected:
     DocumentPtr *document;
@@ -522,6 +550,7 @@ protected:
     bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
     // find out if a node is allowed to be our child
     void dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode );
+    void dispatchChildRemovalEvents( NodeImpl *child, int &exceptioncode );
 };
 
 // --------------------------------------------------------------------------

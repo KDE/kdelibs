@@ -39,7 +39,6 @@
 
 #include <kurl.h>
 #include <kstringhandler.h>
-#include <kio/job.h>
 #include <kdebug.h>
 
 using namespace khtml;
@@ -204,6 +203,7 @@ StyleSheetImpl *HTMLLinkElementImpl::sheet() const
 
 HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
+    m_processed = false;
 }
 
 HTMLMetaElementImpl::~HTMLMetaElementImpl()
@@ -220,11 +220,15 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_HTTP_EQUIV:
-      _equiv = attr->value();
-      break;
+	m_equiv = attr->value();
+	m_processed = false;
+	checkProcess();
+	break;
     case ATTR_CONTENT:
-      _content = attr->value();
-      break;
+	m_content = attr->value();
+	m_processed = false;
+	checkProcess();
+	break;
     case ATTR_NAME:
       break;
     default:
@@ -232,71 +236,24 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLMetaElementImpl::init()
+void HTMLMetaElementImpl::insertedIntoDocument()
 {
-    HTMLElementImpl::init();
+    checkProcess();
+}
 
-    KHTMLView *v = getDocument()->view();
-    setStyle(getDocument()->styleSelector()->styleForElement(this));
-    //kdDebug() << "meta::init() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
-    if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
-    {
-        // get delay and url
-        QString str = _content.string().stripWhiteSpace();
-        int pos = str.find(QRegExp("[;,]"));
-        if ( pos == -1 )
-            pos = str.find(QRegExp("[ \t]"));
+void HTMLMetaElementImpl::checkProcess()
+{
+    if (!m_processed && !m_equiv.isNull() && !m_content.isNull()) {
+	// Get the document to process the tag, but only if we're actually part of DOM tree (changing a meta tag while
+	// it's not in the tree shouldn't have any effect on the document)
 
-        if (pos == -1) // There can be no url (David)
-        {
-            bool ok = false;
-            int delay = 0;
-            if(!_content.isNull())
-                delay = _content.implementation()->toInt(&ok);
-             //kdDebug( ) << "delay = " << delay << " ok = " << ok << endl;
-             //kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
-            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
-        } else {
-            int delay = 0;
-            bool ok = false;
-            if(!_content.isNull()) {
-                DOMStringImpl* s = _content.implementation()->substring(0, pos);
-                delay = s->toInt(&ok);
-                delete s;
-            }
-            pos++;
-            while(pos < (int)str.length() && str[pos].isSpace()) pos++;
-            str = str.mid(pos);
-            if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
-            str = str.stripWhiteSpace();
-            if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
-            str = parseURL( DOMString(str) ).string();
-            if ( ok )
-                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
-        }
-    }
-    else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())
-    {
-        QString str = _content.string().stripWhiteSpace();
-        time_t expire_date = str.toLong();
-        KURL url = v->part()->url();
-        if (getDocument()->docLoader())
-            getDocument()->docLoader()->setExpireDate(expire_date);
-    }
-    else if( (strcasecmp(_equiv, "pragma") == 0 || strcasecmp(_equiv, "cache-control") == 0) && !_content.isNull())
-    {
-        QString str = _content.string().lower().stripWhiteSpace();
-        KURL url = v->part()->url();
-        if ((str == "no-cache") && url.protocol().startsWith("http"))
-        {
-           KIO::http_update_cache(url, true, 0);
-        }
-    }
-    else if( (strcasecmp(_equiv, "set-cookie") == 0) && !_content.isNull())
-    {
-        // ### make setCookie work on XML documents too; e.g. in case of <html:meta .....>
-        HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(getDocument());
-        d->setCookie(_content);
+	NodeImpl *doc = parentNode();
+	while (doc && (doc->nodeType() != Node::DOCUMENT_NODE))
+	    doc = doc->parentNode();
+	if (doc) {
+	    static_cast<DocumentImpl*>(doc)->processHttpEquiv(m_equiv,m_content);
+	    m_processed = true;
+	}
     }
 }
 

@@ -450,6 +450,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTableElementImpl::init()
 {
+    HTMLElementImpl::init();
+
     if (!m_noBorder) {
         int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
         addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
@@ -457,8 +459,6 @@ void HTMLTableElementImpl::init()
         addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
         addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
     }
-
-    HTMLElementImpl::init();
 }
 
 // --------------------------------------------------------------------------
@@ -714,6 +714,8 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTableCellElementImpl::init()
 {
+    HTMLTablePartElementImpl::init();
+
     HTMLElementImpl* p = static_cast<HTMLElementImpl*>(_parent);
     while(p && p->id() != ID_TABLE)
         p = static_cast<HTMLElementImpl*>(p->parentNode());

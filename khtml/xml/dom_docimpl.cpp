@@ -60,6 +60,8 @@
 #include "html/html_tableimpl.h"
 #include "html/html_objectimpl.h"
 
+#include <kio/job.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -1282,6 +1284,70 @@ NodeImpl *DocumentImpl::nodeWithAbsIndex(int absIndex)
 	n = n->traverseNextNode();
     }
     return n;
+}
+
+void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &content)
+{
+    assert(!equiv.isNull() && !content.isNull());
+
+    KHTMLView *v = getDocument()->view();
+
+    if(strcasecmp(equiv, "refresh") == 0 && v->part()->metaRefreshEnabled())
+    {
+        // get delay and url
+        QString str = content.string().stripWhiteSpace();
+        int pos = str.find(QRegExp("[;,]"));
+        if ( pos == -1 )
+            pos = str.find(QRegExp("[ \t]"));
+
+        if (pos == -1) // There can be no url (David)
+        {
+            bool ok = false;
+            int delay = 0;
+	    delay = content.implementation()->toInt(&ok);
+            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
+        } else {
+            int delay = 0;
+            bool ok = false;
+
+	    DOMStringImpl* s = content.implementation()->substring(0, pos);
+	    delay = s->toInt(&ok);
+	    delete s;
+
+            pos++;
+            while(pos < (int)str.length() && str[pos].isSpace()) pos++;
+            str = str.mid(pos);
+            if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
+            str = str.stripWhiteSpace();
+            if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
+            str = parseURL( DOMString(str) ).string();
+            if ( ok )
+                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
+        }
+    }
+    else if(strcasecmp(equiv, "expires") == 0)
+    {
+        QString str = content.string().stripWhiteSpace();
+        time_t expire_date = str.toLong();
+        KURL url = v->part()->url();
+        if (m_docLoader)
+            m_docLoader->setExpireDate(expire_date);
+    }
+    else if(strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0)
+    {
+        QString str = content.string().lower().stripWhiteSpace();
+        KURL url = v->part()->url();
+        if ((str == "no-cache") && url.protocol().startsWith("http"))
+        {
+           KIO::http_update_cache(url, true, 0);
+        }
+    }
+    else if( (strcasecmp(equiv, "set-cookie") == 0))
+    {
+        // ### make setCookie work on XML documents too; e.g. in case of <html:meta .....>
+        HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(this);
+        d->setCookie(content);
+    }
 }
 
 bool DocumentImpl::prepareMouseEvent( int _x, int _y,
