@@ -126,7 +126,7 @@ void KAnimWidget::slotTimerUpdate()
 
   ++d->iter;
 
-  repaint();
+  repaint(false);
 }
 
 void KAnimWidget::drawContents( QPainter *p )
@@ -134,14 +134,27 @@ void KAnimWidget::drawContents( QPainter *p )
   if ( d->pixmap.isNull() )
     return;
 
+  QPixmap pm(QSize(this->width(), this->height()));
+  QPainter p2 (&pm);
+  int x, y;
+    
+  pm.fill (p->backgroundColor());
+  
   if ( d->pixmap.width() != width() || d->pixmap.height() != height() )
   {
-    int x = (width()  - d->pixmap.width()) / 2;
-    int y = (height() - d->pixmap.height()) / 2;
-    p->drawPixmap( x, y, d->pixmap);
+    x = (width()  - d->pixmap.width()) / 2;
+    y = (height() - d->pixmap.height()) / 2;
   }
   else
-    p->drawPixmap( 0, 0, d->pixmap);
+  {
+  
+    x = 0;
+    y = 0;
+  }  
+  
+  p2.drawPixmap (x, y, d->pixmap);
+  p->drawPixmap( 0, 0, pm);
+  kdDebug() << "In REGULAR size" << endl;
 }
 
 void KAnimWidget::updateIcons()
