@@ -394,9 +394,12 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 	uint keyModMaskX = KAccel::accelModMaskX() | KAccel::keyModXModeSwitch();
 	keyModX &= KAccel::accelModMaskX(); // Get rid of any non-relevant bits in mod
 
+#ifndef __osf__
+// this crashes under Tru64 so .....
 	kdDebug(125) << QString( "grabKey( key: 0x%1, bGrab: %2 ): %3 keyCodeX: %4 keyModX: %5\n" )
 		.arg( key.key(), 0, 16 ).arg( bGrab ).arg( bGrab ? key.toString() : "" )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
+#endif
 
 	if( !keyCodeX )
 		return false;
