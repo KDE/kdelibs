@@ -266,39 +266,39 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     }
     else if ( e->type() == QEvent::Drop )
     {
+        removeTempSep();
         QDropEvent *dev = (QDropEvent*)e;
         if ( KBookmarkDrag::canDecode( dev ) )
-        {
-            removeTempSep();
-            // ohhh. we got a valid drop, woopeedoo
-            QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
-            if (list.count() > 1)
-               kdWarning(7043) << "Sorry, currently you can only drop one address "
-                                  "onto the bookmark bar!" << endl;
-            QString address = a->property("address").toString();
-            kdDebug(7043) << "inserting " 
-                          << QString(atFirst ? "before" : "after")
-                          << " address == " << address << endl;
-            KBookmark bookmark = m_pManager->findByAddress( address );
-            Q_ASSERT(!bookmark.isNull());
-            KBookmarkGroup parentBookmark = bookmark.parentGroup();
-            Q_ASSERT(!parentBookmark.isNull());
-            KBookmark toInsert = list.first();
-            KBookmark newBookmark = parentBookmark.addBookmark( 
-                                          m_pManager, toInsert.fullText(),
-                                          toInsert.url() );
-            parentBookmark.moveItem( newBookmark, atFirst ? KBookmark() : bookmark );
-            m_pManager->emitChanged( parentBookmark );
-            return true;
-        }
+           return false;
+        QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
+        if (list.count() > 1)
+           kdWarning(7043) << "Sorry, currently you can only drop one address "
+                              "onto the bookmark bar!" << endl;
+        KBookmark toInsert = list.first();
+        QString address = a->property("address").toString();
+        KBookmark bookmark = m_pManager->findByAddress( address );
+        Q_ASSERT(!bookmark.isNull());
+        kdDebug(7043) << "inserting " 
+                      << QString(atFirst ? "before" : "after")
+                      << " address == " << address << endl;
+        KBookmarkGroup parentBookmark = bookmark.parentGroup();
+        Q_ASSERT(!parentBookmark.isNull());
+        KBookmark newBookmark = parentBookmark.addBookmark( 
+                                      m_pManager, toInsert.fullText(),
+                                      toInsert.url() );
+        parentBookmark.moveItem( newBookmark, atFirst ? KBookmark() : bookmark );
+        m_pManager->emitChanged( parentBookmark );
+        return true;
     }
     else if ( e->type() == QEvent::DragMove )
     {
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        KAction *_a; bool _atFirst;
-        if (_a = doFunkySepThing(dme->pos(), dptr()->m_actions, _atFirst), _a)
+        KAction *_a; 
+        bool _atFirst;
+        _a = doFunkySepThing(dme->pos(), dptr()->m_actions, _atFirst);
+        if (_a)
         {
             a = _a;
             atFirst = _atFirst;
