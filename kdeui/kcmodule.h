@@ -168,6 +168,7 @@ public:
    * The quick-help text should contain a short description of the module and
    * links to the module's help files. You can use QML formatting tags in the text.
    *
+   * @since 3.3
    * @note make sure the quick help text gets translated (use i18n()).
    */
   virtual QString quickHelp() const;
@@ -239,6 +240,8 @@ protected:
 
   /**
    * Sets the quick help.
+   *
+   * @since 3.3
    */
   void setQuickHelp( const QString& help );
 
