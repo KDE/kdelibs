@@ -2153,7 +2153,7 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
 	nextP = bckgrNextP;
     }
     //kdDebug(6080) << "found background property!" << endl;
-    return nextP;
+    return found;
 }
 
 QList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QChar *endP)
