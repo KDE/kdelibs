@@ -195,9 +195,10 @@ void KioslaveTest::changeProgressMode( int id ) {
 
 
 void KioslaveTest::startJob() {
-  KURL current(QDir::currentDirPath()+"/");
+  QString sCurrent = QDir::currentDirPath()+"/";
+  KURL::encode(sCurrent);
   QString sSrc( le_source->text() );
-  KURL src( current, sSrc );
+  KURL src( sCurrent, sSrc );
 
   if ( src.isMalformed() ) {
     QMessageBox::critical(this, i18n("Kioslave Error Message"), i18n("Source URL is malformed") );
@@ -205,7 +206,7 @@ void KioslaveTest::startJob() {
   }
 
   QString sDest( le_dest->text() );
-  KURL dest( current, sDest );
+  KURL dest( sCurrent, sDest );
 
   if ( dest.isMalformed() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
