@@ -189,6 +189,10 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   //kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+  DOM::HTMLBodyElement body = doc.body();
+
+  KHTMLPart *part = static_cast<DOM::DocumentImpl*>(doc.handle())->
+		      view()->part();
 
   // image and form elements with the name p will be looked up first
   DOM::HTMLCollection coll = doc.all();
@@ -207,11 +211,9 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return getString(doc.URL());
   else if (p == "body")
     return getDOMNode(doc.body());
-  else if (p == "location") {
-    KHTMLPart *part = static_cast<DOM::DocumentImpl*>(doc.handle())->
-		      view()->part();
+  else if (p == "location")
     return Window::retrieveWindow(part)->location();
-  } else if (p == "images")
+  else if (p == "images")
     return new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")
     return new HTMLDocFunction(doc, HTMLDocFunction::Applets);
@@ -223,6 +225,12 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
   else if (p == "all")
     return new HTMLDocFunction(doc, HTMLDocFunction::All);
+  else if (p == "layers")
+    return Undefined(); // We will not support that!
+  else if (p == "plugins")
+    return Undefined(); // ###
+  else if (p == "tags")
+    return Undefined(); // ###
   else if (p == "cookie")
     return String(doc.cookie());
   else if (DOMDocument::hasProperty(p))	// expandos override functions
@@ -239,6 +247,26 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
   else if (p == "getElementsByName")
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
+  else if (p == "bgColor")
+    return String(body.bgColor());
+  else if (p == "fgColor")
+    return String(body.text()); 
+  else if (p == "alinkColor")
+    return String(body.aLink());
+  else if (p == "linkColor")
+    return String(body.link());
+  else if (p == "vlinkColor")
+    return String(body.vLink());
+  else if (p == "embeds")
+    return Undefined(); //###
+  else if (p == "ids")
+    return Undefined(); //###
+  else if (p == "lastModified")
+    return Undefined(); //###
+  else if (p == "height")
+    return Number(part->view() ? part->view()->visibleWidth() : 0);
+  else if (p == "width")
+    return Number(part->view() ? part->view()->visibleWidth() : 0);
   else {
     if(!element.isNull())
       return getDOMNode(element);
