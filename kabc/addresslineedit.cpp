@@ -291,13 +291,23 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( !m_useCompletion )
         return;
 
-    QString s(text());
-    QString prevAddr;
+    QString prevAddr;    
+    
+    QString s(text());    
     int n = s.findRev(',');
+        
     if (n >= 0)
     {
-        prevAddr = s.left(n+1) + ' ';
-        s = s.mid(n+1,255).stripWhiteSpace();
+        n++; // Go past the ","
+        
+        int len = s.length();
+        
+        // Increment past any whitespace...
+        while( n < len && s[n].isSpace() )
+          n++;
+                  
+        prevAddr = s.left(n);
+        s = s.mid(n,255).stripWhiteSpace();
     }
 
     if ( s_addressesDirty )
@@ -321,8 +331,12 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     
     switch ( mode )
     {
-        case KGlobalSettings::CompletionPopup:
         case KGlobalSettings::CompletionPopupAuto:
+        {
+            if (s.isEmpty())
+                break;
+        }
+        case KGlobalSettings::CompletionPopup:        
         {
             m_previousAddresses = prevAddr;
             QStringList items = s_completion->allMatches( s );
@@ -350,7 +364,23 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                 }
 
                 items = removeMailDupes( items );
-                setCompletedItems( items );
+                
+                // We do not want KLineEdit::setCompletedItems to perform text
+                // completion (suggestion) since it does not know how to deal
+                // with providing proper completions for different items on the 
+                // same line, e.g. comma-separated list of email addresses.
+                bool autoSuggest = (mode != KGlobalSettings::CompletionPopupAuto);                                
+                setCompletedItems( items, autoSuggest );
+                
+                if (!autoSuggest)
+                {
+                    int index = items.first().find( s );
+                    QString newText = prevAddr + items.first().mid( index );
+                    //kdDebug() << "OLD TEXT: " << text() << endl;
+                    //kdDebug() << "NEW TEXT: " << newText << endl;
+                    setUserSelection(false);
+                    setCompletedText(newText,true);
+                }
             }
 
             break;
@@ -370,15 +400,17 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         case KGlobalSettings::CompletionMan: // Short-Auto in fact
         case KGlobalSettings::CompletionAuto:
         {
-            QString match = s_completion->makeCompletion( s );
-            if ( !match.isNull() && match != s )
-            {
-                QString adds = prevAddr + match;
-                setCompletedText( adds );
+            if (!s.isEmpty())
+            {              
+                QString match = s_completion->makeCompletion( s );
+                if ( !match.isNull() && match != s )
+                {
+                  QString adds = prevAddr + match;
+                  setCompletedText( adds );
+                }
+                break;
             }
-            break;
-        }
-        
+        }        
         case KGlobalSettings::CompletionNone:
         default: // fall through        
             break;
