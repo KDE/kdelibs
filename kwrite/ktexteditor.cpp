@@ -14,6 +14,7 @@ public:
   }
 
   Document *m_doc;
+  bool m_bContextPopup;
 };
 
 View::View( Document *doc, QWidget *parent, const char *name )
@@ -21,6 +22,7 @@ View::View( Document *doc, QWidget *parent, const char *name )
 {
   d = new ViewPrivate;
   d->m_doc = doc;
+  d->m_bContextPopup = true;
 }
 
 View::~View()
@@ -32,6 +34,17 @@ Document *View::textDocument() const
 {
   return d->m_doc;
 }
+
+void View::setInternalContextMenuEnabled( bool b )
+{
+  d->m_bContextPopup = b; 
+}
+
+bool View::internalContextMenuEnabled() const
+{
+  return d->m_bContextPopup; 
+} 
+
 
 class Document::DocumentPrivate
 {
@@ -59,8 +72,8 @@ Document::~Document()
 
 QList<View> Document::views() const
 {
-  return d->m_views; 
-} 
+  return d->m_views;
+}
 
 void Document::addView( View *view )
 {
@@ -91,6 +104,5 @@ void Document::slotViewDestroyed()
   const View *view = static_cast<const View *>( sender() );
   d->m_views.removeRef( view );
 }
-
 
 #include "ktexteditor.moc"

@@ -11,6 +11,7 @@ class Document;
 
 class View : public QWidget, public KXMLGUIClient
 {
+  Q_OBJECT
 public:
   View( Document *doc, QWidget *parent, const char *name = 0 );
   virtual ~View();
@@ -23,6 +24,19 @@ public:
   virtual void setSelection( int row_from, int col_from, int row_to, int col_t ) = 0;
   virtual bool hasSelection() const = 0;
   virtual QString selection() const = 0;
+
+  /**
+   * You should reimplement this method.
+   * If the internal popupmenu property is enabled, then the implementation is free
+   * to handle/use/implement/show a context popupmenu ( see also KContextMenuManager class
+   * in kdeui ) . If disabled, then the implementation should emit the @ref contextPopupMenu
+   * signal.
+   */
+  virtual void setInternalContextMenuEnabled( bool b );
+  virtual bool internalContextMenuEnabled() const;
+
+signals:
+  void contextPopupMenu( const QPoint &p );
 
 private:
   class ViewPrivate;
