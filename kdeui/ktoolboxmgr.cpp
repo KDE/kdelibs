@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.4  1998/05/04 16:39:12  radej
+ // No more server locking + opaque sizing/moving
+ //
  // Revision 1.3  1998/05/03 10:56:23  radej
  // Fixing the locked server bug; all grab ungrab is in one function now.
  // Screen is not locked any more across different QTimer steps
@@ -147,6 +150,8 @@ void KToolBoxManager::doMoveInternal()
   int trash;
   unsigned int buttons;
 
+  XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
+	       PointerMotionMask, &ev); // to disable mouserelease
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &rx, &ry, &trash, &trash, &buttons );
   
@@ -247,7 +252,9 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   orig_y = p.y();
   orig_w = w;
   orig_h = h;
-  
+
+  XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
+	       PointerMotionMask, &ev);
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &sx, &sy, &trash, &trash, &active_button);
   
@@ -316,10 +323,9 @@ void KToolBoxManager::stop ()
   QApplication::restoreOverrideCursor();
 
   if (transparent)
-  {
     deleteLastRectangle();
-    XFlush(qt_xdisplay());
-  }
+
+  XFlush(qt_xdisplay());
 
   if (dontmoveres)
   {
