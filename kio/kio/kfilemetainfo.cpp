@@ -149,7 +149,8 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
     if ( d == Data::null ) return;
     
     if ( !d->editable ||
-         (d->value.isValid() && value.type() != d->value.type()) )
+         (d->value.isValid() && value.type() != d->value.type()) &&
+                                value.type() != QVariant::Invalid)
         return;
 
     d->dirty = true;
@@ -309,15 +310,22 @@ KFileMetaInfo::~KFileMetaInfo()
 KFileMetaInfoItem KFileMetaInfo::addItem( const QString& key,
                                           const QString&)
 {
-    KFileMetaInfoItem item;
+  kdDebug(7033) << "additem of " << key << endl;
 
     if ((d->supportsVariableKeys) ||
         (!d->supportsVariableKeys && d->supportedKeys.contains(key)))
     {
+        // empty item, unchecked for now, will fix this after 3.0
+        // this is a hackish last-minute fix, but makes Phalynx happy
+        // because it makes noatun-metatag work as expected
+        // this will be subject to massive changes after the release
+        // and I swear I'll not be so slow this time ;)  (Rolf)
+        KFileMetaInfoItem item(key, key, QVariant(), true);
         d->items.insert(key, item);
+        return item;
     }      
     // if the key is not supported, return an invalid item
-    return item;
+    return KFileMetaInfoItem();
 }
 
 const QStringList KFileMetaInfo::supportedGroups() const
