@@ -83,14 +83,17 @@ public slots:
   void slotGeneratePersonal();
   void slotUseEGD();
   void slotChooseEGD();
+  void slotChooseOSSL();
   void slotCWcompatible();
   void slotCWus();
   void slotCWexp();
   void slotCWall();
 
+  void slotTestOSSL();
+
 private:
   QTabWidget *tabs;
-  QWidget *tabSSL;
+  QWidget *tabSSL, *tabOSSL;
 
   QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
 
@@ -118,6 +121,13 @@ private:
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
+
+  /* OpenSSL tab */
+  QLabel    *oInfo;
+  QLineEdit *oPath;
+  QPushButton *oFind;
+  QPushButton *oTest;
+
 
   KConfig *config;
 };

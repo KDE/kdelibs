@@ -252,10 +252,34 @@ QString whatstr;
   QWhatsThis::add(mWarnOnMixed, whatstr);
 #endif
 
+  ///////////////////////////////////////////////////////////////////////////
+  // SECOND TAB
+  ///////////////////////////////////////////////////////////////////////////
+
+#ifdef HAVE_SSL
+  tabOSSL = new QFrame(this);
+  grid = new QGridLayout(tabOSSL, 6, 6, KDialog::marginHint(), KDialog::spacingHint());
+
+  oInfo = new QLabel(i18n("Enter the path to your OpenSSL shared libraries:"), tabOSSL);
+  grid->addMultiCellWidget(oInfo, 0, 0, 0, 5);
+  oPath = new QLineEdit(tabOSSL);
+  grid->addMultiCellWidget(oPath, 1, 1, 0, 4);
+  oFind = new QPushButton(i18n("..."), tabOSSL);
+  grid->addWidget(oFind, 1, 5);
+  oTest = new QPushButton(i18n("&Test..."), tabOSSL);
+  grid->addWidget(oTest, 2, 5);
+
+  connect(oPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
+  connect(oFind, SIGNAL(clicked()), SLOT(slotChooseOSSL()));
+
+#endif
+
+
+
 #if 0
 
   ///////////////////////////////////////////////////////////////////////////
-  // SECOND TAB
+  // THIRD TAB
   ///////////////////////////////////////////////////////////////////////////
   tabYourSSLCert = new QFrame(this);
 
@@ -314,7 +338,7 @@ QString whatstr;
 
 #if 0   // NOT YET IMPLEMENTED
   ///////////////////////////////////////////////////////////////////////////
-  // THIRD TAB
+  // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabOtherSSLCert = new QFrame(this);
 
@@ -354,7 +378,7 @@ QString whatstr;
 
 
   ///////////////////////////////////////////////////////////////////////////
-  // FOURTH TAB
+  // FIFTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCA = new QFrame(this);
 
@@ -393,7 +417,7 @@ QString whatstr;
 #endif
 
   ///////////////////////////////////////////////////////////////////////////
-  // FIFTH TAB
+  // SIXTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCOpts = new QFrame(this);
 
@@ -445,6 +469,10 @@ QString whatstr;
   // Add the tabs and startup
   ///////////////////////////////////////////////////////////////////////////
   tabs->addTab(tabSSL, i18n("SSL"));
+#ifdef HAVE_SSL
+  tabs->addTab(tabOSSL, i18n("OpenSSL"));
+#endif
+
 #if 0
   tabs->addTab(tabYourSSLCert, i18n("Your SSL Certificates"));
   tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
@@ -488,7 +516,12 @@ void KCryptoConfig::load()
   mEGDLabel->setEnabled(mUseEGD->isChecked());
   mChooseEGD->setEnabled(mUseEGD->isChecked());
   mEGDPath->setEnabled(mUseEGD->isChecked());
-  mEGDPath->setText(config->readEntry("EGDPath"));
+  mEGDPath->setText(config->readEntry("EGDPath", ""));
+
+#ifdef HAVE_SSL
+  config->setGroup("OpenSSL");
+  oPath->setText(config->readEntry("Path", ""));
+#endif
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
@@ -550,6 +583,11 @@ void KCryptoConfig::save()
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("EGDPath", mEGDPath->text());
+
+#ifdef HAVE_SSL
+  config->setGroup("OpenSSL");
+  config->writeEntry("Path", oPath->text());
+#endif
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
@@ -642,6 +680,7 @@ void KCryptoConfig::defaults()
   mChooseEGD->setEnabled(false);
   mEGDPath->setEnabled(false);
   mEGDPath->setText("");
+  oPath->setText("");
 #endif
 
   emit changed(true);
@@ -738,6 +777,18 @@ void KCryptoConfig::slotChooseEGD() {
   QString newFile = KFileDialog::getOpenFileName();
   if (newFile.length() > 0)
     mEGDPath->setText(newFile);
+}
+
+
+void KCryptoConfig::slotChooseOSSL() {
+  QString newFile = KFileDialog::getExistingDirectory();
+  if (newFile.length() > 0)
+    oPath->setText(newFile);
+}
+
+
+void KCryptoConfig::slotTestOSSL() {
+// FIXME
 }
 
 
