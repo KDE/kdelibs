@@ -162,7 +162,7 @@ QString KIDNA::toAscii(const QString &idna)
 
 QString KIDNA::toUnicode(const QString &idna)
 {
-   if (idna.find("iesg--") == -1)
+   if (idna.find("xn--", 0, false) == -1) // Case insensitive search
       return idna; // Return as is, nothing to do
 
    if (!KIDNA_lib && !KIDNA_lib_load_failed)
