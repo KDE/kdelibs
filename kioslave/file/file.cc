@@ -41,8 +41,10 @@
 #include <limits.h>
 
 #ifdef HAVE_VOLMGT
-#include <volmgt.h>
-#include <sys/mnttab.h>
+	#include <volmgt.h>
+	#include <sys/mnttab.h>
+#else
+	#include <kstddirs.h>
 #endif
 
 #include <kio/ioslave_defaults.h>
@@ -1043,33 +1045,40 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     QCString point = QFile::encodeName( shellQuote(_point) );
     QCString fstype = _fstype;
     QCString readonly = _ro ? "-r" : "";
+    QString path = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/sbin");
+    QString mountProg = KGlobal::dirs()->findExe("mount", path);
+
+    if (mountProg.isEmpty()) {
+        mountProg = "mount";
+    }
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
     {
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
         if ( !_dev.isEmpty() && _point.isEmpty() && fstype.isEmpty() )
-            buffer.sprintf( "mount %s 2>%s", dev.data(), tmp );
+            buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), dev.data(), tmp );
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
           if ( !_point.isEmpty() && _dev.isEmpty() && fstype.isEmpty() )
-            buffer.sprintf( "mount %s 2>%s", point.data(), tmp );
+            buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), point.data(), tmp );
           else
             // mount giving device + mountpoint but no fstype
             if ( !_point.isEmpty() && !_dev.isEmpty() && fstype.isEmpty() )
-              buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
+              buffer.sprintf( "%s %s %s %s 2>%s", mountProg.latin1(), readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
 #if defined(__svr4__) && defined(__sun__) // MARCO for Solaris 8 and I
                 // believe this is true for SVR4 in general
-                buffer.sprintf( "mount -F %s %s %s %s 2>%s"
+                buffer.sprintf( "%s -F %s %s %s %s 2>%s"
+				mountProg.latin1()
                                 fstype.data()
                                 _ro ? "-oro" : ""
                                 dev.data()
                                 point.data()
                                 tmp );
 #else
-              buffer.sprintf( "mount %s -t %s %s %s 2>%s", readonly.data(),
+              buffer.sprintf( "%s %s -t %s %s %s 2>%s", mountProg.latin1(), readonly.data(),
                               fstype.data(), dev.data(), point.data(), tmp );
 #endif
 
@@ -1215,7 +1224,14 @@ void FileProtocol::unmount( const QString& _point )
 		return;
 	}
 #else
-    buffer.sprintf( "umount %s 2>%s", QFile::encodeName(_point).data(), tmp );
+    QString path = getenv("PATH");
+    path.append(":/usr/sbin:/sbin");
+    QString umountProg = KGlobal::dirs()->findExe("umount", path);
+
+    if (umountProg.isEmpty()) {
+        umountProg = "umount";
+    }
+    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(_point).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
 
