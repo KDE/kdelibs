@@ -130,10 +130,10 @@ void Addressee::setNameFromString( const QString &str )
   suffixes += i18n( "Jr." );
   suffixes += i18n( "Sr." );
 
-  QStringList lastnames;
-  lastnames += "van";
-  lastnames += "von";
-  lastnames += "de";
+  QStringList prefixes;
+  prefixes += "van";
+  prefixes += "von";
+  prefixes += "de";
 
   // clear all name parts
   setPrefix( "" );
@@ -142,298 +142,110 @@ void Addressee::setNameFromString( const QString &str )
   setFamilyName( "" );
   setSuffix( "" );
 
+  if ( str.isEmpty() )
+    return;
+
   int i = str.find(',');
   if( i < 0 ) {
-    // "Mr. Tobias Willi (Frank Josef) van Koenig Jr."
-    QStringList nameParts = QStringList::split( " ", str );
-    switch( nameParts.count() ) {
-      case 1:
-        // Koenig
-        setFamilyName( nameParts[ 0 ] );
+    QStringList parts = QStringList::split( " ", str );
+    int leftOffset = 0;
+    int rightOffset = parts.count() - 1;
+
+    QString suffix;
+    while ( rightOffset >= 0 ) {
+      if ( suffixes.contains( parts[ rightOffset ] ) ) {
+        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? "" : " "));
+        rightOffset--;
+      } else
         break;
-      case 2:
-        if ( lastnames.contains( nameParts[ 0 ].lower() ) )
-          // van Koenig
-          setFamilyName( str );
-        else {
-          // Tobias Koenig
-          setGivenName( nameParts[ 0 ] );
-          setFamilyName( nameParts[ 1 ] );
-        }
-        break;
-      case 3:
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          if ( lastnames.contains( nameParts[ 1 ].lower() ) )
-            // Mr. van Koenig
-            setFamilyName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-          else if ( suffixes.contains( nameParts[ 2 ] ) ) {
-            // Mr. Koenig Jr.
-            setFamilyName( nameParts[ 1 ] );
-            setSuffix( nameParts[ 2 ] );
-          } else {
-            // Mr. Tobias Koenig
-            setGivenName( nameParts[ 1 ] );
-            setFamilyName( nameParts[ 2 ] );
-          }
-        } else if ( suffixes.contains( nameParts[ 2 ] ) ) {
-          setSuffix( nameParts[ 2 ] );
-          if ( lastnames.contains( nameParts[ 0 ].lower() ) )
-            // van Koenig Jr.
-            setFamilyName( nameParts[ 0 ] + nameParts[ 1 ] );
-          else {
-            // Mr. Tobias Koenig
-            setGivenName( nameParts[ 0 ] );
-            setFamilyName( nameParts[ 1 ] );
-          }
-        } else {
-          // Tobias Willi Koenig
-          setGivenName( nameParts[ 0 ] );
-          setAdditionalName( nameParts[ 1 ] );
-          setFamilyName( nameParts[ 2 ] );
-        }
-        break;
-      case 4:
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          if ( lastnames.contains( nameParts[ 2 ].lower() ) ) {
-            // Mr. Tobias van Koenig
-            setGivenName( nameParts[ 1 ] );
-            setFamilyName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-          } else if ( suffixes.contains( nameParts[ 3 ] ) ) {
-            setSuffix( nameParts[ 3 ] );
-            if ( lastnames.contains( nameParts[ 1 ].lower() ) ) {
-              // Mr. van Koenig Jr.
-              setFamilyName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-            } else {
-              // Mr. Tobias Koenig Jr.
-              setGivenName( nameParts[ 1 ] );
-              setFamilyName( nameParts[ 2 ] );
-            }
-          } else {
-            // Mr. Tobias Willi Koenig
-            setGivenName( nameParts[ 1 ] );
-            setAdditionalName( nameParts[ 2 ] );
-            setFamilyName( nameParts[ 3 ] );
-          }
-        } else if ( suffixes.contains( nameParts[ 3 ] ) ) {
-          setSuffix( nameParts[ 3 ] );
-          if ( lastnames.contains( nameParts[ 1 ].lower() ) ) {
-            // Tobias van Koenig Jr.
-            setGivenName( nameParts[ 0 ] );
-            setFamilyName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-          } else {
-            setGivenName( nameParts[ 0 ] );
-            setAdditionalName( nameParts[ 1 ] );
-            setFamilyName( nameParts[ 2 ] );
-          }
-        } else if ( lastnames.contains( nameParts[ 2 ].lower() ) ) {
-          // Tobias Willi van Koenig
-          setGivenName( nameParts[ 0 ] );
-          setAdditionalName( nameParts[ 1 ] );
-          setFamilyName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-        } else {
-          // Tobias Willi Frank Koenig
-          setGivenName( nameParts[ 0 ] );
-          setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-          setFamilyName( nameParts[ 3 ] );
-        }
-        break;
-      case 5:
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          if ( suffixes.contains( nameParts[ 4 ] ) ) {
-            setSuffix( nameParts[ 4 ] );
-            if ( lastnames.contains( nameParts[ 2 ].lower() ) ) {
-              // Mr. Tobias van Koenig Jr.
-              setGivenName( nameParts[ 1 ] );
-              setFamilyName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-            } else {
-              // Mr. Tobias Willi Koenig Jr.
-              setGivenName( nameParts[ 1 ] );
-              setAdditionalName( nameParts[ 2 ] );
-              setFamilyName( nameParts[ 3 ] );
-            }
-          } else if ( lastnames.contains( nameParts[ 3 ].lower() ) ) {
-            // Mr. Tobias Willi van Koenig
-            setGivenName( nameParts[ 1 ] );
-            setAdditionalName( nameParts[ 2 ] );
-            setFamilyName( nameParts[ 3 ] + " " + nameParts[ 4 ] );
-          } else {
-            // Mr. Tobias Willi Frank Koenig
-            setGivenName( nameParts[ 1 ] );
-            setAdditionalName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-            setFamilyName( nameParts[ 4 ] );
-          }
-        } else if ( suffixes.contains( nameParts[ 4 ] ) ) {
-          setSuffix( nameParts[ 4 ] );
-          if ( lastnames.contains( nameParts[ 2 ].lower() ) ) {
-            // Tobias Willi van Koenig Jr.
-            setGivenName( nameParts[ 0 ] );
-            setAdditionalName( nameParts[ 1 ] );
-            setFamilyName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-          } else {
-            // Tobias Willi Frank Koenig Jr.
-            setGivenName( nameParts[ 0 ] );
-            setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-            setFamilyName( nameParts[ 3 ] );
-          }
-        } else if ( lastnames.contains( nameParts[ 3 ].lower() ) ) {
-          // Tobias Willi Frank van Koenig
-            setGivenName( nameParts[ 0 ] );
-            setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-            setFamilyName( nameParts[ 3 ] + " " + nameParts[ 4 ] );
-        } else {
-          // Tobias Willi Frank Josef Koenig 
-            setGivenName( nameParts[ 0 ] );
-            setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] + " " + nameParts[ 3 ] );
-            setFamilyName( nameParts[ 4 ] );
-        }
-        break;
-      case 6:
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          if ( suffixes.contains( nameParts[ 5 ] ) ) {
-            setSuffix( nameParts[ 5 ] );
-            if ( lastnames.contains( nameParts[ 3 ].lower() ) ) {
-              // Mr. Tobias Willi van Koenig Jr.
-              setGivenName( nameParts[ 1 ] );
-              setAdditionalName( nameParts[ 2 ] );
-              setFamilyName( nameParts[ 3 ] + " " + nameParts[ 4 ] );
-            } else {
-              // Mr. Tobias Willi Frank Koenig Jr.
-              setGivenName( nameParts[ 1 ] );
-              setAdditionalName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-              setFamilyName( nameParts[ 4 ] );
-            }
-          } else if ( lastnames.contains( nameParts[ 4 ].lower() ) ) {
-            // Mr. Tobias Willi Frank van Koenig
-            setGivenName( nameParts[ 1 ] );
-            setAdditionalName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
-            setFamilyName( nameParts[ 4 ] + " " + nameParts[ 5 ] );
-          } else {
-            // Mr. Tobias Willi Frank Josef Koenig
-            setGivenName( nameParts[ 1 ] );
-            setAdditionalName( nameParts[ 2 ] + " " + nameParts[ 3 ] + " " + nameParts[ 4 ] );
-            setFamilyName( nameParts[ 5 ] );
-          }
-        } else if ( suffixes.contains( nameParts[ 5 ] ) ) {
-          setSuffix( nameParts[ 5 ] );
-          setGivenName( nameParts[ 0 ] );
-          if ( lastnames.contains( nameParts[ 3 ].lower() ) ) {
-            // Tobias Willi Frank van Koenig Jr.
-            setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-            setFamilyName( nameParts[ 3 ] + " " + nameParts[ 4 ] );
-          } else {
-            // Tobias Willi Frank Josef Koenig Jr.
-            setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] + " " + nameParts[ 3 ] );
-            setFamilyName( nameParts[ 4 ] );
-          }
-        } else if ( lastnames.contains( nameParts[ 4 ].lower() ) ) {
-          // Tobias Willi Frank Josef van Koenig
-          setGivenName( nameParts[ 0 ] );
-          setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] + " " + nameParts[ 3 ] );
-          setFamilyName( nameParts[ 4 ] + " " + nameParts[ 5 ] );
-        } else {
-          // Tobias Willi Frank Josef Neo Koenig
-          setGivenName( nameParts[ 0 ] );
-          setAdditionalName( nameParts[ 1 ] + " " + nameParts[ 2 ] + " " + nameParts[ 3 ] + " " + nameParts[ 4 ] );
-          setFamilyName( nameParts[ 5 ] );
-        }
-        break;
-      default:
-       setFamilyName( str );
-       break;
     }
+    setSuffix( suffix );
+
+    if ( rightOffset - 1 >= 0 && prefixes.contains( parts[ rightOffset - 1 ].lower() ) ) {
+      setFamilyName( parts[ rightOffset - 1 ] + " " + parts[ rightOffset ] );
+      rightOffset--;
+    } else
+      setFamilyName( parts[ rightOffset ] );
+
+    QString prefix;
+    while ( leftOffset < rightOffset ) {
+      if ( titles.contains( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+        leftOffset++;
+      } else
+        break;
+    }
+    setPrefix( prefix );
+
+    if ( leftOffset < rightOffset ) {
+      setGivenName( parts[ leftOffset ] );
+      leftOffset++;
+    }
+
+    QString additionalName;
+    while ( leftOffset < rightOffset ) {
+      additionalName.append( ( additionalName.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      leftOffset++;
+    }
+    setAdditionalName( additionalName );
   } else {
-    // "Family, Given [Additional]"
     QString part1 = str.left( i );
     QString part2 = str.mid( i + 1 );
 
-    QStringList nameParts = QStringList::split( " ", part1 );
-    // Mr. van Koenig Sr.
-    switch( nameParts.count() ) {
-      case 1:
-        // Koenig
-        setFamilyName( nameParts[ 0 ] );
-        break;
-      case 2:
-        if ( lastnames.contains( nameParts[ 0 ].lower() ) ) {
-          // van Koenig
-          setFamilyName( nameParts[ 0 ] + " " + nameParts[ 1 ] );
-        } else if ( titles.contains( nameParts[ 0 ].lower() ) ) {
-          // Mr. Koenig
-          setPrefix( nameParts[ 0 ] );
-          setFamilyName( nameParts[ 1 ] );
-        } else {
-          // Koenig Sr.
-          setFamilyName( nameParts[ 0 ] );
-          setSuffix( nameParts[ 1 ] );
-        }
-        break;
-      case 3:
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          if ( lastnames.contains( nameParts[ 1 ].lower() ) ) {
-            // Mr. van Koenig
-            setFamilyName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-          } else {
-            // Mr. Koenig Sr.
-            setFamilyName( nameParts[ 1 ] );
-            setSuffix( nameParts[ 2 ] );
-          }
-        } else {
-          // van Koenig Sr.
-          setFamilyName( nameParts[ 0 ] + " " + nameParts[ 1 ] );
-          setSuffix( nameParts[ 2 ] );
-        }
-        break;
-      case 4:
-          // Mr. van Koenig Sr.
-          setPrefix( nameParts[ 0 ] );
-          setFamilyName( nameParts[ 1 ] + " " + nameParts[ 2 ] );
-          setSuffix( nameParts[ 3 ] );
-        break;
-      default:
-       setFamilyName( part1 );
-       break;
-    }
+    QStringList parts = QStringList::split( " ", part1 );
+    int leftOffset = 0;
+    int rightOffset = parts.count() - 1;
 
-    nameParts = QStringList::split( " ", part2 );
-    // Mr. Tobias Willi Frank Josef ...
-    switch( nameParts.count() ) {
-      case 1:
-        if ( titles.contains( nameParts[ 0 ] ) )
-          // Mr.
-          setPrefix( nameParts[ 0 ] );
-        else
-          // Tobias
-          setGivenName( nameParts[ 0 ] );
-        break;
-      default:
-        int start;
-        if ( titles.contains( nameParts[ 0 ] ) ) {
-          setPrefix( nameParts[ 0 ] );
-          setGivenName( nameParts[ 1 ] );
-          start = 2;
-        } else {
-          setGivenName( nameParts[ 0 ] );
-          start = 1;
-        }
-        QString name;
-        bool first = true;
-        for ( uint i = start; i < nameParts.count(); ++i ) {
-          if ( !first )
-            name += " ";
-          else
-            first = false;
-          name += nameParts[ i ];
-        }
-
-        setAdditionalName( name );
-
+    QString suffix;
+    while ( rightOffset >= 0 ) {
+      if ( suffixes.contains( parts[ rightOffset ] ) ) {
+        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? "" : " "));
+        rightOffset--;
+      } else
         break;
     }
+    setSuffix( suffix );
+
+    if ( rightOffset - 1 >= 0 && prefixes.contains( parts[ rightOffset - 1 ].lower() ) ) {
+      setFamilyName( parts[ rightOffset - 1 ] + " " + parts[ rightOffset ] );
+      rightOffset--;
+    } else
+      setFamilyName( parts[ rightOffset ] );
+
+    QString prefix;
+    while ( leftOffset < rightOffset ) {
+      if ( titles.contains( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+        leftOffset++;
+      } else
+        break;
+    }
+
+    parts = QStringList::split( " ", part2 );
+
+    leftOffset = 0;
+    rightOffset = parts.count();
+
+    while ( leftOffset < rightOffset ) {
+      if ( titles.contains( parts[ leftOffset ] ) ) {
+        prefix.append( ( prefix.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+        leftOffset++;
+      } else
+        break;
+    }
+    setPrefix( prefix );
+
+    if ( leftOffset < rightOffset ) {
+      setGivenName( parts[ leftOffset ] );
+      leftOffset++;
+    }
+
+    QString additionalName;
+    while ( leftOffset < rightOffset ) {
+      additionalName.append( ( additionalName.isEmpty() ? "" : " ") + parts[ leftOffset ] );
+      leftOffset++;
+    }
+    setAdditionalName( additionalName );
   }
 }
 
