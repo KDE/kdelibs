@@ -377,6 +377,15 @@ public:
    */
   bool runPrivileged() const;
 
+  /**
+   * Detaches KProcess from child process. All communication is closed.
+   * No exit notification is emitted any more for the child process.
+   * Deleting the KProcess will no longer kill the child process.
+   * Note that the current process remains the parent process of the
+   * child process.
+   */
+  void detach(); 
+
 signals:
 
   /**

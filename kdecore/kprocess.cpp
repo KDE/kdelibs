@@ -134,6 +134,19 @@ KProcess::~KProcess()
   // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
+void KProcess::detach()
+{
+  KProcessController::theKProcessController->processList->remove(this);
+
+  runs = false;
+  pid_ = 0;
+
+  // Clean up open fd's and socket notifiers.
+  closeStdin();
+  closeStdout();
+  closeStderr();
+}
+
 bool KProcess::setExecutable(const QString& proc)
 {
   if (runs) return false;
