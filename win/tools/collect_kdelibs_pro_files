@@ -14,7 +14,9 @@ cd $KDELIBS
 for pro in `find . -name \*.pro | grep -v "\/\.\|^\.\/win/"` ; do
 	dir=`dirname $pro`
 	mkdir -p $dest/$dir
-	cp -p $pro $dest/$pro
-	echo $pro
+	if [ "$pro" -nt "$dest/$pro" ] ; then
+		cp -p "$pro" $dest/$pro
+		echo "$pro"
+	fi
 done
 
