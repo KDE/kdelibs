@@ -482,7 +482,7 @@ const char k_nl_default_dirname[] = GNULOCALEDIR;
 struct binding *_nl_domain_bindings;
 
 /* Prototypes for local functions.  */
-static char *find_msg  (struct loaded_l10nfile *domain_file,
+char *find_msg  (struct loaded_l10nfile *domain_file,
 			const char *msgid);
 
 /* For those loosing systems which don't have `alloca' we have to add
@@ -691,7 +691,7 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
   /* NOTREACHED */
 }
 
-static char *
+char *
 find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
 {
   size_t top, act, bottom;

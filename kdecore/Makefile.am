@@ -70,7 +70,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp \
         kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
-	kxmessages.cpp kstartupinfo.cpp kdesktopwidget.cpp
+	kxmessages.cpp kstartupinfo.cpp kdesktopwidget.cpp kcatalogue.cpp
 
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
