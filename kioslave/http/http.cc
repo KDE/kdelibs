@@ -1540,7 +1540,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     if (ret == 0)
       m_bEOF = true;
 
-  } while ((ret == -1) && (m_bIsSSL || errno == EAGAIN || errno == EINTR));
+  } while ((ret == -1) && (errno == EAGAIN || errno == EINTR));
 
   return ret;
 }
