@@ -44,12 +44,12 @@ public:
    KFileTreeViewItem( KFileTreeView*, KFileItem*, KFileTreeBranch * );
 
    /**
-    * @return the @see KFileTreeBranch the item is sorted in.
+    * @return the @ref KFileTreeBranch the item is sorted in.
     */
    KFileTreeBranch* branch() const     { return m_branch; }
 
    /**
-    * @return the @see KFileItem the viewitem is representing.
+    * @return the @ref KFileItem the viewitem is representing.
     */
    KFileItem *fileItem() const         { return m_kfileitem; }
 
@@ -59,7 +59,7 @@ public:
    QString path() const;
 
    /**
-    * @return the items @see KURL
+    * @return the items @ref KURL
     */
    KURL    url() const;
 
@@ -69,7 +69,7 @@ public:
    bool    isDir() const;
 
    /**
-    * @return if this directory was already seen by a @see KDirLister.
+    * @return if this directory was already seen by a @ref KDirLister.
     */ 
    bool    alreadyListed() const;
 
