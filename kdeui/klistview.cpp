@@ -1198,10 +1198,24 @@ QPtrList<QListViewItem> KListView::selectedItems() const
 {
   QPtrList<QListViewItem> list;
 
-  QListViewItemIterator it(const_cast<KListView *>(this), QListViewItemIterator::Selected);
+  switch(selectionModeExt())
+  {
+  case NoSelection:
+      break;
+  case Single:
+      if(selectedItem())
+          list.append(selectedItem());
+      break;
+  default:
+  {
+      QListViewItemIterator it(const_cast<KListView *>(this), QListViewItemIterator::Selected);
 
-  for(; it.current(); ++it)
-      list.append(it.current());
+      for(; it.current(); ++it)
+          list.append(it.current());
+
+      break;
+  }
+  }
 
   return list;
 }
