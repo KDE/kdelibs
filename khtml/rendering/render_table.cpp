@@ -1925,8 +1925,8 @@ void RenderTableRow::layout()
 
 // -------------------------------------------------------------------------
 
-RenderTableCell::RenderTableCell(DOM::NodeImpl* node)
-  : RenderFlow(node)
+RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
+  : RenderFlow(_node)
 {
   _col = -1;
   _row = -1;
