@@ -128,6 +128,9 @@ protected:
  * virtual KInstance *createInstance() method, for example in case you want to extend the 
  * paths of your instance's KStandardDirs object.
  *
+ * If a KParts::ReadOnlyPart is requested through this factory and the template argument
+ * implements a KParts::ReadWritePart then setReadWrite( false ) will automatically be
+ * called in createPartObject.
  */
 template <class T>
 class GenericFactory : public Factory
@@ -157,7 +160,16 @@ public:
         while ( metaObject )
         {
             if ( !qstrcmp( className, metaObject->className() ) )
-                return new T( parentWidget, widgetName, parent, name );
+            {
+                T *part = new T( parentWidget, widgetName, parent, name );
+                if ( !qstrcmp( className, "KParts::ReadOnlyPart" ) )
+                {
+                    KParts::ReadWritePart *rwp = dynamic_cast<KParts::ReadWritePart *>( part );
+                    if ( rwp )
+                        rwp->setReadWrite( false );
+                }
+                return part;    
+            }
             metaObject = metaObject->superClass();
         }
         return 0;
