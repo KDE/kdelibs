@@ -106,8 +106,8 @@ void test1()
 	float newspeed = (float)CALLS/benchmark(BENCH_END);
 
 	check("speed for calls",(oldspeed * 2.0) < newspeed);
-	cout << "  -> old " << (int)(oldspeed/1000.0) << " calls/msec" << endl;
-	cout << "  -> new " << (int)(newspeed/1000.0) << " calls/msec" << endl;
+	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
+	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
 
 void test2()
