@@ -1,4 +1,10 @@
-v0.10:		KConfig::read*Entry() methods take a default argument.
+30.05.97:	signal handler for reaping zombie help processes reinstalls itself
+			patch to KIconLoader by Christian Esken
+			slightly better look for KTabCtl
+			kdecore Makefile does not expect current dir to be in path
+			Better Alpha support
+
+???:		KConfig::read*Entry() methods take a default argument.
 			Application-specific config files no longer start with a dot.
 			KApplication::invokeHTMLHelp() defaults the filename to 
 				$KDEDIR/doc/HTML/<appname>/<appname>.html

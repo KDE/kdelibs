@@ -2,6 +2,10 @@
  * $Id$
  * $Log$
  *
+ * Revision 1.8  1997/09/18 12:16:04  kulow
+ * corrected some header dependencies. Removed most of them in drag.h and put
+ * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
+ *
  * Revision 1.7  1997/08/30 08:32:54  kdecvs
  * Coolo: changed the location of the include files to get rid of the
  * hardcoded HAVE_STDC_HEADERS
@@ -38,12 +42,6 @@
  * Kalle: new stopsign.xpm
  * 			KConfig: environment variables are resolved in readEntry()
  * 			Added KFloater
-
-#ifdef ALPHA
-#define ksize_t size_t
-#else
-#define ksize_t int
-#endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port )
 #include <errno.h>

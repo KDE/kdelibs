@@ -132,6 +132,15 @@ public:
 	 and call KIconLoader( config, "MyApplication", "PixmapPath" ).
 */
   KIconLoader ( KConfig *conf, const QString &app_name, const QString &var_name );
+
+  /**
+	 There now exists a simple-to-use version of KIconLoader. If you
+ 	 create a KIconLoader without giving arguments, findFile() will
+ 	 be used for locating icons.
+	 */
+  KIconLoader();
+
+  /// Destructor
   ~KIconLoader ();
 
   /// Load an icon from disk

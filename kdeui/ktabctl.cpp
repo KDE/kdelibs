@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * There are some left in mediatool, but this is not C++
+ *
+ * Revision 1.6  1997/10/16 11:15:54  torben
+ * Kalle: Copyright headers
  * kdoctoolbar removed
  *
  * Revision 1.5  1997/10/09 11:46:29  kalle
@@ -183,7 +187,7 @@ void KTabCtl::setSizes()
     }
 }
 
-    p.drawLine(x1, y1, x0, y0);          /* bottom line */
+    p.setPen( white );
 {
     if (!tabs)
 	return;

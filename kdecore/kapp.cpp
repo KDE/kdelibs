@@ -1,6 +1,15 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.11  1997/05/17 20:38:21  kalle
+// Kalle:
+// - Bugfix for KPanner (from Paul Kendall)
+// - Better colors with kdisplay schemes (from Bernd Wuebben)
+// - new behavior in KApplication::invokeHTMLHelp(): if the first
+//   argument (the filename) is empty, the filename is defaulted to
+// 	$KDEDIR/doc/HTML/<appname>/<appname>.html
+// - KApplication::getCaption for Matthias added (breaks binary compatibility!)
+//
 // Revision 1.10  1997/05/15 20:33:19  wuebben
 // Bernd: Added signals:
 // kdisplayFontChanged()
@@ -124,7 +133,15 @@
 // prevents children from going zombie
 void reaper(int) 
 {
+  
   wait(0);
+
+  /* The signal handler may not be reinstalled before the call to wait
+   * because brain-dead System V systems then would call this signal
+   * handler continuously. (See Stevens: Advanced Programming in the
+   * Unix Environment, section 10.7. for details.)
+   */
+  (void)signal(SIGCHLD, reaper); 
 }
 // Revision 1.60  1997/10/16 11:35:24  kulow
 // I'm not sure, why this have been removed, but I'm sure, they are

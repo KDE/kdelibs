@@ -238,6 +238,7 @@ void KIconLoaderDialog::filterChanged()
 
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name )
 {
+  debug( "KIconLoader( a, b, c ) is obsolete. Please use KIconloader()" );
   pix_dialog = NULL;
   caching = FALSE;
   config = conf;
@@ -246,7 +247,17 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
   name_list.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
 }
-
+ 
+KIconLoader::KIconLoader( )
+{
+  pix_dialog = NULL;
+  caching = FALSE;
+  pixmap_path = NULL;
+  name_list.setAutoDelete(TRUE);
+  pixmap_list.setAutoDelete(TRUE);
+}
+ 
+ 
 KIconLoader::~KIconLoader()
 {
   name_list.clear();
@@ -261,20 +272,18 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
   if ( (index = name_list.find(name)) < 0)
     {  
       pix = new QPixmap;
-      if( name[0] == '/' )
-	new_xpm.load(name);
-      else
-	new_xpm.load( pixmap_path + '/' + name );
+	  QString Location = KApplication::findFile( name );
+	  new_xpm.load( Location );
       *pix = new_xpm;
       if( pix->isNull() )
-	{
-	  debug("ERROR: couldn't find icon: %s", (const char *) name);
-	}
+		{
+		  debug("ERROR: couldn't find icon: %s", (const char *) name);
+		}
       else
-	{
-	  name_list.append(name);
-	  pixmap_list.append(pix);
-	}
+		{
+		  name_list.append(name);
+		  pixmap_list.append(pix);
+		}
     }
   else
     {
@@ -287,6 +296,11 @@ QPixmap KIconLoader::selectIcon(QString &name, const QString &filter)
 {
   if( pix_dialog == NULL )
     pix_dialog = new KIconLoaderDialog;
+  if( pixmap_path )
+	pix_dialog->setDir( pixmap_path );
+  else // sanity check. This should be solved in a better manner.
+	pix_dialog->setDir( "/" );
+
   pix_dialog->setDir( pixmap_path );
   QPixmap pixmap;
   QString pix_name;
