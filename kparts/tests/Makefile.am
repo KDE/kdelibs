@@ -7,6 +7,11 @@ check_PROGRAMS = kpartstest
 
 kpartstest_SOURCES = example.cpp notepad.cpp
 
+lib_LTLIBRARIES = libspellcheck.la
+libspellcheck_la_LDFLAGS = -avoid-version -module
+libspellcheck_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+libspellcheck_la_SOURCES = plugin_spellcheck.cpp
+
 rcdir = $(kde_datadir)/kpartstest
 rc_DATA = kpartstest_shell.rc
 
