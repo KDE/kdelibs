@@ -48,6 +48,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.89  1999/11/24 12:35:32  navindra
+// do not collapse the bars on MidButton press *and* release.  do it only
+// on Mid release, just like is done with the Left button.  i believe the
+// previous behaviour was somewhat confusing and seemed buggy.
+//
 // Revision 1.88  1999/10/31 16:14:11  bero
 // Compilation fix for --enable-final
 //
@@ -1136,8 +1141,7 @@ void KStyleMenuBarInternal::drawContents(QPainter *p)
             }
             else if(!mi->text().isEmpty()){
                 QString s = mi->text();
-                w = fm.width(s) - fm.minLeftBearing() - fm.minRightBearing()
-                    + 2*motifItemHMargin;
+                w = fm.boundingRect(s).width() + 2*motifItemHMargin;
                 w -= s.contains('&')*fm.width('&');
                 w += s.contains("&&")*fm.width('&');
                 h = fm.height() + motifItemVMargin;
