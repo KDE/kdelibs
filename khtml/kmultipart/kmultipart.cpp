@@ -251,7 +251,8 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 void KMultiPart::setPart( const QString& mimeType )
 {
     KXMLGUIFactory *guiFactory = factory();
-    guiFactory->removeClient( this );
+    if ( guiFactory ) // seems to be 0 when restoring from SM
+        guiFactory->removeClient( this );
     kdDebug() << "KMultiPart::setPart " << mimeType << endl;
     delete m_part;
     // Try to find an appropriate viewer component
@@ -328,7 +329,8 @@ void KMultiPart::setPart( const QString& mimeType )
     // if className != "Browser/View".
     loadPlugins( this, m_part, m_part->instance() );
     // Get the part's GUI to appear
-    guiFactory->addClient( this );
+    if ( guiFactory )
+        guiFactory->addClient( this );
 }
 
 void KMultiPart::startOfData()
